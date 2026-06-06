@@ -1,4 +1,6 @@
 /* crypto_test.rex — smoke test for crypto.cls */
+/* Intercept Ctrl+C to stop cleanly */
+signal on halt name UserAborted
 
 say copies("=", 60)
 say "  crypto.cls  —  component tests"
@@ -13,6 +15,9 @@ miner~start("mine")  /* The ~start message runs the method in a new thread */
 /* Give the miner a tiny fraction of a second to print its startup message */
 call SysSleep 0.1
 say ""
+
+say "Let the Miner mine for a bit" 
+pull
 
 
 /* ── MD5 ─────────────────────────────────────────────────── */
@@ -227,6 +232,13 @@ miner~stop
  * which will forcefully kill the background thread safely. */
 exit
 
+/* --- HALT HANDLER --- */
+UserAborted:
+  say ""
+  say " [!] Ctrl+C detected. Forcing miner to stop..."
+  if rx_is_var("MINER") then miner~stop
+  exit /* Instantly kills the process */
+
 
 /* ============================================================
  * Helper Routine: Get prime from cache or generate a new one
@@ -299,6 +311,7 @@ exit
 
     /* We test candidates continuously. If we find one, write it. */
     if rx_is_prime_mr(cand, 40) then do
+      say "[MINER] I found a prime!"
       /* Check keepMining again in case we were stopped during the test */
       if keepMining then do
         s = .Stream~new(poolFile)
@@ -312,5 +325,8 @@ exit
 ::method stop
   expose keepMining
   keepMining = .false
+
+
+
 
 ::requires "crypto.cls"
