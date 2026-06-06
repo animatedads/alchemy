@@ -749,7 +749,6 @@
 /* Generate a fresh RSA-2048 keypair by generating two 1024-bit primes.
  * This is the complete key generation pipeline — may take a minute or two. */
 ::method generateKeypair class
-  numeric digits 2000
   use arg e
   if arg() < 1 then e = 65537
   say "[RSA] Generating 1024-bit prime p (please wait)..."
@@ -886,101 +885,202 @@
 
 ::class CryptoStream public
 
-::attribute _path    unguarded
-::attribute _mode    unguarded
-::attribute _stream  unguarded
+/* _key_hex / _nonce_hex: supply to enable streaming ChaCha20.
+ * _offset:    ciphertext bytes written or read so far (for keystream position).
+ * _line_buf:  decrypted plaintext buffer for lineIn in ChaCha20 mode.
+ *
+ * Plain mode (no key/nonce):
+ *   cs = .CryptoStream~new("file", "READ")
+ *   say cs~md5 / cs~sha512 / cs~sign(priv) / cs~verify(sig,pub)
+ *
+ * Streaming ChaCha20 mode:
+ *   WRITE:
+ *     cs = .CryptoStream~new("out.enc", "WRITE REPLACE", key_hex, nonce_hex)
+ *     cs~charOut("chunk1")   -- encrypted immediately, offset tracked
+ *     cs~lineOut("chunk2")   -- same, appends 0a newline
+ *     cs~close
+ *   READ:
+ *     cs = .CryptoStream~new("out.enc", "READ", key_hex, nonce_hex)
+ *     chunk = cs~charIn(, 1024)   -- decrypted on the fly
+ *     line  = cs~lineIn           -- decrypted line
+ *     cs~close
+ *
+ * Each charOut/charIn call advances _offset so the keystream
+ * position is correct -- no keystream reuse, no full buffering. */
+
+::attribute _path       unguarded
+::attribute _mode       unguarded
+::attribute _stream     unguarded
+::attribute _key_hex    unguarded
+::attribute _nonce_hex  unguarded
+::attribute _offset     unguarded
+::attribute _line_buf   unguarded
 
 ::method init
-  expose _path _mode _stream
-  use arg path, mode
-  if arg() < 2 then mode = "READ"
-  _path   = path
-  _mode   = mode~upper
-  _stream = .Stream~new(path)
+  expose _path _mode _stream _key_hex _nonce_hex _offset _line_buf
+  use arg path, mode, key_hex, nonce_hex
+  if arg() < 2 then mode      = "READ"
+  if arg() < 3 then key_hex   = ""
+  if arg() < 4 then nonce_hex = ""
+  _path      = path
+  _mode      = mode~upper
+  _key_hex   = key_hex
+  _nonce_hex = nonce_hex
+  _offset    = 0
+  _line_buf  = ""
+  _stream    = .Stream~new(path)
   _stream~open(mode)
 
 ::method close
   expose _stream
   if _stream \== .nil then _stream~close
 
-/* Read entire stream content as a string */
+/* XOR data with ChaCha20 keystream at _offset, advance _offset.
+ * Works for both encrypt (write) and decrypt (read) -- XOR is symmetric.
+ * start_block = _offset / 64 + 1   (1-based ChaCha20 block)
+ * pos_in_block = _offset mod 64    (byte offset within that block) */
+::method _chacha_crypt private
+  expose _key_hex _nonce_hex _offset
+  use arg data
+  if data = "" then return ""
+  hex_in       = c2x(data)
+  start_block  = _offset % 64 + 1
+  pos_in_block = _offset // 64
+  bytes_needed  = pos_in_block + length(data)
+  blocks_needed = (bytes_needed + 63) % 64 + 1
+  keystream = ""
+  do blk = start_block to start_block + blocks_needed - 1
+    keystream = keystream || rx_chacha20_block(_key_hex, _nonce_hex, blk)
+  end
+  ks_pos  = pos_in_block * 2 + 1
+  out_hex = ""
+  do i = 1 to length(hex_in) by 2
+    pb = x2d(substr(hex_in,    i,            2))
+    kb = x2d(substr(keystream, ks_pos+i-1,   2))
+    out_hex = out_hex || right(d2x(rx_xor32(pb, kb)), 2, "0")
+  end
+  _offset = _offset + length(data)
+  return x2c(out_hex)
+
+/* Read whole file for bulk ops (md5/sha512/sign/RSA).
+ * In ChaCha20 mode decrypts from byte 0 without disturbing _offset. */
 ::method _readAll private
-  expose _stream _path _mode
+  expose _stream _path _mode _key_hex _offset _line_buf
   _stream~close
   s = .Stream~new(_path)
   s~open("READ")
-  content = ""
   chars = s~chars
-  if chars > 0 then content = s~charIn(, chars)
+  raw = ""
+  if chars > 0 then raw = s~charIn(, chars)
   s~close
-  /* Re-open for original mode */
   _stream = .Stream~new(_path)
   _stream~open(_mode)
-  return content
+  _line_buf = ""
+  if _key_hex \= "" then do
+    save = _offset;  _offset = 0
+    plain = self~_chacha_crypt(raw)
+    _offset = save
+    return plain
+  end
+  return raw
 
-/* MD5 digest of the whole stream */
+/* ---- Streaming write ---------------------------------------- */
+
+::method charOut
+  expose _stream _key_hex
+  use arg data
+  if _key_hex \= "" then data = self~_chacha_crypt(data)
+  return _stream~charOut(data)
+
+::method lineOut
+  expose _stream _key_hex
+  use arg text
+  payload = text || "0a"x
+  if _key_hex \= "" then payload = self~_chacha_crypt(payload)
+  return _stream~charOut(payload)
+
+/* ---- Streaming read ----------------------------------------- */
+
+::method charIn
+  expose _stream _key_hex
+  use arg start, len
+  if arg() < 2 | len == .nil  then len   = 4096
+  if arg() < 1 | start == .nil then raw  = _stream~charIn(, len)
+  else raw = _stream~charIn(start, len)
+  if _key_hex \= "" then return self~_chacha_crypt(raw)
+  return raw
+
+/* Plain mode: delegate to stream~lineIn.
+ * ChaCha20 mode: decrypt 512-byte chunks into _line_buf,
+ * return text up to the next 0a newline. */
+::method lineIn
+  expose _stream _key_hex _line_buf
+  if _key_hex = "" then return _stream~lineIn
+  do while pos("0a"x, _line_buf) = 0 & _stream~state = "READY"
+    chunk = _stream~charIn(, 512)
+    if chunk = "" then leave
+    _line_buf = _line_buf || self~_chacha_crypt(chunk)
+  end
+  nl = pos("0a"x, _line_buf)
+  if nl = 0 then do
+    line = _line_buf;  _line_buf = "";  return line
+  end
+  line = left(_line_buf, nl-1)
+  _line_buf = substr(_line_buf, nl+1)
+  return line
+
+::method state
+  expose _stream
+  return _stream~state
+
+/* ---- Bulk crypto (reads whole file) ------------------------- */
+
 ::method md5
   content = self~_readAll
   return .MD5~new(content)~digest
 
-/* SHA-512 digest of the whole stream */
 ::method sha512
   content = self~_readAll
   return .SHA512~new(content)~digest
 
-/* Hash with named algorithm: "MD5" or "SHA512" */
 ::method hash
   use arg algo
   if arg() < 1 then algo = "SHA512"
   if algo~upper = "MD5" then return self~md5
   return self~sha512
 
-/* Ed25519 sign — returns 128-char hex signature */
 ::method sign
   use arg privateKeyHex
   content = self~_readAll
   return .Ed25519~sign(content, privateKeyHex)
 
-/* Ed25519 verify — returns .true or .false */
 ::method verify
   use arg sigHex, publicKeyHex
   content = self~_readAll
   return .Ed25519~verify(content, sigHex, publicKeyHex)
 
-/* Encrypt file content.
- * mode="X25519" uses XOR-CBC with X25519 shared secret (default)
- * mode="CHACHA20" uses ChaCha20 with key_hex and nonce_hex */
 ::method encrypt
   use arg key, nonce, mode
-  if arg() < 3 then mode = "X25519"
+  if arg() < 3 then mode  = "X25519"
   if arg() < 2 then nonce = ""
   content = self~_readAll
   if mode~upper = "CHACHA20" then
     return .ChaCha20~encrypt(content, key, nonce)
   return .X25519~encryptStream(content, key)
 
-/* Decrypt cipherstream string to plaintext */
 ::method decryptHex class
   use arg cipherHex, sharedSecret
   return .X25519~decryptStream(cipherHex, sharedSecret)
 
-/* RSA hybrid encrypt: session scalar RSA-wrapped, content ChaCha20 */
 ::method encryptRSA
   use arg public_e, modulus_n, session_int
   if arg() < 3 then session_int = 12345
   content = self~_readAll
   return .RSAStream~encrypt(content, public_e, modulus_n, session_int)
 
-/* RSA hybrid decrypt: class method, takes cipherstream string */
 ::method decryptRSA class
   use arg cipherstream, private_d, modulus_n
   return .RSAStream~decrypt(cipherstream, private_d, modulus_n)
-
-/* lineIn / lineOut / charIn — pass-through to underlying stream */
-::method lineIn;  expose _stream; return _stream~lineIn
-::method lineOut; expose _stream; use arg line; return _stream~lineOut(line)
-::method charIn;  expose _stream; use arg start, len; return _stream~charIn(start, len)
-::method state;   expose _stream; return _stream~state
 
 
 /* ============================================================
@@ -1309,7 +1409,7 @@
     mod_hex = substr("0123456789abcdef", (temp//16)+1, 1) || mod_hex
     temp = temp % 16
   end
-  /* floor((len-1)/2): guarantees m < n for any modulus */
+  /* floor((len-1)/2): guarantees m < n */
   block_bytes = (length(mod_hex) - 1) % 2
   if length(raw_text) >= block_bytes then return -1
   /* PKCS#7 pad */
@@ -1490,9 +1590,8 @@
  * Typical time: a few seconds to a few minutes in pure OORexx
  * depending on how quickly a prime candidate is found.
  * All 1024-bit primes are in [10^308, 2×10^308] (309 decimal digits). */
-
 ::routine rx_generate_prime_1024 public
-  numeric digits 2000
+  numeric digits 1000
   candidate = rx_generate_1024_candidate()
   do while rx_is_prime_mr(candidate, 40) = 0
     candidate = candidate + 2
@@ -1504,7 +1603,7 @@
  * then one forced-odd last digit.
  * Note: covers the upper half of 1024-bit numbers -- sufficient for RSA. */
 ::routine rx_generate_1024_candidate public
-  numeric digits 2000
+  numeric digits 1000
   s = "1"
   do i = 1 to 307
     s = s || random(0, 9)
@@ -1516,7 +1615,7 @@
 /* Miller-Rabin primality test.
  * rounds=40 gives < 4^(-40) ~= 10^(-24) false-prime probability. */
 ::routine rx_is_prime_mr public
-  numeric digits 2000
+  numeric digits 1000
   use arg n, rounds
   if n // 2 == 0 then return 0
   if n // 3 == 0 then return 0
@@ -1539,12 +1638,45 @@
   return 1
 
 /* Witness bases: first 25 primes, then deterministic hash of round+n */
-::routine rx_get_prime_witness
+::routine rx_get_prime_witness public
   numeric digits 1000
   use arg round_num, n
   witnesses = "2 3 5 7 11 13 17 19 23 29 31 37 41 43 47 53 59 61 67 71 73 79 83 89 97"
   if round_num <= words(witnesses) then
     return word(witnesses, round_num)
   return (round_num * 100003) // (n - 3) + 2
+
+
+/* Read a cached prime from pool file, randomly selected.
+ * Falls back to generating fresh if pool is empty.
+ * exclude_prime: pass p to guarantee p != q. */
+::routine rx_get_cached_prime public
+  numeric digits 2000
+  use arg pool_file, exclude_prime
+  if arg() < 2 then exclude_prime = ""
+  primes = .Array~new
+  s = .Stream~new(pool_file)
+  if s~query("EXISTS") \== "" then do
+    s~open("READ")
+    do while s~lines > 0
+      line = s~linein~strip
+      if line \= "" & line \= exclude_prime~string then
+        primes~append(line)
+    end
+    s~close
+  end
+  if primes~items > 0 then do
+    idx = random(1, primes~items)
+    say "  [PrimePool] selected prime" idx "of" primes~items "from" pool_file
+    return primes[idx] + 0
+  end
+  say "  [PrimePool] pool empty, generating fresh prime..."
+  p = rx_generate_prime_1024()
+  s = .Stream~new(pool_file)
+  s~open("WRITE APPEND")
+  s~lineout(p)
+  s~close
+  say "  [PrimePool] saved to" pool_file
+  return p
 
 ::routine sin EXTERNAL "LIBRARY rxmath RxCalcSin"

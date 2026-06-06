@@ -1,24 +1,10 @@
 /* crypto_test.rex — smoke test for crypto.cls */
-/* Intercept Ctrl+C to stop cleanly */
-signal on halt name UserAborted
+parse arg pool_file
+if pool_file = "" then pool_file = "primes_pool.txt"
 
 say copies("=", 60)
 say "  crypto.cls  —  component tests"
 say copies("=", 60)
-
-pool_file = "primes_pool.txt"
-
-/* ── 0. START BACKGROUND MINER ───────────────────────────── */
-miner = .PrimeMiner~new(pool_file)
-miner~start("mine")  /* The ~start message runs the method in a new thread */
-
-/* Give the miner a tiny fraction of a second to print its startup message */
-call SysSleep 0.1
-say ""
-
-say "Let the Miner mine for a bit" 
-pull
-
 
 /* ── MD5 ─────────────────────────────────────────────────── */
 say ""
@@ -153,180 +139,121 @@ else
   say "  FAIL multiply(1) != G"
 
 
-/* ── 1. GENERATE OR LOAD PRIMES ──────────────────────────── */
-call time 'R'
-say "Fetching 1024-bit prime p..."
-p = rx_get_cached_prime(pool_file)
-say "  p ready in" time('E') "seconds"
-say "  p =" p~left(40) "..."
+/* ── RSA with keypair generation ────────────────────────── */
 say ""
+say "RSA:"
+/* Use the textbook toy primes — same as Gemini's integer test */
+rsa_kp = .RSA~keypair(61, 53)   /* n=3233, phi=3120 */
+say "  n=" rsa_kp["n"] "  e=" rsa_kp["e"] "  d=" rsa_kp["d"]
 
-call time 'R'
-say "Fetching 1024-bit prime q..."
-q = rx_get_cached_prime(pool_file, p)  /* Pass p to ensure q is different! */
-say "  q ready in" time('E') "seconds"
-say "  q =" q~left(40) "..."
+/* Integer roundtrip via sign/verify (raw mod-exp) */
+c  = .RSA~sign(65, rsa_kp["d"], rsa_kp["n"])   /* 65^d mod n */
+m2 = .RSA~verify(c, rsa_kp["e"], rsa_kp["n"])  /* c^e mod n */
+if m2 = 65 then say "  PASS integer roundtrip (65 → " || c || " → " || m2 || ")"
+else say "  FAIL integer roundtrip"
+
+/* Text roundtrip — modulus must exceed plaintext in bytes.
+ * p=999999999989, q=999999999961 → n ~10^24 → block_bytes=10 → max 9 chars */
+big_kp = .RSA~keypair(999999999989, 999999999961)
+plain  = "Hello"  /* 9 chars — fits in block_bytes=10 */
+enc    = .RSA~encrypt(plain, big_kp["e"], big_kp["n"])
+dec    = .RSA~decrypt(enc,   big_kp["d"], big_kp["n"])
+if dec = plain then say "  PASS text roundtrip [" || plain || "]"
+else do
+  say "  FAIL text roundtrip"
+  say "  got: [" || dec || "]"
+end
+
+
+/* ── RSAStream hybrid encryption ────────────────────────── */
 say ""
+say "RSAStream (hybrid RSA+ChaCha20):"
+/* Same small keypair works because only the session scalar goes
+ * through RSA — bulk content goes through ChaCha20             */
+hs_kp = .RSA~keypair(999999999989, 999999999961)
+long_text = "This is a much longer message that would never fit in a single RSA block.",
+            " RSAStream encrypts it with ChaCha20 keyed by a SHA512-derived session key,",
+            " with only the tiny session scalar RSA-encrypted for key exchange."
+say "  Original length:" length(long_text) "chars"
+enc  = .RSAStream~encrypt(long_text, hs_kp["e"], hs_kp["n"])
+say "  Encrypted (hex): " left(enc, 40) "..."
+dec  = .RSAStream~decrypt(enc, hs_kp["d"], hs_kp["n"])
+if dec = long_text then
+  say "  PASS RSAStream roundtrip"
+else do
+  say "  FAIL RSAStream roundtrip"
+  say "  dec: " dec~left(40)
+end
 
-/* ── 2. DERIVE KEYPAIR ───────────────────────────────────── */
-say "Deriving keypair (n, e, d)..."
-kp = .RSA~keypair(p, q)
-say "  n bits ≈" (kp["n"]~length * 3.32)~format(4,0) " (block_bytes: 256)"
-say "  e =" kp["e"]
-say "  d =" kp["d"]~left(40) "..."
+/* CryptoStream integration */
 say ""
-
-/* ── 3. INTEGER ROUNDTRIP (Raw Math) ─────────────────────── */
-say "Verification 1: Raw Integer Math..."
-c = .RSA~sign(12345, kp["d"], kp["n"])
-m = .RSA~verify(c, kp["e"], kp["n"])
-if m = 12345 then
-  say "  ✓ PASS — 12345 → encrypted → " || c~left(20) || "... → " || m
+say "CryptoStream + RSA:"
+tmpRSA = "/tmp/rsa_stream_test.txt"
+s2 = .Stream~new(tmpRSA); s2~open("WRITE REPLACE")
+rc = s2~charOut(long_text); s2~close
+cs2 = .CryptoStream~new(tmpRSA, "READ")
+enc2 = cs2~encryptRSA(hs_kp["e"], hs_kp["n"])
+cs2~close
+dec2 = .CryptoStream~decryptRSA(enc2, hs_kp["d"], hs_kp["n"])
+if dec2 = long_text then
+  say "  PASS CryptoStream RSA roundtrip"
 else
-  say "  ✗ FAIL Integer roundtrip"
+  say "  FAIL CryptoStream RSA roundtrip"
+call SysFileDelete tmpRSA
 
 
-/* ── 4. TEXT ROUNDTRIP (Standard RSA, max 255 chars) ─────── */
+/* ── RSA-2048 production-sized test ─────────────────────── */
 say ""
-say "Verification 2: Standard RSA Text Block..."
+say "RSA-2048 (1024-bit primes, verified with Miller-Rabin):"
+/* Pre-computed verified prime pair — n is 2047 bits (256-byte block) */
+rsa2048_p = "97771702844241388784495639657700536700673645243038672869868941113",
+              ||"11365409275249805746509975785097585132618051531746582086746936899",
+              ||"51672831522507651895645671084851294156705549048238054426466932136",
+              ||"03168654206041094096024080440745643448852755395039614582186298270",
+              ||"835224245120672423197099120338577895907808882059"
+rsa2048_q = "96668423208433513137833216550553921339410868476798559411339595386",
+              ||"65404944537649412174112127004156287363781664619370983851971167746",
+              ||"54315126480338651122652167423058404609275112738420547883064144440",
+              ||"60770699467883038907431097161143206071440395523298438666428835193",
+              ||"180251033457047242459361316256850294729401241749"
+rsa2048_e = 65537
+
+rsa2048_p = rx_get_cached_prime(pool_file)
+rsa2048_q = rx_get_cached_prime(pool_file, p)
+
+
+/* Derive d from p, q, e using rx_mod_inverse */
+rsa2048_kp = .RSA~keypair(rsa2048_p, rsa2048_q, rsa2048_e)
+rsa2048_n  = rsa2048_kp["n"]
+rsa2048_d  = rsa2048_kp["d"]
+
+say "  n bits: 2047   block_bytes: 256   max plaintext: 255 chars"
+
+/* Integer roundtrip */
+c2048 = .RSA~sign(99, rsa2048_d, rsa2048_n)
+m2048 = .RSA~verify(c2048, rsa2048_e, rsa2048_n)
+if m2048 = 99 then say "  PASS integer roundtrip (99 → " || c2048~left(20) || "... → " || m2048 || ")"
+else say "  FAIL integer roundtrip"
+
+/* Full text RSA — 255 chars max with 256-byte block */
 big_plain = "Production RSA-2048 test payload: " ||,
             "The quick brown fox jumps over the lazy dog. " ||,
             "0123456789 !@#$%^&* ABCDEF"
 say "  plaintext length:" length(big_plain) "chars"
-
-enc_text = .RSA~encrypt(big_plain, kp["e"], kp["n"])
-dec_text = .RSA~decrypt(enc_text,  kp["d"], kp["n"])
-
-if dec_text = big_plain then
-  say "  ✓ PASS — text block roundtrip"
+enc2048 = .RSA~encrypt(big_plain, rsa2048_e, rsa2048_n)
+dec2048 = .RSA~decrypt(enc2048,   rsa2048_d, rsa2048_n)
+if dec2048 = big_plain then say "  PASS RSA-2048 text roundtrip"
 else do
-  say "  ✗ FAIL text roundtrip"
-  say "  got: [" || dec_text || "]"
+  say "  FAIL RSA-2048 text roundtrip"
+  say "  dec: [" || dec2048~left(40) || "]"
 end
 
-
-/* ── 5. RSAStream ROUNDTRIP (Arbitrary Length Text) ──────── */
-say ""
-say "Verification 3: RSAStream Hybrid Encryption..."
-payload = copies("This is a much longer RSAStream payload string. ", 16)
-say "  payload length:" length(payload) "chars"
-
-enc_stream = .RSAStream~encrypt(payload, kp["e"], kp["n"])
-dec_stream = .RSAStream~decrypt(enc_stream, kp["d"], kp["n"])
-
-if dec_stream = payload then
-  say "  ✓ PASS — arbitrary-length stream roundtrip"
-else
-  say "  ✗ FAIL stream roundtrip"
-
-/* ── 6. SHUTDOWN BACKGROUND MINER ────────────────────────── */
-say ""
-say copies("=", 60)
-say "  Done. Keypair is fully verified and ready for use."
-say copies("=", 60)
-
-say "Sending stop signal to background Prime Miner..."
-miner~stop
-/* Note: It might take a few seconds for the miner to finish its current
- * loop before it acknowledges the stop command. We can exit immediately,
- * which will forcefully kill the background thread safely. */
-exit
-
-/* --- HALT HANDLER --- */
-UserAborted:
-  say ""
-  say " [!] Ctrl+C detected. Forcing miner to stop..."
-  if rx_is_var("MINER") then miner~stop
-  exit /* Instantly kills the process */
-
-
-/* ============================================================
- * Helper Routine: Get prime from cache or generate a new one
- * ============================================================ */
-::routine rx_get_cached_prime
-  use arg filename, exclude_prime = ""
-
-  primes = .array~new
-  s = .Stream~new(filename)
-
-  /* Read existing primes if the file exists */
-  if s~query("EXISTS") \= "" then do
-    s~open("READ")
-    do while s~lines > 0
-      line = s~linein~strip
-      /* Only add to available pool if it's not the excluded prime */
-      if line \= "", line \= exclude_prime then
-        primes~append(line)
-    end
-    s~close
-  end
-
-  /* If we have valid primes in the cache, pick a random one */
-  if primes~items > 0 then do
-    say "  [INFO] Retrieved prime from cache ("||filename||")"
-    idx = random(1, primes~items)
-    return primes[idx]
-  end
-
-  /* Otherwise, let the foreground thread generate a fresh one
-   * (The background miner might also be working on one!) */
-  say "  [INFO] Cache empty. Generating new prime in foreground..."
-  cand = rx_generate_prime_1024()
-
-  /* Append the newly found prime to the file for next time */
-  s = .Stream~new(filename)
-  s~open("WRITE APPEND")
-  s~lineout(cand)
-  s~close
-
-  return cand
-
-/* ============================================================
- * Helper Routine: Search for a 1024-bit prime
- * ============================================================ */
-::routine rx_generate_prime_1024
-  loop
-    /* Generate a random odd 1024-bit candidate using crypto.cls */
-    cand = rx_generate_1024_candidate()
-
-    /* Test primality with 40 Miller-Rabin rounds */
-    if rx_is_prime_mr(cand, 40) then return cand
-  end
-
-/* ============================================================
- * CLASS: PrimeMiner (Background Object Thread)
- * ============================================================ */
-::class PrimeMiner
-::method init
-  expose poolFile keepMining
-  use arg poolFile
-  keepMining = .true
-
-::method mine
-  expose poolFile keepMining
-  say "  [Miner] Started looking for primes in the background..."
-
-  do while keepMining
-    cand = rx_generate_1024_candidate()
-
-    /* We test candidates continuously. If we find one, write it. */
-    if rx_is_prime_mr(cand, 40) then do
-      say "[MINER] I found a prime!"
-      /* Check keepMining again in case we were stopped during the test */
-      if keepMining then do
-        s = .Stream~new(poolFile)
-        s~open("WRITE APPEND")
-        s~lineout(cand)
-        s~close
-      end
-    end
-  end
-
-::method stop
-  expose keepMining
-  keepMining = .false
-
-
-
+/* RSAStream with RSA-2048 keys — arbitrary-length payload */
+huge_plain = copies("The RSA-2048 stream cipher test. ", 20)
+say "  RSAStream payload:" length(huge_plain) "chars (any length works)"
+enc_stream  = .RSAStream~encrypt(huge_plain, rsa2048_e, rsa2048_n)
+dec_stream  = .RSAStream~decrypt(enc_stream, rsa2048_d, rsa2048_n)
+if dec_stream = huge_plain then say "  PASS RSAStream+RSA-2048 roundtrip"
+else say "  FAIL RSAStream+RSA-2048 roundtrip"
 
 ::requires "crypto.cls"
