@@ -45,7 +45,22 @@
  * Authors:
  *   md5 / int32        — Tom Dyer
  *   EdwardsPoint / X25519 arithmetic — Gemini (Google)
- *   sha512 / int64 / CryptoStream / class structure — Claude
+ *   sha512 / int64 / early CryptoStream class structure — Claude
+ *   virtual CryptoStream/session-module architecture, ChaCha20 default
+ *     stream module, RSA hybrid stream module, ED209 signing/audit module,
+ *     and EnigmaM3 plug-in module — ChatGPT
+ *
+ * CryptoStream design note:
+ *   CryptoStream is a virtual plaintext Stream API over a physical
+ *   cryptographical backing stream.  Application write boundaries are
+ *   not encryption message boundaries.  open() starts one session,
+ *   charOut()/lineOut() feed that same session, flush() emits only
+ *   available material, and close() finalises exactly once.
+ *
+ * Security note:
+ *   EnigmaM3 and ED209 are included as educational/demo modules.
+ *   EnigmaM3 is historical entertainment, not modern confidentiality.
+ *   ED209 is a signing/audit pass-through module, not encryption.
  * ============================================================ */
 
 ::options digits 2000
@@ -883,163 +898,1124 @@
  *   dec = .CryptoStream~decryptHex(enc, sharedSecret)
  * ============================================================ */
 
-::class CryptoStream public
+/* ============================================================
+ * Crypto stream module contract
+ *
+ * CryptoStream does not care whether the module underneath is
+ * ChaCha20, RSA-hybrid, ED209-signing, or comedy Enigma.  It cares that
+ * the object behaves as a continuous session:
+ *
+ *   start(mode)
+ *   updateWrite(plaintext)  -> bytes to place on the physical stream
+ *   updateRead(ciphertext)  -> plaintext bytes for the virtual stream
+ *   flushFullBlocks()       -> available output only, no finalisation
+ *   finalWrite()            -> final trailer/tag/padding if any
+ *   finalRead()             -> verify/finish if needed
+ *   reset()                 -> optional rewind of module state
+ *
+ * The default CryptoStream string-secret path now uses ChaCha20.  The
+ * old integer XOR/CBC demonstration block engine intentionally remains
+ * retired because it leaked readable structure into the disk file.
+ * ============================================================ */
 
-/* _key_hex / _nonce_hex: supply to enable streaming ChaCha20.
- * _offset:    ciphertext bytes written or read so far (for keystream position).
- * _line_buf:  decrypted plaintext buffer for lineIn in ChaCha20 mode.
+/* ============================================================
+ * ChaCha20CipherSession — binary-safe continuous stream module
  *
- * Plain mode (no key/nonce):
- *   cs = .CryptoStream~new("file", "READ")
- *   say cs~md5 / cs~sha512 / cs~sign(priv) / cs~verify(sig,pub)
+ * This is the default module used when CryptoStream receives a string
+ * sharedSecret.  The key and nonce are derived from SHA512(secret):
+ *   key   = first  64 hex chars  (32 bytes)
+ *   nonce = next   24 hex chars  (12 bytes)
  *
- * Streaming ChaCha20 mode:
- *   WRITE:
- *     cs = .CryptoStream~new("out.enc", "WRITE REPLACE", key_hex, nonce_hex)
- *     cs~charOut("chunk1")   -- encrypted immediately, offset tracked
- *     cs~lineOut("chunk2")   -- same, appends 0a newline
- *     cs~close
- *   READ:
- *     cs = .CryptoStream~new("out.enc", "READ", key_hex, nonce_hex)
- *     chunk = cs~charIn(, 1024)   -- decrypted on the fly
- *     line  = cs~lineIn           -- decrypted line
- *     cs~close
- *
- * Each charOut/charIn call advances _offset so the keystream
- * position is correct -- no keystream reuse, no full buffering. */
+ * The underlying ChaCha20 primitive is a complete-message function, so
+ * this session preserves stream continuity by tracking the byte offset
+ * and discarding the keystream prefix for each chunk.  This is not the
+ * most efficient possible implementation, but it is correct for the
+ * virtual-stream contract and avoids write-boundary crypto resets.
+ * ============================================================ */
 
-::attribute _path       unguarded
-::attribute _mode       unguarded
-::attribute _stream     unguarded
-::attribute _key_hex    unguarded
-::attribute _nonce_hex  unguarded
-::attribute _offset     unguarded
-::attribute _line_buf   unguarded
+::class ChaCha20CipherSession public
+
+::attribute _keyHex unguarded
+::attribute _nonceHex unguarded
+::attribute _position unguarded
+::attribute _finalised unguarded
 
 ::method init
-  expose _path _mode _stream _key_hex _nonce_hex _offset _line_buf
-  use arg path, mode, key_hex, nonce_hex
-  if arg() < 2 then mode      = "READ"
-  if arg() < 3 then key_hex   = ""
-  if arg() < 4 then nonce_hex = ""
-  _path      = path
-  _mode      = mode~upper
-  _key_hex   = key_hex
-  _nonce_hex = nonce_hex
-  _offset    = 0
-  _line_buf  = ""
-  _stream    = .Stream~new(path)
-  _stream~open(mode)
+  expose _keyHex _nonceHex _position _finalised
+  use arg sharedSecret, keyHex, nonceHex
 
-::method close
-  expose _stream
-  if _stream \== .nil then _stream~close
+  if arg() >= 2 & keyHex \= "" then do
+    _keyHex = keyHex~lower
+    if arg() >= 3 & nonceHex \= "" then _nonceHex = nonceHex~lower
+    else _nonceHex = left(.SHA512~new(_keyHex)~digest, 24)
+  end
+  else do
+    if arg() < 1 then sharedSecret = ""
+    h = .SHA512~new(sharedSecret~string)~digest
+    _keyHex = left(h, 64)
+    _nonceHex = substr(h, 65, 24)
+  end
 
-/* XOR data with ChaCha20 keystream at _offset, advance _offset.
- * Works for both encrypt (write) and decrypt (read) -- XOR is symmetric.
- * start_block = _offset / 64 + 1   (1-based ChaCha20 block)
- * pos_in_block = _offset mod 64    (byte offset within that block) */
-::method _chacha_crypt private
-  expose _key_hex _nonce_hex _offset
+  _position = 0
+  _finalised = .false
+
+::method start
+  expose _position _finalised
+  use arg mode
+  _position = 0
+  _finalised = .false
+  return self
+
+::method reset
+  expose _position _finalised
+  use arg
+  _position = 0
+  _finalised = .false
+  return self
+
+::method updateWrite
+  use arg plaintext
+  return self~_cryptChunk(plaintext)
+
+::method updateRead
+  use arg ciphertext
+  return self~_cryptChunk(ciphertext)
+
+::method flushFullBlocks
+  use arg
+  return ""
+
+::method finalWrite
+  expose _finalised
+  use arg
+  _finalised = .true
+  return ""
+
+::method finalRead
+  expose _finalised
+  use arg
+  _finalised = .true
+  return ""
+
+::method _cryptChunk private
+  expose _keyHex _nonceHex _position _finalised
   use arg data
+
+  if _finalised then
+    raise syntax 93.900 array("ChaCha20CipherSession: update after final")
+
+  if data == .nil then data = ""
   if data = "" then return ""
-  hex_in       = c2x(data)
-  start_block  = _offset % 64 + 1
-  pos_in_block = _offset // 64
-  bytes_needed  = pos_in_block + length(data)
-  blocks_needed = (bytes_needed + 63) % 64 + 1
-  keystream = ""
-  do blk = start_block to start_block + blocks_needed - 1
-    keystream = keystream || rx_chacha20_block(_key_hex, _nonce_hex, blk)
-  end
-  ks_pos  = pos_in_block * 2 + 1
-  out_hex = ""
-  do i = 1 to length(hex_in) by 2
-    pb = x2d(substr(hex_in,    i,            2))
-    kb = x2d(substr(keystream, ks_pos+i-1,   2))
-    out_hex = out_hex || right(d2x(rx_xor32(pb, kb)), 2, "0")
-  end
-  _offset = _offset + length(data)
-  return x2c(out_hex)
 
-/* Read whole file for bulk ops (md5/sha512/sign/RSA).
- * In ChaCha20 mode decrypts from byte 0 without disturbing _offset. */
-::method _readAll private
-  expose _stream _path _mode _key_hex _offset _line_buf
-  _stream~close
-  s = .Stream~new(_path)
-  s~open("READ")
-  chars = s~chars
-  raw = ""
-  if chars > 0 then raw = s~charIn(, chars)
-  s~close
-  _stream = .Stream~new(_path)
-  _stream~open(_mode)
-  _line_buf = ""
-  if _key_hex \= "" then do
-    save = _offset;  _offset = 0
-    plain = self~_chacha_crypt(raw)
-    _offset = save
-    return plain
-  end
-  return raw
+  /* Generate stream from zero and cut away bytes already consumed. */
+  prefix = '00'x~copies(_position)
+  whole  = .ChaCha20~crypt(prefix || data, _keyHex, _nonceHex)
+  out    = whole~substr(_position + 1)
+  _position = _position + data~length
+  return out
 
-/* ---- Streaming write ---------------------------------------- */
+
+/* Backwards-compatible name used by CryptoStream's string-secret path. */
+::class CryptoBlockCipherSession subclass ChaCha20CipherSession public
+
+
+/* ============================================================
+ * RSAHybridCipherSession — RSA wrapped ChaCha20 session module
+ *
+ * RSA is not a bulk stream cipher.  This module uses RSA only to wrap a
+ * small session integer and uses ChaCha20 for the continuous virtual
+ * stream.  The physical stream starts with an ASCII header:
+ *
+ *   RSAHYB1 <rsa-session-hex>\n
+ *
+ * Write-side constructor:
+ *   .RSAHybridCipherSession~new("WRITE", public_e, modulus_n, session_int)
+ *
+ * Read-side constructor:
+ *   .RSAHybridCipherSession~new("READ", private_d, modulus_n)
+ * ============================================================ */
+
+::class RSAHybridCipherSession public
+
+::attribute _mode unguarded
+::attribute _exponent unguarded
+::attribute _modulus unguarded
+::attribute _sessionInt unguarded
+::attribute _chacha unguarded
+::attribute _headerDone unguarded
+::attribute _headerBuffer unguarded
+::attribute _finalised unguarded
+
+::method init
+  expose _mode _exponent _modulus _sessionInt _chacha _headerDone _headerBuffer _finalised
+  numeric digits 2000
+  use arg mode, exponent, modulus, sessionInt
+
+  if arg() < 1 then mode = "WRITE"
+  _mode = mode~upper
+  _exponent = exponent
+  _modulus = modulus
+  if arg() < 4 then sessionInt = 12345
+  _sessionInt = sessionInt
+  _headerDone = .false
+  _headerBuffer = ""
+  _finalised = .false
+
+  if pos("WRITE", _mode) > 0 then do
+    _chacha = .ChaCha20CipherSession~new(_sessionInt~string)
+  end
+  else do
+    _chacha = .nil
+  end
+
+::method start
+  use arg mode
+  return self
+
+::method updateWrite
+  expose _exponent _modulus _sessionInt _chacha _headerDone _finalised
+  numeric digits 2000
+  use arg plaintext
+
+  if _finalised then
+    raise syntax 93.900 array("RSAHybridCipherSession: write after final")
+
+  out = ""
+  if \_headerDone then do
+    encSession = rx_rsa_pow_mod(_sessionInt, _exponent, _modulus)
+    rsaHex = d2x(encSession)~lower
+    out = "RSAHYB1 " || rsaHex || '0a'x
+    _headerDone = .true
+  end
+
+  return out || _chacha~updateWrite(plaintext)
+
+::method updateRead
+  expose _exponent _modulus _chacha _headerDone _headerBuffer _finalised
+  numeric digits 2000
+  use arg ciphertext
+
+  if _finalised then
+    raise syntax 93.900 array("RSAHybridCipherSession: read after final")
+
+  if ciphertext == .nil then ciphertext = ""
+
+  if _headerDone then return _chacha~updateRead(ciphertext)
+
+  _headerBuffer = _headerBuffer || ciphertext
+  p = pos('0a'x, _headerBuffer)
+  if p = 0 then return ""
+
+  header = _headerBuffer~substr(1, p - 1)
+  rest = _headerBuffer~substr(p + 1)
+  _headerBuffer = ""
+
+  if header~left(8) \= "RSAHYB1 " then
+    raise syntax 93.900 array("RSAHybridCipherSession: missing RSAHYB1 header")
+
+  rsaHex = header~substr(9)
+  encSession = x2d(rsaHex)
+  sessionInt = rx_rsa_pow_mod(encSession, _exponent, _modulus)
+  _chacha = .ChaCha20CipherSession~new(sessionInt~string)
+  _headerDone = .true
+
+  if rest = "" then return ""
+  return _chacha~updateRead(rest)
+
+::method flushFullBlocks
+  use arg
+  return ""
+
+::method finalWrite
+  expose _finalised _chacha
+  use arg
+  _finalised = .true
+  if _chacha == .nil then return ""
+  return _chacha~finalWrite
+
+::method finalRead
+  expose _finalised _headerDone _headerBuffer _chacha
+  use arg
+  if \_headerDone & _headerBuffer \= "" then
+    raise syntax 93.900 array("RSAHybridCipherSession: truncated RSAHYB1 header")
+  _finalised = .true
+  if _chacha == .nil then return ""
+  return _chacha~finalRead
+
+
+/* ============================================================
+ * ED209CipherSession — Ed25519 signing/audit pass-through module
+ *
+ * ED209 is deliberately named as a wink.  It is not encryption.  It is a
+ * CryptoStream-compatible integrity/audit module that passes bytes through
+ * while accumulating the message.  The final signature can be retrieved
+ * with signature() after finalWrite().
+ *
+ * Use this when the desired module is "prove what went through" rather
+ * than "hide what went through".  For confidentiality use ChaCha20 or the
+ * RSAHybrid module above.
+ * ============================================================ */
+
+::class ED209CipherSession public
+
+::attribute _privateKeyHex unguarded
+::attribute _publicKeyHex unguarded
+::attribute _buffer unguarded
+::attribute _signature unguarded
+::attribute _finalised unguarded
+
+::method init
+  expose _privateKeyHex _publicKeyHex _buffer _signature _finalised
+  use arg privateKeyHex, publicKeyHex
+  _privateKeyHex = privateKeyHex
+  _publicKeyHex = publicKeyHex
+  _buffer = ""
+  _signature = ""
+  _finalised = .false
+
+::method start
+  use arg mode
+  return self
+
+::method updateWrite
+  expose _buffer _finalised
+  use arg plaintext
+  if _finalised then
+    raise syntax 93.900 array("ED209CipherSession: write after final")
+  if plaintext == .nil then plaintext = ""
+  _buffer = _buffer || plaintext
+  return plaintext
+
+::method updateRead
+  expose _buffer _finalised
+  use arg ciphertext
+  if _finalised then
+    raise syntax 93.900 array("ED209CipherSession: read after final")
+  if ciphertext == .nil then ciphertext = ""
+  _buffer = _buffer || ciphertext
+  return ciphertext
+
+::method flushFullBlocks
+  use arg
+  return ""
+
+::method finalWrite
+  expose _privateKeyHex _buffer _signature _finalised
+  use arg
+  if _privateKeyHex \= "" then
+    _signature = .Ed25519~sign(_buffer, _privateKeyHex)
+  _finalised = .true
+  return ""
+
+::method finalRead
+  expose _finalised
+  use arg
+  _finalised = .true
+  return ""
+
+::method signature
+  expose _signature
+  use arg
+  return _signature
+
+/* ============================================================
+ * EnigmaM3CipherSession — historical / educational crypto module
+ *
+ * This is a streaming cipher module for CryptoStream.  It is NOT
+ * binary-safe, NOT case-preserving, and NOT modern cryptography.  It exists
+ * because it is a useful visible demonstration of cipher continuity:
+ *
+ *   updateWrite("HELLO") || updateWrite("WORLD")
+ *
+ * must equal:
+ *
+ *   reset(...); updateWrite("HELLOWORLD")
+ *
+ * Non A-Z characters pass through unchanged by default so lineOut() can keep
+ * line boundaries while the rotor state advances only for A-Z letters.
+ * ============================================================ */
+
+::class EnigmaRotor public
+::attribute wiring
+::attribute notch
+
+::method init
+  expose wiring notch
+  use arg wiringArg, notchArg
+  wiring = wiringArg~upper
+  notch = notchArg~upper
+
+::class EnigmaM3CipherSession public
+
+::attribute alphabet unguarded
+::attribute rotorTable unguarded
+::attribute rotors unguarded
+::attribute reflector unguarded
+::attribute positions unguarded
+::attribute plugboardMap unguarded
+::attribute startPositions unguarded
+::attribute passThroughUnknown unguarded
+
+::method init
+  expose alphabet rotorTable rotors reflector positions plugboardMap startPositions passThroughUnknown
+  use arg r1, r2, r3, p1, p2, p3, plugs, passUnknown
+
+  if arg() < 1 then r1 = "I"
+  if arg() < 2 then r2 = "II"
+  if arg() < 3 then r3 = "III"
+  if arg() < 4 then p1 = "A"
+  if arg() < 5 then p2 = "A"
+  if arg() < 6 then p3 = "A"
+  if arg() < 7 then plugs = ""
+  if arg() < 8 then passUnknown = .true
+
+  alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  passThroughUnknown = passUnknown
+
+  rotorTable = .StringTable~new
+  rotorTable["I"]    = .EnigmaRotor~new("EKMFLGDQVZNTOWYHXUSPAIBRCJ", "Q")
+  rotorTable["II"]   = .EnigmaRotor~new("AJDKSIRUXBLHWTMCQGZNPYFVOE", "E")
+  rotorTable["III"]  = .EnigmaRotor~new("BDFHJLCPRTXVZNYEIWGAKMUSQO", "V")
+  rotorTable["IV"]   = .EnigmaRotor~new("ESOVPZJAYQUIRHXLNFTGKDCMWB", "J")
+  rotorTable["V"]    = .EnigmaRotor~new("VZBRGITYUPSDNHLXAWMJQOFECK", "Z")
+
+  reflector = "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+
+  /* positions[1] is the fast/right rotor. */
+  rotors = .Array~of(rotorTable[r3~upper], rotorTable[r2~upper], rotorTable[r1~upper])
+  positions = .Array~of(p3~upper, p2~upper, p1~upper)
+  startPositions = .Array~of(p3~upper, p2~upper, p1~upper)
+
+  self~setupPlugboard(plugs)
+
+::method start
+  use arg mode
+  return self
+
+::method reset
+  expose positions startPositions
+  use arg p1, p2, p3
+
+  if arg() >= 3 then do
+    positions[1] = p3~upper
+    positions[2] = p2~upper
+    positions[3] = p1~upper
+    startPositions = .Array~of(positions[1], positions[2], positions[3])
+  end
+  else do
+    positions[1] = startPositions[1]
+    positions[2] = startPositions[2]
+    positions[3] = startPositions[3]
+  end
+  return self
+
+::method setupPlugboard
+  expose plugboardMap
+  use arg pairs
+
+  plugboardMap = .StringTable~new
+  pairs = pairs~upper~space(1)
+  do i = 1 to pairs~words
+    pair = pairs~word(i)
+    if pair~length = 2 then do
+      a = pair~substr(1, 1)
+      b = pair~substr(2, 1)
+      plugboardMap[a] = b
+      plugboardMap[b] = a
+    end
+  end
+
+::method updateWrite
+  use arg text
+  return self~process(text)
+
+::method updateRead
+  use arg text
+  return self~process(text)
+
+::method flushFullBlocks
+  use arg
+  return ""
+
+::method finalWrite
+  use arg
+  return ""
+
+::method finalRead
+  use arg
+  return 0
+
+::method process
+  expose alphabet rotors reflector positions passThroughUnknown
+  use arg text
+
+  text = text~upper
+  outText = ""
+
+  do i = 1 to text~length
+    char = text~substr(i, 1)
+    if alphabet~pos(char) > 0 then do
+      self~stepRotors
+      char = self~plugboardSwap(char)
+
+      do r = 1 to 3
+        char = self~passThrough(char, rotors[r], positions[r], .true)
+      end
+
+      idx = alphabet~pos(char)
+      char = reflector~substr(idx, 1)
+
+      do r = 3 to 1 by -1
+        char = self~passThrough(char, rotors[r], positions[r], .false)
+      end
+
+      char = self~plugboardSwap(char)
+      outText = outText || char
+    end
+    else do
+      if passThroughUnknown then outText = outText || char
+    end
+  end
+  return outText
+
+::method plugboardSwap
+  expose plugboardMap
+  use arg char
+  if plugboardMap~hasIndex(char) then return plugboardMap[char]
+  return char
+
+::method stepRotors
+  expose rotors positions
+
+  rightAtNotch  = (positions[1] = rotors[1]~notch)
+  middleAtNotch = (positions[2] = rotors[2]~notch)
+
+  if middleAtNotch then positions[3] = self~nextPos(positions[3])
+  if rightAtNotch | middleAtNotch then positions[2] = self~nextPos(positions[2])
+  positions[1] = self~nextPos(positions[1])
+
+::method nextPos
+  expose alphabet
+  use arg p
+  idx = alphabet~pos(p) + 1
+  if idx > 26 then idx = 1
+  return alphabet~substr(idx, 1)
+
+::method passThrough
+  expose alphabet
+  use arg char, rotor, pos, forward
+
+  offset = alphabet~pos(pos) - 1
+  charIdx = alphabet~pos(char) - 1
+  inIdx = (charIdx + offset) // 26
+  if inIdx < 0 then inIdx = inIdx + 26
+  inChar = alphabet~substr(inIdx + 1, 1)
+
+  if forward then do
+    outChar = rotor~wiring~substr(alphabet~pos(inChar), 1)
+  end
+  else do
+    outChar = alphabet~substr(rotor~wiring~pos(inChar), 1)
+  end
+
+  outIdx = alphabet~pos(outChar) - 1
+  finalIdx = (outIdx - offset) // 26
+  if finalIdx < 0 then finalIdx = finalIdx + 26
+  return alphabet~substr(finalIdx + 1, 1)
+
+/* ============================================================
+ * CryptoStream — virtual plaintext Stream over encrypted bytes
+ *
+ * CryptoStream presents a plaintext Stream API to callers.
+ * The inherited/provided base stream carries only encrypted bytes.
+ *
+ * Application write boundaries are not encryption message boundaries.
+ * open() starts one continuous cipher session.
+ * charout()/lineout() feed that session.
+ * flush() emits only complete encrypted blocks already available.
+ * close() finalises padding/trailer exactly once.
+ *
+ * chars()/lines()/charin()/linein() operate on decrypted plaintext
+ * buffers, never directly on the encrypted backing stream.
+ * ============================================================ */
+
+::class CryptoStream subclass Stream public
+
+::attribute _baseStream unguarded
+::attribute _usingSelfStream unguarded
+::attribute _sharedSecret unguarded
+::attribute _cipherSession unguarded
+::attribute _mode unguarded
+::attribute _plainBuffer unguarded
+::attribute _lineEnd unguarded
+::attribute _closed unguarded
+::attribute _readFinal unguarded
+::attribute _moduleOption unguarded
+::attribute _moduleOptionSupplied unguarded
+
+::method init
+  expose _baseStream _usingSelfStream _sharedSecret _cipherSession _mode _plainBuffer _lineEnd _closed _readFinal _moduleOption _moduleOptionSupplied
+  use arg target, mode, sharedSecret, options
+
+  if arg() < 2 then mode = "READ"
+  if arg() < 3 then sharedSecret = ""
+
+  _baseStream      = .nil
+  _usingSelfStream = .false
+  _sharedSecret    = sharedSecret
+  _cipherSession   = .nil
+  _mode            = ""
+  _plainBuffer     = ""
+  _lineEnd         = "0a"x
+  _closed          = .true
+  _readFinal       = .false
+  _moduleOption    = options
+  _moduleOptionSupplied = arg(4, "E")
+
+  if target~isA(.Stream) then do
+    _baseStream = target
+  end
+  else do
+    self~init:super(target)
+    _baseStream = self
+    _usingSelfStream = .true
+  end
+
+  if mode \= "" then self~open(mode)
+
+::method open
+  expose _baseStream _usingSelfStream _sharedSecret _cipherSession _mode _plainBuffer _closed _readFinal _moduleOption _moduleOptionSupplied
+  args = arg(1, "A")
+  argc = arg()
+
+  if argc >= 1 & args~hasIndex(1) then mode = args[1]
+  else mode = "READ"
+
+  _mode = mode~upper
+  _plainBuffer = ""
+  _readFinal = .false
+
+  if _sharedSecret == .nil | _sharedSecret = "" then do
+    _cipherSession = .nil
+  end
+  else if _moduleOptionSupplied then do
+    /* Four-argument constructor compatibility:
+     *   .CryptoStream~new(path, "WRITE REPLACE", public_e, n)
+     *   .CryptoStream~new(path, "READ",          private_d, n)
+     * selects the RSA-hybrid stream module.  RSA wraps the session key;
+     * ChaCha20 carries the continuous virtual stream. */
+    if self~_isWriteMode then
+      _cipherSession = .RSAHybridCipherSession~new("WRITE", _sharedSecret, _moduleOption)
+    else
+      _cipherSession = .RSAHybridCipherSession~new("READ", _sharedSecret, _moduleOption)
+  end
+  else if _sharedSecret~isA(.String) then do
+    _cipherSession = .CryptoBlockCipherSession~new(_sharedSecret)
+  end
+  else do
+    /* A supplied cipher module/session, for example .EnigmaM3CipherSession. */
+    _cipherSession = _sharedSecret
+    if _cipherSession~hasMethod("START") then _cipherSession~start(_mode)
+  end
+
+  if _usingSelfStream then do
+    select
+      when argc = 0 then self~open:super
+      when argc = 1 then do
+        if args~hasIndex(1) then self~open:super(args[1])
+        else self~open:super
+      end
+      when argc = 2 then do
+        if args~hasIndex(1) & args~hasIndex(2) then self~open:super(args[1], args[2])
+        else if \args~hasIndex(1) & args~hasIndex(2) then self~open:super(, args[2])
+        else if args~hasIndex(1) then self~open:super(args[1])
+        else self~open:super
+      end
+      otherwise do
+        if args~hasIndex(1) & args~hasIndex(2) & args~hasIndex(3) then self~open:super(args[1], args[2], args[3])
+        else if args~hasIndex(1) & args~hasIndex(2) then self~open:super(args[1], args[2])
+        else if args~hasIndex(1) then self~open:super(args[1])
+        else self~open:super
+      end
+    end
+  end
+  else do
+    if _baseStream~hasMethod("OPEN") then do
+      select
+        when argc = 0 then _baseStream~open
+        when argc = 1 then do
+          if args~hasIndex(1) then _baseStream~open(args[1])
+          else _baseStream~open
+        end
+        when argc = 2 then do
+          if args~hasIndex(1) & args~hasIndex(2) then _baseStream~open(args[1], args[2])
+          else if \args~hasIndex(1) & args~hasIndex(2) then _baseStream~open(, args[2])
+          else if args~hasIndex(1) then _baseStream~open(args[1])
+          else _baseStream~open
+        end
+        otherwise do
+          if args~hasIndex(1) & args~hasIndex(2) & args~hasIndex(3) then _baseStream~open(args[1], args[2], args[3])
+          else if args~hasIndex(1) & args~hasIndex(2) then _baseStream~open(args[1], args[2])
+          else if args~hasIndex(1) then _baseStream~open(args[1])
+          else _baseStream~open
+        end
+      end
+    end
+  end
+
+  _closed = .false
+  return self
 
 ::method charOut
-  expose _stream _key_hex
-  use arg data
-  if _key_hex \= "" then data = self~_chacha_crypt(data)
-  return _stream~charOut(data)
+  expose _cipherSession _closed _mode
+  args = arg(1, "A")
+  argc = arg()
+
+  if argc >= 1 & args~hasIndex(1) then data = args[1]
+  else data = ""
+  if data == .nil then data = ""
+
+  if _closed then
+    raise syntax 93.900 array("CryptoStream: write on closed stream")
+  if self~_isReadMode then
+    raise syntax 93.900 array("CryptoStream: stream is not open for write")
+
+  if _cipherSession == .nil then do
+    if argc = 0 then return self~_baseCharOut("")
+    if argc = 1 then do
+      if args~hasIndex(1) then return self~_baseCharOut(args[1])
+      return self~_baseCharOut("")
+    end
+    if args~hasIndex(1) & args~hasIndex(2) then return self~_baseCharOut(args[1], args[2])
+    if args~hasIndex(1) then return self~_baseCharOut(args[1])
+    return self~_baseCharOut("")
+  end
+
+  if argc >= 2 then
+    raise syntax 93.900 array("CryptoStream: positioned charOut is not supported on virtual encrypted streams")
+
+  cipherText = _cipherSession~updateWrite(data)
+  if cipherText \= "" then self~_baseCharOut(cipherText)
+  return 0
 
 ::method lineOut
-  expose _stream _key_hex
-  use arg text
-  payload = text || "0a"x
-  if _key_hex \= "" then payload = self~_chacha_crypt(payload)
-  return _stream~charOut(payload)
+  expose _lineEnd
+  args = arg(1, "A")
+  argc = arg()
 
-/* ---- Streaming read ----------------------------------------- */
+  if argc >= 1 & args~hasIndex(1) then text = args[1]
+  else text = ""
+  if text == .nil then text = ""
+
+  if argc >= 2 then
+    raise syntax 93.900 array("CryptoStream: positioned lineOut is not supported on virtual encrypted streams")
+
+  return self~charOut(text || _lineEnd)
 
 ::method charIn
-  expose _stream _key_hex
-  use arg start, len
-  if arg() < 2 | len == .nil  then len   = 4096
-  if arg() < 1 | start == .nil then raw  = _stream~charIn(, len)
-  else raw = _stream~charIn(start, len)
-  if _key_hex \= "" then return self~_chacha_crypt(raw)
-  return raw
+  expose _plainBuffer _cipherSession _closed
+  args = arg(1, "A")
+  argc = arg()
 
-/* Plain mode: delegate to stream~lineIn.
- * ChaCha20 mode: decrypt 512-byte chunks into _line_buf,
- * return text up to the next 0a newline. */
+  if _closed then
+    raise syntax 93.900 array("CryptoStream: read on closed stream")
+  if self~_isWriteMode then
+    raise syntax 93.900 array("CryptoStream: stream is not open for read")
+
+  hasStart = .false
+  select
+    when argc = 0 then wanted = 1
+    when argc = 1 then do
+      if args~hasIndex(1) then wanted = args[1]
+      else wanted = 1
+    end
+    otherwise do
+      if \args~hasIndex(1) then do
+        if args~hasIndex(2) then wanted = args[2]
+        else wanted = 1
+      end
+      else if \args~hasIndex(2) then do
+        wanted = 1
+      end
+      else if args[1] == .nil then do
+        wanted = args[2]
+      end
+      else if args[1] = "" then do
+        wanted = args[2]
+      end
+      else do
+        start = args[1]
+        wanted = args[2]
+        hasStart = .true
+      end
+    end
+  end
+
+  if wanted < 1 then return ""
+
+  if _cipherSession == .nil then do
+    if hasStart then return self~_baseCharIn(start, wanted)
+    return self~_baseCharInLen(wanted)
+  end
+
+  if hasStart then
+    raise syntax 93.900 array("CryptoStream: positioned charIn is not supported on virtual encrypted streams")
+
+  self~_fillPlain(wanted)
+
+  out = _plainBuffer~substr(1, wanted)
+  _plainBuffer = _plainBuffer~substr(out~length + 1)
+  return out
+
 ::method lineIn
-  expose _stream _key_hex _line_buf
-  if _key_hex = "" then return _stream~lineIn
-  do while pos("0a"x, _line_buf) = 0 & _stream~state = "READY"
-    chunk = _stream~charIn(, 512)
-    if chunk = "" then leave
-    _line_buf = _line_buf || self~_chacha_crypt(chunk)
-  end
-  nl = pos("0a"x, _line_buf)
-  if nl = 0 then do
-    line = _line_buf;  _line_buf = "";  return line
-  end
-  line = left(_line_buf, nl-1)
-  _line_buf = substr(_line_buf, nl+1)
-  return line
+  expose _plainBuffer _lineEnd _cipherSession _closed _readFinal
+  args = arg(1, "A")
+  argc = arg()
 
-::method state
-  expose _stream
-  return _stream~state
+  if _closed then
+    raise syntax 93.900 array("CryptoStream: read on closed stream")
+  if self~_isWriteMode then
+    raise syntax 93.900 array("CryptoStream: stream is not open for read")
 
-/* ---- Bulk crypto (reads whole file) ------------------------- */
+  if _cipherSession == .nil then do
+    if argc = 0 then return self~_baseLineIn
+    if argc = 1 then do
+      if args~hasIndex(1) then return self~_baseLineIn(args[1])
+      return self~_baseLineIn
+    end
+    if args~hasIndex(1) & args~hasIndex(2) then return self~_baseLineIn(args[1], args[2])
+    if \args~hasIndex(1) & args~hasIndex(2) then return self~_baseLineIn(, args[2])
+    return self~_baseLineIn(args[1])
+  end
+
+  if argc > 0 then
+    raise syntax 93.900 array("CryptoStream: positioned/counted lineIn is not supported on virtual encrypted streams")
+
+  do while pos(_lineEnd, _plainBuffer) = 0 & \_readFinal
+    before = _plainBuffer~length
+    self~_fillPlain(_plainBuffer~length + 1)
+    if _plainBuffer~length = before then leave
+  end
+
+  p = pos(_lineEnd, _plainBuffer)
+  if p > 0 then do
+    out = _plainBuffer~substr(1, p - 1)
+    _plainBuffer = _plainBuffer~substr(p + _lineEnd~length)
+    return out
+  end
+
+  out = _plainBuffer
+  _plainBuffer = ""
+  return out
+
+::method flush
+  expose _cipherSession
+  use arg
+
+  if _cipherSession \== .nil then do
+    cipherText = _cipherSession~flushFullBlocks
+    if cipherText \= "" then self~_baseCharOut(cipherText)
+  end
+  return self~_baseFlush
+
+::method close
+  expose _cipherSession _closed _mode _readFinal
+  use arg
+
+  if _closed then return 0
+
+  if self~_isWriteMode then do
+    if _cipherSession \== .nil then do
+      cipherText = _cipherSession~finalWrite
+      if cipherText \= "" then self~_baseCharOut(cipherText)
+    end
+    self~_baseFlush
+  end
+  else do
+    if _cipherSession \== .nil & \_readFinal then do
+      self~_fillPlainAvailable
+      _cipherSession~finalRead
+      _readFinal = .true
+    end
+  end
+
+  _closed = .true
+  return self~_baseClose
+
+
+
+::method chars
+  expose _plainBuffer _cipherSession
+  use arg
+
+  if _cipherSession == .nil then return self~_baseChars
+  self~_fillPlainAvailable
+  return _plainBuffer~length
+
+::method lines
+  expose _plainBuffer _cipherSession _readFinal
+  use arg
+
+  if _cipherSession == .nil then return self~_baseLines
+  self~_fillPlainAvailable
+  return self~_countPlainLines
+
+::method _fillPlain private
+  expose _plainBuffer _cipherSession _readFinal
+  use arg wanted
+
+  if _cipherSession == .nil then return
+  if arg() < 1 then wanted = _plainBuffer~length + 1
+
+  do while _plainBuffer~length < wanted & \_readFinal
+    raw = self~_baseCharInLen(1024)
+    if raw == "" then do
+      _cipherSession~finalRead
+      _readFinal = .true
+      leave
+    end
+    _plainBuffer = _plainBuffer || _cipherSession~updateRead(raw)
+  end
+
+::method _fillPlainAvailable private
+  expose _plainBuffer _cipherSession _readFinal
+  use arg
+
+  if _cipherSession == .nil then return
+
+  do while \_readFinal
+    avail = self~_baseChars
+    if avail <= 0 then leave
+    take = avail
+    raw = self~_baseCharInLen(take)
+    if raw == "" then leave
+    _plainBuffer = _plainBuffer || _cipherSession~updateRead(raw)
+  end
+
+::method _countPlainLines private
+  expose _plainBuffer _lineEnd _readFinal
+  use arg
+
+  count = 0
+  scan = _plainBuffer
+  p = pos(_lineEnd, scan)
+  do while p > 0
+    count = count + 1
+    scan = scan~substr(p + _lineEnd~length)
+    p = pos(_lineEnd, scan)
+  end
+
+  if _readFinal & scan~length > 0 then count = count + 1
+  return count
+
+::method _isReadMode private
+  expose _mode
+  use arg
+  return pos("READ", _mode) > 0
+
+::method _isWriteMode private
+  expose _mode
+  use arg
+  return pos("WRITE", _mode) > 0 | pos("APPEND", _mode) > 0 | pos("REPLACE", _mode) > 0
+
+::method _baseCharOut private
+  expose _baseStream _usingSelfStream
+  args = arg(1, "A")
+  argc = arg()
+
+  if _usingSelfStream then do
+    if argc = 0 then return self~charOut:super
+    if argc = 1 then do
+      if args~hasIndex(1) then return self~charOut:super(args[1])
+      return self~charOut:super("")
+    end
+    if args~hasIndex(1) & args~hasIndex(2) then return self~charOut:super(args[1], args[2])
+    if args~hasIndex(1) then return self~charOut:super(args[1])
+    return self~charOut:super("")
+  end
+
+  if argc = 0 then return _baseStream~charOut
+  if argc = 1 then do
+    if args~hasIndex(1) then return _baseStream~charOut(args[1])
+    return _baseStream~charOut("")
+  end
+  if args~hasIndex(1) & args~hasIndex(2) then return _baseStream~charOut(args[1], args[2])
+  if args~hasIndex(1) then return _baseStream~charOut(args[1])
+  return _baseStream~charOut("")
+
+::method _baseCharIn private
+  expose _baseStream _usingSelfStream
+  args = arg(1, "A")
+  argc = arg()
+
+  select
+    when argc = 0 then do
+      if _usingSelfStream then return self~charIn:super
+      return _baseStream~charIn
+    end
+    when argc = 1 then do
+      if args~hasIndex(1) then do
+        if _usingSelfStream then return self~charIn:super(args[1])
+        return _baseStream~charIn(args[1])
+      end
+      if _usingSelfStream then return self~charIn:super
+      return _baseStream~charIn
+    end
+    otherwise do
+      if \args~hasIndex(1) then do
+        if args~hasIndex(2) then do
+          if _usingSelfStream then return self~charIn:super(, args[2])
+          return _baseStream~charIn(, args[2])
+        end
+        if _usingSelfStream then return self~charIn:super
+        return _baseStream~charIn
+      end
+      if args[1] == .nil then do
+        if args~hasIndex(2) then do
+          if _usingSelfStream then return self~charIn:super(, args[2])
+          return _baseStream~charIn(, args[2])
+        end
+        if _usingSelfStream then return self~charIn:super
+        return _baseStream~charIn
+      end
+      if args[1] = "" then do
+        if args~hasIndex(2) then do
+          if _usingSelfStream then return self~charIn:super(, args[2])
+          return _baseStream~charIn(, args[2])
+        end
+        if _usingSelfStream then return self~charIn:super
+        return _baseStream~charIn
+      end
+      if args~hasIndex(2) then do
+        if _usingSelfStream then return self~charIn:super(args[1], args[2])
+        return _baseStream~charIn(args[1], args[2])
+      end
+      if _usingSelfStream then return self~charIn:super(args[1])
+      return _baseStream~charIn(args[1])
+    end
+  end
+
+::method _baseCharInLen private
+  expose _baseStream _usingSelfStream
+  use arg len
+
+  /* Read by length at the current backing-stream position.  Do not pass
+   * a local START variable; pass an explicitly omitted first argument. */
+  if _usingSelfStream then return self~charIn:super(, len)
+  return _baseStream~charIn(, len)
+
+::method _baseLineIn private
+  expose _baseStream _usingSelfStream
+  args = arg(1, "A")
+  argc = arg()
+
+  select
+    when argc = 0 then do
+      if _usingSelfStream then return self~lineIn:super
+      return _baseStream~lineIn
+    end
+    when argc = 1 then do
+      if args~hasIndex(1) then do
+        if _usingSelfStream then return self~lineIn:super(args[1])
+        return _baseStream~lineIn(args[1])
+      end
+      if _usingSelfStream then return self~lineIn:super
+      return _baseStream~lineIn
+    end
+    otherwise do
+      if \args~hasIndex(1) then do
+        if args~hasIndex(2) then do
+          if _usingSelfStream then return self~lineIn:super(, args[2])
+          return _baseStream~lineIn(, args[2])
+        end
+        if _usingSelfStream then return self~lineIn:super
+        return _baseStream~lineIn
+      end
+      if args[1] == .nil then do
+        if args~hasIndex(2) then do
+          if _usingSelfStream then return self~lineIn:super(, args[2])
+          return _baseStream~lineIn(, args[2])
+        end
+        if _usingSelfStream then return self~lineIn:super
+        return _baseStream~lineIn
+      end
+      if args[1] = "" then do
+        if args~hasIndex(2) then do
+          if _usingSelfStream then return self~lineIn:super(, args[2])
+          return _baseStream~lineIn(, args[2])
+        end
+        if _usingSelfStream then return self~lineIn:super
+        return _baseStream~lineIn
+      end
+      if args~hasIndex(2) then do
+        if _usingSelfStream then return self~lineIn:super(args[1], args[2])
+        return _baseStream~lineIn(args[1], args[2])
+      end
+      if _usingSelfStream then return self~lineIn:super(args[1])
+      return _baseStream~lineIn(args[1])
+    end
+  end
+
+::method _baseChars private
+  expose _baseStream _usingSelfStream
+  use arg
+
+  if _usingSelfStream then return self~chars:super
+  return _baseStream~chars
+
+::method _baseLines private
+  expose _baseStream _usingSelfStream
+  use arg
+
+  if _usingSelfStream then return self~lines:super
+  return _baseStream~lines
+
+::method _baseFlush private
+  expose _baseStream _usingSelfStream
+  use arg
+
+  if _usingSelfStream then return self~flush:super
+  if _baseStream~hasMethod("FLUSH") then return _baseStream~flush
+  return 0
+
+::method _baseClose private
+  expose _baseStream _usingSelfStream
+  use arg
+
+  if _usingSelfStream then return self~close:super
+  if _baseStream~hasMethod("CLOSE") then return _baseStream~close
+  return 0
+
+/* ---- Bulk crypto helpers ----------------------------------- */
+
+::method _readAll private
+  expose _plainBuffer _cipherSession _readFinal
+  use arg
+
+  if _cipherSession == .nil then do
+    totalChars = self~_baseChars
+    if totalChars <= 0 then return ""
+    return self~_baseCharInLen(totalChars)
+  end
+
+  self~_fillPlainAvailable
+  do while \_readFinal
+    before = _plainBuffer~length
+    self~_fillPlain(before + 1)
+    if _plainBuffer~length = before then leave
+  end
+
+  out = _plainBuffer
+  _plainBuffer = ""
+  return out
 
 ::method md5
+  use arg
   content = self~_readAll
   return .MD5~new(content)~digest
 
 ::method sha512
+  use arg
   content = self~_readAll
   return .SHA512~new(content)~digest
 

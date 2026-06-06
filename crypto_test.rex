@@ -201,6 +201,37 @@ else
   say "  FAIL CryptoStream RSA roundtrip"
 call SysFileDelete tmpRSA
 
+/* CryptoStream integration */
+say ""
+say "Writing CryptoStream + RSA:"
+cs = .CryptoStream~new(tmpRSA, "WRITE REPLACE", hs_kp["e"], hs_kp["n"])
+
+cs~lineOut("line one oh 1")         /* block 1, bytes 0-8 */
+cs~lineOut("line two")             /* block 1, bytes 0-8 */
+cs~charOut("bigChunk")           /* picks up at byte 9  */
+cs~charOut("anotherChunk")       /* continues from there */
+cs~close
+
+/* Read back, decrypting identically.  CryptoStream is a virtual
+ * plaintext stream, so positioned charIn(start,len) is intentionally not
+ * used here.  RSA-hybrid stream mode is selected by the 4-argument
+ * constructor: write with public exponent, read with private exponent. */
+cs = .CryptoStream~new(tmpRSA, "READ", hs_kp["d"], hs_kp["n"])
+expected = "line one oh 1" || "0a"x || "line two" || "0a"x || "bigChunk" || "anotherChunk"
+say "  virtual lines/chars:" cs~lines cs~chars
+available = cs~chars
+data = cs~charIn(available)
+if data = expected then
+  say "  PASS writing CryptoStream RSA-hybrid roundtrip"
+else do
+  say "  FAIL writing CryptoStream RSA-hybrid roundtrip"
+  say "  got:      [" || data || "]"
+  say "  expected: [" || expected || "]"
+end
+cs~close
+
+call SysFileDelete tmpRSA
+
 
 /* ── RSA-2048 production-sized test ─────────────────────── */
 say ""
