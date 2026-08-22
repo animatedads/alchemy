@@ -7,30 +7,28 @@
   },
   "working_directory": ".",
   "environment": {
-    "set": {}
+    "set": {
+      "LIVE_CAMERA_ROOT": "/home/hc3/alchemy/camera_behaviour_oorexx"
+    }
   },
   "tests": [
     {
       "name": "prepare-camera-v035",
-      "argv": [
-        "sh",
-        "prepare_package.sh"
-      ],
-      "timeout_seconds": 60
+      "argv": ["sh", "prepare_package.sh"],
+      "timeout_seconds": 60,
+      "environment": {
+        "require_dirs": ["LIVE_CAMERA_ROOT"],
+        "report": ["LIVE_CAMERA_ROOT"]
+      }
     },
     {
       "name": "camera-v035-suite",
-      "argv": [
-        "sh",
-        "run_tests.sh"
-      ],
+      "argv": ["sh", "run_tests.sh"],
       "timeout_seconds": 240,
       "environment": {
         "rexx_path": {
           "mode": "replace",
-          "entries": [
-            "${PACKAGE_ROOT}/prepared/camera_behaviour_oorexx_v0.35"
-          ],
+          "entries": ["${PACKAGE_ROOT}/prepared/camera_behaviour_oorexx_v0.35"],
           "require_entries": true
         }
       }
