@@ -10,7 +10,8 @@ cat \
   "$ROOT/payload/oorexx_work_load_units_v0.2.1.zip.b64.01" \
   "$ROOT/payload/oorexx_work_load_units_v0.2.1.zip.b64.02" \
   "$ROOT/payload/oorexx_work_load_units_v0.2.1.zip.b64.03" \
-  "$ROOT/payload/fix04a" \
+  "$ROOT/payload/fix04a1" \
+  "$ROOT/payload/fix04a2-exact" \
   "$ROOT/payload/fix04b" \
   "$ROOT/payload/oorexx_work_load_units_v0.2.1.zip.b64.05" \
   "$ROOT/payload/oorexx_work_load_units_v0.2.1.zip.b64.06" \
