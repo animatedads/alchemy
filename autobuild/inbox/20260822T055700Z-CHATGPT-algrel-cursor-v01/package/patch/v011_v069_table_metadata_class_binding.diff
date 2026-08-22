@@ -1,0 +1,20 @@
+--- integration/NoSQLServerAlgorithmRelationExternalEngine.cls
++++ integration/NoSQLServerAlgorithmRelationExternalEngine.cls
+@@ -177,10 +177,16 @@
+   return raw
+ 
+ ::method tableMetadata
++  expose nosqlClasses
+   use arg tableName
+   t = self~table(tableName)
+   if t == .nil then return .nil
+-  return .DatabaseTableMetadata~new(t~definition)
++  metadataClass = nosqlClasses['TABLE_METADATA']
++  if metadataClass == .nil then do
++    self~lastError = 'NOSQL_CLASSSET_MISSING TABLE_METADATA'
++    return .nil
++  end
++  return metadataClass~new(t~definition)
+ 
+ ::method tableRowCount
+   use arg tableName
