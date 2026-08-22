@@ -1,0 +1,28 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "oorexx_crypto",
+    "version": "0.1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "REXX_PATH": "${PACKAGE_ROOT}/src"
+    },
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "crypto-test-battery",
+      "argv": ["sh", "run_tests.sh"],
+      "timeout_seconds": 900
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_crypto_v0.1"
+    }
+  }
+}
