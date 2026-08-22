@@ -1,0 +1,338 @@
+--- src/ReputationEffect.cls
++++ src/ReputationEffect.cls
+@@ -1,5 +1,5 @@
+ /*
+- * Reputation Effect v0.1
++ * Reputation Effect v0.2
+  *
+  * Independent, geographic, temporal and evidence-bearing reputation model.
+  * It does not assign a universal reputation score to a person or organisation.
+@@ -8,8 +8,8 @@
+  */
+ 
+ ::class ReputationEffectBuild public
+-::constant VERSION "0.1"
+-::constant API_VERSION "reputation.effect/0.1"
++::constant VERSION "0.2"
++::constant API_VERSION "reputation.effect/0.2"
+ ::constant PRODUCT "ooRexx Reputation Effect"
+ 
+ ::class ReputationConstant public
+@@ -624,6 +624,188 @@
+   return associationKind || "|" || associationId
+ 
+ 
++
++
++::class ReputationCommunicationFailure public
++::attribute failureId get
++::attribute failureKind get
++::attribute routeId get
++::attribute failureState get
++::attribute severity get
++::attribute detail get
++
++::method init
++  expose failureId failureKind routeId failureState severity detail
++  use arg failureIdArg, failureKindArg, routeIdArg = "", failureStateArg = "OPEN", severityArg = 70, detailArg = ""
++  failureId = failureIdArg~string
++  failureKind = failureKindArg~string~upper
++  routeId = routeIdArg~string~upper
++  failureState = failureStateArg~string~upper
++  severity = .ReputationCanonical~clamp(severityArg)
++  detail = detailArg~string
++
++::method isOpen
++  expose failureState
++  return failureState = "OPEN" | failureState = "UNRESOLVED"
++
++::method canonicalText
++  expose failureId failureKind routeId failureState severity detail
++  return .ReputationCanonical~field("FAILURE_ID", failureId) || -
++         .ReputationCanonical~field("FAILURE_KIND", failureKind) || -
++         .ReputationCanonical~field("ROUTE", routeId) || -
++         .ReputationCanonical~field("STATE", failureState) || -
++         .ReputationCanonical~field("SEVERITY", severity) || -
++         .ReputationCanonical~field("DETAIL", detail)
++
++
++::class ReputationCommunicationAct public
++::attribute actKind get
++::attribute target get
++::attribute value get
++::attribute strength get
++::attribute detail get
++
++::method init
++  expose actKind target value strength detail
++  use arg actKindArg, targetArg = "", valueArg = "", strengthArg = 100, detailArg = ""
++  actKind = actKindArg~string~upper
++  target = targetArg~string~upper
++  value = valueArg~string
++  strength = .ReputationCanonical~clamp(strengthArg)
++  detail = detailArg~string
++
++::method canonicalText
++  expose actKind target value strength detail
++  return .ReputationCanonical~field("ACT_KIND", actKind) || -
++         .ReputationCanonical~field("TARGET", target) || -
++         .ReputationCanonical~field("VALUE", value) || -
++         .ReputationCanonical~field("STRENGTH", strength) || -
++         .ReputationCanonical~field("DETAIL", detail)
++
++
++::class ReputationCommunicationSurface public
++::attribute surfaceId get
++::attribute recipientRelationship get
++::attribute institutionalContext get
++::attribute priorResponseId get
++::attribute sealed get
++
++::method init
++  expose surfaceId recipientRelationship institutionalContext priorResponseId acts failures evidence sealed
++  use arg surfaceIdArg, recipientRelationshipArg = "CUSTOMER", institutionalContextArg = "", priorResponseIdArg = ""
++  surfaceId = surfaceIdArg~string
++  recipientRelationship = recipientRelationshipArg~string~upper
++  institutionalContext = institutionalContextArg~string~upper
++  priorResponseId = priorResponseIdArg~string
++  acts = .array~new
++  failures = .array~new
++  evidence = .array~new
++  sealed = .false
++
++::method addAct
++  expose acts sealed
++  use arg actKind, target = "", value = "", strength = 100, detail = ""
++  if sealed then return .false
++  acts~append(.ReputationCommunicationAct~new(actKind, target, value, strength, detail))
++  return .true
++
++::method addFailure
++  expose failures sealed
++  use arg failure
++  if sealed then return .false
++  if failure == .nil then return .false
++  failures~append(failure)
++  return .true
++
++::method addEvidence
++  expose evidence sealed
++  use arg anchor
++  if sealed then return .false
++  if anchor == .nil then return .false
++  evidence~append(anchor)
++  return .true
++
++::method acts
++  expose acts
++  return .ReputationCanonical~copyArray(acts)
++
++::method failures
++  expose failures
++  return .ReputationCanonical~copyArray(failures)
++
++::method evidence
++  expose evidence
++  return .ReputationCanonical~copyArray(evidence)
++
++::method hasAct
++  expose acts
++  use arg kindArg, targetArg = "", valueArg = ""
++  kind = kindArg~string~upper
++  target = targetArg~string~upper
++  value = valueArg~string~upper
++  do act over acts
++    if act~actKind <> kind then iterate
++    if target <> "" & act~target <> target then iterate
++    if value <> "" & act~value~string~upper <> value then iterate
++    return .true
++  end
++  return .false
++
++::method maximumOpenFailureSeverity
++  expose failures
++  best = 0
++  do failure over failures
++    if failure~isOpen & failure~severity > best then best = failure~severity
++  end
++  return best
++
++::method hasOpenFailureKind
++  expose failures
++  use arg kindArg
++  wanted = kindArg~string~upper
++  do failure over failures
++    if failure~isOpen & failure~failureKind == wanted then return .true
++  end
++  return .false
++
++::method redirectedFailedRouteSeverity
++  expose failures acts
++  best = 0
++  do failure over failures
++    if \failure~isOpen then iterate
++    if failure~routeId = "" then iterate
++    do act over acts
++      if act~actKind = "REDIRECT" & act~target == failure~routeId then do
++        if failure~severity > best then best = failure~severity
++      end
++    end
++  end
++  return best
++
++::method seal
++  expose sealed
++  sealed = .true
++  return self
++
++::method canonicalText
++  expose surfaceId recipientRelationship institutionalContext priorResponseId acts failures evidence sealed
++  if \sealed then raise syntax 93.900 additional("ReputationCommunicationSurface must be sealed before canonicalisation")
++  text = .ReputationCanonical~field("COMM_ID", surfaceId)
++  text ||= .ReputationCanonical~field("RECIPIENT_REL", recipientRelationship)
++  text ||= .ReputationCanonical~field("INSTITUTION", institutionalContext)
++  text ||= .ReputationCanonical~field("PRIOR_RESPONSE", priorResponseId)
++  actTexts = .array~new
++  do act over acts; actTexts~append(act~canonicalText); end
++  failTexts = .array~new
++  do failure over failures; failTexts~append(failure~canonicalText); end
++  evidenceTexts = .array~new
++  do anchor over evidence; evidenceTexts~append(anchor~canonicalText); end
++  text ||= .ReputationCanonical~join("COMM_ACT", actTexts)
++  text ||= .ReputationCanonical~join("COMM_FAILURE", failTexts)
++  text ||= .ReputationCanonical~join("COMM_EVIDENCE", evidenceTexts)
++  return text
++
++
+ ::class ReputationActionSurface public
+ ::attribute actionId get
+ ::attribute actorId get
+@@ -632,9 +814,10 @@
+ ::attribute reachClass get
+ ::attribute targetActorId get
+ ::attribute sealed get
++::attribute communicationSurface get
+ 
+ ::method init
+-  expose actionId actorId actionType intendedAt reachClass targetActorId geographies audiences concepts associations behaviors evidence sealed
++  expose actionId actorId actionType intendedAt reachClass targetActorId geographies audiences concepts associations behaviors evidence communicationSurface sealed
+   use arg actionIdArg, actorIdArg, actionTypeArg = "PUBLICATION", intendedAtArg = .nil, reachClassArg = "NORMAL", targetActorArg = ""
+   actionId = actionIdArg~string
+   actorId = actorIdArg~string~upper
+@@ -649,6 +832,7 @@
+   associations = .array~new
+   behaviors = .array~new
+   evidence = .array~new
++  communicationSurface = .nil
+   sealed = .false
+ 
+ ::method addGeography
+@@ -698,6 +882,14 @@
+   evidence~append(anchor)
+   return .true
+ 
++::method setCommunicationSurface
++  expose communicationSurface sealed
++  use arg surface
++  if sealed then return .false
++  if surface == .nil then return .false
++  communicationSurface = surface
++  return .true
++
+ ::method geographies
+   expose geographies
+   return .ReputationCanonical~copyArray(geographies)
+@@ -728,14 +920,15 @@
+   return .ReputationCanonical~containsString(behaviors, behaviorClass)
+ 
+ ::method seal
+-  expose sealed geographies
++  expose sealed geographies communicationSurface
+   if geographies~items = 0 then raise syntax 88.900 array("ReputationActionSurface requires at least one geography")
++  if communicationSurface \== .nil then if \communicationSurface~sealed then raise syntax 88.900 array("ReputationActionSurface communication surface must be sealed")
+   sealed = .true
+   return self
+ 
+ 
+ ::method canonicalText
+-  expose actionId actorId actionType intendedAt reachClass targetActorId geographies audiences concepts associations behaviors evidence sealed
++  expose actionId actorId actionType intendedAt reachClass targetActorId geographies audiences concepts associations behaviors evidence communicationSurface sealed
+   if \sealed then raise syntax 93.900 additional("ReputationActionSurface must be sealed before canonicalisation")
+   text = .ReputationCanonical~field("ACTION_ID", actionId)
+   text ||= .ReputationCanonical~field("ACTOR", actorId)
+@@ -757,6 +950,9 @@
+     evidenceTexts~append(anchor~canonicalText)
+   end
+   text ||= .ReputationCanonical~join("EVIDENCE", evidenceTexts)
++  if communicationSurface == .nil then commText = "NONE"
++  else commText = communicationSurface~canonicalText
++  text ||= .ReputationCanonical~field("COMMUNICATION", commText)
+   return text
+ 
+ ::class ReputationConceptGraph public
+@@ -1217,6 +1413,7 @@
+       self~evaluateEventForGeography(action, event, snapshot, geographyId, geographyCatalog, conceptGraph, policy, geoDecision)
+     end
+ 
++    self~evaluateCommunication(action, geographyId, geoDecision)
+     self~evaluateBrandNorms(action, snapshot, geographyId, geographyCatalog, geoDecision)
+     geoDecision~finalize(policy)
+     decision~putGeographicDecision(geoDecision)
+@@ -1339,6 +1536,57 @@
+     geoDecision~addItem(.ReputationAssessmentItem~new(.ReputationConstant~ITEM_CONCERN, "DIRECT_EVENT_ASSOCIATION", severityValue, effect~confidence, geographyId, event~eventId, detail, event))
+   end
+ 
++::method evaluateCommunication private
++  use arg action, geographyId, geoDecision
++  comm = action~communicationSurface
++  if comm == .nil then return
++
++  openSeverity = comm~maximumOpenFailureSeverity
++  hasSalesPrompt = comm~hasAct("SALES_PROMPT")
++  hasProcurement = comm~hasAct("PROCUREMENT_INFO")
++  declaredStop = comm~hasAct("DECLARED_INTENT", "", "STOP_SELLING")
++
++  if openSeverity > 0 & hasSalesPrompt then do
++    severityValue = openSeverity + 5
++    if severityValue > 100 then severityValue = 100
++    detail = "Sales prompt issued while material customer/process failure remains unresolved"
++    geoDecision~addItem(.ReputationAssessmentItem~new(.ReputationConstant~ITEM_CONCERN, "COMMERCIAL_PRESSURE_COLLISION", severityValue, 95, geographyId, "", detail, comm))
++  end
++
++  redirectedSeverity = comm~redirectedFailedRouteSeverity
++  if redirectedSeverity > 0 then do
++    severityValue = redirectedSeverity
++    if severityValue < 65 then severityValue = 65
++    detail = "Response redirects recipient to a route already represented as failed/unresolved"
++    geoDecision~addItem(.ReputationAssessmentItem~new(.ReputationConstant~ITEM_CONCERN, "PROCESS_CIRCULARITY", severityValue, 90, geographyId, "", detail, comm))
++  end
++
++  if declaredStop & (hasSalesPrompt | hasProcurement) then do
++    if hasSalesPrompt then severityValue = 80
++    else severityValue = 50
++    detail = "Declared STOP_SELLING intent conflicts with commercial continuation in the same communication"
++    geoDecision~addItem(.ReputationAssessmentItem~new(.ReputationConstant~ITEM_CONCERN, "DECLARED_INTENT_ACTION_MISMATCH", severityValue, 95, geographyId, "", detail, comm))
++  end
++
++  if comm~hasAct("RETRACTION") & comm~hasAct("CORRECTIVE_STATEMENT") then do
++    strength = 70
++    if comm~hasAct("EVIDENCE_LIMIT") then strength += 10
++    if comm~hasAct("PROCESS_OWNERSHIP") then strength += 10
++    if strength > 100 then strength = 100
++    detail = "Response explicitly retracts/corrects a prior claim and states evidential/process limits"
++    geoDecision~addItem(.ReputationAssessmentItem~new(.ReputationConstant~ITEM_SUPPORT, "REPUTATIONAL_RECOVERY", strength, 95, geographyId, "", detail, comm))
++  end
++
++  if declaredStop & \hasSalesPrompt & \hasProcurement & openSeverity > 0 then do
++    detail = "Commercial activity is deliberately suppressed while unresolved failures remain"
++    geoDecision~addItem(.ReputationAssessmentItem~new(.ReputationConstant~ITEM_SUPPORT, "COMMERCIAL_RESTRAINT", 85, 95, geographyId, "", detail, comm))
++  end
++
++  if comm~hasAct("EVIDENCE_LIMIT") & comm~hasAct("ACKNOWLEDGEMENT") then do
++    detail = "Communication acknowledges recipient evidence while limiting claims to what is actually known"
++    geoDecision~addItem(.ReputationAssessmentItem~new(.ReputationConstant~ITEM_SUPPORT, "EVIDENTIAL_DISCIPLINE", 80, 95, geographyId, "", detail, comm))
++  end
++
+ ::method evaluateBrandNorms private
+   use arg action, snapshot, geographyId, geographyCatalog, geoDecision
+   do behavior over action~behaviorClasses
