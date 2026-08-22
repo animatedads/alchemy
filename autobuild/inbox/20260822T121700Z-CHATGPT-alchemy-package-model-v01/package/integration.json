@@ -1,0 +1,39 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "alchemy_package_model",
+    "version": "0.1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "execution-plan",
+      "argv": ["rexx", "tests/test_execution_plan.rex"],
+      "cwd": "tests",
+      "timeout_seconds": 30
+    },
+    {
+      "name": "required-directory",
+      "argv": ["rexx", "tests/test_required_directory.rex"],
+      "cwd": "tests",
+      "timeout_seconds": 30
+    },
+    {
+      "name": "unresolved-dependency",
+      "argv": ["rexx", "tests/test_unresolved_dependency.rex"],
+      "cwd": "tests",
+      "timeout_seconds": 30
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/alchemy_package_model_v0.1"
+    }
+  }
+}
