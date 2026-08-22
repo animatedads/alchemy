@@ -7,37 +7,77 @@
   },
   "working_directory": ".",
   "environment": {
-    "set": {
-      "REXX_PATH": "${PACKAGE_ROOT}/src"
-    },
+    "set": {},
     "prepend_path": []
   },
   "tests": [
     {
-      "name": "prepare-source",
-      "argv": ["bash", "prepare_source.sh"],
+      "name": "prepare-authoritative-source",
+      "argv": ["sh", "prepare_source.sh"],
       "timeout_seconds": 60
     },
     {
-      "name": "manifest",
+      "name": "verify-release-manifest",
       "argv": ["sha256sum", "-c", "MANIFEST.sha256"],
+      "cwd": "release",
       "timeout_seconds": 60
     },
     {
       "name": "crypto-test-battery",
-      "argv": ["bash", "run_tests.sh"],
+      "argv": ["sh", "run_tests.sh"],
+      "cwd": "release",
       "timeout_seconds": 900
     }
   ],
   "publish": {
     "tree": {
-      "source": ".",
+      "source": "release",
       "path": "packages/oorexx_crypto_v0.1"
     },
     "files": [
       {
-        "source": "src/crypto.cls",
+        "source": "release/src/crypto.cls",
         "path": "packages/oorexx_crypto_v0.1/src/crypto.cls",
+        "when": "pass"
+      },
+      {
+        "source": "release/benchmarks/benchmark_fast_mac.rex",
+        "path": "packages/oorexx_crypto_v0.1/benchmarks/benchmark_fast_mac.rex",
+        "when": "pass"
+      },
+      {
+        "source": "release/tests/test_asymmetric_misc.rex",
+        "path": "packages/oorexx_crypto_v0.1/tests/test_asymmetric_misc.rex",
+        "when": "pass"
+      },
+      {
+        "source": "release/tests/test_chacha20.rex",
+        "path": "packages/oorexx_crypto_v0.1/tests/test_chacha20.rex",
+        "when": "pass"
+      },
+      {
+        "source": "release/tests/test_ed25519.rex",
+        "path": "packages/oorexx_crypto_v0.1/tests/test_ed25519.rex",
+        "when": "pass"
+      },
+      {
+        "source": "release/tests/test_hashes.rex",
+        "path": "packages/oorexx_crypto_v0.1/tests/test_hashes.rex",
+        "when": "pass"
+      },
+      {
+        "source": "release/tests/test_hmac_sha512.rex",
+        "path": "packages/oorexx_crypto_v0.1/tests/test_hmac_sha512.rex",
+        "when": "pass"
+      },
+      {
+        "source": "release/tests/test_input_validation.rex",
+        "path": "packages/oorexx_crypto_v0.1/tests/test_input_validation.rex",
+        "when": "pass"
+      },
+      {
+        "source": "release/tests/test_siphash128.rex",
+        "path": "packages/oorexx_crypto_v0.1/tests/test_siphash128.rex",
         "when": "pass"
       }
     ]
