@@ -1,0 +1,78 @@
+WLU v0.2.1 CRYPTO CONSOLIDATION VALIDATION
+
+PASS: standalone oorexx_crypto_v0.1 is required through CRYPTO_SRC/OOREXX_CRYPTO_SRC.
+PASS: no private src/crypto.cls remains in WLU.
+PASS: WLUSipHash128 is a compatibility subclass of shared SipHash128; algorithm implementation is not duplicated.
+PASS: all 8 WLU executable suites pass under ooRexx 5.3.0 r13196 against shared crypto.
+PASS: authenticated ledger Ed25519 checkpoint and SipHash fast-MAC tests remain green.
+
+--- Historical v0.2 validation follows ---
+
+ooRexx Work Load Units v0.2 validation
+======================================
+
+Runtime used
+------------
+Open Object Rexx 5.3.0 r13196, 64-bit debug/internal test build supplied by the user.
+
+Core invariants exercised
+-------------------------
+- WLU remains a normalized work quantity; WLU/s remains a separate delivery-capacity quantity.
+- Acceleration/throttling changes WLU/s without multiplying reserved or actual WLU.
+- Mandatory account, burst and throughput constraints are selected by authority policy.
+- Failed admission causes no consumer/account reservation side effect.
+- Internal reservation and job-budget proofs use SipHash-2-4-128; durable ledger checkpoints retain an Ed25519 boundary.
+- Rate-card generation is retained across live policy changes.
+- Terminal capacity denial occurs before terminal mutation.
+
+Logical-job / budget invariants added in v0.2
+---------------------------------------------
+- One business job/session owns one authenticated WLU budget across implementation changes.
+- Script, Gemma, Grok and OpenAI execution stages do not mint independent copies of the parent budget.
+- Explicit handoff/context-rehydration allowance is included in the target stage's demand.
+- Fallback branches are mutually exclusive alternatives; strategy ceiling uses the maximum declared successor path.
+- Parent budget reports FULL_STRATEGY or PARTIAL_STRATEGY coverage rather than implying unavailable rescue routes are guaranteed.
+- spent + committed + remaining == hard job budget.
+- Child reservations are carved from remaining parent budget and still pass through normal WLU authority admission.
+- Replacement stages may be reserved before an old stage is released (make-before-break).
+- Releasing a partially consumed old stage preserves observed work in parent spent WLU and refunds only unused commitment.
+- A stale authenticated parent lease cannot mint additional child work.
+- Fallback assessment is side-effect free and reports both parent-budget viability and live enterprise capacity viability.
+
+FlyLo / Shannon executable scenario
+-----------------------------------
+Plan:
+  SCRIPT -> GEMMA -> { GROK | OPENAI }
+
+Declared ceilings:
+  SCRIPT: 2 WLU
+  GEMMA: 6 WLU execution + 1 WLU handoff = 7 WLU
+  GROK: 9 WLU execution + 2 WLU handoff = 11 WLU
+  OPENAI: 12 WLU execution + 3 WLU handoff = 15 WLU
+
+Maximum declared fallback path:
+  SCRIPT + GEMMA + OPENAI = 24 WLU
+
+Test job budget:
+  20 WLU -> PARTIAL_STRATEGY
+
+After 1 WLU actual SCRIPT work and 5 WLU actual GEMMA work:
+  spent = 6 WLU
+  remaining = 14 WLU
+  GROK 11-WLU ceiling -> viable
+  OPENAI 15-WLU ceiling -> WLU job-budget shortfall of 1 WLU
+
+Executable suite
+----------------
+PASS test_authenticated_ledger
+PASS test_authority
+PASS test_billing_reporting
+PASS test_enterprise_acceleration
+PASS test_fast_mac
+PASS test_job_budget_escalation
+PASS test_terminal_client
+PASS test_units_ratecard
+
+Example
+-------
+examples/flylo_shannon_job.rex executes the staged conversation budget and prints the expected fallback viability.
