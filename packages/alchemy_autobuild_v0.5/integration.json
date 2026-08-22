@@ -1,0 +1,24 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "alchemy_autobuild",
+    "version": "0.5",
+    "kind": "python"
+  },
+  "tests": [
+    {
+      "name": "branch-inbox-acceptance",
+      "argv": [
+        "sh",
+        "run_tests.sh"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/alchemy_autobuild_v0.5"
+    }
+  }
+}
