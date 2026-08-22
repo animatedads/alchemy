@@ -6,6 +6,17 @@ There is no local LLM and no heuristic package selection. The runner observes a
 single configured download folder, executes a versioned declarative manifest,
 and uses Git as the durable publication/IPC plane.
 
+## Sending a managed ZIP
+
+The canonical producer instructions are at repository root in
+[`MANAGED_ZIP.md`](../../MANAGED_ZIP.md). Any AI or human preparing a ZIP for
+this runner should follow that document before presenting a download link.
+
+The critical delivery rule is: start `alchemy-autobuild.service` first, then
+download one managed ZIP into `~/Downloads`. The runner only considers the
+newest post-start top-level `*.zip` and does not walk backwards through older
+candidates.
+
 ## Default configuration
 
 - runner root: `~/alchemy-autobuild`
