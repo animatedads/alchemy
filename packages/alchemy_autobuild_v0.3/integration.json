@@ -1,0 +1,94 @@
+{
+  "schema": "alchemy.autobuild.integration/0.1",
+  "package": {
+    "name": "alchemy_autobuild",
+    "version": "0.3",
+    "kind": "python"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "acceptance",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "tests.test_autobuild"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/alchemy_autobuild_v0.3"
+    },
+    "files": [
+      {
+        "source": "GIT_SUBMISSION.md",
+        "path": "packages/alchemy_autobuild_v0.3/GIT_SUBMISSION.md",
+        "legacy_bootstrap": true
+      },
+      {
+        "source": "README.md",
+        "path": "packages/alchemy_autobuild_v0.3/README.md",
+        "legacy_bootstrap": true
+      },
+      {
+        "source": "alchemy-autobuild.service.example",
+        "path": "packages/alchemy_autobuild_v0.3/alchemy-autobuild.service.example",
+        "legacy_bootstrap": true
+      },
+      {
+        "source": "alchemy_autobuild.py",
+        "path": "packages/alchemy_autobuild_v0.3/alchemy_autobuild.py",
+        "legacy_bootstrap": true
+      },
+      {
+        "source": "bootstrap.sh",
+        "path": "packages/alchemy_autobuild_v0.3/bootstrap.sh",
+        "legacy_bootstrap": true
+      },
+      {
+        "source": "config.example.json",
+        "path": "packages/alchemy_autobuild_v0.3/config.example.json",
+        "legacy_bootstrap": true
+      },
+      {
+        "source": "integration.schema.json",
+        "path": "packages/alchemy_autobuild_v0.3/integration.schema.json",
+        "legacy_bootstrap": true
+      },
+      {
+        "source": "run_tests.sh",
+        "path": "packages/alchemy_autobuild_v0.3/run_tests.sh",
+        "legacy_bootstrap": true
+      },
+      {
+        "source": "tests/__init__.py",
+        "path": "packages/alchemy_autobuild_v0.3/tests/__init__.py",
+        "legacy_bootstrap": true
+      },
+      {
+        "source": "tests/test_autobuild.py",
+        "path": "packages/alchemy_autobuild_v0.3/tests/test_autobuild.py",
+        "legacy_bootstrap": true
+      },
+      {
+        "source": "integration.json",
+        "path": "packages/alchemy_autobuild_v0.3/integration.json",
+        "legacy_bootstrap": true
+      },
+      {
+        "source": "GIT_SUBMISSION.md",
+        "path": "GIT_SUBMISSION.md",
+        "when": "pass"
+      }
+    ]
+  }
+}
