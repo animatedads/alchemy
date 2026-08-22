@@ -14,6 +14,16 @@
   },
   "tests": [
     {
+      "name": "prepare-source",
+      "argv": ["bash", "prepare_source.sh"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "manifest",
+      "argv": ["sha256sum", "-c", "MANIFEST.sha256"],
+      "timeout_seconds": 60
+    },
+    {
       "name": "crypto-test-battery",
       "argv": ["bash", "run_tests.sh"],
       "timeout_seconds": 900
@@ -23,6 +33,13 @@
     "tree": {
       "source": ".",
       "path": "packages/oorexx_crypto_v0.1"
-    }
+    },
+    "files": [
+      {
+        "source": "src/crypto.cls",
+        "path": "packages/oorexx_crypto_v0.1/src/crypto.cls",
+        "when": "pass"
+      }
+    ]
   }
 }
