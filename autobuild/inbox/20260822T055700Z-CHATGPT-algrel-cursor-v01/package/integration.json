@@ -1,0 +1,41 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "algrel_cursor_probe",
+    "version": "0.1",
+    "kind": "oorexx-integration-probe"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "manifest",
+      "argv": ["sha256sum", "-c", "MANIFEST.sha256"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "shell-syntax",
+      "argv": ["bash", "-n", "run.sh"],
+      "timeout_seconds": 30
+    },
+    {
+      "name": "python-client-compile",
+      "argv": ["python3", "-m", "py_compile", "client.py"],
+      "timeout_seconds": 30
+    },
+    {
+      "name": "metadata-binding-contract",
+      "argv": ["sh", "-c", "grep -q \"TABLE_METADATA\" integration_patch/NoSQLServerAlgorithmRelationExternalEngine.cls && grep -q \"DatabaseTableMetadata\" server.rex"],
+      "timeout_seconds": 30
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/algrel_cursor_probe_v0.1"
+    }
+  }
+}
