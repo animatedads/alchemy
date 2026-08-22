@@ -1,85 +1,117 @@
 # Direct Git submissions to Alchemy Autobuild
 
-Alchemy Autobuild v0.3 supports a durable Git inbox in addition to browser-downloaded managed ZIPs.
+Use the repository's canonical sender whenever a local Git checkout is available.
+Do **not** hand-upload package files one by one, base64-split archives, create a pull
+request, or merge a submission branch into `main`.
 
-An AI that can write to `animatedads/alchemy` may submit a package without asking the human to download a ZIP.
+## Canonical AI command
 
-## Submission layout
+From any local clone of `animatedads/alchemy`:
 
-Choose a globally unique submission id. A UTC timestamp plus producer and short task name is recommended.
+```sh
+python3 tools/alchemy_submit.py \
+  --repo . \
+  --package /path/to/finished/package \
+  --submitted-by CHATGPT \
+  --json
+```
+
+Replace `CHATGPT` with the actual producer identity (`CLAUDE`, `GEMINI`, etc.).
+The package directory must contain `integration.json` at its root.
+
+For a preview that performs no fetch, commit, branch creation or push:
+
+```sh
+python3 tools/alchemy_submit.py --repo . --package /path/to/package \
+  --submitted-by CHATGPT --dry-run --json
+```
+
+## What the sender guarantees
+
+The sender:
+
+1. validates the root `integration.json` enough to reject an obviously malformed
+   package before transport;
+2. fetches exactly `refs/heads/main` into `refs/remotes/origin/main`;
+3. creates a temporary detached worktree from that remote-tracking base, leaving
+   the AI's development checkout untouched;
+4. creates a globally unique `autobuild-submit/<submission-id>` branch;
+5. copies the complete package to
+   `autobuild/inbox/<submission-id>/package/`;
+6. commits the complete package body in **one commit**;
+7. creates and commits `ready.json` in a **second commit**;
+8. pushes the branch **once**, transferring both commits and all package Git
+   objects in one pack; and
+9. removes its temporary worktree and local helper branch.
+
+Binary files are ordinary Git objects. They must not be encoded into text chunks
+for this transport.
+
+The two-commit / one-push design preserves the important rule that `ready.json` is
+logically last, while avoiding hundreds of per-file network operations.
+
+## Submission shape
+
+The resulting remote branch contains:
 
 ```text
-autobuild/inbox/20260822T061500Z-CHATGPT-my-component/
+autobuild/inbox/<submission-id>/
 ├── package/
 │   ├── integration.json
-│   ├── run_tests.sh
-│   └── ... package source ...
+│   └── ... complete package source ...
 └── ready.json
 ```
 
-`package/` is the package root. Its `integration.json` uses the same `alchemy.autobuild.integration/0.1` or `/0.2` contract as a managed ZIP.
-
-## Critical ordering rule
-
-Write **all files under `package/` first**. Commit them to GitHub. Create `ready.json` **last**.
-
-The runner only scans immediate child directories of `autobuild/inbox/` for `ready.json`. It does not inspect the package tree until the ready marker exists.
-
-Example `ready.json`:
+Example ready marker:
 
 ```json
 {
   "schema": "alchemy.autobuild.git-submission/0.1",
-  "submission_id": "20260822T061500Z-CHATGPT-my-component",
+  "submission_id": "20260822T070000Z-CHATGPT-my-component-acde12",
   "submitted_by": "CHATGPT",
   "package_path": "package"
 }
 ```
 
-The `submission_id` must exactly match the directory name.
+Once the ready commit exists, the submission is immutable. Corrections use a new
+submission id and therefore a new branch.
 
-Once `ready.json` has been committed, the submission is immutable. Do not edit a ready submission. To correct or replace it, create a new submission id and a new folder.
+## Receiver semantics
 
-## What the local runner does
+The branch-capable receiver treats remote branches as transport envelopes. It
+fetches remote refs, looks for newly-added `autobuild/inbox/<id>/ready.json`
+markers, and reads the package tree from the exact branch commit using Git object
+operations.
 
-The runner polls Git independently of the `~/Downloads` scanner. By default it pulls every 5 seconds.
+It does **not** checkout, merge, or rebase a submission branch into `main`. A
+submission branch may be far behind `main`; only the submitted package subtree is
+materialized and tested.
 
-A Git submission is pending when:
-
-- `autobuild/inbox/<id>/ready.json` exists; and
-- `autobuild/receipts/<id>.json` does not exist.
-
-Unlike downloaded ZIPs, Git submissions are durable. The Downloads startup watermark does **not** apply. A ready submission committed while the local service is stopped is processed after the service starts again.
-
-The runner snapshots `package/` into a deterministic ZIP, executes its declared tests in staging, and uses the normal publication rules. A passing `publish.tree` is promoted as ordinary Git source files. Failed tests do not promote source.
-
-## Result and receipt
-
-Every attempted ready submission gets a persistent receipt:
+Accepted state, results and receipts belong on `main`:
 
 ```text
 autobuild/receipts/<submission-id>.json
-```
-
-The normal evidence is also written:
-
-```text
 autobuild/results/<run-id>/result.json
 autobuild/results/<run-id>/logs/...
 autobuild/artifacts/<package>/<version>/<sha256>.zip
-mesh/ctl/AUTOBUILD-CHATGPT/<message>.msg
+packages/<accepted-package>/...
 ```
 
-The receipt is the idempotency marker. Once it exists, the runner will not run that submission id again, regardless of PASS, FAIL, or ERROR.
+The receipt is the idempotency marker. A receipt suppresses future execution of
+that submission id regardless of PASS, FAIL or ERROR.
 
-## Minimal AI procedure
+## `integration.json`
 
-1. Read `MANAGED_ZIP.md` for the `integration.json` contract.
-2. Choose a new unique submission id.
-3. Create `autobuild/inbox/<id>/package/` and upload the complete package there.
-4. Ensure `package/integration.json` declares tests and publication.
-5. Commit `autobuild/inbox/<id>/ready.json` last.
-6. Do not modify the folder again.
-7. Read `autobuild/receipts/<id>.json` and its referenced result/logs for feedback.
+Use the current Alchemy integration contract. ooRexx-heavy tests should declare
+their environment at the individual test level when search paths differ, including
+`REXX_PATH` and required package-root exports. Do not rely on a login-shell
+environment to select dependency versions.
 
-This path needs no local AI and no human download step. Git is the durable queue; the local autobuilder is only the deterministic executor.
+## Fallback when the sender cannot be executed
+
+Only when an execution-capable Git checkout is genuinely unavailable may an AI
+construct the same branch protocol through a Git provider API. The same invariants
+still apply: package tree first, ready marker in the final commit, immutable after
+ready, globally unique submission id, and no merge to `main`.
+
+Provider-API fallback is not the normal path. Prefer `tools/alchemy_submit.py`.
