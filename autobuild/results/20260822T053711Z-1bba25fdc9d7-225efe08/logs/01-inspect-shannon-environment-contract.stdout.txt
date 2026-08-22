@@ -1,0 +1,104 @@
+== Shannon run_tests.sh ==
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")" && pwd)"
+: "${HARDWORLD_ROOT:?set HARDWORLD_ROOT to the HardWorld package root}"
+: "${LEGAL_EFFECT_ROOT:?set LEGAL_EFFECT_ROOT to the Legal Effect package root}"
+: "${RUNTIME_REGISTRY_ROOT:?set RUNTIME_REGISTRY_ROOT to the Runtime Registry package root}"
+: "${QUEUE_FABRIC_ROOT:?set QUEUE_FABRIC_ROOT to the Queue Fabric package root}"
+: "${STRUCTURED_RELATION_ROOT:?set STRUCTURED_RELATION_ROOT to the Structured Relation package root}"
+: "${NOSQLSERVER_ROOT:?set NOSQLSERVER_ROOT to the NoSQLServer package root}"
+: "${WLU_ROOT:?set WLU_ROOT to the Work Load Units package root}"
+: "${REPUTATION_EFFECT_ROOT:?set REPUTATION_EFFECT_ROOT to the Reputation Effect package root}"
+: "${REPUTATION_FEED_ROOT:?set REPUTATION_FEED_ROOT to the Reputation Feed package root}"
+MODE="${1:-quick}"
+
+run_rexx_test() {
+  local test="$1"
+  echo "== $(basename "$test") =="
+  "$ROOT/run_rexx.sh" "$test" "$ROOT"
+}
+
+run_shell_test() {
+  local test="$1"
+  echo "== $(basename "$test") =="
+  "$test" "$ROOT"
+}
+
+case "$MODE" in
+  quick)
+    # Pay the pure-ooRexx Legal Effect verification cost once, first.  The
+    # remaining transport/topic/EDI probes are lightweight and isolated.
+    echo "== consolidated Legal Effect / HardWorld acceptance =="
+    echo "NOTE: Legal policy verification is cryptographic and CPU-bound; the consolidated suite verifies one generation and reuses it."
+    run_rexx_test "$ROOT/tests/test_shannon_v09_combined_acceptance.rex"
+    run_rexx_test "$ROOT/tests/test_shannon_queue_compatibility.rex"
+    run_shell_test "$ROOT/tests/test_shannon_no_hard_release_gates.sh"
+    run_rexx_test "$ROOT/tests/test_shannon_topic_bus.rex"
+    run_rexx_test "$ROOT/tests/test_shannon_wlu_terminal_gate.rex"
+    run_rexx_test "$ROOT/tests/test_shannon_reputation_gate.rex"
+    run_rexx_test "$ROOT/tests/test_shannon_reputation_communication.rex"
+    run_rexx_test "$ROOT/tests/test_shannon_reputation_feed.rex"
+    run_rexx_test "$ROOT/tests/test_shannon_pnrgov_parse.rex"
+    run_rexx_test "$ROOT/tests/test_shannon_pnrgov_compact_parse.rex"
+    run_shell_test "$ROOT/tests/test_shannon_socket_ingress.sh"
+    ;;
+  full)
+    for test in "$ROOT"/tests/test_*.rex; do run_rexx_test "$test"; done
+    for test in "$ROOT"/tests/test_*.sh; do [[ -e "$test" ]] && run_shell_test "$test"; done
+    ;;
+  *)
+    echo "usage: $0 [quick|full]" >&2
+    exit 2
+    ;;
+esac
+== top-level alchemy directories ==
+ai_interface
+ai_interface_v2
+ai_psychic
+legal_effect
+librarian
+msqlshim
+nosqlserver
+oc
+oorexx
+oorexx_db_skeleton
+oorexxpython
+oorexx_queue_fabric
+oorexx-source
+oorexx_terminal_machine
+oorexx_work_load_units
+ourladyair_shannon_v0.5
+plan42
+psychic_poker
+reputation_effect
+reputation_feed
+ReverseRTO
+RTO
+rto2
+rto3
+runtime_registry
+structured_relation_plugin
+temp
+virtual_ryta_hardworld
+== likely dependency roots ==
+FOUND /home/hc3/alchemy/runtime_registry
+/home/hc3/alchemy/runtime_registry/src/AbilityRegistry.cls
+/home/hc3/alchemy/runtime_registry/src/RuntimeRegistry.cls
+FOUND /home/hc3/alchemy/reputation_effect
+/home/hc3/alchemy/reputation_effect/src/ReputationEffect.cls
+/home/hc3/alchemy/reputation_effect/VERSION.txt
+FOUND /home/hc3/alchemy/reputation_feed
+/home/hc3/alchemy/reputation_feed/src/ReputationFeed.cls
+/home/hc3/alchemy/reputation_feed/VERSION.txt
+FOUND /home/hc3/alchemy/oorexx_queue_fabric
+FOUND /home/hc3/alchemy/nosqlserver
+FOUND /home/hc3/alchemy/oorexx_db_skeleton
+== Shannon source directories ==
+/home/hc3/alchemy/ourladyair_shannon_v0.5
+/home/hc3/alchemy/ourladyair_shannon_v0.5/docs
+/home/hc3/alchemy/ourladyair_shannon_v0.5/examples
+/home/hc3/alchemy/ourladyair_shannon_v0.5/policy
+/home/hc3/alchemy/ourladyair_shannon_v0.5/src
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests
+PASS SHANNON_ENVIRONMENT_CAPTURED
