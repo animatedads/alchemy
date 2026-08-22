@@ -1,5 +1,5 @@
 {
-  "schema": "alchemy.autobuild.integration/0.2",
+  "schema": "alchemy.autobuild.integration/0.3",
   "package": {
     "name": "oorexx_work_load_units",
     "version": "0.2.1",
@@ -7,10 +7,7 @@
   },
   "working_directory": ".",
   "environment": {
-    "set": {
-      "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src",
-      "OOREXX_CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
-    },
+    "set": {},
     "prepend_path": []
   },
   "tests": [
@@ -20,9 +17,148 @@
       "timeout_seconds": 60
     },
     {
-      "name": "wlu-test-battery",
-      "argv": ["bash", "run_tests.sh"],
-      "timeout_seconds": 1200
+      "name": "authenticated-ledger",
+      "argv": ["rexx", "tests/test_authenticated_ledger.rex"],
+      "timeout_seconds": 600,
+      "environment": {
+        "set": {
+          "WLU_SRC": "${PACKAGE_ROOT}/src",
+          "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": ["${PACKAGE_ROOT}/src", "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"],
+          "require_entries": true
+        },
+        "require_dirs": ["WLU_SRC", "CRYPTO_SRC"],
+        "report": ["WLU_SRC", "CRYPTO_SRC"]
+      }
+    },
+    {
+      "name": "authority",
+      "argv": ["rexx", "tests/test_authority.rex"],
+      "timeout_seconds": 300,
+      "environment": {
+        "set": {
+          "WLU_SRC": "${PACKAGE_ROOT}/src",
+          "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": ["${PACKAGE_ROOT}/src", "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"],
+          "require_entries": true
+        },
+        "require_dirs": ["WLU_SRC", "CRYPTO_SRC"],
+        "report": ["WLU_SRC", "CRYPTO_SRC"]
+      }
+    },
+    {
+      "name": "billing-reporting",
+      "argv": ["rexx", "tests/test_billing_reporting.rex"],
+      "timeout_seconds": 300,
+      "environment": {
+        "set": {
+          "WLU_SRC": "${PACKAGE_ROOT}/src",
+          "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": ["${PACKAGE_ROOT}/src", "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"],
+          "require_entries": true
+        },
+        "require_dirs": ["WLU_SRC", "CRYPTO_SRC"],
+        "report": ["WLU_SRC", "CRYPTO_SRC"]
+      }
+    },
+    {
+      "name": "enterprise-acceleration",
+      "argv": ["rexx", "tests/test_enterprise_acceleration.rex"],
+      "timeout_seconds": 300,
+      "environment": {
+        "set": {
+          "WLU_SRC": "${PACKAGE_ROOT}/src",
+          "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": ["${PACKAGE_ROOT}/src", "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"],
+          "require_entries": true
+        },
+        "require_dirs": ["WLU_SRC", "CRYPTO_SRC"],
+        "report": ["WLU_SRC", "CRYPTO_SRC"]
+      }
+    },
+    {
+      "name": "fast-mac",
+      "argv": ["rexx", "tests/test_fast_mac.rex"],
+      "timeout_seconds": 300,
+      "environment": {
+        "set": {
+          "WLU_SRC": "${PACKAGE_ROOT}/src",
+          "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": ["${PACKAGE_ROOT}/src", "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"],
+          "require_entries": true
+        },
+        "require_dirs": ["WLU_SRC", "CRYPTO_SRC"],
+        "report": ["WLU_SRC", "CRYPTO_SRC"]
+      }
+    },
+    {
+      "name": "job-budget-escalation",
+      "argv": ["rexx", "tests/test_job_budget_escalation.rex"],
+      "timeout_seconds": 300,
+      "environment": {
+        "set": {
+          "WLU_SRC": "${PACKAGE_ROOT}/src",
+          "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": ["${PACKAGE_ROOT}/src", "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"],
+          "require_entries": true
+        },
+        "require_dirs": ["WLU_SRC", "CRYPTO_SRC"],
+        "report": ["WLU_SRC", "CRYPTO_SRC"]
+      }
+    },
+    {
+      "name": "terminal-client",
+      "argv": ["rexx", "tests/test_terminal_client.rex"],
+      "timeout_seconds": 300,
+      "environment": {
+        "set": {
+          "WLU_SRC": "${PACKAGE_ROOT}/src",
+          "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": ["${PACKAGE_ROOT}/src", "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"],
+          "require_entries": true
+        },
+        "require_dirs": ["WLU_SRC", "CRYPTO_SRC"],
+        "report": ["WLU_SRC", "CRYPTO_SRC"]
+      }
+    },
+    {
+      "name": "units-ratecard",
+      "argv": ["rexx", "tests/test_units_ratecard.rex"],
+      "timeout_seconds": 300,
+      "environment": {
+        "set": {
+          "WLU_SRC": "${PACKAGE_ROOT}/src",
+          "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": ["${PACKAGE_ROOT}/src", "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"],
+          "require_entries": true
+        },
+        "require_dirs": ["WLU_SRC", "CRYPTO_SRC"],
+        "report": ["WLU_SRC", "CRYPTO_SRC"]
+      }
     }
   ],
   "publish": {
