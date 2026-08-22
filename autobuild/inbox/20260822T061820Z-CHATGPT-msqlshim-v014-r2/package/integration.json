@@ -1,0 +1,47 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "msqlshim",
+    "version": "0.14",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "LIVE_MSQLSHIM_ROOT": "/home/hc3/alchemy/msqlshim"
+    }
+  },
+  "tests": [
+    {
+      "name": "prepare-msqlshim-v014",
+      "argv": ["sh", "prepare_package.sh"],
+      "timeout_seconds": 60,
+      "environment": {
+        "require_dirs": ["LIVE_MSQLSHIM_ROOT"],
+        "report": ["LIVE_MSQLSHIM_ROOT"]
+      }
+    },
+    {
+      "name": "msqlshim-v014-suite",
+      "argv": ["sh", "run_tests.sh"],
+      "timeout_seconds": 360,
+      "environment": {
+        "rexx_path": {
+          "mode": "prepend",
+          "entries": [
+            "${PACKAGE_ROOT}/prepared/msqlshim_v0.14",
+            "${PACKAGE_ROOT}/prepared/msqlshim_v0.14/src",
+            "${PACKAGE_ROOT}/prepared/msqlshim_v0.14/vendor"
+          ],
+          "require_entries": true
+        }
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": "prepared/msqlshim_v0.14",
+      "path": "packages/msqlshim_v0.14"
+    }
+  }
+}
