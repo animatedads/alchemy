@@ -1,0 +1,43 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "virtual_ryta_hardworld",
+    "version": "0.23-work",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "payload-integrity",
+      "argv": ["sh", "run_tests.sh", "payload"],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "source-manifest",
+      "argv": ["sh", "run_tests.sh", "source-manifest"],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "rexxc",
+      "argv": ["sh", "run_tests.sh", "compile"],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "inherited-hardworld",
+      "argv": ["sh", "run_tests.sh", "inherited"],
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "current-stack-rollup",
+      "argv": ["sh", "run_tests.sh", "current-stack"],
+      "timeout_seconds": 1200
+    }
+  ],
+  "publish": {
+    "artifact_only": true
+  }
+}
