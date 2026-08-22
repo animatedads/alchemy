@@ -1,0 +1,10 @@
+No msqlshim v0.14 live source and no msqlshim_v0.14*.zip in /home/hc3/Downloads.
+Live README begins:
+# msqlshim v0.08
+
+`msqlshim` is the isolated MySQL/MariaDB wire-protocol lane for NoSQLServer. It does not modify NoSQLServer's SQL parser, storage engine, or public API. MySQL-family protocol/session compatibility lives here; native SQL semantics remain in NoSQLServer.
+
+The package includes an unchanged NoSQLServer v0.58 `NoSQLServer.cls` snapshot in `vendor/` so the shim is directly runnable. To bind a different backend without changing its source tree:
+
+```bash
+./bind_backend.sh /path/to/NoSQLServer.cls
