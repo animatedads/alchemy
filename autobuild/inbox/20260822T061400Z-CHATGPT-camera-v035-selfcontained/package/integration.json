@@ -1,0 +1,37 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "camera_behaviour_oorexx",
+    "version": "0.35",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {}
+  },
+  "tests": [
+    {
+      "name": "prepare-camera-v035",
+      "argv": ["sh", "prepare_package.sh"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "camera-v035-suite",
+      "argv": ["sh", "run_tests.sh"],
+      "timeout_seconds": 240,
+      "environment": {
+        "rexx_path": {
+          "mode": "replace",
+          "entries": ["${PACKAGE_ROOT}/prepared/camera_behaviour_oorexx_v0.35"],
+          "require_entries": true
+        }
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": "prepared/camera_behaviour_oorexx_v0.35",
+      "path": "packages/camera_behaviour_oorexx_v0.35"
+    }
+  }
+}
