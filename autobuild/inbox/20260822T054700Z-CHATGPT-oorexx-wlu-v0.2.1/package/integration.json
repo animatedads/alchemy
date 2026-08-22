@@ -1,0 +1,34 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "oorexx_work_load_units",
+    "version": "0.2.1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src",
+      "OOREXX_CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+    },
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "manifest",
+      "argv": ["sha256sum", "-c", "MANIFEST.sha256"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "wlu-test-battery",
+      "argv": ["bash", "run_tests.sh"],
+      "timeout_seconds": 1200
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_work_load_units_v0.2.1"
+    }
+  }
+}
