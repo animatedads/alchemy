@@ -1,0 +1,245 @@
+== Shannon reputation dependency probe ==
+shannon_root=/home/hc3/alchemy/ourladyair_shannon_v0.5
+rexx=/usr/bin/rexx
+
+Syntax is "rexx [-o[d] "options"] filename [arguments]"
+or        "rexx -e program_string [arguments]"
+or        "rexx -v".
+== reputation references in Shannon harness ==
+/home/hc3/alchemy/ourladyair_shannon_v0.5/run_tests.sh:11:: "${REPUTATION_EFFECT_ROOT:?set REPUTATION_EFFECT_ROOT to the Reputation Effect package root}"
+/home/hc3/alchemy/ourladyair_shannon_v0.5/run_tests.sh:12:: "${REPUTATION_FEED_ROOT:?set REPUTATION_FEED_ROOT to the Reputation Feed package root}"
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_gate.rex:2:repRoot = value('REPUTATION_EFFECT_ROOT', , 'ENVIRONMENT')
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_gate.rex:3:if repRoot == '' then do; say 'FAIL: REPUTATION_EFFECT_ROOT missing'; exit 1; end
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_gate.rex:14:artifact = .RuntimeArtifact~new('reputation.effect', 'REPUTATION_RULES', '0.2', artifactId, 'ReputationRuntimeModule', load~value, .ReputationEffectBuild~API_VERSION, sourcePath)
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_gate.rex:17:activated = kernel~activate('test', 'reputation.effect', staged~value~generationId)
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_gate.rex:19:acquired = kernel~acquire('test', 'reputation.effect')
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_communication.rex:2:repRoot = value('REPUTATION_EFFECT_ROOT', , 'ENVIRONMENT')
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_communication.rex:3:if repRoot == '' then do; say 'FAIL: REPUTATION_EFFECT_ROOT missing'; exit 1; end
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_communication.rex:12:artifact = .RuntimeArtifact~new('reputation.effect', 'REPUTATION_RULES', '0.2', artifactId, 'ReputationRuntimeModule', loadOp~value, .ReputationEffectBuild~API_VERSION, sourcePath)
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_communication.rex:15:activated = kernel~activate('test', 'reputation.effect', staged~value~generationId)
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_communication.rex:17:acquired = kernel~acquire('test', 'reputation.effect')
+/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_communication.rex:101:call assertTrue recoveryDecision~containsCode('REPUTATIONAL_RECOVERY'), 'explicit correction retained as recovery support'
+== gate source ==
+parse arg root
+repRoot = value('REPUTATION_EFFECT_ROOT', , 'ENVIRONMENT')
+if repRoot == '' then do; say 'FAIL: REPUTATION_EFFECT_ROOT missing'; exit 1; end
+
+/* Load Reputation Effect through Runtime Registry. Shannon receives a lease;
+   it does not instantiate the runtime module by classname. */
+verifier = .RuntimePinnedSourceVerifier~new
+kernel = .RuntimeKernel~new(verifier)
+sourcePath = repRoot || '/runtime/ReputationRuntimeModule.cls'
+load = .RuntimeSourceLoader~readFile(sourcePath)
+call assertTrue load~ok, 'reputation runtime source loads'
+artifactId = 'reputation:effect:shannon-v09-test'
+ignored = verifier~pin(artifactId, load~value)
+artifact = .RuntimeArtifact~new('reputation.effect', 'REPUTATION_RULES', '0.2', artifactId, 'ReputationRuntimeModule', load~value, .ReputationEffectBuild~API_VERSION, sourcePath)
+staged = kernel~stage('test', artifact)
+call assertTrue staged~ok, 'reputation runtime stages'
+activated = kernel~activate('test', 'reputation.effect', staged~value~generationId)
+call assertTrue activated~ok, 'reputation runtime activates'
+acquired = kernel~acquire('test', 'reputation.effect')
+call assertTrue acquired~ok, 'reputation runtime acquires'
+lease = acquired~value
+
+now = .DateTime~new
+eventTime = now - .TimeSpan~new(0, 0, 0, 5, 0)
+
+catalog = .ReputationGeographyCatalog~new
+catalog~add(.ReputationGeography~new('WORLD','WORLD'))
+catalog~add(.ReputationGeography~new('EUROPE','REGION','WORLD'))
+catalog~add(.ReputationGeography~new('GB','COUNTRY','EUROPE','United Kingdom'))
+
+graph = .ReputationConceptGraph~new
+graph~link('EXTRA_LEGROOM','CABIN_SPACE')
+
+event = .ReputationEvent~new('SYNTH-CABIN','AIRCRAFT_SAFETY_INCIDENT','Synthetic cabin-space incident',eventTime,eventTime,90,'SERIOUS','AVIATION')
+event~addSubject('MANUFACTURER','BOEING',100)
+event~addSubject('EQUIPMENT','737-MAX-9',100)
+event~addConcept('CABIN_SPACE')
+event~addGeographicEffect(.ReputationGeographicEffect~new('SYNTH-CABIN','GB','*',95,'ADVERSE',95,eventTime,.nil,'NONE'))
+event~seal
+
+snapshot = .ReputationSnapshot~new('SHANNON-REP-SNAPSHOT',now,now)
+snapshot~addCoverageGeography('GB')
+snapshot~addEvent(event)
+snapshot~seal
+
+gate = .ShannonReputationGate~new(lease, snapshot, catalog, graph)
+call assertEqual .ReputationEffectBuild~API_VERSION, gate~runtimeApi, 'loaded reputation API retained as evidence'
+
+action = .ReputationActionSurface~new('OLA-EXTRA-LEGROOM','OURLADYAIR','ADVERTISING',now,'NORMAL')
+action~addGeography('GB')
+action~addAudience('GENERAL_PUBLIC')
+action~addAssociation('MANUFACTURER','BOEING',90)
+action~addAssociation('EQUIPMENT','737-MAX-9',100)
+action~addConcept('EXTRA_LEGROOM')
+action~seal
+assessment = gate~assess(action)
+call assertTrue assessment~evaluated, 'reputation action evaluated'
+call assertEqual 'HOLD', assessment~disposition, 'direct synthetic incident holds creative'
+call assertTrue \assessment~emissionAllowed, 'held creative cannot emit'
+
+ordinary = .ReputationActionSurface~new('OLA-BAR','OURLADYAIR','TRANSACTIONAL_OFFER',now,'NORMAL')
+ordinary~addGeography('GB')
+ordinary~addAudience('GENERAL_PUBLIC')
+ordinary~addConcept('BAR_BUNDLE')
+ordinary~seal
+ordinaryAssessment = gate~assess(ordinary)
+call assertEqual 'CLEAR', ordinaryAssessment~disposition, 'unrelated ordinary offer remains clear'
+call assertTrue ordinaryAssessment~emissionAllowed, 'clear ordinary offer remains commercially available'
+
+staleRefresh = now - .TimeSpan~new(0, 0, 30, 0, 0)
+staleSnapshot = .ReputationSnapshot~new('SHANNON-REP-STALE',now,staleRefresh)
+staleSnapshot~addCoverageGeography('GB')
+staleSnapshot~seal
+staleGate = .ShannonReputationGate~new(lease, staleSnapshot, catalog, graph)
+staleAction = .ReputationActionSurface~new('OLA-LIVE','OURLADYAIR','ADVERTISING',now,'LIVE_MAJOR_EVENT')
+staleAction~addGeography('GB')
+staleAction~addAudience('GENERAL_PUBLIC')
+staleAction~seal
+stale = staleGate~assess(staleAction)
+call assertEqual 'HOLD_REFRESH_REQUIRED', stale~disposition, 'stale reputation world fails closed'
+call assertTrue \stale~emissionAllowed, 'stale reputation world suppresses action requiring evaluation'
+
+call assertTrue gate~release, 'runtime lease releases'
+say 'PASS test_shannon_reputation_gate api=' || .ReputationEffectBuild~API_VERSION
+exit 0
+
+assertTrue: procedure
+  use arg value, label
+  if \value then do; say 'FAIL:' label; exit 1; end
+  return
+assertEqual: procedure
+  use arg expected, actual, label
+  if expected \== actual then do; say 'FAIL:' label 'expected='expected 'actual='actual; exit 1; end
+  return
+
+::requires 'ShannonReputationGate.cls'
+::requires 'RuntimeRegistry.cls'
+== communication source head ==
+parse arg root
+repRoot = value('REPUTATION_EFFECT_ROOT', , 'ENVIRONMENT')
+if repRoot == '' then do; say 'FAIL: REPUTATION_EFFECT_ROOT missing'; exit 1; end
+
+verifier = .RuntimePinnedSourceVerifier~new
+kernel = .RuntimeKernel~new(verifier)
+sourcePath = repRoot || '/runtime/ReputationRuntimeModule.cls'
+loadOp = .RuntimeSourceLoader~readFile(sourcePath)
+call assertTrue loadOp~ok, 'reputation runtime source loads'
+artifactId = 'reputation:effect:shannon-v09-communication'
+ignored = verifier~pin(artifactId, loadOp~value)
+artifact = .RuntimeArtifact~new('reputation.effect', 'REPUTATION_RULES', '0.2', artifactId, 'ReputationRuntimeModule', loadOp~value, .ReputationEffectBuild~API_VERSION, sourcePath)
+staged = kernel~stage('test', artifact)
+call assertTrue staged~ok, 'reputation runtime stages'
+activated = kernel~activate('test', 'reputation.effect', staged~value~generationId)
+call assertTrue activated~ok, 'reputation runtime activates'
+acquired = kernel~acquire('test', 'reputation.effect')
+call assertTrue acquired~ok, 'reputation runtime acquires'
+lease = acquired~value
+
+now = .DateTime~new
+catalog = .ReputationGeographyCatalog~new
+catalog~add(.ReputationGeography~new('WORLD','WORLD'))
+catalog~add(.ReputationGeography~new('EUROPE','REGION','WORLD'))
+catalog~add(.ReputationGeography~new('GB','COUNTRY','EUROPE','United Kingdom'))
+graph = .ReputationConceptGraph~new
+snapshot = .ReputationSnapshot~new('SHANNON-COMMS-SNAPSHOT',now,now)
+snapshot~addCoverageGeography('GB')
+snapshot~seal
+
+gate = .ShannonReputationGate~new(lease, snapshot, catalog, graph)
+
+serviceFailure = .ReputationCommunicationFailure~new('F-SERVICE', 'SERVICE_RESPONSE_FAILURE', 'SUPPORT', 'OPEN', 70, 'Technical response consumed allowance but was not delivered')
+safetyFailure = .ReputationCommunicationFailure~new('F-SAFETY', 'SAFETY_REPORT_UNANSWERED', 'SAFETY_INBOX', 'OPEN', 85, 'Safety correspondence remains unanswered')
+
+/* The soft-sales failure: Shannon says she will stop selling, then asks for deal
+   qualification anyway.  Semantic acknowledgement does not become process state. */
+softComm = .ReputationCommunicationSurface~new('COMM-SOFT-SELL', 'PROSPECTIVE_CUSTOMER', 'UK_PUBLIC_BODY')
+softComm~addFailure(serviceFailure)
+softComm~addFailure(safetyFailure)
+softComm~addAct('ACKNOWLEDGEMENT', 'CUSTOMER_EVIDENCE', 'ACCEPTED')
+softComm~addAct('EVIDENCE_LIMIT', 'MODEL_VISIBILITY', 'NO_PRIOR_HISTORY')
+softComm~addAct('DECLARED_INTENT', '', 'STOP_SELLING')
+softComm~addAct('SALES_PROMPT', 'DEAL_QUALIFICATION', 'SEAT_COUNT')
+softComm~addAct('REDIRECT', 'SUPPORT', 'OPEN_SUPPORT_CASE')
+softComm~seal
+softAction = .ReputationActionSurface~new('OLA-COMMS-SOFT-SELL', 'OURLADYAIR', 'CUSTOMER_COMMUNICATION', now, 'NORMAL')
+softAction~addGeography('GB')
+softAction~addAudience('GENERAL_PUBLIC')
+softAction~setCommunicationSurface(softComm)
+softAction~seal
+softAssessment = gate~assess(softAction)
+call assertEqual 'HOLD', softAssessment~disposition, 'declared stop plus continued qualification is held'
+call assertTrue \softAssessment~emissionAllowed, 'held communication cannot continue commercial emission'
+softDecision = softAssessment~decision~geographicDecision('GB')
+call assertTrue softDecision~containsCode('COMMERCIAL_PRESSURE_COLLISION'), 'sales into unresolved failure detected'
+call assertTrue softDecision~containsCode('PROCESS_CIRCULARITY'), 'redirect to failed route detected'
+call assertTrue softDecision~containsCode('DECLARED_INTENT_ACTION_MISMATCH'), 'declared intent/action mismatch detected'
+
+/* Same unresolved state, but commercial activity is actually suppressed. */
+restrainedComm = .ReputationCommunicationSurface~new('COMM-RESTRAINED', 'PROSPECTIVE_CUSTOMER', 'UK_PUBLIC_BODY')
+restrainedComm~addFailure(serviceFailure)
+restrainedComm~addFailure(safetyFailure)
+restrainedComm~addAct('ACKNOWLEDGEMENT', 'CUSTOMER_EVIDENCE', 'ACCEPTED')
+restrainedComm~addAct('EVIDENCE_LIMIT', 'ROOT_CAUSE', 'UNKNOWN')
+restrainedComm~addAct('PROCESS_OWNERSHIP', 'CUSTOMER_PROCESS', 'FAILURE_ACKNOWLEDGED')
+restrainedComm~addAct('DECLARED_INTENT', '', 'STOP_SELLING')
+restrainedComm~seal
+restrainedAction = .ReputationActionSurface~new('OLA-COMMS-RESTRAINED', 'OURLADYAIR', 'CUSTOMER_COMMUNICATION', now, 'NORMAL')
+restrainedAction~addGeography('GB')
+restrainedAction~addAudience('GENERAL_PUBLIC')
+restrainedAction~setCommunicationSurface(restrainedComm)
+restrainedAction~seal
+restrainedAssessment = gate~assess(restrainedAction)
+call assertEqual 'CLEAR', restrainedAssessment~disposition, 'actual commercial restraint remains clear'
+restrainedDecision = restrainedAssessment~decision~geographicDecision('GB')
+call assertTrue restrainedDecision~containsCode('COMMERCIAL_RESTRAINT'), 'restraint support retained'
+call assertTrue restrainedDecision~containsCode('EVIDENTIAL_DISCIPLINE'), 'evidential discipline retained'
+call assertTrue \restrainedDecision~containsCode('DECLARED_INTENT_ACTION_MISMATCH'), 'no mismatch when state follows declaration'
+
+/* Explicit correction is support, but procurement continuation still conflicts with
+   STOP_SELLING.  Reputation Effect records both instead of erasing history. */
+recoveryComm = .ReputationCommunicationSurface~new('COMM-RECOVERY', 'PROSPECTIVE_CUSTOMER', 'UK_PUBLIC_BODY', 'COMM-SOFT-SELL')
+recoveryComm~addFailure(serviceFailure)
+recoveryComm~addAct('RETRACTION', 'PRIOR_CLAIM', 'EXPECTED_ON_FREE')
+recoveryComm~addAct('CORRECTIVE_STATEMENT', 'PRIOR_CLAIM', 'NOT_SUPPORTED_BY_FACTS')
+recoveryComm~addAct('EVIDENCE_LIMIT', 'ROOT_CAUSE', 'UNKNOWN')
+recoveryComm~addAct('PROCESS_OWNERSHIP', 'CUSTOMER_PROCESS', 'FAILURE_ACKNOWLEDGED')
+recoveryComm~addAct('ACKNOWLEDGEMENT', 'CUSTOMER_EVIDENCE', 'ACCEPTED')
+recoveryComm~addAct('DECLARED_INTENT', '', 'STOP_SELLING')
+recoveryComm~addAct('PROCUREMENT_INFO', 'PURCHASE_ROUTE', 'PUBLIC_INFORMATION')
+recoveryComm~seal
+recoveryAction = .ReputationActionSurface~new('OLA-COMMS-RECOVERY', 'OURLADYAIR', 'CUSTOMER_COMMUNICATION', now, 'NORMAL')
+recoveryAction~addGeography('GB')
+recoveryAction~addAudience('GENERAL_PUBLIC')
+recoveryAction~setCommunicationSurface(recoveryComm)
+recoveryAction~seal
+recoveryAssessment = gate~assess(recoveryAction)
+call assertEqual 'WARN', recoveryAssessment~disposition, 'recovery plus continuing procurement info warns'
+recoveryDecision = recoveryAssessment~decision~geographicDecision('GB')
+call assertTrue recoveryDecision~containsCode('REPUTATIONAL_RECOVERY'), 'explicit correction retained as recovery support'
+call assertTrue recoveryDecision~containsCode('DECLARED_INTENT_ACTION_MISMATCH'), 'procurement continuation still conflicts with stop selling'
+
+call assertTrue gate~release, 'reputation runtime lease releases'
+say 'PASS test_shannon_reputation_communication api=' || .ReputationEffectBuild~API_VERSION
+exit 0
+
+assertTrue: procedure
+  use arg value, label
+  if \value then do; say 'FAIL:' label; exit 1; end
+  return
+assertEqual: procedure
+  use arg expected, actual, label
+  if expected \== actual then do; say 'FAIL:' label 'expected='expected 'actual='actual; exit 1; end
+  return
+
+::requires 'ShannonReputationGate.cls'
+::requires 'RuntimeRegistry.cls'
+== locally visible reputation package candidates ==
+== API strings in visible ReputationEffect.cls files ==
+--- /home/hc3/alchemy/reputation_effect/src/ReputationEffect.cls
+11:::constant VERSION "0.1"
+12:::constant API_VERSION "reputation.effect/0.1"
+old_gate=0 new_communication_surface=1
+FAIL EXPECTED_MISMATCH_NOT_CONFIRMED state_has_changed=1
