@@ -5,7 +5,18 @@ RELEASE="$ROOT/release"
 EXPECTED="489a36593297934f6d4f34f13949e637231d8f2462ee3315ba2273600571faf2"
 TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
-cat "$ROOT"/payload/oorexx_work_load_units_v0.2.1.zip.b64.* | base64 -d > "$TMP/package.zip"
+cat \
+  "$ROOT/payload/oorexx_work_load_units_v0.2.1.zip.b64.00" \
+  "$ROOT/payload/oorexx_work_load_units_v0.2.1.zip.b64.01" \
+  "$ROOT/payload/oorexx_work_load_units_v0.2.1.zip.b64.02" \
+  "$ROOT/payload/oorexx_work_load_units_v0.2.1.zip.b64.03" \
+  "$ROOT/payload/fix04a" \
+  "$ROOT/payload/fix04b" \
+  "$ROOT/payload/oorexx_work_load_units_v0.2.1.zip.b64.05" \
+  "$ROOT/payload/oorexx_work_load_units_v0.2.1.zip.b64.06" \
+  "$ROOT/payload/fix07a" \
+  "$ROOT/payload/fix07b" \
+  | base64 -d > "$TMP/package.zip"
 ACTUAL="$(sha256sum "$TMP/package.zip" | awk '{print $1}')"
 if [[ "$ACTUAL" != "$EXPECTED" ]]; then
   echo "WLU archive hash mismatch: expected=$EXPECTED actual=$ACTUAL" >&2
