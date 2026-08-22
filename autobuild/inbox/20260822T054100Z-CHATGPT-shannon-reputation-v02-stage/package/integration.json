@@ -1,0 +1,26 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "shannon_reputation_v02_stage",
+    "version": "0.1",
+    "kind": "shell"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "SHANNON_ROOT": "/home/hc3/alchemy/ourladyair_shannon_v0.5",
+      "LIVE_REPUTATION_EFFECT_ROOT": "/home/hc3/alchemy/reputation_effect"
+    },
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "staged-v02-shannon-integration",
+      "argv": ["bash", "run_tests.sh"],
+      "timeout_seconds": 180
+    }
+  ],
+  "publish": {
+    "artifact_only": true
+  }
+}
