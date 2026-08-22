@@ -1,0 +1,40 @@
+legal_effect_v0.10.zip: OK
+nosqlserver_v0.75.zip: OK
+oorexx_queue_fabric_v0.8.1.zip: OK
+oorexx_work_load_units_v0.2.zip: OK
+reputation_effect_v0.2.zip: OK
+reputation_feed_v0.1.zip: OK
+runtime_registry_v0.11.zip: OK
+structured_relation_plugin_v0.9.zip: OK
+virtual_ryta_hardworld_v0.19.zip: OK
+AUTOBUILD closure=LOCKED sha256=7a584cbc4af4dd5a99452371e7037ab519156d296f8d01b714889d9ab4b112c5
+AUTOBUILD rexx=/usr/bin/rexx
+== test_shannon_required_surfaces.rex ==
+STACK reputation_effect=reputation.effect/0.2 root=/home/hc3/alchemy-autobuild/staging/run-w2s58s59/.autobuild-deps/reputation_effect/reputation_effect_v0.2
+STACK reputation_feed=reputation.feed/0.1 root=/home/hc3/alchemy-autobuild/staging/run-w2s58s59/.autobuild-deps/reputation_feed/reputation_feed_v0.1
+PASS test_shannon_required_surfaces reputation=reputation.effect/0.2 feed=reputation.feed/0.1
+== consolidated Legal Effect / HardWorld acceptance ==
+NOTE: Legal policy verification is cryptographic and CPU-bound; the consolidated suite verifies one generation and reuses it.
+== test_shannon_v09_combined_acceptance.rex ==
+PASS test_shannon_v09_combined_acceptance legal=legal.effect/0.10 queue=queue.fabric/0.8 nosql=0.75
+== test_shannon_queue_compatibility.rex ==
+PASS test_shannon_queue_compatibility api=queue.fabric/0.8 fabric=0.8 nosql=0.75
+== test_shannon_no_hard_release_gates.sh ==
+PASS test_shannon_no_hard_release_gates
+== test_shannon_topic_bus.rex ==
+PASS test_shannon_topic_bus
+== test_shannon_wlu_terminal_gate.rex ==
+PASS test_shannon_wlu_terminal_gate
+== test_shannon_reputation_gate.rex ==
+PASS test_shannon_reputation_gate api=reputation.effect/0.2
+== test_shannon_reputation_communication.rex ==
+PASS test_shannon_reputation_communication api=reputation.effect/0.2
+== test_shannon_reputation_feed.rex ==
+PASS test_shannon_reputation_feed api=reputation.feed/0.1
+== test_shannon_pnrgov_parse.rex ==
+PASS test_shannon_pnrgov_parse
+== test_shannon_pnrgov_compact_parse.rex ==
+PASS test_shannon_pnrgov_compact_parse annotations=1 envelope=INVALID
+== test_shannon_socket_ingress.sh ==
+PASS test_shannon_socket_ingress
+serve=OK;mode=TRANSPORT_TEST;audit=ourladyair.shannon.turn.v4;fabric=0.8;indexed=1;text=SOCKET_ECHO:Can I put my EpiPen in a 10 kg cabin bag that might be gate-checked and put in the hold?
