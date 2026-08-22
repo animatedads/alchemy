@@ -1,0 +1,70 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "reputation_effect",
+    "version": "0.2",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "RUNTIME_REGISTRY_ROOT": "/home/hc3/alchemy/runtime_registry",
+      "SHANNON_ROOT": "/home/hc3/alchemy/ourladyair_shannon_v0.5",
+      "REPUTATION_FEED_ROOT": "/home/hc3/alchemy/reputation_feed"
+    },
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "prepare-source",
+      "argv": ["bash", "prepare_package.sh"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "reputation-effect-suite",
+      "argv": ["bash", "prepared/reputation_effect_v0.2/run_tests.sh"],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "shannon-reputation-integration",
+      "argv": ["bash", "test_shannon_integration.sh"],
+      "timeout_seconds": 180
+    }
+  ],
+  "publish": {
+    "artifact_only": true,
+    "files": [
+      {"source":"prepared/reputation_effect_v0.2/ARCHITECTURE.md","path":"packages/reputation_effect_v0.2/ARCHITECTURE.md","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/CHANGELOG.md","path":"packages/reputation_effect_v0.2/CHANGELOG.md","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/DEMO_OUTPUT.txt","path":"packages/reputation_effect_v0.2/DEMO_OUTPUT.txt","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/DEPENDENCIES.txt","path":"packages/reputation_effect_v0.2/DEPENDENCIES.txt","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/MANIFEST.sha256","path":"packages/reputation_effect_v0.2/MANIFEST.sha256","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/README.md","path":"packages/reputation_effect_v0.2/README.md","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/VALIDATION.txt","path":"packages/reputation_effect_v0.2/VALIDATION.txt","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/VALIDATION_TRANSCRIPT.txt","path":"packages/reputation_effect_v0.2/VALIDATION_TRANSCRIPT.txt","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/VERSION.txt","path":"packages/reputation_effect_v0.2/VERSION.txt","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/examples/airline_reputation_demo.rex","path":"packages/reputation_effect_v0.2/examples/airline_reputation_demo.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/examples/customer_communication_demo.rex","path":"packages/reputation_effect_v0.2/examples/customer_communication_demo.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/run_tests.sh","path":"packages/reputation_effect_v0.2/run_tests.sh","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/runtime/ReputationRuntimeModule.cls","path":"packages/reputation_effect_v0.2/runtime/ReputationRuntimeModule.cls","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/src/ReputationEffect.cls","path":"packages/reputation_effect_v0.2/src/ReputationEffect.cls","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/ReputationTestSupport.cls","path":"packages/reputation_effect_v0.2/tests/ReputationTestSupport.cls","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/compile_smoke.rex","path":"packages/reputation_effect_v0.2/tests/compile_smoke.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_brand_mismatch.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_brand_mismatch.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_communication_pair.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_communication_pair.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_communication_recovery.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_communication_recovery.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_communication_sealing.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_communication_sealing.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_competitor_brand_norm.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_competitor_brand_norm.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_freshness_unknown.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_freshness_unknown.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_geographic_airline.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_geographic_airline.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_geography_propagation.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_geography_propagation.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_human_harm_boundary.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_human_harm_boundary.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_manufacturer_distance.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_manufacturer_distance.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_mile_high_collision.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_mile_high_collision.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_observation_geography.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_observation_geography.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_runtime_registry.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_runtime_registry.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_sealing.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_sealing.rex","when":"pass"},
+      {"source":"prepared/reputation_effect_v0.2/tests/test_reputation_temporal_replay.rex","path":"packages/reputation_effect_v0.2/tests/test_reputation_temporal_replay.rex","when":"pass"}
+    ]
+  }
+}
