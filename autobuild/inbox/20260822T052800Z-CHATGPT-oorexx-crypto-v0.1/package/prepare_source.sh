@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
-OUT="$ROOT/src/crypto.cls"
+OUT="$ROOT/release/src/crypto.cls"
 EXPECTED="1bd4765c6d60251f1275790240f70cdbd55cb94ee1f50fa0a703e184e67a2d2f"
-mkdir -p "$(dirname "$OUT")"
+mkdir -p "$ROOT/release/src" "$ROOT/release/tests" "$ROOT/release/benchmarks"
 cat "$ROOT"/payload/crypto.cls.gz.b64.* | base64 -d | gzip -dc > "$OUT"
 ACTUAL="$(sha256sum "$OUT" | awk '{print $1}')"
 if [[ "$ACTUAL" != "$EXPECTED" ]]; then
@@ -11,4 +11,6 @@ if [[ "$ACTUAL" != "$EXPECTED" ]]; then
   rm -f "$OUT"
   exit 1
 fi
+cp "$ROOT"/tests/*.rex "$ROOT/release/tests/"
+cp "$ROOT"/benchmarks/benchmark_fast_mac.rex "$ROOT/release/benchmarks/"
 echo "PASS prepare_source sha256=$ACTUAL"
