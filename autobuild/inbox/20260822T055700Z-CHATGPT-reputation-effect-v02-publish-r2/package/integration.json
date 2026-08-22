@@ -1,0 +1,84 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {"name": "reputation_effect", "version": "0.2", "kind": "oorexx"},
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "LIVE_REPUTATION_EFFECT_ROOT": "/home/hc3/alchemy/reputation_effect",
+      "RUNTIME_REGISTRY_ROOT": "/home/hc3/alchemy/runtime_registry",
+      "SHANNON_ROOT": "/home/hc3/alchemy/ourladyair_shannon_v0.5",
+      "REPUTATION_FEED_ROOT": "/home/hc3/alchemy/reputation_feed"
+    }
+  },
+  "tests": [
+    {
+      "name": "prepare-reputation-effect-v02",
+      "argv": ["bash", "prepare_package.sh"],
+      "timeout_seconds": 60,
+      "environment": {"require_dirs": ["LIVE_REPUTATION_EFFECT_ROOT"], "report": ["LIVE_REPUTATION_EFFECT_ROOT"]}
+    },
+    {
+      "name": "reputation-effect-v02-suite",
+      "argv": ["bash", "run_reputation_suite.sh"],
+      "timeout_seconds": 180,
+      "environment": {
+        "rexx_path": {
+          "mode": "replace",
+          "entries": [
+            "${PACKAGE_ROOT}/prepared/reputation_effect_v0.2/src",
+            "${PACKAGE_ROOT}/prepared/reputation_effect_v0.2/runtime",
+            "${PACKAGE_ROOT}/prepared/reputation_effect_v0.2/tests",
+            "${RUNTIME_REGISTRY_ROOT}/src"
+          ],
+          "require_entries": true
+        },
+        "require_dirs": ["RUNTIME_REGISTRY_ROOT"],
+        "report": ["RUNTIME_REGISTRY_ROOT"]
+      }
+    },
+    {
+      "name": "shannon-reputation-gate-v02",
+      "argv": ["rexx", "/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_gate.rex", "/home/hc3/alchemy/ourladyair_shannon_v0.5"],
+      "timeout_seconds": 90,
+      "environment": {
+        "set": {"REPUTATION_EFFECT_ROOT": "${PACKAGE_ROOT}/prepared/reputation_effect_v0.2"},
+        "rexx_path": {"mode": "replace", "entries": ["${SHANNON_ROOT}/src", "${PACKAGE_ROOT}/prepared/reputation_effect_v0.2/src", "${RUNTIME_REGISTRY_ROOT}/src"], "require_entries": true},
+        "require_dirs": ["SHANNON_ROOT", "REPUTATION_EFFECT_ROOT", "RUNTIME_REGISTRY_ROOT"],
+        "report": ["SHANNON_ROOT", "REPUTATION_EFFECT_ROOT", "RUNTIME_REGISTRY_ROOT"]
+      }
+    },
+    {
+      "name": "shannon-reputation-communication-v02",
+      "argv": ["rexx", "/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_communication.rex", "/home/hc3/alchemy/ourladyair_shannon_v0.5"],
+      "timeout_seconds": 90,
+      "environment": {
+        "set": {"REPUTATION_EFFECT_ROOT": "${PACKAGE_ROOT}/prepared/reputation_effect_v0.2"},
+        "rexx_path": {"mode": "replace", "entries": ["${SHANNON_ROOT}/src", "${PACKAGE_ROOT}/prepared/reputation_effect_v0.2/src", "${RUNTIME_REGISTRY_ROOT}/src"], "require_entries": true},
+        "require_dirs": ["SHANNON_ROOT", "REPUTATION_EFFECT_ROOT", "RUNTIME_REGISTRY_ROOT"],
+        "report": ["SHANNON_ROOT", "REPUTATION_EFFECT_ROOT", "RUNTIME_REGISTRY_ROOT"]
+      }
+    },
+    {
+      "name": "shannon-reputation-feed-v02",
+      "argv": ["rexx", "/home/hc3/alchemy/ourladyair_shannon_v0.5/tests/test_shannon_reputation_feed.rex", "/home/hc3/alchemy/ourladyair_shannon_v0.5"],
+      "timeout_seconds": 90,
+      "environment": {
+        "set": {"REPUTATION_EFFECT_ROOT": "${PACKAGE_ROOT}/prepared/reputation_effect_v0.2"},
+        "rexx_path": {
+          "mode": "replace",
+          "entries": [
+            "${SHANNON_ROOT}/src",
+            "${PACKAGE_ROOT}/prepared/reputation_effect_v0.2/src",
+            "${REPUTATION_FEED_ROOT}/src",
+            "${REPUTATION_FEED_ROOT}/integration",
+            "${RUNTIME_REGISTRY_ROOT}/src"
+          ],
+          "require_entries": true
+        },
+        "require_dirs": ["SHANNON_ROOT", "REPUTATION_EFFECT_ROOT", "REPUTATION_FEED_ROOT", "RUNTIME_REGISTRY_ROOT"],
+        "report": ["SHANNON_ROOT", "REPUTATION_EFFECT_ROOT", "REPUTATION_FEED_ROOT", "RUNTIME_REGISTRY_ROOT"]
+      }
+    }
+  ],
+  "publish": {"tree": {"source": "prepared/reputation_effect_v0.2", "path": "packages/reputation_effect_v0.2"}}
+}
