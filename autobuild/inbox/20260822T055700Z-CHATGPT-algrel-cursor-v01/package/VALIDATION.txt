@@ -1,0 +1,18 @@
+Validated with Open Object Rexx 5.3.0 r13196 (build 3 August 2026).
+
+Observed against the supplied v0.11 + v0.10 + v0.69 packages:
+
+MSQL ALGREL EXTERNAL READY port=3684 invocations=0
+PASS two COM_STMT_PREPARE calls provider invocations=0
+PASS cursor EXECUTE materialized provider exactly once
+PASS COM_STMT_FETCH batches reuse frozen materialization
+PASS second prepared relation shares same provider materialization
+PASS RESET + re-EXECUTE still provider invocations=1
+MYSQL WIRE PREPARED CURSOR ALGORITHM RELATION V0.69: OK
+
+Before applying the included v0.69 metadata compatibility patch, the same
+PREPARE path reproduced:
+
+MySQL wire client failure: Object ".DATABASETABLEMETADATA" does not understand message "NEW".
+
+No msqlshim source change and no NoSQLServer source change is included.
