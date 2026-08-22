@@ -120,7 +120,7 @@ def integrate(z,st,m,c,start_ns):
         rd=Path("autobuild/results")/rid; logs=c["repo"]/rd/"logs"; logs.mkdir(parents=True,exist_ok=True)
         for i,r in enumerate(tr,1):
             stem=f"{i:02d}-{sname(r['name'])}"; op=rd/"logs"/(stem+".stdout.txt"); ep=rd/"logs"/(stem+".stderr.txt"); (c["repo"]/op).write_text(r.pop("stdout")); (c["repo"]/ep).write_text(r.pop("stderr")); r["stdout_path"]=str(op); r["stderr_path"]=str(ep)
-        ended=time.time_ns(); res=dict(schema=RESULT_SCHEMA,run_id=rid,status="PASS" if ok else "FAIL",runner=dict(started_ns=start_ns,started_at=iso(start_ns)),run=dict(started_at=iso(began),ended_at=iso(ended),elapsed_ms=round((ended-began)/1e6,3)),source=dict(filename=Path(z).name,mtime_ns=st.st_mtime_ns,ctime_ns=st.st_ctime_ns,arrival_ns=max(st.st_mtime_ns,st.st_ctime_ns),size=st.st_size,sha256=h),package=p,artifact_path=str(ar),tests=tr)
+        ended=time.time_ns(); res=dict(schema=RESULT_SCHEMA,run_id=rid,status="PASS" if ok else "FAIL",runner=dict(started_ns=start_ns,started_at=iso(start_ns)),run=dict(started_at=iso(began),ended_at=iso(ended),elapsed_ms=round((ended-began)/1e6,3)),source=dict(filename=Path(z).name,mtime_ns=st.st_mtime_ns,ctime_ns=st.st_ctime_ns,arrival_ns=st.st_ctime_ns,size=st.st_size,sha256=h),package=p,artifact_path=str(ar),tests=tr)
         pubs=publish(m,pkg,c)
         if pubs: res["published_files"]=pubs
         write_json(c["repo"]/rd/"result.json",res)
@@ -138,7 +138,7 @@ def candidate(downloads,start_ns):
     except FileNotFoundError: return None
     for p in entries:
         if not p.is_file() or p.suffix.lower()!=".zip": continue
-        st=p.stat(); arrived=max(st.st_mtime_ns,st.st_ctime_ns)
+        st=p.stat(); arrived=st.st_ctime_ns
         if arrived<start_ns: continue
         if best is None or (arrived,p.name)>(best[0],best[1].name): best=(arrived,p,st)
     return None if best is None else (best[1],best[2])
@@ -150,7 +150,7 @@ def loop(c,once=False,start_ns=None):
         if x:
             z,st=x; fp=(str(z),st.st_mtime_ns,st.st_ctime_ns,st.st_size)
             if fp not in handled:
-                if fp!=seen: seen=fp; state(c,start_ns,"observed",candidate=z.name,arrival_ns=max(st.st_mtime_ns,st.st_ctime_ns))
+                if fp!=seen: seen=fp; state(c,start_ns,"observed",candidate=z.name,arrival_ns=st.st_ctime_ns)
                 else:
                     try: m=manifest(z)
                     except (zipfile.BadZipFile,EOFError): seen=None; state(c,start_ns,"waiting-for-stable-zip",candidate=z.name)
