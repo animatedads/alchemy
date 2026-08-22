@@ -1,37 +1,34 @@
 # Sending a Managed ZIP to Alchemy Autobuild
 
-This document is the producer contract for any AI or human preparing a ZIP for
+This is the producer contract for any AI or human preparing a ZIP for
 `alchemy_autobuild`.
 
 The autobuilder is deliberately dumb. It does not infer how a package should be
-run. The ZIP must describe itself with a root-level `integration.json` file.
+run or where accepted source belongs. The ZIP must describe that declaratively
+with a root-level `integration.json`.
 
-## Human delivery sequence
+## Delivery sequence
 
-1. Make sure the autobuilder service is running.
+1. Make sure `alchemy-autobuild.service` is running.
 2. Only after the service has started, download the managed ZIP into `~/Downloads`.
 3. Download one candidate at a time. The runner considers only the newest
-   post-start top-level `*.zip` and does not walk backwards through older ZIPs.
-4. Do not move an old ZIP into place and expect it to be accepted as a previous
-   job. Each service start establishes a fresh intake watermark.
+   post-start top-level `*.zip`; it does not walk backwards through older ZIPs.
+4. The scan is not recursive.
 
-Typical service check:
+Typical check:
 
 ```sh
 systemctl --user status alchemy-autobuild.service
 ```
 
-The default watched path is:
+The default watched path is `~/Downloads/*.zip`.
 
-```text
-~/Downloads/*.zip
-```
+Each service start establishes a fresh intake watermark. A ZIP whose Linux
+`ctime_ns` predates that startup is outside the run.
 
-The scan is not recursive.
+## ZIP layout
 
-## What the sender must produce
-
-A managed ZIP must contain `integration.json` at the archive root.
+`integration.json` MUST be at archive root.
 
 Correct:
 
@@ -52,13 +49,18 @@ my_component_v0.4.zip
     └── run_tests.sh
 ```
 
-The second form is not managed because `integration.json` is not at ZIP root.
+## Current protocol: 0.2
 
-## Minimum manifest
+Normal source packages should use `alchemy.autobuild.integration/0.2`.
+Protocol 0.2 deliberately refuses to accept an omitted publication decision:
+the manifest must either declare `publish.tree` or explicitly set
+`publish.artifact_only` to true.
+
+A normal ooRexx component looks like this:
 
 ```json
 {
-  "schema": "alchemy.autobuild.integration/0.1",
+  "schema": "alchemy.autobuild.integration/0.2",
   "package": {
     "name": "my_component",
     "version": "0.4",
@@ -75,125 +77,117 @@ The second form is not managed because `integration.json` is not at ZIP root.
       "argv": ["sh", "run_tests.sh"],
       "timeout_seconds": 120
     }
-  ]
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/my_component_v0.4"
+    }
+  }
 }
 ```
 
-Required rules:
+### Why `publish.tree` matters
 
-- `schema` must be exactly `alchemy.autobuild.integration/0.1`.
-- `package.name` and `package.version` must be non-empty strings.
-- `tests` must contain at least one test.
-- Every test uses an `argv` array. Do not use shell-command strings.
-- Every timeout must be positive.
-- `working_directory`, test `cwd`, PATH entries, and publication sources are
-  package-relative unless otherwise documented.
+The original ZIP is always archived, but an opaque ZIP is not enough for other
+AI sessions. They need accepted source visible as normal Git files for search,
+inspection and dependency work.
 
-## ooRexx package example
+After every declared test passes, v0.2 re-extracts a pristine copy of the
+original ZIP and publishes the declared source tree into Git. Test-generated
+cache files, logs or temporary build debris are therefore not promoted by
+accident.
 
-A package which needs its own classes available through `PATH` can declare that
-without teaching the runner anything about the component:
+If the destination already exists with identical content, publication is a
+harmless no-op. If it exists with different content, the integration result is
+`ERROR`; existing package source is never silently overwritten.
+
+A failed test still uploads the original ZIP, result, logs and autobuild IPC
+message, but DOES NOT promote the source tree.
+
+### Deliberately artifact-only payloads
+
+If a ZIP really should remain only an archived test payload, say so explicitly:
 
 ```json
-{
-  "schema": "alchemy.autobuild.integration/0.1",
-  "package": {
-    "name": "queue_fabric",
-    "version": "0.8.2",
-    "kind": "oorexx"
+"publish": {
+  "artifact_only": true
+}
+```
+
+Do not omit the publication decision.
+
+## Environment setup
+
+The AI should declare everything required before the tests run instead of
+assuming an interactive shell setup.
+
+Available substitutions in `environment.set` are:
+
+- `${PACKAGE_ROOT}` — temporary extracted package root;
+- `${AUTOBUILD_ROOT}` — normally `~/alchemy-autobuild`;
+- `${REPO_ROOT}` — local checkout of `animatedads/alchemy`.
+
+Example:
+
+```json
+"environment": {
+  "set": {
+    "MY_COMPONENT_HOME": "${PACKAGE_ROOT}",
+    "REXX_PATH": "${PACKAGE_ROOT}/lib"
   },
-  "working_directory": ".",
-  "environment": {
-    "set": {
-      "QUEUE_FABRIC_HOME": "${PACKAGE_ROOT}"
-    },
-    "prepend_path": [
-      ".",
-      "lib"
-    ]
+  "prepend_path": ["bin"]
+}
+```
+
+Tests are argv arrays, not inferred shell prose:
+
+```json
+"tests": [
+  {
+    "name": "unit",
+    "argv": ["rexx", "tests/test_unit.rex"],
+    "timeout_seconds": 60
   },
-  "tests": [
+  {
+    "name": "acceptance",
+    "argv": ["sh", "run_tests.sh"],
+    "timeout_seconds": 180
+  }
+]
+```
+
+Each test receives separate stdout/stderr capture, return code, start/end time
+and elapsed milliseconds.
+
+## Additional files and IPC
+
+`publish.tree` is for the accepted package source. Additional prepared files can
+also be published:
+
+```json
+"publish": {
+  "tree": {
+    "source": ".",
+    "path": "packages/my_component_v0.4"
+  },
+  "files": [
     {
-      "name": "acceptance",
-      "argv": ["sh", "run_tests.sh"],
-      "timeout_seconds": 300
-    },
-    {
-      "name": "direct-smoke",
-      "argv": ["rexx", "tests/test_smoke.rex"],
-      "timeout_seconds": 60
+      "source": "ipc/reply.msg",
+      "path": "mesh/ctl/MY-COMPONENT-CHATGPT/reply.msg",
+      "when": "always"
     }
   ]
 }
 ```
 
-Available substitutions in `environment.set` are:
-
-```text
-${PACKAGE_ROOT}
-${AUTOBUILD_ROOT}
-${REPO_ROOT}
-```
-
-The runner also exports:
-
-```text
-ALCHEMY_PACKAGE_ROOT
-ALCHEMY_AUTOBUILD_ROOT
-ALCHEMY_REPO_ROOT
-```
-
-If a package needs several environment variables or paths before its tests run,
-put them in the manifest. Do not rely on the user's interactive shell profile.
-
-## Test contract
-
-Tests run in manifest order. Each test records:
-
-- start and end timestamps;
-- elapsed milliseconds;
-- return code;
-- timeout state;
-- stdout;
-- stderr.
-
-A zero return code is PASS. A non-zero return code or timeout is FAIL.
-
-A package should normally include its own `run_tests.sh` so that the same test
-entrypoint works both under autobuild and when a developer runs the package by
-hand.
-
-## Publishing a prepared IPC or result file
-
-A package may contain a file which should be copied into the Alchemy repository
-after testing. Declare it explicitly:
-
-```json
-{
-  "publish": {
-    "files": [
-      {
-        "source": "ipc/reply.msg",
-        "path": "mesh/ctl/PACKAGE-CHATGPT/20260822T060000Z-reply.msg"
-      }
-    ]
-  }
-}
-```
-
-`source` is inside the ZIP. `path` is relative to the Alchemy repository root.
-Existing `mesh/ctl/...` files are append-only and will not be overwritten.
-
-The package itself does not need to create the standard autobuild result
-message. The runner automatically publishes an `AUTOBUILD_RESULT` packet under:
-
-```text
-mesh/ctl/AUTOBUILD-CHATGPT/
-```
+`when` may be `pass` (the default) or `always`. Use `always` only for evidence or
+IPC which must survive a failed test. `mesh/ctl` messages are append-only.
+Ordinary explicit file publication is also collision-protected.
 
 ## What the runner publishes automatically
 
-After running a managed ZIP, the runner commits and pushes:
+Every attempted managed integration publishes durable evidence to Git:
 
 ```text
 autobuild/artifacts/<package>/<version>/<sha256>.zip
@@ -202,48 +196,36 @@ autobuild/results/<run-id>/logs/...
 mesh/ctl/AUTOBUILD-CHATGPT/<timestamp>-<sha>.msg
 ```
 
-The original ZIP is therefore preserved by content hash. Failed runs still
-produce evidence and logs.
+For a successful normal source package it additionally publishes the declared
+`publish.tree` path, normally under `packages/`.
 
-## Instructions for an AI sending a package
-
-When asked to provide a package for this system:
-
-1. Finish the component and its tests.
-2. Put a valid `integration.json` at ZIP root.
-3. Ensure every required test/environment setup is declared in that manifest.
-4. Include `run_tests.sh` when the component has a normal package test suite.
-5. ZIP the package with `integration.json` at archive root, not inside a wrapper
-   directory.
-6. Give the user the actual downloadable `.zip` file/link.
-7. Tell the user to click/download it only after `alchemy-autobuild.service` is
-   running.
-8. Do not ask the user to unpack, copy, rename, or manually run the package.
-9. Do not upload a second candidate until the first has been observed unless the
-   intention is to supersede it; only the newest post-start ZIP is considered.
-10. Subsequent diagnosis should read the GitHub `autobuild/results/...` and
-    `mesh/ctl/AUTOBUILD-CHATGPT/...` output instead of asking the user to paste
-    terminal output when Git evidence is available.
+The result records the package/version, archive SHA-256, source stat data,
+runner startup watermark, overall timing, individual test timing and the
+published source path.
 
 ## Sender checklist
 
-Before presenting the download link, verify:
+Before presenting the user with the ZIP download link, the producing AI must
+verify all of the following:
 
-```text
-[ ] archive extension is .zip
-[ ] integration.json is at ZIP root
-[ ] schema is alchemy.autobuild.integration/0.1
-[ ] package name/version are present
-[ ] at least one argv-based test is declared
-[ ] required PATH/environment setup is declared
-[ ] run_tests.sh and referenced test files are present
-[ ] publication sources, if any, exist inside the ZIP
-[ ] archive does not contain path traversal entries
-[ ] user is told to download after service startup
-```
+- ZIP contains `integration.json` at root;
+- schema is `alchemy.autobuild.integration/0.2` for normal new packages;
+- package name and version are explicit;
+- required environment/PATH setup is declared;
+- tests use argv arrays and have sensible timeouts;
+- normal source packages declare `publish.tree` to a versioned path under
+  `packages/`;
+- artifact-only intent is explicit if no source tree should be published;
+- the ZIP has been locally tested where tooling permits;
+- no unwanted caches, credentials or unrelated files are included;
+- the user is reminded to download it only after the autobuilder service has
+  started.
 
-The authoritative runner implementation is in:
+## v0.1 to v0.2 transition
 
-```text
-packages/alchemy_autobuild_v0.1/
-```
+A running v0.1 service cannot consume a normal schema-0.2 package. The
+`alchemy_autobuild_v0.2.zip` upgrade is specially bootstrapped with a compatible
+0.1 manifest and enumerated legacy publication files. v0.1 can therefore test
+that one ZIP and place `packages/alchemy_autobuild_v0.2/` into Git. After that,
+run its `bootstrap.sh`, reload systemd and restart the service. Subsequent
+packages should use protocol 0.2.
