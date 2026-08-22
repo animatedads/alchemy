@@ -1,0 +1,13 @@
+[Unit]
+Description=Alchemy deterministic autobuild relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 %h/alchemy-autobuild/repo/packages/alchemy_autobuild_v0.2/alchemy_autobuild.py --config %h/alchemy-autobuild/config.json
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=default.target
