@@ -5,9 +5,9 @@ MODE="${1:-all}"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/ryta-v023-git-autobuild.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
 
-PAYLOAD="$WORK/virtual_ryta_hardworld_v0.23_work.zip"
-cat "$HERE"/payload/virtual_ryta_hardworld_v0.23_work.zip.b64.* | base64 -d > "$PAYLOAD"
-EXPECTED="$(awk '$2 == "virtual_ryta_hardworld_v0.23_work.zip" {print $1}' "$HERE/payload/SHA256")"
+PAYLOAD="$WORK/virtual_ryta_hardworld_v0.23_work.tar.xz"
+cat "$HERE"/payload/virtual_ryta_hardworld_v0.23_work.tar.xz.b64.* | base64 -d > "$PAYLOAD"
+EXPECTED="$(awk '$2 == "virtual_ryta_hardworld_v0.23_work.tar.xz" {print $1}' "$HERE/payload/SHA256")"
 ACTUAL="$(sha256sum "$PAYLOAD" | awk '{print $1}')"
 [[ "$ACTUAL" == "$EXPECTED" ]] || {
   echo "payload checksum mismatch" >&2
@@ -17,12 +17,13 @@ ACTUAL="$(sha256sum "$PAYLOAD" | awk '{print $1}')"
 }
 
 mkdir -p "$WORK/source_unpack"
-unzip -q "$PAYLOAD" -d "$WORK/source_unpack"
+tar -xJf "$PAYLOAD" -C "$WORK/source_unpack"
 SRC="$WORK/source_unpack/virtual_ryta_hardworld_v0.23_work"
 
 case "$MODE" in
   payload)
-    echo "SOURCE ZIP SHA256: $ACTUAL"
+    echo "TRANSPORT TAR.XZ SHA256: $ACTUAL"
+    echo "ORIGINAL SOURCE ZIP SHA256: 6319128e97fc286915a6206e0784afc6eb8609ff4e15dd58084e1133fb107e41"
     ;;
   source-manifest)
     cd "$SRC"
