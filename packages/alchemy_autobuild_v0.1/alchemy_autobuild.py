@@ -120,11 +120,11 @@ def integrate(z,st,m,c,start_ns):
         rd=Path("autobuild/results")/rid; logs=c["repo"]/rd/"logs"; logs.mkdir(parents=True,exist_ok=True)
         for i,r in enumerate(tr,1):
             stem=f"{i:02d}-{sname(r['name'])}"; op=rd/"logs"/(stem+".stdout.txt"); ep=rd/"logs"/(stem+".stderr.txt"); (c["repo"]/op).write_text(r.pop("stdout")); (c["repo"]/ep).write_text(r.pop("stderr")); r["stdout_path"]=str(op); r["stderr_path"]=str(ep)
-        res=dict(schema=RESULT_SCHEMA,run_id=rid,status="PASS" if ok else "FAIL",runner=dict(started_ns=start_ns,started_at=iso(start_ns)),run=dict(started_at=iso(began),ended_at=iso(time.time_ns())),source=dict(filename=Path(z).name,mtime_ns=st.st_mtime_ns,ctime_ns=st.st_ctime_ns,arrival_ns=max(st.st_mtime_ns,st.st_ctime_ns),size=st.st_size,sha256=h),package=p,artifact_path=str(ar),tests=tr)
+        ended=time.time_ns(); res=dict(schema=RESULT_SCHEMA,run_id=rid,status="PASS" if ok else "FAIL",runner=dict(started_ns=start_ns,started_at=iso(start_ns)),run=dict(started_at=iso(began),ended_at=iso(ended),elapsed_ms=round((ended-began)/1e6,3)),source=dict(filename=Path(z).name,mtime_ns=st.st_mtime_ns,ctime_ns=st.st_ctime_ns,arrival_ns=max(st.st_mtime_ns,st.st_ctime_ns),size=st.st_size,sha256=h),package=p,artifact_path=str(ar),tests=tr)
         pubs=publish(m,pkg,c)
         if pubs: res["published_files"]=pubs
         write_json(c["repo"]/rd/"result.json",res)
-    route=Path("mesh/ctl")/(c["ipc_from"]+"-"+c["ipc_to"]); mr=route/(stamp()+"-"+h[:12]+".msg"); md=c["repo"]/mr; md.parent.mkdir(parents=True,exist_ok=True); msg=dict(schema=MSG_SCHEMA,knd="AUTOBUILD_RESULT",src=c["ipc_from"],dst=c["ipc_to"],run_id=rid,status=res["status"],package=p,result_path=str(rd/"result.json"),artifact_path=str(ar),sha256=h); md.write_text("EVENT|"+json.dumps(msg,sort_keys=True)+"\n")
+    route=Path("mesh/ctl")/(c["ipc_from"]+"-"+c["ipc_to"]); mr=route/(stamp()+"-"+h[:12]+".msg"); md=c["repo"]/mr; md.parent.mkdir(parents=True,exist_ok=True); msg=dict(schema=MSG_SCHEMA,knd="AUTOBUILD_RESULT",src=c["ipc_from"],dst=c["ipc_to"],run_id=rid,status=res["status"],elapsed_ms=res["run"]["elapsed_ms"],package=p,result_path=str(rd/"result.json"),artifact_path=str(ar),sha256=h); md.write_text("EVENT|"+json.dumps(msg,sort_keys=True)+"\n")
     paths=[str(ar),str(rd),str(mr)]+res.get("published_files",[]); git(c,"add","--",*paths)
     if git(c,"status","--porcelain",capture=True).strip():
         git(c,"commit","-m","autobuild: "+rid)
