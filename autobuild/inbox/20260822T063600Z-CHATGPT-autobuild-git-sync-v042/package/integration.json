@@ -1,0 +1,26 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "alchemy_autobuild",
+    "version": "0.4.2",
+    "kind": "python"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "git-sync-explicit-remote-ref",
+      "argv": ["sh", "run_tests.sh"],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/alchemy_autobuild_v0.4.2"
+    }
+  }
+}
