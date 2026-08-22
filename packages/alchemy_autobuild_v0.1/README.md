@@ -92,7 +92,7 @@ records the runner startup watermark, archive SHA-256, and source stat data.
 From a checkout containing this package:
 
 ```sh
-./bootstrap.sh
+sh bootstrap.sh
 systemctl --user daemon-reload
 systemctl --user enable --now alchemy-autobuild.service
 ```
@@ -102,4 +102,4 @@ only when one does not already exist, and installs a user-level systemd unit.
 Each service start establishes a fresh startup watermark, so ZIPs already
 present before that start are outside the intake window.
 
-Run tests with `./run_tests.sh`.
+Run tests with `sh run_tests.sh`.
