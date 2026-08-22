@@ -1,0 +1,41 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "autobuild_v04_env_probe",
+    "version": "0.1",
+    "kind": "shell"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "PACKAGE_SCOPE_MARKER": "package-scope-ok"
+    }
+  },
+  "tests": [
+    {
+      "name": "per-test-environment-contract",
+      "argv": ["sh", "probe.sh"],
+      "timeout_seconds": 30,
+      "environment": {
+        "set": {
+          "TEST_SCOPE_MARKER": "test-scope-ok",
+          "V04_PACKAGE_ROOT": "${REPO_ROOT}/packages/alchemy_autobuild_v0.4"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": [
+            "${REPO_ROOT}/packages/alchemy_autobuild_v0.4",
+            "${REPO_ROOT}/packages/alchemy_autobuild_v0.3"
+          ],
+          "require_entries": true
+        },
+        "require": ["PACKAGE_SCOPE_MARKER", "TEST_SCOPE_MARKER"],
+        "require_dirs": ["V04_PACKAGE_ROOT"],
+        "report": ["PACKAGE_SCOPE_MARKER", "TEST_SCOPE_MARKER", "V04_PACKAGE_ROOT"]
+      }
+    }
+  ],
+  "publish": {
+    "artifact_only": true
+  }
+}
