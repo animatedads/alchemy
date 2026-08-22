@@ -1,0 +1,10 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {"name": "alchemy_autobuild", "version": "0.4.1", "kind": "python"},
+  "working_directory": ".",
+  "environment": {"set": {}, "prepend_path": []},
+  "tests": [
+    {"name": "git-sync-regression", "argv": ["python3", "-m", "unittest", "-v", "tests.test_sync"], "timeout_seconds": 60}
+  ],
+  "publish": {"tree": {"source": ".", "path": "packages/alchemy_autobuild_v0.4.1"}}
+}
