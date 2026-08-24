@@ -1,0 +1,157 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_queue_fabric",
+    "version": "0.9-dev5",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {}
+  },
+  "tests": [
+    {
+      "name": "manifest",
+      "argv": ["bash", "run_candidate.sh", "manifest"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "style",
+      "argv": ["bash", "run_candidate.sh", "style"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "compile",
+      "argv": ["bash", "run_candidate.sh", "compile"],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "core",
+      "argv": ["bash", "run_candidate.sh", "core"],
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "topics",
+      "argv": ["bash", "run_candidate.sh", "topics"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "distributed-topics",
+      "argv": ["bash", "run_candidate.sh", "distributed-topics"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "transport-core",
+      "argv": ["bash", "run_candidate.sh", "transport-core"],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "socket-transport",
+      "argv": ["bash", "run_candidate.sh", "socket-transport"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "socket-security",
+      "argv": ["bash", "run_candidate.sh", "socket-security"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "socket-health-failover",
+      "argv": ["bash", "run_candidate.sh", "socket-health"],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "service",
+      "argv": ["bash", "run_candidate.sh", "service"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "registry",
+      "argv": ["bash", "run_candidate.sh", "registry"],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "wlu",
+      "argv": ["bash", "run_candidate.sh", "wlu"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "release-boundary",
+      "argv": ["bash", "run_candidate.sh", "release-boundary"],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "compat-v082-to-v09",
+      "argv": ["bash", "run_candidate.sh", "compat-v082-v09"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "compat-v082-to-v09-authenticated",
+      "argv": ["bash", "run_candidate.sh", "compat-v082-v09-auth"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "compat-v09-to-v082",
+      "argv": ["bash", "run_candidate.sh", "compat-v09-v082"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "compat-v09-to-v082-authenticated",
+      "argv": ["bash", "run_candidate.sh", "compat-v09-v082-auth"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "crypto-known-answer",
+      "argv": ["bash", "run_candidate.sh", "crypto-known-answer"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "crypto-hmac-durability",
+      "argv": ["bash", "run_candidate.sh", "crypto-hmac"],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "crypto-ed25519-checkpoint",
+      "argv": ["bash", "run_candidate.sh", "crypto-checkpoint"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "crypto-hmac-rotation",
+      "argv": ["bash", "run_candidate.sh", "crypto-rotation"],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "crypto-torn-tail-recovery",
+      "argv": ["bash", "run_candidate.sh", "crypto-recovery"],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "crypto-checkpoint-keyring",
+      "argv": ["bash", "run_candidate.sh", "crypto-keyring"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "crypto-authenticated-uow",
+      "argv": ["bash", "run_candidate.sh", "crypto-uow"],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "crypto-authenticated-channel",
+      "argv": ["bash", "run_candidate.sh", "crypto-channel"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "crypto-authenticated-topic",
+      "argv": ["bash", "run_candidate.sh", "crypto-topic"],
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "crypto-authenticated-distributed-topic",
+      "argv": ["bash", "run_candidate.sh", "crypto-distributed-topic"],
+      "timeout_seconds": 1800
+    }
+  ],
+  "publish": {
+    "artifact_only": true
+  }
+}
