@@ -1,0 +1,31 @@
+name: Test alchemy-publish
+
+on:
+  push:
+    paths:
+      - 'bin/alchemy-publish'
+      - 'tools/alchemy_publish.py'
+      - 'tools/alchemy_publication/**'
+      - 'tests/test_alchemy_publish.py'
+      - '.github/workflows/test-alchemy-publish.yml'
+  pull_request:
+    paths:
+      - 'bin/alchemy-publish'
+      - 'tools/alchemy_publish.py'
+      - 'tools/alchemy_publication/**'
+      - 'tests/test_alchemy_publish.py'
+      - '.github/workflows/test-alchemy-publish.yml'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile and test publication command
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -x bin/alchemy-publish
+          python3 -m py_compile tools/alchemy_publish.py tools/alchemy_publication/*.py
+          python3 tests/test_alchemy_publish.py -v
+          ./bin/alchemy-publish --help >/dev/null
