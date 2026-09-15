@@ -1,0 +1,44 @@
+name: One-shot Alchemy publication ingest
+
+on:
+  push:
+    branches:
+      - publication/2026-09-15-oorexx-estate
+    paths:
+      - publication_payload/READY
+
+permissions:
+  contents: write
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: publication/2026-09-15-oorexx-estate
+          fetch-depth: 0
+      - name: Verify and extract publication payloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          declare -A expected
+          expected[direct]='1f7a220f1a50513ad5b82b880c1178f4d040951757cfb3854f33fa25390eb7ea'
+          expected[spheres]='4497728ac2eca33b57de42e5dd1fc1a70815e1200ed46d65701dc4c82adb4eb9'
+          expected[fdtext]='27a645ce4acc247580a7818b39fffd9ba9388f47d1c14af3e675bd4d76bdcc2e'
+          for name in direct spheres fdtext; do
+            cat publication_payload/${name}.part-* | base64 --decode > /tmp/${name}.tar.xz
+            printf '%s  %s\n' "${expected[$name]}" "/tmp/${name}.tar.xz" | sha256sum -c -
+            tar -xJf /tmp/${name}.tar.xz -C .
+          done
+      - name: Commit real source and remove transport envelope
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf publication_payload
+          rm -f .github/workflows/publication-ingest.yml
+          git config user.name 'Alchemy Publication Bot'
+          git config user.email '131276687+animatedads@users.noreply.github.com'
+          git add -A
+          git commit -m 'publication: import ooRexx direct components, spheres and FD source'
+          git push origin HEAD:publication/2026-09-15-oorexx-estate
