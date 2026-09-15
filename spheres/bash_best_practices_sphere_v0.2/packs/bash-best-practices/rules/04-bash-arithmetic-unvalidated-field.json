@@ -1,0 +1,20 @@
+{
+  "kind": "language-rule",
+  "id": "BASH.ARITHMETIC.UNVALIDATED_FIELD",
+  "version": "0.1",
+  "language": "bash",
+  "title": "Performing shell arithmetic on a value not first validated as a number",
+  "purpose": "Prevent a non-numeric or malicious-looking string from being reinterpreted by arithmetic (a typo'd or empty field can disable a bound or set a wild value), which an LLM wrongly treats as impossible.",
+  "trigger": "A `(( ))`, `$(( ))`, or let expression or a `[ ]`/`[[ ]]` numeric comparison consumes a value with no preceding whitelist regex like ^[0-9]+$ that would have rejected non-digits.",
+  "correct": "Before arithmetic or numeric comparison, validate the field is all-digits (e.g. [[ \"$x\" =~ ^[0-9]+$ ]]); reject or correct it when not. Guard a timeout/count as > 0 so a bad value cannot just disable the protection.",
+  "fixability": "SUGGESTED",
+  "assess": {
+    "classification": "defensive-practice",
+    "detection_certainty": "deterministic",
+    "violation": "contextual_on_provenance",
+    "suggested_correction": "available",
+    "auto_rewrite": "cautious_requires_provenance_read"
+  },
+  "evidence_note": "Grounded in bin/queue-dev-timeout rejecting a non-positive timeout before use and assets.d/queue.sh duration parsing; docs/SNMP_INTEGRATION.md validates with ^[0-9]+$ before arithmetic.",
+  "return_semantics": "A reference rule page; shown for LLM author guidance, not executed by rules check."
+}

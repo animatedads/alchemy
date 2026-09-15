@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "qt.secure-frames",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Encrypted authenticated secure-frame contract",
+  "summary": "After handshake, PROBE, DELIVER, HEALTH and RESULT bodies are wrapped in queue.transport/2 SECURE frames. ChaCha20 encrypts the plaintext and a separate HMAC-SHA-512 authenticates protocol, direction, transcript and ciphertext; the MAC is checked before decryption.",
+  "authority": "project-authority",
+  "invariants": [
+    "Use encrypt-then-MAC for protected bodies.",
+    "Authentication failure must stop processing before decryption or application dispatch.",
+    "Direction is authenticated as part of the secure-frame contract.",
+    "HELLO and CHALLENGE metadata remain authenticated but visible; application command/result bodies are confidential after challenge."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 354,
+      "line_end": 395,
+      "claim": "seal/open implement ChaCha20 plus HMAC-SHA-512 and verify MAC before decrypt."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 39,
+      "line_end": 45,
+      "claim": "Security properties and explicit visibility of handshake metadata."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/VALIDATION.txt",
+      "line_start": 61,
+      "line_end": 66,
+      "claim": "Validation records encrypted PROBE/DELIVER/HEALTH/RESULT with authentication before decryption/application processing."
+    }
+  ]
+}

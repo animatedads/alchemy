@@ -1,0 +1,22 @@
+{
+  "kind": "article",
+  "id": "ops.rule-classification",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "A single fixability field is not enough; rules carry a structured assessment",
+  "summary": "A detected pattern is not automatically a violation, and a suggested rewrite is not automatically safe. Rules therefore carry an assess object separating detection certainty from whether the pattern is actually a violation from whether an automatic rewrite is safe, so an LLM can see the boundary clearly instead of being told a blanket AUTOMATIC or MANUAL.",
+  "why_more_than_one_field": "The five bash rules in this sphere are not all the same sort of concern. eval is a security/authority hazard; swallowing a deciding rc is a correctness/contract hazard; an unquoted expansion is language semantics plus intent; numeric validation is a defensive practice whose necessity depends on provenance. Collapsing them into one fixability value hides exactly where judgement is required.",
+  "model": {
+    "classification": "the kind of hazard (security-authority, correctness-contract, language-semantics-plus-intent, defensive-practice)",
+    "detection_certainty": "how reliably the trigger is seen (deterministic vs heuristic_on_call_graph)",
+    "violation": "whether finding the trigger already proves a breach (violation vs contextual vs contextual_on_provenance)",
+    "suggested_correction": "whether a concrete correction exists (available)",
+    "auto_rewrite": "whether the tool may rewrite automatically (safe_when_unknown_or_untrusted, cautious_requires_provenance_read, unsafe_without_intent, no_automatic_only_refactor_review)"
+  },
+  "evidence_note": "For example, unquoted expansion is detected deterministically but is a contextual violation because intentional word-splitting/globbing exists; the legacy fixability is therefore MANUAL, not AUTOMATIC. Direct eval and dynamic source are deterministic, authority-class violations with no safe automatic rewrite.",
+  "invariants": [
+    "Never label an intent-dependent pattern AUTOMATIC; express judgements via the assess fields and the safer legacy value.",
+    "Keep classification/detection/violation/correction/auto_rewrite explicit so an LLM can decide whether to apply, ask, or pause.",
+    "A rule's assess object is advisory guidance in this data-only sphere; nothing here edits the still-hardcoded engine evaluator."
+  ]
+}

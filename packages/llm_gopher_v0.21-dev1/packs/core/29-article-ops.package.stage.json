@@ -1,0 +1,21 @@
+{
+  "kind": "article",
+  "id": "ops.package.stage",
+  "version": "0.1",
+  "sphere": "core",
+  "title": "Stage and qualify a package",
+  "summary": "Create a clean staging tree, inspect all packaging breaches together, discover tests and their environment references, update changelog, then seal only when READY.",
+  "procedure": [
+    "Create stage from source; generated caches, VCS metadata and prior root ZIPs are excluded.",
+    "Run package.stage.check and review all breaches together.",
+    "Ensure CHANGELOG contains the candidate version.",
+    "Ensure at least one discoverable test exists and review its environment references.",
+    "Run qualification tests and record evidence.",
+    "Only seal/package after the stage reports READY."
+  ],
+  "invariants": [
+    "Package membership is declared/staged, not inferred from filesystem proximity.",
+    "Dependencies are external by default; embedding requires explicit package policy.",
+    "Do not seal a package with BLOCKER packaging breaches."
+  ]
+}

@@ -1,0 +1,37 @@
+Reputation Feed v0.12 core dependencies:
+- ooRexx 5.3.0 (validated with r13196 Internal Test Version supplied by The Architect)
+- Alchemy Objects v0.8 (`AlchemyObject.cls`, `AlchemyAdoption.cls`)
+  package SHA-256 7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073
+- ooRexx Crypto v0.1 (`crypto.cls`)
+  package SHA-256 3eab23b5138cba889eb11ea5b93747eb14fca8da0fd4ac936a70174349ae8f3a
+- `json.cls` from the validated ooRexx 5.3.0 installation
+
+Core independence:
+- Reputation Feed remains independent of HardWorld, Legal Effect, Queue Fabric, NoSQLServer, Shannon, Institutional Policy, Reputation Effect, Interaction Event, Structured Utterance, any network SDK, and any LLM implementation.
+- Event hypotheses are acquisition/corroboration evidence only. Feed does not create authoritative ReputationEvent objects or reputational dispositions.
+- Source authentication, assertion ancestry and interaction assessments are evidence axes only; none establishes assertion truth or a universal source trust score.
+- `ReputationFeedPolicySet` owns Feed rule meaning; Institutional Policy may select/deploy an exact set but does not reinterpret its semantics.
+
+Optional integration dependencies:
+- ooRexx Logging v0.5 for optional structured decision-trace delivery; Feed does not own logging rule/target/scope policy
+  package SHA-256 31f4b3243f4a1f046f07bd41d7810509e8ef682f6850c02d52ab852458ed53fa
+- Institutional Policy v0.6 for publication authority, lifecycle, deployment topology and bounded progressive rollout
+  package SHA-256 179682880c0f7d221114bfc648fab4e9f678153640d850ed1c3944c478eb6ae3
+- Queue Fabric v0.9-dev4 for rich object-graph delivery/persistence
+  package SHA-256 9c1487f8dc878ae21a19e8fc8a139c801a80a97acd2c6575635003e6f8069898
+- Reputation Effect API 0.2 for Feed -> Effect and governed promotion bridges
+  package SHA-256 f3778c9114b97ec25fbd146d640db9ad25ee72dec8b5e6c6cdebf06261957b63
+- Runtime Registry v0.14 for generation-based publication
+  package SHA-256 b8748634f271f5389b9e7e4fd7089eda314b0eea90ab6e47151ae1de270c6209
+- Interaction Event v0.3 for `ReputationFeedInteractionEventBridge`
+  package SHA-256 0d2f46ddc5617ab0879bf06fd373dc6ea8cebbd5aeb5b36e2ef86d52f471b536
+- Structured Utterance v0.3 for `ReputationFeedStructuredUtteranceBridge`
+  package SHA-256 76f56332e21dc8614c07b64358dcabf0cc6ae06f0eff4aeaa9a8a18a0b727974
+- a Librarian/content-analysis provider for real paragraph/corpus scores, normalized event keys and claim-level assertion ancestry.
+
+Current API authority:
+- oorexxapis(20260824-191304).zip SHA-256 c2e3b1e7751e3ed69514cc2743e1ba82c0d3e6b7ca2b16f999a862f3dcfef5a8
+- predecessor reputation_feed_v0.11.zip SHA-256 83faae97be435d14a2230c8715932b2e54957bbf791e12547924bc4caf702492
+
+Adjacent compatibility evidence:
+- Structured Utterance v0.3 `test_interaction_bridge_v03.rex` PASS under ooRexx 5.3.0 r13196 with Interaction Event v0.3. The earlier Interaction Event v0.2 missing-native-evidence defect is resolved in the current API closure. Feed adapters remain independent by design.

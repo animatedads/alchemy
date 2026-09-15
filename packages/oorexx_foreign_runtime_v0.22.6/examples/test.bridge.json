@@ -1,0 +1,725 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": {
+    "provider": "native",
+    "path": "./libforeign_test.so",
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "constants": {
+    "ANSWER": {
+      "type": "i32",
+      "value": 42
+    },
+    "MSINTHAXWINHDLNOTLOTUS": {
+      "type": "HWND",
+      "value": "0x12345678"
+    },
+    "HWND_TOPMOST_EXAMPLE": {
+      "type": "HWND",
+      "value": "-1"
+    },
+    "WM_CLOSE_EXAMPLE": {
+      "type": "u32",
+      "value": "0x0010"
+    }
+  },
+  "functions": {
+    "add": {
+      "symbol": "add_i32",
+      "return": "i32",
+      "args": [
+        "i32",
+        "i32"
+      ]
+    },
+    "weighted": {
+      "return": "f64",
+      "args": [
+        "f64",
+        "i32"
+      ]
+    },
+    "hello": {
+      "return": "utf8",
+      "args": [
+        "utf8"
+      ]
+    },
+    "echo_handle": {
+      "return": "uintptr",
+      "args": [
+        "HWND"
+      ]
+    },
+    "echo_intptr": {
+      "return": "intptr",
+      "args": [
+        "LPARAM"
+      ]
+    },
+    "echo_utf16": {
+      "return": "utf16",
+      "args": [
+        "utf16"
+      ]
+    },
+    "fill_bytes": {
+      "return": "void",
+      "args": [
+        {
+          "type": "pointer",
+          "direction": "out"
+        },
+        "u32"
+      ]
+    },
+    "box_new": {
+      "return": {
+        "type": "pointer",
+        "object": "foreign_box",
+        "ownership": "owned",
+        "destructor": "box_free"
+      },
+      "args": [
+        "i32"
+      ]
+    },
+    "box_value": {
+      "return": "i32",
+      "args": [
+        "pointer"
+      ]
+    },
+    "overloaded": [
+      {
+        "symbol": "echo_i32",
+        "return": "i32",
+        "args": [
+          "i32"
+        ]
+      },
+      {
+        "symbol": "hello",
+        "return": "utf8",
+        "args": [
+          "utf8"
+        ]
+      }
+    ],
+    "concurrency_reset": {
+      "return": "void",
+      "args": []
+    },
+    "concurrent_probe": {
+      "return": "i32",
+      "args": [
+        "i32"
+      ]
+    },
+    "concurrency_max": {
+      "return": "i32",
+      "args": []
+    },
+    "box_probe_is_started": {
+      "return": "i32",
+      "args": []
+    },
+    "box_value_delayed": {
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "foreign_box"
+        },
+        "i32"
+      ]
+    },
+    "fill_bytes_delayed": {
+      "return": "void",
+      "args": [
+        {
+          "type": "pointer",
+          "direction": "out"
+        },
+        "u32",
+        "i32"
+      ]
+    },
+    "fnv1a_bytes": {
+      "return": "u32",
+      "args": [
+        "bytes",
+        "u32"
+      ]
+    },
+    "make_pattern": {
+      "return": "void",
+      "args": [
+        {
+          "name": "pattern",
+          "type": "pointer",
+          "direction": "out",
+          "size": 8
+        }
+      ]
+    },
+    "box_out": {
+      "return": "i32",
+      "args": [
+        {
+          "name": "box",
+          "type": "pointer",
+          "direction": "out",
+          "pointerDepth": 2,
+          "object": "foreign_box",
+          "ownership": "owned",
+          "destructor": "box_free"
+        }
+      ]
+    },
+    "sum6": {
+      "symbol": "sum6_i64",
+      "return": "i64",
+      "args": [
+        "i64",
+        "i64",
+        "i64",
+        "i64",
+        "i64",
+        "i64"
+      ]
+    },
+    "box_free_pp_reset": {
+      "return": "void",
+      "args": []
+    },
+    "box_free_pp_count": {
+      "return": "i32",
+      "args": []
+    },
+    "box_out_pp": {
+      "return": "i32",
+      "args": [
+        {
+          "name": "box",
+          "type": "pointer",
+          "direction": "out",
+          "pointerDepth": 2,
+          "object": "foreign_box",
+          "ownership": "owned",
+          "destructor": "box_free_pp",
+          "destructorPointerDepth": 2
+        }
+      ]
+    },
+    "layout_fill": {
+      "return": "void",
+      "args": [
+        {
+          "type": "pointer"
+        },
+        "i32",
+        "u64"
+      ]
+    },
+    "layout_channels": {
+      "return": "i32",
+      "args": [
+        "pointer"
+      ]
+    },
+    "layout_mask": {
+      "return": "u64",
+      "args": [
+        "pointer"
+      ]
+    },
+    "pointer_array_first_sum": {
+      "return": "u32",
+      "args": [
+        "pointer",
+        "u32"
+      ]
+    },
+    "layout_channels_delayed": {
+      "return": "i32",
+      "args": [
+        "pointer",
+        "i32"
+      ]
+    },
+    "pointer_array_first_sum_delayed": {
+      "return": "u32",
+      "args": [
+        "pointer",
+        "u32",
+        "i32"
+      ]
+    },
+    "device_free_reset": {
+      "return": "void",
+      "args": []
+    },
+    "device_free_count": {
+      "return": "i32",
+      "args": []
+    },
+    "device_alloc": {
+      "symbol": "device_alloc_64",
+      "return": {
+        "type": "pointer",
+        "object": "synthetic_device_buffer",
+        "ownership": "owned",
+        "destructor": "device_free",
+        "addressSpace": "device",
+        "byteLength": 64
+      },
+      "args": []
+    },
+    "device_consume": {
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "synthetic_device_buffer",
+          "addressSpace": "device"
+        }
+      ]
+    },
+    "callback_apply": {
+      "symbol": "callback_apply_i32",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "callback": "binary_i32"
+        },
+        "i32",
+        "i32"
+      ]
+    },
+    "callback_apply_twice": {
+      "symbol": "callback_apply_twice_i32",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "callback": "binary_i32"
+        },
+        "i32",
+        "i32"
+      ]
+    },
+    "callback_apply_other_thread": {
+      "symbol": "callback_apply_other_thread_i32",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "callback": "binary_i32"
+        },
+        "i32",
+        "i32"
+      ]
+    },
+    "fake_handle_close_reset": {
+      "return": "void",
+      "args": []
+    },
+    "fake_handle_close_count": {
+      "return": "i32",
+      "args": []
+    },
+    "fake_handle_new": {
+      "return": {
+        "type": "i32",
+        "resource": "TEST_FD",
+        "carrier": "i32",
+        "ownership": "owned",
+        "destructor": "fake_handle_close",
+        "invalid": -1
+      },
+      "args": []
+    },
+    "fake_handle_value": {
+      "return": "i32",
+      "args": [
+        "i32"
+      ]
+    },
+    "fake_errno_failure": {
+      "return": "i32",
+      "errno": true,
+      "args": []
+    },
+    "fake_out_handle_success": {
+      "return": "i32",
+      "errno": true,
+      "args": [
+        {
+          "name": "fd",
+          "type": "pointer",
+          "direction": "out",
+          "size": 4,
+          "resultType": "handle",
+          "resource": "TEST_FD",
+          "carrier": "i32",
+          "ownership": "owned",
+          "destructor": "fake_handle_close",
+          "invalid": -1,
+          "outputsOnReturn": "zero"
+        }
+      ]
+    },
+    "fake_out_handle_failure": {
+      "return": "i32",
+      "errno": true,
+      "args": [
+        {
+          "name": "fd",
+          "type": "pointer",
+          "direction": "out",
+          "size": 4,
+          "resultType": "handle",
+          "resource": "TEST_FD",
+          "carrier": "i32",
+          "ownership": "owned",
+          "destructor": "fake_handle_close",
+          "invalid": -1,
+          "outputsOnReturn": "zero"
+        }
+      ]
+    },
+    "fake_handle_invalid": {
+      "return": {
+        "type": "i32",
+        "resource": "TEST_FD",
+        "carrier": "i32",
+        "ownership": "owned",
+        "destructor": "fake_handle_close",
+        "invalid": -1
+      },
+      "errno": true,
+      "args": []
+    },
+    "fake_handle_probe_reset": {
+      "return": "void",
+      "args": []
+    },
+    "fake_handle_probe_is_started": {
+      "return": "i32",
+      "args": []
+    },
+    "fake_handle_value_delayed": {
+      "return": "i32",
+      "args": [
+        "i32",
+        "i32"
+      ]
+    },
+    "raw_bytes_address": {
+      "return": "pointer",
+      "args": []
+    },
+    "raw_slots_address": {
+      "return": "pointer",
+      "args": []
+    },
+    "layout_array_channel_sum": {
+      "return": "i32",
+      "args": [
+        "pointer",
+        "u32"
+      ]
+    },
+    "layout_probe_reset": {
+      "symbol": "layout_probe_reset",
+      "return": "void",
+      "args": []
+    },
+    "layout_probe_is_started": {
+      "symbol": "layout_probe_is_started",
+      "return": "i32",
+      "args": []
+    },
+    "fill_probe_is_started": {
+      "return": "i32",
+      "args": []
+    },
+    "graph_sum": {
+      "return": "u32",
+      "args": [
+        "pointer"
+      ]
+    },
+    "graph_sum_delayed": {
+      "return": "u32",
+      "args": [
+        "pointer",
+        "i32"
+      ]
+    },
+    "graph_probe_reset": {
+      "return": "void",
+      "args": []
+    },
+    "graph_probe_is_started": {
+      "return": "i32",
+      "args": []
+    },
+    "echo_i8": {
+      "symbol": "echo_i8",
+      "return": "i8",
+      "args": [
+        "i8"
+      ]
+    },
+    "echo_u8": {
+      "symbol": "echo_u8",
+      "return": "u8",
+      "args": [
+        "u8"
+      ]
+    },
+    "add_i8_u8": {
+      "symbol": "add_i8_u8",
+      "return": "i32",
+      "args": [
+        "i8",
+        "u8"
+      ]
+    },
+    "byte_fields_fill": {
+      "symbol": "byte_fields_fill",
+      "return": "void",
+      "args": [
+        "pointer",
+        "i8",
+        "u8"
+      ]
+    },
+    "byte_fields_sum": {
+      "symbol": "byte_fields_sum",
+      "return": "i32",
+      "args": [
+        "pointer"
+      ]
+    },
+    "echo_c_long": {
+      "symbol": "echo_c_long",
+      "return": "long",
+      "args": [
+        "long"
+      ]
+    },
+    "echo_c_ulong": {
+      "symbol": "echo_c_ulong",
+      "return": "unsigned long",
+      "args": [
+        "unsigned long"
+      ]
+    },
+    "echo_c_size_t": {
+      "symbol": "echo_c_size_t",
+      "return": "size_t",
+      "args": [
+        "size_t"
+      ]
+    },
+    "echo_c_ptrdiff_t": {
+      "symbol": "echo_c_ptrdiff_t",
+      "return": "ptrdiff_t",
+      "args": [
+        "ptrdiff_t"
+      ]
+    },
+    "echo_c_ssize_t": {
+      "symbol": "echo_c_ssize_t",
+      "return": "ssize_t",
+      "args": [
+        "ssize_t"
+      ]
+    },
+    "echo_c_socklen_t": {
+      "symbol": "echo_c_socklen_t",
+      "return": "socklen_t",
+      "args": [
+        "socklen_t"
+      ]
+    },
+    "native_scalars_long": {
+      "symbol": "native_scalars_long",
+      "return": "long",
+      "args": [
+        "pointer"
+      ]
+    },
+    "native_scalars_size": {
+      "symbol": "native_scalars_size",
+      "return": "size_t",
+      "args": [
+        "pointer"
+      ]
+    },
+    "native_scalars_ssize": {
+      "symbol": "native_scalars_ssize",
+      "return": "ssize_t",
+      "args": [
+        "pointer"
+      ]
+    },
+    "native_scalars_socklen": {
+      "symbol": "native_scalars_socklen",
+      "return": "socklen_t",
+      "args": [
+        "pointer"
+      ]
+    }
+  },
+  "types": {
+    "foreign_layout": {
+      "kind": "struct",
+      "size": 24,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "order",
+          "type": "i32",
+          "offset": 0
+        },
+        {
+          "name": "channels",
+          "type": "i32",
+          "offset": 4
+        },
+        {
+          "name": "mask",
+          "type": "u64",
+          "offset": 8
+        },
+        {
+          "name": "opaque",
+          "type": "pointer",
+          "offset": 16
+        }
+      ]
+    },
+    "foreign_box": {
+      "kind": "struct",
+      "size": 4,
+      "alignment": 4,
+      "fields": [
+        {
+          "name": "value",
+          "type": "i32",
+          "offset": 0
+        }
+      ]
+    },
+    "foreign_graph_iovec": {
+      "kind": "struct",
+      "size": 16,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "iov_base",
+          "type": "pointer",
+          "offset": 0
+        },
+        {
+          "name": "iov_len",
+          "type": "u64",
+          "offset": 8
+        }
+      ]
+    },
+    "foreign_graph_msg": {
+      "kind": "struct",
+      "size": 24,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "msg_iov",
+          "type": "pointer",
+          "offset": 0
+        },
+        {
+          "name": "msg_control",
+          "type": "pointer",
+          "offset": 8
+        },
+        {
+          "name": "msg_controllen",
+          "type": "u64",
+          "offset": 16
+        }
+      ]
+    },
+    "foreign_byte_fields": {
+      "kind": "struct",
+      "size": 2,
+      "alignment": 1,
+      "fields": [
+        {
+          "name": "signed_byte",
+          "type": "i8",
+          "offset": 0
+        },
+        {
+          "name": "unsigned_byte",
+          "type": "u8",
+          "offset": 1
+        }
+      ]
+    },
+    "foreign_native_scalars": {
+      "kind": "struct",
+      "size": 48,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "signed_long",
+          "type": "long",
+          "offset": 0
+        },
+        {
+          "name": "unsigned_long",
+          "type": "unsigned long",
+          "offset": 8
+        },
+        {
+          "name": "size_value",
+          "type": "size_t",
+          "offset": 16
+        },
+        {
+          "name": "diff_value",
+          "type": "ptrdiff_t",
+          "offset": 24
+        },
+        {
+          "name": "ssize_value",
+          "type": "ssize_t",
+          "offset": 32
+        },
+        {
+          "name": "socklen_value",
+          "type": "socklen_t",
+          "offset": 40
+        }
+      ]
+    }
+  },
+  "callbacks": {
+    "binary_i32": {
+      "return": "i32",
+      "args": [
+        "i32",
+        "i32"
+      ],
+      "threadPolicy": "call-thread",
+      "lifetime": "call"
+    }
+  }
+}

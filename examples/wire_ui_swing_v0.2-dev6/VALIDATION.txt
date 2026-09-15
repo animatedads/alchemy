@@ -1,0 +1,71 @@
+Wire UI Swing v0.2-dev6 validation
+==================================
+Date: 2026-08-28
+
+Java runtime:
+  OpenJDK 21.0.11
+
+Build discipline:
+  javac --release 21 -Xlint:all -Werror
+  executable JAR Main-Class: org.alchemy.wireui.swing.WireSwingMain
+
+Strict headless renderer suite:
+  PASS 52/52
+
+Desktop suite under Xvfb:
+  PASS visible/capture/resize
+  PASS focus/editor preservation across structural relayout
+  PASS exactly-once onClosed lifecycle
+
+Executable distribution acceptance:
+  PASS java -jar build/wire-ui-swing-v0.2-dev6.jar --version
+  PASS java -jar ... --smoke-window under Xvfb
+  PASS exact no-argument java -jar ... launch under Xvfb; READY view=SEARCH revision=0
+
+Current semantic/authority locks:
+  PASS exact definition manifest/content-address authority and immutable non-pruning cache
+  PASS proactive cold definition request and warm reauthorisation without duplicate request
+  PASS committed-view deauthorisation blocks semantic actions and requests resynchronisation
+  PASS exact UI_MATERIAL_SET identity with release provenance kept outside immutable content
+  PASS typed field presentation preserves string wire values
+  PASS collection selection remains local-only; activation detail remains narrow
+  PASS CREATE_INSTANCE / SET_SLOT / LIST_APPEND / LIST_MOVE / DESTROY_INSTANCE / LIST_REMOVE
+  PASS structural move preserves surviving component identity, focus, and unsent editor state
+  PASS descendants-first structural removal preflight
+  PASS workspaceContext is captured/deep-frozen at event time with renderedRevision
+  PASS unknown/future workspaceContext fields pass through unchanged
+  PASS missing/mismatched workspaceContext fails closed locally
+  PASS local Swing selection cannot manufacture server selectedIds
+
+Headless ooRexx / BSF integration:
+  PASS ooRexx -> BSF -> Java Swing hello/root construction
+  PASS ooRexx -> BSF -> snapshot/patch roundtrip revision=2
+  PASS Wire UI Server v0.17 ordered/windowed collection patches -> bridge -> Swing revision=6
+  PASS Server v0.17 workspaceContext -> event-time freeze/opaque echo -> server validation revisions=1,2
+  PASS Wire UI Builder v0.11 compiled GRID12 -> bridge -> Swing widths=12,3,5,4,12
+
+Real desktop ooRexx / BSF integration:
+  PASS ooRexx -> BSF -> WireSwingDesktopWindow real JFrame show/dispose under Xvfb
+
+Reference runtime/API integration:
+  Open Object Rexx 5.3.0 r13196 (64-bit internal test build, 2026-08-03)
+  BSF4ooRexx v850 (2026-03-26 refresh)
+  Wire UI Server v0.17
+  Wire UI Builder v0.11
+  Alchemy Objects v0.8
+  ooRexx Crypto v0.5
+
+Reference uploaded inputs (SHA-256):
+  16bbf64cc9aec97ae0dec1d4100bc823092fda06e01aea890dfb91db181c5288  oorexxapis(20260828-193048).zip
+  ae8060d9a59400057ee15fa0f58d5f44624daae51981ebc0960aad6a17a44c38  BSF4ooRexx_install_v850-20260326-refresh(4).zip
+  8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae  oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20260828-193138).deb
+
+Current components extracted from the supplied API roll-up (SHA-256):
+  82c3a9d270d123dcbedabed1b57ed5e0944b828b1a184a5b71d47d9f9f188441  wire_ui_server_v0.17.zip
+  dd48908e49e8ee00c94f931c3a1cfdfc8d5324e2e0fbf64e2cdd7d82c510ad3f  wire_ui_builder_v0.11.zip
+  7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073  alchemy_objects_v0.8.zip
+  fede97fdce138377b93ad0e7fbc21116211769ad94921402a12ff0032393d424  oorexx_crypto_v0.5.zip
+
+Desktop validation note:
+  AWT graphics environment is required for real windows.
+  Xvfb/xvfb-run is used for automated GUI tests only; it is not a product dependency.

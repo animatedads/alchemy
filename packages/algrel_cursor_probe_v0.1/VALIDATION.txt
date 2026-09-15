@@ -16,3 +16,62 @@ PREPARE path reproduced:
 MySQL wire client failure: Object ".DATABASETABLEMETADATA" does not understand message "NEW".
 
 No msqlshim source change and no NoSQLServer source change is included.
+
+
+Current-stack Structured Relation acceptance (24 Aug 2026)
+---------------------------------------------------------
+Runtime: ooRexx 5.3.0 r13196
+Structured Relation: v0.9 compatibility work (`textMode=CLASSIC` external-column surface)
+HardWorld: v0.28 work; stock external engine `NOSQL-ALGREL-EXTERNAL-0.13`
+NoSQLServer: v0.77
+msqlshim: v0.20
+Shannon fixture: ourladyair_shannon_ticket_groups_v1.edi
+
+Observed:
+PASS PREPARE/catalog path provider invocations=0
+PASS native RichBusinessFact/source/projected-row identities retained before materialisation
+PASS cursor EXECUTE materialised provider exactly once
+PASS COM_STMT_FETCH batches reused frozen materialisation
+PASS three G07 NSST facts retained three distinct native EDIFACT source paths
+PASS scalar consumer rows reported native-object preservation while source objects remained rich
+PASS deliberately invalid Shannon envelope remained INVALID; no repair/normalisation was introduced
+
+No NoSQLServer, HardWorld, CivicPort, Shannon or msqlshim source change is included.
+The historical v0.69 integration patch remains in the package only for its original validation path and
+is not used by `run_structured_current.sh`.
+
+
+Probe requalification hardening (25 Aug 2026)
+---------------------------------------------
+The current-stack client no longer owns/hard-codes HardWorld external-engine release
+`NOSQL-ALGREL-EXTERNAL-0.13`. It requires a non-empty `NOSQL-ALGREL-EXTERNAL-*`
+identity from the running stack and optionally checks an exact caller-supplied expected
+identity for release certification.
+
+Declared next external target: HardWorld v0.31-work + NoSQLServer v0.79 + msqlshim v0.21.
+Those three executable archives were not mounted in this runtime when this probe update
+was made, so no execution certification against that target is claimed here.
+
+Mounted-stack regression after requalification hardening (25 Aug 2026)
+---------------------------------------------------------------------
+Companions actually executed:
+  HardWorld v0.28-work
+  NoSQLServer v0.77
+  msqlshim v0.20
+  Structured Relation v0.9-compat
+  Alchemy Objects v0.8
+  ooRexx crypto v0.1
+  ooRexx 5.3.0 r13196
+
+Exact external integration lock: NOSQL-ALGREL-EXTERNAL-0.13
+
+Observed:
+  PASS PREPARE/catalog provider executions=0 and native identity retained
+  PASS exact HardWorld external integration identity matched
+  PASS cursor EXECUTE materialised once
+  PASS FETCH batches reused frozen materialisation and three distinct paths
+  PASS scalar consumer visibility did not replace rich source objects
+  PASS deliberately wrong expected external identity failed closed (client rc=1)
+  PASS bash -n run_structured_current.sh
+  PASS python3 -m py_compile structured_client.py
+

@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "ops.oorexx.environment.ready",
+  "version": "0.1",
+  "sphere": "oorexx",
+  "title": "Establish ooRexx runtime readiness",
+  "rules": [
+    "Observe before acquiring software.",
+    "A missing executable is an operation result, not a tool failure.",
+    "Do not download or install a runtime unless an authorised acquisition selector is published."
+  ],
+  "selectors": [
+    {
+      "id": "locate-rexx",
+      "type": "exec",
+      "action": "exec",
+      "resource": "tool:executable.locate",
+      "capability": "executable.locate",
+      "args": {
+        "name": "rexx"
+      }
+    },
+    {
+      "id": "examine-source",
+      "type": "exec",
+      "action": "exec",
+      "resource": "tool:source.oorexx.examine",
+      "capability": "source.oorexx.examine"
+    }
+  ]
+}

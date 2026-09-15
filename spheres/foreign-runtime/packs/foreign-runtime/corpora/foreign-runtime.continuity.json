@@ -1,0 +1,57 @@
+{
+  "kind": "corpus",
+  "id": "foreign-runtime.continuity",
+  "sphere": "foreign-runtime",
+  "title": "ooRexx Foreign Runtime engineering sphere continuity records",
+  "records": [
+    {
+      "topic": "baseline",
+      "value": "Foreign Runtime v0.22.6",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465"
+    },
+    {
+      "topic": "ABI",
+      "rule": "Current qualified ABI-specific profile: linux-x86_64-le-lp64 only."
+    },
+    {
+      "topic": "fixed width",
+      "rule": "i8/u8/i16/... keep exact width; host aliases resolve separately from compiled ABI."
+    },
+    {
+      "topic": "memory",
+      "rule": "ForeignBuffer can own or borrow storage; provider release occurs only after pins are released."
+    },
+    {
+      "topic": "struct graph",
+      "rule": "Managed pointer fields retain child relationships; transitive graph pinned on call; cycles rejected."
+    },
+    {
+      "topic": "python proxy",
+      "rule": "Resident Python proxy arguments are passed by registry reference, including kwargs/dict/nested arrays."
+    },
+    {
+      "topic": "indexing",
+      "rule": "Rexx-facing at/[] is one-based; pythonAt preserves exact Python indexing; mapping keys are supported."
+    },
+    {
+      "topic": "DLPack",
+      "rule": "Capsules remain inside provider; ooRexx sees ForeignTensor metadata/operations, not capsule objects."
+    },
+    {
+      "topic": "device",
+      "rule": "Descriptor device metadata does not grant CPU dereference permission."
+    },
+    {
+      "topic": "GPU claim",
+      "rule": "No CUDA runtime qualification; Vulkan hardware path remains optional/host-specific."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6.zip",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "member": "oorexx_foreign_runtime_v0.22.6/rexx/foreign.cls",
+      "claim": "Current source/package identity for continuity records."
+    }
+  ]
+}

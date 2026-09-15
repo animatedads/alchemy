@@ -1,0 +1,43 @@
+NoSQLServer v0.32 database_core v0.22 compatibility adapter validation
+
+Runtime:
+  Open Object Rexx 5.3.0 r13196 (64-bit)
+
+Primary compatibility smoke:
+  tests/v032_database_core_adapter_smoke.rex
+  NOSQLSERVER V0.32 DATABASE_CORE ADAPTER SMOKE: OK
+
+Validated compatibility behavior:
+  - db~databaseCore returns namespaced .NoSQLDatabaseCoreAdapter.
+  - Native NoSQLServer API remains unchanged.
+  - Successful compatibility commit: status=SUCCESS, outcome=COMMITTED.
+  - Pre-execution conflict: status/outcome=NOTEXECUTED and error=SERIALIZATIONFAILURE.
+  - Whole-transaction retry succeeds on a fresh snapshot; attemptCount=2/retried=true.
+  - Deferred query result resolves only from the final successful retry and sees the fresh live snapshot.
+  - Read-only transactions reject mutation before it is queued.
+  - DEFAULT/SERIALIZABLE isolation accepted; unsupported isolation levels return UNSUPPORTED.
+  - setTimeout returns UNSUPPORTED and TRANSACTION_TIMEOUT is not advertised.
+  - queryWithSchema applies type vectors by output ordinal while preserving SQL output names.
+  - Invalid/contradictory typed results return INVALIDPARAMETER.
+  - Compatibility row at(name) returns value object; rawAt/valueAt match database_core semantics.
+  - Metadata exposes engineType/databaseType/nullable/ordinal and types vector.
+  - Ordered mutationResults preserve one result per ordinary mutation and per prepared-batch member.
+  - generatedKey surface is reserved and remains .nil.
+  - Core-style logical operation history counts prepared declaration/savepoint control operations.
+
+Regression gates:
+  Claude torture corpus: 12/12 PASS, all oracle-backed, 0 WRONG_RESULT.
+  Grok hell corpus v1: 24/25 PASS, 1 deliberate SQLUNSUPPORTED, 0 WRONG_RESULT.
+  Grok SQL feature torture: 72/72 expected behaviours.
+  SQL-92 company smoke: PASS.
+  Historical runtime smoke chain through v0.31: PASS.
+  rexxc: NoSQLServer.cls and every tests/*.rex PASS.
+
+Deliberate boundaries:
+  - The compatibility facade is namespaced. Do not ::requires database_core.cls and
+    NoSQLServer.cls into the same package namespace because same-named public classes
+    have different observable semantics.
+  - TRANSACTION_TIMEOUT is not advertised; no enforceable transaction deadline exists.
+  - GENERATED_KEYS is not advertised; generatedKey remains .nil.
+  - READUNCOMMITTED, READCOMMITTED, and REPEATABLEREAD are not claimed as distinct
+    native isolation modes.

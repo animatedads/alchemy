@@ -1,0 +1,18 @@
+{
+  "schema": "oorexx.foreign/0.11",
+  "library": {"provider":"native", "names":["libswresample.so.5","libswresample.so"]},
+  "functions": {
+    "version": {"symbol":"swresample_version","return":"u32","args":[]},
+    "license": {"symbol":"swresample_license","return":"utf8","args":[]},
+    "alloc_set_opts2": {
+      "symbol":"swr_alloc_set_opts2", "return":"i32",
+      "args":[
+        {"name":"context","type":"pointer","direction":"out","pointerDepth":2,
+         "object":"SwrContext","ownership":"owned","destructor":"swr_free","destructorPointerDepth":2},
+        "pointer","i32","i32","pointer","i32","i32","i32","pointer"
+      ]
+    },
+    "swr_init_call": {"symbol":"swr_init","return":"i32","args":[{"type":"pointer","object":"SwrContext"}]},
+    "swr_convert_call": {"symbol":"swr_convert","return":"i32","args":[{"type":"pointer","object":"SwrContext"},"pointer","i32","pointer","i32"]}
+  }
+}

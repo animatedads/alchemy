@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "ops.civicport.oorexx-pitfalls",
+  "version": "0.1",
+  "sphere": "civicport",
+  "title": "ooRexx implementation pitfalls learned in CivicPort",
+  "summary": "CivicPort qualification exposed several ooRexx-specific traps that should be treated as durable project lessons: RESULT is special, instance variables need correct expose/attribute handling, parser/runtime wrapper types carry semantics, and message/class-side dispatch must be explicit.",
+  "authority": "project-maintainer",
+  "invariants": [
+    "Do not use ordinary local variable RESULT/result; message/function calls can clobber the special RESULT variable.",
+    "For non-attribute instance variables, use expose; do not write self~name = value unless an appropriate setter/attribute exists.",
+    "Do not invent a numeric coercion layer for ooRexx JSON values; preserve lexical/parser-native values exactly.",
+    "When a JSON schema requires string for numeric-looking data, retain/emit JsonString rather than converting it to a number.",
+    "Call class-side methods through the class, not through an instance.",
+    "In test Rexx, use call or assignment where a bare function-call expression could be parsed as a command."
+  ],
+  "procedure": [
+    "Run rexxc over every src/*.cls before release.",
+    "Scan source/tests for accidental ordinary RESULT/result assignments.",
+    "Add regression tests whenever an ooRexx runtime semantic causes a real defect."
+  ],
+  "provenance": [
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "VALIDATION.txt",
+      "line_start": 43,
+      "line_end": 55,
+      "claim": "JsonString preservation and no numeric/DateTime inference in current runtime surface."
+    },
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "VALIDATION.txt",
+      "line_start": 74,
+      "line_end": 86,
+      "claim": "All-source compilation and RESULT/result plus boundary static scans."
+    }
+  ]
+}

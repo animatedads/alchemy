@@ -1,0 +1,33 @@
+::requires "WireUIAlchemy.cls"
+::requires "WireUIProtocol.cls"
+::requires "WireUIRevision.cls"
+::requires "WireUIElementDefinition.cls"
+::requires "WireUISubscription.cls"
+::requires "WireUIObservationDefinition.cls"
+::requires "WireUIObservationRecord.cls"
+::requires "WireUIView.cls"
+::requires "WireUIProjection.cls"
+::requires "WireUIApplication.cls"
+::requires "WireUIJourneyTransition.cls"
+::requires "WireUIJourneyPlan.cls"
+::requires "WireUIDefinitionPlanner.cls"
+::requires "WireUISiteReleaseBinding.cls"
+::requires "WireUIExperimentAssignment.cls"
+::requires "WireUICompiledCatalogue.cls"
+
+::requires "WireUIRenderProfilePolicy.cls"
+::requires "WireUIDefinitionManifest.cls"
+::requires "WireUITimingClock.cls"
+::requires "WireUIJourneyTimingRecord.cls"
+
+::requires "WireUISemanticState.cls"
+
+::requires "WireUIIntentProjection.cls"
+
+::requires "WireUICollectionWindow.cls"
+::requires "WireUIEvidenceEntry.cls"
+
+::requires "WireUIWorkspaceQueryState.cls"
+::requires "WireUIWorkspaceSelection.cls"
+::requires "WireUIWorkspaceCommandContext.cls"
+::requires "WireUIWorkspaceResultState.cls"

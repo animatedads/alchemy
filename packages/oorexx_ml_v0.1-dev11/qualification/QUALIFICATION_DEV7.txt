@@ -1,0 +1,37 @@
+ooRexx ML v0.1-dev7 qualification
+
+Runtime: ooRexx 5.3.0 r13196 (debug build supplied in conversation)
+Result: PASS
+
+Technique expansion:
+- MLBinaryLogisticRegression
+- MLGaussianNaiveBayes
+- MLDecisionTreeClassifier
+- MLKMeans
+- MLPrincipalComponentAnalysis
+- MLTechniqueCatalogue
+
+Executable regression suite:
+- 34/34 test files PASS.
+- All 28 dev6 regressions remain green.
+- Six dev7 regressions cover logistic regression + rollback/roll-forward, Gaussian NB, decision tree, deterministic k-means, PCA/provenance and catalogue discovery.
+
+Compilation:
+- 11 ML source classes PASS rexxc.
+- Audio Pareto adapter PASS rexxc.
+- Storage Fabric bridge PASS rexxc.
+- Recovered-audio integration replacement PASS rexxc.
+- Total compile surfaces checked: 14.
+
+Semantic Source Control v0.2.3 dogfood:
+- Rebuilt dev6 as OorexxML / MAIN / sourceLevel 7.
+- Scanned dev7: 11 files, 11 packages, 537 methods, 291 attributes, 0 external candidates, 0 pending proposals.
+- Accepted dev7 as OorexxML / MAIN / sourceLevel 8.
+
+Design qualification:
+- Every fitted estimator/transform subclasses MLDriveableObject.
+- Logistic positive-label semantics may be explicitly supplied by the caller.
+- Decision-tree policy is retained state and tree nodes are immutable after construction.
+- k-means contains no hidden RNG; maximin initialisation is deterministic.
+- PCA transformation preserves sample ids and derives dataset provenance with transform=PCA.
+- No existing GA/Pareto/constraint/Storage/Audio semantics were changed.

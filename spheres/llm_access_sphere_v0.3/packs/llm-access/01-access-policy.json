@@ -1,0 +1,23 @@
+{
+  "kind": "access-policy",
+  "id": "llm-access-access",
+  "version": "0.3",
+  "sphere": "llm-access",
+  "policy_note": "Public documentation and list-models endpoints only. No credential values, no exploit technique, no unpublished endpoint probing.",
+  "rules": [
+    {
+      "effect": "allow",
+      "roles": [
+        "llm",
+        "developer",
+        "operator",
+        "admin"
+      ],
+      "actions": [
+        "read",
+        "exec"
+      ],
+      "resource": "*"
+    }
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "id": "job-node-allocator.capability-capacity",
+  "title": "Durable capability versus transient capacity",
+  "section": "architecture",
+  "summary": "NodeCapabilityStatement represents comparatively durable facts such as jurisdiction, trust/access/ability/runtime/architecture and API-egress capability. NodeCapacityObservation separately represents short-lived free memory/disk/CPU, WLU rate, queue depth and active jobs, bound to a capability generation and expiry.",
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "job-node-allocator",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6.zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/src/JobNodeAllocator.cls",
+      "claim": "Grounded in Job-to-Node Allocator v0.6.",
+      "line_start": 107,
+      "line_end": 260
+    }
+  ],
+  "invariants": [
+    "Capacity cannot repair a missing capability.",
+    "Capacity observations must match the advertised capability generation.",
+    "Capacity evidence has an expiry and therefore bounds lease freshness."
+  ]
+}

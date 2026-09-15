@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "ap-cryptographic-evidence",
+  "version": "0.3",
+  "sphere": "access-permissions",
+  "title": "Cryptographic proof is evidence, not bearer authority",
+  "summary": "AccessPermissionsSigner and AuthorizationDecisionEnvelope provide trusted-key-ring MAC proofs for Access Control and Permission decisions. Proofs establish integrity/provenance of a decision but do not become executable authority.",
+  "authority": "project-authority",
+  "invariants": [
+    "A retained ALLOW receipt is audit evidence, not a bearer capability.",
+    "Proof verification checks kind, artifact identity, and trusted CryptoMacKeyRing authentication.",
+    "Possession of proof never substitutes for current session state, current policy resolution, Security Effect evaluation, Permission evaluation, or Security Manager enforcement."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/README.md",
+      "line_start": 89,
+      "line_end": 93,
+      "claim": "Authentication assertions and decision proofs are evidence, not bearer capabilities; proof does not substitute for live authority checks.",
+      "note": "Cryptographic invariant."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/ARCHITECTURE.md",
+      "line_start": 73,
+      "line_end": 77,
+      "claim": "Decision proofs use trusted-key-ring MAC verification while receipts remain audit evidence only.",
+      "note": "Proof semantics."
+    }
+  ]
+}

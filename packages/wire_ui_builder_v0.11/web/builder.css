@@ -1,0 +1,238 @@
+:root{--builder-ink:var(--wui-brand-ink,#172033);--builder-accent:var(--wui-brand-accent,#4f46e5);--builder-surface:var(--wui-surface,#fff);--builder-radius:calc(var(--wui-radius-control,8)*1px);font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:var(--builder-ink);background:#f4f6fb}*{box-sizing:border-box}body{margin:0}.builder-topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:#111827;color:#fff}.builder-topbar strong{font-size:20px}.builder-topbar span{margin-left:12px;color:#a5b4fc;font-size:12px}.builder-stage{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:22px;padding:22px}.builder-intro{position:sticky;top:22px;align-self:start;background:#111827;color:#fff;border-radius:16px;padding:24px}.builder-intro h1{margin-top:0;font-size:30px;line-height:1}.builder-intro p{color:#cbd5e1;line-height:1.55}.wire-ui-root{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}.wire-ui-root>*{background:var(--builder-surface);border:1px solid #dde3ef;border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(23,32,51,.06)}.wui-field{display:grid;gap:6px;margin-bottom:12px;font-size:12px;font-weight:700;color:#536078}.wui-field input,.wui-record-input{width:100%;padding:11px 12px;border:1px solid #c7d0e0;border-radius:var(--builder-radius);font:inherit}.wui-primary-action{border:0;border-radius:var(--builder-radius);padding:11px 16px;background:var(--builder-accent);color:#fff;font-weight:800;cursor:pointer}.wui-collection-item{width:100%;text-align:left;border:1px solid #dce2ed;background:#fff;border-radius:var(--builder-radius);padding:12px;margin:0 0 8px;cursor:pointer}.wui-record-field{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:8px 0;border-bottom:1px solid #eef1f6}.wui-record-label{font-weight:700;color:#667085}.builder-bootstrap-error{padding:24px;background:#fff1f2;border:1px solid #fecdd3;border-radius:16px;color:#9f1239}@media(max-width:900px){.builder-stage{grid-template-columns:1fr}.builder-intro{position:static}.wire-ui-root{grid-template-columns:1fr}}
+
+/* Semantic composition rendering. Values are interpreted from Builder-compiled
+   composition hints; these rules are not the authoring source of truth. */
+.wui-builder-composition-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px;align-items:start;grid-column:1/-1;background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
+.wui-builder-composition-grid>[data-wire-region]{min-width:0}
+.wui-builder-canvas{min-height:260px;border:2px dashed color-mix(in srgb,var(--builder-accent) 35%,#dce2ed)!important;background:linear-gradient(180deg,#fff,#f8f9ff)!important}
+.wui-builder-canvas .wui-collection-item{cursor:grab;touch-action:none}
+.wui-builder-canvas .wui-collection-item:active{cursor:grabbing}
+.wui-builder-preview-summary{background:#f8f9ff!important}
+@media(max-width:639px){.wui-builder-composition-grid>[data-wire-region]{grid-column:span 12!important}}
+
+.wui-composition-inactive{display:none!important}
+.wui-builder-tool-nav{grid-column:1/-1!important;display:flex!important;align-items:center;gap:8px;overflow:auto;padding:10px 12px!important;background:#fff!important;border:1px solid #dde3ef!important;border-radius:14px!important;box-shadow:0 6px 20px rgba(23,32,51,.04)!important}
+.wui-builder-tool-nav .wui-collection-item{width:auto;min-width:max-content;margin:0;padding:8px 12px;border-radius:999px;background:#f7f8fc;border-color:#e1e5ef;font-size:12px;font-weight:800;color:#475467}
+.wui-builder-tool-nav .wui-collection-item:hover{border-color:var(--builder-accent);color:var(--builder-accent);background:#f5f3ff}
+
+/* v0.6 visual-workspace presentation. The semantic composition remains
+   authoritative; these rules render its regions as a design tool. */
+body{background:#eef2f7;color:#152238}
+.builder-topbar{height:58px;padding:0 20px;background:#0c1b33;border-bottom:1px solid #243752;box-shadow:0 2px 12px rgba(12,27,51,.18)}
+.builder-topbar strong{font-size:18px;letter-spacing:-.02em}.builder-topbar span{color:#8fb4ff}
+.builder-stage{grid-template-columns:210px minmax(0,1fr);gap:14px;padding:14px;max-width:1800px;margin:0 auto}
+.builder-intro{top:14px;border-radius:12px;padding:18px;background:linear-gradient(180deg,#142846,#0d1d34);box-shadow:0 12px 28px rgba(12,27,51,.16)}
+.builder-intro h1{font-size:22px;line-height:1.08;margin-bottom:12px}.builder-intro p{font-size:12px;line-height:1.5}
+.wire-ui-root{gap:10px}.wire-ui-root>*{border-radius:10px;padding:14px;border-color:#d7dfeb;box-shadow:0 2px 8px rgba(28,45,74,.05)}
+.wui-builder-composition-grid{gap:10px!important}
+.wui-builder-composition-grid>[data-wire-region="header"]{background:#fff!important}
+[data-wire-definition="WUIB_PROJECT@1"]{padding:10px 14px!important}
+[data-wire-definition="WUIB_PROJECT@1"] .wui-record-field{display:inline-grid;grid-template-columns:auto auto;border:0;padding:2px 18px 2px 0;font-size:11px}
+[data-wire-definition="WUIB_PROJECT@1"] .wui-record-label{color:#8190a7}
+.wui-builder-tool-nav{padding:7px 9px!important;border-radius:10px!important;gap:4px!important}
+.wui-builder-tool-nav .wui-collection-item{padding:7px 11px;font-size:11px;border-radius:7px;background:transparent;border-color:transparent}
+.wui-builder-tool-nav .wui-collection-item:hover{background:#eef4ff;border-color:#c9d8f5}.wui-builder-tool-nav .wui-builder-tool-active{background:#e4edff!important;border-color:#a9c1ef!important;color:#123b7a!important}
+
+[data-wire-definition]{position:relative}
+[data-wire-definition]::before{display:block;font-size:10px;line-height:1.2;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:#6d7b91;margin-bottom:10px}
+[data-wire-definition="WUIB_ARTIFACT_LIBRARY@1"]::before{content:"Library"}
+[data-wire-definition="WUIB_COMPOSITION_CANVAS@1"]::before{content:"Composition canvas · drag / resize / relocate"}
+[data-wire-definition="WUIB_SELECTION_INSPECTOR@1"]::before{content:"Selection"}
+[data-wire-definition="WUIB_COMPOSITION_EDITOR@1"]::before{content:"Placement properties"}
+[data-wire-definition="WUIB_PREVIEW_CONTROL@1"]::before{content:"Preview context"}
+[data-wire-definition="WUIB_PREVIEW_SUMMARY@1"]::before{content:"Compiled preview"}
+[data-wire-definition="WUIB_FLOW_MAP@1"]::before{content:"Screen flow"}
+[data-wire-definition="WUIB_SOURCE_FILES@1"]::before{content:"Source tree"}
+[data-wire-definition="WUIB_SOURCE_DETAIL@1"]::before{content:"Source detail"}
+
+.wui-builder-library{background:#f8fafc!important;min-height:480px}.wui-builder-library .wui-collection-item{margin-bottom:6px}
+.wui-builder-library-item{display:grid!important;grid-template-columns:auto 1fr!important;gap:3px 8px!important;align-items:center!important;padding:9px 10px!important;border-radius:8px!important;background:#fff!important}
+.wui-builder-library-kind{font-size:8px;font-weight:900;letter-spacing:.07em;color:#335b9b;background:#e8f0ff;padding:3px 5px;border-radius:4px}.wui-builder-library-item strong{font-size:11px;overflow:hidden;text-overflow:ellipsis}.wui-builder-library-rev{grid-column:2;font-size:9px;color:#8a96a8}
+
+.wui-builder-canvas{min-height:520px!important;padding:18px!important;border:1px solid #cfd9e8!important;background-color:#f7f9fd!important;background-image:linear-gradient(#e7edf6 1px,transparent 1px),linear-gradient(90deg,#e7edf6 1px,transparent 1px),linear-gradient(180deg,#fafcff,#f4f7fb)!important;background-size:20px 20px,20px 20px,100% 100%!important;box-shadow:inset 0 0 0 6px #fff!important}
+.wui-builder-canvas::after{content:"12-column semantic composition";display:block;text-align:center;color:#a1adbd;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding-top:8px}
+.wui-builder-placement-card{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;min-height:58px!important;border:1px solid #cbd8eb!important;border-left:4px solid #3568b8!important;border-radius:8px!important;background:#fff!important;padding:10px 10px 10px 12px!important;box-shadow:0 4px 10px rgba(38,65,105,.07)!important;transition:border-color .12s,box-shadow .12s,transform .12s}
+.wui-builder-placement-card:hover{border-color:#8eb1e8!important;box-shadow:0 7px 16px rgba(38,65,105,.12)!important;transform:translateY(-1px)}
+.wui-builder-placement-selected{outline:2px solid #3a73c9!important;outline-offset:2px;background:#f7fbff!important}
+.wui-builder-placement-main{display:grid;gap:4px;min-width:0}.wui-builder-placement-title{font-size:12px;color:#17365f;overflow:hidden;text-overflow:ellipsis}.wui-builder-placement-meta{font-size:9px;color:#7a8799;text-transform:uppercase;letter-spacing:.04em}
+.wui-builder-placement-tools{display:flex;gap:3px;align-items:center}.wui-builder-placement-handle{display:grid;place-items:center;width:24px;height:24px;border:1px solid #d7e0ed;border-radius:5px;background:#f8fafc;color:#50627b;font-size:12px;font-weight:900;cursor:pointer}.wui-builder-placement-handle:hover{background:#e8f1ff;color:#154a91;border-color:#a8c2e9}
+
+.wui-builder-inspector,.wui-builder-preview-control{background:#fff!important}.wui-builder-inspector .wui-record-field{grid-template-columns:90px 1fr;font-size:10px}.wui-builder-preview-summary{background:#f6f9fe!important;border-color:#cad8ec!important}.wui-builder-preview-summary .wui-record-field{font-size:10px}
+.wui-field{font-size:10px;margin-bottom:8px}.wui-field input,.wui-record-input{padding:8px 9px;font-size:11px;border-radius:6px}.wui-primary-action{padding:8px 11px;border-radius:6px;font-size:11px;background:#245ea9}.wui-record-field{padding:5px 0;grid-template-columns:100px 1fr;font-size:10px}.wui-record-label{color:#718096}
+
+.wui-builder-flow-map{background:#f7f9fd!important;overflow:auto}.wui-builder-flow-map>div{display:flex;gap:10px;align-items:stretch;min-width:max-content}.wui-builder-flow-card{display:grid!important;grid-template-rows:auto auto 1fr!important;gap:5px!important;width:190px!important;min-height:105px!important;margin:0!important;padding:12px!important;border-radius:9px!important;border:1px solid #cdd8e8!important;border-top:4px solid #2f65ad!important;background:#fff!important;position:relative}.wui-builder-flow-card:not(:last-child)::after{content:"→";position:absolute;right:-18px;top:40%;color:#7790b2;font-size:18px;font-weight:900}.wui-builder-flow-state{font-size:13px;color:#14345e}.wui-builder-flow-counts{font-size:9px;color:#738198}.wui-builder-flow-next{font-size:9px;color:#295f9f;align-self:end}
+
+@media(max-width:1100px){.builder-stage{grid-template-columns:1fr}.builder-intro{display:none}.wui-builder-composition-grid>[data-wire-region]{grid-column:span 12!important}.wui-builder-canvas{min-height:360px!important}}
+
+/* v0.6 visual fidelity: render the target composition as a real 12-column
+   semantic canvas, with derived region/ruler guides and journey thumbnails. */
+.wui-builder-canvas-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px!important;align-items:stretch}
+.wui-builder-canvas-grid>.wui-collection-item{width:auto!important;margin:0!important;min-width:0}
+.wui-builder-region-guides{grid-column:1/-1;display:grid;gap:7px;margin:-2px 0 4px;padding-bottom:8px;border-bottom:1px solid #dce5f1}
+.wui-builder-grid-ruler{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px}
+.wui-builder-grid-ruler i{font-style:normal;text-align:center;font-size:8px;font-weight:800;color:#9ba9bb;border-top:2px solid #d8e1ed;padding-top:3px}
+.wui-builder-region-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.wui-builder-region-row::before{content:"regions";font-size:8px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:#9aa7b9;margin-right:3px}
+.wui-builder-region-row b{font-size:8px;text-transform:uppercase;letter-spacing:.05em;color:#365f94;background:#edf4fd;border:1px solid #cfddf0;border-radius:999px;padding:3px 7px}
+.wui-builder-placement-type{font-size:8px;line-height:1;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:#7890ad}
+.wui-builder-placement-card[data-wire-placement-region="sidebar"]{border-left-color:#7159ad!important}.wui-builder-placement-card[data-wire-placement-region="footer"]{border-left-color:#4f8b79!important}.wui-builder-placement-card[data-wire-placement-region="secondary"]{border-left-color:#ad794a!important}
+.wui-builder-placement-card[data-wire-placement-align="START"]{align-self:start}.wui-builder-placement-card[data-wire-placement-align="CENTER"]{align-self:center}.wui-builder-placement-card[data-wire-placement-align="END"]{align-self:end}
+.wui-builder-flow-card{width:210px!important;min-height:155px!important}.wui-builder-flow-thumb{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:12px;gap:2px;align-content:start;min-height:42px;padding:5px;border:1px solid #d9e2ef;border-radius:5px;background-color:#f8fbff;background-image:linear-gradient(90deg,rgba(122,145,177,.08) 1px,transparent 1px);background-size:8.333% 100%}
+.wui-builder-flow-thumb-tile{display:block;border-radius:2px;background:#aac3e6;border:1px solid #88a8d5}.wui-builder-flow-thumb-tile[data-region="sidebar"]{background:#c8bae5;border-color:#aa96d5}.wui-builder-flow-thumb-tile[data-region="footer"]{background:#b8d8cf;border-color:#91c1b3}.wui-builder-flow-thumb-tile[data-region="secondary"]{background:#dfc4a8;border-color:#cca47a}.wui-builder-flow-thumb-empty{grid-column:1/-1;display:grid;place-items:center}.wui-builder-flow-thumb-empty::after{content:"no composition";font-style:normal;font-size:8px;color:#a2adbc}
+.wui-builder-inspector{border-top:3px solid #376eb8!important}.wui-builder-placement-selected{outline:3px solid rgba(47,103,184,.32)!important;box-shadow:0 0 0 2px #fff,0 8px 20px rgba(36,94,169,.18)!important}.wui-builder-placement-selected .wui-builder-placement-title{color:#0a468e}
+.wui-builder-preview-summary{position:relative;overflow:hidden}.wui-builder-preview-summary::after{content:"compiled semantic preview";position:absolute;right:8px;top:8px;padding:3px 6px;border-radius:999px;background:#e4edff;color:#35619a;font-size:7px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+@media(max-width:900px){.wui-builder-canvas-grid>.wui-collection-item{grid-column:1/-1!important}.wui-builder-grid-ruler{display:none}}
+
+/* v0.6 Studio region stacks. These wrappers are presentation-only: live Wire UI
+   instance roots are merely re-parented beneath a semantic region container. */
+.wui-builder-studio-region{display:flex;flex-direction:column;gap:10px;align-self:start;min-width:0;background:transparent;border:0;padding:0;box-shadow:none}
+.wui-builder-studio-region>[data-wire-definition]{grid-column:auto!important;grid-row:auto!important;order:initial!important;width:100%}
+.wui-builder-studio-region[data-wire-studio-region="header"],.wui-builder-studio-region[data-wire-studio-region="nav"],.wui-builder-studio-region[data-wire-studio-region="flow"]{grid-column:1 / 13!important}
+.wui-builder-studio-region[data-wire-studio-region="library"]{grid-column:1 / 4!important}.wui-builder-studio-region[data-wire-studio-region="canvas"]{grid-column:4 / 10!important}.wui-builder-studio-region[data-wire-studio-region="inspector"]{grid-column:10 / 13!important}
+.wui-builder-flow-map{display:flex!important;position:relative;gap:10px!important;align-items:stretch!important;overflow-x:auto!important;padding-top:38px!important;scroll-snap-type:x proximity}
+.wui-builder-flow-map::before{position:absolute!important;left:14px;top:14px;margin:0!important}.wui-builder-flow-map>.wui-builder-flow-card{flex:0 0 210px;width:210px!important;scroll-snap-align:start}
+@media(max-width:1100px){.wui-builder-studio-region[data-wire-studio-region]{grid-column:1/-1!important}}
+
+/* v0.9 designer ergonomics. These controls only emit typed Builder operations;
+   the DOM remains a view of the semantic project. */
+.wui-builder-placement-card{position:relative!important;padding-right:18px!important;overflow:visible}
+.wui-builder-drag-grip{display:grid;place-items:center;width:24px;height:24px;border:1px solid #d7e0ed;border-radius:5px;background:#f8fafc;color:#50627b;font-size:12px;font-weight:900;cursor:grab;user-select:none}.wui-builder-drag-grip:active{cursor:grabbing}.wui-builder-drag-source{opacity:.52!important;transform:scale(.99)!important}
+.wui-builder-resize-handle{position:absolute;top:8px;right:-6px;bottom:8px;width:11px;border-radius:7px;cursor:ew-resize;background:linear-gradient(90deg,transparent 3px,#84a4cf 3px,#84a4cf 5px,transparent 5px);opacity:.35;transition:opacity .12s,background .12s}.wui-builder-placement-card:hover .wui-builder-resize-handle,.wui-builder-placement-selected .wui-builder-resize-handle,.wui-builder-resizing .wui-builder-resize-handle{opacity:1}.wui-builder-resizing{z-index:4!important;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(36,94,169,.24),0 10px 24px rgba(36,94,169,.18)!important}
+.wui-builder-region-row{gap:6px}.wui-builder-region-row b{cursor:default;transition:background .12s,border-color .12s,box-shadow .12s,transform .12s}.wui-builder-region-row b::before{content:"↳";margin-right:4px;color:#7896bd}.wui-builder-region-row b[role="button"]{cursor:copy}.wui-builder-region-row b[role="button"]:hover{background:#e1edff;border-color:#a8c2e9}.wui-builder-region-drop-active{background:#d8e9ff!important;border-color:#5384c5!important;box-shadow:0 0 0 3px rgba(83,132,197,.16)!important;transform:translateY(-1px)}
+.wui-builder-library-selected{border-color:#5f8dcc!important;background:#edf5ff!important;box-shadow:inset 3px 0 0 #3568b8}.wui-builder-library-related:not(.wui-builder-library-selected){border-color:#a7bddc!important;background:#f7fbff!important}.wui-builder-library-related:not(.wui-builder-library-selected)::after{content:"linked";grid-column:2;justify-self:end;font-size:7px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#4c719f;background:#e8f1fc;border-radius:999px;padding:2px 5px}
+.wui-builder-flow-card{cursor:pointer!important;transition:border-color .12s,box-shadow .12s,transform .12s,background .12s}.wui-builder-flow-card:hover{border-color:#8eacd4!important;transform:translateY(-1px)}.wui-builder-flow-active{border-color:#4b7fbe!important;border-top-color:#164f97!important;background:#f7fbff!important;box-shadow:0 0 0 2px rgba(47,103,184,.12),0 8px 18px rgba(36,94,169,.10)!important}.wui-builder-flow-active .wui-builder-flow-state{color:#0a468e}.wui-builder-flow-active::before{content:"editing";position:absolute;right:9px;top:8px;padding:2px 5px;border-radius:999px;background:#dfeeff;color:#205997;font-size:7px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
+.wui-builder-inspector{padding-bottom:10px!important}.wui-builder-inspector .wui-record-field{border:0!important;padding:3px 0!important}.wui-builder-inspector [data-wire-inspector-field="kind"]{display:block!important;margin-bottom:2px}.wui-builder-inspector [data-wire-inspector-field="kind"] .wui-record-label{display:none}.wui-builder-inspector [data-wire-inspector-field="kind"] .wui-record-value{display:inline-block;padding:3px 6px;border-radius:999px;background:#e6effc;color:#35619a;font-size:8px;font-weight:900;letter-spacing:.06em}.wui-builder-inspector [data-wire-inspector-field="artifact-id"]{display:block!important}.wui-builder-inspector [data-wire-inspector-field="artifact-id"] .wui-record-label{display:none}.wui-builder-inspector [data-wire-inspector-field="artifact-id"] .wui-record-value{font-size:14px;font-weight:800;color:#183d6b}.wui-builder-inspector [data-wire-inspector-field="detail"]{display:block!important;padding:5px 0!important}.wui-builder-inspector [data-wire-inspector-field="detail"] .wui-record-label{display:none}.wui-builder-inspector [data-wire-inspector-field="detail"] .wui-record-value{font-size:9px;color:#6c7c92}.wui-builder-inspector [data-wire-inspector-field="draft-revision"],.wui-builder-inspector [data-wire-inspector-field="publish-version"]{display:inline-grid!important;grid-template-columns:auto auto!important;gap:4px!important;margin-right:10px}.wui-builder-inspector [data-wire-inspector-field="draft-revision"] .wui-record-label,.wui-builder-inspector [data-wire-inspector-field="publish-version"] .wui-record-label{font-size:8px;text-transform:uppercase;letter-spacing:.05em}.wui-builder-inspector [data-wire-inspector-field="draft-revision"] .wui-record-value,.wui-builder-inspector [data-wire-inspector-field="publish-version"] .wui-record-value{font-size:9px;font-weight:800}
+[data-wire-definition="WUIB_COMPOSITION_EDITOR@1"]::before{content:"Layout properties"}.wui-builder-context-card{display:grid;gap:10px;margin-bottom:9px}.wui-builder-context-placeholder{display:grid;gap:4px;padding:12px;border:1px dashed #cbd7e7;border-radius:8px;background:#f8fbff}.wui-builder-context-placeholder strong{font-size:11px;color:#315a8f}.wui-builder-context-placeholder span{font-size:9px;line-height:1.45;color:#7b899c}.wui-builder-context-hero{display:grid;gap:3px;padding-bottom:9px;border-bottom:1px solid #e4eaf3}.wui-builder-context-hero>span{font-size:8px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#7189a7}.wui-builder-context-hero>strong{font-size:14px;color:#173f72}.wui-builder-context-hero>small{font-size:8px;color:#8491a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wui-builder-property-group{display:grid;gap:5px}.wui-builder-property-label{font-size:8px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:#7c899b}.wui-builder-property-values{display:flex;gap:4px;align-items:center;flex-wrap:wrap}.wui-builder-property-chip{appearance:none;border:1px solid #d2dce9;background:#f8fafc;color:#51647e;border-radius:6px;padding:5px 7px;font-size:8px;font-weight:800;cursor:pointer}.wui-builder-property-chip:hover{border-color:#94b2db;background:#edf5ff;color:#245a9f}.wui-builder-property-chip.is-active,.wui-builder-property-chip[aria-pressed="true"]{background:#dfeeff;border-color:#7ca3d5;color:#174d8f}.wui-builder-span-range{flex:1 1 100px;min-width:80px;accent-color:#3568b8}.wui-builder-span-value{min-width:32px;text-align:right;font-size:9px;font-weight:900;color:#315a8f}.wui-builder-context-advanced{margin-top:8px;border-top:1px solid #e2e8f1;padding-top:8px}.wui-builder-context-advanced>summary{cursor:pointer;list-style:none;font-size:8px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#77869a}.wui-builder-context-advanced>summary::before{content:"＋";margin-right:5px}.wui-builder-context-advanced[open]>summary::before{content:"−"}.wui-builder-context-advanced:not([open])>.wui-field,.wui-builder-context-advanced:not([open])>.wui-primary-action{display:none!important}.wui-builder-context-empty .wui-builder-context-advanced{display:none}.wui-builder-context-advanced .wui-field{margin-top:7px}
+@media(max-width:900px){.wui-builder-resize-handle{display:none}.wui-builder-property-values{gap:6px}.wui-builder-property-chip{padding:7px 9px}}
+
+/* v0.9 live-browser layout stabilisation.
+   The Studio shell is the one semantic workspace; region stacks must stretch
+   across that workspace and hidden parked stacks must not participate in grid
+   sizing. This is presentation only -- authored GRID12 spans remain semantic. */
+.wire-ui-root{display:block!important;width:100%!important;min-width:0!important}
+.wire-ui-root>.wui-builder-composition-grid{display:grid!important;width:100%!important;min-width:0!important;max-width:none!important;justify-self:stretch!important}
+.wui-builder-composition-grid{width:100%!important;min-width:0!important;max-width:100%;grid-template-columns:repeat(12,minmax(0,1fr))!important;grid-auto-flow:row}
+.wui-builder-studio-region{width:100%;min-width:0!important;max-width:100%}
+.wui-builder-studio-region[hidden]{display:none!important}
+.wui-builder-studio-region>[data-wire-definition]{min-width:0!important;max-width:100%}
+.wui-builder-canvas,.wui-builder-flow-map,.wui-builder-library,.wui-builder-inspector,.wui-builder-preview-summary,.wui-builder-preview-control{width:100%!important;min-width:0}
+.wui-builder-placement-main{flex:1 1 auto;min-width:0}.wui-builder-placement-tools{flex:0 0 auto}
+
+/* v0.9 DESIGN chrome topology.
+   The outer Studio workspace is not the target application's 12-column canvas.
+   Named areas give the browser a deterministic four-row Studio topology while
+   the target canvas keeps its own semantic GRID12 internally. */
+.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]{
+  grid-template-columns:minmax(180px,3fr) minmax(0,6fr) minmax(220px,3fr)!important;
+  grid-template-areas:
+    "header header header"
+    "nav nav nav"
+    "library canvas inspector"
+    "flow flow flow" !important;
+  grid-auto-flow:row!important;
+  align-items:start!important;
+}
+.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="header"]{grid-area:header!important}
+.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="nav"]{grid-area:nav!important}
+.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="library"]{grid-area:library!important}
+.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="canvas"]{grid-area:canvas!important}
+.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="inspector"]{grid-area:inspector!important}
+.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="flow"]{grid-area:flow!important}
+.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region{justify-self:stretch!important;align-self:start!important;width:auto!important;max-width:none!important}
+@media(max-width:1100px){
+  .wui-builder-composition-grid[data-wire-composition-state="DESIGN"]{
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-areas:"header" "nav" "library" "canvas" "inspector" "flow" !important;
+  }
+}
+
+/* v0.9 conditional/fact-flow authoring cues. These are Builder chrome only;
+   customer-visible copy remains resource-owned outside Builder. */
+.wui-builder-placement-conditional{box-shadow:inset 3px 0 0 currentColor}
+.wui-builder-placement-conditional .wui-builder-placement-meta{font-weight:600}
+.wui-builder-flow-id{display:inline-flex;align-self:flex-start;padding:2px 5px;border:1px solid #cbd5e1;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
+
+/* v0.11 non-DESIGN Studio topology.
+   These are editor-chrome areas only. A single semantic region wrapper must
+   never collapse two sibling authoring perspectives into a vertical stack;
+   SOURCE in particular is a 4/8 catalogue/detail workbench. */
+.wui-builder-composition-grid[data-wire-composition-state="SOURCE"]{
+  grid-template-columns:minmax(260px,4fr) minmax(0,8fr)!important;
+  grid-template-areas:"header header" "nav nav" "source-list source-detail"!important;
+  grid-auto-flow:row!important;align-items:start!important;
+}
+.wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  grid-template-areas:"header header header header" "nav nav nav nav" "catalogue component-editor element-editor projection-editor"!important;
+  grid-auto-flow:row!important;align-items:start!important;
+}
+.wui-builder-composition-grid[data-wire-composition-state="MATERIALS"]{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  grid-template-areas:"header header header" "nav nav nav" "catalogue material-editor preview"!important;
+  grid-auto-flow:row!important;align-items:start!important;
+}
+.wui-builder-composition-grid[data-wire-composition-state="FLOW"]{
+  grid-template-columns:repeat(12,minmax(0,1fr))!important;
+  grid-template-areas:
+    "header header header header header header header header header header header header"
+    "nav nav nav nav nav nav nav nav nav nav nav nav"
+    "catalogue catalogue catalogue flow flow flow flow flow flow flow flow flow"
+    "journey-editor journey-editor journey-editor journey-editor condition-editor condition-editor condition-editor condition-editor policy-editor policy-editor policy-editor policy-editor"
+    "experiment-editor experiment-editor experiment-editor experiment-editor experiment-editor experiment-editor preview preview preview preview preview preview"!important;
+  grid-auto-flow:row!important;align-items:start!important;
+}
+.wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]{
+  grid-template-columns:minmax(240px,4fr) minmax(0,5fr) minmax(220px,3fr)!important;
+  grid-template-areas:"header header header" "nav nav nav" "catalogue preview publish"!important;
+  grid-auto-flow:row!important;align-items:start!important;
+}
+.wui-builder-composition-grid[data-wire-composition-state="SOURCE"]>.wui-builder-studio-region[data-wire-studio-region="source-list"]{grid-area:source-list!important}
+.wui-builder-composition-grid[data-wire-composition-state="SOURCE"]>.wui-builder-studio-region[data-wire-studio-region="source-detail"]{grid-area:source-detail!important}
+.wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]>.wui-builder-studio-region[data-wire-studio-region="catalogue"],.wui-builder-composition-grid[data-wire-composition-state="MATERIALS"]>.wui-builder-studio-region[data-wire-studio-region="catalogue"],.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="catalogue"],.wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]>.wui-builder-studio-region[data-wire-studio-region="catalogue"]{grid-area:catalogue!important}
+.wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]>.wui-builder-studio-region[data-wire-studio-region="component-editor"]{grid-area:component-editor!important}
+.wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]>.wui-builder-studio-region[data-wire-studio-region="element-editor"]{grid-area:element-editor!important}
+.wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]>.wui-builder-studio-region[data-wire-studio-region="projection-editor"]{grid-area:projection-editor!important}
+.wui-builder-composition-grid[data-wire-composition-state="MATERIALS"]>.wui-builder-studio-region[data-wire-studio-region="material-editor"]{grid-area:material-editor!important}
+.wui-builder-composition-grid[data-wire-composition-state="MATERIALS"]>.wui-builder-studio-region[data-wire-studio-region="preview"]{grid-area:preview!important}
+.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="flow"]{grid-area:flow!important}
+.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="journey-editor"]{grid-area:journey-editor!important}
+.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="condition-editor"]{grid-area:condition-editor!important}
+.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="policy-editor"]{grid-area:policy-editor!important}
+.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="experiment-editor"]{grid-area:experiment-editor!important}
+.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="preview"]{grid-area:preview!important}
+.wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]>.wui-builder-studio-region[data-wire-studio-region="preview"]{grid-area:preview!important}
+.wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]>.wui-builder-studio-region[data-wire-studio-region="publish"]{grid-area:publish!important}
+
+/* v0.11 SOURCE is an authoritative window over source facts, not a raw object dump. */
+[data-wire-definition="WUIB_SOURCE_WINDOW_CONTROL@1"]{display:grid;grid-template-columns:minmax(160px,2fr) repeat(4,minmax(70px,1fr));gap:8px;align-items:end}
+[data-wire-definition="WUIB_SOURCE_WINDOW_CONTROL@1"] .wui-field{margin:0}
+[data-wire-definition="WUIB_SOURCE_FILES@1"]{padding:10px!important}
+[data-wire-definition="WUIB_SOURCE_FILES@1"]>.wui-record-field{display:inline-grid!important;grid-template-columns:auto auto!important;gap:4px!important;margin:0 10px 8px 0;padding:2px 0!important;border:0!important;font-size:9px}
+[data-wire-definition="WUIB_SOURCE_FILES@1"]>.wui-record-field .wui-record-label{font-size:8px;text-transform:uppercase;letter-spacing:.04em;color:#7b8798}
+[data-wire-definition="WUIB_SOURCE_ROW@1"]{display:block;width:100%;text-align:left;border:1px solid #dce2ed;background:#fff;border-radius:var(--builder-radius);padding:9px 10px;margin:0 0 6px;cursor:pointer;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.35;overflow-wrap:anywhere;word-break:break-word;color:inherit}
+[data-wire-definition="WUIB_SOURCE_ROW@1"]:hover{border-color:#9bb8dd;background:#f7fbff}
+[data-wire-definition="WUIB_SOURCE_DETAIL@1"] .wui-record-value{overflow-wrap:anywhere;word-break:break-word;white-space:pre-wrap}
+[data-wire-definition="WUIB_SOURCE_DETAIL@1"] .wui-record-field{grid-template-columns:minmax(90px,140px) minmax(0,1fr)}
+@media(max-width:900px){[data-wire-definition="WUIB_SOURCE_WINDOW_CONTROL@1"]{grid-template-columns:minmax(0,1fr)}}
+
+@media(max-width:1100px){
+  .wui-builder-composition-grid[data-wire-composition-state="SOURCE"],
+  .wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"],
+  .wui-builder-composition-grid[data-wire-composition-state="MATERIALS"],
+  .wui-builder-composition-grid[data-wire-composition-state="FLOW"],
+  .wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]{
+    grid-template-columns:minmax(0,1fr)!important;
+  }
+  .wui-builder-composition-grid[data-wire-composition-state="SOURCE"]{grid-template-areas:"header" "nav" "source-list" "source-detail"!important}
+  .wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]{grid-template-areas:"header" "nav" "catalogue" "component-editor" "element-editor" "projection-editor"!important}
+  .wui-builder-composition-grid[data-wire-composition-state="MATERIALS"]{grid-template-areas:"header" "nav" "catalogue" "material-editor" "preview"!important}
+  .wui-builder-composition-grid[data-wire-composition-state="FLOW"]{grid-template-areas:"header" "nav" "catalogue" "flow" "journey-editor" "condition-editor" "policy-editor" "experiment-editor" "preview"!important}
+  .wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]{grid-template-areas:"header" "nav" "catalogue" "preview" "publish"!important}
+}
+
+/* v0.11 fact-flow cues: conditional participation and conditional journey
+   edges are visible semantic facts, not browser predicates. */
+.wui-builder-flow-signals{display:flex;gap:4px;flex-wrap:wrap;min-height:0}
+.wui-builder-flow-signal{display:inline-flex;padding:2px 5px;border-radius:999px;border:1px solid #d8c7f0;background:#f7f1ff;color:#69449d;font-size:7px;font-weight:900;letter-spacing:.04em;text-transform:uppercase}
+.wui-builder-flow-branches{display:grid;gap:3px;align-self:end;min-width:0}
+.wui-builder-flow-branch{display:block;padding:3px 5px;border-left:2px solid #b9c8dc;background:#f7f9fc;color:#335b86;font-size:8px;line-height:1.25;white-space:normal;overflow-wrap:anywhere}
+.wui-builder-flow-branch.is-conditional{border-left-color:#8a5bc4;background:#faf6ff;color:#643b96}

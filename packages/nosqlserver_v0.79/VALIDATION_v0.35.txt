@@ -1,0 +1,45 @@
+NoSQLServer v0.35 validation
+============================
+
+Focus
+-----
+Partition-wide window aggregates and derived-window filtering.
+
+New semantics
+-------------
+- COUNT/SUM/AVG/MIN/MAX OVER (PARTITION BY ...) without ORDER BY evaluate over
+  the complete partition.
+- OVER () evaluates over the complete result partition.
+- Ordered running aggregates retain their explicit ROWS BETWEEN UNBOUNDED
+  PRECEDING AND CURRENT ROW requirement.
+- Ordered ranking windows may coexist with partition-wide aggregate windows.
+- Derived SELECT parsing uses top-level ORDER BY detection so ORDER BY inside
+  OVER(...) does not truncate the outer query.
+- Derived output names follow SQL output naming (qualified source names become
+  unqualified derived columns unless explicitly aliased).
+- Derived WHERE supports scalar arithmetic comparisons over projected/window
+  values.
+
+Hell corpus v2
+--------------
+PASS             6
+UNSUPPORTED     13
+PARSE_ERROR     11
+WRONG_RESULT     0
+EXECUTION_ERROR  0
+
+New oracle-backed PASS:
+- Q24 window row-number + partition count + outer arithmetic filter
+- Q27 rank result filtered through a derived table
+
+Regression gates
+----------------
+- v0.34 derived-window smoke: PASS
+- v0.30 extended-window smoke: PASS
+- v0.29 recursive CTE smoke: PASS
+- v0.32 database_core adapter smoke: PASS
+- v0.31 Gemini smoke: PASS
+- SQL-92 company smoke: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

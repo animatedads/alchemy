@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "arch.layered-audio.channels",
+  "version": "0.1",
+  "sphere": "layered-audio",
+  "title": "Streams, channels, sources and transcript layers are distinct",
+  "summary": "A media stream, an encoded/decoded channel, an acoustic source hypothesis and a transcript layer are different semantic objects. Input cardinality is also distinct from channel count.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Two processor input roles A and B mean two independently addressable materials, not one stereo material.",
+    "Never silently downmix independent channels.",
+    "A downmix is explicit derived material with provenance.",
+    "The McGill stereo A-law fixture is a regression because its left and right channels contain materially different speech."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "M1F1-Alaw-AFsp.wav",
+      "sha256": "cfbc1821b7dd3d288d4223859c454d28065f4fbf23eabcdc77a13166a61fd37f",
+      "member": ".",
+      "claim": "External regression fixture whose stereo channels carry materially different speech."
+    }
+  ]
+}

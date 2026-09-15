@@ -1,0 +1,17 @@
+ooRexx 5.3.0 r13196 (qualification runtime)
+Wire UI Server v0.17 -- WireUIResult semantic result contract
+HTTPS Server v0.4.4 -- production HTTP/TLS route host
+LLM Gopher v0.21-dev1 -- sphere resolution/check adapter
+json.cls supplied with ooRexx 5.3.0
+
+Runtime note: McpProjectService and McpProtocolAdapter do not directly depend on native HTTPS libraries. McpHttpsRoute explicitly requires `https_server.cls` so that the package-local `.HttpResponse` symbol resolves through an ooRexx package dependency. HTTPS Server v0.4.4 therefore must be present on REXX_PATH together with its Socket/Foreign Runtime dependencies.
+
+Catalog provenance note (v0.2-dev8): runtime consumes the sealed composite
+catalog/components.json. The supplied sphere roll-up is a build/qualification
+source for first-class sphere component rows; it is not an additional runtime
+dependency of McpProjectWireService.
+
+Optional qualification authority (v0.2-dev8):
+- Qualification Execution Broker v0.1-dev1 (`QualificationExecutionBroker.cls`)
+- ooRexx Crypto v0.8.3 / Runtime Reference v0.4 / Foreign Runtime v0.22.6 when qualification cryptographic acceleration is configured
+The MCP adapter retains the historical eight project tools when no broker is supplied; it exposes seven additional qualification control/evidence tools when a broker is injected. Worker execution is never an MCP tool.

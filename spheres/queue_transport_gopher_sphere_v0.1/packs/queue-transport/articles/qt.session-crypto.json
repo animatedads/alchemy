@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "qt.session-crypto",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Transcript-bound directional session crypto",
+  "summary": "After both 256-bit random nonces are known, the PSK and authenticated transcript derive a per-connection root, then independent client-to-server and server-to-client ChaCha20 keys, HMAC-SHA-512 keys and nonces.",
+  "authority": "project-authority",
+  "invariants": [
+    "The transport PSK must be at least 256 bits / 64 hexadecimal characters.",
+    "C2S and S2C encryption keys, MAC keys and nonces are separately labelled and therefore direction-separated.",
+    "The connection transcript participates in the root derivation; fresh nonces create fresh session material.",
+    "Do not reuse one directional key/nonce pair for traffic in the opposite direction."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 24,
+      "line_end": 37,
+      "claim": "Documentation states derivation labels, direction separation, session binding and minimum PSK size."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 339,
+      "line_end": 352,
+      "claim": "Source derives independent C2S/S2C encryption, MAC and nonce material from protocol-labelled root HMAC."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 126,
+      "line_end": 172,
+      "claim": "Endpoint validates minimum PSK length and supplies HMAC/session derivation through the transport authority."
+    }
+  ]
+}

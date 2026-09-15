@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "native-db.postgresql",
+  "version": "0.1",
+  "sphere": "native-database-backends",
+  "title": "PostgreSQL: Foreign Runtime/libpq is the primary native proving ground",
+  "summary": "The PostgreSQL primary backend uses Foreign Runtime to own libpq connection/result handles and projects PGresult into the provider-neutral structured result model. The process/psql route remains an explicit fallback. v0.2 does not yet claim parameter-array marshalling, cancellation, nonblocking dispatch, COPY streaming or pipeline mode.",
+  "authority": "project-architecture",
+  "invariants": [
+    "libpq native handles have explicit ownership and cleanup semantics.",
+    "The process route is a separate fallback implementation of the same upper contract.",
+    "No SQL interpolation fallback is allowed for the future parameter-binding implementation.",
+    "COPY requires explicit source/sink/backpressure/lifetime semantics rather than whole-result materialization.",
+    "Pipeline mode is only claimed when the linked libpq version and qualification prove it."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/README.md",
+      "line_start": 33,
+      "line_end": 45,
+      "claim": "PostgreSQL Foreign Runtime/libpq is primary; process is fallback; parameter arrays, cancellation, async, COPY streaming and pipeline are deliberate non-claims."
+    },
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/PLAN.md",
+      "line_start": 3,
+      "line_end": 10,
+      "claim": "The continuation plan orders parameter binding, cancellation, nonblocking execution, COPY streaming and pipeline mode before later backends."
+    }
+  ]
+}

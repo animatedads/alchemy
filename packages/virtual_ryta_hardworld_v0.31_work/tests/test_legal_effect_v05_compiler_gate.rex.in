@@ -1,0 +1,117 @@
+say 'LEGAL EFFECT V0.5 COMPILER / VERIFIER PROMOTION GATE V0.18 START'
+
+/* A merely sealed generation remains usable for Legal Effect offline, but may
+   not mint authority-bearing HardWorld promotions. */
+manualSource = .NormativeSource~new('MANUAL', 'CONTRACT', 'manual')
+manualNorm = .LegalNorm~new('MANUAL-N', 'MANUAL', '1', 'CONTRACT_TERM', 'ACT', 'PROHIBITED')
+manualGeneration = .LegalRuleGeneration~new('MANUAL-G', '0.5')
+ignored = manualGeneration~addSource(manualSource)
+ignored = manualGeneration~addNorm(manualNorm)
+ignored = manualGeneration~seal
+manualContext = .LegalContext~new('M', '2026-08-20')
+ignored = manualContext~bindSource('MANUAL', 'test')
+manualPinned = .LegalEffectV05PinnedEvaluator~evaluate(.LegalEffectEngine~new, .LegalAction~new('ACT'), manualGeneration, manualContext)
+call AssertTrue \manualPinned~ok, 'manually sealed generation rejected for authority promotion'
+call AssertEqual 'LEGAL_GENERATION_NOT_COMPILED', manualPinned~code, 'manual generation refusal code'
+
+/* Caller-supplied VERIFIED is not verifier authority and cannot compile. */
+fakeIdentity = .LegalSourceIdentity~new('FAKE', 'CONTRACT', 'expr', 'urn:fake', 'sha256:claimed', 'PARTIES', '*', 'VERIFIED')
+call AssertEqual 'SELF_ASSERTED', fakeIdentity~verificationState, 'caller VERIFIED becomes SELF_ASSERTED'
+fakeUnit = .LegalCompilationUnit~new('FAKE-G', '0.5', 'test-compiler', '1')
+fakeSource = .NormativeSource~new('FAKE', 'CONTRACT', 'fake')
+fakeAdd = fakeUnit~addSource(fakeIdentity, fakeSource)
+call AssertTrue fakeAdd~ok, 'self-asserted identity can enter staging unit for compiler validation'
+fakeProvisionRef = .LegalProvisionReference~new('FAKE', '1', 'expr', 'clause 1', 'sha256:claimed', 'text', 'VERIFIED')
+fakeProvision = .LegalProvision~new('FAKE', '1', 'ACTIVE', 'BASE', 'text')
+ignored = fakeUnit~addProvision(fakeProvisionRef, fakeProvision)
+fakeNorm = .LegalNorm~new('FAKE-N', 'FAKE', '1', 'CONTRACT_TERM', 'ACT', 'PROHIBITED')
+fakeProposal = .LegalCompileProposal~new('FAKE-P', 'NORM', fakeNorm, 'test', 'HUMAN', '1')
+ignored = fakeProposal~addEvidenceReference(fakeProvisionRef)
+ignored = fakeUnit~addProposal(fakeProposal)
+fakeReport = .LegalRuleCompiler~new~compile(fakeUnit)
+call AssertTrue \fakeReport~ok, 'self-asserted source/provision rejected by compiler'
+call AssertTrue HasDiagnostic(fakeReport, 'SOURCE_IDENTITY_UNVERIFIED'), 'source verification diagnostic retained'
+
+/* A verifier-issued, compiler-certified generation is admissible. */
+sourceText = 'A verified provision prohibits ACT.'
+verifiedSource = .LegalSourceVerifier~verifyText('LAW', 'CONTRACT', 'expr-1', 'urn:test:law', sourceText, 'PARTIES', '*')
+call AssertTrue verifiedSource~ok, 'source bytes verify'
+sourceIdentity = verifiedSource~value~identity
+call AssertTrue sourceIdentity~cryptographicallyVerified, 'source identity cryptographically verified'
+
+verifiedProvision = .LegalSourceVerifier~verifyProvisionText(sourceIdentity, '1', 'clause 1', sourceText)
+call AssertTrue verifiedProvision~ok, 'provision bytes verify'
+reference = verifiedProvision~value~reference
+call AssertTrue reference~cryptographicallyVerified, 'provision reference cryptographically verified'
+
+unit = .LegalCompilationUnit~new('COMPILED-G', '0.5', 'test-compiler', '1')
+source = .NormativeSource~new('LAW', 'CONTRACT', 'verified law')
+ignored = unit~addSource(sourceIdentity, source)
+provision = .LegalProvision~new('LAW', '1', 'ACTIVE', 'BASE', sourceText)
+ignored = unit~addProvision(reference, provision)
+norm = .LegalNorm~new('LAW-N', 'LAW', '1', 'CONTRACT_TERM', 'ACT', 'PROHIBITED')
+proposal = .LegalCompileProposal~new('LAW-P', 'NORM', norm, 'test', 'HUMAN', '1')
+ignored = proposal~addEvidenceReference(reference)
+ignored = unit~addProposal(proposal)
+
+report = .LegalRuleCompiler~new~compile(unit)
+call AssertTrue report~ok, 'verified compilation succeeds'
+generation = report~generation
+call AssertTrue generation~publicationEligible, 'compiled generation publication eligible'
+call AssertTrue generation~compilationCertificate \== .nil, 'compilation certificate attached'
+
+context = .LegalContext~new('E', '2026-08-20')
+ignored = context~bindSource('LAW', 'test')
+pinned = .LegalEffectV05PinnedEvaluator~evaluate(.LegalEffectEngine~new, .LegalAction~new('ACT'), generation, context)
+call AssertTrue pinned~ok, 'compiled verifier-backed generation pins'
+snapshot = pinned~envelope~generationSnapshot
+call AssertEqual report~certificate~inputIdentity, snapshot~compilationInputIdentity, 'compiler input identity bound'
+call AssertTrue snapshot~certificateHash <> '', 'certificate hash bound'
+call AssertTrue snapshot~verificationClosureHash <> '', 'verification closure hash bound'
+
+promotions = .LegalEffectV05PromotionAdapter~promotionsFrom(pinned~envelope)
+call AssertEqual 3, promotions~count, 'three status promotions emitted'
+blockedPromotion = FindPromotion(promotions, 'LEGAL_ACTION_BLOCKED')
+call AssertTrue blockedPromotion \== .nil, 'blocked promotion exists'
+call AssertTrue blockedPromotion~promotionStatus == 'AUTHORIZED', 'compiled promotion authorized'
+call AssertTrue blockedPromotion~authority~pos('LEGAL_EFFECT/0.5/') == 1, 'v0.5 authority namespace'
+call AssertTrue HasBasis(blockedPromotion, 'LEGAL_COMPILATION_CERTIFICATE'), 'certificate appears in promotion basis'
+call AssertTrue HasBasis(blockedPromotion, 'LEGAL_VERIFIED_SOURCE'), 'verified source appears in promotion basis'
+call AssertTrue HasBasis(blockedPromotion, 'LEGAL_VERIFIED_PROVISION'), 'verified provision appears in promotion basis'
+
+say 'LEGAL EFFECT V0.5 COMPILER / VERIFIER PROMOTION GATE V0.18: OK'
+exit 0
+
+::routine HasDiagnostic
+  use arg report, code
+  do diagnostic over report~diagnostics
+    if diagnostic~code == code then return .true
+  end
+  return .false
+
+::routine HasBasis
+  use arg promotion, kind
+  do item over promotion~basis
+    if item~basisKind == kind then return .true
+  end
+  return .false
+
+::routine FindPromotion
+  use arg setObject, target
+  do promotion over setObject~promotions
+    if promotion~targetFactName == target then return promotion
+  end
+  return .nil
+
+::routine AssertTrue
+  use arg condition, label
+  if \condition then raise syntax 88.900 array('ASSERT TRUE FAILED: ' || label)
+  return 0
+
+::routine AssertEqual
+  use arg expected, actual, label
+  if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: ' || label || ' expected=' || expected || ' actual=' || actual)
+  return 0
+
+::requires 'LegalEffect.cls'
+::requires '../integration/LegalEffectV05PromotionAdapter.cls'

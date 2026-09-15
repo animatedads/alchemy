@@ -1,0 +1,92 @@
+say 'STRUCTURED V0.7 -> LEGAL EFFECT V0.3 -> PROMOTION -> HARDWORLD V0.18 START'
+
+xmlDoc=.XmlDocumentContext~new('__PLUGIN_FIXTURES__/orders.xml')
+xmlDoc~registerNamespace('o','urn:example:orders')
+xmlDoc~registerNamespace('c','urn:example:common')
+xmlProvider=.XmlRelationProvider~new(.BridgeResult)
+xmlDef=xmlProvider~defineRelation('xml_qty',xmlDoc,'/o:Orders/o:Order/o:Line')
+xmlDef~columnMap('quantity','c:Quantity','INTEGER')
+xmlFact=xmlProvider~table('xml_qty')~readRows[2]~fact('quantity')
+call Assert xmlFact~value=50, 'real XML quantity 50'
+
+/* Preserve the rich object while placing the fact in Legal Effect. */
+legalFacts=.LegalEffectStructuredRelationBridge~factSetFrom(.array~of(xmlFact),'FROZEN_OBSERVATION','XML-LEGAL-OBS-1')
+legalQuantity=legalFacts~fact('QUANTITY')
+call Assert legalQuantity~state='KNOWN', 'XML quantity imported as known legal fact'
+call Assert legalQuantity~value=50, 'legal fact value 50'
+call Assert legalQuantity~source~nativeObject == xmlFact~source, 'native XML node remains reachable in LegalFact source evidence'
+call Assert legalQuantity~source~sources[1]~sourcePath=xmlFact~sourcePath, 'native XML path remains reachable'
+
+source=.NormativeSource~new('SYN-CONTRACT','CONTRACT','Synthetic quantity contract')
+norm=.LegalNorm~new('SYN-QTY-50','SYN-CONTRACT','QTY-50','CONTRACT_TERM','SHIP_ORDER','CONTRACT_BREACH')
+ignored=norm~addCondition(.LegalPredicate~new('QUANTITY','EQUALS',50))
+generation=.LegalRuleGeneration~new('LEGAL-QTY-GEN','0.3')
+ignored=generation~addSource(source); ignored=generation~addNorm(norm); ignored=generation~seal
+context=.LegalContext~new('ORDER-EVENT','2026-08-20','2026-08-20',legalFacts)
+ignored=context~bindSource('SYN-CONTRACT','synthetic test binding')
+action=.LegalAction~new('SHIP_ORDER')
+pinned=.LegalEffectV03PinnedEvaluator~evaluate(.LegalEffectEngine~new,action,generation,context)
+call Assert pinned~ok, 'pinned legal evaluation over XML evidence'
+call Assert pinned~envelope~assessment~status='BLOCKED', 'XML quantity drives synthetic contract breach assessment'
+promotions=.LegalEffectV03PromotionAdapter~promotionsFrom(pinned~envelope)
+world=.RYTAWorldState~new('STRUCTURED-LEGAL-WORLD')
+applyStatus=.EvidencePromotionApplier~apply(promotions,world)
+call Assert applyStatus~applied=3, 'legal status promotions applied'
+call Assert world~isKnownTrue('LEGAL_ACTION_BLOCKED'), 'HardWorld receives blocked fact through promotion'
+
+bundle=world~fact('LEGAL_ACTION_BLOCKED')~evidence
+promotion=bundle~promotions[1]
+assessment=promotion~evidence~nativeObject
+assessmentRich=assessment~currentContext~facts~fact('QUANTITY')~source
+call Assert assessmentRich~nativeObject == xmlFact~source, 'HardWorld promotion evidence reaches original XML node through legal assessment'
+call Assert assessmentRich~sources[1]~sourcePath=xmlFact~sourcePath, 'HardWorld promotion evidence reaches original XML path'
+
+/* Now use the real supplied cross-format disagreement: XML=50, X12=2. */
+x12Doc=.X12DocumentContext~new('__PLUGIN_FIXTURES__/purchase_order.x12')
+x12Provider=.X12RelationProvider~new(.BridgeResult)
+x12Def=x12Provider~defineRelation('x12_qty',x12Doc,'TRANSACTION:850')
+x12Def~columnMap('quantity','PO1/2','INTEGER')
+x12Fact=x12Provider~table('x12_qty')~readRows[1]~fact('quantity')
+call Assert x12Fact~value=2, 'real X12 quantity 2'
+qtyConflict=.StructuredRelationRichEvidenceAdapter~combineFacts('QUANTITY',.array~of(xmlFact,x12Fact),'FROZEN_OBSERVATION','XML-X12-LEGAL-CONFLICT')
+call Assert qtyConflict~evidenceState='CONFLICT', 'structured evidence conflict established'
+conflictFacts=.LegalEffectStructuredRelationBridge~conflictFactSet('QUANTITY',qtyConflict)
+conflictContext=.LegalContext~new('ORDER-CONFLICT','2026-08-20','2026-08-20',conflictFacts)
+ignored=conflictContext~bindSource('SYN-CONTRACT','synthetic test binding')
+conflictPinned=.LegalEffectV03PinnedEvaluator~evaluate(.LegalEffectEngine~new,action,generation,conflictContext)
+call Assert conflictPinned~ok, 'pinned legal evaluation over conflict evidence'
+call Assert conflictPinned~envelope~assessment~status='REVIEW_REQUIRED', 'conflicting source evidence stays unresolved in legal effect'
+conflictPromotions=.LegalEffectV03PromotionAdapter~promotionsFrom(conflictPinned~envelope)
+conflictWorld=.RYTAWorldState~new('STRUCTURED-LEGAL-CONFLICT-WORLD')
+conflictApply=.EvidencePromotionApplier~apply(conflictPromotions,conflictWorld)
+call Assert conflictApply~applied=3, 'review promotions applied'
+call Assert conflictWorld~isKnownTrue('LEGAL_ACTION_REVIEW_REQUIRED'), 'HardWorld receives review-required rather than invented legal certainty'
+call Assert conflictWorld~isKnownFalse('LEGAL_ACTION_BLOCKED'), 'HardWorld does not invent blocked disposition from unresolved conflict'
+conflictAssessment=conflictWorld~fact('LEGAL_ACTION_REVIEW_REQUIRED')~evidence~promotions[1]~evidence~nativeObject
+retainedConflict=conflictAssessment~currentContext~facts~fact('QUANTITY')~source
+call Assert retainedConflict~sourceCount=2, 'both source objects survive through legal assessment and promotion'
+formats=.set~new
+do sourceRef over retainedConflict~sources; formats~put(sourceRef~sourceFormat); end
+call Assert formats~hasIndex('XML'), 'XML provenance survives full chain'
+call Assert formats~hasIndex('X12'), 'X12 provenance survives full chain'
+
+say 'STRUCTURED V0.7 -> LEGAL EFFECT V0.3 -> PROMOTION -> HARDWORLD V0.18: OK'
+exit 0
+
+Assert: procedure
+  use arg condition,message
+  if \condition then raise syntax 93.900 additional('ASSERT FAILED: ' || message)
+  return
+
+::class BridgeResult public
+::method init
+  use arg operation='SELECT'
+
+::requires '__PLUGIN_ROOT__/src/XmlRelationAdapter.cls'
+::requires '__PLUGIN_ROOT__/src/X12RelationAdapter.cls'
+::requires 'LegalEffect.cls'
+::requires '__RYTA_ROOT__/algorithm/RichEvidence.cls'
+::requires '__RYTA_ROOT__/integration/StructuredRelationRichEvidenceAdapter.cls'
+::requires '__RYTA_ROOT__/integration/LegalEffectStructuredRelationBridge.cls'
+::requires '__RYTA_ROOT__/integration/LegalEffectV03PromotionAdapter.cls'
+::requires '__RYTA_ROOT__/HardWorld.cls'

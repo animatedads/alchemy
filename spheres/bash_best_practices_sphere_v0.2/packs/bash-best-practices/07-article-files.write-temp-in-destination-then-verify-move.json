@@ -1,0 +1,17 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.files.write-temp-in-destination-then-verify-move",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Write with hygiene: temp in the destination dir, verify your own write, then atomic-rename once",
+  "summary": "The reliable pattern for producing a file good enough to publish is: build the content in a temporary file placed in the same directory as the target (so the final rename is atomic on the same filesystem), verify what you just wrote (existence, and ideally size/hash), and on any failure clean up the temp and abort without touching the target. Straight writes that publish directly risk leaving a truncated or partially-escaped artifact if interrupted.",
+  "technique": "mktemp with a precise template in the target dir; fill it in one succeeded redirect, checking the return of the fill; run a status/integrity check on the temp BEFORE moving; only then mv; clean the temp on every failure and set restrictive permissions for private material.",
+  "evidence_note": "queuebash.sh:9061-9088 creates `...candidate.XXXXXX`, fills it with quoted exports (using %q), runs a file-status check, and only then `mv` to the destination, removing the temp on each failure branch. The env/hand-off contract in docs/IPC.md uses the same temp-then-mv then a verify because a partial file would wrongly satisfy a consumer.",
+  "invariants": [
+    "Build the candidate inside the destination directory, not somewhere you must move across filesystems from.",
+    "Verify your own output (existence and integrity) before you let it be seen as authoritative.",
+    "Publish with one atomic rename (mv) once the temp passes checks; never write to the final name incrementally.",
+    "Clean up the temp on every failure, and use an EXIT trap when verification can fail at many points.",
+    "For sensitive material set a restrictive umask/permissions during the private write, then relax only the result you deliberately make public."
+  ]
+}

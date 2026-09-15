@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Vector Meridian Markets · Dealing & Risk Preview</title>
+  <link rel="stylesheet" href="vmm-wire-ui.css">
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+  <header class="vmm-topbar">
+    <div class="vmm-brand">
+      <img src="assets/vmm-glyph.png" alt="" class="vmm-glyph">
+      <span class="vmm-brand-copy"><strong>VECTOR MERIDIAN</strong><span>MARKETS</span></span>
+    </div>
+    <div class="vmm-session-strip"><span class="vmm-perimeter">Independent principal market maker</span><div class="wire-ui-connection" data-state="live">Preview fixture</div></div>
+  </header>
+
+  <nav class="preview-nav" aria-label="Preview navigation">
+    <strong>VMM · LONDON</strong>
+    <button class="active">Dealing</button><button>Institutional</button><button>Treasury</button><button>Exceptions</button>
+    <span class="preview-nav-spacer"></span><span class="preview-release">VECTOR_MERIDIAN_MARKETS_OPERATIONS@2</span><span class="preview-time">Projection 21:43:12.441Z · GBP base</span>
+  </nav>
+
+  <main class="preview-main">
+    <section class="preview-heading">
+      <div><p class="vmm-eyebrow">VECTOR_MERIDIAN_MARKETS_LTD</p><h1>Dealing &amp; Risk</h1><p>Principal inventory, execution and institutional exposure. Server-authoritative in live mode.</p></div>
+      <div class="preview-badges"><span class="badge good">ALGOS · ENABLED</span><span class="badge warning">2 RECONCILIATIONS</span><span class="badge">CAPITAL · VMM ONLY</span></div>
+    </section>
+
+    <section class="preview-summary" aria-label="Firm summary">
+      <div><label>VMM capital</label><strong>£84.0m</strong><small>Independent capital base</small></div>
+      <div><label>Gross inventory</label><strong>£126.4m</strong><small>Exact tradable lines</small></div>
+      <div><label>Net directional</label><strong>£18.7m</strong><small>Across admitted lines</small></div>
+      <div><label>Today realised P/L</label><strong class="positive">+£438k</strong><small>Fees &amp; rebates separated</small></div>
+      <div><label>Leverage</label><strong>2.31×</strong><small>Limit 3.00×</small></div>
+      <div><label>Arm's-length funding</label><strong>£28.0m</strong><small>Federation · lender only</small></div>
+    </section>
+
+    <section class="preview-alert">
+      <div class="alert-icon">!</div>
+      <div><strong>Venue reconciliation required</strong><span>Order VMM-ORD-00019281 remains UNKNOWN_PENDING_RECONCILIATION after adapter recovery. Inventory has not inferred a failure or replayed the order.</span></div>
+      <span class="alert-ref">QF · VMM.EXEC.XLON.A · corr 7fc1…9b2e</span>
+    </section>
+
+    <section class="operator-strip" aria-label="Server-authoritative operator controls">
+      <div class="operator-trust">
+        <span class="trust-kicker">CONTROL AVAILABILITY · SERVER PROJECTED</span>
+        <strong>Selected order · VMM-ORD-00019281</strong>
+        <small>Controls below are a static preview of semantic intents. The live browser cannot manufacture availability.</small>
+      </div>
+      <div class="operator-actions">
+        <button class="operator-button danger"><span>Request cancel</span><code>VMM.ORDER.CANCEL.REQUEST</code></button>
+        <button class="operator-button warning"><span>Reconcile venue state</span><code>VMM.ORDER.RECONCILE.REQUEST</code></button>
+        <button class="operator-button danger"><span>Kill strategy</span><code>VMM.ALGO.KILL.REQUEST</code></button>
+        <button class="operator-button disabled" disabled><span>Resume strategy</span><code>server unavailable</code></button>
+      </div>
+    </section>
+
+    <section class="preview-grid">
+      <div class="preview-card">
+        <div class="card-head"><div><h2>Live orders &amp; fills</h2><p>Venue state is projected; this fixture does not issue commands.</p></div><div class="card-actions"><button class="active">All</button><button>Open</button><button>Exceptions</button></div></div>
+        <div class="data-table">
+          <div class="row header"><span>Order / instrument</span><span>Side</span><span>Quantity</span><span>State</span><span>Filled</span><span>Net price</span><span>Route</span></div>
+          <div class="row selected"><span><b>VMM-ORD-00019281 · SHEL</b><small>GB00BP6MXD84 · XLON · GBP</small></span><span><b>BUY</b><small>synthetic hedge</small></span><span><b>450,000</b><small>shares</small></span><span><em class="state pending">UNKNOWN</em><small>reconcile</small></span><span><b>210,000</b><small>46.7%</small></span><span><b>£27.4081</b><small>incl. venue economics</small></span><span><em class="state external">VENUE-LDN-A</em><small>adapter 17</small></span></div>
+          <div class="row"><span><b>VMM-ORD-00019276 · AZN</b><small>GB0009895292 · XLON · GBP</small></span><span><b>SELL</b><small>principal flow</small></span><span><b>85,000</b><small>shares</small></span><span><em class="state live">PART FILLED</em><small>venue ack</small></span><span><b>64,000</b><small>75.3%</small></span><span><b>£118.742</b><small>rebate £1.8k</small></span><span><em class="state external">VENUE-LDN-B</em><small>smart route</small></span></div>
+          <div class="row"><span><b>VMM-ORD-00019269 · HSBA</b><small>GB0005405286 · XLON · GBP</small></span><span><b>BUY</b><small>inventory hedge</small></span><span><b>310,000</b><small>shares</small></span><span><em class="state flat">FILLED</em><small>final</small></span><span><b>310,000</b><small>100%</small></span><span><b>£6.8472</b><small>fee £620</small></span><span><em class="state external">VENUE-LDN-A</em><small>adapter 17</small></span></div>
+        </div>
+        <div class="restricted"><strong>Execution identity:</strong> ISIN + venue/listing + quote/settlement currency. Cross-listed lines are not silently merged.</div>
+      </div>
+
+      <div class="detail-stack">
+        <div class="preview-card">
+          <div class="card-head"><div><h2>Firm risk</h2><p>Independent VMM limits.</p></div><span class="badge good">WITHIN LIMIT</span></div>
+          <div class="detail-body">
+            <div class="kv"><span>Daily loss utilisation</span><b>31%</b></div><div class="risk-meter"><i></i></div>
+            <div class="kv"><span>Leverage utilisation</span><b>77%</b></div><div class="risk-meter danger"><i></i></div>
+            <div class="kv"><span>Borrowed capital</span><b>£28.0m</b></div>
+            <div class="kv"><span>Open short locate</span><b>1.42m sh</b></div>
+            <div class="kv"><span>Algo kill state</span><b class="positive">ARMED / NOT TRIPPED</b></div>
+          </div>
+        </div>
+        <div class="preview-card">
+          <div class="card-head"><div><h2>Selected inventory</h2><p>SHEL · XLON · GBP</p></div></div>
+          <div class="detail-body">
+            <div class="kv"><span>Principal position</span><b>+240,000 sh</b></div>
+            <div class="kv"><span>Marked value</span><b>£6.58m</b></div>
+            <div class="kv"><span>Realised P/L</span><b class="positive">+£73.4k</b></div>
+            <div class="kv"><span>Unrealised P/L</span><b class="negative">−£18.2k</b></div>
+            <div class="kv"><span>Market structure</span><b>EXACT LINE</b></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="subgrid">
+      <div class="preview-card">
+        <div class="card-head"><div><h2>Institutional synthetics</h2><p>Contract state without leaking the client's raw reference portfolio into execution.</p></div><div class="card-actions"><button class="active">Live</button><button>Close-out</button></div></div>
+        <div class="mini-table">
+          <div class="mini-row header"><span>Contract</span><span>Counterparty</span><span>State</span><span>VMM value</span></div>
+          <div class="mini-row"><span><b>VMM-AJI-SYN-1</b><small>PORTFOLIO_LOSS_PROTECTION</small></span><span>All Japan Insurance</span><span><em class="state live">ACTIVE</em></span><span><b>−¥3.84bn</b></span></div>
+          <div class="mini-row"><span><b>VMM-INT-SYN-0041</b><small>portfolio overlay</small></span><span>Institutional CP-41</span><span><em class="state pending">VM DUE</em></span><span><b>+£4.1m</b></span></div>
+        </div>
+        <div class="legal-boundary"><span>Execution sees VMM contract references only.</span><code>vmm.institutional.synthetic/0.5</code></div>
+      </div>
+
+      <div class="preview-card">
+        <div class="card-head"><div><h2>Funding &amp; collateral</h2><p>Separate liabilities and custody evidence.</p></div></div>
+        <div class="mini-table">
+          <div class="mini-row header"><span>Facility / asset</span><span>Counterparty</span><span>State</span><span>Amount</span></div>
+          <div class="mini-row"><span><b>VMM-FAC-CORE-01</b><small>arm's-length debt</small></span><span>FederationBank</span><span><em class="state live">DRAWN</em></span><span><b>£28.0m</b></span></div>
+          <div class="mini-row"><span><b>IM · VMM-AJI-SYN-1</b><small>segregated securities</small></span><span>Third-party custodian</span><span><em class="state live">CONTROLLED</em></span><span><b>¥6.1bn</b></span></div>
+        </div>
+        <div class="legal-boundary"><span>Federation is lender evidence, not VMM book authority.</span><code>VECTOR_MERIDIAN_MARKETS_LTD</code></div>
+      </div>
+    </section>
+
+    <section class="preview-card exception-card">
+      <div class="card-head"><div><h2>Operator exceptions</h2><p>Evidence-first work queue. Acknowledgement is not resolution.</p></div><span class="badge warning">2 OPEN</span></div>
+      <div class="mini-table exception-table">
+        <div class="mini-row header"><span>Exception</span><span>Related object</span><span>Reason / evidence</span><span>Operator state</span></div>
+        <div class="mini-row selected-exception"><span><b>VMM-EXC-000441</b><small>EXECUTION_RECONCILIATION</small></span><span>VMM-ORD-00019281</span><span><b>Venue session recovery</b><small>adapter receipt · sequence 1884201</small></span><span><em class="state pending">UNACKNOWLEDGED</em></span></div>
+        <div class="mini-row"><span><b>VMM-EXC-000438</b><small>COLLATERAL_EVIDENCE</small></span><span>VMM-AJI-SYN-1</span><span><b>Custodian evidence refresh</b><small>third-party control receipt</small></span><span><em class="state external">ACKNOWLEDGED</em></span></div>
+      </div>
+      <div class="exception-foot"><span>Selected exception may expose <code>VMM.EXCEPTION.ACKNOWLEDGE.REQUEST</code> only when the server marks that action available.</span><span class="boundary-pill">Federation principals · no workspace authority</span></div>
+    </section>
+  </main>
+
+  <footer><span>Vector Meridian Markets Ltd</span><span>NON-AUTHORITATIVE PREVIEW · no network calls · no trading implementation</span></footer>
+</body>
+</html>

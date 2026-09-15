@@ -1,0 +1,20 @@
+{
+  "kind": "language-rule",
+  "id": "BASH.SAFETY.EVAL_SOURCE_INDIRECT",
+  "version": "0.1",
+  "language": "bash",
+  "title": "eval or dynamic source constructing a command from a variable",
+  "purpose": "Prevent executing text you (or another component) did not hand-author, because eval/build-a-command-string-from-a-variable turns data into code with no bounds.",
+  "trigger": "Code uses eval, or sources/maintains a file whose path or content is provided by a variable or $( ) (dynamic source), or composes a command line by string interpolation and pipes it to sh. eval built from a var or $( ) is unambiguously the intent to run dynamic text.",
+  "correct": "Prefer direct execution of a known command and argument arrays. Where you genuinely must interpret controlled text, whitelist allowed forms and run them via the bounded mechanism; never eval unbounded data.",
+  "fixability": "MANUAL",
+  "assess": {
+    "classification": "security-authority",
+    "detection_certainty": "deterministic",
+    "violation": "violation",
+    "suggested_correction": "available",
+    "auto_rewrite": "no_automatic_only_refactor_review"
+  },
+  "evidence_note": "Grounded in docs/PLAN_ADAPTER_CONTRACT.md, which flags eval/dynamic source/piped curl|sh as needs_review, and in the provider data-never-shell doctrine.",
+  "return_semantics": "A reference rule page; shown for LLM author guidance, not executed by rules check."
+}

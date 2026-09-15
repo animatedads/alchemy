@@ -1,0 +1,14 @@
+{
+  "kind": "language-rule",
+  "id": "OOREXX.OPERATOR.NONSHORTCIRCUIT_BOOLEAN",
+  "version": "0.1",
+  "language": "oorexx",
+  "title": "& and | used where a short-circuit guard was intended",
+  "purpose": "Prevent a NOMETHOD/NOSTRING crash on the right-hand operand when the left-hand operand alone would have made evaluating the right-hand one unnecessary and unsafe.",
+  "trigger": "A `&` or `|` expression combines two conditions where the right-hand condition would raise a condition (most commonly a NOMETHOD error from indexing or negating .nil) if evaluated in isolation, and the left-hand condition exists specifically to guard against that case. ooRexx's `&` and `|` operators always evaluate both operands; they are not short-circuiting the way `and`/`or` are in Python or `&&`/`||` are in C-family languages.",
+  "evidence_note": "This project's own Alchemy conventions already record it: '& does not short-circuit -- use nested if'. It was also the confirmed root cause of a real crash traced this session in an unrelated component: a predicate `if \\\\left[\"ok\"] | \\\\right[\"ok\"] then return .nil` failed with 'The NIL object does not understand message \"\\\\\"' because a prior evaluation step could leave left[\"ok\"] genuinely unset (.nil) rather than an explicit boolean, and `\\\\` applied to .nil is itself a NOMETHOD error, independent of the missing short-circuit.",
+  "correct": "Replace `if guard & risky then ...` with nested guards: `if guard then do; if risky then ...; end`. Where the risky operand cannot itself be .nil-safe, check it explicitly (`x \\\\== .nil`) rather than relying on evaluation order that ooRexx does not provide.",
+  "fixability": "SUGGESTED",
+  "compiler_relationship": "Both operands are always evaluated by design; this is documented ooRexx operator semantics, not a translator bug. The rule is about a common incorrect assumption carried over from short-circuiting languages, not about non-conformant code.",
+  "return_semantics": "A LanguageRulePage may be opened and then return to the originating cycle selector."
+}

@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "ac.resident-service",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Resident service is a thin composition loop",
+  "summary": "AlchemyAutobuildService discovers candidates through AlchemyInbox, rechecks terminal receipts, calls the orchestrator, and records terminal evidence. Planning, transport, execution and publication remain outside the daemon.",
+  "authority": "project-authority",
+  "invariants": [
+    "The service does not own Git branch discovery rules.",
+    "The service rechecks receipt immediately before work to close scan races.",
+    "Inbox conflicts become terminal ERROR evidence rather than killing the daemon.",
+    "Syntax/error/failure conditions are converted to terminal ERROR receipts.",
+    "runForever is runOnce plus bounded polling; domain behavior remains in components below it."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_autobuild_service_v0.4/src/AlchemyAutobuildService.cls",
+      "line_start": 1,
+      "line_end": 7,
+      "claim": "Service composition boundary."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_autobuild_service_v0.4/src/AlchemyAutobuildService.cls",
+      "line_start": 37,
+      "line_end": 71,
+      "claim": "Thin runOnce/runForever loop and receipt recheck."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_autobuild_service_v0.4/src/AlchemyAutobuildService.cls",
+      "line_start": 73,
+      "line_end": 125,
+      "claim": "PASS/FAIL/ERROR orchestration and terminal evidence handling."
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+SAFETY16 CHECKPOINT
+===================
+Parent: sealed safety15
+Promoted: primary X'FF' as a BC-mode operation exception (classifier only)
+No OPFF method exists.
+No OPC4 method exists.
+
+Exact FF frontier before promotion:
+  IA       000020
+  ICOUNT   521152
+  BYTES    FF04000D0001
+  PSW      0004000160000020
+
+Exact retry:
+  PGM OLD  00040001E0000026
+  PGM NEW  00040000000002CA
+  NEXT IA  0002CA
+  ICOUNT   521153
+
+Forward progress after retry:
+  6211 successful instructions
+  next boundary C4 @ 000042
+  ICOUNT 527364
+  fetch C4E80C000000
+
+Validation: COMPILE PASS 125 sources; RUNTIME PASS 63 tests.

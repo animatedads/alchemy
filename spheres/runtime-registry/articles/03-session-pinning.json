@@ -1,0 +1,13 @@
+{
+  "id": "rr-ability-session-pinning",
+  "title": "Ability Session Pinning",
+  "summary": "Client requests are bound to an AbilitySession, which pins a specific AbilityGeneration and its underlying Runtime Snapshots.",
+  "why": "Allows the server to rotate global runtimes and profiles without breaking existing sessions.",
+  "invariants": [
+    "An AbilitySession pins a specific AbilityGeneration.",
+    "Staging a profile captures one runtime snapshot and owns those leases for the warm lifetime of the generation.",
+    "Publishing a new profile (P2) does not change existing sessions (P1)."
+  ],
+  "evidence_note": "Source: runtime_registry_v0.14/README.md:105-120. Line 106: 'An AbilityProfileRevision describes one immutable client-facing configuration.'",
+  "grounding": "oorexx-grounded"
+}

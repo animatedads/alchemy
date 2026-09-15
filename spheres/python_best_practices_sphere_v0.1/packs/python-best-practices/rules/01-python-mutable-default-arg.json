@@ -1,0 +1,13 @@
+{
+  "kind": "language-rule",
+  "id": "PYTHON.DEFAULT_MUTABLE",
+  "version": "0.1",
+  "language": "python",
+  "title": "Mutable object bound as a default argument value",
+  "purpose": "Prevent the classic shared-mutable-default bug an authoring LLM reproduces from corpora: the default object is created once and mutated residual across calls.",
+  "trigger": "A function parameter's default value is a list/dict/set literal (or a fresh-mutable constructor call such as list(), dict(), set()) producing an object that carries in-place mutation semantics.",
+  "correct": "Bind None as the default and construct a fresh mutable inside the body only when the argument is None; keep all per-call state local to that call.",
+  "fixability": "AUTOMATIC",
+  "compiler_relationship": "Statistically safe and almost always intended-wrong; a deliberate shared-cache default is rare and should be an explicit documented decision, not a bare literal.",
+  "return_semantics": "A LanguageRulePage may be opened and then returned to the originating cycle."
+}

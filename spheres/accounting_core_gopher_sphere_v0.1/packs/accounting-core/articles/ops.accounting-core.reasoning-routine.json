@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "ops.accounting-core.reasoning-routine",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "Reasoning routine for a new accounting scenario",
+  "summary": "Use a stable question order before proposing accounts or code. This prevents an LLM from confusing legal entity, establishment, tax registration, regulator, client-money perimeter, reporting boundary and operational source authority.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Do not start with debit/credit lines; first establish whose books, what happened, and which authority proves it.",
+    "Do not infer tax jurisdiction from company domicile, regulatory scope from tax scope, establishment from legal entity, or consolidation from a cross-entity report.",
+    "Do not invent an accounting treatment when legal/economic substance is unresolved; carry evidence and defer the treatment to the effective policy.",
+    "Do not manufacture a subsidiary merely because one legal entity has an overseas place of business, tax registration or regulator relationship."
+  ],
+  "procedure": [
+    "1. Name the legal entity whose AccountingBook may change.",
+    "2. Identify the authoritative operational/economic event, sourceEventRef, source authority and immutable evidence.",
+    "3. Identify the effective accounting policy generation and exact executable policy identity for that entity/event/date.",
+    "4. Identify orthogonal scopes: establishment, tax registration/election, regulator, client-money arrangement, matter, counterparty and relationship kind.",
+    "5. If tax is involved, determine tax under the selected registration/election/ruleset before accounting the result.",
+    "6. If settlement rounding is involved, apply its separate election only after the accounted obligation exists; never let it rewrite tax.",
+    "7. Post exact whole minor-unit journal lines, balanced independently by currency.",
+    "8. For external filings, import into an assessment book rather than native GL truth.",
+    "9. For reports, select immutable journal evidence through a ReportingBoundary; do not repost the ledger to make a report.",
+    "10. For corrections, create new journals/snapshots/filings and explicit lineage; never rewrite historical evidence."
+  ],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/ARCHITECTURE.md",
+      "claim": "Architecture separates legal entity, event/policy/posting, scopes, tax, settlement, assessment and reporting evidence."
+    },
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/ACCOUNTING_EVENT_TRANSACTION_CONTRACT.md",
+      "claim": "Preferred reasoning begins from authoritative operational evidence and exact legal-entity accounting policy, not from invented journal lines."
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+now=.DateTime~new
+handover=now+.InstitutionalPolicyTime~seconds(3600)
+old=.InstitutionalPolicyAuthorityProfile~new('DEMO-GOV','1.0',now,handover)
+ignored=old~addGrant(.InstitutionalPolicyAuthorityGrant~new('OLD-A','TEAM','AUTHOR','PAYMENT-POLICY',now,handover)~seal)
+ignored=old~addGrant(.InstitutionalPolicyAuthorityGrant~new('OLD-R','RISK','APPROVER','PAYMENT-POLICY',now,handover)~seal)
+ignored=old~addGrant(.InstitutionalPolicyAuthorityGrant~new('OLD-P','BOT-1','PUBLISHER','PAYMENT-POLICY',now,handover)~seal)
+ignored=old~addRule(.InstitutionalPolicyAuthorityRule~new('OLD-RULE','PAYMENT-POLICY',.true,'OPTIONAL')~seal)
+ignored=old~seal
+new=.InstitutionalPolicyAuthorityProfile~new('DEMO-GOV','2.0',handover,.nil)
+ignored=new~setSupersedes('1.0')
+ignored=new~addGrant(.InstitutionalPolicyAuthorityGrant~new('NEW-A','TEAM','AUTHOR','PAYMENT-POLICY',handover,.nil)~seal)
+ignored=new~addGrant(.InstitutionalPolicyAuthorityGrant~new('NEW-R','RISK-2','APPROVER','PAYMENT-POLICY',handover,.nil)~seal)
+ignored=new~addGrant(.InstitutionalPolicyAuthorityGrant~new('NEW-P','BOT-2','PUBLISHER','PAYMENT-POLICY',handover,.nil)~seal)
+ignored=new~addRule(.InstitutionalPolicyAuthorityRule~new('NEW-RULE','PAYMENT-POLICY',.true,'OPTIONAL')~seal)
+ignored=new~seal
+catalog=.InstitutionalPolicyAuthorityProfileCatalog~new
+ignored=catalog~publish(old)
+ignored=catalog~publish(new)
+say 'before handover=' catalog~resolve('DEMO-GOV',now+.InstitutionalPolicyTime~seconds(60))~value~version
+say 'at handover=' catalog~resolve('DEMO-GOV',handover)~value~version
+::requires 'InstitutionalPolicy.cls'

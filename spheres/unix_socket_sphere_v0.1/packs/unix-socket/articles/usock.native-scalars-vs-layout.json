@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "usock.native-scalars-vs-layout",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Host-native C scalars and qualified aggregate layout are different concerns",
+  "summary": "Foreign Runtime v0.22.6 supplies ABI-native aliases such as size_t, ssize_t, socklen_t, short and unsigned long. These make function signatures and scalar fields use their real C implementation types without weakening profile authority for aggregate offsets, sizes and padding.",
+  "authority": "project-authority",
+  "invariants": [
+    "Use size_t/ssize_t/socklen_t and other ABI-native C aliases where the C prototype uses those implementation types.",
+    "A host-native scalar does not make a struct layout architecture-neutral.",
+    "msghdr, cmsghdr, iovec, pollfd, ucred and stat remain profile-qualified aggregates.",
+    "Fixed-width types remain appropriate only where the ABI/kernel record truly specifies that width."
+  ],
+  "procedure": [
+    "Ask whether a fact is a C scalar width or an aggregate layout/constant fact before deciding whether Foreign Runtime datatype resolution or the bridge profile owns it."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/QUALIFICATION.md",
+      "line_start": 41,
+      "line_end": 63,
+      "claim": "Qualification defines ABI-native scalar use and explicitly preserves profile authority for aggregate layouts, with an 18-assertion forcing test.",
+      "note": "v0.6 scalar/layout boundary."
+    },
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6(1).zip",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "member": "oorexx_foreign_runtime_v0.22.6/README.md",
+      "line_start": 4,
+      "line_end": 8,
+      "claim": "Foreign Runtime v0.22.6 defines ABI-native C scalar aliases and distinguishes portable native scalar typing from ABI-qualified aggregate layout.",
+      "note": "Dependency authority for native C scalar semantics."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+NoSQLServer v0.39 validation
+============================
+
+Focus
+-----
+Native INSERT grammar compatibility exposed by an external MariaDB/MySQL client.
+
+New SQL surface
+---------------
+- INSERT INTO table VALUES (...) positional form.
+- Positional values map to TableDefinition declared column order.
+- Explicit-column INSERT accepts spaces, tabs, LF and CRLF between grammar tokens.
+- INSERT dispatch accepts SQL whitespace between INSERT, INTO and the table name.
+- Multi-row positional INSERT is supported.
+- Parentheses around every VALUES tuple remain mandatory.
+- Quoted whitespace is preserved as data; the parser does not globally collapse SQL text.
+
+Capabilities
+------------
+- INSERT_POSITIONAL_VALUES
+- INSERT_FLEXIBLE_WHITESPACE
+
+Regression evidence
+-------------------
+- v0.39 INSERT grammar smoke: PASS
+- Exact multiline shape observed through MariaDB client: PASS
+- Positional INSERT: PASS
+- tab/CRLF grammar whitespace: PASS
+- multi-row positional INSERT: PASS
+- malformed unparenthesized VALUES: rejected
+- v0.38 through prior feature gates: PASS
+- database_core adapter smoke: PASS
+- SQL-92 company smoke: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 12/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

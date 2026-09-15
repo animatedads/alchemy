@@ -1,0 +1,37 @@
+FederationBank IOM Offshore Backend v0.9.1 validation target: ooRexx 5.3.0 r13196
+
+Validated behaviours:
+- all FederationBank *.cls files compile under r13196
+- 41 banking regression test_*.rex cases + smoke_runtime.rex pass in fresh Queue Fabric roots
+- existing three-engine, SQL atomicity, durable replay, retained projections, beneficiary, fee, FX, IJCIB/CivicPort, Bouncer, Legal Effect, Institutional Policy, DLQ and PHANTOM_FUNDS regressions remain green
+- the delivered ooRexx JMS Queue Bridge v0.1-dev7-fb1 remains the transport dependency
+- ATM JSON parser wrappers are canonicalised only at the external ATM boundary before durable Queue Fabric work
+- online ATM withdrawal/deposit/cancel/status and dual idempotency remain unchanged
+- bank-issued RESERVED_ALLOWANCE and DELEGATED_STAND_IN authorities remain single-use and retained
+- delayed OFFLINE_WITHDRAWAL_ADVICE is judged against the physical dispense event, not merely advice arrival time
+- expiry still prevents new offline vending
+- delayed advice requires retained bank authority plus matching terminal/customer/account/currency/rules/session binding, forward terminal sequence, physical transaction identity and amount envelope
+- delayed evidence is accepted only inside bank-defined clock-skew and reconciliation windows
+- a different later customer session cannot consume the earlier authority
+- interactive LOGOFF/timeout does not erase already-created physical-cash recovery work
+- authority/session state survives ATM Gateway restart through retained Queue Fabric topics
+- delayed settlement preserves dispensedAt, bank adviceReceivedAt, authority issue/expiry, issuing terminal sequence, evidence disposition, reconciliation window and clock-skew bounds in durable payment/Ledger receipt evidence
+- stale, post-authority, cross-session, non-forward-sequence and reused physical cash advice is rejected before new monetary truth
+- replay of the same advice/idempotency/physical identity recovers the original committed result without a second debit
+- Java ATM v0.1.5 package manifest verifies and its supplied suite passes 12/12
+- ATM v0.1.5 composed v0.9.1 paths pass for both ordinary online banking and bank-issued reserved offline authority/replay
+
+Monetary invariants:
+- holds are not postings
+- only Ledger makes monetary truth
+- committed ATM withdrawal/deposit/offline settlement remains atomic double entry
+- already-incurred delegated physical cash may SETTLEMENT_MUST_POST
+- no generic force-post capability exists
+- PHANTOM_FUNDS invariant remains green
+
+Important boundary:
+A terminal timestamp is evidence, not authority. Delayed reconciliation is bounded by a bank-issued, terminal/session/account-specific, single-use authority and a finite bank-side evidence window. The model does not claim that an untrusted terminal clock alone cryptographically proves when cash moved.
+
+All limits, reconciliation windows, clock-skew tolerances, offline authority amounts, fee amounts, FX rates/markups, bureau bands and legal/regulatory content in FederationBankFixtures.cls or the ATM gateway defaults are TEST FIXTURES ONLY.
+
+Dependency versions are listed in DEPENDENCIES.txt.

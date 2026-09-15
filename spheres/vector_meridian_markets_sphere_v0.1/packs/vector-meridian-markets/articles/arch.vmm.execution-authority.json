@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "arch.vmm.execution-authority",
+  "version": "0.1",
+  "sphere": "vector-meridian-markets",
+  "title": "Queue Fabric is execution truth; APIs are edge adapters",
+  "summary": "VMM execution uses durable queue-persistable commands/events and asynchronous lifecycle truth. A routed order is not a synchronous function result; venue acknowledgement, fill, cancellation and reconciliation are facts that arrive later.",
+  "invariants": [
+    "Canonical external execution protocol is vmm.execution/0.4.",
+    "JSON/HTTP may translate edge messages but cannot mutate VMM inventory or manufacture fill truth.",
+    "A routed cancel becomes CANCEL_PENDING until venue confirmation; it is not fabricated as CANCELLED.",
+    "UNKNOWN_PENDING_RECONCILIATION is an explicit state; timeout is not evidence of failure.",
+    "Venue fills are post-trade facts and must be booked even if a strategy is later disabled or risk limits changed."
+  ],
+  "authority": "artifact-grounded",
+  "provenance": [
+    {
+      "artifact": "vector_meridian_markets_v0.11.zip",
+      "sha256": "4ebde9b8ca4ca158906bd42d4367bb3040b83b598b8bd41850addfe6518e3509",
+      "member": "vector_meridian_markets_v0.11/docs/QUEUE_EXECUTION_PROTOCOL.md",
+      "line_start": 1,
+      "line_end": 73,
+      "claim": "Queue-persisted execution payloads, asynchronous lifecycle, cancel/reconcile semantics and JSON edge rule."
+    }
+  ]
+}

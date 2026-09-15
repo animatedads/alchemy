@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "ap-domain-admission",
+  "version": "0.3",
+  "sphere": "access-permissions",
+  "title": "Access Control is domain admission",
+  "summary": "AccessControlAuthority evaluates a sealed AccessControlRequest against a sealed AccessControlPolicy to decide whether a principal may cross a protected domain boundary. Context is part of the request and policy is deny-by-default.",
+  "authority": "project-authority",
+  "invariants": [
+    "The request binds request id, principal id, domain id, entry point, intended time, and snapshotted contextual attributes.",
+    "Highest numeric priority wins; DENY wins equal-priority mixed-action ties; same-action ties use lexical rule id.",
+    "Default action is DENY.",
+    "A successful Access Control decision establishes admission only; it is not a method capability."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/ARCHITECTURE.md",
+      "line_start": 11,
+      "line_end": 15,
+      "claim": "Access Control is protected-domain admission with deterministic priority, DENY tie-breaking, and default DENY.",
+      "note": "Architecture contract."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AccessPermissions.cls",
+      "line_start": 520,
+      "line_end": 560,
+      "claim": "AccessControlAuthority implements sealed/effective checks, attribution binding, rule selection, default policy action, proof wrapping, and DENY-wins equal priority selection.",
+      "note": "Executable authority."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+call assertEq "0.2", .AccessPermissionsBuild~RELEASE, "release"
+call assertEq "access.permissions/0.2", .AccessPermissionsBuild~API_VERSION, "api"
+say "PASS compile_smoke"
+::requires "TestSupport.cls"
+::requires "AccessPermissions.cls"
+::requires "AlchemyAccessPermissionsAdapter.cls"

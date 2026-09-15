@@ -1,0 +1,82 @@
+{
+  "schema": "oorexx.foreign/0.11",
+  "library": {
+    "provider": "native",
+    "names": [
+      "libavutil.so.59",
+      "libavutil.so"
+    ]
+  },
+  "types": {
+    "AVFrame": {
+      "kind": "struct",
+      "size": 152,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "data0",
+          "type": "pointer",
+          "offset": 0
+        },
+        {
+          "name": "linesize0",
+          "type": "i32",
+          "offset": 64
+        },
+        {
+          "name": "width",
+          "type": "i32",
+          "offset": 104
+        },
+        {
+          "name": "height",
+          "type": "i32",
+          "offset": 108
+        },
+        {
+          "name": "nb_samples",
+          "type": "i32",
+          "offset": 112
+        },
+        {
+          "name": "format",
+          "type": "i32",
+          "offset": 116
+        },
+        {
+          "name": "pts",
+          "type": "i64",
+          "offset": 136
+        }
+      ]
+    }
+  },
+  "functions": {
+    "version": {
+      "symbol": "avutil_version",
+      "return": "u32",
+      "args": []
+    },
+    "frame_alloc": {
+      "symbol": "av_frame_alloc",
+      "return": {
+        "type": "pointer",
+        "object": "AVFrame",
+        "ownership": "owned",
+        "destructor": "av_frame_free",
+        "destructorPointerDepth": 2
+      },
+      "args": []
+    },
+    "frame_unref": {
+      "symbol": "av_frame_unref",
+      "return": "void",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "AVFrame"
+        }
+      ]
+    }
+  }
+}

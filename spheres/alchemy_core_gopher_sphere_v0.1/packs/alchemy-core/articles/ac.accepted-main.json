@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "ac.accepted-main",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Accepted main is read and written through detached transactions",
+  "summary": "The normal checkout is only a Git handle. Accepted dependencies are read from an exact detached snapshot of origin/main; accepted publication/evidence writes use a separate detached main transaction. A dirty or stale ordinary checkout is not an error condition.",
+  "authority": "project-authority",
+  "invariants": [
+    "Do not clean, reset, stash or fast-forward the ordinary checkout merely to run Autobuild.",
+    "A read-only snapshot fetches exact remote main, creates a detached worktree, then releases the repository lease while immutable content is consumed.",
+    "A write transaction stages/commits/pushes in its detached worktree and then removes it.",
+    "Dependency planning must use the accepted-main snapshot as REPO_ROOT, not the caller's potentially stale checkout."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/README.md",
+      "line_start": 8,
+      "line_end": 16,
+      "claim": "Core rules explicitly separate repository lease, accepted-main snapshots and ordinary checkout."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_transport_v0.4/src/AlchemyTransport.cls",
+      "line_start": 226,
+      "line_end": 363,
+      "claim": "Git revision snapshot and main transaction objects."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_orchestrator_v0.5/src/AlchemyOrchestrator.cls",
+      "line_start": 52,
+      "line_end": 86,
+      "claim": "Orchestrator builds dependency floor and executes from accepted-main snapshot."
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.collection-patches",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Ordered collection/window patch semantics",
+  "summary": "Current Wire UI Server collection/window operations mutate authoritative semantic child order and membership. Swing must preserve that order explicitly rather than relying on Java map insertion order, and ordinary reorder operations should reuse existing JComponents.",
+  "authority": "wire-ui-server-contract",
+  "invariants": [
+    "Snapshot children[]/parent relationships define authoritative direct-child order when supplied.",
+    "LIST_APPEND inserts at the server-defined zero-based index.",
+    "LIST_MOVE changes semantic order without reconstructing unaffected component instances.",
+    "DESTROY_INSTANCE removes semantic/component subtree instances only according to the protocol; LIST_REMOVE updates owning collection order/membership.",
+    "Malformed structural operations fail transactionally rather than being guessed or partially applied.",
+    "Selection preservation follows stable server identity, never old row number, and restoration emits no application action."
+  ],
+  "procedure": [
+    "Preflight collection membership and child order.",
+    "Apply semantic ordering to the mirror.",
+    "Relayout existing component objects on EDT.",
+    "Restore focus/selection only as renderer-local state when the same semantic identity still exists."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_server_v0.17.zip",
+      "sha256": "82c3a9d270d123dcbedabed1b57ed5e0944b828b1a184a5b71d47d9f9f188441",
+      "member": "wire_ui_server_v0.17/src/WireUIView.cls",
+      "claim": "Current server view snapshot/patch child ordering and collection operation source."
+    },
+    {
+      "artifact": "wire_ui_server_v0.17.zip",
+      "sha256": "82c3a9d270d123dcbedabed1b57ed5e0944b828b1a184a5b71d47d9f9f188441",
+      "member": "wire_ui_server_v0.17/tests/cross_language/cross_collection_window_server.rex",
+      "claim": "Cross-language collection/window operation acceptance shapes."
+    }
+  ],
+  "patch_vocabulary": [
+    "CREATE_INSTANCE",
+    "SET_SLOT",
+    "LIST_APPEND",
+    "LIST_MOVE",
+    "DESTROY_INSTANCE",
+    "LIST_REMOVE"
+  ]
+}

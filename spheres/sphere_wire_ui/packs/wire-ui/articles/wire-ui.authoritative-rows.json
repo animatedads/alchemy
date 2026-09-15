@@ -1,0 +1,49 @@
+{
+  "kind": "article",
+  "id": "wire-ui.authoritative-rows",
+  "version": "0.1",
+  "sphere": "wire-ui",
+  "title": "Authoritative rows and lists",
+  "summary": "Lists, tables and worklists are first-class semantic collections. Render 0/1/N rows from an explicit collection contract; keep count separate; use stable server-owned row identity; never derive transaction authority from row position or displayed values.",
+  "invariants": [
+    "A collection slot and a numeric count are different facts. Never overload one value to mean both.",
+    "Row identity is a stable server-owned semantic identity, never visible position, DOM index or current sort position.",
+    "0, 1 and N rows are equally ordinary states and must be covered by regression tests.",
+    "Missing or duplicate semantic identities fail closed for actionable collections.",
+    "If an explicit count is projected, count/collection disagreement is an invalid state rather than an empty list.",
+    "Displayed row fields are presentation evidence and do not become command parameters merely because the browser can see them.",
+    "Application code should consume the shared Wire collection implementation rather than inventing a private list renderer."
+  ],
+  "regression_matrix": [
+    "0 rows",
+    "1 row",
+    "2 rows",
+    "N rows",
+    "count mismatch",
+    "missing identity",
+    "duplicate identity",
+    "reorder",
+    "filter scope change",
+    "page/window change",
+    "stale action context",
+    "forged row identity"
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_builder_v0.12-dev1.zip",
+      "sha256": "73dea2f650dddeba862b8402b52b0a7c97d6d385b970ebaf746814174aa3b88c",
+      "member": "wire_ui_builder_v0.12-dev1/ROW_COLLECTIONS.md",
+      "line_start": 1,
+      "line_end": 40,
+      "claim": "Compiled authoritative row-collection contract and Federation-company baseline."
+    },
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev5-row1.zip",
+      "sha256": "1562221e9550cd75f2f3ba51388b68bbf93f70453b5c5b9a0a2e21ad739eca51",
+      "member": "alchemy_wire_ui_js_v0.4-dev5-row1/ROW_COLLECTIONS.md",
+      "line_start": 1,
+      "line_end": 18,
+      "claim": "Renderer consumes explicit row contract, stable identity, count validation, selection and action boundaries."
+    }
+  ]
+}

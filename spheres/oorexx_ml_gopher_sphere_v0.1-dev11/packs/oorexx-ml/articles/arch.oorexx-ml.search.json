@@ -1,0 +1,46 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.search",
+  "version": "0.2",
+  "sphere": "oorexx-ml",
+  "title": "Bounded search experiments and search spaces",
+  "summary": "Search strategy, evaluator, scalar or objective-vector evidence, workspace/retention policy and execution placement are separate objects. dev5 supports both scalar ranking and Pareto front analysis while materializing only bounded results.",
+  "authority": "Executable ooRexx ML source/tests are authoritative; recovered-audio integration is the first serious customer.",
+  "invariants": [
+    "MLObjective owns MINIMIZE/MAXIMIZE direction; domain evaluators should return their natural score.",
+    "MLObjectiveFitnessAdapter owns score-to-GA-fitness conversion.",
+    "Search spaces are declared explicitly and compared before interpreting lane results as equivalent coverage.",
+    "Workspace budgets, reserve free space and retention limits are deployment contracts, not comments.",
+    "Requested evaluation count, unique normalized evaluation count and retained material count are distinct evidence.",
+    "Execution placement/transport does not define the hypothesis identity.",
+    "Multi-objective search retains non-dominated tradeoffs explicitly; retention may use Pareto rank/crowding but must not fabricate a scalar score."
+  ],
+  "procedure": [
+    "Declare MLParameterDomain/MLSearchSpace and MLObjective.",
+    "Declare workspace and retention policy before launching the lane.",
+    "Preflight resources fail closed.",
+    "Drive the chosen grid/random/GA strategy through the same evaluator contract.",
+    "Promote only policy-selected candidates to durable bulk material.",
+    "Compare lanes only after recording search-space relation and common evidence basis."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev5.zip",
+      "sha256": "b9aa9b80031743508b025c69d3819f00ea2a8e93aeb00f7ccc22691a0866c122",
+      "member": "oorexx_ml_v0.1-dev5/src/MLMultiObjective.cls",
+      "claim": "Pareto search candidates, front analysis and bounded front-by-front retention."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev4.zip",
+      "sha256": "ea9992023e3d5a318d5e69d07bb7edc3bc1a82e14a2172aac3c00f8fda1fa73b",
+      "member": "oorexx_ml_v0.1-dev4/src/MLSearch.cls",
+      "claim": "First-class objective, workspace, retention, parameter-space, search-lane and qualification contracts."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev4.zip",
+      "sha256": "ea9992023e3d5a318d5e69d07bb7edc3bc1a82e14a2172aac3c00f8fda1fa73b",
+      "member": "oorexx_ml_v0.1-dev4/tests/test_search_space_contains.rex",
+      "claim": "dev4 regression for search-space membership predicate repair."
+    }
+  ]
+}

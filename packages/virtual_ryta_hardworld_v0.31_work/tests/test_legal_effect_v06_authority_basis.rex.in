@@ -1,0 +1,92 @@
+say 'LEGAL EFFECT V0.6 EFFECTIVE / SUPPRESSED AUTHORITY BASIS V0.19 START'
+provider=.V06TestDigestProvider~new
+verifier=.LegalSourceVerifier~new(provider,'ryta-v019-verifier')
+unit=.LegalCompilationUnit~new('AUTH-BASIS','0.6','ryta-v019-test','1')
+call AddSource unit,'LAW','LEGISLATION','law-expr',.array~of('1'),provider,verifier
+call AddSource unit,'CONTRACT','CONTRACT','contract-expr',.array~of('2'),provider,verifier
+call AddSource unit,'AUTH','LEGISLATION','auth-expr',.array~of('3'),provider,verifier
+
+prohibited=.LegalNorm~new('LAW-N','LAW','1','PROHIBITION','ACT','PROHIBITED','TEST','synthetic',.nil,'BASE','ACT-LEGALITY')
+p1=.LegalCompileProposal~new('P-LAW','NORM',prohibited,'test','HUMAN','1'); ignored=p1~addEvidenceReference(unit~provisionReference('LAW','1')); ignored=unit~addProposal(p1)
+permitted=.LegalNorm~new('CONTRACT-N','CONTRACT','2','PERMISSION','ACT','PERMITTED','TEST','synthetic',.nil,'BASE','ACT-LEGALITY')
+p2=.LegalCompileProposal~new('P-CONTRACT','NORM',permitted,'test','HUMAN','1'); ignored=p2~addEvidenceReference(unit~provisionReference('CONTRACT','2')); ignored=unit~addProposal(p2)
+authorityRule=.LegalAuthorityRule~new('PERMISSION-WINS','AUTH','3','CONTRACT','LAW','DEROGATES_FROM','TEST','ACT',.nil,'CONTRACT-N','LAW-N','synthetic explicit derogation')
+p3=.LegalCompileProposal~new('P-AUTH','AUTHORITY_RULE',authorityRule,'test','HUMAN','1'); ignored=p3~addEvidenceReference(unit~provisionReference('AUTH','3')); ignored=unit~addProposal(p3)
+report=.LegalRuleCompiler~new~compile(unit)
+call AssertTrue report~ok,'authority graph compiles'
+generation=report~generation
+context=.LegalContext~new('AUTH-EVENT','2026-08-20'); ignored=context~bindSource('CONTRACT','party')
+pinned=.LegalEffectV06PinnedEvaluator~evaluate(.LegalEffectEngine~new,.LegalAction~new('ACT'),generation,context)
+call AssertTrue pinned~ok,'resolved authority evaluation pins'
+assessment=pinned~envelope~assessment
+call AssertEqual 'ADMISSIBLE',assessment~status,'permission winner leaves action admissible'
+call AssertEqual 1,assessment~resolvedConflicts~items,'resolved conflict retained'
+call AssertEqual 1,assessment~suppressedMatches~items,'losing prohibition suppressed'
+call AssertEqual 'LAW-N',assessment~suppressedMatches[1]~norm~normId,'suppressed norm is prohibition'
+call AssertEqual 'CONTRACT-N',assessment~effectiveMatches[1]~norm~normId,'effective norm is permission'
+
+promotionSet=.LegalEffectV06PromotionAdapter~promotionsFrom(pinned~envelope)
+blocked=FindPromotion(promotionSet,'LEGAL_ACTION_BLOCKED')
+call AssertTrue blocked \== .nil,'blocked promotion exists'
+call AssertTrue blocked~proposedValue == .false,'blocked projection false'
+call AssertTrue \HasBasisId(blocked,'LEGAL_NORM_EFFECTIVE','LAW-N'),'suppressed prohibition not cited as effective basis'
+call AssertTrue HasBasisId(blocked,'LEGAL_AUTHORITY_RULE','PERMISSION-WINS'),'controlling authority rule cited'
+call AssertTrue HasBasisKind(blocked,'LEGAL_COMPILATION_CERTIFICATE'),'compilation certificate cited'
+call AssertEqual 3,CountBasisKind(blocked,'LEGAL_SOURCE_VERIFICATION_EVIDENCE'),'all three source verifier snapshots cited'
+call AssertEqual 3,CountBasisKind(blocked,'LEGAL_PROVISION_VERIFICATION_EVIDENCE'),'all three provision verifier snapshots cited'
+
+say 'LEGAL EFFECT V0.6 EFFECTIVE / SUPPRESSED AUTHORITY BASIS V0.19: OK'
+exit 0
+
+::routine AddSource
+ use arg unit,sourceId,sourceKind,expressionId,provisionIds,provider,verifier
+ sourceText=''
+ do pid over provisionIds; sourceText=sourceText||sourceId||' provision '||pid||'0a'x; end
+ identity=.LegalSourceIdentity~new(sourceId,sourceKind,expressionId,'urn:test:'||sourceId,'sha256:'||provider~digest(sourceText),'AUTH','TEST','VERIFIED')
+ source=.NormativeSource~new(sourceId,sourceKind,sourceId,'AUTH','TEST')
+ ignored=unit~addSource(identity,source)
+ sourceVerify=unit~verifySource(sourceId,.LegalVerificationMaterial~fromText(source,sourceText,'urn:test:'||sourceId,'RAW_NORMATIVE_SOURCE'),verifier)
+ if \sourceVerify~ok then raise syntax 88.900 array('source verification failed:' sourceId)
+ do pid over provisionIds
+   lexical=sourceId||' provision '||pid
+   reference=.LegalProvisionReference~new(sourceId,pid,expressionId,'p.'||pid,'sha256:'||provider~digest(lexical),lexical,'VERIFIED')
+   ignored=unit~addProvision(reference,.LegalProvision~new(sourceId,pid,'ACTIVE','BASE',lexical))
+   pv=unit~verifyProvision(sourceId,pid,.LegalVerificationMaterial~fromText(.directory~new,lexical,'p.'||pid,'PROVISION_TEXT'),verifier)
+   if \pv~ok then raise syntax 88.900 array('provision verification failed:' sourceId pid)
+ end
+ return 0
+
+::class V06TestDigestProvider public
+::method algorithm
+ return 'SHA256'
+::method digest
+ use arg material
+ return .AlgorithmDigest~sha256Text(material)
+
+::routine FindPromotion
+ use arg setObject,targetName
+ do p over setObject~promotions; if p~targetFactName=targetName then return p; end
+ return .nil
+::routine HasBasisKind
+ use arg promotion,kind
+ return CountBasisKind(promotion,kind)>0
+::routine CountBasisKind
+ use arg promotion,kind
+ c=0
+ do item over promotion~basis; if item~basisKind=kind then c=c+1; end
+ return c
+::routine HasBasisId
+ use arg promotion,kind,id
+ do item over promotion~basis; if item~basisKind=kind then if item~basisId=id then return .true; end
+ return .false
+::routine AssertTrue
+ use arg condition,label
+ if \condition then raise syntax 88.900 array('ASSERT TRUE FAILED: '||label)
+ return 0
+::routine AssertEqual
+ use arg expected,actual,label
+ if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: '||label||' expected='||expected||' actual='||actual)
+ return 0
+::requires 'LegalEffect.cls'
+::requires '__RYTA_ROOT__/algorithm/AlgorithmIntegrity.cls'
+::requires '__RYTA_ROOT__/integration/LegalEffectV06PromotionAdapter.cls'

@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "ac.object-foundation",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "AlchemyObject is the operational base",
+  "summary": "Stateful/value/service objects in Alchemy Core inherit through AlchemyCoreComponent to AlchemyObject so identity, lifecycle evidence, contracts, telemetry and sealed introspection come from the shared foundation rather than being reimplemented by each service.",
+  "authority": "project-authority",
+  "invariants": [
+    "AlchemyCoreComponent subclasses AlchemyObject and initializes common component identity through initAlchemy.",
+    "Accepted Core v0.5 embeds Alchemy Objects v0.4.3; the v0.6 line intentionally targets Alchemy Objects v0.8 as a new immutable version cut.",
+    "Alchemy Objects readiness is temporal: BASE, STANDARD and SECURE_READY are distinct adoption levels; a Core v0.6 release must qualify its intended level rather than assume inheritance is enough.",
+    "Alchemy Objects v0.8 itself still documents oorexx_crypto_v0.1 as its external dependency, so Core v0.6's Crypto v0.8.3 uplift requires executable compatibility/adoption proof, not version-name inference."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_core_component_v0.1/src/AlchemyCoreComponent.cls",
+      "line_start": 1,
+      "line_end": 39,
+      "claim": "Accepted Core component base subclasses AlchemyObject."
+    },
+    {
+      "artifact": "alchemy_objects_v0.8.zip",
+      "sha256": "7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073",
+      "member": "alchemy_objects_v0.8/README.md",
+      "line_start": 1,
+      "line_end": 29,
+      "claim": "Alchemy Objects v0.8 foundation and BASE/STANDARD/SECURE_READY adoption contract."
+    },
+    {
+      "artifact": "alchemy_objects_v0.8.zip",
+      "sha256": "7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073",
+      "member": "alchemy_objects_v0.8/README.md",
+      "line_start": 51,
+      "line_end": 69,
+      "claim": "Alchemy Objects v0.8 documents its external Crypto dependency and capability model."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.6-pre2-source.zip",
+      "sha256": "3b0a18732a6ec33fc55ac35cf4589fb931623796cd0d628062a83c2cfcac914b",
+      "member": "alchemy_oorexx_core_rollup_v0.6-pre2-source/PREBASE_STATUS.txt",
+      "line_start": 6,
+      "line_end": 29,
+      "claim": "v0.6 prebase targets Objects v0.8 and Crypto v0.8.3."
+    }
+  ]
+}

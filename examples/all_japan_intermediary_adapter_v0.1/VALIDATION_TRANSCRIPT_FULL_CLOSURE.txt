@@ -1,0 +1,117 @@
+=== Regulated Intermediary Distribution v0.2 core ===
+== test_mortgage_permission_gate.rex ==
+PASS mortgage permission gate
+== test_mortgage_evidence_gate.rex ==
+PASS mortgage evidence gate
+== test_investment_execution_only.rex ==
+PASS investment execution-only separation
+== test_insurance_provider_boundary.rex ==
+PASS insurance provider legal-entity boundary
+== test_provider_status_exact_identity.rex ==
+PASS provider status exact identity, idempotence and sequencing
+== test_provider_status_late_event.rex ==
+PASS late provider event cannot roll state backwards
+== test_representative_suspension.rex ==
+PASS representative suspension gate
+== test_authority_revocation.rex ==
+PASS authority control event gate
+== test_product_approval_identity.rex ==
+PASS exact product approval identity
+== test_vmm_not_relabelled_internal.rex ==
+PASS VMM remains outside intermediary product authority
+=== Regulated Intermediary Distribution v0.2 integration ===
+== test_institutional_policy_bridge.rex ==
+PASS Institutional Policy bridge
+== test_relationship_case_bridge.rex ==
+PASS Relationship Case bridge
+== test_digital_signature_ed25519.rex ==
+PASS Ed25519 provider event and digital document signatures via Runtime Reference
+== test_queue_status_projection.rex ==
+PASS Queue Fabric authoritative provider-status projection
+=== RID Service v0.1 ===
+== test_service_journey.rex ==
+PASS service insurance journey
+== test_provider_projection.rex ==
+PASS service provider projection is authoritative and ordered
+== test_idempotency_and_worklist.rex ==
+PASS service idempotency and intermediary worklist
+== test_durable_recovery.rex ==
+PASS service durable replay recovery
+== test_permanent_queue_recovery.rex ==
+PASS permanent Queue Fabric typed-command recovery
+=== All Japan Insurance v0.4 ===
+COMPILE AllJapanInsurance.cls
+COMPILE AllJapanInsuranceContract.cls
+COMPILE AllJapanInsuranceRating.cls
+COMPILE TestSupport.cls
+=== test_bind_and_claim.rex ===
+PASS bind creates policy truth and covered loss opens claim
+=== test_bound_contract_survives_ruleset_change.rex ===
+PASS bound term keeps old rules; new business and renewal adopt new rules
+=== test_catalogue.rex ===
+PASS acquired product catalogue
+=== test_claim_coverage_period.rex ===
+PASS claim loss date must fall inside policy coverage
+=== test_contract_locks_rating_function.rex ===
+PASS contract and bound term retain executable rating function identity
+=== test_contract_locks_rating_plan.rex ===
+PASS contract release can lock the permitted rating-plan release
+=== test_contract_rejects_rating_function_mismatch.rex ===
+PASS contract release can constrain executable rating-function release
+=== test_contract_version_ambiguity.rex ===
+PASS overlapping contract releases are ambiguous
+=== test_contract_version_approval_and_identity.rex ===
+PASS contract releases require approval and unique immutable identity
+=== test_contract_version_resolution.rex ===
+PASS effective-dated contract version resolution
+=== test_factor_table_fail_closed.rex ===
+PASS factor-table gaps fail closed rather than silently defaulting
+=== test_factor_table_rating.rex ===
+PASS versioned factor table adjusts selected rating target with evidence
+=== test_group_ownership_no_authority.rex ===
+PASS group ownership does not inherit insurance authority
+=== test_minimum_premium.rex ===
+PASS minimum premium is an explicit rated cost rather than a hidden clamp
+=== test_payout_function_version_identity.rex ===
+PASS payout function identity is versioned and cannot be silently replaced
+=== test_policy_bind_requires_contract_version.rex ===
+PASS policy bind requires an effective approved contract version
+=== test_product_policy_identity.rex ===
+PASS product policy identity cannot cross lines
+=== test_proration_policy.rex ===
+PASS transaction proration is explicit and cost-code aware
+=== test_quote_requires_accept.rex ===
+PASS quote requires accepted underwriting decision
+=== test_rate_plan_immutable_identity.rex ===
+PASS rate-plan release identity is immutable
+=== test_ratebook_ambiguity.rex ===
+PASS overlapping effective rate plans are ambiguous
+=== test_ratebook_effective_date.rex ===
+PASS effective-dated rate-book resolution
+=== test_rated_quote_authority.rex ===
+PASS rated quotation is calculation-backed and arbitrary premium is gated
+=== test_rating_below_threshold.rex ===
+PASS below-step and below-underwriting-risk path
+=== test_rating_formula.rex ===
+PASS quotation formula fixed + stepped proportions + UW fee + overage + sales + tax
+=== test_rating_function_identity.rex ===
+PASS rating function identity changes executable premium semantics
+=== test_rating_function_registry.rex ===
+PASS rating function registry is immutable and publication-gated
+=== test_rating_rounding.rex ===
+PASS exact rational component rounding
+=== test_sales_cost_gross_up.rex ===
+PASS commission gross-up and additive sales loading are distinct
+=== test_schedule_modifier_authority.rex ===
+PASS schedule modifiers are bounded and evidence-bearing
+=== test_tax_basis.rex ===
+PASS explicit tax bases avoid hidden tax ordering assumptions
+=== All Japan Intermediary Adapter v0.1 ===
+== test_submit_boundary.rex ==
+PASS intermediary submit boundary and insurer authority separation
+== test_exact_provider_identity.rex ==
+PASS Federation group ownership does not rewrite insurer identity
+== test_sales_target_not_evidence.rex ==
+PASS sales target cannot substitute for customer insurance evidence
+== test_full_provider_lifecycle.rex ==
+PASS actual AJI provider lifecycle projects into intermediary case

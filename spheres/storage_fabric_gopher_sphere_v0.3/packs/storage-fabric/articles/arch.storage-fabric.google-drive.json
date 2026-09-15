@@ -1,0 +1,45 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.google-drive",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Google Drive bounded data plane, verification and offload seam",
+  "summary": "Google Drive remains primarily catalogue/durable/offload storage, but v0.1-dev7 adds executable bounded HTTP/auth/resumable/range adapters, provider-authoritative resume reconciliation, remote SHA-256 verification and optional API Client v0.3 bridging. Account lifecycle still decides whether a verified Drive location counts as durable safety.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Non-final resumable upload chunks obey the 256 KiB provider quantum; 8 MiB is the current recommended Storage chunk.",
+    "Resume and ambiguous failure recovery use provider-acknowledged Range evidence; never assume all transmitted bytes arrived.",
+    "Only provider-acknowledged bytes advance the generic transfer checkpoint; partial acknowledgement causes exact suffix replay.",
+    "Bearer/refresh credentials and resumable-session URIs are capability secrets and must not be persisted in generic catalogue/checkpoint evidence.",
+    "Google Drive sha256Checksum may verify binary Drive content before COMMIT; COPY, VERIFY and COMMIT remain separate.",
+    "Provider performance is learned from observations rather than hard-coded.",
+    "The BashQueues Drive account is disposable TEST infrastructure; a verified copy there does not automatically count as safe durability."
+  ],
+  "procedure": [],
+  "topics": [
+    "google-drive",
+    "cloud",
+    "offload",
+    "resumable"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/src/StorageGoogleDrive.cls",
+      "claim": "Implements Drive HTTP/auth adapter, bounded range source, resumable sink, SHA-256 verifier and commit boundary."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_google_drive_streaming_sink.rex",
+      "claim": "Regression proves partial provider acknowledgement recovery, SHA-256 verification, capability secrecy and lifecycle-aware commit."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_api_client_bridge.rex",
+      "claim": "Regression proves optional bounded Storage HTTP request mapping onto API Client v0.3."
+    }
+  ]
+}

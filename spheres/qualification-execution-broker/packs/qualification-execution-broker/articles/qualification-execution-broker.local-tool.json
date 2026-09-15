@@ -1,0 +1,23 @@
+{
+  "id": "qualification-execution-broker.local-tool",
+  "title": "Local approval utility",
+  "section": "security",
+  "summary": "qual_authorize.rex independently recomputes the intent hash and renders the exact requested run before asking the human to type YES.",
+  "invariants": [
+    "The private-key file is first accessed only after literal YES.",
+    "Decline succeeds even when the supplied private-key path does not exist.",
+    "The utility emits only runId, approverKeyId, detached signature and intentHash."
+  ],
+  "kind": "article",
+  "version": "0.1-dev1",
+  "sphere": "qualification-execution-broker",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "qualification_execution_broker_v0.1-dev1.zip",
+      "sha256": "ecbd9419343f11e96e112679fd0a1f54308c2bb293a849d6de613d40cac7487f",
+      "member": "qualification_execution_broker_v0.1-dev1/tools/qual_authorize.rex",
+      "claim": "Local-only signing ceremony implementation."
+    }
+  ]
+}

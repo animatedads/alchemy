@@ -1,0 +1,14 @@
+{
+  "id": "pl-allocation-flow",
+  "title": "The Placement Flow",
+  "summary": "The flow from job request to execution involves finding an eligible node, verifying capabilities, and binding the implementation via Runtime Reference.",
+  "why": "Ensures the total chain of authority (WLU -> Allocator -> Node Profile -> Runtime Reference) is satisfied before execution begins.",
+  "invariants": [
+    "WLU remains the work/capacity admission authority.",
+    "Queue Fabric remains the transport authority.",
+    "API Client v0.2 remains authoritative for API egress-session allocation after general node placement.",
+    "Hard eligibility (Allocator) -> Capabilities (Node Profile) -> Location Binding (Runtime Reference)."
+  ],
+  "evidence_note": "Source: job_node_allocator_v0.6/README.md:15-20. Line 16: 'Queue Fabric remains transport authority, WLU remains work/capacity admission authority...'",
+  "grounding": "oorexx-grounded"
+}

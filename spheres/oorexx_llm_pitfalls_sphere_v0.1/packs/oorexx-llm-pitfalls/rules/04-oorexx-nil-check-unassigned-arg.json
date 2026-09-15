@@ -1,0 +1,13 @@
+{
+  "kind": "language-rule",
+  "id": "OOREXX.NIL.UNASSIGNED_ARG_CHECK",
+  "version": "0.1",
+  "language": "oorexx",
+  "title": "Testing an optional argument for .nil without a symbol() guard",
+  "purpose": "Distinguish 'caller passed .nil explicitly' from 'caller omitted this argument entirely', which a bare equality test cannot do reliably for a USE ARG variable with no default.",
+  "trigger": "A method declares `use arg a, b` (or similar) with an optional trailing parameter that has no default value, and later tests that parameter with `== .nil` or `\\\\== .nil` directly, without first checking `symbol(\"paramname\") = \"LIT\"` (or an equivalent guard) to establish the variable was actually assigned.",
+  "correct": "For a USE ARG parameter with no default, check `if symbol(\"paramname\") = \"LIT\" then ...` before relying on its value, or give the parameter an explicit default (`use arg a, b = .nil`) so a direct .nil comparison is always well-founded.",
+  "fixability": "SUGGESTED",
+  "compiler_relationship": "Not a translator issue -- an unassigned USE ARG variable without a default is a genuinely different runtime state (unassigned symbol) from one explicitly set to .nil, and only the symbol() check distinguishes them.",
+  "return_semantics": "A LanguageRulePage may be opened and then return to the originating cycle selector."
+}

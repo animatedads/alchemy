@@ -1,0 +1,47 @@
+KL10 IPL ooRexx v0.31-dev4
+
+Runtime:
+  ooRexx 5.3.0 r13196 debug build
+
+Second RH20/TU45 read:
+  PASS test_rh20_multiccw_read
+  PASS test_second_read_real_state
+
+Authentic result:
+  PC       774445
+  ICOUNT   852340
+  tape     2568 -> 5136
+  record   2560 bytes / 512 36-bit words
+  CCW1     16 words  -> physical 000000..000017
+  CCW2     496 words -> physical 000020..000777
+  word0    064250,,347640
+  logout   CLP 762002, final address 000777
+  PCR FULL clear
+  CMD DONE asserted
+
+Execution acceleration:
+  PASS test_execution_probe_accelerator
+  PASS test_execution_region_cycle
+
+Observed phase-one acceleration:
+  500 runner work units
+  539084 historical instructions
+  241 accelerations
+
+State schema:
+  3d662969aa66a35bc263fd759a40f274956999b9bec6419c3cb418d4105c9f2f
+
+Third real read:
+  PASS test_third_read_real_state
+  PC       774445
+  ICOUNT   853475
+  tape     5136 -> 7704
+  CCW      620000,,001000
+  transfer physical 001000..001777
+
+Continued stream:
+  21 complete records consumed
+  tape position 53928
+  PC 774551
+  ICOUNT 874780
+  no new RH20/channel refusal

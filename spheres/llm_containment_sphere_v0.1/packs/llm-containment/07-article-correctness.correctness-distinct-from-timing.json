@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "llm-containment.correctness.correctness-is-distinct-from-timing",
+  "version": "0.1",
+  "sphere": "llm-containment",
+  "title": "Separate behavioural correctness from performance and observation overhead",
+  "summary": "A deterministic system's reproducibility is a behavioural property, not a timing one. When measuring an LLM-assisted path, keep the correctness comparison independent of how long observation or shadow probing takes, and never let 'optimisation' hide or reorder an evidence-bearing side effect.",
+  "evidence_note": "Psychic-poker VALIDATION.md records the seeded reproducibility proof: with Seed 424242 the same trajectory reproduces identically with or without observers. It separately notes the overhead (for example a slower persistence path) as a timing fact, distinct from behaviour.",
+  "invariants": [
+    "Prove 'the observer did not change the result' by replaying the deterministic trajectory, not by timing it.",
+    "Keep counts/identity audit separate from secret payload copies.",
+    "A paired shadow probe answers 'did adding evidence change the output'; it is not a claim about intent.",
+    "Only optimisation that preserves every reproducible behavioural invariant is an optimisation."
+  ]
+}

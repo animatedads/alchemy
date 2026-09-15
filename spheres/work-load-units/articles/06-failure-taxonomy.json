@@ -1,0 +1,14 @@
+{
+  "id": "wlu-failure-taxonomy",
+  "title": "WLU Failure Taxonomy (429-like)",
+  "summary": "WLU distinguishes between entitlement, capacity, and throughput exhaustion to guide scheduler reactions.",
+  "why": "A throughput shortfall is a capacity problem (can be solved by scaling/throttling), whereas entitlement exhaustion is a budget problem (cannot be solved by scaling).",
+  "invariants": [
+    "WLU_ENTITLEMENT_EXHAUSTED: Insufficient admitted work entitlement.",
+    "WLU_CAPACITY_EXHAUSTED: Temporary token/burst capacity unavailable (may carry retryAfterSeconds).",
+    "WLU_THROUGHPUT_EXHAUSTED: Requested WLU/s delivery rate cannot be reserved.",
+    "WLU_RESERVATION_EXPIRED / WLU_RESERVATION_PROOF_INVALID: Authentication/Lifecycle failures."
+  ],
+  "evidence_note": "Source: oorexx_work_load_units_v0.12/README.md:120-130. Line 122-128 list the specific exhaustion results.",
+  "grounding": "oorexx-grounded"
+}

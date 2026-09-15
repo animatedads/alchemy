@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "ref.terminal-machine.tls-helper",
+  "version": "0.1",
+  "sphere": "terminal-machine",
+  "title": "Verified TLS helper ownership and cleanup",
+  "summary": "When socat is used as the TLS adapter, the transport owns an exact helper PID and verifies command-line ownership before signaling it. Close drops the loopback socket, attempts TERM, waits boundedly, then re-verifies ownership before KILL escalation.",
+  "authority": "terminal-machine-project",
+  "invariants": [
+    "Never signal a reused PID merely because the number matches.",
+    "Zombie/defunct helper state counts as network-resource release.",
+    "Top-level HALT cleanup must close the helper-backed transport.",
+    "Orderly terminal close propagates helper shutdown failure rather than hiding it."
+  ],
+  "procedure": [],
+  "topics": [
+    "terminal",
+    "tn5250"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_terminal_machine_v0.21.zip",
+      "sha256": "64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5",
+      "member": "oorexx_terminal_machine_v0.21/src/TerminalTransport.cls",
+      "claim": "Supports this Terminal Machine/TN5250 continuity article."
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "native-db.backend-contract",
+  "version": "0.1",
+  "sphere": "native-database-backends",
+  "title": "Backend contract: strong common shape without lowest-common-denominator pretending",
+  "summary": "Backends publish identity, implementation kind, capabilities, limitations, requirements, qualification state and selection priority through a provider-neutral model. SUPPORTED, UNSUPPORTED, CONDITIONAL and UNKNOWN are distinct states. UNKNOWN or CONDITIONAL must not be silently promoted to SUPPORTED. A missing capability is an explicit eligibility failure, not an invitation to guess.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Capability status is explicit and machine-readable.",
+    "Limitations are published separately from capabilities so absence is not ambiguous.",
+    "Implementation identity records whether the route is OOREXX_NATIVE, FOREIGN_RUNTIME or PROCESS_BRIDGE.",
+    "Requirements and qualification evidence remain distinct from capability claims.",
+    "A provider-neutral API may expose richer provider metadata without flattening it prematurely."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/README.md",
+      "line_start": 27,
+      "line_end": 39,
+      "claim": "v0.2 publishes explainable planner semantics and current backend profiles; UNKNOWN/CONDITIONAL are not silently treated as supported."
+    }
+  ]
+}

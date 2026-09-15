@@ -1,0 +1,70 @@
+{
+  "schema": "oorexx.foreign/0.9",
+  "library": {
+    "provider": "native",
+    "names": [
+      "libcrypto.so.3",
+      "libcrypto.so",
+      "libcrypto-3-x64.dll"
+    ]
+  },
+  "functions": {
+    "ctx_new": {
+      "symbol": "EVP_MD_CTX_new",
+      "return": {
+        "type": "pointer",
+        "object": "EVP_MD_CTX",
+        "ownership": "owned",
+        "destructor": "EVP_MD_CTX_free"
+      },
+      "args": []
+    },
+    "sha256": {
+      "symbol": "EVP_sha256",
+      "return": {
+        "type": "pointer",
+        "object": "EVP_MD",
+        "ownership": "borrowed"
+      },
+      "args": []
+    },
+    "digest_init": {
+      "symbol": "EVP_DigestInit_ex",
+      "return": "i32",
+      "args": [
+        "pointer",
+        "pointer",
+        "pointer"
+      ]
+    },
+    "digest_update": {
+      "symbol": "EVP_DigestUpdate",
+      "return": "i32",
+      "args": [
+        "pointer",
+        "bytes",
+        "u64"
+      ]
+    },
+    "digest_final": {
+      "symbol": "EVP_DigestFinal_ex",
+      "return": "i32",
+      "args": [
+        "pointer",
+        {
+          "name": "digest",
+          "type": "pointer",
+          "direction": "out",
+          "size": 32
+        },
+        {
+          "name": "digestLength",
+          "type": "pointer",
+          "direction": "out",
+          "size": 4,
+          "resultType": "u32"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,103 @@
+parse arg root
+if root == '' then root='/tmp/virtual_ryta_rich_v071'
+say 'RICH BUSINESS FACT NOSQL V0.71 START'
+
+fed=.FederatedDatabaseEngine~new(root)
+sql=.NoSQLServerSQL~new(fed)
+
+ediNode=.RichFixtureNode~new('EDI-QTY','50')
+xmlNode=.RichFixtureNode~new('XML-QTY','5000')
+ediRef=.RichEvidenceSourceRef~new(ediNode,'EDI-DOC#QTY','EDIFACT','EDIFACT_COMPONENT','/INTERCHANGE[1]/MESSAGE[1]/QTY[1]/E1/R1/C2','50',50,'VALID','EDI-DOC',8,1,'')
+xmlRef=.RichEvidenceSourceRef~new(xmlNode,'XML-DOC#QTY','XML','ELEMENT','/Order/Quantity[1]','5000',5000,'VALID','XML-DOC',5,12,'')
+rich=.RichEvidenceValue~new(.array~of(ediNode,xmlNode),'PO-CROSS-88:ORDER_QUANTITY','ORDER_QUANTITY','CONFLICT',.RichEvidenceProjectionState~SCALAR_REFUSED,.nil,.array~of(ediRef,xmlRef),.array~of('EDIFACT_PARSED','XML_PARSED','CROSS_FORMAT_COMPARED'),'FROZEN_OBSERVATION','SOURCE-CONS-RICH-1')
+
+inputSchema=.AlgorithmSchema~new('RICH_INPUT')
+inputSchema~add('FACT_ID','TEXT',.false)
+inputSchema~add('RICH_VALUE','RICH_OBJECT',.false)
+builder=.AlgorithmInputRelationBuilder~new(inputSchema,'RICH_INPUT')
+vals=.directory~new; vals['FACT_ID']='ORDER_QUANTITY'; vals['RICH_VALUE']=rich
+call assert builder~addValues(vals), 'rich row accepted'
+inputSnapshot=builder~freeze('RICH-V071-INPUT')
+
+provider=.RichBusinessFactAlgorithmProvider~new('..')
+algorithmEngine=.AlgorithmRelationEngine~new
+call assert algorithmEngine~addProvider(provider), 'provider registration'
+ctx=.AlgorithmExecutionContext~new('RICH-V071-INV-1',inputSnapshot~sourceOid,inputSnapshot~sourceOid)
+classes=.directory~new
+classes['TABLE_DEFINITION']=.TableDefinition
+classes['DATABASE_ROW']=.DatabaseRow
+classes['DATABASE_RESULT']=.DatabaseResult
+bindings=.directory~new
+bindings['RICH_FACT_SUMMARY']='rich_fact_summary'
+bindings['RICH_FACT_SOURCES']='rich_fact_sources'
+bindings['RICH_FACT_TRACE']='rich_fact_trace'
+external=.NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine,'RICH_BUSINESS_FACTS',inputSnapshot,ctx,classes,bindings)
+call assert external~isReady, 'scalar projection external engine ready' external~lastError
+ignore=fed~addEngine(external)
+call assert provider~invocationCount=0, 'registration/metadata does not execute provider'
+
+meta=fed~tableMetadata('rich_fact_summary')
+call assert meta \== .nil, 'summary metadata visible'
+call assert provider~invocationCount=0, 'metadata remains observational'
+
+rs=sql~execute("SELECT fact_id, semantic_role, evidence_state, projection_state, scalar_value, source_count, authority_disposition, source_consistency_grade, input_consistency_grade FROM rich_fact_summary")
+call ok rs
+call assert rs~rows~items=1, 'one summary row'
+r=rs~rows[1]
+call assert r['fact_id']='ORDER_QUANTITY', 'fact id'
+call assert r['evidence_state']='CONFLICT', 'conflict preserved'
+call assert r['projection_state']='SCALAR_REFUSED', 'scalar projection refused'
+call assert r['scalar_value']==.nil, 'no invented scalar'
+call assert r['source_count']=2, 'source multiplicity'
+call assert r['authority_disposition']='EVIDENCE_ONLY', 'no authority promotion'
+call assert provider~invocationCount=1, 'first data read materializes once'
+
+rs=sql~execute("SELECT source_ordinal, source_format, source_kind, source_path, lexical_value, typed_value, validation_state, native_object_preserved FROM rich_fact_sources ORDER BY source_ordinal")
+call ok rs
+call assert rs~rows~items=2, 'two independent source rows'
+call assert rs~rows[1]['source_format']='EDIFACT', 'first source format'
+call assert rs~rows[1]['source_path']='/INTERCHANGE[1]/MESSAGE[1]/QTY[1]/E1/R1/C2', 'EDIFACT native path'
+call assert rs~rows[2]['source_format']='XML', 'second source format'
+call assert rs~rows[2]['source_path']='/Order/Quantity[1]', 'XML native path'
+call assert rs~rows[1]['native_object_preserved']=.true, 'EDI native object preserved during projection'
+call assert rs~rows[2]['native_object_preserved']=.true, 'XML native object preserved during projection'
+call assert provider~invocationCount=1, 'second relation shares materialization'
+
+/* v0.71 provider-neutral mutation dispatch must find the external owner and
+   reject mutation as unsupported rather than falling through to FILE NOTFOUND. */
+mutation=sql~execute("UPDATE rich_fact_summary SET scalar_value='evil' WHERE fact_id='ORDER_QUANTITY'")
+call assert mutation~status=.Error~NOTEXECUTED, 'read-only external mutation rejected'
+call assert mutation~error=.Error~SQLUNSUPPORTED, 'v0.71 reports SQLUNSUPPORTED at external owner'
+call assert provider~invocationCount=1, 'mutation rejection does not rerun provider'
+
+say 'provider invocations:' provider~invocationCount
+say 'RICH BUSINESS FACT NOSQL V0.71: OK'
+exit 0
+
+ok: procedure
+  use arg rs
+  if rs~status=.Error~SUCCESS then return .true
+  raise syntax 93.900 additional('SQL failed: ' || rs~error || ' ' || rs~message)
+
+assert: procedure
+  use arg condition,message,detail=''
+  if condition then return .true
+  raise syntax 93.900 additional('ASSERT FAILED: ' || message || ' ' || detail)
+
+::class RichFixtureNode public
+::attribute nodeId get
+::attribute currentValue get
+::method init
+  expose nodeId currentValue
+  use arg id,value
+  nodeId=id; currentValue=value
+::method string
+  expose currentValue
+  return currentValue
+
+::requires '__NOSQLSERVER_CLS__'
+::requires '../algorithm/AlgorithmRelation.cls'
+::requires '../algorithm/AlgorithmInputRelation.cls'
+::requires '../algorithm/RichEvidence.cls'
+::requires '../integration/RichBusinessFactAlgorithmProvider.cls'
+::requires '../integration/NoSQLServerAlgorithmRelationExternalEngine.cls'

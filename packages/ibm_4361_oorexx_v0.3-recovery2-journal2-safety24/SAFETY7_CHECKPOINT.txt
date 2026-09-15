@@ -1,0 +1,24 @@
+IBM 4361 / OS/360 MVT ooRexx safety7 checkpoint
+
+This checkpoint promotes only the System/370 MONITOR CALL (opcode AF) behaviour
+actually exercised by the real MVT frontier: a valid MC whose selected monitor
+class is masked off in control register 8 executes as a no-operation and leaves
+condition code unchanged.
+
+The monitor-event interruption path for an enabled class is deliberately NOT
+claimed or fabricated.  It fails closed until a future exact-state guest or
+focused architectural qualification justifies implementing the low-core event
+state and program interruption sequencing.
+
+Real MVT advances from the old AF boundary at IA 016606 / ICOUNT 511776 to the
+next unsupported instruction at IA 018A72 / ICOUNT 511782, bytes
+B05458F0B094, opcode B0.
+
+Key preserved boundaries:
+- freeze files: durable whole-machine evidence/replay
+- journal-pointed state: live rewind/fork/diff/retry history
+- object-scope live methods: executable trial layer outside journalled machine
+  state, intentionally surviving rewind and replaceable in place
+- guest 3215 console separate from physical 4361 operator/control console
+
+See docs/LIVE_ARCHAEOLOGY.md and HANDOVER_SAFETY7.md.

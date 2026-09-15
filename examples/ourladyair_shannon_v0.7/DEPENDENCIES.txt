@@ -1,0 +1,49 @@
+OurLadyAir Shannon v0.7 validated dependency baseline
+
+Runtime tested:
+  Open Object Rexx 5.3.0 r13196
+
+Current project bundle validated:
+  virtual_ryta_hardworld_v0.19
+  legal_effect_v0.10                 (loaded API legal.effect/0.10)
+  runtime_registry_v0.11             (core API runtime.registry/0.3)
+  oorexx_queue_fabric_v0.8.1         (runtime API queue.fabric/0.8)
+  structured_relation_plugin_v0.9
+  nosqlserver_v0.75
+  oorexx_work_load_units_v0.2        (API work.load.units/0.2)
+
+Compatibility rule:
+  The list above is a VALIDATED BASELINE, not a set of exact runtime release
+  gates. Shannon v0.7 does not reject Queue Fabric, NoSQLServer, Legal Effect or
+  Work Load Units merely because a release/API identity differs from the baseline.
+  It executes the required surfaces and fails closed at the actual incompatible
+  operation. Loaded identities are retained in audit evidence.
+
+Structured Relation is the EDIFACT evidence boundary:
+  ShannonPnrGovParser consumes EdiFactDocumentContext and EdiFactRelationProvider.
+  Rich projected rows and source objects are retained; Shannon does not replace the
+  parser with a local string splitter.
+
+NoSQLServer is a derived audit/index dependency:
+  ShannonAuditCatalog exposes scalar audit relations for SQL inquiry. The rich Queue
+  Fabric audit object remains the evidence source and is never replaced by SQL rows.
+
+Queue Fabric is the queue/transport/topic boundary:
+  Shannon consumes the queue/channel/topic surface it actually uses. v0.8 explicitly
+  retains the accepted v0.7 surface. Topic routing is observability, not Legal/
+  HardWorld authority. Shannon does not infer permissions from a fabric release.
+
+Legal Effect identity:
+  The exact loaded engine API/build is evidence. Compatibility is proved by exact
+  policy-byte verification, successful compilation/evaluation and the exercised
+  HardWorld LegalEffectV05PromotionAdapter. LEGAL_EFFECT/0.5/... remains the bridge
+  identity and is never cosmetically rewritten to the engine API.
+
+HardWorld adapter ownership:
+  Shannon ships no copies of LegalEffectPromotionAdapter.cls or
+  LegalEffectV05PromotionAdapter.cls. run_rexx.sh executes from the supplied
+  HardWorld integration directory so its relative ::REQUIRES resolve upstream.
+
+Work Load Units is resource admission only:
+  Shannon records the loaded WLU API and exercises WLUAuthority reserve/admit/settle.
+  WLU cannot alter booking facts, Legal Effect or HardWorld disposition.

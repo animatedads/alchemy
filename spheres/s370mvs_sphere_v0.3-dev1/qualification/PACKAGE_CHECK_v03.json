@@ -1,0 +1,61 @@
+{
+  "schema": "llm-gopher/0.21",
+  "tool_status": {
+    "rc": 0,
+    "class": "OK"
+  },
+  "operation_status": {
+    "rc": 0,
+    "class": "READY"
+  },
+  "result": {
+    "path": "/mnt/data/s370_cont/sphere_v03/s370mvs_sphere_v0.3-dev1",
+    "version": "0.3-dev1",
+    "files_considered": 23,
+    "tests": [
+      "tests/run_s370mvs.sh"
+    ],
+    "test_count": 1,
+    "environment": [
+      {
+        "name": "GOPHER_ROOT",
+        "referenced_by": [
+          "tests/run_s370mvs.sh"
+        ]
+      }
+    ],
+    "breaches": [],
+    "breach_count": 0,
+    "blockers": 0,
+    "excluded_candidates": [],
+    "rules_checked": [
+      "PACKAGE.CONTENT.EXCLUDED",
+      "PACKAGE.DEPENDENCY.ROOT",
+      "PACKAGE.CHANGELOG.REQUIRED",
+      "PACKAGE.CHANGELOG.VERSION",
+      "PACKAGE.TEST.REQUIRED"
+    ]
+  },
+  "service_proxy": {
+    "kind": "service-proxy",
+    "service": "package.stage.check",
+    "capability": "package.stage.check",
+    "operations": [
+      "exec"
+    ],
+    "rank": 10
+  },
+  "route": {
+    "requested_capability": "package.stage.check",
+    "service": "package.stage.check",
+    "implementation": "builtin.package.stage.check",
+    "fallback_depth": 0,
+    "attempts": [
+      {
+        "service": "package.stage.check",
+        "implementation": "builtin.package.stage.check",
+        "tool_status": "OK"
+      }
+    ]
+  }
+}

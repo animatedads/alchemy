@@ -1,0 +1,69 @@
+Accounting Core Gopher sphere v0.1
+=================================
+
+Purpose
+-------
+Durable LLM-facing architectural knowledge for Accounting Core, kept separate from the executable accounting package and from the specialist Accounting Rigour sphere.
+
+Observed source baseline
+------------------------
+accounting_core_v0.10.zip
+SHA-256: f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00
+
+Accounting Core v0.10 itself records qualification against:
+- ooRexx 5.3.0 r13196 debug package SHA-256 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+- oorexxapis(20260901-112242).zip SHA-256 9f95981d13a9cf6b51aaa032f6c7c401615b3f53609b4a240268bccd13cd5d63
+- Crypto v0.8.3 source ZIP SHA-256 5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49
+
+Companion sphere observed
+-------------------------
+accounting_rigour_sphere_v0.1.zip
+SHA-256: 36b7bd7d7840a956684e25da1c24853444c711e2396da391a1d8a0843431adcd
+
+Separation
+----------
+- accounting-core sphere: conceptual architecture, authority boundaries, scopes, reasoning procedure and reporting evidence model.
+- accounting-rigour sphere: implementation hazards/incidents around numeric precision, persistence, replay, rounding and filing no-overclaim.
+
+This split is deliberate; neither sphere replaces executable Accounting Core source/contracts.
+
+Qualification intent
+--------------------
+The sphere is required to prove useful retrieval for questions an implementation LLM will actually ask:
+- context exposes overview + reasoning routine + both corpora;
+- exact reasoning routine opens with provenance;
+- foreign VAT registration resolves without domicile/local-company assumptions;
+- Client Account/regulatory scope is discoverable;
+- rehypothecation resolves to policy/evidence extensibility rather than a core-ledger fork;
+- 'not zero' resolves filed-account omission discipline;
+- REPORT_POPULATION_STALE resolves sealed-report population semantics;
+- exact corpus lookup works for tax registration and settlement rounding;
+- glossary lookup resolves ReportingSnapshot.
+
+The sphere intentionally publishes no language-rules: its core lessons are semantic and authority-sensitive, so mechanical matching would overclaim.
+
+Qualification results
+---------------------
+PASS Sphere Editor validate: 18 objects, 0 problems, 0 warnings.
+PASS Sphere Editor lint: CLEAN, 0 warnings.
+PASS tests/run.sh against supplied LLM Gopher v0.19-dev1.
+PASS context exposes overview, reasoning routine and both corpora.
+PASS open reasoning routine with structured Accounting Core provenance.
+PASS search foreign seller -> tax-registration lesson.
+PASS search Client Account -> client-money lesson.
+PASS search rehypothecation -> exotic-structures lesson.
+PASS search 'not zero' -> omitted/not-filed lesson.
+PASS search REPORT_POPULATION_STALE -> sealed-snapshot lesson.
+PASS exact lookup topic=tax-registration.
+PASS exact lookup topic=settlement-rounding.
+PASS exact glossary lookup term=ReportingSnapshot.
+
+Sphere contents
+---------------
+- 14 architecture/reasoning articles.
+- 24 durable reasoning records.
+- 18 architecture glossary records.
+- structured provenance to Accounting Core v0.10 contract documents.
+- companion-sphere provenance to Accounting Rigour v0.1.
+- no mechanical language rules by design.
+PASS explicit `gopher sphere load accounting-core --override <sphere.zip>` activation with profile resolution and post-activation context/search.

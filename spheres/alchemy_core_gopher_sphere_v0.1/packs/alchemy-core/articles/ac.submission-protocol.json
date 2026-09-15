@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "ac.submission-protocol",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Submission branches are transport envelopes",
+  "summary": "The canonical ooRexx sender validates a finished package, creates a fresh autobuild-submit branch from accepted origin/main, commits package body first, commits ready.json last, and publishes both commits in one push. Submission branches are not development branches and are never merged into main.",
+  "authority": "project-authority",
+  "invariants": [
+    "Finish the package before submission.",
+    "ready.json is the immutable go marker and must be committed last.",
+    "Corrections use a new submission id; never mutate a ready submission.",
+    "Do not merge or rebase submission branches into main.",
+    "Do not write accepted package trees directly to main.",
+    "One push transfers the body and ready commits together."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/GIT_SUBMISSION.md",
+      "line_start": 1,
+      "line_end": 33,
+      "claim": "Canonical Git submission contract."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_submission_v0.4/src/AlchemySubmission.cls",
+      "line_start": 28,
+      "line_end": 104,
+      "claim": "Sender implementation: detached worktree, ready-last, one-push publication."
+    }
+  ]
+}

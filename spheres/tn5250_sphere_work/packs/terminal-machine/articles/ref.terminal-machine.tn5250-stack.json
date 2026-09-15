@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "ref.terminal-machine.tn5250-stack",
+  "version": "0.1",
+  "sphere": "terminal-machine",
+  "title": "TN5250 protocol stack and wire boundary",
+  "summary": "The TN5250 vertical slice composes Telnet negotiation, RFC1205-compatible record framing, 5250 workstation data-stream decoding/encoding, presentation-space/field semantics and higher-level automation. Wire bytes are not semantic authority and may contain secrets.",
+  "authority": "terminal-machine-project",
+  "invariants": [
+    "Binary, EOR and terminal-type negotiation belong to Telnet/TN5250, not the presentation model.",
+    "Raw READ/input response bytes are trusted-runtime data and must not be returned through safe automation surfaces.",
+    "5250 field semantics, AID behavior and operator conditions remain distinct from TCP/TLS transport lifecycle."
+  ],
+  "procedure": [],
+  "topics": [
+    "terminal",
+    "tn5250"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_terminal_machine_v0.21.zip",
+      "sha256": "64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5",
+      "member": "oorexx_terminal_machine_v0.21/src/TN5250Wire.cls",
+      "claim": "Supports this Terminal Machine/TN5250 continuity article."
+    }
+  ]
+}

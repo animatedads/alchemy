@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "ssc.adapter-contract",
+  "version": "0.1-dev1",
+  "sphere": "semantic-source-control",
+  "title": "Planned Gopher adapter: bounded SSC capabilities, not arbitrary osc execution",
+  "summary": "Gopher needs a dedicated SSC service adapter with fixed schemas and parsed machine output. Do not expose arbitrary shell/osc flags. SSC should add a stable JSON protocol so the adapter does not scrape human text.",
+  "planned_capabilities": [
+    "source.semantic.identify",
+    "source.semantic.status",
+    "source.semantic.compare",
+    "source.semantic.impact",
+    "source.semantic.history",
+    "source.semantic.source",
+    "source.semantic.intake",
+    "source.semantic.proposals",
+    "source.semantic.proposal.decide (reviewer/admin only)",
+    "source.semantic.accept (reviewer/admin only)"
+  ],
+  "invariants": [
+    "Read-only negative outcomes such as NOT_FOUND/UNCHANGED/REVIEW_REQUIRED return tool_status OK; they must not trigger Gopher service fallback.",
+    "Only infrastructure/service failures map to UNAVAILABLE/TEMPORARY_FAILURE/DEPENDENCY_FAILURE.",
+    "Mutations require stale fences: expected repository generation/parent level/candidate digest/proposal digest as applicable.",
+    "Result pages are resumable UI projections; durable history remains in SSC."
+  ]
+}

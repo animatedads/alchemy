@@ -1,0 +1,19 @@
+Safety22 validation
+===================
+BASE Safety21 SHA-256 2a0fc15538e0b1a43d3a432ac021b74e40825d0318c6fd6803d492d2d9f23cf9
+IBM DOC GX20-1850-5 primary X'02' unassigned in code table
+COMPILE PASS 152 sources
+RUNTIME PASS 81 tests
+MVTRES.350 SHA-256 095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49
+PASS real media
+PASS real MVT IPL PSW=0000000000000080 CCHHR=0/0/4
+PASS exact X'02' permanent microstate operation exception
+PASS X'02' live pre-promotion unsupported/atomic then classifier rewind/retry
+PASS X'02' live classifier -> rewind -> remove -> permanent equivalence
+PASS exact old PSW 0004000160000070
+PASS complete new PSW 00040000000002CA
+AUDIT no OP02
+AUDIT no OP70
+RECOVERED exact guest live + permanent replay: 4506 instructions -> X'70' @ 000082 / ICOUNT 539172
+FRESH whole-guest rerun attempt: interrupted by execution ceiling before frontier; not acceptance evidence
+QUALIFICATION acceleration: Crypto v0.8.3 through its Foreign Runtime/OpenSSL provider, Foreign Runtime v0.22.6 + Runtime Reference v0.4

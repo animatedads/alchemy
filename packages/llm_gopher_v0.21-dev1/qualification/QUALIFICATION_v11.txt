@@ -1,0 +1,35 @@
+LLM Gopher v0.11-dev1 qualification
+Date: 2026-09-02
+
+Increment scope:
+- package staging as a first-class operation
+- grouped packaging-rule diagnostics
+- automatic VCS/cache/generated/prior-artifact exclusion during staging
+- dependency-at-root policy
+- changelog version check
+- test discovery
+- external test-environment reference discovery
+- task-oriented package stage/check commands
+
+Evidence:
+PASS ALL LLM GOPHER v0.11 PACKAGE/STAGING TESTS
+PASS ALL LLM GOPHER v0.10 RESULT/CYCLE TESTS
+PASS ALL LLM GOPHER v0.9 GOPHER+ FORM TESTS
+PASS ALL LLM GOPHER v0.8 SELECTOR/GOPHER TESTS
+PASS ALL LLM GOPHER v0.7 LANGUAGE-RULE CYCLE TESTS
+PASS ALL LLM GOPHER v0.6 BOUNDED SOURCE-EDIT TESTS
+PASS ALL LLM GOPHER v0.5 LLM-USABILITY TESTS
+
+Real package self-stage:
+- stage operation: STAGED
+- package check: READY
+- blocker breaches: 0
+- test count: 12
+- external/defaulted test environment references discovered:
+  DEMO_TOKEN (v0.11 fixture)
+  LLM_GOPHER_PYTHON
+  REXXC
+
+Packaging invariant:
+Package membership is staged; filesystem proximity alone never implies delivery membership.
+Dependencies remain external by default unless explicit package policy requests embedding.

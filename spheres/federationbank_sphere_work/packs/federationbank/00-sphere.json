@@ -1,0 +1,32 @@
+{
+  "kind": "sphere",
+  "id": "federationbank",
+  "version": "0.2",
+  "title": "FederationBank Core Banking and authority boundaries",
+  "access_policy": "federationbank-access",
+  "purpose": "Give LLMs a compact, authoritative interface to FederationBank Core/Retail banking architecture and the service boundaries that must not be collapsed: account authority, payment authority, Ledger monetary truth, physical cash custody, staff/teller channels, ATM recovery, and arm's-length Merchant Banking.",
+  "observed_as_of": "2026-09-02",
+  "observed_core_baseline": "federationbank_engine_v0.9.2.zip",
+  "scope": "Core/Retail Banking plus explicit boundary contracts to Staff/Teller/Branch Cash, ATM and Merchant Banking. This sphere does not make Merchant Banking part of Core.",
+  "start_here": [
+    "ops.federationbank.start",
+    "architecture.federationbank.authority-map",
+    "ledger.federationbank.monetary-truth",
+    "replay.federationbank.durable-idempotency",
+    "cash.federationbank.physical-vs-monetary",
+    "merchant.federationbank.arm-length-boundary"
+  ],
+  "inherits_services_from": [
+    "core"
+  ],
+  "provenance": [
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/README.md",
+      "line_start": 3,
+      "line_end": 5,
+      "claim": "Core is intentionally three queue-addressable services under Channels request; backend authorities decide and execute."
+    }
+  ]
+}

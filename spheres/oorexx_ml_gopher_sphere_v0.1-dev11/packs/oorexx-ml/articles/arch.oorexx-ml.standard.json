@@ -1,0 +1,48 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.standard",
+  "version": "0.3",
+  "sphere": "oorexx-ml",
+  "title": "Conventional ML reference layer",
+  "summary": "The conventional-ML layer includes provenance-aware immutable datasets, scaling, exact/reference and ridge regression, iterative gradient linear regression, centroid/k-NN classification, and dev7 logistic regression, Gaussian Naive Bayes, decision trees, deterministic k-means and PCA.",
+  "authority": "Executable source/tests and supplied upstream API artifacts are authoritative; this sphere preserves architecture and continuity.",
+  "invariants": [
+    "Domain packages consume ooRexx Maths instead of private matrix numerics.",
+    "Reference algorithms prioritize semantic correctness, replay and evidence over maximum speed.",
+    "Iterative estimator continuation keeps optimizer/session state outside private model internals.",
+    "Numerical upgrades must not change object/history semantics."
+  ],
+  "procedure": [
+    "Use MLDataset with explicit identity/provenance for evidence-grade training.",
+    "Use closed-form/iterative regression, classification, clustering and PCA reference objects according to task semantics; do not flatten them into disposable wrappers.",
+    "Treat every fitted estimator/transform as a driveable historical object and branch policy alternatives from retained checkpoints.",
+    "Use validation evidence and retained-branch comparison before selecting a future.",
+    "Accelerated providers may replace execution only when model/provenance/history semantics remain observationally equivalent."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev7.zip",
+      "sha256": "2749c3673ed6d431e1e23589234ba088a90db82f6f29cda14e9edfae2802fc24",
+      "member": "oorexx_ml_v0.1-dev7/src/MLTechniques.cls",
+      "claim": "dev7 conventional technique expansion: logistic regression, Gaussian Naive Bayes, Gini decision tree, deterministic k-means, PCA and technique catalogue."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev2.zip",
+      "sha256": "66bd14e51181a54db58b7b40d3a323b82c09d0248a172e89e212befbfa5d90a3",
+      "member": "oorexx_ml_v0.1-dev2/src/MLStandard.cls",
+      "claim": "dev2 conventional ML, dataset provenance, ridge, k-NN, iterative gradient regression and metrics."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev1.zip",
+      "sha256": "450a8fe846fe7a07e453a830bedb3e7127ff6f3f1e7f734595ac1b39eb95e98f",
+      "member": "oorexx_ml_v0.1-dev1/src/MLStandard.cls",
+      "claim": "Initial standard-ML implementation."
+    },
+    {
+      "artifact": "oorexx_maths_v0.7.zip",
+      "sha256": "b2385efc83aa525392f6c804327f7d370abd6c06d04a7d31855803e62f95c19d",
+      "member": "oorexx_maths_v0.7/README.md",
+      "claim": "Maths constitution requires ML domains to consume Maths."
+    }
+  ]
+}

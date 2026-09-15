@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "llm-containment.boundary.no-private-state-in-prompt",
+  "version": "0.1",
+  "sphere": "llm-containment",
+  "title": "A live model prompt is assembled through an explicit boundary that admits only public state",
+  "summary": "When a live model acts inside a larger system, every prompt field is provenance- or disclosure-labelled and the boundary admits only public state plus the acting party's own private material. Observer narration, other parties' private state, engine/RNG state and SECRET/INTERNAL material are fail-closed before the provider is invoked.",
+  "evidence_note": "psychic-poker prompt-boundary audit v0.7.38: PokerPromptEnvelope admits only public table state plus the acting player's own hole-card field; SECRET/INTERNAL material is fail-closed before provider invocation; live prompt audits persist counts and SHA-512 identity only, never the prompt text.",
+  "invariants": [
+    "A live actor receives no hidden strategy, psychic observation, or other-agent private material.",
+    "Speech to a live actor is evidence, not truth: it reveals no hidden cards and does not change the actor's objective.",
+    "Keep an audit trail of what crossed the boundary by identity/digest, not by copying secret prompt contents into logs.",
+    "A probe that questions the model twice on identical public state is evidence of sensitivity, not proof of causation; label projections as claims unless the paired control reproduced them."
+  ]
+}

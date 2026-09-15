@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "ops.bash-best-practices.overview",
+  "status": "reference",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Why this sphere exists",
+  "summary": "LLM-authored bash is confident on the outside and silently wrong underneath: it aborts the wrong scope, forgets to quote an expansion until a space breaks every later argument, emits polluted stdout that a JSON consumer mis-parses, writes a file that is not yet verifiable, or runs data as a command. bashqueues is a large, mature native-Bash system (queuebash.sh ~0.18.139, many bin/ and providers scripts plus contract docs) that demonstrates the deliberate counters to all of these. This sphere turns those counters into grounded lessons and best practice, evenly split between pure bash technique and the fail-closed doctrine the system enforces.",
+  "evidence_note": "PLABEL: bashqueues-grounded. Every article cites the real file it comes from (queuebash.sh, bin/queue-*, providers, or docs/*_CONTRACT.md) with the exact idiom; the technique is then generalised as best practice. Claimed facts about bash itself are the language semantics; claims about why bashqueues chose a form are cited to that file.",
+  "invariants": [
+    "A technique lesson states the concrete correct form and the failure it avoids, grounded in a bashqueues file.",
+    "A doctrine lesson records an invariant the system hard-wires (typed JSON, evidence-not-acceptance, fail-closed, never-eval data).",
+    "No lesson is included because 'an LLM might be confused'; each is grounded in what the files show.",
+    "A rule document has a genuine deterministic trigger; anything requiring intent is an article."
+  ]
+}

@@ -1,0 +1,49 @@
+NoSQLServer v0.56 validation
+============================
+
+Focus
+-----
+Explicit object-table INSERT factory and explicit ARRAY_DELETE removal policy.
+
+Object INSERT
+-------------
+- ObjectTableMapping~factory(factoryObject, factoryMessage)
+- Single-row SQL INSERT is coerced to the mapping's DatabaseRow shape.
+- Identity collision is checked before factory invocation.
+- Factory receives the typed DatabaseRow and returns the object to append.
+- All mapped getters must exist before the collection is mutated.
+- BEFORE_INSERT may veto; AFTER_INSERT fires only after append succeeds.
+- Missing factory is a clean statement failure.
+- Multi-row object INSERT remains SQLUNSUPPORTED because no atomic factory-batch
+  contract exists yet.
+
+Object DELETE
+-------------
+- ObjectTableMapping~removal("ARRAY_DELETE") explicitly authorises array removal.
+- Matching object indexes are captured before mutation.
+- Deletion occurs in descending array-index order so shifts cannot corrupt the
+  target set.
+- BEFORE_DELETE may veto; AFTER_DELETE fires only after removal.
+- Missing/unknown removal policy is a clean statement failure.
+
+Isolation / honesty
+-------------------
+- No reflection-based factory discovery.
+- No implicit collection mutation policy.
+- No object transactions.
+- No DDL-to-class fiction.
+- msqlshim untouched.
+
+Regression evidence
+-------------------
+- 32 gates green.
+- v0.56 object INSERT/DELETE smoke: PASS
+- v0.55 federation: PASS
+- v0.54 object UPDATE/events: PASS
+- v0.53 object joins/aggregates: PASS
+- v0.52 object SELECT: PASS
+- actual NoSQLServerSQL class has zero references to ~storage, SysFile,
+  CsvStream, YAML, table.yaml, or /tables/.
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 14/30 PASS, 0 wrong results

@@ -1,0 +1,81 @@
+say 'LEGAL EFFECT V0.6 SEMANTIC / EXECUTION IDENTITY GUARD V0.19 START'
+provider=.V06TestDigestProvider~new
+verifier=.LegalSourceVerifier~new(provider,'ryta-v019-verifier')
+g1=BuildAmbiguous('CONDITIONAL_FIRST',provider,verifier)
+g2=BuildAmbiguous('REVIEW_FIRST',provider,verifier)
+call AssertEqual g1~semanticIdentity,g2~semanticIdentity,'v0.6 semantic identities intentionally canonicalize insertion order'
+s1=.LegalEffectV06GenerationSnapshot~new(g1)
+s2=.LegalEffectV06GenerationSnapshot~new(g2)
+call AssertEqual s1~semanticIdentityHash,s2~semanticIdentityHash,'semantic hash remains equal'
+call AssertTrue s1~executionIdentity \== s2~executionIdentity,'conservative execution identity sees norm order'
+ctx1=.LegalContext~new('A1','2026-08-20')
+ctx2=.LegalContext~new('A2','2026-08-20')
+ignored=ctx1~bindSource('LAW','test')
+ignored=ctx2~bindSource('LAW','test')
+r1=.LegalEffectEngine~new~evaluate(.LegalAction~new('AMB'),g1,ctx1)
+r2=.LegalEffectEngine~new~evaluate(.LegalAction~new('AMB'),g2,ctx2)
+call AssertTrue r1~ok & r2~ok,'raw evaluations succeed'
+call AssertTrue r1~value~status \== r2~value~status,'raw v0.6 reducer remains insertion-order sensitive'
+p1=.LegalEffectV06PinnedEvaluator~evaluate(.LegalEffectEngine~new,.LegalAction~new('AMB'),g1,ctx1)
+p2=.LegalEffectV06PinnedEvaluator~evaluate(.LegalEffectEngine~new,.LegalAction~new('AMB'),g2,ctx2)
+call AssertTrue \p1~ok,'first ambiguous reduction refused for authority'
+call AssertTrue \p2~ok,'second ambiguous reduction refused for authority'
+call AssertEqual 'LEGAL_STATUS_REDUCTION_AMBIGUOUS',p1~code,'first refusal code'
+call AssertEqual 'LEGAL_STATUS_REDUCTION_AMBIGUOUS',p2~code,'second refusal code'
+
+/* Deep seal remains fixed upstream. */
+norm=g1~norms[1]
+before=norm~conditions~items
+returned=norm~conditions
+returned~append(.LegalPredicate~new('EXTRA','KNOWN_TRUE'))
+call AssertEqual before,norm~conditions~items,'copy-on-read sealed conditions cannot mutate generation'
+
+say 'LEGAL EFFECT V0.6 SEMANTIC / EXECUTION IDENTITY GUARD V0.19: OK'
+exit 0
+
+::routine BuildAmbiguous
+ use arg order,provider,verifier
+ sourceText='Conditional provision. Review provision.'
+ identity=.LegalSourceIdentity~new('LAW','CONTRACT','expr','urn:test:amb','sha256:'||provider~digest(sourceText),'PARTIES','*','VERIFIED')
+ unit=.LegalCompilationUnit~new('AMB-G','0.6','ryta-v019-test','1')
+ source=.NormativeSource~new('LAW','CONTRACT','ambiguous law')
+ ignored=unit~addSource(identity,source)
+ cText='Conditional provision.'; rText='Review provision.'
+ cRef=.LegalProvisionReference~new('LAW','1','expr','clause 1','sha256:'||provider~digest(cText),cText,'VERIFIED')
+ rRef=.LegalProvisionReference~new('LAW','2','expr','clause 2','sha256:'||provider~digest(rText),rText,'VERIFIED')
+ ignored=unit~addProvision(cRef,.LegalProvision~new('LAW','1','ACTIVE','BASE',cText))
+ ignored=unit~addProvision(rRef,.LegalProvision~new('LAW','2','ACTIVE','BASE',rText))
+ sourceMaterial=.LegalVerificationMaterial~fromText(source,sourceText,'urn:test:amb','RAW_TEXT')
+ sv=unit~verifySource('LAW',sourceMaterial,verifier)
+ if \sv~ok then raise syntax 88.900 array('source verification failed')
+ cv=unit~verifyProvision('LAW','1',.LegalVerificationMaterial~fromText(.directory~new,cText,'clause 1','PROVISION_TEXT'),verifier)
+ rv=unit~verifyProvision('LAW','2',.LegalVerificationMaterial~fromText(.directory~new,rText,'clause 2','PROVISION_TEXT'),verifier)
+ if \cv~ok | \rv~ok then raise syntax 88.900 array('provision verification failed')
+ cNorm=.LegalNorm~new('COND','LAW','1','CONTRACT_TERM','AMB','REQUIRES_OBLIGATION')
+ rNorm=.LegalNorm~new('REV','LAW','2','CONTRACT_TERM','AMB','REVIEW')
+ cp=.LegalCompileProposal~new('P-COND','NORM',cNorm,'test','HUMAN','1'); ignored=cp~addEvidenceReference(cRef)
+ rp=.LegalCompileProposal~new('P-REV','NORM',rNorm,'test','HUMAN','1'); ignored=rp~addEvidenceReference(rRef)
+ if order='CONDITIONAL_FIRST' then do; ignored=unit~addProposal(cp); ignored=unit~addProposal(rp); end
+ else do; ignored=unit~addProposal(rp); ignored=unit~addProposal(cp); end
+ report=.LegalRuleCompiler~new~compile(unit)
+ if \report~ok then raise syntax 88.900 array('ambiguous generation compile failed')
+ return report~generation
+
+::class V06TestDigestProvider public
+::method algorithm
+ return 'SHA256'
+::method digest
+ use arg material
+ return .AlgorithmDigest~sha256Text(material)
+
+::routine AssertTrue
+ use arg condition,label
+ if \condition then raise syntax 88.900 array('ASSERT TRUE FAILED: '||label)
+ return 0
+::routine AssertEqual
+ use arg expected,actual,label
+ if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: '||label||' expected='||expected||' actual='||actual)
+ return 0
+::requires 'LegalEffect.cls'
+::requires '__RYTA_ROOT__/algorithm/AlgorithmIntegrity.cls'
+::requires '__RYTA_ROOT__/integration/LegalEffectV06PromotionAdapter.cls'

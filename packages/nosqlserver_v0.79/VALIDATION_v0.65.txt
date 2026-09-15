@@ -1,0 +1,68 @@
+NoSQLServer v0.65 validation
+============================
+
+Focus
+-----
+NATURAL JOIN plus explicit DISTINCT/aggregate ORDER BY semantics.
+
+NATURAL JOIN
+------------
+- One NATURAL JOIN relation is supported in a SELECT.
+- Common columns are discovered case-insensitively by name.
+- All common columns participate in the equality key.
+- NULL common-column values do not match NULL.
+- SELECT * exposes each common column once: all left columns followed by
+  non-common right columns.
+- If there are no common columns, NATURAL JOIN degenerates to a cross join.
+- ORDER BY, WHERE, projection and DISTINCT continue through the ordinary
+  result machinery.
+- Access paths:
+    NATURAL_HASH_JOIN
+    NATURAL_CROSS_SCAN
+
+Hell Corpus v2 Q18
+------------------
+emp and assignment share only emp_id. Ten assignment rows have matching
+employees. The independent oracle checks:
+- exactly 10 result rows;
+- ORDER BY emp_id, assignment_id;
+- expected employee names and assignment ids;
+- exactly 12 visible columns, proving emp_id is emitted once.
+
+Q23 semantic lock
+-----------------
+The query:
+  SELECT DISTINCT e.dept_id
+  FROM emp e
+  ORDER BY AVG(e.salary)
+
+is not silently rewritten into GROUP BY e.dept_id. DISTINCT does not create
+an aggregate grouping context. v0.65 returns SQLPARSEERROR with:
+  DISTINCT ORDER BY aggregate requires an explicit GROUP BY or projected aggregate
+
+This is an intentional semantic rejection, not a missing-expression fallback.
+
+Result
+------
+Grok Hell Corpus v2:
+  PASS            22
+  UNSUPPORTED      2
+  PARSE_ERROR      6
+  WRONG_RESULT     0
+  EXECUTION_ERROR  0
+
+Regression evidence
+-------------------
+- 42 gates green.
+- v0.65 NATURAL JOIN / DISTINCT semantic smoke: PASS
+- v0.64 multi-CTE: PASS
+- v0.63 SET CORRESPONDING BY: PASS
+- v0.62 journal UTC timestamp: PASS
+- v0.61 DELETE USING: PASS
+- v0.60 UPDATE FROM: PASS
+- object/federation/storage/planner/database_core gates: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 22/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly under ooRexx
+  5.3.0 r13196.

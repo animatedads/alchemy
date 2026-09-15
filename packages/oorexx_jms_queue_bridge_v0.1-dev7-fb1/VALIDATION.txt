@@ -1,0 +1,74 @@
+ooRexx JMS Queue Bridge v0.1-dev7-fb1 delivery validation
+========================================================
+Date: 2026-08-26
+Target runtime: supplied ooRexx 5.3.0 r13196 debug, 64-bit
+BSF runtime: supplied BSF4ooRexx v850 refresh
+Recovered source: previously written dev7-fb1-fbcompat package, original manifest verified before repair
+Delivered API-roll-up baseline: oorexx_jms_queue_bridge_v0.1-dev6
+Queue Fabric: v0.9-dev4
+Alchemy Objects: v0.8
+Crypto: v0.1
+Secret Broker: v0.2
+Runtime Registry: v0.14
+
+DEV7-FB1 SHARED DELTA
+  outbound Java-free MAP body -> JMS MapMessage              PASS
+  inbound JMS MapMessage -> persistable ooRexx Directory    PASS
+  arbitrary application JMS property forwarding             PASS
+  bridge-reserved AlchemyTransferId / AlchemyQueue protected PASS
+  package/envelope JMS correlation handling                 PASS
+  optional JMSType forwarding                               PASS
+  TEXT path and durable alchemy.jms.message/0.1 unchanged   PASS
+
+PRE-DELIVERY LIVE-EDGE REPAIRS
+  JMSBSFProvider~send exposes config                         PASS
+  Java Connection.start uses bsf.invoke                     PASS
+  Java MessageProducer.send uses bsf.invoke                 PASS
+  ActiveMQ Enumeration names survive BSF conversion         PASS
+
+DETERMINISTIC SUITE -- ooRexx 5.3.0 r13196
+  style                                                      PASS
+  JMSQueueBridge.cls compile                                 PASS
+  JMSQueueBridgeBSF.cls compile with real BSF4ooRexx         PASS
+  JMSQueueBridgeSecrets.cls compile                          PASS
+  inbound CLIENT_ACK idempotency                             PASS 8
+  inbound CLIENT_ACK recovery                                PASS 7
+  inbound AUTO_ACK monitoring semantics                      PASS 7
+  non-transacted outbound semantics                          PASS 11
+  FederationBank MAP/property compatibility                  PASS
+  FederationBank fake-BSF edge                               PASS 28
+  persistence                                                PASS 8
+  runtime lifecycle                                          PASS 9
+  provider/flow probe                                        PASS 15
+  session policy                                             PASS 5
+  flow capability model                                      PASS 17
+  operational readiness                                      PASS 18
+  Alchemy Objects v0.8 adoption                              PASS 6
+  environment credentials                                    PASS 9
+  Secret Broker v0.2 credentials                             PASS 16
+  Runtime Registry v0.14                                     PASS
+
+REAL BSF4OOREXX + ACTIVEMQ EDGE
+  provider connect/start                                     PASS
+  inbound real Java MapMessage                               PASS
+  inbound MAP fields + IJCIB properties                      PASS
+  inbound JMSCorrelationID + JMSType                         PASS
+  CLIENT_ACK settlement                                      PASS
+  outbound Java-free MAP -> real MapMessage                  PASS
+  outbound application properties                            PASS
+  reserved transfer/queue metadata protection                PASS
+  correlation precedence                                     PASS
+  outbound TEXT compatibility                                PASS
+  aggregate                                                  PASS 24
+
+FEDERATIONBANK V0.8
+  39 banking regressions covered against dev7-fb1            PASS
+  ATM gateway protocol/JMS metadata                           PASS
+  ATM hold/dispense/commit/cancel/deposit/replay              PASS
+  IJCIB exact MAP/property contract                           PASS
+  PHANTOM_FUNDS regression                                    PASS
+  runtime smoke                                               PASS
+
+The ActiveMQ qualification is a development broker edge test, not a claim about
+production FAA/SCDS or IJCIB endpoint credentials/policy. Provider-specific
+production readiness remains separately probed by the existing capability modes.

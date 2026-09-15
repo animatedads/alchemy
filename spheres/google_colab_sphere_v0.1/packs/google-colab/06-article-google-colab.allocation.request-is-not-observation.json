@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "google-colab.allocation.request-is-not-observation",
+  "version": "0.1",
+  "sphere": "google-colab",
+  "title": "Requested accelerator and actual runtime resources are separate facts",
+  "summary": "A selector such as --gpu T4 is an allocation request, not sufficient evidence of the device or its usable memory. The worker must inspect the actual GPU identity, CUDA-visible memory, host MemTotal/MemAvailable and disk before model loading. In the qualified Gemma run, the T4 exposed 14,912 MiB CUDA memory and the host exposed 12,975 MiB total RAM; literal 15,000 MiB gates were therefore wrong even though the correct T4 had been allocated.",
+  "evidence_note": "Live T4 evidence: Tesla T4, 14,912 MiB CUDA-visible GPU memory, 12,975 MiB host memory, with successful later NF4/LoRA work after calibrated gates. Current upstream also warns that accelerator availability is entitlement/capacity dependent and status should be used to inspect actual hardware.",
+  "invariants": [
+    "Keep nominal accelerator identity distinct from observed GPU memory.",
+    "Worker sanity thresholds use realistic exposed-resource floors, not marketing/nominal numbers.",
+    "Check MemAvailable as well as MemTotal before memory-heavy work.",
+    "Resource mismatch fails before downloading/loading the expensive model when practical."
+  ]
+}

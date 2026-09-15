@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Wire UI v0.8 full gateway acceptance</title></head>
+<body>
+  <main id="app"></main>
+  <script type="module">
+    import {
+      Comms,
+      QueueFabricGatewayTransport,
+      DefinitionRegistry,
+      BrowserRenderer,
+      WireUIRuntime,
+      RenderProfileController,
+      MemoryDefinitionCache,
+      MessageKind
+    } from '/wire-ui-js/src/index.js';
+
+    const params = new URLSearchParams(location.search);
+    const gatewayPort = params.get('gatewayPort');
+    const transport = new QueueFabricGatewayTransport({
+      url: `ws://127.0.0.1:${gatewayPort}/wire-ui?binding=flylo`,
+      outboundQueue: 'WIREUI.IN.AP1',
+      ownership: { applicationId: 'FLYLO', sessionId: 'S1', accessPointId: 'AP1' },
+      putResultMode: 'required'
+    });
+    const comms = new Comms({ transport, source: 'FLYLO.BROWSER', destination: 'WIREUI.IN.AP1' });
+    const definitions = new DefinitionRegistry();
+    const renderer = new BrowserRenderer({ definitions, mount: document.querySelector('#app') });
+    const cache = new MemoryDefinitionCache();
+    const profile = new RenderProfileController({
+      comms, definitions, definitionCache: cache, renderer, siteId: 'FLYLO'
+    });
+    const runtime = new WireUIRuntime({
+      comms, definitions, renderer, serverSemantic: true, renderProfile: profile,
+      ownership: { applicationId: 'FLYLO', sessionId: 'S1', accessPointId: 'AP1' }
+    });
+    void runtime;
+
+    let definitionRequests = 0;
+    comms.onAny((kind, payload) => {
+      if (kind === MessageKind.UI_RENDER_PROFILE) {
+        document.documentElement.dataset.renderProfile = payload.profileId || '';
+        document.documentElement.dataset.manifest = payload.manifestId || '';
+      }
+    });
+    const originalSend = comms.send.bind(comms);
+    comms.send = async (kind, payload, options) => {
+      if (kind === MessageKind.UI_DEFINITION_REQUIRED) definitionRequests += 1;
+      return originalSend(kind, payload, options);
+    };
+
+    const observer = new MutationObserver(() => {
+      const text = document.body.textContent || '';
+      if (text.includes('Nothing has been added to your booking.')) {
+        document.documentElement.dataset.acceptance = 'PASS';
+        document.documentElement.dataset.definitionRequests = String(definitionRequests);
+        document.title = 'PASS';
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true, characterData: true });
+
+    comms.onState((event) => {
+      if (event.type === 'inbound-handler-error') {
+        document.documentElement.dataset.acceptance = 'FAIL';
+        document.documentElement.dataset.error = String(event.error?.message ?? event.error);
+      }
+    });
+
+    await comms.connect(profile.helloPayload({ applicationId: 'FLYLO', sessionId: 'S1', accessPointId: 'AP1' }));
+
+    const wait = (fn, timeout = 5000) => new Promise((resolve, reject) => {
+      const start = performance.now();
+      const tick = () => {
+        const value = fn();
+        if (value) return resolve(value);
+        if (performance.now() - start > timeout) return reject(new Error('timeout'));
+        setTimeout(tick, 10);
+      };
+      tick();
+    });
+
+    const button = await wait(() => [...document.querySelectorAll('button')].find((b) => b.textContent.includes('Ask FlyLo')));
+    button.click();
+  </script>
+</body>
+</html>

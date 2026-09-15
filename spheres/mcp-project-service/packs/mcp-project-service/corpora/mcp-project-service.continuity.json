@@ -1,0 +1,120 @@
+{
+  "kind": "corpus",
+  "id": "mcp-project-service.continuity",
+  "sphere": "mcp-project-service",
+  "title": "MCP Project Service durable continuation records",
+  "records": [
+    {
+      "topic": "current baseline",
+      "value": "oorexx_mcp_service_v0.2-dev8.zip",
+      "sha256": "56a38180ae1d2f712ba9afc3f9f2aa5bd528bc04a5c976510167faf6f98287d3"
+    },
+    {
+      "topic": "baseline",
+      "value": "oorexx_mcp_service_v0.2-dev7.zip",
+      "sha256": "0fda08557692c4011a43972a205d7e1a03a1a00bb5fb64a5469ce4a8b8322140"
+    },
+    {
+      "topic": "transport",
+      "rule": "HTTPS Server v0.4.4 owns TLS/HTTP; MCP is a route adapter."
+    },
+    {
+      "topic": "wire authority",
+      "rule": "McpProjectWireService owns project coordination semantics and returns WireUIResult."
+    },
+    {
+      "topic": "identity",
+      "rule": "Authenticated request context mcp.principal is authority; MCP clientInfo is not."
+    },
+    {
+      "topic": "requests",
+      "rule": "Requests are immutable; replies create child requests; read state is per-reader evidence."
+    },
+    {
+      "topic": "component mailbox",
+      "rule": "Unowned-component work waits at component:<id>; active owner inherits visibility."
+    },
+    {
+      "topic": "ownership",
+      "rule": "One ACTIVE owner; same-owner reclaim idempotent; other-owner claim conflicts; only active owner may explicitly release; release is append-only and makes the component claimable again."
+    },
+    {
+      "topic": "journal",
+      "rule": "Append durable event before apply; claim/release/re-claim replay is qualified; JSONL backend remains single-writer in v0.2-dev7."
+    },
+    {
+      "topic": "MCP",
+      "rule": "Primary revision 2026-07-28; initialize-era 2025-03-26/2025-06-18/2025-11-25 are served statelessly for connector compatibility; no session authority."
+    },
+    {
+      "topic": "tools",
+      "value": "sphere.check, project.components.list, project.request.create, project.ownership.claim, project.ownership.release, project.requests.list, project.request.mark_read, project.request.reply"
+    },
+    {
+      "topic": "Gopher",
+      "rule": "sphere.check returns structured Gopher resolution/provenance."
+    },
+    {
+      "topic": "ChatGPT deployment",
+      "rule": "External ChatGPT successfully discovered/invoked Alchemy tools after JSON boolean schema correction. Initial no-auth scanning is supported, while write authority still comes only from trusted HTTPS mcp.principal."
+    },
+    {
+      "topic": "ooRexx package binding",
+      "rule": "McpHttpsRoute must directly require https_server.cls; sibling ::requires in the host does not import HttpResponse into the MCP route package."
+    },
+    {
+      "topic": "ownership release",
+      "rule": "project.ownership.release is owner-only; non-owner => OWNERSHIP_RELEASE_FORBIDDEN; already unowned => ALREADY_UNOWNED; successful release => immutable OWNERSHIP_RELEASED evidence."
+    },
+    {
+      "topic": "canonical tool names",
+      "rule": "The authoritative MCP surface remains eight dotted names: sphere.check plus the seven project.* operations including ownership.release."
+    },
+    {
+      "topic": "Grok connector compatibility",
+      "rule": "An optional compat adapter advertises exactly eight underscore aliases only, sharing the same Wire service. It is an A/B client-index presentation, not a second API."
+    },
+    {
+      "topic": "schema compatibility",
+      "rule": "Advertised input schemas omit optional $schema and use only object/properties/required/additionalProperties with JSON booleans."
+    },
+    {
+      "topic": "stateless GET",
+      "rule": "GET/HEAD on MCP remain 405 + Allow: POST. Do not fake SSE; real SSE/stateful support requires session and streaming authority."
+    },
+    {
+      "topic": "sphere components",
+      "rule": "Gopher spheres are first-class ownable project components with canonical IDs sphere:<sphereId>; sphere ownership never implies ownership of a runtime component."
+    },
+    {
+      "topic": "sphere component sources",
+      "rule": "Current composite catalogue is 82 runtime/API artifact entries plus 53 sphere artifact entries, 135 entries / 129 unique canonical component IDs, sourced from the supplied 20260908 API and sphere roll-ups."
+    },
+    {
+      "topic": "component aliases",
+      "rule": "Convenience aliases may resolve to canonical IDs, but exact component IDs always win and journal events always store canonical IDs; oorexx_llm_pitfalls resolves to sphere:oorexx-llm-pitfalls."
+    },
+    {
+      "topic": "Grok live interoperability",
+      "rule": "After dev6 2025-11-25 routing correction, Grok exposed all eight compatibility tools and successfully called project_components_list and project_requests_list."
+    },
+    {
+      "topic": "qualification broker",
+      "rule": "When QEB v0.1-dev1 is injected, MCP exposes PLAN/REQUEST/AUTH challenge+submit/STATUS/RESULTS/CANCEL only; worker execute authority remains outside MCP."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_mcp_service_v0.2-dev8.zip",
+      "sha256": "56a38180ae1d2f712ba9afc3f9f2aa5bd528bc04a5c976510167faf6f98287d3",
+      "member": "oorexx_mcp_service_v0.2-dev8/VALIDATION.txt",
+      "claim": "Current sealed executable baseline and qualification."
+    },
+    {
+      "artifact": "oorexx_mcp_service_v0.2-dev7.zip",
+      "sha256": "0fda08557692c4011a43972a205d7e1a03a1a00bb5fb64a5469ce4a8b8322140",
+      "member": "oorexx_mcp_service_v0.2-dev7/VALIDATION.txt",
+      "claim": "Sealed executable baseline and qualification."
+    }
+  ]
+}

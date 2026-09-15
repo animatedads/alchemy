@@ -1,0 +1,52 @@
+ooRexx ML v0.1-dev10 qualification
+=================================
+
+Runtime
+- ooRexx 5.3.0 r13196 (user-supplied debug build)
+- standard ooRexx RxMath library for sin/cos/sqrt/arctan/arccos in cylindrical geometry
+
+Executable behaviour
+- 57/57 test files PASS.
+- All 49 dev9 tests remain green.
+- New dev10 regressions:
+  * temporal market demo contract
+  * temporal pattern index rollback/roll-forward
+  * local timing fluctuation survives global scale normalization
+  * vector-valued market state
+  * event/sample-density invariance
+  * global time-scale invariance and absolute timing distinction
+  * time-shift/absolute-origin policy including fail-closed contradictory policy
+  * 3-D bearing/elevation vector ranges
+
+Demo evidence
+- examples/cylindrical_market_pattern_demo.rex executes under ooRexx and self-generates the SVG.
+- A vs B nominal-price lookalike: dominant=1288, dominant kind/channel=TURN/FX, total=33545.
+- A vs C economic twin: dominant=0, exact hash equality under declared value/time scale invariance.
+- A vs D local timing shock: dominant=160, dominant kind/channel=ELEVATION/RELATIVE, total=4220.
+- The demo is explicitly illustrative synthetic market data; it makes no investment or causal claim.
+
+Compilation
+- 17/17 source/integration surfaces PASS rexxc:
+  * 14 src/*.cls including MLTemporalPatternHash.cls and OorexxML.cls
+  * AudioParetoObjectives.cls
+  * AudioSearchExperiment.rex
+  * MLStorageFabricBridge.cls
+
+Semantic Source Control v0.2.3
+- Reconstructed dev9 exactly as OorexxML / MAIN / sourceLevel 10:
+  13 packages / 726 methods / 291 attributes / 0 external tracked.
+- dev10 scan:
+  14 packages / 859 methods / 291 attributes / 3640 message uses / 0 external candidates / 0 pending proposals.
+- dev10 accepted as OorexxML / MAIN / sourceLevel 11.
+
+Dependency snapshots
+- Journal Pointed State, Maths, MathsBootstrap and Storage Fabric hashes are unchanged from dev9/latest supplied qualification snapshots.
+
+Key semantic checks
+- time is an independent height coordinate, not silently substituted for event index;
+- the temporal cylinder is open in time: no last->first temporal segment is invented;
+- multi-channel state is retained independently rather than scalarized before hashing;
+- time-scale invariance implies time-shift invariance and contradictory policy fails closed;
+- local timing fluctuation remains visible under global time-scale normalization;
+- significance-ordered distance reports the dominant kind/channel instead of hiding cause in one scalar;
+- MLTemporalPatternIndex remains a driveable historical object.

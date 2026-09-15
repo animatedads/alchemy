@@ -1,0 +1,58 @@
+ooRexx HTTPS Server v0.4.4 local qualification
+Date: 2026-08-30
+ooRexx: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+OpenSSL: OpenSSL 3.5.5 27 Jan 2026 (Library: OpenSSL 3.5.5 27 Jan 2026)
+Foreign Runtime: exact supplied v0.17.1 prebuilt, libffi dispatcher
+Transport: RxSock network I/O + OpenSSL memory BIOs
+Admission: 16 fixed workers + bounded FIFO capacity 64
+Native TLS execution: one serialized in-memory lane
+
+PASS test_http_util
+PASS bounded accepted-connection FIFO capacity=4 highWater=4 rejected=1
+PASS memory-BIO config requires one native TLS lane
+PASS serialized TLS native lane count=1 maxConcurrent=1 calls=32
+TLS_PROVIDER /lib/x86_64-linux-gnu/libssl.so.3
+TLS_OPTIONS 1074921472
+THREADING thread-safe
+FOREIGN_RUNTIME 0.17.1 DISPATCHER libffi.so.8 MAX_ARITY 0 POLICY min-proto-control
+PASS tls context probe
+PASS ooRexx API, TLS context, and provider-threading probes
+PASS memory-BIO TLS pump keeps network I/O in RxSock
+PASS retryable OpenSSL handshake states locked
+PASS serialized memory-BIO native TLS boundary locked
+PASS bounded pre-TLS connection admission and fast-abort cleanup locked
+PASS runtime dispatcher, provider/native threading policies, TLS policy, and generation observability
+PASS TLS HTTP/1.1 health route
+PASS binary-exact TLS body path
+PASS multi-record memory-BIO body and 100-continue path
+PASS HEAD semantics
+PASS exact routing and 405
+PASS anti-smuggling framing rules
+PASS Host requirement
+PASS keep-alive and pipelined carry-over
+PASS TLS 1.2 and TLS 1.3
+PASS positive traffic leaves server error log clean
+PASS TLS 1.0/1.1 floor
+PASS 16 concurrent HTTPS clients
+PASS 8-wave concurrent TLS plus reset/abort stress with bounded admission
+PASS handler exception containment
+PASS request context and ordered before/after interceptor pipeline
+PASS interceptor short-circuit bypasses route and unwinds entered hooks
+PASS route and interceptor failure containment with outer unwind
+PASS interceptor registration immutable after start
+PASS concurrent request-context identity
+PASS interceptor failure diagnostics
+PASS required client certificate verification
+PASS TLS rejection diagnostic shape
+PASS mTLS rejection diagnostic shape
+PASS atomic hot TLS context/certificate replacement with generation pinning
+PASS failed TLS replacement is atomic and non-destructive
+PASS graceful listener drain preserves accepted requests and refuses new work
+PASS ALL HTTPS SERVER v0.4.4 TESTS
+
+ooRexx HTTPS Server v0.4.4 additional local liveness soak
+Environment: supplied ooRexx 5.3.0 r13196 debug build; exact supplied Foreign Runtime v0.17.1 prebuilt; OpenSSL 3.5.5.
+Server pinned to one CPU with taskset -c 0.
+40 waves, each wave: 16 valid HTTPS /healthz clients + 16 peers sending an incomplete TLS prefix then closing.
+Client connect timeout: 2 seconds (unchanged).
+Result: 640/640 valid HTTPS requests passed; 640 abort peers completed; server remained alive; final /healthz passed; no ERROR lines in server log.

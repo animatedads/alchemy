@@ -1,0 +1,41 @@
+Semantic Source Control Gopher Sphere v0.1-dev1 qualification
+Date: 2026-09-02
+
+Engine:
+- LLM Gopher v0.16-dev1
+- private setup status READY
+- ooRexx 5.3.0 r13196 Internal Test Version from the supplied .deb
+
+Dogfood:
+- Gopher source.symbol.lookup found exact ::class SemanticRepository in sealed SSC v0.2.3.
+- Gopher examine source reported SSC v0.2.3 SemanticSourceControl.cls as 25 classes / 190 methods / 141 attributes.
+- DOGFOOD.CAPABILITY_GAP recorded because Gopher exposes no SSC repository identity/history/delta/impact capability.
+- DOGFOOD.CAPABILITY_GAP recorded because Gopher explains sphere authoring but has no bounded sphere scaffold/write capability.
+
+Packaging:
+- First package.stage.check correctly returned BREACHED / PACKAGE.CHANGELOG.REQUIRED.
+- CHANGELOG.md was added; no bypass was used.
+- Final package.stage.check: READY, breaches=0, blockers=0, one discovered test.
+
+Fresh activation:
+- new private Gopher environment created from the exact supplied ooRexx .deb.
+- sphere load semantic-source-control --override <zip> => ACTIVATED.
+- activated archive SHA-256 recorded by Gopher.
+- live context opens 8 SSC articles.
+- live context inherits ooRexx/core capabilities including:
+  source.symbol.lookup
+  source.oorexx.examine
+  source.oorexx.method.edit
+  source.language.rules.evaluate
+  test.impact.discover
+  package.stage.check/create
+  dogfood.escape.record
+- live context publishes corpus ssc.interface with 15 records.
+- exact lookup capability=source.semantic.accept => EXACT_FIELD, state=PLANNED, class=mutation, roles=reviewer/admin.
+- tests/run_semantic_source_control_sphere.sh => PASS SEMANTIC SOURCE CONTROL GOPHER SPHERE v0.1-dev1
+
+Architectural qualification:
+- The sphere deliberately publishes no fake executable SSC repository capabilities.
+- Gopher is the operational interface/projection.
+- SSC remains authoritative for stable identity, accepted history, source levels, semantic deltas, impact and external-operation tracking decisions.
+- Evidence is not acceptance; source.semantic.accept and source.semantic.proposal.decide are reserved for reviewer/admin in the intended access model.

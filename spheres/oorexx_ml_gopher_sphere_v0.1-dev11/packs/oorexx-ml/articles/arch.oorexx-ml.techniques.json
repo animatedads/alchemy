@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.techniques",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Conventional technique expansion",
+  "summary": "dev7 broadens the pure-ooRexx reference catalogue with binary logistic regression, Gaussian Naive Bayes, deterministic Gini decision trees, deterministic k-means and PCA while preserving MLDriveableObject history semantics.",
+  "authority": "Executable dev7 source/tests are authoritative; this sphere preserves architectural intent and continuation knowledge.",
+  "invariants": [
+    "Every fitted estimator/transform is a driveable historical object; fit state can be rolled backward, rolled forward and branched.",
+    "Pure ooRexx is the semantic/reference path; native/NumPy/Torch acceleration must preserve state/provenance/history semantics and declared numerical policy.",
+    "Binary logistic probability meaning must not silently depend on arbitrary label ordering when the caller supplies a positive label.",
+    "Unsupervised transforms still consume provenance-bearing MLDataset objects so sample identity survives feature-space changes.",
+    "Deterministic k-means intentionally has no hidden RNG state; identical input and policy replay identically."
+  ],
+  "procedure": [
+    "For two-class probabilistic classification use MLBinaryLogisticRegression and supply the positive label when probability semantics matter.",
+    "For conditionally independent continuous features use MLGaussianNaiveBayes; prediction uses log-score ordering and a variance floor.",
+    "For interpretable numeric partitioning use MLDecisionTreeClassifier and branch maxDepth/minSamplesSplit/minGain policy rather than overwriting a fitted future.",
+    "For unsupervised compact partitioning use MLKMeans; its maximin initialisation is deterministic.",
+    "For linear dimensionality reduction use MLPrincipalComponentAnalysis; transformed datasets preserve sample ids and derive PCA provenance.",
+    "Validate model futures against held-out evidence before promotion; technique breadth does not relax leakage/domain barriers."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev7.zip",
+      "sha256": "2749c3673ed6d431e1e23589234ba088a90db82f6f29cda14e9edfae2802fc24",
+      "member": "oorexx_ml_v0.1-dev7/src/MLTechniques.cls",
+      "claim": "Executable implementations and state contracts."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev7.zip",
+      "sha256": "2749c3673ed6d431e1e23589234ba088a90db82f6f29cda14e9edfae2802fc24",
+      "member": "oorexx_ml_v0.1-dev7/tests/test_logistic_regression.rex",
+      "claim": "Logistic classification and rollback/roll-forward qualification."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev7.zip",
+      "sha256": "2749c3673ed6d431e1e23589234ba088a90db82f6f29cda14e9edfae2802fc24",
+      "member": "oorexx_ml_v0.1-dev7/tests/test_pca.rex",
+      "claim": "PCA dominant-component and provenance qualification."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev7.zip",
+      "sha256": "2749c3673ed6d431e1e23589234ba088a90db82f6f29cda14e9edfae2802fc24",
+      "member": "oorexx_ml_v0.1-dev7/qualification/QUALIFICATION_DEV7.txt",
+      "claim": "34-test, rexxc and SSC sourceLevel-8 qualification summary."
+    }
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "kind": "article",
+  "id": "ap-method-permissions",
+  "version": "0.3",
+  "sphere": "access-permissions",
+  "title": "Permission is exact object and method authority",
+  "summary": "PermissionAuthority evaluates a PermissionRequest bound to principal, exact object identity, object class, method, Security Effect disposition, Security Effect policy identity, trace identity, and retained constraints.",
+  "authority": "project-authority",
+  "invariants": [
+    "Permission is exact subject x object x method authority, not class-wide authority unless policy deliberately uses a wildcard object selector.",
+    "PermissionRequest cannot be sealed without Security Effect evidence.",
+    "Security Effect evidence must be bound to the same principal, exact object id, and method.",
+    "Same-class different-object access remains denied unless explicitly authorized.",
+    "Default action is DENY and DENY wins equal-priority mixed-action ties."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/ARCHITECTURE.md",
+      "line_start": 17,
+      "line_end": 25,
+      "claim": "Permission is exact protected-operation authority bound to principal, exact object, method and Security Effect evidence; Security Manager remains enforcement.",
+      "note": "Architecture contract."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AccessPermissions.cls",
+      "line_start": 565,
+      "line_end": 624,
+      "claim": "PermissionRequest binds exact object/method and refuses Security Effect evidence for a different principal, object, or method.",
+      "note": "Executable Security Effect binding."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AccessPermissions.cls",
+      "line_start": 841,
+      "line_end": 887,
+      "claim": "PermissionAuthority evaluates sealed/effective policy, optional attribution subject binding, deterministic rule selection and signed decision envelope.",
+      "note": "Executable Permission authority."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+Accounting Rigour Gopher sphere v0.1
+====================================
+
+Purpose
+-------
+LLM-focused money-accounting rigour layered onto LLM Gopher without changing Gopher
+engine semantics. The accounting-rigour profile loads core + accounting-rigour and
+publishes only article + corpus content. No language-rules are forced: the money
+failure modes are semantic (arithmetic-context intent, legal intent, durable store
+state), so a syntactic rule would false-positive and is deliberately excluded.
+
+Grounded-in source (observed baseline), all consulted 2026-09-02:
+  accounting_core_v0.10.zip  (docs/PERSISTENCE_AND_PRECISION.md,
+      SETTLEMENT_ROUNDING_CONTRACT.md, REPORTING_LIFECYCLE_CONTRACT.md,
+      REAL_FILING_16024067_QUALIFICATION.md, CHANGELOG.md, QUALIFICATION.md)
+
+Headline incidents encoded
+--------------------------
+- v0.3.1/0.4.1 sibling-reconciliation repair: whole-number guard must run under
+  numeric digits 50 before DATATYPE(...,'W'); an inadequate context mis-evaluates a
+  legitimate 12,000,000,000 exact-minor-unit transaction.
+- v0.4 json.cls coercion hazard: numeric-looking money/opaque Rexx strings could be
+  re-emitted as JSON numbers; fixed by S:/I: storage prefixes on persisted scalars.
+- v0.7 settlement-vs-tax separation and replay DUPLICATE / SOURCE_*_EVENT_CONFLICT.
+- v0.8..v0.10 immutable filing lifecycle + no-overclaim / not-filed-never-zero on the
+  real Companies House 16024067 filing.
+
+Qualification results
+---------------------
+PASS tests/run_accounting_rigour_sphere.sh
+PASS semantic pack merge: MERGED
+PASS accounting-rigour context publishes accounting-rigour overview and precision article
+PASS search 'settlement rounding' resolves the rounding-separation article
+PASS search 'not zero' resolves the real-filing no-invent article
+PASS lookup topic=rounding resolves exact typed corpus record (exact match preferred)
+PASS package check reports READY with zero breaches.
+
+Sphere contents
+---------------
+- ops overview article (why the sphere exists, evidence discipline)
+- precision / minor-units / 50-digit article
+- money-is-not-a-JSON-number persistence article
+- settlement-vs-tax rounding article
+- immutable-lifecycle supersession article
+- exact-replay vs changed-reuse article
+- real-filing no-overclaim / omitted-never-zero article
+- source-reference / ground-truth article
+- searchable all-corpus of the rigour rules
+
+The sphere intentionally records architectural decisions and authoritative accounting
+invariants rather than duplicating any Accounting Core source tree.

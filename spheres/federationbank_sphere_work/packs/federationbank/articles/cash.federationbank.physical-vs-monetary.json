@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "cash.federationbank.physical-vs-monetary",
+  "version": "0.1",
+  "sphere": "federationbank",
+  "title": "Physical cash fact is not customer intent and is not Ledger truth",
+  "summary": "Cash channels preserve separate identities for customer intent, physical custody/device fact and FederationBank monetary truth. Correlation is required; none of the three facts may be silently substituted for another.",
+  "authority": "federationbank-project-doctrine",
+  "invariants": [
+    "Withdrawal authorisation may place a hold without book movement.",
+    "Physical dispense/acceptance is recorded by the physical channel/custody authority before the corresponding commit path claims it happened.",
+    "A lost response must never cause a second physical dispense or second Ledger posting.",
+    "The terminal/till never supplies an arbitrary internal settlement account.",
+    "Already-incurred physical obligations may require explicit mandatory-settlement authority; there is no generic force-post capability."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/README.md",
+      "line_start": 147,
+      "line_end": 165,
+      "claim": "ATM physical cash and monetary commit identities are distinct."
+    },
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/README.md",
+      "line_start": 191,
+      "line_end": 200,
+      "claim": "Debit authority distinguishes ordinary funds checks from already-incurred mandatory settlement."
+    }
+  ]
+}

@@ -1,0 +1,101 @@
+ooRexx LLM Personal Assistant v0.1-dev9-candidate1 validation
+================================================================
+
+Status:
+- Candidate integration based on the user's mid-session Codex WIP, not a sealed successor to the previously accepted dev8 artifact.
+- Adds SecurityManager-contained read-only ED209 machine observation abilities.
+
+Runtime used for deterministic qualification:
+- Open Object Rexx 5.3.0 r13196, user-supplied debug/internal-test build.
+- Queue Fabric v0.9-dev5, Alchemy Objects v0.8 and other API-rollup dependencies from the user's supplied oorexxapis archive.
+
+Machine observation authority gate:
+- transport helper: /home/hc3/alchemy-autobuild/sshnode.sh
+- model-facing surface: named abilities only; no arbitrary shell command argument
+- abilities: machine_health, memory_status, space_status, process_status, queue_status, configuration_status, file_status, deployment_status
+- every ability: READ_ONLY, mutating=false, eventable=true
+- actual ADDRESS SYSTEM is executed from a floating ooRexx Method with LlmPaMachineCheckSecurityManager attached using Method~setSecurityManager
+- SecurityManager independently validates the full command shape: timeout 20 <configured sshnode helper> <delegated ED209 node> '<known read-only probe>'
+- exact command must additionally match the per-invocation allowlist
+- defense-in-depth denies shell composition/redirection and mutators including pipe/redirection, --transfer, rm/mv/cp/touch/mkdir/rmdir/ln/unlink, sudo/kill/chmod/chown, filesystem/device mutation, service start/stop/restart, and QueueBash mutation
+- stdout/stderr are captured directly into Rexx arrays; no > or >> output files are used
+- process command lines are used internally for classification but raw process arguments are redacted before PA/model evidence leaves the ability
+- queue_status uses aggregate `queue stats`; raw QueueBash job payloads/commands are not given to Gemma
+- file_status is metadata-only and rejects traversal and sensitive path classes
+
+Deployment observation:
+- observes QueueBash version, installed queue script stat/hash, read-only systemd active state, and deployment-like process presence/elapsed time
+- active deployment process under 300 seconds -> IN_PROGRESS
+- active deployment process at/over 300 seconds -> STUCK_SUSPECTED
+- no active deployment process + expected installed version match -> DEPLOYED
+- no active deployment process + expected version mismatch -> NOT_DEPLOYED_OR_STALE
+- no expected version + quiet identifiable installation -> INSTALLED_QUIESCENT
+- this is observation only and cannot deploy, repair, restart, cancel, clean up, or transfer anything
+
+Eventable semantics:
+- an Alarm-fired PA turn may request one of the same machine observations
+- the triggering Alarm is still one-shot and ends when it fires
+- machine observation cannot create recurrence
+- Gemma may decide to finish or explicitly request a NEW Alarm under the existing Alarm authority path
+
+Focused negative/positive qualification (`tests/test_machine_abilities.rex`): PASS
+- fixed safe sshnode probe executes under the real SecurityManager and stdout remains in memory
+- `>` output redirection rejected before execution; target remains unchanged
+- `rm` rejected
+- `touch` rejected
+- `sshnode --transfer` form rejected
+- unknown ED209 node rejected
+- sensitive .ssh path rejected
+- parent traversal rejected
+- memory and filesystem parsers qualified
+- deployment elapsed-time parser qualified at 380 seconds -> STUCK_SUSPECTED
+- expected installed version -> DEPLOYED
+- expected version mismatch -> NOT_DEPLOYED_OR_STALE
+- process evidence is typed and raw process stdout is redacted
+- generated service commands contain the configured sshnode helper and no pipe/redirection/transfer/rm/sudo primitives
+
+Full deterministic gate: 29/29 PASS
+1. test_memory.rex
+2. test_memory_index.rex
+3. test_memory_context.rex
+4. test_local_knowledge.rex
+5. test_gopher_tool.rex
+6. test_async_queue.rex
+7. test_queue_recovery.rex
+8. test_cli_parser.rex
+9. test_machine_abilities.rex
+10. test_command_bridge.rex
+11. test_model_boundary.rex
+12. test_model_orchestrator.rex
+13. test_gemma_reminder_decision.rex
+14. test_remind_after.rex
+15. test_calendar.rex
+16. test_native_gemma_adapter.rex
+17. test_ollama_json_boolean.rex
+18. test_loopback_http_transport.rex
+19. test_no_curl_transport.rex
+20. test_workflow.rex
+21. test_continuity.rex
+22. test_plan.rex
+23. test_workflow_execution.rex
+24. test_escalation.rex
+25. test_external_providers.rex
+26. test_lessons.rex
+27. test_budget_policy.rex
+28. test_budget_authority.rex
+29. test_reasoning_escalator.rex
+
+Exact ooRexx compile qualification after integration:
+- src/LlmPaMachineChecks.cls PASS
+- src/LlmPaWorker.cls PASS
+- src/LlmPaCommandClient.cls PASS
+- bin/llmpad.rex PASS
+
+Target-host live boundary:
+- This environment does not have /home/hc3/alchemy-autobuild/sshnode.sh or the user's ED209 network/credentials, so no claim of live ED209 execution is made here.
+- Target qualification should start the daemon normally, then exercise e.g.:
+    rexx bin/llmpa.rex '-machine "memory_status ed209e"'
+    rexx bin/llmpa.rex '-machine "space_status ed209e"'
+    rexx bin/llmpa.rex '-machine "deployment_status ed209a 0.18.143"'
+    rexx bin/llmpa.rex '-ask "did 0.18.143 actually deploy on ED209A or is it stuck?"'
+- A natural ask uses a constrained Gemma selection turn that can emit only NONE or ABILITY|ability|node|argument; ooRexx validates and executes the selected fixed ability.

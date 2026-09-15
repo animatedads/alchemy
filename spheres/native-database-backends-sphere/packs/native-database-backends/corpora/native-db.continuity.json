@@ -1,0 +1,172 @@
+{
+  "kind": "corpus",
+  "id": "native-db.continuity",
+  "sphere": "native-database-backends",
+  "title": "Native Database Backends continuity and durable reasoning ledger",
+  "records": [
+    {
+      "topic": "current-baseline",
+      "component": "oorexx_native_database_backends",
+      "version": "0.2",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "status": "current workstream baseline",
+      "note": "Provider-neutral capability/result/planner foundation; live external dependency gates inherited where not re-executed."
+    },
+    {
+      "topic": "implementation-kind",
+      "value": "OOREXX_NATIVE",
+      "meaning": "Implementation is direct ooRexx code and may be library-independent; GeoPackage portable reader is the current exemplar."
+    },
+    {
+      "topic": "implementation-kind",
+      "value": "FOREIGN_RUNTIME",
+      "meaning": "Implementation calls a qualified native ABI through ooRexx Foreign Runtime; PostgreSQL/libpq is the current exemplar."
+    },
+    {
+      "topic": "implementation-kind",
+      "value": "PROCESS_BRIDGE",
+      "meaning": "Implementation reaches a provider through an explicit process/bridge path; retained as fallback, never mislabeled native."
+    },
+    {
+      "topic": "selection-rule",
+      "rule": "hard capability eligibility precedes priority ranking",
+      "note": "Priority cannot compensate for UNSUPPORTED/UNKNOWN/CONDITIONAL hard requirements."
+    },
+    {
+      "topic": "selection-rule",
+      "rule": "lowest numerical priority wins among eligible backends",
+      "note": "Current profiles: PostgreSQL native 10, GeoPackage pure ooRexx 20, PostgreSQL process fallback 100."
+    },
+    {
+      "topic": "fallback-rule",
+      "rule": "select before session acquisition",
+      "note": "After acquisition, failure is surfaced; no silent replay through another implementation."
+    },
+    {
+      "topic": "result-rule",
+      "rule": "structured native result is authoritative",
+      "note": "Compatibility text framing is an adapter over NativeDatabaseExecution/Result."
+    },
+    {
+      "topic": "null-rule",
+      "rule": "SQL NULL remains .nil",
+      "note": "Do not collapse provider NULL into empty string merely for compatibility framing."
+    },
+    {
+      "topic": "postgresql",
+      "primary": "Foreign Runtime/libpq",
+      "fallback": "process/psql route",
+      "status": "v0.2 structured result projection implemented"
+    },
+    {
+      "topic": "postgresql-next",
+      "feature": "parameter arrays",
+      "rule": "PQexecParams/PQsendQueryParams with Foreign Runtime pointer/buffer ownership; no SQL interpolation fallback"
+    },
+    {
+      "topic": "postgresql-next",
+      "feature": "COPY",
+      "rule": "must have explicit streaming source/sink, backpressure and lifetime ownership before capability becomes SUPPORTED"
+    },
+    {
+      "topic": "geopackage",
+      "primary-portable": "pure ooRexx direct reader",
+      "future-accelerator": "Foreign Runtime sqlite3/spatial",
+      "rule": "accelerator supplements, never replaces, the dependency-free reference/correctness route"
+    },
+    {
+      "topic": "mysql-boundary",
+      "outbound": "future Native Database Backend using client C API",
+      "inbound": "msqlshim classic wire server",
+      "rule": "do not couple opposite boundaries"
+    },
+    {
+      "topic": "msqlshim-current-reference",
+      "version": "0.21.2",
+      "sha256": "f39bc8c58b2437d4cd45ef2443580785260a6d5dc85332a75bcb112ff026bfcc",
+      "rule": "NoSQLServer remains external package reference; shim owns wire/session compatibility only"
+    },
+    {
+      "topic": "current-rollup",
+      "artifact": "oorexxapis(20260902-164925).zip",
+      "sha256": "190c3e9f7b484cfccc3e0fa4fe7fe06f0d15838ae2024b028ccaffd9652830",
+      "note": "Continuity reference, not automatic compatibility qualification."
+    },
+    {
+      "topic": "current-companion-reference",
+      "component": "Database Core",
+      "version": "0.46",
+      "sha256": "4650ecf85ac74d26a77912021b516174aab4bbd7a3f4facc980cd82b16a1f63f",
+      "qualification": "v0.1 parent used v0.46; v0.2 did not freshly execute all external gates"
+    },
+    {
+      "topic": "current-companion-reference",
+      "component": "NoSQLServer",
+      "version": "0.79",
+      "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec",
+      "qualification": "v0.1 parent used v0.79; current rollup still carries v0.79"
+    },
+    {
+      "topic": "current-companion-reference",
+      "component": "Foreign Runtime",
+      "version": "0.22.6",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "qualification": "newer than v0.2 parent qualification v0.22.2; available continuity reference only until requalified"
+    },
+    {
+      "topic": "qualification",
+      "runtime": "ooRexx 5.3.0 r13196",
+      "v0.2-executed": [
+        "capability model",
+        "structured result model",
+        "backend planner",
+        "fake-libpq result adapter",
+        "compile gates"
+      ],
+      "not-newly-executed": [
+        "live libpq connection",
+        "live GeoPackage external dependency gates"
+      ]
+    },
+    {
+      "topic": "non-claim",
+      "feature": "PostgreSQL cancellation",
+      "status": "UNSUPPORTED in v0.2"
+    },
+    {
+      "topic": "non-claim",
+      "feature": "PostgreSQL nonblocking/async",
+      "status": "UNSUPPORTED in v0.2"
+    },
+    {
+      "topic": "non-claim",
+      "feature": "PostgreSQL COPY streaming",
+      "status": "UNSUPPORTED in v0.2"
+    },
+    {
+      "topic": "non-claim",
+      "feature": "PostgreSQL pipeline mode",
+      "status": "UNSUPPORTED in v0.2"
+    },
+    {
+      "topic": "non-claim",
+      "feature": "GeoPackage Foreign Runtime accelerator",
+      "status": "not implemented in v0.2"
+    },
+    {
+      "topic": "non-claim",
+      "feature": "MySQL/MariaDB native outbound backend",
+      "status": "not implemented in v0.2"
+    },
+    {
+      "topic": "doctrine",
+      "rule": "newer dependency available does not mean older backend qualified",
+      "reason": "capabilities, ABI and transitive dependencies can change independently"
+    },
+    {
+      "topic": "doctrine",
+      "rule": "do not vendor external database/runtime packages",
+      "reason": "avoid stale shadow copies and preserve exact package identity/qualification"
+    }
+  ]
+}

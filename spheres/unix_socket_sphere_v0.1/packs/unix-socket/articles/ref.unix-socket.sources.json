@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "ref.unix-socket.sources",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Authoritative source and dependency map",
+  "summary": "The primary implementation artifact is oorexx_unix_socket_v0.6.zip. unixsocket.cls owns semantic objects and safety rules; bridge/libc-af-unix.bridge.json owns qualified libc declarations/constants/layouts; tests and qualification documents force the boundary. Foreign Runtime v0.22.6 is the required native-binding dependency.",
+  "authority": "project-authority",
+  "invariants": [
+    "unixsocket.cls is the semantic implementation source.",
+    "bridge/libc-af-unix.bridge.json is the Linux x86-64 ABI/provider declaration source.",
+    "QUALIFICATION.md and tests/run.sh define the current release evidence surface.",
+    "Foreign Runtime v0.22.6 capability abi-native-c-scalars plus prior managed pointer graph/binary slice capabilities are required.",
+    "The supplied ooRexx 5.3.0 r13196 package is the qualification interpreter/header baseline recorded by v0.6."
+  ],
+  "procedure": [
+    "Resolve current claims against these artifacts and hashes before relying on remembered version text."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/README.md",
+      "line_start": 83,
+      "line_end": 96,
+      "claim": "README records the exact Foreign Runtime dependency capabilities and r13196 qualification baseline.",
+      "note": "Dependency/source map."
+    },
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/bridge/libc-af-unix.bridge.json",
+      "line_start": 1,
+      "line_end": 47,
+      "claim": "Bridge declares Foreign Runtime schema/provider plus the qualified linux-x86_64-le-lp64 constants profile.",
+      "note": "Native provider/ABI source."
+    }
+  ]
+}

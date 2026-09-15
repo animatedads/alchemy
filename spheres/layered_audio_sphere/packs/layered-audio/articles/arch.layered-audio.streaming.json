@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "arch.layered-audio.streaming",
+  "version": "0.1",
+  "sphere": "layered-audio",
+  "title": "Streaming and state ownership",
+  "summary": "Stateful processing is first-class. Semantic sessions own block sequence, EOS, flush, checkpoint identity and state version while providers own numerical state such as FFT history, learned noise floors and IIR state.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Stateful providers do not require callers to fake overlap when history is provider-owned.",
+    "Checkpoints are detached value evidence and never serialize live Python/native/tensor state.",
+    "State modes distinguish NONE, CHECKPOINTABLE and PROVIDER_AFFINE.",
+    "Provider-affine streams require session affinity when dispatched."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "layered_audio_oorexx_v0.23.zip",
+      "sha256": "404da2298dcf1a2d5603d3222c4bb419a31b2e565cb7484ed3970bbda1fab7b3",
+      "member": "audio_layered_v0.23/AudioProcessingToolkit.cls",
+      "claim": "Streaming/session/checkpoint contracts."
+    }
+  ]
+}

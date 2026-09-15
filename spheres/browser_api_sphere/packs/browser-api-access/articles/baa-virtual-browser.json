@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "baa-virtual-browser",
+  "version": "0.1",
+  "sphere": "browser-api-access",
+  "title": "Virtual Browser is a non-rendering application runtime",
+  "summary": "Virtual Browser automates web applications through HTML/DOM/JavaScript semantics and browser-like sessions without paying the cost of a GUI renderer when pixels are not needed.",
+  "authority": "project-authority",
+  "invariants": [
+    "Virtual Browser is not a scraper abstraction and is not headless Chrome by default.",
+    "Commands are semantic browser operations such as navigate, set value, activate, submit, wait, read and enumerate.",
+    "HTML/DOM/application state is authoritative; visual rasterisation is absent from normal execution.",
+    "Images, fonts, media, analytics, advertising, preload and prefetch are suppressed by default unless semantically required.",
+    "CSS semantics may be implemented where application behaviour depends on them without requiring a visual renderer.",
+    "A separate FULL_BROWSER_REQUIRED capability may be used for sites that genuinely depend on layout, canvas, WebGL, WebAuthn or browser-specific behaviour."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "virtual_browser_v0.9.zip",
+      "sha256": "cf252cb1c713c9bad9a458b526d5159ed66964da75899de22b8cca349d0b9a2e",
+      "member": "virtual_browser_v0.9/README.md",
+      "line_start": 1,
+      "line_end": 5,
+      "claim": "v0.9 identifies the component as a non-rendering semantic browser and preserves API/placement authority boundaries.",
+      "note": "Authoritative executable-candidate grounding."
+    }
+  ]
+}

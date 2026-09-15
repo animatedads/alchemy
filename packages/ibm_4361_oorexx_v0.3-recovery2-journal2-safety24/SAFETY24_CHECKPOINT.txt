@@ -1,0 +1,13 @@
+SAFETY24 CHECKPOINT
+===================
+Base: sealed Safety23 SHA-256 78ec6e899ac4825658116326fe25395efe821c06d0745475bd8cec206c1dcefc
+Promotion: EX transient-target specification exceptions propagate through generic program-interruption handling using EX IA/ILC
+No OP70; OP44 remains the existing EX implementation.
+Exact frontier before: 44 @ 0004B6 / ICOUNT 539205 / 440004F45010 / target 70E005C84780
+Exact retry: PGMOLD 00040006800004BA / PGMNEW 00040000000002CA / ICOUNT 539206
+Independent permanent replay: PASS
+Forward progress after permanent EX repair: 102530 successful instructions
+Next boundary: 4B @ FFB5A8 / ICOUNT 641735 / 4B80D24B1684 / PSW 00040000A0FFB5A8
+Classification: System/370 4B = SH / Subtract Halfword / RX
+Qualification: 162 sources compile / 87 runtime tests pass
+Next task: exact SH journal/live proof; do not touch beyond X'4B' before sealing Safety24

@@ -1,0 +1,6 @@
+ooRexx HTTPS Server v0.4.4 additional local liveness soak
+Environment: supplied ooRexx 5.3.0 r13196 debug build; exact supplied Foreign Runtime v0.17.1 prebuilt; OpenSSL 3.5.5.
+Server pinned to one CPU with taskset -c 0.
+40 waves, each wave: 16 valid HTTPS /healthz clients + 16 peers sending an incomplete TLS prefix then closing.
+Client connect timeout: 2 seconds (unchanged).
+Result: 640/640 valid HTTPS requests passed; 640 abort peers completed; server remained alive; final /healthz passed; no ERROR lines in server log.

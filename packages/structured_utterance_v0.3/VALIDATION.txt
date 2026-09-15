@@ -1,0 +1,32 @@
+Structured Utterance v0.3 qualification validation
+Date: 2026-08-24
+Interpreter: Open Object Rexx 5.3.0 r13196 Internal Test Version
+Current API baseline: oorexxapis(4).zip supplied in this qualification
+
+Dependencies used:
+- Alchemy Objects v0.8 (v0.4.3+ adoption surface remains compatible)
+- ooRexx Crypto v0.1
+- Interaction Event v0.3
+- Runtime Registry v0.14
+
+Direct package result: PASS (15/15 requested tests)
+
+Validated surfaces:
+- structured segment/lineage/privacy model
+- generation-intent and information-use integrity
+- cross-act sensitive-information commercial-repurposing detection
+- Structured Utterance -> Interaction Event v0.3 native evidence bridge
+- native information-use / generation-intent / derived-finding export
+- deidentified projection removes raw sensitive source prose while preserving structured residue
+- BrandExperienceContext is sealed with its owning utterance; canonical evidence cannot drift after seal
+- legacy free-form ids that cannot satisfy Interaction Event opaque-token fields return INTERACTION_NATIVE_TOKEN_INCOMPATIBLE instead of raising syntax
+- Runtime Registry v0.14 stage/activate/acquire/release for API structured.utterance/0.3
+
+Downstream compatibility evidence:
+- Brand Interaction Effect v0.6 complete suite: PASS (24/24) against this repaired package and Interaction Event v0.3
+- Reputation Feed v0.10 Structured Utterance acquisition bridge: PASS
+
+Qualification boundary:
+- The current AI Access/provider contract returns flattened provider reply text/model/finish metadata and does not expose a package-native Structured Utterance handoff. Provider/model output -> Structured Utterance is therefore NOT proven as an authoritative package contract by the current baseline. It requires producer/orchestrator integration while pre-flattening intent/lineage is still available.
+
+See VALIDATION_TRANSCRIPT.txt for the direct executed suite.

@@ -1,0 +1,31 @@
+FederationBank Relationship Adapter Service v0.1 validation
+UTC: 2026-08-26T02:19:25Z
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+
+== test_submission_and_result.rex ==
+PASS: submission/result correlation retains Core Banking authority
+== test_no_action_service.rex ==
+PASS: no-action decision is service-visible without Core command
+== test_idempotency.rex ==
+PASS: service idempotency protects bank command submission
+== test_outbox_retry.rex ==
+PASS: outbox decouples relationship state from event delivery
+== test_persistence_restart.rex ==
+PASS: durable state/idempotency recover across service restart
+== test_queue_persistent_recovery.rex ==
+PASS: permanent Queue Fabric recovers typed decision/request/case command
+== test_bank_queue_port_no_ledger.rex ==
+PASS: bank port has Account/Payments routes and no Ledger ingress
+== test_runtime_module.rex ==
+PASS: runtime service module boundary
+
+PASS rexxc integration/FederationBankRelationshipBankQueuePort.cls
+PASS rexxc integration/FederationBankRelationshipServicePersistence.cls
+PASS rexxc integration/FederationBankRelationshipServiceQueue.cls
+PASS rexxc runtime/FederationBankRelationshipAdapterServiceRuntimeModule.cls
+PASS rexxc src/FederationBankRelationshipAdapterService.cls
+PASS rexxc tests/FakeBankPort.cls
+PASS rexxc tests/TestSupport.cls
+PASS rexxc total=7

@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "nosqlserver.interop-lineage",
+  "version": "0.1",
+  "sphere": "nosqlserver",
+  "title": "Interop handoff lineage: v0.13 requirements versus v0.79 reality",
+  "section": "integration",
+  "summary": "The preserved interop handoff targeted NoSQLServer v0.13 and required additive common status/operation aliases, transactions, prepared statements/batches, savepoints and metadata compatibility without copying PostgreSQL/MySQL internals. It is lineage, not the current baseline; v0.79 must be inspected for what has since landed.",
+  "authority": "chat-handoff-lineage",
+  "invariants": [
+    "Never use the old target version as current project identity.",
+    "Preserve the additive principle: shared database semantics do not require copying client-backed backend internals.",
+    "Capability queries are preferred to engine-name branching."
+  ],
+  "provenance": [
+    {
+      "artifact": "NOSQLSERVER_INTEROP_REQUIREMENTS_v1.md",
+      "sha256": "43a7833a148b0d506687f6d7f313c58a54c6f30cde9788332cf1b0894a872200",
+      "member": "NOSQLSERVER_INTEROP_REQUIREMENTS_v1.md",
+      "claim": "Historical NoSQLServer interoperability handoff, explicitly targeting v0.13."
+    }
+  ]
+}

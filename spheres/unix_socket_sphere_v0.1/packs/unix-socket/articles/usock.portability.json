@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "usock.portability",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Portability is profile addition, not profile renaming",
+  "summary": "v0.6 qualifies Linux x86-64 little-endian LP64 only. ABI-native scalars reduce unnecessary fixed-width assumptions, but they do not authorize claiming AArch64 or another Unix family without independent aggregate and semantic evidence.",
+  "authority": "project-authority",
+  "invariants": [
+    "The current concrete profile is linux-x86_64-le-lp64.",
+    "AArch64, BSD, macOS or another Unix target requires its own constants/layout evidence and may require semantic feature gating.",
+    "Linux-only facilities such as abstract sockets, SO_PEERCRED/SCM_CREDENTIALS, accept4 flags and /proc inode mutation helpers must not be silently advertised as portable POSIX semantics.",
+    "Portability claims are narrower than successful compilation on one host."
+  ],
+  "procedure": [
+    "For each new target, qualify Foreign Runtime ABI support first, then author and force a matching Unix Socket bridge/profile and gate OS-specific semantics explicitly."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/QUALIFICATION.md",
+      "line_start": 103,
+      "line_end": 105,
+      "claim": "Qualification narrows the concrete portability claim to linux-x86_64-le-lp64 and rejects copying layouts to other Unix ABIs.",
+      "note": "Current portability claim."
+    }
+  ]
+}

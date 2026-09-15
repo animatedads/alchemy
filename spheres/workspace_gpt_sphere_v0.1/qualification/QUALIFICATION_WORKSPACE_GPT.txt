@@ -1,0 +1,18 @@
+workspace-gpt sphere v0.1
+Date: 2026-09-02
+Engine requirement: LLM Gopher v0.18-dev1+
+
+Common capabilities used:
+  workspace.inspect
+  workspace.archive.preflight
+  workspace.materialization.check
+  workspace.handover.frame
+  workspace.context.recoverability
+
+Exact development regression:
+  ~30.1 MiB ZIP
+  154 MiB uncompressed member
+  60 MiB declared workspace quota
+  => HANDOVER_ADVISED / INSUFFICIENT_BYTES / PREPARE_HANDOVER
+
+The sphere itself does not materialise host files; it explicitly requests host capability `files.materialize` when the bytes are unavailable to the execution workspace.

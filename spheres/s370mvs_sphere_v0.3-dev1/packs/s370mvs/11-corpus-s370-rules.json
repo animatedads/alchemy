@@ -1,0 +1,194 @@
+{
+  "kind": "corpus",
+  "id": "s370.rules",
+  "sphere": "s370mvs",
+  "title": "System/370 cross-cutting behavior rules",
+  "records": [
+    {
+      "aliases": [
+        "rule:instruction-formats",
+        "formats:RR RX RS SI S SS SSE RRE"
+      ],
+      "topic": "instruction formats",
+      "rule": "System/370 instructions are 1, 2 or 3 halfwords. Primary opcode high bits participate in length/format classification; individual descriptions override general rules.",
+      "source": {
+        "type": "IBM_DOC",
+        "publication": "GA22-7000-6",
+        "location": "Chapter 5, pp. 5-2 to 5-3"
+      }
+    },
+    {
+      "aliases": [
+        "rule:operation-exception",
+        "program interruption operation"
+      ],
+      "topic": "operation exception",
+      "rule": "Unassigned/invalid operation codes take a program interruption; do not create OPxx implementations for intentionally invalid guest diagnostics.",
+      "project_proof": [
+        "00",
+        "FF",
+        "C4",
+        "62",
+        "65"
+      ]
+    },
+    {
+      "aliases": [
+        "rule:program-old-new-psw",
+        "lowcore:28 68"
+      ],
+      "topic": "program interruption PSWs",
+      "rule": "Store complete program-old PSW at low core 0x28 and load complete program-new PSW from 0x68 for BC-mode program interruptions; ILC/address reflect architectural exception semantics.",
+      "source": {
+        "type": "executable-reference",
+        "title": "Hercules cpu.c program_interrupt"
+      }
+    },
+    {
+      "aliases": [
+        "rule:svc-old-new-psw",
+        "lowcore:20 60"
+      ],
+      "topic": "SVC PSWs",
+      "rule": "SVC stores current PSW at 0x20 and loads the complete SVC-new PSW from 0x60.",
+      "source": {
+        "type": "executable-reference",
+        "title": "Hercules supervisor_call"
+      }
+    },
+    {
+      "aliases": [
+        "rule:divide-odd-r1",
+        "opcode:5D odd r1"
+      ],
+      "topic": "D exception precedence",
+      "rule": "For D/5D, odd R1 causes specification exception before the second operand is fetched; a zero divisor is irrelevant to that historical case.",
+      "source": {
+        "type": "executable-reference",
+        "title": "Hercules general1.c ODD_CHECK before vfetch4"
+      },
+      "project_proof": "safety19 exact MVT retry"
+    },
+    {
+      "aliases": [
+        "rule:mvn-overlap",
+        "opcode:D1 overlap"
+      ],
+      "topic": "MVN overlap",
+      "rule": "MVN operates left-to-right, one byte at a time; destination high nibble survives and source low nibble replaces destination low nibble. Overlap therefore observes earlier writes when they become later source bytes.",
+      "source": {
+        "type": "executable-reference",
+        "title": "Hercules MOVE_NUMERIC_BUMP"
+      },
+      "project_proof": "safety20 exact MVT retry + destructive-overlap regression"
+    },
+    {
+      "aliases": [
+        "rule:unpk-order",
+        "opcode:F3 overlap"
+      ],
+      "topic": "UNPK processing",
+      "rule": "UNPK is defined as if processed right-to-left; overlap must preserve that architectural processing model.",
+      "source": {
+        "type": "IBM_DOC",
+        "publication": "GA22-7000-6",
+        "location": "Chapter 7, UNPACK description around p. 7-36"
+      }
+    },
+    {
+      "aliases": [
+        "rule:decimal-summary",
+        "packed decimal AP SP MP DP CP ZAP"
+      ],
+      "topic": "decimal instruction family",
+      "rule": "Packed-decimal instruction family includes AP, CP, DP, ED, EDMK, MP, SRP, SP and ZAP, with instruction-specific condition-code and decimal exception behavior.",
+      "source": {
+        "type": "IBM_DOC",
+        "publication": "GA22-7000-4",
+        "location": "Decimal Instruction Summary p. 148"
+      }
+    },
+    {
+      "aliases": [
+        "rule:hfp",
+        "hexadecimal floating point"
+      ],
+      "topic": "hexadecimal floating point",
+      "rule": "System/370 floating point is hexadecimal HFP. Preserve IBM fraction width, hexadecimal normalization, rounding/truncation and exceptions; do not substitute host IEEE behavior.",
+      "source": {
+        "type": "IBM_DOC",
+        "publication": "GA22-7000-6",
+        "location": "Chapter 9; floating-point summary around p. 9-5"
+      }
+    },
+    {
+      "aliases": [
+        "rule:archaeology-acceptance",
+        "journal rewind retry"
+      ],
+      "topic": "emulator archaeology acceptance",
+      "rule": "Resolve semantics independently, retry the exact historical state via journal/live method insertion, require plausible guest progress, prove candidate-to-permanent equivalence, then seal before the next unknown boundary.",
+      "source": {
+        "type": "PROJECT_RULE",
+        "project": "IBM 4361 ooRexx emulator"
+      }
+    },
+    {
+      "aliases": [
+        "rule:evidence-maturity",
+        "evidence status sealed guest-proven"
+      ],
+      "topic": "evidence maturity",
+      "rule": "Keep IBM_DOC, EXECUTABLE_REFERENCE, PROJECT_EVIDENCE guest proof, permanent-source replay proof, and SEALED_CHECKPOINT as separate claim levels. A green exact-state replay is not a sealed artifact until manifest/fresh-extraction packaging completes."
+    },
+    {
+      "aliases": [
+        "rule:unassigned-no-opxx",
+        "invalid opcode no OPxx"
+      ],
+      "topic": "unassigned primary opcode handling",
+      "rule": "When a System/370 primary opcode is proven unassigned, deliver the architecturally correct operation exception through the generic classifier/interruption path and keep OPxx absent. Architecture generation remains part of the classification."
+    },
+    {
+      "aliases": [
+        "rule:oorexx-object-args",
+        "use arg parse arg object identity"
+      ],
+      "topic": "ooRexx emulator helper argument discipline",
+      "rule": "Use use arg for machine/CPU/storage/journal/executor and other object-bearing helper arguments so object identity is preserved. Use parse arg for textual/scalar command-line parsing."
+    },
+    {
+      "aliases": [
+        "rule:project-artifact-separation",
+        "sphere emulator separate lifecycle"
+      ],
+      "topic": "sphere/emulator artifact separation",
+      "rule": "The s370mvs sphere is maintained independently of emulator safety checkpoints. Sphere updates may record newly qualified knowledge without being bundled into or redefining an emulator checkpoint."
+    },
+    {
+      "aliases": [
+        "rule:hfp-register-selectors",
+        "FPR 0 2 4 6",
+        "STE specification exception"
+      ],
+      "topic": "short/long HFP register selectors",
+      "rule": "For System/370 short/long hexadecimal floating-point instructions, the R field may designate only floating-point registers 0, 2, 4, or 6. Other selectors cause specification exception before the instruction modifies its operand.",
+      "source": {
+        "type": "IBM_DOC",
+        "publication": "GX20-1850-5",
+        "location": "Floating-point register/instruction summaries"
+      },
+      "project_proof": "Safety23 exact STE X'70' with R1=E"
+    },
+    {
+      "aliases": [
+        "rule:ex-target-exception",
+        "opcode:44 exception propagation"
+      ],
+      "topic": "EX target architectural exceptions",
+      "rule": "When EX constructs a transient target instruction, do not reduce a target architectural exception to generic UNSUPPORTED_EX_TARGET. Preserve the exact historical EX state and establish IBM-defined interruption attribution (ILC/instruction address/old PSW) before permanent promotion.",
+      "maturity": "PROJECT_NEXT_TASK",
+      "project_proof": "Safety23 sealed frontier 44 @ 0004B6 targets 70E005C84780"
+    }
+  ]
+}

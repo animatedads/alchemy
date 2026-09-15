@@ -1,0 +1,761 @@
+{
+  "schema": "oorexx.foreign/0.22.6",
+  "library": {
+    "provider": "native",
+    "names": [
+      "libc.so.6"
+    ],
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "abiProfiles": {
+    "linux-x86_64-le-lp64": {
+      "constants": {
+        "AF_UNIX": {
+          "type": "i32",
+          "value": 1
+        },
+        "SOCK_STREAM": {
+          "type": "i32",
+          "value": 1
+        },
+        "SOCK_DGRAM": {
+          "type": "i32",
+          "value": 2
+        },
+        "SOCK_SEQPACKET": {
+          "type": "i32",
+          "value": 5
+        },
+        "SOCK_CLOEXEC": {
+          "type": "i32",
+          "value": 524288
+        },
+        "SOL_SOCKET": {
+          "type": "i32",
+          "value": 1
+        },
+        "SO_SNDBUF": {
+          "type": "i32",
+          "value": 7
+        },
+        "SO_RCVBUF": {
+          "type": "i32",
+          "value": 8
+        },
+        "SO_PASSCRED": {
+          "type": "i32",
+          "value": 16
+        },
+        "SO_PEERCRED": {
+          "type": "i32",
+          "value": 17
+        },
+        "SCM_RIGHTS": {
+          "type": "i32",
+          "value": 1
+        },
+        "SCM_CREDENTIALS": {
+          "type": "i32",
+          "value": 2
+        },
+        "MSG_CTRUNC": {
+          "type": "i32",
+          "value": 8
+        },
+        "MSG_TRUNC": {
+          "type": "i32",
+          "value": 32
+        },
+        "MSG_NOSIGNAL": {
+          "type": "i32",
+          "value": 16384
+        },
+        "MSG_CMSG_CLOEXEC": {
+          "type": "i32",
+          "value": 1073741824
+        },
+        "F_GETFD": {
+          "type": "i32",
+          "value": 1
+        },
+        "F_SETFD": {
+          "type": "i32",
+          "value": 2
+        },
+        "F_GETFL": {
+          "type": "i32",
+          "value": 3
+        },
+        "F_SETFL": {
+          "type": "i32",
+          "value": 4
+        },
+        "F_DUPFD_CLOEXEC": {
+          "type": "i32",
+          "value": 1030
+        },
+        "FD_CLOEXEC": {
+          "type": "i32",
+          "value": 1
+        },
+        "O_NONBLOCK": {
+          "type": "i32",
+          "value": 2048
+        },
+        "O_PATH": {
+          "type": "i32",
+          "value": 2097152
+        },
+        "O_NOFOLLOW": {
+          "type": "i32",
+          "value": 131072
+        },
+        "POLLIN": {
+          "type": "i16",
+          "value": 1
+        },
+        "POLLPRI": {
+          "type": "i16",
+          "value": 2
+        },
+        "POLLOUT": {
+          "type": "i16",
+          "value": 4
+        },
+        "POLLERR": {
+          "type": "i16",
+          "value": 8
+        },
+        "POLLHUP": {
+          "type": "i16",
+          "value": 16
+        },
+        "POLLNVAL": {
+          "type": "i16",
+          "value": 32
+        },
+        "ENOTSOCK": {
+          "type": "i32",
+          "value": 88
+        },
+        "EINVAL": {
+          "type": "i32",
+          "value": 22
+        },
+        "ENAMETOOLONG": {
+          "type": "i32",
+          "value": 36
+        },
+        "EMSGSIZE": {
+          "type": "i32",
+          "value": 90
+        },
+        "EAGAIN": {
+          "type": "i32",
+          "value": 11
+        },
+        "EWOULDBLOCK": {
+          "type": "i32",
+          "value": 11
+        },
+        "EINTR": {
+          "type": "i32",
+          "value": 4
+        },
+        "SHUT_RD": {
+          "type": "i32",
+          "value": 0
+        },
+        "SHUT_WR": {
+          "type": "i32",
+          "value": 1
+        },
+        "SHUT_RDWR": {
+          "type": "i32",
+          "value": 2
+        },
+        "SOCKADDR_UN_SIZE": {
+          "type": "u32",
+          "value": 110
+        },
+        "SOCKADDR_UN_ALIGNMENT": {
+          "type": "u32",
+          "value": 2
+        },
+        "SUN_FAMILY_OFFSET": {
+          "type": "u32",
+          "value": 0
+        },
+        "SUN_PATH_OFFSET": {
+          "type": "u32",
+          "value": 2
+        },
+        "SUN_PATH_CAPACITY": {
+          "type": "u32",
+          "value": 108
+        },
+        "CMSGHDR_SIZE": {
+          "type": "u32",
+          "value": 16
+        },
+        "CMSGHDR_ALIGNMENT": {
+          "type": "u32",
+          "value": 8
+        },
+        "CMSG_LEN_OFFSET": {
+          "type": "u32",
+          "value": 0
+        },
+        "CMSG_LEVEL_OFFSET": {
+          "type": "u32",
+          "value": 8
+        },
+        "CMSG_TYPE_OFFSET": {
+          "type": "u32",
+          "value": 12
+        },
+        "CMSG_DATA_OFFSET": {
+          "type": "u32",
+          "value": 16
+        },
+        "CMSG_ALIGN_UNIT": {
+          "type": "u32",
+          "value": 8
+        },
+        "UCRED_SIZE": {
+          "type": "u32",
+          "value": 12
+        },
+        "FD_SIZE": {
+          "type": "u32",
+          "value": 4
+        },
+        "STAT_SIZE": {
+          "type": "u32",
+          "value": 144
+        },
+        "S_IFMT": {
+          "type": "u32",
+          "value": 61440
+        },
+        "S_IFSOCK": {
+          "type": "u32",
+          "value": 49152
+        },
+        "MODE_MASK": {
+          "type": "u32",
+          "value": 4095
+        },
+        "UID_T_MAX": {
+          "type": "u64",
+          "value": 4294967295
+        },
+        "GID_T_MAX": {
+          "type": "u64",
+          "value": 4294967295
+        },
+        "PID_T_SIZE": {
+          "type": "u32",
+          "value": 4
+        },
+        "UID_T_SIZE": {
+          "type": "u32",
+          "value": 4
+        },
+        "GID_T_SIZE": {
+          "type": "u32",
+          "value": 4
+        },
+        "UCRED_PID_OFFSET": {
+          "type": "u32",
+          "value": 0
+        },
+        "UCRED_UID_OFFSET": {
+          "type": "u32",
+          "value": 4
+        },
+        "UCRED_GID_OFFSET": {
+          "type": "u32",
+          "value": 8
+        }
+      },
+      "types": {
+        "iovec": {
+          "kind": "struct",
+          "size": 16,
+          "alignment": 8,
+          "fields": [
+            {
+              "name": "iov_base",
+              "type": "pointer",
+              "offset": 0
+            },
+            {
+              "name": "iov_len",
+              "type": "size_t",
+              "offset": 8
+            }
+          ]
+        },
+        "msghdr": {
+          "kind": "struct",
+          "size": 56,
+          "alignment": 8,
+          "fields": [
+            {
+              "name": "msg_name",
+              "type": "pointer",
+              "offset": 0
+            },
+            {
+              "name": "msg_namelen",
+              "type": "socklen_t",
+              "offset": 8
+            },
+            {
+              "name": "msg_iov",
+              "type": "pointer",
+              "offset": 16
+            },
+            {
+              "name": "msg_iovlen",
+              "type": "size_t",
+              "offset": 24
+            },
+            {
+              "name": "msg_control",
+              "type": "pointer",
+              "offset": 32
+            },
+            {
+              "name": "msg_controllen",
+              "type": "size_t",
+              "offset": 40
+            },
+            {
+              "name": "msg_flags",
+              "type": "i32",
+              "offset": 48
+            }
+          ]
+        },
+        "pollfd": {
+          "kind": "struct",
+          "size": 8,
+          "alignment": 4,
+          "fields": [
+            {
+              "name": "fd",
+              "type": "i32",
+              "offset": 0
+            },
+            {
+              "name": "events",
+              "type": "short",
+              "offset": 4
+            },
+            {
+              "name": "revents",
+              "type": "short",
+              "offset": 6
+            }
+          ]
+        },
+        "cmsghdr": {
+          "kind": "struct",
+          "size": 16,
+          "alignment": 8,
+          "fields": [
+            {
+              "name": "cmsg_len",
+              "type": "size_t",
+              "offset": 0
+            },
+            {
+              "name": "cmsg_level",
+              "type": "i32",
+              "offset": 8
+            },
+            {
+              "name": "cmsg_type",
+              "type": "i32",
+              "offset": 12
+            }
+          ]
+        },
+        "ucred": {
+          "kind": "struct",
+          "size": 12,
+          "alignment": 4,
+          "fields": [
+            {
+              "name": "pid",
+              "type": "i32",
+              "offset": 0
+            },
+            {
+              "name": "uid",
+              "type": "u32",
+              "offset": 4
+            },
+            {
+              "name": "gid",
+              "type": "u32",
+              "offset": 8
+            }
+          ]
+        },
+        "stat": {
+          "kind": "struct",
+          "size": 144,
+          "alignment": 8,
+          "fields": [
+            {
+              "name": "st_dev",
+              "type": "u64",
+              "offset": 0
+            },
+            {
+              "name": "st_ino",
+              "type": "u64",
+              "offset": 8
+            },
+            {
+              "name": "st_mode",
+              "type": "u32",
+              "offset": 24
+            },
+            {
+              "name": "st_uid",
+              "type": "u32",
+              "offset": 28
+            },
+            {
+              "name": "st_gid",
+              "type": "u32",
+              "offset": 32
+            }
+          ]
+        }
+      }
+    }
+  },
+  "functions": {
+    "posix_socket": {
+      "symbol": "socket",
+      "return": {
+        "type": "i32",
+        "resource": "POSIX_FD",
+        "carrier": "i32",
+        "ownership": "owned",
+        "destructor": "close",
+        "invalid": -1
+      },
+      "errno": true,
+      "args": [
+        "i32",
+        "i32",
+        "i32"
+      ]
+    },
+    "posix_accept4": {
+      "symbol": "accept4",
+      "return": {
+        "type": "i32",
+        "resource": "POSIX_FD",
+        "carrier": "i32",
+        "ownership": "owned",
+        "destructor": "close",
+        "invalid": -1
+      },
+      "errno": true,
+      "args": [
+        "i32",
+        "pointer",
+        "pointer",
+        "i32"
+      ]
+    },
+    "posix_fcntl_dup": {
+      "symbol": "fcntl",
+      "return": {
+        "type": "i32",
+        "resource": "POSIX_FD",
+        "carrier": "i32",
+        "ownership": "owned",
+        "destructor": "close",
+        "invalid": -1
+      },
+      "errno": true,
+      "args": [
+        "i32",
+        "i32",
+        "i32"
+      ]
+    },
+    "posix_socketpair": {
+      "symbol": "socketpair",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "i32",
+        "i32",
+        "pointer"
+      ]
+    },
+    "posix_bind": {
+      "symbol": "bind",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "pointer",
+        "socklen_t"
+      ]
+    },
+    "posix_connect": {
+      "symbol": "connect",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "pointer",
+        "socklen_t"
+      ]
+    },
+    "posix_listen": {
+      "symbol": "listen",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "i32"
+      ]
+    },
+    "posix_shutdown": {
+      "symbol": "shutdown",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "i32"
+      ]
+    },
+    "posix_send": {
+      "symbol": "send",
+      "return": "ssize_t",
+      "errno": true,
+      "args": [
+        "i32",
+        "bytes",
+        "size_t",
+        "i32"
+      ]
+    },
+    "posix_recv": {
+      "symbol": "recv",
+      "return": "ssize_t",
+      "errno": true,
+      "args": [
+        "i32",
+        "pointer",
+        "size_t",
+        "i32"
+      ]
+    },
+    "posix_sendto": {
+      "symbol": "sendto",
+      "return": "ssize_t",
+      "errno": true,
+      "args": [
+        "i32",
+        "bytes",
+        "size_t",
+        "i32",
+        "pointer",
+        "socklen_t"
+      ]
+    },
+    "posix_sendmsg": {
+      "symbol": "sendmsg",
+      "return": "ssize_t",
+      "errno": true,
+      "args": [
+        "i32",
+        "pointer",
+        "i32"
+      ]
+    },
+    "posix_recvmsg": {
+      "symbol": "recvmsg",
+      "return": "ssize_t",
+      "errno": true,
+      "args": [
+        "i32",
+        "pointer",
+        "i32"
+      ]
+    },
+    "posix_getsockname": {
+      "symbol": "getsockname",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "pointer",
+        "pointer"
+      ]
+    },
+    "posix_getpeername": {
+      "symbol": "getpeername",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "pointer",
+        "pointer"
+      ]
+    },
+    "posix_setsockopt": {
+      "symbol": "setsockopt",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "i32",
+        "i32",
+        "pointer",
+        "socklen_t"
+      ]
+    },
+    "posix_getsockopt": {
+      "symbol": "getsockopt",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "i32",
+        "i32",
+        "pointer",
+        "pointer"
+      ]
+    },
+    "posix_fcntl_get": {
+      "symbol": "fcntl",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "i32"
+      ]
+    },
+    "posix_fcntl_set": {
+      "symbol": "fcntl",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "i32",
+        "i32"
+      ]
+    },
+    "posix_poll": {
+      "symbol": "poll",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "pointer",
+        "unsigned long",
+        "i32"
+      ]
+    },
+    "posix_close_raw": {
+      "symbol": "close",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32"
+      ]
+    },
+    "posix_strerror": {
+      "symbol": "strerror",
+      "return": "utf8",
+      "args": [
+        "i32"
+      ]
+    },
+    "posix_unlink": {
+      "symbol": "unlink",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "utf8"
+      ]
+    },
+    "posix_lstat": {
+      "symbol": "lstat",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "utf8",
+        "pointer"
+      ]
+    },
+    "posix_open": {
+      "symbol": "open",
+      "return": {
+        "type": "i32",
+        "resource": "POSIX_FD",
+        "carrier": "i32",
+        "ownership": "owned",
+        "destructor": "close",
+        "invalid": -1
+      },
+      "errno": true,
+      "args": [
+        "utf8",
+        "i32"
+      ]
+    },
+    "posix_fstat": {
+      "symbol": "fstat",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "pointer"
+      ]
+    },
+    "posix_chmod": {
+      "symbol": "chmod",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "utf8",
+        "u32"
+      ]
+    },
+    "posix_chown": {
+      "symbol": "chown",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "utf8",
+        "u32",
+        "u32"
+      ]
+    },
+    "posix_fcntl_dup_raw": {
+      "symbol": "fcntl",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        "i32",
+        "i32",
+        "i32"
+      ]
+    }
+  }
+}

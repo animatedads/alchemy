@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "kl10.tops20.paging",
+  "version": "0.1",
+  "sphere": "kl10",
+  "title": "TOPS-20 V7 paging, APR and boot source",
+  "summary": "Guest-oracle source set for understanding PGRINI, page-fault dispatch, APR/NXM handling, POSTLD placement, BOOT memory discovery, and resident/swap monitor maps.",
+  "procedure": [
+    "Use PAGUTL/PAGEM to identify which initialization phase owns the failing instruction.",
+    "Use APRSRV for page-fault codes, UPT frame use, parity/NXM dispatch and fatal/recovery behavior.",
+    "Use POSTLD to explain image relocation such as PNRCOD rather than assuming a runtime corruption.",
+    "Use BOOT to understand physical memory probing and how monitor pages are loaded before PGRINI."
+  ],
+  "invariants": [
+    "A familiar monitor address is not enough; identify the source label and initialization phase.",
+    "Expected memory-scan NXM handling must be distinguished from earlier initialization touching required core.",
+    "UPT new-PC contents may be deliberately replaced during initialization; compare the active phase before judging a vector wrong."
+  ],
+  "documents": [
+    "tops20.v7.pagem",
+    "tops20.v7.pagutl",
+    "tops20.v7.aprsrv",
+    "tops20.v7.postld",
+    "tops20.v7.boot",
+    "tops20.v7.stg"
+  ],
+  "selectors": []
+}

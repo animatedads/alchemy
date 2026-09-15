@@ -1,0 +1,41 @@
+--- /mnt/data/atm_more_toys/bank/federationbank_engine_v0.8/src/FederationBankAtmGateway.cls	2026-08-25 23:04:17.000000000 +0000
++++ /mnt/data/atm_more_toys/federationbank_engine_v0.8-atm-jms-compat1/src/FederationBankAtmGateway.cls	2026-08-26 00:12:53.492168894 +0000
+@@ -357,13 +357,37 @@
+     end
+     otherwise return self~response(req,.false,"OPERATION_UNSUPPORTED",op)
+   end
++::method plainWireValue private
++  use arg value
++  if value == .nil then return .nil
++  /* ooRexx json.cls intentionally returns JSON string literals as the
++     String subclass .JsonString.  Durable Queue Fabric payloads must not
++     accidentally retain parser wrapper objects, so canonicalise only that
++     wrapper while preserving booleans, numbers and all other scalar types. */
++  if value~isA(.JsonString) then return value~string
++  if value~isA(.Directory) then do
++    out=.directory~new
++    do key over value~allIndexes
++      out[key~string]=self~plainWireValue(value[key])
++    end
++    return out
++  end
++  if value~isA(.Array) then do
++    out=.array~new
++    do item over value
++      out~append(self~plainWireValue(item))
++    end
++    return out
++  end
++  return value
++
+ ::method processBridgeMessage
+   use arg message
+   blank=.directory~new; blank["commandId"]=""; blank["operation"]=""; blank["terminalId"]=""
+   if message==.nil | \message~isA(.JMSBridgeMessage) then return .JMSBridgeResult~failure("ATM_JMS_MESSAGE_REQUIRED")
+   if message~bodyType<>"TEXT" then return .JMSBridgeResult~failure("ATM_JMS_TEXT_REQUIRED")
+   signal on syntax name badJson
+-  req=.JSON~fromJSON(message~body)
++  req=self~plainWireValue(.JSON~fromJSON(message~body))
+   signal off syntax
+   checked=self~validateRequest(req,message)
+   if checked~ok then response=self~handleRequest(req)

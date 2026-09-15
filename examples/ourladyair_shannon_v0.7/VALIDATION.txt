@@ -1,0 +1,92 @@
+OurLadyAir Shannon v0.7 validation
+=================================
+
+Runtime
+-------
+Open Object Rexx 5.3.0 r13196 (user-supplied debug build)
+
+Current clean bundle used
+-------------------------
+oorexx-libs(20260822-022521).zip
+
+Validated companion set
+------------------------
+virtual_ryta_hardworld_v0.19
+legal_effect_v0.10                 API legal.effect/0.10
+runtime_registry_v0.11             core API runtime.registry/0.3
+oorexx_queue_fabric_v0.8.1         API queue.fabric/0.8; runtime VERSION 0.8
+structured_relation_plugin_v0.9
+nosqlserver_v0.75
+oorexx_work_load_units_v0.2        API work.load.units/0.2
+
+Primary repair
+--------------
+v0.6 performed exact startup checks against Queue Fabric VERSION 0.7,
+NoSQLServer RELEASE 0.74, Legal Effect API legal.effect/0.7 and WLU API
+work.load.units/0.2.  The clean current bundle therefore caused v0.6 to reject
+Queue Fabric 0.8 before using the retained v0.7 surface.
+
+v0.7 removes those exact runtime release/API gates.  Loaded identities are
+recorded as evidence. Compatibility is established by executing the surfaces
+Shannon actually depends on and by failing closed at the actual incompatible
+operation.
+
+Source compilation
+------------------
+PASS: all 12 Shannon .cls units compile independently with rexxc against the
+current companion set.
+
+Focused compatibility/identity acceptance
+------------------------------------------
+PASS test_shannon_queue_compatibility
+  api=queue.fabric/0.8 fabric=0.8 nosql=0.75
+PASS test_shannon_no_hard_release_gates
+PASS test_shannon_legal_identity_and_promotion
+  api=legal.effect/0.10 build=0.10
+  promotion remains LEGAL_EFFECT/0.5/... through the unmodified HardWorld
+  LegalEffectV05PromotionAdapter compatibility contract.
+
+Consolidated governance acceptance
+----------------------------------
+PASS test_shannon_v07_combined_acceptance
+  legal=legal.effect/0.10 queue=queue.fabric/0.8 nosql=0.75
+  elapsed on this container: 34.72 s
+  - G07 EUR90 governed candidate revenue
+  - G02 scattered seats do not become unpurchased seats
+  - G03 teen alcohol target blocked; adult targets retained
+  - G04 EpiPen/custody uncertainty suppresses commercial revenue
+  - G01 contradictory age/PTC evidence fails closed
+  - Queue + NoSQL audit projection succeeds under current companions
+
+Lightweight acceptance
+----------------------
+PASS test_shannon_pnrgov_parse                    1.01 s
+PASS test_shannon_pnrgov_compact_parse            0.66 s
+  annotations=1 envelope=INVALID
+PASS test_shannon_topic_bus                        0.46 s
+PASS test_shannon_wlu_terminal_gate                0.43 s
+PASS test_shannon_socket_ingress
+  serve=OK; mode=TRANSPORT_TEST; audit=ourladyair.shannon.turn.v3;
+  fabric=0.8; indexed=1
+
+Aggregate-run note
+------------------
+One aggregate `run_tests.sh quick` invocation in this constrained tool container
+was interrupted by the external 120-second execution wall while inside repeated
+pure-ooRexx legal verification.  The same final quick-suite components were run
+independently as listed above and passed.  The consolidated acceptance itself was
+rerun after the interruption and passed in 34.72 s.  No interrupted run is counted
+as a PASS.
+
+Authority/identity boundaries
+-----------------------------
+- Loaded component release/API identities are evidence, not permissions.
+- Exact Legal policy bytes remain SHA-512 pinned and compiler verified.
+- Legal Effect engine identity is not the HardWorld promotion bridge identity.
+- LEGAL_EFFECT/0.5/... remains the explicit compatibility authority emitted by
+  HardWorld's LegalEffectV05PromotionAdapter and is not relabelled to 0.10.
+- Queue topics remain DERIVED_EVENT_ROUTING_ONLY.
+- NoSQL audit rows remain DERIVED_INDEX_ONLY.
+- WLU remains RESOURCE_ADMISSION_ONLY.
+- Structured Relation remains the EDIFACT evidence boundary.
+- Rich SHANNON.AUDIT objects remain the evidence-bearing audit source.

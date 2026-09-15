@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.definition-manifest",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Exact definition cache and manifest authority",
+  "summary": "Definition identity and render authorisation are separate. The cache records immutable definitionId@version/contentAddress content already seen; the current UI_RENDER_PROFILE/UI_DEFINITION_MANIFEST records which exact identities are authorised now. Manifest changes never rewrite immutable definition identity.",
+  "authority": "wire-ui-server-contract",
+  "invariants": [
+    "An inline definition manifest carried by UI_RENDER_PROFILE is authoritative immediately.",
+    "A later UI_DEFINITION_MANIFEST replaces the current authorisation set but does not prune/redefine the immutable cache.",
+    "Missing exact authorised definitions are requested proactively and snapshots/patches wait until exact content is available.",
+    "The same definitionId@version cannot later claim a different contentAddress; a new immutable version is required.",
+    "A committed view deauthorised by a manifest refresh may remain visible as recovery pixels but cannot emit semantic actions.",
+    "Profile/manifest mismatches and manifest-id content collisions fail closed."
+  ],
+  "procedure": [
+    "Apply render profile and inline manifest.",
+    "Compare authorised exact keys with immutable cache.",
+    "Emit UI_DEFINITION_REQUIRED for cold authorised keys.",
+    "Commit held snapshots/patches only after all exact definitions are available and authorised."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev5.zip",
+      "sha256": "a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271",
+      "member": "wire_ui_swing_v0.2-dev5/DESIGN.md",
+      "claim": "Immutable definition cache versus current authorisation manifest."
+    },
+    {
+      "artifact": "wire_ui_server_v0.17.zip",
+      "sha256": "82c3a9d270d123dcbedabed1b57ed5e0944b828b1a184a5b71d47d9f9f188441",
+      "member": "wire_ui_server_v0.17/src/WireUIDefinitionManifest.cls",
+      "claim": "Current server exact definition manifest contract."
+    }
+  ]
+}

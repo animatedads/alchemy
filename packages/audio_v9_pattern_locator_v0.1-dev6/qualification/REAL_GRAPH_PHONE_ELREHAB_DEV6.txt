@@ -1,0 +1,52 @@
+Audio V9 Pattern Locator v0.1-dev6 — first real graph diagnostic comparison
+Date: 2026-09-09
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version
+Profile: VOICE
+Window: first 2 seconds of each supplied fixture
+Box geometry: 1000 ms box, 250 ms step
+
+Fixtures:
+  Did_you_threat_to_break_in_AI_Master(1).ogg -> canonical mono 8 kHz f32 slice
+  elrehab_example.ogg -> canonical mono 8 kHz f32 slice
+
+Both runs:
+  boxes=116
+  edges=454
+  continuation=87
+  adjacent_band=112
+  diagonal_migration=168
+  delayed_candidates=87
+
+These identical counts are graph topology only and are not acoustic similarity evidence.
+The MLPatternHashDifference values carried by those edges differ materially.
+
+PHONE
+box_mean_residual_motion=1.19593163689058511159696384657
+box_mean_turn=0.993335050199953530963412467353
+box_states=static:0,slow:1,mixed:74,moving:41
+continuation mean_total=3047.42528735632183908045977011 median_total=2932 p90_total=4080
+adjacent-band mean_total=1376.39285714285714285714285714 median_total=1143 p90_total=2547
+diagonal-migration mean_total=3059.71428571428571428571428571 median_total=2945.5 p90_total=3918
+delayed-candidate mean_total=3173.80459770114942528735632184 median_total=3074 p90_total=4073
+
+EL REHAB
+box_mean_residual_motion=0.642414755028895452162683952798
+box_mean_turn=0.809888198650142823950688151772
+box_states=static:2,slow:17,mixed:73,moving:24
+continuation mean_total=3759.13793103448275862068965517 median_total=3668 p90_total=5099
+adjacent-band mean_total=2962.00892857142857142857142857 median_total=2867.5 p90_total=3850
+diagonal-migration mean_total=3803.10714285714285714285714286 median_total=3691.5 p90_total=4888
+delayed-candidate mean_total=3953.0229885057471264367816092 median_total=3841 p90_total=5180
+
+Initial diagnostic reading, not a classifier claim:
+  The phone slice has substantially greater local box residual motion than the El Rehab slice,
+  while its adjacent-band pattern difference is substantially lower. This is consistent with
+  stronger coordinated cross-band movement in the speech fixture. The El Rehab field moves less
+  locally but neighbouring-band pattern shapes are less mutually alike under this VOICE profile.
+  This is evidence for developing graph-coordination measures; it is not yet a speech/AC classifier.
+
+Renderer scaling finding:
+  A 5 s phone graph rendered successfully (464 boxes, 3956 edges, ~18 s).
+  A 5 s El Rehab diagnostic graph hit the surrounding execution window during renderer traversal.
+  The spectral field and graph model had already been constructed. This is recorded as a
+  presentation-scaling defect; no timeout increase or semantic threshold change is accepted as a fix.

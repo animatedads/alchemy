@@ -1,0 +1,75 @@
+Virtual RYTA / HardWorld v0.20 validation transcript summary
+============================================================
+
+Base archive
+------------
+virtual_ryta_hardworld_v0.19.zip internal MANIFEST.sha256: PASS
+The supplied v0.19 archive was preserved unchanged and used as the v0.20 base.
+
+Runtime
+-------
+Open Object Rexx 5.3.0 r13196 Internal Test, 64 bit
+
+Inherited internal suite
+------------------------
+V020_INTERNAL_FINAL_RUN.txt: PASS
+All inherited self-contained v0.19 behavioral, adversarial, mutation, table-feed,
+consistency/authority and static-guard tests pass on the v0.20 tree.
+
+Focused current stack
+---------------------
+V020_FOCUSED_CURRENT_STACK.txt: PASS
+- Legal Effect v0.6 compatibility authority tests: PASS
+- Legal Effect v0.7 native runtime promotion: PASS
+- Legal Effect v0.7 reducer semantic/execution identity guard: PASS
+- Structured Relation v0.8 Git -> Legal v0.7 -> HardWorld: PASS
+- Legal v0.7 promotion -> NoSQLServer v0.71: PASS
+
+Upstream suites
+---------------
+V020_UPSTREAM_SUITES.txt: PASS
+- Structured Relation v0.8: PASS (optional NoSQL federation skipped in that upstream runner)
+- Legal Effect v0.7 full companion-aware suite: PASS
+- Runtime Registry v0.8 full supplied-companion suite: PASS
+- Runtime Registry Queue Fabric optional integration: SKIP (package not supplied)
+
+Public Git evidence retained in full chain
+------------------------------------------
+base: 0796bbeb3271a210ed7ed5d85a82fc76939db61a GIT_BLOB_BOUND
+head: d9e16f361107c6d66f32ad8050c658d3b01f9241 GIT_BLOB_BOUND
+finding: BOUNDS_VALUE_FLOW_PROTECTION_PRESERVED
+legal result: REVIEW_REQUIRED
+HardWorld fact: LEGAL_ACTION_REVIEW_REQUIRED
+
+Candidate archive acceptance
+----------------------------
+A candidate archive rooted at virtual_ryta_hardworld_v0.20/ was freshly extracted.
+- MANIFEST.sha256: PASS (250 entries at candidate stage)
+- tests/run_all.sh: PASS
+- Legal Effect v0.7 native promotion/runtime provenance: PASS
+- Legal Effect v0.7 semantic/execution identity guard: PASS
+- Structured Relation v0.8 public Git -> Legal v0.7 -> HardWorld: PASS
+- Legal Effect v0.7 promotion -> NoSQLServer v0.71: PASS
+- Legal Effect v0.6 authority-basis compatibility: PASS
+- Legal Effect v0.6 semantic/execution identity compatibility: PASS
+- Legal Effect v0.6 retained-object drift compatibility: PASS
+- Legal Effect v0.6 verifier/compiler promotion compatibility: PASS
+- shipped .cls compilation under rexxc: PASS (36 / 36)
+
+Trust/nonclaims
+---------------
+- Runtime Registry generation/artifact identity is promotion provenance, not legal authority.
+- Legal Effect v0.7 authority remains source/provision verification + compiler certificate +
+  legal semantic/execution identity; runtime provenance is excluded from the authority string.
+- Complex Structured Relation diagnostic evidence/counter-evidence arrays are canonically pinned
+  without replacing the retained native diagnostic objects.
+- The known Legal Effect status-reducer ordering ambiguity remains fail-closed as
+  LEGAL_STATUS_REDUCTION_AMBIGUOUS.
+- Queue Fabric integration is not claimed for this handoff because no Queue Fabric package was supplied.
+
+Final archive acceptance
+------------------------
+The final archive is built only after this candidate acceptance record is written.
+The release process then freshly extracts the final bytes, verifies MANIFEST.sha256,
+runs the full HardWorld suite plus focused current-stack gates, and recompiles all shipped
+.cls files. Those final-byte acceptance results are reported with the release artifact SHA-256.

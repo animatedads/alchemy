@@ -1,0 +1,119 @@
+{
+  "sphere": "queue-transport",
+  "version": "0.1",
+  "status": "PASS",
+  "authoring_tool": "LLM Gopher v0.19-dev1 Sphere Editor",
+  "source_artifact": {
+    "name": "oorexx_queue_fabric_v0.9-dev5.zip",
+    "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+    "status": "development continuation candidate"
+  },
+  "authoring_inputs": [
+    {
+      "name": "llm_gopher_v0.19-dev1(20260902-162827).zip",
+      "sha256": "d70b5e1e6a345197d32c1fac13de35aeb1c43333e2f1378b626fd7f9c35493ad"
+    },
+    {
+      "name": "sphere(20260902-162826).zip",
+      "sha256": "4ce4e36729b0daaf0f258b8cabab947e01447094b87f62851570986e4061a2ff",
+      "use": "sibling sphere/layout reference only"
+    }
+  ],
+  "content": {
+    "canonical_objects": 23,
+    "articles": 19,
+    "corpora": 2,
+    "glossary_records": 18,
+    "continuity_reasoning_records": 12,
+    "inherits_services_from": [
+      "oorexx"
+    ]
+  },
+  "checks": [
+    {
+      "name": "sphere_editor_validate",
+      "status": "PASS",
+      "object_count": 23,
+      "problem_count": 0
+    },
+    {
+      "name": "sphere_editor_lint",
+      "status": "PASS",
+      "warning_count": 0
+    },
+    {
+      "name": "sphere_tests_run_sh",
+      "status": "PASS",
+      "detail": "structure, exact implementation SHA, every article/corpus provenance member and line range, and doctrine guards"
+    },
+    {
+      "name": "explicit_override_load",
+      "status": "PASS",
+      "detail": "packaged candidate activated in a fresh private Gopher environment"
+    },
+    {
+      "name": "compact_context",
+      "status": "PASS",
+      "articles": 19,
+      "corpora": 2
+    },
+    {
+      "name": "corpus_lookup_forward_secrecy",
+      "status": "PASS",
+      "match_kind": "EXACT_FIELD"
+    },
+    {
+      "name": "corpus_lookup_multi_command_warning",
+      "status": "PASS",
+      "match_kind": "EXACT_FIELD"
+    },
+    {
+      "name": "open_qt_oci_two_node",
+      "status": "PASS"
+    },
+    {
+      "name": "open_qt_allocator_seam",
+      "status": "PASS"
+    },
+    {
+      "name": "oorexx_service_inheritance",
+      "status": "PASS",
+      "capability": "source.oorexx.examine",
+      "available": true
+    },
+    {
+      "name": "source_oorexx_examine_transport",
+      "status": "PASS",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "classes_found": 12
+    },
+    {
+      "name": "manifest_nonself_integrity",
+      "status": "PASS",
+      "detail": "final delivery manifest covers every packaged file except MANIFEST.sha256 itself"
+    }
+  ],
+  "implementation_evidence_boundary": {
+    "fresh_passes_recorded_in_source_validation": [
+      "exact IPv4 policy 11 assertions",
+      "encrypted socket transport 6 assertions",
+      "socket security 13 assertions",
+      "encrypted health/failover 15 assertions",
+      "cross-session replay rejection",
+      "wrong-direction secure-frame rejection",
+      "tamper rejection before application processing",
+      "correct-key/wrong-IP pre-auth rejection",
+      "stale peer-IP removal"
+    ],
+    "explicit_non_claims": [
+      "exact v0.8.2 bilateral compatibility was not freshly rerun in the dev5 execution",
+      "the tail of the long inherited crypto matrix was not all freshly rerun",
+      "Alchemy Autobuild/publish qualification was not run",
+      "queue.transport/2 does not provide forward secrecy"
+    ]
+  },
+  "packaging": {
+    "sphere_editor_package_preflight": "PASS with --require-clean-lint",
+    "manifest_policy": "Final delivery MANIFEST.sha256 excludes MANIFEST.sha256 itself. The supplied Gopher v0.19-dev1 packager includes a stale self-checksum entry; existing supplied Sphere Editor spheres exhibit the same self-reference quirk. Excluding the manifest from its own checksum list makes ordinary sha256sum -c verification complete and meaningful."
+  }
+}

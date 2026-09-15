@@ -1,0 +1,93 @@
+Legal Effect v0.14 validation
+============================
+
+Status: PASS (manual packaging workflow)
+Runtime: ooRexx 5.3.0 r13196
+Public legal API: legal.effect/0.10
+Package version: 0.14
+
+Rebase / companion line
+-----------------------
+Accepted predecessor: legal_effect_v0.13
+Predecessor SHA-256: e31f7ac5f7dcaeb802b8ffe6447bf43e2d79fe48dedcc0530b1263697b18a48f
+Consolidated roll-up: oorexx-libs(20260822-crypto-consolidated)(8).zip
+Roll-up SHA-256: e95f489b0088c7d11d31f3b04ac7d2bc766661c6e103a0cfaec8292ffe5203c1
+
+Companions used for acceptance:
+- Runtime Registry v0.12  080a26579730b06981ac451aed919d854f44eb6efa31fef61892c226f2ebc24a
+- Structured Relation v0.9 37d02bf5acec935dd2173b8cd110caea403da9e180b45f22f88ffe92e88a4933
+- HardWorld v0.23         e52131c84c02383d13f70114bdcba50e68fd40019c54470b8d92d2c65e595ffc
+- Alchemy Objects v0.4.3 368787648a3ac88aebef169ad34dc3468df888e2dfc3272a09fdd22b67b19764
+- oorexx_crypto v0.1     3eab23b5138cba889eb11ea5b93747eb14fca8da0fd4ac936a70174349ae8f3a
+
+v0.14 development gate
+----------------------
+Deterministic counterfactual / sensitivity evaluation adds:
+- Alchemy-managed LegalCounterfactualEvaluator;
+- pure LegalCounterfactualAssumption / Comparison / Set values;
+- CONTEXT scope for pre-existing world facts and ACTION_OVERRIDE scope for facts created/changed by the proposal;
+- explicit reuse of the ordinary LegalEffectEngine over the same sealed generation and cloned inputs;
+- hypothetical=true / authoritative=false boundary on all counterfactual results;
+- COUNTERFACTUAL_ASSUMPTION fact authority retained in alternate decision traces;
+- deterministic status/disposition/controlling-norm/conflict/source-anchor deltas;
+- deterministic counterfactualIdentity and setIdentity;
+- evaluateBoolean() which executes both FALSE and TRUE branches instead of inferring a flip from reviewInputs().
+
+Explicit assertions
+-------------------
+core                              20 PASS
+temporal / jurisdiction             3 PASS
+modification effects               38 PASS
+rule sealing                       17 PASS
+semantic identity                   6 PASS
+authority conflicts                26 PASS
+structured decision trace          61 PASS
+decision trace query               46 PASS
+counterfactual evaluation          63 PASS
+conflict of laws                    8 PASS
+compiler boundary                  29 PASS
+compiler semantic kinds            12 PASS
+source verification                23 PASS
+compilation snapshot atomicity     15 PASS
+source authority attestation       30 PASS
+real Ed25519                        4 PASS
+Alchemy integration                48 PASS
+Structured native-source verify    25 PASS
+                                   ---
+TOTAL                              474 PASS
+
+Cross-package gates
+-------------------
+Structured Relation v0.9 bridge      PASS
+HardWorld v0.23 bridge                PASS
+Runtime Registry v0.12 bridge         PASS
+Deterministic runtime bundle          PASS (8 units / 10865 lines / 9 local requires)
+Runtime evidence chain                PASS
+HardWorld promotion compatibility     PASS
+Class compilation                     8/8 PASS
+Demos                                 7/7 PASS
+
+Important invariants
+--------------------
+- Counterfactual evaluation never mutates the original LegalEffectAssessment, LegalAction, LegalContext or decision trace.
+- CONTEXT assumptions modify only a cloned current-world fact set before the original action is evaluated.
+- ACTION_OVERRIDE assumptions are appended only to a copied action and therefore can override a proposed-action fact without altering the original action.
+- Every assumed fact is labelled COUNTERFACTUAL_ASSUMPTION; a hypothetical value is not source evidence.
+- Counterfactual results are explicitly hypothetical and non-authoritative and cannot substitute for source authority, compilation certification or a Runtime Registry legal lease.
+- Alternate status/applicability/conflicts are produced by the ordinary LegalEffectEngine; the trace/query layer does not predict them.
+- A same-value assumption may produce a different trace because the hypothesis is visible, but legallyMaterial remains false when status/dispositions/control/conflicts/source closure are unchanged.
+- evaluateBoolean() actually executes two branches; it does not treat an UNKNOWN review input as proof of either outcome.
+- legal semantic identity, runtime identity, compiler/source-authority identity, traceIdentity, queryIdentity and counterfactualIdentity remain separate claims.
+
+Packaging
+---------
+Packaging is manual for this cut, per current project workflow. MANIFEST.sha256 is regenerated before each archive and verified after clean extraction.
+
+Candidate artifact acceptance
+-----------------------------
+Candidate clean extraction manifest: 46/46 PASS.
+All 474 explicit assertions reproduced from the candidate extraction. Structured Relation, HardWorld, Runtime Registry live bridge and deterministic bundle also passed. A cumulative crypto-heavy integration batch reached its wall-clock ceiling while inside the Runtime Registry evidence chain after the preceding crypto gates had passed; no assertion failure was reported. The runtime-evidence chain, HardWorld promotion, seven demos and 8/8 class compilation were then rerun independently from the same clean candidate extraction and all passed.
+
+Final artifact acceptance
+-------------------------
+The package is rebuilt after this evidence is recorded. MANIFEST.sha256 and key gates are rechecked from the exact final ZIP before release.

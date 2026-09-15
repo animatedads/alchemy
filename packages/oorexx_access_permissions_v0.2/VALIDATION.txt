@@ -1,0 +1,36 @@
+PASS — qualified on 2026-09-01 against the user-supplied ooRexx 5.3.0 r13196 debug build and `oorexxapis(20260901-103912).zip` components:
+
+- Alchemy Objects v0.8
+- ooRexx Crypto v0.8.3
+- Institutional Policy v0.8
+- Security Effect v0.10
+
+Module suite: 9/9 PASS.
+
+Focused upstream compatibility:
+
+- Alchemy Security Manager contract PASS
+- Security Effect deterministic policy PASS
+- Security Effect shared Institutional Policy PASS
+
+Executable example PASS:
+
+- Access Control ALLOW proof verifies;
+- session Security Manager permits the exact protected method only through PermissionAuthority;
+- Permission ALLOW proof verifies.
+
+Security properties exercised:
+
+- cryptographic attribution does not imply Access Control authority;
+- attributed principal must equal the request principal at both Access Control and Permission authorities;
+- Access Control is a separate coarse domain-entry decision;
+- contextual Access Control attributes are deterministic and fail closed on missing/mismatched values;
+- Access Control request attributes are snapshotted against post-seal caller mutation;
+- protected-domain composition requires a cryptographically proved Access Control ALLOW by default;
+- successful building/domain entry does not grant any protected method permission;
+- Permission remains exact subject × object × method and requires Security Effect evidence bound to the same exact object and method;
+- a second object of the same class is denied when only the first object identity is granted;
+- Security Manager blocks denied protected methods before their body executes;
+- Access Control and Permission decisions retain verifiable Crypto key-ring MAC proofs;
+- both policy types publish and resolve through Institutional Policy v0.8;
+- default DENY and deterministic DENY-wins-equal-priority semantics remain tested.

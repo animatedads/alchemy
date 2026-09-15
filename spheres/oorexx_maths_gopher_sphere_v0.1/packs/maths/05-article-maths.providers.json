@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "maths.providers",
+  "version": "0.1",
+  "sphere": "maths",
+  "title": "Maths provider and representation ledger",
+  "providers": [
+    {"id":"PURE","role":"ooRexx decimal/exact rational reference computation","guarantee":"domain-dependent; exact in rational lane"},
+    {"id":"REFERENCE","role":"materially different verification algorithms","guarantee":"exact in rational verification lane; otherwise numerical"},
+    {"id":"NUMPY","role":"resident accelerated matrices via Foreign Runtime","guarantee":"approximate IEEE-754 binary64; explicit opt-in"},
+    {"id":"SYMPY","role":"symbolic equality/simplification witness","guarantee":"claim/assumption scoped symbolic proof only when exact reduction establishes it"},
+    {"id":"MPMATH-IV","role":"direct-expression interval witness","guarantee":"supported-operation containment; bounds may be weak"},
+    {"id":"FLINT-ARB","role":"rigorous ball arithmetic","guarantee":"rigorous enclosure; capability gated; python-flint >= 0.9.0"},
+    {"id":"CRYPTO","role":"SHA-256 evidence/proof sealing","guarantee":"integrity/provenance evidence, not mathematical truth"}
+  ],
+  "representations": [
+    "Exact integer/fraction/rational",
+    "Exact recurring decimal expansion",
+    "Decimal approximate context",
+    "IEEE-754 binary64",
+    "Rigorous interval/ball enclosure",
+    "SYMMETRIC_INT8 block quantization",
+    "NF4 declared-codebook quantization",
+    "Mixed precision policy"
+  ]
+}

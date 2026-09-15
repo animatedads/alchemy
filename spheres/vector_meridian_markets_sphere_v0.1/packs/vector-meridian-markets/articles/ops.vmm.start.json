@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "ops.vmm.start",
+  "version": "0.1",
+  "sphere": "vector-meridian-markets",
+  "title": "Start here: VMM current baselines and non-negotiables",
+  "summary": "Vector Meridian Markets is a separate principal market-maker and direct institutional OTC manufacturer. Current runtime baseline is VMM v0.11; current separate operator UI baseline is Wire UI Web v0.3. Preserve legal, queue, accounting and UI authority boundaries before adding features.",
+  "current_baselines": {
+    "runtime": "vector_meridian_markets_v0.11.zip",
+    "runtime_sha256": "4ebde9b8ca4ca158906bd42d4367bb3040b83b598b8bd41850addfe6518e3509",
+    "ui": "vector_meridian_markets_wire_ui_web_v0.3.zip",
+    "ui_sha256": "b988c0f4677bb094e92c9aa8245425cc3c5f0687eda66083a5a5df2d7de481b9",
+    "legal_entity": "VECTOR_MERIDIAN_MARKETS_LTD"
+  },
+  "invariants": [
+    "Do not fold VMM into FederationBank Core/Retail or Merchant Banking.",
+    "Federation relationships are explicit arm's-length contracts or Queue Fabric message boundaries, never inherited authority.",
+    "Do not replace a newer VMM/UI candidate with an older copy merely because a later roll-up happens to bundle it.",
+    "Operational, accounting and browser projection truth remain separate authority layers."
+  ],
+  "authority": "project-authoritative",
+  "provenance": [
+    {
+      "artifact": "vector_meridian_markets_v0.11.zip",
+      "sha256": "4ebde9b8ca4ca158906bd42d4367bb3040b83b598b8bd41850addfe6518e3509",
+      "member": "vector_meridian_markets_v0.11/HANDOVER.md",
+      "line_start": 3,
+      "line_end": 15,
+      "claim": "Current VMM v0.11 runtime/legal/protocol/reporting baseline and qualification target."
+    },
+    {
+      "artifact": "vector_meridian_markets_wire_ui_web_v0.3.zip",
+      "sha256": "b988c0f4677bb094e92c9aa8245425cc3c5f0687eda66083a5a5df2d7de481b9",
+      "member": "vector_meridian_markets_wire_ui_web_v0.3/HANDOVER.md",
+      "line_start": 3,
+      "line_end": 30,
+      "claim": "UI v0.3 is separate from runtime v0.11 and carries the @3 semantic/operator application baseline."
+    }
+  ]
+}

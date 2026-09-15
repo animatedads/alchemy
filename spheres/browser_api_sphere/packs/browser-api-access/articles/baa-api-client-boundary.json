@@ -1,0 +1,45 @@
+{
+  "kind": "article",
+  "id": "baa-api-client-boundary",
+  "version": "0.1",
+  "sphere": "browser-api-access",
+  "title": "API Client is the managed outbound execution plane",
+  "summary": "API Client is provider-neutral outbound execution with declarative route requirements, managed egress sessions, WLU/rate admission, completion routing and native HTTPS; it is not a curl wrapper.",
+  "authority": "project-authority",
+  "invariants": [
+    "ApiRequest describes work independently from transport implementation.",
+    "ApiRouteRequirement is declarative and independent of HTTP semantics.",
+    "Origin/owner node, execution node and egress node are distinct identities.",
+    "Country, VPN, network, egress class and required-tag constraints are hard eligibility requirements, never soft preferences.",
+    "Session reservation is explicit and releasable.",
+    "Completion uses registered routing/callback seams rather than arbitrary callback URLs supplied by untrusted request data.",
+    "Native transport must fail closed on TLS/HTTP errors and must not shell out to curl."
+  ],
+  "procedure": [
+    "Resolve route requirements before transport side effects.",
+    "Reserve an eligible egress session.",
+    "Perform WLU/rate admission after route/session resolution.",
+    "Execute through ApiTransport.",
+    "Return completion through the owning session/callback seam."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_api_client_v0.3.zip",
+      "sha256": "07a22f3d4c04f0589c7f6453c555f8fe8e4176b077c934d276648774dd4adfbc",
+      "member": "oorexx_api_client_v0.3/README.md",
+      "line_start": 3,
+      "line_end": 11,
+      "claim": "API Client is provider-neutral and separates route/session/admission/transport responsibilities.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "oorexx_api_client_v0.3.zip",
+      "sha256": "07a22f3d4c04f0589c7f6453c555f8fe8e4176b077c934d276648774dd4adfbc",
+      "member": "oorexx_api_client_v0.3/README.md",
+      "line_start": 13,
+      "line_end": 27,
+      "claim": "v0.3 supplies native HTTPS through RxSock and Foreign Runtime/OpenSSL with fail-closed transport behaviour.",
+      "note": "Authoritative executable-candidate grounding."
+    }
+  ]
+}

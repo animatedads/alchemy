@@ -1,0 +1,77 @@
+{
+  "kind": "article",
+  "id": "ref.vmm.source-map",
+  "version": "0.1",
+  "sphere": "vector-meridian-markets",
+  "title": "VMM source and evidence map",
+  "summary": "Key runtime and UI source files to inspect before changing a VMM boundary.",
+  "entries": [
+    {
+      "concern": "legal perimeter and principal market maker",
+      "file": "src/VectorMeridianMarkets.cls"
+    },
+    {
+      "concern": "execution lifecycle",
+      "file": "src/VMMQueueExecution.cls"
+    },
+    {
+      "concern": "smart routing/locate/market restrictions",
+      "file": "src/VMMSmartExecution.cls"
+    },
+    {
+      "concern": "institutional product lifecycle",
+      "file": "src/VMMSyntheticProducts.cls"
+    },
+    {
+      "concern": "default/termination",
+      "file": "src/VMMDefaultCloseout.cls"
+    },
+    {
+      "concern": "dispute/netting/custody return",
+      "file": "src/VMMCloseoutOperations.cls"
+    },
+    {
+      "concern": "accounting policy/event mapping",
+      "file": "src/VMMAccounting.cls"
+    },
+    {
+      "concern": "durable accounting store",
+      "file": "src/VMMAccountingPersistence.cls"
+    },
+    {
+      "concern": "reporting boundaries",
+      "file": "src/VMMAccountingReporting.cls"
+    },
+    {
+      "concern": "Federation queue boundary",
+      "file": "integration/VectorMeridianFederationQueue.cls"
+    },
+    {
+      "concern": "institutional queue boundaries",
+      "file": "integration/VectorMeridianInstitutionalSyntheticQueue.cls and related lifecycle/default/closeout queue classes"
+    },
+    {
+      "concern": "Wire UI semantic release",
+      "file": "wire_ui/VMMWireUIDesignFixture.cls"
+    },
+    {
+      "concern": "Wire UI application authority adapter",
+      "file": "wire_ui/VMMWireUIApplication.cls"
+    }
+  ],
+  "authority": "artifact-grounded",
+  "provenance": [
+    {
+      "artifact": "vector_meridian_markets_v0.11.zip",
+      "sha256": "4ebde9b8ca4ca158906bd42d4367bb3040b83b598b8bd41850addfe6518e3509",
+      "member": "vector_meridian_markets_v0.11/src/VectorMeridianMarkets.cls",
+      "claim": "Primary VMM runtime source exists in the qualified runtime artifact."
+    },
+    {
+      "artifact": "vector_meridian_markets_wire_ui_web_v0.3.zip",
+      "sha256": "b988c0f4677bb094e92c9aa8245425cc3c5f0687eda66083a5a5df2d7de481b9",
+      "member": "vector_meridian_markets_wire_ui_web_v0.3/wire_ui/VMMWireUIApplication.cls",
+      "claim": "Primary VMM Wire UI application adapter exists in the qualified UI artifact."
+    }
+  ]
+}

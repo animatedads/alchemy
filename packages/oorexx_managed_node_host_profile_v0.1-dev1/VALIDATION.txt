@@ -1,0 +1,14 @@
+QUALIFICATION: ooRexx Managed Node Host Profile v0.1-dev1
+Runtime: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+
+PASS Managed Node Host Profile identity/bootstrap/capacity/boot-generation/twin eligibility
+
+Properties exercised:
+- stable allocator node identity separate from provider resource identity
+- queue readiness is hard eligibility, not a scoring preference
+- finite Managed Node task kinds become explicit allocator abilities only when ready
+- Linux boot_id-style runtime generation is carried into capability generation
+- stale capacity tied to an older capability generation is rejected
+- transient free RAM/disk/CPU remains capacity observation, not durable hardware
+- two same-shape nodes in different provider fault domains remain distinct allocator nodes
+- no SSH/scp/remote shell implementation exists in this package

@@ -1,0 +1,2 @@
+sink=.FederationBankExternalCashMemoryEventSink~new; sink~failNext; s=.FBExtServiceTest~service(.nil,.nil,sink); sh=.FBExtServiceTest~shipment("EV1","INBOUND",1000); r=.FBExtServiceTest~submit(s,sh); .FBExtServiceTest~assertTrue(r~ok); .FBExtServiceTest~assertTrue(s~state~outbox~items>0); r=s~flushOutbox; .FBExtServiceTest~assertTrue(r~ok); .FBExtServiceTest~assertEq(0,s~state~outbox~items); say "PASS: external cash outbox retries without losing committed state"
+::requires "TestSupport.cls"

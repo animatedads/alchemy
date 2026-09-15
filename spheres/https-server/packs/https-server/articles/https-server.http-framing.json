@@ -1,0 +1,23 @@
+{
+  "id": "https-server.http-framing",
+  "title": "HTTP/1.1 framing and interceptor boundary",
+  "section": "architecture",
+  "summary": "Exact routes, GET/POST/HEAD, keep-alive/pipelining, 100-continue and binary-exact bodies are supported with bounded headers/body/counts and conservative framing. Duplicate Content-Length, unsupported Transfer-Encoding, invalid Host/framing and malformed requests fail closed.",
+  "invariants": [
+    "Interceptors see request-local projections, not raw Socket/BIO/SSL/SSL_CTX/Foreign Runtime objects.",
+    "Before-hooks are ordered and after-hooks reverse ordered.",
+    "Short-circuit and interceptor failure are contained."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "https-server",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_https_server_v0.4.4.zip",
+      "sha256": "aad4305c2495b13145a71938c59af86bc8d128be8d466aaf7b3548468a252d56",
+      "member": "oorexx_https_server_v0.4.4/README.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

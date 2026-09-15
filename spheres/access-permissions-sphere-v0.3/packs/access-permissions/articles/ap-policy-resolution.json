@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "ap-policy-resolution",
+  "version": "0.3",
+  "sphere": "access-permissions",
+  "title": "Institutional Policy is the live policy authority",
+  "summary": "AccessPermissionsPolicyResolver resolves either one sealed fixed Access Control/Permission policy or a policy id through InstitutionalPolicyCatalog at an exact authorization time, optionally using resolveForContext for deployment-scoped selection.",
+  "authority": "project-authority",
+  "invariants": [
+    "Resolver kind is fixed as ACCESS_CONTROL or PERMISSION.",
+    "Catalog resolution grants no authority by itself; it supplies the operative policy object.",
+    "Suspended, withdrawn, ineffective, unavailable, wrong-id, wrong-kind, or unsealed policy resolution fails closed.",
+    "Fixed-policy v0.2 construction remains compatible through internally wrapped fixed resolvers."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/README.md",
+      "line_start": 13,
+      "line_end": 27,
+      "claim": "v0.3 adds fixed or Institutional Policy catalog resolution and deliberately gives Access Control and Permission different lifecycle behavior.",
+      "note": "v0.3 policy lifecycle."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AccessPermissions.cls",
+      "line_start": 925,
+      "line_end": 1005,
+      "claim": "AccessPermissionsPolicyResolver supports sealed fixed policy or live catalog resolution, optional deployment context, and fail-closed protocol/id/kind/effectiveness checks.",
+      "note": "Executable resolver semantics."
+    }
+  ]
+}

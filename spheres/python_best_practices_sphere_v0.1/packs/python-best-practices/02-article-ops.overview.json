@@ -1,0 +1,14 @@
+{
+  "kind": "article",
+  "id": "ops.python-best-practices.overview",
+  "version": "0.1",
+  "sphere": "python-best-practices",
+  "title": "Why this sphere exists",
+  "summary": "Python figures disproportionately in LLM training corpora, so LLM-authored Python is confident and plausible on the outside while quietly wrong on semantics an LLM does not memorise well: what is mutable and shared, when a value is None, which exception class a call can raise, how a splice should preserve untouched bytes. This sphere is deliberately portable and reference-style: each guide states the real Python semantics and the correct form it follows, so an authoring LLM can reproduce good code without relying on memorised snippets.",
+  "evidence_note": "PLABEL: canonical/reference. Guidance here is grounded in the CPython data model and standard-library semantics, not in any single incident, because Python is a secondary surface of this project. Where a rule is statically detectable it is recorded as a rule document; where it requires reading what a call can do or what the author intends, it is an article.",
+  "invariants": [
+    "A rule document states a deterministic trigger and a concrete correction, so it can be read and applied reliably.",
+    "An article carries the semantics and is used when intent or call behaviour must be decided.",
+    "Nothing here is a memory-claimer about an API's signature; statements about the language are the semantics, which do not drift by deployment."
+  ]
+}

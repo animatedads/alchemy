@@ -1,0 +1,391 @@
+{
+  "schema": "oorexx.foreign/0.11",
+  "library": {
+    "provider": "native",
+    "names": [
+      "libcrypto.so.3",
+      "libcrypto.so",
+      "libcrypto-3-x64.dll"
+    ]
+  },
+  "types": {
+    "SizeTBox": {
+      "kind": "struct",
+      "size": 8,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "value",
+          "type": "u64",
+          "offset": 0
+        }
+      ]
+    },
+    "I32Box": {
+      "kind": "struct",
+      "size": 4,
+      "alignment": 4,
+      "fields": [
+        {
+          "name": "value",
+          "type": "i32",
+          "offset": 0
+        }
+      ]
+    }
+  },
+  "functions": {
+    "sha256": {
+      "symbol": "SHA256",
+      "return": "pointer",
+      "args": [
+        "bytes",
+        "u64",
+        {
+          "type": "pointer",
+          "direction": "out"
+        }
+      ]
+    },
+    "sha512": {
+      "symbol": "SHA512",
+      "return": "pointer",
+      "args": [
+        "bytes",
+        "u64",
+        {
+          "type": "pointer",
+          "direction": "out"
+        }
+      ]
+    },
+    "cipher_ctx_new": {
+      "symbol": "EVP_CIPHER_CTX_new",
+      "return": {
+        "type": "pointer",
+        "object": "EVP_CIPHER_CTX",
+        "ownership": "owned",
+        "destructor": "EVP_CIPHER_CTX_free"
+      },
+      "args": []
+    },
+    "chacha20_cipher": {
+      "symbol": "EVP_chacha20",
+      "return": {
+        "type": "pointer",
+        "object": "EVP_CIPHER",
+        "ownership": "borrowed"
+      },
+      "args": []
+    },
+    "encrypt_init": {
+      "symbol": "EVP_EncryptInit_ex",
+      "return": "i32",
+      "args": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "bytes",
+        "bytes"
+      ]
+    },
+    "pkey_private_ed25519": {
+      "symbol": "EVP_PKEY_new_raw_private_key_ex",
+      "return": {
+        "type": "pointer",
+        "object": "EVP_PKEY",
+        "ownership": "owned",
+        "destructor": "EVP_PKEY_free"
+      },
+      "args": [
+        "pointer",
+        "utf8",
+        "pointer",
+        "bytes",
+        "u64"
+      ]
+    },
+    "pkey_public_ed25519": {
+      "symbol": "EVP_PKEY_new_raw_public_key_ex",
+      "return": {
+        "type": "pointer",
+        "object": "EVP_PKEY",
+        "ownership": "owned",
+        "destructor": "EVP_PKEY_free"
+      },
+      "args": [
+        "pointer",
+        "utf8",
+        "pointer",
+        "bytes",
+        "u64"
+      ]
+    },
+    "pkey_get_raw_public": {
+      "symbol": "EVP_PKEY_get_raw_public_key",
+      "return": "i32",
+      "args": [
+        "pointer",
+        {
+          "type": "pointer",
+          "direction": "out"
+        },
+        {
+          "type": "pointer"
+        }
+      ]
+    },
+    "md_ctx_new": {
+      "symbol": "EVP_MD_CTX_new",
+      "return": {
+        "type": "pointer",
+        "object": "EVP_MD_CTX",
+        "ownership": "owned",
+        "destructor": "EVP_MD_CTX_free"
+      },
+      "args": []
+    },
+    "digest_sign_init": {
+      "symbol": "EVP_DigestSignInit",
+      "return": "i32",
+      "args": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer"
+      ]
+    },
+    "digest_sign": {
+      "symbol": "EVP_DigestSign",
+      "return": "i32",
+      "args": [
+        "pointer",
+        {
+          "type": "pointer",
+          "direction": "out"
+        },
+        {
+          "type": "pointer"
+        },
+        "bytes",
+        "u64"
+      ]
+    },
+    "digest_verify_init": {
+      "symbol": "EVP_DigestVerifyInit",
+      "return": "i32",
+      "args": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer"
+      ]
+    },
+    "digest_verify": {
+      "symbol": "EVP_DigestVerify",
+      "return": "i32",
+      "args": [
+        "pointer",
+        "bytes",
+        "u64",
+        "bytes",
+        "u64"
+      ]
+    },
+    "bn_new": {
+      "symbol": "BN_new",
+      "return": {
+        "type": "pointer",
+        "object": "BIGNUM",
+        "ownership": "owned",
+        "destructor": "BN_free"
+      },
+      "args": []
+    },
+    "bn_ctx_new": {
+      "symbol": "BN_CTX_new",
+      "return": {
+        "type": "pointer",
+        "object": "BN_CTX",
+        "ownership": "owned",
+        "destructor": "BN_CTX_free"
+      },
+      "args": []
+    },
+    "bn_dec2bn": {
+      "symbol": "BN_dec2bn",
+      "return": "i32",
+      "args": [
+        {
+          "name": "bn",
+          "type": "pointer",
+          "direction": "out",
+          "pointerDepth": 2,
+          "object": "BIGNUM",
+          "ownership": "owned",
+          "destructor": "BN_free"
+        },
+        "utf8"
+      ]
+    },
+    "bn_mul": {
+      "symbol": "BN_mul",
+      "return": "i32",
+      "args": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer"
+      ]
+    },
+    "bn_copy": {
+      "symbol": "BN_copy",
+      "return": "pointer",
+      "args": [
+        "pointer",
+        "pointer"
+      ]
+    },
+    "bn_sub_word": {
+      "symbol": "BN_sub_word",
+      "return": "i32",
+      "args": [
+        "pointer",
+        "u64"
+      ]
+    },
+    "bn_mod_inverse": {
+      "symbol": "BN_mod_inverse",
+      "return": "pointer",
+      "args": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer"
+      ]
+    },
+    "bn_generate_prime": {
+      "symbol": "BN_generate_prime_ex",
+      "return": "i32",
+      "args": [
+        "pointer",
+        "i32",
+        "i32",
+        "pointer",
+        "pointer",
+        "pointer"
+      ]
+    },
+    "bn_cmp": {
+      "symbol": "BN_cmp",
+      "return": "i32",
+      "args": [
+        "pointer",
+        "pointer"
+      ]
+    },
+    "bn_mod_exp_consttime": {
+      "symbol": "BN_mod_exp_mont_consttime",
+      "return": "i32",
+      "args": [
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer",
+        "pointer"
+      ]
+    },
+    "bn_num_bits": {
+      "symbol": "BN_num_bits",
+      "return": "i32",
+      "args": [
+        "pointer"
+      ]
+    },
+    "bn_to_binpad": {
+      "symbol": "BN_bn2binpad",
+      "return": "i32",
+      "args": [
+        "pointer",
+        {
+          "type": "pointer",
+          "direction": "out"
+        },
+        "i32"
+      ]
+    },
+    "bn_set_flags": {
+      "symbol": "BN_set_flags",
+      "return": "void",
+      "args": [
+        "pointer",
+        "i32"
+      ]
+    },
+    "bn_bin2bn": {
+      "symbol": "BN_bin2bn",
+      "return": "pointer",
+      "args": [
+        "bytes",
+        "i32",
+        "pointer"
+      ]
+    },
+    "q_mac": {
+      "symbol": "EVP_Q_mac",
+      "return": "pointer",
+      "args": [
+        "pointer",
+        "utf8",
+        "pointer",
+        "utf8",
+        "pointer",
+        "bytes",
+        "u64",
+        "bytes",
+        "u64",
+        {
+          "type": "pointer",
+          "direction": "out"
+        },
+        "u64",
+        {
+          "type": "pointer"
+        }
+      ]
+    },
+    "encrypt_update": {
+      "symbol": "EVP_EncryptUpdate",
+      "return": "i32",
+      "args": [
+        "pointer",
+        {
+          "type": "pointer",
+          "direction": "out"
+        },
+        {
+          "type": "pointer"
+        },
+        "bytes",
+        "i32"
+      ]
+    },
+    "encrypt_final": {
+      "symbol": "EVP_EncryptFinal_ex",
+      "return": "i32",
+      "args": [
+        "pointer",
+        {
+          "type": "pointer",
+          "direction": "out"
+        },
+        {
+          "type": "pointer"
+        }
+      ]
+    }
+  }
+}

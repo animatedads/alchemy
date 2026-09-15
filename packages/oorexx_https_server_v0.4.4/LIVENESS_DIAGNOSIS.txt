@@ -1,0 +1,21 @@
+ooRexx HTTPS Server v0.4.4 liveness diagnosis
+
+Independent target-host evidence eliminated several earlier hypotheses:
+- v0.3: unrestricted concurrent TLS/native activity could segfault under reset pressure.
+- v0.4: one global serialized native gate removed the crash but reset stress timed out.
+- v0.4.1: four serialized native lanes still timed out on the target host.
+- v0.4.2: OpenSSL socket BIOs were removed completely and RxSock became sole network-I/O owner, yet the same mixed reset storm still timed out in wave 1.
+
+The remaining common scaling behavior was admission: every accepted TCP peer immediately received a fresh ooRexx activity before TLS was established. Reset/abort peers therefore competed with valid clients for interpreter scheduling and lifecycle cleanup merely by completing TCP accept(). Ordinary 16-way HTTPS passed on the target while the 32-peer mixed wave failed, matching that boundary.
+
+v0.4.4 response:
+- fixed connection worker set: 16 by default;
+- bounded FIFO of accepted sockets: 64 by default;
+- accept() only acquires/pins the connection lease and enqueues it;
+- workers process queued connections synchronously; there is no conn~start('run') per peer;
+- failed/incomplete TLS handshakes do not perform SSL_shutdown/close_notify;
+- direct peer EOF during handshake is normal ABORT/noise, not ERROR-log amplification;
+- OpenSSL remains one serialized in-memory native lane;
+- RxSock remains sole descriptor/network-I/O owner.
+
+Local evidence is deliberately not treated as closure for the independent OpenSSL 3.5.3 host. The decisive closure test is the unchanged 16-good + 16-reset wave there.

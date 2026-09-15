@@ -1,0 +1,19 @@
+Independent qualification report for sealed ooRexx HTTPS Server v0.4
+
+Passed before failure:
+- Foreign Runtime v0.14.0
+- OpenSSL thread-safe provider contract
+- serialized nonblocking TLS boundary
+- TLS 1.2/1.3
+- HTTP routes and binary echo
+- HEAD, pipelining, anti-smuggling, Host validation
+- TLS version floor
+- 16 concurrent HTTPS clients
+- runtime/generation observability
+
+Failure in heavier reset/abort stress:
+  curl: (28) Connection timed out after 2001-2002 ms
+  FAIL stress good client failed in wave 1
+
+Interpretation carried into v0.4.1:
+The prior v0.3 segmentation fault did not recur in the ordinary 16-client phase, but v0.4's one server-wide serialized native gate introduced a liveness/head-of-line bottleneck under heavier mixed good/reset TLS load. The server fix must improve forward progress rather than merely increase client timeout values.

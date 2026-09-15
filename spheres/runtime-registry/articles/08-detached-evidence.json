@@ -1,0 +1,13 @@
+{
+  "id": "rr-detached-evidence",
+  "title": "Detached Runtime Execution Evidence",
+  "summary": "The registry provides a detached snapshot of the execution environment (generation, artifact, etc.) that is separate from the mutable generation object.",
+  "why": "Allows a request to prove exactly which code executed the work without exposing lifecycle authority or being affected by later generation changes.",
+  "invariants": [
+    "RuntimeExecutionEvidence contains metadata only; it has no lifecycle methods.",
+    "An evidence snapshot captured while ACTIVE remains ACTIVE forever as historical evidence, even if the generation later drains.",
+    "The evidence is detached from the mutable RuntimeGeneration."
+  ],
+  "evidence_note": "Source: runtime_registry_v0.14/README.md:65-75. Line 66: 'RuntimeLease~executionEvidence returns a detached RuntimeExecutionEvidence snapshot'.",
+  "grounding": "oorexx-grounded"
+}

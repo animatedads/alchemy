@@ -1,0 +1,27 @@
+{
+  "kind": "language-rule",
+  "id": "LLM.ACCESS.NO_MEMORY_SLUG",
+  "version": "0.3",
+  "language": "any",
+  "title": "Do not emit a provider model ID from memory",
+  "purpose": "Training-cutoff slugs compile, authenticate, and sometimes silently hit a different model.",
+  "trigger": "Generated code or docs name a foundation-model API ID without an observed_as_of date and a primary URL.",
+  "correct": "Cite slug + date + primary models page, or call list-models. If unchecked, write STALE-UNKNOWN.",
+  "fixability": "REQUIRED",
+  "classification": "freshness_and_integration",
+  "detection": "contextual",
+  "severity": "WARNING",
+  "authority": "provider-primary-snapshot",
+  "fix": {
+    "class": "SUGGESTED"
+  },
+  "legacy_evidence_note": "Repeated project incident: generated harnesses targeting claude-3-haiku / Haiku v3, gpt-4o as flagship, gemini-1.5-pro, grok-2. Each cost a full return-to-test cycle.",
+  "provenance": [
+    {
+      "artifact": "llm_access_sphere_v0.2.zip",
+      "sha256": "eaaf9ffd12c3734143c6721753d057caf02f20c2ac05783662627e33bb2b2ae6",
+      "member": "llm_access_sphere_v0.1/packs/llm-access/rules/01-never-memory-slug.json",
+      "claim": "Rule preserved from v0.2; classification metadata added conservatively."
+    }
+  ]
+}

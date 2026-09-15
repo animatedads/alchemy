@@ -1,0 +1,27 @@
+LLM GOPHER v0.3-dev1 qualification
+
+Baseline: v0.2-dev1
+Schema: llm-gopher/0.3
+
+Runtime:
+  supplied ooRexx 5.3.0 r13196 Internal Test Version
+  runtime_probe.rex: PASS OOREXX RUNTIME PROBE
+
+Real source page probe:
+  source: Maths.cls extracted from supplied API roll-up
+  page handler: RexxClassPage
+  classes: 33
+  methods: 318
+  operation: OPENED
+
+Merge:
+  packs: core + oorexx + flylo + federationbank
+  semantic documents: 28
+  canonical digest: 187b74c00eec63a7f1c09731114f116bb5bd9ea0967958e23d79d1c10520681a
+  page-handler conflict rejection tested
+
+Tests:
+  PASS semantic merge/finder/proxy/fallback/search/access tests
+  PASS 6 command smoke tests
+  PASS ALL LLM GOPHER v0.2-dev1 TESTS
+  PASS ALL LLM GOPHER v0.3 PAGE TESTS

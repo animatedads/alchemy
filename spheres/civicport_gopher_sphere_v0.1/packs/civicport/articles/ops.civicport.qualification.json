@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "ops.civicport.qualification",
+  "version": "0.1",
+  "sphere": "civicport",
+  "title": "Qualification and release discipline",
+  "summary": "The sealed v0.14 artifact passed 150/150 manifest entries, 24/24 source compilation, 81 deterministic tests, 0 failures and 4 explicitly skipped optional network probes. Qualification is against exact artifacts and does not treat a worktree as release evidence.",
+  "authority": "project-release-evidence",
+  "invariants": [
+    "Fresh-extracted exact ZIP acceptance is the release evidence.",
+    "Optional live probes are never counted as deterministic acceptance.",
+    "Synthetic fixtures must be labelled synthetic and must not be represented as live captures.",
+    "A component package is delivered standalone unless the Architect explicitly requests a roll-up.",
+    "Do not claim Autobuild submission/acceptance while the project is in manual-packaging mode."
+  ],
+  "procedure": [
+    "Regenerate MANIFEST.sha256 from a clean release tree.",
+    "Create the standalone ZIP with one top-level package directory.",
+    "Fresh-unzip the exact ZIP.",
+    "Verify manifest, compile every source, run deterministic tests and boundary scans.",
+    "Record exact artifact SHA-256 and dependency baseline in VALIDATION.txt."
+  ],
+  "provenance": [
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "VALIDATION.txt",
+      "line_start": 1,
+      "line_end": 18,
+      "claim": "Qualification scope and exact consolidated roll-up digest."
+    },
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "VALIDATION.txt",
+      "line_start": 34,
+      "line_end": 91,
+      "claim": "Focused assertions, complete deterministic results, compilation, scans and fixture honesty."
+    }
+  ]
+}

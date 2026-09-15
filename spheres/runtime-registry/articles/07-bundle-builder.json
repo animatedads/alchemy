@@ -1,0 +1,13 @@
+{
+  "id": "rr-bundle-builder",
+  "title": "Runtime Bundle Builder",
+  "summary": "The Bundle Builder converts multiple source files with internal ::REQUIRES into a single, immutable, hashed source closure.",
+  "why": "Allows for independent, reloadable code closures that do not collide with other versions of the same classes in the same process.",
+  "invariants": [
+    "Local ::REQUIRES become provenance markers.",
+    "The resulting bundle is the artifact that is hashed, signed, and promoted.",
+    "External/stable ::REQUIRES are preserved."
+  ],
+  "evidence_note": "Source: runtime_registry_v0.14/README.md:185-195. Line 187: 'RuntimeBundleBuilder deterministically creates one generation-private source closure.'",
+  "grounding": "oorexx-grounded"
+}

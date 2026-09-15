@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.numeric.validate-before-arithmetic-and-suffix-normalize",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Validate a value as numeric before arithmetic, and normalize case before matching units",
+  "summary": "Running arithmetic on an unvalidated string can turn a control value into an unexpected number, and matching a unit suffix case-insensitively is the quickest way to mis-handle 's', 'h', 'd' or 'w'. Confirm a field is an all-digits integer first, then use it; normalize with case-expansion before you compare units.",
+  "technique": "A bounded regex `^[0-9]+$` gates arithmetic; a duration parser strips a unit suffix and multiplies integer seconds; case-folding with ${VAR^^} makes a case-insensitive unit match obvious and deliberate.",
+  "evidence_note": "assets.d/queue.sh:44-56 parses durations by range-glob suffixes with guard fallback; bin/queue-dev-timeout:53-56 rejects a non-positive integer timeout BEFORE using it; queue-vcs-probe:41-50 and :109-115 normalize with ${COUNTRY^^} before a case match.",
+  "invariants": [
+    "Validate a field as non-negative all-digits before any arithmetic on it.",
+    "Reject a non-positive or malformed bound rather than silently substituting one that disables the protection.",
+    "Normalize case (${VAR^^} / ${VAR,,}) before a case comparison you mean to be case-insensitive.",
+    "Prefer an explicit unit-to-seconds mapping over assuming the caller always passes seconds."
+  ]
+}

@@ -1,0 +1,11 @@
+# Minimal integration into the existing Space app.py
+#
+# 1. Copy src/managed_compute_core.py, src/managed_space_endpoints.py and
+#    src/managed_smoke.py into the Space repository root.
+# 2. Import:
+#       from managed_space_endpoints import attach_managed_endpoints
+# 3. Inside the existing `with gr.Blocks() as demo:` construction, add:
+#       attach_managed_endpoints()
+# 4. Keep the existing `demo.queue().launch(...)` call.
+#
+# Do not launch a second Gradio app.

@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.namespace-views",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Fluid namespaces and folder-by-filter projections",
+  "summary": "A path is a contextual view over StorageRef, not a permanent claim about where bytes live. The same object can be projected through multiple logical paths and query-derived folders, each with independent route semantics.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "PATH, OBJECT, LOCATION and POLICY are never conflated.",
+    "Logical directories may be explicit bindings, query folders, aliases or composed union/search paths.",
+    "Removing a generated/query entry is an unlink/exclusion operation, not implicit destruction of every replica.",
+    "Namespace semantics remain logical in v0.1; no OS/FUSE mounted-filesystem claim is made."
+  ],
+  "procedure": [],
+  "topics": [
+    "namespace",
+    "path",
+    "folder-by-filter"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_namespace_views.rex",
+      "claim": "Regression proves query-folder projection, EA predicates and safe exclusion without object destruction."
+    }
+  ]
+}

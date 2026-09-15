@@ -1,0 +1,29 @@
+IBM 4361 / OS/360 MVT ooRexx safety9 checkpoint
+
+This checkpoint promotes only System/370 LCR / Load Complement Register
+(opcode X'13') behaviour proven by focused tests and exact-state real-MVT
+journal rewind/retry.
+
+At the real frontier IA 014FCA / ICOUNT 511869, R7 contained FFFFFFF4 (-12),
+CC=1 and program mask=0.  A live object-scope OP13 survived journal rewind,
+retried the identical invocation, produced R7=0000000C (+12), CC=2 and allowed
+MVT to execute 27 further instructions.  Permanent source reproduces the same
+trajectory and stops at the next unsupported boundary:
+
+  IA 01464C / ICOUNT 511897 / bytes 1420506032CE / opcode 14
+
+The X'80000000' LCR fixed-point-overflow result is implemented as architected
+(result unchanged, CC=3) when the overflow mask is off.  The masked
+fixed-point-overflow program-interruption path is deliberately NOT fabricated;
+it fails closed until its low-core interruption sequencing is independently
+qualified.
+
+Preserved architecture:
+- freeze files are durable whole-machine evidence/replay artifacts;
+- journal points are live in-process rewind/fork/diff/retry history;
+- live object methods are executable hypotheses outside journalled machine
+  state, intentionally surviving rewind and replaceable in place;
+- guest IBM 3215 console remains separate from the physical IBM 4361 operator
+  console.
+
+Safety9 does not implement opcode X'14'.

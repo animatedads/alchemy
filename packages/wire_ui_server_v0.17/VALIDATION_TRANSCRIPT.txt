@@ -1,0 +1,175 @@
+=== test_package_identity.rex ===
+PASS server package identity 0.17 / WIRE-UI/0.1
+=== test_wire_ui_v01.rex ===
+ok 1 snapshot type
+ok 1 initial revision
+ok 2 active subscription supplies exactly two definitions
+ok 9 unsubscribed definition absent
+ok 9 unsubscribed definition absent #2
+ok 3 action reaches owning app
+ok 4 one precise patch produced
+ok 4 one slot operation
+ok 4 SET_SLOT
+ok 4 status slot
+ok 5 monotonic revision
+ok 6 stale revision detected
+ok 7 resync snapshot
+ok 7 resync current revision
+ok 8 duplicate does not repeat effect
+ok 10 state can activate subscription
+ok 10 subscription can deactivate
+ok 11 server revalidates guarded action
+ok 12 full semantic reconstruction
+PASS wire_ui_server_v0.1 acceptance 12/12
+=== test_queue_integration.rex ===
+ok patch generated
+ok direct queue carries patch
+PASS queue integration
+=== test_subscription_integration.rex ===
+ok only active PANEL definition delivered
+ok subscription delivered PANEL
+ok active subscriptions deliver PANEL plus CHAT
+ok new subscribed definition delivered; unsubscribed definition absent
+PASS subscription integration
+=== test_journey_planner.rex ===
+ok search active
+ok pages 2-4 prefetched
+ok insurance terms remain on-demand
+ok repeat plan causes no subscription churn
+ok explicit on-demand activation
+ok exactly requested capability activated
+ok old search subscription removed differentially
+ok delta reports deactivation
+ok transition evidence recorded
+PASS journey planner v0.3
+=== test_agent_profile.rex ===
+ok detection offers visible semantic affordance
+ok canonical interaction profile offer emitted
+ok explicit profile selected
+ok journey switches to machine-semantic projection
+ok agent semantic definitions staged
+ok human decorative journey definitions released
+ok definition projection is agent-optimised
+PASS agent profile v0.3
+=== test_integration_lock.rex ===
+ok v1 remains addressable
+ok v2 independently addressable
+ok bare id has no implicit latest resolution
+ok UI_JOURNEY_PLAN emitted
+ok active entry canonical
+ok prefetch entries canonical
+ok capability distinct from subscription
+ok on-demand subscription named
+ok canonical on-demand activates exact subscription
+ok capability cannot redirect to another subscription
+ok INTERACTION_PROFILE_OFFER emitted
+ok detail.profileId accepted without adapter flattening
+ok profile selection advances authoritative journey
+PASS integration lock exact-version/wire contract
+=== test_compiled_release_binding.rex ===
+ok release binding installed
+ok release id exact
+ok release version exact
+ok sealed release address preserved
+ok compiled package address preserved
+ok human search exact definition loaded
+ok agent search exact definition loaded ahead of profile switch
+ok builder definition content address preserved
+ok no implicit latest resolution after release load
+ok journey wire carries exact site release
+ok compiled SEARCH active subscription installed
+ok compiled SEARCH prefetch subscription installed
+ok binding does not replace authoritative live view
+ok snapshot carries compiled package provenance
+ok application profile switched explicitly
+ok agent profile has active semantic search definition
+ok AI_AGENT_OPTIMISED activates semantic-record definition
+ok mismatched release provenance rejected
+PASS compiled release binding Builder -> Server
+=== test_experiment_assignment.rex ===
+ok unassigned release retains compiled v1
+ok unassigned release retains compiled v2
+ok assignment recorded
+ok variant resolves exact projection definition
+ok assignment bound to exact release
+ok assigned exact definition active
+ok non-assigned variant not active
+ok journey wire carries assignment provenance
+ok wire assignment exact
+ok private assignment subject not emitted
+ok snapshot carries assignment provenance
+ok unknown variant rejected
+PASS runtime compiled experiment assignment
+=== test_observation_contract.rex ===
+PASS positive-list observation contract
+=== test_render_profile_cache.rex ===
+ok server selects renderer profile
+ok hello emits bootstrap messages
+ok render profile first
+ok profile id on wire
+ok manifest contains active/prefetch definitions only
+ok manifest identity present
+ok inactive on-demand definition absent
+ok manifest blocks catalogue probing
+ok cold request queues two definitions
+ok definition delivery semantic type
+ok same manifest does not duplicate definition payload
+ok no duplicate definition messages
+ok manifest update emitted
+ok manifest id changes with authorised definition set
+ok newly authorised exact definition appears
+ok stale manifest request rejected
+PASS render-profile/definition-manifest cache contract
+=== test_material_delivery.rex ===
+ok one material message
+ok material message type
+ok material identity exact
+ok material version exact
+ok material content address exact
+ok material token preserved
+ok material recipe preserved
+ok material binds site release
+ok Queue Fabric carries material
+ok Queue Fabric preserves material version content
+PASS versioned material delivery Builder -> Server -> Queue Fabric
+=== test_v09_reconciliation.rex ===
+ok hello emitted renderer bootstrap
+ok render profile first
+ok manifest bound exact release
+ok exact definition manifest present
+ok one material set
+ok material message type
+ok material and manifest share exact release
+ok material identity preserved
+ok Queue Fabric carries reconciled material
+PASS v0.9 renderer-manifest + material reconciliation
+=== test_dynamic_journey_runtime.rex ===
+WIRE UI DYNAMIC JOURNEY RUNTIME START
+WIRE UI DYNAMIC JOURNEY RUNTIME: OK
+=== test_multi_action_binding.rex ===
+PASS multi-action element binding
+=== test_journey_timing_evidence.rex ===
+PASS factual journey timing evidence
+=== test_operational_workspace_projection.rex ===
+PASS operational workspace projection
+=== test_intent_cross_object_projection.rex ===
+PASS intent and cross-object projection
+=== test_large_collection_window.rex ===
+PASS large authoritative collection window and evidence stream
+=== test_workspace_command_state.rex ===
+PASS workspace command/query state
+=== test_workspace_result_state.rex ===
+PASS authoritative workspace result revision
+=== test_alchemy_adoption.rex ===
+PASS AlchemyObject STANDARD adoption 27
+=== cross_language/cross_wire_js.mjs ===
+PASS ooRexx <-> configured JS runtime OurLadyAir cross-wire integration
+=== cross_language/cross_observation_js.mjs ===
+PASS ooRexx <-> configured JS runtime positive-list observation cross-wire
+=== cross_language/cross_operational_workspace_js.mjs ===
+PASS ooRexx <-> JS operational workspace collection patches
+=== cross_language/cross_collection_window_js.mjs ===
+PASS ooRexx <-> JS large authoritative collection window
+=== cross_language/cross_workspace_context_js.mjs ===
+PASS ooRexx <-> JS authoritative workspace command context
+=== gateway/full_gateway_runtime.mjs SKIP: compatible legacy WIRE_UI_GATEWAY_SRC not set ===

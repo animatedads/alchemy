@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "arch.civicport.runtime-sql-hardworld",
+  "version": "0.1",
+  "sphere": "civicport",
+  "title": "Read-only SQL, Runtime Registry and HardWorld boundaries",
+  "summary": "NoSQLServer and Runtime Registry expose evidence-shaped, generation-pinned views. They do not own transport authority. HardWorld is downstream and mutates only through explicit promotion.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Catalog/metadata discovery is network-free.",
+    "Civic SQL relations are read-only; unsupported mutation returns SQLUNSUPPORTED without fetching.",
+    "Runtime inputs expose semantic identifiers only, never deployment URL/credential/cache-root/queue selectors unless a contract explicitly requires them.",
+    "Numeric-looking source strings that must be JSON strings use Runtime Registry JsonString; this preserves type and is not numeric coercion.",
+    "HardWorld evidence/provenance may be produced without world mutation; promotion requires an explicit grant."
+  ],
+  "procedure": [
+    "Freeze a relation snapshot when the contract says first-read snapshot.",
+    "Keep rich/native evidence reachable from projected rows where defined.",
+    "Pin every Runtime ability/contract/mapping generation exactly.",
+    "Do not add a source-specific HardWorld promotion shortcut when the generic evidence/promotion seam is sufficient."
+  ],
+  "provenance": [
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "ARCHITECTURE.md",
+      "line_start": 384,
+      "line_end": 416,
+      "claim": "Read-only SQL, Runtime input pinning and explicit HardWorld promotion boundary."
+    },
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "ARCHITECTURE.md",
+      "line_start": 3,
+      "line_end": 39,
+      "claim": "v0.14 NOTAM journal SQL/Runtime surfaces remain non-JMS and non-HardWorld."
+    }
+  ]
+}

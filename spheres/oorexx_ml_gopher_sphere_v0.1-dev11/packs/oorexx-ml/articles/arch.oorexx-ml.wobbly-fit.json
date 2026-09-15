@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.wobbly-fit",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Wobbly fit \u2014 contextual fit restoration and distance to fit",
+  "summary": "dev11 formalizes model-relative wobbliness: find the smallest observation set whose temporary exclusion restores a declared fit, retain all equally minimal restoring sets, measure distance-to-fit and normative wobbliness, and reassign evidence explicitly rather than deleting it.",
+  "authority": "Executable dev11 source/tests and the radar two-track demo are authoritative. Wobble means incompatibility with the active fit, not falsehood, noise, anomaly, or irrelevance in every model.",
+  "invariants": [
+    "Wobbliness is relative to an active model and fit criterion; a valid observation can be wobbly here and highly relevant elsewhere.",
+    "Exclusion is diagnostic only and never deletion authority.",
+    "Distance-to-fit is the minimum number of observations that must be temporarily set aside before the criterion is satisfied.",
+    "Search proceeds by increasing cardinality and retains every restoring set at the first successful cardinality.",
+    "A bounded exact search must fail closed when its evaluation budget is exceeded rather than silently becoming approximate.",
+    "Participation across alternative minimal restoring sets is evidence about explanatory stability, not guilt or error probability.",
+    "Normative wobbliness is a distribution of expected fit-restoration fractions, not merely a mean.",
+    "Reassignment is explicit: alternate track/source/model, normative clutter, measurement error, unresolved, or another declared disposition.",
+    "Changing fit threshold, model, or normative baseline creates a different analysis history; MLWobbleStudy is driveable and branchable."
+  ],
+  "procedure": [
+    "Choose a scorer that returns MLFitAssessment and declare MLFitCriterion with explicit direction and threshold.",
+    "Run MLWobbleSetSearch with maxRemovals and maxEvaluations appropriate to the bounded problem.",
+    "Inspect the full baseline and individual leave-one-out influence, but do not assume the strongest individual is in the best multi-item restoring set.",
+    "Inspect all minimal restoring sets, distanceToFit, normalizedDistance and MLWobbleParticipation.",
+    "When historical reference data exists, supply MLWobbleNorm and inspect percentile/p50/p95/normativeClass.",
+    "Re-test excluded observations against alternate tracks/sources/models and record MLWobbleReassignment explicitly.",
+    "Use MLWobbleStudy when analytical history, rollback or branching of fit policy matters.",
+    "Run examples/wobbly_radar_demo.rex: the mixed 12-return fixture has distance-to-fit 3; B3/B6/B9 restore Track A to RMS 0 and themselves fit Track B to RMS 0."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev11.zip",
+      "sha256": "713c4998c67aed9b526f3e20f7b2f14de4b355939259bff55beebe9133980c79",
+      "member": "oorexx_ml_v0.1-dev11/src/MLWobblyFit.cls",
+      "claim": "Executable fit-restoration, normative, participation, reassignment and driveable-study semantics."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev11.zip",
+      "sha256": "713c4998c67aed9b526f3e20f7b2f14de4b355939259bff55beebe9133980c79",
+      "member": "oorexx_ml_v0.1-dev11/examples/wobbly_radar_demo.rex",
+      "claim": "Canonical contextual-reassignment demo with two coherent radar tracks."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev11.zip",
+      "sha256": "713c4998c67aed9b526f3e20f7b2f14de4b355939259bff55beebe9133980c79",
+      "member": "oorexx_ml_v0.1-dev11/qualification/QUALIFICATION_DEV11.txt",
+      "claim": "63-test and 18-surface compiler qualification; SSC re-baseline explicitly not claimed."
+    }
+  ]
+}

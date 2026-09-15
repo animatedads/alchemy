@@ -1,0 +1,29 @@
+FederationBank Merchant Wire UI Web v0.6 target/qualification stack
+
+Merchant authorities
+- FederationBank Merchant Bank v0.15
+- FederationBank Merchant Risk Service v0.5
+- FederationBank Merchant Accounting Adapter v0.5
+- Accounting Core v0.8 qualified compatible with Merchant Accounting Adapter v0.5 (19/19 unchanged)
+- ooRexx Journal Pointed State v0.1
+
+Wire UI/runtime
+- Wire UI Server v0.17
+- Wire UI Builder v0.11 (authoring/qualification only)
+- Alchemy Wire UI JS v0.4-dev4
+- ooRexx Queue Fabric v0.9-dev4
+- ooRexx Queue Fabric Web Gateway v0.2
+- Alchemy Objects v0.8
+- ooRexx Crypto v0.8.3
+- ooRexx 5.3.0 r13196 Internal Test Version
+
+Candidate consolidated provenance
+- oorexxapis(20260901-111939).zip
+- SHA-256 9f95981d13a9cf6b51aaa032f6c7c401615b3f53609b4a240268bccd13cd5d63
+
+Important roll-up reconciliation
+- the roll-up contains Merchant Bank v0.15 and Merchant Accounting Adapter v0.5;
+- the roll-up contains Merchant Risk Service v0.4, which is stale for this lane;
+- the separately sealed Merchant Risk Service v0.5 (SHA-256 4b9d6b1b0c5585c4c3bfa633ed8bf72c666464b5275fbb77836052817460abcb) remains authoritative;
+- the roll-up contains Merchant Wire UI Web v0.3, which is older than this lane's sealed v0.5 starting point and is not used as a replacement;
+- Accounting Core v0.8 is a compatible newer shared dependency; it does not itself justify a Merchant Accounting Adapter version bump.

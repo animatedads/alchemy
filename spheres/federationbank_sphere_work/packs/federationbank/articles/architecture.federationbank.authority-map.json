@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "architecture.federationbank.authority-map",
+  "version": "0.1",
+  "sphere": "federationbank",
+  "title": "Core Banking authority map: Account → Payments → Ledger",
+  "summary": "Core/Retail Banking is three queue-addressable authorities. Account owns customer/account/beneficiary lifecycle; Payments owns customer transaction and reservation authority; Ledger owns balances, holds, postings, atomic commit and durable monetary receipts.",
+  "authority": "federationbank-project-doctrine",
+  "invariants": [
+    "Account Engine has no transfer method and no balance/posting API.",
+    "Payments may authorise a payment or hold but cannot alter monetary truth.",
+    "Ledger alone owns postings, balances, holds/reservations and SQL monetary truth.",
+    "The ordinary channel principal has no direct PUT access to the Ledger command queue.",
+    "Final customer outcomes are published only after Ledger commit."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/README.md",
+      "line_start": 9,
+      "line_end": 65,
+      "claim": "Account, Payments and Ledger ownership boundaries."
+    }
+  ]
+}

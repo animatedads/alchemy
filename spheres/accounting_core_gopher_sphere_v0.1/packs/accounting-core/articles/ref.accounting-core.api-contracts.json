@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "ref.accounting-core.api-contracts",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "Additive contract generations and adoption boundary",
+  "summary": "Accounting Core evolves through additive contracts so existing company adapters can adopt newer tax/reporting/lifecycle layers incrementally. The event/transaction/posting path remains the accounting spine; persistence, scopes, tax, settlement and reporting evidence are layered above or beside it.",
+  "authority": "project-architecture",
+  "invariants": [
+    "accounting.event/0.1 and accounting.transaction/0.1 are the preferred operational integration spine.",
+    "accounting.store/0.1 makes the same legal-entity book restartable without changing authority semantics.",
+    "accounting.tax/0.1 and accounting.settlement/0.1 produce evidence-bound determinations that enter ordinary accounting policy rather than posting directly.",
+    "accounting.reporting/0.1 selects live views; accounting.reporting.snapshot/0.1 seals exact populations; attestation/submission and filing/lifecycle contracts sit above that evidence.",
+    "A consumer should adopt only the layers it needs; newer reporting features must not force an operational engine to change its existing accounting-event contract.",
+    "A sphere or documentation statement never supersedes a newer executable Accounting Core artifact in the same workspace."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/BASELINE.md",
+      "claim": "v0.10 is additive over earlier accounting contract generations and preserves existing consumer APIs."
+    },
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/QUALIFICATION.md",
+      "claim": "v0.10 retains all earlier transaction, persistence, tax, settlement, scope/reporting and assessment qualifications."
+    }
+  ]
+}

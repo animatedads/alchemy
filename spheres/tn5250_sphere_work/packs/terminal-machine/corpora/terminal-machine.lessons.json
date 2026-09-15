@@ -1,0 +1,92 @@
+{
+  "kind": "corpus",
+  "id": "terminal-machine.lessons",
+  "sphere": "terminal-machine",
+  "title": "Terminal Machine durable lessons",
+  "records": [
+    {
+      "topic": "continuation-baseline",
+      "value": "Use oorexx_terminal_machine_v0.21 as recovered continuation baseline; SHA-256 64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5."
+    },
+    {
+      "topic": "one-writer-many-readers",
+      "value": "One live terminal mutation owner; any number of immutable observers. Mutation requires current-generation authority."
+    },
+    {
+      "topic": "persistent-session",
+      "value": "Attach observers/controllers around one retained TN5250 session; do not create a new IBM i login merely because another AI wants to inspect it."
+    },
+    {
+      "topic": "control-transfer",
+      "value": "Transfer control by release/revoke -> no controller -> grant new controller at current generation; never overlap leases."
+    },
+    {
+      "topic": "wlu",
+      "value": "WLU is external admission/accounting authority. Admission failure must occur before terminal mutation."
+    },
+    {
+      "topic": "credentials",
+      "value": "Raw passwords stay in trusted local credential/runtime/wire layers and are not passed via argv/environment by PUB400 tools."
+    },
+    {
+      "topic": "nondisplay",
+      "value": "Snapshots/replay/WatchAlong/known-state persistence expose <SECRET> or masks, never NONDISPLAY field bytes."
+    },
+    {
+      "topic": "known-state",
+      "value": "Semantic host state and local operator condition are orthogonal; protected-area cursor errors do not create fake host states."
+    },
+    {
+      "topic": "pub400-expiry-order",
+      "value": "Confirmed PUB400 order: IBM_I_SIGNON -> IBM_I_PASSWORD_EXPIRED_NOTICE -> IBM_I_CHANGE_PASSWORD -> IBM_I_MAIN_MENU."
+    },
+    {
+      "topic": "main-menu-signoff",
+      "value": "Signoff only after unique IBM_I_MAIN_MENU match: stage 90, one explicit ENTER, then observe with no further input."
+    },
+    {
+      "topic": "devname",
+      "value": "Strict requested DEVNAME collision returns DEVICE_COLLISION; do not silently substitute a new QPADEV device."
+    },
+    {
+      "topic": "server-assigned-device",
+      "value": "Prefer SERVER_ASSIGNED for ordinary PUB400 work unless explicit reconnect/device identity behavior is under test."
+    },
+    {
+      "topic": "socat-cleanup",
+      "value": "Own exact helper PID, verify command identity, TERM with bounded wait, reverify then KILL if required; propagate close failure."
+    },
+    {
+      "topic": "operator-error",
+      "value": "typeAtCursor models terminal-like cursor semantics and may fail/lock in protected space; setField is a separate structured abstraction."
+    },
+    {
+      "topic": "service-drain",
+      "value": "Socket drain -> accepted workers finish -> protocol quiesce; retained terminal/broker stays OPEN. Signoff is separate protected authority."
+    },
+    {
+      "topic": "health",
+      "value": "Service readiness requires lifecycle, listener, acceptor, endpoint and broker state to agree; disagreement is DEGRADED and fails closed."
+    },
+    {
+      "topic": "emulator-only-rewind",
+      "value": "Journal/time-travel/execution-ticket/retry machinery is EMULATOR/TESTBED/REPLAY_SANDBOX only. LIVE_HOST has no rewind authority; the machinery cannot rewind a remote IBM i host."
+    },
+    {
+      "topic": "live-repair",
+      "value": "Live repair requires explicit TerminalEmulatorPatchable; merely method-shaped objects are not patch authority."
+    },
+    {
+      "topic": "next-protocol-gap",
+      "value": "Remaining 5250 work includes exact WRITE ERROR CODE pre/post-help semantics, help/post-help signaling and byte-exact Read Immediate x72 regeneration."
+    },
+    {
+      "topic": "learn-before-automate",
+      "value": "Every new live host screen: immutable snapshot -> known-state candidate -> live-confirmed semantic state -> only then automation."
+    },
+    {
+      "topic": "qualification",
+      "value": "v0.21 fresh-package acceptance under ooRexx 5.3.0 r13196: 93/93 source-test-tool compile, 3/3 examples, 45/45 self-contained functional cases, socket/service/WLU/TCP/TLS/helper-cleanup gates PASS; no PUB400 login."
+    }
+  ]
+}

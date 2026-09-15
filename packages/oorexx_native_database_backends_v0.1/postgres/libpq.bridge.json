@@ -1,0 +1,35 @@
+{
+  "schema": "oorexx.foreign/0.9",
+  "library": {
+    "provider": "native",
+    "names": ["libpq.so.5", "libpq.so", "libpq.dll", "libpq.dylib"]
+  },
+  "functions": {
+    "lib_version": {"symbol":"PQlibVersion", "return":"i32", "args":[]},
+    "connect": {
+      "symbol":"PQsetdbLogin",
+      "return":{"type":"pointer","object":"PGconn","ownership":"owned","destructor":"PQfinish"},
+      "args":["utf8","utf8","utf8","utf8","utf8","utf8","utf8"]
+    },
+    "connection_status": {"symbol":"PQstatus", "return":"i32", "args":[{"type":"pointer","object":"PGconn"}]},
+    "connection_error": {"symbol":"PQerrorMessage", "return":"utf8", "args":[{"type":"pointer","object":"PGconn"}]},
+    "server_version": {"symbol":"PQserverVersion", "return":"i32", "args":[{"type":"pointer","object":"PGconn"}]},
+    "protocol_version": {"symbol":"PQprotocolVersion", "return":"i32", "args":[{"type":"pointer","object":"PGconn"}]},
+    "send_query": {"symbol":"PQsendQuery", "return":"i32", "args":[{"type":"pointer","object":"PGconn"},"utf8"]},
+    "get_result": {
+      "symbol":"PQgetResult",
+      "return":{"type":"pointer","object":"PGresult","ownership":"owned","destructor":"PQclear"},
+      "args":[{"type":"pointer","object":"PGconn"}]
+    },
+    "result_status": {"symbol":"PQresultStatus", "return":"i32", "args":[{"type":"pointer","object":"PGresult"}]},
+    "result_error": {"symbol":"PQresultErrorMessage", "return":"utf8", "args":[{"type":"pointer","object":"PGresult"}]},
+    "result_error_field": {"symbol":"PQresultErrorField", "return":"utf8", "args":[{"type":"pointer","object":"PGresult"},"i32"]},
+    "tuple_count": {"symbol":"PQntuples", "return":"i32", "args":[{"type":"pointer","object":"PGresult"}]},
+    "field_count": {"symbol":"PQnfields", "return":"i32", "args":[{"type":"pointer","object":"PGresult"}]},
+    "field_name": {"symbol":"PQfname", "return":"utf8", "args":[{"type":"pointer","object":"PGresult"},"i32"]},
+    "field_is_null": {"symbol":"PQgetisnull", "return":"i32", "args":[{"type":"pointer","object":"PGresult"},"i32","i32"]},
+    "field_value": {"symbol":"PQgetvalue", "return":"utf8", "args":[{"type":"pointer","object":"PGresult"},"i32","i32"]},
+    "command_status": {"symbol":"PQcmdStatus", "return":"utf8", "args":[{"type":"pointer","object":"PGresult"}]},
+    "command_tuples": {"symbol":"PQcmdTuples", "return":"utf8", "args":[{"type":"pointer","object":"PGresult"}]}
+  }
+}

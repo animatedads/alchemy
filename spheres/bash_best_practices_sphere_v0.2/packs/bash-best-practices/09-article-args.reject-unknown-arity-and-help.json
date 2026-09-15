@@ -1,0 +1,17 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.args.reject-unknown-arity-and-help",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Parse arguments exactly: accept both value forms, check arity, and reject unknown flags loudly",
+  "summary": "LLM sloppiness in arg parsing silently rearranges flags or quietly treats a typo as a positional. A rigorous parser accepts both `--flag value` and `--flag=value`, verifies each flag has its value present, prints usage to stderr with a distinct usage exit code on error, supports --help, and cleanly stops at the first positional.",
+  "technique": "A per-flag case that checks arity before consuming, a `--*=*` branch that strips the prefix, a `*) break` that stops flag scanning where the positional begins, and a catch-all that reports an unknown option and exits with the usage code (not the operational one).",
+  "evidence_note": "bin/queue-vcs-assert:24-39 shows both --type/--type= forms with arity checks and the `*) break` stop; bin/queue-dev-timeout:43-44 rejects unexpected arguments before -- after a `--) shift; break`.",
+  "invariants": [
+    "Support --flag value and --flag=value where your consumers will mix them.",
+    "Require-arity by testing the argument count before you consume, and exit with the usage code when it is missing.",
+    "Unknown `--*` is an error (usage exit), not silently accepted.",
+    "--help / -h prints usage to stdout and exits 0; usage-for-error goes to stderr with the usage exit code (commonly 2), distinct from runtime failure (1).",
+    "Respect `--` as the end-of-options marker."
+  ]
+}

@@ -1,0 +1,28 @@
+IBM 4361 ooRexx v0.3 recovery2 journal2 safety5
+
+Purpose: in-progress durable checkpoint after the exact-state discovery,
+object-scope journal retry, and permanent implementation of System/370 CVD
+(opcode X'4E').
+
+Newly preserved since safety4:
+- Reproduced the safety4 real-MVT frontier at IA FF71B0 / ICOUNT 511763 with
+  bytes 4E10D677F332 and proved X'4E' as CVD from independent Hercules source.
+- Object-scope OP4E journal trial at the exact guest state:
+    first try -> UNSUPPORTED with state unchanged
+    rewind    -> exact FF71B0 / 511763 / R1 / operand / CC state restored
+    retry     -> OK at FF71B4 / 511764; FFD470=000000000000013C; CC remains 3
+- Permanent OP4E/CVD implementation and test_cpu_cvd.rex added.
+- Full package suite: 74 sources compile; 33 runtime tests pass.
+- Explicit historical-media checks pass on supplied MVTRES.350.
+- Permanent-source MVT stops at untouched X'F3' at FF71B4 / ICOUNT 511764,
+  bytes F332D643D67C. Independent source identifies F3 as UNPK, but UNPK is
+  deliberately not implemented in safety5.
+- Fresh probe-container equivalence check byte-compared all 7676 logical tracks.
+
+This is NOT a release. Durable freeze files and live journal-pointed state
+remain separate mechanisms. The IBM 3215 guest channel console remains
+separate from the physical IBM 4361 operator console.
+
+SSC note: exact oorexx_semantic_source_control_v0.2.2 was not present in the
+supplied files and was not recovered from Library search. v0.2.3 was not
+substituted. The v0.2.2 qualification remains pending.

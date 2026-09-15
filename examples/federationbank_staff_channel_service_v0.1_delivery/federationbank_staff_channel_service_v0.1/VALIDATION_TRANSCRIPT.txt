@@ -1,0 +1,87 @@
+FederationBank Staff Channel Service v0.1 validation transcript
+UTC: 2026-08-26T03:06:21Z
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+of the Common Public License v1.0 which accompanies this distribution or at
+https://www.oorexx.org/license.html
+
+== executable tests ==
+== test_service_direct_submit.rex ==
+PASS: Staff Channel Service delegates staff authority and submits Core command
+== test_service_approval_resume.rex ==
+PASS: maker/checker resumes through Staff Authority Service
+== test_service_idempotency.rex ==
+PASS: Staff Channel service command idempotency
+== test_write_ahead_core_recovery.rex ==
+PASS: READY_FOR_CORE is durable before Core submission and restart-safe
+== test_persistence_restart.rex ==
+PASS: typed Staff Channel work graph survives service restart
+== test_outbox_retry.rex ==
+PASS: Staff Channel event publication is at-least-once
+== test_queue_persistent_recovery.rex ==
+PASS: permanent Queue Fabric recovers typed Staff Channel command graph
+== test_relationship_to_service_to_core.rex ==
+PASS: Relationship Case authority -> Staff Channel Service -> Staff Authority Service -> Core Banking
+== test_runtime_module.rex ==
+PASS: Staff Channel service runtime module
+
+== rexxc package class checks ==
+-- integration/FederationBankStaffChannelServicePersistence.cls
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+of the Common Public License v1.0 which accompanies this distribution or at
+https://www.oorexx.org/license.html
+-- integration/FederationBankStaffChannelServiceQueue.cls
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+of the Common Public License v1.0 which accompanies this distribution or at
+https://www.oorexx.org/license.html
+-- integration/FederationBankStaffChannelStaffAuthorityServicePort.cls
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+of the Common Public License v1.0 which accompanies this distribution or at
+https://www.oorexx.org/license.html
+-- runtime/FederationBankStaffChannelServiceRuntimeModule.cls
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+of the Common Public License v1.0 which accompanies this distribution or at
+https://www.oorexx.org/license.html
+-- src/FederationBankStaffChannelService.cls
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+of the Common Public License v1.0 which accompanies this distribution or at
+https://www.oorexx.org/license.html
+-- tests/TestSupport.cls
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+of the Common Public License v1.0 which accompanies this distribution or at
+https://www.oorexx.org/license.html
+REXXC_CLASS_COUNT=6

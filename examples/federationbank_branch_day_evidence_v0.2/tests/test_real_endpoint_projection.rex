@@ -1,0 +1,2 @@
+bc=.FBBranchDayEvidenceTest~branchCashService; till=.FBBranchDayEvidenceTest~openTill; tills=.directory~new; tills[till~tillId]=till; a=.FederationBankBranchDayEvidenceAssembler~new(bc,tills); es=a~endpointEvidence("IOM-DOUGLAS","GBP"); .FBBranchDayEvidenceTest~assertEq(2,es~items); .FBBranchDayEvidenceTest~assertEq("VAULT",es[1]~endpointKind); .FBBranchDayEvidenceTest~assertEq(100000,a~positionEvidence("IOM-DOUGLAS","GBP")~expectedMinor); say "PASS: Branch Day endpoint evidence projects actual vault and till authority state"
+::requires "TestSupport.cls"

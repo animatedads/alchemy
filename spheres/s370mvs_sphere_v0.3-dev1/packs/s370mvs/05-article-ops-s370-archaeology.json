@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "ops.s370.archaeology",
+  "version": "0.3-dev1",
+  "sphere": "s370mvs",
+  "title": "Guest-driven System/370 archaeology",
+  "summary": "Procedure for resolving an unknown guest boundary without coding in the dark.",
+  "procedure": [
+    "Capture exact IA, instruction bytes, ICOUNT, PSW, relevant registers, effective addresses and storage before changing behavior.",
+    "Record evidence maturity explicitly: documented architecture, executable-reference corroboration, exact guest proof, permanent replay proof, and sealed checkpoint are distinct states.",
+    "Resolve the opcode/exception rule against System/370 documentation and an independent executable reference where practical.",
+    "Take a journal point; attach object-scope live behavior; deliberately dirty state when useful; abort and verify exact machine rewind while the live hypothesis survives.",
+    "Retry the identical historical state and require architecturally plausible forward progress.",
+    "Promote only the proven behavior, prove live-candidate to permanent equivalence, run the accumulated suite, then seal before the next unknown boundary.",
+    "After sealing, add the exact artifact SHA-256 and next untouched frontier to project-evidence records; do not retroactively describe unsealed work as sealed."
+  ],
+  "invariants": [
+    "Freeze evidence and journal-pointed state remain separate mechanisms.",
+    "Unknown opcode symptoms may be caused by an earlier sequencing defect.",
+    "No disappearance of a guest diagnostic is sufficient acceptance evidence.",
+    "Object-bearing ooRexx helper arguments use use arg; parse arg is reserved for scalar/text parsing where object identity is not required."
+  ],
+  "authority": "project-doctrine"
+}

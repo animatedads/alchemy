@@ -1,0 +1,18 @@
+ooRexx API Client v0.4.1 qualification
+Date: 2026-09-10
+Runtime: ooRexx 5.3.0 r13196 (user-supplied Ubuntu debug amd64 package)
+Runtime package SHA-256: 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+Foreign Runtime: v0.22.6
+
+v0.4.1 repairs the v0.4 ApiTlsClientSession~handshake object-variable exposure defect:
+  h2 and applicationProtocol are now explicitly exposed by handshake.
+It also refreshes the localhost qualification certificate; the original v0.4 fixture expired 2026-09-03 and was correctly rejected by TLS verification.
+
+Full tests/run.sh result on r13196:
+PASS api client v0.3 priority routing sessions callbacks rate monitoring direct execution
+PASS HTTP PARSER SSE URL
+PASS NATIVE HTTPS + JSON + CHUNKED SSE
+PASS TLS HOSTNAME MISMATCH FAILS CLOSED
+PASS HTTP/2 ALPN NGHTTP2 REDIRECT POLICY
+
+Native HTTP/2 uses libnghttp2 for framing/HPACK and OpenSSL ALPN through the existing Foreign Runtime/RxSock TLS path. HTTP/2 support is bounded synchronous request/response; multiplexed pooled connections remain out of scope.

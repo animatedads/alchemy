@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "qt.boundary",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Transport authority boundary",
+  "summary": "Queue Transport owns the remote TCP confidentiality/authentication/admission mechanism. It does not own queue semantics, channel semantics, durable persistence formats, placement decisions, WLU admission, receiver ACLs, or application delivery idempotence.",
+  "authority": "project-authority",
+  "invariants": [
+    "Local/in-process queue operations are not encrypted merely because remote transport is encrypted.",
+    "Channel and queue-manager semantics remain above the socket transport.",
+    "Receiver channel/ACL authority remains above transport admission.",
+    "Transport crypto must not be moved into Job-to-Node Allocator, WLU, or persistence code."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 3,
+      "line_end": 8,
+      "claim": "Purpose and fail-closed scope distinguish remote transport from queue, placement and WLU authorities."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 1,
+      "line_end": 15,
+      "claim": "Source states confidentiality/IP admission while channel and queue-manager semantics remain above the layer."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/VALIDATION.txt",
+      "line_start": 61,
+      "line_end": 68,
+      "claim": "Validation records receiver channel/ACL and durable idempotence as authorities above transport admission."
+    }
+  ]
+}

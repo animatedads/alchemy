@@ -1,0 +1,125 @@
+FD Door Micro Motion v0.2-dev5 qualification
+============================================
+
+Purpose of the dev5 rebase
+--------------------------
+v0.2-dev5 rebases fresh FD execution onto Migratable Job v0.2.4 managed
+initial placement.  The normal NEW path no longer uses the dev4 FD-specific
+authority receipt.  Instead the FD application carries a native
+JobPlacementRequest, MigratableJobManagedPlacementTool obtains and verifies the
+Job-to-Node v0.6 lease, and FDDoorMicroMotionPlacedStartExecutor injects only
+that already-verified lease before entering the standard
+migratable.job.start/1 starter.
+
+Standard APIs
+-------------
+Migratable Job main API:             migratable.job/0.2
+Standard starter:                    migratable.job.start/1
+Managed initial placement:           migratable.job.placement/1
+Placement audit receipt:             migratable.job.placement.receipt/1
+Migratable Job implementation:       v0.2.4
+Job-to-Node implementation:          v0.6
+
+The placement audit store is evidence, not placement authority.  Job-to-Node
+ownership state is persisted by JobNodeDurableJournal.  A failed or ambiguous
+START retains the verified placement until an explicit RELEASE after runtime
+state has independently been established.
+
+Exact runtime used locally
+--------------------------
+ooRexx 5.3.0 r13196
+Migratable Job v0.2.4
+  supplied archive SHA-256:
+  c6cfadcd64ad9f803eea14e37854021ef7eae2015a1c54dcc3c799c04f1517df
+Job-to-Node Allocator v0.6
+  exact core archive SHA-256:
+  58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead
+  API: job.node.allocator/0.6
+Crypto v0.8.3
+Runtime Reference v0.4
+Foreign Runtime v0.22.6
+
+Managed placement / starter qualification
+-----------------------------------------
+PASS FD managed placement PLAN/ALLOCATE/CHECK/START/replay/RELEASE via
+     v0.2.4 placement API.
+PASS allocation replay retains the verified current placement rather than
+     inventing a second owner.
+PASS standard start replay suppresses duplicate FD worker creation.
+PASS failed/ambiguous managed start returns placement-held semantics and the
+     native Job-to-Node placement remains current until explicit RELEASE.
+PASS file HANDOFF enters the standard starter, preserves the coordinator-
+     committed destination node/placement/ownership epoch, and suppresses a
+     duplicate destination start.
+PASS real tiny-video managed NEW start through v0.2.4:
+     frames=75, samples=69, placement=PLACE-1-FD-E2E-TEST, epoch=1,
+     audio_used=NO.
+PASS Migratable Job v0.2.4 execution adapter load/binding.
+PASS direct payload entry is blocked; a fresh NEW job cannot be started by
+     invoking run_fd_worker.rex directly.
+
+Scientific / migration regression checks
+----------------------------------------
+PASS night locator: reference frame x=438, translated frame x=519,
+     recovered displacement=81 px.
+PASS occluded F11 geometry fails closed.
+PASS TP00002-only exclusion contract: 03:12:00-03:28:00 camera wall time maps
+     to media [605000,1565000) ms from its 03:01:55 origin; the exclusion is
+     not applied to TP00000/1/3.
+PASS four-file 00:00-05:00 wall-clock mapping:
+     TP00000 start_ms=5995000, TP00003 end_ms=5056000.
+PASS synthetic wall-window worker: rows=33, excluded_frames=15.
+PASS stock ooRexx CSVStream control/checkpoint round trip, including empty
+     final values, quotes, embedded TAB and paths containing spaces.
+PASS synthetic visual worker status=OK.
+PASS migration bundle tamper is rejected at digest-bound materialization.
+PASS pause -> bundle -> path-rebased destination restore/replay -> completion
+     is evidence-equivalent for samples/events/epochs/relocations/exclusions:
+     sha256:ce56a9bf2676a705977c08a8efbfc5556c3abfaef7869c3beda8ca86eacf4b1b
+
+Static qualification
+--------------------
+PASS rexxc under ooRexx 5.3.0 r13196 for all package source classes:
+  src/FDDoorMicroMotion.cls
+  src/FDDoorMicroMotionManagedPlacement.cls
+  src/FDDoorMicroMotionStarter.cls
+  src/FDDoorMicroMotionMigratable.cls
+  src/FDDoorMicroMotionHandoff.cls
+
+PASS rexxc for deployment/control tools, including:
+  tools/make_fd_job_to_node_probe.rex
+  tools/make_fd_window_launch_spec.rex
+  tools/allocate_fd_managed.rex
+  tools/start_fd_managed.rex
+  tools/check_fd_migratable_start.rex
+  tools/release_fd_managed.rex
+  tools/start_fd_file_handoff.rex
+  tools/start_fd_migratable.rex   (retired guard; exits 66 for NEW)
+  tools/run_fd_worker.rex          (private payload)
+
+Campaign source bindings
+------------------------
+ed209c / TP00003 source SHA-256:
+158321e60849bdd1692bf5d2de595538e998845c1d959150dd99097296c84235
+
+ed209d / TP00000 source SHA-256:
+b1f9332583f6ceb20424dbc564687688718c48207ca474004c386ac40fddc17
+
+ed209h / TP00001 source SHA-256:
+0ea25da2dd4c2cf9d96ed04c1392d332d8335694db0fcc2af399ed6eeaa05cc3
+
+ed209i / TP00002 source SHA-256:
+301b519e9894758cb9086b68d0b0691328d172977fd9a95f773eb3ea3ad8ad61
+
+Deployment rule
+---------------
+For the 00:00-05:00 night campaign, ed209a holds the canonical durable
+Job-to-Node journal.  C/D/H/I prepare their measured node/source probes and
+launch specifications; ed209a performs standard managed placement against the
+same durable journal; the exact resulting durable state snapshot, probe/spec
+and audit evidence are supplied to the assigned worker; the worker performs
+CHECK then START through start_fd_managed.rex.
+
+Operators do not type a placement ID or ownership epoch and do not use a
+custom FD authority receipt.  run_fd_worker.rex is payload machinery only.
+The legacy ed209e TP00009 job is outside this rebase and must remain untouched.

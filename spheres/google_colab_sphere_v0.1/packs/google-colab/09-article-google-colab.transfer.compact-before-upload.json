@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "google-colab.transfer.compact-before-upload",
+  "version": "0.1",
+  "sphere": "google-colab",
+  "title": "Verify and compact large artifacts locally before upload",
+  "summary": "The Colab file-transfer plane is not an object store. A 480,178,064-byte recovery archive failed during upload before model work, while a locally verified compact payload of 77,062,608 bytes was successfully dispatched. The correct response was not to infer a universal Colab size limit; it was to unpack and authenticate the archive locally, remove provably redundant frozen tensors, bind the compact payload to the original digest, and upload only what the worker needed.",
+  "evidence_note": "Live Gemma dev20/dev21 regrade incident: monolithic ~480 MB upload failed; compact ~73.5 MiB payload succeeded. PEFT had saved two redundant resized F32 embedding/lm-head tensors. No universal threshold is claimed.",
+  "invariants": [
+    "Do not infer a provider-wide maximum upload size from one failed transfer.",
+    "Prefer small immutable digest-bound inputs over monolithic convenience archives.",
+    "Compaction must be fail-closed: prove removed bytes are reconstructible/redundant before deleting them.",
+    "Bind compact artifacts to the original artifact identity so transformation is auditable."
+  ]
+}

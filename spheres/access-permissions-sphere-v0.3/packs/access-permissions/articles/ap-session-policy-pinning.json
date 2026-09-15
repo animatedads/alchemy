@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "ap-session-policy-pinning",
+  "version": "0.3",
+  "sphere": "access-permissions",
+  "title": "Access Control policy is pinned to the admitted session",
+  "summary": "AlchemyAccessSessionGuard retains the exact Access Control policy identity that admitted a session. Before protected METHOD evaluation it verifies that the session is open and that the same admission policy remains operative.",
+  "authority": "project-authority",
+  "invariants": [
+    "Building admission is a session boundary, so an admitted session is pinned to the exact Access Control policy identity used at entry.",
+    "If that policy is unavailable, suspended, withdrawn, ineffective, or replaced by another operative identity, the old session fails closed.",
+    "Session invalidation occurs before Security Effect or Permission evaluation.",
+    "A policy transition requires fresh authenticated re-entry; it does not silently migrate an old admission."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/ARCHITECTURE.md",
+      "line_start": 59,
+      "line_end": 71,
+      "claim": "Access Control policy identity is pinned to the admitted session and changes require fresh authenticated re-entry; method Permission is intentionally live.",
+      "note": "Lifecycle rationale."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AlchemyAccessPermissionsAdapter.cls",
+      "line_start": 9,
+      "line_end": 33,
+      "claim": "AlchemyAccessSessionGuard fails closed for closed session, unavailable admission policy, or changed admission-policy identity.",
+      "note": "Executable session guard."
+    }
+  ]
+}

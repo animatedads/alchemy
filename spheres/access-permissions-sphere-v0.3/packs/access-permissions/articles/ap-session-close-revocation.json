@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "ap-session-close-revocation",
+  "version": "0.3",
+  "sphere": "access-permissions",
+  "title": "Session close is local fail-closed revocation",
+  "summary": "AlchemyAccessControlledSession.close(reason) closes its AlchemyAccessSessionGuard. Subsequent protected METHOD checkpoints fail before Security Effect or Permission evaluation.",
+  "authority": "project-authority",
+  "invariants": [
+    "session.close(reason) is local in-process revocation.",
+    "Closed state is checked before a new Permission decision is emitted.",
+    "Closing a session does not create or revoke a transferable token because the session is not a bearer capability.",
+    "Mutable open/closed state is not folded into the session semantic identity."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/ARCHITECTURE.md",
+      "line_start": 79,
+      "line_end": 85,
+      "claim": "Session close is in-process revocation checked at subsequent METHOD checkpoints; session state is not a transferable authority mechanism.",
+      "note": "Session lifecycle contract."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AlchemyAccessPermissionsAdapter.cls",
+      "line_start": 34,
+      "line_end": 50,
+      "claim": "AlchemyAccessSessionGuard.close marks the session closed and active/validateAt enforce that state.",
+      "note": "Executable local revocation."
+    }
+  ]
+}

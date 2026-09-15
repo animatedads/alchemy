@@ -1,0 +1,24 @@
+{
+  "id": "qualification-execution-broker.authorization",
+  "title": "Local private key and detached human approval",
+  "section": "security",
+  "summary": "Only the public Ed25519 verification key is server-side. The private seed remains entirely local to the human workstation.",
+  "invariants": [
+    "Private key material is never an MCP or broker field.",
+    "The detached signature covers a domain-separated intent SHA-256.",
+    "Public key, fingerprint, intent and prior signatures are safe to expose and cannot create new approval.",
+    "Authorization is valid only for the frozen run and is consumed by worker start."
+  ],
+  "kind": "article",
+  "version": "0.1-dev1",
+  "sphere": "qualification-execution-broker",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "qualification_execution_broker_v0.1-dev1.zip",
+      "sha256": "ecbd9419343f11e96e112679fd0a1f54308c2bb293a849d6de613d40cac7487f",
+      "member": "qualification_execution_broker_v0.1-dev1/src/QualificationExecutionBroker.cls",
+      "claim": "Ed25519 public-key verification and one-run authorization."
+    }
+  ]
+}

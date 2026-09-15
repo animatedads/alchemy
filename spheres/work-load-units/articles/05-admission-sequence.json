@@ -1,0 +1,14 @@
+{
+  "id": "wlu-admission-sequence",
+  "title": "Admission Sequence: Fail-Closed Pattern",
+  "summary": "WLU uses a strict, side-effect-safe sequence to move from a proposal to a reservation and finally to settlement.",
+  "why": "Ensures that no work is performed and no state is mutated until a valid, authenticated reservation proof is held.",
+  "invariants": [
+    "Proposals are side-effect free.",
+    "Admission occurs before the side effect.",
+    "Settlement converts actual work into spent WLU and releases unused ceiling/capacity.",
+    "Failure at any step before the side-effect leaves the consumer untouched."
+  ],
+  "evidence_note": "Source: oorexx_work_load_units_v0.12/README.md:100-115 (Admission sequence diagram).",
+  "grounding": "oorexx-grounded"
+}

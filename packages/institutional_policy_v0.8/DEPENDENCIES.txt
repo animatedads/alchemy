@@ -1,0 +1,14 @@
+Required runtime:
+- ooRexx 5.3.0 r13196 or compatible
+- Alchemy Objects v0.8
+- ooRexx Crypto v0.1 (transitive Alchemy requirement)
+
+Integration validation:
+- Legal Effect v0.14
+
+No runtime LLM dependency.
+No mandatory cryptographic signature dependency for policy approval; approval evidence verification is host-pluggable.
+
+Deployment topology, progressive version routing, and rollout acceptance gates are deterministic and have no runtime LLM or network dependency. Rollout observations are supplied by the host as evidence; v0.8 records exactly what was evaluated but does not itself prove a metric producer truthful.
+
+Post-promotion rollback observations are host-supplied governance evidence. Automatic eligibility is deterministic; metric truth/provenance verification remains host-pluggable.

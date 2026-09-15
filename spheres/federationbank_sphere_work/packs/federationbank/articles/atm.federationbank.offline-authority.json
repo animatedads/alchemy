@@ -1,0 +1,44 @@
+{
+  "kind": "article",
+  "id": "atm.federationbank.offline-authority",
+  "version": "0.1",
+  "sphere": "federationbank",
+  "title": "Offline ATM authority is bank-issued, bounded and single-use",
+  "summary": "Offline cash vending is permitted only under a retained bank-issued authority. RESERVED_ALLOWANCE is hold-backed; DELEGATED_STAND_IN is explicit bank risk authority that may later create mandatory settlement after physical cash has left the terminal.",
+  "authority": "federationbank-project-doctrine",
+  "invariants": [
+    "An ATM-supplied offlineAuthorityId has no authority by itself.",
+    "Both modes pass Bouncer, Institutional Policy and Legal Effect before issue.",
+    "The bank resolves stored authority and verifies terminal/session/customer/account/currency/rules/amount/sequence/single-use binding rather than trusting client assertions.",
+    "Expiry blocks new vending but bounded delayed reconciliation may still settle cash physically dispensed while authority was valid.",
+    "A terminal timestamp is evidence, not authority; delayed advice is accepted only inside the bank-issued identity/amount envelope and reconciliation window.",
+    "The retained authority topic is authorization/risk evidence, not a balance store; monetary truth remains Ledger SQL."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/ATM_OFFLINE_AUTHORITY_CONTRACT.md",
+      "line_start": 5,
+      "line_end": 14,
+      "claim": "Offline authority is bank-issued with RESERVED_ALLOWANCE and DELEGATED_STAND_IN modes."
+    },
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/ATM_OFFLINE_AUTHORITY_CONTRACT.md",
+      "line_start": 80,
+      "line_end": 110,
+      "claim": "Bank resolves retained authority; delayed reconciliation remains bounded and terminal time is evidence, not authority."
+    },
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/ATM_OFFLINE_AUTHORITY_CONTRACT.md",
+      "line_start": 134,
+      "line_end": 140,
+      "claim": "Offline authority topic is authorization evidence; Ledger SQL remains monetary truth."
+    }
+  ]
+}

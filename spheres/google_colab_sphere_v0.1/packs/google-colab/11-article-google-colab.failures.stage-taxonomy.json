@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "google-colab.failures.stage-taxonomy",
+  "version": "0.1",
+  "sphere": "google-colab",
+  "title": "Classify failures by lifecycle stage",
+  "summary": "A managed Colab job should report which stage failed: ALLOCATION, SECRET_STAGE, INPUT_UPLOAD, INSTALL, WORKER_RESOURCE_GATE, EXECUTE/WORKLOAD, OUTPUT_DOWNLOAD, GRADING/PROMOTION, STOP, or SECRET_RETIRE. Do not collapse a missing final output into 'the model failed' when execution never began. During Gemma recovery, distinct incidents included unsupported CLI flags before allocation, connection loss during install, GPU-memory rejection before model load, a Transformers API failure before training step 1, a Debian extraction failure after completed training, upload failure before regrade model load, and finally genuine generated-code quality rejection after all infrastructure passed.",
+  "evidence_note": "Grounded in the full live Gemma-ooRexx Colab recovery/regrade sequence. This taxonomy exists specifically to prevent infrastructure faults from being mistaken for workload/model faults and vice versa.",
+  "invariants": [
+    "Record the deepest completed stage and the failing stage.",
+    "Promotion/grading is separate from training/execution success.",
+    "OUTPUT_MISSING is a symptom; preserve the earlier stage evidence that explains why output is absent.",
+    "A rejected quality gate may still contain a valuable trained artifact; do not discard it automatically."
+  ]
+}

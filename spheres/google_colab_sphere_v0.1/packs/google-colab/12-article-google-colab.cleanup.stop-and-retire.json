@@ -1,0 +1,14 @@
+{
+  "kind": "article",
+  "id": "google-colab.cleanup.stop-and-retire",
+  "version": "0.1",
+  "sphere": "google-colab",
+  "title": "Cleanup is a finally-path obligation",
+  "summary": "Every managed job terminates the remote session and retires staged secrets even when allocation partially succeeds, install fails, the worker rejects resources, execution throws, output transfer fails or promotion rejects. Cleanup evidence should distinguish STOP from workload status. A successful STOP does not make the job successful; it proves resource cleanup succeeded.",
+  "evidence_note": "All live Gemma Colab incidents cleaned the session and emitted STOP plus SECRET_RETIRE evidence, including failures before model loading and quality-gate rejection after training.",
+  "invariants": [
+    "Stop and secret retirement are independent terminal cleanup operations.",
+    "Do not keep a failed accelerator alive accidentally because later stages threw.",
+    "Cleanup evidence must be redacted and safe to publish."
+  ]
+}

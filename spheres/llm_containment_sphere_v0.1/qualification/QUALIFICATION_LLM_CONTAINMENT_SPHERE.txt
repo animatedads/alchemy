@@ -1,0 +1,53 @@
+LLM Containment Gopher sphere v0.1
+==================================
+
+Purpose
+-------
+LLM-focused containment and honest-evidence guidance layered onto LLM Gopher without
+changing engine semantics. The llm-containment profile loads core + llm-containment and
+publishes articles, a searchable corpus, and a small mechanically-scoped rule set.
+
+Grounded-in source (all consulted 2026-09-02):
+  repo/testapps/psychic_poker_v0738_prompt_boundary_audit/README_TABLE_TALK.md
+  repo/testapps/psychic_poker_v0738_prompt_boundary_audit/VALIDATION.md
+  flylo_v0.2/docs/GROK_INTEGRATION.md
+  flylo_v0.2/docs/LEGAL_MODEL.md
+  browser-observation-test/observation/README.md
+  browser-observation-test/virtual/README.md
+
+Headline incidents / boundary contracts encoded
+-----------------------------------------------
+- PokerPromptEnvelope v0.7.38: live prompts admit only public state plus acting-player
+  private state; SECRET/INTERNAL and other-player private state fail closed before the
+  provider is invoked; prompt audits keep counts/digest, not prompt text.
+- Free text is deliberately NOT allowed for live AI speech: frozen dictionary tokens,
+  exact Librarian classification, unknown/free-form tokens discarded.
+- Observation v0.2: read-only observer stream; mutation-shaped operations fail closed as
+  OBSERVATION_MUTATION_FORBIDDEN; passwords remain non-display evidence.
+- FlyLo legal-effect model: an AI explanation cannot create, waive or alter an
+  entitlement; an unresolved outcome gate becomes REVIEW_REQUIRED, not a guess; absent or
+  rejected credential fails closed with no silent model substitution.
+- Psychic-poker seeded trajectory (reproducibility) keeps correctness distinct from timing.
+
+Qualification results
+---------------------
+PASS tests/run_llm_containment_sphere.sh
+PASS semantic pack merge: MERGED
+PASS llm-containment context publishes boundary, observer, facts and correctness articles
+PASS search 'unknown token' resolves the constrained-output record
+PASS lookup topic=observer returns exact typed corpus record (EXACT_FIELD)
+PASS sphere publishes the scoped containment rule objects.
+PASS package check reports READY with zero breaches.
+
+Sphere contents
+---------------
+- ops overview article (why the sphere exists, evidence discipline)
+- prompt-boundary / no-private-state article
+- constrained-definable output (frozen tokens, not free prose) article
+- observer-never-mutates / non-display-evidence article
+- no-invented-operational-truth / REVIEW_REQUIRED / fail-closed-credential article
+- correctness-distinct-from-timing article
+- source-reference/ground-truth article
+- searchable containment corpus
+- three bounded rules (private-state reference, observation secret material,
+  mutation-via-observation)

@@ -1,0 +1,24 @@
+# Relationship Case Service v0.1 validation
+
+Qualified locally on 2026-08-26 with ooRexx 5.3.0 r13196 and the current supplied component set.
+
+Validated against:
+- Relationship Case v0.2
+- Alchemy Objects v0.8
+- Institutional Policy v0.8
+- ooRexx Queue Fabric v0.9-dev4
+- ooRexx Crypto v0.1
+
+Eight executable acceptance tests pass:
+1. CASE.OPEN / ATTACH_ELEMENT / TRANSITION / GET / FOR_SUBJECT service commands;
+2. semantic command idempotency and command-id conflict detection;
+3. Alan-style external-pressure policy barrier and restricted staff projection;
+4. theoretical CRM reference boundary without authority promotion;
+5. in-process Queue Fabric command/reply/event adapter;
+6. Runtime Registry lifecycle-shaped service module;
+7. append-only service-state recovery, durable outbox retry and restart-safe idempotency;
+8. typed persistent Queue Fabric command recovery and post-restart event emission.
+
+`rexxc` translation passes for the service core, CRM boundary, persistence adapter, Queue Fabric adapter and runtime module.
+
+Durability semantics are intentionally at-least-once for service-event delivery. Stable service event IDs support downstream de-duplication. A state persistence failure faults/quiesces the current service instance rather than allowing further divergent mutations.

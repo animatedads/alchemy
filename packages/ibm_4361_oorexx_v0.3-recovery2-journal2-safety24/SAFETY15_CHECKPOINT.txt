@@ -1,0 +1,20 @@
+SAFETY15 CHECKPOINT
+Parent: sealed safety14, SHA-256 54b128e9381474b7e2a7a13de6a10deeb54cd9cb45bcfd887e1ca1cfb9d2c88c
+
+Promoted: System/370 X'1E' ALR / Add Logical Register.
+Exact MVT frontier: IA 01A482, IC 513307, instruction 1EAB.
+Operands: R10=20000000, R11=40000002, CC1.
+Retry: R10=60000002, CC1, IA 01A484, IC 513308.
+Forward progress: 7844 further successful guest instructions.
+Next boundary: X'FF' at IA 000020, IC 521152, fetch FF04000D0001.
+
+X'FF' is NOT implemented in safety15 and has not yet been classified as an
+architectural instruction versus interruption/control-flow symptom. Do not add
+OPFF until independent architecture evidence and exact-state archaeology agree.
+
+Regression contract includes ALR four-way carry/zero CC semantics, R1==R2
+aliasing, live object override, journal rewind, and live-candidate -> method
+withdrawal -> permanent OP1E equivalence at the recorded MVT microstate.
+
+Freeze remains durable evidence; journal remains live reversible history;
+object-scope executable hypotheses remain outside journalled machine state.

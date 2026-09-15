@@ -1,0 +1,24 @@
+{
+  "id": "qualification-execution-broker.worker",
+  "title": "Worker-only execution and sealed results",
+  "section": "operations",
+  "summary": "An authorized run is revalidated immediately before worker start; the worker then seals outcome/evidence metadata after execution.",
+  "invariants": [
+    "workerStart requires AUTHORIZED state and checks expiry/material fingerprint.",
+    "There is no QUALIFICATION.EXECUTE dispatch operation.",
+    "workerSeal is bound to the worker that started the run.",
+    "Results are QUALIFIED, FAILED or INCONCLUSIVE and carry an evidence-manifest hash plus result-set hash."
+  ],
+  "kind": "article",
+  "version": "0.1-dev1",
+  "sphere": "qualification-execution-broker",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "qualification_execution_broker_v0.1-dev1.zip",
+      "sha256": "ecbd9419343f11e96e112679fd0a1f54308c2bb293a849d6de613d40cac7487f",
+      "member": "qualification_execution_broker_v0.1-dev1/src/QualificationExecutionBroker.cls",
+      "claim": "Worker authority and result sealing."
+    }
+  ]
+}

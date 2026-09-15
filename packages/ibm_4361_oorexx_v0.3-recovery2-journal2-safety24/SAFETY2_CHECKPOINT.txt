@@ -1,0 +1,19 @@
+IBM 4361 ooRexx v0.3 recovery2 journal2 safety2
+
+Purpose: in-progress durable checkpoint after real-MVT qualification of the
+console-address conversion and alternate 3215 console-selection path.
+
+Newly preserved since safety1:
+- System/370 PACK corrected: every zoned source byte contributes its digit;
+  the rightmost zone nibble becomes the packed sign.
+- Exact LPSW sequencing: a newly loaded PSW is not modified by the old
+  instruction's ILC bookkeeping.
+- IBM 3215 guest channel device implementation, separate from the physical
+  IBM 4361 operator/control console.
+- Real Jay MVT console-selection evidence:
+    UCM "0C0" -> PACK 0C0F -> TIO 00C0 -> CC3 (not attached)
+    UCM "01F" -> PACK 01FC -> TIO 001F -> CC0 (3215 attached)
+  The previous deliberate WAIT 7 / NO CONSOLE future disappears.
+
+This is NOT a release and does not redefine the freeze format. Journal history
+and durable freeze files remain separate features with separate purposes.

@@ -27,7 +27,3 @@ Evacuation owns inventory, generations, convergence, replica authority and seali
 ## Current boundary
 
 The local filesystem endpoint is the executable qualification endpoint in dev2. Azure/network endpoints, QueueRexx work-unit binding and the shared bandwidth governor are intentionally not yet added. FIFOs, sockets and device nodes are inventoried but fail closed rather than being silently omitted or falsely declared safe.
-
-## GitHub dependency layout
-
-The original standalone delivery carried Storage Fabric under `vendor/storage_fabric/` and also duplicated `StorageFabric.cls` into `src/`. Those dependency copies are intentionally not published in this component tree. Install/use the first-class Storage Fabric package separately and add its `src/` directory to `REXX_PATH`; `StorageEvacuation.cls` resolves `StorageStreaming.cls` from that external dependency path.

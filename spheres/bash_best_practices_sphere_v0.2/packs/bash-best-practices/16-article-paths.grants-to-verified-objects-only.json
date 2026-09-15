@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.paths.grants-to-verified-objects-only",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Read and write paths your code has verified, never a bare shared scratch that an attacker can pre-place",
+  "summary": "Trusting a caller-supplied absolute path, or granting a high-risk class write access to a shared scratch location, lets a symlink, magic link, mount or stale file change what your command actually touches. Grant and operate on verified objects and trusted parent directories, keep sensitive work in a private per-job workspace, and reject a path whose identity (symlink/mount/parent) you did not establish.",
+  "technique": "Path grants are to verified objects and allowed parents, not bare strings and not communal scratch; reject cross-mount/symlink/magiclink crossings, parent identity mismatch, and shared /tmp grants for high-risk classes.",
+  "evidence_note": "docs/PROFILING_PATH_LOCK_CONTRACT.md:7 'Path grants are grants to verified objects and trusted parent directories, not bare strings.'; :72 high-risk classes should not receive write grants to shared /tmp and should get a private per-job workspace; :58-68 rejects symlink/magiclink/mount crossing and parent-identity mismatch.",
+  "invariants": [
+    "Treat a path as trustworthy only after you verified the object (or its parent) exists and is not a symlink/mount ride-over.",
+    "Give high-risk or untrusted work a private workspace, not shared /tmp write access.",
+    "Reject any path that crosses a mount/symlink/parent boundary your contract does not permit.",
+    "Never widen permissions broadly (chmod -R 777 / chown -R) on a path you do not fully own."
+  ]
+}

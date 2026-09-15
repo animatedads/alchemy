@@ -1,0 +1,13 @@
+{
+  "id": "rr-dependency-closure",
+  "title": "Immutable Dependency Closures",
+  "summary": "A runtime generation atomically snapshots its declared dependencies and holds them alive for its own lifetime.",
+  "why": "Ensures that if Component A depends on Component B (v1), it continues to see B (v1) even if B (v2) is activated globally.",
+  "invariants": [
+    "A live/warm generation keeps every generation in its declared dependency closure alive until the owning generation is released.",
+    "Dependency sets are captured through one atomic multi-module snapshot.",
+    "A replacement generation must be staged to bind a newer dependency version."
+  ],
+  "evidence_note": "Source: runtime_registry_v0.14/README.md:160-168. Line 162: 'A live/warm generation keeps every generation in its declared dependency closure alive until the owning generation is released.'",
+  "grounding": "oorexx-grounded"
+}

@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.training",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Driveable training worlds",
+  "summary": "A reproducible training checkpoint is a coherent world containing model state, optimizer state and training-session state; restoring only weights is insufficient when the omitted state changes continuation.",
+  "authority": "Executable source/tests and supplied upstream API artifacts are authoritative; this sphere preserves architecture and continuity.",
+  "invariants": [
+    "Model, optimizer and session are separate semantic objects.",
+    "State-of-the-Nation checkpoints restore all registered training participants together.",
+    "Optimizer learning rate, momentum, velocity and step are historical state.",
+    "Training status/epoch/objective/metrics are historical state, not logging decoration."
+  ],
+  "procedure": [
+    "Construct MLTrainingRun with the model and optional optimizer.",
+    "Use the post-registration initialCheckpoint as the rewind origin.",
+    "Begin the session, drive model/optimizer/session, then checkpoint the coherent training world.",
+    "Rollback with a preserved future before changing data, hyperparameters or policy; roll-forward to compare/restore the old world."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev2.zip",
+      "sha256": "66bd14e51181a54db58b7b40d3a323b82c09d0248a172e89e212befbfa5d90a3",
+      "member": "oorexx_ml_v0.1-dev2/src/MLTraining.cls",
+      "claim": "Driveable gradient optimizer, training session, training evidence and coordinated training run."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev2.zip",
+      "sha256": "66bd14e51181a54db58b7b40d3a323b82c09d0248a172e89e212befbfa5d90a3",
+      "member": "oorexx_ml_v0.1-dev2/tests/test_iterative_training.rex",
+      "claim": "Regression proves iterative model + optimizer + session rollback and roll-forward."
+    }
+  ]
+}

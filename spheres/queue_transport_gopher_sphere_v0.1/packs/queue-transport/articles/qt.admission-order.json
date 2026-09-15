@@ -1,0 +1,44 @@
+{
+  "kind": "article",
+  "id": "qt.admission-order",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Fail-closed connection admission order",
+  "summary": "A remote connection is admitted in a fixed order: accept TCP, obtain numeric peer address, perform exact source-IP admission before reading protocol bytes, parse/authenticate HELLO, re-check the selected peer/IP binding, authenticate CHALLENGE, derive session keys, then accept encrypted commands.",
+  "authority": "project-authority",
+  "invariants": [
+    "An unlisted source is closed before HELLO is read and before cryptographic peer authentication.",
+    "Passing the aggregate IP gate is insufficient: the selected peer identity must also be bound to the actual source IP.",
+    "Passing either IP gate never bypasses cryptographic proof or receiver/queue authority."
+  ],
+  "procedure": [
+    "accept socket",
+    "read numeric peer address",
+    "aggregate exact-IP gate",
+    "read and decode HELLO",
+    "resolve trusted peer",
+    "peer-specific IP gate",
+    "verify HELLO MAC",
+    "send authenticated challenge",
+    "derive session crypto",
+    "open secure command"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 9,
+      "line_end": 22,
+      "claim": "Canonical admission sequence and the rule that IP admission does not replace identity/ACL checks."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 829,
+      "line_end": 885,
+      "claim": "Listener source shows pre-HELLO aggregate IP rejection, then peer-specific IP binding, then HELLO HMAC verification."
+    }
+  ]
+}

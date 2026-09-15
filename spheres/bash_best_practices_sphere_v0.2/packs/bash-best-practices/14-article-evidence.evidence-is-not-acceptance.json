@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.evidence.evidence-is-not-acceptance",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Treat passing tests and helper output as evidence for review, never as acceptance or authority",
+  "summary": "An automation's own green result is evidence a reviewer should weigh; it is not the act of being accepted. No tool should self-author acceptance, grant authority, or treat its own 'passed' as approval to mutate or bypass a gate. This matters doubly when an LLM writes the tool, because it will happily make a summary 'decide' something.",
+  "technique": "separate evidence (what a helper returned or a validator proved) from acceptance (stated by an authority or reviewed path). A lesson, overridden lesson, passing validation, or reporter claim informs but does not by itself accept. Absent facts stay absent and are treated as unknown/deny rather than invented approval.",
+  "evidence_note": "docs/QUEUE_DEV_AI_LESSONS.md:33-35 'Lessons are evidence and guidance. A matched lesson is not acceptance...'; QUEUE_DEV_ATTEMPT_EVIDENCE.md:29 'Validation output remains evidence only. It does not self-author acceptance'; QUEUE_DEV_SECURITY_MODEL.md:61 acceptance must be explicit and authority-tagged; PLAN_ADAPTER_CONTRACT.md:135 report what you can prove, not certainty; OCI_EXPLAINABILITY.md:35 missing fixtures must not become allow.",
+  "invariants": [
+    "A green pass is input to review, not the approval itself.",
+    "Report what you can prove; add the unresolved case as unknown/for-review rather than a confident guess or acceptance.",
+    "Do not grant authority or mutate from within the validating step; record evidence and let the authority path accept.",
+    "Absence (no answer, no fixture, no record) denies or goes to review; it never silently becomes an allow."
+  ]
+}

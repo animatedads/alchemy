@@ -1,0 +1,63 @@
+Security Effect v0.14 provisional validation transcript
+=======================================================
+Date: 2026-09-01
+
+Environment discovery
+---------------------
+command -v rexx   -> unavailable
+command -v rexxc  -> unavailable
+/usr/local/bin/rexx, /usr/bin/rexx -> unavailable
+
+Authoritative roll-up mount probe
+---------------------------------
+Declared path: /mnt/data/oorexxapis(20260901-104840).zip
+container filesystem: NOT PRESENT
+Python Path.exists(): false
+Result: outer-roll-up reconciliation/byte-preservation certification NOT PERFORMED
+
+Static acceptance
+-----------------
+run_tests.sh bash syntax                         PASS
+run_integration_tests.sh bash syntax             PASS
+run_case_integration_tests.sh bash syntax        PASS
+run_permissions_integration_tests.sh bash syntax PASS
+static commit contract                           PASS
+core tests declared                              30
+Access Permissions direct tests declared          4
+Alchemy invocation integration declared           1
+
+v0.14 commit-boundary checks present
+------------------------------------
+origin execution evidence required               PASS (static contract)
+exact continuation identity retained             PASS (static contract)
+exact staged-state identity checked              PASS (static contract)
+exact live context identity checked              PASS (static contract)
+fresh commit snapshot required                   PASS (static contract)
+Security disposition must remain ALLOW            PASS (static contract)
+commit evidence age/future skew checked          PASS (static contract)
+single-use continuation barrier                  PASS (static contract)
+combined consumption fail-closed                 PASS (static contract)
+replay-barrier rollback code absent              PASS (static contract)
+Access Permissions remains separate authority    PASS (static contract)
+
+Prepared executable scenarios (not run here)
+--------------------------------------------
+test_commit_revalidation.rex
+  - Security validation without origin execution evidence -> SECURITY_ORIGIN_EXECUTION_EVIDENCE_REQUIRED
+  - unchanged exact staged state + current ALLOW -> valid commit revalidation
+  - changed staged state -> SECURITY_COMMIT_STATE_MISMATCH
+  - changed context -> SECURITY_COMMIT_CONTEXT_MISMATCH
+  - new ACCOUNT_TAKEOVER_CONFIRMED finding -> SECURITY_COMMIT_NOT_ALLOWED
+  - stale commit evidence -> SECURITY_COMMIT_EVIDENCE_EXPIRED
+  - successful commit -> single-use; replay -> SECURITY_CONTINUATION_ALREADY_COMMITTED
+
+test_access_permissions_commit_boundary.rex
+  - Security ALLOW + exact Permission ALLOW -> consume both single-use security validations
+  - Permission DENY remains authoritative and non-consumptive
+  - current Security HOLD blocks before Permission evaluation
+
+Qualification state
+-------------------
+PROVISIONAL. The package is suitable for handoff/review but MUST NOT be described as an ooRexx-executed certified
+candidate until v0.14 is run under ooRexx 5.3.0 r13196 (or an explicitly requalified successor runtime) against the
+actual September-1 roll-up dependency set.

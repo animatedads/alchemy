@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "native-db.structured-results",
+  "version": "0.1",
+  "sphere": "native-database-backends",
+  "title": "Structured native results are authoritative; compatibility text is an adapter",
+  "summary": "v0.2 introduces NativeDatabaseColumn, NativeDatabaseRow, NativeDatabaseResult and NativeDatabaseExecution. Provider-native metadata survives projection: PostgreSQL field names, OIDs, text/binary format, SQLSTATE/native status and SQL NULL can be preserved without first flattening everything to text. Existing Database Core tabular framing remains a compatibility renderer over the structured result.",
+  "authority": "project-architecture",
+  "invariants": [
+    "SQL NULL is preserved as .nil rather than inherently becoming an empty string.",
+    "Provider-native type and field-format metadata may cross the provider-neutral boundary as evidence.",
+    "Command tags and affected-row evidence remain part of structured execution results.",
+    "COPY is not treated as an ordinary materialized result until explicit streaming ownership exists.",
+    "Compatibility text framing is downstream of the native result model, not the native result model itself."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/README.md",
+      "line_start": 7,
+      "line_end": 25,
+      "claim": "v0.2 introduces structured native result objects, preserves NULL/type/format metadata, and treats Database Core framing as an adapter."
+    },
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/VALIDATION.txt",
+      "line_start": 17,
+      "line_end": 27,
+      "claim": "Executed v0.2 acceptance preserves PostgreSQL OID/format, SQL NULL, command evidence, SQLSTATE, and fails closed on COPY."
+    }
+  ]
+}

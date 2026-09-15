@@ -1,0 +1,32 @@
+Layered Audio v0.19 processing-toolkit validation
+
+Qualified executable paths:
+- ooRexx object model/catalog/graph/streaming/placement regression.
+- Foreign Runtime v0.22.5 ForeignPython reference provider.
+- Native ForeignBuffer -> Python memoryview input path.
+- Python NumPy processing output -> ForeignTensor runtime binding.
+- ForeignTensor derived output -> second Python processor without byte materialisation.
+- Maths v0.5 MathEvidence on correlation and alignment measurements.
+- McGill stereo A-law external fixture channel-independence check.
+- Historical Layered Audio core, transcript, fragment, pitch, speaker, music, scene, camera interop, FFmpeg decode, tensor and ASR preparation paths under v0.22.5.
+
+Reference processors executed in v0.19:
+  alignment.gcc_phat
+  alignment.envelope_lag
+  alignment.cross_ambiguity
+  transform.adaptive_spectral_denoise
+  mask.phase_coherence_wiener
+  transform.mvdr.dual
+  transform.clean_spectral_lines
+  mask.echo_persistence
+  transform.eigen_noise_projection
+  mask.syllabic_modulation
+
+McGill external fixture:
+  format: G.711 A-law WAVE, stereo, 8 kHz
+  samples/channel: 23493
+  left RMS: ~0.02709204
+  right RMS: ~0.02477716
+  Pearson L/R correlation: ~0.00696814
+
+Runtime Reference v0.4 TCP/JSON fallback requires an external `json.cls`; that dependency was not present in the supplied roll-up/environment, so the legacy TCP/JSON fallback is conditional in run_tests.sh and is not part of v0.19's new processing-provider qualification. Runtime Reference object/value semantics remain the offload envelope boundary.

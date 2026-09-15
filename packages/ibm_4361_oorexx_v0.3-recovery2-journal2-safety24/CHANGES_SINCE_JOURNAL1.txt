@@ -1,0 +1,132 @@
+Changed-file inventory versus preceding recovery2-journal1 working tree:
+Only in /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety: CHANGES_SINCE_JOURNAL1.txt
+Files /mnt/data/ibm_continue/ibm_4361_oorexx_v0.3-recovery2-journal1/IBM370Architecture.cls and /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety/IBM370Architecture.cls differ
+Files /mnt/data/ibm_continue/ibm_4361_oorexx_v0.3-recovery2-journal1/IBM370DASD.cls and /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety/IBM370DASD.cls differ
+Files /mnt/data/ibm_continue/ibm_4361_oorexx_v0.3-recovery2-journal1/IBM370Executor.cls and /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety/IBM370Executor.cls differ
+Files /mnt/data/ibm_continue/ibm_4361_oorexx_v0.3-recovery2-journal1/IBM370IO.cls and /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety/IBM370IO.cls differ
+Files /mnt/data/ibm_continue/ibm_4361_oorexx_v0.3-recovery2-journal1/IBM4361.cls and /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety/IBM4361.cls differ
+Only in /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety: SAFETY_CHECKPOINT.txt
+Only in /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety: VALIDATION_SAFETY_CHECKPOINT.txt
+Only in /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety/tests: probe_watch_ffe608.rex
+Only in /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety/tests: test_clock_one_instruction_equivalence.rex
+Files /mnt/data/ibm_continue/ibm_4361_oorexx_v0.3-recovery2-journal1/tests/test_cpu_ex_sequencing.rex and /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety/tests/test_cpu_ex_sequencing.rex differ
+Only in /mnt/data/ibm_4361_oorexx_v0.3-recovery2-journal2-safety/tests: test_storage_small_fastpath.rex
+
+Safety4 continuation:
+- reproduced real-MVT frontier FF717E / ICOUNT 511635 and captured opcode 8A
+- implemented and regression-tested System/370 SRA (X'8A')
+- added narrow executor installLiveMethod() object-scope trial seam
+- proved OP8A through journal rewind/retry at the exact guest state
+- permanent source advances 128 instructions to next unsupported X'4E' at FF71B0 / ICOUNT 511763
+- added logical-track-equivalent uncompressed CCKD probe evidence; media remains external
+- SSC v0.2.2 pass pending because exact v0.2.2 package was not supplied; v0.2.3 was not substituted
+
+Safety5 continuation:
+- reproduced real-MVT frontier FF71B0 / ICOUNT 511763 and proved opcode 4E as CVD
+- object-scope OP4E exact-state journal rewind/retry succeeded; packed result 000000000000013C at FFD470 with CC unchanged
+- promoted permanent System/370 CVD (X'4E') and added test_cpu_cvd.rex
+- full suite now 74 sources compile / 33 runtime tests pass; explicit real-media and real-MVT IPL tests also pass
+- permanent source stops at next untouched X'F3' at FF71B4 / ICOUNT 511764, bytes F332D643D67C
+- independent Hercules evidence identifies X'F3' as UNPK, but OPF3 is deliberately not implemented in safety5
+- refreshed logical CCKD probe equivalence evidence for all 7676 logical tracks
+- exact SSC v0.2.2 still unavailable after supplied-file and Library recovery attempts; v0.2.3 not substituted
+
+Safety11 continuation:
+- exact real-MVT AL frontier 0154D0 / ICOUNT 511943 proved against sealed safety10
+- live object-scope OP5E journal rewind/retry: R6 80016A60 + storage 40000000 -> C0016A60, CC1
+- guest advances 296 instructions to next untouched X'56' at 0146FC / ICOUNT 512240
+- permanent System/370 AL (X'5E') implements all four carry/zero CC outcomes
+- added removeLiveMethod() seam; insertion/replacement/removal all remain outside journalled machine state
+- added removal rewind regression and exact AL candidate-to-permanent microstate equivalence regression
+- freeze files remain separate durable evidence; journal/method state is not folded into freeze serialization
+- X'56' is identified independently as O/Or but deliberately not implemented in safety11
+- exact SSC v0.2.2 remains unavailable; v0.2.3 not substituted
+
+Safety12 continuation:
+- exact real-MVT X'56' frontier 0146FC / ICOUNT 512240 proved against sealed safety11
+- operands captured: R1=00035EC8, R12=00035ED8, EA=035EDC, storage=FC000000, CC0
+- live object-scope OP56 journal retry -> R1=FC035EC8, CC1, IA=014700, storage unchanged
+- guest advances 803 instructions to next untouched X'D4' at 00660C / ICOUNT 513044
+- permanent System/370 O/Or (X'56') promoted after live proof
+- exact-microstate live-candidate -> remove override -> permanent OP56 equivalence regression added
+- X'D4' independently identified as NC / And Character but deliberately not implemented in safety12
+
+Safety13 continuation:
+- exact real-MVT X'D4' frontier 00660C / ICOUNT 513044 proved against sealed safety12
+- exact invocation is four-byte self-NC at 00B0A0: 00000000, CC1
+- live object-scope OPD4 journal retry leaves bytes zero, sets CC0, advances to 006612
+- guest advances 227 further successful instructions before X'00' at IA 000000 / ICOUNT 513272
+- permanent NC is byte-sequential left-to-right with destructive-overlap and 24-bit-wrap regressions
+- exact-microstate candidate -> remove override -> permanent OPD4 equivalence regression added
+- X'00' is classified as an operation-exception/control-flow investigation and deliberately has no OP00 implementation
+- 112 sources compile / 54 runtime tests pass; original real media and IPL pass
+
+Safety14: qualified BC-mode X'00' operation-exception program interruption as a non-OPxx architectural path; added late ordinary-RAM -> journalled-RAM exact-state handoff archaeology, prefix-relative program-old/new PSW handling, and candidate-to-permanent promotion regressions. Exact MVT forward progress reaches 1E/ALR @ 01A482 IC513307. No OP00 exists.
+
+Safety15 continuation:
+- exact real-MVT X'1E' ALR frontier 01A482 / ICOUNT 513307 proved against sealed safety14
+- operands R10=20000000, R11=40000002, CC1; first attempt UNSUPPORTED atomically
+- late ordinary-RAM -> journalled-RAM handoff verified; live OP1E survives rewind while GPR/RAM dirt is restored
+- retry -> R10=60000002, CC1, IA=01A484, then 7844 further successful instructions
+- permanent System/370 ALR X'1E' promoted with all four carry/zero CC outcomes and R1==R2 alias regression
+- exact microstate live-candidate -> remove override -> permanent OP1E equivalence regression added
+- next untouched boundary X'FF' at IA 000020 / ICOUNT 521152; deliberately not implemented or classified in safety15
+- test-helper object arguments use `use arg`; `parse arg` is retained for scalar/text parsing only
+
+Safety18: System/370 primary X'62' independently classified and promoted as a
+BC-mode operation exception through the generic program-interruption seam. No
+OP62 was added. Exact real-MVT retry writes PGMOLD 00040001A0000054, loads
+00040000000002CA, then advances 2283 instructions to X'5D' D/Divide at
+IA 00005E / ICOUNT 531376. 133 sources compile; 69 runtime tests pass.
+
+Safety19
+--------
+- Added a separate architectural specification-exception preflight seam.
+- Proved System/370 X'5D' D with odd R1 raises specification exception before divisor fetch.
+- Qualified BC-mode specification interruption old PSW 00040006A0000062 at the exact MVT state.
+- Kept normal OP5D unimplemented; advanced 18 guest instructions to X'D1' MVN at 00047C.
+- Codified parse arg for textual CLI and use arg for object-bearing helpers.
+
+Safety20
+--------
+- Exact real-MVT X'D1' MVN frontier 00047C / ICOUNT 531395 proved from sealed safety19.
+- Operand capture: destination 10 @ 0004E7, source B8 @ 0005D1, CC0; retry -> destination 18, source unchanged, CC0.
+- Permanent OPD1 is byte-sequential left-to-right, destructive on overlap, 24-bit wrapping, and leaves CC unchanged.
+- Added exact microstate live-candidate -> rewind -> remove override -> permanent OPD1 equivalence regression.
+- Whole-trajectory permanent replay advances 1565 successful instructions to X'65' at 000066 / ICOUNT 532961.
+- X'65' remains unimplemented; Gopher s370mvs sphere identifies it as an unassigned/operation-exception lead for the next checkpoint.
+- run_tests.sh now discovers json.cls beside the selected ooRexx runtime, avoiding caller-specific REXX_PATH setup.
+- LLM Gopher v0.18-dev1 used for sphere/archive/source/qualification dogfood; capability gaps were recorded rather than hidden.
+Safety21
+--------
+- Recovered the prior exact X'65' guest/permanent replay from separate s370mvs sphere v0.2-dev1 (SHA-256 bd20213258b94004774e5b01ae266e40909953c24d96447b98af54716e53ed5f).
+- Promoted only X'65' into architecturalOperationException(); no OP65 exists.
+- Exact operation old/new PSWs are 00040001A000006A and 00040000000002CA.
+- Guest evidence advances 1703 successful instructions to untouched X'02' @ 00006E / ICOUNT 534665.
+- Added permanent/live/promotion-equivalence X'65' regressions; full qualification is 147 sources / 78 tests.
+- Current-rollup Crypto v0.8.3 qualification used its own Foreign Runtime/OpenSSL provider with Foreign Runtime v0.22.6 and Runtime Reference v0.4 to avoid the deliberately slow portable SHA-512 path.
+- X'02' remains pending authoritative System/370 table confirmation; no OP02.
+
+
+Safety22:
+- IBM GX20-1850-5 confirms primary X'02' is unassigned; BCTR is X'06'.
+- Promoted only X'02' into architecturalOperationException(); no OP02 exists.
+- Exact recovered guest retry: PGMOLD 0004000160000070, PGMNEW 00040000000002CA.
+- Recovered independent permanent replay reaches X'70' @ 000082 / ICOUNT 539172 after 4506 instructions.
+- Fresh 152-source / 81-test qualification passes.
+- X'70'/STE remains untouched and is a specification-exception candidate because frontier R1=E is not a valid S/370 floating-point register designator.
+
+SAFETY23
+--------
+- X'70'/STE invalid floating-register selectors are now caught by architectural specification-exception preflight before implementation coverage.
+- Valid STE selectors 0/2/4/6 deliberately remain unsupported; no OP70 was added.
+- Exact MVT journal retry: 70E0 @ 000082 / IC 539172 -> PGMOLD 0004000690000086 -> PGMNEW 00040000000002CA.
+- 32 instructions later, EX @ 0004B6 targets 70E005C84780; next work is transient-target exception propagation through EX.
+
+SAFETY24
+--------
+- Propagate qualified architectural specification exceptions from an EX transient target using EX's IA/ILC in the old PSW.
+- Exact MVT proof: EX 440004F4 @ 0004B6 targeting 70E005C84780 -> PGMOLD 00040006800004BA -> PGMNEW 00040000000002CA.
+- No OP70 added; OP44 remains existing EX implementation.
+- Permanent whole-MVT replay runs 102530 more instructions to missing 4B/SH @ FFB5A8, ICOUNT 641735.
+- Qualification: 162 compiled sources / 87 runtime tests.

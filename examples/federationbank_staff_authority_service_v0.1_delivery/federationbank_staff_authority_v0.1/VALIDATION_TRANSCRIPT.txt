@@ -1,0 +1,38 @@
+FederationBank Staff Authority v0.1 validation transcript
+Date: 2026-08-26
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+
+== Core module tests ==
+== test_teller_maker_authority.rex ==
+PASS: teller maker authority is policy-bound
+== test_maker_checker.rex ==
+PASS: maker/checker separation of duties
+== test_branch_and_session_scope.rex ==
+PASS: branch/desk/session context is authority evidence
+== test_bounded_delegation.rex ==
+PASS: delegation is bounded and cannot increase policy authority
+== test_temporary_elevation.rex ==
+PASS: temporary elevation is explicit, bounded and evidenced
+== test_command_binding.rex ==
+PASS: staff authority binds exact Core Banking command
+== test_core_staff_policy_separation.rex ==
+PASS: staff authority and Core Banking policy remain independent
+== test_runtime_module.rex ==
+PASS: runtime module boundary
+
+== Full relationship/staff/core integration test ==
+== test_relationship_staff_core_chain.rex ==
+PASS: relationship authority + staff authority + Core Banking policy chain
+
+== rexxc package .cls files ==
+PASS rexxc examples/FederationBankStaffAuthorityPolicyFixtures.cls
+PASS rexxc integration/FederationBankRelationshipStaffAuthorityBridge.cls
+PASS rexxc integration/FederationBankStaffCorePolicyFixtures.cls
+PASS rexxc runtime/FederationBankStaffAuthorityRuntimeModule.cls
+PASS rexxc src/FederationBankStaffAuthority.cls
+PASS rexxc tests/TestSupport.cls
+PASS rexxc total=6

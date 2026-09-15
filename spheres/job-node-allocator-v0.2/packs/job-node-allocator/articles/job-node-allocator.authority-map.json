@@ -1,0 +1,26 @@
+{
+  "id": "job-node-allocator.authority-map",
+  "title": "Authority boundaries",
+  "section": "integration",
+  "summary": "The allocator decides execution-node placement but does not absorb neighbouring authorities. Security/Legal/Access decisions are hard eligibility evidence; WLU owns work-capacity reservation; Queue Fabric owns transport; API Client owns outbound egress session allocation; Crypto supplies digest/proof primitives through existing interfaces.",
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "job-node-allocator",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6.zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "claim": "Grounded in Job-to-Node Allocator v0.6.",
+      "line_start": 101,
+      "line_end": 112
+    }
+  ],
+  "invariants": [
+    "Reachability is not authority.",
+    "Queue delivery is not placement authority.",
+    "A WLU reservation is authoritative capacity admission, not a scheduler score.",
+    "API egress selection may legitimately occur after general execution-node placement."
+  ]
+}

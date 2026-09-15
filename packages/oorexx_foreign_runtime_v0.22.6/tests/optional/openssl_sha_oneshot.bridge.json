@@ -1,0 +1,19 @@
+{
+  "schema": "oorexx.foreign/0.8.1",
+  "library": {
+    "provider": "native",
+    "names": ["libcrypto.so.3", "libcrypto.so", "libcrypto-3-x64.dll"]
+  },
+  "functions": {
+    "sha256": {
+      "symbol": "SHA256",
+      "return": "pointer",
+      "args": ["bytes", "u64", {"type":"pointer", "direction":"out"}]
+    },
+    "sha512": {
+      "symbol": "SHA512",
+      "return": "pointer",
+      "args": ["bytes", "u64", {"type":"pointer", "direction":"out"}]
+    }
+  }
+}

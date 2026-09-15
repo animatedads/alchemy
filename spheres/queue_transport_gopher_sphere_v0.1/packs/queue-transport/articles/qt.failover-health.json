@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "qt.failover-health",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Health probes and failover do not weaken transport security",
+  "summary": "Health probes use the same authenticated session establishment and encrypted secure-frame machinery as delivery. Client failover may try ordered endpoints after eligible transport failures, but each endpoint must independently satisfy its cryptographic configuration and the listener still applies exact source-IP admission.",
+  "authority": "project-authority",
+  "invariants": [
+    "PROBE and HEALTH are encrypted/authenticated after the challenge just like DELIVER/RESULT.",
+    "Failover is an endpoint-selection behavior, not a permission to downgrade crypto, bypass IP admission, or reuse another endpoint's identity.",
+    "Health success/failure counters are observability evidence, not admission authority."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 524,
+      "line_end": 550,
+      "claim": "Client delivery/probe iterate eligible endpoint candidates and use failover rules."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 626,
+      "line_end": 650,
+      "claim": "Health response is opened as S2C secure data and updates endpoint health counters."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/VALIDATION.txt",
+      "line_start": 82,
+      "line_end": 92,
+      "claim": "Encrypted health/failover and transport NoSQL qualification passed."
+    }
+  ]
+}

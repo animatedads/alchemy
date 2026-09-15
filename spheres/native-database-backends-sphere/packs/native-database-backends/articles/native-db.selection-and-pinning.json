@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "native-db.selection-and-pinning",
+  "version": "0.1",
+  "sphere": "native-database-backends",
+  "title": "Explainable selection and session pinning",
+  "summary": "NativeDatabaseBackendPlanner evaluates eligibility and emits explicit rejection reasons such as UNAVAILABLE, FAMILY_MISMATCH and MISSING_CAPABILITY:<name>. Among eligible implementations, the lowest numerical priority wins unless a higher policy layer deliberately changes ranking. Once acquired, the implementation is pinned for the session/transaction.",
+  "authority": "project-architecture",
+  "invariants": [
+    "UNAVAILABLE is different from missing capability.",
+    "UNKNOWN and CONDITIONAL do not count as SUPPORTED for hard eligibility.",
+    "Required capabilities can make a lower-preference fallback the only eligible implementation.",
+    "Failure after acquisition is surfaced; automatic mid-session or mid-transaction replay is prohibited.",
+    "Selection rationale should be publishable to Database Core / NoSQL federation for diagnostics and evidence."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/PLAN.md",
+      "line_start": 1,
+      "line_end": 12,
+      "claim": "Fallback selection occurs before session acquisition and post-acquisition failures are surfaced rather than replayed."
+    }
+  ]
+}

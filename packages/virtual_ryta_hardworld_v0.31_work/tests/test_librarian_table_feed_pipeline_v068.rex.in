@@ -1,0 +1,133 @@
+/*
+ * Librarian -> SQL -> frozen input relation -> TABLE_FEED_DECIDER -> SQL.
+ * The persisted target/action mapping is deliberately a toy plumbing joint,
+ * not an ontology claim.
+ */
+parse arg root
+if root == '' then root = '/tmp/librarian_table_feed_v09'
+
+say 'LIBRARIAN TABLE-FED PIPELINE V0.11 START'
+packageRoot = directory('..')
+topics = packageRoot || '/librarian/fixtures/librarian_topics.txt'
+fed = .FederatedDatabaseEngine~new(root)
+sql = .NoSQLServerSQL~new(fed)
+
+factory = .LibrarianDeterministicAnalyzerFactory~new(topics)
+modelManifest = .LibrarianDeterministicFixture~buildModelManifest(packageRoot, topics)
+modelFingerprint = modelManifest~hash
+librarianProvider = .LibrarianTextAlgorithmProvider~new(factory, 'LIBRARIAN-FIXTURE', '1', modelManifest, packageRoot)
+algorithmEngine = .AlgorithmRelationEngine~new
+call assert algorithmEngine~addProvider(librarianProvider), 'register Librarian provider'
+
+textSchema = .AlgorithmSchema~new('LIBRARIAN_TEXT_SOURCE')
+textSchema~add('DOCUMENT_ID', 'TEXT', .false)
+textSchema~add('TEXT', 'TEXT', .false)
+textBuilder = .AlgorithmInputRelationBuilder~new(textSchema, 'LIBRARIAN_TEXT_SOURCE', .AlgorithmInputRelationConstant~BAG_UNORDERED)
+textValues = .directory~new
+textValues['DOCUMENT_ID'] = 'DOC-PIPE-1'
+textValues['TEXT'] = 'We sell product. Warning danger medication.'
+call assert textBuilder~addValues(textValues), 'text row accepted'
+textSnapshot = textBuilder~freeze('LIBRARIAN-TEXT-PIPE-1', 'pipeline fixture', 'LIBRARIAN_TEST')
+librarianContext = .AlgorithmExecutionContext~new('LIB-PIPE-A-1', textSnapshot~sourceOid)
+
+nosqlClasses = .directory~new
+nosqlClasses['TABLE_DEFINITION'] = .TableDefinition
+nosqlClasses['DATABASE_ROW'] = .DatabaseRow
+nosqlClasses['DATABASE_RESULT'] = .DatabaseResult
+nosqlClasses['TABLE_METADATA'] = .DatabaseTableMetadata
+
+librarianBindings = .directory~new
+librarianBindings['LIBRARIAN_TARGET_HITS'] = 'librarian_hits'
+librarianBindings['LIBRARIAN_DOCUMENT_ANALYSIS'] = 'librarian_documents'
+librarianExternal = .NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine, 'LIBRARIAN_TEXT', textSnapshot, librarianContext, nosqlClasses, librarianBindings)
+call assert librarianExternal~isReady, 'Librarian external engine ready' librarianExternal~lastError
+ignore = fed~addEngine(librarianExternal)
+call assert librarianProvider~invocationCount = 0, 'Librarian lazy at registration'
+
+/* Explicit toy policy: text target key -> downstream authority disposition. */
+call ok sql~execute("CREATE TABLE librarian_action_policy (target_key VARCHAR PRIMARY KEY, label VARCHAR, upstream_disposition VARCHAR)")
+call ok sql~execute("INSERT INTO librarian_action_policy VALUES ('SELL','sell evidence','SUPPRESSED'),('PRODUCT','product evidence','PERMITTED'),('WARNING','warning evidence','REQUIRED'),('DANGER','danger evidence','PROHIBITED'),('MEDICATION','medication evidence','PERMITTED')")
+
+sourceSql = "SELECT h.target_key AS row_id,p.label AS label,h.weight AS preference_score,p.upstream_disposition AS upstream_disposition FROM librarian_hits h JOIN librarian_action_policy p ON h.target_key=p.target_key ORDER BY h.target_key"
+feedSchema = .AlgorithmSchema~new('TABLE_FEED_SOURCE')
+feedSchema~add('ROW_ID', 'TEXT', .false)
+feedSchema~add('LABEL', 'TEXT', .false)
+feedSchema~add('PREFERENCE_SCORE', 'NUMBER', .false)
+feedSchema~addEnum('UPSTREAM_DISPOSITION', 'TEXT', .false, .array~of('UNRESOLVED','PERMITTED','REQUIRED','SUPPRESSED','PROHIBITED','REQUIRES_APPROVAL'))
+
+capture = .NoSQLServerAlgorithmInputCapture~new(fed)
+feedSnapshot = capture~capture(sourceSql, feedSchema, '', .AlgorithmInputRelationConstant~BAG_UNORDERED, 'NOSQLSERVER_V068_LIBRARIAN_RESULT')
+call assert feedSnapshot \== .nil, 'capture Librarian/policy SQL result' capture~lastError
+call assert feedSnapshot~rowCount = 5, 'five unique target hits captured'
+call assert librarianProvider~invocationCount = 1, 'capture executes Librarian once'
+
+feedProvider = .TableFeedDecisionProvider~new(packageRoot)
+call assert algorithmEngine~addProvider(feedProvider), 'register downstream provider'
+feedContext = .AlgorithmExecutionContext~new('LIB-PIPE-B-1', feedSnapshot~sourceOid, feedSnapshot~sourceOid)
+feedBindings = .directory~new
+feedBindings['TABLE_FEED_DECISIONS'] = 'librarian_decisions'
+feedBindings['TABLE_FEED_TRACE'] = 'librarian_decision_trace'
+feedExternal = .NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine, 'TABLE_FEED_DECIDER', feedSnapshot, feedContext, nosqlClasses, feedBindings)
+call assert feedExternal~isReady, 'downstream external engine ready' feedExternal~lastError
+ignore = fed~addEngine(feedExternal)
+call assert feedProvider~invocationCount = 0, 'downstream remains lazy at registration'
+
+rows = sql~execute("SELECT row_id,preference_score,upstream_disposition,disposition,final_selected FROM librarian_decisions ORDER BY row_id")
+call ok rows
+call assert rows~rows~items = 5, 'five downstream decisions'
+call assert feedProvider~invocationCount = 1, 'downstream executes once'
+
+danger = findRow(rows, 'DANGER')
+warning = findRow(rows, 'WARNING')
+sell = findRow(rows, 'SELL')
+product = findRow(rows, 'PRODUCT')
+call assert danger['preference_score'] = 10, 'DANGER carries Librarian target weight'
+call assert danger['disposition'] = 'PROHIBITED', 'DANGER policy prohibition survives score'
+call assert danger['final_selected'] = .false, 'DANGER not selected'
+call assert warning['preference_score'] = 8, 'WARNING carries Librarian target weight'
+call assert warning['disposition'] = 'REQUIRED', 'WARNING policy requirement'
+call assert warning['final_selected'] = .true, 'WARNING required'
+call assert sell['disposition'] = 'SUPPRESSED', 'SELL context suppression'
+call assert sell['final_selected'] = .false, 'SELL not selected'
+call assert product['disposition'] = 'PERMITTED', 'PRODUCT permitted'
+call assert product['final_selected'] = .true, 'PRODUCT positive preference selected'
+
+again = sql~execute("SELECT row_id,disposition FROM librarian_decisions WHERE final_selected=1 ORDER BY row_id")
+call ok again
+call assert librarianProvider~invocationCount = 1, 'Librarian remains one execution after downstream scans'
+call assert feedProvider~invocationCount = 1, 'downstream remains one execution after rescan'
+
+say '  librarian_invocations=' || librarianProvider~invocationCount
+say '  downstream_invocations=' || feedProvider~invocationCount
+say '  text_input_hash=' || textSnapshot~contentHash
+say '  feed_input_hash=' || feedSnapshot~contentHash
+say 'LIBRARIAN TABLE-FED PIPELINE V0.11: OK'
+exit 0
+
+findRow: procedure
+  use arg databaseResult, wanted
+  do databaseRow over databaseResult~rows
+    if databaseRow['row_id'] == wanted then return databaseRow
+  end
+  return .nil
+
+ok: procedure
+  use arg databaseResult
+  if databaseResult~status \= .Error~SUCCESS then do
+    say 'FAILED:' databaseResult~status databaseResult~error databaseResult~message
+    exit 1
+  end
+  return .true
+
+assert: procedure
+  use arg condition, message, detail = ''
+  if condition then return .true
+  say 'ASSERT FAILED:' message detail
+  exit 1
+
+::requires '__NOSQLSERVER_CLS__'
+::requires '../librarian/LibrarianDeterministicFixture.cls'
+::requires '../integration/LibrarianTextAlgorithmProvider.cls'
+::requires '../integration/NoSQLServerAlgorithmRelationExternalEngine.cls'
+::requires '../integration/NoSQLServerAlgorithmInputCapture.cls'
+::requires '../algorithm/TableFeedDecisionProvider.cls'

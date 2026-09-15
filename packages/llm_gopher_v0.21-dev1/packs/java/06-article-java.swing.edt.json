@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "java.swing.edt-and-authority",
+  "version": "0.1",
+  "sphere": "java",
+  "title": "Swing: EDT discipline and authority separation",
+  "summary": "Wire UI Swing keeps widget mutation on the Event Dispatch Thread and keeps business/network authority out of listeners. A listener captures local values and queues UI_ACTION; it does not call ooRexx, Queue Fabric, JMS/network code, or wait for a server reply.",
+  "authoritative_sources": [
+    {
+      "archive": "oorexxapis(20260902-105429).zip",
+      "nested": "current/wire_ui_swing_v0.2-dev3.zip",
+      "member": "wire_ui_swing_v0.2-dev3/DESIGN.md"
+    },
+    {
+      "archive": "oorexxapis(20260902-105429).zip",
+      "nested": "current/wire_ui_swing_v0.2-dev3.zip",
+      "member": "wire_ui_swing_v0.2-dev3/src/main/java/org/alchemy/wireui/swing/WireSwingEdt.java"
+    }
+  ],
+  "invariants": [
+    "Swing component access is marshalled to or asserted on the EDT.",
+    "Do not block the EDT on network, JMS, server, or application logic.",
+    "Presentation state is not permission/business-state authority."
+  ],
+  "correct": [
+    "Preflight semantic work before committing the widget mutation on the EDT.",
+    "Restore interrupt status when InterruptedException is caught at the EDT marshalling boundary.",
+    "Keep failure scope local; ordinary rendering faults must not become process exits."
+  ]
+}

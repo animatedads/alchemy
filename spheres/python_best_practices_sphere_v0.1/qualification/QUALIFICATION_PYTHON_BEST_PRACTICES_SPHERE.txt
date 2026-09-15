@@ -1,0 +1,61 @@
+Python Best Practices Gopher sphere v0.1
+========================================
+
+Purpose
+-------
+Portable Python best-practice guidance for LLM authors, layered onto LLM Gopher
+without changing engine semantics. The python-best-practices profile loads core +
+python-best-practices and publishes articles, an indexed corpus, reference rule
+documents, and engine-consumable example method splices.
+
+Posture
+-------
+Canonical/reference (PLABEL). Grounding is the CPython data model and standard
+library semantics plus the known failure classes an LLM emits from corpora. It is
+not a set of fabricated project incidents. Python is secondary in this project; the
+sphere is deliberately portable so an authoring LLM on any checkout can use it.
+
+Engine reality
+--------------
+- `rules check` executes exactly four statically-detectable Python breaches
+  (syntax, duplicate method, wildcard import, bare except) from a hardcoded
+  evaluator; a sphere cannot add executed breaches without editing the engine.
+- python `language-rule` documents here are reference guidance rendered by
+  `rules show`, each with a deterministic trigger and concrete correction.
+- examples/python-method/*.py.frag are one complete method each, the exact
+  replacement_path shape `source.python.method.edit` validates before an AST-scoped
+  commit (article edits.preserve-unrelated-bytes).
+
+Headline guides and rules
+-------------------------
+Articles:
+- defaults.no-mutable-default-argument
+- controlflow.no-implicit-none-return
+- optional.truthiness-not-none
+- exceptions.narrow-and-surfaced
+- edits.preserve-unrelated-bytes (ties to source.python.method.edit)
+- collections.copies-over-internals
+- ref.using-and-splices + ops overview
+
+Rules (reference via rules show, language python):
+- PYTHON.DEFAULT_MUTABLE
+- PYTHON.HANDLER_BROAD_CATCH
+- PYTHON.CONDITION_EQ_TRUE
+
+Corpus: python-best-practices.rules (lookup/searchable)
+Example splices: examples/python-method/*.py.frag (4 files)
+
+Qualification results
+---------------------
+PASS tests/run_python_best_practices_sphere.sh
+PASS semantic pack merge: MERGED
+PASS python-best-practices context publishes article set (no (kind,id) conflicts)
+PASS search 'mutable default' resolves the mutable-default record
+PASS lookup topic=none-check returns exact typed corpus record (EXACT_FIELD)
+PASS rules show PYTHON.DEFAULT_MUTABLE / HANDLER_BROAD_CATCH / CONDITION_EQ_TRUE open
+PASS example splices each parse as a single method and carry no mutable default
+PASS live interoperability: source.python.method.edit ADD of the bundled
+     collect_names_no_mutable_default.py.frag committed into a sample class
+     (operation ADD, class NameRepo, method collect_names, committed True).
+PASS sphere resolve FOUND / sphere load ACTIVATED for the delivered archive.
+PASS package check reports READY with zero breaches.

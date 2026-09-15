@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "manual-navigation.start",
+  "version": "0.1",
+  "sphere": "manual-navigation",
+  "title": "How to use Gopher when a manual is the authority",
+  "summary": "Do not guess a chapter/page workflow. Use find/locate to resolve a bounded location, read it, move around it for context, then return to the original task.",
+  "authority": "gopher-operational-doctrine",
+  "procedure": [
+    "If you know a phrase or command name, run `gopher reference find <file-or-url> <string>`.",
+    "If you know a printed/manual page but PDF front matter shifts physical pages, run `reference locate --reference-page N --approx-page M --window K`.",
+    "Run `reference read` on the returned physical_page or HTML section.",
+    "Use `reference move` with -1, +1, -5, +5 (or another bounded delta) to inspect continuation/context.",
+    "Return to the originating sphere/article and apply the evidence to the coding/reasoning task."
+  ],
+  "examples": [
+    "gopher reference find https://www.oorexx.org/docs/pdf/rexxref.pdf FORWARD",
+    "gopher reference locate https://www.oorexx.org/docs/pdf/rexxref.pdf --reference-page 55 --approx-page 73 --window 20",
+    "gopher reference read https://www.oorexx.org/docs/pdf/rexxref.pdf --page 73 --reference-page 55",
+    "gopher reference move https://www.oorexx.org/docs/pdf/rexxref.pdf --page 73 1"
+  ],
+  "invariants": [
+    "Find results contain ready-to-open locations.",
+    "PDF navigation is by physical page. Printed/manual page is a separate approximate reference identity.",
+    "Reads/searches are bounded.",
+    "HTTP(S) and local files use the same operation shapes."
+  ]
+}

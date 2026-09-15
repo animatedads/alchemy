@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "native-db.qualification",
+  "version": "0.1",
+  "sphere": "native-database-backends",
+  "title": "Qualification state: distinguish executed v0.2 evidence from inherited and current-rollup evidence",
+  "summary": "v0.2 was executed under ooRexx 5.3.0 r13196 for the capability model, structured result model, planner, deterministic fake-libpq PostgreSQL result adapter and compile gates. Live external dependency roots were not available for that v0.2 run, so live PostgreSQL/GeoPackage evidence is inherited from v0.1 rather than re-claimed. The 2026-09-02 API roll-up contains newer Foreign Runtime v0.22.6 plus current DB Core v0.46, NoSQLServer v0.79 and msqlshim v0.21.2; those available versions are continuity references, not claims that v0.2 has been requalified against every newer companion.",
+  "authority": "qualification-evidence",
+  "invariants": [
+    "Never turn retained inherited tests into newly executed evidence when dependency roots were unavailable.",
+    "Deterministic fake-provider tests qualify projection and planner logic, not a live remote database connection.",
+    "Current roll-up availability does not equal compatibility qualification.",
+    "Non-claims remain first-class evidence until the implementation and tests exist.",
+    "Qualification must name runtime and exact companion versions/digests where material."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/VALIDATION.txt",
+      "line_start": 1,
+      "line_end": 55,
+      "claim": "v0.2 executed provider-neutral/fake-libpq/compile gates under ooRexx r13196, retained inherited live gates, and publishes non-claims."
+    },
+    {
+      "artifact": "oorexxapis(20260902-164925).zip",
+      "sha256": "190c3e9f7b484cfccc3e0fa4fe7fe07e6f0d15838ae2024b028ccaffd9652830",
+      "member": "current/oorexx_db_skeleton_v0_46.zip",
+      "claim": "Current roll-up contains Database Core v0.46 as a continuity reference."
+    },
+    {
+      "artifact": "oorexxapis(20260902-164925).zip",
+      "sha256": "190c3e9f7b484cfccc3e0fa4fe7fe07e6f0d15838ae2024b028ccaffd9652830",
+      "member": "current/nosqlserver_v0.79.zip",
+      "claim": "Current roll-up contains NoSQLServer v0.79 as a continuity reference."
+    },
+    {
+      "artifact": "oorexxapis(20260902-164925).zip",
+      "sha256": "190c3e9f7b484cfccc3e0fa4fe7fe07e6f0d15838ae2024b028ccaffd9652830",
+      "member": "current/oorexx_foreign_runtime_v0.22.6.zip",
+      "claim": "Current roll-up contains Foreign Runtime v0.22.6, newer than the v0.2 parent qualification companion; availability is not automatic requalification."
+    },
+    {
+      "artifact": "oorexxapis(20260902-164925).zip",
+      "sha256": "190c3e9f7b484cfccc3e0fa4fe7fe07e6f0d15838ae2024b028ccaffd9652830",
+      "member": "current/msqlshim_v0.21.2.zip",
+      "claim": "Current roll-up contains msqlshim v0.21.2 as the inbound MySQL wire compatibility reference."
+    }
+  ]
+}

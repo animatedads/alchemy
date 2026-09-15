@@ -1,0 +1,31 @@
+Supplied ooRexx API roll-up: oorexxapis(20260905-145833).zip
+SHA-256: 37160716671020faef4b3a1cd9efa67cdd2c2c7cbfa622c60520799182bc279d
+
+Supplied ooRexx runtime package: oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20260905-145845).deb
+SHA-256: 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+Runtime used for qualification: Open Object Rexx 5.3.0 r13196, 64-bit, build date 2026-08-03 (extracted from supplied package).
+
+Integration review considered current roll-up components including:
+- oorexx_api_client_v0.3.zip
+- oorexx_secret_broker_v0.2.zip
+- oorexx_managed_node_host_profile_v0.1-dev1.zip
+- job_node_allocator_v0.6.zip
+- oorexx_oracle_managed_node_increment_20260901_v1.zip
+- oorexx_semantic_source_control_v0.2.3.zip
+- oorexx_access_permissions_v0.2.zip
+- institutional_policy_v0.8.zip
+- security_effect_v0.14.zip
+
+Storage Fabric remains authority-separate from these components; v0.1-dev7 publishes storage-locality, lifecycle and node/device-topology evidence without copying allocator, security, queue, source-control or provider-control authority.
+
+Dev6 exact integration fixtures:
+- extracted oorexx_api_client_v0.3 package SHA-256: 07a22f3d4c04f0589c7f6453c555f8fe8e4176b077c934d276648774dd4adfbc
+- extracted oorexx_secret_broker_v0.2 package SHA-256: c063a8e863547e8d5af427daee9b887590fdad76a65bc042b8f853acfd51e623
+
+Dev7 current ED209 test-fleet identities supplied for storage-topology qualification:
+- ed209a  Oracle     193.123.184.140
+- ed209b  Oracle     193.123.190.35
+- ed209c  Microsoft  52.146.17.8       (disposable Azure trial workspace)
+- ed209d  AWS        16.170.244.216
+
+Endpoint addresses are observations, not stable node identity. No remote capacity is invented from these endpoint declarations. Observed Azure block devices remain unqualified unless separately admitted as StoragePool/capacity domains.

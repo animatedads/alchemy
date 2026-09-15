@@ -1,0 +1,72 @@
+All Japan Insurance Wire UI Web v0.2 - Validation
+=================================================
+
+Qualification date: 2026-08-28
+
+Purpose
+-------
+v0.2 closes the v0.1 live-start gap by supplying a runnable authoritative
+AJI Wire UI application/bootstrap service.  The browser shell remains a
+projection client and does not manufacture AJI insurance authority.
+
+Qualified stack
+---------------
+- ooRexx 5.3.0 r13196 Internal Test Version
+- Wire UI Server v0.17
+- Wire UI Builder v0.11
+- Alchemy Wire UI JS v0.4-dev4
+- Queue Fabric v0.9-dev4
+- Queue Fabric Web Gateway v0.2
+- Alchemy Objects v0.8
+- ooRexx Crypto v0.5
+- oorexxapis(20260828-191905).zip roll-up
+
+Results
+-------
+- Browser bootstrap config Node tests: 2/2 PASS
+- Browser projection-shell authority boundary: PASS
+- Non-authoritative preview boundary: PASS
+- Authoritative-service/browser boundary: PASS
+- Starter script live/preview contract: PASS
+- Real live round trip:
+    ooRexx AJI WireUIApplication
+      -> Wire UI Server v0.17
+      -> Queue Fabric
+      -> Web Gateway v0.2
+      -> WebSocket
+      -> Alchemy Wire UI JS v0.4-dev4
+      -> browser semantic action
+      -> authoritative AJI policy drill-down
+  PASS
+- Builder v0.11 -> Wire UI Server v0.17 exact-definition contract: PASS
+- Compiled-release source lock: PASS
+- Complete package suite: PASS
+
+Live-start acceptance
+---------------------
+`./start.sh --live` owns both development processes by default:
+- browser shell:          http://127.0.0.1:8082/
+- authoritative bootstrap: http://127.0.0.1:8090/wire-ui/bootstrap
+
+The authoritative service publishes browser-safe bootstrap material and a
+WebSocket gateway.  The live release is ALL_JAPAN_INSURANCE_OPERATIONS@2.
+The server-side sample projection is explicitly labelled
+AUTHORITATIVE_DEVELOPMENT_FIXTURE; it is not a replacement for the
+production AJI v0.10 application/service repository.
+
+Compatibility correction from v0.1
+----------------------------------
+v0.1 used SUMMARY/TIMELINE semantic primitives that are not supported by the
+current Alchemy Wire UI JS v0.4-dev4 semantic adapter.  v0.2 uses supported
+SEMANTIC_RECORD and OFFER_LIST primitives with explicit field bindings.
+
+Final clean-package acceptance
+------------------------------
+- Manifest entries verified after clean unzip: 113/113 OK
+- Complete suite rerun from clean unzip: PASS
+- Combined self-start launcher checked from clean unzip on alternate ports
+  18082/18090:
+    /__health             -> 200 live ALL_JAPAN_INSURANCE
+    /wire-ui/bootstrap    -> 200 authoritative browser-safe bootstrap
+    gatewayUrl            -> ws://127.0.0.1:18090/wire-ui?...private token...
+    release               -> ALL_JAPAN_INSURANCE_OPERATIONS@2

@@ -1,0 +1,17 @@
+ooRexx 5.3.0 r13196
+oorexx_journal_pointed_state_v0.1
+federationbank_merchant_bank_v0.15 (integration adapter/tests only)
+oorexx_queue_fabric_v0.9-dev4
+alchemy_objects_v0.8
+oorexx_crypto_v0.5 (transitive Queue Fabric/Alchemy dependency; qualified from oorexxapis(20260828-192054))
+accounting_core_v0.7 (event accounting.event/0.1; transaction accounting.transaction/0.1; posting accounting.posting/0.2; durable store accounting.store/0.1; scope accounting.scope/0.1; reporting accounting.reporting/0.1)
+json.cls from ooRexx 5.3.0 runtime
+
+Accounting Core v0.7 retains the 50-digit package-level accounting compatibility contract and append-only durable store adopted in VMM v0.10, and adds generic scope/reporting, tax and settlement facilities. VMM v0.11 consumes scope/reporting only; no VMM tax-determination or cash-rounding policy is introduced by this cut.
+
+Queue Fabric targeted validation additionally used:
+nosqlserver_v0.79
+runtime_registry_v0.14
+
+Current-roll-up context:
+oorexxapis(20260828-192054) also contains all_japan_insurance_v0.9 and oorexx_access_permissions_v0.1. AJI v0.9 is an independent institutional counterparty, not a VMM runtime dependency. Access Permissions is a sibling exact object x method authority component; v0.11 does not wire it decoratively into queue-only VMM boundaries.

@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "arch.vmm.security-seams",
+  "version": "0.1",
+  "sphere": "vector-meridian-markets",
+  "title": "Security seams: queue authority is not object-method permission",
+  "summary": "VMM uses distinct authority mechanisms at distinct seams. Queue Fabric ACL/message admission protects cross-company and venue boundaries; exact object×method permission belongs only where a VMM object method is actually exposed through Security Manager.",
+  "invariants": [
+    "Do not decorate queue-only message boundaries with Access Permissions merely because the module exists.",
+    "Federation principals have no ACL on VMM direct-institutional default/close-out product queues.",
+    "The browser never receives VMM engine/service/Queue Fabric authority objects.",
+    "When a protected VMM method is exposed through Security Manager, evaluate exact object×method permission there."
+  ],
+  "authority": "project-authoritative",
+  "provenance": [
+    {
+      "artifact": "vector_meridian_markets_v0.11.zip",
+      "sha256": "4ebde9b8ca4ca158906bd42d4367bb3040b83b598b8bd41850addfe6518e3509",
+      "member": "vector_meridian_markets_v0.11/docs/ARCHITECTURE.md",
+      "line_start": 77,
+      "line_end": 87,
+      "claim": "One-book boundary plus explicit rule that Access Permissions is not decoratively applied to Queue Fabric message boundaries."
+    },
+    {
+      "artifact": "vector_meridian_markets_wire_ui_web_v0.3.zip",
+      "sha256": "b988c0f4677bb094e92c9aa8245425cc3c5f0687eda66083a5a5df2d7de481b9",
+      "member": "vector_meridian_markets_wire_ui_web_v0.3/docs/FRONTEND_BOUNDARY.md",
+      "line_start": 24,
+      "line_end": 41,
+      "claim": "Browser/service authority separation and exact action-layer rule."
+    }
+  ]
+}

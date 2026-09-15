@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "kl10.current-continuation",
+  "version": "0.1-dev3",
+  "sphere": "kl10",
+  "title": "Current TOPS-20 / KL10 continuation frontier",
+  "summary": "Preserve the qualified baseline and distinguish event convergence from machine-state convergence: the historical pre_041342 fixture correctly reproduces the CST-age-zero fetch event, but its wider CPU/APR state is not equivalent to the newly authentic 512K replay arrival.",
+  "procedure": [
+    "Treat f8a304b as the qualified restart baseline unless a later qualified KL10 package explicitly supersedes it.",
+    "Keep the historical 256K default behavior distinguishable from an explicit KL10B minimum-memory profile; do not silently enlarge every machine.",
+    "Qualify the explicit 1024-page / 512K-word memory profile through both EXB and raw-tape loading paths.",
+    "Replay the preserved pre_nxm_refusal state with the second 256K installed and confirm that 071724 SETZM and 071730 BLT no longer signal NXM.",
+    "Use the historical pre_041342 fixture only as an event oracle: its next fetch must fault with CST_AGE_ZERO at VA 041342, page-fail word 001000,,041342, vector 044414, and post-fault ICOUNT 1253190.",
+    "Do not use historical pre_041342 as a complete-machine restart point: its APR and several AC left halves differ from the newly authentic replay report.",
+    "Produce a new frozen checkpoint from the authentic 512K replay immediately before the 041342 fetch and compare full AC blocks, pager/APR state, UPT/TLB, CST entries, serialized memory, and page-fail frame against the historical fixture.",
+    "Only promote state that is reached from the authentic 512K path and passes the wider regression suite."
+  ],
+  "invariants": [
+    "The earlier 071724/071730 NXM was caused by the configured 256K physical-memory boundary, not malformed PNRCOD and not BLT retirement semantics.",
+    "POSTLD deliberately relocates NRCOD into section 1 and records the relocated address in PNRCOD; PGRINI allocates CST storage after that image.",
+    "With 512K words installed, the preserved replay executes 10,848 additional authentic instructions and reaches 041342 with APR flags reported as zero.",
+    "The historical pre_041342 fixture is event-convergent but not full-state-convergent: its one-step fault is genuine, while APR=002000 and AC0/AC2/AC17 retain different left halves.",
+    "Historical pre_041342 may serve as a focused CST-age-zero regression oracle but not as an unquestioned continuation checkpoint.",
+    "Do not revive the old bogus NXM/BUGHLT future or synthetic UPT/TLB fixes merely because they reach a familiar downstream PC."
+  ],
+  "selectors": []
+}

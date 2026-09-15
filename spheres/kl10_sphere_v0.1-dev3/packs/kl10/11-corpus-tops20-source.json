@@ -1,0 +1,56 @@
+{
+  "kind": "corpus",
+  "id": "kl10.tops20-source",
+  "sphere": "kl10",
+  "title": "TOPS-20 V7 guest-oracle source",
+  "records": [
+    {
+      "id": "tops20.v7.pagem",
+      "authority": "PRIMARY_GUEST_SOURCE",
+      "title": "PAGEM.MAC",
+      "url": "https://github.com/PDP-10/tops20-build/blob/456fed1f22b196f987375d35a1145f4d41c35703/src/monitor/pagem.mac",
+      "topics": ["paging", "PGRINI", "memory-management", "CST", "section-maps"],
+      "use": "Guest oracle for paging initialization, CST construction and monitor map management."
+    },
+    {
+      "id": "tops20.v7.pagutl",
+      "authority": "PRIMARY_GUEST_SOURCE",
+      "title": "PAGUTL.MAC",
+      "url": "https://github.com/PDP-10/tops20-build/blob/456fed1f22b196f987375d35a1145f4d41c35703/src/monitor/pagutl.mac",
+      "topics": ["PGRINI", "MEMOFF", "memory-scan", "NXM", "page-fault-handler"],
+      "use": "Contains the PGRINI memory scan and MEMOFF recovery path that deliberately handles NXM after the special handler is installed."
+    },
+    {
+      "id": "tops20.v7.aprsrv",
+      "authority": "PRIMARY_GUEST_SOURCE",
+      "title": "APRSRV.MAC",
+      "url": "https://github.com/PDP-10/tops20-build/blob/456fed1f22b196f987375d35a1145f4d41c35703/src/monitor/aprsrv.mac",
+      "topics": ["APR", "PI", "page-fault", "UPT", "NXM", "parity", "BUGHLT"],
+      "use": "Guest oracle for APR conditions, page-fault classification/dispatch, UPT variables and hard-error recovery."
+    },
+    {
+      "id": "tops20.v7.postld",
+      "authority": "PRIMARY_GUEST_SOURCE",
+      "title": "POSTLD.MAC",
+      "url": "https://github.com/PDP-10/tops20-build/blob/456fed1f22b196f987375d35a1145f4d41c35703/src/monitor/postld.mac",
+      "topics": ["POSTLD", "PNRCOD", "NRCOD", "image-layout", "section-1"],
+      "use": "Explains monitor-image relocation before boot. In particular, MOVNRC relocates NRCOD into section 1 and records its postload address in PNRCOD for PGRINI."
+    },
+    {
+      "id": "tops20.v7.boot",
+      "authority": "PRIMARY_GUEST_SOURCE",
+      "title": "BOOT.MAC",
+      "url": "https://github.com/PDP-10/tops20-build/blob/456fed1f22b196f987375d35a1145f4d41c35703/src/monitor/boot.mac",
+      "topics": ["BOOT", "physical-memory", "TSTMEM", "HIADDR", "EXE-loader", "RH20"],
+      "use": "Guest oracle for memory probing, EXE loading and pre-monitor machine setup."
+    },
+    {
+      "id": "tops20.v7.stg",
+      "authority": "PRIMARY_GUEST_SOURCE",
+      "title": "STG.MAC",
+      "url": "https://github.com/PDP-10/tops20-build/blob/456fed1f22b196f987375d35a1145f4d41c35703/src/monitor/stg.mac",
+      "topics": ["storage-layout", "PSB", "UPTPG", "BUGLCK", "monitor-symbols"],
+      "use": "Use to identify monitor data structures, special PSB/UPT pages and resident variables encountered in traces."
+    }
+  ]
+}

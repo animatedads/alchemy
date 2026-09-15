@@ -1,0 +1,25 @@
+SAFETY17 CHECKPOINT
+===================
+Parent: sealed safety16
+Promoted: System/370 primary X'C4' as BC-mode operation exception classifier entry
+No OPC4 method exists. No OP62 method exists.
+
+Exact C4 frontier:
+  IA       000042
+  ICOUNT   527364
+  BYTES    C4E80C000000
+  PSW      0004000160000042
+
+Exact retry:
+  PGM OLD  00040001E0000048
+  PGM NEW  00040000000002CA
+  NEXT IA  0002CA
+  ICOUNT   527365
+
+Forward progress:
+  1727 successful instructions
+  next boundary X'62' @ 000050
+  ICOUNT 529092
+  fetch 62E050000001
+
+Validation: COMPILE PASS 129 sources; RUNTIME PASS 66 tests.

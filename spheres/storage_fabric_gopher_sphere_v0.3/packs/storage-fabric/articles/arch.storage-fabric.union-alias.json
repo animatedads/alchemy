@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.union-alias",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "TVFS-inspired ordered search paths and fluid aliases",
+  "summary": "StorageUnionView borrows the useful TVFS/search-path idea: unrelated namespace roots can be overlaid in priority order. StoragePathAlias resolves its target at access time, allowing the target to move/advance while an alias retains independent route policy.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "First matching layer shadows lower duplicate names; lower-only names remain visible.",
+    "Union composition does not copy objects or merge capacity domains.",
+    "An alias is dynamic path indirection rather than a frozen copy of the target StorageRef.",
+    "Alias loops fail closed.",
+    "This is a TVFS-inspired project namespace design, not a claim of implementing historical TVFS.IFS compatibility."
+  ],
+  "procedure": [],
+  "topics": [
+    "TVFS",
+    "union",
+    "search-path",
+    "alias"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_union_search_path.rex",
+      "claim": "Regression proves ordered TVFS-style union resolution and duplicate-name shadowing."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_alias_views.rex",
+      "claim": "Regression proves fluid path aliases, independent route policy and alias-loop failure."
+    }
+  ]
+}

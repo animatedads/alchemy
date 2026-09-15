@@ -1,0 +1,11 @@
+{
+  "schema": "oorexx.foreign/0.11",
+  "library": {"provider":"native","path":"./libcrypto_compat.so"},
+  "functions": {
+    "edwards25519_add": {"symbol":"compat_edwards25519_add","return":"i32","args":["bytes","u32",{"type":"pointer","direction":"out"}]},
+    "edwards25519_multiply": {"symbol":"compat_edwards25519_multiply","return":"i32","args":["bytes","u32",{"type":"pointer","direction":"out"}]},
+    "x25519_public": {"symbol":"compat_x25519_public","return":"i32","args":["bytes","u32",{"type":"pointer","direction":"out"}]},
+    "x25519_shared": {"symbol":"compat_x25519_shared","return":"i32","args":["bytes","u32",{"type":"pointer","direction":"out"}]},
+    "ed448_keypair": {"symbol":"compat_ed448_keypair","return":"i32","args":["bytes","u32",{"type":"pointer","direction":"out"}]}
+  }
+}

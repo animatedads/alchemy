@@ -1,0 +1,22 @@
+{
+  "id": "job-node-allocator.durable-recovery",
+  "title": "Durable placement state and restart recovery",
+  "section": "architecture",
+  "summary": "Committed placement snapshots are append-only durable state. Recovery restores current placement/lease state and reconciles WLU reservations rather than manufacturing fresh authority after restart.",
+  "invariants": [
+    "Restart must not silently extend lease/freshness.",
+    "Durable state is evidence of committed placement, not a substitute for current liveness/capacity verification."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "job-node-allocator",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6.zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

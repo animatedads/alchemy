@@ -1,0 +1,57 @@
+ooRexx Unix Socket v0.6 Foreign Runtime ABI-native-scalar validation
+
+Build/qualification inputs:
+ooRexx r13196 deb SHA-256: 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+Foreign Runtime v0.22.6 supplied zip SHA-256: 25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465
+Unix Socket v0.5 baseline zip SHA-256: 6d3f44a913d97768bb5be160ca7d5abd412d8f774f1ca78496c72f1403c17d53
+Rebuilt Foreign Runtime libforeign_runtime.so SHA-256: 69e17621ccde0634d34754b945bb93bb355d64a47ca44bd71f63c706e878790f
+
+Foreign Runtime v0.22.6 rebuilt-binary full suite under supplied ooRexx r13196:
+PASS thread-safety activities
+PASS 128 assertions
+PASS i8/u8 scalar and struct-field support 18 assertions
+PASS ABI profile qualification 17 assertions
+PASS ABI-native C scalar aliases 23 assertions
+PASS managed struct pointer graph and binary buffer slices
+PASS library candidate fallback
+PASS metadata-gated UNKNOWN rejects undefined method
+PASS provider serialized threading policy
+PASS cross-thread callback rejected by call-thread policy
+PASS Foreign Runtime -> POSIX openpty/poll/exact-binary/errno
+OPTIONAL Vulkan-hardware SKIP reason=no-matching-non-CPU-Intel-device
+PASS Python provider activity stress
+PASS optional OpenSSL metadata probe
+PASS OpenSSL EVP SHA-256 via Foreign Runtime
+PASS automatic OpenSSL EVP SHA-256 outputs via Foreign Runtime
+PASS OpenSSL one-shot SHA-256/SHA-512 exact binary bytes via Foreign Runtime
+PASS Foreign Runtime -> FFmpeg avformat open/find/close
+PASS Foreign Runtime -> FFmpeg AVChannelLayout struct
+PASS Foreign Runtime -> FFmpeg planar uint8_t **
+QUALIFICATION prebuilt-binary interpreter=Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+
+Unix Socket v0.6 release suite:
+PASS qualified ABI bridge resolves relative to unixsocket.cls profile= linux-x86_64-le-lp64
+PASS bridge ABI metadata matches C headers profile=linux-x86_64-le-lp64 constants=67 types=6
+PASS stock socket.cls rejects AF_UNIX as expected
+PASS mismatched ABI profile rejected before dlopen
+PASS Foreign Runtime boundary version= 0.22.6 abi= linux-x86_64-le-lp64 provider=/lib/x86_64-linux-gnu/libc.so.6
+PASS Unix Socket ABI-native C scalar binding 18 assertions
+PASS class smoke: socketpair, binary send/recv, peer credentials
+PASS path client
+PASS path server
+PASS abstract client
+PASS abstract server
+PASS pathname SOCK_DGRAM sendTo/recvFrom with binary payload and sender address
+PASS unbound SOCK_DGRAM sender is represented as UNNAMED
+PASS datagram truncation is surfaced explicitly
+PASS SCM_RIGHTS descriptor transfer, ownership release, and live socket use
+PASS SCM_RIGHTS ancillary truncation fails closed errno=90
+PASS created and SCM_RIGHTS-received descriptors default to CLOEXEC
+PASS SOCK_DGRAM and SOCK_SEQPACKET socketPair transport
+PASS nonblocking mode, would-block classification, semantic poll readiness, and sendAll safety
+PASS explicit SO_RCVBUF/SO_SNDBUF whitelist with kernel-normalized values
+PASS socket-only pathname inspection, pinned chmod/chown, and non-socket unlink refusal
+PASS kernel per-message SCM_CREDENTIALS and combined ancillary receive
+PASS abstract SOCK_DGRAM sendTo/recvFrom
+PASS binary-safe Linux abstract namespace names including embedded NUL
+PASS ALL ooRexx Unix Socket v0.6 Foreign Runtime ABI-native-scalar tests

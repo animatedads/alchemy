@@ -1,0 +1,24 @@
+{
+  "id": "nosqlserver.database-core",
+  "title": "Database Core compatibility is an adapter, not namespace fusion",
+  "section": "integration",
+  "summary": "NoSQLServer exposes a namespaced Database Core adapter because both packages publish overlapping public class names with different observable semantics. Do not ::requires both complete class sets into one package namespace merely to gain compatibility.",
+  "invariants": [
+    "Preserve native DatabaseRow, DatabaseValue, transaction, planner and staged-publication semantics.",
+    "Capability queries are preferred to engine-name tests.",
+    "Common error/operation aliases are acceptable only where semantics truly match.",
+    "The adapter is a compatibility boundary, not authority to redesign the native engine."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "nosqlserver",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "nosqlserver_v0.79.zip",
+      "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec",
+      "member": "nosqlserver_v0.79/COMPATIBILITY_DATABASE_CORE_v0.34.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

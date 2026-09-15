@@ -1,0 +1,24 @@
+{
+  "id": "foreign-runtime.tensor",
+  "title": "ForeignTensor, DLPack and provider-neutral descriptor",
+  "section": "architecture",
+  "summary": "ForeignTensor retains an independent provider/Python reference, exposes dtype/shape/byte-strides/device metadata, keeps DLPack capsules provider-internal, and offers native descriptor export with pin/release. NumPy/Torch zero-copy is explicitly qualified on CPU.",
+  "invariants": [
+    "DLPack capsules never cross into ooRexx.",
+    "Torch element strides are normalized to bytes.",
+    "Closing the source proxy must not invalidate an independently retained ForeignTensor.",
+    "Generic CPU consumers must reject non-CPU device tensors."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "foreign-runtime",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6.zip",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "member": "oorexx_foreign_runtime_v0.22.6/HANDOVER.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

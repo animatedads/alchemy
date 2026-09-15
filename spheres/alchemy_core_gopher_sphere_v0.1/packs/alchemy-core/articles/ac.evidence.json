@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "ac.evidence",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Results and receipts are terminal evidence, not decision authority",
+  "summary": "AlchemyAutobuildEvidence records an already-made orchestration outcome. It persists result JSON, per-test stdout/stderr and a terminal receipt together through accepted-main transaction; the receipt is the idempotency surface for subsequent scans.",
+  "authority": "project-authority",
+  "invariants": [
+    "Evidence does not execute packages and does not decide PASS/FAIL.",
+    "A receipt path is autobuild/receipts/<submission-id>.json and is terminal/idempotent.",
+    "Result evidence records package, source, publication, per-test status/return code/timeout/cwd, bounded environment and log paths.",
+    "An existing receipt is preserved; it is not replaced by a later run using the same submission id."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_autobuild_evidence_v0.3/src/AlchemyAutobuildEvidence.cls",
+      "line_start": 1,
+      "line_end": 13,
+      "claim": "Evidence authority boundary and schemas."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_autobuild_evidence_v0.3/src/AlchemyAutobuildEvidence.cls",
+      "line_start": 95,
+      "line_end": 129,
+      "claim": "Receipt existence/idempotency."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_autobuild_evidence_v0.3/src/AlchemyAutobuildEvidence.cls",
+      "line_start": 131,
+      "line_end": 209,
+      "claim": "Result/log/receipt persistence in one accepted-main transaction."
+    }
+  ]
+}

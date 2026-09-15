@@ -1,0 +1,59 @@
+{
+  "kind": "article",
+  "id": "arch.civicport.jms-swim",
+  "version": "0.1",
+  "sphere": "civicport",
+  "title": "JMS to AlchemyQueue bridge and durable SWIM ingress",
+  "summary": "CivicPort consumes Java-neutral durable JMSBridgeMessage evidence from Queue Fabric. The side-by-side JMS bridge owns Java/BSF/JNDI/provider lifecycle and Secret Broker credential leases; CivicPort journals before Queue ACK and then parses rich SWIM XML.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "CivicPort never directly connects to JMS.",
+    "JMS provider URL/connection factory/destination/VPN are bridge-side connection authority; username/password material belongs behind Secret Broker references/leases.",
+    "The durable bridge message identity is alchemy.jms.message/0.1 on the current TEXT path.",
+    "CivicQueueIngestor appends Civic evidence before ACK.",
+    "Crash after Civic journal append but before ACK is recovered by Queue Fabric redelivery plus Civic duplicate recognition; this is at-least-once with idempotent local evidence, not XA.",
+    "Same JMS source identity with different evidence is SOURCE_IDENTITY_CONFLICT and must not be ACKed as a duplicate.",
+    "SWIM XML parsing begins only from the frozen CivicQueueDocument."
+  ],
+  "procedure": [
+    "Receive/persist/settle JMS in the bridge, not CivicPort.",
+    "Claim the persistent AlchemyQueue package.",
+    "Freeze bridge envelope into CivicQueueDocument and append CivicQueueJournal.",
+    "ACK only after durable journal success or exact duplicate recognition.",
+    "Parse rich XML and semantic projections after the durability handoff."
+  ],
+  "provenance": [
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "ARCHITECTURE.md",
+      "line_start": 95,
+      "line_end": 169,
+      "claim": "JMS bridge separation, Secret Broker boundary, append-before-ACK recovery and journal integrity."
+    },
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "ARCHITECTURE.md",
+      "line_start": 171,
+      "line_end": 215,
+      "claim": "JMS TextMessage evidence definition, SWIM XML/disclosure metadata and current dependency pins."
+    },
+    {
+      "artifact": "oorexx_jms_queue_bridge_v0.2-dev1.zip",
+      "sha256": "94b45b6fe8606b85e8f8158c974fb8717ae37c0c1edf36f11da661d72125c1b8",
+      "member": "README.md",
+      "line_start": 1,
+      "line_end": 42,
+      "claim": "Historical side candidate documents the generic Java boundary and inbound at-least-once/idempotent insertion architecture."
+    },
+    {
+      "artifact": "oorexx_jms_queue_bridge_v0.2-dev1.zip",
+      "sha256": "94b45b6fe8606b85e8f8158c974fb8717ae37c0c1edf36f11da661d72125c1b8",
+      "member": "README.md",
+      "line_start": 75,
+      "line_end": 123,
+      "claim": "Historical side candidate established the Secret Broker credential lease boundary and endpoint-authority separation later absorbed by the consolidated bridge line."
+    }
+  ]
+}

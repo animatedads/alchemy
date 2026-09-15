@@ -1,0 +1,27 @@
+{
+  "schema": "alchemy.objects.method-interposition-contract/0.1",
+  "base_version": "0.8",
+  "provider_id": "ALCHEMY.EXECUTION_PROVENANCE",
+  "priority": 1000,
+  "required_protocol_methods": [
+    "__methodInterpositionAdd",
+    "__methodInterpositionRemove",
+    "methodInterpositionStatus"
+  ],
+  "provider_callbacks": [
+    "before(receiver, methodName, arguments)",
+    "after(receiver, methodName, token, result)",
+    "failure(receiver, methodName, token, conditionObject)"
+  ],
+  "ordering": {
+    "external_coordinator_first": "Alchemy joins the existing coordinator and does not install another physical wrapper.",
+    "alchemy_first": "Alchemy keeps its direct wrapper; a later coordinator may wrap and later restore that exact object method.",
+    "unsafe_direct_release": "Alchemy refuses to remove its direct layer while an outer coordinator remains active."
+  },
+  "security": {
+    "instrument_mutations": "INSTRUMENTMETHOD, INSTRUMENTREGISTEREDMETHODS and UNINSTRUMENTMETHOD are PROTECTED.",
+    "callback_authority": "An opaque per-object identity token is required by the public callback bridge.",
+    "coordinator_trust": "Protocol presence is instrumentation compatibility evidence, not execution authority or cryptographic trust."
+  },
+  "introspection_schema": "alchemy.objects.method-interposition/0.1"
+}

@@ -660,4 +660,4 @@
   if current~outstandingCount<>0 | current~errorCount<>0 | current~dirtyCount<>0 then return .false
   return current~seal
 
-::requires "StorageStreaming.cls"
+::requires "vendor/storage_fabric/StorageStreaming.cls"

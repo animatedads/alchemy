@@ -1,0 +1,19 @@
+{
+  "kind": "article",
+  "id": "ref.python-best-practices.using-and-splices",
+  "version": "0.1",
+  "sphere": "python-best-practices",
+  "title": "Applying this sphere and its example splices",
+  "summary": "Consult this sphere's rule documents (rules show) and articles before editing Python, and use the bundled example method splices as replacement_path inputs to source.python.method.edit for safe, single-method changes.",
+  "procedure": [
+    "Open this article set with `gopher --profile python-best-practices context python-best-practices`.",
+    "Before a structural edit, prefer `gopher ... source.python.method.edit` so the change is AST-scoped; read article edits.preserve-unrelated-bytes first.",
+    "For a clean, tested reference body to replace into a method, read one of the examples/python-method/*.py.frag files in this activated archive and reference it as the replacement_path.",
+    "Verify with `gopher --profile python-best-practices rules check <file>.py --language python` to confirm the four statically-detectable core breaches stay clear, then re-read the module for the intent-based guides from this sphere."
+  ],
+  "invariants": [
+    "A sphere never edits engine/gopher.py; added python rule documents are reference guidance surfaced by rules show, not extra executed rule-check breaches.",
+    "Example splices are one complete method each and are validated as a single class member before commit.",
+    "If Python artefacts in your checkout differ from these canonical bases, your checkout is authoritative for its own edits; this sphere is reference."
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.heredocs.quote-the-delimiter-to-avoid-expansion",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Quote a heredoc delimiter to keep the contents literal",
+  "summary": "A heredoc whose delimiter is unquoted expands $VAR, backticks and command substitutions in the body, which silently corrupts anything meant verbatim (a JSON document, a help message with $QUEUE_ROOT, a template to ship). Quoting the delimiter (<<'EOF') makes the body literal. Choose quoted-heredoc by default for files and static descriptors; reserve unquoted heredocs for the rare place you genuinely want expansion.",
+  "technique": "Static descriptors and JSON are written with `cat <<'JSON'` so nothing in the body is expanded. Generated content destined to become a script re-asserts its own strict mode inside, but is itself produced via a quoted heredoc template so the generated code is not mangled while being written.",
+  "evidence_note": "providers.d/ask/anthropic.sh:10-26 emits a static JSON contract via `cat <<'JSON'`; queuebash.sh creates embedded child tools via a quoted heredoc (with set -euo pipefail inside), and bin tools keep their literal-name help as quoted heredocs. Bin/queue-vcs-probe uses the quoted `python3 - <<'PY'` for JSON so no bash expansion touches the python source.",
+  "invariants": [
+    "Quote a heredoc delimiter (<<'EOF') whenever the body must be taken verbatim.",
+    "Use an unquoted heredoc only where you positively want the body's variables expanded.",
+    "Emit code/data from a quoted heredoc template so $ and backticks in the payload survive.",
+    "Never rely on an unquoted heredoc when the body is JSON or help text containing $ or {}."
+  ]
+}

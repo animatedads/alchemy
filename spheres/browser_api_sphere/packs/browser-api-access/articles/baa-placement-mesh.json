@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "baa-placement-mesh",
+  "version": "0.1",
+  "sphere": "browser-api-access",
+  "title": "Placement lease and egress session are separate allocations",
+  "summary": "API-specific jobs can legitimately require two allocations: a general placement lease followed by an API egress-session reservation. They mesh through identity, requirements, generations and proofs but remain separate authorities.",
+  "authority": "project-authority",
+  "invariants": [
+    "A placement lease answers whether the job may execute on a node.",
+    "An egress session answers whether an outbound operation may use a particular route now.",
+    "Failure to allocate egress does not necessarily invalidate job placement.",
+    "Invalid or expired placement must stop browser/job side effects before attempting a new outbound operation.",
+    "Current ownership epoch is necessary but not sufficient; requirement, capability, capacity and policy evidence must remain valid.",
+    "Long-lived browser sessions must not treat same-node execution as proof that placement is still valid."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6(1).zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "line_start": 43,
+      "line_end": 54,
+      "claim": "Lease expiry and verification are bound to fresh capacity, capability generation, policy generation and evidence digests.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "job_node_allocator_v0.6(1).zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "line_start": 80,
+      "line_end": 99,
+      "claim": "Allocator defines normal placement/recovery and the separate API work composition.",
+      "note": "Authoritative executable-candidate grounding."
+    }
+  ]
+}

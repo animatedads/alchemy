@@ -1,0 +1,109 @@
+Legal Effect v0.14 validation transcript
+========================================
+
+Environment
+-----------
+ooRexx 5.3.0 r13196
+Runtime Registry v0.12
+Structured Relation v0.9
+HardWorld v0.23
+Alchemy Objects v0.4.3
+oorexx_crypto v0.1
+
+Semantic/security gates
+-----------------------
+core                              20/20 PASS
+temporal/jurisdiction              3/3 PASS
+modification effects              38/38 PASS
+rule sealing                      17/17 PASS
+semantic identity                  6/6 PASS
+authority conflicts               26/26 PASS
+structured decision trace         61/61 PASS
+decision trace query              46/46 PASS
+counterfactual evaluation         63/63 PASS
+conflict of laws                   8/8 PASS
+compiler boundary                 29/29 PASS
+compiler semantic kinds           12/12 PASS
+source verification               23/23 PASS
+compilation snapshot              15/15 PASS
+source authority                  30/30 PASS
+real Ed25519                       4/4 PASS
+Alchemy Object integration        48/48 PASS
+Structured native source verify   25/25 PASS
+TOTAL                            474/474 PASS
+
+Counterfactual-specific checks
+------------------------------
+- unresolved LICENCE_ACTIVE base decision => REVIEW_REQUIRED PASS
+- CONTEXT LICENCE_ACTIVE=FALSE => actual engine result ADMISSIBLE PASS
+- CONTEXT LICENCE_ACTIVE=TRUE => actual engine result BLOCKED / PROHIBITED PASS
+- both boolean branches are executed, not inferred PASS
+- assumption fact authority visible as COUNTERFACTUAL_ASSUMPTION PASS
+- original assessment/trace unchanged PASS
+- repeated identical assumption => identical counterfactualIdentity PASS
+- repeated boolean branch set => identical setIdentity PASS
+- ACTION_OVERRIDE RATE_CUT=FALSE overrides original RATE_CUT=TRUE on copied action only PASS
+- ACTION_OVERRIDE same-value RATE_CUT=TRUE => legallyMaterial=false despite distinct hypothetical trace PASS
+- authority-condition counterfactual changes resolved conflict into REVIEW_REQUIRED unresolved conflict PASS
+- conflict/source-anchor deltas retained PASS
+- explicit UNKNOWN assumption is evaluated rather than predicted PASS
+- invalid fact state/scope and empty fact name fail closed PASS
+- result collections copy-on-read PASS
+- counterfactual service exposes Alchemy operational identity/contracts while result values remain non-Alchemy PASS
+
+Cross-package gates
+-------------------
+Structured Relation bridge        PASS
+HardWorld v0.23 bridge             PASS
+Runtime Registry v0.12 bridge      PASS
+Runtime deterministic bundle       PASS
+  bundle_units=8
+  bundle_lines=10865
+  local_requires=9
+Runtime evidence chain             PASS
+  output status=REVIEW_REQUIRED
+HardWorld promotion compatibility  PASS
+  disposition=BLOCKED
+
+Demos
+-----
+authority_conflict_demo.rex        PASS
+compiler_boundary_demo.rex         PASS
+counterfactual_demo.rex             PASS
+decision_trace_demo.rex            PASS
+decision_trace_query_demo.rex      PASS
+food_delivery_demo.rex             PASS
+framework_snapshot_demo.rex        PASS
+
+Class compilation
+-----------------
+LegalEffect.cls                     PASS
+LegalRuntimeCryptoBridge.cls        PASS
+LegalEffectAuthorityTestSupport.cls PASS
+DemoCodeEvidenceRules.cls           PASS
+DemoLegalRules_manual.cls           PASS
+DemoLegalRules_unattested.cls       PASS
+DemoLegalRules_v1.cls               PASS
+DemoLegalRules_v2.cls               PASS
+CLASS_COMPILE_COUNT=8 PASS
+
+Candidate artifact acceptance
+-----------------------------
+MANIFEST.sha256                    46/46 PASS
+Explicit assertions               474/474 PASS
+Structured Relation bridge        PASS
+Structured native-source verify   25/25 PASS
+HardWorld v0.23 bridge             PASS
+Runtime Registry v0.12 bridge      PASS
+Runtime deterministic bundle       PASS (8 units / 10865 lines / 9 local requires)
+Cumulative integration batch       RESOURCE/TIME INTERRUPT inside runtime-evidence chain after prior crypto gates
+Runtime evidence chain rerun       PASS
+HardWorld promotion rerun          PASS
+Seven demos                        7/7 PASS
+Class compile                       8/8 PASS
+
+The cumulative interruption was a wall-clock/resource event, not an assertion failure. Every interrupted or remaining gate was rerun from the same cleanly extracted candidate.
+
+Final artifact acceptance
+-------------------------
+Pending final archive rebuild after validation metadata/manifest update; exact final-byte smoke is appended before release.

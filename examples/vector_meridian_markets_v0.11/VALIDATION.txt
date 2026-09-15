@@ -1,0 +1,105 @@
+Vector Meridian Markets Ltd v0.11 validation
+Date: 2026-08-28
+
+Runtime
+-------
+ooRexx 5.3.0 r13196 (Internal Test Version)
+
+Primary candidate dependencies
+------------------------------
+- Accounting Core v0.7
+  - accounting.event/0.1
+  - accounting.transaction/0.1
+  - accounting.posting/0.2
+  - accounting.store/0.1
+  - accounting.scope/0.1
+  - accounting.reporting/0.1
+- Journal Pointed State v0.1
+- FederationBank Merchant Bank v0.15 (integration qualification only)
+- Queue Fabric v0.9-dev4
+- Alchemy Objects v0.8
+- ooRexx Crypto v0.5 (transitive Queue Fabric/Alchemy dependency)
+
+Roll-up selection
+-----------------
+Qualified against oorexxapis(20260828-192054). The roll-up advances Accounting Core to v0.7, FederationBank Merchant Bank to v0.15 and ooRexx Crypto to v0.5. All Japan Insurance v0.9 is the current independent institutional-counterparty package but is not a VMM runtime dependency. oorexx_access_permissions_v0.1 is present as a sibling Security Manager permissions component and is deliberately not wired into VMM's queue-only message boundaries in v0.11.
+
+Accounting Core v0.7 qualification
+----------------------------------
+PASS:
+- test_civic_assessment.rex: 13 assertions
+- test_companies_house_walkabout.rex: 31 assertions
+- test_core.rex: 14 assertions
+- test_durable_transactions.rex: 9 assertions
+- test_four_company_chain.rex: 16 assertions
+- test_precision_persistence.rex: 26 assertions
+- test_scope_persistence.rex: 9 assertions
+- test_scopes_reporting.rex: 30 assertions
+- test_settlement_persistence.rex: 12 assertions
+- test_settlement_rounding.rex: 32 assertions
+- test_tax_determination.rex: 49 assertions
+- test_tax_persistence.rex: 15 assertions
+- test_transactions.rex: 41 assertions
+- total ooRexx: 297 assertions
+- test_reference_projection.py: 10 assertions
+
+VMM test suite
+--------------
+PASS 61/61
+
+v0.11 accounting/reporting regressions
+---------------------------------------
+- VMM accounting advances to vmm.accounting/0.11 and persistence to vmm.accounting.persistence/0.11;
+- new reporting protocol is vmm.accounting.reporting/0.11 over Accounting Core accounting.reporting/0.1 and accounting.scope/0.1;
+- VMM retains one VECTOR_MERIDIAN_MARKETS_LTD / VMM-STAT / ENTITY_GAAP book; reporting views do not repost or create desk books/legal entities;
+- posted journals carry exact vmm.businessLine and vmm.accountingFunction dimensions;
+- institutional-synthetics and treasury-funding boundaries filter the same immutable book correctly;
+- collateral/custody and XVA function boundaries filter independently;
+- Federation can remain a funding counterparty dimension but a boundary attempting to include Federation as a reporting entity is rejected;
+- reporting-boundary authority/evidence and exact VMM policy identity are required by the VMM wrapper;
+- business-line/function dimensions and report results survive AccountingFileStore restart;
+- package-level 50-digit VMM accounting-policy compatibility remains in force;
+- Accounting Core v0.7 generic tax and cash-settlement-rounding facilities are not adopted as VMM policy in this candidate.
+
+FederationBank Merchant Bank regression
+---------------------------------------
+federationbank_merchant_bank_v0.15: PASS 51/51
+Merchant Bank source was not modified.
+
+Queue Fabric targeted regression
+--------------------------------
+Against oorexx_queue_fabric_v0.9-dev4 using ooRexx Crypto v0.5, Alchemy Objects v0.8, NoSQLServer v0.79 and Runtime Registry v0.14:
+- test_queue_fabric.rex: 62 assertions PASS
+- test_queue_adversarial.rex: 71 assertions PASS
+- test_queue_mq_semantics.rex: 141 assertions PASS
+- test_queue_channels.rex: 85 assertions PASS
+- test_queue_release_boundary.rex: 10 assertions PASS
+
+Source compile
+--------------
+rexxc compiled all 15 VMM source/integration class files successfully.
+
+Protocol/version notes
+----------------------
+- package version: VMM 0.11
+- VMM accounting adapter: vmm.accounting/0.11
+- VMM accounting persistence: vmm.accounting.persistence/0.11
+- VMM accounting reporting: vmm.accounting.reporting/0.11 new
+- Accounting Core event API: accounting.event/0.1
+- Accounting Core transaction API: accounting.transaction/0.1
+- Accounting Core posting API: accounting.posting/0.2
+- Accounting Core durable store API: accounting.store/0.1
+- Accounting Core scope API: accounting.scope/0.1 new VMM dependency
+- Accounting Core reporting API: accounting.reporting/0.1 new VMM dependency
+- post-termination close-out operations: vmm.institutional.synthetic.closeout/0.9 unchanged
+- institutional default/termination: vmm.institutional.synthetic.default/0.8 unchanged
+- institutional lifecycle: vmm.institutional.synthetic.lifecycle/0.6 unchanged
+- institutional formation: vmm.institutional.synthetic/0.5 unchanged
+- Federation Merchant <-> VMM: vmm.federation.arm_length/0.3 unchanged
+- base execution: vmm.execution/0.4 unchanged
+- smart execution: vmm.smart-execution/0.4 unchanged
+
+Package integrity
+-----------------
+- MANIFEST.sha256: 92 entries; all verified
+- ZIP integrity and final archive SHA-256 are verified after packaging

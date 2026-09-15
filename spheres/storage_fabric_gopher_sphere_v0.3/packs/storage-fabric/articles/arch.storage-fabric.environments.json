@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.environments",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "LIVE, TEST and DEVELOPMENT as namespace generations",
+  "summary": "LIVE, TEST and DEVELOPMENT are environment projections over versioned storage objects rather than obligatorily duplicated directory trees. TEST/DEV can inherit immutable LIVE refs and diverge through change-set overlays.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Default route policy is VERSIONED for LIVE, COPY_ON_WRITE for TEST and TRACKED for DEVELOPMENT.",
+    "A TEST/DEV write must not mutate the LIVE base without an explicit promotion/merge operation.",
+    "Environment generations and change-set evidence are restart-persistent.",
+    "Promotion is generation-pinned: stale target generations fail preflight instead of silently rebasing.",
+    "Sharing immutable source objects across environments does not imply policy permission to expose restricted LIVE data to TEST/DEV."
+  ],
+  "procedure": [],
+  "topics": [
+    "LIVE",
+    "TEST",
+    "DEVELOPMENT",
+    "promotion",
+    "generation"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_environment_overlays.rex",
+      "claim": "Regression proves LIVE/TEST overlay semantics and generation-pinned promotion."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_environment_journal.rex",
+      "claim": "Regression proves restart-persistent environment and change-set evidence."
+    }
+  ]
+}

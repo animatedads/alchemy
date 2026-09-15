@@ -1,0 +1,48 @@
+{
+  "kind": "article",
+  "id": "arch.civicport.cache-journal",
+  "version": "0.1",
+  "sphere": "civicport",
+  "title": "HTTP cache and append-only journal semantics",
+  "summary": "CivicPort cache/journal state is evidence, not mutable truth. Body-bearing documents, revalidation observations, stale fallbacks and integrity checks remain distinct and recoverable.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "HTTP 304 creates a new observation tied to a prior body-bearing document; it does not mutate the prior document.",
+    "MISS/FRESH/REVALIDATED/STALE describe cache behavior, not semantic truth.",
+    "Journal records are append-only and integrity-checked; torn tails and orphan records fail closed or are skipped according to the sealed recovery contract.",
+    "Parser-native JSON lexical numeric strings survive journal round-trips unchanged.",
+    "Evidence-bearing User-Agent is cache-keyed; arbitrary unkeyed caller headers remain refused."
+  ],
+  "procedure": [
+    "Construct request/cache identity from all evidence-bearing representation selectors.",
+    "Append immutable document/observation evidence before exposing a cache result.",
+    "On restart, verify index/record digests before reconstructing state.",
+    "Preserve stale/revalidation cause separately from body identity."
+  ],
+  "provenance": [
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "CHANGELOG.md",
+      "line_start": 148,
+      "line_end": 161,
+      "claim": "Credential-aware journal generation and backward reader compatibility."
+    },
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "CHANGELOG.md",
+      "line_start": 210,
+      "line_end": 212,
+      "claim": "Append-only cache journal and conditional revalidation origin."
+    },
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "ARCHITECTURE.md",
+      "line_start": 370,
+      "line_end": 382,
+      "claim": "Evidence-bearing User-Agent is retained and cache-keyed while other caller headers remain rejected."
+    }
+  ]
+}

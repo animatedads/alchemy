@@ -1,0 +1,41 @@
+NoSQLServer v0.38 validation
+============================
+
+Focus
+-----
+Named window definitions and explicit NULL ordering.
+
+New SQL surface
+---------------
+- WINDOW name AS (...) reused by multiple window expressions.
+- ORDER BY ... NULLS FIRST
+- ORDER BY ... NULLS LAST
+- Explicit NULL ordering is independent of ASC/DESC inversion.
+
+Hell Corpus v2
+--------------
+PASS             12
+UNSUPPORTED       7
+PARSE_ERROR      11
+WRONG_RESULT      0
+EXECUTION_ERROR   0
+
+New oracle-backed PASS:
+- Q05 named window reused by SUM and AVG
+- Q15 NULLS FIRST plus secondary DESC ordering
+
+Regression gates
+----------------
+- v0.38 named-window/null-order smoke: PASS
+- v0.37 aggregate FILTER smoke: PASS
+- v0.36 offset-window smoke: PASS
+- v0.35 partition-window smoke: PASS
+- v0.34 derived-window smoke: PASS
+- v0.30 extended-window smoke: PASS
+- v0.29 recursive CTE smoke: PASS
+- v0.32 database_core adapter smoke: PASS
+- v0.31 Gemini smoke: PASS
+- SQL-92 company smoke: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

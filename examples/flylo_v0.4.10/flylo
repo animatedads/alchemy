@@ -1,0 +1,871 @@
+#!/usr/bin/env node
+'use strict';
+
+const http = require('node:http');
+const fs = require('node:fs');
+const path = require('node:path');
+const os = require('node:os');
+const { spawn, spawnSync } = require('node:child_process');
+const crypto = require('node:crypto');
+const { URL } = require('node:url');
+const readline = require('node:readline');
+
+const ROOT = __dirname;
+const WEB_ROOT = path.join(ROOT, 'web');
+const CHAT_BRIDGE = path.join(ROOT, 'tools', 'flylo_assistant_turn.rex');
+const RUNTIME_PROBE = path.join(ROOT, 'tools', 'flylo_runtime_probe.rex');
+const PUBLIC_RUNTIME = path.join(ROOT, 'tools', 'flylo_public_runtime.rex');
+const ASSISTANT_BODY_LIMIT = 64 * 1024;
+const ASSISTANT_SESSION_LIMIT = 256;
+const assistantSessions = new Map();
+let assistantRuntimeProbe = { ok: false, code: 'NOT_PROBED' };
+const assistantDiagnostics = { internalFailures: 0, lastInternalCode: null, lastStage: null };
+let publicRuntimeBridge = null;
+
+function usage(exitCode = 0) {
+  const out = exitCode === 0 ? process.stdout : process.stderr;
+  out.write(`FlyLo development website launcher\n\nUsage:\n  ./flylo [--host HOST] [--port PORT]\n\nDefaults:\n  host: FLYLO_HOST or 127.0.0.1\n  port: FLYLO_PORT or 4173\n\nAssistant:\n  XAI_API_KEY enables the real-time Grok assistant.\n  FLYLO_GROK_MODEL defaults to grok-4.3.\n  Structured-language interpretation + Structured Utterance v0.3 are mandatory.\n  No Grok Batch path is used.\n\nWebsite runtime:\n  Public booking/manage-booking actions are server-backed through Wire UI Server v0.17\n  and durable Queue Fabric-backed FlyLo engines. No browser demo action fallback is used.\n\nExamples:\n  ./flylo\n  ./flylo --port 8080\n  ./flylo --host 0.0.0.0 --port 4173\n`);
+  process.exit(exitCode);
+}
+
+function parseArgs(argv) {
+  const options = {
+    host: process.env.FLYLO_HOST || '127.0.0.1',
+    port: Number(process.env.FLYLO_PORT || 4173)
+  };
+  for (let i = 0; i < argv.length; i += 1) {
+    const arg = argv[i];
+    if (arg === '--help' || arg === '-h') usage(0);
+    if (arg === '--host') {
+      if (++i >= argv.length) usage(2);
+      options.host = argv[i];
+      continue;
+    }
+    if (arg === '--port') {
+      if (++i >= argv.length) usage(2);
+      options.port = Number(argv[i]);
+      continue;
+    }
+    process.stderr.write(`Unknown option: ${arg}\n`);
+    usage(2);
+  }
+  if (!options.host) throw new Error('FLYLO_HOST_REQUIRED');
+  if (!Number.isInteger(options.port) || options.port < 0 || options.port > 65535) {
+    throw new Error('FLYLO_PORT_INVALID');
+  }
+  return options;
+}
+
+function flyloDataDirectory() {
+  const configured = String(process.env.FLYLO_DATA_DIR || '').trim();
+  return configured ? path.resolve(configured) : path.join(os.homedir(), '.flylo');
+}
+
+function ensureFlyLoDataDirectory() {
+  const root = flyloDataDirectory();
+  fs.mkdirSync(root, { recursive: true, mode: 0o700 });
+  fs.mkdirSync(path.join(root, 'queue'), { recursive: true, mode: 0o700 });
+  fs.mkdirSync(path.join(root, 'accounting'), { recursive: true, mode: 0o700 });
+  return root;
+}
+
+const MIME = Object.freeze({
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.jpeg': 'image/jpeg',
+  '.webp': 'image/webp',
+  '.ico': 'image/x-icon'
+});
+
+function send(res, status, headers, body) {
+  res.writeHead(status, {
+    'x-content-type-options': 'nosniff',
+    'cache-control': 'no-store',
+    ...headers
+  });
+  res.end(body);
+}
+
+function sendJson(res, status, value) {
+  return send(res, status, { 'content-type': 'application/json; charset=utf-8' }, JSON.stringify(value) + '\n');
+}
+
+function resolveStaticPath(pathname) {
+  let decoded;
+  try { decoded = decodeURIComponent(pathname); }
+  catch { return null; }
+  const relative = decoded === '/' ? 'index.html' : decoded.replace(/^\/+/, '');
+  const normalized = path.normalize(relative);
+  if (normalized.startsWith('..') || path.isAbsolute(normalized)) return null;
+  const candidate = path.join(WEB_ROOT, normalized);
+  const rel = path.relative(WEB_ROOT, candidate);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) return null;
+  return candidate;
+}
+
+function credentialEnvironmentName() {
+  return process.env.AI_GROK_CREDENTIAL_ENV || 'XAI_API_KEY';
+}
+
+function assistantConfigured() {
+  const envName = credentialEnvironmentName();
+  return typeof process.env[envName] === 'string' && process.env[envName].trim().length > 0;
+}
+
+function parseWholeEnvironment(name, fallback, minimum, maximum, issues) {
+  const raw = process.env[name];
+  if (raw === undefined || String(raw).trim() === '') return fallback;
+  const value = Number(String(raw).trim());
+  if (!Number.isInteger(value) || value < minimum || value > maximum) {
+    issues.push(`${name}_INVALID`);
+    return fallback;
+  }
+  return value;
+}
+
+function assistantConfiguration() {
+  const issues = [];
+  const model = String(process.env.FLYLO_GROK_MODEL || 'grok-4.3').trim();
+  if (!model) issues.push('FLYLO_GROK_MODEL_REQUIRED');
+  parseWholeEnvironment('FLYLO_GROK_MAX_OUTPUT', 700, 1, 8192, issues);
+  parseWholeEnvironment('AI_GROK_MAX_OUTPUT', 8192, 1, 65536, issues);
+  parseWholeEnvironment('AI_GROK_TIMEOUT', 60, 1, 300, issues);
+  parseWholeEnvironment('FLYLO_GROK_REQUEST_TIMEOUT_MS', 70000, 1000, 310000, issues);
+  const endpoint = String(process.env.AI_GROK_ENDPOINT || 'https://api.x.ai/v1/chat/completions').trim();
+  const allowHttp = process.env.AI_GROK_ALLOW_HTTP_TEST === '1';
+  if (!(endpoint.startsWith('https://') || (allowHttp && endpoint.startsWith('http://')))) issues.push('AI_GROK_ENDPOINT_INVALID');
+  const allowlist = String(process.env.AI_GROK_MODELS || 'grok-4.3,grok-4.6,grok-4.5,grok-4')
+    .split(',').map(v => v.trim()).filter(Boolean);
+  if (model && !allowlist.includes(model)) issues.push('FLYLO_GROK_MODEL_NOT_ALLOWLISTED');
+  return { issues, model, endpoint };
+}
+
+function assistantReady() {
+  return assistantConfigured() && assistantRuntimeProbe.ok && assistantConfiguration().issues.length === 0;
+}
+
+function assistantStatus() {
+  const config = assistantConfiguration();
+  return {
+    provider: 'grok-xai',
+    transport: 'realtime',
+    batch: false,
+    configured: assistantConfigured(),
+    ready: assistantReady(),
+    runtimeReady: Boolean(assistantRuntimeProbe.ok),
+    runtimeCode: assistantRuntimeProbe.code,
+    model: config.model,
+    configurationIssues: config.issues,
+    structuredLanguage: true,
+    structuredOutput: 'xai-json-schema-strict',
+    structuredFrame: 'flylo.assistant.frame/0.2',
+    structuredUtterance: 'structured.utterance/0.3',
+    jsonRuntime: 'vendored-oorexx-5.3.0-r13196-json',
+    toolAuthority: 'flylo-deterministic-orchestrator',
+    degraded: assistantDiagnostics.internalFailures > 0,
+    lastInternalCode: assistantDiagnostics.lastInternalCode
+  };
+}
+
+function flyloReferenceDate() {
+  const configured = String(process.env.FLYLO_TODAY || '').trim();
+  if (/^\d{4}-\d{2}-\d{2}$/.test(configured)) return configured;
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/London', year: 'numeric', month: '2-digit', day: '2-digit'
+  }).formatToParts(new Date());
+  const values = Object.fromEntries(parts.filter(p => p.type !== 'literal').map(p => [p.type, p.value]));
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
+function assistantSessionId(raw) {
+  const supplied = typeof raw === 'string' ? raw.trim() : '';
+  if (supplied && /^[A-Za-z0-9._-]{1,80}$/.test(supplied)) return supplied;
+  return crypto.randomUUID();
+}
+
+function assistantSession(id) {
+  const existing = assistantSessions.get(id);
+  if (existing) {
+    existing.updatedAt = Date.now();
+    return existing;
+  }
+  if (assistantSessions.size >= ASSISTANT_SESSION_LIMIT) {
+    let oldestKey = null;
+    let oldest = Infinity;
+    for (const [key, value] of assistantSessions) {
+      if (value.updatedAt < oldest) { oldest = value.updatedAt; oldestKey = key; }
+    }
+    if (oldestKey) assistantSessions.delete(oldestKey);
+  }
+  const created = { frame: null, updatedAt: Date.now() };
+  assistantSessions.set(id, created);
+  return created;
+}
+
+function readJsonBody(req) {
+  return new Promise((resolve, reject) => {
+    let size = 0;
+    const chunks = [];
+    req.on('data', chunk => {
+      size += chunk.length;
+      if (size > ASSISTANT_BODY_LIMIT) {
+        reject(Object.assign(new Error('request too large'), { code: 'BODY_TOO_LARGE' }));
+        req.destroy();
+        return;
+      }
+      chunks.push(chunk);
+    });
+    req.on('end', () => {
+      try {
+        const text = Buffer.concat(chunks).toString('utf8');
+        resolve(text ? JSON.parse(text) : {});
+      } catch (error) {
+        reject(Object.assign(error, { code: 'JSON_INVALID' }));
+      }
+    });
+    req.on('error', reject);
+  });
+}
+
+function textBound(value, max) {
+  const text = typeof value === 'string' ? value : '';
+  return text.length <= max ? text : text.slice(0, max);
+}
+
+function safeBrowserContext(value) {
+  const input = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+  const safe = {};
+  const search = input.search && typeof input.search === 'object' ? input.search : null;
+  if (search) {
+    safe.search = {
+      origin: textBound(search.origin, 16),
+      destination: textBound(search.destination, 16),
+      date: textBound(search.date, 20),
+      passengers: Number.isInteger(search.passengers) ? search.passengers : undefined
+    };
+  }
+  const sale = input.sale && typeof input.sale === 'object' ? input.sale : null;
+  if (sale) {
+    safe.sale = {
+      state: textBound(sale.state, 32),
+      flightNo: textBound(sale.flightNo, 24),
+      origin: textBound(sale.origin, 16),
+      destination: textBound(sale.destination, 16),
+      date: textBound(sale.date, 20),
+      totalMinor: Number.isInteger(sale.totalMinor) ? sale.totalMinor : undefined,
+      currency: textBound(sale.currency, 8),
+      bookingStatus: textBound(sale.bookingStatus, 32),
+      bookingRef: textBound(sale.bookingRef, 32),
+      selectedExtras: Array.isArray(sale.selectedExtras) ? sale.selectedExtras.slice(0, 8).map(v => textBound(v, 40)) : []
+    };
+  }
+  return safe;
+}
+
+function safeConversation(history) {
+  if (!Array.isArray(history)) return '';
+  return history.slice(-8).map(item => {
+    if (!item || typeof item !== 'object') return null;
+    const role = item.role === 'assistant' ? 'ASSISTANT' : item.role === 'user' ? 'CUSTOMER' : null;
+    if (!role) return null;
+    const content = textBound(item.content, 2000).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, ' ');
+    return `${role}: ${content}`;
+  }).filter(Boolean).join('\n');
+}
+
+function rexxCommand() {
+  if (process.env.FLYLO_REXX) return process.env.FLYLO_REXX;
+  if (process.env.OOREXX_HOME) return path.join(process.env.OOREXX_HOME, 'bin', 'rexx');
+  return 'rexx';
+}
+
+function assistantRexxCommand() {
+  return process.env.FLYLO_ASSISTANT_REXX || rexxCommand();
+}
+
+function rexxEnvironment() {
+  const roots = [
+    path.join(ROOT, 'vendor', 'oorexx_stdlib_5.3.0_r13196'),
+    path.join(ROOT, 'src'),
+    path.join(ROOT, 'vendor', 'oorexx_ai_provider_grok_v0.4', 'src'),
+    path.join(ROOT, 'vendor', 'oorexx_ai_access_v0.6', 'src'),
+    path.join(ROOT, 'vendor', 'oorexx_secret_broker_v0.2', 'src'),
+    path.join(ROOT, 'vendor', 'alchemy_objects_v0.8', 'src'),
+    path.join(ROOT, 'vendor', 'oorexx_crypto_v0.5', 'src'),
+    path.join(ROOT, 'vendor', 'structured_utterance_v0.3', 'src'),
+    path.join(ROOT, 'vendor', 'oorexx_queue_fabric_v0.9-dev4', 'src'),
+    path.join(ROOT, 'vendor', 'wire_ui_server_v0.17', 'src'),
+    path.join(ROOT, 'vendor', 'wire_ui_builder_v0.11', 'src'),
+    path.join(ROOT, 'vendor', 'accounting_core_v0.7', 'src'),
+    path.join(ROOT, 'vendor', 'legal_effect_v0.14', 'src')
+  ];
+  const configuredRexx = rexxCommand();
+  if (path.isAbsolute(configuredRexx)) roots.push(path.dirname(configuredRexx));
+  if (process.env.OOREXX_HOME) roots.push(path.join(process.env.OOREXX_HOME, 'bin'));
+  if (process.env.REXX_PATH) roots.push(process.env.REXX_PATH);
+  return { ...process.env, REXX_PATH: roots.join(path.delimiter) };
+}
+
+function probeRexxRuntime() {
+  if (!fs.existsSync(RUNTIME_PROBE)) return { ok: false, code: 'RUNTIME_PROBE_MISSING' };
+  const result = spawnSync(assistantRexxCommand(), [RUNTIME_PROBE], {
+    cwd: ROOT, env: rexxEnvironment(), encoding: 'utf8', timeout: 5000, shell: false
+  });
+  if (result.error) return { ok: false, code: result.error.code === 'ENOENT' ? 'REXX_UNAVAILABLE' : 'RUNTIME_PROBE_ERROR' };
+  if (result.status !== 0 || !String(result.stdout || '').includes('FLYLO_RUNTIME_PROBE_OK')) {
+    return { ok: false, code: `RUNTIME_PROBE_FAILED_${result.status ?? 'UNKNOWN'}` };
+  }
+  return { ok: true, code: 'OK' };
+}
+
+function emptyAssistantFrame() {
+  return {
+    schema: 'flylo.assistant.frame/0.2', intent: 'UNKNOWN', serviceRequest: 'NONE', informationRequest: 'NONE',
+    slots: {
+      origin: '', destination: '', outboundDay: 0, outboundMonth: 0, outboundYear: 0, outboundDate: '',
+      passengers: 0, tripType: '', returnDay: 0, returnMonth: 0, returnYear: 0, returnDate: '',
+      bookingRef: '', familyName: '', documentCountry: '', travellerAge: 0,
+      companionChildMentioned: false, tobaccoForCompanion: false
+    }
+  };
+}
+
+function safeContinuityFallback(question, partialFrame) {
+  const text = String(question || '').trim();
+  const lower = text.toLowerCase();
+  const frame = partialFrame && typeof partialFrame === 'object' ? JSON.parse(JSON.stringify(partialFrame)) : emptyAssistantFrame();
+  frame.slots = frame.slots && typeof frame.slots === 'object' ? frame.slots : emptyAssistantFrame().slots;
+  let missing = [];
+  let reply = 'I am having trouble with the live chat language layer, but I can still keep the conversation moving. Tell me whether you want to search for a flight or get help with an existing booking.';
+
+  if (/\b(my booking|my reservation|booked|booking)\b/.test(lower)) {
+    frame.intent = 'MANAGE_BOOKING';
+    frame.serviceRequest = frame.serviceRequest === 'ADD_CHECKED_BAG' ? frame.serviceRequest : 'BOOKING_LOOKUP';
+    missing = [];
+    if (!frame.slots.bookingRef) missing.push('bookingRef');
+    if (!frame.slots.familyName) missing.push('familyName');
+    reply = 'I can still help with your existing booking. Please give me the FlyLo booking reference and the booking surname so I can retrieve the right booking.';
+  } else if (/\b(fly|flight|travel|go|ticket|tickets|book)\b/.test(lower)) {
+    frame.intent = 'BOOK_JOURNEY';
+    if (/\b(new york|newark|nyc)\b/.test(lower)) frame.slots.destination = 'EWR';
+    const partyMatch = lower.match(/\b(\d{1,6})\s+(?:ticket|tickets|passenger|passengers|seat|seats)\b/);
+    if (partyMatch) frame.slots.passengers = Number.parseInt(partyMatch[1], 10);
+    missing = [];
+    if (!frame.slots.origin) missing.push('origin');
+    if (!frame.slots.destination) missing.push('destination');
+    if (!frame.slots.outboundDate) missing.push('outboundDate');
+    if (!Number.isInteger(frame.slots.passengers) || frame.slots.passengers < 1) missing.push('passengers');
+    if (!frame.slots.tripType) missing.push('tripType');
+    const destination = frame.slots.destination === 'EWR' ? ' to New York' : '';
+    const party = Number.isInteger(frame.slots.passengers) && frame.slots.passengers > 0 ? ` for ${frame.slots.passengers} passengers` : '';
+    const asks = [];
+    if (!frame.slots.origin) asks.push('where you are leaving from');
+    if (!frame.slots.outboundDate) asks.push('your travel date');
+    if (!Number.isInteger(frame.slots.passengers) || frame.slots.passengers < 1) asks.push('number of passengers');
+    if (!frame.slots.tripType) asks.push('whether it is one-way or return');
+    reply = `I can still collect the flight-search details${destination}${party}. Tell me ${asks.join(', ').replace(/, ([^,]*)$/, ', and $1')}.`;
+  }
+
+  return { text: reply, frame, missing };
+}
+
+function normalizeAssistantBooleans(result) {
+  const truth = value => value === true || value === 1 || value === '1' || value === 'true';
+  const slots = result && result.frame && result.frame.slots;
+  if (slots && typeof slots === 'object') {
+    for (const key of ['companionChildMentioned', 'tobaccoForCompanion']) {
+      if (Object.prototype.hasOwnProperty.call(slots, key)) slots[key] = truth(slots[key]);
+    }
+  }
+  const evidence = result && result.authorityEvidence;
+  if (evidence && typeof evidence === 'object') {
+    const booleanKeys = new Set([
+      'governmentAdmissionAuthority','airlineDocumentCheckOnly','visaWaiverProgram','needsDocumentStatus',
+      'checkedBaggageDoesNotChangeCustomsAllowance','dutyFreeShopDoesNotOverrideImportRules','mustDeclareExcess',
+      'ageClarificationNeeded','companionAllowanceEligible','ordinaryCigarettesCheckedBaggagePermitted',
+      'ordinaryCigarettesCarryOnPermitted','lighterRuleSeparate','customsRulesSeparate','customsRulesRemainSeparate',
+      'transactionRequired','quietTransactionForbidden','quietTransactionPermitted'
+    ]);
+    const visit = value => {
+      if (!value || typeof value !== 'object') return;
+      if (Array.isArray(value)) { for (const item of value) visit(item); return; }
+      for (const [key, child] of Object.entries(value)) {
+        if (booleanKeys.has(key)) value[key] = truth(child);
+        else visit(child);
+      }
+    };
+    visit(evidence);
+  }
+  if (result && result.action && result.action.product) {
+    for (const key of ['transactionRequired','quietTransactionForbidden','quietTransactionPermitted']) {
+      if (Object.prototype.hasOwnProperty.call(result.action.product, key)) result.action.product[key] = truth(result.action.product[key]);
+    }
+  }
+  return result;
+}
+
+
+class FlyLoPublicRuntimeBridge {
+  constructor(dataRoot) {
+    this.dataRoot = dataRoot;
+    this.child = null;
+    this.pending = new Map();
+    this.sequence = 0;
+    this.ready = false;
+    this.readyInfo = null;
+    this.lastError = null;
+  }
+
+  start() {
+    if (this.child) return Promise.resolve(this.readyInfo);
+    return new Promise((resolve, reject) => {
+      const runtimeEnv = {
+        ...rexxEnvironment(),
+        FLYLO_DURABLE_ROOT: path.join(this.dataRoot, 'queue'),
+        FLYLO_ACCOUNTING_STORE: path.join(this.dataRoot, 'accounting', 'flylo-stat.jsonl')
+      };
+      const child = spawn(rexxCommand(), [PUBLIC_RUNTIME], {
+        cwd: ROOT, env: runtimeEnv, stdio: ['pipe', 'pipe', 'pipe'], shell: false
+      });
+      this.child = child;
+      const timer = setTimeout(() => {
+        if (this.ready) return;
+        child.kill('SIGTERM');
+        reject(new Error('FLYLO_PUBLIC_RUNTIME_START_TIMEOUT'));
+      }, 10000);
+      timer.unref();
+
+      const lines = readline.createInterface({ input: child.stdout, crlfDelay: Infinity });
+      lines.on('line', line => {
+        let message;
+        try { message = JSON.parse(line); }
+        catch {
+          this.lastError = `invalid runtime output: ${line.slice(0, 240)}`;
+          return;
+        }
+        if (message.event === 'FLYLO_PUBLIC_RUNTIME_READY') {
+          this.ready = Boolean(message.ok);
+          this.readyInfo = message;
+          clearTimeout(timer);
+          if (this.ready) resolve(message);
+          else reject(new Error(message.code || 'FLYLO_PUBLIC_RUNTIME_NOT_READY'));
+          return;
+        }
+        const id = String(message.id || '');
+        const pending = this.pending.get(id);
+        if (!pending) return;
+        this.pending.delete(id);
+        clearTimeout(pending.timer);
+        pending.resolve(message);
+      });
+      child.stderr.on('data', chunk => {
+        const text = chunk.toString('utf8').trim();
+        if (text) process.stderr.write(`FLYLO_PUBLIC_RUNTIME_DIAGNOSTIC ${text}\n`);
+      });
+      child.on('error', error => {
+        this.lastError = error.message;
+        clearTimeout(timer);
+        if (!this.ready) reject(error);
+        this.failPending(error);
+      });
+      child.on('exit', code => {
+        this.ready = false;
+        this.lastError = `runtime exited ${code}`;
+        clearTimeout(timer);
+        this.child = null;
+        this.failPending(new Error(this.lastError));
+      });
+    });
+  }
+
+  failPending(error) {
+    for (const pending of this.pending.values()) {
+      clearTimeout(pending.timer);
+      pending.reject(error);
+    }
+    this.pending.clear();
+  }
+
+  request(payload, timeoutMs = 12000) {
+    if (!this.child || !this.ready) return Promise.reject(new Error('FLYLO_PUBLIC_RUNTIME_UNAVAILABLE'));
+    const id = `R${++this.sequence}`;
+    const request = { ...payload, id };
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(() => {
+        this.pending.delete(id);
+        reject(new Error('FLYLO_PUBLIC_RUNTIME_REQUEST_TIMEOUT'));
+      }, timeoutMs);
+      timer.unref();
+      this.pending.set(id, { resolve, reject, timer });
+      this.child.stdin.write(JSON.stringify(request) + '\n', error => {
+        if (!error) return;
+        const pending = this.pending.get(id);
+        if (!pending) return;
+        this.pending.delete(id);
+        clearTimeout(timer);
+        reject(error);
+      });
+    });
+  }
+
+  status() {
+    return {
+      ready: this.ready,
+      wireUiServer: this.readyInfo?.wireUiServer || '0.17',
+      engine: this.readyInfo?.engine || 'QUEUE_FABRIC_DURABLE_FIXTURE',
+      accounting: this.readyInfo?.accounting || 'ACCOUNTING_CORE_0.7',
+      storage: this.readyInfo?.storage || 'DURABLE',
+      lastError: this.lastError
+    };
+  }
+
+  stop() {
+    if (!this.child) return;
+    this.child.stdin.end();
+    this.child.kill('SIGTERM');
+  }
+}
+
+function publicActionFailure(reply, action) {
+  const internalCode = String(reply?.code || 'FLYLO_ACTION_FAILED');
+  const detail = String(reply?.detail || '');
+  if (action === 'BOOKING.LOOKUP' && (internalCode === 'BOOKING_NOT_FOUND' || internalCode === 'BOOKING_NAME_MISMATCH')) {
+    return { status: 404, body: { ok: false, code: 'BOOKING_LOOKUP_NOT_MATCHED', message: 'We could not match that booking reference and surname. Check the confirmation and try again.' } };
+  }
+  if (internalCode.startsWith('RUNTIME_CONDITION_') || internalCode.startsWith('BOOT_CONDITION_')) {
+    process.stderr.write(`FLYLO_PUBLIC_RUNTIME_DIAGNOSTIC action=${action} code=${internalCode} stage=${String(reply?.stage || '')} detail=${detail}\n`);
+    return { status: 500, body: { ok: false, code: 'FLYLO_ACTION_INTERNAL_FAILURE', message: 'FlyLo hit an internal service error while handling that request. The booking was not changed.' } };
+  }
+  const friendly = internalCode === 'NO_ITINERARY_AVAILABLE'
+    ? 'FlyLo could not find an itinerary with enough availability for that search.'
+    : (detail || internalCode);
+  return { status: 409, body: { ok: false, code: internalCode, message: friendly } };
+}
+
+async function handlePublicAction(req, res) {
+  let body;
+  try { body = await readJsonBody(req); }
+  catch (error) { return sendJson(res, 400, { ok: false, code: error.code || 'JSON_INVALID', message: 'The FlyLo action request could not be read.' }); }
+  if (!publicRuntimeBridge?.ready) return sendJson(res, 503, { ok: false, code: 'FLYLO_PUBLIC_RUNTIME_UNAVAILABLE', message: 'FlyLo booking services are not ready.' });
+  const action = typeof body.action === 'string' ? body.action : '';
+  if (!action) return sendJson(res, 400, { ok: false, code: 'FLYLO_ACTION_REQUIRED', message: 'A semantic action is required.' });
+  try {
+    const reply = await publicRuntimeBridge.request({ op: 'ACTION', action, detail: body.detail && typeof body.detail === 'object' ? body.detail : {} });
+    if (!reply.ok) {
+      const failure = publicActionFailure(reply, action);
+      return sendJson(res, failure.status, failure.body);
+    }
+    return sendJson(res, 200, { ok: true, code: reply.code, result: reply.result });
+  } catch (error) {
+    process.stderr.write(`FLYLO_PUBLIC_RUNTIME_DIAGNOSTIC action=${action} bridge=${error.message}\n`);
+    return sendJson(res, 502, { ok: false, code: 'FLYLO_PUBLIC_RUNTIME_FAILED', message: 'FlyLo could not reach its booking runtime. The booking was not changed.' });
+  }
+}
+
+async function handleWorkspaceMutation(req, res, op) {
+  let body;
+  try { body = await readJsonBody(req); }
+  catch (error) { return sendJson(res, 400, { ok: false, code: error.code || 'JSON_INVALID', message: 'The FlyLo workspace request could not be read.' }); }
+  if (!publicRuntimeBridge?.ready) return sendJson(res, 503, { ok: false, code: 'FLYLO_PUBLIC_RUNTIME_UNAVAILABLE', message: 'FlyLo booking services are not ready.' });
+  try {
+    const reply = await publicRuntimeBridge.request({ op, ...body });
+    if (!reply.ok) return sendJson(res, 409, { ok: false, code: reply.code, stage: reply.stage, message: String(reply.detail || reply.code) });
+    return sendJson(res, 200, { ok: true, code: reply.code, result: reply.result });
+  } catch (error) {
+    return sendJson(res, 502, { ok: false, code: 'FLYLO_WORKSPACE_RUNTIME_FAILED', message: error.message });
+  }
+}
+
+function runAssistant(payload) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(assistantRexxCommand(), [CHAT_BRIDGE], {
+      cwd: ROOT,
+      env: rexxEnvironment(),
+      stdio: ['pipe', 'pipe', 'pipe'],
+      shell: false
+    });
+    let stdout = '';
+    let stderr = '';
+    let finished = false;
+    const limit = 256 * 1024;
+    const timer = setTimeout(() => {
+      if (finished) return;
+      child.kill('SIGTERM');
+      reject(Object.assign(new Error('assistant timeout'), { code: 'ASSISTANT_TIMEOUT' }));
+    }, Number(process.env.FLYLO_GROK_REQUEST_TIMEOUT_MS || 70000));
+    timer.unref();
+
+    function append(which, chunk) {
+      if (which === 'out') stdout += chunk.toString('utf8');
+      else stderr += chunk.toString('utf8');
+      if (stdout.length + stderr.length > limit) child.kill('SIGTERM');
+    }
+    child.stdout.on('data', chunk => append('out', chunk));
+    child.stderr.on('data', chunk => append('err', chunk));
+    child.on('error', error => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      reject(Object.assign(error, { code: error.code === 'ENOENT' ? 'REXX_UNAVAILABLE' : 'ASSISTANT_PROCESS_ERROR' }));
+    });
+    child.on('close', code => {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      const lines = stdout.trim().split(/\r?\n/).filter(Boolean);
+      const last = lines[lines.length - 1] || '';
+      try {
+        const result = JSON.parse(last);
+        result.processExitCode = code;
+        resolve(result);
+      } catch {
+        reject(Object.assign(new Error(`assistant bridge returned invalid output${stderr ? ': ' + stderr.slice(-240) : ''}`), { code: 'ASSISTANT_BRIDGE_INVALID' }));
+      }
+    });
+    child.stdin.end(JSON.stringify(payload) + '\n');
+  });
+}
+
+async function handleAssistant(req, res) {
+  if (!assistantConfigured()) {
+    return sendJson(res, 503, {
+      ok: false,
+      code: 'FLYLO_ASSISTANT_NOT_CONFIGURED',
+      message: `Grok is ready to assist once ${credentialEnvironmentName()} is available to ./flylo.`,
+      assistant: assistantStatus()
+    });
+  }
+  if (!assistantRuntimeProbe.ok) {
+    return sendJson(res, 503, {
+      ok: false, code: 'FLYLO_ASSISTANT_REXX_RUNTIME_INCOMPATIBLE',
+      message: 'FlyLo could not initialise its ooRexx structured-assistant runtime. Check the server console; the website itself can remain running.',
+      assistant: assistantStatus()
+    });
+  }
+  const configuration = assistantConfiguration();
+  if (configuration.issues.length) {
+    return sendJson(res, 503, {
+      ok: false, code: 'FLYLO_ASSISTANT_CONFIGURATION_INVALID',
+      message: 'FlyLo found an invalid Grok assistant configuration. Check /healthz or the server console.',
+      assistant: assistantStatus()
+    });
+  }
+
+  let body;
+  try { body = await readJsonBody(req); }
+  catch (error) {
+    const status = error.code === 'BODY_TOO_LARGE' ? 413 : 400;
+    return sendJson(res, status, { ok: false, code: error.code || 'FLYLO_ASSISTANT_REQUEST_INVALID', message: 'The assistant request could not be read.' });
+  }
+
+  const question = textBound(body.question, 4000).trim();
+  if (!question) return sendJson(res, 400, { ok: false, code: 'FLYLO_ASSISTANT_QUESTION_REQUIRED', message: 'Please type a question for FlyLo.' });
+
+  const sessionId = assistantSessionId(body.sessionId);
+  const session = assistantSession(sessionId);
+  const context = safeBrowserContext(body.context);
+  const payload = {
+    question,
+    referenceDate: flyloReferenceDate(),
+    turnId: `FLYLO-${Date.now()}-${crypto.randomUUID().replace(/-/g, '').slice(0, 12)}`,
+    currentFrame: session.frame,
+    browserContext: context,
+    conversationEvidence: safeConversation(body.history)
+  };
+
+  try {
+    const result = normalizeAssistantBooleans(await runAssistant(payload));
+    if (result.ok) {
+      session.frame = result.frame || session.frame;
+      session.updatedAt = Date.now();
+      return sendJson(res, 200, {
+        ok: true,
+        sessionId,
+        text: result.text,
+        model: result.model || assistantStatus().model,
+        finishReason: result.finishReason || 'stop',
+        frame: result.frame || null,
+        missing: result.missing || [],
+        structuredUtterance: result.structuredUtterance && typeof result.structuredUtterance === 'object'
+          ? { ...result.structuredUtterance, sealed: Boolean(result.structuredUtterance.sealed) }
+          : null,
+        authorityEvidence: result.authorityEvidence || null,
+        action: result.action || null
+      });
+    }
+    if (String(result.code || '').startsWith('FLYLO_ASSISTANT_INTERNAL_')) {
+      assistantDiagnostics.internalFailures += 1;
+      assistantDiagnostics.lastInternalCode = result.code;
+      assistantDiagnostics.lastStage = result.diagnostic && result.diagnostic.stage || null;
+      const diagnostic = result.diagnostic || {};
+      process.stderr.write(`FLYLO_ASSISTANT_DIAGNOSTIC code=${result.code} stage=${diagnostic.stage || 'unknown'} condition=${diagnostic.conditionCode || 'unknown'} position=${diagnostic.position || 0}\n`);
+      const continuity = safeContinuityFallback(question, result.partialFrame || session.frame);
+      session.frame = continuity.frame;
+      session.updatedAt = Date.now();
+      return sendJson(res, 200, {
+        ok: true, degraded: true, sessionId, text: continuity.text, model: null, finishReason: 'deterministic-continuity',
+        frame: continuity.frame, missing: continuity.missing, structuredUtterance: null, authorityEvidence: null, action: null,
+        assistantCode: result.code
+      });
+    }
+    let status = 502;
+    let message = 'I could not reach Grok just now. Your FlyLo booking and journey systems have not been changed.';
+    if (result.code === 'AI_PROVIDER_RATE_LIMITED') { status = 429; message = 'Grok is busy just now. Please try the question again shortly.'; }
+    if (result.code === 'AI_PROVIDER_CREDENTIAL_UNAVAILABLE' || result.code === 'AI_PROVIDER_AUTH_REJECTED') { status = 503; message = "FlyLo's Grok assistant credentials need attention on the server."; }
+    if (String(result.code || '').includes('UNRESOLVED') || String(result.code || '').includes('INVALID')) { status = 422; message = result.detail || 'I could not interpret that safely. Please rephrase the travel detail.'; }
+    return sendJson(res, status, { ok: false, code: result.code || 'FLYLO_ASSISTANT_FAILED', message });
+  } catch (error) {
+    const code = error.code || 'FLYLO_ASSISTANT_RUNTIME_FAILED';
+    const status = code === 'REXX_UNAVAILABLE' ? 503 : code === 'ASSISTANT_TIMEOUT' ? 504 : 502;
+    return sendJson(res, status, {
+      ok: false,
+      code,
+      message: code === 'REXX_UNAVAILABLE' ? 'FlyLo needs ooRexx available to run the Grok assistant.' : 'The FlyLo assistant is temporarily unavailable.'
+    });
+  }
+}
+
+function handle(req, res) {
+  const requestUrl = new URL(req.url || '/', 'http://flylo.invalid');
+  if (req.method === 'GET' && requestUrl.pathname === '/healthz') {
+    return sendJson(res, 200, {
+      ok: true,
+      service: 'flylo-website',
+      version: fs.readFileSync(path.join(ROOT, 'VERSION.txt'), 'utf8').trim(),
+      runtime: publicRuntimeBridge ? publicRuntimeBridge.status() : { ready: false },
+      assistant: assistantStatus()
+    });
+  }
+
+  if (req.method === 'POST' && requestUrl.pathname === '/api/assistant') {
+    void handleAssistant(req, res);
+    return;
+  }
+  if (req.method === 'POST' && requestUrl.pathname === '/api/action') {
+    void handlePublicAction(req, res);
+    return;
+  }
+  if (req.method === 'POST' && requestUrl.pathname === '/api/workspace/select') {
+    void handleWorkspaceMutation(req, res, 'WORKSPACE.SELECT');
+    return;
+  }
+  if (req.method === 'POST' && requestUrl.pathname === '/api/workspace/sort') {
+    void handleWorkspaceMutation(req, res, 'WORKSPACE.SORT');
+    return;
+  }
+  if (req.method === 'POST' && requestUrl.pathname === '/api/workspace/context') {
+    void handleWorkspaceMutation(req, res, 'WORKSPACE.CONTEXT');
+    return;
+  }
+
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    return send(res, 405, { 'content-type': 'text/plain; charset=utf-8', allow: 'GET, HEAD, POST' }, 'Method not allowed\n');
+  }
+
+  const filename = resolveStaticPath(requestUrl.pathname);
+  if (!filename) return send(res, 400, { 'content-type': 'text/plain; charset=utf-8' }, 'Bad request\n');
+
+  fs.stat(filename, (statError, stat) => {
+    if (statError || !stat.isFile()) {
+      return send(res, 404, { 'content-type': 'text/plain; charset=utf-8' }, 'Not found\n');
+    }
+    const type = MIME[path.extname(filename).toLowerCase()] || 'application/octet-stream';
+    res.writeHead(200, {
+      'content-type': type,
+      'content-length': stat.size,
+      'x-content-type-options': 'nosniff',
+      'cache-control': 'no-store'
+    });
+    if (req.method === 'HEAD') return res.end();
+    const stream = fs.createReadStream(filename);
+    stream.on('error', () => {
+      if (!res.headersSent) send(res, 500, { 'content-type': 'text/plain; charset=utf-8' }, 'Server error\n');
+      else res.destroy();
+    });
+    stream.pipe(res);
+  });
+}
+
+function displayHost(host) {
+  if (host === '0.0.0.0' || host === '::') return '127.0.0.1';
+  return host.includes(':') ? `[${host}]` : host;
+}
+
+let options;
+try { options = parseArgs(process.argv.slice(2)); }
+catch (error) {
+  process.stderr.write(`FlyLo launcher error: ${error.message}\n`);
+  process.exit(2);
+}
+
+if (!fs.existsSync(path.join(WEB_ROOT, 'index.html'))) {
+  process.stderr.write(`FlyLo launcher error: web/index.html not found under ${ROOT}\n`);
+  process.exit(2);
+}
+if (!fs.existsSync(CHAT_BRIDGE)) {
+  process.stderr.write(`FlyLo launcher error: tools/flylo_assistant_turn.rex not found under ${ROOT}\n`);
+  process.exit(2);
+}
+if (!fs.existsSync(PUBLIC_RUNTIME)) {
+  process.stderr.write(`FlyLo launcher error: tools/flylo_public_runtime.rex not found under ${ROOT}\n`);
+  process.exit(2);
+}
+if (!fs.existsSync(RUNTIME_PROBE)) {
+  process.stderr.write(`FlyLo launcher error: tools/flylo_runtime_probe.rex not found under ${ROOT}\n`);
+  process.exit(2);
+}
+assistantRuntimeProbe = probeRexxRuntime();
+if (!assistantRuntimeProbe.ok) process.stderr.write(`FLYLO_ASSISTANT_PREFLIGHT ${assistantRuntimeProbe.code}\n`);
+const configAtStart = assistantConfiguration();
+if (configAtStart.issues.length) process.stderr.write(`FLYLO_ASSISTANT_CONFIG ${configAtStart.issues.join(',')}\n`);
+
+const server = http.createServer(handle);
+server.on('error', (error) => {
+  if (error && error.code === 'EADDRINUSE') {
+    process.stderr.write(`FlyLo launcher error: ${options.host}:${options.port} is already in use\n`);
+  } else {
+    process.stderr.write(`FlyLo launcher error: ${error.message}\n`);
+  }
+  process.exit(1);
+});
+
+async function startFlyLo() {
+  const dataRoot = ensureFlyLoDataDirectory();
+  publicRuntimeBridge = new FlyLoPublicRuntimeBridge(dataRoot);
+  try {
+    await publicRuntimeBridge.start();
+  } catch (error) {
+    process.stderr.write(`FlyLo launcher error: public booking runtime failed: ${error.message}\n`);
+    process.exit(2);
+    return;
+  }
+  server.listen(options.port, options.host, () => {
+    const address = server.address();
+    const port = typeof address === 'object' && address ? address.port : options.port;
+    const url = `http://${displayHost(options.host)}:${port}/`;
+    process.stdout.write(`FLYLO_READY ${url}\n`);
+    process.stdout.write(`FLYLO_RUNTIME wire-ui-0.17 queue-fabric-durable accounting-core-0.7\n`);
+    process.stdout.write(`FLYLO_ASSISTANT ${assistantReady() ? 'grok-realtime' : assistantConfigured() ? 'configuration-error' : 'not-configured'}\n`);
+    process.stdout.write('Press Ctrl-C to stop FlyLo.\n');
+  });
+}
+
+void startFlyLo();
+
+let stopping = false;
+function stop(signal) {
+  if (stopping) return;
+  stopping = true;
+  process.stdout.write(`FLYLO_STOP ${signal}\n`);
+  if (publicRuntimeBridge) publicRuntimeBridge.stop();
+  server.close(() => process.exit(0));
+  setTimeout(() => process.exit(1), 3000).unref();
+}
+process.on('SIGINT', () => stop('SIGINT'));
+process.on('SIGTERM', () => stop('SIGTERM'));

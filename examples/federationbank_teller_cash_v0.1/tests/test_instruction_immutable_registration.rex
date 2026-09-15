@@ -1,0 +1,11 @@
+p=.FederationBankTellerCashDispatchPort~new(.FBTellerCashDomainTestSupport~corePort)
+i1=.FBTellerCashDomainTestSupport~instruction("REG","WITHDRAWAL",10000,"TILL-04")
+i2=.FederationBankTellerCashInstruction~new("CASHWORK:OTHER","CASHCMD:REG","WITHDRAWAL","TILL-99","FB-SETTLEMENT-GBP",.FBTellerCashDomainTestSupport~bundle(10000),.FBTellerCashDomainTestSupport~custody("TILL-99"))
+r1=p~registerInstruction(i1); r2=p~registerInstruction(i1); r3=p~registerInstruction(i2)
+.FBTellerCashDomainTestSupport~assertTrue(r1~ok)
+.FBTellerCashDomainTestSupport~assertTrue(r2~ok)
+.FBTellerCashDomainTestSupport~assertEq("IDEMPOTENT_INSTRUCTION",r2~code)
+.FBTellerCashDomainTestSupport~assertFalse(r3~ok)
+.FBTellerCashDomainTestSupport~assertEq("CASH_INSTRUCTION_CONFLICT",r3~code)
+.FBTellerCashDomainTestSupport~pass("cash instruction binding is immutable per staff command identity")
+::requires "TestSupport.cls"

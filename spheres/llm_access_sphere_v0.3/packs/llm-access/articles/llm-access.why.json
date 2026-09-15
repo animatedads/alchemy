@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "llm-access.why",
+  "version": "0.3",
+  "sphere": "llm-access",
+  "title": "The cutoff trap",
+  "summary": "LLMs recite model IDs, base URLs and API-key header names from training data with the same confidence as a live catalog. The number-one integration failure in this project is recommending last year's cheap model (Haiku 3, gpt-4o, gemini-1.5-pro, grok-2) and last year's auth shape, then burning a full test cycle. Worse: some providers silently remap retired slugs onto a different model and price instead of 404ing.",
+  "invariants": [
+    "A model ID without an observed_as_of date is not a recommendation.",
+    "Primary provider docs beat aggregator blogs, which beat model memory.",
+    "GET list-models on the live key is the only current catalog for that key.",
+    "This sphere is not an attack-surface map and does not document unpublished endpoints or credential theft."
+  ],
+  "authority": "provider-primary-snapshot",
+  "provenance": [
+    {
+      "artifact": "llm_access_sphere_v0.2.zip",
+      "sha256": "eaaf9ffd12c3734143c6721753d057caf02f20c2ac05783662627e33bb2b2ae6",
+      "member": "llm_access_sphere_v0.1/packs/llm-access/02-article-why.json",
+      "claim": "Content preserved from v0.2 during structural normalization."
+    }
+  ],
+  "section": "procedure"
+}

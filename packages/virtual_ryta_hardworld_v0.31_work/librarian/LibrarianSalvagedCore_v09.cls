@@ -1,0 +1,3676 @@
+
+::class LibrarianEngine public
+
+::method init
+  expose lexicon graph grammar resolver targetModel gazetteer corpus loader maxRows debugTarget similarWord gazetteerFile skipDbFiles lexiconOnly cacheSaveFile cacheLoadFile cacheOnly inspectWords relatedWords targetDumpFile summaryOnly serviceMode serviceMessages serviceMessageFile queueDir queuePollSeconds queueOnce parallelLoad readParallelLimit
+  lexicon = .LibrarianLexicon~new
+  graph = .LibrarianRelationGraph~new
+  grammar = .LibrarianGrammar~new(lexicon)
+  resolver = .LibrarianResolver~new(lexicon, grammar)
+  targetModel = .LibrarianTargetModel~new(lexicon, graph)
+  gazetteer = .LibrarianGazetteer~new(lexicon)
+  corpus = .LibrarianCorpus~new
+  loader = .nil
+  maxRows = 0
+  debugTarget = ''
+  similarWord = ''
+  gazetteerFile = ''
+  skipDbFiles = 0
+  lexiconOnly = 0
+  cacheSaveFile = ''
+  cacheLoadFile = ''
+  cacheOnly = 0
+  inspectWords = .Array~new
+  relatedWords = .Array~new
+  targetDumpFile = ''
+  summaryOnly = 0
+  serviceMode = 0
+  serviceMessages = .Array~new
+  serviceMessageFile = ''
+  queueDir = ''
+  queuePollSeconds = 2
+  queueOnce = 0
+  parallelLoad = 1
+  readParallelLimit = 8
+
+::method run
+  expose lexicon graph grammar resolver targetModel gazetteer corpus loader maxRows debugTarget similarWord gazetteerFile skipDbFiles lexiconOnly cacheSaveFile cacheLoadFile cacheOnly inspectWords relatedWords targetDumpFile summaryOnly serviceMode serviceMessages serviceMessageFile queueDir queuePollSeconds queueOnce parallelLoad readParallelLimit
+  use arg commandLine
+
+  args = ParseCommandLine(commandLine)
+  if args~items < 1 then do
+    self~usage
+    return 1
+  end
+
+  dictRoot = args~at(1)
+  topicFile = ''
+  articleFiles = .Array~new
+  i = 2
+  do while i <= args~items
+    token = args~at(i)
+    select
+      when token = '--topics' then do
+        i = i + 1
+        if i <= args~items then topicFile = args~at(i)
+      end
+      when token = '--max' then do
+        i = i + 1
+        if i <= args~items then maxRows = args~at(i)
+      end
+      when token = '--debug-target' then do
+        i = i + 1
+        if i <= args~items then debugTarget = CanonicalKey(args~at(i))
+      end
+      when token = '--similar' then do
+        i = i + 1
+        if i <= args~items then similarWord = CanonicalKey(args~at(i))
+      end
+      when token = '--inspect' | token = '--inspect-word' then do
+        i = i + 1
+        if i <= args~items then inspectWords~append(CanonicalKey(args~at(i)))
+      end
+      when token = '--related' | token = '--related-word' then do
+        i = i + 1
+        if i <= args~items then relatedWords~append(CanonicalKey(args~at(i)))
+      end
+      when token = '--dump-targets' then do
+        i = i + 1
+        if i <= args~items then targetDumpFile = args~at(i)
+      end
+      when token = '--summary-only' then do
+        summaryOnly = 1
+      end
+      when token = '--service' | token = '--resident' then do
+        serviceMode = 1
+      end
+      when token = '--message' then do
+        i = i + 1
+        if i <= args~items then serviceMessages~append(args~at(i))
+      end
+      when token = '--message-file' then do
+        i = i + 1
+        if i <= args~items then serviceMessageFile = args~at(i)
+      end
+      when token = '--queue-dir' | token = '--spool-dir' | token = '--message-dir' then do
+        i = i + 1
+        if i <= args~items then do
+          queueDir = args~at(i)
+          serviceMode = 1
+        end
+      end
+      when token = '--queue-sleep' | token = '--poll-seconds' | token = '--queue-poll' then do
+        i = i + 1
+        if i <= args~items then queuePollSeconds = args~at(i)
+      end
+      when token = '--queue-once' | token = '--spool-once' then do
+        queueOnce = 1
+        serviceMode = 1
+      end
+      when token = '--inspect-only' then do
+        lexiconOnly = 1
+      end
+      when token = '--gazetteer' then do
+        i = i + 1
+        if i <= args~items then gazetteerFile = args~at(i)
+      end
+      when token = '--no-dbfiles' then do
+        skipDbFiles = 1
+      end
+      when token = '--parallel-load' | token = '--parallel-data' then do
+        parallelLoad = 1
+      end
+      when token = '--read-parallel-limit' | token = '--parallel-read-limit' | token = '--dbfile-parallel-limit' then do
+        i = i + 1
+        if i <= args~items then do
+          readParallelLimit = args~at(i)
+          if \datatype(readParallelLimit, 'W') then readParallelLimit = 8
+          if readParallelLimit < 1 then readParallelLimit = 1
+        end
+      end
+      when token = '--sequential-load' | token = '--single-loader' then do
+        parallelLoad = 0
+      end
+      when token = '--lexicon-only' then do
+        lexiconOnly = 1
+      end
+      when token = '--save-cache' then do
+        i = i + 1
+        if i <= args~items then cacheSaveFile = args~at(i)
+      end
+      when token = '--load-cache' then do
+        i = i + 1
+        if i <= args~items then cacheLoadFile = args~at(i)
+      end
+      when token = '--cache-only' then do
+        cacheOnly = 1
+        lexiconOnly = 1
+      end
+      otherwise do
+        articleFiles~append(token)
+      end
+    end
+    i = i + 1
+  end
+
+  say '==================== OO WORDNET LIBRARIAN ======================'
+  say 'Dictionary root:        ' dictRoot
+  say 'Topic file:             ' topicFile
+  say 'Gazetteer file:         ' gazetteerFile
+  say 'Article files requested:' articleFiles~items
+  say 'No dbfiles mode:        ' BoolText(skipDbFiles)
+  say 'Lexicon-only mode:      ' BoolText(lexiconOnly)
+  say 'Load cache file:        ' cacheLoadFile
+  say 'Save cache file:        ' cacheSaveFile
+  say 'Cache-only mode:        ' BoolText(cacheOnly)
+  say 'Resident service mode:  ' BoolText(serviceMode)
+  say 'Parallel load mode:     ' BoolText(parallelLoad)
+  say 'Parallel read limit:    ' readParallelLimit
+  say 'Message file:           ' serviceMessageFile
+  say 'Queue directory:        ' queueDir
+  say 'Queue alarm seconds:    ' queuePollSeconds
+  say 'Queue once mode:        ' BoolText(queueOnce)
+  say 'Startup messages:       ' serviceMessages~items
+
+  runTimer = .LibrarianTimer~new('total run')
+
+  cache = .LibrarianLexiconCache~new(lexicon, graph)
+  if cacheLoadFile <> '' then do
+    loadTimer = .LibrarianTimer~new('lexicon cache load')
+    say '[STEP] loading lexical object cache:' cacheLoadFile
+    cache~loadFile(cacheLoadFile)
+    loadTimer~done
+  end
+  else do
+    loader = .LibrarianWordNetLoader~new(dictRoot, lexicon, graph, maxRows, skipDbFiles, parallelLoad, readParallelLimit)
+    loadTimer = .LibrarianTimer~new('WordNet dictionary data')
+    say '[STEP] loading WordNet dictionary data'
+    loader~load
+    loadTimer~done
+  end
+
+  if cacheSaveFile <> '' then do
+    saveTimer = .LibrarianTimer~new('lexicon cache save')
+    say '[STEP] saving lexical object cache:' cacheSaveFile
+    cache~saveFile(cacheSaveFile)
+    saveTimer~done
+  end
+
+  if cacheOnly = 1 then do
+    say
+    say '==================== CACHE BUILD COMPLETE ======================'
+    say '[MODE] --cache-only requested; grammar, targets, and article analysis skipped.'
+    say 'Loaded words:           ' lexicon~wordCount
+    say 'Loaded senses:          ' lexicon~senseCount
+    say 'Loaded graph edges:     ' graph~edgeCount
+    runTimer~done
+    return 0
+  end
+
+  phaseTimer = .LibrarianTimer~new('grammar builtins')
+  say '[STEP] installing grammar builtins'
+  grammar~installBuiltins
+  phaseTimer~done
+
+  phaseTimer = .LibrarianTimer~new('gazetteer defaults')
+  say '[STEP] installing gazetteer defaults'
+  gazetteer~installDefaults
+  phaseTimer~done
+  if gazetteerFile <> '' then do
+    phaseTimer = .LibrarianTimer~new('gazetteer file')
+    say '[STEP] loading gazetteer:' gazetteerFile
+    gazetteer~loadFile(gazetteerFile)
+    say '[STEP] gazetteer entries:' gazetteer~entryCount
+    phaseTimer~done
+  end
+
+  phaseTimer = .LibrarianTimer~new('Soundex index')
+  say '[STEP] building Soundex index for' lexicon~wordCount 'words'
+  lexicon~buildSoundexIndex
+  say '[STEP] Soundex buckets:' lexicon~soundexBucketCount
+  phaseTimer~done
+
+  if topicFile <> '' then do
+    phaseTimer = .LibrarianTimer~new('target topic file')
+    say '[STEP] loading target topics:' topicFile
+    targetModel~loadFile(topicFile)
+    say '[STEP] target seeds:' targetModel~seedCount
+    phaseTimer~done
+
+    phaseTimer = .LibrarianTimer~new('target expansion')
+    say '[STEP] expanding target topics through lexical graph'
+    targetModel~expand
+    say '[STEP] expanded target terms:' targetModel~termCount
+    phaseTimer~done
+  end
+
+  say 'Loaded words:           ' lexicon~wordCount
+  say 'Loaded senses:          ' lexicon~senseCount
+  say 'Loaded graph edges:     ' graph~edgeCount
+  say 'Loaded Soundex buckets: ' lexicon~soundexBucketCount
+  say 'Loaded gazetteer terms: ' gazetteer~entryCount
+  say 'Loaded target seeds:    ' targetModel~seedCount
+  say 'Expanded target terms:  ' targetModel~termCount
+
+  if targetDumpFile <> '' then do
+    phaseTimer = .LibrarianTimer~new('target dump')
+    say '[STEP] dumping expanded targets:' targetDumpFile
+    targetModel~writeDump(targetDumpFile)
+    phaseTimer~done
+  end
+  if debugTarget <> '' then targetModel~debugTarget(debugTarget)
+  if similarWord <> '' then self~debugSimilar(similarWord)
+  do inspectKey over inspectWords
+    self~inspectWord(inspectKey)
+  end
+  do relatedKey over relatedWords
+    self~debugRelated(relatedKey)
+  end
+
+  service = .LibrarianService~new(lexicon, graph, grammar, resolver, targetModel, gazetteer, corpus, summaryOnly, topicFile, gazetteerFile)
+  if serviceMessageFile <> '' then service~runMessageFile(serviceMessageFile)
+  do serviceMessage over serviceMessages
+    service~handleMessage(serviceMessage)
+  end
+  targetModel = service~targetModel
+  gazetteer = service~gazetteer
+  corpus = service~corpus
+  summaryOnly = service~summaryOnly
+  if serviceMode = 1 then do
+    say
+    say '==================== RESIDENT SERVICE =========================='
+    say '[SERVICE] lexical object graph is resident in memory.'
+    if queueDir <> '' then do
+      say '[SERVICE] spool queue enabled:' queueDir
+      queue = .LibrarianMessageQueueAdapter~new(service, queueDir, queuePollSeconds, queueOnce)
+      queue~run
+      runTimer~done
+      return 0
+    end
+    say '[SERVICE] type HELP for messages, PROCESS file.txt, RELOAD-TARGETS, or QUIT.'
+    service~interactive
+    runTimer~done
+    return 0
+  end
+
+  if lexiconOnly = 1 then do
+    say
+    say '==================== LEXICON ONLY COMPLETE ====================='
+    say '[MODE] --lexicon-only requested; article analysis skipped.'
+    runTimer~done
+    return 0
+  end
+
+  say
+  say '==================== ARTICLE ANALYSIS =========================='
+
+  previousArticle = .nil
+  corpusScore = 0
+  corpusTargetScore = 0
+  do articlePath over articleFiles
+    articleTimer = .LibrarianTimer~new('article ' || articlePath)
+    say '[STEP] analysing article:' articlePath
+    article = .LibrarianArticle~fromFile(articlePath)
+    analyzer = .LibrarianAnalyzer~new(lexicon, graph, grammar, resolver, targetModel, gazetteer)
+    analyzer~analyseArticle(article)
+    corpus~addArticle(article)
+    if summaryOnly = 1 then article~printSummary
+    else article~printReport
+    corpusScore = corpusScore + article~score
+    corpusTargetScore = corpusTargetScore + article~targetScore
+    articleTimer~done
+    if previousArticle <> .nil then do
+      say 'ARTICLE-TO-ARTICLE CONTINUITY FROM:' previousArticle~title
+      say '  continuity score: ' article~continuityWith(previousArticle)
+      say
+    end
+    previousArticle = article
+  end
+
+  say '==================== CORPUS SUMMARY ============================'
+  say 'Corpus lexical score:   ' corpusScore
+  say 'Corpus target score:    ' corpusTargetScore
+  say 'Corpus observations:    ' corpus~observationCount
+  runTimer~done
+  return 0
+
+::method debugSimilar
+  expose lexicon
+  use arg rawWord
+  rawWord = CanonicalKey(rawWord)
+  code = Soundex(rawWord)
+  say 'DEBUG SIMILAR:' rawWord 'soundex=' || code
+  candidates = lexicon~wordsWithSoundex(code)
+  shown = 0
+  do candidate over candidates
+    dist = EditDistance(rawWord, candidate~key)
+    say '  ' candidate~key 'distance=' || dist 'categories=' || candidate~categories
+    shown = shown + 1
+    if shown >= 50 then leave
+  end
+
+::method inspectWord
+  expose lexicon graph targetModel
+  use arg rawWord
+  key = CanonicalKey(rawWord)
+  say
+  say '==================== WORD INSPECTION ==========================='
+  say 'WORD:' key
+  wordObj = lexicon~word(key)
+  if wordObj = .nil then do
+    say '  not present as a lexical word object'
+    code = Soundex(key)
+    say '  soundex=' || code
+    candidates = lexicon~wordsWithSoundex(code)
+    shown = 0
+    do candidate over candidates
+      say '  candidate:' candidate~key 'distance=' || EditDistance(key, candidate~key) 'categories=' || candidate~categories
+      shown = shown + 1
+      if shown >= 20 then leave
+    end
+    return
+  end
+  say '  id=' || wordObj~id 'display=' || wordObj~display 'soundex=' || wordObj~soundex 'baseScore=' || wordObj~baseScore
+  say '  categories:' wordObj~categories
+  senseNo = 0
+  do sense over wordObj~senses
+    senseNo = senseNo + 1
+    say '  sense' senseNo || ':' sense~posKind sense~lexCategory 'offset=' || sense~offset 'score=' || sense~score 'source=' || sense~sourceFile
+    if senseNo >= 25 then do
+      say '  ... senses truncated at 25'
+      leave
+    end
+  end
+  do relationName over .Array~of('SYNONYM', 'DBFILE_LINK', 'EXCEPTION_ALIAS')
+    related = graph~relatedWords(wordObj, relationName)
+    if related~items > 0 then do
+      say '  outgoing' relationName || ':' related~items
+      shown = 0
+      do relatedWord over related
+        say '    ->' relatedWord~key
+        shown = shown + 1
+        if shown >= 20 then do
+          say '    ... truncated at 20'
+          leave
+        end
+      end
+    end
+    incoming = graph~incomingWords(wordObj, relationName)
+    if incoming~items > 0 then do
+      say '  incoming' relationName || ':' incoming~items
+      shown = 0
+      do incomingWord over incoming
+        say '    <-' incomingWord~key
+        shown = shown + 1
+        if shown >= 20 then do
+          say '    ... truncated at 20'
+          leave
+        end
+      end
+    end
+  end
+  targetModel~debugTarget(key)
+
+::method debugRelated
+  expose lexicon graph
+  use arg rawWord
+  key = CanonicalKey(rawWord)
+  say
+  say '==================== RELATION PROBE ============================'
+  say 'RELATED WORD:' key
+  wordObj = lexicon~word(key)
+  if wordObj = .nil then do
+    say '  not present as a lexical word object'
+    return
+  end
+  do relationName over .Array~of('SYNONYM', 'DBFILE_LINK', 'EXCEPTION_ALIAS')
+    related = graph~relatedWords(wordObj, relationName)
+    say '  outgoing' relationName || ':' related~items
+    shown = 0
+    do relatedWord over related
+      say '    ->' relatedWord~key relatedWord~categories
+      shown = shown + 1
+      if shown >= 50 then do
+        say '    ... truncated at 50'
+        leave
+      end
+    end
+    incoming = graph~incomingWords(wordObj, relationName)
+    say '  incoming' relationName || ':' incoming~items
+    shown = 0
+    do incomingWord over incoming
+      say '    <-' incomingWord~key incomingWord~categories
+      shown = shown + 1
+      if shown >= 50 then do
+        say '    ... truncated at 50'
+        leave
+      end
+    end
+  end
+
+::method usage
+  say 'Usage:'
+  say '  rexx librarian_wordnet_oorexx.rex ./dict --topics targets.txt article1.txt article2.txt'
+  say 'Options:'
+  say '  --max N              limit rows per WordNet data file for smoke tests'
+  say '  --debug-target WORD  show expanded target terms for one canonical word'
+  say '  --similar WORD       show Soundex candidates for one word'
+  say '  --inspect WORD       inspect one word object, senses, relations, and target terms'
+  say '  --related WORD       show incoming/outgoing relation links for one word'
+  say '  --inspect-only       run loading/probes and skip article analysis'
+  say '  --dump-targets FILE  write expanded target term table'
+  say '  --summary-only       print compact article summaries instead of full sentence reports'
+  say '  --gazetteer FILE     load phrase rows: SECTION|PHRASE|POS|WEIGHT'
+  say '  --no-dbfiles        skip dbfiles relation edge load for faster smoke tests'
+  say '  --parallel-load     load data/exception/dbfile files in staged parallel reads; default'
+  say '  --read-parallel-limit N  cap concurrent bulk-read activities; default 8'
+  say '  --sequential-load   force data/exception files through one loader activity'
+  say '  --lexicon-only      build lexical indexes and stop before article analysis'
+  say '  --save-cache FILE    write a line cache of words/senses/exceptions/edges after loading'
+  say '  --load-cache FILE    load words/senses/exceptions/edges from a saved cache instead of WordNet files'
+  say '  --cache-only         build or load cache, optionally save it, then stop early'
+  say '  --service            keep the object graph resident and read messages from stdin'
+  say '  --message MSG        run one resident-service message after loading'
+  say '  --message-file FILE  run resident-service messages from a file after loading'
+  say '  --queue-dir DIR      poll DIR for *.msg files and execute each as service messages'
+  say '  --queue-once         process current *.msg files once, then stop'
+  say '  --queue-sleep SEC    alarm interval for queue polling; default 2'
+
+
+
+::class LibrarianService public
+
+::method init
+  expose lexicon graph grammar resolver targetModel gazetteer corpus summaryOnly lastTopicFile lastGazetteerFile
+  use arg lexicon, graph, grammar, resolver, targetModel, gazetteer, corpus, summaryOnly, topicFile, gazetteerFile
+  self~lexicon = lexicon
+  self~graph = graph
+  self~grammar = grammar
+  self~resolver = resolver
+  self~targetModel = targetModel
+  self~gazetteer = gazetteer
+  self~corpus = corpus
+  self~summaryOnly = summaryOnly
+  lastTopicFile = topicFile
+  lastGazetteerFile = gazetteerFile
+
+::attribute lexicon
+::attribute graph
+::attribute grammar
+::attribute resolver
+::attribute targetModel
+::attribute gazetteer
+::attribute corpus
+::attribute summaryOnly
+
+::method interactive
+  do forever
+    call charout , 'librarian> '
+    message = linein()
+    rc = self~handleMessage(message)
+    if rc = 99 then leave
+  end
+  return 0
+
+::method runMessageFile
+  use arg path
+  if path = '' then return 1
+  if stream(path, 'c', 'query exists') = '' then do
+    say '[SERVICE] message file missing:' path
+    return 1
+  end
+  say '[SERVICE] message file start:' path
+  do while lines(path) > 0
+    message = linein(path)
+    if strip(message) = '' then iterate
+    if left(strip(message), 1) = '#' then iterate
+    say '[MESSAGE]' message
+    rc = self~handleMessage(message)
+    if rc = 99 then leave
+  end
+  call stream path, 'c', 'close'
+  return 0
+
+::method handleMessage
+  expose lexicon graph grammar resolver targetModel gazetteer corpus summaryOnly lastTopicFile lastGazetteerFile
+  use arg message
+  message = strip(message)
+  if message = '' then return 0
+  upperMessage = translate(message)
+  verb = word(upperMessage, 1)
+  select
+    when verb = 'HELP' | verb = '?' then do
+      self~messageHelp
+    end
+    when verb = 'STATUS' | verb = 'STATS' then do
+      self~status
+    end
+    when verb = 'SUMMARY-ONLY' then do
+      flag = word(upperMessage, 2)
+      if flag = 'ON' | flag = '1' | flag = 'YES' then summaryOnly = 1
+      else if flag = 'OFF' | flag = '0' | flag = 'NO' then summaryOnly = 0
+      say '[SERVICE] summaryOnly=' || BoolText(summaryOnly)
+    end
+    when verb = 'LOAD-TARGETS' | verb = 'TARGETS' | verb = 'RELOAD-TARGETS' then do
+      path = word(message, 2)
+      if path = '' then path = lastTopicFile
+      self~reloadTargets(path)
+    end
+    when verb = 'LOAD-GAZETTEER' | verb = 'GAZETTEER' | verb = 'RELOAD-GAZETTEER' then do
+      path = word(message, 2)
+      if path = '' then path = lastGazetteerFile
+      self~reloadGazetteer(path)
+    end
+    when verb = 'PROCESS' | verb = 'PROCESS-FILE' | verb = 'ARTICLE' then do
+      path = word(message, 2)
+      mode = word(upperMessage, 3)
+      self~processFile(path, mode)
+    end
+    when verb = 'INSPECT' | verb = 'INSPECT-WORD' then do
+      self~inspectWord(word(message, 2))
+    end
+    when verb = 'RELATED' | verb = 'RELATED-WORD' then do
+      self~debugRelated(word(message, 2))
+    end
+    when verb = 'SIMILAR' | verb = 'SOUNDEX' then do
+      self~debugSimilar(word(message, 2))
+    end
+    when verb = 'DUMP-TARGETS' then do
+      path = word(message, 2)
+      if path = '' then path = 'expanded_targets.txt'
+      targetModel~writeDump(path)
+    end
+    when verb = 'CLEAR-CORPUS' | verb = 'RESET-CORPUS' then do
+      corpus = .LibrarianCorpus~new
+      say '[SERVICE] corpus reset'
+    end
+    when verb = 'QUIT' | verb = 'EXIT' | verb = 'STOP' then do
+      say '[SERVICE] stopping resident message loop'
+      return 99
+    end
+    otherwise do
+      say '[SERVICE] unknown message:' message
+      say '[SERVICE] type HELP for available messages.'
+    end
+  end
+  return 0
+
+::method messageHelp
+  say 'Resident Librarian messages:'
+  say '  STATUS'
+  say '  LOAD-TARGETS targets.txt'
+  say '  RELOAD-TARGETS'
+  say '  LOAD-GAZETTEER librarian_gazetteer.txt'
+  say '  PROCESS article.txt'
+  say '  PROCESS article.txt SUMMARY'
+  say '  INSPECT SURVEILLANCE'
+  say '  RELATED DISMISS'
+  say '  SIMILAR RAN'
+  say '  DUMP-TARGETS expanded_targets.txt'
+  say '  SUMMARY-ONLY ON|OFF'
+  say '  CLEAR-CORPUS'
+  say 'Spool queue files:'
+  say '  one command per line, blank and # comment lines ignored'
+  say '  processed marker: file.msg.done'
+  say '  receipt file:     file.msg.receipt'
+  say '  QUIT'
+
+::method status
+  expose lexicon graph targetModel gazetteer corpus summaryOnly lastTopicFile lastGazetteerFile
+  say '[SERVICE] words=' || lexicon~wordCount 'senses=' || lexicon~senseCount 'edges=' || graph~edgeCount
+  say '[SERVICE] soundexBuckets=' || lexicon~soundexBucketCount 'targets=' || targetModel~termCount 'gazetteer=' || gazetteer~entryCount
+  say '[SERVICE] corpusArticles=' || corpus~articleCount 'observations=' || corpus~observationCount
+  say '[SERVICE] summaryOnly=' || BoolText(summaryOnly) 'lastTargets=' || lastTopicFile 'lastGazetteer=' || lastGazetteerFile
+
+::method reloadTargets
+  expose lexicon graph targetModel lastTopicFile
+  use arg path
+  if path = '' then do
+    say '[SERVICE] no target file supplied and no previous target file known'
+    return 1
+  end
+  timer = .LibrarianTimer~new('service reload targets')
+  say '[SERVICE] loading targets:' path
+  newTargets = .LibrarianTargetModel~new(lexicon, graph)
+  newTargets~loadFile(path)
+  newTargets~expand
+  targetModel = newTargets
+  lastTopicFile = path
+  say '[SERVICE] target seeds=' || targetModel~seedCount 'expandedTerms=' || targetModel~termCount
+  timer~done
+  return 0
+
+::method reloadGazetteer
+  expose lexicon gazetteer lastGazetteerFile
+  use arg path
+  timer = .LibrarianTimer~new('service reload gazetteer')
+  newGazetteer = .LibrarianGazetteer~new(lexicon)
+  newGazetteer~installDefaults
+  if path <> '' then do
+    say '[SERVICE] loading gazetteer:' path
+    newGazetteer~loadFile(path)
+    lastGazetteerFile = path
+  end
+  gazetteer = newGazetteer
+  say '[SERVICE] gazetteer entries=' || gazetteer~entryCount
+  timer~done
+  return 0
+
+::method processFile
+  expose lexicon graph grammar resolver targetModel gazetteer corpus summaryOnly
+  use arg path, mode
+  if path = '' then do
+    say '[SERVICE] PROCESS needs a file path'
+    return 1
+  end
+  timer = .LibrarianTimer~new('service process ' || path)
+  article = .LibrarianArticle~fromFile(path)
+  analyzer = .LibrarianAnalyzer~new(lexicon, graph, grammar, resolver, targetModel, gazetteer)
+  analyzer~analyseArticle(article)
+  corpus~addArticle(article)
+  if mode = 'SUMMARY' | summaryOnly = 1 then article~printSummary
+  else article~printReport
+  timer~done
+  return article~targetScore
+
+::method debugSimilar
+  expose lexicon
+  use arg rawWord
+  rawWord = CanonicalKey(rawWord)
+  if rawWord = '' then do
+    say '[SERVICE] SIMILAR needs a word'
+    return
+  end
+  code = Soundex(rawWord)
+  say 'DEBUG SIMILAR:' rawWord 'soundex=' || code
+  candidates = lexicon~wordsWithSoundex(code)
+  shown = 0
+  do candidate over candidates
+    dist = EditDistance(rawWord, candidate~key)
+    say '  ' candidate~key 'distance=' || dist 'categories=' || candidate~categories
+    shown = shown + 1
+    if shown >= 50 then leave
+  end
+
+::method inspectWord
+  expose lexicon graph targetModel
+  use arg rawWord
+  key = CanonicalKey(rawWord)
+  if key = '' then do
+    say '[SERVICE] INSPECT needs a word'
+    return
+  end
+  say
+  say '==================== WORD INSPECTION ==========================='
+  say 'WORD:' key
+  wordObj = lexicon~word(key)
+  if wordObj = .nil then do
+    say '  not present as a lexical word object'
+    code = Soundex(key)
+    say '  soundex=' || code
+    candidates = lexicon~wordsWithSoundex(code)
+    shown = 0
+    do candidate over candidates
+      say '  candidate:' candidate~key 'distance=' || EditDistance(key, candidate~key) 'categories=' || candidate~categories
+      shown = shown + 1
+      if shown >= 20 then leave
+    end
+    return
+  end
+  say '  id=' || wordObj~id 'display=' || wordObj~display 'soundex=' || wordObj~soundex 'baseScore=' || wordObj~baseScore
+  say '  categories:' wordObj~categories
+  senseNo = 0
+  do sense over wordObj~senses
+    senseNo = senseNo + 1
+    say '  sense' senseNo || ':' sense~posKind sense~lexCategory 'offset=' || sense~offset 'score=' || sense~score 'source=' || sense~sourceFile
+    if senseNo >= 25 then do
+      say '  ... senses truncated at 25'
+      leave
+    end
+  end
+  do relationName over .Array~of('SYNONYM', 'DBFILE_LINK', 'EXCEPTION_ALIAS')
+    related = graph~relatedWords(wordObj, relationName)
+    if related~items > 0 then say '  outgoing' relationName || ':' related~items
+    shown = 0
+    do relatedWord over related
+      say '    ->' relatedWord~key
+      shown = shown + 1
+      if shown >= 20 then do
+        say '    ... truncated at 20'
+        leave
+      end
+    end
+    incoming = graph~incomingWords(wordObj, relationName)
+    if incoming~items > 0 then say '  incoming' relationName || ':' incoming~items
+    shown = 0
+    do incomingWord over incoming
+      say '    <-' incomingWord~key
+      shown = shown + 1
+      if shown >= 20 then do
+        say '    ... truncated at 20'
+        leave
+      end
+    end
+  end
+  targetModel~debugTarget(key)
+
+::method debugRelated
+  expose lexicon graph
+  use arg rawWord
+  key = CanonicalKey(rawWord)
+  if key = '' then do
+    say '[SERVICE] RELATED needs a word'
+    return
+  end
+  say
+  say '==================== RELATION PROBE ============================'
+  say 'RELATED WORD:' key
+  wordObj = lexicon~word(key)
+  if wordObj = .nil then do
+    say '  not present as a lexical word object'
+    return
+  end
+  do relationName over .Array~of('SYNONYM', 'DBFILE_LINK', 'EXCEPTION_ALIAS')
+    related = graph~relatedWords(wordObj, relationName)
+    say '  outgoing' relationName || ':' related~items
+    shown = 0
+    do relatedWord over related
+      say '    ->' relatedWord~key relatedWord~categories
+      shown = shown + 1
+      if shown >= 50 then do
+        say '    ... truncated at 50'
+        leave
+      end
+    end
+    incoming = graph~incomingWords(wordObj, relationName)
+    say '  incoming' relationName || ':' incoming~items
+    shown = 0
+    do incomingWord over incoming
+      say '    <-' incomingWord~key incomingWord~categories
+      shown = shown + 1
+      if shown >= 50 then do
+        say '    ... truncated at 50'
+        leave
+      end
+    end
+  end
+
+
+::class LibrarianLexiconCache public
+
+::method init
+  expose lexicon graph
+  use arg lexicon, graph
+  self~lexicon = lexicon
+  self~graph = graph
+
+::attribute lexicon
+::attribute graph
+
+::method saveFile
+  expose lexicon graph
+  use arg path
+  if path = '' then return 1
+  call lineout path, 'LIBRARIAN-OOREXX-CACHE|1'
+  wordRows = 0
+  wordSupplier = lexicon~wordSupplier
+  do while wordSupplier~available
+    wordObj = wordSupplier~item
+    call lineout path, 'W|' || CacheField(wordObj~key) || '|' || CacheField(wordObj~display) || '|' || CacheField(wordObj~baseScore)
+    wordRows = wordRows + 1
+    if wordRows // 50000 = 0 then say '[CACHE] save words=' || wordRows
+    wordSupplier~next
+  end
+  senseRows = 0
+  senseSupplier = lexicon~senseSupplier
+  do while senseSupplier~available
+    sense = senseSupplier~item
+    call lineout path, 'S|' || CacheField(sense~word~key) || '|' || CacheField(sense~posKind) || '|' || CacheField(sense~lexCategory) || '|' || CacheField(sense~offset) || '|' || CacheField(sense~lemma) || '|' || CacheField(sense~sourceFile)
+    senseRows = senseRows + 1
+    if senseRows // 50000 = 0 then say '[CACHE] save senses=' || senseRows
+    senseSupplier~next
+  end
+  exceptionRows = 0
+  supplier = lexicon~exceptionSupplier
+  do while supplier~available
+    idx = supplier~index
+    lemma = supplier~item
+    parse var idx surface '/' posKind
+    call lineout path, 'X|' || CacheField(surface) || '|' || CacheField(posKind) || '|' || CacheField(lemma)
+    exceptionRows = exceptionRows + 1
+    supplier~next
+  end
+  edgeRows = 0
+  supplier = graph~edgeSupplier
+  do while supplier~available
+    edge = supplier~item
+    call lineout path, 'E|' || CacheField(edge~fromWord~key) || '|' || CacheField(edge~relationType) || '|' || CacheField(edge~toWord~key) || '|' || CacheField(edge~weight) || '|' || CacheField(edge~source)
+    edgeRows = edgeRows + 1
+    if edgeRows // 50000 = 0 then say '[CACHE] save edges=' || edgeRows
+    supplier~next
+  end
+  call lineout path, 'Z|' || wordRows || '|' || senseRows || '|' || exceptionRows || '|' || edgeRows
+  call lineout path
+  say '[CACHE] save complete words=' || wordRows 'senses=' || senseRows 'exceptions=' || exceptionRows 'edges=' || edgeRows
+  return 0
+
+::method loadFile
+  expose lexicon graph
+  use arg path
+  if path = '' then return 1
+  wordRows = 0
+  senseRows = 0
+  exceptionRows = 0
+  edgeRows = 0
+  do while lines(path) > 0
+    line = linein(path)
+    if strip(line) = '' then iterate
+    parse var line recType '|' rest
+    select
+      when recType = 'LIBRARIAN-OOREXX-CACHE' then nop
+      when recType = 'W' then do
+        parse var rest key '|' display '|' baseScore
+        wordObj = lexicon~getOrCreateWord(CacheUnfield(key), CacheUnfield(display))
+        if wordObj <> .nil then wordObj~baseImportance = CacheUnfield(baseScore)
+        wordRows = wordRows + 1
+        if wordRows // 50000 = 0 then say '[CACHE] load words=' || wordRows
+      end
+      when recType = 'S' then do
+        parse var rest key '|' posKind '|' lexCategory '|' offset '|' lemma '|' sourceFile
+        lexicon~addSense(CacheUnfield(key), CacheUnfield(posKind), CacheUnfield(lexCategory), CacheUnfield(offset), CacheUnfield(lemma), '', CacheUnfield(sourceFile))
+        senseRows = senseRows + 1
+        if senseRows // 50000 = 0 then say '[CACHE] load senses=' || senseRows
+      end
+      when recType = 'X' then do
+        parse var rest surface '|' posKind '|' lemma
+        lexicon~addException(CacheUnfield(surface), CacheUnfield(posKind), CacheUnfield(lemma))
+        exceptionRows = exceptionRows + 1
+      end
+      when recType = 'E' then do
+        parse var rest fromKey '|' relationType '|' toKey '|' weight '|' source
+        fromWord = lexicon~getOrCreateWord(CacheUnfield(fromKey), CacheUnfield(fromKey))
+        toWord = lexicon~getOrCreateWord(CacheUnfield(toKey), CacheUnfield(toKey))
+        graph~link(fromWord, CacheUnfield(relationType), toWord, CacheUnfield(weight), CacheUnfield(source), 'cache')
+        edgeRows = edgeRows + 1
+        if edgeRows // 50000 = 0 then say '[CACHE] load edges=' || edgeRows
+      end
+      otherwise nop
+    end
+  end
+  call lineout path
+  say '[CACHE] load complete words=' || wordRows 'senses=' || senseRows 'exceptions=' || exceptionRows 'edges=' || edgeRows
+  return 0
+
+
+::class LibrarianMessageQueueAdapter public
+
+::method init
+  expose service queueDir pollSeconds onceMode processedCount running activeAlarm
+  use arg service, queueDir, pollSeconds, onceMode
+  self~service = service
+  self~queueDir = queueDir
+  self~pollSeconds = pollSeconds
+  self~onceMode = onceMode
+  processedCount = 0
+  running = 0
+  activeAlarm = .nil
+
+::attribute service
+::attribute queueDir
+::attribute pollSeconds
+::attribute onceMode
+
+::method run unguarded
+  expose queueDir pollSeconds onceMode processedCount running
+  say '[QUEUE] resident spool queue started dir=' || queueDir 'once=' || BoolText(onceMode) 'alarm-seconds=' || pollSeconds
+  if onceMode = 1 then do
+    processed = self~processOnce
+    say '[QUEUE] resident spool queue stopped processed=' || processedCount
+    return processed
+  end
+  running = 1
+  initialProcessed = self~processOnce
+  if initialProcessed = 99 then running = 0
+  if running = 1 then self~scheduleNextAlarm
+  do while running = 1
+    self~idleWait
+  end
+  say '[QUEUE] resident spool queue stopped processed=' || processedCount
+  return processedCount
+
+::method scheduleNextAlarm unguarded
+  expose pollSeconds running activeAlarm
+  if running <> 1 then return 0
+  seconds = self~normalisePollSeconds
+  msg = .Message~new(self, 'alarmPoll')
+  activeAlarm = .Alarm~new(seconds, msg)
+  return 0
+
+::method alarmPoll unguarded
+  expose running activeAlarm processedCount
+  activeAlarm = .nil
+  if running <> 1 then return 0
+  processed = self~processOnce
+  if processed = 99 then do
+    running = 0
+    return 99
+  end
+  self~scheduleNextAlarm
+  return processed
+
+::method stop unguarded
+  expose running activeAlarm
+  running = 0
+  if activeAlarm <> .nil then do
+    signal on syntax name CancelAlarmIgnored
+    activeAlarm~cancel
+    signal off syntax
+  end
+  activeAlarm = .nil
+  return 0
+CancelAlarmIgnored:
+  signal off syntax
+  activeAlarm = .nil
+  return 0
+
+::method processOnce unguarded
+  expose queueDir processedCount
+  files = self~messageFiles
+  processed = 0
+  do filePath over files
+    donePath = filePath || '.done'
+    if stream(donePath, 'c', 'query exists') <> '' then iterate
+    rc = self~processMessageFile(filePath)
+    if rc = 99 then do
+      processedCount = processedCount + 1
+      return 99
+    end
+    processed = processed + 1
+    processedCount = processedCount + 1
+  end
+  if processed = 0 then say '[QUEUE] no pending messages in' queueDir
+  return processed
+
+::method messageFiles unguarded
+  expose queueDir
+  out = .Array~new
+  signal on syntax name NoRexxUtilForQueue
+  call RxFuncAdd 'SysLoadFuncs', 'RexxUtil', 'SysLoadFuncs'
+  call SysLoadFuncs
+  call SysFileTree queueDir || '/*.msg', 'qfiles.', 'FO'
+  signal off syntax
+  do i = 1 to qfiles.0
+    out~append(qfiles.i)
+  end
+  return out
+NoRexxUtilForQueue:
+  signal off syntax
+  say '[QUEUE] RexxUtil SysFileTree unavailable; cannot scan queue directory'
+  return out
+
+::method processMessageFile unguarded
+  expose service
+  use arg filePath
+  say '[QUEUE] processing:' filePath
+  receiptPath = filePath || '.receipt'
+  donePath = filePath || '.done'
+  call lineout receiptPath, 'LIBRARIAN-QUEUE-RECEIPT|1'
+  call lineout receiptPath, 'file=' || filePath
+  call lineout receiptPath, 'started=' || date('S') || 'T' || time('N')
+  if stream(filePath, 'c', 'query exists') = '' then do
+    call lineout receiptPath, 'status=missing'
+    call lineout receiptPath
+    return 1
+  end
+  streamObj = .Stream~new(filePath)
+  linesArray = streamObj~makeArray('LINES')
+  streamObj~close
+  if linesArray = .nil then linesArray = .Array~new
+  lineNo = 0
+  stopRequested = 0
+  do message over linesArray
+    lineNo = lineNo + 1
+    message = strip(message)
+    if message = '' then iterate
+    if left(message, 1) = '#' then iterate
+    say '[QUEUE MESSAGE]' message
+    rc = service~handleMessage(message)
+    call lineout receiptPath, 'line=' || lineNo || '|rc=' || rc || '|message=' || message
+    if rc = 99 then do
+      stopRequested = 1
+      leave
+    end
+  end
+  call lineout receiptPath, 'finished=' || date('S') || 'T' || time('N')
+  if stopRequested = 1 then call lineout receiptPath, 'status=stop-requested'
+  else call lineout receiptPath, 'status=ok'
+  call lineout receiptPath
+  call lineout donePath, 'done=' || date('S') || 'T' || time('N')
+  call lineout donePath
+  if stopRequested = 1 then return 99
+  return 0
+
+::method normalisePollSeconds unguarded
+  expose pollSeconds
+  seconds = pollSeconds
+  if \IsDigits(seconds) then seconds = 2
+  if seconds < 1 then seconds = 1
+  return seconds
+
+::method idleWait unguarded
+  signal on syntax name NoSleepAvailable
+  call RxFuncAdd 'SysLoadFuncs', 'RexxUtil', 'SysLoadFuncs'
+  call SysLoadFuncs
+  call SysSleep 1
+  signal off syntax
+  return
+NoSleepAvailable:
+  signal off syntax
+  call time 'R'
+  do while time('E') < 1
+    nop
+  end
+  return
+
+::class LibrarianTimer public
+
+::method init
+  expose label startSeconds
+  use arg label
+  if label = '' then label = 'phase'
+  self~label = label
+  startSeconds = ClockSeconds()
+
+::attribute label
+
+::method elapsed
+  expose startSeconds
+  now = ClockSeconds()
+  elapsed = now - startSeconds
+  if elapsed < 0 then elapsed = elapsed + 86400
+  return elapsed
+
+::method done
+  expose label
+  say '[TIME]' label 'seconds=' || FormatSeconds(self~elapsed)
+  return self~elapsed
+
+::class LibrarianWord public
+
+::method init
+  expose id key display soundexCode senses variants posFlags baseImportance
+  use arg id, key, display
+  self~id = id
+  self~key = CanonicalKey(key)
+  if display = '' then display = self~key
+  self~display = display~upper
+  soundexCode = ''
+  senses = .Array~new
+  variants = .Relation~new
+  posFlags = .Directory~new
+  baseImportance = 1
+
+::attribute id
+::attribute key
+::attribute display
+::attribute baseImportance
+
+::method soundex
+  expose soundexCode key
+  if soundexCode = '' then soundexCode = Soundex(key)
+  return soundexCode
+
+::method calculateSoundex
+  expose soundexCode key
+  soundexCode = Soundex(key)
+  return soundexCode
+
+::method addSense
+  expose senses posFlags baseImportance
+  use arg sense
+  senses~append(sense)
+  posFlags~put(1, sense~posKind)
+  baseImportance = max(baseImportance, sense~score)
+
+::method senses
+  expose senses
+  return senses
+
+::method hasPos
+  expose posFlags
+  use arg posKind
+  posKind = NormalisePos(posKind)
+  return posFlags~hasIndex(posKind)
+
+::method addVariant
+  expose variants
+  use arg surface
+  key = CanonicalKey(surface)
+  if key <> '' then variants[key] = surface~upper
+
+::method variants
+  expose variants
+  return variants
+
+::method categories
+  expose senses
+  cats = ''
+  do sense over senses
+    cats = AddUniqueWord(cats, sense~lexCategory)
+  end
+  return cats
+
+::method primarySense
+  expose senses
+  use arg preferredPos
+  preferredPos = NormalisePos(preferredPos)
+  if preferredPos <> '' then do sense over senses
+    if sense~posKind = preferredPos then return sense
+  end
+  if senses~items > 0 then return senses~at(1)
+  return .nil
+
+::method baseScore
+  expose baseImportance
+  return baseImportance
+
+::method string
+  expose id key
+  return key || '#' || id
+
+::class LibrarianSense public
+
+::method init
+  expose id word posKind lexCategory offset lemma gloss sourceFile senseScore
+  use arg id, word, posKind, lexCategory, offset, lemma, gloss, sourceFile
+  self~id = id
+  self~word = word
+  self~posKind = NormalisePos(posKind)
+  self~lexCategory = lexCategory~upper
+  self~offset = offset
+  self~lemma = CanonicalKey(lemma)
+  self~gloss = gloss
+  self~sourceFile = sourceFile
+  senseScore = SenseBaseScore(self~posKind, self~lexCategory)
+
+::attribute id
+::attribute word
+::attribute posKind
+::attribute lexCategory
+::attribute offset
+::attribute lemma
+::attribute gloss
+::attribute sourceFile
+
+::method score
+  expose senseScore
+  return senseScore
+
+::method isNoun
+  expose posKind
+  return posKind = 'N'
+
+::method isVerb
+  expose posKind
+  return posKind = 'V'
+
+::method isAdjective
+  expose posKind
+  return posKind = 'ADJ'
+
+::method isAdverb
+  expose posKind
+  return posKind = 'ADV'
+
+::method string
+  expose word posKind lexCategory
+  return word~key || '/' || posKind || '/' || lexCategory
+
+::class LibrarianLexicon public
+
+::method init
+  expose nextWordId nextSenseId wordsById wordByKey sensesById sensesByWord sensesByPos sensesByLexCategory wordsBySoundex wordsByPos wordsByCategory exceptions surfaceAliases soundexBuckets synsetWordsByOffset synsetWordIdsByOffset
+  nextWordId = 0
+  nextSenseId = 0
+  -- Exact key/value indexes use Table: no uppercase coercion and fastest exact lookup.
+  wordsById = .Table~new
+  wordByKey = .Table~new
+  sensesById = .Table~new
+  sensesByWord = .Relation~new
+  sensesByPos = .Relation~new
+  sensesByLexCategory = .Relation~new
+  wordsBySoundex = .Relation~new
+  wordsByPos = .Relation~new
+  wordsByCategory = .Relation~new
+  exceptions = .Directory~new
+  surfaceAliases = .Directory~new
+  soundexBuckets = .Table~new
+  synsetWordsByOffset = .Relation~new
+  synsetWordIdsByOffset = .Relation~new
+
+::method getOrCreateWord
+  expose nextWordId wordsById wordByKey
+  use arg rawKey, display
+  key = CanonicalKey(rawKey)
+  if key = '' then return .nil
+  wordObj = wordByKey~at(key)
+  if wordObj <> .nil then return wordObj
+  nextWordId = nextWordId + 1
+  wordObj = .LibrarianWord~new(nextWordId, key, display)
+  wordsById~put(wordObj, nextWordId)
+  wordByKey~put(wordObj, key)
+  return wordObj
+
+::method word
+  expose wordByKey
+  use arg rawKey
+  key = CanonicalKey(rawKey)
+  if key = '' then return .nil
+  return wordByKey~at(key)
+
+::method hasWord
+  expose wordByKey
+  use arg rawKey
+  key = CanonicalKey(rawKey)
+  return wordByKey~at(key) <> .nil
+
+::method wordById
+  expose wordsById
+  use arg id
+  return wordsById~at(id)
+
+::method addSense
+  expose nextSenseId sensesById sensesByWord sensesByPos sensesByLexCategory wordsByPos wordsByCategory synsetWordsByOffset synsetWordIdsByOffset
+  use arg rawWord, posKind, lexCategory, offset, lemma, gloss, sourceFile
+  posKind = NormalisePos(posKind)
+  wordObj = self~getOrCreateWord(rawWord, rawWord)
+  if wordObj = .nil then return .nil
+  nextSenseId = nextSenseId + 1
+  sense = .LibrarianSense~new(nextSenseId, wordObj, posKind, lexCategory, offset, lemma, gloss, sourceFile)
+  sensesById~put(sense, nextSenseId)
+  sensesByWord[wordObj~key] = sense
+  sensesByPos[posKind] = sense
+  sensesByLexCategory[sense~lexCategory] = sense
+  wordsByPos[posKind] = wordObj
+  wordsByCategory[sense~lexCategory] = wordObj
+  wordObj~addSense(sense)
+  synsetWordsByOffset[offset || '/' || posKind] = wordObj
+  synsetWordIdsByOffset[offset || '/' || posKind] = wordObj~id
+  return sense
+
+::method addParsedSense
+  expose nextWordId nextSenseId wordsById wordByKey sensesById sensesByWord sensesByPos sensesByLexCategory wordsByPos wordsByCategory synsetWordsByOffset synsetWordIdsByOffset
+  use arg cleanLemma, posKind, lexCategory, offset, gloss, sourceFile
+  key = cleanLemma
+  if key = '' then return .nil
+  wordObj = wordByKey~at(key)
+  if wordObj = .nil then do
+    nextWordId = nextWordId + 1
+    wordObj = .LibrarianWord~new(nextWordId, key, key)
+    wordsById~put(wordObj, nextWordId)
+    wordByKey~put(wordObj, key)
+  end
+  nextSenseId = nextSenseId + 1
+  sense = .LibrarianSense~new(nextSenseId, wordObj, posKind, lexCategory, offset, key, gloss, sourceFile)
+  sensesById~put(sense, nextSenseId)
+  sensesByWord[key] = sense
+  sensesByPos[posKind] = sense
+  sensesByLexCategory[sense~lexCategory] = sense
+  wordsByPos[posKind] = wordObj
+  wordsByCategory[sense~lexCategory] = wordObj
+  wordObj~addSense(sense)
+  synsetWordsByOffset[offset || '/' || posKind] = wordObj
+  synsetWordIdsByOffset[offset || '/' || posKind] = wordObj~id
+  return sense
+
+::method wordsForSynset
+  expose synsetWordsByOffset
+  use arg offset, posKind
+  return synsetWordsByOffset~allAt(offset || '/' || NormalisePos(posKind))
+
+::method wordIdsForSynset
+  expose synsetWordIdsByOffset
+  use arg offset, posKind
+  return synsetWordIdsByOffset~allAt(offset || '/' || NormalisePos(posKind))
+
+::method addException
+  expose exceptions
+  use arg surface, posKind, lemma
+  surfaceKey = CanonicalKey(surface)
+  lemmaKey = CanonicalKey(lemma)
+  posKind = NormalisePos(posKind)
+  if surfaceKey <> '' & lemmaKey <> '' then exceptions~put(lemmaKey, surfaceKey || '/' || posKind)
+
+::method exceptionLemma
+  expose exceptions
+  use arg surface, posKind
+  surfaceKey = CanonicalKey(surface)
+  posKind = NormalisePos(posKind)
+  idx = surfaceKey || '/' || posKind
+  lemma = exceptions~at(idx)
+  if lemma <> .nil then return lemma
+  return ''
+
+::method addSurfaceAlias
+  expose surfaceAliases
+  use arg surface, target
+  surfaceKey = CanonicalKey(surface)
+  targetKey = CanonicalKey(target)
+  if surfaceKey <> '' & targetKey <> '' then surfaceAliases~put(targetKey, surfaceKey)
+
+::method surfaceAlias
+  expose surfaceAliases
+  use arg surface
+  surfaceKey = CanonicalKey(surface)
+  alias = surfaceAliases~at(surfaceKey)
+  if alias <> .nil then return alias
+  return ''
+
+::method buildSoundexIndex
+  expose wordByKey wordsBySoundex soundexBuckets
+  wordsBySoundex = .Relation~new
+  soundexBuckets = .Table~new
+  wordSupplier = wordByKey~supplier
+  do while wordSupplier~available
+    wordObj = wordSupplier~item
+    code = wordObj~soundex
+    if code <> '' then do
+      wordsBySoundex[code] = wordObj
+      soundexBuckets~put(1, code)
+    end
+    wordSupplier~next
+  end
+
+::method wordsWithSoundex
+  expose wordsBySoundex
+  use arg code
+  return wordsBySoundex~allAt(code)
+
+::method sensesForWord
+  expose sensesByWord
+  use arg wordObj
+  if wordObj = .nil then return .Array~new
+  return sensesByWord~allAt(wordObj~key)
+
+::method wordsForPos
+  expose wordsByPos
+  use arg posKind
+  return wordsByPos~allAt(NormalisePos(posKind))
+
+::method wordCount
+  expose wordsById
+  return wordsById~items
+
+::method senseCount
+  expose sensesById
+  return sensesById~items
+
+::method soundexBucketCount
+  expose soundexBuckets
+  return soundexBuckets~items
+
+
+::method words
+  expose wordsById
+  return wordsById
+
+::method wordSupplier
+  expose wordByKey
+  return wordByKey~supplier
+
+::method senses
+  expose sensesById
+  return sensesById
+
+::method senseSupplier
+  expose sensesById
+  return sensesById~supplier
+
+::method exceptionSupplier
+  expose exceptions
+  return exceptions~supplier
+
+::class LibrarianRelationEdge public
+
+::method init
+  expose fromWord relationType toWord weight source evidence
+  use arg fromWord, relationType, toWord, weight, source, evidence
+  self~fromWord = fromWord
+  self~relationType = relationType~upper
+  self~toWord = toWord
+  self~weight = weight
+  self~source = source
+  self~evidence = evidence
+
+::attribute fromWord
+::attribute relationType
+::attribute toWord
+::attribute weight
+::attribute source
+::attribute evidence
+
+::method string
+  expose fromWord relationType toWord weight source
+  return fromWord~key || ' --' || relationType || '/' || weight || '--> ' || toWord~key || ' [' || source || ']'
+
+::class LibrarianRelationGraph public
+
+::method init
+  expose relationTypes relationNames edgeMatrix exactEdges outgoingIndex incomingIndex nextType edgeCounter matrixAvailable
+  -- Exact graph registries use Table; one-to-many edge indexes remain Relation.
+  relationTypes = .Table~new
+  relationNames = .Table~new
+  exactEdges = .Table~new
+  outgoingIndex = .Relation~new
+  incomingIndex = .Relation~new
+  nextType = 0
+  edgeCounter = 0
+  matrixAvailable = 0
+  edgeMatrix = .Table~new
+  -- Exact edge lookup is a sparse string-keyed Directory.
+  -- Do not use .Matrix here: WordNet word ids are large sparse coordinates,
+  -- and Matrix implementations can behave like dense multi-dimensional storage.
+  -- The previous Matrix fast-path made dbfile linking catastrophically slow.
+  return
+
+::method relationTypeId
+  expose relationTypes relationNames nextType
+  use arg name
+  name = CanonicalKey(name)
+  if name = '' then name = 'RELATED'
+  typeId = relationTypes~at(name)
+  if typeId <> .nil then return typeId
+  nextType = nextType + 1
+  relationTypes~put(nextType, name)
+  relationNames~put(name, nextType)
+  return nextType
+
+::method link
+  expose edgeMatrix exactEdges outgoingIndex incomingIndex edgeCounter matrixAvailable
+  use arg fromWord, relationName, toWord, weight, source, evidence
+  if fromWord = .nil | toWord = .nil then return .nil
+  typeId = self~relationTypeId(relationName)
+  edgeKey = fromWord~id || ':' || typeId || ':' || toWord~id
+  edge = exactEdges~at(edgeKey)
+  if edge <> .nil then return edge
+  edge = .LibrarianRelationEdge~new(fromWord, relationName, toWord, weight, source, evidence)
+  exactEdges~put(edge, edgeKey)
+  if matrixAvailable then do
+    signal on syntax name MatrixPutFailed
+    edgeMatrix[fromWord~id, typeId, toWord~id] = edge
+    signal off syntax
+  end
+MatrixPutResume:
+  outgoingIndex[fromWord~id || ':' || typeId] = edge
+  incomingIndex[toWord~id || ':' || typeId] = edge
+  edgeCounter = edgeCounter + 1
+  return edge
+MatrixPutFailed:
+  signal off syntax
+  signal MatrixPutResume
+
+::method linkByTypeId
+  expose exactEdges outgoingIndex incomingIndex edgeCounter
+  use arg fromWord, typeId, relationName, toWord, weight, source, evidence
+  if fromWord = .nil | toWord = .nil then return .nil
+  edgeKey = fromWord~id || ':' || typeId || ':' || toWord~id
+  edge = exactEdges~at(edgeKey)
+  if edge <> .nil then return edge
+  edge = .LibrarianRelationEdge~new(fromWord, relationName, toWord, weight, source, evidence)
+  exactEdges~put(edge, edgeKey)
+  outgoingIndex[fromWord~id || ':' || typeId] = edge
+  incomingIndex[toWord~id || ':' || typeId] = edge
+  edgeCounter = edgeCounter + 1
+  return edge
+
+::method linkPairByTypeId
+  expose exactEdges outgoingIndex incomingIndex edgeCounter
+  use arg leftWord, typeId, relationName, rightWord, weight, source, evidence
+  if leftWord = .nil | rightWord = .nil then return .nil
+  if leftWord~id = rightWord~id then return .nil
+
+  leftKey = leftWord~id || ':' || typeId || ':' || rightWord~id
+  leftEdge = exactEdges~at(leftKey)
+  if leftEdge = .nil then do
+    leftEdge = .LibrarianRelationEdge~new(leftWord, relationName, rightWord, weight, source, evidence)
+    exactEdges~put(leftEdge, leftKey)
+    outgoingIndex[leftWord~id || ':' || typeId] = leftEdge
+    incomingIndex[rightWord~id || ':' || typeId] = leftEdge
+    edgeCounter = edgeCounter + 1
+  end
+
+  rightKey = rightWord~id || ':' || typeId || ':' || leftWord~id
+  rightEdge = exactEdges~at(rightKey)
+  if rightEdge = .nil then do
+    rightEdge = .LibrarianRelationEdge~new(rightWord, relationName, leftWord, weight, source, evidence)
+    exactEdges~put(rightEdge, rightKey)
+    outgoingIndex[rightWord~id || ':' || typeId] = rightEdge
+    incomingIndex[leftWord~id || ':' || typeId] = rightEdge
+    edgeCounter = edgeCounter + 1
+  end
+  return leftEdge
+
+::method hasLink
+  expose exactEdges
+  use arg fromWord, relationName, toWord
+  typeId = self~relationTypeId(relationName)
+  edgeKey = fromWord~id || ':' || typeId || ':' || toWord~id
+  return exactEdges~at(edgeKey) <> .nil
+
+::method edge
+  expose exactEdges
+  use arg fromWord, relationName, toWord
+  typeId = self~relationTypeId(relationName)
+  edgeKey = fromWord~id || ':' || typeId || ':' || toWord~id
+  return exactEdges~at(edgeKey)
+
+::method relatedWords
+  expose outgoingIndex
+  use arg fromWord, relationName
+  results = .Array~new
+  if fromWord = .nil then return results
+  typeId = self~relationTypeId(relationName)
+  edges = outgoingIndex~allAt(fromWord~id || ':' || typeId)
+  do edge over edges
+    results~append(edge~toWord)
+  end
+  return results
+
+::method incomingWords
+  expose incomingIndex
+  use arg toWord, relationName
+  results = .Array~new
+  if toWord = .nil then return results
+  typeId = self~relationTypeId(relationName)
+  edges = incomingIndex~allAt(toWord~id || ':' || typeId)
+  do edge over edges
+    results~append(edge~fromWord)
+  end
+  return results
+
+::method expand
+  use arg wordObj, relationNames, maxDepth
+  seen = .Directory~new
+  expandedWords = .Array~new
+  if wordObj = .nil then return expandedWords
+  queue = .Queue~new
+  queue~queue(wordObj)
+  depth = .Directory~new
+  depth~put(0, wordObj~id)
+  seen~put(1, wordObj~id)
+  do while queue~items > 0
+    current = queue~pull
+    currentDepth = depth~at(current~id)
+    if currentDepth >= maxDepth then iterate
+    do r = 1 to words(relationNames)
+      relationName = word(relationNames, r)
+      related = self~relatedWords(current, relationName)
+      do nextWord over related
+        if \seen~hasIndex(nextWord~id) then do
+          seen~put(1, nextWord~id)
+          expandedWords~append(nextWord)
+          depth~put(currentDepth + 1, nextWord~id)
+          queue~queue(nextWord)
+        end
+      end
+    end
+  end
+  return expandedWords
+
+::method edgeSupplier
+  expose exactEdges
+  return exactEdges~supplier
+
+::method edgeCount
+  expose edgeCounter
+  return edgeCounter
+
+::class LibrarianWordNetLoader public
+
+::method init
+  expose dictRoot lexicon graph maxRows skipDbFiles parallelLoad readParallelLimit synsetRows dbfileLinks sourceBytes pendingPointers pointerLinks tempLinks tempLinkSeen tempLinkQueued
+  use arg dictRoot, lexicon, graph, maxRows, skipDbFiles, parallelLoad, readParallelLimit
+  self~dictRoot = dictRoot
+  self~lexicon = lexicon
+  self~graph = graph
+  self~maxRows = maxRows
+  if skipDbFiles = '' then skipDbFiles = 0
+  if parallelLoad = '' then parallelLoad = 1
+  if readParallelLimit = '' then readParallelLimit = 8
+  if \datatype(readParallelLimit, 'W') then readParallelLimit = 8
+  if readParallelLimit < 1 then readParallelLimit = 1
+  self~skipDbFiles = skipDbFiles
+  self~parallelLoad = parallelLoad
+  self~readParallelLimit = readParallelLimit
+  synsetRows = 0
+  dbfileLinks = 0
+  sourceBytes = 0
+  pendingPointers = .Array~new
+  pointerLinks = 0
+  tempLinks = .Array~new
+  tempLinkSeen = .Table~new
+  tempLinkQueued = 0
+
+::attribute dictRoot
+::attribute lexicon
+::attribute graph
+::attribute maxRows
+::attribute skipDbFiles
+::attribute parallelLoad
+::attribute readParallelLimit
+
+::method load
+  expose dictRoot skipDbFiles parallelLoad readParallelLimit
+  say '[LOAD] WordNet root:' dictRoot
+
+  dataJobs = .Array~new
+  dataJobs~append(.LibrarianFileLoadJob~new('DATA', 'N', dictRoot || '/data.noun'))
+  dataJobs~append(.LibrarianFileLoadJob~new('DATA', 'V', dictRoot || '/data.verb'))
+  dataJobs~append(.LibrarianFileLoadJob~new('DATA', 'ADJ', dictRoot || '/data.adj'))
+  dataJobs~append(.LibrarianFileLoadJob~new('DATA', 'ADV', dictRoot || '/data.adv'))
+
+  say '[LOAD] data jobs prepared:' dataJobs~items
+  self~runLoadJobs(dataJobs, 'data')
+
+  exceptionJobs = .Array~new
+  exceptionJobs~append(.LibrarianFileLoadJob~new('EXC', 'N', dictRoot || '/noun.exc'))
+  exceptionJobs~append(.LibrarianFileLoadJob~new('EXC', 'V', dictRoot || '/verb.exc'))
+  exceptionJobs~append(.LibrarianFileLoadJob~new('EXC', 'ADJ', dictRoot || '/adj.exc'))
+  exceptionJobs~append(.LibrarianFileLoadJob~new('EXC', 'ADV', dictRoot || '/adv.exc'))
+
+  say '[LOAD] exception jobs prepared:' exceptionJobs~items
+  self~runLoadJobs(exceptionJobs, 'exception')
+
+  self~resolvePendingPointers
+  self~resolveTempLinks('WordNet data pointers and synonyms')
+
+  if skipDbFiles = 1 then do
+    say '[LOAD] dbfiles skipped by --no-dbfiles'
+  end
+  else self~loadDbFiles(dictRoot || '/dbfiles')
+  say '[LOAD] WordNet load complete'
+
+::method runLoadJobs
+  expose parallelLoad readParallelLimit
+  use arg jobs, label
+  if jobs = .nil then return
+  if jobs~items = 0 then return
+
+  if parallelLoad <> 1 | jobs~items < 2 then do
+    say '[LOAD] running' label 'jobs sequentially:' jobs~items
+    do job over jobs
+      job~run(self)
+    end
+    return
+  end
+
+  if readParallelLimit = '' then readParallelLimit = 8
+  if \datatype(readParallelLimit, 'W') then readParallelLimit = 8
+  if readParallelLimit < 1 then readParallelLimit = 1
+  if readParallelLimit > jobs~items then readParallelLimit = jobs~items
+
+  say '[LOAD] bulk-reading' label 'jobs in staged parallel batches:' jobs~items 'limit='readParallelLimit
+  startIndex = 1
+  do while startIndex <= jobs~items
+    endIndex = startIndex + readParallelLimit - 1
+    if endIndex > jobs~items then endIndex = jobs~items
+    say '[LOAD] read batch:' label startIndex || '-' || endIndex 'of' jobs~items
+
+    messages = .Array~new
+    do jobNo = startIndex to endIndex
+      job = jobs~at(jobNo)
+      say '[JOB] dispatch read:' label jobNo || '/' || jobs~items job~posKind job~path
+      messages~append(job~start('bulkRead'))
+    end
+
+    waitNo = startIndex - 1
+    do msg over messages
+      waitNo = waitNo + 1
+      say '[JOB] waiting read:' label waitNo || '/' || jobs~items
+      resultText = msg~result
+      say '[JOB] joined read: ' label waitNo || '/' || jobs~items resultText
+    end
+    startIndex = endIndex + 1
+  end
+
+  say '[LOAD] parsing' label 'jobs sequentially after staged parallel read:' jobs~items
+  mergeNo = 0
+  do job over jobs
+    mergeNo = mergeNo + 1
+    say '[JOB] merge:' label mergeNo || '/' || jobs~items job~posKind job~path
+    job~merge(self)
+  end
+
+::method readFileLines
+  use arg path
+  if stream(path, 'c', 'query exists') = '' then return .nil
+  readTimer = .LibrarianTimer~new('bulk read ' || path)
+  streamObj = .Stream~new(path)
+  linesArray = streamObj~makeArray('LINES')
+  streamObj~close
+  if linesArray = .nil then linesArray = .Array~new
+  say '[LOAD] bulk read:' path 'lines='linesArray~items
+  readTimer~done
+  return linesArray
+
+::method loadDataFile
+  use arg posKind, path
+  if stream(path, 'c', 'query exists') = '' then do
+    say '[LOAD] missing data file:' path
+    return
+  end
+  fileLines = self~readFileLines(path)
+  self~loadDataFileFromLines(posKind, path, fileLines)
+
+::method loadDataFileFromLines
+  expose lexicon graph maxRows synsetRows sourceBytes pendingPointers
+  use arg posKind, path, fileLines
+  if fileLines = .nil then do
+    say '[LOAD] data file unavailable:' path
+    return
+  end
+
+  fileTimer = .LibrarianTimer~new('data file ' || posKind)
+  say '[LOAD] data scalar stage start:' posKind path 'lines='fileLines~items
+
+  -- Stage one follows the tdtest shape: parse once, store scalar/index records,
+  -- and do not construct Word, Sense, RelationEdge, or graph objects here.
+  stageTimer = .LibrarianTimer~new('scalar stage data file ' || posKind)
+  t_byID      = .Table~new(100000)
+  t_byWord    = .Table~new(100000)
+  s_byID      = .Relation~new(100000)
+  -- typed pointer arrays: pre-allocated to avoid resize churn
+  p_hypernym  = .Array~new(10000)   -- @  @i
+  p_hyponym   = .Array~new(10000)   -- ~  ~i
+  p_meronym   = .Array~new(10000)   -- #m #s #p
+  p_holonym   = .Array~new(10000)   -- %m %s %p
+  p_antonym   = .Array~new(10000)   -- !
+  p_derived   = .Array~new(10000)   -- +
+  p_attribute = .Array~new(10000)   -- =
+  p_domain    = .Array~new(10000)   -- ;c -c
+  p_other     = .Array~new(1000)    -- anything else
+  stagedRows = 0
+  stagedLemmas = 0
+  stagedPointers = 0
+  skipped = 0
+
+  do data over fileLines
+    sourceBytes = sourceBytes + length(data)
+    if data = '' then iterate
+    if pos(' ', data) = 1 then iterate
+    if substr(data, 1, 2) = '--' then iterate
+
+    parse value data with data '|' definition                       -- tail gone
+    parse value data with id code letter code2 definedword x rest  -- header + word1 + lex1
+
+    synsetKey = id || '/' || posKind
+    t_byID[synsetKey]     = .Array~of(id, code, letter, code2, definedword, definition)
+    t_byWord[definedword] = synsetKey
+    s_byID~put(definedword, synsetKey)
+    stagedLemmas = stagedLemmas + 1
+
+    -- remaining words: lex_id is always a single hex digit (0-f)
+    -- anything else in the lex slot means we have hit the pointer count - put both back
+    do while rest \= ''
+      parse value rest with word1 word2 rest
+      if \datatype(word2, 'X') | length(word2) > 1 then do
+        rest = word1 word2 rest   -- word1 is pointer count, put both back
+        leave
+      end
+      if word1 \= '' then do
+        t_byWord[word1] = synsetKey
+        s_byID~put(word1, synsetKey)
+        stagedLemmas = stagedLemmas + 1
+      end
+    end
+
+    -- pointer block: pCnt then 4-token blocks until empty
+    -- routed to typed arrays at parse time - no second pass needed
+    parse value rest with pCnt rest
+    do while rest \= ''
+      parse value rest with pSym tOff tPos sSrc rest
+      if pSym = '' | tOff = '' | tPos = '' then iterate
+      rec = .Array~of(id, posKind, pSym, tOff, tPos, sSrc)
+      select
+        when pSym = '@'  | pSym = '@i' then p_hypernym~append(rec)
+        when pSym = '~'  | pSym = '~i' then p_hyponym~append(rec)
+        when pSym = '#m' | pSym = '#s' | pSym = '#p' then p_meronym~append(rec)
+        when pSym = '%m' | pSym = '%s' | pSym = '%p' then p_holonym~append(rec)
+        when pSym = '!'  then p_antonym~append(rec)
+        when pSym = '+'  then p_derived~append(rec)
+        when pSym = '='  then p_attribute~append(rec)
+        when pSym = ';c' | pSym = ';r' | pSym = ';u' then p_domain~append(rec)
+        when pSym = '-c' | pSym = '-r' | pSym = '-u' then p_domain~append(rec)
+        otherwise p_other~append(rec)
+      end
+      stagedPointers = stagedPointers + 1
+    end
+
+    stagedRows = stagedRows + 1
+    if maxRows > 0 & stagedRows >= maxRows then leave
+  end
+
+  say '[LOAD] data scalar stage done: ' posKind 'rows='stagedRows 'lemmas='stagedLemmas 'pointers='stagedPointers 'skipped='skipped ,
+      'hyper='p_hypernym~items 'hypo='p_hyponym~items 'mero='p_meronym~items ,
+      'holo='p_holonym~items 'ant='p_antonym~items 'deriv='p_derived~items ,
+      'attr='p_attribute~items 'dom='p_domain~items 'other='p_other~items
+  stageTimer~done
+
+  materialTimer = .LibrarianTimer~new('materialise scalar staged data file ' || posKind)
+  say '[LOAD] data object materialise start:' posKind 'stagedRows='stagedRows 'lemmaRefs='stagedLemmas
+  synonymTypeId = graph~relationTypeId('SYNONYM')
+  lexCategoryCache = .Table~new
+  synsetWords = .Array~new
+  rows = 0
+
+  supplier = t_byID~supplier
+  do while supplier~available
+    synsetKey = supplier~index
+    rec = supplier~item
+    offset = rec~at(1)
+    code = rec~at(2)
+    gloss = rec~at(6)
+    lexCategory = lexCategoryCache~at(code)
+    if lexCategory = .nil then do
+      lexCategory = LexCategoryName(code)
+      lexCategoryCache~put(lexCategory, code)
+    end
+
+    synsetWords~empty
+    lemmas = s_byID~allAt(synsetKey)
+    do definedword over lemmas
+      cleanLemma = CanonicalKey(definedword)
+      if cleanLemma = '' then iterate
+      sense = lexicon~addParsedSense(cleanLemma, posKind, lexCategory, offset, gloss, path)
+      if sense <> .nil then synsetWords~append(sense~word~id)
+    end
+
+    wordItems = synsetWords~items
+    if wordItems > 1 then do
+      lastPair = wordItems - 1
+      synsetSource = 'synset:' || offset
+      do a = 1 to lastPair
+        w1Id = synsetWords~at(a)
+        do b = (a + 1) to wordItems
+          self~queueTempPairById(w1Id, synonymTypeId, 'SYNONYM', synsetWords~at(b), 1, synsetSource, lexCategory)
+        end
+      end
+    end
+
+    synsetRows = synsetRows + 1
+    rows = rows + 1
+    if rows // 25000 = 0 then do
+      say '[LOAD] data materialise progress:' posKind 'rows='rows 'words='lexicon~wordCount 'senses='lexicon~senseCount 'queuedLinks='self~tempLinkCount
+    end
+    supplier~next
+  end
+
+  -- merge all typed pointer arrays into pendingPointers (exposed) for later resolution
+  do ptrRec over p_hypernym;  pendingPointers~append(ptrRec); end
+  do ptrRec over p_hyponym;   pendingPointers~append(ptrRec); end
+  do ptrRec over p_meronym;   pendingPointers~append(ptrRec); end
+  do ptrRec over p_holonym;   pendingPointers~append(ptrRec); end
+  do ptrRec over p_antonym;   pendingPointers~append(ptrRec); end
+  do ptrRec over p_derived;   pendingPointers~append(ptrRec); end
+  do ptrRec over p_attribute; pendingPointers~append(ptrRec); end
+  do ptrRec over p_domain;    pendingPointers~append(ptrRec); end
+  do ptrRec over p_other;     pendingPointers~append(ptrRec); end
+  say '[LOAD] pointers merged into pendingPointers:' pendingPointers~items
+
+  say '[LOAD] data file done: ' posKind 'rows='rows 'totalSynsets='synsetRows 'words='lexicon~wordCount 'senses='lexicon~senseCount 'pendingPointers='pendingPointers~items 'queuedLinks='self~tempLinkCount 'edges='graph~edgeCount
+  materialTimer~done
+  fileTimer~done
+
+::method tempLinkCount
+  expose tempLinks
+  if tempLinks = .nil then return 0
+  return tempLinks~items
+
+::method queueTempLinkById
+  expose tempLinks tempLinkSeen tempLinkQueued
+  use arg fromId, typeId, relationName, toId, weight, source, evidence
+  if fromId = '' | toId = '' | typeId = '' then return 0
+  if fromId = toId then return 0
+  if tempLinks = .nil then tempLinks = .Array~new
+  if tempLinkSeen = .nil then tempLinkSeen = .Table~new
+  edgeKey = fromId || ':' || typeId || ':' || toId
+  if tempLinkSeen~at(edgeKey) <> .nil then return 0
+  tempLinkSeen~put(1, edgeKey)
+  tempLinks~append(.Array~of(fromId, typeId, relationName, toId, weight, source, evidence))
+  tempLinkQueued = tempLinkQueued + 1
+  return 1
+
+::method queueTempPairById
+  use arg leftId, typeId, relationName, rightId, weight, source, evidence
+  added = self~queueTempLinkById(leftId, typeId, relationName, rightId, weight, source, evidence)
+  added = added + self~queueTempLinkById(rightId, typeId, relationName, leftId, weight, source, evidence)
+  return added
+
+::method resolveTempLinks
+  expose lexicon graph tempLinks tempLinkSeen tempLinkQueued
+  use arg label
+  if label = '' then label = 'temporary links'
+  if tempLinks = .nil then return
+  if tempLinks~items = 0 then do
+    say '[LOAD] materialising' label ': no temporary links'
+    return
+  end
+  say '[LOAD] materialising' label ':' tempLinks~items
+  timer = .LibrarianTimer~new('materialise ' || label)
+  realised = 0
+  skipped = 0
+  do rec over tempLinks
+    fromId = rec~at(1)
+    typeId = rec~at(2)
+    relationName = rec~at(3)
+    toId = rec~at(4)
+    weight = rec~at(5)
+    source = rec~at(6)
+    evidence = rec~at(7)
+    fromWord = lexicon~wordById(fromId)
+    toWord = lexicon~wordById(toId)
+    if fromWord = .nil | toWord = .nil then do
+      skipped = skipped + 1
+      iterate
+    end
+    edge = graph~linkByTypeId(fromWord, typeId, relationName, toWord, weight, source, evidence)
+    if edge <> .nil then realised = realised + 1
+    if realised // 25000 = 0 then say '[LOAD] materialise progress:' label 'realised='realised 'skipped='skipped 'edges='graph~edgeCount
+  end
+  say '[LOAD] materialise done:' label 'realised='realised 'skipped='skipped 'edges='graph~edgeCount
+  tempLinks = .Array~new
+  tempLinkSeen = .Table~new
+  tempLinkQueued = 0
+  timer~done
+
+::method resolvePendingPointers
+  expose lexicon graph pendingPointers pointerLinks
+  if pendingPointers = .nil then return
+  if pendingPointers~items = 0 then do
+    say '[LOAD] pointer block links skipped: no pending pointers'
+    return
+  end
+  say '[LOAD] resolving WordNet pointer blocks to id-only temporary links:' pendingPointers~items
+  timer = .LibrarianTimer~new('WordNet pointer block staging')
+  resolved = 0
+  unresolved = 0
+  pointerTypeCache = .Table~new
+  do rec over pendingPointers
+    sourceOffset = rec~at(1)
+    sourcePos = rec~at(2)
+    ptrSymbol = rec~at(3)
+    targetOffset = rec~at(4)
+    targetPos = rec~at(5)
+    sourceTarget = rec~at(6)
+    relationInfo = pointerTypeCache~at(ptrSymbol)
+    if relationInfo <> .nil then do
+      relationName = relationInfo~at(1)
+      typeId = relationInfo~at(2)
+    end
+    else do
+      relationName = PointerRelationName(ptrSymbol)
+      typeId = graph~relationTypeId(relationName)
+      pointerTypeCache~put(.Array~of(relationName, typeId), ptrSymbol)
+    end
+    fromIds = lexicon~wordIdsForSynset(sourceOffset, sourcePos)
+    toIds = lexicon~wordIdsForSynset(targetOffset, targetPos)
+    if fromIds~items = 0 | toIds~items = 0 then do
+      unresolved = unresolved + 1
+      iterate
+    end
+    addedForPointer = 0
+    do fromId over fromIds
+      do toId over toIds
+        addedForPointer = addedForPointer + self~queueTempLinkById(fromId, typeId, relationName, toId, 1, 'ptr:' || sourceOffset, sourceTarget)
+      end
+    end
+    pointerLinks = pointerLinks + addedForPointer
+    resolved = resolved + 1
+    if resolved // 25000 = 0 then say '[LOAD] pointer stage progress: resolved='resolved 'unresolved='unresolved 'queuedLinks='pointerLinks
+  end
+  say '[LOAD] pointer blocks staged: resolved='resolved 'unresolved='unresolved 'queuedLinks='pointerLinks
+  timer~done
+
+::method loadExceptionFile
+  use arg posKind, path
+  if stream(path, 'c', 'query exists') = '' then do
+    say '[LOAD] missing exception file:' path
+    return
+  end
+  fileLines = self~readFileLines(path)
+  self~loadExceptionFileFromLines(posKind, path, fileLines)
+
+::method loadExceptionFileFromLines
+  expose lexicon sourceBytes
+  use arg posKind, path, fileLines
+  if fileLines = .nil then do
+    say '[LOAD] exception file unavailable:' path
+    return
+  end
+  fileTimer = .LibrarianTimer~new('exception file ' || posKind)
+  say '[LOAD] exception parse start:' posKind path 'lines='fileLines~items
+  exceptionRows = 0
+  exceptionLinks = 0
+  do rawLine over fileLines
+    sourceBytes = sourceBytes + length(rawLine)
+    line = translate(strip(rawLine))
+    if line = '' then iterate
+    parse value line with surface rest
+    do while strip(rest) <> ''
+      parse value rest with lemma rest
+      lexicon~addException(surface, posKind, lemma)
+      exceptionLinks = exceptionLinks + 1
+    end
+    exceptionRows = exceptionRows + 1
+  end
+  say '[LOAD] exception file done: ' posKind 'rows='exceptionRows 'links='exceptionLinks
+  fileTimer~done
+
+::method loadDbFiles
+  expose dbfileLinks
+  use arg dbPath
+  dirTimer = .LibrarianTimer~new('dbfiles directory')
+  say '[LOAD] dbfiles directory start:' dbPath
+  signal on syntax name NoRexxUtil
+  call RxFuncAdd 'SysLoadFuncs', 'RexxUtil', 'SysLoadFuncs'
+  call SysLoadFuncs
+  call SysFileTree dbPath || '/*', 'dbfiles.', 'FO'
+  signal off syntax
+  say '[LOAD] dbfiles found:' dbfiles.0
+
+  dbJobs = .Array~new
+  do i = 1 to dbfiles.0
+    path = dbfiles.i
+    category = FileNameOnly(path)
+    dbJobs~append(.LibrarianFileLoadJob~new('DBFILE', category, path))
+  end
+
+  say '[LOAD] dbfile jobs prepared:' dbJobs~items
+  self~runLoadJobs(dbJobs, 'dbfile')
+  self~resolveTempLinks('dbfile links')
+
+  say '[LOAD] dbfiles directory done: totalDbLinks='dbfileLinks
+  dirTimer~done
+  return
+NoRexxUtil:
+  signal off syntax
+  say '[LOAD] dbfiles skipped: RexxUtil SysFileTree unavailable'
+  return
+
+::method loadDbFile
+  use arg path, category
+  if stream(path, 'c', 'query exists') = '' then return
+  fileLines = self~readFileLines(path)
+  self~loadDbFileFromLines(path, category, fileLines)
+
+::method loadDbFileFromLines
+  expose lexicon graph dbfileLinks sourceBytes
+  use arg path, category, fileLines
+  if fileLines = .nil then do
+    say '[LOAD] dbfile unavailable:' path
+    return
+  end
+  category = translate(category)
+  fileTimer = .LibrarianTimer~new('dbfile ' || category)
+  beforeLinks = dbfileLinks
+  say '[LOAD] dbfile parse start:' category path 'lines='fileLines~items
+  fileRows = 0
+  dbfileTypeId = graph~relationTypeId('DBFILE_LINK')
+  do rawLine over fileLines
+    sourceBytes = sourceBytes + length(rawLine)
+    line = translate(rawLine)
+    if line = '' then iterate
+    fileRows = fileRows + 1
+    if fileRows // 5000 = 0 then say '[LOAD] dbfile progress:' category 'rows='fileRows 'totalDbLinks='dbfileLinks
+    prevWordId = ''
+    norm = line
+    norm = translate(norm, ' ', '{}[](),;"')
+    do while strip(norm) <> ''
+      parse value norm with token norm
+      if token = '' then iterate
+      colon = pos(':', token)
+      if colon > 0 then do
+        relCategory = left(token, colon - 1)
+        relWordText = substr(token, colon + 1)
+        relWordText = strip(relWordText, 'T', '+')
+        relWordText = strip(relWordText, 'T', '@')
+        relWord = lexicon~getOrCreateWord(relWordText, relWordText)
+        if prevWordId <> '' & relWord <> .nil then do
+          dbfileLinks = dbfileLinks + self~queueTempLinkById(prevWordId, dbfileTypeId, 'DBFILE_LINK', relWord~id, 1, path, relCategory)
+          dbfileLinks = dbfileLinks + self~queueTempLinkById(relWord~id, dbfileTypeId, 'DBFILE_LINK', prevWordId, 1, path, category)
+        end
+        if relWord <> .nil then prevWordId = relWord~id
+      end
+      else do
+        key = CanonicalKey(token)
+        if key <> '' then do
+          prevWord = lexicon~getOrCreateWord(key, key)
+          if prevWord <> .nil then prevWordId = prevWord~id
+        end
+      end
+    end
+  end
+  addedLinks = dbfileLinks - beforeLinks
+  say '[LOAD] dbfile done:' category 'rows='fileRows 'linksAdded='addedLinks 'totalDbLinks='dbfileLinks
+  fileTimer~done
+
+::class LibrarianFileLoadJob public
+
+::method init
+  expose jobType posKind path lines status
+  use arg jobType, posKind, path
+  self~jobType = jobType
+  self~posKind = posKind
+  self~path = path
+  lines = .nil
+  status = 'NEW'
+
+::attribute jobType
+::attribute posKind
+::attribute path
+::attribute lines
+::attribute status
+
+::method run
+  expose jobType posKind path
+  use arg loader
+  say '[JOB] start:' jobType posKind path
+  select
+    when jobType = 'DATA' then loader~loadDataFile(posKind, path)
+    when jobType = 'EXC' then loader~loadExceptionFile(posKind, path)
+    when jobType = 'DBFILE' then loader~loadDbFile(path, posKind)
+    otherwise say '[JOB] unknown load job type:' jobType
+  end
+  say '[JOB] done: ' jobType posKind path
+  return jobType || '/' || posKind || ' done'
+
+::method bulkRead unguarded
+  expose jobType posKind path lines status
+  say '[JOB] start read:' jobType posKind path
+  if stream(path, 'c', 'query exists') = '' then do
+    lines = .nil
+    status = 'MISSING'
+    say '[JOB] missing:' jobType posKind path
+    return jobType || '/' || posKind || ' missing'
+  end
+  readTimer = .LibrarianTimer~new('bulk read job ' || jobType || ' ' || posKind)
+  streamObj = .Stream~new(path)
+  lines = streamObj~makeArray('LINES')
+  streamObj~close
+  if lines = .nil then lines = .Array~new
+  status = 'READ'
+  say '[JOB] read done:' jobType posKind path 'lines='lines~items
+  readTimer~done
+  return jobType || '/' || posKind || ' read lines=' || lines~items
+
+::method merge
+  expose jobType posKind path lines status
+  use arg loader
+  if status <> 'READ' then do
+    say '[JOB] merge skipped:' jobType posKind path 'status='status
+    return
+  end
+  select
+    when jobType = 'DATA' then loader~loadDataFileFromLines(posKind, path, lines)
+    when jobType = 'EXC' then loader~loadExceptionFileFromLines(posKind, path, lines)
+    when jobType = 'DBFILE' then loader~loadDbFileFromLines(path, posKind, lines)
+    otherwise say '[JOB] unknown merge job type:' jobType
+  end
+  status = 'MERGED'
+  lines = .nil
+
+::class LibrarianGrammar public
+
+::method init
+  expose lexicon roleByWord
+  use arg lexicon
+  self~lexicon = lexicon
+  roleByWord = .Directory~new
+
+::attribute lexicon
+
+::method installBuiltins
+  expose roleByWord lexicon
+  self~addMany('NEGATOR', 'NOT NO NEVER NONE WITHOUT CANNOT CANT WONT SHOULDNT DIDNT DOESNT DONT ISNT ARENT WASNT WERENT')
+  self~addMany('PRONOUN', 'I ME MY MINE WE US OUR OURS YOU YOUR YOURS HE HIM HIS SHE HER HERS THEY THEM THEIR THEIRS IT ITS THIS THAT THESE THOSE WHO WHOM WHICH WHAT')
+  self~addMany('JOIN', 'AND OR BUT NOR YET SO WHILE')
+  self~addMany('PREP', 'IN ON AT TO FROM FOR WITH WITHOUT BY OF ABOUT INTO THROUGH ACROSS OVER UNDER AFTER BEFORE DURING REGARDING AGAINST BETWEEN AMONG AS')
+  self~addMany('DETERMINER', 'THE A AN EVERY EACH SOME ANY ALL BOTH FEW MANY SEVERAL')
+  self~addMany('MODAL', 'WILL SHALL MUST MAY MIGHT CAN COULD SHOULD WOULD')
+  self~addMany('TITLE', 'MR MRS MS MISS DR PROF SIR MADAM')
+
+::method addMany
+  expose roleByWord lexicon
+  use arg role, wordsText
+  do i = 1 to words(wordsText)
+    key = CanonicalKey(word(wordsText, i))
+    roleByWord~put(role, key)
+    w = lexicon~getOrCreateWord(key, key)
+    if w <> .nil then w~addVariant(key)
+  end
+
+::method roleFor
+  expose roleByWord
+  use arg rawWord
+  key = CanonicalKey(rawWord)
+  if roleByWord~hasIndex(key) then return roleByWord~at(key)
+  return ''
+
+::method isClosedClass
+  return self~roleFor(arg(1)) <> ''
+
+::class LibrarianResolution public
+
+::method init
+  expose rawWord cleanWord wordObj senseObj resolvedKey resolvedPos source confidence candidateWords
+  use arg rawWord, cleanWord, wordObj, senseObj, resolvedKey, resolvedPos, source, confidence, candidateWords
+  self~rawWord = rawWord
+  self~cleanWord = cleanWord
+  self~wordObj = wordObj
+  self~senseObj = senseObj
+  self~resolvedKey = CanonicalKey(resolvedKey)
+  self~resolvedPos = NormalisePos(resolvedPos)
+  self~source = source
+  self~confidence = confidence
+  if candidateWords = .nil then candidateWords = .Array~new
+  self~candidateWords = candidateWords
+
+::attribute rawWord
+::attribute cleanWord
+::attribute wordObj
+::attribute senseObj
+::attribute resolvedKey
+::attribute resolvedPos
+::attribute source
+::attribute confidence
+::attribute candidateWords
+
+::method isResolved
+  expose wordObj
+  return wordObj <> .nil
+
+::class LibrarianResolver public
+
+::method init
+  expose lexicon grammar
+  use arg lexicon, grammar
+  self~lexicon = lexicon
+  self~grammar = grammar
+
+::attribute lexicon
+::attribute grammar
+
+::method resolve
+  expose lexicon grammar
+  use arg rawWord, sentence
+  clean = CanonicalKey(rawWord)
+  if clean = '' then return .LibrarianResolution~new(rawWord, clean, .nil, .nil, '', '', 'empty', 0, .nil)
+
+  grammarRole = grammar~roleFor(clean)
+  if grammarRole <> '' then do
+    wordObj = lexicon~getOrCreateWord(clean, clean)
+    posKind = RoleToPos(grammarRole)
+    return .LibrarianResolution~new(rawWord, clean, wordObj, .nil, clean, posKind, 'grammar', 1.0, .nil)
+  end
+
+  wordObj = lexicon~word(clean)
+  if wordObj <> .nil then do
+    sense = self~chooseSense(wordObj, rawWord, sentence)
+    posKind = ''
+    if sense <> .nil then posKind = sense~posKind
+    return .LibrarianResolution~new(rawWord, clean, wordObj, sense, wordObj~key, posKind, 'exact', 1.0, .nil)
+  end
+
+  do posKind over .Array~of('V', 'N', 'ADJ', 'ADV')
+    lemma = lexicon~exceptionLemma(clean, posKind)
+    if lemma <> '' then do
+      wordObj = lexicon~word(lemma)
+      if wordObj <> .nil then do
+        sense = wordObj~primarySense(posKind)
+        return .LibrarianResolution~new(rawWord, clean, wordObj, sense, wordObj~key, posKind, 'exception', 0.95, .nil)
+      end
+    end
+  end
+
+  morph = self~morphologyCandidate(clean)
+  if morph <> '' then do
+    wordObj = lexicon~word(morph)
+    if wordObj <> .nil then do
+      sense = self~chooseSense(wordObj, rawWord, sentence)
+      posKind = ''
+      if sense <> .nil then posKind = sense~posKind
+      return .LibrarianResolution~new(rawWord, clean, wordObj, sense, wordObj~key, posKind, 'morphology', 0.85, .nil)
+    end
+  end
+
+  if length(clean) >= 4 then do
+    soundexCode = Soundex(clean)
+    candidates = lexicon~wordsWithSoundex(soundexCode)
+    best = .nil
+    bestDistance = 999
+    accepted = .Array~new
+    do candidate over candidates
+      candKey = candidate~key
+      if left(candKey, 1) <> left(clean, 1) then iterate
+      if abs(length(candKey) - length(clean)) > 2 then iterate
+      distance = EditDistance(clean, candKey)
+      if distance <= 2 then do
+        accepted~append(candidate)
+        if distance < bestDistance then do
+          bestDistance = distance
+          best = candidate
+        end
+      end
+    end
+    if best <> .nil then do
+      sense = self~chooseSense(best, rawWord, sentence)
+      posKind = ''
+      if sense <> .nil then posKind = sense~posKind
+      return .LibrarianResolution~new(rawWord, clean, best, sense, best~key, posKind, 'soundex:' || soundexCode, 0.55, accepted)
+    end
+  end
+
+  return .LibrarianResolution~new(rawWord, clean, .nil, .nil, clean, '', 'unresolved', 0, .nil)
+
+::method morphologyCandidate
+  expose lexicon
+  use arg clean
+  candidates = .Array~new
+  if right(clean, 3) = 'ING' & length(clean) > 5 then do
+    base = left(clean, length(clean) - 3)
+    candidates~append(base)
+    candidates~append(base || 'E')
+  end
+  if right(clean, 2) = 'ED' & length(clean) > 4 then do
+    base = left(clean, length(clean) - 2)
+    candidates~append(base)
+    candidates~append(base || 'E')
+  end
+  if right(clean, 3) = 'IES' & length(clean) > 4 then candidates~append(left(clean, length(clean) - 3) || 'Y')
+  if right(clean, 2) = 'ES' & length(clean) > 4 then candidates~append(left(clean, length(clean) - 2))
+  if right(clean, 1) = 'S' & length(clean) > 3 then candidates~append(left(clean, length(clean) - 1))
+  do candidate over candidates
+    if lexicon~hasWord(candidate) then return candidate
+  end
+  return ''
+
+::method chooseSense
+  expose lexicon grammar
+  use arg wordObj, rawWord, sentence
+  clean = CanonicalKey(rawWord)
+  if right(clean, 3) = 'ING' then do
+    sense = wordObj~primarySense('V')
+    if sense <> .nil then return sense
+  end
+  if sentence <> .nil then do
+    previous = sentence~previousUsefulRole
+    if previous = 'TO' then do
+      sense = wordObj~primarySense('V')
+      if sense <> .nil then return sense
+    end
+  end
+  sense = wordObj~primarySense('N')
+  if sense <> .nil then return sense
+  return wordObj~primarySense('')
+
+
+::class LibrarianGazetteerEntry public
+
+::method init
+  expose section phrase canonicalKey posKind weight label tokenText tokenCount
+  use arg section, phrase, posKind, weight, label
+  self~section = CanonicalKey(section)
+  self~phrase = translate(strip(phrase))
+  self~canonicalKey = CanonicalKey(phrase)
+  self~posKind = NormalisePos(posKind)
+  if self~posKind = '' then self~posKind = 'N'
+  self~weight = weight + 0
+  if label = '' then label = self~section || ':' || self~canonicalKey
+  self~label = label
+  tokenText = ''
+  do i = 1 to words(phrase)
+    token = CanonicalKey(word(phrase, i))
+    if token <> '' then tokenText = tokenText token
+  end
+  tokenText = space(tokenText)
+  tokenCount = words(tokenText)
+
+::attribute section
+::attribute phrase
+::attribute canonicalKey
+::attribute posKind
+::attribute weight
+::attribute label
+::attribute tokenText
+::attribute tokenCount
+
+::method firstToken
+  expose tokenText
+  if words(tokenText) = 0 then return ''
+  return word(tokenText, 1)
+
+::method matchesTokenText
+  expose tokenText tokenCount
+  use arg candidateTokenText, startWord
+  if tokenCount = 0 then return 0
+  do i = 1 to tokenCount
+    if startWord + i - 1 > words(candidateTokenText) then return 0
+    if CanonicalKey(word(candidateTokenText, startWord + i - 1)) <> word(tokenText, i) then return 0
+  end
+  return 1
+
+::method string
+  expose section phrase posKind weight
+  return section || '|' || phrase || '|' || posKind || '|' || weight
+
+::class LibrarianGazetteer public
+
+::method init
+  expose lexicon entries entriesByFirst
+  use arg lexicon
+  self~lexicon = lexicon
+  entries = .Array~new
+  entriesByFirst = .Relation~new
+
+::attribute lexicon
+
+::method installDefaults
+  -- Built-ins are deliberately plain phrases, not a substitute for a user gazetteer.
+  self~addPhrase('LEGAL', 'SUPREME COURT', 'N', 6, 'builtin')
+  self~addPhrase('SURVEILLANCE', 'MASS SURVEILLANCE', 'N', 8, 'builtin')
+  self~addPhrase('DATA', 'DATA BROKER', 'N', 7, 'builtin')
+  self~addPhrase('DATA', 'DATA BROKER LOOPHOLE', 'N', 8, 'builtin')
+  self~addPhrase('DATA', 'ELECTORAL ROLL', 'N', 6, 'builtin')
+  self~addPhrase('DATA', 'OPEN REGISTER', 'N', 5, 'builtin')
+  self~addPhrase('GOV_UK', 'LAND REGISTRY', 'N', 7, 'builtin')
+  self~addPhrase('GOV_UK', 'COMPANIES HOUSE', 'N', 7, 'builtin')
+  self~addPhrase('GOV_UK', 'POLICE NATIONAL COMPUTER', 'N', 8, 'builtin')
+  self~addPhrase('GOV_UK', 'CHILD BENEFIT', 'N', 7, 'builtin')
+  self~addPhrase('EMPLOYMENT', 'REDUCTION IN FORCE', 'N', 9, 'builtin')
+  self~addPhrase('WORKPLACE', 'OPERATIONAL STANDARDS', 'N', 6, 'builtin')
+
+::method loadFile
+  expose entries
+  use arg path
+  if path = '' then return
+  if stream(path, 'c', 'query exists') = '' then do
+    say '[LOAD] gazetteer file missing:' path
+    return
+  end
+  say '[LOAD] gazetteer file start:' path
+  gazRows = 0
+  do while lines(path) > 0
+    line = strip(linein(path))
+    if line = '' then iterate
+    if left(line, 1) = '#' then iterate
+    if pos('|', line) > 0 then do
+      parse var line section '|' phrase '|' posKind '|' weight .
+      self~addPhrase(section, phrase, posKind, weight, 'file')
+      gazRows = gazRows + 1
+    end
+    else if words(line) >= 4 then do
+      section = word(line, 1)
+      posKind = word(line, words(line) - 1)
+      weight = word(line, words(line))
+      phrase = subword(line, 2, words(line) - 3)
+      self~addPhrase(section, phrase, posKind, weight, 'file')
+      gazRows = gazRows + 1
+    end
+  end
+  call stream path, 'c', 'close'
+  say '[LOAD] gazetteer file done: rows='gazRows 'entries='entries~items
+
+::method addPhrase
+  expose lexicon entries entriesByFirst
+  use arg section, phrase, posKind, weight, label
+  phrase = translate(strip(phrase))
+  if phrase = '' then return .nil
+  entry = .LibrarianGazetteerEntry~new(section, phrase, posKind, weight, label)
+  if entry~tokenCount = 0 then return .nil
+  entries~append(entry)
+  entriesByFirst[entry~firstToken] = entry
+  wordObj = lexicon~getOrCreateWord(entry~canonicalKey, entry~phrase)
+  if wordObj <> .nil then wordObj~addVariant(entry~phrase)
+  return entry
+
+::method matchTokenText
+  expose entriesByFirst
+  use arg tokenText, startWord
+  first = CanonicalKey(word(tokenText, startWord))
+  if first = '' then return .nil
+  entries = entriesByFirst~allAt(first)
+  best = .nil
+  bestLen = 0
+  do entry over entries
+    if entry~tokenCount > bestLen then do
+      if entry~matchesTokenText(tokenText, startWord) then do
+        best = entry
+        bestLen = entry~tokenCount
+      end
+    end
+  end
+  return best
+
+::method entryCount
+  expose entries
+  return entries~items
+
+::class LibrarianTargetSeed public
+
+::method init
+  expose section seedWord posKind weight
+  use arg section, seedWord, posKind, weight
+  self~section = CanonicalKey(section)
+  self~seedWord = CanonicalKey(seedWord)
+  self~posKind = NormalisePos(posKind)
+  self~weight = weight + 0
+
+::attribute section
+::attribute seedWord
+::attribute posKind
+::attribute weight
+
+::method label
+  expose section seedWord posKind
+  return section || ':' || seedWord || '/' || posKind
+
+::class LibrarianTargetTerm public
+
+::method init
+  expose wordObj key posKind weight section sourceSeed expansionSource
+  use arg wordObj, key, posKind, weight, section, sourceSeed, expansionSource
+  self~wordObj = wordObj
+  self~key = CanonicalKey(key)
+  self~posKind = NormalisePos(posKind)
+  self~weight = weight + 0
+  self~section = section
+  self~sourceSeed = sourceSeed
+  self~expansionSource = expansionSource
+
+::attribute wordObj
+::attribute key
+::attribute posKind
+::attribute weight
+::attribute section
+::attribute sourceSeed
+::attribute expansionSource
+
+::method label
+  expose section sourceSeed expansionSource
+  return section || ':' || sourceSeed || ':' || expansionSource
+
+::method matchesWordUse
+  expose key posKind
+  use arg wordUse
+  if wordUse~resolvedKey = key | wordUse~cleanText = key then do
+    if posKind = '' | wordUse~resolvedPos = posKind | wordUse~rolePos = posKind then return 1
+  end
+  return 0
+
+::class LibrarianTargetModel public
+
+::method init
+  expose lexicon graph seeds termsByWordPos termsBySection expandedWords seenTerms terms
+  use arg lexicon, graph
+  self~lexicon = lexicon
+  self~graph = graph
+  seeds = .Array~new
+  termsByWordPos = .Relation~new
+  termsBySection = .Relation~new
+  expandedWords = .Relation~new
+  seenTerms = .Directory~new
+  terms = .Array~new
+
+::attribute lexicon
+::attribute graph
+
+::method loadFile
+  expose seeds
+  use arg path
+  if path = '' then return
+  if stream(path, 'c', 'query exists') = '' then do
+    say '[LOAD] target file missing:' path
+    return
+  end
+  say '[LOAD] target file start:' path
+  targetRows = 0
+  do while lines(path) > 0
+    line = translate(strip(linein(path)))
+    if line = '' then iterate
+    if left(line, 1) = '#' then iterate
+    wc = words(line)
+    if wc = 3 then do
+      section = 'TARGET'
+      seedWord = word(line, 1)
+      posKind = word(line, 2)
+      weight = word(line, 3)
+    end
+    else if wc >= 4 then do
+      section = word(line, 1)
+      seedWord = word(line, 2)
+      posKind = word(line, 3)
+      weight = word(line, 4)
+    end
+    else iterate
+    seed = .LibrarianTargetSeed~new(section, seedWord, posKind, weight)
+    if seed~seedWord <> '' then do
+      seeds~append(seed)
+      targetRows = targetRows + 1
+    end
+  end
+  call stream path, 'c', 'close'
+  say '[LOAD] target file done: rows='targetRows 'seeds='seeds~items
+
+::method expand
+  expose seeds lexicon graph
+  say '[EXPAND] target expansion start: seeds='seeds~items
+  seedNo = 0
+  do seed over seeds
+    seedNo = seedNo + 1
+    if seedNo // 25 = 0 then say '[EXPAND] target progress: seed=' || seedNo || '/' || seeds~items
+    self~addTargetTerm(seed, seed~seedWord, seed~posKind, seed~weight, 'seed')
+    wordObj = lexicon~word(seed~seedWord)
+    if wordObj = .nil then do
+      wordObj = lexicon~getOrCreateWord(seed~seedWord, seed~seedWord)
+    end
+    do relationName over .Array~of('SYNONYM', 'DBFILE_LINK')
+      related = graph~relatedWords(wordObj, relationName)
+      do relatedWord over related
+        self~addTargetTerm(seed, relatedWord~key, seed~posKind, seed~weight, relationName)
+        do sense over relatedWord~senses
+          self~addTargetTerm(seed, relatedWord~key, sense~posKind, seed~weight, relationName || ':' || sense~lexCategory)
+        end
+      end
+      incoming = graph~incomingWords(wordObj, relationName)
+      do relatedWord over incoming
+        self~addTargetTerm(seed, relatedWord~key, seed~posKind, seed~weight, 'INCOMING_' || relationName)
+        do sense over relatedWord~senses
+          self~addTargetTerm(seed, relatedWord~key, sense~posKind, seed~weight, 'INCOMING_' || relationName || ':' || sense~lexCategory)
+        end
+      end
+    end
+  end
+  say '[EXPAND] target expansion done'
+
+::method addTargetTerm
+  expose lexicon termsByWordPos termsBySection expandedWords seenTerms terms
+  use arg seed, key, posKind, weight, expansionSource
+  key = CanonicalKey(key)
+  posKind = NormalisePos(posKind)
+  if key = '' then return
+  if posKind = '' then posKind = seed~posKind
+  section = seed~section
+  sourceSeed = seed~seedWord || '/' || seed~posKind
+  termKey = key || '/' || posKind || '/' || section || '/' || sourceSeed || '/' || expansionSource
+  if seenTerms~hasIndex(termKey) then return
+  seenTerms~put(1, termKey)
+  wordObj = lexicon~word(key)
+  if wordObj = .nil then wordObj = lexicon~getOrCreateWord(key, key)
+  term = .LibrarianTargetTerm~new(wordObj, key, posKind, weight, section, sourceSeed, expansionSource)
+  terms~append(term)
+  termsByWordPos[key || '/' || posKind] = term
+  termsByWordPos[key || '/ANY'] = term
+  termsBySection[section] = term
+  expandedWords[sourceSeed] = term
+  compact = CompactKey(key)
+  if compact <> key then do
+    aliasKey = compact || '/' || posKind || '/' || section || '/' || sourceSeed || '/compact'
+    if \seenTerms~hasIndex(aliasKey) then do
+      seenTerms~put(1, aliasKey)
+      aliasTerm = .LibrarianTargetTerm~new(wordObj, compact, posKind, weight, section, sourceSeed, expansionSource || ':compact')
+      terms~append(aliasTerm)
+      termsByWordPos[compact || '/' || posKind] = aliasTerm
+      termsByWordPos[compact || '/ANY'] = aliasTerm
+    end
+  end
+
+::method scoreWordUse
+  expose termsByWordPos
+  use arg wordUse
+  seen = .Directory~new
+  total = 0
+  probes = wordUse~targetProbeKeys
+  do probe over probes
+    do posKind over .Array~of(wordUse~resolvedPos, wordUse~rolePos, 'ANY')
+      if posKind = '' then iterate
+      terms = termsByWordPos~allAt(probe || '/' || posKind)
+      do term over terms
+        tag = term~section || ':' || term~sourceSeed || ':' || term~key || '/' || term~posKind
+        if \seen~hasIndex(tag) then do
+          seen~put(1, tag)
+          total = total + term~weight
+          wordUse~addTargetHit(term)
+        end
+      end
+    end
+  end
+  return total
+
+::method debugTarget
+  expose termsByWordPos
+  use arg targetKey
+  targetKey = CanonicalKey(targetKey)
+  say 'DEBUG TARGET:' targetKey
+  do posKind over .Array~of('N', 'V', 'ADJ', 'ADV', 'ANY')
+    terms = termsByWordPos~allAt(targetKey || '/' || posKind)
+    do term over terms
+      say '  ' targetKey || '/' || posKind ' =>' term~section term~sourceSeed term~weight term~expansionSource
+    end
+  end
+
+::method writeDump
+  expose terms
+  use arg path
+  if path = '' then return
+  call lineout path, 'SECTION|KEY|POS|WEIGHT|SOURCE_SEED|EXPANSION_SOURCE'
+  rows = 0
+  do term over terms
+    call lineout path, term~section || '|' || term~key || '|' || term~posKind || '|' || term~weight || '|' || term~sourceSeed || '|' || term~expansionSource
+    rows = rows + 1
+  end
+  call stream path, 'c', 'close'
+  say '[STEP] target dump rows:' rows
+
+::method terms
+  expose terms
+  return terms
+
+::method seedCount
+  expose seeds
+  return seeds~items
+
+::method termCount
+  expose seenTerms
+  return seenTerms~items
+
+::class LibrarianWordUse public
+
+::method init
+  expose articleId paragraphNo sentenceNo wordNo rawText cleanText wordObj senseObj resolvedKey resolvedPos perceivedRole rolePos relationRole resolutionSource confidence score targetHits targetScore
+  use arg articleId, paragraphNo, sentenceNo, wordNo, rawText, resolution, grammarRole
+  self~articleId = articleId
+  self~paragraphNo = paragraphNo
+  self~sentenceNo = sentenceNo
+  self~wordNo = wordNo
+  self~rawText = rawText
+  self~cleanText = CanonicalKey(rawText)
+  wordObj = resolution~wordObj
+  senseObj = resolution~senseObj
+  resolvedKey = resolution~resolvedKey
+  resolvedPos = resolution~resolvedPos
+  resolutionSource = resolution~source
+  confidence = resolution~confidence
+  perceivedRole = grammarRole
+  if perceivedRole = '' then perceivedRole = PosToRole(resolvedPos)
+  rolePos = RoleToPos(perceivedRole)
+  relationRole = ''
+  if senseObj <> .nil then score = senseObj~score
+  else score = RoleBaseScore(perceivedRole)
+  targetHits = .Array~new
+  targetScore = 0
+
+::attribute articleId
+::attribute paragraphNo
+::attribute sentenceNo
+::attribute wordNo
+::attribute rawText
+::attribute cleanText
+::attribute wordObj
+::attribute senseObj
+::attribute resolvedKey
+::attribute resolvedPos
+::attribute perceivedRole
+::attribute rolePos
+::attribute relationRole
+::attribute resolutionSource
+::attribute confidence
+::attribute score
+::attribute targetScore
+
+::method coordinate
+  expose articleId paragraphNo sentenceNo wordNo
+  return articleId || ':P' || paragraphNo || ':S' || sentenceNo || ':W' || wordNo
+
+::method addTargetHit
+  expose targetHits targetScore
+  use arg term
+  targetHits~append(term)
+  targetScore = targetScore + term~weight
+
+::method addContextScore
+  expose score
+  use arg amount
+  if datatype(amount, 'N') then score = score + amount
+
+::method setRelationRole
+  expose relationRole
+  use arg role
+  relationRole = translate(role)
+
+::method targetHitsArray
+  expose targetHits
+  return targetHits
+
+::method targetHitText
+  expose targetHits
+  text = ''
+  do term over targetHits
+    text = text || term~key || '/' || term~posKind || '+' || term~weight || '[' || term~section || ':' || term~sourceSeed || '] '
+  end
+  return strip(text)
+
+::method targetProbeKeys
+  expose rawText cleanText resolvedKey wordObj
+  probes = .Array~new
+  seen = .Directory~new
+  self~appendProbe(probes, seen, cleanText)
+  self~appendProbe(probes, seen, CompactKey(cleanText))
+  self~appendProbe(probes, seen, resolvedKey)
+  self~appendProbe(probes, seen, CompactKey(resolvedKey))
+  if wordObj <> .nil then self~appendProbe(probes, seen, wordObj~key)
+  morph = BasicMorphKey(cleanText)
+  self~appendProbe(probes, seen, morph)
+  return probes
+
+::method appendProbe private
+  use arg probes, seen, key
+  key = CanonicalKey(key)
+  if key = '' then return
+  if \seen~hasIndex(key) then do
+    seen~put(1, key)
+    probes~append(key)
+  end
+
+::method observationText
+  expose rawText resolvedKey perceivedRole resolvedPos resolutionSource score
+  return rawText resolvedKey '=>' perceivedRole '/' resolvedPos 'score=' || score 'source=' || resolutionSource
+
+::class LibrarianSentence public
+
+::method init
+  expose article paragraphNo sentenceNo text uses score targetScore indicatorText previousUseful
+  use arg article, paragraphNo, sentenceNo, text
+  self~article = article
+  self~paragraphNo = paragraphNo
+  self~sentenceNo = sentenceNo
+  self~text = strip(text)
+  uses = .Array~new
+  score = 0
+  targetScore = 0
+  indicatorText = ''
+  previousUseful = ''
+
+::attribute article
+::attribute paragraphNo
+::attribute sentenceNo
+::attribute text
+::attribute score
+::attribute targetScore
+
+::method addUse
+  expose uses score targetScore previousUseful
+  use arg wordUse
+  uses~append(wordUse)
+  score = score + wordUse~score
+  targetScore = targetScore + wordUse~targetScore
+  if wordUse~relationRole <> 'GAZETTEER' then do
+    if wordUse~perceivedRole <> 'DETERMINER' then previousUseful = wordUse~resolvedKey
+  end
+
+::method uses
+  expose uses
+  return uses
+
+::method previousUsefulRole
+  expose previousUseful
+  return previousUseful
+
+::method sequence
+  expose uses
+  seq = ''
+  do u over uses
+    seq = seq u~perceivedRole
+  end
+  return space(seq)
+
+::method concepts
+  expose uses
+  text = ''
+  do u over uses
+    role = u~perceivedRole
+    if role = 'DETERMINER' | role = 'PREP' | role = 'JOIN' then iterate
+    text = AddUniqueWord(text, u~resolvedKey)
+  end
+  return text
+
+::method targetHits
+  expose uses
+  text = ''
+  do u over uses
+    hits = u~targetHitText
+    if hits <> '' then text = text || u~coordinate || ' ' || u~rawText || ' => ' || hits || ' ; '
+  end
+  return strip(text)
+
+::method buildIndicator
+  expose uses indicatorText
+  subject = ''
+  action = ''
+  object = ''
+  negator = ''
+  location = ''
+  do u over uses
+    role = u~perceivedRole
+    select
+      when role = 'NEGATOR' then negator = 'NOT'
+      when role = 'PRONOUN' & subject = '' then subject = u~resolvedKey
+      when role = 'NOUN' & subject = '' then subject = u~resolvedKey
+      when role = 'VERB' & action = '' then action = u~resolvedKey
+      when role = 'NOUN' & subject <> '' & object = '' then object = u~resolvedKey
+      when role = 'PREP' & u~resolvedKey = 'IN' then nop
+      otherwise nop
+    end
+  end
+  if subject = '' & action = '' & object = '' then indicatorText = 'NO-RELATION'
+  else do
+    if action = '' then indicatorText = subject
+    else if negator <> '' then indicatorText = subject 'NOT' action object
+    else indicatorText = space(subject action object)
+  end
+  return indicatorText
+
+::method indicator
+  expose indicatorText
+  if indicatorText = '' then return self~buildIndicator
+  return indicatorText
+
+::method printReport
+  say '    Sentence ' self~sentenceNo ':' self~text
+  say '      sequence:  ' self~sequence
+  say '      score:     ' self~score
+  say '      concepts:  ' self~concepts
+  say '      indicator: ' self~indicator
+  say '      target:    ' self~targetScore self~targetHits
+
+::class LibrarianParagraph public
+
+::method init
+  expose article paragraphNo text sentences score targetScore
+  use arg article, paragraphNo, text
+  self~article = article
+  self~paragraphNo = paragraphNo
+  self~text = strip(text)
+  sentences = .Array~new
+  score = 0
+  targetScore = 0
+
+::attribute article
+::attribute paragraphNo
+::attribute text
+::attribute score
+::attribute targetScore
+
+::method addSentence
+  expose sentences score targetScore
+  use arg sentence
+  sentences~append(sentence)
+  score = score + sentence~score
+  targetScore = targetScore + sentence~targetScore
+
+::method sentences
+  expose sentences
+  return sentences
+
+::method concepts
+  expose sentences
+  text = ''
+  do s over sentences
+    text = MergeWordLists(text, s~concepts)
+  end
+  return text
+
+::method indicators
+  expose sentences
+  text = ''
+  do s over sentences
+    if text <> '' then text = text || ' ; '
+    text = text || s~indicator
+  end
+  return text
+
+::method targetHits
+  expose sentences
+  text = ''
+  do s over sentences
+    hits = s~targetHits
+    if hits <> '' then text = text || hits || ' '
+  end
+  return strip(text)
+
+::method continuityWith
+  use arg other
+  if other = .nil then return 0
+  return WordListIntersectionScore(self~concepts, other~concepts)
+
+::method printReport
+  say '  PARAGRAPH ' self~paragraphNo ':' self~text
+  do s over self~sentences
+    s~printReport
+  end
+  say '  Paragraph score:       ' self~score
+  say '  Paragraph concepts:    ' self~concepts
+  say '  Paragraph indicators:  ' self~indicators
+  say '  Paragraph target score:' self~targetScore
+  say '  Paragraph target hits: ' self~targetHits
+  say
+
+::class LibrarianArticle public
+
+::method init
+  expose id title sourcePath rawText paragraphs score targetScore
+  use arg sourcePath, rawText
+  self~sourcePath = sourcePath
+  self~id = 'ARTICLE-FILE - ' || sourcePath
+  self~title = self~id
+  self~rawText = rawText
+  paragraphs = .Array~new
+  score = 0
+  targetScore = 0
+
+::attribute id
+::attribute title
+::attribute sourcePath
+::attribute rawText
+::attribute score
+::attribute targetScore
+
+::method fromFile class
+  use arg path
+  text = ''
+  if stream(path, 'c', 'query exists') = '' then do
+    say 'Article not found:' path
+    return .LibrarianArticle~new(path, '')
+  end
+  do while lines(path) > 0
+    text = text || linein(path) || '0a'x
+  end
+  call stream path, 'c', 'close'
+  return .LibrarianArticle~new(path, text)
+
+::method addParagraph
+  expose paragraphs score targetScore
+  use arg paragraph
+  paragraphs~append(paragraph)
+  score = score + paragraph~score
+  targetScore = targetScore + paragraph~targetScore
+
+::method paragraphs
+  expose paragraphs
+  return paragraphs
+
+::method concepts
+  expose paragraphs
+  text = ''
+  do p over paragraphs
+    text = MergeWordLists(text, p~concepts)
+  end
+  return text
+
+::method indicators
+  expose paragraphs
+  text = ''
+  do p over paragraphs
+    ind = p~indicators
+    if ind <> '' then do
+      if text <> '' then text = text || ' ; '
+      text = text || ind
+    end
+  end
+  return text
+
+::method targetHits
+  expose paragraphs
+  text = ''
+  do p over paragraphs
+    hits = p~targetHits
+    if hits <> '' then text = text || hits || ' '
+  end
+  return strip(text)
+
+::method continuityWith
+  use arg otherArticle
+  if otherArticle = .nil then return 0
+  return WordListIntersectionScore(self~concepts, otherArticle~concepts)
+
+::method printSummary
+  say
+  say 'ARTICLE SUMMARY:' self~title
+  say '  Paragraph count:     ' self~paragraphs~items
+  say '  Article score:       ' self~score
+  say '  Article target score:' self~targetScore
+  hits = self~targetHits
+  if hits <> '' then do
+    if length(hits) > 1000 then hits = left(hits, 1000) || ' ...'
+    say '  Target hits:         ' hits
+  end
+  else say '  Target hits:          '
+
+::method printReport
+  say
+  say 'ARTICLE: ' self~title
+  say '  Paragraph count:' self~paragraphs~items
+  say '------------------------------------------------------------------------'
+  previous = .nil
+  do p over self~paragraphs
+    p~printReport
+    if previous <> .nil then say '  Paragraph continuity from previous paragraph:' p~continuityWith(previous)
+    previous = p
+  end
+  say 'ARTICLE SCORE:       ' self~score
+  say 'ARTICLE CONCEPTS:    ' self~concepts
+  say 'ARTICLE INDICATORS:  ' self~indicators
+  say 'ARTICLE TARGET SCORE:' self~targetScore
+  say 'ARTICLE TARGET HITS: ' self~targetHits
+  say
+
+
+::class LibrarianCorpus public
+
+::method init
+  expose articles observations usesByWord usesByTargetSection usesByCoordinate
+  articles = .Array~new
+  observations = .Array~new
+  usesByWord = .Relation~new
+  usesByTargetSection = .Relation~new
+  usesByCoordinate = .Directory~new
+
+::method addArticle
+  expose articles
+  use arg article
+  articles~append(article)
+  self~indexArticle(article)
+
+::method indexArticle
+  expose observations usesByWord usesByTargetSection usesByCoordinate
+  use arg article
+  do paragraph over article~paragraphs
+    do sentence over paragraph~sentences
+      do wordUse over sentence~uses
+        observations~append(wordUse)
+        usesByCoordinate~put(wordUse, wordUse~coordinate)
+        if wordUse~resolvedKey <> '' then usesByWord[wordUse~resolvedKey] = wordUse
+        hitText = wordUse~targetHitText
+        if hitText <> '' then do term over wordUse~targetHitsArray
+          usesByTargetSection[term~section] = wordUse
+        end
+      end
+    end
+  end
+
+::method observationCount
+  expose observations
+  return observations~items
+
+::method usesForWord
+  expose usesByWord
+  use arg key
+  return usesByWord~allAt(CanonicalKey(key))
+
+::method useAt
+  expose usesByCoordinate
+  use arg coord
+  if usesByCoordinate~hasIndex(coord) then return usesByCoordinate~at(coord)
+  return .nil
+
+::class LibrarianAnalyzer public
+
+::method init
+  expose lexicon graph grammar resolver targetModel gazetteer
+  use arg lexicon, graph, grammar, resolver, targetModel, gazetteer
+  self~lexicon = lexicon
+  self~graph = graph
+  self~grammar = grammar
+  self~resolver = resolver
+  self~targetModel = targetModel
+  self~gazetteer = gazetteer
+
+::attribute lexicon
+::attribute graph
+::attribute grammar
+::attribute resolver
+::attribute targetModel
+::attribute gazetteer
+
+::method analyseArticle
+  expose lexicon graph grammar resolver targetModel gazetteer
+  use arg article
+  paraTexts = SplitParagraphs(article~rawText)
+  pno = 0
+  do paraText over paraTexts
+    if strip(paraText) = '' then iterate
+    pno = pno + 1
+    paragraph = .LibrarianParagraph~new(article, pno, paraText)
+    sentenceTexts = SplitSentences(paraText)
+    sno = 0
+    do sentenceText over sentenceTexts
+      if strip(sentenceText) = '' then iterate
+      sno = sno + 1
+      sentence = .LibrarianSentence~new(article, pno, sno, sentenceText)
+      self~analyseSentence(sentence)
+      paragraph~addSentence(sentence)
+    end
+    article~addParagraph(paragraph)
+  end
+
+::method analyseSentence
+  expose lexicon grammar resolver targetModel gazetteer
+  use arg sentence
+  tokenText = Tokenise(sentence~text)
+  do wno = 1 to words(tokenText)
+    rawWord = word(tokenText, wno)
+    clean = CanonicalKey(rawWord)
+    if clean = '' then iterate
+
+    phraseEntry = .nil
+    if gazetteer <> .nil then phraseEntry = gazetteer~matchTokenText(tokenText, wno)
+    if phraseEntry <> .nil then do
+      phraseWord = lexicon~getOrCreateWord(phraseEntry~canonicalKey, phraseEntry~phrase)
+      phraseResolution = .LibrarianResolution~new(phraseEntry~phrase, phraseEntry~canonicalKey, phraseWord, .nil, phraseEntry~canonicalKey, phraseEntry~posKind, 'gazetteer:' || phraseEntry~label, 1.0, .nil)
+      phraseRole = PosToRole(phraseEntry~posKind)
+      phraseUse = .LibrarianWordUse~new(sentence~article~id, sentence~paragraphNo, sentence~sentenceNo, wno || 'G', phraseEntry~phrase, phraseResolution, phraseRole)
+      phraseUse~setRelationRole('GAZETTEER')
+      phraseUse~addContextScore(phraseEntry~weight)
+      phraseTargetScore = targetModel~scoreWordUse(phraseUse)
+      sentence~addUse(phraseUse)
+    end
+
+    resolution = resolver~resolve(clean, sentence)
+    grammarRole = grammar~roleFor(clean)
+    wordUse = .LibrarianWordUse~new(sentence~article~id, sentence~paragraphNo, sentence~sentenceNo, wno, rawWord, resolution, grammarRole)
+    wordTargetScore = targetModel~scoreWordUse(wordUse)
+    sentence~addUse(wordUse)
+  end
+  sentence~buildIndicator
+
+-- Utility routines
+
+::routine ParseCommandLine public
+  use arg line
+  arr = .Array~new
+  do i = 1 to words(line)
+    arr~append(word(line, i))
+  end
+  return arr
+
+::routine CanonicalKey public
+  use arg value
+  value = translate(value)
+  out = ''
+  do i = 1 to length(value)
+    ch = substr(value, i, 1)
+    if pos(ch, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') > 0 then out = out || ch
+  end
+  return out
+
+::routine CompactKey public
+  use arg value
+  return CanonicalKey(value)
+
+::routine BasicMorphKey public
+  use arg clean
+  clean = CanonicalKey(clean)
+  if right(clean, 3) = 'ING' & length(clean) > 5 then return left(clean, length(clean) - 3)
+  if right(clean, 2) = 'ED' & length(clean) > 4 then return left(clean, length(clean) - 2)
+  if right(clean, 3) = 'IES' & length(clean) > 4 then return left(clean, length(clean) - 3) || 'Y'
+  if right(clean, 2) = 'ES' & length(clean) > 4 then return left(clean, length(clean) - 2)
+  if right(clean, 1) = 'S' & length(clean) > 3 then return left(clean, length(clean) - 1)
+  return ''
+
+::routine PointerRelationName public
+  use arg ptrSymbol
+  ptrSymbol = strip(ptrSymbol)
+  ptrUp = translate(ptrSymbol)
+  select
+    when ptrUp = '@' then return 'HYPERNYM'
+    when ptrUp = '@I' then return 'INSTANCE_HYPERNYM'
+    when ptrUp = '~' then return 'HYPONYM'
+    when ptrUp = '~I' then return 'INSTANCE_HYPONYM'
+    when ptrUp = '!' then return 'ANTONYM'
+    when ptrUp = '+' then return 'DERIVATIONALLY_RELATED'
+    when ptrUp = '&' then return 'SIMILAR_TO'
+    when ptrUp = '#M' then return 'MEMBER_HOLONYM'
+    when ptrUp = '#S' then return 'SUBSTANCE_HOLONYM'
+    when ptrUp = '#P' then return 'PART_HOLONYM'
+    when ptrUp = '%M' then return 'MEMBER_MERONYM'
+    when ptrUp = '%S' then return 'SUBSTANCE_MERONYM'
+    when ptrUp = '%P' then return 'PART_MERONYM'
+    when ptrUp = '=' then return 'ATTRIBUTE'
+    when ptrUp = '^' then return 'ALSO_SEE'
+    when ptrUp = '*' then return 'ENTAILMENT'
+    when ptrUp = '>' then return 'CAUSE'
+    when ptrUp = '$' then return 'VERB_GROUP'
+    when ptrUp = ';C' then return 'DOMAIN_TOPIC'
+    when ptrUp = '-C' then return 'MEMBER_TOPIC'
+    when ptrUp = ';R' then return 'DOMAIN_REGION'
+    when ptrUp = '-R' then return 'MEMBER_REGION'
+    when ptrUp = ';U' then return 'DOMAIN_USAGE'
+    when ptrUp = '-U' then return 'MEMBER_USAGE'
+    otherwise return 'WN_POINTER_' || CanonicalKey(ptrUp)
+  end
+
+::routine NormalisePos public
+  use arg posKind
+  posKind = translate(strip(posKind))
+  select
+    when posKind = 'N' | posKind = 'NOUN' then return 'N'
+    when posKind = 'V' | posKind = 'VERB' then return 'V'
+    when posKind = 'A' | posKind = 'S' | posKind = 'ADJ' | posKind = 'ADJECTIVE' then return 'ADJ'
+    when posKind = 'R' | posKind = 'ADV' | posKind = 'ADVERB' then return 'ADV'
+    otherwise return posKind
+  end
+
+::routine RoleToPos public
+  use arg role
+  role = translate(strip(role))
+  select
+    when role = 'NOUN' | role = 'PRONOUN' | role = 'TITLE' then return 'N'
+    when role = 'VERB' | role = 'MODAL' then return 'V'
+    when role = 'ADJ' | role = 'ADJECTIVE' | role = 'DETERMINER' then return 'ADJ'
+    when role = 'ADV' | role = 'ADVERB' then return 'ADV'
+    otherwise return ''
+  end
+
+::routine PosToRole public
+  use arg posKind
+  posKind = NormalisePos(posKind)
+  select
+    when posKind = 'N' then return 'NOUN'
+    when posKind = 'V' then return 'VERB'
+    when posKind = 'ADJ' then return 'ADJ'
+    when posKind = 'ADV' then return 'ADV'
+    otherwise return 'UNKNOWN'
+  end
+
+::routine RoleBaseScore public
+  use arg role
+  role = translate(role)
+  select
+    when role = 'NOUN' then return 5
+    when role = 'VERB' then return 6
+    when role = 'ADJ' then return 3
+    when role = 'ADV' then return 2
+    when role = 'PRONOUN' then return 1
+    when role = 'NEGATOR' then return -2
+    otherwise return 0
+  end
+
+::routine SenseBaseScore public
+  use arg posKind, category
+  posKind = NormalisePos(posKind)
+  category = translate(category)
+  base = RoleBaseScore(PosToRole(posKind))
+  if pos('VERB.COMMUNICATION', category) > 0 then base = base + 2
+  if pos('VERB.COGNITION', category) > 0 then base = base + 1
+  if pos('VERB.MOTION', category) > 0 then base = base + 1
+  if pos('NOUN.ANIMAL', category) > 0 then base = base + 4
+  if pos('NOUN.PERSON', category) > 0 then base = base + 4
+  if pos('NOUN.LOCATION', category) > 0 then base = base + 3
+  if pos('NOUN.ACT', category) > 0 then base = base + 1
+  return base
+
+::routine LexCategoryName public
+  use arg lexFileNum
+  n = lexFileNum + 0
+  select
+    when n = 0 then return 'adj.all'
+    when n = 1 then return 'adj.pert'
+    when n = 2 then return 'adv.all'
+    when n = 3 then return 'noun.Tops'
+    when n = 4 then return 'noun.act'
+    when n = 5 then return 'noun.animal'
+    when n = 6 then return 'noun.artifact'
+    when n = 7 then return 'noun.attribute'
+    when n = 8 then return 'noun.body'
+    when n = 9 then return 'noun.cognition'
+    when n = 10 then return 'noun.communication'
+    when n = 11 then return 'noun.event'
+    when n = 12 then return 'noun.feeling'
+    when n = 13 then return 'noun.food'
+    when n = 14 then return 'noun.group'
+    when n = 15 then return 'noun.location'
+    when n = 16 then return 'noun.motive'
+    when n = 17 then return 'noun.object'
+    when n = 18 then return 'noun.person'
+    when n = 19 then return 'noun.phenomenon'
+    when n = 20 then return 'noun.plant'
+    when n = 21 then return 'noun.possession'
+    when n = 22 then return 'noun.process'
+    when n = 23 then return 'noun.quantity'
+    when n = 24 then return 'noun.relation'
+    when n = 25 then return 'noun.shape'
+    when n = 26 then return 'noun.state'
+    when n = 27 then return 'noun.substance'
+    when n = 28 then return 'noun.time'
+    when n = 29 then return 'verb.body'
+    when n = 30 then return 'verb.change'
+    when n = 31 then return 'verb.cognition'
+    when n = 32 then return 'verb.communication'
+    when n = 33 then return 'verb.competition'
+    when n = 34 then return 'verb.consumption'
+    when n = 35 then return 'verb.contact'
+    when n = 36 then return 'verb.creation'
+    when n = 37 then return 'verb.emotion'
+    when n = 38 then return 'verb.motion'
+    when n = 39 then return 'verb.perception'
+    when n = 40 then return 'verb.possession'
+    when n = 41 then return 'verb.social'
+    when n = 42 then return 'verb.stative'
+    when n = 43 then return 'verb.weather'
+    when n = 44 then return 'adj.ppl'
+    otherwise return 'lex.' || n
+  end
+
+::routine IsDigits public
+  use arg value
+  value = strip(value)
+  if value = '' then return 0
+  do i = 1 to length(value)
+    if pos(substr(value, i, 1), '0123456789') = 0 then return 0
+  end
+  return 1
+
+::routine IsHex public
+  use arg value
+  value = translate(strip(value))
+  if value = '' then return 0
+  do i = 1 to length(value)
+    if pos(substr(value, i, 1), '0123456789ABCDEF') = 0 then return 0
+  end
+  return 1
+
+::routine SafeX2D public
+  use arg value
+  value = translate(strip(value))
+  if \IsHex(value) then return 0
+  signal on syntax name BadHex
+  d = x2d(value)
+  signal off syntax
+  return d
+BadHex:
+  signal off syntax
+  return 0
+
+::routine Soundex public
+  use arg name
+  name = CanonicalKey(name)
+  if name = '' then return '0000'
+  firstLetter = left(name, 1)
+  coded = ''
+  do i = 1 to length(name)
+    ch = substr(name, i, 1)
+    select
+      when pos(ch, 'BFPV') > 0 then code = '1'
+      when pos(ch, 'CGJKQSXZ') > 0 then code = '2'
+      when pos(ch, 'DT') > 0 then code = '3'
+      when pos(ch, 'L') > 0 then code = '4'
+      when pos(ch, 'MN') > 0 then code = '5'
+      when pos(ch, 'R') > 0 then code = '6'
+      otherwise code = '.'
+    end
+    coded = coded || code
+  end
+  cleanCodes = left(coded, 1)
+  do i = 2 to length(coded)
+    prev = substr(coded, i - 1, 1)
+    curr = substr(coded, i, 1)
+    if curr \= prev then cleanCodes = cleanCodes || curr
+  end
+  cleanCodes = substr(cleanCodes, 2)
+  cleanCodes = changestr('.', cleanCodes, '')
+  finalCode = firstLetter || cleanCodes
+  finalCode = left(finalCode, 4, '0')
+  return finalCode
+
+::routine EditDistance public
+  use arg a, b
+  a = CanonicalKey(a)
+  b = CanonicalKey(b)
+  la = length(a)
+  lb = length(b)
+  if la = 0 then return lb
+  if lb = 0 then return la
+  prev. = 0
+  curr. = 0
+  do j = 0 to lb
+    prev.j = j
+  end
+  do i = 1 to la
+    curr.0 = i
+    do j = 1 to lb
+      cost = 0
+      if substr(a, i, 1) \= substr(b, j, 1) then cost = 1
+      deleteCost = prev.j + 1
+      insertCost = curr.(j-1) + 1
+      replaceCost = prev.(j-1) + cost
+      curr.j = min(deleteCost, insertCost, replaceCost)
+    end
+    do j = 0 to lb
+      prev.j = curr.j
+    end
+  end
+  return prev.lb
+
+::routine Tokenise public
+  use arg text
+  text = translate(text, ' ', '0d0a09'x)
+  text = changestr('.', text, ' . ')
+  text = changestr(',', text, ' ')
+  text = changestr(';', text, ' ')
+  text = changestr(':', text, ' ')
+  text = changestr('(', text, ' ')
+  text = changestr(')', text, ' ')
+  text = changestr('"', text, ' ')
+  text = changestr("'", text, ' ')
+  return space(text)
+
+::routine SplitParagraphs public
+  use arg text
+  paras = .Array~new
+  current = ''
+  linesText = text
+  do while linesText <> ''
+    parse var linesText line ('0a'x) linesText
+    if strip(line) = '' then do
+      if strip(current) <> '' then do
+        paras~append(strip(current))
+        current = ''
+      end
+    end
+    else current = current line
+  end
+  if strip(current) <> '' then paras~append(strip(current))
+  return paras
+
+::routine SplitSentences public
+  use arg text
+  sentences = .Array~new
+  current = ''
+  do i = 1 to length(text)
+    ch = substr(text, i, 1)
+    current = current || ch
+    if ch = '.' | ch = '!' | ch = '?' then do
+      sentences~append(strip(current))
+      current = ''
+    end
+  end
+  if strip(current) <> '' then sentences~append(strip(current))
+  return sentences
+
+::routine AddUniqueWord public
+  use arg list, item
+  item = strip(item)
+  if item = '' then return list
+  do i = 1 to words(list)
+    if word(list, i) = item then return list
+  end
+  return space(list item)
+
+::routine MergeWordLists public
+  use arg a, b
+  mergedWords = a
+  do i = 1 to words(b)
+    mergedWords = AddUniqueWord(mergedWords, word(b, i))
+  end
+  return mergedWords
+
+::routine WordListIntersectionScore public
+  use arg a, b
+  score = 0
+  do i = 1 to words(a)
+    w = word(a, i)
+    do j = 1 to words(b)
+      if w = word(b, j) then do
+        score = score + 2
+        leave
+      end
+    end
+  end
+  return score
+
+
+::routine ClockSeconds public
+  seconds = time('S') + 0
+  return seconds
+
+::routine FormatSeconds public
+  use arg seconds
+  seconds = seconds + 0
+  return seconds
+
+::routine BoolText public
+  use arg flag
+  if flag = 1 then return 'yes'
+  return 'no'
+
+
+::routine CacheField public
+  use arg value
+  value = value || ''
+  value = changestr('\\', value, '\\\\')
+  value = changestr('|', value, '\p')
+  return value
+
+::routine CacheUnfield public
+  use arg value
+  value = value || ''
+  value = changestr('\p', value, '|')
+  value = changestr('\\\\', value, '\\')
+  return value
+
+::routine FileNameOnly public
+  use arg path
+  name = path
+  do while pos('/', name) > 0
+    parse var name . '/' name
+  end
+  return name

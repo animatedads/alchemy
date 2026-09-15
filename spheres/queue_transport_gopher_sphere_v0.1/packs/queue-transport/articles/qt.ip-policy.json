@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "qt.ip-policy",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Exact canonical IPv4 allowlist policy",
+  "summary": "The application-layer Queue Fabric allowlist is a set of exact canonical dotted-quad IPv4 addresses. It is intentionally not a CIDR, DNS, hostname or IPv6 policy in dev5.",
+  "authority": "project-authority",
+  "invariants": [
+    "Reject empty addresses, CIDR notation, IPv6 syntax, malformed/non-decimal octets, leading-zero forms, out-of-range octets and 0.0.0.0.",
+    "A trusted peer must have a non-empty explicit allowlist.",
+    "Re-registering a peer rebuilds the listener-wide aggregate trusted-source set so removed addresses do not linger at the pre-authentication gate.",
+    "Do not silently broaden the application rule from exact IP to network range or hostname matching."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 223,
+      "line_end": 292,
+      "claim": "Source implements canonical IPv4 validation and peer allowlist requirements."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 771,
+      "line_end": 788,
+      "claim": "trustPeer replacement rebuilds the aggregate source-IP set from current peers."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 11,
+      "line_end": 23,
+      "claim": "Documentation defines exact IPv4 policy and stale-address removal."
+    }
+  ]
+}

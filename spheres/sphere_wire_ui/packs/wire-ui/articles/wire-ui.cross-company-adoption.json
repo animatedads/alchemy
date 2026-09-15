@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "wire-ui.cross-company-adoption",
+  "version": "0.1",
+  "sphere": "wire-ui",
+  "title": "Cross-company adoption rule",
+  "summary": "Treat list/row/filter/sort/selection mechanics as shared Wire UI platform capability across FlyLo and Federation-company UIs. Application-specific code supplies domain facts and semantic actions; it must not fork the generic row authority model.",
+  "apply_to": [
+    "FlyLo passenger/booking/disruption workspaces",
+    "FederationBank customer/account/staff/merchant workspaces",
+    "regulated intermediary case/product worklists",
+    "insurance policy/claim lists",
+    "Vector Meridian Markets orders/positions/inventory workspaces",
+    "future Federation-company operator UIs"
+  ],
+  "continuation_rule": "Before implementing a local list/table renderer, inspect the current shared Wire UI Server/Builder/renderer contracts and consume the latest qualified platform implementation. Only add application-specific code for domain projection or semantic actions.",
+  "provenance": [
+    {
+      "artifact": "wire_ui_builder_v0.12-dev1.zip",
+      "sha256": "73dea2f650dddeba862b8402b52b0a7c97d6d385b970ebaf746814174aa3b88c",
+      "member": "wire_ui_builder_v0.12-dev1/ROW_COLLECTIONS.md",
+      "line_start": 38,
+      "line_end": 40,
+      "claim": "Federation-company row/list baseline."
+    }
+  ]
+}

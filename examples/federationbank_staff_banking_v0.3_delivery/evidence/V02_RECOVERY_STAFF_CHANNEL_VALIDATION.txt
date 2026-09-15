@@ -1,0 +1,36 @@
+## Staff Channel v0.1 against Staff Authority v0.2
+== test_direct_staff_transfer.rex ==
+PASS: direct customer instruction -> staff authority -> Core Banking
+== test_maker_checker_resume.rex ==
+PASS: maker/checker is resumable coordination, not UI state
+== test_relationship_decision_chain.rex ==
+PASS: Relationship decision remains independent evidence through Staff Channel
+== test_relationship_command_mismatch.rex ==
+PASS: relationship authority cannot be replayed onto altered banking action
+== test_no_bank_action.rex ==
+PASS: NO_BANK_ACTION is a positive coordinated outcome
+== test_external_signal_not_origin.rex ==
+PASS: external signal cannot jump directly into Staff/Core authority
+== test_core_final_authority.rex ==
+PASS: Staff Channel cannot turn staff authority into Core Banking authority
+== test_runtime_module.rex ==
+PASS: runtime module boundary
+## Staff Channel Service v0.1 against Staff Authority Service v0.2
+== test_service_direct_submit.rex ==
+PASS: Staff Channel Service delegates staff authority and submits Core command
+== test_service_approval_resume.rex ==
+PASS: maker/checker resumes through Staff Authority Service
+== test_service_idempotency.rex ==
+PASS: Staff Channel service command idempotency
+== test_write_ahead_core_recovery.rex ==
+PASS: READY_FOR_CORE is durable before Core submission and restart-safe
+== test_persistence_restart.rex ==
+PASS: typed Staff Channel work graph survives service restart
+== test_outbox_retry.rex ==
+PASS: Staff Channel event publication is at-least-once
+== test_queue_persistent_recovery.rex ==
+PASS: permanent Queue Fabric recovers typed Staff Channel command graph
+== test_relationship_to_service_to_core.rex ==
+PASS: Relationship Case authority -> Staff Channel Service -> Staff Authority Service -> Core Banking
+== test_runtime_module.rex ==
+PASS: Staff Channel service runtime module

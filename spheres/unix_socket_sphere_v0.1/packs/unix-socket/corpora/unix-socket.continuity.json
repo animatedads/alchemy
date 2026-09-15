@@ -1,0 +1,119 @@
+{
+  "kind": "corpus",
+  "id": "unix-socket.continuity",
+  "sphere": "unix-socket",
+  "title": "ooRexx Unix Socket durable continuity ledger",
+  "records": [
+    {
+      "id": "baseline",
+      "topic": "baseline",
+      "rule": "Current sealed candidate is oorexx_unix_socket_v0.6.zip SHA-256 aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326."
+    },
+    {
+      "id": "binding",
+      "topic": "architecture",
+      "rule": "unixsocket.cls owns Unix IPC semantics; Foreign Runtime owns libc binding, managed resource lifetime and ABI enforcement."
+    },
+    {
+      "id": "stock",
+      "topic": "negative control",
+      "rule": "Stock socket.cls is AF_INET-shaped and must not be presented as supporting AF_UNIX merely by passing a family constant."
+    },
+    {
+      "id": "native-shim",
+      "topic": "negative control",
+      "rule": "Qualified releases contain no Unix-socket-specific librxunixsocket.so; v0.3 native code is historical semantic oracle only."
+    },
+    {
+      "id": "addresses",
+      "topic": "address model",
+      "rule": "UnixAddress distinguishes PATHNAME, ABSTRACT and UNNAMED; abstract names are binary-safe including embedded NUL; pathname names reject NUL."
+    },
+    {
+      "id": "fd-owner",
+      "topic": "descriptor ownership",
+      "rule": "Descriptors are owned resources; created/accepted/pair/received descriptors are CLOEXEC by default and transfers are explicit."
+    },
+    {
+      "id": "rights",
+      "topic": "SCM_RIGHTS",
+      "rule": "SCM_RIGHTS transfers capabilities. Raw received integers are converted to managed owners and originals closed."
+    },
+    {
+      "id": "ctrunc",
+      "topic": "ancillary truncation",
+      "rule": "MSG_CTRUNC or descriptor-limit overflow closes identifiable received FDs and fails with EMSGSIZE; never expose a partial capability set."
+    },
+    {
+      "id": "credentials",
+      "topic": "credentials",
+      "rule": "SO_PEERCRED and SCM_CREDENTIALS are kernel attribution evidence, not authorization decisions."
+    },
+    {
+      "id": "poll",
+      "topic": "readiness",
+      "rule": "UnixPoll exposes semantic readiness; wouldBlock recognizes EAGAIN/EWOULDBLOCK."
+    },
+    {
+      "id": "sendall",
+      "topic": "nonblocking",
+      "rule": "sendAll refuses nonblocking descriptors to avoid ambiguous partial-prefix replay after EAGAIN."
+    },
+    {
+      "id": "path",
+      "topic": "filesystem security",
+      "rule": "chmod/chown pin verified socket inode with O_PATH|O_NOFOLLOW; unlink refuses non-sockets but still relies on controlled parent-directory authority."
+    },
+    {
+      "id": "options",
+      "topic": "socket options",
+      "rule": "Socket options are an explicit whitelist rather than a general setsockopt escape hatch."
+    },
+    {
+      "id": "fr0223",
+      "topic": "history",
+      "rule": "Foreign Runtime v0.22.3 managed pointer graphs and binary buffer slices made safe msghdr binding possible and enabled migration away from the native shim."
+    },
+    {
+      "id": "abi",
+      "topic": "ABI authority",
+      "rule": "Foreign Runtime executable ABI profile is authority for constants and aggregate layouts; mismatched/unqualified profile fails before dlopen."
+    },
+    {
+      "id": "native-scalars",
+      "topic": "ABI native scalars",
+      "rule": "Foreign Runtime v0.22.6 native aliases size_t/ssize_t/socklen_t/short/unsigned long own C implementation-width scalar typing; aggregate layout remains profile-qualified."
+    },
+    {
+      "id": "profile",
+      "topic": "portability",
+      "rule": "Only linux-x86_64-le-lp64 is currently aggregate-profile-qualified. Do not rename/copy it to claim AArch64 or another Unix."
+    },
+    {
+      "id": "forcing",
+      "topic": "qualification",
+      "rule": "v0.6 forcing validates 67 bridge constants, six struct layouts and 18 native-scalar declarations in addition to semantic regressions."
+    },
+    {
+      "id": "runtime",
+      "topic": "runtime baseline",
+      "rule": "v0.6 qualification used ooRexx 5.3.0 r13196 and Foreign Runtime v0.22.6."
+    },
+    {
+      "id": "next",
+      "topic": "continuation",
+      "rule": "Extend the smallest responsible layer: Unix semantics in unixsocket.cls, generic FFI capability in Foreign Runtime, ABI facts in qualified bridge profiles, OS-specific features behind explicit gates."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/README.md",
+      "line_start": 1,
+      "line_end": 96,
+      "claim": "Continuity ledger summarizes the current package architecture, surface, ABI boundary, dependency capabilities and platform claim.",
+      "note": "Primary ledger grounding."
+    }
+  ]
+}

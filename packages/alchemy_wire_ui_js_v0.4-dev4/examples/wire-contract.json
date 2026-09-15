@@ -1,0 +1,85 @@
+{
+  "subscriptionActivate": {
+    "kind": "SUBSCRIPTION_ACTIVATE",
+    "payload": {
+      "name": "UI.ACCOUNT",
+      "revision": 7,
+      "purpose": "render-account"
+    }
+  },
+  "definition": {
+    "kind": "UI_DEFINITION",
+    "payload": {
+      "subscription": "UI.ACCOUNT",
+      "definition": {
+        "id": "SITE.CANCEL_SERVICE_ACTION",
+        "version": 1,
+        "profileId": "*",
+        "root": "root",
+        "nodes": [
+          { "key": "root", "primitive": "button", "className": "cancel-service" }
+        ],
+        "slots": [
+          { "index": 0, "target": "root", "writer": "text" },
+          { "index": 1, "target": "root", "writer": "enabled" },
+          { "index": 2, "target": "root", "writer": "visible" }
+        ],
+        "actions": [
+          { "target": "root", "event": "click", "action": "SERVICE.CANCEL.BEGIN" }
+        ]
+      }
+    }
+  },
+  "snapshot": {
+    "kind": "UI_VIEW_SNAPSHOT",
+    "payload": {
+      "viewRef": "CustomerAccount",
+      "revision": 41,
+      "rootInstanceId": 172,
+      "instances": [
+        {
+          "instanceId": 172,
+          "definitionId": "SITE.CANCEL_SERVICE_ACTION",
+          "definitionVersion": 1,
+          "slots": ["Cancel service", true, true]
+        }
+      ]
+    }
+  },
+  "patch": {
+    "kind": "UI_VIEW_PATCH",
+    "payload": {
+      "viewRef": "CustomerAccount",
+      "previousRevision": 41,
+      "newRevision": 42,
+      "operations": [
+        { "op": "SET_SLOT", "instanceId": 172, "slot": 1, "value": false }
+      ]
+    }
+  },
+  "action": {
+    "kind": "UI_ACTION",
+    "payload": {
+      "viewRef": "CustomerAccount",
+      "renderedRevision": 42,
+      "elementInstance": 172,
+      "action": "SERVICE.CANCEL.BEGIN",
+      "detail": {}
+    }
+  },
+  "observationPlan": {
+    "kind": "OBSERVATION_PLAN",
+    "payload": {
+      "subscription": "SERVICE.CONTEXT",
+      "revision": 3,
+      "points": [
+        {
+          "id": "UI.ORDER.FAILURE",
+          "allowedFields": ["orderRef", "failureClass"],
+          "purpose": "SERVICE_RECOVERY",
+          "evidenceStrength": "CLIENT_APPLICATION_ASSERTED"
+        }
+      ]
+    }
+  }
+}

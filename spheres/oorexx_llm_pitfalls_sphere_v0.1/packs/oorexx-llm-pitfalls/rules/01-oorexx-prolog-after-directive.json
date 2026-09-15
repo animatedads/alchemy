@@ -1,0 +1,14 @@
+{
+  "kind": "language-rule",
+  "id": "OOREXX.STRUCTURE.PROLOG_AFTER_DIRECTIVE",
+  "version": "0.1",
+  "language": "oorexx",
+  "title": "Top-level executable code placed after the first :: directive",
+  "purpose": "Prevent silently-dead prolog code, which produces a program that compiles cleanly and runs with zero output instead of failing loudly.",
+  "trigger": "An ooRexx source file contains a top-level (non-directive, non-comment) executable statement appearing after the first ::CLASS/::METHOD/::ROUTINE/::REQUIRES line. Once directive space begins, it does not end -- there is no way back into prolog space later in the same file.",
+  "evidence_note": "Directly observed this session: a test script was written with ::class TestPokerTable as the first construct in the file, followed by the intended main-flow code (assignments, decide() calls, say statements). The file compiled without error and executed with no output at all -- the prolog was never reached, because directive space had already started at the top of the file. Restructuring to prolog-first, directives-last fixed it immediately.",
+  "correct": "All top-level executable statements (the program's main flow, including any internal routines it calls via CALL or function-call syntax) must appear before the first :: directive. ::CLASS/::METHOD/::REQUIRES etc. belong at the end of the file, after `exit`.",
+  "fixability": "SUGGESTED",
+  "compiler_relationship": "ooRexx does not raise a syntax error for this -- the file is fully valid, just structured so the intended entry point is unreachable. Silent-wrong-behaviour class of bug, not a translator failure.",
+  "return_semantics": "A LanguageRulePage may be opened and then return to the originating cycle selector."
+}

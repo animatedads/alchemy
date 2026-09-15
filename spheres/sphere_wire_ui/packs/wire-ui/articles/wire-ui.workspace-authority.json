@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "wire-ui.workspace-authority",
+  "version": "0.1",
+  "sphere": "wire-ui",
+  "title": "Workspace query, selection and result authority",
+  "summary": "Wire UI Server owns query/scope/order/selection/result revisions. Renderers carry the exact workspace context back with semantic actions; they do not reconstruct or certify business query state locally.",
+  "invariants": [
+    "Sort changes ordering and may preserve selection when semantic membership is unchanged.",
+    "Scope-changing filters invalidate stale selection by default.",
+    "Selected identities are semantic IDs independent of the currently materialised window.",
+    "Commands bind to the exact query, scope, order, selection and result revisions projected by the server.",
+    "A changed authoritative business result invalidates an old command even when the same rows remain selected.",
+    "Renderer-local selection is not server workspace-selection truth.",
+    "Paging/windowing does not redefine membership or semantic row identity."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_server_v0.17.zip",
+      "sha256": "82c3a9d270d123dcbedabed1b57ed5e0944b828b1a184a5b71d47d9f9f188441",
+      "member": "wire_ui_server_v0.17/README.md",
+      "line_start": 15,
+      "line_end": 49,
+      "claim": "Server v0.17 result revision plus v0.16 query/selection and v0.15 collection-window authority."
+    }
+  ]
+}

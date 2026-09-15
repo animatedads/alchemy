@@ -1,0 +1,56 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Alchemy Wire UI v0.1 demo</title>
+<div id="app"></div>
+<pre id="log"></pre>
+<script type="module">
+  import {
+    BrowserRenderer, CaptureTransport, Comms, DefinitionRegistry,
+    MessageKind, WireUIRuntime, makeEnvelope
+  } from '../src/index.js';
+
+  const log = document.querySelector('#log');
+  const transport = new CaptureTransport();
+  const comms = new Comms({ transport, source: 'browser:demo', destination: 'server:demo' });
+  transport.start((envelope) => comms.receive(envelope));
+  comms.connected = true;
+
+  const definitions = new DefinitionRegistry();
+  const renderer = new BrowserRenderer({ definitions, mount: document.querySelector('#app') });
+  new WireUIRuntime({ comms, definitions, renderer });
+
+  let seq = 0;
+  function inject(kind, payload) {
+    seq += 1;
+    transport.inject(makeEnvelope({
+      kind, payload, sequence: seq,
+      source: 'server:demo', destination: 'browser:demo',
+      messageId: `demo:${seq}`
+    }));
+  }
+
+  const definition = {
+    id: 'SITE.CANCEL_SERVICE_ACTION', version: 1, profileId: '*', root: 'root',
+    nodes: [{ key: 'root', primitive: 'button' }],
+    slots: [
+      { index: 0, target: 'root', writer: 'text' },
+      { index: 1, target: 'root', writer: 'enabled' }
+    ],
+    actions: [{ target: 'root', event: 'click', action: 'SERVICE.CANCEL.BEGIN' }]
+  };
+
+  inject(MessageKind.UI_DEFINITION, { subscription: 'UI.ACCOUNT', definition });
+  inject(MessageKind.UI_VIEW_SNAPSHOT, {
+    viewRef: 'CustomerAccount', revision: 1, rootInstanceId: 172,
+    instances: [{ instanceId: 172, definitionId: definition.id, slots: ['Cancel service', true] }]
+  });
+
+  setTimeout(() => inject(MessageKind.UI_VIEW_PATCH, {
+    viewRef: 'CustomerAccount', previousRevision: 1, newRevision: 2,
+    operations: [{ op: 'SET_SLOT', instanceId: 172, slot: 0, value: 'Cancel service (server revision 2)' }]
+  }), 750);
+
+  setInterval(() => {
+    log.textContent = JSON.stringify(transport.sent.map(({ kind, payload }) => ({ kind, payload })), null, 2);
+  }, 100);
+</script>

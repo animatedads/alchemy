@@ -1,0 +1,20 @@
+{
+  "kind": "article",
+  "id": "ops.language-module",
+  "version": "0.1",
+  "sphere": "core",
+  "title": "Language modules: resolve source work without hard-coded language guessing",
+  "summary": "A language-module maps source extensions to source kind, examiner, symbol semantics, optional rule/compile capability and default sphere. Composite source examination resolves this object first.",
+  "invariants": [
+    "The engine does not infer language semantics from generic text search when a language module exists.",
+    "Exact symbol semantics remain language-specific.",
+    "A module may describe examination without claiming an editor.",
+    "Compiler/runtime validation remains a separate evidence step from lexical source examination."
+  ],
+  "procedure": [
+    "Use `gopher language resolve <source>` to identify the module.",
+    "Use `gopher language describe <language>` to inspect its declared capabilities.",
+    "Use composite `examine source` for source discovery and exact symbol lookup.",
+    "Use the module's compile/rule capability when published."
+  ]
+}

@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="flylo-action-endpoint" content="/api/action">
+  <title>FlyLo — Prestwick to Newark</title>
+  <link rel="stylesheet" href="flylo.css">
+</head>
+<body data-demo-mode="false">
+<header class="top">
+  <div class="brand-group"><div class="brand"><span class="wing">✦</span><span>FLYLO</span></div><span id="runtime-build" class="runtime-build">checking build…</span></div>
+  <nav><a href="#book">Book</a><a href="#manage">Manage</a><a href="#status">Flight status</a><a href="#help">Help</a></nav>
+</header>
+<main>
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="eyebrow">GLASGOW PRESTWICK → NEWARK</p>
+      <h1>New York,<br>without the<br>Glasgow airport<br>everyone else<br>uses.</h1>
+      <p>Direct transatlantic flying with no mystery fees, no mystery flight status, and legal rights that are calculated rather than improvised.</p>
+    </div>
+    <div class="sun"><div class="plane">✈</div></div>
+  </section>
+
+  <section id="book" class="panel booking">
+    <h2>Where are we getting you?</h2>
+    <form id="search-form">
+      <label>From<input name="origin" value="Glasgow Prestwick (PIK)" readonly></label>
+      <label>To<input name="destination" value="Newark (EWR)" readonly></label>
+      <label>Date<input name="date" type="date" value="2026-09-12" required></label>
+      <label>Passengers<input name="passengers" type="number" min="1" max="99" value="1" required></label>
+      <button type="submit">Find flights</button>
+    </form>
+    <div class="booking-truth">Server-backed development runtime: Wire UI Server v0.17 → durable Queue Fabric → FlyLo engines. Fixture inventory/payment boundaries remain explicit; the browser does not invent availability, fares, bookings or servicing results.</div>
+  </section>
+
+  <section id="sales-process" class="sales-shell" aria-live="polite" hidden></section>
+
+  <section class="grid">
+    <article id="status" class="card">
+      <h3>Flight status</h3><p>Check the operational record straight from FlyLo systems.</p>
+      <form id="status-form" class="mini-form">
+        <label>Flight<input name="flightNo" value="FL101" required></label>
+        <label>Date<input name="date" type="date" value="2026-09-12" required></label>
+        <button type="submit" class="secondary">Check flight</button>
+      </form>
+      <p id="status-result" class="fine" aria-live="polite"></p>
+    </article>
+    <article id="manage" class="card">
+      <h3>Manage booking</h3><p>Open the server-owned passenger workspace. A booking you just made opens directly; older bookings use reference + surname. Selections survive sorting and stale or forged passenger commands are rejected before dispatch.</p>
+      <button type="button" class="secondary" id="manage-open">Open booking</button>
+    </article>
+    <article id="help" class="card pink">
+      <h3>Ask FlyLo</h3><p>Grok can explain flights, bookings and passenger-rights results. It cannot make up the facts or the law.</p>
+      <button type="button" class="dark" id="assistant-open">Ask a question</button>
+    </article>
+  </section>
+
+  <section id="manage-process" class="manage-panel" aria-labelledby="manage-title" hidden>
+    <div class="manage-head">
+      <div><p class="eyebrow">WIRE UI v0.17 WORKSPACE</p><h2 id="manage-title">Manage your passengers</h2></div>
+      <span id="manage-context-badge" class="context-badge">No workspace loaded</span>
+    </div>
+    <form id="manage-lookup-form" class="manage-lookup">
+      <label>Booking reference<input id="manage-booking-ref" name="bookingRef" autocomplete="off" required></label>
+      <label>Booking surname<input id="manage-family-name" name="familyName" autocomplete="family-name" required></label>
+      <button type="submit">Open passenger workspace</button>
+    </form>
+    <div id="manage-workspace" hidden></div>
+    <p id="manage-error" class="manage-error" role="alert"></p>
+  </section>
+
+  <section id="assistant-panel" class="assistant-panel" aria-labelledby="assistant-title" hidden>
+    <div class="assistant-head">
+      <div><p class="eyebrow">GROK, ON CABIN DUTY</p><h2 id="assistant-title">Ask FlyLo</h2></div>
+      <div class="assistant-head-actions"><span id="assistant-status" class="assistant-status">Checking…</span><button id="assistant-close" class="assistant-close" type="button" aria-label="Close assistant">×</button></div>
+    </div>
+    <div id="assistant-messages" class="assistant-messages" role="log" aria-live="polite">
+      <div class="assistant-message assistant"><strong>FlyLo assistant</strong><p>Hello. I can help explain your journey, fare, booking steps and disruption information. I can’t invent airline facts or quietly transact on your booking.</p></div>
+    </div>
+    <form id="assistant-form" class="assistant-form">
+      <label for="assistant-question">Your question</label>
+      <textarea id="assistant-question" name="question" rows="3" maxlength="4000" placeholder="For example: what happens if I miss my connection?" required></textarea>
+      <button id="assistant-send" type="submit">Ask Grok</button>
+    </form>
+    <p class="assistant-note">Real-time assistance only. FlyLo does not use Grok Batch for passenger chat. Hidden booking/payment fields are not injected into Grok. What you type into chat is sent to the assistant so it can help.</p>
+  </section>
+
+  <section class="rights">
+    <div><p class="eyebrow">WHEN THINGS GO SIDEWAYS</p><h2>Your rights are an evaluated result, not chatbot vibes.</h2><p>For delays and cancellations we combine operational evidence with the applicable legal models. If a fact matters and we do not know it yet, the answer says so and goes to review.</p></div>
+    <div class="trace"><strong>Legal Effect</strong><span>facts → rules → obligations → explanation</span><code>traceIdentity retained</code></div>
+  </section>
+
+  <details class="action-monitor">
+    <summary>DEV: semantic actions fired <span id="action-count">0</span></summary>
+    <ol id="action-log"></ol>
+  </details>
+</main>
+<footer>FlyLo v0.4.10 · Wire UI Server v0.17 · durable Queue Fabric + Accounting Core v0.7 development runtime</footer>
+<script src="flylo.js"></script>
+</body>
+</html>

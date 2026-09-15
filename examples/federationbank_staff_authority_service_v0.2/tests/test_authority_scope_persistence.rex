@@ -1,0 +1,23 @@
+root="/tmp/fbstaff-scope-service-"||time("S")||"-"||random(100000,999999)
+store=.FederationBankStaffAuthorityServiceStore~new(root)
+svc=.FBStaffServiceTestSupport~service(store)
+ctx=.FBStaffServiceTestSupport~context("RID-STAFF-17","INTERMEDIARY_REPRESENTATIVE","S-RID-17")
+.FBStaffServiceTestSupport~assertTrue(.FBStaffServiceTestSupport~putContext(svc,"CTX-RID-SCOPE",ctx)~ok,"institutional staff context")
+a=.FBStaffServiceTestSupport~action("RID-SCOPE","RID-STAFF-17","S-RID-17",0,"DOUGLAS","DESK-04","INTERMEDIARY_ARRANGE","INSTITUTIONAL")
+p=.directory~new; p["action"]=a; p["envelopeId"]="ENV:RID-SCOPE"
+r=svc~handle(.FederationBankStaffServiceEnvelope~new("AUTH-RID-SCOPE","FBSTAFF.ACTION.AUTHORISE","RID-STAFF-17","INTERMEDIARY_REPRESENTATIVE",p))
+.FBStaffServiceTestSupport~assertTrue(r~ok,"institutional authority issued")
+.FBStaffServiceTestSupport~assertEq("INSTITUTIONAL",r~value~authorityScope,"record scope")
+.FBStaffServiceTestSupport~assertEq("INSTITUTIONAL",r~value~decision~authorityScope,"decision scope")
+.FBStaffServiceTestSupport~assertEq("INSTITUTIONAL",r~value~envelope~authorityScope,"envelope scope")
+svc2=.FBStaffServiceTestSupport~service(store)
+rec=svc2~state~record("ACT:RID-SCOPE")
+.FBStaffServiceTestSupport~assertTrue(rec<>.nil,"record recovered")
+.FBStaffServiceTestSupport~assertEq("INSTITUTIONAL",rec~authorityScope,"record scope survives restart")
+.FBStaffServiceTestSupport~assertEq("INSTITUTIONAL",rec~action~authorityScope,"action scope survives restart")
+.FBStaffServiceTestSupport~assertEq("INSTITUTIONAL",rec~decision~authorityScope,"decision scope survives restart")
+.FBStaffServiceTestSupport~assertEq("INSTITUTIONAL",rec~envelope~authorityScope,"envelope scope survives restart")
+.FBStaffServiceTestSupport~assertEq("federationbank.staff.authority.service.state/2",svc2~state~queuePersistentType,"current state format")
+.FBStaffServiceTestSupport~pass("institutional staff authority scope survives durable service restart")
+::requires "FederationBankStaffAuthorityServicePersistence.cls"
+::requires "TestSupport.cls"

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LLM Gopher Explorer</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">G</div>
+        <div>
+          <div class="brand-title">LLM Gopher</div>
+          <div class="brand-subtitle">human explorer</div>
+        </div>
+      </div>
+      <div class="collection-meta">
+        <span id="collection-count">— spheres</span>
+        <button id="refresh" class="icon-button" title="Rescan collection" aria-label="Rescan collection">↻</button>
+      </div>
+      <label class="filter-wrap">
+        <span class="visually-hidden">Filter spheres</span>
+        <input id="sphere-filter" type="search" placeholder="Filter spheres…" autocomplete="off">
+      </label>
+      <nav id="sphere-list" class="sphere-list" aria-label="Spheres"></nav>
+      <div class="sidebar-foot">
+        <span class="status-dot"></span>
+        <span id="server-state">connecting…</span>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div>
+          <div id="crumb" class="crumb">collection</div>
+          <h1 id="page-title">Choose a sphere</h1>
+        </div>
+        <div class="readonly-badge">read only</div>
+      </header>
+
+      <section id="welcome" class="welcome">
+        <div class="welcome-card">
+          <div class="eyebrow">A window into the burrow</div>
+          <h2>Explore the Gopher’s accumulated knowledge.</h2>
+          <p>Select a sphere at left. The explorer activates that exact ZIP through Gopher, then renders Gopher’s own JSON for human eyes.</p>
+          <div class="welcome-grid">
+            <div><strong>Articles</strong><span>architecture, invariants, evidence</span></div>
+            <div><strong>Capabilities</strong><span>what each sphere knows how to ask for</span></div>
+            <div><strong>Corpus</strong><span>Gopher search and typed lookup</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="sphere-view" class="sphere-view hidden">
+        <div id="sphere-summary" class="summary-grid"></div>
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="articles">Articles</button>
+          <button class="tab" data-tab="search">Search</button>
+          <button class="tab" data-tab="lookup">Lookup</button>
+          <button class="tab" data-tab="capabilities">Capabilities</button>
+          <button class="tab" data-tab="json">Gopher JSON</button>
+        </div>
+
+        <div id="panel-articles" class="panel active"></div>
+        <div id="panel-search" class="panel">
+          <form id="search-form" class="query-form">
+            <input id="search-query" type="search" placeholder="Search this sphere’s corpus…" autocomplete="off">
+            <button>Search</button>
+          </form>
+          <div id="search-result" class="result-area empty-state">Search uses <code>gopher search … --sphere …</code>.</div>
+        </div>
+        <div id="panel-lookup" class="panel">
+          <form id="lookup-form" class="query-form">
+            <input id="lookup-query" type="text" placeholder="topic=precision  or  opcode=5D" autocomplete="off">
+            <button>Lookup</button>
+          </form>
+          <div class="hint">Multiple exact fields may be separated by commas. Exact corpus matches are returned before Gopher’s bounded text fallback.</div>
+          <div id="lookup-result" class="result-area empty-state">Typed lookup uses Gopher’s corpus record lookup.</div>
+        </div>
+        <div id="panel-capabilities" class="panel"></div>
+        <div id="panel-json" class="panel"><pre id="context-json" class="json-block"></pre></div>
+      </section>
+    </main>
+
+    <aside id="drawer" class="drawer" aria-live="polite">
+      <div class="drawer-head">
+        <div>
+          <div id="drawer-kind" class="eyebrow">article</div>
+          <h2 id="drawer-title">Article</h2>
+        </div>
+        <button id="drawer-close" class="icon-button" aria-label="Close article">×</button>
+      </div>
+      <div id="drawer-body" class="drawer-body"></div>
+    </aside>
+  </div>
+  <div id="toast" class="toast" role="status"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

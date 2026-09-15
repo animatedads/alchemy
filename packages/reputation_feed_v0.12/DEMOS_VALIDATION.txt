@@ -1,0 +1,113 @@
+== acquisition_demo.rex ==
+feed_api= reputation.feed/0.12
+source= NEWS-GLA kind=NEWS role=EDITORIAL_REPORTING
+document= DOC-ENV-DEMO paragraphs=2 corpus=NEWS_LINEAGE
+article= DOC-ENV-DEMO reach_known= 0
+claim= CLAIM-DEMO event_key=DEMO-EVENT-1 source=NEWS-GLA
+authority_boundary=CLAIM_ONLY
+PASS acquisition_demo.rex
+== assertion_ancestry_demo.rex ==
+feed_api= reputation.feed/0.12
+publication_families= 4
+explicit_assertion_origins= 2
+corroborating_assertion_families= 2
+weighted_confidence= 87
+status= CORROBORATED
+R publication= PUB-REUTERS corroboration=ASSERTION:BOEING-PR-123
+B publication= PUB-BBC corroboration=ASSERTION:BOEING-PR-123
+F publication= PUB-FAA corroboration=ASSERTION:FAA-CONFIRM-987
+PASS assertion_ancestry_demo.rex
+== event_hypothesis_demo.rex ==
+claims=3
+independent_assertion_families=2
+required_families=2
+family_normalised_confidence=86
+required_confidence=70
+status=CORROBORATED
+watch_match=1 score=100
+PASS event_hypothesis_demo.rex
+== governed_policy_demo.rex ==
+api= reputation.feed/0.12
+before_policy= REPUTATION-FEED-GLOBAL@1.0
+before_status= CORROBORATED effect_observations=2
+after_policy= REPUTATION-FEED-GLOBAL@2.0
+after_status= CORROBORATING promotion=HYPOTHESIS_NOT_CORROBORATED
+counterfactual_mode= COUNTERFACTUAL promotion=COUNTERFACTUAL_NOT_PROMOTABLE
+assurance= IDENTIFIER_ONLY
+observation_policy_ref=REPUTATION-FEED-GLOBAL@1.0
+PASS governed_policy_demo.rex
+== interaction_evidence_demo.rex ==
+feed_api= reputation.feed/0.12
+structured_packet=PACKET-SU privacy=DEIDENTIFIED_ANALYTIC items=2
+interaction_packet=PACKET-IE privacy=DEIDENTIFIED_ANALYTIC items=2
+same_assertion_root= 1
+representation_families=2
+assertion_families=1
+status=CORROBORATING
+raw_sensitive_present= 0
+safe_abstraction_present= 1
+structured_to_interaction_adjacent_bridge=NOT_USED
+PASS interaction_evidence_demo.rex
+== lineage_demo.rex ==
+publication articles=3
+independent lineage families= 2
+A family= FAMILY-1
+B family= FAMILY-1
+C family= FAMILY-2
+PASS lineage_demo.rex
+== policy_deployment_demo.rex ==
+api= reputation.feed/0.12
+normal=1.0 CORROBORATED binding=V1-ACTIVE rollout=RF-DEMO-ROLLOUT
+pilot=2.0 CORROBORATING mode=CANARY binding=V2-PILOT
+cutover=2.0 CORROBORATING binding=V2-ACTIVE
+rollback=1.0 CORROBORATED binding=V1-ROLLBACK
+PASS policy_deployment_demo.rex
+== provenance_corroboration_demo.rex ==
+feed_api= reputation.feed/0.12
+claims= 4
+eligible_claims= 2
+discovery_only_claims= 2
+eligible_families= 2
+family_normalised_confidence= 86
+status= CORROBORATED
+failed_family= DISCOVERY_ONLY AUTHENTICATION_FAILED
+compromised_family= DISCOVERY_ONLY SOURCE_COMPROMISED
+PASS provenance_corroboration_demo.rex
+== queue_fabric_demo.rex ==
+api=reputation.feed/0.12
+topic=reputation/feed/claims/news-1/demo-claim
+payload_class=REPUTATIONFEEDCLAIM
+payload_same_object=1
+authority_boundary=CLAIM_NOT_FACT
+persistent_type=reputation.feed.claim/1
+persistent_codec_capable=1
+PASS queue_fabric_demo.rex
+== queue_persistence_demo.rex ==
+api=reputation.feed/0.12
+persistent_type=reputation.feed.claim/1
+payload_class=REPUTATIONFEEDCLAIM
+payload_restored=1
+canonical_equal=1
+authority_boundary=CLAIM_NOT_FACT
+retained_after_restart=1
+PASS queue_persistence_demo.rex
+== source_authentication_demo.rex ==
+feed_api= reputation.feed/0.12
+source=REG-DEMO origin=VERIFIED verified=1
+history_events=1 verified_auth=1 failed_auth=0
+truth_decision=NONE (origin authentication is provenance only)
+PASS source_authentication_demo.rex
+== decision_audit_demo.rex ==
+api= reputation.feed/0.12
+decision= CORROBORATION_CORROBORATING
+status= CORROBORATING
+eligible_claims= 1
+discovery_only_claims= 1
+reason_count= 2
+logging_emitted= 1 log_payload_same= 1
+queue_topic= reputation/feed/decisions/reputation-feed-demo/1.0/trace-demo-1
+queue_boundary= GOVERNED_DECISION_AUDIT_NOT_DISPOSITION
+queue_payload_same= 1
+raw_claim_content_in_trace=0
+PASS decision_audit_demo.rex
+TOTAL PASS 12/12

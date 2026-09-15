@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "kl10.architecture",
+  "version": "0.1",
+  "sphere": "kl10",
+  "title": "Primary KL10 architecture documents",
+  "summary": "The core architecture set for instruction behavior, effective addressing, paging, memory, APR/PI, and KL10 system organization.",
+  "procedure": [
+    "Start with the 1982 DECsystem-10/DECSYSTEM-20 Processor Reference for instruction and system-visible behavior.",
+    "Use the 1984 KL10 Technical Reference for KL10-R hardware, minimum memory, EBOX/MBOX and channel-oriented hardware details.",
+    "Use Extended Addressing on the DECSYSTEM-20 for Model-B local/global effective-address and 30-bit PC rules."
+  ],
+  "invariants": [
+    "Section zero retains compatibility effective-address behavior.",
+    "Model-B nonzero-section execution uses extended addressing rules.",
+    "The PC section and word fields do not carry into one another during ordinary sequential increment."
+  ],
+  "documents": [
+    "dec.processor-reference.1982",
+    "dec.kl10-techref.1984",
+    "dec.extended-addressing"
+  ],
+  "selectors": []
+}

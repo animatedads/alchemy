@@ -1,0 +1,18 @@
+GA final-generation correction (v0.1-dev3)
+
+Observed dev2 integration pattern:
+- caller loop invoked MLGeneticAlgorithm~step(evaluator) N times;
+- step evaluated population generation G, bred and committed generation G+1;
+- the last G+1 population was therefore not scored unless another step/evaluation followed.
+
+Correction:
+- low-level step semantics remain explicit and return newPopulationEvaluated=false;
+- evaluateCurrent(evaluator) evaluates/publishes the current population without breeding;
+- run(evaluator, breedingSteps) performs breeding steps and then evaluateCurrent before return;
+- MLGABudgetPlan budgets the initial and final evaluated populations, not only breeding calls.
+
+Regression test_ga_final_generation_scored.rex:
+- one breeding step starts at generation 0 and returns generation 1;
+- evaluator sees both G0-* and G1-* genomes;
+- exactly 8 fitness calls for a 4-individual population;
+- evolution registry contains two published evaluated generations.

@@ -1,0 +1,19 @@
+now = .DateTime~new
+start = now - .TimeSpan~new(0,0,1,0,0)
+profile = .InstitutionalPolicyAuthorityProfile~new('DEMO-GOVERNANCE','1.0',start,.nil)
+ignored = profile~addGrant(.InstitutionalPolicyAuthorityGrant~new('AUTHOR-GRANT','POLICY-ENGINEER','AUTHOR','DEMO-POLICY',start,.nil,'BOARD','HR-ROLE')~seal)
+ignored = profile~addGrant(.InstitutionalPolicyAuthorityGrant~new('APPROVE-GRANT','POLICY-BOARD','APPROVER','DEMO-POLICY',start,.nil,'BOARD','BOARD-CHARTER')~seal)
+ignored = profile~addGrant(.InstitutionalPolicyAuthorityGrant~new('PUBLISH-GRANT','RELEASE-SERVICE','PUBLISHER','DEMO-POLICY',start,.nil,'OPS','DEPLOY-ROLE')~seal)
+ignored = profile~addRule(.InstitutionalPolicyAuthorityRule~new('DEMO-RULE','DEMO-POLICY',.true,'OPTIONAL')~seal)
+ignored = profile~seal
+policy = .InstitutionalPolicyRelease~new('DEMO-POLICY','1.0',now,.nil,'POLICY-ENGINEER','POLICY-BOARD','',.nil,'DEMO-PAYLOAD')~seal
+request = .InstitutionalPolicyPublicationRequest~new(policy,'RELEASE-SERVICE',now)
+evaluator = .InstitutionalPolicyAuthorityEvaluator~new(profile)
+catalog = .InstitutionalPolicyCatalog~new(.nil,.nil,.nil,.nil,evaluator)
+result = catalog~publish(policy,request)
+say 'publish=' result~ok result~code
+record = catalog~publicationRecord('DEMO-POLICY','1.0')~value
+say 'assurance=' record~assuranceMode
+say 'publisher=' record~publisherId
+say 'authority-profile=' record~authorityDecision~authorityProfileId || '@' || record~authorityDecision~authorityProfileVersion
+::requires 'InstitutionalPolicy.cls'

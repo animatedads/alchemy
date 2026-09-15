@@ -1,0 +1,18 @@
+IBM 4361 / OS/360 MVT ooRexx safety12 validation
+
+Runtime: ooRexx 5.3.0 r13196 supplied debug build.
+Dependencies loaded externally from the supplied API roll-up.
+MVTRES.350 SHA-256: 095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49
+
+Qualification results:
+- 107 .cls/.rex sources compile
+- all 51 tests/test_*.rex runtime scripts pass
+- test_real_media.rex PASS
+- test_real_mvt_ipl.rex PASS
+- O native/live/promotion regressions PASS
+- live insertion/replacement/removal PASS
+- freeze/journal separation PASS
+- real-MVT live retry reaches X'D4' at IA 00660C / ICOUNT 513044
+
+Safety12 deliberately contains no OPD4 implementation.
+Exact SSC v0.2.2 remains unavailable; v0.2.3 is not substituted.

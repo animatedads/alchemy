@@ -1,0 +1,134 @@
+{
+  "schema": "oorexx.foreign/0.11",
+  "library": {
+    "provider": "native",
+    "names": [
+      "libavformat.so.61",
+      "libavformat.so"
+    ]
+  },
+  "functions": {
+    "version": {
+      "symbol": "avformat_version",
+      "return": "u32",
+      "args": []
+    },
+    "open_input": {
+      "symbol": "avformat_open_input",
+      "return": "i32",
+      "args": [
+        {
+          "name": "context",
+          "type": "pointer",
+          "direction": "out",
+          "pointerDepth": 2,
+          "object": "AVFormatContext",
+          "ownership": "owned",
+          "destructor": "avformat_close_input",
+          "destructorPointerDepth": 2
+        },
+        "utf8",
+        "pointer",
+        "pointer"
+      ]
+    },
+    "find_stream_info": {
+      "symbol": "avformat_find_stream_info",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "AVFormatContext"
+        },
+        "pointer"
+      ]
+    },
+    "find_best_stream": {
+      "symbol": "av_find_best_stream",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "AVFormatContext"
+        },
+        "i32",
+        "i32",
+        "i32",
+        "pointer",
+        "i32"
+      ]
+    },
+    "read_frame": {
+      "symbol": "av_read_frame",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "AVFormatContext"
+        },
+        {
+          "type": "pointer",
+          "object": "AVPacket"
+        }
+      ]
+    },
+    "find_best_stream_decoder": {
+      "symbol": "av_find_best_stream",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "AVFormatContext"
+        },
+        "i32",
+        "i32",
+        "i32",
+        {
+          "name": "decoder",
+          "type": "pointer",
+          "direction": "out",
+          "pointerDepth": 2,
+          "object": "AVCodec",
+          "ownership": "borrowed"
+        },
+        "i32"
+      ]
+    }
+  },
+  "types": {
+    "AVFormatContext": {
+      "kind": "struct",
+      "size": 64,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "nb_streams",
+          "type": "u32",
+          "offset": 44
+        },
+        {
+          "name": "streams",
+          "type": "pointer",
+          "offset": 48
+        }
+      ]
+    },
+    "AVStream": {
+      "kind": "struct",
+      "size": 24,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "index",
+          "type": "i32",
+          "offset": 8
+        },
+        {
+          "name": "codecpar",
+          "type": "pointer",
+          "offset": 16
+        }
+      ]
+    }
+  }
+}

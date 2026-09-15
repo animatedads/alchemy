@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.integration-boundaries",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Authority seams with allocator, Queue Fabric, security and consumers",
+  "summary": "Storage Fabric publishes storage facts and executes storage semantics while remaining authority-separate from Job-to-Node Allocation, Queue Fabric, Access Control/Permissions/Security Effect, Semantic Source Control and Audio/Video domain objects.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Job-to-Node owns hard eligibility, ranking and placement leases; Storage publishes locality/workspace/movement evidence.",
+    "Queue Fabric owns dispatch/delivery; Storage owns transfer checkpoints, verification and commit state.",
+    "Access Control and Permissions/Security Effect own authority; Storage route policy is an additional mutation constraint.",
+    "Semantic Source Control owns semantic source evolution; Storage change sets own namespace/object mutation evidence.",
+    "Audio/Video consume StorageRef/materialisation/workspace and must not make /srv/space, Drive ids or USB mount paths permanent object identity."
+  ],
+  "procedure": [],
+  "topics": [
+    "integration",
+    "authority",
+    "queue",
+    "security",
+    "audio",
+    "video"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/INTEGRATION.md",
+      "claim": "Current package defines authority seams with Job-to-Node, Queue Fabric, Security, SSC, API Client and Audio/Video consumers."
+    }
+  ]
+}

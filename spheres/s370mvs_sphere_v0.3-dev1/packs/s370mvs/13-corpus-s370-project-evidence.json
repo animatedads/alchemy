@@ -1,0 +1,202 @@
+{
+  "kind": "corpus",
+  "id": "s370.project-evidence",
+  "sphere": "s370mvs",
+  "title": "Exact IBM 4361/MVT project evidence",
+  "records": [
+    {
+      "aliases": [
+        "checkpoint:safety20",
+        "evidence:D1-MVN",
+        "opcode:D1 safety20"
+      ],
+      "checkpoint": "safety20",
+      "maturity": "SEALED_CHECKPOINT",
+      "artifact": "ibm_4361_oorexx_v0.3-recovery2-journal2-safety20.zip",
+      "sha256": "7e7019c503ae62ef738315e154e533acb3e7fbc19be26dd69838ddc102645913",
+      "promotion": "D1 / MVN \u2014 Move Numerics",
+      "frontier_before": {
+        "ia": "00047C",
+        "icount": 531395,
+        "bytes": "D10004E705D1",
+        "psw": "000400008000047C"
+      },
+      "exact_case": {
+        "length_bytes": 1,
+        "destination_address": "0004E7",
+        "destination_before": "10",
+        "source_address": "0005D1",
+        "source": "B8",
+        "destination_after": "18",
+        "cc_before": 0,
+        "cc_after": 0,
+        "ia_after": "000482",
+        "icount_after": 531396
+      },
+      "forward_progress": {
+        "successful_instructions_after_retry": 1565,
+        "next_frontier": {
+          "opcode": "65",
+          "ia": "000066",
+          "icount": 532961,
+          "bytes": "65F000040000",
+          "psw": "0004000160000066"
+        }
+      },
+      "qualification": {
+        "compiled_sources": 143,
+        "runtime_tests": 75,
+        "real_media": true,
+        "real_mvt_ipl": true,
+        "manifest_fresh_extraction": true
+      },
+      "invariants": [
+        "left-to-right destructive/sequential overlap",
+        "24-bit address wrap",
+        "CC unchanged",
+        "OP65 absent"
+      ]
+    },
+    {
+      "aliases": [
+        "checkpoint:safety21",
+        "evidence:65-operation-exception",
+        "opcode:65 safety21"
+      ],
+      "checkpoint": "safety21",
+      "maturity": "SEALED_CHECKPOINT",
+      "artifact": "ibm_4361_oorexx_v0.3-recovery2-journal2-safety21.zip",
+      "classification": "X'65' unassigned on System/370 target -> operation exception",
+      "implementation_shape": "generic architecture-specific operation-exception classifier; OP65 absent",
+      "frontier_before": {
+        "opcode": "65",
+        "ia": "000066",
+        "icount": 532961,
+        "bytes": "65F000040000",
+        "psw": "0004000160000066"
+      },
+      "exact_retry": {
+        "program_old_psw": "00040001A000006A",
+        "program_new_psw": "00040000000002CA"
+      },
+      "forward_progress": {
+        "successful_instructions_after_retry": 1703,
+        "next_frontier": {
+          "opcode": "02",
+          "ia": "00006E",
+          "icount": 534665,
+          "bytes": "02CA00020000",
+          "psw": "000400016000006E"
+        }
+      },
+      "qualification": {
+        "compiled_sources": 147,
+        "runtime_tests": 78,
+        "permanent_whole_mvt_replay": true,
+        "manifest_fresh_extraction": true
+      },
+      "invariants": [
+        "OP65 absent",
+        "X'02' untouched in Safety21",
+        "generic operation-exception seam used"
+      ],
+      "sha256": "2a0fc15538e0b1a43d3a432ac021b74e40825d0318c6fd6803d492d2d9f23cf9"
+    },
+    {
+      "aliases": [
+        "checkpoint:safety22",
+        "evidence:02-operation-exception",
+        "opcode:02 safety22"
+      ],
+      "checkpoint": "safety22",
+      "maturity": "SEALED_CHECKPOINT",
+      "artifact": "ibm_4361_oorexx_v0.3-recovery2-journal2-safety22.zip",
+      "sha256": "bd4ada1fe3ad6da3b97cbfe645e1130b7f0e625c6e3cd2d13a53d50239968f91",
+      "classification": "Primary X'02' unassigned on System/370 -> operation exception",
+      "implementation_shape": "generic architecture-specific operation-exception classifier; OP02 absent",
+      "frontier_before": {
+        "opcode": "02",
+        "ia": "00006E",
+        "icount": 534665,
+        "bytes": "02CA00020000",
+        "psw": "000400016000006E"
+      },
+      "exact_retry": {
+        "program_old_psw": "0004000160000070",
+        "program_new_psw": "00040000000002CA"
+      },
+      "forward_progress": {
+        "successful_instructions_after_retry": 4506,
+        "next_frontier": {
+          "opcode": "70",
+          "ia": "000082",
+          "icount": 539172,
+          "bytes": "70E000000000",
+          "psw": "0004000190000082"
+        }
+      },
+      "qualification": {
+        "compiled_sources": 152,
+        "runtime_tests": 81,
+        "permanent_whole_mvt_replay": true,
+        "manifest_fresh_extraction": true
+      },
+      "invariants": [
+        "OP02 absent",
+        "OP70 untouched",
+        "BCTR is X'06', not X'02'"
+      ]
+    },
+    {
+      "aliases": [
+        "checkpoint:safety23",
+        "evidence:70-specification-exception",
+        "opcode:70 safety23"
+      ],
+      "checkpoint": "safety23",
+      "maturity": "SEALED_CHECKPOINT",
+      "artifact": "ibm_4361_oorexx_v0.3-recovery2-journal2-safety23.zip",
+      "sha256": "78ec6e899ac4825658116326fe25395efe821c06d0745475bd8cec206c1dcefc",
+      "classification": "X'70' is STE; historical R1=E is invalid for short/long HFP and causes specification exception before normal STE coverage",
+      "implementation_shape": "architectural specification-exception preflight; OP70 absent; normal STE unimplemented",
+      "frontier_before": {
+        "opcode": "70",
+        "ia": "000082",
+        "icount": 539172,
+        "bytes": "70E000000000",
+        "psw": "0004000190000082"
+      },
+      "exact_retry": {
+        "program_old_psw": "0004000690000086",
+        "program_new_psw": "00040000000002CA"
+      },
+      "forward_progress": {
+        "successful_instructions_after_retry": 32,
+        "next_causal_boundary": {
+          "opcode": "44",
+          "mnemonic": "EX",
+          "ia": "0004B6",
+          "icount": 539205,
+          "bytes": "440004F45010",
+          "psw": "00040000800004B6",
+          "transient_target": "70E005C84780"
+        }
+      },
+      "qualification": {
+        "compiled_sources": 157,
+        "runtime_tests": 84,
+        "permanent_whole_mvt_replay": true,
+        "manifest_entries": 331,
+        "manifest_fresh_extraction": true,
+        "gopher_package_breaches": 0,
+        "gopher_package_blockers": 0
+      },
+      "invariants": [
+        "OP70 absent",
+        "normal STE still unsupported for valid FPR selectors 0/2/4/6",
+        "OP44 already implemented and unchanged",
+        "next task is EX target-exception propagation"
+      ]
+    }
+  ]
+}

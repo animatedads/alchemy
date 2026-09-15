@@ -1,0 +1,13 @@
+{
+  "kind": "language-rule",
+  "id": "PYTHON.HANDLER_BROAD_CATCH",
+  "version": "0.1",
+  "language": "python",
+  "title": "Broad except Exception/BaseException around a body that may hide real faults",
+  "purpose": "Prevent over-broad handlers that convert every programming error and unexpected failure into one indistinguishable default, making real faults silent.",
+  "trigger": "An except clause names the broad class Exception or BaseException (the engine already flags the barest 'except:' separately). Such a catch almost never matches an individually-justifiable failure class.",
+  "correct": "Catch the narrowest exception class the operation can raise for the reason you intend; provide distinctly-typed raises/returns; never swallow. When context is needed on a genuine failure, re-raise with 'raise ... from exc'.",
+  "fixability": "SUGGESTED",
+  "compiler_relationship": "Advisory best-practice rule; legal Python, but broad catches routinely hide bugs an authoring LLM introduced.",
+  "return_semantics": "A LanguageRulePage may be opened and then returned to the originating cycle."
+}

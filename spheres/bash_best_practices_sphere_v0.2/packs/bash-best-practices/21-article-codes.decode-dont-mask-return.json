@@ -1,0 +1,17 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.codes.decode-dont-mask-return",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Read and decode a command's exit code; never mask a real failure with an unconditional true",
+  "summary": "A function or pipeline communicates through its exit code; an LLM writing bash flattens this by following a failure with `; true` or by returning a default on any error. Use the code: branch on it, capture it the moment you need it, and map it to a meaning instead of swallowing it.",
+  "technique": "Branch on the compound command's own status (cmd && ok || reason with care for the last-status side effect) or read $? immediately after; record meaning per code so a nonzero is decoded, not discarded. Clean incidental cleanup with || true, but only for the incidental side step, never for the value-producing command that decided the result.",
+  "evidence_note": "The system maps reserved codes to reasons (queuebash.sh rc=96 caps / 97 log overflow; the signature verifier maps 10-18 to reasons via case \"$?\"), and uses `... || true` solely on incidental loggers/cleanup, never on the command that produced the decision.",
+  "invariants": [
+    "Know immediately whom $? refers to; capture it right after the command you care about.",
+    "Do not follow a deciding command with unconditional `; true` or a blanket default that hides its failure.",
+    "Clean incidental background/loggers with `|| true` so cleanup cannot add a nonzero, but never for the command that owns the outcome.",
+    "Decode a nonzero into a meaning (usage, caps, timeout) rather than a single generic failure.",
+    "Prefer `if cmd; then` for a binary success/failure habit over re-reading $? in fragile spots."
+  ]
+}

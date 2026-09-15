@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "python-best-practices.controlflow.no-implicit-none-return",
+  "version": "0.1",
+  "sphere": "python-best-practices",
+  "title": "A function with meaningful branches must not silently fall off into an implicit None",
+  "summary": "A function that returns a result in one branch but has no return in another returns None there. An LLM happily emits branches that return on the success path and 'no return' on the failure path, pushing a None downstream into attribute access, arithmetic, or f-string rendering. Make the contract explicit on every path.",
+  "semantics": "A Python function returns None whenever control reaches the end of its body (no explicit return) or executes a bare return. Callers will cheerfully pass that None onward.",
+  "evidence_note": "PLABEL: canonical. This is a semantics fact: falling off the end returns None.",
+  "invariants": [
+    "Every branch that ends the function returns a value its declared type allows, or raises, or explicitly returns None.",
+    "Do not let a 'not found' or 'invalid' path sell into None implicitly; return None explicitly or raise a specific exception so the caller can branch on it.",
+    "If a function returns Optional[X] on purpose, signal it in the type and branch on the None at call sites (see the Optional-handling article).",
+    "When you think 'this path is unreachable' in a way a reader cannot prove, raise an explicit error there."
+  ]
+}

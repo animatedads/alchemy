@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "ap-authentication-attribution",
+  "version": "0.3",
+  "sphere": "access-permissions",
+  "title": "Authentication is attribution, not authority",
+  "summary": "AuthenticationAssertion and AuthenticationVerifier bind a sealed principal/key to exact evidence. Both AccessControlAuthority and PermissionAuthority additionally require the request principal to equal the attributed principal before policy evaluation.",
+  "authority": "project-authority",
+  "invariants": [
+    "A valid signature/MAC proves attribution and integrity but grants no Access Control or Permission.",
+    "request.principalId must equal attributedPrincipal.principalId when attribution is supplied.",
+    "An authorized signer cannot truthfully sign a request for another subject and inherit that subject's rights."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/README.md",
+      "line_start": 70,
+      "line_end": 76,
+      "claim": "Authentication validity alone does not establish request subject; request principal must equal attributed principal.",
+      "note": "Subject-binding doctrine."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AccessPermissions.cls",
+      "line_start": 513,
+      "line_end": 533,
+      "claim": "AccessControlAuthority checks principal equality and verifies exact Access Control attribution before policy evaluation when attribution is supplied.",
+      "note": "Executable Access Control binding."
+    }
+  ]
+}

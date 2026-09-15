@@ -1,0 +1,426 @@
+{
+  "kind": "corpus",
+  "id": "s370.opcodes",
+  "sphere": "s370mvs",
+  "title": "System/370 opcode records",
+  "records": [
+    {
+      "aliases": [
+        "opcode:00",
+        "x00"
+      ],
+      "opcode": "00",
+      "assigned": false,
+      "behavior": "operation exception",
+      "project_status": "qualified",
+      "evidence": "MVT intentional program-check path; no OP00"
+    },
+    {
+      "aliases": [
+        "opcode:02",
+        "x02"
+      ],
+      "opcode": "02",
+      "assigned": false,
+      "project_status": "qualified; sealed Safety22; no OP02",
+      "note": "Primary X'02' is unassigned in IBM GX20-1850-5. Do not confuse it with BCTR/X'06' or later extended-opcode reuse.",
+      "project_frontier": {
+        "ia": "00006E",
+        "icount": 534665,
+        "bytes": "02CA00020000",
+        "psw": "000400016000006E"
+      },
+      "behavior": "operation exception",
+      "project_evidence": {
+        "frontier_ia": "00006E",
+        "frontier_icount": 534665,
+        "bytes": "02CA00020000",
+        "psw": "000400016000006E",
+        "program_old_psw": "0004000160000070",
+        "program_new_psw": "00040000000002CA",
+        "forward_instructions": 4506,
+        "next_frontier": "70 @ 000082 / ICOUNT 539172"
+      }
+    },
+    {
+      "aliases": [
+        "opcode:06",
+        "x06",
+        "mnemonic:BCTR",
+        "name:branch on count register"
+      ],
+      "opcode": "06",
+      "mnemonic": "BCTR",
+      "name": "Branch on Count Register",
+      "format": "RR",
+      "assigned": true,
+      "behavior": "decrement R1; if result nonzero and R2 nonzero, branch to address in R2",
+      "source": {
+        "type": "executable-reference",
+        "title": "Hercules general1.c",
+        "symbol": "branch_on_count_register"
+      }
+    },
+    {
+      "aliases": [
+        "opcode:08",
+        "x08",
+        "mnemonic:SSK"
+      ],
+      "opcode": "08",
+      "mnemonic": "SSK",
+      "name": "Set Storage Key",
+      "assigned": true,
+      "class": "system/control",
+      "privileged": true
+    },
+    {
+      "aliases": [
+        "opcode:09",
+        "x09",
+        "mnemonic:ISK"
+      ],
+      "opcode": "09",
+      "mnemonic": "ISK",
+      "name": "Insert Storage Key",
+      "assigned": true,
+      "class": "system/control",
+      "privileged": true
+    },
+    {
+      "aliases": [
+        "opcode:0A",
+        "x0a",
+        "mnemonic:SVC"
+      ],
+      "opcode": "0A",
+      "mnemonic": "SVC",
+      "name": "Supervisor Call",
+      "format": "I",
+      "assigned": true,
+      "behavior": "store SVC old PSW and load complete SVC new PSW",
+      "low_core": {
+        "old_psw": "0x20",
+        "new_psw": "0x60"
+      }
+    },
+    {
+      "aliases": [
+        "opcode:13",
+        "x13",
+        "mnemonic:LCR"
+      ],
+      "opcode": "13",
+      "mnemonic": "LCR",
+      "name": "Load Complement Register",
+      "format": "RR",
+      "assigned": true,
+      "project_status": "implemented-qualified"
+    },
+    {
+      "aliases": [
+        "opcode:14",
+        "x14",
+        "mnemonic:NR"
+      ],
+      "opcode": "14",
+      "mnemonic": "NR",
+      "name": "And Register",
+      "format": "RR",
+      "assigned": true,
+      "project_status": "implemented-qualified"
+    },
+    {
+      "aliases": [
+        "opcode:1E",
+        "x1e",
+        "mnemonic:ALR"
+      ],
+      "opcode": "1E",
+      "mnemonic": "ALR",
+      "name": "Add Logical Register",
+      "format": "RR",
+      "assigned": true,
+      "project_status": "implemented-qualified",
+      "condition_code": "carry/zero four-way logical-add CC"
+    },
+    {
+      "aliases": [
+        "opcode:44",
+        "x44",
+        "mnemonic:EX",
+        "name:execute"
+      ],
+      "opcode": "44",
+      "mnemonic": "EX",
+      "name": "Execute",
+      "format": "RX",
+      "assigned": true,
+      "class": "branch/flow",
+      "behavior": "OR low-order byte of R1 into second byte of target instruction and execute target transiently; normal sequencing resumes after EX unless target changes control flow",
+      "project_status": "implemented; Safety23 sealed frontier exposes missing propagation of target architectural exceptions",
+      "project_evidence": {
+        "frontier_ia": "0004B6",
+        "frontier_icount": 539205,
+        "bytes": "440004F45010",
+        "psw": "00040000800004B6",
+        "transient_target": "70E005C84780",
+        "current_status": "UNSUPPORTED_EX_TARGET",
+        "next_task": "prove System/370 EX target-exception attribution before changing permanent source"
+      }
+    },
+    {
+      "aliases": [
+        "opcode:45",
+        "x45",
+        "mnemonic:BAL"
+      ],
+      "opcode": "45",
+      "mnemonic": "BAL",
+      "name": "Branch and Link",
+      "format": "RX",
+      "assigned": true,
+      "project_status": "implemented-qualified",
+      "ordering_rule": "compute effective address before writing link when R1 aliases X2/B2"
+    },
+    {
+      "aliases": [
+        "opcode:46",
+        "x46",
+        "mnemonic:BCT"
+      ],
+      "opcode": "46",
+      "mnemonic": "BCT",
+      "name": "Branch on Count",
+      "format": "RX",
+      "assigned": true,
+      "project_status": "implemented; alias-order audit remains visible"
+    },
+    {
+      "aliases": [
+        "opcode:56",
+        "x56",
+        "mnemonic:O",
+        "name:or"
+      ],
+      "opcode": "56",
+      "mnemonic": "O",
+      "name": "Or",
+      "format": "RX",
+      "assigned": true,
+      "project_status": "implemented-qualified",
+      "condition_code": "0 if result zero, otherwise 1"
+    },
+    {
+      "aliases": [
+        "opcode:5D",
+        "x5d",
+        "mnemonic:D",
+        "name:divide"
+      ],
+      "opcode": "5D",
+      "mnemonic": "D",
+      "name": "Divide",
+      "format": "RX",
+      "assigned": true,
+      "class": "fixed-point",
+      "normal_behavior": "signed 64-bit dividend in even/odd GPR pair divided by signed 32-bit storage operand; quotient/remainder replace register pair",
+      "exception_precedence": "odd R1 => specification exception before storage operand fetch",
+      "project_status": "normal arithmetic not yet implemented; odd-R1 preflight qualified"
+    },
+    {
+      "aliases": [
+        "opcode:5E",
+        "x5e",
+        "mnemonic:AL"
+      ],
+      "opcode": "5E",
+      "mnemonic": "AL",
+      "name": "Add Logical",
+      "format": "RX",
+      "assigned": true,
+      "project_status": "implemented-qualified",
+      "condition_code": "0 no-carry/zero; 1 no-carry/nonzero; 2 carry/zero; 3 carry/nonzero"
+    },
+    {
+      "aliases": [
+        "opcode:62",
+        "x62"
+      ],
+      "opcode": "62",
+      "assigned": false,
+      "behavior": "operation exception",
+      "project_status": "qualified; no OP62"
+    },
+    {
+      "aliases": [
+        "opcode:65",
+        "x65"
+      ],
+      "opcode": "65",
+      "assigned": false,
+      "behavior": "operation exception",
+      "project_status": "qualified; sealed Safety21; no OP65",
+      "project_evidence": {
+        "frontier_ia": "000066",
+        "frontier_icount": 532961,
+        "bytes": "65F000040000",
+        "program_old_psw": "00040001A000006A",
+        "program_new_psw": "00040000000002CA",
+        "forward_instructions": 1703,
+        "next_frontier": "02 @ 00006E / ICOUNT 534665",
+        "sealed_artifact": "ibm_4361_oorexx_v0.3-recovery2-journal2-safety21.zip",
+        "sealed_sha256": "2a0fc15538e0b1a43d3a432ac021b74e40825d0318c6fd6803d492d2d9f23cf9"
+      }
+    },
+    {
+      "aliases": [
+        "opcode:70",
+        "x70",
+        "mnemonic:STE",
+        "name:store short"
+      ],
+      "opcode": "70",
+      "mnemonic": "STE",
+      "name": "Store Short",
+      "format": "RX",
+      "assigned": true,
+      "class": "hexadecimal-floating-point",
+      "valid_register_selectors": [
+        0,
+        2,
+        4,
+        6
+      ],
+      "exception_precedence": "R1 outside 0/2/4/6 => specification exception before storage modification or normal STE implementation coverage",
+      "project_status": "invalid-R1 specification preflight qualified and sealed in Safety23; normal STE remains unimplemented; OP70 absent",
+      "project_evidence": {
+        "frontier_ia": "000082",
+        "frontier_icount": 539172,
+        "bytes": "70E000000000",
+        "psw": "0004000190000082",
+        "program_old_psw": "0004000690000086",
+        "program_new_psw": "00040000000002CA",
+        "forward_instructions": 32,
+        "next_causal_boundary": "EX 44 @ 0004B6 / ICOUNT 539205",
+        "ex_target": "70E005C84780",
+        "sealed_artifact": "ibm_4361_oorexx_v0.3-recovery2-journal2-safety23.zip",
+        "sealed_sha256": "78ec6e899ac4825658116326fe25395efe821c06d0745475bd8cec206c1dcefc"
+      }
+    },
+    {
+      "aliases": [
+        "opcode:82",
+        "x82",
+        "mnemonic:LPSW"
+      ],
+      "opcode": "82",
+      "mnemonic": "LPSW",
+      "name": "Load PSW",
+      "assigned": true,
+      "class": "system/control",
+      "behavior": "load complete PSW from storage",
+      "project_status": "implemented-qualified"
+    },
+    {
+      "aliases": [
+        "opcode:AF",
+        "xaf",
+        "mnemonic:MC"
+      ],
+      "opcode": "AF",
+      "mnemonic": "MC",
+      "name": "Monitor Call",
+      "assigned": true,
+      "project_status": "implemented qualified masked/no-op subset; enabled event path fail-closed"
+    },
+    {
+      "aliases": [
+        "opcode:C4",
+        "xc4"
+      ],
+      "opcode": "C4",
+      "assigned": false,
+      "architecture": "System/370 target",
+      "behavior": "operation exception",
+      "project_status": "qualified; later architecture reuse does not apply"
+    },
+    {
+      "aliases": [
+        "opcode:D1",
+        "xd1",
+        "mnemonic:MVN"
+      ],
+      "opcode": "D1",
+      "mnemonic": "MVN",
+      "name": "Move Numerics",
+      "format": "SS",
+      "assigned": true,
+      "behavior": "for each byte preserve destination high nibble and copy source low nibble",
+      "processing_order": "left-to-right; overlap is destructive/sequential",
+      "project_status": "implemented-qualified; sealed Safety20",
+      "project_evidence": {
+        "instruction": "D10004E705D1",
+        "ia": "00047C",
+        "icount": 531395,
+        "destination": "0004E7:10->18",
+        "source": "0005D1:B8 unchanged",
+        "cc": "0 unchanged",
+        "next_ia": "000482",
+        "next_icount": 531396
+      }
+    },
+    {
+      "aliases": [
+        "opcode:D4",
+        "xd4",
+        "mnemonic:NC"
+      ],
+      "opcode": "D4",
+      "mnemonic": "NC",
+      "name": "And Characters",
+      "format": "SS",
+      "assigned": true,
+      "processing_order": "left-to-right byte sequential including overlap and 24-bit wrap",
+      "condition_code": "0 if entire result zero, otherwise 1",
+      "project_status": "implemented-qualified"
+    },
+    {
+      "aliases": [
+        "opcode:F2",
+        "xf2",
+        "mnemonic:PACK"
+      ],
+      "opcode": "F2",
+      "mnemonic": "PACK",
+      "name": "Pack",
+      "format": "SS",
+      "assigned": true,
+      "project_status": "implemented-qualified"
+    },
+    {
+      "aliases": [
+        "opcode:F3",
+        "xf3",
+        "mnemonic:UNPK"
+      ],
+      "opcode": "F3",
+      "mnemonic": "UNPK",
+      "name": "Unpack",
+      "format": "SS",
+      "assigned": true,
+      "project_status": "implemented-qualified",
+      "doc_behavior": "packed digits/sign converted to zoned form; result defined as right-to-left processing"
+    },
+    {
+      "aliases": [
+        "opcode:FF",
+        "xff"
+      ],
+      "opcode": "FF",
+      "assigned": false,
+      "behavior": "operation exception",
+      "project_status": "qualified; no OPFF"
+    }
+  ]
+}

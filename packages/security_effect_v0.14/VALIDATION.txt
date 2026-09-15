@@ -1,0 +1,74 @@
+Security Effect v0.14 validation
+===============================
+Date: 2026-09-01
+Status: PROVISIONAL CANDIDATE — STATIC/PACKAGE QUALIFICATION COMPLETE; ooRexx EXECUTABLE QUALIFICATION PENDING
+
+Purpose
+-------
+v0.14 closes the time-of-check/time-of-irreversible-use gap for staged or long-running operations.
+A Security ALLOW at the original method admission is not a bearer capability for a later commit.
+The commit must bind the exact continuation, origin execution-evidence identity, operation, staged-state identity,
+context, fresh commit invocation evidence, fresh Security snapshot/assessment and (optionally) Access Permissions authority.
+
+New schemas
+-----------
+Component API:                 security.effect/0.14
+Security decision policy:      security.policy/0.5 (unchanged)
+Invocation policy:             security.invocation.policy/0.1 (unchanged)
+Invocation binding:            security.invocation.binding/0.1 (unchanged)
+Continuation policy:           security.continuation.policy/0.1
+Continuation binding/evidence: security.continuation.binding/0.1
+
+Static/package gates completed
+------------------------------
+PASS: four shipped shell runners pass `bash -n`.
+PASS: v0.14 static commit-contract audit.
+PASS: core runner declares 30 executable Rexx tests, including test_commit_revalidation.rex.
+PASS: Access Permissions runner declares four direct tests plus the existing live Alchemy invocation integration test.
+PASS: source contains explicit exact-state, exact-context, fresh-snapshot, current-disposition and single-use replay barriers.
+PASS: continuation requires non-empty host-supplied origin execution-evidence identity; Security validation alone is not represented as proof that work started.
+PASS: combined continuation/invocation consumption is fail-closed and contains no replay-barrier rollback path.
+PASS: decision policy schema remains security.policy/0.5; this cut changes continuation/commit execution evidence, not Bouncer rule meaning.
+PASS: no runtime LLM decision path introduced.
+
+Executable gates prepared but NOT claimed in this environment
+--------------------------------------------------------------
+- 30 core Security Effect tests.
+- Interaction Event v0.3 integrations.
+- Relationship Case v0.2 / Service v0.1 integrations.
+- Access Permissions v0.1 integrations including exact COMMIT authority boundary.
+- unchanged Access Permissions consumer suite.
+- unchanged FederationBank Staff Method Permissions consumer suite when available.
+- complete rexxc sweep over shipped .rex/.cls targets.
+- commit revalidation demo.
+
+Why executable certification is pending
+---------------------------------------
+The ooRexx 5.3.0 r13196 executable used for all prior Security Effect certification is not present in this execution
+filesystem, and no rexx/rexxc executable is on PATH. Previous v0.13 executable PASS evidence is retained as predecessor
+evidence only and is not relabelled as v0.14 execution.
+
+The user-supplied authoritative outer roll-up oorexxapis(20260901-104840).zip was declared at
+/mnt/data/oorexxapis(20260901-104840).zip but that exact path did not materialise in either the container or Python
+filesystem view. Therefore no byte-preserving September-1 outer-roll-up replacement or dependency-version claim is made.
+
+Current standalone dependency declaration remains the last physically qualified v0.13 line until the new roll-up bytes
+can be inspected:
+- Institutional Policy v0.8
+- Alchemy Objects v0.8
+- ooRexx Crypto v0.5
+Integration companions:
+- Interaction Event v0.3
+- Relationship Case v0.2
+- Relationship Case Service v0.1
+- ooRexx Access Permissions v0.1
+
+Trust-boundary non-claims
+-------------------------
+- SecurityContinuationEvidence is not Permission authority.
+- originExecutionEvidenceIdentity is host/enforcement provenance; Security Effect does not reinterpret it as authority.
+- SecurityCommitEvidence is not proof that a transaction was actually published.
+- SecurityCommitValidation is not method authority.
+- Permission ALLOW remains separately required where Access Permissions governs the COMMIT method.
+- physical commit/publication remains the host/enforcement responsibility.
+- no certification claim is made for the inaccessible 20260901 outer roll-up.

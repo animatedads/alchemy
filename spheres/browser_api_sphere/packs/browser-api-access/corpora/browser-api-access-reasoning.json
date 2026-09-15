@@ -1,0 +1,58 @@
+{
+  "kind": "corpus",
+  "id": "browser-api-access-reasoning",
+  "sphere": "browser-api-access",
+  "title": "Durable reasoning records",
+  "records": [
+    {
+      "id": "reason.placement-vs-egress",
+      "situation": "A job can run on NODE-Z and needs US/VPN egress.",
+      "reasoning": "First verify/obtain the general placement lease. Then let API Client independently resolve and reserve the required outbound route. Never treat spare capacity or local convenience as permission to weaken the route."
+    },
+    {
+      "id": "reason.route-loss",
+      "situation": "A browser session is valid but its required VPN disappears.",
+      "reasoning": "Keep placement/browser state conceptually separate. Return route/egress failure for that operation; do not silently relocate the job or weaken the route."
+    },
+    {
+      "id": "reason.placement-stale",
+      "situation": "The node capability generation changes while a browser timer is about to fetch.",
+      "reasoning": "Revalidate placement before the side effect. Suspend/fail if the allocator would no longer verify the lease; do not infer validity from same node identity."
+    },
+    {
+      "id": "reason.bulk-priority",
+      "situation": "Bulk source/news ingestion competes with interactive work.",
+      "reasoning": "Keep WLU cost truthful. Reduce desired delivery rate and schedule priority for bulk traffic; do not fake lower work cost."
+    },
+    {
+      "id": "reason.observer-control",
+      "situation": "An AI watching a browser wants to click a button.",
+      "reasoning": "Observation returns state only. The AI must submit a separate authorised Virtual Browser command; never add mutation to the neutral Observation query plane."
+    },
+    {
+      "id": "reason.browser-network",
+      "situation": "Page JavaScript calls fetch().",
+      "reasoning": "Route through Virtual Browser host authority and API Client. The ECMAScript engine never receives a bypass socket."
+    },
+    {
+      "id": "reason.state-migration",
+      "situation": "Allocator replaces a failed execution node.",
+      "reasoning": "Job replacement does not automatically authorize transfer of authenticated browser state. Apply separate state-migration policy or restart from a semantic checkpoint."
+    },
+    {
+      "id": "reason.tracker-resource",
+      "situation": "HTML references analytics, images and fonts irrelevant to the job.",
+      "reasoning": "Suppress them at Virtual Browser resource policy before API Client admission. Do not spend remote bandwidth/WLU merely to imitate a visual consumer browser."
+    },
+    {
+      "id": "reason.rate-limit",
+      "situation": "A web app polls every 250 ms.",
+      "reasoning": "Virtual Browser may clamp polling to a policy minimum. API Client remains final outbound admission/rate authority."
+    },
+    {
+      "id": "reason.native-abi",
+      "situation": "A native ECMAScript binding exposes size_t or long.",
+      "reasoning": "Use Foreign Runtime ABI-native scalar aliases and require abi-native-c-scalars; do not guess fixed widths or claim unqualified ABI struct layouts."
+    }
+  ]
+}

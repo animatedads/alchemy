@@ -1,0 +1,42 @@
+=== Branch Cash Service v0.3 ===
+Runtime: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+--- test_authority_persisted.rex ---
+PASS: exact Branch Cash authority survives durable service restart
+--- test_branch_position_in_transit.rex ---
+PASS: branch cash position includes explicit in-transit custody
+--- test_destination_failure_in_transit.rex ---
+PASS: failed destination leaves cash in explicit transit custody
+--- test_nonvault_authority_denial.rex ---
+PASS: non-vault route cannot bypass Branch Cash authority policy and checker separation
+--- test_outbox_retry.rex ---
+PASS: branch cash event delivery is at-least-once without rolling back custody
+--- test_queue_persistent_recovery.rex ---
+PASS: permanent Queue Fabric recovers typed Branch Cash transfer command graph
+--- test_reconciliation_retry.rex ---
+PASS: reconciliation retry completes the same in-transit transfer
+--- test_restart_recovery.rex ---
+PASS: durable restart preserves vault state and in-transit reconciliation
+--- test_runtime_module.rex ---
+PASS: Branch Cash service runtime module
+--- test_service_idempotency.rex ---
+PASS: semantic command replay cannot duplicate physical cash movement
+--- test_till_to_till.rex ---
+PASS: till-to-till movement is explicit internal custody transfer
+--- test_till_to_vault.rex ---
+PASS: till skim enters branch vault as internal physical cash movement
+--- test_vault_to_till.rex ---
+PASS: vault replenishment moves physical custody without customer transaction semantics
+RESULT 13 PASS / 0 FAIL
+=== COMPILE CHECKS ===
+PASS rexxc integration/FederationBankBranchCashServicePersistence.cls
+PASS rexxc integration/FederationBankBranchCashServiceQueue.cls
+PASS rexxc runtime/FederationBankBranchCashServiceRuntimeModule.cls
+PASS rexxc src/FederationBankBranchCashService.cls
+COMPILE RESULT 4 PASS / 0 FAIL
+=== ALL .CLS COMPILE CHECKS ===
+PASS rexxc integration/FederationBankBranchCashServicePersistence.cls
+PASS rexxc integration/FederationBankBranchCashServiceQueue.cls
+PASS rexxc runtime/FederationBankBranchCashServiceRuntimeModule.cls
+PASS rexxc src/FederationBankBranchCashService.cls
+PASS rexxc tests/TestSupport.cls
+ALL .CLS COMPILE RESULT 5 PASS / 0 FAIL

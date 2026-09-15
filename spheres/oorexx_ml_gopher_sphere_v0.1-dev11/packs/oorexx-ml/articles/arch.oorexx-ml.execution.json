@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.execution",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Foreign runtime and accelerated execution",
+  "summary": "Acceleration is an execution provider concern. ooRexx objects retain model identity, history, precision policy, evidence and branch semantics even when NumPy/Torch/native code performs heavy computation.",
+  "authority": "Executable source/tests and supplied upstream API artifacts are authoritative; this sphere preserves architecture and continuity.",
+  "invariants": [
+    "Foreign tensors/handles are not durable historical state.",
+    "Precision transitions must be explicit.",
+    "Provider-local state is either checkpointable/value-exportable or explicitly affine."
+  ],
+  "procedure": [
+    "Prefer Maths provider selection for numerical acceleration.",
+    "Use Foreign Runtime tensor/DLPack seams for zero-copy execution where safe.",
+    "Persist only portable model/checkpoint values through Storage Fabric."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6.zip",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "member": "oorexx_foreign_runtime_v0.22.6/README.md",
+      "claim": "Foreign Runtime provider/tensor ownership substrate."
+    },
+    {
+      "artifact": "oorexx_maths_v0.7.zip",
+      "sha256": "b2385efc83aa525392f6c804327f7d370abd6c06d04a7d31855803e62f95c19d",
+      "member": "oorexx_maths_v0.7/README.md",
+      "claim": "Provider-neutral numerical semantics and precision evidence."
+    }
+  ]
+}

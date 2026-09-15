@@ -1,0 +1,168 @@
+{
+  "kind": "corpus",
+  "id": "google-colab.operations",
+  "sphere": "google-colab",
+  "title": "Google Colab managed-compute operating records",
+  "records": [
+    {
+      "topic": "lifecycle",
+      "aliases": [
+        "named session",
+        "new install exec stop",
+        "cleanup",
+        "session"
+      ],
+      "rule": "For managed multi-stage work use a deterministic named session and explicit allocate -> stage -> install -> execute -> retrieve -> stop lifecycle.",
+      "plane": "article google-colab.lifecycle.named-session"
+    },
+    {
+      "topic": "compatibility",
+      "aliases": [
+        "version drift",
+        "colab new -h",
+        "colab exec --env",
+        "high-mem",
+        "installed help"
+      ],
+      "rule": "The installed CLI version and subcommand help are the runtime authority. Probe before emitting optional flags; current upstream main may differ from a pinned 0.6.0 installation.",
+      "plane": "article google-colab.compat.installed-cli-is-authority"
+    },
+    {
+      "topic": "kernelclient",
+      "aliases": [
+        "KernelClient",
+        "jupyter_kernel_client",
+        "0.9.0",
+        "uv tool environment"
+      ],
+      "rule": "For the qualified CLI 0.6.0 incident, repair KernelClient in the exact CLI Python environment and prove the fix with a secret-free probe; do not universalize the pin.",
+      "plane": "article google-colab.compat.kernelclient-exact-environment"
+    },
+    {
+      "topic": "resources",
+      "aliases": [
+        "T4",
+        "14912 MiB",
+        "12975 MiB",
+        "MemAvailable",
+        "CUDA memory",
+        "worker gate"
+      ],
+      "rule": "Requested accelerator is not observed capacity. Verify actual GPU identity, CUDA-visible memory, host total/available RAM and disk in the worker before expensive work.",
+      "plane": "article google-colab.allocation.request-is-not-observation"
+    },
+    {
+      "topic": "accelerators",
+      "aliases": [
+        "T4",
+        "L4",
+        "G4",
+        "H100",
+        "A100",
+        "TPU",
+        "v5e1",
+        "v6e1",
+        "entitlement",
+        "capacity"
+      ],
+      "rule": "As of 2026-09-02 current upstream main advertises GPU T4/L4/G4/H100/A100 and TPU v5e1/v6e1, but availability is entitlement/capacity dependent. Treat the installed help and successful allocation plus worker observation as authority for a given run.",
+      "plane": "article google-colab.allocation.request-is-not-observation"
+    },
+    {
+      "topic": "secrets",
+      "aliases": [
+        "HF token",
+        "Secret Broker",
+        "redacted",
+        "argv",
+        "environment",
+        "SECRET_RETIRE"
+      ],
+      "rule": "Carry secret references separately from ordinary job environment; never place bearer values in argv, generated source, logs or manifests; retire staged secrets on every terminal path.",
+      "plane": "article google-colab.secrets.separate-plane"
+    },
+    {
+      "topic": "install-retry",
+      "aliases": [
+        "Connection was lost",
+        "WebSocket",
+        "retry",
+        "transport",
+        "bad package"
+      ],
+      "rule": "Retry only classified transient transport loss in the same live session with bounded backoff; fail fast on deterministic package/dependency errors.",
+      "plane": "article google-colab.install.retry-transient-transport-only"
+    },
+    {
+      "topic": "upload",
+      "aliases": [
+        "480178064",
+        "77062608",
+        "compact payload",
+        "UPLOAD_FAILED",
+        "large artifact"
+      ],
+      "rule": "Verify and compact large artifacts locally; upload only required immutable digest-bound payloads. One failed 480 MB transfer is not evidence of a universal size limit.",
+      "plane": "article google-colab.transfer.compact-before-upload"
+    },
+    {
+      "topic": "exec",
+      "aliases": [
+        "exec -f",
+        "driver",
+        "--env",
+        "ordinary configuration"
+      ],
+      "rule": "Use exec -f for local code; feature-detect environment flags. Ordinary non-secret configuration may be materialized in a driver when necessary, but secrets stay on a separate plane.",
+      "plane": "article google-colab.exec.driver-and-environment"
+    },
+    {
+      "topic": "failure-stage",
+      "aliases": [
+        "ALLOCATION",
+        "INSTALL_FAILED",
+        "UPLOAD_FAILED",
+        "OUTPUT_MISSING",
+        "promotion",
+        "grading"
+      ],
+      "rule": "Report the lifecycle stage that failed. Training success, infrastructure success and promotion success are separate facts.",
+      "plane": "article google-colab.failures.stage-taxonomy"
+    },
+    {
+      "topic": "persistence",
+      "aliases": [
+        "/content",
+        "ephemeral",
+        "download before stop",
+        "artifact manifest"
+      ],
+      "rule": "Treat the runtime filesystem as ephemeral; retrieve and verify durable output artifacts before stop.",
+      "plane": "article google-colab.persistence.retrieve-before-stop"
+    },
+    {
+      "topic": "authentication",
+      "aliases": [
+        "ADC",
+        "OAuth",
+        "colab auth",
+        "GCP",
+        "control plane",
+        "workload credential"
+      ],
+      "rule": "Keep local Colab API authentication, optional VM/GCP authentication, and workload/model credentials as separate authority planes.",
+      "plane": "article google-colab.auth.control-plane-vs-workload-credentials"
+    },
+    {
+      "topic": "cleanup",
+      "aliases": [
+        "STOP",
+        "finally",
+        "secret retirement",
+        "idempotent"
+      ],
+      "rule": "Stop the session and retire secrets on every terminal path. Cleanup success is evidence of cleanup, not evidence that the job itself succeeded.",
+      "plane": "article google-colab.cleanup.stop-and-retire"
+    }
+  ]
+}

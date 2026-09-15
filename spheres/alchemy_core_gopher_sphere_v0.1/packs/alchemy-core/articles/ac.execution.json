@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "ac.execution",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Executor runs the model's exact plan",
+  "summary": "AlchemyExecutor decodes the manifest through the package model, plans against the supplied dependency floor, then runs each planned test with a deliberately constructed environment and bounded timeout/failure capture.",
+  "authority": "project-authority",
+  "invariants": [
+    "The executor does not discover dependencies from disk; it consumes a supplied dependency floor.",
+    "The executor does not invent REXX_PATH ordering; it uses AlchemyExecutionPlanner output.",
+    "Non-zero process return codes and timeout are execution evidence, not transport errors.",
+    "Reported environment is the model's bounded reportEnvironment rather than an uncontrolled environment dump."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_executor_v0.4/src/AlchemyExecutor.cls",
+      "line_start": 41,
+      "line_end": 111,
+      "claim": "Executor and process runner consume the model plan."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_package_model_v0.3/src/AlchemyPackageModel.cls",
+      "line_start": 185,
+      "line_end": 256,
+      "claim": "Planner defines exact dependency and environment composition."
+    }
+  ]
+}

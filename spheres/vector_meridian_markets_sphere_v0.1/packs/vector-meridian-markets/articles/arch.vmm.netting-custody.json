@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "arch.vmm.netting-custody",
+  "version": "0.1",
+  "sphere": "vector-meridian-markets",
+  "title": "Master-agreement netting and segregated collateral",
+  "summary": "Cross-contract set-off is a legal evidence question, not a portfolio convenience. Segregated initial margin remains outside close-out netting and returns through an exact custodian transfer lifecycle.",
+  "invariants": [
+    "Netting requires exact counterparty, master agreement, currency, governing law, legal opinion and close-out-netting election.",
+    "Gross receivables/payables remain visible when one legal net cash amount is settled.",
+    "A member of a fixed netting set cannot settle individually.",
+    "Cross-counterparty or cross-master-agreement convenience netting fails without mutating member state.",
+    "Segregated IM is not silently netted and is not returned until custody settlement; acknowledgement alone is insufficient."
+  ],
+  "authority": "artifact-grounded",
+  "provenance": [
+    {
+      "artifact": "vector_meridian_markets_v0.11.zip",
+      "sha256": "4ebde9b8ca4ca158906bd42d4367bb3040b83b598b8bd41850addfe6518e3509",
+      "member": "vector_meridian_markets_v0.11/docs/CLOSEOUT_OPERATIONS_PROTOCOL.md",
+      "line_start": 19,
+      "line_end": 56,
+      "claim": "Dispute/finalization, exact master-agreement netting and segregated IM custody-return semantics."
+    }
+  ]
+}

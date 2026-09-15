@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "ref.terminal-machine.architecture",
+  "version": "0.1",
+  "sphere": "terminal-machine",
+  "title": "Terminal Machine architecture",
+  "summary": "Terminal Machine is terminal-neutral automation infrastructure. Transport, protocol, presentation model, semantic known-state memory, control authority, service hosting and emulator recovery are separable layers; TN5250 is one personality rather than the generic core.",
+  "authority": "terminal-machine-project",
+  "invariants": [
+    "Generic Terminal Machine code must not acquire TN5250-specific assumptions merely for convenience.",
+    "Transport/protocol/model/automation authority are separate seams.",
+    "Detached snapshots/actions/evidence remain value objects unless lifecycle identity is actually required."
+  ],
+  "procedure": [
+    "Trace a live 5250 path as TCP/TLS -> Telnet -> TN5250/RFC1205 framing -> 5250 workstation data stream -> field model -> known-state/automation.",
+    "Keep future personalities such as TN3270E, VT/TTY, serial/PTY and replay behind the same generic boundaries."
+  ],
+  "topics": [
+    "terminal",
+    "tn5250"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_terminal_machine_v0.21.zip",
+      "sha256": "64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5",
+      "member": "oorexx_terminal_machine_v0.21/README.md",
+      "claim": "Supports this Terminal Machine/TN5250 continuity article."
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "msqlshim",
+    "version": "0.21.2",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "NOSQLSERVER_ROOT": "${REPO_ROOT}/packages/nosqlserver_v0.79",
+      "ALCHEMY_OBJECTS_ROOT": "${REPO_ROOT}/packages/alchemy_objects_v0.8",
+      "OOREXX_CRYPTO_ROOT": "${REPO_ROOT}/packages/oorexx_crypto_v0.1"
+    }
+  },
+  "tests": [
+    {
+      "name": "msqlshim-v0212-suite",
+      "argv": [
+        "bash",
+        "run_tests.sh"
+      ],
+      "timeout_seconds": 360,
+      "environment": {
+        "require_dirs": [
+          "NOSQLSERVER_ROOT",
+          "ALCHEMY_OBJECTS_ROOT",
+          "OOREXX_CRYPTO_ROOT"
+        ],
+        "report": [
+          "NOSQLSERVER_ROOT",
+          "ALCHEMY_OBJECTS_ROOT",
+          "OOREXX_CRYPTO_ROOT"
+        ]
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/msqlshim_v0.21.2"
+    }
+  }
+}

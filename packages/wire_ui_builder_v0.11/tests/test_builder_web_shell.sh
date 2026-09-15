@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+set -euo pipefail
+ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+grep -q 'bootstrapUrl' "$ROOT/web/index.html"
+grep -q 'QueueFabricGatewayTransport' "$ROOT/web/builder-wire-ui.js"
+! grep -REqi 'flylo|our.?lady.?air|federation.?bank' "$ROOT/web"
+! grep -REq 'DESIGN\.(COMPONENT|ELEMENT|PROJECTION|MATERIAL|JOURNEY|EXPERIMENT)\.DRAFT' "$ROOT/web"
+grep -q 'DESIGN.COMPOSITION.ALIGN' "$ROOT/web/composition-controller.js"
+grep -q 'wui-builder-flow-thumb' "$ROOT/web/builder.css"
+grep -q 'wui-builder-studio-region' "$ROOT/web/builder.css"
+grep -q 'wire-ui-root{display:block!important;width:100%!important;min-width:0!important}' "$ROOT/web/builder.css"
+grep -q 'wire-ui-root>.wui-builder-composition-grid{display:grid!important;width:100%!important' "$ROOT/web/builder.css"
+! grep -q 'wire-ui-root{grid-template-columns:' "$ROOT/web/builder.css" # mount owns no composition columns
+grep -q 'wui-builder-studio-region\[hidden\]' "$ROOT/web/builder.css"
+grep -q 'data-wire-studio-region="canvas".*grid-column:4 / 10!important' "$ROOT/web/builder.css"
+grep -q 'data-wire-studio-region="inspector".*grid-column:10 / 13!important' "$ROOT/web/builder.css"
+grep -q 'grid-template-areas:' "$ROOT/web/builder.css"
+grep -q '"library canvas inspector"' "$ROOT/web/builder.css"
+grep -q '"flow flow flow"' "$ROOT/web/builder.css"
+grep -q 'studioRegionGridColumn' "$ROOT/web/composition-controller.js"
+grep -q 'studioRegionGridRow' "$ROOT/web/composition-controller.js"
+grep -q 'studioRegionGridArea' "$ROOT/web/composition-controller.js"
+grep -q 'node.parentElement!==stack' "$ROOT/web/composition-controller.js"
+grep -q 'stack.hidden=true' "$ROOT/web/composition-controller.js"
+# v0.11 SOURCE/topology regression
+grep -q 'data-wire-composition-state="SOURCE"' "$ROOT/web/builder.css"
+grep -q '"source-list source-detail"' "$ROOT/web/builder.css"
+grep -q 'data-wire-studio-region="source-list"' "$ROOT/web/builder.css"
+grep -q 'data-wire-studio-region="source-detail"' "$ROOT/web/builder.css"
+grep -q 'SOURCE row carries only a stable path label' "$ROOT/tests/test_builder_application_self_source.rex"
+echo 'PASS test_builder_web_shell'

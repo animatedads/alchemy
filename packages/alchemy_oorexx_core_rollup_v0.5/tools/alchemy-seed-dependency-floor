@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+REPO_HOME=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+export REXX_PATH="$REPO_HOME/packages/alchemy_dependency_floor_v0.5/src:$REPO_HOME/packages/alchemy_transport_v0.4/src:$REPO_HOME/packages/alchemy_repository_lease_v0.2/src:$REPO_HOME/packages/alchemy_package_model_v0.3/src:$REPO_HOME/packages/alchemy_core_component_v0.1/src:$REPO_HOME/packages/alchemy_objects_v0.4.3/src:$REPO_HOME/packages/oorexx_crypto_v0.1/src${REXX_PATH:+:$REXX_PATH}"
+exec rexx "$REPO_HOME/packages/alchemy_dependency_floor_v0.5/seed_dependency_floor.rex" "$@"

@@ -1,0 +1,49 @@
+{
+  "kind": "corpus",
+  "id": "llm-containment.records",
+  "sphere": "llm-containment",
+  "title": "LLM-containment and honest-evidence records",
+  "records": [
+    {
+      "aliases": ["topic:prompt-boundary","boundary","no-private-state","SECRET/INTERNAL","no hidden cards","prompt envelope","PHASE boundary"],
+      "topic": "prompt-boundary",
+      "rule": "Admit only public state plus the acting party's own private field into a live prompt; observer narration and other-party private state are fail-closed before provider invocation.",
+      "audit": "persist counts and digest identity, not prompt text",
+      "source": "psychic-poker v0.7.38 PokerPromptEnvelope"
+    },
+    {
+      "aliases": ["topic:constrained-output","free text","token","dictionary","classifier","SOCIAL_EVIDENCE","free-form","unknown token"],
+      "topic": "constrained-output",
+      "rule": "Where effect must stay interpretable, constrain to a frozen classified catalog and reject unknown tokens rather than guessing.",
+      "note": "the classifier, not the model, is authoritative for phrase/class/pressure deltas",
+      "source": "HardWorld table-talk / Librarian"
+    },
+    {
+      "aliases": ["topic:observer","read-only","mutation-forbidden","OBSERVATION_MUTATION_FORBIDDEN","monitor","no control","password","non-display"],
+      "topic": "observer",
+      "rule": "An observer never mutates what it observes; mutation-shaped operations over an observation channel fail closed.",
+      "sensitive": "passwords remain non-display evidence with no raw value in snapshot/history",
+      "source": "Observation v0.2 / Virtual Browser README"
+    },
+    {
+      "aliases": ["topic:no-invent","operational facts","entitlement","REVIEW_REQUIRED","fail closed","no silent substitute","cannot waive","credential"],
+      "topic": "no-invent",
+      "rule": "A helper never invents an operational fact, entitlement or capability; an unresolved outcome gate becomes REVIEW_REQUIRED, not a guess.",
+      "credentials": "absent/rejected credential fails closed; no silent substitute model without an explicitly published policy",
+      "source": "FlyLo legal-effect model + GROK_INTEGRATION.md"
+    },
+    {
+      "aliases": ["topic:correctness","determinism","seed","reproducible","shadow","timing","performance","behaviour"],
+      "topic": "correctness",
+      "rule": "Reproducibility is behavioural, not a timing fact; prove the observer did not change the result by replay, keep audit as identity not payload copies.",
+      "source": "psychic-poker seeded trajectory proof (Seed 424242)"
+    },
+    {
+      "aliases": ["topic:retaliation","at-most-once","consumed once","single trigger"],
+      "topic": "at-most-once",
+      "rule": "A bounded response trigger is consumed at most once; releasing capabilities repeats no more than permitted.",
+      "note": "e.g. each incoming utterance can trigger at most one retaliation",
+      "source": "psychic-poker Apex counter-talk"
+    }
+  ]
+}

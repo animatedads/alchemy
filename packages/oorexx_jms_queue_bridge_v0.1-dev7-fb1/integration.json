@@ -1,0 +1,92 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_jms_queue_bridge",
+    "version": "0.1-dev7-fb1",
+    "kind": "oorexx"
+  },
+  "tests": [
+    {
+      "name": "core",
+      "argv": ["bash", "run_tests.sh", "core"],
+      "timeout_seconds": 300,
+      "environment": {
+        "set": {
+          "QF_SRC": "${REPO_ROOT}/packages/oorexx_queue_fabric_v0.9/src",
+          "ALCHEMY_OBJECTS_SRC": "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+          "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": [
+            "${PACKAGE_ROOT}/src",
+            "${PACKAGE_ROOT}/tests",
+            "${REPO_ROOT}/packages/oorexx_queue_fabric_v0.9/src",
+            "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+            "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+          ],
+          "require_entries": true
+        },
+        "require_dirs": ["QF_SRC", "ALCHEMY_OBJECTS_SRC", "CRYPTO_SRC"],
+        "report": ["QF_SRC", "ALCHEMY_OBJECTS_SRC", "CRYPTO_SRC"]
+      }
+    },
+    {
+      "name": "secret-broker",
+      "argv": ["bash", "run_tests.sh", "secret"],
+      "timeout_seconds": 180,
+      "environment": {
+        "set": {
+          "QF_SRC": "${REPO_ROOT}/packages/oorexx_queue_fabric_v0.9/src",
+          "ALCHEMY_OBJECTS_SRC": "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+          "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src",
+          "SECRET_BROKER_SRC": "${REPO_ROOT}/packages/oorexx_secret_broker_v0.2/src"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": [
+            "${PACKAGE_ROOT}/src",
+            "${PACKAGE_ROOT}/tests",
+            "${REPO_ROOT}/packages/oorexx_queue_fabric_v0.9/src",
+            "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+            "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src",
+            "${REPO_ROOT}/packages/oorexx_secret_broker_v0.2/src"
+          ],
+          "require_entries": true
+        },
+        "require_dirs": ["QF_SRC", "ALCHEMY_OBJECTS_SRC", "CRYPTO_SRC", "SECRET_BROKER_SRC"],
+        "report": ["SECRET_BROKER_SRC"]
+      }
+    },
+    {
+      "name": "runtime-registry",
+      "argv": ["bash", "run_tests.sh", "registry"],
+      "timeout_seconds": 240,
+      "environment": {
+        "set": {
+          "QF_SRC": "${REPO_ROOT}/packages/oorexx_queue_fabric_v0.9/src",
+          "ALCHEMY_OBJECTS_SRC": "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+          "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src",
+          "RUNTIME_REGISTRY_SRC": "${REPO_ROOT}/packages/runtime_registry_v0.14/src"
+        },
+        "rexx_path": {
+          "mode": "replace",
+          "entries": [
+            "${PACKAGE_ROOT}/src",
+            "${PACKAGE_ROOT}/tests",
+            "${REPO_ROOT}/packages/oorexx_queue_fabric_v0.9/src",
+            "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+            "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src",
+            "${REPO_ROOT}/packages/runtime_registry_v0.14/src"
+          ],
+          "require_entries": true
+        },
+        "require_dirs": ["QF_SRC", "ALCHEMY_OBJECTS_SRC", "CRYPTO_SRC", "RUNTIME_REGISTRY_SRC"],
+        "report": ["RUNTIME_REGISTRY_SRC"]
+      }
+    }
+  ],
+  "publish": {
+    "artifact_only": true
+  }
+}

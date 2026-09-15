@@ -1,0 +1,73 @@
+{
+  "kind": "corpus",
+  "id": "nosqlserver.continuity",
+  "sphere": "nosqlserver",
+  "title": "NoSQLServer engineering sphere continuity records",
+  "records": [
+    {
+      "topic": "baseline",
+      "value": "NoSQLServer v0.79",
+      "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec"
+    },
+    {
+      "topic": "current construction",
+      "rule": "Alchemy Objects v0.8 preferred INIT:SUPER for service objects; semantics unchanged."
+    },
+    {
+      "topic": "hot path",
+      "rule": "Rows, scalar values, geometry values, parser/expression nodes and other hot-path data remain lightweight."
+    },
+    {
+      "topic": "storage",
+      "rule": "FILE/Object/JSON/native SQLite/GeoPackage/Federated engines coexist behind relational boundaries."
+    },
+    {
+      "topic": "json",
+      "rule": "Explicit relation projections only; no implicit recursive JSON flattening."
+    },
+    {
+      "topic": "sqlite",
+      "rule": "Native ooRexx page-oriented SQLite reader; no shell/C bridge at v0.74+; read-only boundary remains explicit."
+    },
+    {
+      "topic": "federation metadata",
+      "rule": "Federation builds neutral metadata from relation definition/capabilities; external providers need not construct NoSQLServer classes."
+    },
+    {
+      "topic": "federation mutation",
+      "rule": "Resolve owning provider first; unsupported read-only mutation => SQLUNSUPPORTED, not NOTFOUND."
+    },
+    {
+      "topic": "interop status",
+      "rule": "NOTEXECUTED and ROLLEDBACK are semantically different and must not be collapsed."
+    },
+    {
+      "topic": "database core",
+      "rule": "Use namespaced adapter; do not load overlapping complete public class sets into one package namespace."
+    },
+    {
+      "topic": "unicode",
+      "rule": "CLASSIC is default; UNICODE requires explicit TUTOR enablement and fails closed when unavailable."
+    },
+    {
+      "topic": "spatial",
+      "rule": "POINT/POLYGON accessors + strict WITHIN + boundary-inclusive INTERSECTS; no full Simple Features claim."
+    },
+    {
+      "topic": "planner",
+      "rule": "Access path is optimisation/evidence; complete SQL predicate/result semantics remain authoritative."
+    },
+    {
+      "topic": "diagnostics",
+      "rule": "SQLPARSEERROR versus SQLUNSUPPORTED must remain explicit."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "nosqlserver_v0.79.zip",
+      "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec",
+      "member": "nosqlserver_v0.79/src/NoSQLServer.cls",
+      "claim": "Current source/package identity for continuity records."
+    }
+  ]
+}

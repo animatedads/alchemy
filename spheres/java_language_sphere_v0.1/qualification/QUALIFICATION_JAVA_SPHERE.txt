@@ -1,0 +1,32 @@
+Java sphere v0.1 qualification
+Date: 2026-09-02
+Engine requirement: LLM Gopher v0.17-dev1+
+
+Grounded artifacts in oorexxapis(20260902-105429).zip:
+  current/wire_ui_swing_v0.2-dev3.zip
+    sha256 10823e3937eb02104c42b8990cef6349c4b587b5dbe198766d64804d89cbe9d3
+  current/testapps/wire_ui_swing_v0.2-dev6.zip
+    sha256 60e45cd023a783c060e2fdb4b823e20a754934100d7f6d48779534775343cc8d
+  current/testapps/federationbank_java_atm_v0.1.9.zip
+    sha256 4ba0ce06bc6977d2218b0faa84cd9919d879b2c82162e3dbcb276b8e8be53be8
+  current/oorexx_jms_queue_bridge_v0.1-dev7-fb1.zip
+    sha256 bf0c742f8f8e95e8d5b10dca67b92641780b8938417a2fd508192f27ccc26622
+
+Executed evidence:
+  FederationBank Java ATM scripts/run_tests.sh => RESULT: 22 passed, 0 failed
+  Wire UI Swing v0.2-dev3 scripts/run_tests.sh => PASS 32/32
+  LLM Gopher v0.17 Java/language-module regression => PASS
+
+Real source examination:
+  JndiJmsBankNetwork.java
+    nested: current/testapps/federationbank_java_atm_v0.1.9.zip
+    exact type declaration line: 21
+  WireSwingEdt.java
+    nested: current/wire_ui_swing_v0.2-dev3.zip
+    exact type declaration line: 7
+
+Host Java used for Gopher compile probe:
+  javac 21.0.11
+  compile probe requested --release 17
+
+The sphere does not claim a Java structural editor.

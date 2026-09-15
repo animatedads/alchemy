@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "ref.s370.program-interruptions",
+  "version": "0.3-dev1",
+  "sphere": "s370mvs",
+  "title": "System/370 program-interruption rules",
+  "summary": "Cross-cutting rules for operation/specification/fixed-point exceptions, old/new PSW handling, and exception precedence.",
+  "rules": [
+    "Exception validity checks that architecturally precede operand access must execute before emulator implementation-coverage checks.",
+    "Store the architecturally required old PSW and load the complete new PSW; do not replace only the instruction address.",
+    "Preserve exception precedence: for D/5D an odd R1 is a specification exception before the storage divisor is fetched."
+  ],
+  "selectors": [],
+  "authority": "IBM-architecture"
+}

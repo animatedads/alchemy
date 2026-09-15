@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.generations",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Immutable learned generations and barriers",
+  "summary": "Published learned generations freeze a model point for later comparison; explicit barriers mark source/domain discontinuities where learned continuity must be reconsidered.",
+  "authority": "Executable source/tests and supplied upstream API artifacts are authoritative; this sphere preserves architecture and continuity.",
+  "invariants": [
+    "A published generation never follows later live mutations.",
+    "A source barrier is evidence about discontinuity, not an automatic guess about which state to reset.",
+    "Generation identity records branch and journal point."
+  ],
+  "procedure": [
+    "Publish MLLearnedGeneration after a meaningful learning milestone.",
+    "Attach MLSourceIdentity when source-code revision evidence is available.",
+    "Create MLLearningBarrier at camera/source, calibration, schema or domain changes."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev1.zip",
+      "sha256": "450a8fe846fe7a07e453a830bedb3e7127ff6f3f1e7f734595ac1b39eb95e98f",
+      "member": "oorexx_ml_v0.1-dev1/src/MLCore.cls",
+      "claim": "Generic learned-generation and barrier objects."
+    },
+    {
+      "artifact": "camera_behaviour_oorexx_v0.56.zip",
+      "sha256": "7586ae52f61f9bf465f3002c8d2c07b14ab68e659d2a46364f0f53b96261cc21",
+      "member": "CameraCore.cls",
+      "claim": "CameraLearnedGeneration and snapshot precedent."
+    }
+  ]
+}

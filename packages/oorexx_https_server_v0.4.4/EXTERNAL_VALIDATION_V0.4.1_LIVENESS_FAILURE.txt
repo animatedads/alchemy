@@ -1,0 +1,22 @@
+Independent target-host result supplied by user for sealed ooRexx HTTPS Server v0.4.1
+
+Passed before failure:
+- Foreign Runtime v0.14.0
+- OpenSSL thread-safe provider contract
+- serialized/nonblocking TLS boundary probes
+- TLS 1.2/1.3
+- HTTP routes and binary echo
+- HEAD, pipelining, anti-smuggling, Host validation
+- TLS version floor
+- 16 concurrent HTTPS clients
+- runtime/generation observability
+
+Failure in first mixed reset/abort stress wave:
+
+curl: (28) Connection timed out after 2001-2002 milliseconds
+FAIL stress good client failed in wave 1
+
+Multiple additional good clients then reported the same ~2 second connection timeout.
+
+Interpretation carried into v0.4.2:
+The v0.4.1 four-lane socket-BIO candidate did not solve target-host liveness. Lane-count tuning is therefore not accepted as the fix. v0.4.2 removes socket BIOs and makes RxSock the sole network-I/O path.

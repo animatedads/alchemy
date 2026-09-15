@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "ref.accounting-core.external-assessment",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "External filed accounts are assessment evidence, not native ledger truth",
+  "summary": "Civic/Companies House accounts enter Accounting through a normalized evidence contract and an AccountingAssessmentBook. They can be assessed, reconciled and compared with internal books, but they never become native GL journals merely because they were filed publicly.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Civic owns retrieval, exact source bytes, filing identity, parsing, taxonomy/context/dimension resolution and versioned mapping.",
+    "Accounting owns projection validation, evidence/mapping identity retention, assessment import and the prohibition on implicit GL conversion.",
+    "An external filed-accounts import never posts to the native AccountingBook implicitly.",
+    "Exact lexical fact evidence, normalized values, source pointers and completeness/omission evidence should survive import.",
+    "A statement intentionally not delivered is evidence of omission, not a zero.",
+    "Assessment arithmetic can verify relationships among filed facts without claiming audit assurance or reconstructing transactions that were never filed."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/CIVIC_COMPANIES_HOUSE_ACCOUNTS_CONTRACT.md",
+      "claim": "Civic owns retrieval/parsing/mapping evidence while Accounting owns assessment import and prevents implicit conversion to native GL truth."
+    },
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/REAL_FILING_16024067_QUALIFICATION.md",
+      "claim": "Real filing qualification preserves omission semantics and exact evidence without inventing unfiled figures."
+    }
+  ]
+}

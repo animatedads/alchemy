@@ -1,0 +1,34 @@
+IBM 4361 recovery2 + live journal integration validation
+Date: 2026-08-25
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+
+COMPILE PASS 23 sources
+== tests/test_ccw0.rex ==
+PASS test_ccw0
+== tests/test_ccw0_ignored_byte.rex ==
+PASS test_ccw0_ignored_byte
+== tests/test_freeze_fail_closed.rex ==
+PASS test_freeze_fail_closed
+== tests/test_journal_storage_branching.rex ==
+PASS test_journal_storage_branching
+== tests/test_journal_instruction_rewind.rex ==
+PASS test_journal_instruction_rewind
+== tests/test_journal_live_patch_rewind.rex ==
+PASS test_journal_live_patch_rewind
+== tests/test_journal_freeze_separation.rex ==
+PASS test_journal_freeze_separation
+== tests/test_nucleus.rex ==
+PASS test_nucleus
+== tests/test_tic.rex ==
+PASS test_tic
+
+KNOWN SLOW PATH:
+The full legacy runner reaches test_ipl_channel_replay and exceeds the bounded debug-runtime watchdog inside pure-ooRexx SHA-512 sealing; prior tests pass before that point. This is not treated as journal acceptance evidence.
+
+== tests/test_journal_ipl_rewind.rex ==
+PASS test_journal_ipl_rewind

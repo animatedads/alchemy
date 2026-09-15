@@ -1,0 +1,32 @@
+Crypto v0.8 architectural-tidiness qualification
+
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version
+Runtime Reference: v0.4 unchanged
+Foreign Runtime: user-supplied v0.11.0 archive SHA-256 28df85268f7c273b7b1692349d476b677423c2cd6390e0b3988fdc4435178b35
+
+Architecture:
+- standard OpenSSL-equivalent operations use direct libcrypto metadata/libffi bindings
+- compatibility C library is restricted to five exports: Edwards25519 add/multiply, unclamped X25519 public/shared, and experimental Ed448 keypair
+- direct and compatibility foreign libraries are independently lazy-loaded and independently fail-safe
+- Runtime Reference and public Crypto call surfaces/fallback semantics are unchanged
+
+PASS native Crypto compatibility tests
+PASS direct SHA-256/SHA-512 exact-binary equivalence
+PASS direct/compat shared-provider SHA concurrency
+PASS direct HMAC-SHA-512 / ChaCha20 / Ed25519 / RSA equivalence
+PASS compatibility Edwards25519 / unclamped X25519 / experimental Ed448 equivalence
+PASS expensive-operation thread stress
+PASS direct-libcrypto / compatibility-shim isolation in both failure directions
+PASS Foreign -> TCP -> native SHA failover
+PASS Foreign -> TCP -> native expensive-operation failover
+PASS dead TCP -> native fallback
+PASS Runtime Reference v0.4 complete suite
+PASS Runtime Registry v0.14 complete non-optional suite against Crypto v0.8
+
+PASS pristine user-supplied Foreign Runtime v0.11.0 prebuilt complete supplied binary suite, including OpenSSL, exact-binary SHA, libffi, FFmpeg AVFormatContext **, metadata-defined AVChannelLayout struct, planar pointer arrays, and real activity/thread safety.
+
+Fresh-package acceptance:
+- Crypto archive manifest verifies after clean extraction.
+- compatibility shim rebuilds cleanly and exports only the five intended compat_* symbols.
+- all native, foreign-equivalence, concurrency, isolation, live/dead TCP, and failover groups pass from a clean Crypto extraction against a clean extraction of the user-supplied Foreign Runtime v0.11.0 and sealed Runtime Reference v0.4.
+- Runtime Registry v0.14 full non-optional suite passes against the clean extracted Crypto v0.8 source.

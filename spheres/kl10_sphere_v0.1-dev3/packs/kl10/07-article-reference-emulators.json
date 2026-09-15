@@ -1,0 +1,25 @@
+{
+  "kind": "article",
+  "id": "kl10.reference-emulators",
+  "version": "0.1",
+  "sphere": "kl10",
+  "title": "Reference emulator implementations",
+  "summary": "Secondary implementation evidence for translating KL10 behavior into emulator code after the architectural and guest-source contracts are understood.",
+  "procedure": [
+    "Compare the closest matching processor mode and paging mode, not just the instruction mnemonic.",
+    "Extract the smallest relevant behavior from the reference implementation and verify it against DEC documentation.",
+    "Where reference emulators disagree, prefer the primary architecture/microcode evidence and keep the disagreement explicit."
+  ],
+  "invariants": [
+    "Reference code is evidence, not proof.",
+    "Do not copy a model-A or KI/KS behavior into Model-B solely because the opcode matches.",
+    "Preserve guest-visible error/status timing where it affects TOPS-20 control flow."
+  ],
+  "documents": [
+    "cornwell.kx10-cpu",
+    "cornwell.kx10-rh",
+    "cornwell.kx10-df",
+    "kl10.production-microcode.repo"
+  ],
+  "selectors": []
+}

@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "ac.package-model",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Declarative package model and execution planning",
+  "summary": "integration.json decodes into ooRexx package/domain objects. Exact dependencies are resolved before execution, and the planner produces immutable-ish per-test plans with exact cwd, argv, timeout and environment.",
+  "authority": "project-authority",
+  "invariants": [
+    "A package identity is name@version; dependency references are exact.",
+    "Unresolved exact dependencies fail planning before test execution.",
+    "Environment precedence is base/caller, resolved dependencies, package environment, then individual test environment.",
+    "Test-level REXX_PATH may prepend, append or replace earlier entries without changing other tests in the same package.",
+    "integration.json is decoded by the model; the executor consumes model objects rather than interpreting JSON itself."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_package_model_v0.3/src/AlchemyPackageModel.cls",
+      "line_start": 3,
+      "line_end": 20,
+      "claim": "Package identity and model API."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_package_model_v0.3/src/AlchemyPackageModel.cls",
+      "line_start": 180,
+      "line_end": 256,
+      "claim": "Exact dependency resolution and environment composition."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_package_model_v0.3/src/AlchemyPackageModel.cls",
+      "line_start": 258,
+      "line_end": 299,
+      "claim": "integration.json codec maps manifest into domain objects."
+    }
+  ]
+}

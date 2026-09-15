@@ -1,0 +1,12 @@
+{
+  "kind": "language-rule",
+  "id": "LLM.CONTAINMENT.NO_MUTATION_VIA_OBSERVATION",
+  "version": "0.1",
+  "language": "any",
+  "title": "Never issue a mutation-shaped operation over an observation channel",
+  "purpose": "An observer/monitor stream is read-only by contract; control must enter only through the engine's own control path. An LLM observer must not be able to mutate the thing it observes via the observation interface.",
+  "trigger": "An observation subscription, query router, or monitor-to-model interface accepts OR forwards a mutation-shaped verb (create, write, put, post, transact, commit, confirm, cancel, delete) instead of failing closed as OBSERVATION_MUTATION_FORBIDDEN.",
+  "correct": "Accept only the read verbs (SNAPSHOT, CURRENT, BACK, HISTORY, KNOWN_STATE). Reject and surface any mutation-shaped operation as OBSERVATION_MUTATION_FORBIDDEN at the observation boundary.",
+  "fixability": "REQUIRED",
+  "evidence_note": "Observation v0.2: ObservationQueryRouter accepts only read operations; mutation-shaped operations fail closed as OBSERVATION_MUTATION_FORBIDDEN. Observation never implies control."
+}

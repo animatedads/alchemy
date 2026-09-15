@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "baa-egress-capability",
+  "version": "0.1",
+  "sphere": "browser-api-access",
+  "title": "Egress capability and route allocation",
+  "summary": "Nodes may expose outbound capabilities such as jurisdiction, VPN attachment, network class and egress class, but API Client remains authoritative for selecting and reserving the actual outbound session.",
+  "authority": "project-authority",
+  "invariants": [
+    "Node identity, capability generation and proofRef must remain available across allocator and API Client seams.",
+    "An execution-node placement may establish that a node is capable of satisfying an egress requirement without reserving an egress session.",
+    "API Client must re-evaluate the particular egress capability generation when allocating a session.",
+    "If no route satisfies every mandatory requirement, the operation fails closed rather than falling back to a weaker route.",
+    "Egress capability assertions must use the common trust architecture; nodes do not gain authority by self-asserting labels such as US or CONTROLLED."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6(1).zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "line_start": 30,
+      "line_end": 54,
+      "claim": "v0.6 binds API route requirements and API-egress capability into placement evidence while retaining hard eligibility.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "job_node_allocator_v0.6(1).zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "line_start": 94,
+      "line_end": 99,
+      "claim": "Allocator explicitly leaves actual API route/session allocation to API Client.",
+      "note": "Authoritative executable-candidate grounding."
+    }
+  ]
+}

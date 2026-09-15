@@ -1,0 +1,68 @@
+LLM Gopher v0.21-dev1 qualification
+Date: 2026-09-03
+
+Scope
+-----
+- bounded PDF/HTML reference retrieval from local files or HTTP(S)
+- PDF text extraction with pdftotext primary route and pypdf fallback
+- PDF page-count with pypdf and pdfinfo fallback
+- approximate printed/manual page -> physical PDF page lookup
+- bounded string search with excerpts and ready-to-open location selectors
+- deterministic previous/next/+N/-N navigation
+- structured retrieval identity including resolved source and SHA-256
+
+ooRexx acceptance case
+----------------------
+Primary public reference:
+  https://www.oorexx.org/docs/pdf/rexxref.pdf
+
+Independent public-document inspection confirms:
+  TOC: section 2.8 FORWARD -> printed page 55
+  FORWARD section begins around physical PDF page 73 (reader indexing may be displayed differently)
+  ARRAY continuation is on the following physical page.
+
+This execution container cannot currently resolve www.oorexx.org from its shell, so the
+live URL was not fetched by the packaged Gopher during local qualification.
+
+URL semantics were instead exercised through a local HTTP server using both PDF and HTML:
+  HTTP PDF find -> FOUND
+  HTTP PDF read -> OPENED
+  HTTP HTML find -> FOUND
+
+The same HTTP(S) fetch implementation handles remote URLs; only http/https schemes are admitted.
+
+Synthetic PDF regression
+------------------------
+Physical page 4 carries printed-page label 2 and text "USE STRICT ARG ...".
+
+  reference find ... "USE STRICT ARG"
+    -> FOUND, physical_page 4
+
+  reference locate ... --reference-page 2 --approx-page 4
+    -> FOUND, physical_page 4
+
+  reference read ... --page 4 --reference-page 2
+    -> OPENED
+    -> reference_page_hint 2
+    -> next 5
+    -> previous 3
+
+  reference move ... --page 4 1
+    -> physical_page 5
+
+  reference move ... --page 4 -1
+    -> physical_page 3
+
+HTML regression
+---------------
+Bounded HTML logical-section extraction and string search pass.
+
+Result
+------
+PASS ALL LLM GOPHER v0.21 REFERENCE READER TESTS
+
+Manual-navigation sphere
+------------------------
+The built-in `manual-navigation` sphere is qualified as the LLM-facing operations guide.
+It teaches find/locate -> read -> move +/-N -> return-to-task, including the ooRexx FORWARD example.
+Standalone `manual_navigation_sphere_v0.1.zip` validates VALID and lints CLEAN.

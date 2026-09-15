@@ -1,0 +1,42 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "psychic_poker",
+    "version": "0.7.41",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "TERM": "xterm"
+    },
+    "prepend_path": [],
+    "rexx_path": {
+      "mode": "prepend",
+      "entries": [
+        "${PACKAGE_ROOT}",
+        "${PACKAGE_ROOT}/deps/structured_utterance_v0.3/src",
+        "${PACKAGE_ROOT}/deps/alchemy_objects_v0.7/src",
+        "${PACKAGE_ROOT}/deps/oorexx_crypto_v0.1/src",
+        "${PACKAGE_ROOT}/nosqlserver/src"
+      ],
+      "require_entries": true
+    }
+  },
+  "tests": [
+    {
+      "name": "psychic-poker-v0741-regression-suite",
+      "argv": [
+        "sh",
+        "run_tests.sh"
+      ],
+      "timeout_seconds": 1800
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/psychic_poker_v0.7.41"
+    }
+  }
+}

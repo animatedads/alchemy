@@ -1,0 +1,60 @@
+Crypto v0.7 final qualification against Foreign Runtime v0.10.0
+Date: 2026-08-30
+ooRexx: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+OpenSSL: OpenSSL 3.5.5 27 Jan 2026
+Foreign Runtime: v0.10.0
+Runtime Reference: v0.4
+
+FOREIGN RUNTIME v0.10.0
+PASS source build with -Wall -Wextra
+PASS 72 deterministic assertions
+PASS library candidate fallback
+PASS metadata-gated UNKNOWN rejection
+PASS real ooRexx activity/thread-safety suite
+PASS OpenSSL EVP SHA-256 explicit and automatic-output paths
+PASS exact-binary one-shot SHA-256/SHA-512
+PASS real FFmpeg avformat open/find/close through runtime-loaded libffi
+PASS pristine supplied prebuilt binary repeated same suite
+
+RUNTIME REFERENCE v0.4
+PASS test_runtime_reference
+PASS real activity concurrency
+PASS TCP STATE_TRANSFORM live
+PASS TCP STATE_TRANSFORM dead/fallback
+
+CRYPTO v0.7 NATIVE
+PASS test_asymmetric_misc
+PASS test_chacha20
+PASS test_ed25519
+PASS test_hashes
+PASS test_hmac_sha512
+PASS test_input_validation
+PASS test_sha256
+PASS test_siphash128
+
+CRYPTO v0.7 FOREIGN v0.10.0
+PASS SHA-256/SHA-512 provider
+PASS SHA shared-provider thread stress
+PASS expensive crypto semantic equivalence
+PASS expensive crypto shared-provider thread stress
+PASS Ed25519/Ed448/X25519/Edwards/HMAC/ChaCha20/RSA foreign evidence
+
+TCP / FAILOVER
+PASS live TCP Ed25519/curve provider
+PASS live TCP RSA provider
+PASS live TCP SHA-256 provider
+PASS live TCP SHA-512 provider
+PASS Foreign -> TCP -> native SHA failover
+PASS Foreign -> TCP -> native expensive-crypto failover
+PASS dead TCP -> native Ed25519/curve fallback
+PASS dead TCP -> native RSA fallback
+PASS dead TCP -> native SHA-256 fallback
+PASS dead TCP -> native SHA-512 fallback
+
+RUNTIME REGISTRY v0.14
+PASS full non-optional suite against exact Crypto v0.7 source
+PASS shared crypto Ed25519 RFC8032 known-answer
+PASS shared SHA-512 known-answer
+PASS crypto verifier/cache path
+
+No Crypto public-call semantic change is introduced by the v0.10.0 substrate requalification.

@@ -1,0 +1,82 @@
+Reputation Feed v0.12 release validation
+========================================
+
+Release/API/generation
+----------------------
+Package: 0.12
+API: reputation.feed/0.12
+Runtime generation: REPUTATION-FEED-V0.12
+Alchemy base: 0.8
+
+Authoritative input
+-------------------
+Architect-supplied API roll-up:
+  oorexxapis(20260824-191304).zip
+  SHA-256 c2e3b1e7751e3ed69514cc2743e1ba82c0d3e6b7ca2b16f999a862f3dcfef5a8
+
+Exact predecessor supplied by the Architect in this conversation:
+  reputation_feed_v0.11.zip
+  SHA-256 83faae97be435d14a2230c8715932b2e54957bbf791e12547924bc4caf702492
+
+Interpreter
+-----------
+Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit.
+Architect-supplied DEB SHA-256:
+  8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Current dependency closure exercised
+------------------------------------
+Alchemy Objects v0.8
+  7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073
+ooRexx Crypto v0.1
+  3eab23b5138cba889eb11ea5b93747eb14fca8da0fd4ac936a70174349ae8f3a
+Institutional Policy v0.6
+  179682880c0f7d221114bfc648fab4e9f678153640d850ed1c3944c478eb6ae3
+Queue Fabric v0.9-dev4
+  9c1487f8dc878ae21a19e8fc8a139c801a80a97acd2c6575635003e6f8069898
+ooRexx Logging v0.5 (optional integration)
+  31f4b3243f4a1f046f07bd41d7810509e8ef682f6850c02d52ab852458ed53fa
+Runtime Registry v0.14 / runtime.registry/0.3
+  b8748634f271f5389b9e7e4fd7089eda314b0eea90ab6e47151ae1de270c6209
+Reputation Effect v0.2 / reputation.effect/0.2
+  f3778c9114b97ec25fbd146d640db9ad25ee72dec8b5e6c6cdebf06261957b63
+Interaction Event v0.3
+  0d2f46ddc5617ab0879bf06fd373dc6ea8cebbd5aeb5b36e2ef86d52f471b536
+Structured Utterance v0.3
+  76f56332e21dc8614c07b64358dcabf0cc6ae06f0eff4aeaa9a8a18a0b727974
+
+v0.12 governed decision-audit delta
+-----------------------------------
+PASS: ReputationFeedDecisionTrace projects a governed Feed outcome into bounded, sealed audit evidence.
+PASS: trace retains exact institutional policy/release, Feed policy-set and deployment/rollout identities.
+PASS: trace retains deterministic threshold/count facts and sorted provenance reason-code counts.
+PASS: raw claim titles/customer/source content are not copied into the trace canonical form.
+PASS: trace persistence identity is independently versioned as reputation.feed.decision-trace/1.
+PASS: Queue Fabric publishes traces beneath reputation/feed/decisions/... with GOVERNED_DECISION_AUDIT_NOT_DISPOSITION authority boundary.
+PASS: Queue Fabric restart reconstructs the trace as a rich ReputationFeedDecisionTrace object with canonical equality.
+PASS: Queue persistence registry now contains seven explicit Feed payload families.
+PASS: optional ReputationFeedLoggingBridge offers the exact sealed trace object to caller-configured ooRexx Logging.
+PASS: Logging owns scopes/rules/targets/retention; no matching LogRule is a clean no-op and Feed creates no logging policy.
+PASS: unsealed traces are rejected at the logging boundary.
+PASS: Runtime Registry v0.14 module exposes a decision-trace factory under Feed generation v0.12.
+
+Complete regression/integration
+-------------------------------
+PASS: 72 non-static Feed/integration classes satisfy the Alchemy v0.8 house inheritance gate.
+PASS: complete acquisition, authentication/history, Librarian lineage, assertion ancestry, provenance-aware corroboration, event hypothesis/correction/replay, watch/salience and structured interaction suites.
+PASS: Feed -> Reputation Effect and governed deployment-aware promotion bridges.
+PASS: Queue Fabric object-graph delivery, persistent codec, retained publication and restart recovery.
+PASS: Institutional Policy v0.6 effective dating, deployment topology, canary/cutover/rollback and rollout expiry.
+PASS: optional ooRexx Logging v0.5 decision-trace delivery.
+PASS: Runtime Registry v0.14 integration.
+PASS: 65/65 shipped .cls/.rex targets compile with rexxc under r13196.
+PASS: 12/12 runnable demos execute against reputation.feed/0.12.
+PASS: release hygiene leaves no tmp_reputation_feed_queue_* or tmp_rep_queue_demo_* directories.
+
+Evidence files
+--------------
+VALIDATION_TRANSCRIPT.txt          complete final run_tests.sh transcript
+REXXC_VALIDATION.txt               65-target syntax compile gate
+DEMOS_VALIDATION.txt               12 runnable demo outputs
+DEMO_DECISION_AUDIT_OUTPUT.txt     decision trace + Logging + Queue boundary demonstration
+ADJACENT_COMPATIBILITY_PROBE.txt   current Structured Utterance -> Interaction Event bridge PASS evidence

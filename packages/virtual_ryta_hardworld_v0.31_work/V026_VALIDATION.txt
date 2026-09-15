@@ -1,0 +1,77 @@
+Virtual RYTA / HardWorld v0.26-work validation
+==============================================
+
+Status
+------
+v0.26-work is an authority-lifetime development checkpoint over v0.25-work.
+Sealed v0.23 remains the release checkpoint.
+
+Interpreter
+-----------
+Open Object Rexx 5.3.0 r13196, 64-bit Internal Test Version, build date 3 Aug 2026.
+User-supplied debug .deb executed from an isolated extraction under /tmp.
+
+Canonical library
+-----------------
+oorexx-libs(20260822-crypto-consolidated)(7).zip
+SHA-256 e95f489b0088c7d11d31f3b04ac7d2bc766661c6e103a0cfaec8292ffe5203c1
+CURRENT_STACK_LOCK.sha256: 29/29 data entries PASS.
+
+v0.26 authority-lifetime model
+------------------------------
+PASS: immutable work-envelope identity is distinct from authority-decision identity.
+PASS: QueueAuthorityExecutionLedger V2 stores envelope fingerprint, authority fingerprint and attempt evidence separately.
+PASS: V2 durable COMPLETE + matching immutable envelope permits ACK-only recovery without consumer revalidation or HardWorld reapplication.
+PASS: changed publisher envelope on a COMPLETE retry => WORK_ENVELOPE_CONFLICT and no ACK bypass.
+PASS: START without COMPLETE remains PREVIOUS_EXECUTION_UNCERTAIN; automatic replay remains fail-closed.
+PASS: cached retained authority cannot move to a later delivery attempt => RETAINED_AUTHORITY_ATTEMPT_BINDING_MISMATCH.
+PASS: cached retained authority cannot move to another work identity/subscriber => RETAINED_AUTHORITY_WORK_BINDING_MISMATCH.
+PASS: per-attempt execution binding is excluded from stable authority-decision canonical identity and retained separately as execution evidence.
+PASS: Queue Fabric claimToken remains live acknowledgement capability only; it is absent from envelope/attempt/authority fingerprints and ledger canonical material.
+PASS: legacy V1 ledger records remain readable and use the conservative legacy path.
+
+Legal Effect v0.10 completed-work recovery
+-----------------------------------------
+PASS: fresh retained work still requires live Legal Effect v0.10 consumer-time evaluation.
+PASS: live Legal authority applies before the deliberately failed ACK and durable COMPLETE is recorded.
+PASS: after RuntimeLease release, redelivery of that SAME completed envelope performs ACK-only cleanup without invoking the released Legal lease and without reapplying HardWorld mutation.
+PASS: DIFFERENT retained work after the same lease release is still refused by fresh Legal evaluation before ledger START.
+PASS: known LEGAL_STATUS_REDUCTION_AMBIGUOUS guard remains in force.
+
+Fresh regression evidence
+-------------------------
+PASS: tests/run_current_stack_rollup_v026.sh
+PASS: Queue authority execution v0.21 compatibility
+PASS: retained-authority v0.25 compatibility
+PASS: 25/25 adversarial corpus
+PASS: 64 rules vectors; 0 holes; 0 ambiguous winners
+PASS: 16/16 mutants killed
+PASS: 18/18 table-fed authority vectors
+PASS: 162/162 consistency x authority vectors
+PASS: rexxc 40/40 .cls files
+PASS: static/Librarian source audits and special-variable guards
+PASS: inherited byte identity, 297 unchanged files and zero unexpected deltas
+PASS: exercised upstream package trees byte-identical to fresh extraction
+
+Inherited debug-suite qualification
+-----------------------------------
+The monolithic inherited tests/run_all.sh was attempted but the outer execution
+window interrupted the unchanged test_algorithm_relation_librarian.rex inside an
+ADDRESS SYSTEM digest operation. Monolithic completion is NOT claimed. The
+unchanged implementation is byte-identical to v0.25-work, whose inherited suite
+was green; changed v0.26 paths and core authority matrices were freshly executed.
+See V026_INCREMENTAL_INHERITED.txt and V026_INHERITED_BYTE_IDENTITY.txt.
+
+Ownership
+---------
+PASS byte-for-byte fresh-extraction comparison:
+- alchemy_objects_v0.4.3
+- oorexx_crypto_v0.1
+- camera_behaviour_oorexx_v0.36
+- structured_relation_plugin_v0.9
+- legal_effect_v0.10.1
+- runtime_registry_v0.12(1)
+- oorexx_queue_fabric_v0.8.2
+- nosqlserver_v0.75
+
+Only the RYTA v0.26-work tree was modified.

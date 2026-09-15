@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "ops.wire-ui-swing.edt-action-boundary",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "EDT discipline and asynchronous action boundary",
+  "summary": "All Swing component creation, mutation and top-level window lifecycle are confined to the Event Dispatch Thread. Swing listeners capture local values and event-time semantic evidence, enqueue UI_ACTION, and return; they never synchronously call ooRexx, Queue Fabric, JMS, network or application logic.",
+  "authority": "renderer-runtime-invariant",
+  "invariants": [
+    "No JComponent creation/mutation/attachment/detachment/destruction outside the EDT.",
+    "No network/server/application wait from an EDT listener.",
+    "UI_ACTION captures viewRef and renderedRevision at event time, not when a transport thread later drains the queue.",
+    "Local selection is not semantic activation; cursor/focus/programmatic selection must not emit application actions.",
+    "Explicit activation such as button press, mouse activation or Enter may enqueue one semantic action."
+  ],
+  "procedure": [
+    "Capture local editor/selection values on EDT.",
+    "Capture immutable event-time semantic evidence.",
+    "Enqueue a plain action record.",
+    "Let the transport/ooRexx side drain actions off-EDT."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev5.zip",
+      "sha256": "a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271",
+      "member": "wire_ui_swing_v0.2-dev5/DESIGN.md",
+      "claim": "EDT confinement, queued UI_ACTION and event-time revision rules."
+    }
+  ]
+}

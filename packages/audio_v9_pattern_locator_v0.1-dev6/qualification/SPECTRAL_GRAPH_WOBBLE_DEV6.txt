@@ -1,0 +1,41 @@
+Audio V9 Pattern Locator v0.1-dev6 — Spectral graph + contextual wobble qualification
+Date: 2026-09-09
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version
+
+Pinned dependencies:
+  ooRexx ML v0.1-dev11
+  SHA-256 713c4998c67aed9b526f3e20f7b2f14de4b355939259bff55beebe9133980c79
+  ooRexx ML Graph v0.1-dev3
+  SHA-256 a4ee63c48eab3ac27166607998071800f32b9af0cf6c3dbba12e08fa6627402a
+
+Important semantic correction:
+  "wobbly" is not local jitter, roughness, anomaly, falsehood, or noise.
+  It is contextual distance-to-fit for an explicitly declared active model.
+  Restoring sets are diagnostic only and never deletion authority.
+
+Focused regression: tests/test_spectral_graph_wobble.rex
+Synthetic graph topology:
+  boxes = 12
+  continuation = 9
+  adjacent-band = 8
+  delayed candidates = 9
+
+Declared echo-delay fit example:
+  six delayed recurrence observations
+  delays: 80,80,80,140,140,140 ms
+  active hypothesis: one coherent delay track
+  fit RMS criterion: 0.01 ms
+  maxRemovals: 3
+
+Result:
+  PASS test_spectral_graph_wobble distance=3 minimalSets=2 edges=38
+
+Interpretation:
+  Minimum distance to a one-delay fit is three observations.
+  Both coherent 3-edge delay families are retained as equally minimal restoring explanations.
+  Participation is 0.5 for every observation across the two minimal restoring sets.
+  No edge is declared noise and no evidence is deleted.
+
+Exact r13196 rexxc:
+  src/AudioV9SpectralGraph.cls PASS
+  tools/render_spectral_graph.rex PASS

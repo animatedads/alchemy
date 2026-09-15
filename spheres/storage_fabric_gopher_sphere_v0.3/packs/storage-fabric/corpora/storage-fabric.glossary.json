@@ -1,0 +1,112 @@
+{
+  "kind": "corpus",
+  "id": "storage-fabric.glossary",
+  "sphere": "storage-fabric",
+  "title": "Storage Fabric glossary",
+  "records": [
+    {
+      "term": "StorageRef",
+      "meaning": "Stable logical identity used to refer to a StorageObject independently of provider/path."
+    },
+    {
+      "term": "StorageObject",
+      "meaning": "Catalogue object carrying identity, descriptive metadata/EAs and one or more replica locations."
+    },
+    {
+      "term": "StorageLocation",
+      "meaning": "Provider locator plus availability, verification, safety/lifecycle and optional node-locality evidence."
+    },
+    {
+      "term": "NamespaceEntry",
+      "meaning": "Binding/projection from a logical path to an object or view semantics."
+    },
+    {
+      "term": "QueryFolder",
+      "meaning": "Directory-like projection whose children are current catalogue matches for a filter."
+    },
+    {
+      "term": "StoragePathAlias",
+      "meaning": "Dynamic logical-path indirection resolved at access time with its own route policy."
+    },
+    {
+      "term": "StorageUnionView",
+      "meaning": "Ordered TVFS-inspired composition of namespace roots with priority shadowing."
+    },
+    {
+      "term": "StorageEA",
+      "meaning": "First-class extended attribute with namespace/name/type/value/provenance/authority."
+    },
+    {
+      "term": "StorageChangeSet",
+      "meaning": "Explicit tracked namespace/object changes used by TEST/DEV overlays and promotion evidence."
+    },
+    {
+      "term": "EnvironmentGeneration",
+      "meaning": "Pinned namespace generation used to detect stale promotion/rebase assumptions."
+    },
+    {
+      "term": "CapacityDomain",
+      "meaning": "Real accounting domain against which free bytes, reservations and safety floors are charged."
+    },
+    {
+      "term": "StoragePool",
+      "meaning": "Provider/workspace/durable role bound to a capacity domain, node and service lifecycle."
+    },
+    {
+      "term": "WorkspaceReservation",
+      "meaning": "Pre-execution claim on bytes in one capacity domain."
+    },
+    {
+      "term": "DisposableStorage",
+      "meaning": "Storage whose service/account lifecycle means it cannot count as a safe durable replica."
+    },
+    {
+      "term": "StorageServiceLifecycle",
+      "meaning": "Safety/lifecycle evidence describing whether a provider/account is stable, temporary, credit-limited, expiring or terminating."
+    },
+    {
+      "term": "StoragePerformanceObservation",
+      "meaning": "Measured throughput/latency evidence kept separate from provider identity and availability."
+    },
+    {
+      "term": "Materialise",
+      "meaning": "Make required bytes available in a selected workspace without changing stable object identity."
+    },
+    {
+      "term": "StoragePlacementEvidence",
+      "meaning": "Per-candidate storage feasibility/locality/movement facts consumed by Job-to-Node Allocation."
+    },
+    {
+      "term": "JOB_TO_DATA",
+      "meaning": "Placement evidence classification where required inputs are already local and moving the job is the storage-cheap direction."
+    },
+    {
+      "term": "DATA_TO_JOB",
+      "meaning": "Placement evidence classification where required input bytes must be materialised to the candidate node."
+    },
+    {
+      "term": "COPY/VERIFY/COMMIT",
+      "meaning": "Three distinct transfer milestones: bytes copied, integrity established, and durable provider/catalogue admission completed."
+    },
+    {
+      "term": "DurableReplica",
+      "meaning": "In v0.1-dev5, an AVAILABLE + VERIFIED + SAFE + STABLE location eligible to satisfy replica safety."
+    },
+    {
+      "term": "ProviderAvailability",
+      "meaning": "Availability state such as connected/available versus offline; independent from throughput and durability."
+    },
+    {
+      "term": "WorkingSpace",
+      "meaning": "Reserved capacity intended for execution/scratch/materialisation and not necessarily safe as a sole durable store."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/src/StorageFabric.cls",
+      "claim": "Glossary names correspond to current executable Storage Fabric concepts/classes and planner/safety semantics."
+    }
+  ]
+}

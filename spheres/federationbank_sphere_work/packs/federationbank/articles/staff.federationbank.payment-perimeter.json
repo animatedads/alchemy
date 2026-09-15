@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "staff.federationbank.payment-perimeter",
+  "version": "0.1",
+  "sphere": "federationbank",
+  "title": "Staff Channel is a separate ingress, not a new payment authority",
+  "summary": "Staff-coordinated Core payments use a separate Queue Fabric ingress bound to authenticated Staff Channel and exact Staff Authority evidence. This prevents an ordinary customer channel from fabricating STAFF-looking fields and reaching the staff payment path.",
+  "authority": "federationbank-project-doctrine",
+  "invariants": [
+    "Ordinary channel cannot PUT FB.STAFF.PAYMENTS.COMMANDS.",
+    "Authenticated Staff Channel cannot use the ordinary customer payment ingress as a substitute for its own perimeter.",
+    "A staff payment command carries exact Staff Authority envelope/action provenance and is rejected before Ledger if that binding is missing.",
+    "Core Payments still performs Security Effect, Institutional Policy and Legal Effect.",
+    "Ledger remains the only monetary authority; Staff Channel is transport/coordination authority."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/README.md",
+      "line_start": 91,
+      "line_end": 115,
+      "claim": "Separate authenticated Staff Channel payment ingress and exact Staff Authority evidence."
+    }
+  ]
+}

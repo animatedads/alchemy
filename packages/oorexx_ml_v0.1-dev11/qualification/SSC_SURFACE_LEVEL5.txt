@@ -1,0 +1,648 @@
+SURFACE OorexxML AT_LEAST 5 lineage=MAIN
+PACKAGE OorexxML.PACKAGE.CLASS:MLGradientDescentOptimizer entity=K-3416c95f0cdea31453d4 revision=SR-ab061de98847570d1ada6fc5 options={} requires={"MLCore.cls"}
+PACKAGE OorexxML.PACKAGE.FILE:OorexxML.cls entity=K-c944761d18d9ad1edb45 revision=SR-de71fc8dcac730d3c95b7bf3 options={} requires={"JournalPointedState.cls" || "MathsBootstrap.cls" || "MLCore.cls" || "MLStandard.cls" || "MLEvolution.cls" || "MLTraining.cls" || "MLValidation.cls" || "MLSearch.cls" || "MLReview.cls"}
+PACKAGE OorexxML.PACKAGE.CLASS:MLDataSplit entity=K-9a184141dd30b627a4aa revision=SR-b4443e69d3c1a7212774ed17 options={} requires={"MLCore.cls" || "MLStandard.cls" || "MLEvolution.cls"}
+PACKAGE OorexxML.PACKAGE.CLASS:MLObjective entity=K-d5f8e5688878c2bf2964 revision=SR-7f96046d36839d4ffa5fc516 options={} requires={"MLCore.cls"}
+PACKAGE OorexxML.PACKAGE.CLASS:MLGenome entity=K-50d93b5a7830f32ca5eb revision=SR-561c0653dce1df8d9f4d2248 options={} requires={"MLCore.cls"}
+PACKAGE OorexxML.PACKAGE.CLASS:MLFrozenVector entity=K-88391504d16038e508c1 revision=SR-d6ed74905e7c8dd2391dd22d options={} requires={"JournalPointedState.cls"}
+PACKAGE OorexxML.PACKAGE.CLASS:MLDatasetProvenance entity=K-cb8d4bc6f0d7ae0aa4ff revision=SR-aedccc99274c07b1c39de206 options={} requires={"MLCore.cls" || "MathsBootstrap.cls"}
+PACKAGE OorexxML.PACKAGE.CLASS:MLReviewDecision entity=K-a8b6d0888bdf3f22c041 revision=SR-a6a6a5f9792d93d3c516f564 options={} requires={"MLSearch.cls"}
+CLASS OorexxML.MLGradientDescentOptimizer entity=C-62491028c61f036189a5 revision=SR-5693e28e9076de17ab40d31d contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLTrainingSession entity=C-baa2de2fb318b919022f revision=SR-0bbfd22b1da37c0ca21233e1 contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLTrainingEvidence entity=C-0cb325581033637c112c revision=SR-0877521b69babb6826955de4 contract={public}
+CLASS OorexxML.MLTrainingRun entity=C-1b1f7bd6573c215f1768 revision=SR-228ead368f1b0aec0887fbb5 contract={public}
+CLASS OorexxML.MLDataSplit entity=C-b8e9ad4d3012f6d4f74e revision=SR-6ba1ec773ce505a0ac579515 contract={public}
+CLASS OorexxML.MLFold entity=C-3e0719eaa3dec1fce201 revision=SR-fe2f38e9253a944a071c6ce2 contract={public}
+CLASS OorexxML.MLKFoldPlan entity=C-a4a5850327452479c89f revision=SR-68c62862aa3b7421385402db contract={public}
+CLASS OorexxML.MLSplitter entity=C-df580779e17c129794ea revision=SR-f186a197434337551431294a contract={public}
+CLASS OorexxML.MLClassModelFactory entity=C-a22bf204f4d4189d538f revision=SR-d03400485b256a7ecb8ceece contract={public}
+CLASS OorexxML.MLFoldResult entity=C-1e3e8b5032c7eba715af revision=SR-197fb9394e70e3412de7a3e5 contract={public}
+CLASS OorexxML.MLValidationEvidence entity=C-228ee725f66837f97875 revision=SR-d2775647d2cc6bf7126ea825 contract={public}
+CLASS OorexxML.MLCrossValidator entity=C-6588fd9595f4d9cd74d3 revision=SR-0b044692f134425d81397f2d contract={public}
+CLASS OorexxML.MLBranchComparisonResult entity=C-e4264ddfa150eab39dbb revision=SR-c4e51cc9b3ee18c6f40522e9 contract={public}
+CLASS OorexxML.MLBranchComparator entity=C-cca6a1122e5ddd5da5be revision=SR-ab289abcbcc567966fe2517d contract={public}
+CLASS OorexxML.MLObjective entity=C-ba6940dae7b0f32abd1f revision=SR-56128d97bf67dd021b89a4ee contract={public}
+CLASS OorexxML.MLObjectiveFitnessAdapter entity=C-3aa0a075cb3394b43191 revision=SR-04d366b98a25d0a474c691db contract={public}
+CLASS OorexxML.MLWorkspaceBudget entity=C-052457a284c6f1c5801d revision=SR-82014a395067277d3346eb74 contract={public}
+CLASS OorexxML.MLRetentionPolicy entity=C-2682674c7b4c4c10704f revision=SR-f39a5a0875ec7709eb0e2f73 contract={public}
+CLASS OorexxML.MLParameterDomain entity=C-4fa2a4ca6b5aad7f66bf revision=SR-4930e496224dfdc047be08a1 contract={public}
+CLASS OorexxML.MLSearchSpace entity=C-4773f43f55eb42f809f0 revision=SR-59f42ba715912c46ef32c063 contract={public}
+CLASS OorexxML.MLSearchSpaceComparison entity=C-cc3984f1878a6b3a2d79 revision=SR-a21165bb4eb6e07aa1280331 contract={public}
+CLASS OorexxML.MLSearchStrategySpec entity=C-ebf7f4f6d56b96d5777d revision=SR-162606cb09669a9da11eb5ad contract={public}
+CLASS OorexxML.MLSearchCandidate entity=C-2d18419475dee05efea0 revision=SR-c53242e6a81822bc2b41ded4 contract={public}
+CLASS OorexxML.MLSearchCandidateComparator entity=C-9ae176f4c7330e55f2d7 revision=SR-1ad5e1ca24090a0db5096859 contract={public}
+CLASS OorexxML.MLSearchLane entity=C-37f1730a3b5e3baec88d revision=SR-8afc88f2142f79f0f53ee901 contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLSearchExperiment entity=C-20bad8b19c0cd69e8fd1 revision=SR-b17f20c3ef214b1d202be691 contract={subclass MLExperiment public}
+CLASS OorexxML.MLQualificationCheck entity=C-fd5826a795f4fdeb10d7 revision=SR-33bf71832fee07fcf153d359 contract={public}
+CLASS OorexxML.MLQualificationReport entity=C-e47aa0c4b086a35793aa revision=SR-e717ca2041b634f0c986560c contract={public}
+CLASS OorexxML.MLSearchQualification entity=C-4dbab1eedea861d3e976 revision=SR-89c32f70bb548bf2030abcdb contract={public}
+CLASS OorexxML.MLGenome entity=C-1ffae71dd3ddb0a1c2f5 revision=SR-5b2f569cb9cacf3dcb271027 contract={public}
+CLASS OorexxML.MLIndividual entity=C-f1c736ec584b32509e7a revision=SR-63076d959e1f088d8cd050b0 contract={public}
+CLASS OorexxML.MLFrozenPopulation entity=C-406618b602f3bbe0e131 revision=SR-2b555cc8ad919bec0b8784f6 contract={public}
+CLASS OorexxML.MLDeterministicRNG entity=C-e4905e267ee261433d81 revision=SR-f4383f1219f19e355c4731ca contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLRNGCursor entity=C-38127a27af0fade9bfcb revision=SR-91acfeee210c07d829c3f080 contract={public}
+CLASS OorexxML.MLPopulation entity=C-eb58af393e7ca5e1177a revision=SR-d2b0ab2a6a10963e5e33ad45 contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLEvolutionGeneration entity=C-df488cd67204bfd5aec1 revision=SR-3dd09360d677adc61b0cc2a0 contract={public}
+CLASS OorexxML.MLEvolutionGenerationRegistry entity=C-80b1cf026462be61646b revision=SR-ba84f9b571ebb388a358fbcc contract={public}
+CLASS OorexxML.MLGeneticPolicy entity=C-8be270d8251668547112 revision=SR-7d77d64448f9e70d31bb2599 contract={public}
+CLASS OorexxML.MLGABudgetPlan entity=C-a631b232de0d07cff4ac revision=SR-1d371b6839a1b2eaa6e318e7 contract={public}
+CLASS OorexxML.MLGARunResult entity=C-3b13bd86630455ab6a53 revision=SR-efa6edf93bc37f8e10c77e6b contract={public}
+CLASS OorexxML.MLGeneticAlgorithm entity=C-f11cdfcdfec40811b5e3 revision=SR-0f151e249c661802300ab1e5 contract={public}
+CLASS OorexxML.MLFrozenVector entity=C-c988485a2377f7158be1 revision=SR-bf730a0b0bd13d7975efaebf contract={public}
+CLASS OorexxML.MLFrozenMap entity=C-a8cdcaae3497b23806a2 revision=SR-826434a3a10e9481ae21d15f contract={public}
+CLASS OorexxML.MLBranch entity=C-ea3e0d1288d2f3332326 revision=SR-3283682795e0a1c7279b14a4 contract={public}
+CLASS OorexxML.MLDriveableObject entity=C-9278eb0ab850832b951d revision=SR-15c914e9b2c354bec355e3ca contract={public}
+CLASS OorexxML.MLExperimentBranch entity=C-ec34831729000da9d96f revision=SR-55e5828643128546ff281869 contract={public}
+CLASS OorexxML.MLExperiment entity=C-d76a4c7874138ab121c2 revision=SR-856da124e9bfc5a6fbbd7791 contract={public}
+CLASS OorexxML.MLSourceIdentity entity=C-1ecb6d615a8969cdbb70 revision=SR-3faaa019e91654ecadb5a142 contract={public}
+CLASS OorexxML.MLLearningBarrier entity=C-fa31bafe2a8bc2239379 revision=SR-dcdb5ce2b9ecd959b25c18e6 contract={public}
+CLASS OorexxML.MLAssessment entity=C-25d3b511d02419f9a452 revision=SR-969e61c04f18ea19fb5f56ce contract={public}
+CLASS OorexxML.MLLearnedGeneration entity=C-1e4d308e617941bb11df revision=SR-eb623d501e8701290b4b83ad contract={public}
+CLASS OorexxML.MLLearnedGenerationRegistry entity=C-7b7d34c85ef42d37bc73 revision=SR-c0434a872379db78fcf0797d contract={public}
+CLASS OorexxML.MLModelDefinition entity=C-f5b94ca70c879022a8eb revision=SR-69ebfcd9b998d8a4deae0890 contract={public}
+CLASS OorexxML.MLTensorContract entity=C-917a48f261e489603c71 revision=SR-878ab11f7e84d6c4e8d92f6f contract={public}
+CLASS OorexxML.MLDatasetProvenance entity=C-2dc5d3fe0523e6db3947 revision=SR-75c06c434dfb747c3ea82f6b contract={public}
+CLASS OorexxML.MLDataset entity=C-20e12cb3db2b47942b87 revision=SR-c32974b03d3a1d9a225ef7e3 contract={public}
+CLASS OorexxML.MLStandardScaler entity=C-ada24f94291946a67c0b revision=SR-94cef9ae53ab00efa52e2386 contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLLinearRegression entity=C-126606b17c838944cd66 revision=SR-5cbca55c381f247448c6a047 contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLRidgeRegression entity=C-ab801893498f65afa0d2 revision=SR-b2c50dafa49dd3781163366a contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLCentroidClassifier entity=C-6c5dd16b7e948c7f5600 revision=SR-5d55c694437a07dd5fa4ce9a contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLKNNClassifier entity=C-1c40c7874df5c1185342 revision=SR-ea92010df6770e9d33ab3410 contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLNeighbor entity=C-ebf168591687d1329093 revision=SR-e2a10f9a41551d878b44b8d1 contract={public}
+CLASS OorexxML.MLNeighborComparator entity=C-836165ca34f7177d7fb3 revision=SR-b9bbd315465b280d623884f6 contract={public}
+CLASS OorexxML.MLLinearGDRegressor entity=C-9a55948319efb45c5bc2 revision=SR-1460f04f3a8c7fa4cc9d6944 contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLConfusionMatrix entity=C-9a07289ac9f959c26a7d revision=SR-8aab16c827ad598e66baf4f9 contract={public}
+CLASS OorexxML.MLMetrics entity=C-2bfc7f2d3b4822127197 revision=SR-e5bed99e2518034ed87d993b contract={public}
+CLASS OorexxML.MLReviewDecision entity=C-b0972715d980114a4db6 revision=SR-7b9baf419e1695b33605f2a6 contract={public}
+CLASS OorexxML.MLReviewCase entity=C-599dbfe6fa83e5f22973 revision=SR-e9f8948d34d77376813703f9 contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLPreferenceJudgement entity=C-ac7d4cf0e45cb361eb86 revision=SR-faac8c36cf6fca79caa89ec2 contract={public}
+CLASS OorexxML.MLCalibrationComparison entity=C-ac29d5326ebf28db9c80 revision=SR-b0a6a78a3217ee244ac91912 contract={public}
+CLASS OorexxML.MLObjectiveCalibrationReport entity=C-5a4498d51aea64c87285 revision=SR-4813b5378621993558d8f3ee contract={public}
+CLASS OorexxML.MLObjectiveCalibration entity=C-aa760888af18b680f9ce revision=SR-89dc8711319d838789442725 contract={public}
+CLASS OorexxML.MLObjectiveCalibrationSession entity=C-615329bcfd3806504709 revision=SR-4829bf88f5a4e6114994e370 contract={subclass MLDriveableObject public}
+CLASS OorexxML.MLObjectiveCalibrationQualification entity=C-4a68e8543ff50e1adc01 revision=SR-2d9f5036db3917b2850946fc contract={public}
+INSTANCE PUBLIC OorexxML.MLGradientDescentOptimizer.init entity=M-bae1b6cda7a93f1a5ca7 revision=SR-b413ff91f3ac2a12401d667e args={use strict arg stableId='GRADIENT_DESCENT',learningRate=0.01,momentum=0}
+INSTANCE PUBLIC OorexxML.MLGradientDescentOptimizer.learningRate entity=M-985c61ef2484293ba5e2 revision=SR-99617c7e0516c01b07c00146 args={}
+INSTANCE PUBLIC OorexxML.MLGradientDescentOptimizer.momentum entity=M-f243df6fe2e9229bb986 revision=SR-cb1359413f7d89e251111856 args={}
+INSTANCE PUBLIC OorexxML.MLGradientDescentOptimizer.step entity=M-bd6e58ef242481cab050 revision=SR-ff9635f350d843d330aefdaf args={}
+INSTANCE PUBLIC OorexxML.MLGradientDescentOptimizer.setLearningRate entity=M-570768923f045cdab6f2 revision=SR-3d89d077f4c03b3578d35b15 args={use strict arg learningRate}
+INSTANCE PUBLIC OorexxML.MLGradientDescentOptimizer.setMomentum entity=M-e6c5f9a1e0735192eb41 revision=SR-7f178ca7712d7155ec7cb93b args={use strict arg momentum}
+INSTANCE PUBLIC OorexxML.MLGradientDescentOptimizer.apply entity=M-0d38a73f0cc75bee4155 revision=SR-1a44084409f81f4e6c434e9f args={use strict arg parameters,gradients,tag='OPTIMIZER_STEP'}
+INSTANCE PUBLIC OorexxML.MLTrainingSession.init entity=M-1789bd5d12499e0f0a25 revision=SR-2f146cf299b1f722e7ff8571 args={use strict arg runId,modelId='',datasetId='',optimizerId='',goal='MINIMIZE'}
+INSTANCE PUBLIC OorexxML.MLTrainingSession.runId entity=M-c0d9415fb2c761311ac0 revision=SR-58123daadbb2654294f1dc0c args={}
+INSTANCE PUBLIC OorexxML.MLTrainingSession.status entity=M-95ede03ebed6152ef202 revision=SR-af5a3486bac86d9918cd6387 args={}
+INSTANCE PUBLIC OorexxML.MLTrainingSession.epoch entity=M-6069859590d820105804 revision=SR-236a60b8e2b30ee0faa74221 args={}
+INSTANCE PUBLIC OorexxML.MLTrainingSession.step entity=M-4d166b8725e54bbd10f9 revision=SR-f07934eea1453dbac2c56423 args={}
+INSTANCE PUBLIC OorexxML.MLTrainingSession.begin entity=M-89f514a4306405695423 revision=SR-e2d8ed00e14f749f5871f9b1 args={use strict arg metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLTrainingSession.recordStep entity=M-d0091830c202b4af3e7e revision=SR-6ca84c599d75a97771adbc61 args={use strict arg objective=.nil,metrics=.nil,metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLTrainingSession.recordEpoch entity=M-f957e4fc36f10a7c95be revision=SR-92aa71a517a1dbfd95b48730 args={use strict arg epoch,objective,metrics=.nil,metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLTrainingSession.complete entity=M-3e1c8c659d976eb36623 revision=SR-3b3b3fa2b0e4cbe9411f5663 args={use strict arg metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLTrainingSession.fail entity=M-75f134c7904932e6e084 revision=SR-187692efb91cd71672f01b1a args={use strict arg reason,metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLTrainingSession.evidence entity=M-84a04d08340634066102 revision=SR-bda3b9a39a0e57fd6c98c18e args={use strict arg model=.nil,optimizer=.nil,checkpoint=.nil}
+INSTANCE PUBLIC OorexxML.MLTrainingEvidence.init entity=M-d1e41adff4c13fcc5021 revision=SR-8ceaad3e84ca09810c1838a5 args={use strict arg session,model=.nil,optimizer=.nil,checkpoint=.nil}
+INSTANCE PUBLIC OorexxML.MLTrainingEvidence.canonicalText entity=M-67225483899842875df1 revision=SR-06a6421178a1712fb97aef52 args={}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.init entity=M-46d30cd221b93ec95760 revision=SR-536934fc39f09a49ec53a315 args={use strict arg runId,model,optimizer=.nil,datasetId='',goal='MINIMIZE',experiment=.nil}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.id entity=M-f0ce928e4619cbd2dd87 revision=SR-d42a17f94e49d10360acc437 args={}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.experiment entity=M-4da684c7263f3ea4bf1c revision=SR-705a81791616306b5bab4fa8 args={}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.session entity=M-369b28e66a2834861db1 revision=SR-59572cddac8327054aff8cb3 args={}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.model entity=M-e78ffbd9e94026f84263 revision=SR-1aa64505b5bd3a4d93608c1e args={}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.optimizer entity=M-4ab05891e5a5d65f768c revision=SR-c278f75a752d6f98db0bf731 args={}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.initialCheckpoint entity=M-8a96951f44969d558078 revision=SR-942f1cc7f9735d82c7a2b625 args={}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.checkpoint entity=M-7168e23f3be793a1da4d revision=SR-6254c4a3a07cd5623e3f23f7 args={use strict arg label='training-checkpoint',eventName='TRAINING',metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.rollback entity=M-bcbdb27966155f9dffd1 revision=SR-ca90bb989622050455a378ed args={use strict arg checkpoint,preserveAs=''}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.branch entity=M-fd7d7c5e5139c81d8efd revision=SR-ee73ba92e11d7c8b7e188198 args={use strict arg name,fromCheckpoint=.nil}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.checkout entity=M-4537087e480ff5bb3010 revision=SR-d4d39c6dba26a43d913295f8 args={use strict arg name}
+INSTANCE PUBLIC OorexxML.MLTrainingRun.rollForward entity=M-fd7845e791f20b86d9a3 revision=SR-e7de7add1b7b04cbf9650858 args={use strict arg name}
+INSTANCE PUBLIC OorexxML.MLDataSplit.init entity=M-b3a313a258373e66076f revision=SR-188b4d1cceef1ee7e03812e8 args={use strict arg id,train,test,trainIndices,testIndices,method='HOLDOUT',evidence=.nil}
+INSTANCE PUBLIC OorexxML.MLDataSplit.canonicalText entity=M-0a1cef555f2bda807fdb revision=SR-af33564091957a56fcd5ace4 args={}
+INSTANCE PUBLIC OorexxML.MLFold.init entity=M-ea99cbdb78ca5fb1093e revision=SR-37cb2fff014930980b0b52b5 args={use strict arg number,trainIndices,testIndices}
+INSTANCE PUBLIC OorexxML.MLFold.canonicalText entity=M-a73401cc2f127e6d039c revision=SR-044c6feb0f501ec38d11b2bf args={}
+INSTANCE PUBLIC OorexxML.MLKFoldPlan.init entity=M-eb58b1f87f58b2b23738 revision=SR-0cb2a14ab5f7ce60118de068 args={use strict arg id,datasetId,k,sourceFolds,shuffled=.false,rngPoint=''}
+INSTANCE PUBLIC OorexxML.MLKFoldPlan.fold entity=M-699098fe3e73ee59946a revision=SR-3d7314c223f177e927fa6e40 args={use strict arg i}
+INSTANCE PUBLIC OorexxML.MLKFoldPlan.folds entity=M-e222e513b6beed6e61c6 revision=SR-ad6e7c2e129d957f32a8252e args={}
+INSTANCE PUBLIC OorexxML.MLKFoldPlan.canonicalText entity=M-e7881884687577ee6a6f revision=SR-cf082bf79e7f9e93fecc8d3e args={}
+CLASS PUBLIC OorexxML.MLSplitter.holdout entity=M-5830b64be945495aacb0 revision=SR-0ee88312af60fe0cb89d270b args={use strict arg dataset,testFraction=0.20,rng=.nil,id='HOLDOUT'}
+CLASS PUBLIC OorexxML.MLSplitter.kfold entity=M-38703d9d6f50ae22f7fe revision=SR-e0198db6db54205d76bd625d args={use strict arg dataset,k=5,rng=.nil,id='KFOLD'}
+CLASS PRIVATE OorexxML.MLSplitter.indexes entity=M-9029682c3c974e5f8011 revision=SR-f55cffbc3bbac4d8658f1e25 args={use strict arg n}
+CLASS PRIVATE OorexxML.MLSplitter.shuffle entity=M-14604abf286b574d7305 revision=SR-d73835db85dd5923ceb85a83 args={use strict arg indexes,rng}
+INSTANCE PUBLIC OorexxML.MLClassModelFactory.init entity=M-58a52dbb68a654ed8ee3 revision=SR-efd1f00c0d585a940a4bc837 args={use strict arg newClassObject,newPrefix='CV'}
+INSTANCE PUBLIC OorexxML.MLClassModelFactory.create entity=M-d409e2bf3495aef7d436 revision=SR-630bb35c4814e52c397c913c args={use strict arg id}
+INSTANCE PUBLIC OorexxML.MLFoldResult.init entity=M-f09da6e2cdcde9e45e26 revision=SR-9708e309ab1da1a5813e54cb args={use strict arg fold,model,metric,value,expected,predicted}
+INSTANCE PUBLIC OorexxML.MLFoldResult.canonicalText entity=M-4dc2e5b22aab1d737c26 revision=SR-eb6b63dad83554739d665967 args={}
+INSTANCE PUBLIC OorexxML.MLValidationEvidence.init entity=M-2ad6bf44c7e8f40dc05c revision=SR-23607a226ce6ab04d9dde118 args={use strict arg id,datasetId,planId,metric,aggregate,sourceResults,sourceIdentity=.nil}
+INSTANCE PUBLIC OorexxML.MLValidationEvidence.results entity=M-2422e477855c04db901a revision=SR-f8f0e42b21f05e1b0c2164e7 args={}
+INSTANCE PUBLIC OorexxML.MLValidationEvidence.canonicalText entity=M-0c9fc199bcae7a38cc40 revision=SR-ca2b91ea25139899c31127e5 args={}
+CLASS PUBLIC OorexxML.MLCrossValidator.evaluate entity=M-ddf7d8ecda01e2b9930c revision=SR-65ac78eae278b9edd63abf09 args={use strict arg dataset,plan,factory,metricName='MSE',positiveLabel='',sourceIdentity=.nil}
+INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.init entity=M-922058d31156a8a66013 revision=SR-168197bdaf2a0a830ecb6c72 args={use strict arg modelId,branchA,branchB,pointA,pointB,metric,valueA,valueB,preferredBranch,predictionsA,predictionsB}
+INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.canonicalText entity=M-70a04730e30f1629be3d revision=SR-a91fbe0598d512b635aad557 args={}
+CLASS PUBLIC OorexxML.MLBranchComparator.compare entity=M-1d70ebe42236fb4731be revision=SR-4e599b55acdd835f5169b912 args={use strict arg model,branchA,branchB,dataset,metricName='MSE',positiveLabel='',direction='AUTO'}
+CLASS PRIVATE OorexxML.MLBranchComparator.predictDataset entity=M-9d97a6b59c0e93002193 revision=SR-0bf07043dd229b9e70aaf898 args={use strict arg model,dataset}
+INSTANCE PUBLIC OorexxML.MLObjective.init entity=M-0fe057c5885ee82bfd4b revision=SR-f3dcf3fc1af09bb639a3b60a args={use strict arg id,direction='MINIMIZE',formula='',description=''}
+INSTANCE PUBLIC OorexxML.MLObjective.fitnessFor entity=M-0f1dc799d43420046c41 revision=SR-01d886bd107d17e7a19d591d args={use strict arg score}
+INSTANCE PUBLIC OorexxML.MLObjective.better entity=M-dee83d702bf94ced3907 revision=SR-199bd2e2c6837771a99c747c args={use strict arg left,right}
+INSTANCE PUBLIC OorexxML.MLObjective.canonicalText entity=M-9873e589c88e8d24d998 revision=SR-3cb3dd3253e9df768b9d8c3a args={}
+INSTANCE PUBLIC OorexxML.MLObjectiveFitnessAdapter.init entity=M-1dbaf43fa1a1cd784e12 revision=SR-9606b481a9ca1d2a823a3c9f args={use strict arg objective,scoreEvaluator}
+INSTANCE PUBLIC OorexxML.MLObjectiveFitnessAdapter.objective entity=M-79e97b21d20b155f9fc7 revision=SR-75b22b56ce7a6e67175eaa13 args={}
+INSTANCE PUBLIC OorexxML.MLObjectiveFitnessAdapter.fitness entity=M-5db1b135440cd8f4f9aa revision=SR-911801cab3a5eacc04e4ed6f args={use strict arg subject}
+INSTANCE PUBLIC OorexxML.MLWorkspaceBudget.init entity=M-6df8139e2dec7bf6f026 revision=SR-9cf75e316a8c1d3d131d412e args={use strict arg maximumBytes,reserveBytes=0,minimumFreeAtStart=.nil,retainedOutputLimit=0,spillPolicy='NONE',failurePolicy='FAIL_CLOSED'}
+CLASS PUBLIC OorexxML.MLWorkspaceBudget.gib entity=M-97bd7067904301b1829c revision=SR-9d222ac103f1c0bc66d34e3a args={use strict arg maximumGiB,reserveGiB=0,minimumFreeGiB=.nil,retainedOutputLimit=0,spillPolicy='NONE',failurePolicy='FAIL_CLOSED'}
+INSTANCE PUBLIC OorexxML.MLWorkspaceBudget.preflight entity=M-ae61aee4a1131cedb19e revision=SR-1db0a65add209ffa3b4665f1 args={use strict arg freeBytes}
+INSTANCE PUBLIC OorexxML.MLWorkspaceBudget.retainedBytesAllowed entity=M-f6a38fc9891147da33ca revision=SR-ef698579a990d91cba0cc671 args={use strict arg retainedBytes}
+INSTANCE PUBLIC OorexxML.MLWorkspaceBudget.canonicalText entity=M-db978675a1495ce8426c revision=SR-b3c93ad00e1fffabda3356ec args={}
+INSTANCE PUBLIC OorexxML.MLRetentionPolicy.init entity=M-e3bb3b57e4a1ad92d9eb revision=SR-54bdd96242ac43e114447962 args={use strict arg retainCount=0,uniqueBy='CANDIDATE',materializeMode='PROMOTED_ONLY'}
+INSTANCE PUBLIC OorexxML.MLRetentionPolicy.shouldRetainRank entity=M-9c9bfb8804d43c2831ee revision=SR-080f26f60f65b857f49b8a68 args={use strict arg rank}
+INSTANCE PUBLIC OorexxML.MLRetentionPolicy.canonicalText entity=M-69dfcd2609e96fed5577 revision=SR-c9171e09352a5989dc5d466e args={}
+INSTANCE PUBLIC OorexxML.MLParameterDomain.init entity=M-28b2f3a1aee8adcbdba7 revision=SR-6780bded866bfc536e6c2822 args={use strict arg name,sourceValues,description=''}
+INSTANCE PUBLIC OorexxML.MLParameterDomain.values entity=M-e1ce7dec9264288ea6cb revision=SR-9c2dc430662f92bd51d28071 args={}
+INSTANCE PUBLIC OorexxML.MLParameterDomain.contains entity=M-0a561fce7134c69f5d55 revision=SR-8da6679a03a7d376721036ac args={use strict arg candidate}
+INSTANCE PUBLIC OorexxML.MLParameterDomain.isSubsetOf entity=M-76ee627c83a389914c62 revision=SR-18e3b510a0d7951cd450e5aa args={use strict arg other}
+INSTANCE PUBLIC OorexxML.MLParameterDomain.canonicalText entity=M-340de94ea59ca9a13e97 revision=SR-b85f51a9674233822b947298 args={}
+INSTANCE PUBLIC OorexxML.MLSearchSpace.init entity=M-bfa48ad7216aaf8b8455 revision=SR-70394af83fb745172c7a32a4 args={use strict arg id,sourceDomains,description=''}
+INSTANCE PUBLIC OorexxML.MLSearchSpace.parameterNames entity=M-e4ba4335836ff56972b2 revision=SR-6f3a42d8589ca8b20ae7727a args={}
+INSTANCE PUBLIC OorexxML.MLSearchSpace.domain entity=M-5c6913e348d8fcaff9df revision=SR-f4409d4e17e7cfc273f9babc args={use strict arg name}
+INSTANCE PUBLIC OorexxML.MLSearchSpace.containsConfiguration entity=M-f0a9cc0bcc1b1b21afa0 revision=SR-456b2c6f0915155c2616372f args={use strict arg configuration}
+INSTANCE PUBLIC OorexxML.MLSearchSpace.canonicalText entity=M-67793bc7440c1c0344cc revision=SR-b7a31d3f5e569e67c5c2e616 args={}
+INSTANCE PUBLIC OorexxML.MLSearchSpaceComparison.init entity=M-d0b2f8d61a6ea2874d26 revision=SR-f70ace535b373dd7640ebb98 args={use strict arg leftId,rightId,relation,sourceDifferences}
+INSTANCE PUBLIC OorexxML.MLSearchSpaceComparison.differences entity=M-851ce3ec7fc1035b52c0 revision=SR-b86ebbda7f725f4416707e93 args={}
+INSTANCE PUBLIC OorexxML.MLSearchSpaceComparison.equivalent entity=M-e6205e483fb75197ca5e revision=SR-c764e893f4cb78092b8e5ff1 args={}
+INSTANCE PUBLIC OorexxML.MLSearchSpaceComparison.canonicalText entity=M-19f576068731140bcdc2 revision=SR-df221fb95b60ea5128d83c8c args={}
+CLASS PUBLIC OorexxML.MLSearchSpaceComparison.compare entity=M-970ad7862704c6cbfdaf revision=SR-a53e6378ac8e4e1f452c06ee args={use strict arg left,right}
+INSTANCE PUBLIC OorexxML.MLSearchStrategySpec.init entity=M-3b7fe76d68e3e539bd36 revision=SR-9c3ed3dec81a1a6e13cc6c4e args={use strict arg id,kind,configuration=.nil}
+INSTANCE PUBLIC OorexxML.MLSearchStrategySpec.canonicalText entity=M-a5a2dc37cc1ef16dd9f7 revision=SR-9dbc4f2221fa129f3670201a args={}
+INSTANCE PUBLIC OorexxML.MLSearchCandidate.init entity=M-9ebe5971a1b9507029ad revision=SR-745267f7f6f6d22aec7beca8 args={use strict arg id,laneId,configuration,score,objective,evidence=.nil,materialRefs=.nil}
+INSTANCE PUBLIC OorexxML.MLSearchCandidate.fitness entity=M-df108461b58d2726b776 revision=SR-e41c88366a57bbbef5a05a63 args={}
+INSTANCE PUBLIC OorexxML.MLSearchCandidate.canonicalText entity=M-c8f00c59d1c5a538ce68 revision=SR-560b2e220b8cc6f77a04753e args={}
+INSTANCE PUBLIC OorexxML.MLSearchCandidateComparator.compare entity=M-62be9663f5de18852b3f revision=SR-ebe2a156b861567bc58218c9 args={use strict arg a,b}
+INSTANCE PUBLIC OorexxML.MLSearchLane.init entity=M-d465bb00c93d780fc010 revision=SR-1e25ff8dbf6094755846412a args={use strict arg laneId,strategy,searchSpace,objective,workspace,retention}
+INSTANCE PUBLIC OorexxML.MLSearchLane.objective entity=M-07824ab01ae5fc7894f5 revision=SR-cf4e86b0f086a7c3c7f2e2c8 args={}
+INSTANCE PUBLIC OorexxML.MLSearchLane.workspaceBudget entity=M-760b4039de7473510f18 revision=SR-81edb1eccaec5d59100b7fff args={}
+INSTANCE PUBLIC OorexxML.MLSearchLane.retentionPolicy entity=M-5c8ac8970ec17ee64034 revision=SR-220eeca8d358b81c87db0697 args={}
+INSTANCE PUBLIC OorexxML.MLSearchLane.searchSpace entity=M-08ce31c04bae1e70ad43 revision=SR-38db79c745612ae3daa0c1fa args={}
+INSTANCE PUBLIC OorexxML.MLSearchLane.strategy entity=M-bbc874a4cdc6ec7b6c48 revision=SR-c37a7dd9b3bf53c4fb369b77 args={}
+INSTANCE PUBLIC OorexxML.MLSearchLane.status entity=M-2b06a75f05d6da682c73 revision=SR-b612c69c6efb09170b2247d3 args={}
+INSTANCE PUBLIC OorexxML.MLSearchLane.begin entity=M-18886ab6be5889188534 revision=SR-d5ba28cbb6272caa9da5ebf2 args={}
+INSTANCE PUBLIC OorexxML.MLSearchLane.recordEvaluation entity=M-dce7cb5c6cb38e1e21b8 revision=SR-6f6c7d330886c41d76ba9425 args={use strict arg unique=.true}
+INSTANCE PUBLIC OorexxML.MLSearchLane.recordPromotion entity=M-8a65dc39491843ef6d4f revision=SR-690fc43f7b74a09ebfa089a1 args={}
+INSTANCE PUBLIC OorexxML.MLSearchLane.complete entity=M-ae6d64abe828ebba069d revision=SR-c99b952a3fabb5f80b5d383a args={}
+INSTANCE PUBLIC OorexxML.MLSearchExperiment.init entity=M-2c0e5c908a38bce35130 revision=SR-0aff403c6f8762385cf6caf3 args={use strict arg id='ML-SEARCH'}
+INSTANCE PUBLIC OorexxML.MLSearchExperiment.addLane entity=M-5bc06e2aa5088b9562c2 revision=SR-b721f3f98f9df64d1e90eef9 args={use strict arg lane}
+INSTANCE PUBLIC OorexxML.MLSearchExperiment.lane entity=M-54a2bc2f0e83cbe3ce0e revision=SR-2cffdda931d42338c0894123 args={use strict arg id}
+INSTANCE PUBLIC OorexxML.MLSearchExperiment.laneIds entity=M-09f0c46f29536225257e revision=SR-2798d60c7a176f7f6903095c args={}
+INSTANCE PUBLIC OorexxML.MLQualificationCheck.init entity=M-2b0e60342d9025c1c31d revision=SR-43a3912bde5f23d1820f4f00 args={use strict arg category,name,passed,detail=''}
+INSTANCE PUBLIC OorexxML.MLQualificationCheck.canonicalText entity=M-a41b66b025d4120eb171 revision=SR-71bf300299031dae9478ba02 args={}
+INSTANCE PUBLIC OorexxML.MLQualificationReport.init entity=M-c219eb4287c91c4b26b0 revision=SR-4b96c7ada92eb5612a4b79bd args={use strict arg id,sourceChecks}
+INSTANCE PUBLIC OorexxML.MLQualificationReport.checks entity=M-b0bce7977089fb7ad4e6 revision=SR-d4bb89dba1a5fc54385b43d6 args={}
+INSTANCE PUBLIC OorexxML.MLQualificationReport.passed entity=M-19d24e8dafff60bc307d revision=SR-39bbd247cb037f5bcbedafe1 args={}
+INSTANCE PUBLIC OorexxML.MLQualificationReport.canonicalText entity=M-c4d646347eb74da4e205 revision=SR-dbf8c12036f325498a5d4ff0 args={}
+CLASS PUBLIC OorexxML.MLSearchQualification.preflight entity=M-6ca66a8f301cb253d557 revision=SR-db4534f8d0a10da31afa8626 args={use strict arg lane,freeBytes}
+INSTANCE PUBLIC OorexxML.MLGenome.init entity=M-9e341c5434fe4b3fb81b revision=SR-12631833e334ea1f0eec208e args={use strict arg id,sourceGenes}
+INSTANCE PUBLIC OorexxML.MLGenome.genes entity=M-67d51fb9ef855284f268 revision=SR-5390848f2cbce8a44ecd8b31 args={}
+INSTANCE PUBLIC OorexxML.MLGenome.gene entity=M-3881843d7ff142f3971c revision=SR-a18328dccfbb780155abed80 args={use strict arg i}
+INSTANCE PUBLIC OorexxML.MLGenome.geneCount entity=M-9be171250d706e74feee revision=SR-991359c2771afa0dbac51bc9 args={}
+INSTANCE PUBLIC OorexxML.MLGenome.canonicalText entity=M-e3e833cb7b6aa35c0a67 revision=SR-64e7afa67b7f8434a98969da args={}
+INSTANCE PUBLIC OorexxML.MLIndividual.init entity=M-50d0138276fc5ee647b3 revision=SR-758232363bf16a990a926f8d args={use strict arg genome,fitness,evidence=.nil}
+INSTANCE PUBLIC OorexxML.MLIndividual.canonicalText entity=M-6d18f0d8b326927fc99f revision=SR-cbd48512735c575e36c190af args={}
+INSTANCE PUBLIC OorexxML.MLFrozenPopulation.init entity=M-d184471a5f6fa3a0c691 revision=SR-620c7e6b33ef3eef3cfc0ede args={use strict arg source}
+INSTANCE PUBLIC OorexxML.MLFrozenPopulation.items entity=M-f79d02dc736d2f8b2792 revision=SR-e7f7e1feef38eefc81af7f3b args={}
+INSTANCE PUBLIC OorexxML.MLFrozenPopulation.at entity=M-98b174afe34024ec9605 revision=SR-5c2eaab6a2e222b716dd2a7b args={use strict arg i}
+INSTANCE PUBLIC OorexxML.MLFrozenPopulation.'[]' entity=M-ea1f642184ff3df235df revision=SR-e935a576ca12d6141bd094f1 args={use strict arg i}
+INSTANCE PUBLIC OorexxML.MLFrozenPopulation.toArray entity=M-cd4f17eb7928b4351916 revision=SR-cb6bed61bfdc02df9adbeab9 args={}
+INSTANCE PUBLIC OorexxML.MLFrozenPopulation.canonicalText entity=M-8699f840401b6506048d revision=SR-304be119ebd9a363df520642 args={}
+INSTANCE PUBLIC OorexxML.MLDeterministicRNG.init entity=M-017b85d3f6898d5605a8 revision=SR-a166503589abbf90861f8a59 args={use strict arg seed=1,stableId='RNG'}
+INSTANCE PUBLIC OorexxML.MLDeterministicRNG.cursor entity=M-73e5b774749ec6e3e484 revision=SR-4e4963f9581e4cf0bc8a8869 args={}
+INSTANCE PUBLIC OorexxML.MLDeterministicRNG.commitCursor entity=M-518abcd2b519866902e0 revision=SR-a7048ff7e40ff865829580aa args={use strict arg cursor,tag='RNG_BATCH'}
+INSTANCE PUBLIC OorexxML.MLRNGCursor.init entity=M-8bc9e378e054e7199f36 revision=SR-4ed45971127908276a23b8e5 args={use strict arg state,draws=0}
+INSTANCE PUBLIC OorexxML.MLRNGCursor.nextUnit entity=M-93e118889f709c8f7d8d revision=SR-74019a37c1cc82f810de2395 args={}
+INSTANCE PUBLIC OorexxML.MLRNGCursor.nextInt entity=M-698fd7bfc02a5e9c1128 revision=SR-f2ce5a7862532acf2e3d60b4 args={use strict arg maximum}
+INSTANCE PUBLIC OorexxML.MLPopulation.init entity=M-1e81e8ad15bd1df52909 revision=SR-db7677332464b4838e3fda73 args={use strict arg sourceGenomes,stableId='POPULATION'}
+INSTANCE PUBLIC OorexxML.MLPopulation.generation entity=M-439fd5754d57291bfc02 revision=SR-dbfad066f5a4c97cae75a490 args={}
+INSTANCE PUBLIC OorexxML.MLPopulation.genomes entity=M-b373aa91066fc86af4b0 revision=SR-033e45de5759c0509bca7350 args={}
+INSTANCE PUBLIC OorexxML.MLPopulation.populationSize entity=M-3a0357e022c4d5b599de revision=SR-549edab38798470f6990056e args={}
+INSTANCE PUBLIC OorexxML.MLPopulation.replaceGeneration entity=M-fe9e08073bae4b0f6bb3 revision=SR-db56aa78bd3810d7aadae7ff args={use strict arg sourceGenomes,generationNumber,tag='EVOLVE'}
+INSTANCE PUBLIC OorexxML.MLEvolutionGeneration.init entity=M-7832b3f04e3a9aa87d6d revision=SR-ea1988ef2193984c0cf0b26f args={use strict arg id,populationGeneration,branch,checkpointId,individuals}
+INSTANCE PUBLIC OorexxML.MLEvolutionGeneration.canonicalText entity=M-10895d535096054f28c4 revision=SR-2c98fed0a8ecf93324355a32 args={}
+INSTANCE PUBLIC OorexxML.MLEvolutionGenerationRegistry.init entity=M-526c42b9d958c2e7ec17 revision=SR-55e7a1addc1c261a1a25f1f8 args={}
+INSTANCE PUBLIC OorexxML.MLEvolutionGenerationRegistry.publish entity=M-73c2859ba5adec685d53 revision=SR-b16e990289b86044260040ac args={use strict arg populationGeneration,branch,checkpointId,individuals}
+INSTANCE PUBLIC OorexxML.MLEvolutionGenerationRegistry.generation entity=M-10ce97a8a63106df256f revision=SR-47a9ab23b829e245d55ca43c args={use strict arg id}
+INSTANCE PUBLIC OorexxML.MLEvolutionGenerationRegistry.generations entity=M-e0e24dffca4285754d73 revision=SR-6cb4ca4a551f1ce273b8dcaa args={}
+INSTANCE PUBLIC OorexxML.MLEvolutionGenerationRegistry.count entity=M-c0f541719bbb46426e9c revision=SR-bf03c1beaf70a80aea79d743 args={}
+INSTANCE PUBLIC OorexxML.MLGeneticPolicy.init entity=M-10bdc29c8459038ae310 revision=SR-fa47b4f8e173afa1478214ea args={use strict arg mutationRate=0.10,mutationScale=0.25,crossoverRate=0.80,eliteCount=1}
+INSTANCE PUBLIC OorexxML.MLGeneticPolicy.canonicalText entity=M-eaf08fb5a35f9b27b655 revision=SR-4f43a3b3c23e2e14a86bf210 args={}
+INSTANCE PUBLIC OorexxML.MLGABudgetPlan.init entity=M-49e6cb93f985ebd9ed82 revision=SR-c5129934014df3cb9cebbaa0 args={use strict arg candidateLimit,populationSize,breedingSteps,minimumEvaluatedGenerations=3}
+INSTANCE PUBLIC OorexxML.MLGABudgetPlan.canonicalText entity=M-1bb8e2ff61dd08eb68d3 revision=SR-78c87bf575fe4f6e02a5d837 args={}
+CLASS PUBLIC OorexxML.MLGABudgetPlan.forCandidateLimit entity=M-6982bc93b69057c276da revision=SR-bdfa729cd7d5c57c075cf7be args={use strict arg candidateLimit,preferredPopulation=30,minimumEvaluatedGenerations=3,minimumPopulation=4}
+INSTANCE PUBLIC OorexxML.MLGARunResult.init entity=M-63de26a8c93c230e71bc revision=SR-e380e77969e7334a42c840a8 args={use strict arg sourceSteps,initialPopulationGeneration,finalPopulationGeneration,finalEvaluation,finalCheckpoint}
+INSTANCE PUBLIC OorexxML.MLGARunResult.steps entity=M-8d14a087f55c99777641 revision=SR-34be7c4ba7166375a48cf304 args={}
+INSTANCE PUBLIC OorexxML.MLGARunResult.canonicalText entity=M-00dc33808e4a4f6ccd73 revision=SR-dc5022fc42ba09c160a05497 args={}
+INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.init entity=M-a644b776a3525f493f29 revision=SR-be0d59a2d5f4687406604850 args={use strict arg population,rng=.nil,experiment=.nil,mutationRate=0.10,mutationScale=0.25,crossoverRate=0.80,eliteCount=1}
+CLASS PUBLIC OorexxML.MLGeneticAlgorithm.fromPolicy entity=M-52f5e983442292510ccf revision=SR-eaa3a778531411b1325a2b34 args={use strict arg population,policy,rng=.nil,experiment=.nil}
+INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.policy entity=M-d02a06a96a8d52700cb3 revision=SR-208c52ea1c53a1e24f40abaf args={}
+INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.eliteCount entity=M-ae230f05bc8d0ae0d5a8 revision=SR-95208f6a2471fa0c76e4e587 args={}
+INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.experiment entity=M-5407fbcada28274378aa revision=SR-ffd0b2287d4a30b7e582018e args={}
+INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.population entity=M-4913ce86e1ffdb78e903 revision=SR-c538f24cd30cafd9b681a4ff args={}
+INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.rng entity=M-03aba5bdc611e0e9b7d7 revision=SR-4dd53646e559bcd56ec1a10f args={}
+INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.generationRegistry entity=M-1693424d94fb12b3430e revision=SR-36fe4f74a05884a5395389f3 args={}
+INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.evaluateCurrent entity=M-7cdb8ee177db8e8dd11d revision=SR-55d2b57beb7ff5498d2f459e args={use strict arg evaluator,tag='GA_FINAL_EVALUATION'}
+INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.run entity=M-3ba618c59e3b57a7576d revision=SR-591a38d640eaa2757f121ccd args={use strict arg evaluator,breedingSteps=1}
+INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.step entity=M-0f67064be7b180870c99 revision=SR-51f31189d05e0e994a1692ec args={use strict arg evaluator}
+INSTANCE PRIVATE OorexxML.MLGeneticAlgorithm.evaluatePopulation entity=M-8406bf5bcea0b6bbfe3e revision=SR-1b6b8b1488644b8995d6c9a0 args={use strict arg evaluator}
+INSTANCE PRIVATE OorexxML.MLGeneticAlgorithm.tournament entity=M-1e252c6c069a8c94a7a5 revision=SR-c14b7c8ae9692c4293f273c4 args={use strict arg individuals,cursor}
+INSTANCE PRIVATE OorexxML.MLGeneticAlgorithm.bestNotAlready entity=M-bad2228e0afd28e3f724 revision=SR-3cae0fbd23560c3908395d5f args={use strict arg individuals,next}
+INSTANCE PRIVATE OorexxML.MLGeneticAlgorithm.breed entity=M-be27f98c667cdb5bafaa revision=SR-e85ff214dc8ebc182e3c3c41 args={use strict arg g1,g2,cursor,mutationRate,mutationScale,crossoverRate}
+INSTANCE PUBLIC OorexxML.MLFrozenVector.init entity=M-dc494e05057aee716307 revision=SR-cc10e358d9d774cbdf6dc2ab args={use strict arg source}
+INSTANCE PUBLIC OorexxML.MLFrozenVector.items entity=M-69d2a76e8a7a6e26826c revision=SR-d0ecd4e0b5ac53af9468469e args={}
+INSTANCE PUBLIC OorexxML.MLFrozenVector.size entity=M-21081ec23fa84216bc74 revision=SR-36ec3f6a2e34b6af1af7241d args={}
+INSTANCE PUBLIC OorexxML.MLFrozenVector.at entity=M-7d5a3efcd2eea693af17 revision=SR-d9857b43126ce89a3d807ca1 args={use strict arg i}
+INSTANCE PUBLIC OorexxML.MLFrozenVector.'[]' entity=M-73f90fe3223793ea864f revision=SR-d5e28debcbeab40dd3112abb args={use strict arg i}
+INSTANCE PUBLIC OorexxML.MLFrozenVector.toArray entity=M-91562ff35fb7d902b5cb revision=SR-52b50fff8e14223d4a4cdb32 args={}
+INSTANCE PUBLIC OorexxML.MLFrozenVector.canonicalText entity=M-f8c9fe314151862480e9 revision=SR-8b20d64150a03d5954e6d773 args={}
+INSTANCE PUBLIC OorexxML.MLFrozenVector.string entity=M-da978bbe9d566e76bc51 revision=SR-181f0c8401c1de138a68c929 args={}
+INSTANCE PUBLIC OorexxML.MLFrozenMap.init entity=M-3ce4e0ad024b8d709dd4 revision=SR-89b75e4daa942fe7f8b9593b args={use strict arg source}
+INSTANCE PUBLIC OorexxML.MLFrozenMap.hasIndex entity=M-a66357fa621c72352ef2 revision=SR-d04c069462d511d6de18ee6f args={use strict arg key}
+INSTANCE PUBLIC OorexxML.MLFrozenMap.at entity=M-9862cf668d2732238a0e revision=SR-2477903c34ef3ce0fe9d4995 args={use strict arg key}
+INSTANCE PUBLIC OorexxML.MLFrozenMap.'[]' entity=M-5e5312e05b29dbb802a9 revision=SR-eebe78cbec8bfbd0b943b3af args={use strict arg key}
+INSTANCE PUBLIC OorexxML.MLFrozenMap.allIndexes entity=M-a9058448dd2ccb358516 revision=SR-ab5fb8468cc09b5d377e7139 args={}
+INSTANCE PUBLIC OorexxML.MLFrozenMap.items entity=M-335d5ec7394d1c94ef04 revision=SR-5a29d4dd5a3867a3b5297b6b args={}
+INSTANCE PUBLIC OorexxML.MLFrozenMap.toDirectory entity=M-87bbd7a690709b4b3c3f revision=SR-5772c0e19df08c53815f2f76 args={}
+INSTANCE PUBLIC OorexxML.MLFrozenMap.canonicalText entity=M-4eab1c4e51ef2d487b36 revision=SR-530457b7b76ca675ae32bdca args={}
+INSTANCE PUBLIC OorexxML.MLFrozenMap.string entity=M-3f529a1575c2b5404d9e revision=SR-5ef603efa89afee009f611c0 args={}
+INSTANCE PUBLIC OorexxML.MLBranch.init entity=M-91d62deb9897603efe10 revision=SR-69b747b38752e85f8e379e45 args={use strict arg name,parent,forkPoint,headPoint,createdTag=''}
+INSTANCE PUBLIC OorexxML.MLBranch.canonicalText entity=M-66f9184ca817f508d7ab revision=SR-c2b873773fabfb3c2f59adb4 args={}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.init entity=M-729f79cefa55a888882c revision=SR-3f86066863107ae058fe4947 args={use strict arg stableId,kind='ML_OBJECT',initial=.nil}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.stableId entity=M-63625ac8130444a31590 revision=SR-65036bedc794c4fda87f754f args={}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.kind entity=M-b8c76d7c104c83f7c8be revision=SR-bc8c0b7533c80ef8548d45e5 args={}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.journalPoint entity=M-32d2e6486ef55c729323 revision=SR-404fadeb06871d798ee093cf args={}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.currentPoint entity=M-3cdcd5f81c9b25470296 revision=SR-746981181df3d52e915358f7 args={}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.rootPoint entity=M-edf8c5f4059dd89d69a2 revision=SR-f8bfdd6274cf80a4916b69e1 args={}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.journalCanMoveTo entity=M-6377f695ab5a62e2a4e6 revision=SR-3c1a3813638ec69f72813c1f args={use strict arg point}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.journalAttachController entity=M-de612222f660d32eb034 revision=SR-e83696375005d40565ce00c8 args={use strict arg newController,newComponentId}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.journalDetachController entity=M-fabdfca6fe43279d374a revision=SR-06e155c87c6cbc0a861e83b4 args={}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.journalMoveTo entity=M-016f480ceff79a5ff06d revision=SR-11e0fac9e229c95e8f72c17e args={use strict arg point,notify=.true}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.snapshot entity=M-d13e68a0ef1ea978a3a1 revision=SR-1f92aa3fe8b9fdc5fc9066d6 args={}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.stateAt entity=M-5c40b714d93bee422ff1 revision=SR-2e79f8a0781777e26b172a73 args={use strict arg point}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.at entity=M-699bcf065c7c0edfa270 revision=SR-7bbcf6f98e4ead81be00ef64 args={use strict arg key}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.hasState entity=M-08b33dd5ed35211bd2a2 revision=SR-9ab7011e58c9a4c5056ec749 args={use strict arg key}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.retainedNodeCount entity=M-73aa0382c43de1d06d83 revision=SR-e501619b54a39c2ab44c3cae args={}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.diff entity=M-b77b496add3239ae306b revision=SR-0b723cf83e1d4b1c48e7bcb0 args={use strict arg fromPoint,toPoint}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.currentBranch entity=M-5c3367a964b8f98c8744 revision=SR-bec32db4b239a7d963f9ae35 args={}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.branchNames entity=M-9c63de0b068cc82f5aa8 revision=SR-c585a294c80db88037a9ffe6 args={}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.branch entity=M-ffbb2be515d83b1a9357 revision=SR-812475d68e23085f0f0d2b97 args={use strict arg name}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.branchHead entity=M-e2c3480dcba441156b09 revision=SR-e45c6518fcc2b871a7c6fa78 args={use strict arg name}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.fork entity=M-db11692a2204e065a1ac revision=SR-678ef186fefa086ac0a2997b args={use strict arg name,fromPoint=.nil,tag='FORK'}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.checkout entity=M-06d67514b61c1bb569ae revision=SR-2667ceb85ba73613f0b11da8 args={use strict arg name}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.rollback entity=M-6e5765717debd67c3033 revision=SR-f1ee7ff2a05fb44b49cb64cb args={use strict arg point,preserveAs=''}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.rollForward entity=M-d547891752913b710df3 revision=SR-7b52e9fb3022b5badfd2d09d args={use strict arg branchName}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.mutate entity=M-cf44fc3f212111659b72 revision=SR-e1d4dced34c19f55829629a2 args={use strict arg changes,tag='MUTATE',metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.removeState entity=M-c3911e465a2341b9139f revision=SR-321db12e38ca26364780611f args={use strict arg key,tag='REMOVE',metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLDriveableObject.canonicalState entity=M-1fc83cf77e57144a9ad1 revision=SR-fc7793558d0b7a128909ac65 args={}
+INSTANCE PUBLIC OorexxML.MLExperimentBranch.init entity=M-5d9810163e18c69efe71 revision=SR-6a2f579db8d61f7309b25b2d args={use strict arg name,parent,forkCheckpoint,headCheckpoint}
+INSTANCE PUBLIC OorexxML.MLExperiment.init entity=M-4a2156a656a2b2acd81c revision=SR-f0071cf9171f962f4423c960 args={use strict arg id='ML-EXPERIMENT'}
+INSTANCE PUBLIC OorexxML.MLExperiment.id entity=M-f1d21572e54fa04093e0 revision=SR-69abeca370949a7707c62889 args={}
+INSTANCE PUBLIC OorexxML.MLExperiment.controller entity=M-40ae33e25b8694c4fc8f revision=SR-bdb961f42ea506d7ed4b61c2 args={}
+INSTANCE PUBLIC OorexxML.MLExperiment.register entity=M-e9c084cc22d312f9d32c revision=SR-9d7244246781cbf9a36ff7c3 args={use strict arg componentId,object}
+INSTANCE PUBLIC OorexxML.MLExperiment.participant entity=M-9e1b054bc4dc81d39b05 revision=SR-e1369db71df0bb98bdb0dfad args={use strict arg componentId}
+INSTANCE PUBLIC OorexxML.MLExperiment.participantIds entity=M-7957578c93fc375be374 revision=SR-f912022682d9246c80408b53 args={}
+INSTANCE PUBLIC OorexxML.MLExperiment.checkpoint entity=M-a233c0328a8759af643a revision=SR-9bad24e91e98b2757b9943fc args={use strict arg label='checkpoint',eventName='ML',metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLExperiment.currentCheckpoint entity=M-17acaf636c4ede728577 revision=SR-4564accd2a2ccefeffc9a1c0 args={}
+INSTANCE PUBLIC OorexxML.MLExperiment.branchNames entity=M-51a19e74a6f59fbae564 revision=SR-4a65e51cea4e9f6a0508841c args={}
+INSTANCE PUBLIC OorexxML.MLExperiment.branch entity=M-ef1572a7c8d287c92346 revision=SR-f42638092888eca317feb390 args={use strict arg name,fromCheckpoint=.nil}
+INSTANCE PUBLIC OorexxML.MLExperiment.checkout entity=M-ac5f25a6accf1805682c revision=SR-9e5c6fb573c8d4edf7ec9d62 args={use strict arg name}
+INSTANCE PUBLIC OorexxML.MLExperiment.rollback entity=M-0b4b6acff70d892c0a4b revision=SR-3590e56d4e4ee9a7ff269c5f args={use strict arg checkpoint,preserveAs=''}
+INSTANCE PUBLIC OorexxML.MLExperiment.rollForward entity=M-a076e07961d107143156 revision=SR-e979054e50fa8e7f6507f740 args={use strict arg branchName}
+INSTANCE PUBLIC OorexxML.MLExperiment.barrier entity=M-3d45ae9676ee7b879e25 revision=SR-618f902029c7073be22b40f9 args={use strict arg barrier}
+INSTANCE PUBLIC OorexxML.MLExperiment.currentBranch entity=M-fba184b500d54e80e4d4 revision=SR-ca7339a5dfe0890423ad26be args={}
+INSTANCE PUBLIC OorexxML.MLSourceIdentity.init entity=M-4df08e0960b9e6f2e086 revision=SR-4754d528c884586d20a691d2 args={use strict arg component='',lineage='',sourceLevel='',label='',revision='',digest=''}
+CLASS PUBLIC OorexxML.MLSourceIdentity.fromSnapshot entity=M-1e8fdbf3eb8370d86ff3 revision=SR-0ba3a35d356502727f344aef args={use strict arg source,revision='',digest=''}
+INSTANCE PUBLIC OorexxML.MLSourceIdentity.canonicalText entity=M-79fe5ee3337c8c903a85 revision=SR-d36713cde4e0d344b6e0d90d args={}
+INSTANCE PUBLIC OorexxML.MLLearningBarrier.init entity=M-83a38973d10f40bcfd60 revision=SR-77119ee35b1764038860633e args={use strict arg id,reason,beforeSource=.nil,afterSource=.nil,metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLLearningBarrier.canonicalText entity=M-1af4f504e3cd7105b3d1 revision=SR-08c8eb73ea3447f8fc9717ef args={}
+INSTANCE PUBLIC OorexxML.MLAssessment.init entity=M-11219aeef4327307f95b revision=SR-8e4f4a61f5115d0e98db2455 args={use strict arg kind,value,confidence=.nil,modelId='',modelPoint='',branch='',evidence=.nil,limitations='',claimType='ADVISORY'}
+INSTANCE PUBLIC OorexxML.MLAssessment.canonicalText entity=M-9172d698357456be8db0 revision=SR-6175e7a501b29a6621ae2043 args={}
+INSTANCE PUBLIC OorexxML.MLLearnedGeneration.init entity=M-a23f222985dbf281455e revision=SR-1610b89e1d0131717e8952a1 args={use strict arg id,object,label='',sourceIdentity=.nil,metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLLearnedGeneration.canonicalText entity=M-476065d65d53c3f918f7 revision=SR-9fc4640b6d4d6f30e0fdaa17 args={}
+INSTANCE PUBLIC OorexxML.MLLearnedGenerationRegistry.init entity=M-9dd1fb9876932c7f8649 revision=SR-70ce9b2d89463dfbe73fbea5 args={}
+INSTANCE PUBLIC OorexxML.MLLearnedGenerationRegistry.publish entity=M-dd3a5bdd2e420e94fea2 revision=SR-043c532e8eddada1a2e10229 args={use strict arg object,label='',sourceIdentity=.nil,metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLLearnedGenerationRegistry.generation entity=M-77d27db8867e9a00c320 revision=SR-a57820ac5c554617d1fac6ab args={use strict arg id}
+INSTANCE PUBLIC OorexxML.MLLearnedGenerationRegistry.generations entity=M-fadf6f8c1cf98f7341d6 revision=SR-0cbb559368c718ac128c3f47 args={}
+INSTANCE PUBLIC OorexxML.MLLearnedGenerationRegistry.count entity=M-e2a1d1780d5540fd36de revision=SR-e682805952c502e66d5abedc args={}
+INSTANCE PUBLIC OorexxML.MLModelDefinition.init entity=M-98cf32160754bd4c9a70 revision=SR-67bfb42aea97e5fa5c5e911b args={use strict arg id,task='',provider='',family='',source='',revision='',runtime='',inputSchema=.nil,outputSchema=.nil,attributes=.nil}
+CLASS PUBLIC OorexxML.MLModelDefinition.fromObject entity=M-5dae788ea8378abc9be5 revision=SR-a1141b1daa2e71093428ca04 args={use strict arg source}
+INSTANCE PUBLIC OorexxML.MLModelDefinition.canonicalText entity=M-4b5413022ba11993ee33 revision=SR-1ca17df3a0a866e0e1a48844 args={}
+INSTANCE PUBLIC OorexxML.MLTensorContract.init entity=M-3731a61ebff7bbf1f74a revision=SR-a36f67fd7a1c51012955af49 args={use strict arg protocol,dtype,shape,strides=.nil,deviceType='',deviceId='',device='',readonly=.false,attributes=.nil}
+CLASS PUBLIC OorexxML.MLTensorContract.fromObject entity=M-5fbc5a8154af5f279e81 revision=SR-dd9a5b48ba6c76935aba0390 args={use strict arg source}
+INSTANCE PUBLIC OorexxML.MLTensorContract.canonicalText entity=M-0abc434d834870b03acd revision=SR-f55cace629598e9f4fe6e921 args={}
+INSTANCE PUBLIC OorexxML.MLDatasetProvenance.init entity=M-1210a95c407709c80155 revision=SR-afb84c3605533bca3d60f9aa args={use strict arg sourceId='',sourceRevision='',acquisitionTag='',digest='',parentDatasetId='',transform='',role='',metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLDatasetProvenance.derive entity=M-7809a042a49186d14c63 revision=SR-dc9af5b025177fb1be2fa16d args={use strict arg parentDatasetId,transform,role='',metadata=.nil}
+INSTANCE PUBLIC OorexxML.MLDatasetProvenance.canonicalText entity=M-1880220b281b5ff07f94 revision=SR-3845f32d04a9e8dacf7bc27a args={}
+INSTANCE PUBLIC OorexxML.MLDataset.init entity=M-3152d50cd98ff931bd35 revision=SR-0886c40bc6e55edfa1bd4ef1 args={use strict arg sourceRows,sourceTargets,sourceFeatureNames=.nil,datasetId='',provenance=.nil,sourceSampleIds=.nil}
+INSTANCE PUBLIC OorexxML.MLDataset.id entity=M-50343af27bb90632157e revision=SR-a47645e879c558255d3f7b73 args={}
+INSTANCE PUBLIC OorexxML.MLDataset.provenance entity=M-b513b98516b525efefa7 revision=SR-3f6ce3de1792f1df98a635f4 args={}
+INSTANCE PUBLIC OorexxML.MLDataset.sampleCount entity=M-26f7000a1edd1e4a26d1 revision=SR-f42ec8c047b994326a91bdf7 args={}
+INSTANCE PUBLIC OorexxML.MLDataset.featureCount entity=M-ad4f5a93f3bbac97ae50 revision=SR-75f8f8cf05835f3c811b4bfc args={}
+INSTANCE PUBLIC OorexxML.MLDataset.featureNames entity=M-fd702ba7d2f0e28e9bcf revision=SR-05d51f4652b0ff6c71bd67a2 args={}
+INSTANCE PUBLIC OorexxML.MLDataset.sampleId entity=M-308cf4a5e287682f2913 revision=SR-3c6c189584199e7136f46cc0 args={use strict arg i}
+INSTANCE PUBLIC OorexxML.MLDataset.sampleIds entity=M-6f21f8db730d0798772b revision=SR-42b7e4c45a76e7a8b0f535b8 args={}
+INSTANCE PUBLIC OorexxML.MLDataset.row entity=M-4daac4e77bb6be37ea94 revision=SR-8ff2e9476771615b9b262673 args={use strict arg i}
+INSTANCE PUBLIC OorexxML.MLDataset.target entity=M-7ad3fb8f8b9ffe146672 revision=SR-69996f28a811d3d7fcca310b args={use strict arg i}
+INSTANCE PUBLIC OorexxML.MLDataset.targets entity=M-338bd4cabbc40eb6d55f revision=SR-7267bd74af996c4a23a91963 args={}
+INSTANCE PUBLIC OorexxML.MLDataset.rows entity=M-7da1d35f05062ea4c658 revision=SR-b05831d1123f7274839d8fe7 args={}
+INSTANCE PUBLIC OorexxML.MLDataset.subset entity=M-cfc55a0a2df01204ad14 revision=SR-d1850ada159edc130764fef5 args={use strict arg indices,newId='',role='SUBSET',transform='SUBSET'}
+INSTANCE PUBLIC OorexxML.MLDataset.canonicalText entity=M-07d290ad7b86f09a61c7 revision=SR-b9d89e2fec95b43219445aff args={}
+INSTANCE PUBLIC OorexxML.MLStandardScaler.init entity=M-e72c33abbb3d6acda956 revision=SR-c25cb722c4a46d6a20dc395f args={use strict arg stableId='SCALER'}
+INSTANCE PUBLIC OorexxML.MLStandardScaler.fit entity=M-90ac7d66fe52b46670b6 revision=SR-702b727c028df0f88097b967 args={use strict arg dataset}
+INSTANCE PUBLIC OorexxML.MLStandardScaler.transformRow entity=M-3988cbeabc3abb391db6 revision=SR-ec7b2b2e0eb2dbd46c52b9e8 args={use strict arg row}
+INSTANCE PUBLIC OorexxML.MLStandardScaler.transform entity=M-633a69d66190b724c328 revision=SR-7544574d732a0a8dffe77a97 args={use strict arg dataset,newId=''}
+INSTANCE PUBLIC OorexxML.MLLinearRegression.init entity=M-0cd9cca3c68ab9cf6392 revision=SR-609c3b0df78a86877785b4ff args={use strict arg stableId='LINEAR_REGRESSION',context=.nil}
+INSTANCE PUBLIC OorexxML.MLLinearRegression.fit entity=M-7bf77cc97f8dbe17ba84 revision=SR-d4564fdf5f2f16e15d65d595 args={use strict arg dataset,context=.nil}
+INSTANCE PUBLIC OorexxML.MLLinearRegression.coefficients entity=M-d0ce191cd082501e81b2 revision=SR-1a8bda395e8c5dbf3a1904f4 args={}
+INSTANCE PUBLIC OorexxML.MLLinearRegression.predict entity=M-1adb9f3b1a5c329880f6 revision=SR-1c0604b65d5cb99eb102a8c2 args={use strict arg row}
+INSTANCE PUBLIC OorexxML.MLLinearRegression.predictDecimal entity=M-4e9ab4f84722ef35b86c revision=SR-3a3188969fab1477d8bcda3f args={use strict arg row,digits=30}
+INSTANCE PUBLIC OorexxML.MLRidgeRegression.init entity=M-d3b7edc6dc28bd593018 revision=SR-0bbf661c9fdcc54499f3cf33 args={use strict arg stableId='RIDGE_REGRESSION',lambda=1,context=.nil}
+INSTANCE PUBLIC OorexxML.MLRidgeRegression.lambda entity=M-296905c8aa0d539d48d2 revision=SR-5d0b261ca4e2ba98062c1ab2 args={}
+INSTANCE PUBLIC OorexxML.MLRidgeRegression.setLambda entity=M-e8d2b41d29f5cc634a71 revision=SR-7dd777fc53ca5c66fcbf673a args={use strict arg lambda}
+INSTANCE PUBLIC OorexxML.MLRidgeRegression.fit entity=M-bbe39b15cb75c21f2dfd revision=SR-6b14c504ad029699bc80e6fb args={use strict arg dataset,context=.nil}
+INSTANCE PUBLIC OorexxML.MLRidgeRegression.coefficients entity=M-d7bf088ac3763102ee2d revision=SR-4558ae5993a733ef4157d471 args={}
+INSTANCE PUBLIC OorexxML.MLRidgeRegression.predict entity=M-eac08609bd470bc9c5b6 revision=SR-da0864aacdb5dfb557673a00 args={use strict arg row}
+INSTANCE PUBLIC OorexxML.MLRidgeRegression.predictDecimal entity=M-df50eb3054e163f6fab1 revision=SR-88c0e82afd839243203705c9 args={use strict arg row,digits=30}
+INSTANCE PUBLIC OorexxML.MLCentroidClassifier.init entity=M-758ae0426636e49bdc7f revision=SR-b19c8851d57735d54224a16c args={use strict arg stableId='CENTROID_CLASSIFIER'}
+INSTANCE PUBLIC OorexxML.MLCentroidClassifier.fit entity=M-535b096bd679d19db959 revision=SR-49e9a5f9b44f7eacdfa15691 args={use strict arg dataset}
+INSTANCE PUBLIC OorexxML.MLCentroidClassifier.predict entity=M-2956e9dcd4bec96f8345 revision=SR-809f9a5358713a78aa261444 args={use strict arg row}
+INSTANCE PUBLIC OorexxML.MLKNNClassifier.init entity=M-ef738eedf24ea680b68d revision=SR-96567fdb0a563e34eb9d47b4 args={use strict arg stableId='KNN_CLASSIFIER',k=3}
+INSTANCE PUBLIC OorexxML.MLKNNClassifier.k entity=M-7eadbf3b0e6320deacac revision=SR-30d8c9b2d8a8573bc57827cf args={}
+INSTANCE PUBLIC OorexxML.MLKNNClassifier.setK entity=M-f5672d3ffcf234acee05 revision=SR-d08c398069d3eca5aad35a58 args={use strict arg k}
+INSTANCE PUBLIC OorexxML.MLKNNClassifier.fit entity=M-c29eee7868a9c0b03c6d revision=SR-d051f11deff5dc2281474b14 args={use strict arg dataset}
+INSTANCE PUBLIC OorexxML.MLKNNClassifier.predict entity=M-1ed8e1fa617625fba571 revision=SR-d3fb756cd2d48c183c6eec5c args={use strict arg row}
+INSTANCE PUBLIC OorexxML.MLNeighbor.init entity=M-6d4ee9ec534b9bb917cd revision=SR-02e4fd0378206bec11af000f args={use strict arg distance,label,index}
+INSTANCE PUBLIC OorexxML.MLNeighborComparator.compare entity=M-26f8eaf08327c614b85c revision=SR-96a1d48536348c166f40c177 args={use strict arg a,b}
+INSTANCE PUBLIC OorexxML.MLLinearGDRegressor.init entity=M-ce6ad3bf2f660a79483d revision=SR-f50583476023430ac745ddb8 args={use strict arg stableId='LINEAR_GD_REGRESSOR'}
+INSTANCE PUBLIC OorexxML.MLLinearGDRegressor.train entity=M-aac60a1db6a0cfef9677 revision=SR-c8e0c50031df0ef41da42697 args={use strict arg dataset,optimizer,session=.nil,epochs=100}
+INSTANCE PUBLIC OorexxML.MLLinearGDRegressor.parameters entity=M-b735a47f1118085a914e revision=SR-e07a36fe14d65cc86bba1a05 args={}
+INSTANCE PUBLIC OorexxML.MLLinearGDRegressor.predict entity=M-2097864645a279f3d1eb revision=SR-d65e6fb6578242406145e434 args={use strict arg row}
+INSTANCE PRIVATE OorexxML.MLLinearGDRegressor.gradient entity=M-e468e65f4bb209118408 revision=SR-db8ad00f3ca1a6d2c4123487 args={use strict arg dataset,weights}
+INSTANCE PRIVATE OorexxML.MLLinearGDRegressor.objective entity=M-889a254d4e65e40881bf revision=SR-110cf58df824f336aa0a61a1 args={use strict arg dataset,weights}
+INSTANCE PUBLIC OorexxML.MLConfusionMatrix.init entity=M-187f521f7aea2ee7efa8 revision=SR-b391e170226fff88a7d88450 args={use strict arg expected,predicted}
+INSTANCE PUBLIC OorexxML.MLConfusionMatrix.labels entity=M-fa1f04eb22b0ef7d9a96 revision=SR-14733393014f84400a6ac65b args={}
+INSTANCE PUBLIC OorexxML.MLConfusionMatrix.count entity=M-554dec6c17e95b34a452 revision=SR-462ed59c261746cf37582a18 args={use strict arg actual,predicted}
+INSTANCE PUBLIC OorexxML.MLConfusionMatrix.total entity=M-8cbb8c7ae23304652784 revision=SR-61d8ec98914ea176f965834a args={}
+INSTANCE PUBLIC OorexxML.MLConfusionMatrix.canonicalText entity=M-f7f3e49f8c98e91743f7 revision=SR-252b8ab0f6d448e316d8d4c5 args={}
+CLASS PUBLIC OorexxML.MLMetrics.meanSquaredError entity=M-ef271a91b8a835501dfa revision=SR-767f6d7839d2ff743d1352de args={use strict arg expected,predicted}
+CLASS PUBLIC OorexxML.MLMetrics.meanAbsoluteError entity=M-8d09ce1cfba52b1d2ffd revision=SR-4ccf1137d8fc2e85182a8b92 args={use strict arg expected,predicted}
+CLASS PUBLIC OorexxML.MLMetrics.rootMeanSquaredError entity=M-ccd7282f14fc170c965f revision=SR-6165f6f01a2a3427cc2ecc91 args={use strict arg expected,predicted}
+CLASS PUBLIC OorexxML.MLMetrics.rSquared entity=M-9f25fdc5e3e51824b430 revision=SR-18c2f739d2b15c83a689cefa args={use strict arg expected,predicted}
+CLASS PUBLIC OorexxML.MLMetrics.accuracy entity=M-1327a1040bed0b490d78 revision=SR-4e5c2f8aeaf8edc7879fbc16 args={use strict arg expected,predicted}
+CLASS PUBLIC OorexxML.MLMetrics.confusionMatrix entity=M-acfce33f4093bff030f4 revision=SR-ea786f3a4fb6296bdc4c6f72 args={use strict arg expected,predicted}
+CLASS PUBLIC OorexxML.MLMetrics.precision entity=M-3704ab6da0c927620f8f revision=SR-dc5340a7049fe5a1b646921c args={use strict arg expected,predicted,positiveLabel}
+CLASS PUBLIC OorexxML.MLMetrics.recall entity=M-4cc58e9ea9b1ed753af4 revision=SR-233c9aa35ae6f6fdfb714fb5 args={use strict arg expected,predicted,positiveLabel}
+CLASS PUBLIC OorexxML.MLMetrics.f1 entity=M-8b496f2f41c0c3a8008d revision=SR-6e5ce39f3a6250b16811539a args={use strict arg expected,predicted,positiveLabel}
+CLASS PUBLIC OorexxML.MLMetrics.evaluate entity=M-38d3f602efd24ed6ac79 revision=SR-829b4f8b8419f53816f2ab3b args={use strict arg metricName,expected,predicted,positiveLabel=''}
+CLASS PRIVATE OorexxML.MLMetrics.checkPair entity=M-d31187e40dbe2361c249 revision=SR-0083dc4802d25a70e1bbf3df args={use strict arg expected,predicted}
+CLASS PRIVATE OorexxML.MLMetrics.number entity=M-001a256c107118d3b916 revision=SR-7c90feae8666ba355b84f3f7 args={use strict arg value}
+INSTANCE PUBLIC OorexxML.MLReviewDecision.init entity=M-3926025c2e0b552209dc revision=SR-01e67692a216eb32375c30ec args={use strict arg id,reviewerId,subjectId,decision,confidence=.nil,rationale='',evidenceRef='',policyId=''}
+INSTANCE PUBLIC OorexxML.MLReviewDecision.canonicalText entity=M-d8ea6a17b61aff7d005d revision=SR-01b379087e6427f379fe4b89 args={}
+INSTANCE PUBLIC OorexxML.MLReviewCase.init entity=M-74ceac1f789d21ec47d6 revision=SR-2176dc99737d2a1d442eee40 args={use strict arg id,subjectId,subjectKind='CANDIDATE'}
+INSTANCE PUBLIC OorexxML.MLReviewCase.subjectId entity=M-bc20782de49b870eb1da revision=SR-e189cd476d35bd47cd6e75c7 args={}
+INSTANCE PUBLIC OorexxML.MLReviewCase.subjectKind entity=M-34f9226e9018af8ffebc revision=SR-f82c7b27c41543e91f88af28 args={}
+INSTANCE PUBLIC OorexxML.MLReviewCase.status entity=M-65661466d60c5b661dd1 revision=SR-fd4d16d4e2180081f97bf8d9 args={}
+INSTANCE PUBLIC OorexxML.MLReviewCase.recordDecision entity=M-d5de9ed9d339632fb2f5 revision=SR-f3eb98260393b9d72035e065 args={use strict arg decision}
+INSTANCE PUBLIC OorexxML.MLReviewCase.decision entity=M-c5fdd922cbde3015f3b0 revision=SR-b525ec12631cb8543d9f5210 args={use strict arg id}
+INSTANCE PUBLIC OorexxML.MLReviewCase.decisionIds entity=M-9e91746dce4ddedaae6a revision=SR-fef36e31005c335fb1f07c17 args={}
+INSTANCE PUBLIC OorexxML.MLReviewCase.selectDecision entity=M-ef289195c4ffc2efcd9d revision=SR-768c06a3a6c1f7f1705f4110 args={use strict arg id}
+INSTANCE PUBLIC OorexxML.MLReviewCase.selectedDecision entity=M-0a80d58bcb3a9e9c171e revision=SR-cfe3632e1bee4a4d38ccdf51 args={}
+INSTANCE PUBLIC OorexxML.MLReviewCase.reopen entity=M-61879803ec5c77681dac revision=SR-23def2bd774dc297416252b1 args={use strict arg reason=''}
+INSTANCE PUBLIC OorexxML.MLPreferenceJudgement.init entity=M-4d9556fd68feab099ddb revision=SR-4262412a3d6bc3a9eee259be args={use strict arg id,reviewerId,leftCandidateId,rightCandidateId,preference,confidence=.nil,rationale='',evidenceRef=''}
+INSTANCE PUBLIC OorexxML.MLPreferenceJudgement.canonicalText entity=M-2267e5a93b69464c5b50 revision=SR-e55130b3880e1fdad24c55d2 args={}
+INSTANCE PUBLIC OorexxML.MLCalibrationComparison.init entity=M-44ce8f6d9e923804c1a2 revision=SR-0a8791af7c32549c26e421fb args={use strict arg judgementId,humanPreference,objectivePreference,concordant,leftScore,rightScore}
+INSTANCE PUBLIC OorexxML.MLCalibrationComparison.canonicalText entity=M-1344df65963d70ceef2a revision=SR-76fb1846d4fa55be6880aae2 args={}
+INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.init entity=M-54367a44532a74e0a3bd revision=SR-5ce6236a41da4c25751dfe27 args={use strict arg id,objectiveId,totalJudgements,comparableJudgements,undecidableJudgements,concordantJudgements,discordantJudgements,sourceComparisons}
+INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.comparisons entity=M-a5c3568070dae43accbf revision=SR-b844a598bf04646aeb04d8e8 args={}
+INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.acceptable entity=M-e762f7f9cc506aa3fcca revision=SR-b7ffe290c2c71409a71e1652 args={use strict arg minimumAgreement=.70,minimumComparable=5}
+INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.canonicalText entity=M-8b88470491f825e31ede revision=SR-a741fe0168740ce772d34460 args={}
+CLASS PUBLIC OorexxML.MLObjectiveCalibration.compare entity=M-d368ab940258f8d77850 revision=SR-170f074f5dfc5a9615950fef args={use strict arg id,objective,candidates,judgements}
+INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationSession.init entity=M-4f9043f0580c44a85775 revision=SR-37a3d3b7198c6c2b48efab71 args={use strict arg id,objective}
+INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationSession.objective entity=M-40d1cd186d421b44810c revision=SR-ba23f055e193c573c3ba3c84 args={}
+INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationSession.addJudgement entity=M-afb22f6e4290af571e27 revision=SR-caa9e98461322be356fd52ad args={use strict arg judgement}
+INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationSession.judgementIds entity=M-4ba95131f83c7230e49a revision=SR-be2bd26c0f40a867649d0c3d args={}
+INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationSession.judgements entity=M-566155c62ad2af167bc2 revision=SR-b176eb8511c166965eddbbb9 args={}
+INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationSession.report entity=M-9f36be9ec59e73bfb947 revision=SR-20b64ae16f6c6a96920101e1 args={use strict arg candidates,id='CALIBRATION'}
+CLASS PUBLIC OorexxML.MLObjectiveCalibrationQualification.assess entity=M-4243242b0880d7d3346e revision=SR-4ad7c13e554d5b17db8065b3 args={use strict arg report,minimumAgreement=.70,minimumComparable=5}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.runId access=BOTH entity=A-d56afe15d44755d195c4 revision=SR-dfb136e367836613b1c038a0 contract={GET{::attribute runId} SET{::attribute runId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.status access=BOTH entity=A-55f8c7ffd5e948b13afd revision=SR-1ee3f62fc6a7aa171143bfed contract={GET{::attribute status} SET{::attribute status}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.branch access=BOTH entity=A-f87a1d4f972812c9286c revision=SR-2270f0451df9caab80ca0060 contract={GET{::attribute branch} SET{::attribute branch}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.sessionPoint access=BOTH entity=A-ad02c87ba4e77fdc5c7a revision=SR-40e4d9f60b6c09ea81190ba1 contract={GET{::attribute sessionPoint} SET{::attribute sessionPoint}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.modelId access=BOTH entity=A-ae9c80aa16a9099d8a6d revision=SR-c397f6f2621b0399833fbcc3 contract={GET{::attribute modelId} SET{::attribute modelId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.modelPoint access=BOTH entity=A-ed63319d1c431b652215 revision=SR-1dbdb97560bc31d9a3872889 contract={GET{::attribute modelPoint} SET{::attribute modelPoint}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.optimizerId access=BOTH entity=A-4b0bf9249e27acf9e294 revision=SR-e60d398b3206087cd651b9aa contract={GET{::attribute optimizerId} SET{::attribute optimizerId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.optimizerPoint access=BOTH entity=A-202deb0a510a940ae016 revision=SR-0612f56303bb683f3323d33f contract={GET{::attribute optimizerPoint} SET{::attribute optimizerPoint}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.datasetId access=BOTH entity=A-b5dff29ccb3595d8f502 revision=SR-c2da4cb3043978277f2f145f contract={GET{::attribute datasetId} SET{::attribute datasetId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.epoch access=BOTH entity=A-82f26901dda4c5af172b revision=SR-a4f97f9a3a2c6d3e8935f16f contract={GET{::attribute epoch} SET{::attribute epoch}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.step access=BOTH entity=A-44dcf157e32645f64a64 revision=SR-086088f8d7067cacde3a3d11 contract={GET{::attribute step} SET{::attribute step}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.objective access=BOTH entity=A-2c879564becd78de25bd revision=SR-9bc5db9ccacb05ce26240c21 contract={GET{::attribute objective} SET{::attribute objective}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.bestObjective access=BOTH entity=A-b4cfd721b697c2280ba8 revision=SR-900e0c367192f637f0faa324 contract={GET{::attribute bestObjective} SET{::attribute bestObjective}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.bestEpoch access=BOTH entity=A-b315fd112eb8120fe9c5 revision=SR-cf057b6d343d95ed9f9a5c44 contract={GET{::attribute bestEpoch} SET{::attribute bestEpoch}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.checkpointId access=BOTH entity=A-fde508f47bfcf96de8f7 revision=SR-7c4b3f94c53d60b7a093266a contract={GET{::attribute checkpointId} SET{::attribute checkpointId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTrainingEvidence.metrics access=BOTH entity=A-de852101dd42e28971da revision=SR-7556a89af3c400f185c45916 contract={GET{::attribute metrics} SET{::attribute metrics}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDataSplit.id access=BOTH entity=A-d197b75f39844742b367 revision=SR-52ff9f14d13033678178f600 contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDataSplit.train access=BOTH entity=A-7bfc40aec6f4a7497943 revision=SR-68b63a9e3efa9abe1574d834 contract={GET{::attribute train} SET{::attribute train}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDataSplit.test access=BOTH entity=A-57d41baf003143986466 revision=SR-46741e67db59728d4831747e contract={GET{::attribute test} SET{::attribute test}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDataSplit.trainIndices access=BOTH entity=A-a9ba9c19d2b5e5f22689 revision=SR-5913aac0f2e2cd0d2b5d02f2 contract={GET{::attribute trainIndices} SET{::attribute trainIndices}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDataSplit.testIndices access=BOTH entity=A-a6ddc2454655aafe2a3a revision=SR-9a73c6339c310ea8397144fb contract={GET{::attribute testIndices} SET{::attribute testIndices}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDataSplit.method access=BOTH entity=A-e826f6275aa59cce6abe revision=SR-8b2f4ffa4f2a5ed18552f35d contract={GET{::attribute method} SET{::attribute method}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDataSplit.evidence access=BOTH entity=A-a91c8af41fbb66e43d78 revision=SR-76e732d45d03edfe0775c689 contract={GET{::attribute evidence} SET{::attribute evidence}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLFold.number access=BOTH entity=A-07bd06d2b3a8298f68a3 revision=SR-8908168a73eaff885490226a contract={GET{::attribute number} SET{::attribute number}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLFold.trainIndices access=BOTH entity=A-6af9ff2e3de3b6b9eb15 revision=SR-bf1229b44e1dc90010db51ef contract={GET{::attribute trainIndices} SET{::attribute trainIndices}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLFold.testIndices access=BOTH entity=A-3402c09cb52d4ce5fb81 revision=SR-2d30cc8adfda9285e030ee6c contract={GET{::attribute testIndices} SET{::attribute testIndices}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLKFoldPlan.id access=BOTH entity=A-a57f8c4b61bb0bfb6409 revision=SR-1c6fd91200b02657bb6c31fb contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLKFoldPlan.datasetId access=BOTH entity=A-dc560e6ca0b20bcd8048 revision=SR-f064ca2ab0e81559d1ddaab4 contract={GET{::attribute datasetId} SET{::attribute datasetId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLKFoldPlan.k access=BOTH entity=A-ff111326044883c2698f revision=SR-e8daa159685f61a44d0fc139 contract={GET{::attribute k} SET{::attribute k}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLKFoldPlan.shuffled access=BOTH entity=A-97d06ecf1778e429a624 revision=SR-fa27f2e4c117e37353a70b6a contract={GET{::attribute shuffled} SET{::attribute shuffled}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLKFoldPlan.rngPoint access=BOTH entity=A-b491408e6f55d1386a41 revision=SR-c668654f060d3f12d34a50d9 contract={GET{::attribute rngPoint} SET{::attribute rngPoint}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLFoldResult.fold access=BOTH entity=A-dfa385926a8593c28b76 revision=SR-54a18726a556a8f231a79dbd contract={GET{::attribute fold} SET{::attribute fold}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLFoldResult.modelId access=BOTH entity=A-29b9b0221b1f8a6714c2 revision=SR-3abaa57af1ef87bec20aa239 contract={GET{::attribute modelId} SET{::attribute modelId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLFoldResult.modelPoint access=BOTH entity=A-1d46288a7b3196f58ab8 revision=SR-5ebf8d9b05461b450536e3e5 contract={GET{::attribute modelPoint} SET{::attribute modelPoint}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLFoldResult.metric access=BOTH entity=A-40a5574e76f53aa15a5f revision=SR-2bc311817552000741e4c171 contract={GET{::attribute metric} SET{::attribute metric}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLFoldResult.value access=BOTH entity=A-e2e5fbdd8d80e2cc26bd revision=SR-05756a4bce8c2f0fc160ebe9 contract={GET{::attribute value} SET{::attribute value}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLFoldResult.expected access=BOTH entity=A-b3b61d1320ad9c1a33c4 revision=SR-d1958b50fbd3a64ac35f4f9f contract={GET{::attribute expected} SET{::attribute expected}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLFoldResult.predicted access=BOTH entity=A-c64759549e397026daa1 revision=SR-4afc0699ea0ca3a3875648cb contract={GET{::attribute predicted} SET{::attribute predicted}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLFoldResult.modelState access=BOTH entity=A-78cb4a9f1c7f497ba724 revision=SR-38cf725ef3768a38a17867eb contract={GET{::attribute modelState} SET{::attribute modelState}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLValidationEvidence.id access=BOTH entity=A-b0a1cc9ea551310a6157 revision=SR-2c219f4fb3d821d28350a6c9 contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLValidationEvidence.datasetId access=BOTH entity=A-2ab07aec66b2a3feba13 revision=SR-a594c5086512664d68ad953d contract={GET{::attribute datasetId} SET{::attribute datasetId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLValidationEvidence.planId access=BOTH entity=A-0f14f1d54be6fb258ec6 revision=SR-6d789fb1d15fe35f4d974ca4 contract={GET{::attribute planId} SET{::attribute planId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLValidationEvidence.metric access=BOTH entity=A-d4e27f4600e8ebe0c07d revision=SR-f28ccd9e0714162f6486ac5a contract={GET{::attribute metric} SET{::attribute metric}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLValidationEvidence.aggregate access=BOTH entity=A-38086a77d9a863fc042e revision=SR-5e60a74da3fa79800b8da614 contract={GET{::attribute aggregate} SET{::attribute aggregate}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLValidationEvidence.sourceIdentity access=BOTH entity=A-0f58baad2a06be2eba17 revision=SR-b2ab859568bd11a408eed5c5 contract={GET{::attribute sourceIdentity} SET{::attribute sourceIdentity}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.modelId access=BOTH entity=A-7e1d569adf8c02f49fc8 revision=SR-cf867d26c662a0eca16d5e1c contract={GET{::attribute modelId} SET{::attribute modelId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.branchA access=BOTH entity=A-4be23ea1779cb0ee663c revision=SR-c169daa92b836b3ad558c9c2 contract={GET{::attribute branchA} SET{::attribute branchA}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.branchB access=BOTH entity=A-5d852595c3817b090999 revision=SR-38f8959c1882b40a49dae214 contract={GET{::attribute branchB} SET{::attribute branchB}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.pointA access=BOTH entity=A-12a9c4d540e8d7484ea7 revision=SR-951459be347bf2991f77c5b9 contract={GET{::attribute pointA} SET{::attribute pointA}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.pointB access=BOTH entity=A-d28f6f9d905756dd732a revision=SR-5f5276e3fb5520cdd2c2371c contract={GET{::attribute pointB} SET{::attribute pointB}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.metric access=BOTH entity=A-a2bbd0ed08c844f779ac revision=SR-5bd05bea473517d2b9bfff18 contract={GET{::attribute metric} SET{::attribute metric}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.valueA access=BOTH entity=A-b71b4c86eb436d00daf2 revision=SR-e2b9cd28fabdf2bfecc25685 contract={GET{::attribute valueA} SET{::attribute valueA}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.valueB access=BOTH entity=A-195c12081d4d6b8d9ff0 revision=SR-7fdad6664ef01d07e23c541d contract={GET{::attribute valueB} SET{::attribute valueB}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.preferredBranch access=BOTH entity=A-fe716eef478e3f280280 revision=SR-0bf1ec4892beb6a5e44685be contract={GET{::attribute preferredBranch} SET{::attribute preferredBranch}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.predictionsA access=BOTH entity=A-2d23f52e8e8f7cfa1edf revision=SR-2343cb9046dac8ff929abdb0 contract={GET{::attribute predictionsA} SET{::attribute predictionsA}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranchComparisonResult.predictionsB access=BOTH entity=A-0c2e8f58bc528e983eb5 revision=SR-a3aa75c4efb0940335789215 contract={GET{::attribute predictionsB} SET{::attribute predictionsB}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjective.id access=BOTH entity=A-8c0b0dcab4e0cf2b322c revision=SR-34f80da12a584dd06bfb582b contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjective.direction access=BOTH entity=A-e15987a186f7d2106ce1 revision=SR-bf2090ece1e07b21900302d8 contract={GET{::attribute direction} SET{::attribute direction}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjective.formula access=BOTH entity=A-bd1411216eeffbff7696 revision=SR-afb803da4358f7eb73d23cb4 contract={GET{::attribute formula} SET{::attribute formula}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjective.description access=BOTH entity=A-0a35181c47a5ab1f1ce8 revision=SR-421a7922d57c266c8849ed0c contract={GET{::attribute description} SET{::attribute description}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLWorkspaceBudget.maximumBytes access=BOTH entity=A-0e9e1eba9975a22067af revision=SR-2d26990abef135cdc4bdc07e contract={GET{::attribute maximumBytes} SET{::attribute maximumBytes}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLWorkspaceBudget.reserveBytes access=BOTH entity=A-ba180b6faf2e84061252 revision=SR-53107752864faedb07e0a0f1 contract={GET{::attribute reserveBytes} SET{::attribute reserveBytes}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLWorkspaceBudget.minimumFreeAtStart access=BOTH entity=A-8bc917c23186c468c803 revision=SR-9b8dc18877e810551f162bea contract={GET{::attribute minimumFreeAtStart} SET{::attribute minimumFreeAtStart}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLWorkspaceBudget.retainedOutputLimit access=BOTH entity=A-ed80bd9b75c7a0b0de35 revision=SR-ccb2988f87fb789d2ac4635d contract={GET{::attribute retainedOutputLimit} SET{::attribute retainedOutputLimit}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLWorkspaceBudget.spillPolicy access=BOTH entity=A-c5ffc5aca3fa4b3f8ee0 revision=SR-01b3455bfc2cacad70625e1e contract={GET{::attribute spillPolicy} SET{::attribute spillPolicy}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLWorkspaceBudget.failurePolicy access=BOTH entity=A-b28962b852ab379fb1ea revision=SR-b636deafa08affde7724b86c contract={GET{::attribute failurePolicy} SET{::attribute failurePolicy}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLRetentionPolicy.retainCount access=BOTH entity=A-45bb569c82e4d1762ea6 revision=SR-1540309203d9c347900ac870 contract={GET{::attribute retainCount} SET{::attribute retainCount}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLRetentionPolicy.uniqueBy access=BOTH entity=A-95a1dc0e56cd5000125d revision=SR-fa0c69058780d716c2d0dffa contract={GET{::attribute uniqueBy} SET{::attribute uniqueBy}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLRetentionPolicy.materializeMode access=BOTH entity=A-607e6537eccfcc9f2e0a revision=SR-0ae257f8ccf0561529311883 contract={GET{::attribute materializeMode} SET{::attribute materializeMode}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLParameterDomain.name access=BOTH entity=A-3905777c0ae3fefbe8fd revision=SR-ece5fac336cfa3f85d2fa052 contract={GET{::attribute name} SET{::attribute name}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLParameterDomain.description access=BOTH entity=A-ca0f62708ec76d59d6b2 revision=SR-5255a2073a488d9999a36f78 contract={GET{::attribute description} SET{::attribute description}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchSpace.id access=BOTH entity=A-8e95f0ee6ede9c83389a revision=SR-af8b091544291c4fe87f98da contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchSpace.description access=BOTH entity=A-44809dfdd74f13623fbb revision=SR-8a94d5aa263ed31868d0d4ef contract={GET{::attribute description} SET{::attribute description}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchSpaceComparison.leftId access=BOTH entity=A-e2f8006cf80997f4b455 revision=SR-1ffb580aaa691f433b183b9c contract={GET{::attribute leftId} SET{::attribute leftId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchSpaceComparison.rightId access=BOTH entity=A-af9b84779b9627315c47 revision=SR-c33c2ead2096d0a962f12cc6 contract={GET{::attribute rightId} SET{::attribute rightId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchSpaceComparison.relation access=BOTH entity=A-b0d715c465e361f16bc3 revision=SR-fd99d7ed17bc759121edec65 contract={GET{::attribute relation} SET{::attribute relation}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchStrategySpec.id access=BOTH entity=A-b8ccf15a4e84b349def0 revision=SR-0f2bd674524845e85019ad69 contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchStrategySpec.kind access=BOTH entity=A-4e3bbf128ca6fe008a7a revision=SR-19b3b9a669bec71e77666b9b contract={GET{::attribute kind} SET{::attribute kind}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchStrategySpec.configuration access=BOTH entity=A-b02f1fa287e803a11e5d revision=SR-69978c5160a6ddf58cc669ef contract={GET{::attribute configuration} SET{::attribute configuration}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchCandidate.id access=BOTH entity=A-812e8cb8d134fbf88eed revision=SR-cef86b13a4a599131cf45735 contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchCandidate.laneId access=BOTH entity=A-8310b9403ce29da2f5d8 revision=SR-2d5d3f5d585f82eba849b7a9 contract={GET{::attribute laneId} SET{::attribute laneId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchCandidate.configuration access=BOTH entity=A-eb7faf8698dfe371afc0 revision=SR-1d718629e39b6be22fdbf610 contract={GET{::attribute configuration} SET{::attribute configuration}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchCandidate.score access=BOTH entity=A-690e6da8d0e27e5ce054 revision=SR-909bc9b3dd1568c495a548e9 contract={GET{::attribute score} SET{::attribute score}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchCandidate.objective access=BOTH entity=A-bb20fd6be42bf2fdfc91 revision=SR-4d7919e37e230bdaad7692c6 contract={GET{::attribute objective} SET{::attribute objective}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchCandidate.evidence access=BOTH entity=A-e02949ba2cf0c27c5475 revision=SR-e8cd803c677f412683a736c9 contract={GET{::attribute evidence} SET{::attribute evidence}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSearchCandidate.materialRefs access=BOTH entity=A-71ddf2042c3f646f3c8a revision=SR-b238a86eaf4b8c4cb2133ba8 contract={GET{::attribute materialRefs} SET{::attribute materialRefs}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLQualificationCheck.category access=BOTH entity=A-670aa0cbdc5ea20a7488 revision=SR-d3f1d574b7a9c7060c18d4b9 contract={GET{::attribute category} SET{::attribute category}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLQualificationCheck.name access=BOTH entity=A-10e62bc84051d63287ae revision=SR-effe75b765f9b6890357c3d9 contract={GET{::attribute name} SET{::attribute name}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLQualificationCheck.passed access=BOTH entity=A-6d94426eabd4d9ec2f66 revision=SR-af7d89140f4c4c8b90c52faa contract={GET{::attribute passed} SET{::attribute passed}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLQualificationCheck.detail access=BOTH entity=A-2c33f382450a54a3d4b4 revision=SR-033eb1906c52aee88a1d5617 contract={GET{::attribute detail} SET{::attribute detail}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLQualificationReport.id access=BOTH entity=A-a451bb376826a3eaacdc revision=SR-825d286bf797f61edbf0def4 contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGenome.id access=BOTH entity=A-0f0058b8653a6b5756db revision=SR-6c1dda724d0e08ee7a414f4c contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLIndividual.genome access=BOTH entity=A-08c5e96641b6e3e5f815 revision=SR-bc87802110633556f70e5c3e contract={GET{::attribute genome} SET{::attribute genome}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLIndividual.fitness access=BOTH entity=A-61fc1c21d6fa4a9e687a revision=SR-83b30e5a72d447a59dd420e0 contract={GET{::attribute fitness} SET{::attribute fitness}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLIndividual.evidence access=BOTH entity=A-edef1586b851082f949d revision=SR-8cbdb7b3f551d015fde7d6c8 contract={GET{::attribute evidence} SET{::attribute evidence}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLRNGCursor.state access=BOTH entity=A-d4030d097d8652724624 revision=SR-e82d9695761a5f6957507a6f contract={GET{::attribute state} SET{::attribute state}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLRNGCursor.draws access=BOTH entity=A-7b3476fb17ac04ff13ed revision=SR-fea12f1b29a5bf91fa704f97 contract={GET{::attribute draws} SET{::attribute draws}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLEvolutionGeneration.id access=BOTH entity=A-dda3551ed3bba9199be6 revision=SR-a59804e0225da58ff540e212 contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLEvolutionGeneration.populationGeneration access=BOTH entity=A-6c7a8c5703ba9bc84bbc revision=SR-e618c1a5962c0f4629366c82 contract={GET{::attribute populationGeneration} SET{::attribute populationGeneration}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLEvolutionGeneration.branch access=BOTH entity=A-026ffdf682e2ad780eac revision=SR-f8e9799416639f81834e34ad contract={GET{::attribute branch} SET{::attribute branch}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLEvolutionGeneration.checkpointId access=BOTH entity=A-1446542a30dc632729c2 revision=SR-f543aa3562429c5173ecc5b0 contract={GET{::attribute checkpointId} SET{::attribute checkpointId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLEvolutionGeneration.bestFitness access=BOTH entity=A-0cf357a4d3ef46c42033 revision=SR-8f03f12548c017695ab0e28f contract={GET{::attribute bestFitness} SET{::attribute bestFitness}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLEvolutionGeneration.bestGenome access=BOTH entity=A-6cae7d1a7ea3c9deca9d revision=SR-15040e83838f98ab0421dd27 contract={GET{::attribute bestGenome} SET{::attribute bestGenome}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLEvolutionGeneration.individuals access=BOTH entity=A-c127d96094ff63b89226 revision=SR-6551160318cbc6c1d3efa9ba contract={GET{::attribute individuals} SET{::attribute individuals}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGeneticPolicy.mutationRate access=BOTH entity=A-6563bc13c6b97a502c1b revision=SR-95ebcd009f9d7808961ad9df contract={GET{::attribute mutationRate} SET{::attribute mutationRate}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGeneticPolicy.mutationScale access=BOTH entity=A-33c3270081874dddde93 revision=SR-b7494d1d380dfcb8ae0bfa24 contract={GET{::attribute mutationScale} SET{::attribute mutationScale}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGeneticPolicy.crossoverRate access=BOTH entity=A-7aa1d7e0c948902865b5 revision=SR-98a67d75fc03ed69d434634c contract={GET{::attribute crossoverRate} SET{::attribute crossoverRate}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGeneticPolicy.eliteCount access=BOTH entity=A-3aea83f92e93f3a7f426 revision=SR-4bbbd2e3cea88063c737be40 contract={GET{::attribute eliteCount} SET{::attribute eliteCount}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGABudgetPlan.candidateLimit access=BOTH entity=A-6bc73d19cb5a9434af16 revision=SR-35335075c0027c3390b3a711 contract={GET{::attribute candidateLimit} SET{::attribute candidateLimit}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGABudgetPlan.populationSize access=BOTH entity=A-752f2fbac9d51a962646 revision=SR-8197b263847e0e621954a009 contract={GET{::attribute populationSize} SET{::attribute populationSize}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGABudgetPlan.breedingSteps access=BOTH entity=A-a22e0078ae43a6ef8919 revision=SR-275c4f1bd8a656bf10bd2f8e contract={GET{::attribute breedingSteps} SET{::attribute breedingSteps}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGABudgetPlan.evaluatedGenerations access=BOTH entity=A-423168127da74bc4ff05 revision=SR-f95e323193418514eac53165 contract={GET{::attribute evaluatedGenerations} SET{::attribute evaluatedGenerations}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGABudgetPlan.plannedEvaluationRequests access=BOTH entity=A-a5a4a7718b480257a190 revision=SR-c8e2b30459644be3e573a57d contract={GET{::attribute plannedEvaluationRequests} SET{::attribute plannedEvaluationRequests}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGABudgetPlan.unusedBudget access=BOTH entity=A-a4774afbfe60b0a3922f revision=SR-877a11723fee468fda74e24f contract={GET{::attribute unusedBudget} SET{::attribute unusedBudget}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGABudgetPlan.minimumEvaluatedGenerations access=BOTH entity=A-228921eaa768928aa800 revision=SR-59bc56ef3918b36b77156a48 contract={GET{::attribute minimumEvaluatedGenerations} SET{::attribute minimumEvaluatedGenerations}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGARunResult.breedingSteps access=BOTH entity=A-5a92eff376da737bf03b revision=SR-9e807655b817cc0c921c9f7c contract={GET{::attribute breedingSteps} SET{::attribute breedingSteps}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGARunResult.initialPopulationGeneration access=BOTH entity=A-419d8df436e8b17cf46d revision=SR-4a645687ab99d932aaabaf68 contract={GET{::attribute initialPopulationGeneration} SET{::attribute initialPopulationGeneration}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGARunResult.finalPopulationGeneration access=BOTH entity=A-c6ab69f9367955f3cb37 revision=SR-9402d87473f4f51ba027180f contract={GET{::attribute finalPopulationGeneration} SET{::attribute finalPopulationGeneration}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGARunResult.finalEvaluation access=BOTH entity=A-73a0cf8a122836f95dfd revision=SR-ce61d7f6065c9dc4fe507845 contract={GET{::attribute finalEvaluation} SET{::attribute finalEvaluation}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGARunResult.finalCheckpoint access=BOTH entity=A-5168bf9030d9602a093b revision=SR-ad1115048d87800a8b7a0b06 contract={GET{::attribute finalCheckpoint} SET{::attribute finalCheckpoint}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.mutationRate access=BOTH entity=A-ff65a766c67c360a6e81 revision=SR-2281166745aca163ec281fb6 contract={GET{::attribute mutationRate} SET{::attribute mutationRate}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.mutationScale access=BOTH entity=A-43ad56218ae2f022393c revision=SR-8cd45a3d67d36e7d9db19fe7 contract={GET{::attribute mutationScale} SET{::attribute mutationScale}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLGeneticAlgorithm.crossoverRate access=BOTH entity=A-7adaa446ba427f40fe32 revision=SR-eac53c86b8e30a754c067e8b contract={GET{::attribute crossoverRate} SET{::attribute crossoverRate}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranch.name access=BOTH entity=A-27e99c4d1b22de4433c7 revision=SR-314da68481bad67a10e71855 contract={GET{::attribute name} SET{::attribute name}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranch.parent access=BOTH entity=A-07f08d71946d076084b6 revision=SR-a88b8fdf94af90538d7e55aa contract={GET{::attribute parent} SET{::attribute parent}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranch.forkPoint access=BOTH entity=A-3402f1f9530732273081 revision=SR-6f5e8345911f7e90a2ccf671 contract={GET{::attribute forkPoint} SET{::attribute forkPoint}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranch.headPoint access=BOTH entity=A-8a6ea6e78b16734cf2c5 revision=SR-c8515139f715bfc391b279ea contract={GET{::attribute headPoint} SET{::attribute headPoint}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLBranch.createdTag access=BOTH entity=A-83d8c89aa48aa5fc99c1 revision=SR-00932d353c4ebdf350206da1 contract={GET{::attribute createdTag} SET{::attribute createdTag}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLExperimentBranch.name access=BOTH entity=A-befd98794251d0c09af4 revision=SR-26581d0c270b1c0fc4d9caec contract={GET{::attribute name} SET{::attribute name}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLExperimentBranch.parent access=BOTH entity=A-f3b2fb0919ad165d1b66 revision=SR-d75958b819891ee584152d01 contract={GET{::attribute parent} SET{::attribute parent}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLExperimentBranch.forkCheckpoint access=BOTH entity=A-f62fd66d81c670335875 revision=SR-f487e9147375ff3dd9304231 contract={GET{::attribute forkCheckpoint} SET{::attribute forkCheckpoint}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLExperimentBranch.headCheckpoint access=BOTH entity=A-ca807ed27ba6b9b9c9ad revision=SR-eb70920df3c27df6f46f64bd contract={GET{::attribute headCheckpoint} SET{::attribute headCheckpoint}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSourceIdentity.component access=BOTH entity=A-01104da28585d1ee007e revision=SR-d87ba6725acfe621cd2e4ecd contract={GET{::attribute component} SET{::attribute component}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSourceIdentity.lineage access=BOTH entity=A-f823b8ee9038e13f1c43 revision=SR-187929a45e4631f1c48c13db contract={GET{::attribute lineage} SET{::attribute lineage}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSourceIdentity.sourceLevel access=BOTH entity=A-2afda9d708c82339c071 revision=SR-f3d689ed2c882452c1ae0e8c contract={GET{::attribute sourceLevel} SET{::attribute sourceLevel}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSourceIdentity.label access=BOTH entity=A-b3734d4d3de143583825 revision=SR-be520a42e400f9750ba5dba8 contract={GET{::attribute label} SET{::attribute label}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSourceIdentity.revision access=BOTH entity=A-86691b23f9794d4e5e71 revision=SR-8b75e9d74bc92f7567a1c392 contract={GET{::attribute revision} SET{::attribute revision}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLSourceIdentity.digest access=BOTH entity=A-26f2b7a82c4975b751bb revision=SR-3274d89e24bd5bfb641748e2 contract={GET{::attribute digest} SET{::attribute digest}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearningBarrier.id access=BOTH entity=A-0288b89027cd50d103c8 revision=SR-7262fc95a1049048bbba33b1 contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearningBarrier.reason access=BOTH entity=A-864638930d2e49aa1fd2 revision=SR-efba787848f189207928795c contract={GET{::attribute reason} SET{::attribute reason}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearningBarrier.beforeSource access=BOTH entity=A-dff95b2a6a57650e178f revision=SR-28115ae65fb4da3cce63d10b contract={GET{::attribute beforeSource} SET{::attribute beforeSource}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearningBarrier.afterSource access=BOTH entity=A-a205a1ccd4f63be355ed revision=SR-1f3aee06c158e1e73d28b7b5 contract={GET{::attribute afterSource} SET{::attribute afterSource}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearningBarrier.metadata access=BOTH entity=A-ce73d1abe43ee28451a6 revision=SR-7e4143784e1d70a409565ee7 contract={GET{::attribute metadata} SET{::attribute metadata}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLAssessment.kind access=BOTH entity=A-3c5ca02778c236b635ae revision=SR-0c77438acb28893c5f2afe59 contract={GET{::attribute kind} SET{::attribute kind}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLAssessment.value access=BOTH entity=A-812fd2917ab020ed257b revision=SR-6d12e80975a44c3af698bc22 contract={GET{::attribute value} SET{::attribute value}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLAssessment.confidence access=BOTH entity=A-7e160dc9ebe29f5d642e revision=SR-c4ce17138a2463e80c0af5dd contract={GET{::attribute confidence} SET{::attribute confidence}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLAssessment.modelId access=BOTH entity=A-c49f202a5ccb48e9dbda revision=SR-bcee3b45fc1d088ea0ebddef contract={GET{::attribute modelId} SET{::attribute modelId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLAssessment.modelPoint access=BOTH entity=A-cdb75bb2fd65258dbffd revision=SR-92a4ca87b726d5483bb2f597 contract={GET{::attribute modelPoint} SET{::attribute modelPoint}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLAssessment.branch access=BOTH entity=A-454241228ea9a751d2fd revision=SR-3b7c6cc31d3dde3cad9fad8a contract={GET{::attribute branch} SET{::attribute branch}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLAssessment.evidence access=BOTH entity=A-415239ba3b72b41e9543 revision=SR-75e009ed57fad6bf77dda4f1 contract={GET{::attribute evidence} SET{::attribute evidence}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLAssessment.limitations access=BOTH entity=A-5498ed8652dd4825310c revision=SR-98a93311b6d84fd2aeb4a91e contract={GET{::attribute limitations} SET{::attribute limitations}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLAssessment.claimType access=BOTH entity=A-eb70bbfdc0bc2f60d06b revision=SR-56f380d676292340c35d536a contract={GET{::attribute claimType} SET{::attribute claimType}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearnedGeneration.id access=BOTH entity=A-5c4bedd93b888176078b revision=SR-7b762ceb9acb618d16fc74e8 contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearnedGeneration.objectId access=BOTH entity=A-2cef76fd3e96d5a57387 revision=SR-3b45e446294253ae077dc439 contract={GET{::attribute objectId} SET{::attribute objectId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearnedGeneration.objectKind access=BOTH entity=A-359c51f4ee878d0e2530 revision=SR-40777d94354a8dd15f894420 contract={GET{::attribute objectKind} SET{::attribute objectKind}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearnedGeneration.branch access=BOTH entity=A-aaa2c211dfbfa6509426 revision=SR-1a1cbf02e5ad4fd50706c1e3 contract={GET{::attribute branch} SET{::attribute branch}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearnedGeneration.point access=BOTH entity=A-9a5e1a6f862a4bf5761a revision=SR-f086ceb91c05ebf9fd81c5b0 contract={GET{::attribute point} SET{::attribute point}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearnedGeneration.label access=BOTH entity=A-ca61ef43d1082d472a59 revision=SR-1618e831b5d54b41305f4613 contract={GET{::attribute label} SET{::attribute label}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearnedGeneration.state access=BOTH entity=A-ca084e7b14a40f6f28f1 revision=SR-72cee682ef9902f176ec2d54 contract={GET{::attribute state} SET{::attribute state}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearnedGeneration.sourceIdentity access=BOTH entity=A-b2166cfb323f168350e9 revision=SR-dc2c1e79f30a068502020ed7 contract={GET{::attribute sourceIdentity} SET{::attribute sourceIdentity}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLLearnedGeneration.metadata access=BOTH entity=A-4c9bafa9f4f77d2064e7 revision=SR-6d4ac0d7fd4d439c0c1f3470 contract={GET{::attribute metadata} SET{::attribute metadata}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLModelDefinition.id access=BOTH entity=A-d4186dafbbebb29fd5ee revision=SR-4fb7018be486d6ef55a9259d contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLModelDefinition.task access=BOTH entity=A-68de61ad5c529ae20df7 revision=SR-e1fd1c0ba18990b537b0ddf5 contract={GET{::attribute task} SET{::attribute task}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLModelDefinition.provider access=BOTH entity=A-5e20edb08c2042039ae6 revision=SR-4cdf27ea3dde5a5c0df1561b contract={GET{::attribute provider} SET{::attribute provider}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLModelDefinition.family access=BOTH entity=A-fcd5758e7bba865d7a9f revision=SR-75e4b4886516d87d3a0d0cf7 contract={GET{::attribute family} SET{::attribute family}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLModelDefinition.source access=BOTH entity=A-40796f65e53e5c7abf7c revision=SR-dcc65dbe5b837eb787a4f5a0 contract={GET{::attribute source} SET{::attribute source}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLModelDefinition.revision access=BOTH entity=A-13a1a027a7ed20150624 revision=SR-e22347666cb1af2dec1fbbc3 contract={GET{::attribute revision} SET{::attribute revision}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLModelDefinition.runtime access=BOTH entity=A-605a4e21e1d2956e173d revision=SR-21d98ae8d8de23b522417cf0 contract={GET{::attribute runtime} SET{::attribute runtime}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLModelDefinition.inputSchema access=BOTH entity=A-da4aa07f40125a008c78 revision=SR-0396ede7b09ee8c7ea1cec19 contract={GET{::attribute inputSchema} SET{::attribute inputSchema}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLModelDefinition.outputSchema access=BOTH entity=A-0ae5666a205941f4add3 revision=SR-e2e6d84887851f8dc406369f contract={GET{::attribute outputSchema} SET{::attribute outputSchema}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLModelDefinition.attributes access=BOTH entity=A-bb57ba20de39177050e5 revision=SR-f51d5f27c672e90b708aa03e contract={GET{::attribute attributes} SET{::attribute attributes}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTensorContract.protocol access=BOTH entity=A-c9bfa15380353fa2804d revision=SR-c70dc9ca587c538fe14485f3 contract={GET{::attribute protocol} SET{::attribute protocol}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTensorContract.dtype access=BOTH entity=A-67790605ebaa4492cab5 revision=SR-9d4b6e6debafc2e4231622a3 contract={GET{::attribute dtype} SET{::attribute dtype}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTensorContract.shape access=BOTH entity=A-aba23c915a65266e3508 revision=SR-c1579376f614893f4f43bc21 contract={GET{::attribute shape} SET{::attribute shape}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTensorContract.strides access=BOTH entity=A-dd3dc39f86799eb4e91f revision=SR-06efba729a487041e4da7c48 contract={GET{::attribute strides} SET{::attribute strides}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTensorContract.deviceType access=BOTH entity=A-9f97c122516ad4f0b476 revision=SR-9ff0d1d0b05845c42b472ec6 contract={GET{::attribute deviceType} SET{::attribute deviceType}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTensorContract.deviceId access=BOTH entity=A-1cb839171292e3a88f6d revision=SR-e604a9a1bf0a1122ad2f7235 contract={GET{::attribute deviceId} SET{::attribute deviceId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTensorContract.device access=BOTH entity=A-8edcb111c20a9969bb61 revision=SR-34662fab8be093657adbfd6b contract={GET{::attribute device} SET{::attribute device}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTensorContract.readonly access=BOTH entity=A-63263998d225f7498baf revision=SR-d44e1a66fcfed9ee9a413080 contract={GET{::attribute readonly} SET{::attribute readonly}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLTensorContract.attributes access=BOTH entity=A-c6ff2ff674e994a9e0c0 revision=SR-8cf825e75d8991c8a6241fb1 contract={GET{::attribute attributes} SET{::attribute attributes}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDatasetProvenance.sourceId access=BOTH entity=A-b7133228fcdafd7a74ca revision=SR-14f9f025a59c753768c43916 contract={GET{::attribute sourceId} SET{::attribute sourceId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDatasetProvenance.sourceRevision access=BOTH entity=A-85f1e87414711ae14356 revision=SR-c66ee100c90d84df9c05ad0e contract={GET{::attribute sourceRevision} SET{::attribute sourceRevision}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDatasetProvenance.acquisitionTag access=BOTH entity=A-254b633c5698addeaccd revision=SR-307a332b2c487533ad7522c0 contract={GET{::attribute acquisitionTag} SET{::attribute acquisitionTag}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDatasetProvenance.digest access=BOTH entity=A-b080c96c4e7282c83941 revision=SR-7a792b9a84c4154aae6d12b3 contract={GET{::attribute digest} SET{::attribute digest}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDatasetProvenance.parentDatasetId access=BOTH entity=A-031757dc8ec303ab7a9f revision=SR-f3ed19355a3ccc6f0bb433f7 contract={GET{::attribute parentDatasetId} SET{::attribute parentDatasetId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDatasetProvenance.transform access=BOTH entity=A-81bc96c323ac5ee925c3 revision=SR-08b422cb7aa329238398c095 contract={GET{::attribute transform} SET{::attribute transform}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDatasetProvenance.role access=BOTH entity=A-7091dd8595ac805ae78c revision=SR-41506b46b9c777854120ae3b contract={GET{::attribute role} SET{::attribute role}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLDatasetProvenance.metadata access=BOTH entity=A-f4fa591241f6ee40f900 revision=SR-c1b23fa9a8b9b5f0148d187f contract={GET{::attribute metadata} SET{::attribute metadata}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLNeighbor.distance access=BOTH entity=A-2c9f058c6b455b25554b revision=SR-38d694a54a8fc397d1ca4717 contract={GET{::attribute distance} SET{::attribute distance}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLNeighbor.label access=BOTH entity=A-19a8f9c5352752c056b7 revision=SR-7cd4722d4aec9946fe4e3458 contract={GET{::attribute label} SET{::attribute label}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLNeighbor.index access=BOTH entity=A-42e7e046e24c08faf6a7 revision=SR-d1f8207170e2d833bc414234 contract={GET{::attribute index} SET{::attribute index}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLReviewDecision.id access=BOTH entity=A-a0783f806802dc9d1a4c revision=SR-d8b6563acbb7f7158ab12dc8 contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLReviewDecision.reviewerId access=BOTH entity=A-276d837d64a31bd87619 revision=SR-6b55085d3eab180fd970d1e6 contract={GET{::attribute reviewerId} SET{::attribute reviewerId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLReviewDecision.subjectId access=BOTH entity=A-90ceb4b288534a802ecc revision=SR-af04d1bc59514f1f44d3a548 contract={GET{::attribute subjectId} SET{::attribute subjectId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLReviewDecision.decision access=BOTH entity=A-07f24d05899dabc869f8 revision=SR-4e341760a32622b2dd0b1b2a contract={GET{::attribute decision} SET{::attribute decision}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLReviewDecision.confidence access=BOTH entity=A-4ff5f5827154d1834cd6 revision=SR-602b2aa2af7f5a185f4a0249 contract={GET{::attribute confidence} SET{::attribute confidence}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLReviewDecision.rationale access=BOTH entity=A-380bde6d62a522c4ea83 revision=SR-bc441bedcccd7620e0e5af3a contract={GET{::attribute rationale} SET{::attribute rationale}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLReviewDecision.evidenceRef access=BOTH entity=A-00492ec9c5fb30b76e03 revision=SR-4fdd8642f0f576fcc226a384 contract={GET{::attribute evidenceRef} SET{::attribute evidenceRef}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLReviewDecision.policyId access=BOTH entity=A-7d5a03a610e580554e05 revision=SR-9f7098e33178d370140808f0 contract={GET{::attribute policyId} SET{::attribute policyId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLPreferenceJudgement.id access=BOTH entity=A-f3339c5c7ff8670969e3 revision=SR-c37d7eaece36b1eb35a26e0d contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLPreferenceJudgement.reviewerId access=BOTH entity=A-0e85d2e3a2b0965c247a revision=SR-fac726410bd10d0ae733cbc3 contract={GET{::attribute reviewerId} SET{::attribute reviewerId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLPreferenceJudgement.leftCandidateId access=BOTH entity=A-f59cbdebf0e156bbba93 revision=SR-ba78476fa1e27d758f17f7eb contract={GET{::attribute leftCandidateId} SET{::attribute leftCandidateId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLPreferenceJudgement.rightCandidateId access=BOTH entity=A-dd7ab6dfa7d8202cc00b revision=SR-9bad1e080c8e8b61354b0e01 contract={GET{::attribute rightCandidateId} SET{::attribute rightCandidateId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLPreferenceJudgement.preference access=BOTH entity=A-abc8b884ad50f8854ae9 revision=SR-4f4884898cb223ca5a131252 contract={GET{::attribute preference} SET{::attribute preference}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLPreferenceJudgement.confidence access=BOTH entity=A-98b1943aca611eeb785a revision=SR-4a07d09b37f20d58f579f1c8 contract={GET{::attribute confidence} SET{::attribute confidence}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLPreferenceJudgement.rationale access=BOTH entity=A-b731161da311414de044 revision=SR-4f38f90b2aa1db7fc01a02c7 contract={GET{::attribute rationale} SET{::attribute rationale}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLPreferenceJudgement.evidenceRef access=BOTH entity=A-ef94de1abb72fdef8da2 revision=SR-9629f67bc4c8faf069d0a01e contract={GET{::attribute evidenceRef} SET{::attribute evidenceRef}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLCalibrationComparison.judgementId access=BOTH entity=A-284023a322dde7cf2bbb revision=SR-1d7c0b6a55a218063e33026c contract={GET{::attribute judgementId} SET{::attribute judgementId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLCalibrationComparison.humanPreference access=BOTH entity=A-8ee3e1585f7ec14f15bd revision=SR-57bc53e3cb109d2c1d2e000f contract={GET{::attribute humanPreference} SET{::attribute humanPreference}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLCalibrationComparison.objectivePreference access=BOTH entity=A-f9fae843f0d7e273690c revision=SR-19d8f18153dcaa27ec45a0b0 contract={GET{::attribute objectivePreference} SET{::attribute objectivePreference}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLCalibrationComparison.concordant access=BOTH entity=A-9b327b7f4f945c69f460 revision=SR-3001e583c38c3d307cc0efad contract={GET{::attribute concordant} SET{::attribute concordant}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLCalibrationComparison.leftScore access=BOTH entity=A-34538d2b3b651ca73bf1 revision=SR-0a0ddc4eccd32dc6a7abf3f8 contract={GET{::attribute leftScore} SET{::attribute leftScore}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLCalibrationComparison.rightScore access=BOTH entity=A-50d63e2eb32f5718233a revision=SR-183b32b3fbc7336f1b56d72f contract={GET{::attribute rightScore} SET{::attribute rightScore}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.id access=BOTH entity=A-57a14efe194e1fa166ae revision=SR-f0f1177f36c383d83ffebbf3 contract={GET{::attribute id} SET{::attribute id}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.objectiveId access=BOTH entity=A-2bf33493d9f23ba2af4a revision=SR-c0ea93cf14f9ef3db2de1d7c contract={GET{::attribute objectiveId} SET{::attribute objectiveId}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.totalJudgements access=BOTH entity=A-646088417e55eb47c29e revision=SR-4d5a37264168a59850bc467b contract={GET{::attribute totalJudgements} SET{::attribute totalJudgements}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.comparableJudgements access=BOTH entity=A-2da55090da114375b0cb revision=SR-9d4cebf4608275efb5884038 contract={GET{::attribute comparableJudgements} SET{::attribute comparableJudgements}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.undecidableJudgements access=BOTH entity=A-8a2f27cf779a5178a73a revision=SR-77901f1f5fcfa428393a26ca contract={GET{::attribute undecidableJudgements} SET{::attribute undecidableJudgements}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.concordantJudgements access=BOTH entity=A-d833b8db59958873aa17 revision=SR-dd425339159c821e63be271d contract={GET{::attribute concordantJudgements} SET{::attribute concordantJudgements}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.discordantJudgements access=BOTH entity=A-f4cb15d838e52544a548 revision=SR-e2bd21aff819c862637c5ff3 contract={GET{::attribute discordantJudgements} SET{::attribute discordantJudgements}}
+ATTRIBUTE INSTANCE PUBLIC OorexxML.MLObjectiveCalibrationReport.agreementRate access=BOTH entity=A-fe048284fdd45a3558af revision=SR-1f93db71b8d5d941a5d82307 contract={GET{::attribute agreementRate} SET{::attribute agreementRate}}

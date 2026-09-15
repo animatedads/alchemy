@@ -1,0 +1,54 @@
+ooRexx ML v0.1-dev8 qualification
+
+Runtime: ooRexx 5.3.0 r13196 debug build supplied in conversation
+Result: PASS
+
+Close-neighbour hashing expansion:
+- MLCloseHashDimension
+- MLCloseHash
+- MLCloseHashDifference
+- MLCloseHashSchema
+- MLProbeKey / closest-first probe ordering
+- MLCloseNeighbourPolicy
+- MLCloseNeighbourEntry / Result / Query
+- MLCloseNeighbourIndex (MLDriveableObject)
+- MLExactNeighbourIndex
+- MLCloseNeighbourAssessment
+
+Semantic rules qualified:
+- largest weighted coordinate discrepancy dominates finer differences;
+- adjacent quantisation cells remain adjacent across binary carry boundaries;
+- exact bucket lookup is radius 0 and neighbouring cells are explicit multi-probe evidence;
+- probe-bucket budget fails closed instead of silently truncating;
+- out-of-range values fail closed by default; CLAMP is explicit policy;
+- duplicate sample ids are rejected by the index;
+- candidate retrieval may optionally rerank the bounded set by exact squared Euclidean distance;
+- approximation quality is measurable against brute-force exact top-k via recall@k and candidate fraction;
+- index fitted state participates in rollback/roll-forward history.
+
+Audio inheritance regression:
+- 18-bit-like 6+6+6 temporal/frequency landmark schema;
+- radius-0 misses adjacent frequency buckets after self-exclusion;
+- radius-1 recovers both one-bin adjacent landmarks;
+- temporal dimension weighting demonstrates explicit significance policy.
+
+Executable regression suite:
+- 42/42 PASS.
+- all 34 dev7 regressions remain green.
+
+Compilation:
+- 12 ML source classes PASS rexxc.
+- Audio Pareto adapter PASS rexxc.
+- Storage Fabric bridge PASS rexxc.
+- recovered-audio integration replacement PASS rexxc.
+- 15 compile surfaces total.
+
+Semantic Source Control v0.2.3 dogfood:
+- reconstructed dev7 as OorexxML / MAIN / sourceLevel 8: 11 packages / 537 methods / 291 attributes.
+- dev8 scan: 12 packages / 636 methods / 291 attributes / 0 external candidates / 0 pending proposals.
+- accepted dev8 as OorexxML / MAIN / sourceLevel 9.
+
+Dependency equivalence:
+- Journal Pointed State v0.1 snapshot MATCH.
+- Maths v0.7 / MathsBootstrap snapshots MATCH.
+- Storage Fabric v0.1-dev7 snapshot MATCH.

@@ -1,0 +1,17 @@
+{
+  "kind": "article",
+  "id": "python-best-practices.defaults.no-mutable-default-argument",
+  "version": "0.1",
+  "sphere": "python-best-practices",
+  "title": "Do not use a mutable object as a default argument value",
+  "summary": "A default argument is evaluated once at function definition, and the same object becomes the default for every call. If that object is mutable (a list, dict, set), a call that mutates its argument permanently corrupts the default seen by later calls. An LLM reaching for items=[] or cache={} as a default is reproducing one of the most common corpora mistakes.",
+  "semantics": "None of list/dict/set literals in the parameter list are guarded; they are bound once in the function object's __defaults__/__kwdefaults__. Each call without the argument reuses that one object.",
+  "why_this_is_not_a_language_rule_everywhere": "Detecting every case statically needs dataflow through the body (is the object actually mutated?). The clearly-safe form below is the rule; using a sentinel is an article because whether the object is touched sometimes needs intent.",
+  "evidence_note": "PLABEL: canonical. CPython evaluates default expressions once and stores them on the function object. This is the well-known 'mutable default argument' gotcha.",
+  "invariants": [
+    "Never author def f(x, acc=[]) or def g(x, cache={}).",
+    "To collect per-call state, write def f(x, acc=None): \\n    if acc is None: acc = [] and mutate acc as a local.",
+    "Use None as the default when later you must distinguish 'argument given' from 'nothing', then branch on truth.",
+    "If you truly want a shared persistent store between calls, make that an explicit design decision and document it, never an incidental default."
+  ]
+}

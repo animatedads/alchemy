@@ -1,0 +1,45 @@
+Crypto v0.8.2 / Foreign Runtime v0.14.0 qualification
+
+Runtime: supplied ooRexx 5.3.0 r13196 Internal Test Version
+Crypto implementation/tests: byte-identical to sealed v0.8.1
+Runtime Reference: sealed v0.4 unchanged
+Foreign Runtime: user-supplied v0.14.0 archive
+Foreign Runtime archive SHA-256: da7643a011fcc2f82d972a3462d12c8069f36139c13f805abcfbe985d990f2ea
+Runtime Reference archive SHA-256: c42a0c51cc5f5e26056d22db97d53eae2633141a7cebe3304b5f19b1847f957a
+Prior Crypto v0.8.1 archive SHA-256: e44079d740c4f32128eb3a35ea61f68a9211f6f6c1ce3a08463099573d175004
+
+Foreign Runtime v0.14.0:
+PASS pristine supplied prebuilt complete suite
+PASS thread-safety activities
+PASS 128 deterministic assertions
+PASS library candidate fallback
+PASS metadata-gated UNKNOWN rejection
+PASS provider serialized threading policy
+PASS callback cross-thread rejection under call-thread policy
+PASS POSIX openpty/poll/exact-binary/errno
+PASS OpenSSL metadata probe / EVP SHA-256 / automatic-output SHA-256
+PASS one-shot exact-binary SHA-256/SHA-512
+PASS FFmpeg avformat / AVChannelLayout / planar pointer-array probes
+PASS fresh source build with -std=c++17 -O2 -fPIC -Wall -Wextra
+PASS source-built complete suite
+
+Crypto v0.8 implementation on Foreign Runtime v0.14.0:
+PASS all native Crypto compatibility tests
+PASS direct SHA-256/SHA-512 exact-binary equivalence
+PASS direct SHA shared-provider concurrency
+PASS direct HMAC-SHA-512 / ChaCha20 / Ed25519 / RSA equivalence
+PASS compatibility Edwards25519 / unclamped X25519 / experimental Ed448 equivalence
+PASS expensive-operation shared-provider concurrency
+PASS direct-libcrypto / compatibility-shim isolation in both failure directions
+PASS live TCP provider tests for Ed25519/X25519/RSA/SHA-256/SHA-512
+PASS Foreign -> TCP -> native SHA failover
+PASS Foreign -> TCP -> native expensive-operation failover
+PASS dead TCP -> native fallback
+
+Outer framework qualification:
+PASS Runtime Reference v0.4 complete suite
+PASS Runtime Registry v0.14 complete non-optional suite against exact Crypto implementation
+PASS Runtime Registry runtime and ability concurrency tests on first run
+
+Conclusion:
+Foreign Runtime v0.14.0 is a qualified replacement substrate for v0.13.0 under the Crypto v0.8 direct-libcrypto/five-function-compat architecture. Crypto v0.8.2 changes qualification/provenance/version documentation only; no Crypto implementation, native compatibility code, test, operation id, public API, TCP wire, or fallback semantic changes.

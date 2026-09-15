@@ -1,0 +1,35 @@
+ooRexx Storage Fabric v0.1-dev7 validation
+
+Runtime:
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+
+Supplied runtime package was extracted under the qualification workspace; no system ooRexx installation was assumed.
+
+Syntax compilation:
+PASS rexxc all src/*.cls
+PASS rexxc all tests/*.rex
+PASS rexxc all examples/*.rex
+
+Regression / behaviour suite:
+PASS all 23 inherited dev6 behavioural tests
+PASS node identity/provider/endpoint/device-admission inventory and restart persistence
+PASS ED209 fleet storage-placement matrix / no invented capacity
+PASS optional Storage -> API Client v0.3 finite-request bridge
+PASS ALL STORAGE FABRIC v0.1-dev7 CORE TESTS
+
+Total behavioural tests executed through tests/run.sh with STORAGE_API_CLIENT_SRC set: 25.
+
+New dev7 evidence:
+- stable nodeId is separate from provider and endpoint; changing endpoint does not redefine object/node identity;
+- inventory records ed209a/ed209b Oracle, ed209c Microsoft Azure and ed209d AWS as four independent planner candidates;
+- observed block devices are not workspace by default: UNQUALIFIED devices remain unavailable to WorkspaceManager until explicitly admitted;
+- the observed Azure 1 TiB and 110 GiB devices therefore do not make a 40 GiB request feasible merely because fdisk can see them;
+- the Azure root workspace remains disposable/CREDIT_LIMITED and requires durable output export;
+- the two Oracle nodes remain separate capacity domains and never masquerade as one aggregate workspace;
+- data resident on ed209a produces JOB_TO_DATA evidence while the same request on ed209b produces DATA_TO_JOB evidence;
+- ed209d with no current StoragePool/capacity observation is storage-INFEASIBLE rather than receiving invented capacity;
+- fleet assessment returns storage evidence for every known node but does not choose the final placement winner; hard eligibility and lease authority remain Job-to-Node responsibilities.
+
+Inherited dev6 Drive/security evidence remains applicable and unchanged.

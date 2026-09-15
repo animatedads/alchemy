@@ -1,0 +1,20 @@
+{
+  "kind": "language-rule",
+  "id": "BASH.QUOTING.UNQUOTED_EXPANSION",
+  "version": "0.1",
+  "language": "bash",
+  "title": "Unquoted variable (or $( )) expansion used as a word instead of an argument",
+  "purpose": "Prevent word-splitting and globbing from turning a single value that is meant to be one argument into several, corrupting every later argument wherever the value holds spaces, globs or is empty.",
+  "trigger": "A positional/argument position expands a variable, parameter or $( ) substitution without double quotes (for example $name, $@ as a lone command argument, or ${arr[*]} where each element must be a separate word), so Bash splits the result on whitespace or expands globs.",
+  "correct": "Double-quote the expansion: \"$name\", \"${arr[@]}\". Use an unquoted expansion only in the specific, deliberate cases where you want splitting, and make that intent obvious.",
+  "fixability": "MANUAL",
+  "assess": {
+    "classification": "language-semantics-plus-intent",
+    "detection_certainty": "deterministic",
+    "violation": "contextual",
+    "suggested_correction": "available",
+    "auto_rewrite": "unsafe_without_intent"
+  },
+  "evidence_note": "Grounded in queuebash.sh and bin/queue-* which spread expansions and compose commands as quoted arrays so spaces/newlines survive.",
+  "return_semantics": "A reference rule page; shown for LLM author guidance, not executed by rules check."
+}

@@ -1,0 +1,25 @@
+FederationBank Merchant Collateral Protocol v0.1 validation
+Date: 2026-08-26
+
+Interpreter:
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+of the Common Public License v1.0 which accompanies this distribution or at
+https://www.oorexx.org/license.html
+
+Tests:
+==> test_control_contract.rex
+PASS test_control_contract
+==> test_realisation_contract.rex
+PASS test_realisation_contract
+PASS 2/2 Merchant Collateral Protocol tests
+
+Boundary evidence:
+- Merchant requests cannot become Core encumbrances without an explicit Core decision.
+- Cross-entity ownership mismatches are rejected by the merchant-side validator.
+- Core cannot acknowledge or realise more than requested.
+- Core rejection remains authoritative.

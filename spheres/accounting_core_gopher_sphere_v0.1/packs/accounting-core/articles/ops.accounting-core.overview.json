@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "ops.accounting-core.overview",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "Accounting Core: one economic world, many independent accounting truths",
+  "summary": "Accounting Core is shared infrastructure, not a shared ledger. Each legal entity owns its own book and posts its own accounting consequence of authoritative operational evidence. A correlation can connect FlyLo, Federation, All Japan, VMM or other counterparties without granting cross-company posting authority. Banking, insurance, airline, market-making, tax and regulatory engines remain separate operational/policy authorities.",
+  "authority": "project-architecture",
+  "invariants": [
+    "A legal entity owns an independent AccountingEngine and AccountingBook; shared software does not imply shared books.",
+    "Operational systems are authoritative for what happened; executable accounting policy decides what that evidence means to one legal entity; Accounting Core enforces posting mechanics and evidence binding.",
+    "A common economic correlation links evidence for reconciliation but never authorises one entity to write another entity's books.",
+    "The banking engine is not the accounting engine, and a bank-account balance is not a substitute for a legal entity's general ledger.",
+    "The core is intentionally boring: jurisdiction-specific tax law, exotic ownership structures and regulator rules belong in versioned policy/evidence layers."
+  ],
+  "procedure": [
+    "When entering a new project, identify each legal entity that needs its own accounting truth before designing journals or reports.",
+    "Load the accounting-rigour companion sphere when implementing arithmetic, persistence, replay or rounding-sensitive behaviour."
+  ],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/ARCHITECTURE.md",
+      "claim": "Accounting Core is shared infrastructure, not a shared ledger; each legal entity owns independent accounting truth and policy maps operational evidence into that truth."
+    }
+  ]
+}

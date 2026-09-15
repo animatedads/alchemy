@@ -1,0 +1,42 @@
+Crypto v0.8.1 / Foreign Runtime v0.13.0 qualification
+
+Runtime: supplied ooRexx 5.3.0 r13196 Internal Test Version
+Crypto implementation: byte-identical src/native implementation to sealed v0.8
+Runtime Reference: sealed v0.4 unchanged
+Foreign Runtime: user-supplied v0.13.0 archive
+Foreign Runtime archive SHA-256: d54275e6b7c92b4b18604971b27abe38c0212ea3da1bec1bd3bcd3a013543d72
+Runtime Reference archive SHA-256: c42a0c51cc5f5e26056d22db97d53eae2633141a7cebe3304b5f19b1847f957a
+Prior Crypto v0.8 archive SHA-256: a8bb73fa30bc22c456328f1171f713ec994d5e8d60c729e43e5beb04a38e104c
+
+Foreign Runtime v0.13.0:
+PASS pristine supplied prebuilt complete suite
+PASS 101 deterministic assertions
+PASS library candidate fallback and UNKNOWN rejection
+PASS thread-safe activity suite
+PASS provider serialized threading policy
+PASS call-thread callback policy rejection
+PASS OpenSSL metadata/EVP/automatic-output/exact-binary SHA probes
+PASS FFmpeg AVFormatContext **, AVChannelLayout struct and planar pointer-array probes
+PASS fresh source build with -Wall -Wextra
+PASS source-built deterministic/callback/serialized tests
+PASS source-built thread-safety activity test in three isolated reruns after one combined debug-runtime timeout
+
+Crypto v0.8 implementation on Foreign Runtime v0.13.0:
+PASS all native Crypto compatibility tests
+PASS direct SHA-256/SHA-512 exact-binary equivalence
+PASS direct SHA shared-provider concurrency
+PASS direct HMAC-SHA-512 / ChaCha20 / Ed25519 / RSA equivalence
+PASS compatibility Edwards25519 / unclamped X25519 / experimental Ed448 equivalence
+PASS expensive-operation shared-provider concurrency
+PASS direct-libcrypto / compatibility-shim isolation in both failure directions
+PASS live TCP provider tests for Ed25519/X25519/RSA/SHA-256/SHA-512
+PASS Foreign -> TCP -> native SHA failover
+PASS Foreign -> TCP -> native expensive-operation failover
+PASS dead TCP -> native fallback
+
+Outer framework qualification:
+PASS Runtime Reference v0.4 complete suite
+PASS Runtime Registry v0.14 complete non-optional suite against exact Crypto v0.8 implementation
+
+Conclusion:
+Foreign Runtime v0.13.0 is a qualified replacement substrate for v0.11.0 under the Crypto v0.8 architecture. Crypto v0.8.1 changes qualification/provenance/version metadata only; no Crypto implementation, operation id, public API, TCP wire, or fallback semantic changes.

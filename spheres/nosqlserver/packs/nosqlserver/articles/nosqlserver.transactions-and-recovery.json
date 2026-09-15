@@ -1,0 +1,24 @@
+{
+  "id": "nosqlserver.transactions-and-recovery",
+  "title": "Transactions, staged mutation and recovery",
+  "section": "architecture",
+  "summary": "The native transaction line preserves NOTEXECUTED versus ROLLEDBACK, staged/atomic mutation publication, recovery journals and ordered mutation evidence. Placement of transaction semantics at the shared database boundary must not erase NoSQLServer's richer native diagnostic/result surface.",
+  "invariants": [
+    "A request rejected before operation begins is NOTEXECUTED.",
+    "A transaction that began and was atomically undone is ROLLEDBACK.",
+    "Those states must never be collapsed.",
+    "Interop is additive; native planner/recovery evidence remains available."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "nosqlserver",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "nosqlserver_v0.79.zip",
+      "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec",
+      "member": "nosqlserver_v0.79/INTEROP_v0.14.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "native-db.roadmap",
+  "version": "0.1",
+  "sphere": "native-database-backends",
+  "title": "Continuation order: PostgreSQL depth, optional GIS acceleration, then MySQL outbound",
+  "summary": "The planned continuation is PostgreSQL parameter arrays, cancellation, nonblocking execution, COPY streaming and pipeline mode; then an optional Foreign Runtime GeoPackage/sqlite/spatial accelerator while preserving the pure-ooRexx reader; then a MySQL/MariaDB outbound native backend using the same common contracts. Rich structured results should eventually flow directly into Database Core rather than being rendered to compatibility text first.",
+  "authority": "project-plan",
+  "procedure": [
+    "Implement PostgreSQL parameter arrays via Foreign Runtime pointer/buffer machinery and PQexecParams/PQsendQueryParams; do not interpolate SQL.",
+    "Add cancellation with explicit session ownership and evidence.",
+    "Add bounded nonblocking libpq execution.",
+    "Add COPY source/sink streaming with backpressure and lifetime semantics.",
+    "Add pipeline mode only after version/capability qualification.",
+    "Add optional GeoPackage Foreign Runtime acceleration, keeping the pure-ooRexx path intact.",
+    "Add MySQL/MariaDB outbound native client backend under the same capability/session/result contract.",
+    "Move Database Core consumers toward structured results where compatible."
+  ],
+  "invariants": [
+    "Do not sacrifice the portable GIS path for acceleration.",
+    "Do not add provider-specific shortcuts to the common contract unless represented as explicit capabilities/extensions.",
+    "Do not silently replay work across backend implementations after acquisition."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/PLAN.md",
+      "line_start": 1,
+      "line_end": 12,
+      "claim": "The continuation order is PostgreSQL depth, optional GIS acceleration preserving pure ooRexx, then MySQL/MariaDB outbound native client."
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+Runtime Registry v0.14 release validation
+=========================================
+
+Release: 0.14
+Core API: runtime.registry/0.3
+Ability HTTP release/API: 0.7 / ability.http/0.7
+Ability WLU bridge release/API: 0.1 / ability.wlu/0.1
+
+Authoritative base
+------------------
+Runtime Registry v0.13 from the user-supplied current API roll-up:
+  SHA-256 93b29bda0ed24cbd042d7f1a2c20db70189195ce69decf6f95b6d20424c10988
+
+Current roll-up
+---------------
+Input roll-up:
+  oorexxapis(20260824-162442).zip
+SHA-256:
+  0ef6ed3c7afc68be24092c609d87a6e112401d075ae4014f5a7f9ba7521e8658
+
+v0.14 delta
+-----------
+- compatibility/qualification release only;
+- Runtime Registry core API remains runtime.registry/0.3;
+- reference Ability HTTP remains ability.http/0.7;
+- optional Ability/WLU bridge remains ability.wlu/0.1;
+- test_ability_wlu_http.rex now qualifies the actual WLU authority evidence
+  work.load.units/0.12 from oorexx_work_load_units_v0.12;
+- no WLU-version compatibility shim is added: AbilityWLUBridge continues to
+  obtain and publish the configured authority's actual API version;
+- existing WLU admission/settlement behavior remains unchanged.
+
+Interpreter
+-----------
+Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit, build 2026-08-03.
+
+Focused current-stack qualification
+-----------------------------------
+Dependencies used:
+- oorexx_crypto_v0.1
+- alchemy_objects_v0.7 (required by WLU v0.12)
+- oorexx_work_load_units_v0.12 (work.load.units/0.12)
+
+Acceptance evidence
+-------------------
+- 15/15 unconditional Runtime Registry/Ability executables PASS under r13196;
+- focused WLU HTTP acceptance PASS against oorexx_work_load_units_v0.12;
+- focused WLU evidence: spent_micro_wlu=700000, retry_after=2;
+- compile audit: 49/49 shipped .cls/.rex targets compile with rexxc.
+
+Expected WLU evidence/behavior:
+- authenticated Ability catalogue reports work.load.units/0.12;
+- successful request settles actual performed work rather than forecast ceiling;
+- pre-work rejection releases the reservation and spends zero;
+- post-work rejection settles reported performed work;
+- result-store failure after performed work still settles that work;
+- WLU capacity refusal maps to HTTP 429 with Retry-After before dynamic
+  capability/provider side effects.
+
+Source audit
+------------
+- Runtime Registry does not vendor crypto.cls;
+- Runtime Registry does not vendor WorkLoadUnits.cls;
+- AbilityHttpServer.cls remains free of a direct WorkLoadUnits.cls ::requires;
+- only AbilityWLU.cls owns the optional WLU source dependency.
+
+Release rule
+------------
+v0.14 changes package qualification, not interface identity. Existing callers
+of runtime.registry/0.3, ability.http/0.7 and ability.wlu/0.1 do not need a
+protocol migration solely because the certified WLU dependency advanced.

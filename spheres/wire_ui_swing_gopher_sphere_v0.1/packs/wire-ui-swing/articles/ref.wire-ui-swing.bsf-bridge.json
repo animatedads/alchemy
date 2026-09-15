@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.bsf-bridge",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Narrow ooRexx/BSF4ooRexx integration boundary",
+  "summary": "The ooRexx integration surface is intentionally narrow: recursively convert ooRexx table/directory/array values into ordinary Java Map/List Wire objects, call WireSwingRuntime.accept, and drain outbound/action records. Do not expose arbitrary Swing widgets as ooRexx application objects.",
+  "authority": "integration-contract",
+  "invariants": [
+    "WireSwingRuntime owns EDT marshalling even when .AwtGuiThread is available as an additional launcher safety layer.",
+    "The bridge does not make JButton/JPanel/JTextField objects part of application authority.",
+    "A BSF-compatible static WireSwingRuntime.create() factory is intentional because BSF v850 constructor resolution rejected the ordinary default constructor in the qualified environment.",
+    "Java VM native loader/library-path setup is a launcher concern, not a Wire contract.",
+    "Top-level JFrame lifecycle remains behind WireSwingDesktopWindow/bridge methods rather than being exposed for arbitrary mutation."
+  ],
+  "procedure": [
+    "Convert inbound ooRexx values recursively to Java collections/scalars.",
+    "Pass the resulting Wire message to WireSwingRuntime.",
+    "Drain outbound protocol/action maps and recursively convert them back to ooRexx values.",
+    "Keep all component and JFrame objects private to the Java renderer/desktop facade."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev5.zip",
+      "sha256": "a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271",
+      "member": "wire_ui_swing_v0.2-dev5/integration/BSF4OOREXX_NOTES.md",
+      "claim": "Qualified narrow ooRexx/BSF bridge and interoperability findings."
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+Brand Interaction Stack Gopher Sphere v0.1 qualification
+Date: 2026-09-02
+Required engine: LLM Gopher v0.19-dev1+
+Runtime used for current-composition probes: Open Object Rexx 5.3.0 r13196 Internal Test Version
+
+Grounded API roll-up:
+- oorexxapis(20260902-164522).zip
+  SHA-256 190c3e9f7b484cfccc3e0fa4fe7fe07e6f0d15838ae2024b028ccaffd9652830
+
+Grounded Brand-stack artifacts:
+- structured_utterance_v0.3-qualified.zip c5dfe06fb7d85080990024c24d45023e4ef1e9e69bdbb10cfec6a9d2ed0dfa79
+- interaction_event_v0.3-qualified.zip bd6ea3ab41eb0f1e2724750a2e20258a91c9fe5c7bb7bdd51dee4845576de4fe
+- brand_interaction_effect_v0.6.zip 235f2ed40206b8571630e18d17bf781d973a319107122d90ba07c751a81a7a4f
+- brand_journey_v0.1.zip cebff32a3d40f9d820c245b33a14825ffbe0da4935ccd43a8a396e90a17d4bf8
+- brand_journey_population_v0.3.zip 13c96cf013bf3cec1d4bfb4c37a6bba2961243ad2e8a1c3c95933fa31b52dfc3
+- brand_intervention_v0.2.zip 22b4fc43952e20c9640e93832f1985e45d400fb3bca860e40c7d9b649b0eeed6
+- brand_intervention_effectiveness_v0.2.zip dcb1e97adcfcb1e22901094896ae93c6438794844fe8fe3d5c17522d73589c98
+- brand_intervention_governance_v0.2.zip 1e367c8847b8878c2008f4a9580936c95fdc96080688185e3612c2a2937b2f81
+- institutional_policy_v0.8.zip cc299764ae7e4d5c9aab7457b46f49ba524320296ed1e85d37b74025b16700bc
+- alchemy_objects_v0.8.zip 7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073
+- runtime_registry_v0.14.zip b8748634f271f5389b9e7e4fd7089eda314b0eea90ab6e47151ae1de270c6209
+- oorexx_crypto_v0.8.3.zip 5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49
+
+Current-composition executable probes using dependencies extracted from the exact Sep-2 roll-up:
+PASS Interaction Event v0.3 complete suite
+PASS Structured Utterance v0.3 complete suite
+PASS Brand Interaction Effect v0.6 complete suite
+PASS Brand Journey v0.1 complete suite
+PASS Brand Journey Population v0.3 complete suite
+GAP  Brand Intervention v0.2 current-stack suite: test_cohort_quality_review.rex line 6 calls removed BrandJourneyPopulation.configureProvenance and receives Object method not found
+PASS Brand Intervention Effectiveness v0.2 complete suite against Journey Population v0.3
+PASS Brand Intervention Governance v0.2 complete suite against Journey Population v0.3 and Institutional Policy v0.8
+
+The Intervention gap is an API-ownership compatibility issue, not an assertion failure in its v0.2 reasoning semantics. Journey Population v0.3 deliberately owns upstream provenance on BrandJourneyPopulation.configureSourceProvenance and cohort-local selection on BrandJourneyCohortDefinition.configureSelectionProvenance, while legacy full configureProvenance remains cohort-owned.
+
+Sphere qualification:
+- Sphere Editor create/put/evidence workflow used.
+- Canonical structured provenance attached to project-authoritative articles.
+- tests/run.sh verifies sphere structure, durable records, current API/hash identities and (when BRAND_API_ROLLUP is supplied) nested artifact digests and provenance members.
+- sphere edit validate: required PASS before package.
+- sphere edit lint: required clean before package.
+- standalone Gopher override resolve/load/context/lookup/corpus lookup: required PASS before release.
+
+Authority boundary:
+This sphere is documentation/project-continuity authority only. It grants no domain, customer, causal, legal, policy-publication, governance-decision or execution authority.
+
+Manifest note:
+LLM Gopher v0.19-dev1 Sphere Editor writes qualification/MANIFEST.sha256 into the manifest itself, as also observed in the supplied example spheres. A cryptographic manifest cannot self-authenticate its final bytes. Release verification therefore checks every manifest entry except the MANIFEST.sha256 self-entry; the outer sphere ZIP SHA-256 authenticates the complete archive including the final manifest bytes.

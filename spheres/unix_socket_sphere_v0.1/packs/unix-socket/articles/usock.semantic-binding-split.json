@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "usock.semantic-binding-split",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Semantic library above Foreign Runtime binding authority",
+  "summary": "The durable architecture separates meaning from binding: unixsocket.cls is the application-facing Unix IPC semantic layer, while Foreign Runtime is the native-call, resource-lifetime and ABI authority that reaches libc.",
+  "authority": "project-authority",
+  "invariants": [
+    "Applications should see UnixSocket, UnixAddress, UnixMessage, UnixDescriptor and semantic poll objects rather than raw msghdr/cmsghdr machinery.",
+    "Foreign Runtime is the binding mechanism; it does not own Unix-domain application semantics.",
+    "Do not reintroduce a Unix-socket-specific native shared library unless a demonstrated Foreign Runtime limitation makes the semantic contract impossible to express safely.",
+    "The v0.3 native implementation is retained conceptually as a semantic oracle/history, not as the preferred system boundary."
+  ],
+  "procedure": [
+    "Place new Unix IPC semantics in unixsocket.cls; place generally reusable FFI/lifetime/ABI capabilities in Foreign Runtime."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/ARCHITECTURE.md",
+      "line_start": 3,
+      "line_end": 22,
+      "claim": "Architecture defines Foreign Runtime as native binding authority, unixsocket.cls as semantic library, and the managed sendmsg/recvmsg graph.",
+      "note": "Current architecture decision."
+    },
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6(1).zip",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "member": "oorexx_foreign_runtime_v0.22.6/README.md",
+      "line_start": 14,
+      "line_end": 16,
+      "claim": "Foreign Runtime v0.22.3 introduced managed pointer-field graphs, transitive pinning, cycle rejection, and exact binary buffer slices.",
+      "note": "Capability that made safe msghdr binding possible."
+    }
+  ]
+}

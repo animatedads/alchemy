@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "usock.address-model",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Unix address namespaces are pathname, abstract, or unnamed",
+  "summary": "UnixAddress models three distinct address forms instead of flattening every endpoint into a pathname string: filesystem pathname, Linux abstract namespace, and genuinely unnamed addresses.",
+  "authority": "project-authority",
+  "invariants": [
+    "PATHNAME addresses reject embedded NUL bytes and include a terminating NUL in sockaddr_un.",
+    "ABSTRACT addresses are binary-safe and may contain embedded NUL bytes; the kernel namespace begins with an initial NUL byte.",
+    "UNNAMED is a real address state, including unbound datagram peers; it is not an empty pathname.",
+    "Address-length limits come from the qualified ABI profile rather than a magic number in application code."
+  ],
+  "procedure": [
+    "Use UnixAddress~pathname, ~abstract, or ~unnamed according to the kernel namespace being represented."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/unixsocket.cls",
+      "line_start": 105,
+      "line_end": 184,
+      "claim": "UnixAddress source implements PATHNAME, ABSTRACT and UNNAMED namespaces with NUL and length rules and binary-safe native encoding/decoding.",
+      "note": "Executable address semantics."
+    }
+  ]
+}

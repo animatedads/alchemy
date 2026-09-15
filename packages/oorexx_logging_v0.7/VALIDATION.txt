@@ -1,0 +1,136 @@
+ooRexx Logging Framework v0.7 validation
+Date: 2026-08-24
+
+Interpreter
+-----------
+Open Object Rexx 5.3.0 r13196 - Internal Test Version
+Build date: 2026-08-03, 64-bit
+supplied package SHA-256:
+8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae  oorexx-5.3.0-13196.ubuntu1604debug.x86_64(5).deb
+
+Current API roll-up
+-------------------
+c2e3b1e7751e3ed69514cc2743e1ba82c0d3e6b7ca2b16f999a862f3dcfef5a8  oorexxapis(20260824-191406).zip
+
+Current integration inputs from that roll-up
+---------------------------------------------
+7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073  alchemy_objects_v0.8.zip
+179682880c0f7d221114bfc648fab4e9f678153640d850ed1c3944c478eb6ae3  institutional_policy_v0.6.zip
+9c1487f8dc878ae21a19e8fc8a139c801a80a97acd2c6575635003e6f8069898  oorexx_queue_fabric_v0.9-dev4.zip
+78afaa1d702d9bcfcb86ab7e56a8e3ca0c46b18519c1c4cae23bb992a2747f42  nosqlserver_v0.77.zip
+3eab23b5138cba889eb11ea5b93747eb14fca8da0fd4ac936a70174349ae8f3a  oorexx_crypto_v0.1.zip
+
+Reviewed but deliberately not imported into logging core
+--------------------------------------------------------
+aabd77d84d67366588f805c9c1b5527028db272b0090c07b2d1ab3ac2334e525  security_effect_v0.8.zip
+cd1576bde75eebb09dd94a04e71bbfe979a3eaa49e8017fe4df1a0b216b2cb32  oorexx_jms_queue_bridge_v0.1-dev2.zip
+
+v0.7 acceptance additions
+-------------------------
+- LogRule may be registered atomically dormant with addDormantRule(), or via
+  addRule(..., initiallyEnabled=.false). Validation and any exact scope crypto
+  checks happen before publication, but disabled rules are omitted from the
+  compiled method/class indexes.
+- DORMANT_RUNTIME_ACTIVATION proves a lightweight object receives no proxy and
+  the service has zero compiled plans while its incident rule is dormant.
+- Arming that rule makes proxy creation eligible. A benign call through the
+  active proxy evaluates one exact predicate but creates zero LogInvocation,
+  active logger, or LogEvent objects.
+- Disarming the rule removes the plan. New references get the original object,
+  and an already-issued proxy performs zero plan evaluations and emits no stale
+  events after disarm.
+- LogRuntimeControl provides the narrow operational service/rule/target toggle
+  surface. It does not expose rule definition/replacement APIs.
+- LogControlEvent records control operation, subject, old/new state, reason and
+  caller-supplied actorId as a structured object outside normal LogEvent
+  delivery. actorId is provenance only, not a cryptographic-authority claim.
+- The control journal is bounded (default 1024, constructor configurable) and
+  exposes controlEventsDropped. CONTROL_JOURNAL_BOUND verifies a 3-entry
+  service retains the newest 3 of 5 control changes and reports dropped=2.
+- LogRuntimeSnapshot exposes structured service, rule, target, registration and
+  compiled-plan status without adding observers/callbacks to the hot path.
+- LogRuntimeNoSQLAdapter exposes fresh read-only object-table snapshots:
+  runtime, rules, targets, registrations, plans, control_events.
+- Runtime NoSQL raw values retain the actual LogService, LogRule, target,
+  registration, plan and LogControlEvent objects. SQL-visible fields are only
+  bounded projections.
+- An executable UPDATE attempt against ctl_rules is NOTEXECUTED and cannot
+  change the underlying LogRule, proving SQL inspection cannot bypass the
+  coherent LogRuntimeControl path.
+
+Core performance acceptance
+---------------------------
+The hard acceptance properties remain structural rather than timer based:
+- with no applicable rule/target/policy, registered substantial-object methods
+  are physically unwrapped and perform zero logging plan/predicate work;
+- dormant lightweight rules create zero proxies and zero compiled plans;
+- an armed selective condition miss creates zero invocation/logger/event
+  objects;
+- an already-issued lightweight proxy performs zero plan work after disarm;
+- Institutional Policy deployment/topology resolution remains activation-time
+  work and is not called from ordinary logged business invocations.
+
+The supplied debug/internal-test interpreter was also sampled with 300,000
+explicit sends to the singleton null logger. Three consecutive standalone
+samples during v0.7 validation were 1.910, 2.046 and 2.068 microseconds of
+incremental time per call. A full-suite sample under concurrent system load was
+7.471 microseconds, illustrating why this microbenchmark is supporting evidence
+rather than a portable acceptance threshold.
+
+Exact selective WebsiteUI acceptance
+------------------------------------
+SELECTIVE_BENIGN calls=1000 plan_evaluations=1000 rule_matches=0 invocations=0 active_loggers=0 events=0
+SELECTIVE_NIL matches=1 invocations=1 events=2
+SELECTIVE_ATTACK matches=1 invocations=1 events=2
+SELECTIVE_DISABLED plan_evaluations=0 events=0 instrumented_methods=0
+
+Large rule-set indexing acceptance
+----------------------------------
+RULE_INDEXING rules=1001 unrelated_predicates=0 selected_predicates=1 allocations_on_miss=0
+RULE_REPLACEMENT rejected_update_atomic=PASS stale_logger_suppressed=PASS
+
+Deployment/progressive acceptance
+---------------------------------
+LOG_POLICY_PROGRESSIVE ordinary=v1 pilot=v2 cutover=v2 topology_hot_path=0 expiry_atomic=PASS
+
+Runtime control acceptance
+--------------------------
+RUNTIME_CONTROL_NOSQL rules=PASS targets=PASS registrations=PASS plans=PASS controls=PASS raw_objects=PASS
+CONTROL_JOURNAL_BOUND retained=3 dropped=2 structured=PASS
+DORMANT_RUNTIME_ACTIVATION inactive_proxy=0 active_proxy=1 benign_allocations=0 stale_proxy_logging=0
+
+Existing integration floor retained
+-----------------------------------
+- Alchemy Objects v0.8 cooperative interposition in both installation orders;
+- real crypto-locked method logging;
+- exact cross-scope/domain Alchemy capability checks;
+- Institutional Policy v0.6 publication, effective dating, progressive overlap,
+  policy seal integrity and atomic handover;
+- NoSQLServer structured event querying and raw object preservation;
+- Queue Fabric direct, topic/subscriber, exact security-domain enforcement and
+  durable event/0.4 object-graph persistence;
+- executable recovery of event/0.3, event/0.2 and event/0.1 records.
+
+Working-tree suite result
+-------------------------
+38 run_test invocations in tests/run_all.sh, plus the real Alchemy
+crypto-locked-method invocation from the Alchemy package test directory.
+37 PASS markers (compile probes intentionally do not print PASS markers).
+ALL LOGGING TESTS PASS
+
+Final artifact verification
+---------------------------
+The release candidate ZIP was extracted to a fresh directory. All 54 entries in
+MANIFEST.sha256 verified successfully and the complete suite reran from that
+extracted copy against the exact interpreter/dependency set above.
+
+Clean-artifact acceptance highlights:
+NOOP_BENCH iterations=300000 plain_s=0.488987 noop_log_s=1.096694 extra_us_per_call=2.026 ratio=2.243
+RUNTIME_CONTROL_NOSQL rules=PASS targets=PASS registrations=PASS plans=PASS controls=PASS raw_objects=PASS
+CONTROL_JOURNAL_BOUND retained=3 dropped=2 structured=PASS
+DORMANT_RUNTIME_ACTIVATION inactive_proxy=0 active_proxy=1 benign_allocations=0 stale_proxy_logging=0
+ALL LOGGING TESTS PASS
+
+After recording this evidence, the package is resealed, its manifest regenerated,
+and that final ZIP is extracted and rerun once more so the distributed checksum
+corresponds to a tested artifact.

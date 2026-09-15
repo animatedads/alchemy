@@ -1,0 +1,27 @@
+V0.26 STATIC / HARDENING GUARDS
+date_utc=2026-08-23T14:45:44Z
+
+STATIC GUARD NO RESULT VARIABLE: OK
+STATIC GUARD NO LEGACY DETERMINISM: OK
+STATIC GUARD NO GLOBAL NOSQL TRANSPORT CLASSES: OK
+STATIC GUARD NO GLOBAL LEGAL VERIFICATION SNAPSHOT CLASS: OK
+STATIC GUARD V0.7 RUNTIME NOT LEGAL AUTHORITY: OK
+
+LIBRARIAN SALVAGE DELTA: OK
+LIBRARIAN HARDENED CORE AUDIT: OK
+  salvage_sha256=e80746ae8a2449e87cb05c239da9970c30ea9fed3fd42d4f876cba3a50c62432
+  hardened_sha256=ba5fca40ec6b5ad900bc51694c824a57472f90cdce86131a1fd930df43fea31f
+LIBRARIAN ASSERTION CONTRACT: OK (22 tests checked)
+LIBRARIAN SPECIAL VARIABLE AUDIT: OK
+  reviewed RC service/queue assignment forms: 4
+
+CLAIM TOKEN STORAGE AUDIT:
+13: * The Queue Fabric claimToken is used only as a live acknowledgement capability.
+648:  use arg queueManager, queueName, package, claimToken, principal, promotionSet, world, executionNamespace, ledger, transferReceipt = .nil, consumerRevalidator = .nil
+656:  /* claimToken is deliberately compared only here and never retained below. */
+657:  if package~claimToken~string \= claimToken~string then return .QueueAuthorityExecutionResult~failure('CLAIM_TOKEN_MISMATCH')
+679:    ackResult = queueManager~ack(queueName, package~packageId, claimToken, principal)
+703:    ackResult = queueManager~ack(queueName, package~packageId, claimToken, principal)
+719:  ackResult = queueManager~ack(queueName, package~packageId, claimToken, principal)
+claimToken production use limited to live input/check/ack: OK
+claimToken absent from envelope/attempt/authority fingerprint methods: OK

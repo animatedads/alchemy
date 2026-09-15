@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "baa-security-boundaries",
+  "version": "0.1",
+  "sphere": "browser-api-access",
+  "title": "Security and callback boundaries",
+  "summary": "Browser/API/Observation integrations reuse the common Crypto + Access Control + Permissions + Security Effect architecture rather than inventing local trust models.",
+  "authority": "project-authority",
+  "invariants": [
+    "Authentication/cryptographic attribution is evidence, not automatic access or method authority.",
+    "Protected session creation, route use, observation subscription and browser control are permissioned operations at their respective seams.",
+    "proofRef is evidence linkage, not a bearer capability.",
+    "Observation subscriptions are read-side authority and never become universal remote control.",
+    "Completion routing uses registered capabilities/session routing rather than arbitrary callback URLs embedded in work requests.",
+    "Password/secret values must not be exposed through Observation history."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_observation_v0.5.zip",
+      "sha256": "0f604f78d5d198190ae209c813fd287967f94ddaf6116dfa83b4e1904a9f6ed7",
+      "member": "oorexx_observation_v0.5/README.md",
+      "line_start": 7,
+      "line_end": 9,
+      "claim": "Observation explicitly leaves authorization to the common security architecture.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "job_node_allocator_v0.6(1).zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "line_start": 111,
+      "line_end": 112,
+      "claim": "Allocator production authorities remain injected and do not create a second trust/key-management system.",
+      "note": "Authoritative executable-candidate grounding."
+    }
+  ]
+}

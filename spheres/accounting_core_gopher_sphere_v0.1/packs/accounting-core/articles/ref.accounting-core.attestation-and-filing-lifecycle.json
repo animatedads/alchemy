@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "ref.accounting-core.attestation-and-filing-lifecycle",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "Attestation, submission and filing lifecycle never rewrite history",
+  "summary": "Above a sealed snapshot, Accounting Core can freeze who asserted approval, under which authority/key identity, what exact report/attestation set was submitted, and the regulator/workflow observations that followed. A correction produces a new filing with exact predecessor lineage; it never rewrites the original report or receipt.",
+  "authority": "project-architecture",
+  "invariants": [
+    "An attestation binds the exact snapshot/boundary plus attestor, asserted authority identity, proof/key identities and evidence.",
+    "Accounting records asserted authority but does not decide whether the actor legally possessed that authority; external authority/security/legal layers decide that.",
+    "Submission evidence freezes the exact snapshot and attestation set plus external submission/receipt identities.",
+    "ORIGINAL, AMENDMENT and CORRECTION filing versions bind exact predecessor fingerprints where applicable.",
+    "Lifecycle observations are append-only: SUBMITTED, RESUBMITTED, ACKNOWLEDGED, ACCEPTED, REJECTED, WITHDRAWN and SUPERSEDED.",
+    "A later backdated journal may make the old snapshot REPORT_POPULATION_STALE while the old signature and receipt remain valid evidence of what was actually approved/filed.",
+    "Withdrawal, rejection and supersession never delete or mutate the historical submission evidence."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/REPORTING_ATTESTATION_SUBMISSION_CONTRACT.md",
+      "claim": "Attestation/submission evidence binds exact snapshot, asserted authority/key identities and exact submission evidence without deciding legal authority."
+    },
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/REPORTING_LIFECYCLE_CONTRACT.md",
+      "claim": "Filing versions and workflow observations are append-only; corrections/supersession never rewrite historical reports, signatures or receipts."
+    }
+  ]
+}

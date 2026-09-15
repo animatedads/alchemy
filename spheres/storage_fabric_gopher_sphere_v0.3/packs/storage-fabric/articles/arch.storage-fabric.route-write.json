@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.route-write",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Route-specific write semantics",
+  "summary": "Write behaviour belongs to the route/view through which an object is accessed. The same base object can be DIRECT through one path, TRACKED through another, and READ_ONLY through a third.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "TRACKED and COPY_ON_WRITE changes do not silently mutate the base object visible through another route.",
+    "READ_ONLY is an additional Storage constraint, never a grant of access or permission.",
+    "DIRECT advances the route binding; VERSIONED/COPY_ON_WRITE/TRACKED preserve explicit change evidence according to their contracts.",
+    "Destruction of the underlying StorageObject is distinct from unlink/exclusion of one namespace binding."
+  ],
+  "procedure": [],
+  "topics": [
+    "write-policy",
+    "copy-on-write",
+    "tracked",
+    "read-only"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_route_write_semantics.rex",
+      "claim": "Regression proves DIRECT/TRACKED/READ_ONLY route-specific mutation behaviour."
+    }
+  ]
+}

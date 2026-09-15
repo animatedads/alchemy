@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "usock.descriptor-ownership",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "File descriptors are owned resources, not casual integers",
+  "summary": "Descriptors created, accepted or received by the library are modeled as owned resources with close-on-exec discipline. Foreign Runtime owns POSIX_FD handles and UnixDescriptor provides explicit ownership transfer forms.",
+  "authority": "project-authority",
+  "invariants": [
+    "socket() and accept4() results are owned ForeignHandle POSIX_FD resources with close as destructor.",
+    "Created, accepted, socket-pair and received descriptors are close-on-exec by default.",
+    "SCM_RIGHTS raw integers are converted to one managed owner using F_DUPFD_CLOEXEC and the received raw integer is closed.",
+    "UnixDescriptor~release returns a caller-owned CLOEXEC duplicate and retires the managed original; transferHandle moves the managed handle itself.",
+    "Abandoned UnixDescriptor objects close their still-owned handle."
+  ],
+  "procedure": [
+    "Make every ownership transfer explicit; never treat a receipt integer as evidence that two owners may close the same descriptor."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/ARCHITECTURE.md",
+      "line_start": 49,
+      "line_end": 55,
+      "claim": "Architecture defines Foreign Runtime POSIX_FD ownership, SCM_RIGHTS adoption, CLOEXEC duplication, and explicit release/handle transfer.",
+      "note": "Descriptor ownership doctrine."
+    }
+  ]
+}

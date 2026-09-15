@@ -1,0 +1,264 @@
+{
+  "kind": "corpus",
+  "id": "oorexx-ml.lessons",
+  "sphere": "oorexx-ml",
+  "title": "ooRexx ML durable lessons",
+  "records": [
+    {
+      "topic": "historical-object",
+      "rule": "A model, population, optimizer or RNG is a driveable ooRexx object with retained history, not a disposable fit result."
+    },
+    {
+      "topic": "rollback",
+      "rule": "Rollback preserves the old future; mutation after rewind creates another retained branch from the same ancestor."
+    },
+    {
+      "topic": "state-of-nation",
+      "rule": "Checkpoint all cooperating learning participants together whenever consistency spans more than one object."
+    },
+    {
+      "topic": "rng",
+      "rule": "Stochastic replay is only reproducible when deterministic RNG state and draw position are part of the same historical checkpoint."
+    },
+    {
+      "topic": "generation",
+      "rule": "Publish immutable learned generations for comparison; never let a historical generation alias mutable live state."
+    },
+    {
+      "topic": "barrier",
+      "rule": "Represent genuine source/domain discontinuities explicitly and require domain policy to decide which learned state crosses the barrier."
+    },
+    {
+      "topic": "epistemology",
+      "rule": "Observation, feature, model output, assessment, claim and action are distinct; model inference never grants operational authority by itself."
+    },
+    {
+      "topic": "maths",
+      "rule": "ML consumes ooRexx Maths for numerical meaning, precision and evidence instead of growing private matrix/tensor arithmetic."
+    },
+    {
+      "topic": "foreign-runtime",
+      "rule": "Foreign tensors, Python proxies, GPU handles and native pointers are execution resources, not durable journal values."
+    },
+    {
+      "topic": "audio",
+      "rule": "Layered Audio generic ML/tensor semantics should migrate upward in a staged rebase; avoid duplicate class ownership while v0.21 remains current."
+    },
+    {
+      "topic": "camera",
+      "rule": "Camera learned generations and source barriers are precedents for generic ML generations/barriers, while camera-specific semantics stay in Camera."
+    },
+    {
+      "topic": "ga",
+      "rule": "Treat a GA generation like a replayable machine event: before-checkpoint, evaluate, derive, commit, after-checkpoint, publish evidence."
+    },
+    {
+      "topic": "ssc",
+      "rule": "Source-code history and learned-state history are separate timelines and both may be recorded in a generation provenance record."
+    },
+    {
+      "topic": "testing",
+      "rule": "Every new stateful learning component requires rollback/roll-forward/branch replay regressions before algorithm breadth or acceleration."
+    },
+    {
+      "topic": "authority",
+      "rule": "Executable source/tests and exact upstream dependency artifacts override the continuity sphere if they conflict."
+    },
+    {
+      "topic": "training-world",
+      "rule": "A training checkpoint must include every state owner that changes continuation: model, optimizer, session and RNG/data cursor when present."
+    },
+    {
+      "topic": "optimizer",
+      "rule": "Learning rate, momentum/velocity and optimizer step are driveable historical state; do not hide them as ephemeral implementation detail."
+    },
+    {
+      "topic": "dataset-provenance",
+      "rule": "Evidence-grade datasets and derived partitions retain stable dataset/sample identity, parent/transform provenance and role."
+    },
+    {
+      "topic": "partition-replay",
+      "rule": "A shuffled train/test/fold partition is reproducible only when the deterministic RNG state used to create it is retained or reconstructible."
+    },
+    {
+      "topic": "validation-evidence",
+      "rule": "Cross-validation produces per-fold model-state and prediction evidence, not only an aggregate score."
+    },
+    {
+      "topic": "branch-comparison",
+      "rule": "Compare retained model futures against the same dataset without moving the caller's live branch/controller position or deleting either future."
+    },
+    {
+      "topic": "iterative-training",
+      "rule": "MLLinearGDRegressor proves the explicit optimizer/session contract can drive a real iterative estimator while remaining Python-free."
+    },
+    {
+      "topic": "ga-final-evaluation",
+      "rule": "A complete GA search must evaluate and publish the final bred population; low-level step() intentionally leaves its replacement population unevaluated."
+    },
+    {
+      "topic": "ga-budget",
+      "rule": "Budget GA work in evaluated populations. Requested evaluations, unique normalized evaluations and retained outputs are separate counts."
+    },
+    {
+      "topic": "objective-direction",
+      "rule": "Domain evaluators return natural scores; MLObjective/fitness adapter owns MINIMIZE/MAXIMIZE orientation so sign conversion is not duplicated in consumers."
+    },
+    {
+      "topic": "search-space",
+      "rule": "Search lanes declare their parameter domains. A narrower GA domain cannot be interpreted as equivalent to a wider grid domain without explicit comparison evidence."
+    },
+    {
+      "topic": "workspace-budget",
+      "rule": "Workspace cap, free-space reserve, spill policy and retained-output limit are fail-closed deployment contracts."
+    },
+    {
+      "topic": "human-review",
+      "rule": "Human review is append-only evidence separate from model output. Reopening or branching a review never erases the earlier decision."
+    },
+    {
+      "topic": "perceptual-calibration",
+      "rule": "Weighted objectives remain hypotheses until pairwise or other review evidence demonstrates adequate agreement under an explicit qualification policy."
+    },
+    {
+      "topic": "undecidable",
+      "rule": "UNDECIDABLE is a legitimate reviewer outcome and is excluded from preference-agreement denominators instead of being coerced into a false label."
+    },
+    {
+      "topic": "audio-penalties",
+      "rule": "Recovered-audio clipping penalty weights 18 and 40 are experimental; dev4 provides calibration machinery but does not assert perceptual validity."
+    },
+    {
+      "topic": "search-membership-repair",
+      "rule": "dev4 repairs MLSearchSpace.containsConfiguration so declared values pass while out-of-domain and missing values fail; keep the regression."
+    },
+    {
+      "topic": "pareto-dominance",
+      "rule": "Keep independent objectives as vectors. Dominance requires no worse on every objective and better on at least one; mixed tradeoffs remain non-dominated."
+    },
+    {
+      "topic": "pareto-crowding",
+      "rule": "Crowding distance is a diversity/tie-break signal inside a Pareto front, not a hidden quality objective."
+    },
+    {
+      "topic": "pareto-ga",
+      "rule": "Pareto evolution follows the same machine-event discipline as scalar GA: checkpoint, evaluate/front-rank, deterministic breed, commit, checkpoint, publish, and score final offspring on complete runs."
+    },
+    {
+      "topic": "pareto-retention",
+      "rule": "Bounded retention proceeds front-by-front and may use crowding for diversity; do not materialize every evaluated candidate or invent a scalar solely to trim storage."
+    },
+    {
+      "topic": "audio-pareto",
+      "rule": "Recovered-audio resemblance, pre-limiter over-range and post-limiter clipping can be kept as separate objectives; the historical 18/40 penalties remain a calibratable scalar policy, not physical truth."
+    },
+    {
+      "topic": "hard-feasibility",
+      "rule": "Hard eligibility is a gate, not an objective. An infeasible candidate can remain evidence but no objective advantage can make it a Pareto answer."
+    },
+    {
+      "topic": "fail-closed-scoring",
+      "rule": "When hard constraints can be assessed from candidate configuration, reject infeasible candidates before expensive objective scoring and publish no objective vector."
+    },
+    {
+      "topic": "constrained-ga",
+      "rule": "Constrained Pareto evolution may use feasibility/violation count to navigate back toward the feasible region, but only feasible candidates participate in dominance and promotion."
+    },
+    {
+      "topic": "storage-authority",
+      "rule": "ML owns experiment/checkpoint/frontier semantics; Storage Fabric owns workspace safety, replica verification, lifecycle and durable-completion truth."
+    },
+    {
+      "topic": "disposable-workspace",
+      "rule": "Successful or verified work on disposable/temporary capacity is still provisional until a safe/stable verified durable replica exists."
+    },
+    {
+      "topic": "value-only-checkpoint",
+      "rule": "Cross-storage ML checkpoint/frontier records carry value identity and evidence, never live journal/controller, tensor, Python proxy or native handle state."
+    },
+    {
+      "topic": "audio-strategy-p",
+      "rule": "Recovered-audio Strategy P is additive constrained-Pareto search rebased on audio_rexx_search_v0.12-dev5; inherited A/B/C/D/E semantics remain upstream-owned."
+    },
+    {
+      "topic": "logistic-regression",
+      "rule": "Binary logistic regression is a driveable two-class probabilistic estimator; when probability semantics matter, the positive label should be supplied explicitly rather than inferred from arbitrary label ordering."
+    },
+    {
+      "topic": "gaussian-naive-bayes",
+      "rule": "Gaussian Naive Bayes retains class priors, per-feature means and variances with a positive variance floor; prediction compares log scores to avoid multiplying tiny densities."
+    },
+    {
+      "topic": "decision-tree",
+      "rule": "Decision-tree depth/split/gain policy is branchable state; learned Gini tree nodes are immutable historical evidence and should be compared across retained policy branches rather than overwritten."
+    },
+    {
+      "topic": "k-means",
+      "rule": "Reference k-means uses deterministic maximin initialisation and retains centroids, assignments, inertia and convergence evidence; it has no hidden RNG state."
+    },
+    {
+      "topic": "pca",
+      "rule": "PCA is a provenance-preserving driveable transform: learned means/components/eigenvalues are historical state and transformed datasets preserve sample ids with derived PCA provenance."
+    },
+    {
+      "topic": "close-neighbour-distance",
+      "rule": "Close-neighbour hashing is distance-bearing and significance ordered: the largest weighted quantised discrepancy dominates every collection of finer differences, then the next-largest discrepancy breaks ties."
+    },
+    {
+      "topic": "close-neighbour-boundary",
+      "rule": "Numeric adjacency is defined in ordered quantised coordinates, not packed binary representation; crossing a binary carry boundary must not turn a one-bin change into a large hash distance."
+    },
+    {
+      "topic": "close-neighbour-probing",
+      "rule": "Keep the source index exact and express tolerance as bounded query-side multi-probe. Probe budgets fail closed rather than silently truncating arbitrary buckets."
+    },
+    {
+      "topic": "close-neighbour-assessment",
+      "rule": "Good-enough retrieval is qualified against an exact oracle using recall@k and candidate fraction examined; do not call an approximate index good merely because examples look plausible."
+    },
+    {
+      "topic": "close-neighbour-audio",
+      "rule": "For 18-bit-like audio landmarks, neighbouring time/frequency bins belong in the generic ML close-neighbour probe policy rather than an audio-private duplicated tolerant index."
+    },
+    {
+      "topic": "pattern-not-number",
+      "rule": "Pattern hashing identifies relative curve geometry rather than absolute values: offset, amplitude and source sample density may change while the polar pattern remains identical."
+    },
+    {
+      "topic": "pattern-polar-grid",
+      "rule": "The reference curve representation is circular: source minimum is the centre, normalized value is radius, and normalized curve progress is angle."
+    },
+    {
+      "topic": "pattern-distance",
+      "rule": "Pattern difference is significance ordered across radial, slope and curvature evidence; the largest structural disagreement dominates collections of smaller residual differences."
+    },
+    {
+      "topic": "pattern-invariance",
+      "rule": "Rotation invariance is explicit and reversal invariance is opt-in; never erase phase or traversal direction unless the domain declares them non-semantic."
+    },
+    {
+      "topic": "pattern-demo",
+      "rule": "Pattern hashing is easy to undervalue until seen. Keep the polar visual demo as qualification evidence: affine and denser-sampled copies overlay exactly while changed turning structure diverges."
+    },
+    {
+      "topic": "temporal-cylinder",
+      "rule": "Temporal pattern identity maps event progress to angle, normalized channel state to radius and event time to height; circular pattern geometry must not invent a last-to-first temporal segment."
+    },
+    {
+      "topic": "temporal-direction",
+      "rule": "Adjacent cylindrical events retain 3-D direction evidence: planar bearing, temporal elevation and turn angle, so timing changes can separate otherwise similar radial shapes."
+    },
+    {
+      "topic": "temporal-invariance",
+      "rule": "Time shift/scale invariance is explicit domain policy. Global scaling may be ignored, but local timing fluctuation must remain visible."
+    },
+    {
+      "topic": "temporal-multichannel",
+      "rule": "Vector-valued temporal events retain named channels independently; significance weights are policy and must not be mistaken for causal truth or a hidden scalarized model."
+    },
+    {
+      "topic": "temporal-demo",
+      "rule": "Keep the market cognitive-trap demo: nominal price lookalikes can be far when FX/relative/volatility differ, while numerically unrelated affine/time-scaled economic twins can be exact under declared invariance."
+    }
+  ]
+}

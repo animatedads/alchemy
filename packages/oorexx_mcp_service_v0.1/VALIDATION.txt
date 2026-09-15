@@ -1,0 +1,41 @@
+ooRexx MCP Project Service v0.1 qualification
+Date: 2026-09-08
+Runtime: ooRexx 5.3.0 r13196, supplied debug x86_64 package
+Wire semantic contract: Wire UI Server v0.17
+HTTPS integration contract: ooRexx HTTPS Server v0.4.4
+Sphere adapter: LLM Gopher v0.21-dev1
+MCP protocol target: 2026-07-28
+
+PASS test_project_service
+  - immutable request creation and reply chains
+  - component-mailbox requests before ownership
+  - new owner visibility over outstanding component-mailbox requests
+  - per-reader read receipts / unread filtering
+  - one-active-owner conflict and idempotent reclaim
+  - fail-closed unknown components and anonymous reads
+  - in-memory journal replay
+PASS test_jsonl_restart
+  - append-only JSONL persistence
+  - restart replay
+  - ID monotonicity/no collision after replay
+PASS test_mcp_protocol
+  - server/discover
+  - tools/list (7 tools)
+  - modern resultType stamping
+  - response serverInfo _meta
+  - tools/call semantic mapping
+  - clientInfo is not authority
+  - Mcp-Name/header-body mismatch rejection
+PASS test_https_route
+  - exact HTTPS route-facing request/header/context shape exercised with contract fake
+  - principal comes from HttpExchangeContext mcp.principal
+  - response protocol header
+PASS test_gopher_sphere_checker
+  - live Gopher resolve of https-server via supplied sphere override bundle
+  - archive provenance hash returned
+  - missing sphere handling
+  - unsafe sphere identifier rejection
+
+All five delivered suites pass.
+
+Boundary note: production HTTPS native/TLS acceptance remains authoritative in ooRexx HTTPS Server v0.4.4. This package exercises the route contract without duplicating that server's native TLS test matrix.

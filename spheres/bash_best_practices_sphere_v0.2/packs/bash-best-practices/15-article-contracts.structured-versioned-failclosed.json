@@ -1,0 +1,17 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.contracts.structured-versioned-failclosed",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Use versioned, structured, fail-closed envelopes for machine exchange",
+  "summary": "When bash hands structured data to a tool or another component, the answer must be: a single parseable document on stdout, schema-versioned so old shapes are not silently reshaped, with real errors as typed objects that carry a code — and any ambiguity or malformed input fails closed (denies) rather than proceeding on an assumption.",
+  "technique": "Versioned schema names at the head of a JSON envelope; a typed error object with ok:false, a reason and a numeric rc nested, not a human string; and a default posture that an unknown operation, unparseable JSON, or missing answer denies instead of trying to interpret. In protocol mode nothing human is printed on stdout.",
+  "evidence_note": "docs/QUEUE_DEV_CONTRACT.md:72 'The JSON schema names are intentionally versioned...'; QUEUE_COMMAND_CONTRACT.md:56-67 shows a queuebash.error.v1 envelope carrying rc; :8-9 broker keeps stdout for protocol; REMOTE_QUEUE_SERVICE_PROVIDER.md:56 lists fail-closed denial on unparseable JSON/unknown/unsafe; CLOUD_INFRASTRUCTURE_HELPERS.md gives dry_run-by-default action envelopes with an explicit live gate.",
+  "invariants": [
+    "Head every wire document with a versioned schema identity; a breaking change is a new schema name.",
+    "Model failures as structured typed objects carrying a code, not by string-mangling diagnostics.",
+    "Keep stdout in protocol mode strictly for the document; route diagnostics to stderr/audit.",
+    "Deny on ambiguous or malformed input rather than guessing intent, and fail closed when a component or answer is absent.",
+    "Prefer dry-run by default and add mutation only behind an explicit, separate gate from credentials."
+  ]
+}

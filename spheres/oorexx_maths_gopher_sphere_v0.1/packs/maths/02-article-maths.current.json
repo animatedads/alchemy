@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "maths.current",
+  "version": "0.1",
+  "sphere": "maths",
+  "title": "Current ooRexx Maths baseline",
+  "baseline": {
+    "package": "oorexx_maths_v0.7.zip",
+    "sha256": "b2385efc83aa525392f6c804327f7d370abd6c06d04a7d31855803e62f95c19d",
+    "dependency_rollup": "oorexxapis(20260901-121025).zip",
+    "dependency_rollup_sha256": "b3166841ae88ac582e57d278ba862fab79b1ffb6da578e6e42d7ee6c3d084640",
+    "foreign_runtime": "v0.22.5",
+    "runtime": "ooRexx 5.3.0 r13196"
+  },
+  "rules": [
+    "Treat v0.7 as the current continuation baseline unless explicitly superseded.",
+    "Do not silently weaken exact or requested precision semantics for acceleration.",
+    "Use Maths as the reusable mathematical substrate; quant, risk, valuation, ML and network packages own domain meaning, not private maths implementations."
+  ],
+  "selectors": [
+    {"id":"inspect-source","type":"exec","action":"exec","resource":"capability:source.oorexx.examine","capability":"source.oorexx.examine"},
+    {"id":"inspect-archive","type":"exec","action":"exec","resource":"capability:archive.zip.examine","capability":"archive.zip.examine"}
+  ]
+}

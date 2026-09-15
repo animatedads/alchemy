@@ -1,0 +1,17 @@
+Qualified against user-supplied Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit.
+
+PASS test_basic
+PASS test_independent_streams
+PASS test_sparse_5g
+PASS test_scan bytes=5368709243 blocks=641
+PASS rexxc src/LazyReadFile.cls
+
+Full sparse 5 GiB + 123 byte sequential scan, blockBytes=8 MiB:
+  blocks: 641
+  elapsed: 11.02 s
+  max RSS: 66288 KiB
+  user CPU: 0.88 s
+  system CPU: 10.02 s
+
+The sparse scan validates bounded-memory traversal and >32-bit offset correctness.
+It is not a physical-disk throughput benchmark because sparse holes do not require disk reads.

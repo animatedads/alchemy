@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.temporal-patterns",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Cylindrical temporal pattern hashing \u2014 pattern through time",
+  "summary": "dev10 extends polar pattern identity into time: event progress is angle, normalized per-channel state is radius, and event time is height. Adjacent points create 3-D bearing/elevation/turn signatures, multi-channel state stays vector-valued, and largest declared structural/temporal disagreement dominates finer differences.",
+  "authority": "Executable dev10 source/tests and the self-generating cylindrical market demo are authoritative. The demo is illustrative synthetic market data; it proves semantics, not investment or causal claims.",
+  "invariants": [
+    "Time is an independent height coordinate, not a synonym for event index.",
+    "The cylinder is circular in its pattern plane but open in time; no synthetic last-to-first temporal segment is created.",
+    "Per-channel state is normalized independently and retained independently; multi-channel temporal patterns are not pre-collapsed into one scalar.",
+    "A temporal segment retains planar bearing, vertical elevation and 3-D turn evidence in addition to radial shape and time gaps.",
+    "Time-shift and time-scale invariance are explicit policy. Time-scale invariance implies time-shift invariance; contradictory policy fails closed.",
+    "Global time scaling may be erased when declared, but local timing fluctuation must remain visible in time-gap/elevation/turn evidence.",
+    "Temporal pattern distance is significance ordered largest-first and reports the dominant discrepancy kind/channel.",
+    "MLTemporalPatternIndex is a driveable historical object; index policy changes belong on retained branches.",
+    "Temporal pattern recurrence is evidence for further domain analysis, not a cryptanalytic, causal or investment conclusion."
+  ],
+  "procedure": [
+    "Represent events with MLTemporalPatternSeries using strictly increasing event times, stable channel names and explicit channel weights.",
+    "Create MLTemporalPatternPolicy with angular/radial/time/bearing/elevation/turn resolution and significance weights.",
+    "Use MLCylindricalTemporalPatternSchema to encode and inspect points/vectors; bearing is circular-plane direction and elevation is temporal pitch.",
+    "Enable timeScaleInvariant only when overall faster/slower replay should remain the same pattern; local event delays still remain evidence.",
+    "Use MLTemporalPatternCorpus / MLTemporalPatternIndex for nearest pattern-through-time retrieval with stable sample ids.",
+    "Inspect MLTemporalPatternDifference dominantKind/dominantChannel plus radius/time/bearing/elevation/turn maxima rather than relying on total distance alone.",
+    "Run examples/cylindrical_market_pattern_demo.rex. Confirm A/C exact economic-time twin, A/D local timing separation and A/B nominal-price lookalike separation through auxiliary channels.",
+    "For market/crypto/audio/camera/sensor uses, calibrate channel significance on held-out evidence and keep domain conclusions separate from match evidence."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev10.zip",
+      "sha256": "8f7f104599e17035314645e300fceb9124735d779fc14c46d6c60ea9b44d6b89",
+      "member": "oorexx_ml_v0.1-dev10/src/MLTemporalPatternHash.cls",
+      "claim": "Executable cylindrical temporal pattern schema, 3-D direction evidence, significance difference and historical index."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev10.zip",
+      "sha256": "8f7f104599e17035314645e300fceb9124735d779fc14c46d6c60ea9b44d6b89",
+      "member": "oorexx_ml_v0.1-dev10/examples/cylindrical_market_pattern_demo.rex",
+      "claim": "Self-generating synthetic market cognitive-trap demonstration."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev10.zip",
+      "sha256": "8f7f104599e17035314645e300fceb9124735d779fc14c46d6c60ea9b44d6b89",
+      "member": "oorexx_ml_v0.1-dev10/qualification/QUALIFICATION_DEV10.txt",
+      "claim": "57-test, 17-surface rexxc and SSC sourceLevel-11 qualification summary."
+    }
+  ]
+}

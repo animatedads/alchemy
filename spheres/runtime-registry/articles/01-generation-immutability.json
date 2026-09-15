@@ -1,0 +1,13 @@
+{
+  "id": "rr-generation-immutability",
+  "title": "Runtime Generation Immutability",
+  "summary": "A RuntimeGeneration is an immutable code closure; once activated, its code and dependencies cannot be silently changed for in-flight requests.",
+  "why": "Prevents non-deterministic behavior where a request's logic changes midway through execution due to a global upgrade.",
+  "invariants": [
+    "Code upgrades and client-configuration upgrades are separate atomic operations.",
+    "Neither is allowed to silently change an in-flight request.",
+    "A request is pinned to its AbilityGeneration for its entire lifetime."
+  ],
+  "evidence_note": "Source: runtime_registry_v0.14/README.md:22-26. Line 23: 'Code upgrades and client-configuration upgrades are separate atomic operations.'",
+  "grounding": "oorexx-grounded"
+}

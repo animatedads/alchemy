@@ -1,0 +1,108 @@
+FC Camera Events v0.1-dev2 qualification
+==========================================
+
+Runtime
+-------
+ooRexx 5.3.0 r13196 (user-supplied Ubuntu debug build)
+ooRexx Foreign Runtime v0.22.6
+Camera Behaviour ooRexx v0.56 FFmpeg boundary
+FFmpeg libavformat 61 / libavcodec 61 / libavutil 59
+
+Primary supplied FC sample
+--------------------------
+file: 20231012_084716_tp00116.mp4
+sha256: e75ac56fc14d068233a7fd42f2a51a4b324b77450c30bbbe1d08001be7b3d4f9
+bytes: 268435456
+video: H.264 1920x1080, approximately 15 fps, stream time_base=1/90000
+container duration: approximately 1691.9 seconds
+
+User visual references
+----------------------
+open-day / red-traffic / blue-window annotation:
+sha256: c40198e875a5e1cdaf9c3dbb83f0315f3f6fd1435567b61c572c78ea044f6792
+
+closed-night room-reflection reference:
+sha256: 91452aebdbcd63626e13e46e6f0bef52308ec11baaf70c4bc30c56b14319a7d9
+
+The reference images are not packaged. Temporary five-second H.264 qualification
+fixtures were produced from development crops only to exercise the exact ooRexx
+decoder/classifier path. They are not runtime dependencies.
+
+Static / contract qualification
+-------------------------------
+rexxc src/FCVehicleMotion.cls: PASS
+PASS FC camera events logic assertions=25
+PASS FC camera events output assertions=29
+PASS FC camera qualification TSV files=27 rows=136
+
+The TSV contract test uses stock ooRexx CSVStream with TAB delimiter and verifies
+rectangular output across the retained qualification evidence.
+
+Window-state qualification
+--------------------------
+Open-day visual reference:
+  mean window ratio: approximately 0.5365
+  persistent state: OPEN
+  reflection events: 0
+
+Closed-night visual reference:
+  mean window ratio: approximately 1.0655
+  persistent state: CLOSED
+  reflection event: ROOM_REFLECTION_VISIBLE
+  persistent reflection samples: 10
+
+This is the intended discriminant: the diagonal blue-region probe sees the dark
+interior gap when open and glass/reflected scene when closed. Reflection texture
+has no authority unless the window is first classified CLOSED.
+
+Traffic / red-slit qualification
+--------------------------------
+A bounded probe around the supplied sample's source neighbourhood near 474 s:
+  traffic events: 1
+  direction: LEFT_TO_RIGHT
+  red slit contact: yes
+  slit samples: 1
+  window state: OPEN
+  room reflections: 0
+
+A bounded probe near 700 s:
+  traffic events: 1
+  direction: LEFT_TO_RIGHT
+  red slit contact: yes
+  slit samples: 1
+  window state: OPEN
+  room reflections: 0
+
+A bounded probe near 590 s contains a coherent lower-frame motion episode that
+does NOT touch the user-identified red traffic slit:
+  admitted traffic events: 0
+  uncertain road-motion episodes retained: 1
+  window state: OPEN
+  room reflections: 0
+
+That third probe is an important negative control. The wider road mask supplies
+trajectory context, but the classifier now requires actual red-slit contact
+before admitting TRAFFIC_MOTION. This prevents lower-frame tree/rail/shadow
+activity from being promoted to a vehicle event merely because it moves
+coherently.
+
+Timing qualification
+--------------------
+All public event times use decoded AVFrame.pts and AVStream.time_base. The first
+decoded PTS of the supplied job MP4 is subtracted, so every job starts at
+00:00:00.000 in its own file-relative coordinate system.
+
+No filename time, wall clock, audio timing correction, FILE_EDGE_MAP.tsv,
+neighbouring video, SSH timing or BashQueue timing participates in event time.
+
+Operational boundary
+--------------------
+The analyser never performs SSH, queue submission, queue polling, remote copy,
+or source-file deletion. Codex + BashQueue own those operations.
+
+Successful local analysis:
+  rc = 0
+  .run.tsv status = OK
+
+Only after evidence harvest should external orchestration remove the temporary
+node-local MP4.

@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.scope.dynamic-mode-cannot-leak",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "A mode switch is scoped to one invocation; never let a flag leak into later commands",
+  "summary": "When a one-off request needs JSON (or another mode) for exactly this command only, keep that switch scoped to the invocation and reset it when the call returns; an LLM's habit of flipping a global 'now output json' and leaving it on turns the whole later interactive session into a parser instead of a human prompt.",
+  "technique": "Export a dynamic-scope variable for the duration of the single queue invocation and ensure it is removed/restored before the next command; non-interactive and interactive modes stay separate.",
+  "evidence_note": "docs/BOB28_DIRECT_SOURCE_AND_JSON_CONTRACT.md:45 'stores the request in dynamically scoped QUEUEBASH_OUTPUT_JSON=1 for the duration of that queue invocation only. The global switch must not leak into later human commands.'",
+  "invariants": [
+    "Tie a one-off mode flag to the scope/lifetime of that one invocation, not to the fish-wide session.",
+    "Restore or clear the mode before the next human command.",
+    "When exposing JSON mode, keep --help human and do not emit half-human help on the JSON channel.",
+    "Do not let non-interactive vs interactive behaviour share a lingering flag."
+  ]
+}

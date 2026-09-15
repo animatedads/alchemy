@@ -1,0 +1,24 @@
+{
+  "id": "nosqlserver.sql-and-planner",
+  "title": "SQL executor, planner and correctness-first evolution",
+  "section": "architecture",
+  "summary": "Current SQL support includes substantial joins, set operations, correlated subqueries, aggregates, windows, recursive/multi CTEs, DML composition and planner access-path diagnostics. Equality may be an access-path optimisation rather than a grammar restriction; the complete predicate remains authoritative.",
+  "invariants": [
+    "Malformed SQL and recognized-but-unsupported SQL remain distinct outcomes.",
+    "Never rewrite unsupported SQL into a different query.",
+    "Planner diagnostics such as accessPath and rowsScanned are useful NoSQLServer extensions, not shared database semantics.",
+    "Correct result semantics outrank a cheaper access path."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "nosqlserver",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "nosqlserver_v0.79.zip",
+      "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec",
+      "member": "nosqlserver_v0.79/README.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

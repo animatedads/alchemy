@@ -1,0 +1,24 @@
+{
+  "id": "nosqlserver.storage-and-relations",
+  "title": "Storage engines and relation boundaries",
+  "section": "architecture",
+  "summary": "The engine has distinct FILE, OBJECT/SNAPSHOT, explicit JSON projection, native SQLite/GeoPackage and federated relation providers. JSON is never implicitly flattened; SQLite native reading sits below SQL and does not introduce a second SQL evaluator.",
+  "invariants": [
+    "JSON crosses into relations only through explicit row/column projections.",
+    "Native SQLite is page-oriented and read-only at this baseline.",
+    "GeoPackage adds typed geometry over native SQLite transport.",
+    "Provider semantics remain outside NoSQLServer; SQL scanning a relation does not make the relation's producer policy truth."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "nosqlserver",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "nosqlserver_v0.79.zip",
+      "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec",
+      "member": "nosqlserver_v0.79/README.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

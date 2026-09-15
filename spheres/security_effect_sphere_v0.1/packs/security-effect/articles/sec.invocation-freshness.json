@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "sec.invocation-freshness",
+  "version": "0.1",
+  "sphere": "security-effect",
+  "title": "A Security ALLOW is evidence for one exact invocation, not a bearer capability",
+  "summary": "SecurityInvocationEvidence binds invocation id, deterministic argument identity, context identity and observation time. SecurityInvocationGuard rejects stale evidence, argument/context substitution and replay. Successful exact Permission execution consumes the single-use Security validation.",
+  "authority": "project-authority",
+  "invariants": [
+    "Changing business arguments invalidates an earlier assessment even when object/method are unchanged.",
+    "Changing session/workspace context invalidates the assessment.",
+    "Permission denial does not consume otherwise-fresh Security evidence; successful exact ALLOW does.",
+    "The live Alchemy METHOD adapter derives identity from actual checkpoint arguments."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "security_effect_v0.14.zip",
+      "sha256": "c9d481140552073c8b9ea4ea81feb93aef03208b5e8a939b9af382d30b9a1935",
+      "member": "security_effect_v0.14/INVOCATION_FRESHNESS.md",
+      "claim": "Invocation freshness contract binds Security assessment to exact live arguments/context and single-use execution."
+    },
+    {
+      "artifact": "security_effect_v0.14.zip",
+      "sha256": "c9d481140552073c8b9ea4ea81feb93aef03208b5e8a939b9af382d30b9a1935",
+      "member": "security_effect_v0.14/PERMISSIONS_INTEGRATION.md",
+      "claim": "Permissions integration documents live METHOD-checkpoint freshness enforcement."
+    }
+  ]
+}

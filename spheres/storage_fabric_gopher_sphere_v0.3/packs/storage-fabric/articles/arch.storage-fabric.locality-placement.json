@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.locality-placement",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Job-to-data versus data-to-job placement evidence",
+  "summary": "Storage publishes locality and movement evidence to Job-to-Node Allocation so the planner can compare moving a small job to existing data with moving large data to a job. Storage does not own hard node eligibility or the final placement lease.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Hard security, legal, access, runtime/software and hardware eligibility is evaluated before locality can improve ranking.",
+    "Locality is an optimization, not permission.",
+    "Candidate evidence includes input bytes, local input bytes, materialisation bytes, job-package bytes, workspace feasibility and mandatory output export.",
+    "Expected output movement matters: a job with small input and huge output may prefer a different location than input-only reasoning suggests.",
+    "Disposable workspace adds mandatory output-commit movement because its result cannot count as durably complete in place.",
+    "Storage classifications JOB_TO_DATA, DATA_TO_JOB, MIXED and INFEASIBLE are descriptive storage evidence; Job-to-Node remains placement authority.",
+    "Fleet assessment emits evidence for every known node rather than silently choosing a winner.",
+    "Unqualified devices and unknown node capacity are excluded from storage feasibility until explicitly admitted/observed."
+  ],
+  "procedure": [],
+  "topics": [
+    "job-to-node",
+    "data-locality",
+    "job-to-data",
+    "data-to-job"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_locality_placement.rex",
+      "claim": "Regression proves job-to-data/data-to-job movement evidence, separate node capacity and mandatory output export from disposable workspace."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_fleet_placement_matrix.rex",
+      "claim": "Regression proves ED209 fleet matrix semantics and no invented/unqualified capacity."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+ooRexx Secret Broker v0.2 validation
+Date: 2026-08-24
+Interpreter: Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit
+
+Recovery basis:
+- historical Secret Broker v0.1 certification survives with SHA-256 ddaa43505c8aec6f94544f59661de0ffdda3f5c8e17122bdf7c9db0c02e986e4
+- original v0.1 archive bytes are not present in the current roll-up; v0.2 is a clean-room successor, not a byte recreation
+
+Core acceptance:
+PASS test_secret_broker
+PASS test_mapped_environment
+PASS test_alchemy_adoption
+PASS compile audit for all shipped .cls/.rex
+PASS bash -n run_tests.sh
+
+Consumer compatibility:
+PASS Grok v0.3 real installed-curl one-shot fixture
+PASS OpenAI-compatible v0.5 real installed-curl one-shot fixture
+PASS OpenAI-compatible v0.5 complete provider contract (secret_acquisitions=7)
+
+Known unrelated consumer-fixture issue:
+Grok v0.3 tests/fixtures/fake_curl.sh hard-codes FAKE-OPENAI-SECRET-7E4B while test_grok_provider.rex supplies FAKE-GROK-SECRET-7E4B. The shipped fake fixture therefore rejects the correct Grok secret. The real Grok curl fixture uses the supplied secret dynamically and passes.
+
+Authority boundary:
+- secret values excluded from broker/provider instrumentation
+- MappedEnvironmentSecretProvider stores only reference -> environment-variable-name mapping; value is read at acquisition time
+- lease retirement clears the broker-held secret string and further reads fail
+- current trusted-consumer and legacy direct-lease compatibility surfaces both covered
+- no Runtime Registry, WLU, endpoint, prompt or model-response authority in Secret Broker

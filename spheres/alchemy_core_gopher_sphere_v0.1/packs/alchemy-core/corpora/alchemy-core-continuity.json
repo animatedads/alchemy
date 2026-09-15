@@ -1,0 +1,207 @@
+{
+  "kind": "corpus",
+  "id": "alchemy-core-continuity",
+  "sphere": "alchemy-core",
+  "title": "Alchemy Core durable continuation reasoning",
+  "records": [
+    {
+      "id": "reason.model-first",
+      "trigger": "A new feature is requested",
+      "rule": "First model the state, identity, authority and invariants in ooRexx objects; only then choose transport/process mechanics. Do not start with a convenience script.",
+      "related": [
+        "ac.doctrine.model-first"
+      ]
+    },
+    {
+      "id": "reason.transport-is-dumb",
+      "trigger": "Adding another ingestion mechanism",
+      "rule": "Make it produce the existing materialized package object. Do not move dependency planning, execution or publication rules into the adapter.",
+      "related": [
+        "ac.transport-boundary"
+      ]
+    },
+    {
+      "id": "reason.no-python-default",
+      "trigger": "A task looks easier as a small Python helper",
+      "rule": "Do not make Python the Alchemy Core architectural default. Keep business/domain logic in ooRexx; use external tools only at narrow OS/transport boundaries.",
+      "related": [
+        "ac.doctrine.model-first"
+      ]
+    },
+    {
+      "id": "reason.run-real-oorexx",
+      "trigger": "Changing ooRexx code",
+      "rule": "Execute it on a real ooRexx runtime. Do not trust static LLM syntax reasoning; interpreter failures have repeatedly caught EXPOSE ordering, RESULT special-state and method/routine semantics.",
+      "related": [
+        "ac.doctrine.model-first",
+        "qual.alchemy-core.current"
+      ]
+    },
+    {
+      "id": "reason.dirty-checkout",
+      "trigger": "The normal checkout is dirty or behind origin/main",
+      "rule": "Do not clean/reset/stash it. Read accepted state from detached origin/main snapshot and write through detached transactions.",
+      "related": [
+        "ac.accepted-main"
+      ]
+    },
+    {
+      "id": "reason.one-lock",
+      "trigger": "Adding Git-mutating behavior",
+      "rule": "Use AlchemyRepositoryLease rather than inventing a new lock convention.",
+      "related": [
+        "ac.repository-lease"
+      ]
+    },
+    {
+      "id": "reason.owner-death",
+      "trigger": "Designing lock cleanup",
+      "rule": "Rely on kernel flock release plus owner liveness; do not introduce stale lock-directory deletion heuristics.",
+      "related": [
+        "ac.repository-lease"
+      ]
+    },
+    {
+      "id": "reason.ready-last",
+      "trigger": "Publishing a submission",
+      "rule": "Commit complete package body first, ready.json second, push once. Ready means immutable and processable.",
+      "related": [
+        "ac.submission-protocol"
+      ]
+    },
+    {
+      "id": "reason.never-merge-submit",
+      "trigger": "A submission branch appears ahead/behind main",
+      "rule": "Treat it as a transport envelope. Read its exact tree; never merge/rebase it into main.",
+      "related": [
+        "ac.submission-protocol"
+      ]
+    },
+    {
+      "id": "reason.receipt-idempotency",
+      "trigger": "Deciding whether a submission should run again",
+      "rule": "The terminal receipt is the durable suppression surface. Recheck it immediately before work.",
+      "related": [
+        "ac.evidence",
+        "ac.resident-service"
+      ]
+    },
+    {
+      "id": "reason.floor-not-acceptance",
+      "trigger": "Seeding dependencies from a consolidated bundle",
+      "rule": "Record bootstrap availability only. Never infer fresh acceptance from presence in the floor.",
+      "related": [
+        "ac.dependency-floor"
+      ]
+    },
+    {
+      "id": "reason.manifest-first",
+      "trigger": "Directory spelling and integration.json disagree",
+      "rule": "Use manifest identity. Directory layout is transport/storage naming only when the manifest exists.",
+      "related": [
+        "ac.semantic-identity"
+      ]
+    },
+    {
+      "id": "reason.malformed-manifest",
+      "trigger": "integration.json exists but cannot decode",
+      "rule": "Fail as corruption. Never silently fall back to parsing the directory name.",
+      "related": [
+        "ac.semantic-identity"
+      ]
+    },
+    {
+      "id": "reason.publish-immutability",
+      "trigger": "Publication target already exists",
+      "rule": "Identical content may no-op; different content is a collision requiring a new version, never overwrite.",
+      "related": [
+        "ac.publication",
+        "ac.versioning"
+      ]
+    },
+    {
+      "id": "reason.service-thin",
+      "trigger": "Adding logic to the daemon",
+      "rule": "Put discovery in Inbox, orchestration in Orchestrator, run policy in Executor, evidence in Evidence. The service should remain a composition loop.",
+      "related": [
+        "ac.resident-service"
+      ]
+    },
+    {
+      "id": "reason.runtime-capsule",
+      "trigger": "Installing the resident daemon",
+      "rule": "Execute from a versioned capsule, not from the ordinary checkout, so local development dirt cannot alter the running service.",
+      "related": [
+        "ac.runtime-capsule"
+      ]
+    },
+    {
+      "id": "reason.version-cut",
+      "trigger": "A dependency manifest or source closure changes after acceptance",
+      "rule": "Cut a new component version and propagate the closure honestly. Do not change an accepted package directory in place.",
+      "related": [
+        "ac.versioning"
+      ]
+    },
+    {
+      "id": "reason.accepted-vs-development",
+      "trigger": "A newer prebase exists",
+      "rule": "Preserve accepted v0.5 as runtime truth until v0.6 completes adoption/full-suite/E2E qualification and is explicitly accepted.",
+      "related": [
+        "ac.current",
+        "ac.v06-continuation"
+      ]
+    },
+    {
+      "id": "reason.foundation-uplift",
+      "trigger": "Moving Core to a newer Alchemy Objects/Crypto foundation",
+      "rule": "Treat foundation versions as exact dependencies and run the intended adoption level plus full closure. Similar APIs or archive names are not sufficient.",
+      "related": [
+        "ac.object-foundation",
+        "ac.v06-continuation"
+      ]
+    },
+    {
+      "id": "reason.provenance",
+      "trigger": "Writing continuity documentation",
+      "rule": "Record exact artifact SHA-256 and source member/range. Distinguish accepted evidence from development intent.",
+      "related": [
+        "ref.alchemy-core.sources"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/README.md",
+      "line_start": 1,
+      "line_end": 34,
+      "claim": "Core architecture invariants."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/VALIDATION.txt",
+      "line_start": 15,
+      "line_end": 60,
+      "claim": "Executable acceptance and freeze behavior."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.6-pre2-source.zip",
+      "sha256": "3b0a18732a6ec33fc55ac35cf4589fb931623796cd0d628062a83c2cfcac914b",
+      "member": "alchemy_oorexx_core_rollup_v0.6-pre2-source/PREBASE_STATUS.txt",
+      "line_start": 1,
+      "line_end": 46,
+      "claim": "Development/accepted boundary for v0.6."
+    },
+    {
+      "artifact": "alchemy_objects_v0.8.zip",
+      "sha256": "7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073",
+      "member": "alchemy_objects_v0.8/README.md",
+      "line_start": 13,
+      "line_end": 29,
+      "claim": "Foundation adoption contract."
+    }
+  ]
+}

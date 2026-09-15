@@ -1,0 +1,94 @@
+say 'LEGAL EFFECT V0.5 SEMANTIC / EXECUTION IDENTITY GUARD V0.18 START'
+
+g1 = BuildAmbiguous('CONDITIONAL_FIRST')
+g2 = BuildAmbiguous('REVIEW_FIRST')
+
+call AssertTrue g1~publicationEligible, 'first generation compiler certified'
+call AssertTrue g2~publicationEligible, 'second generation compiler certified'
+call AssertEqual g1~semanticIdentity, g2~semanticIdentity, 'v0.5 semantic identity canonicalises insertion order'
+
+s1 = .LegalEffectV05GenerationSnapshot~new(g1)
+s2 = .LegalEffectV05GenerationSnapshot~new(g2)
+call AssertEqual s1~semanticIdentityHash, s2~semanticIdentityHash, 'semantic hashes equal'
+call AssertTrue s1~executionIdentity \== s2~executionIdentity, 'execution identities retain observable norm order'
+call AssertTrue s1~canonicalIdentity \== s2~canonicalIdentity, 'authority closure identities differ'
+
+ctx1 = .LegalContext~new('E1', '2026-08-20')
+ignored = ctx1~bindSource('LAW', 'test')
+ctx2 = .LegalContext~new('E2', '2026-08-20')
+ignored = ctx2~bindSource('LAW', 'test')
+
+raw1 = .LegalEffectEngine~new~evaluate(.LegalAction~new('AMB'), g1, ctx1)
+raw2 = .LegalEffectEngine~new~evaluate(.LegalAction~new('AMB'), g2, ctx2)
+call AssertTrue raw1~ok, 'first raw evaluation succeeds'
+call AssertTrue raw2~ok, 'second raw evaluation succeeds'
+call AssertTrue raw1~value~status \== raw2~value~status, 'v0.5 reducer remains insertion-order sensitive'
+
+p1 = .LegalEffectV05PinnedEvaluator~evaluate(.LegalEffectEngine~new, .LegalAction~new('AMB'), g1, ctx1)
+p2 = .LegalEffectV05PinnedEvaluator~evaluate(.LegalEffectEngine~new, .LegalAction~new('AMB'), g2, ctx2)
+call AssertTrue \p1~ok, 'first ambiguous reduction refused for authority'
+call AssertTrue \p2~ok, 'second ambiguous reduction refused for authority'
+call AssertEqual 'LEGAL_STATUS_REDUCTION_AMBIGUOUS', p1~code, 'first refusal code'
+call AssertEqual 'LEGAL_STATUS_REDUCTION_AMBIGUOUS', p2~code, 'second refusal code'
+
+say 'LEGAL EFFECT V0.5 SEMANTIC / EXECUTION IDENTITY GUARD V0.18: OK'
+exit 0
+
+::routine BuildAmbiguous
+  use arg order
+
+  sourceText = 'Conditional provision. Review provision.'
+  verifiedSource = .LegalSourceVerifier~verifyText('LAW', 'CONTRACT', 'expr', 'urn:test:amb-law', sourceText, 'PARTIES', '*')
+  if \verifiedSource~ok then raise syntax 88.900 array('source verification failed')
+  sourceIdentity = verifiedSource~value~identity
+
+  conditionalText = 'Conditional provision.'
+  reviewText = 'Review provision.'
+  condRefResult = .LegalSourceVerifier~verifyProvisionText(sourceIdentity, '1', 'clause 1', conditionalText)
+  reviewRefResult = .LegalSourceVerifier~verifyProvisionText(sourceIdentity, '2', 'clause 2', reviewText)
+  if \condRefResult~ok then raise syntax 88.900 array('conditional provision verification failed')
+  if \reviewRefResult~ok then raise syntax 88.900 array('review provision verification failed')
+  condRef = condRefResult~value~reference
+  reviewRef = reviewRefResult~value~reference
+
+  unit = .LegalCompilationUnit~new('AMB-G', '0.5', 'test-compiler', '1')
+  ignored = unit~addSource(sourceIdentity, .NormativeSource~new('LAW', 'CONTRACT', 'ambiguous law'))
+  ignored = unit~addProvision(condRef, .LegalProvision~new('LAW', '1', 'ACTIVE', 'BASE', conditionalText))
+  ignored = unit~addProvision(reviewRef, .LegalProvision~new('LAW', '2', 'ACTIVE', 'BASE', reviewText))
+
+  condNorm = .LegalNorm~new('COND', 'LAW', '1', 'CONTRACT_TERM', 'AMB', 'REQUIRES_OBLIGATION')
+  condProposal = .LegalCompileProposal~new('P-COND', 'NORM', condNorm, 'test', 'HUMAN', '1')
+  ignored = condProposal~addEvidenceReference(condRef)
+
+  reviewNorm = .LegalNorm~new('REV', 'LAW', '2', 'CONTRACT_TERM', 'AMB', 'REVIEW')
+  reviewProposal = .LegalCompileProposal~new('P-REV', 'NORM', reviewNorm, 'test', 'HUMAN', '1')
+  ignored = reviewProposal~addEvidenceReference(reviewRef)
+
+  if order == 'CONDITIONAL_FIRST' then do
+    ignored = unit~addProposal(condProposal)
+    ignored = unit~addProposal(reviewProposal)
+  end
+  else do
+    ignored = unit~addProposal(reviewProposal)
+    ignored = unit~addProposal(condProposal)
+  end
+
+  report = .LegalRuleCompiler~new~compile(unit)
+  if \report~ok then do
+    if report~diagnostics~items > 0 then say report~diagnostics[1]
+    raise syntax 88.900 array('ambiguous generation compilation failed')
+  end
+  return report~generation
+
+::routine AssertTrue
+  use arg condition, label
+  if \condition then raise syntax 88.900 array('ASSERT TRUE FAILED: ' || label)
+  return 0
+
+::routine AssertEqual
+  use arg expected, actual, label
+  if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: ' || label || ' expected=' || expected || ' actual=' || actual)
+  return 0
+
+::requires 'LegalEffect.cls'
+::requires '../integration/LegalEffectV05PromotionAdapter.cls'

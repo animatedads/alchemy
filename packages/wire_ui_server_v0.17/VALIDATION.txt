@@ -1,0 +1,23 @@
+wire_ui_server_v0.17 validation
+
+Validated on ooRexx 5.3.0 r13196 against the current consolidated baseline `oorexxapis(20260828-132715).zip`:
+- Alchemy Objects v0.8
+- ooRexx Crypto v0.3
+- Queue Fabric v0.9-dev4
+- Wire UI Builder v0.9.1
+- Alchemy Wire UI JS v0.4-dev4
+
+New v0.17 acceptance:
+- authoritative workspace result state independent of filter/sort query state
+- exact resultRevision bound into workspace command context
+- business/risk result refresh under unchanged query invalidates old command contexts
+- query/filter/sort movement makes previous result explicitly non-current until republished
+- semantic selection survives pure result refresh but remains protected by the new result revision
+- factual aggregate/total/provenance/as-of result context
+- real ooRexx <-> JS v0.4-dev4 workspace context round-trip including result revision fields
+
+Full inherited server suite: PASS
+Alchemy STANDARD adoption: 27 representative Wire UI object types
+Alchemy Wire UI JS v0.4-dev4: 45/45 PASS
+npm run check: PASS
+WIRE-UI/0.1 remains unchanged.

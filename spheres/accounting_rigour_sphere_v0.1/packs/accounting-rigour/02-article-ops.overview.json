@@ -1,0 +1,13 @@
+{
+  "kind": "article",
+  "id": "ops.accounting-rigour.overview",
+  "version": "0.1",
+  "sphere": "accounting-rigour",
+  "title": "Why this sphere exists",
+  "summary": "llm-generated money code keeps hitting the same real incidents: treating an amount as a display number or generic numeric so its exactness is silently lost; letting a JSON layer or a stored scalar reword a monetary string into a number; reaching for shared rounding rules when settlement and tax rounding are different decisions; and masking what was actually approved/filed when a later accounting figure arrives. The failures compile and run and produce a plausible-but-wrong balance. This sphere is narrow and grounded in the Accounting Core v0.2..v0.10 incident lineage, not a general finance survey.",
+  "evidence_note": "Every article in this sphere cites the concrete Accounting Core release or qualification fixture the rule came from. The clearest root-cause incident is the v0.3.1 sibling-branch repair (CHANGELOG 0.4.1): a large exact-minor-unit transaction mis-evaluated because the whole-number guard ran under an inadequate arithmetic context before DATATYPE(...,'W').",
+  "invariants": [
+    "Nothing in this sphere is included on the strength of 'this seems like it could confuse an LLM'. Each entry cites the real incident or qualified contract it comes from.",
+    "A rule with a reliable mechanical trigger is packaged as a rule. A judgement that requires understanding author intent is packaged as an article instead of being forced into the rule schema with a weak trigger."
+  ]
+}

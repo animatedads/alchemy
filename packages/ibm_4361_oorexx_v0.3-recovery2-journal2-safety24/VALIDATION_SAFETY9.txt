@@ -1,0 +1,42 @@
+IBM 4361 / OS/360 MVT ooRexx safety9 validation
+
+Runtime:
+  ooRexx 5.3.0 r13196 supplied debug build
+
+Dependencies loaded externally by REXX_PATH:
+  Alchemy Objects v0.8
+  ooRexx Crypto v0.1
+  msqlshim v0.21.2
+  journal-pointed-state v0.1
+
+Media:
+  MVTRES.350 SHA-256
+  095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49
+
+Results:
+  91 .cls/.rex sources compile
+  42 tests/test_*.rex runtime scripts pass
+  test_real_media.rex PASS against supplied MVTRES.350
+  test_real_mvt_ipl.rex PASS, PSW=0000000000000080, CCHHR=0/0/4
+  test_cpu_lcr.rex PASS
+  test_cpu_lcr_live_trial.rex PASS
+  freeze/journal separation regressions PASS
+  live method insertion/replacement regressions PASS
+
+The primary suite command reached the 120-second harness wall-clock limit while
+starting test_state_tamper_rejected.rex, after 39 tests including both real-media
+tests had passed.  The remaining three tests were then run immediately under
+the identical runtime/dependency environment and all passed.  Evidence is
+preserved in evidence/safety9_full_suite.log.
+
+Real-MVT evidence:
+  exact journal retry:
+    IA 014FCA / ICOUNT 511869 / OP13 / R7 FFFFFFF4 / CC1
+    -> live OP13 retry R7 0000000C / CC2
+    -> next boundary OP14 at IA 01464C / ICOUNT 511897
+  permanent replay reaches the same OP14 boundary.
+
+SSC:
+  Exact requested oorexx_semantic_source_control_v0.2.2 remains unavailable.
+  v0.2.3 was not silently substituted.  SSC v0.2.2 qualification remains
+  explicitly pending.

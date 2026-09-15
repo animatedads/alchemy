@@ -1,0 +1,23 @@
+{
+  "id": "foreign-runtime.memory",
+  "title": "Managed memory, lifetime and call pinning",
+  "section": "architecture",
+  "summary": "ForeignBuffer may own runtime memory or borrow provider memory with release callback. Managed structs may retain pointer-field child resources; invocation pins the transitive reachable graph and rejects cycles/stale closure.",
+  "invariants": [
+    "Readonly imported buffers reject out/inout use.",
+    "Closing a managed child before a later parent invocation must fail closed rather than dereference stale storage.",
+    "Embedded NUL bytes and exact byte slices are preserved."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "foreign-runtime",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6.zip",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "member": "oorexx_foreign_runtime_v0.22.6/SCHEMA.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

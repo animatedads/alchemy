@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "kl10.microcode",
+  "version": "0.1",
+  "sphere": "kl10",
+  "title": "KL10 Model-B production microcode",
+  "summary": "Use the recovered production microcode for instruction sequences where the architectural manual does not expose the exact restart, parity-wait, or special-case implementation behavior.",
+  "procedure": [
+    "Locate the instruction micro-routine, then follow shared transfer/memory subroutines before inferring a CPU-visible result.",
+    "Treat restart/fixup labels as evidence about what architectural state must be reconstructable after a fault or interrupt.",
+    "For BLT, distinguish the normal copy loop from the explicit clear-core optimization."
+  ],
+  "invariants": [
+    "Microcode explains implementation sequencing; it does not license simulator shortcuts that alter architected state.",
+    "BLT clear-core optimization and general BLT must remain distinct paths.",
+    "Fault restart state must be reconstructed as the microcode expects, not from host-loop convenience."
+  ],
+  "documents": [
+    "kl10.production-microcode.repo",
+    "kl10.production-microcode.blt"
+  ],
+  "selectors": []
+}

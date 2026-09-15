@@ -1,0 +1,26 @@
+ooRexx Hugging Face Space Job v0.2.1
+Qualified: 2026-09-01
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version
+
+PASS HF SPACE CORE CREDENTIAL ZEROGPU QUOTA ENDPOINT POLICY
+PASS HF SPACE JOB NODE ALLOCATOR HARD ELIGIBILITY
+PASS HF SPACE HUB DISCOVERY THROUGH APICLIENT
+PASS HF SPACE API CLIENT HTTPS UPLOAD V2 SUBMIT SSE DOWNLOAD CLEANUP
+PASS HF SPACE AUTO V2-TO-V1 INTROSPECTED FALLBACK
+
+Packaged HTTPS fixtures verify nested `request` payload, multipart upload,
+terminal Gradio [result-json, FileData] output, native TLS/chunked SSE, and
+AUTO fallback that reads /gradio_api/info rather than guessing positional
+parameter order.
+
+Additional local integration: the actual managed endpoint package was hosted
+under Gradio 6.5.1 with TLS. ooRexx API Client/HF Space Job successfully
+uploaded a bundle, negotiated from unavailable v2 to advertised v1, completed
+the real Gradio queue/SSE lifecycle, downloaded the returned result ZIP, and
+released the API egress session. Result bundle contained job-result.json,
+stdout/stderr logs and the smoke output.
+
+No live Hugging Face Space mutation, real credential use or ZeroGPU
+consumption occurred during qualification.
+
+v0.2.1 dependency rebase: unchanged HF Space implementation and allocator adapter re-qualified on 2026-09-01 against Job-to-Node Allocator v0.6 under ooRexx 5.3.0 r13196. No live Space mutation, real token use or ZeroGPU consumption was performed.

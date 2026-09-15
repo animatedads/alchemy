@@ -1,0 +1,265 @@
+{
+  "kind": "corpus",
+  "id": "federationbank.knowledge",
+  "sphere": "federationbank",
+  "title": "FederationBank operational knowledge index",
+  "records": [
+    {
+      "topic": "architecture",
+      "aliases": [
+        "core",
+        "three engines",
+        "Account Engine",
+        "Payments Engine",
+        "Ledger Engine",
+        "authority map"
+      ],
+      "rule": "Account owns customer/account/beneficiary lifecycle; Payments owns transaction/reservation authority; Ledger owns monetary truth.",
+      "article": "architecture.federationbank.authority-map"
+    },
+    {
+      "topic": "ledger",
+      "aliases": [
+        "monetary truth",
+        "double entry",
+        "SQL truth",
+        "SERIALIZABLE",
+        "balance"
+      ],
+      "rule": "Only Ledger owns postings, balances, holds and durable monetary receipts.",
+      "article": "ledger.federationbank.monetary-truth"
+    },
+    {
+      "topic": "atomicity",
+      "aliases": [
+        "atomic commit",
+        "transaction header",
+        "posting legs",
+        "receipt",
+        "provenance"
+      ],
+      "rule": "Header, every posting leg, authority evidence and durable receipt commit atomically or none become visible.",
+      "article": "ledger.federationbank.monetary-truth"
+    },
+    {
+      "topic": "replay",
+      "aliases": [
+        "idempotency",
+        "worker crash",
+        "redelivery",
+        "durable receipt",
+        "restart"
+      ],
+      "rule": "After SQL commit, redelivery recovers the committed result rather than executing the banking event again.",
+      "article": "replay.federationbank.durable-idempotency"
+    },
+    {
+      "topic": "holds",
+      "aliases": [
+        "reservation",
+        "PLACE_HOLD",
+        "available balance",
+        "book balance"
+      ],
+      "rule": "A hold reduces available funds but is not a Ledger posting; reservation state/event/evidence/receipt commit atomically.",
+      "article": "ledger.federationbank.monetary-truth"
+    },
+    {
+      "topic": "physical-cash",
+      "aliases": [
+        "cash",
+        "ATM dispense",
+        "teller cash",
+        "physical truth",
+        "cash accepted"
+      ],
+      "rule": "Customer intent, physical cash fact and Ledger monetary truth are distinct facts that must be correlated.",
+      "article": "cash.federationbank.physical-vs-monetary"
+    },
+    {
+      "topic": "staff-channel",
+      "aliases": [
+        "STAFF",
+        "FB.STAFF.PAYMENTS.COMMANDS",
+        "Staff Authority",
+        "staff payment"
+      ],
+      "rule": "Staff payments use a separate authenticated ingress with exact Staff Authority evidence; Staff Channel is not monetary authority.",
+      "article": "staff.federationbank.payment-perimeter"
+    },
+    {
+      "topic": "teller-till",
+      "aliases": [
+        "till",
+        "counter cash",
+        "physical custody",
+        "drawer"
+      ],
+      "rule": "Teller Till owns physical counter-cash custody and never customer account or Ledger truth.",
+      "article": "branch.federationbank.physical-custody"
+    },
+    {
+      "topic": "branch-cash",
+      "aliases": [
+        "vault",
+        "in transit",
+        "replenishment",
+        "skim",
+        "till-to-till"
+      ],
+      "rule": "Branch Cash owns physical custody; released cash remains explicit in-transit custody until accepted.",
+      "article": "branch.federationbank.physical-custody"
+    },
+    {
+      "topic": "branch-day",
+      "aliases": [
+        "opening",
+        "closing",
+        "EOD",
+        "end of day",
+        "reconciliation"
+      ],
+      "rule": "Branch Day certifies opening/closing from typed evidence and is blocked by in-transit cash, unresolved reconciliation or discrepancy.",
+      "article": "branch.federationbank.physical-custody"
+    },
+    {
+      "topic": "offline-atm",
+      "aliases": [
+        "RESERVED_ALLOWANCE",
+        "DELEGATED_STAND_IN",
+        "offline authority",
+        "delayed advice"
+      ],
+      "rule": "Offline ATM vending requires retained bank-issued, bounded, single-use authority; terminal assertions are evidence, not authority.",
+      "article": "atm.federationbank.offline-authority"
+    },
+    {
+      "topic": "mandatory-settlement",
+      "aliases": [
+        "SETTLEMENT_MUST_POST",
+        "force post",
+        "already incurred"
+      ],
+      "rule": "Already-incurred physical obligations may require explicit SETTLEMENT_MUST_POST authority; there is no generic force=true capability.",
+      "article": "cash.federationbank.physical-vs-monetary"
+    },
+    {
+      "topic": "merchant",
+      "aliases": [
+        "Merchant Bank",
+        "derivatives",
+        "margin",
+        "brokerage",
+        "capital markets"
+      ],
+      "rule": "Merchant Banking owns derivative/margin/close-out facts but is at arm’s length from Core/Retail and cannot post the Core Ledger.",
+      "article": "merchant.federationbank.arm-length-boundary"
+    },
+    {
+      "topic": "collateral",
+      "aliases": [
+        "control receipt",
+        "MBCollateralControlReceipt",
+        "pledge",
+        "lien",
+        "realisation"
+      ],
+      "rule": "Merchant collateral candidate is not usable collateral until Core returns exact enforceable control evidence.",
+      "article": "merchant.federationbank.collateral-two-effects"
+    },
+    {
+      "topic": "merchant-settlement",
+      "aliases": [
+        "close-out",
+        "settlement obligation",
+        "cross-perimeter cash"
+      ],
+      "rule": "Merchant close-out may create a contractual settlement obligation; Core collateral realisation/cash movement is a separate Core authority event.",
+      "article": "merchant.federationbank.collateral-two-effects"
+    },
+    {
+      "topic": "fx",
+      "aliases": [
+        "FX",
+        "currency",
+        "per-currency balance",
+        "GBP USD"
+      ],
+      "rule": "FX journals balance independently per currency; unlike currencies are never summed together, and both Legal Effects are evaluated.",
+      "article": "ledger.federationbank.monetary-truth"
+    },
+    {
+      "topic": "fees",
+      "aliases": [
+        "fee",
+        "waiver",
+        "fee income",
+        "policy fee"
+      ],
+      "rule": "Fees are a separate Institutional Policy decision and are committed atomically with the transfer when applicable.",
+      "article": "policy.federationbank.regulatory-and-fixtures"
+    },
+    {
+      "topic": "policy",
+      "aliases": [
+        "Institutional Policy",
+        "Legal Effect",
+        "limits",
+        "regulatory profile",
+        "fixtures"
+      ],
+      "rule": "Limits/fees/reservations/account-opening rules belong to Institutional Policy; legal/regulatory effects are evaluated separately; fixture values are not real regulation.",
+      "article": "policy.federationbank.regulatory-and-fixtures"
+    },
+    {
+      "topic": "phantom-funds",
+      "aliases": [
+        "PHANTOM_FUNDS",
+        "spendable credit",
+        "failed transfer"
+      ],
+      "rule": "No transfer credit may become ordinary spendable balance unless the balancing debit is authoritative in the same Ledger transaction.",
+      "article": "ledger.federationbank.monetary-truth"
+    },
+    {
+      "topic": "internal-accounts",
+      "aliases": [
+        "GL",
+        "settlement account",
+        "fee account",
+        "FX position account"
+      ],
+      "rule": "Internal settlement, fee and FX accounts are Ledger-owned infrastructure; channels do not nominate arbitrary internal GL identifiers.",
+      "article": "ledger.federationbank.monetary-truth"
+    },
+    {
+      "topic": "source-lineage",
+      "aliases": [
+        "current baseline",
+        "newer package",
+        "provenance",
+        "update sphere"
+      ],
+      "rule": "Inspect the newest supplied package before coding; revise the smallest sphere object and attach structured provenance.",
+      "article": "ref.federationbank.sources"
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/README.md",
+      "line_start": 9,
+      "line_end": 115,
+      "claim": "Primary Core authority and Staff ingress facts indexed by the corpus."
+    },
+    {
+      "artifact": "federationbank_merchant_bank_v0.2(1).zip",
+      "sha256": "4c07643588f22a71a817a73de6e06960805c67700698dc73aa0bff8dbec8ed41",
+      "member": "federationbank_merchant_bank_v0.2/README.md",
+      "line_start": 7,
+      "line_end": 23,
+      "claim": "Merchant perimeter facts indexed by the corpus."
+    }
+  ]
+}

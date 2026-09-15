@@ -1,0 +1,179 @@
+{
+  "kind": "corpus",
+  "id": "queue-transport-glossary",
+  "sphere": "queue-transport",
+  "title": "Queue Transport authoritative glossary",
+  "records": [
+    {
+      "id": "term.queue-transport-2",
+      "term": "queue.transport/2",
+      "definition": "The encrypted authenticated remote Queue Fabric socket protocol introduced by v0.9-dev5; it is a wire identity, not a durable queue-record identity.",
+      "related": [
+        "qt.current",
+        "qt.version-boundary"
+      ]
+    },
+    {
+      "id": "term.source-ip-admission",
+      "term": "Source-IP admission",
+      "definition": "Pre-HELLO exact numeric source-address gate applied to an accepted socket. It is an admission fact and never substitutes for cryptographic identity.",
+      "related": [
+        "qt.admission-order",
+        "qt.ip-policy"
+      ]
+    },
+    {
+      "id": "term.aggregate-allowlist",
+      "term": "Aggregate trusted-source allowlist",
+      "definition": "Listener-wide union of current peer exact IPv4 addresses used for the pre-authentication rejection gate; rebuilt after peer re-registration.",
+      "related": [
+        "qt.ip-policy",
+        "qt.admission-order"
+      ]
+    },
+    {
+      "id": "term.peer-binding",
+      "term": "Peer-specific IP binding",
+      "definition": "Second source-IP check after HELLO resolves source manager, principal and key id to a trusted peer.",
+      "related": [
+        "qt.admission-order",
+        "qt.peer-authentication"
+      ]
+    },
+    {
+      "id": "term.transport-psk",
+      "term": "Transport PSK",
+      "definition": "Long-term pre-shared secret used to authenticate HELLO/CHALLENGE and derive per-connection directional session material; minimum 256 bits in dev5.",
+      "related": [
+        "qt.session-crypto",
+        "qt.secret-authority"
+      ]
+    },
+    {
+      "id": "term.key-id",
+      "term": "keyId",
+      "definition": "Non-secret identifier selecting transport key material. It is metadata, not authority.",
+      "related": [
+        "qt.peer-authentication",
+        "qt.secret-authority",
+        "qt.observability"
+      ]
+    },
+    {
+      "id": "term.transcript",
+      "term": "Authenticated session transcript",
+      "definition": "Protocol-labelled managers/channel/principal/key-id and client/server nonces bound into per-connection key derivation and secure-frame authentication.",
+      "related": [
+        "qt.session-crypto",
+        "qt.secure-frames"
+      ]
+    },
+    {
+      "id": "term.c2s",
+      "term": "C2S",
+      "definition": "Client-to-server direction with independently derived ChaCha20 key, HMAC key and nonce.",
+      "related": [
+        "qt.session-crypto"
+      ]
+    },
+    {
+      "id": "term.s2c",
+      "term": "S2C",
+      "definition": "Server-to-client direction with independently derived ChaCha20 key, HMAC key and nonce.",
+      "related": [
+        "qt.session-crypto"
+      ]
+    },
+    {
+      "id": "term.secure-frame",
+      "term": "SECURE frame",
+      "definition": "queue.transport/2 wrapper carrying protocol identity, direction, ciphertext and HMAC tag.",
+      "related": [
+        "qt.secure-frames"
+      ]
+    },
+    {
+      "id": "term.encrypt-then-mac",
+      "term": "Encrypt-then-MAC",
+      "definition": "Protect plaintext with ChaCha20, authenticate the resulting ciphertext/transcript/direction with HMAC-SHA-512, and verify the MAC before decrypting.",
+      "related": [
+        "qt.secure-frames"
+      ]
+    },
+    {
+      "id": "term.one-exchange",
+      "term": "One exchange per connection",
+      "definition": "Current lifecycle in which a TCP session carries one DELIVER or PROBE and one RESULT or HEALTH response, allowing each derived directional nonce to be used once.",
+      "related": [
+        "qt.connection-lifecycle"
+      ]
+    },
+    {
+      "id": "term.transfer-id",
+      "term": "transferId receipt",
+      "definition": "Durable receiver-side idempotence identity for legitimate retransmission. It is distinct from cryptographic session replay separation.",
+      "related": [
+        "qt.replay-idempotence"
+      ]
+    },
+    {
+      "id": "term.forward-secrecy",
+      "term": "Forward secrecy",
+      "definition": "Property intentionally not claimed by the dev5 PSK design; a future standards-qualified ephemeral/TLS transport may add it.",
+      "related": [
+        "qt.forward-secrecy"
+      ]
+    },
+    {
+      "id": "term-oci-32",
+      "term": "OCI peer /32",
+      "definition": "Network-layer security rule permitting the Queue Fabric TCP port only from one exact peer IPv4. Queue Fabric itself stores the same address without CIDR notation.",
+      "related": [
+        "qt.oci-two-node"
+      ]
+    },
+    {
+      "id": "term.secret-broker",
+      "term": "Secret Broker seam",
+      "definition": "Production boundary where trusted runtime code should resolve PSK material by reference; Queue Transport should not persist or become authority over long-term secrets.",
+      "related": [
+        "qt.secret-authority"
+      ]
+    },
+    {
+      "id": "term.secure-capability",
+      "term": "QUEUE_SECURE_TRANSPORT_V2",
+      "definition": "Suggested durable node ability for allocator hard eligibility when remote dispatch depends on queue.transport/2.",
+      "related": [
+        "qt.allocator-seam"
+      ]
+    },
+    {
+      "id": "term.ip-rejected-count",
+      "term": "ipRejectedCount",
+      "definition": "Listener counter for connections rejected by the pre-authentication source-IP gate.",
+      "related": [
+        "qt.failure-semantics",
+        "qt.observability"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 3,
+      "line_end": 62,
+      "claim": "Glossary derives from the secure transport contract."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/OCI_TWO_NODE_DEPLOYMENT.md",
+      "line_start": 17,
+      "line_end": 73,
+      "claim": "Deployment/replay/secret terminology derives from the two-node OCI contract."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "kind": "article",
+  "id": "llm-access.access-points",
+  "version": "0.3",
+  "sphere": "llm-access",
+  "title": "Public access points observed 2026-09-02",
+  "summary": "Header names and list-models paths as published. Not a secret surface.",
+  "providers": [
+    {
+      "id": "xai",
+      "base": "https://api.x.ai/v1",
+      "auth": "Authorization: Bearer <XAI_API_KEY>",
+      "list_models": "GET /v1/models and GET /v1/language-models",
+      "chat_or_responses": "POST /v1/chat/completions and POST /v1/responses",
+      "primary": "https://x.ai/docs/api-reference",
+      "observed_as_of": "2026-09-02"
+    },
+    {
+      "id": "openai",
+      "base": "https://api.openai.com/v1",
+      "auth": "Authorization: Bearer <OPENAI_API_KEY>",
+      "list_models": "GET /v1/models",
+      "preferred_write": "Responses API (developers.openai.com) in addition to Chat Completions",
+      "primary": "https://developers.openai.com/api/docs/models",
+      "observed_as_of": "2026-09-02"
+    },
+    {
+      "id": "anthropic",
+      "base": "https://api.anthropic.com",
+      "auth": "x-api-key: <ANTHROPIC_API_KEY> plus anthropic-version: 2023-06-01 (version header still required; value is a protocol date, not a model date)",
+      "write": "POST /v1/messages and POST /v1/messages/batches",
+      "channels": [
+        "direct",
+        "Amazon Bedrock anthropic.claude-*",
+        "Google Vertex claude-*@DATE or dateless"
+      ],
+      "primary": "https://platform.claude.com/docs/en/about-claude/models/overview",
+      "observed_as_of": "2026-09-02"
+    },
+    {
+      "id": "google-gemini",
+      "base_ai_studio": "Gemini API via AI Studio / Google GenAI client (ai.google.dev)",
+      "auth": "API key on Gemini API; OAuth/service account on Vertex",
+      "list_models": "models.list on the Gemini API / Vertex publisher models",
+      "primary": "https://ai.google.dev/gemini-api/docs/models",
+      "observed_as_of": "2026-09-02"
+    },
+    {
+      "id": "deepseek",
+      "base_openai": "https://api.deepseek.com",
+      "base_openai_v1": "https://api.deepseek.com/v1",
+      "base_anthropic": "https://api.deepseek.com/anthropic",
+      "auth": "Authorization: Bearer <DEEPSEEK_API_KEY>",
+      "write": "POST /chat/completions (OpenAI shape) or Anthropic-compatible path on the anthropic base",
+      "primary": "https://api-docs.deepseek.com/",
+      "observed_as_of": "2026-09-02"
+    }
+  ],
+  "authority": "provider-primary-snapshot",
+  "provenance": [
+    {
+      "artifact": "llm_access_sphere_v0.2.zip",
+      "sha256": "eaaf9ffd12c3734143c6721753d057caf02f20c2ac05783662627e33bb2b2ae6",
+      "member": "llm_access_sphere_v0.1/packs/llm-access/04-article-access-points.json",
+      "claim": "Content preserved from v0.2 during structural normalization."
+    }
+  ],
+  "section": "procedure"
+}

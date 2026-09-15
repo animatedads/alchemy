@@ -1,0 +1,44 @@
+{
+  "schema": "llm-gopher/0.18",
+  "tool_status": {
+    "rc": 0,
+    "class": "OK"
+  },
+  "operation_status": {
+    "rc": 1,
+    "class": "CORRECT"
+  },
+  "result": {
+    "language": "oorexx",
+    "path": "/mnt/data/safety21_work/ibm_4361_oorexx_v0.3-recovery2-journal2-safety20/IBM370Executor.cls",
+    "rules_checked": 3,
+    "breaches": [],
+    "breach_count": 0,
+    "blockers": 0,
+    "advisories": 0,
+    "cycle": "cycle://language-rules/eb6bf9188722737b",
+    "resume": "cycle://language-rules/eb6bf9188722737b"
+  },
+  "service_proxy": {
+    "kind": "service-proxy",
+    "service": "source.language.rules",
+    "capability": "source.language.rules.evaluate",
+    "operations": [
+      "exec"
+    ],
+    "rank": 10
+  },
+  "route": {
+    "requested_capability": "source.language.rules.evaluate",
+    "service": "source.language.rules",
+    "implementation": "builtin.language.rules.evaluate",
+    "fallback_depth": 0,
+    "attempts": [
+      {
+        "service": "source.language.rules",
+        "implementation": "builtin.language.rules.evaluate",
+        "tool_status": "OK"
+      }
+    ]
+  }
+}

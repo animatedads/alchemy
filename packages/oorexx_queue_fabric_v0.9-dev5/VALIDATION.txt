@@ -1,0 +1,145 @@
+OBJECT QUEUE FABRIC v0.9-dev5 SECURE INTER-NODE TRANSPORT VALIDATION
+====================================================================
+
+Status
+------
+DEVELOPMENT CONTINUATION CANDIDATE.
+
+This is not a sealed/released Queue Fabric v0.9. The secure inter-node transport
+slice and broad inherited Queue Fabric behavior were executed locally as
+recorded below. Exact v0.8.2 bilateral compatibility and the remaining long
+crypto matrix were not all rerun in this execution, and Alchemy Autobuild was
+not run; those are explicit non-claims.
+
+Supplied qualification inputs
+------------------------------
+oorexxapis(20260901-175320).zip
+  SHA-256 d059d4696f0257a8faa5135e13a349749f90b7078edf59d75bea1c950f4d24a0
+base current/oorexx_queue_fabric_v0.9-dev4.zip
+  SHA-256 9c1487f8dc878ae21a19e8fc8a139c801a80a97acd2c6575635003e6f8069898
+oorexx_crypto_v0.8.3.zip from supplied roll-up
+  SHA-256 5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49
+oorexx_foreign_runtime_v0.22.6(6).zip
+  SHA-256 25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465
+ooRexx 5.3.0 r13196 Internal Test Version deb
+  SHA-256 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+alchemy_objects_v0.8.zip from supplied roll-up
+  SHA-256 7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073
+nosqlserver_v0.79.zip from supplied roll-up
+  SHA-256 076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec
+runtime_registry_v0.14.zip from supplied roll-up
+  SHA-256 b8748634f271f5389b9e7e4fd7089eda314b0eea90ab6e47151ae1de270c6209
+oorexx_work_load_units_v0.12.zip from supplied roll-up
+  SHA-256 b5f6cd8230daa26c227b93032d42b4263c5fcb3b40838359aeab3421cf0ab75a
+
+Runtime
+-------
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version.
+
+Foreign Runtime / accelerated crypto probe
+------------------------------------------
+PASS Crypto v0.8.3 HMAC-SHA-512 and ChaCha20 through the supplied Foreign
+Runtime provider; provider path resolved to /lib/x86_64-linux-gnu/libcrypto.so.3.
+
+Identity / compatibility boundary
+---------------------------------
+Aggregate Queue Fabric API: VERSION 0.9 / queue.fabric/0.9
+Development package: 0.9-dev5
+Remote socket protocol: queue.transport/2 (intentional wire change)
+Durable Queue Fabric record identities and QAUTH2 formats remain unchanged.
+
+Security boundary implemented
+-----------------------------
+1. Accepted socket numeric source address is checked before any HELLO read.
+2. Application allowlist is exact canonical dotted-quad IPv4 only. CIDR,
+   hostnames, IPv6, leading-zero forms, malformed/out-of-range octets and
+   0.0.0.0 are rejected.
+3. Re-registering a peer rebuilds the aggregate source set; removed addresses
+   do not remain admitted to pre-auth processing.
+4. Selected peer identity is checked against its own IP allowlist again before
+   cryptographic authentication.
+5. HELLO and CHALLENGE are mutually HMAC-SHA-512 authenticated.
+6. Client/server random nonces plus the complete authenticated transcript and
+   PSK derive independent C2S/S2C encryption keys, MAC keys and nonces.
+7. PROBE, DELIVER, HEALTH and RESULT bodies are ChaCha20 encrypted and
+   HMAC-SHA-512 authenticated using encrypt-then-MAC. Authentication is checked
+   before decrypt/application processing.
+8. Receiver channel/ACL authority and durable transfer-id idempotence remain
+   authoritative above transport admission.
+
+The design is PSK-based and does NOT provide forward secrecy. See
+SECURE_TRANSPORT.md.
+
+Executable evidence: secure transport
+-------------------------------------
+PASS all 14 first-party source classes compile with rexxc.
+PASS ooRexx message-style gate (14 first-party sources; crypto external).
+PASS exact IPv4 source-policy test: 11 assertions.
+PASS secure-session round trip with plaintext absent from secure frame.
+PASS tampered secure frame rejected.
+PASS wrong-direction frame rejected and direction-separated frame differs.
+PASS frame from one nonce/transcript-bound session rejected in another session.
+PASS encrypted socket transport: 6 assertions.
+PASS socket security: 13 assertions, including wrong key, legitimate fresh-
+     connection receiver idempotence, queue-full semantics, forged encrypted
+     RESULT rejection, correct-key/wrong-IP pre-auth rejection with no mutation,
+     and stale source-IP removal after peer re-registration.
+PASS encrypted health/failover: 15 assertions.
+PASS encrypted distributed-topic socket: 6 assertions, within the distributed
+     topic run below.
+PASS release-boundary lock: 10 assertions; queue.transport/2 is explicit while
+     durable record identities remain locked.
+PASS transport NoSQL and failover NoSQL; raw transport key is not projected.
+
+Executable evidence: broad inherited behavior
+---------------------------------------------
+PASS core acceptance: 62 assertions.
+PASS adversarial core: 71 assertions.
+PASS concurrency: produced=2000 consumed=2000 duplicates=0.
+PASS MQ semantics: 141 assertions.
+PASS manager NoSQL: 24 assertions.
+PASS channels: 85 assertions; channel NoSQL: 38 assertions.
+PASS topics: 135 assertions; topic NoSQL: 44 assertions.
+PASS distributed topics: 84 assertions.
+PASS distributed-topic multihop: 87 assertions.
+PASS distributed-topic recovery: 66 assertions.
+PASS distributed-topic NoSQL: 57 assertions.
+PASS broker service, retry, lifecycle, drain, Alchemy adoption and broker NoSQL.
+PASS Runtime Registry service integration.
+PASS WLU admission and heartbeat admission.
+PASS shared crypto known-answer integration (Ed25519 RFC8032 + SHA-512 abc).
+PASS HMAC durability: 20 assertions.
+PASS Ed25519 checkpoint: 6 assertions.
+
+Not rerun / not promoted to PASS in this execution
+--------------------------------------------------
+- Exact v0.8.2 <-> v0.9 ordinary/QAUTH2 compatibility modes: the supplied
+  20260901-175320 roll-up contains v0.9-dev4 but no exact v0.8.2 Queue Fabric
+  source tree to bind QF_V082_SRC. Existing inherited documentation is not
+  promoted into fresh local evidence here.
+- The aggregate long crypto batch exceeded the execution boundary after the
+  checkpoint mode. Rotation, torn-tail recovery, keyring, authenticated UOW,
+  channel, topic and distributed-topic crypto modes were therefore not all
+  freshly rerun on this dev5 tree and are not claimed green here.
+- Alchemy Autobuild / publish qualification was not run.
+
+OCI two-node deployment contract
+--------------------------------
+Prefer private VCN addresses. At the OCI network layer use a narrow ingress
+rule for the Queue Fabric TCP port from the reciprocal peer address /32; do not
+open that port from 0.0.0.0/0. At Queue Fabric itself bind the trusted peer to
+the same exact numeric private IPv4. See OCI_TWO_NODE_DEPLOYMENT.md.
+
+Allocator boundary
+------------------
+Transport crypto remains a Queue Fabric concern. A node that offers this path
+may advertise a hard ability such as QUEUE_SECURE_TRANSPORT_V2; jobs that depend
+on it should require that ability. Capacity or ranking cannot replace a missing
+hard requirement.
+
+Secret boundary
+---------------
+keyId is metadata, not authority. NoSQL projection tests continue to exclude
+raw transport key material. The compatibility constructor still accepts keyHex;
+production wiring should resolve that material from Secret Broker by reference.
+Secret-reference-native registration/rotation remains a separate increment.

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")" && pwd)"
+: "${ALCHEMY_SRC:?set ALCHEMY_SRC}"
+: "${CRYPTO_SRC:?set CRYPTO_SRC}"
+: "${QUEUE_FABRIC_SRC:?set QUEUE_FABRIC_SRC}"
+: "${RUNTIME_REFERENCE_SRC:?set RUNTIME_REFERENCE_SRC}"
+: "${WIRE_UI_SERVER_SRC:?set WIRE_UI_SERVER_SRC}"
+: "${WIRE_UI_BUILDER_SRC:?set WIRE_UI_BUILDER_SRC}"
+: "${WEB_GATEWAY_ROOT:?set WEB_GATEWAY_ROOT to oorexx_queue_fabric_web_gateway_v0.2 root}"
+: "${ACCESS_PERMISSIONS_SRC:?set ACCESS_PERMISSIONS_SRC to oorexx_access_permissions_v0.1/src}"
+: "${SECURITY_EFFECT_SRC:?set SECURITY_EFFECT_SRC to security_effect_v0.10/src}"
+: "${POLICY_SRC:?set POLICY_SRC to institutional_policy_v0.8/src}"
+export REXX_PATH="$HERE/src:$HERE/examples:$HERE/integration:$HERE/tests:$WIRE_UI_SERVER_SRC:$WIRE_UI_BUILDER_SRC:$WEB_GATEWAY_ROOT/src:$ACCESS_PERMISSIONS_SRC:$SECURITY_EFFECT_SRC:$POLICY_SRC:$ALCHEMY_SRC:$CRYPTO_SRC:$QUEUE_FABRIC_SRC:$RUNTIME_REFERENCE_SRC${REXX_PATH:+:$REXX_PATH}"
+export REXX_BIN="${REXX_BIN:-rexx}"
+node "$HERE/tests/test_wire_browser_gateway.mjs"

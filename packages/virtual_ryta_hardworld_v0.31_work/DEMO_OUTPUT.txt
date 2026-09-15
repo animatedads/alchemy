@@ -1,0 +1,41 @@
+RYTA decision run
+model=RYTA-CABIN-SAFETY|version=0.2|snapshot=WORLD-SNAPSHOT-UNBOUND
+state=REMEDIATION_REQUIRED|rule=RYTA-CUSTODY-UNSAFE|tier=SAFETY_CRITICAL|ambiguous=0|execution=READY
+actions:
+  ANSWER_QUERY|score=10|provisional=1|disposition=PERMITTED|final=1|capability=CAPABLE|approval=NOT_REQUIRED|override=NON_OVERRIDEABLE
+  SELL_PRODUCT|score=5|provisional=1|disposition=SUPPRESSED|final=0|capability=CAPABLE|approval=NOT_REQUIRED|override=CONTEXTUAL
+  WARNING|score=-2|provisional=0|disposition=REQUIRED|final=1|capability=CAPABLE|approval=NOT_REQUIRED|override=NON_OVERRIDEABLE
+  UPSELL|score=3|provisional=1|disposition=PROHIBITED|final=0|capability=CAPABLE|approval=NOT_REQUIRED|override=NON_OVERRIDEABLE
+  BIG_UPSELL|score=8|provisional=1|disposition=PROHIBITED|final=0|capability=CAPABLE|approval=NOT_REQUIRED|override=NON_OVERRIDEABLE
+  ASK_INFORMATION|score=0|provisional=0|disposition=PERMITTED|final=0|capability=CAPABLE|approval=NOT_REQUIRED|override=NON_OVERRIDEABLE
+  ESCALATE|score=0|provisional=0|disposition=PERMITTED|final=0|capability=CAPABLE|approval=NOT_REQUIRED|override=NON_OVERRIDEABLE
+outputs:
+  blah blah blah answer query
+  do warning
+trace:
+  MODEL id=RYTA-CABIN-SAFETY version=0.2 snapshot=WORLD-SNAPSHOT-UNBOUND
+  CAPABILITY_DEFAULTS installed=7
+  PROVISIONAL ANSWER_QUERY score=10 selected=1
+  PROVISIONAL SELL_PRODUCT score=5 selected=1
+  PROVISIONAL WARNING score=-2 selected=0
+  PROVISIONAL UPSELL score=3 selected=1
+  PROVISIONAL BIG_UPSELL score=8 selected=1
+  PROVISIONAL ASK_INFORMATION score=0 selected=0
+  PROVISIONAL ESCALATE score=0 selected=0
+  RULE_MATCH RYTA-CUSTODY-UNSAFE tier=SAFETY_CRITICAL state=REMEDIATION_REQUIRED
+  RULE_SURVIVOR RYTA-CUSTODY-UNSAFE tier=SAFETY_CRITICAL
+  STATE REMEDIATION_REQUIRED winner=RYTA-CUSTODY-UNSAFE tier=SAFETY_CRITICAL ambiguous=0
+  POLICY REMEDIATION-ANSWER action=ANSWER_QUERY disposition=PERMITTED
+  POLICY REMEDIATION-SELL action=SELL_PRODUCT disposition=SUPPRESSED
+  POLICY REMEDIATION-WARNING action=WARNING disposition=REQUIRED
+  POLICY REMEDIATION-UPSELL action=UPSELL disposition=PROHIBITED
+  POLICY REMEDIATION-BIG-UPSELL action=BIG_UPSELL disposition=PROHIBITED
+  POLICY REMEDIATION-ASK action=ASK_INFORMATION disposition=PERMITTED
+  POLICY REMEDIATION-ESCALATE action=ESCALATE disposition=PERMITTED
+  FINAL ANSWER_QUERY disposition=PERMITTED selected=1 capability=CAPABLE approval=NOT_REQUIRED
+  FINAL SELL_PRODUCT disposition=SUPPRESSED selected=0 capability=CAPABLE approval=NOT_REQUIRED
+  FINAL WARNING disposition=REQUIRED selected=1 capability=CAPABLE approval=NOT_REQUIRED
+  FINAL UPSELL disposition=PROHIBITED selected=0 capability=CAPABLE approval=NOT_REQUIRED
+  FINAL BIG_UPSELL disposition=PROHIBITED selected=0 capability=CAPABLE approval=NOT_REQUIRED
+  FINAL ASK_INFORMATION disposition=PERMITTED selected=0 capability=CAPABLE approval=NOT_REQUIRED
+  FINAL ESCALATE disposition=PERMITTED selected=0 capability=CAPABLE approval=NOT_REQUIRED

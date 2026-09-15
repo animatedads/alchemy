@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "usock.ancillary-data",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Ancillary messages and capability transfer",
+  "summary": "sendmsg/recvmsg are expressed as managed Foreign Runtime pointer graphs while the flexible cmsghdr byte stream is constructed and parsed in ooRexx from profile-qualified offsets/alignment and ABI-native scalar widths.",
+  "authority": "project-authority",
+  "invariants": [
+    "The msghdr -> iovec -> payload/control/name resource graph stays pinned transitively for the native call.",
+    "SCM_RIGHTS is capability transfer and received descriptor ownership must be explicit.",
+    "On MSG_CTRUNC or an excess descriptor count, identifiable received descriptors are closed and the operation fails with EMSGSIZE.",
+    "No partial capability set is exposed after ancillary truncation.",
+    "Raw pointer extraction must not bypass Foreign Runtime managed-resource pinning."
+  ],
+  "procedure": [
+    "Use UnixMessage and sendDescriptors/recvDescriptors rather than exposing raw cmsghdr buffers to callers."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/unixsocket.cls",
+      "line_start": 571,
+      "line_end": 658,
+      "claim": "recvMessage/sendDescriptors implement managed msghdr graphs, ancillary parsing, SCM_RIGHTS transfer, and fail-closed truncation.",
+      "note": "Executable ancillary semantics."
+    }
+  ]
+}

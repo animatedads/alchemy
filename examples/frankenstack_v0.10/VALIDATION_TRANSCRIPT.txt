@@ -1,0 +1,146 @@
+=== Runtime ===
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+
+=== Focused current-stack preflight ===
+NOSQLSERVER V0.72 GENERAL JOIN ON SMOKE: OK
+G07 seat-together offer: seats= 3 unit_eur=20 total_eur= 60
+OURLADYAIR PNRGOV NOSQL SEAT OFFER SMOKE: OK
+OBJECT QUEUE FABRIC V0.8 DISTRIBUTED TOPICS: OK
+assertions=84
+OBJECT QUEUE FABRIC V0.8 DISTRIBUTED TOPIC RECOVERY: OK
+assertions=66
+RUNTIME REGISTRY V0.9 EXECUTION EVIDENCE START
+  assertions=24
+  old_generation=g000000001
+  new_generation=g000000002
+  locator=fixture://evidence/value
+RUNTIME REGISTRY V0.9 EXECUTION EVIDENCE: OK
+LEGAL EFFECT V0.7 CORE START
+  assertions=20
+LEGAL EFFECT V0.7 CORE: OK
+TABLE FEED AUTHORITY MATRIX START
+vectors: 18
+holes: 0
+TABLE FEED AUTHORITY MATRIX: OK
+DATABASE COMPILE SMOKE: OK
+FOCUSED CURRENT-STACK PREFLIGHT: OK
+
+=== Native G07 PNRGOV evidence ===
+evidence_id	group_ref	message_ref	surname	given_name	service_code	service_value	source_path	source_kind	source_identity_preserved
+G07-G07A	G07	G07A	MACLEOD	DECLAN	NSST	SEAT NOT PURCHASED	/INTERCHANGE[1]/GROUP[7]/MESSAGE[14]/SSR[1]/E1/R1/C1	EDIFACTCOMPONENT	1
+G07-G07B	G07	G07B	ROBERTSON	NOOR	NSST	SEAT NOT PURCHASED	/INTERCHANGE[1]/GROUP[7]/MESSAGE[15]/SSR[1]/E1/R1/C1	EDIFACTCOMPONENT	1
+G07-G07C	G07	G07C	OKAFOR	SUSAN	NSST	SEAT NOT PURCHASED	/INTERCHANGE[1]/GROUP[7]/MESSAGE[16]/SSR[1]/E1/R1/C1	EDIFACTCOMPONENT	1
+
+=== Runtime generation evidence: captured history vs current generation ===
+phase	generation_id	version	artifact_id	generation_state	captured_state	locator
+CONSUMER_CURRENT	g000000002	2.0.0	fixture:seat-offer:v2	ACTIVE	ACTIVE	
+PUBLISH_CAPTURED	g000000001	1.0.0	fixture:seat-offer:v1	ACTIVE	DETACHED_ACTIVE	edifact://ourladyair/G07/SSR:NSST
+PUBLISH_LIVE_AFTER_CUTOVER	g000000001	1.0.0	fixture:seat-offer:v1	DRAINING	DRAINING	
+
+=== Same sealed synthetic legal generation, different action time ===
+phase	event_time	evaluation_time	assessment_status	dispositions	legal_generation_id	runtime_generation_id	note
+CONSUMER_TIME	2026-08-22	2026-08-22	BLOCKED	PROHIBITED	SEAT-LEGAL-G1	g000000002	same sealed legal generation blocks the action after the synthetic cutover
+PUBLISHER_TIME	2026-08-20	2026-08-20	ADMISSIBLE		SEAT-LEGAL-G1	g000000001	legal admissibility at publication is evidence, not a permanent capability token
+
+=== Retained authority time bomb ===
+case_id	publication_id	publisher_remote_count	retained_at_a	consumer_depth	consumer_payload_class	publisher_legal_status	consumer_legal_status	receipt_count	duplicate_suppressed	provenance_preserved
+G07-RETAINED-TIME-BOMB	pub-351620-1	0	1	1	Directory	ADMISSIBLE	BLOCKED	1	1	1
+
+=== Queue Fabric v0.8.1 durable retained state and receipt ===
+publication_id	topic_name	topic_string	payload_class	correlation_id
+pub-351620-1	SEAT.OFFERS	seat/offers/g07/seat-together	Directory	G07-SEAT-TOGETHER-60
+publication_id	topic_name	topic_string	payload_class	correlation_id
+pub-351620-1	SEAT.OFFERS	seat/offers/g07/seat-together	Directory	G07-SEAT-TOGETHER-60
+receipt_id	origin_manager	publication_id	destination_topic	source_manager
+QM.A|pub-351620-1|SEAT.OFFERS	QM.A	pub-351620-1	SEAT.OFFERS	QM.A
+
+=== Explicit evidence -> authority promotion ===
+promotion_id	evidence_type	evidence_key	promoted_meaning	authority_effect	provenance
+PROMO-LEGAL-CONSUME	LEGAL_EFFECT	BLOCKED	CONSUMER_TIME_ACTION_BLOCKED	PROHIBIT_ACTION	consumer-time evaluation after synthetic cutover controls actionability
+PROMO-LEGAL-PUBLISH	LEGAL_EFFECT	ADMISSIBLE	PUBLISHER_TIME_ADMISSIBILITY	EVIDENCE_ONLY	publisher event was admissible under synthetic law at 2026-08-20; not transferable authority
+PROMO-QUEUE-RETAIN	QUEUE_FABRIC	RETAINED_AND_RECEIPTED	DURABLE_TRANSPORT_PROVENANCE	EVIDENCE_ONLY	queue proves durable retained handoff and duplicate suppression; it does not grant business authority
+PROMO-RUNTIME	RUNTIME_REGISTRY	g000000001	HISTORICAL_EXECUTION_GENERATION	EVIDENCE_ONLY	detached publisher evidence remains historically truthful while v2 is current
+PROMO-STRUCTURED	STRUCTURED_RELATION	G07_NSST_X3	SOURCE_PROVENANCE_PRESERVED	REQUIRE_PRESERVATION	three native EDIFACT facts retain exact source document and paths
+
+=== HardWorld: transport provenance is not current authority ===
+row_id	preference_score	upstream_disposition	disposition	final_selected	reason
+ACT_ON_RETAINED_OFFER	9000000	PROHIBITED	PROHIBITED	0	UPSTREAM_PROHIBITION_OVERRIDES_SCORE
+PRESERVE_SOURCE_PROVENANCE	-500000	REQUIRED	REQUIRED	1	UPSTREAM_REQUIREMENT_OVERRIDES_SCORE
+RE_EVALUATE_AT_CONSUMER	-1000000	REQUIRED	REQUIRED	1	UPSTREAM_REQUIREMENT_OVERRIDES_SCORE
+SUPPRESS_RETAINED_OFFER	-1000	REQUIRED	REQUIRED	1	UPSTREAM_REQUIREMENT_OVERRIDES_SCORE
+TREAT_QUEUE_DELIVERY_AS_AUTHORITY	7000000	PROHIBITED	PROHIBITED	0	UPSTREAM_PROHIBITION_OVERRIDES_SCORE
+TRUST_PUBLISHER_TIME_APPROVAL	8000000	PROHIBITED	PROHIBITED	0	UPSTREAM_PROHIBITION_OVERRIDES_SCORE
+
+=== Prepared cursor remains observational ===
+PASS COM_STMT_PREPARE remains observational: [['TRIBUNAL', '1']]
+PASS EXECUTE/FETCH reuse frozen Algorithm Relation: [['TRIBUNAL', '1']]
+PASS prepared cursor rows: [['ACT_ON_RETAINED_OFFER', 'PROHIBITED'], ['PRESERVE_SOURCE_PROVENANCE', 'REQUIRED'], ['RE_EVALUATE_AT_CONSUMER', 'REQUIRED'], ['SUPPRESS_RETAINED_OFFER', 'REQUIRED'], ['TREAT_QUEUE_DELIVERY_AS_AUTHORITY', 'PROHIBITED'], ['TRUST_PUBLISHER_TIME_APPROVAL', 'PROHIBITED']]
+FRANKENSTACK V0.10 PREPARED CURSOR: OK
+
+=== Mutation attacks against evidence/transport/decision snapshots ===
+UPDATE structured_offer_evidence SET service_code='SEAT' WHERE evidence_id='G07-G07A'
+ERROR 1235: Object snapshot tables are read-only
+rc=1
+UPDATE mqb_retained_publications SET topic_name='APPROVED' WHERE topic_name='SEAT.OFFERS'
+ERROR 1235: Object snapshot tables are read-only
+rc=1
+DELETE FROM mqb_topic_distribution_receipts WHERE origin_manager='QM.A'
+ERROR 1235: Object snapshot tables are read-only
+rc=1
+INSERT INTO mqb_topic_distribution_receipts VALUES ('fake','QM.X','p','SEAT.OFFERS','QM.X','now')
+ERROR 1235: Object snapshot tables are read-only
+rc=1
+UPDATE retained_authority_decisions SET disposition='PERMITTED' WHERE row_id='ACT_ON_RETAINED_OFFER'
+ERROR 1235: Object snapshot tables are read-only
+rc=1
+
+=== Database Core v0.39 round-trip ===
+DATABASE CORE V0.39 -> MYSQL WIRE IDENTITY
+ protocol=mysql product=nosqlserver
+ raw=5.7.44-NoSQLServer-ooRexx
+DATABASE CORE -> NATIVE G07 EVIDENCE rows=3
+G07A | MACLEOD | NSST | SEAT NOT PURCHASED | /INTERCHANGE[1]/GROUP[7]/MESSAGE[14]/SSR[1]/E1/R1/C1 | identity=1
+G07B | ROBERTSON | NSST | SEAT NOT PURCHASED | /INTERCHANGE[1]/GROUP[7]/MESSAGE[15]/SSR[1]/E1/R1/C1 | identity=1
+G07C | OKAFOR | NSST | SEAT NOT PURCHASED | /INTERCHANGE[1]/GROUP[7]/MESSAGE[16]/SSR[1]/E1/R1/C1 | identity=1
+DATABASE CORE -> RUNTIME EVIDENCE rows=3
+CONSUMER_CURRENT | g000000002 | fixture:seat-offer:v2 | state=ACTIVE | captured=ACTIVE
+PUBLISH_CAPTURED | g000000001 | fixture:seat-offer:v1 | state=ACTIVE | captured=DETACHED_ACTIVE
+PUBLISH_LIVE_AFTER_CUTOVER | g000000001 | fixture:seat-offer:v1 | state=DRAINING | captured=DRAINING
+DATABASE CORE -> LEGAL TIME rows=2
+CONSUMER_TIME | event=2026-08-22 | BLOCKED | PROHIBITED | runtime=g000000002
+PUBLISHER_TIME | event=2026-08-20 | ADMISSIBLE |  | runtime=g000000001
+DATABASE CORE -> RETAINED AUTHORITY CASE rows=1
+G07-RETAINED-TIME-BOMB | pub=pub-351620-1 | remote_at_publish=0 | retained=1 | consumer_depth=1 | legal=ADMISSIBLE->BLOCKED | receipts=1 | duplicate_suppressed=1
+DATABASE CORE -> QUEUE DISTRIBUTION RECEIPTS rows=1
+QM.A|pub-351620-1|SEAT.OFFERS | origin=QM.A | publication=pub-351620-1 | topic=SEAT.OFFERS
+DATABASE CORE -> RETAINED AUTHORITY TRIBUNAL rows=6
+ACT_ON_RETAINED_OFFER | score=9000000 | PROHIBITED | selected=0 | UPSTREAM_PROHIBITION_OVERRIDES_SCORE
+PRESERVE_SOURCE_PROVENANCE | score=-500000 | REQUIRED | selected=1 | UPSTREAM_REQUIREMENT_OVERRIDES_SCORE
+RE_EVALUATE_AT_CONSUMER | score=-1000000 | REQUIRED | selected=1 | UPSTREAM_REQUIREMENT_OVERRIDES_SCORE
+SUPPRESS_RETAINED_OFFER | score=-1000 | REQUIRED | selected=1 | UPSTREAM_REQUIREMENT_OVERRIDES_SCORE
+TREAT_QUEUE_DELIVERY_AS_AUTHORITY | score=7000000 | PROHIBITED | selected=0 | UPSTREAM_PROHIBITION_OVERRIDES_SCORE
+TRUST_PUBLISHER_TIME_APPROVAL | score=8000000 | PROHIBITED | selected=0 | UPSTREAM_PROHIBITION_OVERRIDES_SCORE
+DATABASE CORE FRANKENSTACK V0.10 FACADE: OK
+
+=== Wire server / provider log ===
+FRANKENSTACK V0.10 RETAINED AUTHORITY TIME BOMB START
+  structured_plugin=0.9 outer_envelope=INVALID g07_nsst=3 offer_eur=60
+  publisher_runtime=g000000001 captured_state=ACTIVE live_after_cutover=DRAINING
+  consumer_runtime=g000000002 state=ACTIVE
+  legal_publish=ADMISSIBLE legal_consume=BLOCKED
+  retained_publication=pub-351620-1 publisher_remote_count=0 receipt_count=1 duplicate_suppressed=1
+  HARDWORLD ACT_ON_RETAINED_OFFER score=9000000 -> PROHIBITED selected=FALSE reason=UPSTREAM_PROHIBITION_OVERRIDES_SCORE
+  HARDWORLD PRESERVE_SOURCE_PROVENANCE score=-500000 -> REQUIRED selected=TRUE reason=UPSTREAM_REQUIREMENT_OVERRIDES_SCORE
+  HARDWORLD RE_EVALUATE_AT_CONSUMER score=-1000000 -> REQUIRED selected=TRUE reason=UPSTREAM_REQUIREMENT_OVERRIDES_SCORE
+  HARDWORLD SUPPRESS_RETAINED_OFFER score=-1000 -> REQUIRED selected=TRUE reason=UPSTREAM_REQUIREMENT_OVERRIDES_SCORE
+  HARDWORLD TREAT_QUEUE_DELIVERY_AS_AUTHORITY score=7000000 -> PROHIBITED selected=FALSE reason=UPSTREAM_PROHIBITION_OVERRIDES_SCORE
+  HARDWORLD TRUST_PUBLISHER_TIME_APPROVAL score=8000000 -> PROHIBITED selected=FALSE reason=UPSTREAM_PROHIBITION_OVERRIDES_SCORE
+  tribunal_provider_invocations=1
+FRANKENSTACK V0.10 FEDERATION READY tables=44
+FRANKENSTACK V0.10 WIRE READY host=127.0.0.1 port=3500
+msqlshim MySQL wire listener on 127.0.0.1:3500
+
+FRANKENSTACK V0.10 RETAINED AUTHORITY TIME BOMB: OK

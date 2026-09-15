@@ -1,0 +1,67 @@
+{
+  "schema": "alchemy.objects.package-metadata/0.1",
+  "package": "alchemy_objects",
+  "version": "0.4.3",
+  "date": "2026-08-23",
+  "purpose": "Universal inherited behavioural, evidence, contract, telemetry, inspection, test and security foundation for Alchemy ooRexx classes.",
+  "authorship": {
+    "design_authority": "Alchemy project architect",
+    "implementation": "OpenAI ChatGPT GPT-5.6 Sol",
+    "inspector_lineage": "User-supplied Inspector Clouseau v1.4.2 lineage"
+  },
+  "standards_and_contracts": [
+    "ooRexx protected-method Security Manager checkpoints",
+    "Alchemy canonical evidence envelope 0.1",
+    "Alchemy delegated capability 0.2",
+    "Alchemy object introspection 0.1",
+    "Alchemy execution trace 0.1",
+    "Alchemy compliance report 0.1",
+    "Alchemy test run 0.1",
+    "Alchemy house object standard 0.4",
+    "Alchemy security runtime profile evidence 0.1",
+    "Alchemy execution quota 0.1",
+    "Alchemy locked method 0.1",
+    "Alchemy method policy 0.1",
+    "Alchemy detached relationship evidence 0.1",
+    "Alchemy capability claims 0.1",
+    "Alchemy locked method envelope 0.1",
+    "Alchemy source snapshot 0.2",
+    "Alchemy requirement assessment 0.1",
+    "Alchemy instrumentation rule 0.1",
+    "Alchemy live security runtime probe 0.1"
+  ],
+  "environment": {
+    "validated_interpreter": "ooRexx 5.3.0 r13196 debug build supplied by project; additional runtimes require live Security Manager semantics probe",
+    "required_runtime_files": [
+      "json.cls"
+    ],
+    "security_manager_profile": "runtime-probed-reference-semantics (fail closed if live probe is unverified)"
+  },
+  "external_requirements": [
+    {
+      "name": "oorexx_crypto",
+      "version": "v0.1",
+      "vendored": false
+    }
+  ],
+  "design_limitations": [
+    "Static ::REQUIRES is not supervised by the per-routine Security Manager on the validated r13196 build.",
+    "Capability expiry uses local service wall-clock base-day and seconds-of-day values and therefore assumes sufficiently synchronized issuer/verifier clocks.",
+    "Pure-ooRexx cryptography is expensive for very large graph evidence; SOURCE/FULL embeds the concrete package source once and externalizes inherited dependency source by package identity.",
+    "Automatic method telemetry deliberately refuses PROTECTED, PRIVATE and PACKAGE-scope methods so instrumentation cannot weaken access or Security Manager checkpoints.",
+    "Automatic method telemetry traps propagated SYNTAX conditions but is not a complete ledger for every possible Rexx condition style.",
+    "FULL execution trace can disclose String argument values and requires its own TRACE:FULL capability.",
+    "Only explicitly registered object variables are exposed by the fixed state emitter; Clouseau probe inference remains separately capability/policy controlled.",
+    "Crypto-locked plaintext exists transiently in process memory while the operating Method executes; the service key-provider boundary must be chosen accordingly.",
+    "The included locked-method in-memory key provider is a reference/service-local implementation, not an HSM/KMS replacement.",
+    "The plaintext convenience builder must not be mistaken for at-rest secrecy when plaintext source literals are present in the same package SOURCE.",
+    "Direct use of Inspector Clouseau outside AlchemyInspectorBridge remains a separate authority surface and must be controlled by the hosted loader/policy.",
+    "Envelope subkey deletion is authoritative-provider revocation; it cannot erase raw key material that was previously exfiltrated.",
+    "The reference envelope provisioner derives keys deterministically from a 256-bit master because oorexx_crypto_v0.1 does not expose a dedicated cryptographic random-byte API; production may replace provisioning with HSM/KMS generation."
+  ],
+  "removed_dependencies": [
+    "BFSProxy",
+    "BSFProxy",
+    "AlchemyBsfProxy"
+  ]
+}

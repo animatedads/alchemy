@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "qt.oci-two-node",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Two-node OCI deployment contract",
+  "summary": "For two Oracle Cloud nodes, prefer the private VCN path and enforce peer restriction twice: OCI network admission permits only the reciprocal peer IPv4 /32 on the Queue Fabric TCP port, and Queue Fabric trustPeer binds the same exact numeric private IPv4 at the application layer.",
+  "authority": "project-authority",
+  "invariants": [
+    "Prefer private VCN addresses; do not route Queue Fabric over the public internet when private connectivity is available.",
+    "At OCI, express one allowed IPv4 as an exact /32 ingress source for the Queue Fabric port.",
+    "Inside Queue Fabric, supply the exact address without CIDR notation because the application allowlist is exact-IP, not a network parser.",
+    "Do not expose the Queue Fabric port as 0.0.0.0/0.",
+    "If both nodes accept inbound Queue Fabric sessions, apply reciprocal rules; distinct A->B and B->A PSKs/key IDs reduce blast radius."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/OCI_TWO_NODE_DEPLOYMENT.md",
+      "line_start": 3,
+      "line_end": 23,
+      "claim": "Private VCN and reciprocal exact /32 OCI admission pattern."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/OCI_TWO_NODE_DEPLOYMENT.md",
+      "line_start": 25,
+      "line_end": 61,
+      "claim": "Application trustPeer/registerEndpoint examples, exact IP rule, crypto admission and separate directional key recommendation."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 47,
+      "line_end": 54,
+      "claim": "OCI deployment rule states network /32 plus application exact-IP enforcement and forbids 0.0.0.0/0."
+    }
+  ]
+}

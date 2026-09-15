@@ -1,0 +1,27 @@
+IBM 4361 ooRexx safety14 checkpoint
+
+Promoted boundary:
+- System/370 BC-mode operation-exception program interruption for primary X'00'.
+- No synthetic OP00 method exists.  Undefined operation delivery is separate from OPxx instruction implementation coverage.
+- Safety14 intentionally classifies only X'00'; other emulator-unsupported opcodes remain atomic archaeology boundaries until independently classified.
+
+Exact MVT proof:
+- safety13 reaches IA=000000, ICOUNT=513272, PSW=0004000A60000000 after BALR R14,R6 with R6=0.
+- low-core program-new PSW at X'68' is 00040000000002CA.
+- first X'00' attempt remains UNSUPPORTED/atomic under the pre-promotion classifier.
+- exact state is handed off in-process from ordinary sparse RAM to IBM370JournaledStorage.
+- live classifier/interruption methods survive journal rewind while deliberate GPR/RAM dirt is restored.
+- retry stores program-old PSW 0004000160000002 at X'28', loads full new PSW 00040000000002CA, and resumes at IA=0002CA.
+- MVT executes 34 further instructions and exposes 1E/ALR at IA=01A482, ICOUNT=513307, bytes 1EAB91C01000.
+
+Qualification:
+- 116 .cls/.rex sources compile under ooRexx 5.3.0 r13196 debug runtime.
+- 57/57 runtime tests pass.
+- supplied MVTRES.350 SHA-256 095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49 passes real-media and IPL tests.
+- journal/freeze separation remains green.
+- operation-interruption live candidate -> rewind -> remove -> permanent equivalence is green.
+
+Explicit boundary:
+- EC-mode program-interruption side fields are not yet qualified and fail closed.
+- OP1E is absent and is the next guest-driven task.
+- exact project-local SSC v0.2.2 qualification remains pending; do not substitute v0.2.3 silently.

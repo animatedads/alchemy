@@ -1,0 +1,17 @@
+OPENAI-COMPATIBLE PROVIDER V0.5 PRE-RELEASE VALIDATION
+Interpreter: ooRexx 5.3.0 r13196 user-supplied debug build
+Required: AI Access v0.5, Secret Broker v0.1, Alchemy Objects v0.7, Crypto v0.1
+Optional qualification: Runtime Registry v0.13 + Work Load Units v0.11
+
+Dependency archive SHA-256:
+  runtime_registry_v0.13 93b29bda0ed24cbd042d7f1a2c20db70189195ce69decf6f95b6d20424c10988
+  alchemy_objects_v0.7 a8e8e1fc080091650ee1791c997ea35ae74904b2cb658cdfdadff2a8fb7d0ee3
+  oorexx_work_load_units_v0.11 373ef629240c051c3a9c5a22a6ba606a6c8cbfc020b029e3b9457d53bf3eac2f
+  oorexx_crypto_v0.1 3eab23b5138cba889eb11ea5b93747eb14fca8da0fd4ac936a70174349ae8f3a
+  oorexx_secret_broker_v0.1 ddaa43505c8aec6f94544f59661de0ffdda3f5c8e17122bdf7c9db0c02e986e4
+
+Functional gates:
+  PASS provider / runtime module / real curl fixture
+  PASS WLU planner v0.4 including tool + structured-message bytes
+  PASS WLU v0.11 HTTP admission: expected 2900000, actual 500000 micro-WLU
+  PASS immutable Runtime Registry fixture generation v5 pin/profile consistency

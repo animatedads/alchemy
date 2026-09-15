@@ -1,0 +1,61 @@
+Virtual RYTA / HardWorld v0.25-work validation
+==============================================
+
+Interpreter
+-----------
+Open Object Rexx 5.3.0 r13196, 64-bit Internal Test Version, build date 3 Aug 2026.
+User-supplied debug .deb executed from an isolated extraction under /tmp.
+
+Canonical library
+-----------------
+oorexx-libs(20260822-crypto-consolidated)(7).zip
+SHA-256 e95f489b0088c7d11d31f3b04ac7d2bc766661c6e103a0cfaec8292ffe5203c1
+CURRENT_STACK_LOCK.sha256: 29/29 data entries PASS.
+
+v0.25 retained authority
+------------------------
+PASS: Queue Fabric native retained replay requires consumer revalidation before ledger START.
+PASS: no revalidator => RETAINED_AUTHORITY_REVALIDATION_REQUIRED; no HardWorld mutation; no START; no ACK.
+PASS: explicit consumer refusal is preserved.
+PASS: publication-id mismatch is refused.
+PASS: same publisher promotion-set object is refused.
+PASS: distinct object with identical publisher canonical promotion semantics is refused.
+PASS: distinct current consumer promotion set applies and ACKs.
+PASS: live topic delivery with oqf.topic.retained=0 remains backward-compatible.
+PASS: QueueAuthorityRevalidationResult Alchemy object id is excluded from canonical revalidation identity.
+
+Legal Effect v0.10 retained authority
+-------------------------------------
+PASS: LegalEffectV010RetainedAuthorityRevalidator performs pinned + live runtime-bound Legal evaluations inside revalidate().
+PASS: consumer context identity derives from canonical Legal input snapshot.
+PASS: action/context are re-pinned after live evaluation.
+PASS: current BLOCKED result applies with native LEGAL_EFFECT/0.10/...+sourceauth: authority.
+PASS: publisher-time approval remains UNKNOWN/evidence-only.
+PASS: released Legal runtime lease => LEGAL_RETAINED_LIVE_EVALUATION_REFUSED before ledger START; prior successful authority is not cached.
+PASS: LEGAL_STATUS_REDUCTION_AMBIGUOUS guard remains in force.
+
+Regression
+----------
+PASS: tests/run_current_stack_rollup_v025.sh
+PASS: inherited tests/run_all.sh including static/Librarian guards
+PASS: 64 rules vectors; 0 holes; 0 ambiguous winners
+PASS: 25/25 adversarial corpus
+PASS: 16/16 mutants killed
+PASS: 18/18 table-fed authority vectors
+PASS: 162/162 consistency x authority vectors
+PASS: rexxc 40/40 .cls files
+
+Ownership
+---------
+PASS byte-for-byte fresh-extraction comparison:
+- alchemy_objects_v0.4.3
+- oorexx_crypto_v0.1
+- camera_behaviour_oorexx_v0.36
+- structured_relation_plugin_v0.9
+- legal_effect_v0.10.1
+- runtime_registry_v0.12(1)
+- oorexx_queue_fabric_v0.8.2
+- nosqlserver_v0.75
+
+Only the RYTA v0.25-work tree was modified.
+Sealed v0.23 remains the release checkpoint.

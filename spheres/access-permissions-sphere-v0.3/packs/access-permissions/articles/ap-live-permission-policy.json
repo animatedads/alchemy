@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "ap-live-permission-policy",
+  "version": "0.3",
+  "sphere": "access-permissions",
+  "title": "Permission policy is live at every METHOD checkpoint",
+  "summary": "Unlike Access Control admission, method Permission is not a session grant. AlchemyPermissionPolicyAdapter resolves the currently operative Permission policy immediately before Security Effect and Permission evaluation for each protected METHOD checkpoint.",
+  "authority": "project-authority",
+  "invariants": [
+    "Permission policy is resolved anew for every protected METHOD checkpoint.",
+    "A Permission policy successor affects the next method call in the same still-valid Access Control session.",
+    "No method capability is minted or reused across calls.",
+    "Session Access Control liveness is checked before live Permission policy resolution."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/README.md",
+      "line_start": 22,
+      "line_end": 27,
+      "claim": "Access Control is pinned to admission while Permission policy is resolved at every METHOD checkpoint.",
+      "note": "Authority lifecycle distinction."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AlchemyAccessPermissionsAdapter.cls",
+      "line_start": 93,
+      "line_end": 130,
+      "claim": "Each METHOD evaluation first validates session state, resolves current Permission policy, obtains Security Effect and emits a fresh exact Permission decision.",
+      "note": "Executable per-call live Permission behavior."
+    }
+  ]
+}

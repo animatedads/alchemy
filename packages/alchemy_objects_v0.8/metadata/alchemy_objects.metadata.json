@@ -1,0 +1,82 @@
+{
+  "schema": "alchemy.objects.package-metadata/0.1",
+  "package": "alchemy_objects",
+  "version": "0.8",
+  "date": "2026-08-24",
+  "purpose": "Universal inherited behavioural, evidence, contract, telemetry, inspection, test and security foundation for Alchemy ooRexx classes.",
+  "authorship": {
+    "design_authority": "Alchemy project architect",
+    "implementation": "OpenAI ChatGPT GPT-5.6 Sol",
+    "inspector_lineage": "User-supplied Inspector Clouseau v1.4.2 lineage"
+  },
+  "standards_and_contracts": [
+    "ooRexx protected-method Security Manager checkpoints",
+    "Alchemy canonical evidence envelope 0.1",
+    "Alchemy delegated capability 0.2",
+    "Alchemy object introspection 0.1",
+    "Alchemy execution trace 0.1",
+    "Alchemy compliance report 0.1",
+    "Alchemy test run 0.1",
+    "Alchemy security runtime profile evidence 0.1",
+    "Alchemy execution quota 0.1",
+    "Alchemy locked method 0.1",
+    "Alchemy method policy 0.1",
+    "Alchemy detached relationship evidence 0.1",
+    "Alchemy capability claims 0.1",
+    "Alchemy locked method envelope 0.1",
+    "Alchemy source snapshot 0.2",
+    "Alchemy requirement assessment 0.1",
+    "Alchemy instrumentation rule 0.1",
+    "Alchemy live security runtime probe 0.1",
+    "Alchemy inheritance integrity 0.1",
+    "Alchemy adoption contract 0.2",
+    "Alchemy adoption verification 0.1",
+    "Alchemy construction provenance 0.1",
+    "Alchemy adoption checkpoint 0.1",
+    "Alchemy house object standard 0.8",
+    "Alchemy method contract 0.2",
+    "Alchemy execution provenance 0.1",
+    "Alchemy cooperative method interposition 0.1"
+  ],
+  "environment": {
+    "validated_interpreter": "Build validation: ooRexx 5.3.0 r13196 debug build using the live Security Manager semantics probe. Earlier project-host field evidence exists for the v0.4.3 lineage on ooRexx 5.2.0 r0; v0.8 requires its own field rerun before claiming release-level 5.2.0 validation.",
+    "required_runtime_files": [
+      "json.cls"
+    ],
+    "security_manager_profile": "runtime-probed-reference-semantics (fail closed if live probe is unverified)"
+  },
+  "external_requirements": [
+    {
+      "name": "oorexx_crypto",
+      "version": "v0.1",
+      "vendored": false
+    }
+  ],
+  "design_limitations": [
+    "Static ::REQUIRES is not supervised by the per-routine Security Manager on the validated ooRexx 5.2.0 r0 and 5.3.0 r13196 builds.",
+    "Capability expiry uses local service wall-clock base-day and seconds-of-day values and therefore assumes sufficiently synchronized issuer/verifier clocks.",
+    "Pure-ooRexx cryptography is expensive for very large graph evidence; SOURCE/FULL embeds the concrete package source once and externalizes inherited dependency source by package identity.",
+    "Automatic method telemetry deliberately refuses PROTECTED, PRIVATE, PACKAGE-scope, and reserved AlchemyObject base-surface methods so instrumentation cannot weaken access, Security Manager checkpoints, or universal base behavior.",
+    "Automatic method telemetry now traps Rexx conditions through SIGNAL ON ANY, but abrupt process/interpreter termination can still leave a retained execution record incomplete rather than producing a normal exit classification.",
+    "FULL execution trace can disclose String argument values and requires its own TRACE:FULL capability.",
+    "Only explicitly registered object variables are exposed by the fixed state emitter; Clouseau probe inference remains separately capability/policy controlled.",
+    "Crypto-locked plaintext exists transiently in process memory while the operating Method executes; the service key-provider boundary must be chosen accordingly.",
+    "The included locked-method in-memory key provider is a reference/service-local implementation, not an HSM/KMS replacement.",
+    "The plaintext convenience builder must not be mistaken for at-rest secrecy when plaintext source literals are present in the same package SOURCE.",
+    "Direct use of Inspector Clouseau outside AlchemyInspectorBridge remains a separate authority surface and must be controlled by the hosted loader/policy.",
+    "Envelope subkey deletion is authoritative-provider revocation; it cannot erase raw key material that was previously exfiltrated.",
+    "The reference envelope provisioner derives keys deterministically from a 256-bit master because oorexx_crypto_v0.1 does not expose a dedicated cryptographic random-byte API; production may replace provisioning with HSM/KMS generation.",
+    "ooRexx does not provide a final-method declaration for this use; v0.5 detects descendant and object-specific shadowing of reserved AlchemyObject surfaces and rejects adoption rather than claiming language-level finality.",
+    "Adoption verification remains a point-in-time check; admission checkpoints can detect later reserved-surface drift when compared, but an unsealed checkpoint is evidence only and must not be treated as authority.",
+    "Execution provenance is automatic only for explicitly instrumented eligible methods; PROTECTED, PRIVATE, PACKAGE-scope and reserved AlchemyObject methods remain deliberately unwrapped so telemetry cannot weaken access or Security Manager semantics.",
+    "Execution provenance retains a bounded recent-history window (default 128 records, maximum configurable 4096); completed-record eviction and unretained active calls increment dropped_total rather than growing object memory without limit.",
+    "Execution records bind method contract identity/revision/fingerprint, implementation origin, entry integrity and result-contract outcome but deliberately do not copy raw argument or result values.",
+    "Implementation-origin attribution prefers exact effective Method-object identity; LINEAGE_DECLARATION_SCAN_FALLBACK is explicitly labelled when an interpreter does not preserve that identity through class introspection.",
+    "Cooperative method interposition is structural infrastructure cooperation, not an authority source; a host must trust the active coordinator implementation before treating coordinated execution provenance as high-assurance evidence."
+  ],
+  "removed_dependencies": [
+    "BFSProxy",
+    "BSFProxy",
+    "AlchemyBsfProxy"
+  ]
+}

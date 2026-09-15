@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.catalogue-ea",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Local catalogue, extended attributes and query views",
+  "summary": "The catalogue is the fast local knowledge plane. Storage objects carry provider locations plus first-class extended attributes; query folders project catalogue predicates as directory-like views without requiring a corresponding physical directory.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Searching the catalogue must not require crawling every remote/removable provider.",
+    "Extended attributes carry namespace, type, value, provenance and authority rather than being reduced to filename conventions.",
+    "Query folders resolve current catalogue matches and may be excluded from a view without deleting the underlying object.",
+    "An object remains discoverable when a known removable provider is offline."
+  ],
+  "procedure": [],
+  "topics": [
+    "catalogue",
+    "EA",
+    "query-folder",
+    "views"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/src/StorageFabric.cls",
+      "claim": "Implements StorageRef, StorageLocation, StorageObject, StorageCatalogue, StorageEA/EASet, filters and query folders."
+    }
+  ]
+}

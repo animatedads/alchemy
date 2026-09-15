@@ -1,0 +1,32 @@
+{
+  "id": "job-node-allocator.collision-provenance",
+  "title": "v0.4 collision merge provenance",
+  "section": "qualification",
+  "summary": "v0.6 is a deliberate merge of two independent v0.4 lines: one carried liveness/ownership fencing/renewal and led into v0.5 durable recovery; the other carried integrity/evidence hardening. Neither branch superseded the other semantically, so v0.6 preserves both.",
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "job-node-allocator",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6.zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "claim": "Grounded in Job-to-Node Allocator v0.6.",
+      "line_start": 17,
+      "line_end": 54
+    },
+    {
+      "artifact": "job_node_allocator_v0.6.zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/VALIDATION.txt",
+      "line_start": 6,
+      "line_end": 36,
+      "claim": "Records collision input identities and merged regression coverage."
+    }
+  ],
+  "invariants": [
+    "Do not regress either branch when continuing from v0.6.",
+    "Evidence integrity and ownership fencing are complementary: current ownership is necessary but not sufficient for valid execution authority."
+  ]
+}

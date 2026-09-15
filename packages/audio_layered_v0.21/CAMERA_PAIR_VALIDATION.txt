@@ -1,0 +1,32 @@
+Layered Audio ooRexx v0.14 - real paired-camera acoustic-scene validation
+
+User-supplied validation media (not redistributed):
+- 1000053605.mp4
+- 1000053603.mp4
+
+User-provided geometry:
+- both cameras are on the same physical mount
+- cameras point in opposite directions
+- each contributes approximately two minutes here
+- recording timelines are not assumed aligned
+
+Observed media properties:
+- both containers: duration reported by ffprobe 119.940 s
+- audio: AAC, mono, 16000 Hz, stream start 0.000 s
+- video: H.264, stream start 0.000 s
+
+Acoustic alignment probe:
+- audio decoded externally for validation only; this does not become a Layered Audio runtime dependency
+- speech-band (150-5000 Hz) RMS envelope, 20 ms hop
+- normalized cross-correlation searched over +/-20 s
+- strongest global peak: +5.32 s under the convention that CAM-3605 scene time is its local time and CAM-3603 scene time = local time + 5.32 s
+- normalized envelope correlation at strongest peak: approximately 0.556
+- nearby alternative peaks include approximately 4.68 s, 5.94 s and 6.44 s
+
+Assessment:
+- +5.32 s is retained only as a moderate-confidence alignment hypothesis
+- nearby peaks mean it is not treated as exact synchronization
+- no clock drift is asserted from this sample; affine scale remains 1.0 as a working mapping with drift assessment explicitly absent
+- source recording timelines remain unchanged
+
+The packaged deterministic regression uses the same 5320 ms mapping geometry to verify scene-time through-cuts across two independent AudioRecording objects. The user media are not included in the package.

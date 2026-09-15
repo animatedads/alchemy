@@ -1,0 +1,53 @@
+{
+  "kind": "corpus",
+  "id": "job-node-allocator.continuity",
+  "sphere": "job-node-allocator",
+  "title": "Job-to-Node Allocator engineering sphere continuity records",
+  "records": [
+    {
+      "topic": "baseline",
+      "value": "Job-to-Node Allocator v0.6",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead"
+    },
+    {
+      "topic": "ordering",
+      "rule": "requirements -> hard eligibility -> eligible set -> capacity/fitness -> policy ranking -> placement lease."
+    },
+    {
+      "topic": "hard constraints",
+      "rule": "security/legal/access/runtime/software/hardware mandatory constraints cannot be outweighed by scoring."
+    },
+    {
+      "topic": "capability vs capacity",
+      "rule": "durable capability and transient capacity are separate evidence classes."
+    },
+    {
+      "topic": "equivocation",
+      "rule": "same generation + different capability/capacity statement is rejected; identical repeat is idempotent."
+    },
+    {
+      "topic": "freshness",
+      "rule": "lease/renewal expiry is bounded by capacity observation expiry."
+    },
+    {
+      "topic": "ownership",
+      "rule": "ownership epoch fencing is necessary but not sufficient; all digests/policy/freshness must still verify."
+    },
+    {
+      "topic": "API route",
+      "rule": "country/VPN/network/egress class/tags participate in hard requirement digest."
+    },
+    {
+      "topic": "dispatch",
+      "rule": "Queue Fabric transports an already-authorised placement; it does not choose the node."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6.zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/src/JobNodeAllocator.cls",
+      "claim": "Current source/package identity for continuity records."
+    }
+  ]
+}

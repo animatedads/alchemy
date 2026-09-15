@@ -1,0 +1,40 @@
+=== Camera v0.27 -> Algorithm Relation ===
+ALGORITHM RELATION CAMERA V0.4 START
+ALGORITHM RELATION CAMERA V0.4: OK
+=== Camera v0.27 -> NoSQLServer v0.71 ===
+CAMERA V0.20 NOSQLSERVER V0.68 EXTERNAL ENGINE START
+camera provider invocations: 1
+CAMERA V0.20 NOSQLSERVER V0.68 EXTERNAL ENGINE: OK
+=== NoSQLServer v0.71 DB-Core Algorithm Relation ===
+NOSQLSERVER V0.70 DBCORE ALGORITHM RELATION START
+provider invocations: 1
+legacy metadata factory calls: 0
+NOSQLSERVER V0.70 DBCORE ALGORITHM RELATION: OK
+=== DB Core v0.36 relational source ===
+DATABASE RELATIONAL SOURCE SMOKE: OK
+=== DB Core v0.36 relation identity ===
+DATABASE RELATION IDENTITY PRESERVATION SMOKE: OK
+=== msqlshim v0.10 prepared cursor -> NoSQLServer v0.71 ===
+MSQL V010 V070 ALGREL CURSOR READY port=3697 invocations=0 metadata_calls=0
+msqlshim MySQL wire listener on 127.0.0.1:3697
+PASS two COM_STMT_PREPARE relations provider invocations=0 metadata_factory_calls=0
+PASS COM_STMT_EXECUTE materialized once; legacy metadata factory still unused
+PASS COM_STMT_FETCH 2+3 rows provider invocations remains=1
+PASS second prepared relation reuses materialization; metadata factory calls remain 0
+PASS cursor reset/re-execute reuses Algorithm Relation; metadata factory calls remain 0
+MYSQL WIRE V0.10 PREPARED CURSOR ALGORITHM RELATION V0.70: OK
+=== supplied cursor probe v0.1 ===
+MSQL ALGREL EXTERNAL READY port=3698 invocations=0
+msqlshim MySQL wire listener on 127.0.0.1:3698
+PASS two COM_STMT_PREPARE calls provider invocations=0
+PASS cursor EXECUTE materialized provider exactly once
+PASS COM_STMT_FETCH batches reuse frozen materialization
+PASS second prepared relation shares same provider materialization
+PASS RESET + re-EXECUTE still provider invocations=1
+MYSQL WIRE PREPARED CURSOR ALGORITHM RELATION V0.69: OK
+=== Structured Relation v0.7 -> Legal v0.6 -> RYTA ===
+STRUCTURED V0.7 -> LEGAL EFFECT V0.6 VERIFIED SOURCE -> PROMOTION -> HARDWORLD V0.19 START
+STRUCTURED V0.7 -> LEGAL EFFECT V0.6 VERIFIED SOURCE -> PROMOTION -> HARDWORLD V0.19: OK
+=== Legal v0.6 promotion -> NoSQLServer v0.71 ===
+LEGAL EFFECT V0.6 PROMOTION ALGREL -> NOSQL V0.71 V0.19 START
+LEGAL EFFECT V0.6 PROMOTION ALGREL -> NOSQL V0.71 V0.19: OK

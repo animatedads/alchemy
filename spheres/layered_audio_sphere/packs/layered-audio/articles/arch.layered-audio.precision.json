@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "arch.layered-audio.precision",
+  "version": "0.1",
+  "sphere": "layered-audio",
+  "title": "Precision, Maths and quantization",
+  "summary": "Precision is policy, not an incidental Torch setting. Maths owns numerical domains, quantization state, proof outcome/strength and error claims; Audio owns which semantic tensor roles may lose precision.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Quantization is an execution representation change, not an acoustic enhancement.",
+    "Source PCM, alignment, TDOA, timestamps, provenance and Maths evidence are protected by default.",
+    "Math proof outcome and proof strength remain distinct.",
+    "A certified quantization error bound over represented values says nothing about information already lost by microphones, codecs, resampling or earlier processing."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_maths_v0.7(2).zip",
+      "sha256": "b2385efc83aa525392f6c804327f7d370abd6c06d04a7d31855803e62f95c19d",
+      "member": "oorexx_maths_v0.7/README.md",
+      "claim": "Maths v0.7 quantization, mixed precision and proof semantics used by Audio."
+    },
+    {
+      "artifact": "layered_audio_oorexx_v0.23.zip",
+      "sha256": "404da2298dcf1a2d5603d3222c4bb419a31b2e565cb7484ed3970bbda1fab7b3",
+      "member": "audio_layered_v0.23/AudioProcessingPrecision.cls",
+      "claim": "Audio precision policy and quantization evidence boundary."
+    }
+  ]
+}

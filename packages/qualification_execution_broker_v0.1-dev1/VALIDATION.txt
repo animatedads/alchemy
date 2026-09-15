@@ -1,0 +1,18 @@
+ooRexx Qualification Execution Broker v0.1-dev1 qualification
+
+Runtime:
+- Open Object Rexx 5.3.0 r13196 (user-supplied Ubuntu debug package)
+- Crypto v0.8.3, accelerated for qualification through Runtime Reference v0.4 + Foreign Runtime v0.22.6 + system OpenSSL
+- Wire UI Server v0.17 WireUIResult contract
+
+Behavioral suites:
+- PASS test_ed25519_kat: RFC 8032 Ed25519 known-answer verification.
+- PASS test_broker_core: runnable preflight; failed preflight creates no authorization state; frozen intent; detached signature; post-signature material drift -> INTENT_STALE; worker-only start/seal; no dispatched execute operation.
+- PASS test_jsonl_restart: durable authorized grant and sealed result survive journal reconstruction.
+- PASS test_local_authorizer: NO path succeeds with a nonexistent private-key path, proving the key is not opened before human approval; YES path signs locally and the detached signature verifies.
+
+Security result:
+- Private signing material is neither stored nor accepted by the broker API.
+- Public verification keys/fingerprints are distributable evidence.
+- Preflight occurs before intent freeze/authorization challenge.
+- Execution transition is not part of dispatch/MCP authority.

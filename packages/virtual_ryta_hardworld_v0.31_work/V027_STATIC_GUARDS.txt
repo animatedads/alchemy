@@ -1,0 +1,16 @@
+V0.27 STATIC / HARDENING GUARDS
+LIBRARIAN HARDENED CORE AUDIT: OK
+  salvage_sha256=e80746ae8a2449e87cb05c239da9970c30ea9fed3fd42d4f876cba3a50c62432
+  hardened_sha256=ba5fca40ec6b5ad900bc51694c824a57472f90cdce86131a1fd930df43fea31f
+LIBRARIAN SPECIAL VARIABLE AUDIT: OK
+NO RESULT ASSIGNMENTS IN V0.27 CHANGED REXX: OK
+CLAIM TOKEN SOURCE AUDIT:
+13: * The Queue Fabric claimToken is used only as a live acknowledgement capability.
+956:  use arg queueManager, queueName, package, claimToken, principal, promotionSet, world, executionNamespace, ledger, transferReceipt = .nil, consumerRevalidator = .nil
+964:  /* claimToken is deliberately compared only here and never retained below. */
+965:  if package~claimToken~string \= claimToken~string then return .QueueAuthorityExecutionResult~failure('CLAIM_TOKEN_MISMATCH')
+986:    ackResult = queueManager~ack(queueName, package~packageId, claimToken, principal)
+1009:    ackResult = queueManager~ack(queueName, package~packageId, claimToken, principal)
+1024:  ackResult = queueManager~ack(queueName, package~packageId, claimToken, principal)
+claimToken remains limited to live input/check/ack in Queue authority source: OK
+V3 ledger keys are host-supplied CryptoMacKeyRing objects; no key material stored in QueueFabricAuthorityExecution.cls: OK

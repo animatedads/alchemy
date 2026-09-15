@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "ref.access-permissions.sources",
+  "version": "0.3",
+  "sphere": "access-permissions",
+  "title": "Authoritative source map",
+  "summary": "The current project implementation is oorexx_access_permissions_v0.3.zip. Core authority objects live in AccessPermissions.cls and the Alchemy integration/session composition lives in AlchemyAccessPermissionsAdapter.cls.",
+  "authority": "project-authority",
+  "invariants": [
+    "AccessPermissions.cls owns principals, authentication assertions/verifier, Access Control requests/rules/policies/authority, Permission requests/rules/policies/authority, proofs/envelopes, and AccessPermissionsPolicyResolver.",
+    "AlchemyAccessPermissionsAdapter.cls owns AlchemyAccessSessionGuard, AlchemyPermissionPolicyAdapter, AlchemyAccessControlledSession, and AlchemyAccessControlledDomain.",
+    "Institutional Policy, Security Effect, Crypto, and Alchemy Security Manager remain separate dependencies/authorities."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/README.md",
+      "line_start": 78,
+      "line_end": 87,
+      "claim": "README enumerates the principal Access Permissions and Alchemy integration classes in the current project.",
+      "note": "Current component inventory."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AlchemyAccessPermissionsAdapter.cls",
+      "line_start": 133,
+      "line_end": 145,
+      "claim": "Adapter source documents protected-domain composition and the non-bearer Access Control receipt invariant.",
+      "note": "Integration source map."
+    }
+  ]
+}

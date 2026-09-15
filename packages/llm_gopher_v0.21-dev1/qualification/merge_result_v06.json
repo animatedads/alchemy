@@ -1,0 +1,872 @@
+{
+  "schema": "llm-gopher/0.6",
+  "tool_status": {
+    "rc": 0,
+    "class": "OK"
+  },
+  "operation_status": {
+    "rc": 0,
+    "class": "MERGED"
+  },
+  "result": {
+    "documents": [
+      {
+        "kind": "access-policy",
+        "id": "core-access",
+        "version": "0.1",
+        "rules": [
+          {
+            "effect": "allow",
+            "roles": [
+              "llm",
+              "operator"
+            ],
+            "actions": [
+              "read",
+              "exec"
+            ],
+            "resource": "*"
+          },
+          {
+            "effect": "allow",
+            "roles": [
+              "llm",
+              "developer",
+              "operator",
+              "admin"
+            ],
+            "actions": [
+              "exec"
+            ],
+            "resource": "capability:*"
+          },
+          {
+            "effect": "allow",
+            "roles": [
+              "llm",
+              "developer",
+              "operator",
+              "admin"
+            ],
+            "actions": [
+              "exec"
+            ],
+            "resource": "service:*"
+          },
+          {
+            "effect": "allow",
+            "roles": [
+              "llm",
+              "developer",
+              "operator",
+              "admin"
+            ],
+            "actions": [
+              "read"
+            ],
+            "resource": "corpus:*"
+          }
+        ],
+        "_provenance": [
+          "packs/core/01-access-policy-core-access.json"
+        ]
+      },
+      {
+        "kind": "access-policy",
+        "id": "federationbank-access",
+        "version": "0.1",
+        "rules": [
+          {
+            "effect": "allow",
+            "roles": [
+              "operator"
+            ],
+            "actions": [
+              "read",
+              "exec"
+            ],
+            "resource": "*"
+          },
+          {
+            "effect": "allow",
+            "roles": [
+              "llm"
+            ],
+            "actions": [
+              "read"
+            ],
+            "resource": "*"
+          }
+        ],
+        "_provenance": [
+          "packs/federationbank/01-access-policy-federationbank-access.json"
+        ]
+      },
+      {
+        "kind": "access-policy",
+        "id": "flylo-access",
+        "version": "0.1",
+        "rules": [
+          {
+            "effect": "allow",
+            "roles": [
+              "operator"
+            ],
+            "actions": [
+              "read",
+              "exec"
+            ],
+            "resource": "*"
+          },
+          {
+            "effect": "allow",
+            "roles": [
+              "llm"
+            ],
+            "actions": [
+              "read"
+            ],
+            "resource": "*"
+          }
+        ],
+        "_provenance": [
+          "packs/flylo/01-access-policy-flylo-access.json"
+        ]
+      },
+      {
+        "kind": "access-policy",
+        "id": "oorexx-access",
+        "version": "0.1",
+        "rules": [
+          {
+            "effect": "allow",
+            "roles": [
+              "llm",
+              "operator"
+            ],
+            "actions": [
+              "read",
+              "exec"
+            ],
+            "resource": "*"
+          },
+          {
+            "effect": "allow",
+            "roles": [
+              "llm",
+              "developer",
+              "operator",
+              "admin"
+            ],
+            "actions": [
+              "exec"
+            ],
+            "resource": "capability:*"
+          },
+          {
+            "effect": "allow",
+            "roles": [
+              "llm",
+              "developer",
+              "operator",
+              "admin"
+            ],
+            "actions": [
+              "exec"
+            ],
+            "resource": "service:*"
+          },
+          {
+            "effect": "allow",
+            "roles": [
+              "llm",
+              "developer",
+              "operator",
+              "admin"
+            ],
+            "actions": [
+              "read"
+            ],
+            "resource": "corpus:*"
+          }
+        ],
+        "_provenance": [
+          "packs/oorexx/01-access-policy-oorexx-access.json"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "federationbank.rules.current",
+        "version": "0.1",
+        "sphere": "federationbank",
+        "title": "FederationBank current rules",
+        "handler": "AuthoritativeRulePage",
+        "corpus": "federationbank.rules",
+        "selectors": [
+          {
+            "id": "read",
+            "type": "read",
+            "action": "read",
+            "resource": "corpus:federationbank.rules"
+          },
+          {
+            "id": "amend",
+            "type": "edit",
+            "action": "edit",
+            "resource": "corpus:federationbank.rules"
+          }
+        ],
+        "_provenance": [
+          "packs/federationbank/02-article-federationbank.rules.current.json"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "flylo.rules.current",
+        "version": "0.1",
+        "sphere": "flylo",
+        "title": "FlyLo current rules",
+        "handler": "AuthoritativeRulePage",
+        "corpus": "flylo.rules",
+        "selectors": [
+          {
+            "id": "read",
+            "type": "read",
+            "action": "read",
+            "resource": "corpus:flylo.rules"
+          },
+          {
+            "id": "amend",
+            "type": "edit",
+            "action": "edit",
+            "resource": "corpus:flylo.rules"
+          }
+        ],
+        "_provenance": [
+          "packs/flylo/02-article-flylo.rules.current.json"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "ops.archive.inspect",
+        "version": "0.1",
+        "sphere": "core",
+        "title": "Inspect a ZIP artifact",
+        "objects": [
+          "archive",
+          "expected_sha",
+          "filename"
+        ],
+        "state": [
+          "archive_exists",
+          "integrity_checked",
+          "sha_checked",
+          "contents_listed",
+          "requested_file_located"
+        ],
+        "selectors": [
+          {
+            "id": "locate",
+            "type": "exec",
+            "action": "exec",
+            "resource": "tool:executable.locate",
+            "capability": "executable.locate"
+          },
+          {
+            "id": "sha256",
+            "type": "exec",
+            "action": "exec",
+            "resource": "tool:crypto.sha256",
+            "capability": "crypto.sha256"
+          },
+          {
+            "id": "list",
+            "type": "exec",
+            "action": "exec",
+            "resource": "tool:archive.zip.list",
+            "capability": "archive.zip.list"
+          },
+          {
+            "id": "find",
+            "type": "exec",
+            "action": "exec",
+            "resource": "tool:archive.zip.find",
+            "capability": "archive.zip.find"
+          }
+        ],
+        "handler": "ArticlePage",
+        "checklist": [
+          {
+            "id": "sha_checked",
+            "label": "Calculate SHA-256",
+            "selector": "sha256",
+            "success": [
+              "OK",
+              "MATCH",
+              "MISMATCH"
+            ]
+          },
+          {
+            "id": "contents_listed",
+            "label": "List ZIP contents",
+            "selector": "list",
+            "success": [
+              "LISTED"
+            ]
+          },
+          {
+            "id": "requested_file_located",
+            "label": "Locate requested file",
+            "selector": "find",
+            "success": [
+              "FOUND",
+              "NOT_FOUND"
+            ]
+          }
+        ],
+        "_provenance": [
+          "packs/core/02-article-ops.archive.inspect.json"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "ops.oorexx.environment.ready",
+        "version": "0.1",
+        "sphere": "oorexx",
+        "title": "Establish ooRexx runtime readiness",
+        "rules": [
+          "Observe before acquiring software.",
+          "A missing executable is an operation result, not a tool failure.",
+          "Do not download or install a runtime unless an authorised acquisition selector is published."
+        ],
+        "selectors": [
+          {
+            "id": "locate-rexx",
+            "type": "exec",
+            "action": "exec",
+            "resource": "tool:executable.locate",
+            "capability": "executable.locate",
+            "args": {
+              "name": "rexx"
+            }
+          },
+          {
+            "id": "examine-source",
+            "type": "exec",
+            "action": "exec",
+            "resource": "tool:source.oorexx.examine",
+            "capability": "source.oorexx.examine"
+          }
+        ],
+        "_provenance": [
+          "packs/oorexx/02-article-ops.oorexx.environment.ready.json"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "ops.source.edit.safe",
+        "version": "0.1",
+        "sphere": "core",
+        "title": "Safely edit existing source",
+        "handler": "ArticlePage",
+        "rules": [
+          "An edit changes only the declared target region unless wider transformation scope is explicitly requested.",
+          "Never regenerate an existing source file from a partial internal model.",
+          "Validate the complete candidate source before commit.",
+          "Retain before/after digests and a bounded diff as evidence.",
+          "Reject stale-source edits when an expected source digest no longer matches."
+        ],
+        "failure_classes": [
+          "SOURCE_EDIT.REGENERATE_INSTEAD_OF_EDIT",
+          "SOURCE_EDIT.AMBIGUOUS_TARGET",
+          "SOURCE_EDIT.STALE_SOURCE",
+          "SOURCE_EDIT.VALIDATION_FAILED"
+        ],
+        "selectors": [],
+        "_provenance": [
+          "packs/core/25-article-ops.source.edit.safe.json"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "ref.archive.zip",
+        "sphere": "core",
+        "title": "ZIP archive",
+        "handler": "ArchivePage",
+        "selectors": [
+          {
+            "id": "find-member",
+            "label": "Find member",
+            "action": "exec",
+            "resource": "capability:archive.zip.member.find",
+            "capability": "archive.zip.member.find"
+          },
+          {
+            "id": "search-text",
+            "label": "Search text in archive",
+            "action": "exec",
+            "resource": "capability:archive.zip.text.search",
+            "capability": "archive.zip.text.search"
+          },
+          {
+            "id": "read-member",
+            "label": "Read member slice",
+            "action": "exec",
+            "resource": "capability:archive.zip.member.read",
+            "capability": "archive.zip.member.read"
+          }
+        ],
+        "_provenance": [
+          "packs/core/05-article-ref-archive-zip.json"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "ref.command.man",
+        "version": "0.1",
+        "sphere": "core",
+        "title": "Read a command manual subset",
+        "handler": "ManPage",
+        "selectors": [
+          {
+            "id": "read",
+            "type": "exec",
+            "action": "exec",
+            "resource": "tool:manual.man.subset",
+            "capability": "manual.man.subset"
+          }
+        ],
+        "_provenance": [
+          "packs/core/04-article-ref-man.json"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "ref.cpp.class",
+        "version": "0.1",
+        "sphere": "core",
+        "title": "Examine a C++ class",
+        "handler": "CppClassPage",
+        "selectors": [
+          {
+            "id": "examine",
+            "type": "exec",
+            "action": "exec",
+            "resource": "tool:source.cpp.examine",
+            "capability": "source.cpp.examine"
+          }
+        ],
+        "_provenance": [
+          "packs/core/03-article-ref-cpp-class.json"
+        ]
+      },
+      {
+        "kind": "article",
+        "id": "ref.oorexx.class",
+        "version": "0.1",
+        "sphere": "oorexx",
+        "title": "Examine an ooRexx class",
+        "handler": "RexxClassPage",
+        "selectors": [
+          {
+            "id": "examine",
+            "type": "exec",
+            "action": "exec",
+            "resource": "tool:source.oorexx.examine",
+            "capability": "source.oorexx.examine"
+          }
+        ],
+        "_provenance": [
+          "packs/oorexx/03-article-ref.oorexx.class.json"
+        ]
+      },
+      {
+        "kind": "corpus",
+        "id": "oorexx.operations.demo",
+        "sphere": "oorexx",
+        "title": "ooRexx operational knowledge demo",
+        "records": [
+          {
+            "topic": "runtime discovery",
+            "rule": "Locate and identify an existing runtime before considering acquisition."
+          },
+          {
+            "topic": "qualification",
+            "rule": "Do not claim executable qualification without runtime identity and test evidence."
+          },
+          {
+            "topic": "source inspection",
+            "rule": "Use the ooRexx source examiner for class, method and attribute structure."
+          }
+        ],
+        "_provenance": [
+          "packs/oorexx/11-corpus-operations.json"
+        ]
+      },
+      {
+        "kind": "page-handler",
+        "id": "ArchivePage",
+        "version": "0.1",
+        "description": "Examines ZIP archives and nested ZIPs without full extraction.",
+        "_provenance": [
+          "packs/core/23-page-handler-archive.json"
+        ]
+      },
+      {
+        "kind": "page-handler",
+        "id": "ArticlePage",
+        "version": "0.1",
+        "description": "Static declarative article renderer",
+        "_provenance": [
+          "packs/core/20-page-handler-article.json"
+        ]
+      },
+      {
+        "kind": "page-handler",
+        "id": "CppClassPage",
+        "version": "0.1",
+        "capability": "source.cpp.examine",
+        "description": "Derives C++ classes and functions from bound source",
+        "_provenance": [
+          "packs/core/21-page-handler-cpp-class.json"
+        ]
+      },
+      {
+        "kind": "page-handler",
+        "id": "ManPage",
+        "version": "0.1",
+        "capability": "manual.man.subset",
+        "description": "Renders a bounded manual-page subset",
+        "_provenance": [
+          "packs/core/22-page-handler-man.json"
+        ]
+      },
+      {
+        "kind": "page-handler",
+        "id": "RexxClassPage",
+        "version": "0.1",
+        "capability": "source.oorexx.examine",
+        "description": "Derives classes, attributes and methods from bound ooRexx source",
+        "_provenance": [
+          "packs/oorexx/20-page-handler-rexx-class.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "core.archive.zip.examine",
+        "rank": 10,
+        "capabilities": [
+          "archive.zip.examine"
+        ],
+        "implementation": "builtin.archive.zip.examine",
+        "implementation_class": "builtin",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "*"
+        ],
+        "_provenance": [
+          "packs/core/16-service-zip-examine.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "core.archive.zip.find",
+        "rank": 10,
+        "capabilities": [
+          "archive.zip.find"
+        ],
+        "implementation": "builtin.archive.zip.find",
+        "implementation_class": "builtin",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "*"
+        ],
+        "_provenance": [
+          "packs/core/14-service-zip-find.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "core.archive.zip.member.find",
+        "rank": 10,
+        "capabilities": [
+          "archive.zip.member.find"
+        ],
+        "implementation": "builtin.archive.zip.member.find",
+        "implementation_class": "builtin",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "*"
+        ],
+        "_provenance": [
+          "packs/core/17-service-zip-member-find.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "core.archive.zip.member.read",
+        "rank": 10,
+        "capabilities": [
+          "archive.zip.member.read"
+        ],
+        "implementation": "builtin.archive.zip.member.read",
+        "implementation_class": "builtin",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "*"
+        ],
+        "_provenance": [
+          "packs/core/18-service-zip-member-read.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "core.archive.zip.python",
+        "rank": 20,
+        "capabilities": [
+          "archive.zip.list"
+        ],
+        "implementation": "builtin.archive.zip.list.python",
+        "implementation_class": "python-adapter",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "*"
+        ],
+        "_provenance": [
+          "packs/core/13-service-zip-python.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "core.archive.zip.text.search",
+        "rank": 10,
+        "capabilities": [
+          "archive.zip.text.search"
+        ],
+        "implementation": "builtin.archive.zip.text.search",
+        "implementation_class": "builtin",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "*"
+        ],
+        "_provenance": [
+          "packs/core/19-service-zip-text-search.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "core.archive.zip.unzip",
+        "rank": 10,
+        "capabilities": [
+          "archive.zip.list"
+        ],
+        "implementation": "builtin.archive.zip.list.unzip",
+        "implementation_class": "shell-adapter",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "*"
+        ],
+        "_provenance": [
+          "packs/core/12-service-zip-unzip.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "core.crypto.sha256",
+        "rank": 10,
+        "capabilities": [
+          "crypto.sha256"
+        ],
+        "implementation": "builtin.crypto.sha256",
+        "implementation_class": "builtin",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "*"
+        ],
+        "_provenance": [
+          "packs/core/11-service-sha256.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "core.executable.locate",
+        "rank": 10,
+        "capabilities": [
+          "executable.locate"
+        ],
+        "implementation": "builtin.executable.locate",
+        "implementation_class": "builtin",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "*"
+        ],
+        "_provenance": [
+          "packs/core/10-service-executable-locate.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "manual.man.subset",
+        "version": "0.1",
+        "capabilities": [
+          "manual.man.subset"
+        ],
+        "operations": [
+          "exec"
+        ],
+        "rank": 10,
+        "spheres": [
+          "core",
+          "*"
+        ],
+        "implementation": "builtin.manual.man.subset",
+        "_provenance": [
+          "packs/core/16-service-man-subset.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "oorexx.source.examine",
+        "rank": 10,
+        "capabilities": [
+          "source.oorexx.examine"
+        ],
+        "implementation": "builtin.source.oorexx.examine",
+        "implementation_class": "examiner",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "oorexx"
+        ],
+        "_provenance": [
+          "packs/oorexx/10-service-source-oorexx.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "oorexx.source.method.edit",
+        "version": "0.1",
+        "rank": 10,
+        "capabilities": [
+          "source.oorexx.method.edit"
+        ],
+        "implementation": "builtin.source.oorexx.method.edit",
+        "implementation_class": "source-editor",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "oorexx"
+        ],
+        "_provenance": [
+          "packs/oorexx/12-service-source-oorexx-edit.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "source.cpp.examine",
+        "version": "0.1",
+        "capabilities": [
+          "source.cpp.examine"
+        ],
+        "operations": [
+          "exec"
+        ],
+        "rank": 10,
+        "spheres": [
+          "core",
+          "*"
+        ],
+        "implementation": "builtin.source.cpp.examine",
+        "_provenance": [
+          "packs/core/15-service-source-cpp.json"
+        ]
+      },
+      {
+        "kind": "service",
+        "id": "source.python.method.edit",
+        "version": "0.1",
+        "rank": 10,
+        "capabilities": [
+          "source.python.method.edit"
+        ],
+        "implementation": "builtin.source.python.method.edit",
+        "implementation_class": "source-editor",
+        "operations": [
+          "exec"
+        ],
+        "spheres": [
+          "core",
+          "oorexx",
+          "flylo",
+          "federationbank",
+          "*"
+        ],
+        "_provenance": [
+          "packs/core/24-service-source-python-edit.json"
+        ]
+      },
+      {
+        "kind": "sphere",
+        "id": "core",
+        "version": "0.1",
+        "title": "LLM Gopher Core",
+        "access_policy": "core-access",
+        "_provenance": [
+          "packs/core/00-sphere-core.json"
+        ]
+      },
+      {
+        "kind": "sphere",
+        "id": "federationbank",
+        "version": "0.1",
+        "title": "FederationBank",
+        "access_policy": "federationbank-access",
+        "_provenance": [
+          "packs/federationbank/00-sphere-federationbank.json"
+        ]
+      },
+      {
+        "kind": "sphere",
+        "id": "flylo",
+        "version": "0.1",
+        "title": "FlyLo",
+        "access_policy": "flylo-access",
+        "_provenance": [
+          "packs/flylo/00-sphere-flylo.json"
+        ]
+      },
+      {
+        "kind": "sphere",
+        "id": "oorexx",
+        "version": "0.1",
+        "title": "ooRexx Development",
+        "access_policy": "oorexx-access",
+        "_provenance": [
+          "packs/oorexx/00-sphere-oorexx.json"
+        ]
+      }
+    ],
+    "count": 37,
+    "digest": "470a28be0c558a434f419dfe54e4d3c771d67309faeeacfbb6640da2a2adbf31"
+  }
+}

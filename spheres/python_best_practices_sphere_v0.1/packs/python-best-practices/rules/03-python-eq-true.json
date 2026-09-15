@@ -1,0 +1,13 @@
+{
+  "kind": "language-rule",
+  "id": "PYTHON.CONDITION_EQ_TRUE",
+  "version": "0.1",
+  "language": "python",
+  "title": "Comparing a value to True/False with == instead of using its truthiness",
+  "purpose": "Prevent the idiom 'if x == True / == False' an authoring LLM emits from memorised snippets, which misbehaves when x's __eq__ or __bool__ is unusual and reads as if x must already be a bool.",
+  "trigger": "A boolean condition literally compares an expression to the constants True or False with ==/!= without having first forced it to a bool (for example 'x == True' in an if/while).",
+  "correct": "Use the value's own truthiness: 'if x:' / 'if not x:', or coerce once with bool(x) when you genuinely need a strict bool, or test identity 'is True' only where the object is known to be exactly the singleton True.",
+  "fixability": "AUTOMATIC",
+  "compiler_relationship": "Advisory rule: valid syntax, but == True is almost never the intended semantics and looks wrong to later reader.",
+  "return_semantics": "A LanguageRulePage may be opened and then returned to the originating cycle."
+}

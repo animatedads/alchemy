@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "id": "baa-native-runtime",
+  "version": "0.1",
+  "sphere": "browser-api-access",
+  "title": "Native transport and Foreign Runtime boundary",
+  "summary": "API Client v0.3 supplies a native HTTPS/HTTP/1.1 path over RxSock and Foreign Runtime/OpenSSL, while Foreign Runtime v0.22.6 supplies ABI-native C scalar aliases for future native browser/runtime bindings.",
+  "authority": "project-authority",
+  "invariants": [
+    "API Client v0.3 does not shell out to curl.",
+    "OpenSSL is reached through Foreign Runtime memory-BIO bindings while RxSock owns TCP.",
+    "TLS requires certificate-chain and hostname verification and fails closed on transport errors.",
+    "Foreign Runtime consumers must use C-native aliases such as size_t, ssize_t and socklen_t when the API type is implementation-native, and fixed-width aliases for genuinely fixed-width APIs.",
+    "Structs containing ABI-native C types still require ABI-qualified layout metadata.",
+    "The currently qualified ABI-specific Foreign Runtime profile is linux-x86_64-le-lp64; other ABIs are not implicitly claimed."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_api_client_v0.3.zip",
+      "sha256": "07a22f3d4c04f0589c7f6453c555f8fe8e4176b077c934d276648774dd4adfbc",
+      "member": "oorexx_api_client_v0.3/README.md",
+      "line_start": 13,
+      "line_end": 36,
+      "claim": "API Client v0.3 native HTTPS transport and dependency boundary.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6(2).zip",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "member": "oorexx_foreign_runtime_v0.22.6/README.md",
+      "line_start": 4,
+      "line_end": 8,
+      "claim": "v0.22.6 ABI-native C scalar aliases and abi-native-c-scalars capability.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6(2).zip",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "member": "oorexx_foreign_runtime_v0.22.6/README.md",
+      "line_start": 105,
+      "line_end": 107,
+      "claim": "Foreign Runtime ABI qualification is limited to linux-x86_64-le-lp64 in this release.",
+      "note": "Authoritative executable-candidate grounding."
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+{
+  "schema": "llm-gopher/0.18",
+  "tool_status": {
+    "rc": 0,
+    "class": "OK"
+  },
+  "operation_status": {
+    "rc": 0,
+    "class": "UPDATED"
+  },
+  "result": {
+    "path": "/mnt/data/s370_work/safety22/ibm_4361_oorexx_v0.3-recovery2-journal2-safety22/IBM370Executor.cls",
+    "language": "oorexx",
+    "class": "IBM370Executor",
+    "method": "architecturalOperationException",
+    "operation": "REPLACE",
+    "changed_range": {
+      "start_line": 47,
+      "end_line_before": 56
+    },
+    "before_sha256": "5f0ee47842e32968ffd7f79b91e804d481e250ca4d1f3958b18ebc1055f7099e",
+    "after_sha256": "eac20aaef86ce075df7f1f8801493526e456d24c38e3b45affbebe152a1401b0",
+    "diff": {
+      "lines": [
+        "--- /mnt/data/s370_work/safety22/ibm_4361_oorexx_v0.3-recovery2-journal2-safety22/IBM370Executor.cls (before)",
+        "+++ /mnt/data/s370_work/safety22/ibm_4361_oorexx_v0.3-recovery2-journal2-safety22/IBM370Executor.cls (after)",
+        "@@ -50,10 +50,11 @@",
+        "   op=raw~left(2)~translate",
+        "   /* Safety14 proved primary X'00'; safety16 proved X'FF'; safety17 proved",
+        "    * System/370 primary X'C4'; safety18 proved System/370 primary X'62';",
+        "-   * safety21 proves System/370 primary X'65'.  Keep this as a positive",
+        "-   * allow-list so genuine emulator coverage gaps remain atomic archaeology",
+        "-   * boundaries until separately classified. */",
+        "-  return op=\"00\" | op=\"FF\" | op=\"C4\" | op=\"62\" | op=\"65\"",
+        "+   * safety21 proved System/370 primary X'65'; safety22 proves System/370",
+        "+   * primary X'02'. Keep this as a positive allow-list so genuine emulator",
+        "+   * coverage gaps remain atomic archaeology boundaries until separately",
+        "+   * classified. */",
+        "+  return op=\"00\" | op=\"FF\" | op=\"C4\" | op=\"62\" | op=\"65\" | op=\"02\"",
+        " ",
+        " ::method architecturalSpecificationException",
+        "   /* Specification exceptions are instruction/operand validity checks, not"
+      ],
+      "line_count": 18,
+      "truncated": false
+    },
+    "validation": {
+      "validator": "/mnt/data/s370_work/runtime/usr/local/bin/rexxc",
+      "rc": 0,
+      "stdout": "Open Object Rexx Version 5.3.0 r13196 - Internal Test Version\nBuild date: Aug  3 2026\nAddressing mode: 64\nCopyright (c) 1995, 2004 IBM Corporation. All rights reserved.\nCopyright (c) 2005-2026 Rexx Language Association. All rights reserved.\nThis program and the accompanying materials are made available under the terms\nof the Common Public License v1.0 which accompanies this distribution or at\nhttps://www.oorexx.org/license.html\n",
+      "stderr": ""
+    },
+    "language_rules": {
+      "language": "oorexx",
+      "path": "/tmp/tmpwecu8dl7.cls",
+      "rules_checked": 3,
+      "breaches": [],
+      "breach_count": 0,
+      "blockers": 0,
+      "advisories": 0,
+      "cycle": "cycle://language-rules/734e06fe2bdb0b9c",
+      "resume": "cycle://language-rules/734e06fe2bdb0b9c"
+    },
+    "committed": true
+  },
+  "service_proxy": {
+    "kind": "service-proxy",
+    "service": "oorexx.source.method.edit",
+    "capability": "source.oorexx.method.edit",
+    "operations": [
+      "exec"
+    ],
+    "rank": 10
+  },
+  "route": {
+    "requested_capability": "source.oorexx.method.edit",
+    "service": "oorexx.source.method.edit",
+    "implementation": "builtin.source.oorexx.method.edit",
+    "fallback_depth": 0,
+    "attempts": [
+      {
+        "service": "oorexx.source.method.edit",
+        "implementation": "builtin.source.oorexx.method.edit",
+        "tool_status": "OK"
+      }
+    ]
+  }
+}

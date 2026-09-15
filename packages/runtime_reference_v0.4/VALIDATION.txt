@@ -1,0 +1,12 @@
+ooRexx Runtime Reference v0.4 validation
+
+Qualification runtime: ooRexx 5.3.0 r13196 Internal Test Version.
+
+PASS core PURE dispatch/circuit tests
+PASS real ooRexx activity provider-overlap test
+PASS STATE_TRANSFORM tests
+PASS live TCP state-transform test
+PASS dead TCP provider / native-fallback eligibility test
+PASS exact-byte compatibility inherited from v0.3
+
+Concurrency invariant: PURE provider work is never executed while holding the process-wide switch, broker, object-provider adapter, or TCP-provider ooRexx monitor. Registration, circuit state, and global evidence use short guarded critical sections only.

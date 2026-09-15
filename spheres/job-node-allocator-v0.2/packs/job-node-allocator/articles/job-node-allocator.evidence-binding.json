@@ -1,0 +1,23 @@
+{
+  "id": "job-node-allocator.evidence-binding",
+  "title": "Requirement/capability/capacity evidence binding",
+  "section": "architecture",
+  "summary": "v0.6 binds API route requirements into requirementDigest, API-egress/online state into capabilityDigest, rejects same-generation equivocation, bounds lease expiry by capacity observation freshness and re-verifies owner/policy/capability/capacity digests independently.",
+  "invariants": [
+    "Identical same-generation repeats are idempotent; different evidence at same generation is equivocation and rejected.",
+    "Offline/revoked node invalidates lease immediately.",
+    "Renewal cannot outlive the capacity observation used to justify it."
+  ],
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "job-node-allocator",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6.zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

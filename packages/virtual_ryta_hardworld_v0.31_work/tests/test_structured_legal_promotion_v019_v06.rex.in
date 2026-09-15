@@ -1,0 +1,136 @@
+say 'STRUCTURED V0.7 -> LEGAL EFFECT V0.6 VERIFIED SOURCE -> PROMOTION -> HARDWORLD V0.19 START'
+provider=.V06TestDigestProvider~new
+verifier=.LegalSourceVerifier~new(provider,'ryta-v019-structured-verifier')
+
+/* Business evidence: actual supplied XML order quantity. */
+xmlDoc=.XmlDocumentContext~new('__PLUGIN_FIXTURES__/orders.xml')
+xmlDoc~registerNamespace('o','urn:example:orders')
+xmlDoc~registerNamespace('c','urn:example:common')
+xmlProvider=.XmlRelationProvider~new(.BridgeResult)
+xmlDef=xmlProvider~defineRelation('xml_qty',xmlDoc,'/o:Orders/o:Order/o:Line')
+xmlDef~columnMap('quantity','c:Quantity','INTEGER')
+xmlFact=xmlProvider~table('xml_qty')~readRows[2]~fact('quantity')
+call Assert xmlFact~value=50,'real XML business quantity 50'
+legalFacts=.LegalEffectStructuredRelationBridge~factSetFrom(.array~of(xmlFact),'FROZEN_OBSERVATION','XML-LEGAL-OBS-V019')
+call Assert legalFacts~fact('QUANTITY')~source~nativeObject == xmlFact~source,'business native XML node retained in legal fact'
+
+/* Legal source: a separate native XML document/node verified by v0.6. */
+policyText='<Policy xmlns="urn:test:policy"><Rule id="Q50">Quantity 50 must not be shipped.</Rule></Policy>'
+policyDoc=.XmlDocumentContext~fromText(policyText,'memory:legal-policy-v019.xml')
+policyDoc~registerNamespace('p','urn:test:policy')
+policyRules=policyDoc~xpath('/p:Policy/p:Rule')
+call Assert policyRules~count=1,'one legal policy rule node'
+policyNode=policyRules~nodes[1]
+sourceMaterial=.LegalVerificationMaterial~fromXmlDocument(policyDoc)
+provisionMaterial=.LegalVerificationMaterial~fromXmlNode(policyNode)
+sourceDigest='sha256:'||provider~digest(sourceMaterial~material)
+provisionDigest='sha256:'||provider~digest(provisionMaterial~material)
+
+unit=.LegalCompilationUnit~new('LEGAL-QTY-GEN','0.6','hardworld-v019-test-compiler','1')
+identity=.LegalSourceIdentity~new('XML-POLICY','POLICY','xml-policy-v1','memory:legal-policy-v019.xml',sourceDigest,'TEST-AUTH','*','VERIFIED')
+source=.NormativeSource~new('XML-POLICY','POLICY','XML quantity policy','TEST-AUTH')
+ignored=unit~addSource(identity,source)
+reference=.LegalProvisionReference~new('XML-POLICY','QTY-50','xml-policy-v1',policyNode~path,provisionDigest,policyNode~text,'VERIFIED')
+provision=.LegalProvision~new('XML-POLICY','QTY-50','ACTIVE','BASE',policyNode~text)
+ignored=unit~addProvision(reference,provision)
+sourceVerify=unit~verifySource('XML-POLICY',sourceMaterial,verifier)
+provisionVerify=unit~verifyProvision('XML-POLICY','QTY-50',provisionMaterial,verifier)
+call Assert sourceVerify~ok & sourceVerify~value~verified,'native legal XML source verified'
+call Assert provisionVerify~ok & provisionVerify~value~verified,'native legal XML provision verified'
+call Assert sourceVerify~value~sourceObject == policyDoc,'legal source evidence retains XmlDocumentContext'
+call Assert provisionVerify~value~sourceObject == policyNode,'legal provision evidence retains XmlNodeRef'
+call Assert provisionVerify~value~parentEvidence == sourceVerify~value,'legal provision verification linked to source verification'
+call Assert provisionMaterial~material~pos('<Rule id="Q50">')>0,'provision digest covers exact XML source span including markup'
+
+norm=.LegalNorm~new('XML-QTY-50','XML-POLICY','QTY-50','OBLIGATION','SHIP_ORDER','PROHIBITED','TEST','source-verified XML policy')
+ignored=norm~addCondition(.LegalPredicate~new('QUANTITY','EQUALS',50))
+proposal=.LegalCompileProposal~new('P-XML-QTY-50','NORM',norm,'structured-v07','DETERMINISTIC','1')
+ignored=proposal~addEvidenceReference(reference)
+ignored=unit~addProposal(proposal)
+report=.LegalRuleCompiler~new~compile(unit)
+call Assert report~ok,'source-verified legal generation compiles'
+generation=report~generation
+call Assert generation~publicationEligible,'legal generation publication eligible'
+call Assert report~certificate~verificationEvidence~items=2,'certificate snapshots source+provision verification'
+
+context=.LegalContext~new('ORDER-EVENT','2026-08-20','2026-08-20',legalFacts)
+ignored=context~bindSource('XML-POLICY','test policy binding')
+action=.LegalAction~new('SHIP_ORDER')
+pinned=.LegalEffectV06PinnedEvaluator~evaluate(.LegalEffectEngine~new,action,generation,context)
+call Assert pinned~ok,'pinned v0.6 legal evaluation over rich business evidence'
+call Assert pinned~envelope~assessment~status='BLOCKED','quantity 50 triggers policy prohibition'
+promotions=.LegalEffectV06PromotionAdapter~promotionsFrom(pinned~envelope)
+world=.RYTAWorldState~new('STRUCTURED-LEGAL-V019')
+applyStatus=.EvidencePromotionApplier~apply(promotions,world)
+call Assert applyStatus~applied=3,'three legal status promotions applied'
+call Assert world~isKnownTrue('LEGAL_ACTION_BLOCKED'),'HardWorld receives blocked fact'
+
+promotion=world~fact('LEGAL_ACTION_BLOCKED')~evidence~promotions[1]
+assessment=promotion~evidence~nativeObject
+businessRich=assessment~currentContext~facts~fact('QUANTITY')~source
+call Assert businessRich~nativeObject == xmlFact~source,'HardWorld promotion reaches original business XML node'
+sourceBasis=FindBasis(promotion,'LEGAL_SOURCE_VERIFICATION_EVIDENCE')
+provisionBasis=FindBasis(promotion,'LEGAL_PROVISION_VERIFICATION_EVIDENCE')
+call Assert sourceBasis \== .nil,'source verification basis present'
+call Assert provisionBasis \== .nil,'provision verification basis present'
+call Assert sourceBasis~nativeObject~sourceObject == policyDoc,'promotion basis reaches original legal XmlDocumentContext'
+call Assert provisionBasis~nativeObject~sourceObject == policyNode,'promotion basis reaches original legal XmlNodeRef'
+call Assert provisionBasis~nativeObject~locator == policyNode~path,'verified legal native path survives promotion'
+
+/* Actual supplied cross-format disagreement remains unresolved evidence. */
+x12Doc=.X12DocumentContext~new('__PLUGIN_FIXTURES__/purchase_order.x12')
+x12Provider=.X12RelationProvider~new(.BridgeResult)
+x12Def=x12Provider~defineRelation('x12_qty',x12Doc,'TRANSACTION:850')
+x12Def~columnMap('quantity','PO1/2','INTEGER')
+x12Fact=x12Provider~table('x12_qty')~readRows[1]~fact('quantity')
+call Assert x12Fact~value=2,'real X12 business quantity 2'
+qtyConflict=.StructuredRelationRichEvidenceAdapter~combineFacts('QUANTITY',.array~of(xmlFact,x12Fact),'FROZEN_OBSERVATION','XML-X12-LEGAL-CONFLICT-V019')
+call Assert qtyConflict~evidenceState='CONFLICT','rich business evidence conflict established'
+conflictFacts=.LegalEffectStructuredRelationBridge~conflictFactSet('QUANTITY',qtyConflict)
+conflictContext=.LegalContext~new('ORDER-CONFLICT','2026-08-20','2026-08-20',conflictFacts)
+ignored=conflictContext~bindSource('XML-POLICY','test policy binding')
+conflictPinned=.LegalEffectV06PinnedEvaluator~evaluate(.LegalEffectEngine~new,action,generation,conflictContext)
+call Assert conflictPinned~ok,'pinned v0.6 legal evaluation over conflicting evidence'
+call Assert conflictPinned~envelope~assessment~status='REVIEW_REQUIRED','conflicting evidence remains review-required'
+conflictPromotions=.LegalEffectV06PromotionAdapter~promotionsFrom(conflictPinned~envelope)
+conflictWorld=.RYTAWorldState~new('STRUCTURED-LEGAL-CONFLICT-V019')
+conflictApply=.EvidencePromotionApplier~apply(conflictPromotions,conflictWorld)
+call Assert conflictApply~applied=3,'review promotions applied'
+call Assert conflictWorld~isKnownTrue('LEGAL_ACTION_REVIEW_REQUIRED'),'HardWorld receives review-required'
+call Assert conflictWorld~isKnownFalse('LEGAL_ACTION_BLOCKED'),'HardWorld does not invent prohibition from conflicting input'
+retained=conflictWorld~fact('LEGAL_ACTION_REVIEW_REQUIRED')~evidence~promotions[1]~evidence~nativeObject~currentContext~facts~fact('QUANTITY')~source
+call Assert retained~sourceCount=2,'both business source objects survive conflict chain'
+
+say 'STRUCTURED V0.7 -> LEGAL EFFECT V0.6 VERIFIED SOURCE -> PROMOTION -> HARDWORLD V0.19: OK'
+exit 0
+
+::routine FindBasis
+ use arg promotion,kind
+ do item over promotion~basis
+   if item~basisKind=kind then return item
+ end
+ return .nil
+::routine Assert
+ use arg condition,message
+ if \condition then raise syntax 93.900 additional('ASSERT FAILED: '||message)
+ return 0
+
+::class V06TestDigestProvider public
+::method algorithm
+ return 'SHA256'
+::method digest
+ use arg material
+ return .AlgorithmDigest~sha256Text(material)
+::class BridgeResult public
+::method init
+ use arg operation='SELECT'
+
+::requires '__PLUGIN_ROOT__/src/XmlRelationAdapter.cls'
+::requires '__PLUGIN_ROOT__/src/X12RelationAdapter.cls'
+::requires 'LegalEffect.cls'
+::requires '__RYTA_ROOT__/algorithm/AlgorithmIntegrity.cls'
+::requires '__RYTA_ROOT__/algorithm/RichEvidence.cls'
+::requires '__RYTA_ROOT__/integration/StructuredRelationRichEvidenceAdapter.cls'
+::requires '__RYTA_ROOT__/integration/LegalEffectStructuredRelationBridge.cls'
+::requires '__RYTA_ROOT__/integration/LegalEffectV06PromotionAdapter.cls'
+::requires '__RYTA_ROOT__/HardWorld.cls'

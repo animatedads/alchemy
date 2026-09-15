@@ -1,0 +1,20 @@
+{
+  "kind": "language-rule",
+  "id": "BASH.JSON.RAW_STRING_CONCAT",
+  "version": "0.1",
+  "language": "bash",
+  "title": "Building a JSON document by string concatenation of unknown input",
+  "purpose": "Prevent corrupt JSON (broken quotes, mangled newlines/backslash) that a machine consumer then mis-parses, which is a frequent LLM-authored bash failure when the value can contain quotes or control characters.",
+  "trigger": "A JSON document is assembled by concatenating unescaped variables into a quoted string (for example printf '\"a\":\"%s\"' \"$v\" where v is not first escaped) instead of escaping with the field-appropriate helper or serializing with a JSON engine.",
+  "correct": "If the value is fixed and known-safe, run it through a backslash-first escape helper; otherwise pass the raw arguments to a Python heredoc that calls json.dumps. Never concatenate an unescaped unknown value into a JSON string.",
+  "fixability": "SUGGESTED",
+  "assess": {
+    "classification": "correctness-contract",
+    "detection_certainty": "deterministic",
+    "violation": "contextual_on_provenance",
+    "suggested_correction": "available",
+    "auto_rewrite": "safe_when_input_unknown_or_untrusted"
+  },
+  "evidence_note": "Grounded in queuebash.sh default escape helper and the python-heredoc json.dumps path in bin/queue-vcs-probe; docs/QUEUE_COMMAND_CONTRACT.md keeps JSON parseable on stdout.",
+  "return_semantics": "A reference rule page; shown for LLM author guidance, not executed by rules check."
+}

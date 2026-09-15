@@ -1,0 +1,86 @@
+/* NoSQLServer v0.70 consistency grades for Algorithm Relation inputs. */
+parse arg root
+if root == '' then root = '/tmp/virtual_ryta_nosql_v070_consistency'
+
+say 'NOSQLSERVER V0.70 ALGORITHM INPUT CONSISTENCY START'
+
+fed = .FederatedDatabaseEngine~new(root)
+sql = .NoSQLServerSQL~new(fed)
+
+/* Persisted single-source table with the table-feed contract shape. */
+call ok sql~execute("CREATE TABLE source_policy (row_id VARCHAR PRIMARY KEY,label VARCHAR,preference_score INTEGER,upstream_disposition VARCHAR)")
+call ok sql~execute("INSERT INTO source_policy VALUES ('BIG_UPSELL','big',1000000,'PROHIBITED'),('WARNING','warn',-1000000,'REQUIRED')")
+
+schema = .AlgorithmSchema~new('TABLE_FEED_SOURCE')
+schema~add('ROW_ID', 'TEXT', .false)
+schema~add('LABEL', 'TEXT', .false)
+schema~add('PREFERENCE_SCORE', 'NUMBER', .false)
+schema~addEnum('UPSTREAM_DISPOSITION', 'TEXT', .false, .array~of('UNRESOLVED','PERMITTED','REQUIRED','SUPPRESSED','PROHIBITED','REQUIRES_APPROVAL'))
+
+/* Generic federation capture refuses to invent atomicity. */
+genericCapture = .NoSQLServerAlgorithmInputCapture~new(fed)
+frozenObservation = genericCapture~capture("SELECT row_id,label,preference_score,upstream_disposition FROM source_policy ORDER BY row_id", schema, '', .AlgorithmInputRelationConstant~BAG_UNORDERED, 'FEDERATED_CAPTURE')
+call assert frozenObservation \== .nil, 'generic capture succeeds' genericCapture~lastError
+call assert frozenObservation~consistencyGrade = 'FROZEN_OBSERVATION', 'generic federation capture is frozen observation only'
+call assert frozenObservation~consistency~sourceCount = 0, 'generic federation source count remains unknown'
+call assert \frozenObservation~meetsConsistency('SOURCE_SNAPSHOT'), 'generic capture cannot satisfy source snapshot requirement'
+
+/* NoSQL file transaction earns SOURCE_SNAPSHOT from the exact stable-clone read. */
+txCapture = .NoSQLServerAlgorithmTransactionalInputCapture~new(fed~fileEngine)
+sourceSnapshot = txCapture~capture("SELECT row_id,label,preference_score,upstream_disposition FROM source_policy ORDER BY row_id", schema, '', .AlgorithmInputRelationConstant~BAG_UNORDERED, 'NOSQL_FILE_TX')
+call assert sourceSnapshot \== .nil, 'transactional capture succeeds' txCapture~lastError
+call assert sourceSnapshot~consistencyGrade = 'SOURCE_SNAPSHOT', 'transactional capture earns source snapshot'
+call assert sourceSnapshot~meetsConsistency('SOURCE_SNAPSHOT'), 'source snapshot satisfies strict grade'
+call assert sourceSnapshot~contentHash = frozenObservation~contentHash, 'same typed rows retain same content identity'
+call assert sourceSnapshot~consistencyHash \= frozenObservation~consistencyHash, 'temporal evidence has distinct identity'
+call assert txCapture~lastTransactionToken \= '', 'transaction token retained'
+call assert txCapture~lastBaseSignature \= '', 'base signature retained'
+
+/* Strict consumer visibly refuses weak input and accepts the transactional one. */
+strictProvider = .TableFeedDecisionProvider~new('..', .AlgorithmInputConsistencyConstant~SOURCE_SNAPSHOT)
+algorithmEngine = .AlgorithmRelationEngine~new
+call assert algorithmEngine~addProvider(strictProvider), 'strict provider registered'
+
+weakCtx = .AlgorithmExecutionContext~new('WEAK-INV', frozenObservation~sourceOid, frozenObservation~sourceOid)
+weakResult = algorithmEngine~execute('TABLE_FEED_DECIDER', frozenObservation, weakCtx)
+call assert weakResult \== .nil, 'weak result returned'
+weakDecisions = weakResult~relation('TABLE_FEED_DECISIONS')
+call assert find(weakDecisions, 'BIG_UPSELL')~value('DISPOSITION') = 'UNRESOLVED', 'weak prohibition withheld'
+call assert find(weakDecisions, 'WARNING')~value('DISPOSITION') = 'UNRESOLVED', 'weak requirement withheld'
+
+strongCtx = .AlgorithmExecutionContext~new('STRONG-INV', sourceSnapshot~sourceOid, sourceSnapshot~sourceOid)
+strongResult = algorithmEngine~execute('TABLE_FEED_DECIDER', sourceSnapshot, strongCtx)
+call assert strongResult \== .nil, 'strong result returned'
+strongDecisions = strongResult~relation('TABLE_FEED_DECISIONS')
+call assert find(strongDecisions, 'BIG_UPSELL')~value('DISPOSITION') = 'PROHIBITED', 'strong prohibition evaluated'
+call assert find(strongDecisions, 'WARNING')~value('DISPOSITION') = 'REQUIRED', 'strong requirement evaluated'
+call assert find(strongDecisions, 'WARNING')~value('FINAL_SELECTED') = .true, 'required warning selected despite negative score'
+call assert strictProvider~invocationCount = 2, 'distinct consistency identities execute separately'
+
+say 'frozen content hash:' frozenObservation~contentHash
+say 'frozen consistency hash:' frozenObservation~consistencyHash
+say 'source consistency hash:' sourceSnapshot~consistencyHash
+say 'transaction token:' txCapture~lastTransactionToken
+say 'NOSQLSERVER V0.70 ALGORITHM INPUT CONSISTENCY: OK'
+exit 0
+
+find: procedure
+  use arg relation, wanted
+  do row over relation~rows
+    if row~value('ROW_ID') == wanted then return row
+  end
+  return .nil
+
+ok: procedure
+  use arg databaseResult
+  if databaseResult~status = .Error~SUCCESS then return .true
+  raise syntax 93.900 additional('DATABASE FAILED: ' || databaseResult~status || ' ' || databaseResult~error || ' ' || databaseResult~message)
+
+assert: procedure
+  use arg condition, message, detail = ''
+  if condition then return .true
+  raise syntax 93.900 additional('ASSERT FAILED: ' || message || ' ' || detail)
+
+::requires '__NOSQLSERVER_CLS__'
+::requires '../integration/NoSQLServerAlgorithmTransactionalInputCapture.cls'
+::requires '../algorithm/TableFeedDecisionProvider.cls'

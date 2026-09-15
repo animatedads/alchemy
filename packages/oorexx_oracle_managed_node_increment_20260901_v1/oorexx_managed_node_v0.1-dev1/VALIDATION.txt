@@ -1,0 +1,23 @@
+QUALIFICATION: ooRexx Managed Node v0.1-dev1
+Runtime: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug 3 2026
+Addressing mode: 64
+
+Each acceptance was executed independently under the package dependency REXX_PATH after the combined capture exceeded the harness time limit.
+
+PASS Managed Node v0.1-dev1 allocator/priority/auth/bundle/execute/result/persistence
+PASS Managed Node result-delivery retry is execution-idempotent in-process
+PASS Managed Node FETCH/SERVICE fail-closed personality boundaries
+
+Acceptance properties:
+- allocator-selected node and exact runtime generation requirement
+- BACKGROUND enqueued first; later INTERACTIVE claimed first
+- permanent Queue Fabric dispatch recovered after manager restart before execution
+- full allocator placement lease preserved in durable dispatch
+- signed exact task authorization binds placement, ownership epoch, task digest and bundle digest
+- immutable Work Bundle verification and isolated staging
+- real /usr/local/bin/rexx task execution
+- structured result durable queue round-trip
+- stale ownership epoch destination fencing
+- result publication failure NACK/retry does not re-execute in-process
+- FETCH and SERVICE never reach generic command executor

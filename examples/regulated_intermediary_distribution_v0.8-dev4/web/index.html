@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Federation Intermediary Hub</title>
+  <link rel="stylesheet" href="./rid.css">
+</head>
+<body class="rid-desktop">
+  <aside class="rid-sidebar" aria-label="Federation Intermediary navigation">
+    <div class="rid-wordmark"><span class="rid-wordmark-mark">F</span><div><strong>Federation</strong><small>Intermediary Hub</small></div></div>
+    <nav class="rid-nav">
+      <a class="rid-nav-item is-active" href="#rid-app"><span>◫</span>Work queue</a>
+      <a class="rid-nav-item" href="#rid-app"><span>◎</span>Cases</a>
+      <a class="rid-nav-item" href="#rid-actions"><span>▤</span>Documents</a>
+      <a class="rid-nav-item" href="#rid-actions"><span>✓</span>Compliance</a>
+      <a class="rid-nav-item" href="#rid-app"><span>◇</span>Products</a>
+    </nav>
+    <div class="rid-sidebar-foot">
+      <div class="rid-secure-pill"><span class="rid-secure-dot"></span>Server authoritative</div>
+      <p>Mortgage · Investment · Insurance</p>
+    </div>
+  </aside>
+
+  <div class="rid-shell">
+    <header class="rid-topbar">
+      <div>
+        <p class="rid-eyebrow">REGULATED DISTRIBUTION</p>
+        <h1>Intermediary workspace</h1>
+      </div>
+      <div class="rid-topbar-actions">
+        <span class="rid-date-label">Live case state</span>
+        <div id="rid-connection" class="rid-connection" aria-live="polite"><span></span>Connecting…</div>
+        <button class="rid-avatar" type="button" aria-label="Current intermediary user">IA</button>
+      </div>
+    </header>
+
+    <section class="rid-hero" aria-labelledby="rid-work-heading">
+      <div>
+        <p class="rid-eyebrow">TODAY'S WORK</p>
+        <h2 id="rid-work-heading">Cases needing your attention</h2>
+        <p>Provider decisions are shown directly from authoritative mortgage, investment and All Japan insurance events.</p>
+      </div>
+      <div class="rid-trust-strip"><span>✓ Signed provider events</span><span>✓ Exact case status</span><span>✓ Digital signatures</span></div>
+    </section>
+
+    <section id="rid-controls" class="rid-controls" aria-label="Worklist filters"></section>
+
+    <main class="rid-layout">
+      <section class="rid-work-column">
+        <div class="rid-section-heading"><div><p class="rid-eyebrow">WORKLIST</p><h2>Active cases</h2></div><span class="rid-hint">Select a case to inspect</span></div>
+        <section id="rid-app" class="rid-workspace" aria-label="Intermediary cases"></section>
+      </section>
+      <aside class="rid-side-column" aria-label="Selected case panel">
+        <div class="rid-section-heading"><div><p class="rid-eyebrow">CASE JOURNEY</p><h2>Journey & evidence</h2></div></div>
+        <section id="rid-actions" class="rid-actions" aria-label="Selected case actions">
+          <div class="rid-empty-state"><div class="rid-empty-icon">↗</div><strong>Select a case</strong><p>Provider progress, intermediary obligations, documents and signing actions will appear here.</p></div>
+        </section>
+      </aside>
+    </main>
+
+    <footer class="rid-footer"><span>Federation regulated intermediary platform</span><span>All actions are policy and permission checked</span></footer>
+  </div>
+
+  <script>
+    window.RID_BOOT_CONFIG = window.RID_BOOT_CONFIG || {
+      gatewayUrl: new URL('/wire-ui', window.location.href).href.replace(/^http/,'ws'),
+      outboundQueue: 'WIREUI.IN.WEB', applicationId: 'RID-APP', sessionId: 'RID-BROWSER', accessPointId: 'WEB'
+    };
+  </script>
+  <script type="module" src="./rid-browser.js"></script>
+</body>
+</html>

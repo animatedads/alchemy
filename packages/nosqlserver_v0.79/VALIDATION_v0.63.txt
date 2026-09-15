@@ -1,0 +1,61 @@
+NoSQLServer v0.63 validation
+============================
+
+Focus
+-----
+INTERSECT / EXCEPT CORRESPONDING BY column-name semantics.
+
+Semantics
+---------
+Supported shape:
+  <select>
+  INTERSECT|EXCEPT CORRESPONDING [BY (name,...)]
+  <select>
+  [ORDER BY ...]
+
+- Plain INTERSECT/EXCEPT retain ordinal column alignment.
+- CORRESPONDING without BY aligns and exposes common output columns by name.
+- CORRESPONDING BY explicitly selects the named common output columns, in BY order.
+- BY names must exist in both branches.
+- Duplicate BY names are a syntax error.
+- '*' projections remain outside this surface.
+- ORDER BY applies to the normalized set-operation output.
+
+Hell Corpus v2 Q28
+------------------
+Left dept-10 employee ids:
+  1,2,3,4,9
+
+Right non-NULL manager ids:
+  1,2,2,1,5,1,1,2,7
+Distinct corresponding id set:
+  1,2,5,7
+
+EXCEPT CORRESPONDING BY(id):
+  3,4,9
+
+The result exposes only the selected corresponding column `id`; `name` is not
+carried through because it is not in the BY list.
+
+Result
+------
+Grok Hell Corpus v2:
+  PASS            20
+  UNSUPPORTED      4
+  PARSE_ERROR      6
+  WRONG_RESULT     0
+  EXECUTION_ERROR  0
+
+Regression evidence
+-------------------
+- 40 gates green.
+- v0.63 SET CORRESPONDING BY smoke: PASS
+- v0.62 journal UTC timestamp smoke: PASS
+- v0.62 UNION CORRESPONDING smoke: PASS
+- v0.61 DELETE USING smoke: PASS
+- v0.60 UPDATE FROM smoke: PASS
+- object/federation/storage/planner/database_core gates: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 20/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

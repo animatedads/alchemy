@@ -1,0 +1,62 @@
+{
+  "kind": "corpus",
+  "id": "kl10.project-continuity",
+  "sphere": "kl10",
+  "title": "KL10 emulator continuation evidence",
+  "records": [
+    {
+      "id": "kl10.continuation.2026-09-02.041342",
+      "authority": "PROJECT_REPLAY_EVIDENCE",
+      "date": "2026-09-02",
+      "topics": [
+        "512K",
+        "memory-profile",
+        "pre_nxm_refusal",
+        "071724",
+        "071730",
+        "041342",
+        "PGRINI",
+        "PNRCOD",
+        "CST"
+      ],
+      "qualified_baseline": "f8a304b",
+      "packaged_component": "kl10_ipl_oorexx_v0.31-dev5-journal1",
+      "status": "WIP_NOT_QUALIFIED",
+      "facts": [
+        "The packaged component still carries a historical 256K-word default physical-core extent.",
+        "An explicit KL10B_MINIMUM_512K profile uses 1024 512-word pages while retaining the historical default separately.",
+        "Replaying pre_nxm_refusal with the second 256K installed removes the old 071724 SETZM / 071730 BLT NXM failure.",
+        "The replay then executes 10,848 additional authentic instructions and naturally attempts fetch 041342; the page-fail vector is 044414 and APR flags are zero.",
+        "Observed boundary values: start ICOUNT 1242342 at PC 071724; arrival ICOUNT 1253190; AC0=000000,,000130; AC1=000000,,060156; AC2=000000,,416000; AC17=000000,,263732.",
+        "The next task is complete-state comparison against states/pre_041342.kl10state before reusing that historical checkpoint."
+      ]
+    },
+    {
+      "id": "kl10.continuation.2026-09-02.pre041342-comparison",
+      "authority": "RECOVERED_FIXTURE_EXECUTION_EVIDENCE",
+      "date": "2026-09-02",
+      "topics": [
+        "pre_041342",
+        "CST_AGE_ZERO",
+        "041342",
+        "044414",
+        "event-convergence",
+        "state-divergence",
+        "APR",
+        "accumulators"
+      ],
+      "fixture_sha256": "db72c3f1558cf0f1e50fafee1343ef257e9f2d759fc9e853a8f165fde44b8f0a",
+      "fixture_schema": "8baa3e9d6977b13c9c851f235126e29270dc4930333563f5c41d354db9fca175",
+      "status": "HISTORICAL_EVENT_ORACLE_NOT_CONTINUATION_STATE",
+      "facts": [
+        "The recovered historical pre_041342 fixture has PC 041342 and ICOUNT 1253189 immediately before its fetch.",
+        "Executing exactly one step with the handover WIP source delivers a fetch-time TOPS-20 page fault with cause CST_AGE_ZERO at VA 041342.",
+        "That fault produces page-fail word 001000,,041342, transfers to vector 044414, and advances ICOUNT to 1253190.",
+        "Those event coordinates converge with the newly authentic 512K replay arrival: attempted fetch 041342, vector 044414, arrival/fault ICOUNT 1253190.",
+        "The full CPU state does not converge with the new replay report: historical APR flags are 002000 rather than 000000; historical AC0=040000,,000130 versus 000000,,000130; AC2=170005,,416000 versus 000000,,416000; AC17=777117,,263732 versus 000000,,263732. AC1=000000,,060156 matches exactly.",
+        "The historical fixture serializes PAGES 512 and TLBCOUNT 0. PAGES is serialized mapped-page count, not by itself an installed-capacity declaration.",
+        "Therefore the historical fixture is rehabilitated only as a focused CST-age-zero event oracle. A new authentic frozen checkpoint is required for continuation."
+      ]
+    }
+  ]
+}

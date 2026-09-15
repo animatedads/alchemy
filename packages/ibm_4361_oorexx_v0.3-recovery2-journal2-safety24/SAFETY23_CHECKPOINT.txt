@@ -1,0 +1,14 @@
+SAFETY23 CHECKPOINT
+===================
+Base: sealed Safety22 SHA-256 bd4ada1fe3ad6da3b97cbfe645e1130b7f0e625c6e3cd2d13a53d50239968f91
+Promotion: X'70' STE invalid R1 outside FPR {0,2,4,6} -> specification exception
+No OP70.
+Exact frontier before: 70 @ 000082 / ICOUNT 539172 / 70E000000000 / PSW 0004000190000082
+Exact retry: PGMOLD 0004000690000086 / PGMNEW 00040000000002CA
+Forward progress after retry: 32 successful instructions
+Next causal boundary: EX 44 @ 0004B6 / ICOUNT 539205 / 440004F45010
+EX transient target: 70E005C84780 (invalid-R1 STE)
+Qualification: 157 sources compile / 84 runtime tests pass
+Independent permanent whole-MVT replay: PASS
+Gopher v0.21 package preflight: READY / 0 breaches / 0 blockers
+Next task: EX-target architectural-exception propagation; do not add OP44 or normal OP70

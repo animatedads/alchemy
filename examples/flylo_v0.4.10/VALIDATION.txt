@@ -1,0 +1,134 @@
+FlyLo v0.4.10 validation
+========================
+
+Runtime / platform baseline
+---------------------------
+ooRexx 5.3.0 r13196
+oorexxapis(20260828-192827).zip
+Wire UI Server v0.17
+Wire UI Builder v0.11
+Queue Fabric v0.9-dev4
+Accounting Core v0.7
+Crypto v0.5
+Grok provider v0.4
+Structured Utterance v0.3-qualified
+
+Purpose of this cut
+-------------------
+FlyLo v0.4.10 makes the package-root airline runtime durable so confirmed
+bookings and stable passenger identities survive `./flylo` restart. It also
+adopts Accounting Core v0.7 persistence/precision and Wire UI v0.17
+authoritative result-revision binding for passenger-scoped servicing.
+
+Accounting Core v0.7 upstream qualification
+--------------------------------------------
+PASS test_civic_assessment.rex              13 assertions
+PASS test_companies_house_walkabout.rex      31 assertions
+PASS test_core.rex                           14 assertions
+PASS test_durable_transactions.rex            9 assertions
+PASS test_four_company_chain.rex              16 assertions
+PASS test_precision_persistence.rex           26 assertions
+PASS test_scope_persistence.rex                9 assertions
+PASS test_scopes_reporting.rex                30 assertions
+PASS test_settlement_persistence.rex           12 assertions
+PASS test_settlement_rounding.rex              32 assertions
+PASS test_tax_determination.rex                49 assertions
+PASS test_tax_persistence.rex                  15 assertions
+PASS test_transactions.rex                     41 assertions
+PASS deterministic reference projection       10 assertions
+Result: 297/297 ooRexx assertions + 10/10 projection assertions.
+
+FlyLo engine / accounting authority
+-----------------------------------
+PASS route search
+PASS booking saga / separate inventory idempotency
+PASS Queue authority boundary / DLQ behaviour
+PASS engine restart reconstruction
+PASS sales-process -> engine integration
+PASS Accounting Core v0.7 integration
+PASS authorization alone creates no journal
+PASS explicit ticket capture posts receivable / passenger-service liability
+PASS passenger-specific checked-bag capture creates a separate journal
+PASS carriage and ancillary revenue remain deferred before performance evidence
+PASS exact replay and changed-source conflict handling
+PASS native AccountingFileStore recovery and retained-Queue reconciliation
+PASS recovered accounting book remains attached to its durable file store
+PASS all 17 current src/*.cls compile with ooRexx r13196 rexxc
+PASS web/flylo.js Node syntax
+
+Durable ./flylo runtime
+-----------------------
+PASS /healthz reports version=0.4.10
+PASS /healthz reports wireUiServer=0.17
+PASS /healthz reports engine=QUEUE_FABRIC_DURABLE_FIXTURE
+PASS /healthz reports accounting=ACCOUNTING_CORE_0.7
+PASS /healthz reports storage=DURABLE
+PASS confirmed booking receives PAX-001/PAX-002 stable identities
+PASS stop ./flylo; restart against same FLYLO_DATA_DIR
+PASS same booking reopens with Tom Dyer / Mia Dyer and identical passenger IDs
+PASS next sale after restart advances SALE-00001 -> SALE-00002
+PASS accounting/flylo-stat.jsonl recovers original journal identity
+PASS prior screenshot lookup miss remains privacy-preserving BOOKING_LOOKUP_NOT_MATCHED
+PASS no passenger-visible RUNTIME_CONDITION/position diagnostics
+
+Wire UI v0.17 passenger servicing
+--------------------------------
+PASS FlyLo manage-booking workspace regression
+PASS FlyLo Wire application interaction regression
+PASS FlyLo Wire definitions compile: 15 definitions
+PASS workspace publishes resultRevision/resultCurrent
+PASS sort preserves PAX-002 semantic selection and republishes authoritative result
+PASS stale pre-sort query context rejected
+PASS forged PAX-999 selection rejected
+PASS exact current context adds one £49 bag to PAX-002 only
+PASS servicing result advances resultRevision
+PASS reuse of the previous still-selected result context rejected as WORKSPACE_RESULT_REVISION_MISMATCH
+PASS exact ancillary replay remains idempotent
+
+Wire UI Server v0.17 upstream evidence
+--------------------------------------
+PASS package identity through authoritative workspace-result tests
+PASS test_workspace_result_state.rex
+PASS ooRexx <-> JS cross-wire
+PASS ooRexx <-> JS observation
+PASS ooRexx <-> JS operational workspace
+PASS ooRexx <-> JS large collection window
+PASS ooRexx <-> JS authoritative workspace command context
+KNOWN UPSTREAM PACKAGING GAP: the supplied roll-up does not contain
+`AlchemyAdoption.cls`, so Wire UI Server's final `test_alchemy_adoption.rex`
+cannot run and returns ooRexx 43.901. All preceding mandatory server tests
+through v0.17 workspace result state pass; this missing file is not a FlyLo
+runtime dependency.
+
+Real gateway seam
+-----------------
+PASS real ooRexx -> Queue Fabric -> Web Gateway v0.2 -> Alchemy Wire UI JS
+     full booking + Ask FlyLo acceptance
+PASS authoritative review total 24200
+PASS hostile browser sale/total/currency claims do not become authority
+PASS assistant context contains permitted passenger name but excludes captured email
+PASS final booking status CONFIRMED
+
+Structured assistant boundary
+-----------------------------
+PASS vendored r13196 JSON structured-runtime preflight
+PASS Structured Language / Structured Utterance contract
+PASS travel-information authority
+PASS larger-party assistant/inventory boundary
+PASS strict Grok interpretation/generation schema boundary
+PASS Grok explanation and conversational prompt boundaries
+PASS literal ./flylo Grok real-time transport fixture
+PASS exact structured booking conversation verified with a diagnostic end-to-end
+     run: Glasgow -> New York, 29th + next month -> 2026-09-29, two passengers,
+     one-way -> GLA-PIK-EWR offer, GBP 476.00 total
+PASS passenger chat contains no Grok Batch provider/WLU or /v1/batches path
+No paid live xAI call is claimed without XAI_API_KEY.
+
+Development truth
+-----------------
+- schedule/fare/inventory remains ENGINE_FIXTURE in the package-root runtime
+- development payment adapter remains explicit fixture payment authority
+- production AS/400 reservation/operations boundary remains intact
+- Accounting Core accounts for operational evidence; it does not become booking, inventory or payment authority
+- tax and settlement APIs present in Accounting Core v0.7 are not silently treated as FlyLo airline policy
+- capture-to-contract-liability remains the current accounting treatment; service-performance revenue recognition is not yet implemented

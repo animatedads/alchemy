@@ -1,0 +1,55 @@
+{
+  "kind": "corpus",
+  "id": "python-best-practices.rules",
+  "sphere": "python-best-practices",
+  "title": "Python best-practice records",
+  "records": [
+    {
+      "aliases": ["topic:mutable-default","default argument","def foo(x=[])","mutating default","cache={}","acc=[]"],
+      "topic": "mutable-default-argument",
+      "rule": "Do not bind a mutable default argument; use None plus a fresh object created inside the function.",
+      "semantics": "defaults evaluate once and are shared across calls",
+      "status": "statically-detectable",
+      "plane": "rule-show document; safe form below"
+    },
+    {
+      "aliases": ["topic:implicit-none","fall off","no return","implicit return None","returns None"],
+      "topic": "implicit-none-return",
+      "rule": "Do not let a meaningful branch fall through to an implicit None; return or raise on every path.",
+      "status": "intent+semantics",
+      "plane": "article"
+    },
+    {
+      "aliases": ["topic:is-none","truthiness","not x","falsy","optional","None check"],
+      "topic": "none-check",
+      "rule": "Test Optional values with 'value is None'; do not rely on truthiness where empty/zero is a legitimate value.",
+      "semantics": "0, '', [] are falsy; only None denotes absence in an Optional",
+      "status": "intent+semantics",
+      "plane": "article"
+    },
+    {
+      "aliases": ["topic:narrow-except","broad except","catch Exception","swallow","re-raise","bare except"],
+      "topic": "exception-scope",
+      "rule": "Catch the narrowest exception class applicable; never swallow a real failure into a falsy default.",
+      "engine_hint": "the python rule PYTHON.EXCEPT.BARE is executed by rules check; this article extends it to broad catch-all",
+      "status": "intent-dependent",
+      "plane": "article"
+    },
+    {
+      "aliases": ["topic:splice","structural edit","regenerate module","rewrite whole file","preserve bytes","source.python.method.edit"],
+      "topic": "edit-splice",
+      "rule": "Prefer an AST-scoped splice over regenerating a module; preserve unrelated bytes and validate before commit.",
+      "engine_capability": "source.python.method.edit with a one-complete-method replacement file",
+      "status": "discipline",
+      "plane": "article + example splices"
+    },
+    {
+      "aliases": ["topic:copies","returns internal","sort in place","alias","shared reference","snapshot"],
+      "topic": "collection-copies",
+      "rule": "Return copies (or read views), not live internals; do not mutate an input the caller owns unless the contract says in place.",
+      "semantics": "assignment/return share the reference; .append/.sort/mutate in place",
+      "status": "intent+ownership",
+      "plane": "article"
+    }
+  ]
+}

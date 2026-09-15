@@ -1,0 +1,20 @@
+Federation Regulated Intermediary Distribution v0.8-dev3 — launcher validation
+
+Validated on supplied ooRexx 5.3.0 r13196 Internal Test Version and Node v22.16.0.
+
+PASS bash syntax: start.sh
+PASS Node syntax: tools/rid-ui-server.mjs
+PASS package-root ./start.sh preview startup
+PASS preview HTTP GET /
+PASS preview HTTP GET /rid.css
+PASS launcher contains no Python execution path
+PASS ./start.sh --live ooRexx RID development fixture startup
+PASS Queue Fabric Web Gateway startup
+PASS live HTML gateway configuration injection
+PASS gateway HTTP endpoint present (426 WebSocket required)
+PASS SIGTERM cleanly stops UI server, Web Gateway and ooRexx fixture
+PASS product-specific journey model
+PASS actual Alchemy browser -> WebSocket edge -> Queue Fabric -> RID Wire UI -> signing -> browser projection
+
+Default UI URL: http://127.0.0.1:8082/
+Default live gateway: ws://127.0.0.1:8090/wire-ui?token=rid-browser-token

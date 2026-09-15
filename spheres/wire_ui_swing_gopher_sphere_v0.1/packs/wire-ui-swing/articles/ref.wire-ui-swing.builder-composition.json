@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.builder-composition",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Builder composition is semantic, not Swing layout source",
+  "summary": "Wire UI Builder v0.11 explicitly remains a fact editor for flow. Its composition artifacts use typed renderer hints such as GRID12/FLOW, region, order, span, rowSpan, alignment, viewport class and conditional placement facts; a Swing renderer interprets those facts without writing Swing-specific coordinates back into Builder.",
+  "authority": "wire-ui-builder-contract",
+  "invariants": [
+    "Never compile Builder placement to absolute Swing pixel bounds.",
+    "GRID12 column/span/row/rowSpan/order/region are semantic renderer hints.",
+    "Conditional placement and journey admission remain authoritative compiled/server facts; Swing does not evaluate or invent business predicates.",
+    "Projection variants may change presentation while element-centric composition remains stable unless an exact projection-specific placement is explicitly authored."
+  ],
+  "procedure": [
+    "Map GRID12 to GridBagConstraints deterministically.",
+    "Reuse existing JComponent objects when structural ordering changes so renderer-local edits/focus survive.",
+    "Treat Builder presentationClass/styleRole/materialRole as presentation hints only."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_builder_v0.11.zip",
+      "sha256": "dd48908e49e8ee00c94f931c3a1cfdfc8d5324e2e0fbf64e2cdd7d82c510ad3f",
+      "member": "wire_ui_builder_v0.11/README.md",
+      "claim": "GRID12/FLOW composition uses typed renderer hints and is not DOM/Swing authoring truth."
+    }
+  ],
+  "mapping": {
+    "screen": "authoritative view/screen hosted in stable desktop container",
+    "GRID12 column": "GridBagConstraints.gridx",
+    "span": "GridBagConstraints.gridwidth",
+    "row": "GridBagConstraints.gridy",
+    "rowSpan": "GridBagConstraints.gridheight",
+    "stretch/alignment": "weight/fill/anchor policy",
+    "region/order": "deterministic semantic placement ordering"
+  }
+}

@@ -1,0 +1,99 @@
+NoSQLServer v0.68 validation
+============================
+
+Focus
+-----
+FederatedDatabaseEngine is now itself the ordinary database facade.
+
+Motivation
+----------
+A generic consumer (Database Core, msqlshim, an Algorithm Relation bridge, or
+another client) must not need to know whether a table is backed by:
+- native FILE storage
+- live OBJECT storage
+- frozen OBJECT/SNAPSHOT storage
+- GeoPackage
+- another registered external read engine
+
+Facade parity
+-------------
+FederatedDatabaseEngine now provides:
+  execute(sqlText)
+  query(sqlText)
+  databaseCore()
+  tableMetadata(tableName)
+  queryTable(tableName)
+  readCatalog()
+
+GeoPackageDatabaseEngine also provides the same read-side facade methods.
+
+Merged catalog
+--------------
+FederatedDatabaseEngine~readCatalog merges and de-duplicates:
+1. persisted FILE catalog tables
+2. OBJECT and SNAPSHOT table registrations
+3. tables exposed by registered external engines
+
+External engines are discovered generically through readCatalog() where
+available, otherwise tableNames(). Resolution precedence remains:
+  OBJECT/SNAPSHOT -> FILE -> external engines in registration order.
+
+Algorithm Relation compatibility
+--------------------------------
+The supplied Virtual RYTA integration showed that Algorithm Relations are
+materialised once and registered using FederatedDatabaseEngine~registerSnapshot.
+The supplied v0.66 federated facade smoke was copied into the current tree
+without semantic changes and passes against v0.68.
+
+The Virtual RYTA package and msqlshim v0.08 source tree are not present in this
+runtime, so their complete provider/wire acceptance harness cannot be rerun
+here. Their NoSQLServer dependency surface is covered by the facade regressions.
+
+Current heterogeneous proof
+---------------------------
+A single FederatedDatabaseEngine contains:
+  persisted                   FILE table
+  people_snapshot             frozen OBJECT snapshot
+  sample_address              GeoPackage POINT table
+  sample_minor                GeoPackage POLYGON table
+  sample_minor_rltenty        GeoPackage attributes table
+
+The same federated facade successfully:
+- executes SQL over FILE
+- executes SQL over SNAPSHOT
+- executes SQL over GeoPackage
+- exposes metadata for SNAPSHOT and GeoPackage
+- serves GeoPackage rows through DatabaseCore~queryTable()
+- returns all five names through one readCatalog()
+- preserves read-only snapshot mutation rejection
+
+Regression evidence
+-------------------
+- 46 gates green.
+- supplied federated-facade smoke: PASS unchanged
+- v0.68 FILE+SNAPSHOT+GeoPackage facade smoke: PASS
+- v0.67 GeoPackage portable smoke: PASS
+- GeoPackage smokes rebuild tools/gpkg_bridge from source before execution, so
+  ZIP extraction executable-bit behaviour is not trusted
+- v0.66 OLAP grouping: PASS
+- all historical object/federation/storage/planner/database-core gates: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, zero wrong results
+- Grok hell v2: 25/30 PASS, zero wrong results
+- NoSQLServer.cls + all tests/*.rex: 83 compile targets, zero failures
+- uploaded Algorithm Relation adapter/facade/wire Rexx artifacts: rexxc clean
+
+Architecture after v0.68
+------------------------
+Database Core / generic clients
+            |
+            v
+FederatedDatabaseEngine  <-- ordinary database facade
+   |        |       |
+ FILE    OBJECT   EXTERNAL
+           |         |
+        SNAPSHOT   GeoPackage / future providers
+
+msqlshim and Algorithm Relation adapters remain outside NoSQLServer core.
+They consume the ordinary facade rather than adding provider-specific semantics
+to the SQL or wire layers.

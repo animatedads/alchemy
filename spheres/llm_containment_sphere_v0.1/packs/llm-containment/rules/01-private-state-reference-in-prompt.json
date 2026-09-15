@@ -1,0 +1,12 @@
+{
+  "kind": "language-rule",
+  "id": "LLM.CONTAINMENT.NO_PRIVATE_STATE_REFERENCE",
+  "version": "0.1",
+  "language": "any",
+  "title": "Do not reference hidden or reserved state in any emitted model prompt",
+  "purpose": "Live model seats must never be given other parties' private state, psychic/hidden observations, engine/RNG state or SECRET/INTERNAL fields; doing so leaks evidence the actor was not entitled to.",
+  "trigger": "Prompt/payload assembly code refers by name to a reserved hidden-state field or SECRET/INTERNAL holder (for example a psychic/hidden-state or other-agent-private ledger) that the boundary contract does not admit for the acting viewer.",
+  "correct": "Route all live prompt fields through the provenance-labelled envelope that admits only public state plus the acting party's own private field, and fail closed on anything else before provider invocation.",
+  "fixability": "REQUIRED",
+  "evidence_note": "psychic-poker prompt-boundary audit v0.7.38 admits only public table state plus the acting player's own hole-card field; other-player private state and SECRET/INTERNAL material are fail-closed."
+}

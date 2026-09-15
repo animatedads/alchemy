@@ -1,0 +1,34 @@
+NoSQLServer v0.30 validation
+============================
+Runtime: ooRexx 5.3.0 r13196 (64-bit Linux)
+
+New window surface
+------------------
+PASS: ROW_NUMBER() OVER (PARTITION BY ... ORDER BY ...)
+PASS: RANK() peer semantics
+PASS: DENSE_RANK() peer semantics
+PASS: global ROW_NUMBER() OVER (ORDER BY ...) with no PARTITION BY
+PASS: DESC window ordering
+PASS: running COUNT(*) with explicit ROWS UNBOUNDED PRECEDING..CURRENT ROW
+PASS: running AVG(column)
+PASS: running MIN(column)
+PASS: running MAX(column)
+PASS: partition-local state reset
+PASS: existing v0.28 running SUM remains compatible
+
+Runtime regression
+------------------
+PASS: historical smoke chain from native storage through v0.29
+PASS: v0.30 extended window smoke
+PASS: Claude torture scorer 12/12, 0 wrong results
+PASS: Grok feature torture 72/72
+PASS: SQL-92 company smoke
+PASS: Grok hell corpus 24/25, 0 wrong results (Q23 remains deliberate unsupported semantic edge)
+PASS: rexxc src/NoSQLServer.cls
+PASS: rexxc tests/*.rex
+
+Deliberate boundaries
+---------------------
+- Running aggregate windows require explicit ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW.
+- Multiple window expressions in one SELECT must currently share partition/order/direction.
+- Arbitrary ROWS/RANGE frames, LEAD/LAG, FIRST_VALUE/LAST_VALUE, NTILE, and general multi-window planning are not yet claimed.

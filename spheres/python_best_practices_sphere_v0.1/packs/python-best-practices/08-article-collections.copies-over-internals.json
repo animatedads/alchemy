@@ -1,0 +1,17 @@
+{
+  "kind": "article",
+  "id": "python-best-practices.collections.copies-over-internals",
+  "version": "0.1",
+  "sphere": "python-best-practices",
+  "title": "Do not let a live internal collection escape, and do not mutate a caller's collection by side effect",
+  "summary": "Lists and dicts are shared references. Returning a live value you own is not a snapshot: the caller can mutate your internals. Mutating an argument (append/.sort/in-place update) writes back into the caller's object. An LLM reproduces both: it exposes engine-held lists to callers or sorts an input list it was only asked to read, silently altering the owner's state.",
+  "semantics": "Assignment, parameter passing and return store a reference, not a copy. Methods like .append, .sort, .update, .clear mutate the referred object in place; sorted() and dict(...) create copies.",
+  "why_this_is_an_article": "Whether mutation is harmful needs to know ownership and intent; there is no safe global claim like 'never sort()'.",
+  "evidence_note": "PLABEL: canonical CPython container reference semantics.",
+  "invariants": [
+    "When you return stored state, return value.copy() / list(...) / dict(...) / Sorted-named read view if callers should not alter your internal memory.",
+    "When you only need to read an input collection, do not mutate it; copy first then mutate locally if needed.",
+    "Prefer sorted(x) and a new dict/list for derived results rather than sorting an argument in place unless the parameter contract explicitly allows an in-place sort.",
+    "Document clearly when a method intentionally mutates a container in place."
+  ]
+}

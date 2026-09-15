@@ -1,0 +1,24 @@
+{
+  "id": "nosqlserver.source-map",
+  "title": "Source map and first inspection points",
+  "section": "operations",
+  "summary": "The principal implementation is src/NoSQLServer.cls. Important first symbols include NoSQLServerVersionInfo, DatabaseResult, DatabaseColumn, TableDefinition, DatabaseRow, DelimitedTableStorage, FileDatabaseTable, federated/JSON/SQLite/GeoPackage engines, SQL predicate/expression/parser and transaction/runtime classes.",
+  "procedure": [
+    "Start with NoSQLServerVersionInfo to establish advertised capabilities.",
+    "Inspect the specific engine/provider class before assuming FILE semantics.",
+    "Inspect DatabaseResult before writing adapter code so planner/diagnostic evidence is not dropped.",
+    "Use current tests matching the feature version as executable evidence."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "nosqlserver",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "nosqlserver_v0.79.zip",
+      "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec",
+      "member": "nosqlserver_v0.79/src/NoSQLServer.cls",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

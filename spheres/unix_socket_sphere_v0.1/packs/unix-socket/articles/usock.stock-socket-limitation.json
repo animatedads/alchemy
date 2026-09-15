@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "usock.stock-socket-limitation",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Why stock socket.cls cannot be turned into AF_UNIX by a constant",
+  "summary": "Stock ooRexx socket.cls is an IPv4/AF_INET API whose public address and bind/connect contract is not a sockaddr_un contract. Passing AF_UNIX into examples written for socket.cls crosses an API boundary that the class does not expose.",
+  "authority": "project-authority",
+  "invariants": [
+    "Do not present AF_UNIX boilerplate as if stock socket.cls accepted Unix-domain addresses.",
+    "Unix-domain support requires a semantic address model and a binding capable of sockaddr_un; a numeric family token alone is insufficient.",
+    "The Unix Socket library exists beside stock socket.cls and does not modify or globally override its correct INET behavior."
+  ],
+  "procedure": [
+    "When an application needs AF_UNIX, require unixsocket.cls rather than attempting to coerce socket.cls."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/README.md",
+      "line_start": 7,
+      "line_end": 11,
+      "claim": "README states stock socket.cls is IPv4/AF_INET-shaped and cannot become a Unix-domain socket by passing AF_UNIX.",
+      "note": "Primary limitation statement."
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "wlu-hierarchical-budgets",
+  "title": "Hierarchical Workload Budgets",
+  "summary": "Enterprise, tenant, and service budgets are enforced as non-additive constraints.",
+  "why": "Prevents the need for complex 'pre-allocation' or 'spending' across a tree; instead, any single reservation must fit within every ancestor ceiling atomically.",
+  "invariants": [
+    "Hierarchy figures are NOT additive.",
+    "A single commitment is reflected at each level for constraint and audit purposes.",
+    "Child ceilings are constraints, not pre-spent allocations.",
+    "Sibling children may sum beyond the parent ceiling, provided no single reservation violates any ancestor."
+  ],
+  "evidence_note": "Source: oorexx_work_load_units_v0.12/README.md:33-45. Specifically line 37: 'hierarchy figures are NOT additive.'",
+  "grounding": "oorexx-grounded"
+}

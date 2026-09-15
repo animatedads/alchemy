@@ -1,0 +1,49 @@
+{
+  "schema": "alchemy.objects.adoption-contract/0.2",
+  "base_class": "AlchemyObject",
+  "base_version": "0.8",
+  "levels": {
+    "BASE": [
+      "inherits AlchemyObject",
+      "AlchemyObject non-virtual initialization core executed and construction provenance completed",
+      "surface contract passes",
+      "no descendant or mixin shadows a reserved AlchemyObject instance surface"
+    ],
+    "STANDARD": [
+      "BASE requirements",
+      "PURPOSE metadata",
+      "PACKAGE metadata",
+      "PACKAGE_VERSION metadata",
+      "AUTHORSHIP metadata",
+      "STANDARDS metadata",
+      "DESIGN_LIMITATIONS metadata"
+    ],
+    "SECURE_READY": [
+      "STANDARD requirements",
+      "evidence sealer configured",
+      "capability authority configured",
+      "live Security Manager runtime semantics observed and verified"
+    ]
+  },
+  "construction": {
+    "preferred_entrypoint": "self~init:super(...)",
+    "compatibility_entrypoint": "initAlchemy(...)",
+    "compatibility_warning": "LEGACY_INIT_ENTRYPOINT",
+    "provenance_schema": "alchemy.objects.construction-provenance/0.1",
+    "rule": "Base construction records receiver class/package, base version, entrypoint, completion, and initial reserved-surface integrity without virtual dispatch through the descendant."
+  },
+  "reserved_surface": {
+    "rule": "All non-private AlchemyObject instance methods except INIT are reserved; VERSION and SCHEMA are class facts and intentionally remain available as descendant business instance-message names.",
+    "reason": "Downstream shadowing must not silently replace universal evidence, security, lifecycle, telemetry, requirement, contract or instrumentation behavior while legitimate business version()/schema() methods remain possible."
+  },
+  "checkpoint": {
+    "schema": "alchemy.objects.adoption-checkpoint/0.1",
+    "creation": "AlchemyAdoptionVerifier~checkpoint(object, level)",
+    "sealed_creation": "AlchemyAdoptionVerifier~sealedCheckpoint(object, level, sealer)",
+    "comparison": "AlchemyAdoptionVerifier~compareCheckpoint(object, checkpoint)",
+    "sealed_comparison": "AlchemyAdoptionVerifier~compareSealedCheckpoint(object, envelope, sealer)",
+    "rule": "A checkpoint binds object identity, target class, base version, construction fingerprint and current reserved-surface fingerprint. Later differences are reported as explicit drift. A checkpoint is evidence, not execution authority."
+  },
+  "verification": "AlchemyAdoptionVerifier~verify(object, level)",
+  "reserved_surface_rule": "Descendants may override INIT and may define business VERSION/SCHEMA. Other non-private AlchemyObject surface names are reserved; descendants should call self~init:super(...) so construction enters the non-virtual Alchemy base core."
+}

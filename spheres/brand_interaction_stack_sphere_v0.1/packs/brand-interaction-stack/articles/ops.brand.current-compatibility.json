@@ -1,0 +1,57 @@
+{
+  "kind": "article",
+  "id": "ops.brand.current-compatibility",
+  "version": "0.1",
+  "sphere": "brand-interaction-stack",
+  "title": "Current 2026-09-02 composition qualification and one open compatibility gap",
+  "summary": "The exact Sep-2 roll-up was exercised with ooRexx 5.3.0 r13196. Interaction Event v0.3, Structured Utterance v0.3, Brand Interaction Effect v0.6, Brand Journey v0.1, Journey Population v0.3, Effectiveness v0.2 and Governance v0.2 (against Institutional Policy v0.8) pass their complete suites. Brand Intervention v0.2 does not complete against Journey Population v0.3 because one v0.2 regression still invokes the removed population-level configureProvenance method.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Do not claim the entire current composition is green until Brand Intervention v0.2 is rebased or compatibly adapted to Journey Population v0.3 provenance ownership.",
+    "The observed failure is OBJECT METHOD NOT FOUND for BrandJourneyPopulation.configureProvenance in test_cohort_quality_review.rex line 6.",
+    "Journey Population v0.3 exposes BrandJourneyPopulation.configureSourceProvenance and BrandJourneyCohortDefinition.configureSelectionProvenance; legacy full configureProvenance remains on the cohort definition.",
+    "Effectiveness v0.2 passes independently against Journey Population v0.3.",
+    "Governance v0.2 passes independently against Journey Population v0.3 and Institutional Policy v0.8."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "brand_intervention_v0.2.zip",
+      "sha256": "22b4fc43952e20c9640e93832f1985e45d400fb3bca860e40c7d9b649b0eeed6",
+      "member": "brand_intervention_v0.2/tests/test_cohort_quality_review.rex",
+      "line_start": 1,
+      "line_end": 18,
+      "claim": "Intervention v0.2 regression calls population.configureProvenance and expects cohort-quality reasoning."
+    },
+    {
+      "artifact": "brand_journey_population_v0.3.zip",
+      "sha256": "13c96cf013bf3cec1d4bfb4c37a6bba2961243ad2e8a1c3c95933fa31b52dfc3",
+      "member": "brand_journey_population_v0.3/src/BrandJourneyPopulation.cls",
+      "line_start": 276,
+      "line_end": 340,
+      "claim": "Journey Population v0.3 retains legacy configureProvenance on cohort definition and adds configureSelectionProvenance."
+    },
+    {
+      "artifact": "brand_journey_population_v0.3.zip",
+      "sha256": "13c96cf013bf3cec1d4bfb4c37a6bba2961243ad2e8a1c3c95933fa31b52dfc3",
+      "member": "brand_journey_population_v0.3/src/BrandJourneyPopulation.cls",
+      "line_start": 515,
+      "line_end": 560,
+      "claim": "Journey Population v0.3 population surface owns configureSourceProvenance and does not expose population.configureProvenance."
+    }
+  ],
+  "qualification": {
+    "runtime": "Open Object Rexx 5.3.0 r13196 - Internal Test Version",
+    "rollup_sha256": "190c3e9f7b484cfccc3e0fa4fe7fe07e6f0d15838ae2024b028ccaffd9652830",
+    "pass": [
+      "interaction_event_v0.3 complete suite",
+      "structured_utterance_v0.3 complete suite",
+      "brand_interaction_effect_v0.6 complete suite",
+      "brand_journey_v0.1 complete suite",
+      "brand_journey_population_v0.3 complete suite",
+      "brand_intervention_effectiveness_v0.2 complete suite",
+      "brand_intervention_governance_v0.2 complete suite with institutional_policy_v0.8"
+    ],
+    "gap": "brand_intervention_v0.2 full current-stack suite stops at test_cohort_quality_review because BrandJourneyPopulation v0.3 no longer owns configureProvenance"
+  }
+}

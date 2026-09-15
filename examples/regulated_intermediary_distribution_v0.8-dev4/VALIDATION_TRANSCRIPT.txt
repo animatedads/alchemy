@@ -1,0 +1,110 @@
+Federation Regulated Intermediary Distribution v0.7 validation transcript
+
+=== RID inherited core/service/integration/provider ===
+===== run_tests.sh =====
+== test_mortgage_permission_gate.rex ==
+PASS mortgage permission gate
+== test_mortgage_evidence_gate.rex ==
+PASS mortgage evidence gate
+== test_investment_execution_only.rex ==
+PASS investment execution-only separation
+== test_insurance_provider_boundary.rex ==
+PASS insurance provider legal-entity boundary
+== test_provider_status_exact_identity.rex ==
+PASS provider status exact identity, idempotence and sequencing
+== test_provider_status_late_event.rex ==
+PASS late provider event cannot roll state backwards
+== test_representative_suspension.rex ==
+PASS representative suspension gate
+== test_authority_revocation.rex ==
+PASS authority control event gate
+== test_product_approval_identity.rex ==
+PASS exact product approval identity
+== test_vmm_not_relabelled_internal.rex ==
+PASS VMM remains outside intermediary product authority
+===== run_service_tests.sh =====
+== test_worklist_authoritative_status.rex ==
+PASS intermediary worklist carries authoritative mortgage status
+== test_worklist_decline_supersedes.rex ==
+PASS decline supersedes approval work and late events create no stale work
+== test_work_sla_expiry.rex ==
+PASS Queue Fabric TTL expiry drives overdue intermediary work
+== test_signature_work_gate.rex ==
+PASS signature-required work cannot complete without a completed digital signature envelope
+== test_work_recovery.rex ==
+PASS durable work audit and SLA deadline recover after restart
+== test_unsigned_provider_completion_exception.rex ==
+PASS terminal provider state with missing digital signature becomes explicit compliance work
+== test_work_source_redelivery_idempotent.rex ==
+PASS downstream case-status redelivery is work-projection idempotent
+===== run_integration_tests.sh =====
+== test_institutional_policy_bridge.rex ==
+PASS Institutional Policy bridge
+== test_relationship_case_bridge.rex ==
+PASS Relationship Case bridge
+== test_digital_signature_ed25519.rex ==
+PASS Ed25519 provider event and digital document signatures via Runtime Reference
+== test_queue_status_projection.rex ==
+PASS Queue Fabric authoritative provider-status projection
+===== run_provider_integration_tests.sh =====
+PASS All Japan insurance authority maps to exact intermediary provider events
+
+=== RID Wire UI/security/result authority ===
+===== test_wire_ui_compile.rex =====
+PASS intermediary Wire UI Builder release compiles
+===== test_wire_dashboard_authority.rex =====
+PASS Wire UI dashboard carries provider truth and rejects forged/stale workspace authority
+===== test_wire_access_permissions.rex =====
+PASS Access Control and exact method/object Permissions gate intermediary Wire UI independently
+===== test_wire_permission_proof.rex =====
+PASS RID carries cryptographically proved exact method/object permission decisions
+===== test_wire_workspace_result_revision.rex =====
+PASS Wire UI result revision prevents action on refreshed provider/work truth
+===== test_wire_live_provider_transition.rex =====
+PASS live Wire UI follows authoritative approval/decline events and firm-scoped retained feed
+===== test_wire_case_timeline.rex =====
+PASS case timeline preserves exact provider history and work progress
+===== test_wire_signing_ceremony.rex =====
+PASS Wire UI digital signing uses one-time server-owned challenge and completes exact work
+
+=== Browser contract and real Web Gateway roundtrip ===
+PASS browser mirrors server-issued query/selection/result command authority
+PASS actual Alchemy browser -> WebSocket edge -> Queue Fabric -> RID Wire UI -> signing -> browser projection
+
+=== Access Permissions v0.1 independent ===
+>>> /mnt/data/oorexx_runtime_531/usr/local/bin/rexx compile_smoke.rex
+PASS compile_smoke
+>>> /mnt/data/oorexx_runtime_531/usr/local/bin/rexx test_authentication_attribution.rex
+PASS test_authentication_attribution
+>>> /mnt/data/oorexx_runtime_531/usr/local/bin/rexx test_access_control.rex
+PASS test_access_control
+>>> /mnt/data/oorexx_runtime_531/usr/local/bin/rexx test_permission_security_effect.rex
+PASS test_permission_security_effect
+>>> /mnt/data/oorexx_runtime_531/usr/local/bin/rexx test_shared_policy_catalog.rex
+PASS test_shared_policy_catalog
+>>> /mnt/data/oorexx_runtime_531/usr/local/bin/rexx test_alchemy_security_manager_integration.rex /mnt/data/rid_v07_deps/oorexx_access_permissions_v0.1/tests/protected_method_agent.rex
+PASS test_alchemy_security_manager_integration
+
+=== Wire UI Server v0.17 targeted upstream ===
+===== test_operational_workspace_projection.rex =====
+PASS operational workspace projection
+===== test_workspace_command_state.rex =====
+PASS workspace command/query state
+===== test_workspace_result_state.rex =====
+PASS authoritative workspace result revision
+
+=== All Japan Insurance v0.9 independent summary ===
+PASS count: 58
+FAIL count: 0
+=== test_rating_function_registry.rex ===
+PASS rating function registry is immutable and publication-gated
+=== test_rating_rounding.rex ===
+PASS exact rational component rounding
+=== test_sales_cost_gross_up.rex ===
+PASS commission gross-up and additive sales loading are distinct
+=== test_schedule_modifier_authority.rex ===
+PASS schedule modifiers are bounded and evidence-bearing
+=== test_tax_basis.rex ===
+PASS explicit tax bases avoid hidden tax ordering assumptions
+=== test_tax_remittance_recovery.rex ===
+PASS premium tax remittance and post-remittance recovery are explicit, authority-gated and bank-attributed

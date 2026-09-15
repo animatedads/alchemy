@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.portability.stat-date-and-line-endings",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Make host assumptions explicit: GNU/BSD differences and LF-only scripts",
+  "summary": "The same busybox/GNU versus BSD host changes whether stat -c or stat -f works and whether date emits ISO. Write a portable form by trying both with a silencing fallback, and keep repository scripts LF only because CRLF breaks the shebang and Bash parsing and is nearly impossible to pin down when an editor or unzip rewrites the file.",
+  "evidence_note": "queuebash.sh uses `stat -c %Y \"$path\" 2>/dev/null || stat -f %m \"$path\" 2>/dev/null || echo 0` (GNU then BSD then safe literal); bin/queue-policy-wizard:152 generates a date with `date -Is 2>/dev/null || date`. docs/WINDOWS_WSL2_QUICKSTART.md:71-72 and WINDOWS_RUNTIME_PLAN.md call out LF-not-CRLF and a line-ending guard; docs/QUEUE_DISPLAY_RESOURCES.md treats CRLF/mixed as a hygiene warning.",
+  "invariants": [
+    "Use `cmd_gnu 2>/dev/null || cmd_bsd 2>/dev/null || literal` when a utility's interface differs across hosts.",
+    "Do not assume ISO date output; pick what your hosts can produce and declare it.",
+    "Keep scripts LF only; treat any CRLF-or-mixed line endings as a release blocker to fix early (not silently tolerated).",
+    "Declare the runtime/tool assumptions of a script at the top rather than letting them surface as a bespoke failure far downstream."
+  ]
+}

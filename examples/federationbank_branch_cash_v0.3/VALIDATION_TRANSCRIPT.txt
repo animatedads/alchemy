@@ -1,0 +1,42 @@
+=== Branch Cash v0.3 ===
+Runtime: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+--- test_approval_exact_binding.rex ---
+PASS: checker approval is bound to exact internal cash transfer
+--- test_authority_envelope.rex ---
+PASS: exact Branch Cash authority envelope binds transfer, checker and upstream staff authority
+--- test_branch_position.rex ---
+PASS: branch position keeps endpoint cash and in-transit cash explicit
+--- test_discrepancy_blocks_handover.rex ---
+PASS: custody handover cannot conceal a vault discrepancy
+--- test_dual_control_open.rex ---
+PASS: vault opening requires explicit dual custody
+--- test_external_cash_custody_control.rex ---
+PASS: external authority cannot bypass current vault dual custody
+--- test_external_cash_inbound.rex ---
+PASS: external inbound cash changes vault physical custody under exact authority
+--- test_external_cash_no_customer_semantics.rex ---
+PASS: external vault movement contains no customer/Core monetary semantics
+--- test_external_cash_outbound.rex ---
+PASS: external outbound cash is exact and idempotent
+--- test_handover_balanced.rex ---
+PASS: balanced branch vault can transfer dual custody
+--- test_insufficient_vault_cash.rex ---
+PASS: branch vault cannot promise physical cash it does not hold
+--- test_reserve_commit_transfer.rex ---
+PASS: vault outgoing cash is reserved then explicitly committed
+--- test_runtime_module.rex ---
+PASS: Branch Cash runtime module
+--- test_separation_of_duties.rex ---
+PASS: vault control enforces separation of duties
+RESULT 14 PASS / 0 FAIL
+=== COMPILE CHECKS ===
+PASS rexxc examples/FederationBankBranchCashPolicyFixtures.cls
+PASS rexxc runtime/FederationBankBranchCashRuntimeModule.cls
+PASS rexxc src/FederationBankBranchCash.cls
+COMPILE RESULT 3 PASS / 0 FAIL
+=== ALL .CLS COMPILE CHECKS ===
+PASS rexxc examples/FederationBankBranchCashPolicyFixtures.cls
+PASS rexxc runtime/FederationBankBranchCashRuntimeModule.cls
+PASS rexxc src/FederationBankBranchCash.cls
+PASS rexxc tests/TestSupport.cls
+ALL .CLS COMPILE RESULT 4 PASS / 0 FAIL

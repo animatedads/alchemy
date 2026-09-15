@@ -1,0 +1,116 @@
+say 'LEGAL EFFECT V0.7 NATIVE PROMOTION + RUNTIME PROVENANCE V0.20 START'
+call main
+exit 0
+
+main:
+  legalRoot = value('LEGAL_EFFECT_ROOT',, 'ENVIRONMENT')
+  runtimeRoot = value('RUNTIME_REGISTRY_ROOT',, 'ENVIRONMENT')
+  cryptoSrc = value('OOREXX_CRYPTO_SRC',, 'ENVIRONMENT')
+  if cryptoSrc = '' then cryptoSrc = value('CRYPTO_SRC',, 'ENVIRONMENT')
+  if legalRoot = '' then raise syntax 88.900 array('LEGAL_EFFECT_ROOT required')
+  if runtimeRoot = '' then raise syntax 88.900 array('RUNTIME_REGISTRY_ROOT required')
+  if cryptoSrc = '' then raise syntax 88.900 array('OOREXX_CRYPTO_SRC or CRYPTO_SRC required')
+
+  builder = .RuntimeBundleBuilder~new
+  call MustOk builder~addFile(legalRoot || '/src/LegalEffect.cls', 'LegalEffect.cls'), 'add LegalEffect'
+  call MustOk builder~addFile(legalRoot || '/src/LegalRuntimeCryptoBridge.cls', 'LegalRuntimeCryptoBridge.cls'), 'add crypto bridge'
+  call MustOk builder~addFile(cryptoSrc || '/crypto.cls', 'crypto.cls'), 'add standalone crypto'
+  call MustOk builder~addFile(legalRoot || '/tests/fixtures/DemoLegalRules_v1.cls', 'DemoLegalRules_v1.cls'), 'add legal fixture'
+  built = builder~build
+  call MustOk built, 'build legal runtime closure'
+  bundle = built~value
+  call AssertEqual 4, bundle~unitCount, 'four unit legal closure'
+  call AssertEqual 3, bundle~localRequiresRemoved~items, 'three local requires closure-bound'
+
+  verifier = .RuntimePinnedSourceVerifier~new
+  artifactId = 'hardworld-v020:legal-effect-v07:demo'
+  call MustOk verifier~pin(artifactId, bundle~sourceLines), 'pin legal runtime closure'
+  artifact = .RuntimeArtifact~new('legal.effect.v07.hardworld', 'LEGAL_RULES', '0.7', artifactId, 'DemoLegalRules', bundle~sourceLines, .LegalEffectBuild~API_VERSION, 'hardworld-v020-runtime-proof')
+  kernel = .RuntimeKernel~new(verifier)
+  staged = kernel~stage('prod', artifact)
+  call MustOk staged, 'stage legal runtime closure'
+  call MustOk kernel~activate('prod', artifact~moduleId, staged~value~generationId), 'activate legal runtime closure'
+
+  acquired = .LegalRuntimeRuleResolver~new~acquire(kernel, 'prod', artifact~moduleId)
+  call MustOk acquired, 'acquire legal runtime lease'
+  legalLease = acquired~value
+  generation = legalLease~generation
+  call AssertTrue generation~publicationEligible, 'generation compiler-certified'
+
+  context = .LegalContext~new('HW-V020', '2026-08-20')
+  ignored = context~bindSource('DEMO-CONTRACT', 'native v0.7 promotion proof')
+  action = .LegalAction~new('RATE_CHANGE', 'synthetic rate change')
+  ignored = action~setFact('RATE_CHANGE', .true)
+
+  evaluated = legalLease~evaluate(action, context)
+  call MustOk evaluated, 'runtime-bound Legal Effect evaluation'
+  runtimeEnvelope = evaluated~value
+  call AssertEqual 'BLOCKED', runtimeEnvelope~status, 'runtime legal status'
+  call AssertEqual artifactId, runtimeEnvelope~bindingEvidence~runtimeEvidence~artifactId, 'runtime artifact retained'
+
+  pinned = .LegalEffectV07PinnedEvaluator~evaluate(.LegalEffectEngine~new, action, generation, context)
+  call AssertTrue pinned~ok, 'native v0.7 pinned evaluator accepts certified generation'
+  promotions = .LegalEffectV07PromotionAdapter~promotionsFrom(pinned~envelope, 'LEGAL_', runtimeEnvelope)
+  blocked = FindPromotion(promotions, 'LEGAL_ACTION_BLOCKED')
+  call AssertTrue blocked \== .nil, 'blocked promotion exists'
+  call AssertEqual 'AUTHORIZED', blocked~promotionStatus, 'native v0.7 promotion authorized'
+  call AssertTrue blocked~authority~pos('LEGAL_EFFECT/0.7/') == 1, 'native v0.7 authority namespace'
+  call AssertTrue blocked~authority~pos(artifactId) == 0, 'runtime artifact excluded from legal authority identity'
+  call AssertTrue HasBasis(blocked, 'LEGAL_GENERATION_V07'), 'v0.7 generation basis retained'
+  call AssertTrue HasBasis(blocked, 'LEGAL_COMPILATION_CERTIFICATE'), 'compiler certificate basis retained'
+  call AssertTrue HasBasis(blocked, 'LEGAL_VERIFIED_SOURCE'), 'verified source basis retained'
+  call AssertTrue HasBasis(blocked, 'LEGAL_VERIFIED_PROVISION'), 'verified provision basis retained'
+  call AssertTrue HasBasis(blocked, 'LEGAL_SOURCE_VERIFICATION_EVIDENCE'), 'source verifier snapshot basis retained'
+  call AssertTrue HasBasis(blocked, 'LEGAL_PROVISION_VERIFICATION_EVIDENCE'), 'provision verifier snapshot basis retained'
+  call AssertTrue HasBasis(blocked, 'LEGAL_RUNTIME_EXECUTION'), 'legal runtime execution provenance basis retained'
+  runtimeBasis = FindBasis(blocked, 'LEGAL_RUNTIME_EXECUTION')
+  call AssertEqual runtimeEnvelope~bindingEvidence~runtimeEvidence~generationId, runtimeBasis~basisId, 'runtime generation basis identity'
+  if runtimeBasis~nativeObject \== runtimeEnvelope~bindingEvidence~runtimeEvidence then raise syntax 88.900 array('runtime evidence object identity lost')
+
+  call MustOk legalLease~release, 'release legal runtime lease'
+  call AssertEqual artifactId, runtimeBasis~nativeObject~artifactId, 'detached runtime provenance survives lease release'
+
+  say '  legal_authority=' || blocked~authority
+  say '  runtime_generation=' || runtimeBasis~basisId
+  say '  runtime_artifact=' || runtimeBasis~nativeObject~artifactId
+  say '  disposition=' || runtimeEnvelope~status
+  say 'LEGAL EFFECT V0.7 NATIVE PROMOTION + RUNTIME PROVENANCE V0.20: OK'
+  return
+
+::routine FindPromotion
+  use arg setObject, target
+  do promotion over setObject~promotions
+    if promotion~targetFactName == target then return promotion
+  end
+  return .nil
+
+::routine HasBasis
+  use arg promotion, kind
+  return FindBasis(promotion, kind) \== .nil
+
+::routine FindBasis
+  use arg promotion, kind
+  do item over promotion~basis
+    if item~basisKind == kind then return item
+  end
+  return .nil
+
+::routine MustOk
+  use arg object, label
+  if \object~ok then raise syntax 88.900 array(label || ': ' || object~code || ' ' || object~detail)
+  return
+
+::routine AssertTrue
+  use arg conditionValue, label
+  if \conditionValue then raise syntax 88.900 array('ASSERT TRUE FAILED: ' || label)
+  return
+
+::routine AssertEqual
+  use arg expected, actual, label
+  if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: ' || label || ' expected=' || expected || ' actual=' || actual)
+  return
+
+::requires 'LegalRuntimeCryptoBridge.cls'
+::requires 'RuntimeRegistry.cls'
+::requires 'RuntimeBundleBuilder.cls'
+::requires '../integration/LegalEffectV07PromotionAdapter.cls'

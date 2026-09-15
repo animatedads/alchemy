@@ -1,0 +1,9 @@
+1. LLM calls qualification.plan (no challenge, no key).
+2. LLM calls qualification.request; server preflights, freezes and hashes the intent.
+3. LLM fetches qualification.authorization.challenge.
+4. Human saves challenge locally and runs qual_authorize.rex.
+5. Local utility renders/validates, asks YES, then and only then reads local private key and signs.
+6. Detached signature returns through qualification.authorization.submit.
+7. Qualification worker calls workerStart; broker revalidates frozen material.
+8. Worker executes exact test plan in sandbox and calls workerSeal with evidence manifest hash.
+9. LLM polls status/results later, independent of chat timeout.

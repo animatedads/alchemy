@@ -1,0 +1,35 @@
+FederationBank Teller Cash v0.1 qualification transcript
+Date: 2026-08-26
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+of the Common Public License v1.0 which accompanies this distribution or at
+https://www.oorexx.org/license.html
+
+=== executable tests ===
+== test_amount_binding.rex ==
+PASS: counted physical bundle must equal authorised banking amount
+== test_deposit_translation.rex ==
+PASS: deposit translates internal settlement debit to customer credit without claiming cash receipt
+== test_instruction_immutable_registration.rex ==
+PASS: cash instruction binding is immutable per staff command identity
+== test_runtime_module.rex ==
+PASS: Teller Cash runtime module boundary
+== test_translator_requires_staff_authority.rex ==
+PASS: cash-to-Core translation requires exact Staff Authority evidence
+== test_withdrawal_translation.rex ==
+PASS: withdrawal translates customer debit to internal settlement without claiming physical release
+
+=== rexxc ===
+[1] rexxc examples/FederationBankTellerCashPolicyFixtures.cls
+PASS
+[2] rexxc runtime/FederationBankTellerCashRuntimeModule.cls
+PASS
+[3] rexxc src/FederationBankTellerCash.cls
+PASS
+[4] rexxc tests/TestSupport.cls
+PASS
+rexxc total: 4/4 PASS

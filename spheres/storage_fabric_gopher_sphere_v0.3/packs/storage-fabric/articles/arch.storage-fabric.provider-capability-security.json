@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.provider-capability-security",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Provider capability and authentication secrecy",
+  "summary": "Provider credentials and resumable-session capabilities are operational secrets, not Storage object identity. Common Storage evidence records stable identities and offsets while secret-bearing provider state remains transient or behind provider-private secure authority.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Authorization bearer tokens never belong in StorageRef, catalogue, planner evidence, generic checkpoint or logs.",
+    "A resumable upload session URI is bearer-like capability material and receives the same secrecy treatment as a credential.",
+    "Generic transfer restart evidence stores stable sink identity and byte offset, not the secret session URI.",
+    "If production restart requires preserving a provider capability, persist it behind provider-private secure authority rather than weakening common Storage persistence.",
+    "Authentication leases should be short-lived and retired after each request; Secret Broker remains the credential-authority seam."
+  ],
+  "procedure": [],
+  "topics": [
+    "security",
+    "capability",
+    "credential",
+    "secret-broker",
+    "google-drive"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/src/StorageGoogleDrive.cls",
+      "claim": "Code separates auth leases and provider session capabilities from generic Storage persistence."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_google_drive_streaming_sink.rex",
+      "claim": "Regression inspects persisted checkpoint slots and rejects leakage of bearer token or resumable-session capability."
+    }
+  ]
+}

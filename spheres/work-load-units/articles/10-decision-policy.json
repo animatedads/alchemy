@@ -1,0 +1,14 @@
+{
+  "id": "wlu-decision-policy",
+  "title": "Policy-Governed Route Decisions",
+  "summary": "The WLU Route Decision Gate uses a shared institutional policy to determine if a scheduler may act on an advisory recommendation.",
+  "why": "Ensures that the transition from 'evidence-based advice' to 'actual execution' is governed by a reviewed and approved institutional policy.",
+  "invariants": [
+    "The Decision Gate has no WLU authority (cannot reserve/spend WLU).",
+    "Policy Rules: DENY, RECOMMENDED_ONLY, EVIDENCE_ELIGIBLE, DECLARED_CANDIDATE.",
+    "Actors: AUTOMATED and OPERATOR may have different permissible rule sets.",
+    "A 'PERMITTED' decision is not an admission; it is a permission to proceed to the ordinary WLU admission path."
+  ],
+  "evidence_note": "Source: oorexx_work_load_units_v0.12/README.md:290-315. Line 305: 'A PERMITTED decision means only that the fixed institutional route-selection policy permits the external scheduler to proceed to the ordinary WLU admission path.'",
+  "grounding": "oorexx-grounded"
+}

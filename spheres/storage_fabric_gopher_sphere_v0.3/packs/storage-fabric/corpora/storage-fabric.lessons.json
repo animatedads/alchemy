@@ -1,0 +1,201 @@
+{
+  "kind": "corpus",
+  "id": "storage-fabric.lessons",
+  "sphere": "storage-fabric",
+  "title": "Storage Fabric durable continuity lessons",
+  "records": [
+    {
+      "id": "identity",
+      "topic": "identity",
+      "rule": "Object identity is stable; pathname and provider locator are views/locations that may change."
+    },
+    {
+      "id": "four-way-split",
+      "topic": "four-way-split",
+      "rule": "Never conflate OBJECT, LOCATION, PATH and POLICY."
+    },
+    {
+      "id": "catalogue",
+      "topic": "catalogue",
+      "rule": "Catalogue/search is the fast local knowledge plane and does not require every provider to be online."
+    },
+    {
+      "id": "ea",
+      "topic": "ea",
+      "rule": "Extended attributes are first-class typed/provenanced metadata and may drive query-folder views."
+    },
+    {
+      "id": "query-folder",
+      "topic": "query-folder",
+      "rule": "A folder may be a filter/view; excluding an entry from that view is not destruction of the underlying object."
+    },
+    {
+      "id": "tvfs",
+      "topic": "tvfs",
+      "rule": "Ordered union/search paths can overlay unrelated namespace roots; first visible match shadows lower duplicates without copying data."
+    },
+    {
+      "id": "alias",
+      "topic": "alias",
+      "rule": "Fluid aliases resolve the current target at access time and may have route-specific write semantics."
+    },
+    {
+      "id": "route-policy",
+      "topic": "route-policy",
+      "rule": "DIRECT, TRACKED, COPY_ON_WRITE, VERSIONED and READ_ONLY are access-route mutation behaviours, not object identities or permission grants."
+    },
+    {
+      "id": "environments",
+      "topic": "environments",
+      "rule": "LIVE/TEST/DEVELOPMENT are generation-pinned namespace projections; TEST/DEV may share immutable Live refs until they diverge."
+    },
+    {
+      "id": "promotion",
+      "topic": "promotion",
+      "rule": "Promotion is explicit and generation-pinned; stale targets fail rather than silently rebasing."
+    },
+    {
+      "id": "capacity",
+      "topic": "capacity",
+      "rule": "Charge workspace to the real capacity domain. Do not add free space reported through multiple paths on the same filesystem."
+    },
+    {
+      "id": "nodes",
+      "topic": "nodes",
+      "rule": "Do not add independent nodes into one workspace capacity unless the job/storage contract explicitly supports distribution."
+    },
+    {
+      "id": "reservation",
+      "topic": "reservation",
+      "rule": "Reserve expected working bytes before execution so concurrent jobs cannot both spend the same free space."
+    },
+    {
+      "id": "removable",
+      "topic": "removable",
+      "rule": "Removable-provider identity survives mount-path changes and disconnection; offline replicas remain catalogued."
+    },
+    {
+      "id": "performance",
+      "topic": "performance",
+      "rule": "Performance and availability are separate measured properties. USB can be intermittent yet fast enough; remote cloud can be available yet slow."
+    },
+    {
+      "id": "service-lifecycle",
+      "topic": "service-lifecycle",
+      "rule": "Physical durability is insufficient: provider/account/service lifecycle determines whether a copy can count as safe."
+    },
+    {
+      "id": "disposable",
+      "topic": "disposable",
+      "rule": "DISPOSABLE or non-STABLE storage is workspace, not safety; never use it as the sole durable replica."
+    },
+    {
+      "id": "termination",
+      "topic": "termination",
+      "rule": "TERMINATING service capacity is not admissible for new workspace."
+    },
+    {
+      "id": "locality",
+      "topic": "locality",
+      "rule": "Compare moving the job to data with moving data to the job; large media makes locality economically and operationally significant."
+    },
+    {
+      "id": "eligibility",
+      "topic": "eligibility",
+      "rule": "Locality never overrides hard security/legal/access/runtime/hardware eligibility."
+    },
+    {
+      "id": "output-movement",
+      "topic": "output-movement",
+      "rule": "Include expected output and required durable export in placement movement cost, not just input transfer."
+    },
+    {
+      "id": "transfer",
+      "topic": "transfer",
+      "rule": "Move large objects through bounded source/sink chunks; never require whole-object memory."
+    },
+    {
+      "id": "checkpoint",
+      "topic": "checkpoint",
+      "rule": "Flush sink before advancing checkpoint; fence resume against source identity."
+    },
+    {
+      "id": "states",
+      "topic": "states",
+      "rule": "COPY, VERIFY and COMMIT are distinct. Process exit zero is not durable completion by itself."
+    },
+    {
+      "id": "drive",
+      "topic": "drive",
+      "rule": "Google Drive is initially durable/offload/catalogue storage with measured performance, not assumed execution workspace."
+    },
+    {
+      "id": "authority",
+      "topic": "authority",
+      "rule": "Storage publishes facts; allocator places, Queue Fabric dispatches, security authorizes, SSC owns semantic source history, consumers own domain meaning."
+    },
+    {
+      "id": "continuation",
+      "topic": "continuation",
+      "rule": "Keep the Gopher sphere separate from executable Storage Fabric and update it when architecture or qualified baseline changes."
+    },
+    {
+      "id": "provider-resume-authority",
+      "topic": "provider-resume",
+      "rule": "Before reconstructing a COPYING transfer, reconcile local progress with provider-authoritative resume evidence when the sink supports it."
+    },
+    {
+      "id": "partial-ack",
+      "topic": "partial-ack",
+      "rule": "Advance checkpoints only by provider-acknowledged bytes; reopen the source at the acknowledged offset and resend any unacknowledged suffix."
+    },
+    {
+      "id": "session-capability",
+      "topic": "session-capability",
+      "rule": "A resumable session URI is bearer-like capability material; keep it out of generic catalogue/checkpoints and place restart persistence behind provider-private secure authority."
+    },
+    {
+      "id": "auth-lease",
+      "topic": "auth-lease",
+      "rule": "Acquire provider credentials through short-lived leases, use them transiently for the request, then retire them; do not retain Authorization in evidence."
+    },
+    {
+      "id": "drive-test-account",
+      "topic": "drive-test-account",
+      "rule": "The BashQueues Google Drive account is disposable TEST infrastructure; account intent/lifecycle can make an otherwise durable provider unsafe as the sole replica."
+    },
+    {
+      "id": "node-identity",
+      "topic": "node-identity",
+      "rule": "Stable nodeId is separate from cloud provider and current network endpoint; endpoint changes do not redefine the node."
+    },
+    {
+      "id": "device-admission",
+      "topic": "device-admission",
+      "rule": "A block device observed by fdisk is not allocatable storage until explicitly admitted and represented by a StoragePool plus capacity observation."
+    },
+    {
+      "id": "unknown-capacity",
+      "topic": "unknown-capacity",
+      "rule": "Unknown or unobserved node capacity is zero for planning; never invent workspace from provider type or device presence."
+    },
+    {
+      "id": "fleet-matrix",
+      "topic": "fleet-matrix",
+      "rule": "Storage may emit per-node feasibility/movement evidence across the inventory, but Job-to-Node retains hard eligibility, ranking and lease authority."
+    },
+    {
+      "id": "ed209-fleet",
+      "topic": "ed209",
+      "rule": "Current test fleet identities are ed209a/ed209b Oracle, ed209c Microsoft Azure disposable trial workspace, and ed209d AWS; endpoint addresses are operational observations rather than identity."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/ARCHITECTURE.md",
+      "claim": "Durable lesson corpus summarizes the qualified dev7 architecture, including node/device topology and admission semantics."
+    }
+  ]
+}

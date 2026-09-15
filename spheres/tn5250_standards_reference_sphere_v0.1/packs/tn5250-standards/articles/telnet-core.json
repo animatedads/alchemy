@@ -1,0 +1,45 @@
+{
+  "kind": "article",
+  "id": "tn5250-standards.telnet-core",
+  "version": "0.1",
+  "sphere": "tn5250-standards",
+  "title": "Telnet standards used by TN5250/TN5250E",
+  "summary": "TN5250 is layered on Telnet. Keep the generic Telnet option standards available so byte-level negotiation is derived from the actual option specifications rather than copied traces.",
+  "references": [
+    {
+      "name": "RFC 854 Telnet Protocol Specification",
+      "url": "https://www.rfc-editor.org/rfc/rfc854.html",
+      "use": "Telnet command/negotiation base"
+    },
+    {
+      "name": "RFC 855 Telnet Option Specifications",
+      "url": "https://www.rfc-editor.org/rfc/rfc855.html",
+      "use": "Option negotiation conventions"
+    },
+    {
+      "name": "RFC 856 Telnet Binary Transmission",
+      "url": "https://www.rfc-editor.org/rfc/rfc856.html",
+      "use": "BINARY option used by 5250 mode"
+    },
+    {
+      "name": "RFC 885 Telnet End of Record Option",
+      "url": "https://www.rfc-editor.org/rfc/rfc885.html",
+      "use": "EOR record boundary used by TN5250"
+    },
+    {
+      "name": "RFC 1091 Telnet Terminal-Type Option",
+      "url": "https://www.rfc-editor.org/rfc/rfc1091.html",
+      "use": "TERMINAL-TYPE negotiation"
+    },
+    {
+      "name": "RFC 1572 Telnet Environment Option",
+      "url": "https://www.rfc-editor.org/rfc/rfc1572.html",
+      "use": "NEW-ENVIRON foundation used by TN5250E"
+    }
+  ],
+  "invariants": [
+    "Do not infer Telnet escaping or option state solely from a packet capture.",
+    "5250 logical-record parsing begins only after Telnet negotiation/escaping and EOR framing are handled correctly."
+  ],
+  "authority": "RFC Editor protocol specifications"
+}

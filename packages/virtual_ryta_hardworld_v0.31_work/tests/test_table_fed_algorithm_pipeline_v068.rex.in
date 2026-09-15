@@ -1,0 +1,177 @@
+/*
+ * Table-fed Algorithm Relation pipeline on stock NoSQLServer v0.68.
+ *
+ * VIRTUAL_RYTA -> SQL join with persisted toy_policy -> frozen input relation
+ * -> TABLE_FEED_DECIDER -> SQL again.
+ */
+parse arg root
+if root == '' then root = '/tmp/virtual_ryta_table_feed_v08'
+
+say 'TABLE-FED ALGORITHM PIPELINE V0.8 START'
+
+fed = .FederatedDatabaseEngine~new(root)
+sql = .NoSQLServerSQL~new(fed)
+
+/* Algorithm A: Virtual RYTA, still lazy. */
+world = .RYTAWorldState~new('WORLD-TABLE-FEED-A')
+world~putKnown('HAS_QUERY', .true)
+world~putKnown('PRODUCT_RELEVANT', .true)
+world~putKnown('PRODUCT_VALUE_HIGH', .true)
+world~putKnown('UPSELL_OPPORTUNITY', .true)
+world~putKnown('ESSENTIAL_MEDICATION', .true)
+world~putKnown('IMMEDIATE_ACCESS', .true)
+world~putKnown('GUARANTEED_CUSTODY', .false)
+
+rytaProvider = .RYTAAlgorithmProvider~new(.nil, '..')
+algorithmEngine = .AlgorithmRelationEngine~new
+call assert algorithmEngine~addProvider(rytaProvider), 'register RYTA provider'
+rytaContext = .AlgorithmExecutionContext~new('PIPE-A-INV-1', world~snapshotOid, world~snapshotOid)
+
+nosqlClasses = .directory~new
+nosqlClasses['TABLE_DEFINITION'] = .TableDefinition
+nosqlClasses['DATABASE_ROW'] = .DatabaseRow
+nosqlClasses['DATABASE_RESULT'] = .DatabaseResult
+nosqlClasses['TABLE_METADATA'] = .DatabaseTableMetadata
+
+rytaBindings = .directory~new
+rytaBindings['RYTA_ACTION_DECISIONS'] = 'ryta_actions'
+rytaBindings['RYTA_DECISION_TRACE'] = 'ryta_trace'
+rytaExternal = .NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine, 'VIRTUAL_RYTA', world, rytaContext, nosqlClasses, rytaBindings)
+call assert rytaExternal~isReady, 'RYTA external engine ready' rytaExternal~lastError
+ignore = fed~addEngine(rytaExternal)
+call assert rytaProvider~invocationCount = 0, 'RYTA not executed at registration'
+
+/* Persisted preference data deliberately fights HardWorld authority. */
+call ok sql~execute("CREATE TABLE toy_policy (action_code VARCHAR PRIMARY KEY, label VARCHAR, preference_score INTEGER)")
+call ok sql~execute("INSERT INTO toy_policy VALUES ('ANSWER_QUERY','answer',10),('SELL_PRODUCT','sell',5),('WARNING','warn',-1000000),('UPSELL','upsell',3),('BIG_UPSELL','big upsell',1000000)")
+
+/* Metadata still cannot execute Algorithm A. */
+meta = fed~tableMetadata('ryta_actions')
+call assert meta \== .nil, 'RYTA metadata visible'
+call assert rytaProvider~invocationCount = 0, 'metadata remains observational'
+
+/*
+ * This ordinary SQL result is the table-fed input.  The SQL query is the only
+ * place where the unrelated persisted preference table and RYTA meet.
+ */
+sourceSql = "SELECT p.action_code AS row_id,p.label AS label,p.preference_score AS preference_score,r.disposition AS upstream_disposition FROM toy_policy p JOIN ryta_actions r ON p.action_code=r.action_code ORDER BY p.action_code"
+inputSchema = .AlgorithmSchema~new('TABLE_FEED_SOURCE')
+inputSchema~add('ROW_ID', 'TEXT', .false)
+inputSchema~add('LABEL', 'TEXT', .false)
+inputSchema~add('PREFERENCE_SCORE', 'NUMBER', .false)
+inputSchema~addEnum('UPSTREAM_DISPOSITION', 'TEXT', .false, .array~of('UNRESOLVED','PERMITTED','REQUIRED','SUPPRESSED','PROHIBITED','REQUIRES_APPROVAL'))
+
+capture = .NoSQLServerAlgorithmInputCapture~new(fed)
+inputSnapshot = capture~capture(sourceSql, inputSchema, '', .AlgorithmInputRelationConstant~BAG_UNORDERED, 'NOSQLSERVER_V068_FEDERATED_RESULT')
+call assert inputSnapshot \== .nil, 'capture federated result' capture~lastError
+call assert inputSnapshot~rowCount = 5, 'five rows captured'
+call assert inputSnapshot~sourceOid~startsWith('ALGREL-INPUT:'), 'input OID is content-addressed'
+call assert rytaProvider~invocationCount = 1, 'source SQL executes RYTA exactly once'
+
+say 'upstream input hash:' inputSnapshot~contentHash
+
+/* Change the persisted source after capture.  Algorithm B must still consume the frozen input. */
+call ok sql~execute("UPDATE toy_policy SET preference_score=-77 WHERE action_code='BIG_UPSELL'")
+changedSource = sql~execute("SELECT preference_score FROM toy_policy WHERE action_code='BIG_UPSELL'")
+call ok changedSource
+call assert changedSource~rows[1]['preference_score'] = -77, 'source table really changed after capture'
+
+/* Algorithm B consumes the frozen SQL relation, not the live tables. */
+tableProvider = .TableFeedDecisionProvider~new('..')
+call assert algorithmEngine~addProvider(tableProvider), 'register table-fed provider'
+tableContext = .AlgorithmExecutionContext~new('PIPE-B-INV-1', inputSnapshot~sourceOid, inputSnapshot~sourceOid)
+tableBindings = .directory~new
+tableBindings['TABLE_FEED_DECISIONS'] = 'table_feed_decisions'
+tableBindings['TABLE_FEED_TRACE'] = 'table_feed_trace'
+tableExternal = .NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine, 'TABLE_FEED_DECIDER', inputSnapshot, tableContext, nosqlClasses, tableBindings)
+call assert tableExternal~isReady, 'table-fed external engine ready' tableExternal~lastError
+ignore = fed~addEngine(tableExternal)
+call assert tableProvider~invocationCount = 0, 'Algorithm B not executed at registration'
+
+catalog = fed~readCatalog
+call assert catalogHas(catalog, 'table_feed_decisions'), 'downstream table in catalog'
+call assert tableProvider~invocationCount = 0, 'catalog does not execute Algorithm B'
+
+/* First downstream SELECT crosses Algorithm B exactly once. */
+downstream = sql~execute("SELECT row_id,preference_score,upstream_disposition,disposition,provisional_selected,final_selected FROM table_feed_decisions ORDER BY row_id")
+call ok downstream
+call assert downstream~rows~items = 5, 'five downstream decisions'
+call assert tableProvider~invocationCount = 1, 'Algorithm B first read executes once'
+
+big = findRow(downstream, 'BIG_UPSELL')
+warn = findRow(downstream, 'WARNING')
+sell = findRow(downstream, 'SELL_PRODUCT')
+answer = findRow(downstream, 'ANSWER_QUERY')
+call assert big \== .nil, 'BIG_UPSELL row'
+call assert big['preference_score'] = 1000000, 'downstream uses frozen pre-mutation score'
+call assert big['provisional_selected'] = .true, 'BIG_UPSELL provisionally selected'
+call assert big['disposition'] = 'PROHIBITED', 'BIG_UPSELL remains prohibited'
+call assert big['final_selected'] = .false, '+1m cannot defeat upstream prohibition'
+call assert warn['preference_score'] = -1000000, 'WARNING carries negative preference score'
+call assert warn['provisional_selected'] = .false, 'WARNING provisionally rejected'
+call assert warn['disposition'] = 'REQUIRED', 'WARNING remains required'
+call assert warn['final_selected'] = .true, '-1m cannot defeat upstream requirement'
+call assert sell['disposition'] = 'SUPPRESSED', 'SELL_PRODUCT suppression propagates'
+call assert sell['final_selected'] = .false, 'suppressed sale not selected'
+call assert answer['disposition'] = 'PERMITTED', 'ANSWER_QUERY permitted'
+call assert answer['final_selected'] = .true, 'permitted positive preference selected'
+
+/* Repeated SQL and a persisted/downstream join cannot rerun either algorithm. */
+again = sql~execute("SELECT row_id,disposition FROM table_feed_decisions WHERE final_selected=1 ORDER BY row_id")
+call ok again
+call assert again~rows~items = 2, 'two downstream final selections'
+joined = sql~execute("SELECT d.row_id,d.disposition,p.label FROM table_feed_decisions d JOIN toy_policy p ON d.row_id=p.action_code WHERE d.final_selected=1 ORDER BY d.row_id")
+call ok joined
+call assert joined~rows~items = 2, 'downstream relation rejoins persisted data'
+traceCount = sql~execute('SELECT COUNT(*) AS n FROM table_feed_trace')
+call ok traceCount
+call assert traceCount~rows[1]['n'] = 5, 'downstream trace row count'
+call assert rytaProvider~invocationCount = 1, 'Algorithm A remains one execution'
+call assert tableProvider~invocationCount = 1, 'Algorithm B remains one execution'
+
+/* A fresh SQL capture sees the changed persisted value and has a different content identity. */
+freshSnapshot = capture~capture(sourceSql, inputSchema, '', .AlgorithmInputRelationConstant~BAG_UNORDERED, 'NOSQLSERVER_V068_FEDERATED_RESULT')
+call assert freshSnapshot \== .nil, 'fresh capture succeeds' capture~lastError
+call assert freshSnapshot~contentHash \== inputSnapshot~contentHash, 'changed source changes input content hash'
+call assert rytaProvider~invocationCount = 1, 'fresh source SQL reuses RYTA materialization'
+
+say 'Algorithm A invocations:' rytaProvider~invocationCount
+say 'Algorithm B invocations:' tableProvider~invocationCount
+say 'frozen input oid:' inputSnapshot~sourceOid
+say 'TABLE-FED ALGORITHM PIPELINE V0.8: OK'
+exit 0
+
+findRow: procedure
+  use arg databaseResult, wanted
+  do databaseRow over databaseResult~rows
+    if databaseRow['row_id'] == wanted then return databaseRow
+  end
+  return .nil
+
+catalogHas: procedure
+  use arg catalog, wanted
+  do actual over catalog['tables']
+    if actual~caselessEquals(wanted) then return .true
+  end
+  return .false
+
+ok: procedure
+  use arg databaseResult
+  if databaseResult~status \= .Error~SUCCESS then do
+    say 'FAILED:' databaseResult~status databaseResult~error databaseResult~message
+    exit 1
+  end
+  return .true
+
+assert: procedure
+  use arg condition, message, detail = ''
+  if condition then return .true
+  say 'ASSERT FAILED:' message detail
+  exit 1
+
+::requires '__NOSQLSERVER_CLS__'
+::requires '../integration/NoSQLServerAlgorithmRelationExternalEngine.cls'
+::requires '../integration/NoSQLServerAlgorithmInputCapture.cls'
+::requires '../algorithm/RYTAAlgorithmProvider.cls'
+::requires '../algorithm/TableFeedDecisionProvider.cls'
+::requires '../HardWorld.cls'

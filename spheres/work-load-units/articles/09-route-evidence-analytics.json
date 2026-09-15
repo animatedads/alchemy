@@ -1,0 +1,14 @@
+{
+  "id": "wlu-route-evidence-analytics",
+  "title": "Route Evidence and Analytics",
+  "summary": "WLU records actual implementation choices and execution outcomes to provide a verified evidence stream for route statistics.",
+  "why": "Separates the 'decision to act' from the 'evidence of what happened', enabling evidence-weighted route advice without giving the analytics layer any WLU authority.",
+  "invariants": [
+    "Route Evidence: Non-entitling record of transitions, reasons (e.g. QUALITY_POLICY), and actual WLU spent.",
+    "Analytics: Read-only statistics over verified durable route evidence.",
+    "Sufficient Sample: Reports are marked 'insufficient' unless they meet a minimum sample threshold (default 30) to prevent over-reliance on small samples.",
+    "Advisory: Deterministic recommendation based on Wilson score intervals for success and over-expected rates; it is not admission authority."
+  ],
+  "evidence_note": "Source: oorexx_work_load_units_v0.12/README.md:235-285. Line 240: 'This evidence remains non-entitling'. Line 260: 'Insufficient evidence is not hidden... sufficientSample is false until sampleCount >= minimumSamples.'",
+  "grounding": "oorexx-grounded"
+}

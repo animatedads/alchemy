@@ -1,0 +1,54 @@
+ooRexx ML Crypto Failure Demo v0.1-dev3
+SAFE_SCOPE=controlled explanatory comparison; no key recovery or attack automation
+
+EXPERIMENT_1_KEY_PERTURBATION
+PLAINTEXT_BYTES=64 BLOCK_BYTES=16 IDENTICAL_PLAINTEXT_BLOCKS=4
+WEAK=repeating-key XOR keyBytes=4
+STRONG=ChaCha20 RFC8439 confidentiality primitive; authentication not tested
+weak.changedBits=16/512 percent=3.13
+weak.activeCipherBytes=16/64 percent=25.00
+strong.changedBits=273/512 percent=53.32
+strong.activeCipherBytes=64/64 percent=100.00
+weak.duplicateCipherBlocks=3/3
+strong.duplicateCipherBlocks=0/3
+equalPlaintextBlockPairs=6
+weak.equalPlainPairsStillEqualInCiphertext=6/6
+strong.equalPlainPairsStillEqualInCiphertext=0/6
+ML_PATTERN_DIFFERENCE=PATTERN_DIFFERENCE=dominant=260|total=7828|radialMax=8|slopeMax=14|curvatureMax=26|rank=260210200190180180180170170160160160150150150150140140140130130130130130110100100100100100100090090080080080070070070070070070070060060060060060056050050048048044044044044040040040040040040040040036036036032032032032032032032030030028028028028028028028028024024020020020016016016016016016012012012012012012010010010008008008008008008008008008008007007007007007007007007007005005005005005005005005005005004004004004004004004004004004004004004004004004004004004004004004004004004004004003003003003003003003003003003003003003003003001001000000000000000000000000000000000000000000|ordered=[260,210,200,190,180,180,180,170,170,160,160,160,150,150,150,150,140,140,140,130,130,130,130,130,110,100,100,100,100,100,100,90,90,80,80,80,70,70,70,70,70,70,70,60,60,60,60,60,56,50,50,48,48,44,44,44,44,40,40,40,40,40,40,40,40,36,36,36,32,32,32,32,32,32,32,30,30,28,28,28,28,28,28,28,28,24,24,20,20,20,16,16,16,16,16,16,12,12,12,12,12,12,10,10,10,8,8,8,8,8,8,8,8,8,8,7,7,7,7,7,7,7,7,7,5,5,5,5,5,5,5,5,5,5,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+ML_TEMPORAL_DIFFERENCE=TEMPORAL_PATTERN_DIFFERENCE=dominant=350|kind=TURN|channel=VALUE|total=18396|radiusMax=8|timeMax=0|bearingMax=36|elevationMax=17|turnMax=35
+NEAREST_PATTERN_QUERY_WEAK
+1. sample=WEAK-P4 label=WEAK-PERIODIC TEMPORAL_PATTERN_DIFFERENCE=dominant=0|kind=NONE|channel=NONE|total=0|radiusMax=0|timeMax=0|bearingMax=0|elevationMax=0|turnMax=0
+2. sample=STRONG-K8 label=STRONG-DISTRIBUTED TEMPORAL_PATTERN_DIFFERENCE=dominant=340|kind=TURN|channel=VALUE|total=17756|radiusMax=8|timeMax=0|bearingMax=35|elevationMax=17|turnMax=34
+3. sample=STRONG-K16 label=STRONG-DISTRIBUTED TEMPORAL_PATTERN_DIFFERENCE=dominant=340|kind=TURN|channel=VALUE|total=18716|radiusMax=8|timeMax=0|bearingMax=35|elevationMax=17|turnMax=34
+NEAREST_PATTERN_QUERY_STRONG
+1. sample=STRONG-K1 label=STRONG-DISTRIBUTED TEMPORAL_PATTERN_DIFFERENCE=dominant=310|kind=TURN|channel=VALUE|total=12442|radiusMax=6|timeMax=0|bearingMax=35|elevationMax=5|turnMax=31
+2. sample=STRONG-K8 label=STRONG-DISTRIBUTED TEMPORAL_PATTERN_DIFFERENCE=dominant=320|kind=TURN|channel=VALUE|total=12674|radiusMax=7|timeMax=0|bearingMax=35|elevationMax=16|turnMax=32
+3. sample=STRONG-K16 label=STRONG-DISTRIBUTED TEMPORAL_PATTERN_DIFFERENCE=dominant=320|kind=TURN|channel=VALUE|total=13062|radiusMax=7|timeMax=0|bearingMax=35|elevationMax=5|turnMax=32
+
+EXPERIMENT_2_LOCAL_TRANSFORM_GEOMETRY
+PLAINTEXT_BYTES=64 LOCAL_BLOCK=ABCE LOCAL_XOR_KEY=1f0f0f1f
+ROT13.valueProfile.first16=13,13,13,13,13,13,13,13,13,13,13,13,13,13,13,13
+XOR.valueProfile.first16=29,11,9,21,29,11,9,21,29,11,9,21,29,11,9,21
+ROT13.binaryProfile.first16=4,3,3,4,4,3,3,4,4,3,3,4,4,3,3,4
+XOR.binaryProfile.first16=5,4,4,5,5,4,4,5,5,4,4,5,5,4,4,5
+ROT13.turnProfile.first16=-1,0,1,0,-1,0,1,0,-1,0,1,0,-1,0,1,0
+XOR.turnProfile.first16=-1,0,1,0,-1,0,1,0,-1,0,1,0,-1,0,1,0
+local.valueProfilesDiffer=true
+local.binaryProfilesDiffer=true
+local.turnProfilesMatch=true
+local.valueMagnitudeDifference=480
+local.binaryMagnitudeDifference=64
+local.turnTemporalDifference=TEMPORAL_PATTERN_DIFFERENCE=dominant=0|kind=NONE|channel=NONE|total=0|radiusMax=0|timeMax=0|bearingMax=0|elevationMax=0|turnMax=0
+
+OUTPUT key_sensitivity_polar.svg
+OUTPUT key_sensitivity_cylindrical.svg
+OUTPUT weak_profile.tsv
+OUTPUT strong_profile.tsv
+OUTPUT local_rot13_value.tsv
+OUTPUT local_xor_value.tsv
+OUTPUT local_rot13_binary.tsv
+OUTPUT local_xor_binary.tsv
+OUTPUT local_rot13_turn.tsv
+OUTPUT local_xor_turn.tsv
+OUTPUT local_transform_angle.svg
+OPTIONAL_RENDERER=run examples/render_matplotlib.rex via run_demo.sh with FOREIGN_ROOT to produce PNG plots

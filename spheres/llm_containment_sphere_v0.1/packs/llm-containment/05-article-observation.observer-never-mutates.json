@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "llm-containment.observation.observer-never-mutates",
+  "version": "0.1",
+  "sphere": "llm-containment",
+  "title": "An observer or monitor never mutates the thing it observes",
+  "summary": "A read-only observer stream is exactly that: an engine stays authoritative for snapshot production and control, while subscriptions carry only a read cursor. Mutation-shaped operations over an observation channel fail closed, not silently ignored. Observation never implies control.",
+  "evidence_note": "Observation v0.2 contract: ObservationQueryRouter accepts only SNAPSHOT, CURRENT, BACK, HISTORY and KNOWN_STATE; mutation-shaped operations fail closed as OBSERVATION_MUTATION_FORBIDDEN. Virtual Browser Read me: 'Password inputs remain non-display evidence with no raw value in snapshot/history.'",
+  "invariants": [
+    "A shared monitor cannot mutate either engine; actions still enter through the real control path.",
+    "Sensitive values (for example passwords) remain non-display evidence with no raw value in snapshot or history.",
+    "An observation subscription never becomes a transaction or control handle just because the reader is a model.",
+    "Resumable replay comes from an exact stream boundary, and the stream producer stays authoritative."
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "kind": "article",
+  "id": "python-best-practices.edits.preserve-unrelated-bytes",
+  "version": "0.1",
+  "sphere": "python-best-practices",
+  "title": "Prefere a structural splice over regenerating the whole module",
+  "summary": "When you change one Python method, do not regenerate the file from a partial model in your head: rewrite only the exact source span of that method and leave every unrelated import, comment, sibling method, docstring and byte-formatted newline untouched. Whole-module regeneration from memory is the most destructive LLM habit and the direct cause of collateral damage.",
+  "semantics": "The engine editors (source.python.method.edit / source.oorexx.method.edit) implement exactly this invariant: an edit changes only the declared target region unless wider transformation was explicitly requested. Replacement fragments are one complete method; the module is re-parsed before commit.",
+  "why_this_is_an_article": "It is a working-method discipline on how to perform the edit, not a single deterministic language trigger.",
+  "evidence_note": "PLABEL: ties to LLM Gopher's own source-edit invariant (engine/README v0.6). It is universal good practice when editing any codebase.",
+  "invariants": [
+    "Edit confined to the target method's source span (AST-derived class/method node), not a manual byte guess.",
+    "Preserve unrelated comments, imports, sibling methods and formatting byte-for-byte.",
+    "Replace only with one complete, parseable method; validate the whole module before committing.",
+    "Carry an expected_sha256 when present so a moved/stale source is rejected instead of silently mis-spliced.",
+    "Match the module's prevailing newline convention when you reindent a supplied fragment."
+  ]
+}

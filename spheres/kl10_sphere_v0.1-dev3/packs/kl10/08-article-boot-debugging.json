@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "kl10.boot-debugging",
+  "version": "0.1-dev2",
+  "sphere": "kl10",
+  "title": "Authentic TOPS-20 boot debugging",
+  "summary": "Operational rules for advancing the reconstructed KL10 only through guest states supported by the architecture, the monitor source and reproducible replay.",
+  "procedure": [
+    "Start from the latest qualified checkpoint, never from a downstream state already tainted by a known impossible event.",
+    "Open kl10.current-continuation and confirm the current qualified baseline, WIP boundary and forbidden stale futures before replay.",
+    "At each new boundary record PC/section, instruction, relevant ACs, FLAGS, APR/PI state, pager registers, UPT frame and the exact memory translation involved.",
+    "Identify the guest source label before implementing an unsupported instruction or changing machine semantics.",
+    "Add a focused regression for the architectural behavior, then replay the authentic guest path.",
+    "Run the wider core suite before qualifying a checkpoint or package."
+  ],
+  "invariants": [
+    "No synthetic memory pages to make the guest progress.",
+    "No forced register values or hand-edited page tables as a promoted solution.",
+    "Observer/debugger reads may be more forgiving than CPU cycles, but they must not mutate guest state.",
+    "Machine capacity, page existence and page contents are separate concepts.",
+    "A downstream convergence is evidence only until the complete upstream path is qualified."
+  ],
+  "selectors": []
+}

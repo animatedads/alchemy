@@ -1,0 +1,15 @@
+caps = .CivicCapabilities~v09
+call assertEqual 9, caps~items, "v0.9 capability count"
+call assertEqual "CIVIC_HTTP", caps[1], "HTTP remains first capability"
+call assertEqual "CIVIC_JSON", caps[2], "JSON remains second capability"
+call assertEqual "CIVIC_ETAG_CACHE", caps[3], "cache remains third capability"
+call assertEqual "CIVIC_READONLY_RELATION", caps[4], "read-only relation remains fourth capability"
+call assertEqual "CIVIC_PROMOTION", caps[5], "explicit promotion remains fifth capability"
+call assertEqual "CIVIC_ACCESS_STATE", caps[6], "access state remains sixth capability"
+call assertEqual "CIVIC_API_CONTRACT", caps[7], "API contract remains seventh capability"
+call assertEqual "CIVIC_CREDENTIAL_PORT", caps[8], "v0.9 adds transport credential seam"
+call assertEqual "CIVIC_COMPANY_PROFILE", caps[9], "v0.9 adds Companies House company profile adapter"
+say "PASS test_capabilities_v09"
+exit 0
+::requires "TestSupport.cls"
+::requires "CivicCore.cls"

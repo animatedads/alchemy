@@ -1,0 +1,46 @@
+{
+  "kind": "article",
+  "id": "arch.vmm.ui-authority",
+  "version": "0.1",
+  "sphere": "vector-meridian-markets",
+  "title": "Operator UI: browser is renderer and intent source, never trading authority",
+  "summary": "Wire UI defines visible semantics, Wire UI Server controls exact-revision action availability, the VMM application adapter resolves server-owned selection/state, and only existing VMM domain/Queue Fabric authority performs transitions.",
+  "current_release": {
+    "release": "VECTOR_MERIDIAN_MARKETS_OPERATIONS@3",
+    "content_address": "wuid01-4709E3FA",
+    "profile": "HUMAN_VISUAL",
+    "workspaces": [
+      "DEALING",
+      "INSTITUTIONAL",
+      "TREASURY",
+      "EXCEPTIONS"
+    ]
+  },
+  "invariants": [
+    "A visible button is not authority.",
+    "Browser-supplied order ID, quantity or price cannot replace server-selected order economics.",
+    "Cancel uses the real VMM order/correlation/remaining quantity and becomes CANCEL_PENDING when routed.",
+    "Operator reconciliation remains unavailable until a real VMM reconciliation-request command exists.",
+    "Strategy disable/resume is not the same as the firm-wide kill switch.",
+    "Federation access-point injection is rejected."
+  ],
+  "authority": "artifact-grounded",
+  "provenance": [
+    {
+      "artifact": "vector_meridian_markets_wire_ui_web_v0.3.zip",
+      "sha256": "b988c0f4677bb094e92c9aa8245425cc3c5f0687eda66083a5a5df2d7de481b9",
+      "member": "vector_meridian_markets_wire_ui_web_v0.3/docs/FRONTEND_BOUNDARY.md",
+      "line_start": 24,
+      "line_end": 45,
+      "claim": "Wire UI Builder/Server/VMM adapter/domain authority layers and browser non-authority."
+    },
+    {
+      "artifact": "vector_meridian_markets_wire_ui_web_v0.3.zip",
+      "sha256": "b988c0f4677bb094e92c9aa8245425cc3c5f0687eda66083a5a5df2d7de481b9",
+      "member": "vector_meridian_markets_wire_ui_web_v0.3/VALIDATION.txt",
+      "line_start": 34,
+      "line_end": 80,
+      "claim": "Exact @3 release identity and server/VMM adapter authority regressions."
+    }
+  ]
+}

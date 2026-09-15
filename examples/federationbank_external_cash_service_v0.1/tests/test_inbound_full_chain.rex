@@ -1,0 +1,2 @@
+v=.FederationBankExternalCashMemoryVaultPort~new("IOM-DOUGLAS","VAULT-1","GBP",100000); s=.FBExtServiceTest~service(v); sh=.FBExtServiceTest~shipment("IN1","INBOUND",25000); r=.FBExtServiceTest~submit(s,sh); .FBExtServiceTest~assertTrue(r~ok); r=.FBExtServiceTest~dispatch(s,sh); .FBExtServiceTest~assertEq("IN_TRANSIT",r~code); r=.FBExtServiceTest~receive(s,sh); .FBExtServiceTest~assertEq("COMPLETED",r~code); .FBExtServiceTest~assertEq(125000,v~expectedMinor); say "PASS: inbound external cash completes only after branch vault acceptance"
+::requires "TestSupport.cls"

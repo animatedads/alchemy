@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.ownership",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Storage Fabric identity and authority model",
+  "summary": "Storage Fabric treats object identity, physical replica location, namespace path/view and route policy as separate concepts. Applications should exchange StorageRef or logical namespace paths rather than persist physical provider locators as object identity.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "A physical pathname is a location, not the identity of the object.",
+    "StorageRef is stable across moves, replicas, aliases and namespace projections.",
+    "Namespace/path selection may change visibility and write semantics without changing the underlying object identity.",
+    "Storage owns storage/catalogue/namespace/materialisation semantics; it does not absorb allocator, security, source-control or queue authority."
+  ],
+  "procedure": [],
+  "topics": [
+    "identity",
+    "authority",
+    "storage-ref"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/README.md",
+      "claim": "Current executable package states the object/location/path/policy separation and authority boundaries."
+    }
+  ]
+}

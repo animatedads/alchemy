@@ -1,0 +1,76 @@
+say 'LEGAL EFFECT V0.3 IDENTITY / REDUCER GUARD V0.18 START'
+
+/* Deep-seal replay: accessor mutation must not touch the sealed object. */
+source = .NormativeSource~new('S', 'CONTRACT', 'source')
+norm = .LegalNorm~new('N', 'S', '1', 'CONTRACT_TERM', 'ACT', 'REVIEW')
+ignored = norm~addCondition(.LegalPredicate~new('READY', 'KNOWN_TRUE'))
+generation = .LegalRuleGeneration~new('G', '0.3')
+ignored = generation~addSource(source)
+ignored = generation~addNorm(norm)
+ignored = generation~seal
+
+semanticBefore = generation~semanticIdentity
+conditionCopy = norm~conditions
+conditionCopy~append(.LegalPredicate~new('INJECTED', 'KNOWN_TRUE'))
+call AssertEqual 1, norm~conditions~items, 'sealed norm condition backing array is protected'
+call AssertEqual semanticBefore, generation~semanticIdentity, 'copy mutation leaves semantic identity unchanged'
+
+/* Same v0.3 semantic graph, different execution-observable norm order. */
+a1 = .NormativeSource~new('A', 'CONTRACT', 'A')
+b1 = .NormativeSource~new('B', 'CONTRACT', 'B')
+cond1 = .LegalNorm~new('COND', 'A', '1', 'CONTRACT_TERM', 'AMB', 'REQUIRES_OBLIGATION')
+review1 = .LegalNorm~new('REV', 'B', '2', 'CONTRACT_TERM', 'AMB', 'REVIEW')
+g1 = .LegalRuleGeneration~new('AMB', '0.3')
+ignored = g1~addSource(a1); ignored = g1~addSource(b1)
+ignored = g1~addNorm(cond1); ignored = g1~addNorm(review1); ignored = g1~seal
+
+a2 = .NormativeSource~new('A', 'CONTRACT', 'A')
+b2 = .NormativeSource~new('B', 'CONTRACT', 'B')
+cond2 = .LegalNorm~new('COND', 'A', '1', 'CONTRACT_TERM', 'AMB', 'REQUIRES_OBLIGATION')
+review2 = .LegalNorm~new('REV', 'B', '2', 'CONTRACT_TERM', 'AMB', 'REVIEW')
+g2 = .LegalRuleGeneration~new('AMB', '0.3')
+ignored = g2~addSource(a2); ignored = g2~addSource(b2)
+ignored = g2~addNorm(review2); ignored = g2~addNorm(cond2); ignored = g2~seal
+
+call AssertEqual g1~semanticIdentity, g2~semanticIdentity, 'v0.3 semantic identity intentionally ignores insertion order'
+s1 = .LegalEffectV03GenerationSnapshot~new(g1)
+s2 = .LegalEffectV03GenerationSnapshot~new(g2)
+call AssertEqual s1~semanticIdentityHash, s2~semanticIdentityHash, 'semantic hashes equal'
+call AssertTrue s1~executionIdentity \== s2~executionIdentity, 'execution fingerprints preserve observable norm order'
+call AssertTrue s1~canonicalIdentity \== s2~canonicalIdentity, 'authority closure identity binds semantic + execution identities'
+
+ctx1 = .LegalContext~new('E1', '2026-08-20')
+ignored = ctx1~bindSource('A', 'test')
+ignored = ctx1~bindSource('B', 'test')
+ctx2 = .LegalContext~new('E2', '2026-08-20')
+ignored = ctx2~bindSource('A', 'test')
+ignored = ctx2~bindSource('B', 'test')
+
+raw1 = .LegalEffectEngine~new~evaluate(.LegalAction~new('AMB'), g1, ctx1)
+raw2 = .LegalEffectEngine~new~evaluate(.LegalAction~new('AMB'), g2, ctx2)
+call AssertTrue raw1~ok, 'first raw evaluation succeeds'
+call AssertTrue raw2~ok, 'second raw evaluation succeeds'
+call AssertTrue raw1~value~status \== raw2~value~status, 'replayed upstream reducer remains insertion-order sensitive'
+
+p1 = .LegalEffectV03PinnedEvaluator~evaluate(.LegalEffectEngine~new, .LegalAction~new('AMB'), g1, ctx1)
+p2 = .LegalEffectV03PinnedEvaluator~evaluate(.LegalEffectEngine~new, .LegalAction~new('AMB'), g2, ctx2)
+call AssertTrue \p1~ok, 'first ambiguous reduction refused for authority'
+call AssertTrue \p2~ok, 'second ambiguous reduction refused for authority'
+call AssertEqual 'LEGAL_STATUS_REDUCTION_AMBIGUOUS', p1~code, 'first refusal code'
+call AssertEqual 'LEGAL_STATUS_REDUCTION_AMBIGUOUS', p2~code, 'second refusal code'
+
+say 'LEGAL EFFECT V0.3 IDENTITY / REDUCER GUARD V0.18: OK'
+exit 0
+
+::routine AssertTrue
+  use arg condition, label
+  if \condition then raise syntax 88.900 array('ASSERT TRUE FAILED: ' || label)
+  return 0
+
+::routine AssertEqual
+  use arg expected, actual, label
+  if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: ' || label || ' expected=' || expected || ' actual=' || actual)
+  return 0
+
+::requires 'LegalEffect.cls'
+::requires '../integration/LegalEffectV03PromotionAdapter.cls'

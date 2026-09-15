@@ -1,0 +1,45 @@
+Wire UI Swing v0.2-dev3 validation
+==================================
+Date: 2026-08-26
+
+Java runtime:
+  OpenJDK 21.0.11
+
+Build discipline:
+  javac --release 21 -Xlint:all -Werror
+  executable JAR Main-Class: org.alchemy.wireui.swing.WireSwingMain
+
+Headless renderer suite:
+  PASS 32/32
+
+Desktop suite:
+  PASS WireSwingDesktopWindow visible/capture/resize-stress/dispose under Xvfb
+
+Executable distribution acceptance:
+  PASS java -jar dist/wire-ui-swing-v0.2-dev3.jar --version
+  PASS java -jar ... --smoke-window under Xvfb
+  PASS exact no-argument java -jar ... launch under Xvfb; READY view=SEARCH revision=0
+
+Semantic/presentation locks added in dev3:
+  PASS FORM label does not rename browser-parity Continue action
+  PASS Enter in text form field emits the same semantic UI_ACTION
+  PASS human collection presentation does not widen server-authority action detail
+  PASS styleRole from metadata changes presentation only
+  PASS renderer remains at SEARCH after click until external demo authority supplies SUMMARY
+  PASS desktop repeated resize/capture stress
+
+Headless integration:
+  PASS ooRexx -> BSF -> Java Swing hello/root construction
+  PASS ooRexx -> BSF -> snapshot/patch roundtrip revision=2
+  PASS Wire UI Server v0.11 objects -> bridge -> Swing revision=1
+  PASS Wire UI Builder v0.8.3 publish -> compiled GRID12 -> bridge -> Swing
+       widths=12,3,5,4,12 with expected x/y placement
+
+Real desktop integration:
+  PASS ooRexx -> BSF -> WireSwingDesktopWindow real JFrame show/dispose under Xvfb
+
+Reference runtime integration:
+  Open Object Rexx 5.3.0 r13196
+  BSF4ooRexx v850 (2026-03-26 refresh)
+  Wire UI Server v0.11
+  Wire UI Builder v0.8.3

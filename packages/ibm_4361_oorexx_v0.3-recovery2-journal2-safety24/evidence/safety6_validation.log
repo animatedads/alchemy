@@ -1,0 +1,38 @@
+Runtime: ooRexx 5.3.0 r13196 debug build supplied with the continuation.
+
+Compilation:
+- initial full pass after permanent UNPK/probe additions: COMPILE PASS 77 sources
+- two later archaeology regressions added and compiled individually:
+  - tests/test_executor_live_method_replacement.rex
+  - tests/test_mvt_unpk_frontier_microstate.rex
+- final source count: 79 compilable .cls/.rex files
+
+Runtime qualification:
+- every one of the 37 tests/test_*.rex scripts was executed successfully across
+  chunked runs (the debug interpreter made a single monolithic invocation exceed
+  the execution ceiling during the crypto-backed freeze test).
+- focused new passes include:
+  PASS test_cpu_unpk
+  PASS test_cpu_unpk_live_trial
+  PASS test_executor_live_method_replacement
+  PASS test_mvt_unpk_frontier_microstate
+  PASS test_executor_live_method_seam
+  PASS test_journal_live_patch_rewind
+  PASS test_journal_freeze_separation
+- all unchanged unit/runtime tests passed as well.
+
+Explicit historical media:
+- PASS test_real_media
+- PASS test_real_mvt_ipl PSW=0000000000000080 CCHHR=0/0/4
+
+Long permanent-source replay note:
+- a fresh full trajectory replay under the supplied debug interpreter was begun
+  against the byte-equivalent uncompressed probe media and followed the expected
+  path through IC=279332 before the execution ceiling interrupted the harness.
+- no contradictory guest stop was observed.
+- the exact permanent OPF3 semantics are additionally locked by
+  test_mvt_unpk_frontier_microstate.rex against the real trial PSW, instruction,
+  R13-derived effective addresses, source operand, destination operand, CC and
+  instruction count transition.
+- the prior full journal retry had already proved 11 instructions of real guest
+  progress to AF at IA 016606.

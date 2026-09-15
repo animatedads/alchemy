@@ -1,0 +1,123 @@
+{
+  "kind": "corpus",
+  "id": "ssc.interface",
+  "sphere": "semantic-source-control",
+  "title": "Semantic Source Control Gopher interface and continuity ledger",
+  "records": [
+    {
+      "topic": "current-baseline",
+      "component": "SemanticSourceControl",
+      "product_version": "0.2.3",
+      "lineage": "MAIN",
+      "source_level": "5",
+      "status": "accepted candidate baseline",
+      "note": "v0.2.4 performance/Gopher work is not sealed in this sphere."
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.identify",
+      "state": "PLANNED",
+      "class": "read",
+      "reason": "map carrier/symbol to SSC component/lineage/source-level/entity/revision"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.status",
+      "state": "PLANNED",
+      "class": "read",
+      "reason": "accepted parent plus working-candidate semantic status"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.compare",
+      "state": "PLANNED",
+      "class": "read",
+      "reason": "semantic deltas without acceptance"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.impact",
+      "state": "PLANNED",
+      "class": "read",
+      "reason": "consumer/requirement/external-operation impact"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.history",
+      "state": "PLANNED",
+      "class": "read",
+      "reason": "accepted source-level/revision history"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.accept",
+      "state": "PLANNED",
+      "class": "mutation",
+      "roles": [
+        "reviewer",
+        "admin"
+      ],
+      "reason": "explicit source-level acceptance only"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.proposal.decide",
+      "state": "PLANNED",
+      "class": "mutation",
+      "roles": [
+        "reviewer",
+        "admin"
+      ],
+      "reason": "external-operation tracking decision"
+    },
+    {
+      "topic": "status-map",
+      "ssc": "no semantic change",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "UNCHANGED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "entity absent",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "NOT_FOUND",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "pending tracking proposal",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "REVIEW_REQUIRED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "requirement unsatisfied",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "REQUIREMENT_UNSATISFIED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "lineage changed",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "SOURCE_LINEAGE_CHANGED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "osc executable/provider unavailable",
+      "gopher_tool_status": "UNAVAILABLE",
+      "gopher_operation_status": "UNKNOWN",
+      "fallback": true
+    },
+    {
+      "topic": "status-map",
+      "ssc": "repository dependency unreadable/corrupt",
+      "gopher_tool_status": "DEPENDENCY_FAILURE",
+      "gopher_operation_status": "UNKNOWN",
+      "fallback": true
+    }
+  ]
+}

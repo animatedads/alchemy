@@ -1,0 +1,13 @@
+Security Effect v0.14 commit revalidation demo
+==============================================
+Status: NOT EXECUTED IN THIS PACKAGING ENVIRONMENT
+
+The shipped executable demo is examples/commit_revalidation_demo.rex.
+Expected semantic path (not recorded as execution evidence here):
+  original START invocation -> Security ALLOW
+  host records origin execution evidence -> continuation
+  exact staged state -> fresh COMMIT assessment ALLOW
+  new ACCOUNT_TAKEOVER_CONFIRMED evidence -> COMMIT assessment HOLD
+  unchanged staged operation is therefore not allowed to commit under the stale original admission.
+
+Run the demo under the package's qualified ooRexx runtime before promotion.

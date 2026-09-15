@@ -1,0 +1,51 @@
+NoSQLServer v0.44 validation
+============================
+
+Focus
+-----
+Native database event registry plus first safe foreign-key subset.
+
+Database events
+---------------
+- Runtime-scoped per canonical database root.
+- BEFORE_INSERT / AFTER_INSERT
+- BEFORE_UPDATE / AFTER_UPDATE
+- BEFORE_DELETE / AFTER_DELETE
+- Object handlers register with db~events~on(eventType, tableName, handler).
+- Wildcard table registration is available with "*".
+- BEFORE handlers may veto before authoritative storage/journal publication.
+- AFTER handlers are observational and cannot retroactively undo publication.
+- Registrations can be disabled with db~events~off(registration).
+
+Foreign keys
+------------
+- Inline single-column REFERENCES syntax.
+- FK metadata persists in table.yaml and is reconstructed on engine reopen.
+- Parent target must be a single-column PRIMARY KEY or UNIQUE constraint.
+- Child and parent column types must match.
+- NULL child values are permitted.
+- Child INSERT/UPDATE validates parent existence.
+- Parent DELETE is RESTRICT/NO ACTION while referenced.
+- Parent key UPDATE is RESTRICT/NO ACTION while referenced.
+- Invalid FK declarations fail before child table publication.
+- CASCADE / SET NULL / SET DEFAULT are deliberately SQLUNSUPPORTED until the
+  staged multi-table mutation graph can publish them atomically.
+
+Capabilities
+------------
+- DATABASE_EVENTS
+- MUTATION_EVENT_VETO
+- FOREIGN_KEYS
+- FOREIGN_KEY_RESTRICT
+
+Regression evidence
+-------------------
+- v0.44 FK/event smoke: PASS
+- v0.43 event smoke: PASS
+- v0.42 and prior feature gates: PASS
+- database_core adapter smoke: PASS
+- SQL-92 company smoke: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 13/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

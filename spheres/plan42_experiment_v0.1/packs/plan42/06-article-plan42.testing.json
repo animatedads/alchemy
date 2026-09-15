@@ -1,0 +1,7 @@
+{
+  "kind":"article","id":"plan42.testing","version":"0.1","sphere":"plan42","title":"Plan42 testing and qualification","authority":"project framework","summary":"Plan42 guidance and executable evidence for plan42.testing",
+  "test_layers":["static contract guards","spec parser/compiler tests","target compile or parse","bounded execution smoke","compatibility matrix","generated-source inspection","report and provenance verification"],
+  "important_tests":["tests/static_contract_check.py","tests/run_plan42_guard.py","tests/oorexx_backend_static.sh","tests/regina_backend_smoke.sh","tests/c_backend_safe_subset_smoke.sh","tests/rust_backend_scaffold_static_guard.py","tests/preferred_capabilities_smoke.py"],
+  "acceptance":["Every claimed target has an executable or explicit compile-only check.","A failed target is reported separately from successful targets.","Generated source is retained before execution.","Reports include command, runtime, inputs, outputs, status and limitations.","No test result is inferred from a low-level generator success alone."],
+  "source_files":["tests/","reports/","tools/plan42_compatibility_matrix.py","tools/plan42_portability_report.py"]
+}

@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "ac.current",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Current Alchemy Core baseline",
+  "summary": "The accepted runtime baseline is frozen Alchemy ooRexx Core v0.5. It is a resident ooRexx Autobuild system whose accepted package/domain semantics are modelled separately from transport. Core v0.6-pre2 is development continuity only and must not be described as accepted or current runtime.",
+  "authority": "project-authority",
+  "invariants": [
+    "Treat alchemy_oorexx_core_rollup_v0.5.zip SHA-256 2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548 as the accepted frozen Core baseline unless explicitly superseded by a later accepted Core release.",
+    "v0.5 accepted source is immutable; post-acceptance fixes require new package versions.",
+    "The 2026-09-02 API roll-up still carries frozen Core v0.5, so distribution truth and project acceptance agree.",
+    "Core v0.6-pre2 is SOURCE_PREBASE_PRE2_NOT_RC_NOT_ACCEPTED."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/RELEASE_STATUS.txt",
+      "line_start": 1,
+      "line_end": 27,
+      "claim": "Frozen/accepted status and exact component closure."
+    },
+    {
+      "artifact": "oorexxapis(20260902-164832).zip",
+      "sha256": "190c3e9f7b484cfccc3e0fa4fe7fe07e6f0d15838ae2024b028ccaffd9652830",
+      "member": "current/alchemy_oorexx_core_rollup_v0.5.zip",
+      "claim": "Current API roll-up carries the accepted Core v0.5 archive."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.6-pre2-source.zip",
+      "sha256": "3b0a18732a6ec33fc55ac35cf4589fb931623796cd0d628062a83c2cfcac914b",
+      "member": "alchemy_oorexx_core_rollup_v0.6-pre2-source/PREBASE_STATUS.txt",
+      "line_start": 1,
+      "line_end": 10,
+      "claim": "v0.6-pre2 is explicitly prebase and does not alter v0.5."
+    }
+  ]
+}

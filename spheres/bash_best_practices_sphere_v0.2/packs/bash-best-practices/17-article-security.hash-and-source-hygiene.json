@@ -1,0 +1,17 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.security.hash-and-source-hygiene",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Verify integrity by hashing a trusted expectation, and re-zero variable state before re-sourcing records",
+  "summary": "Before you trust a file or published record, compare its digest against what you already believe is right, and give the result a meaning via a distinct code. When you source a persisted record that sets environment-like variables, first clear the ones you are about to read so a value inherited from the current environment cannot be spliced in as if it came from the record.",
+  "technique": "Compute the sha256 and compare to an expected or signed value; separate the verification stages by exit code so each reason (sha mismatch, untrusted key, verify failure) is distinguishable. Decode binary material (a key, a signature) to a temp file rather than into a shell variable, and pre-zero AUTHORISATION_* before sourcing the record file.",
+  "evidence_note": "queuebash.sh:6407-6426 verifies sha/signature and maps distinct exit codes to reasons; :8917-8922 pins the public key by its own sha and rejects a mismatch; :6460-6467 and friends reset AUTHORISATION_* before sourcing the trusted record so ambient env cannot leak in.",
+  "invariants": [
+    "Compare a computed digest to an already-trusted expectation, and reject on mismatch.",
+    "Let each verification stage carry a distinct meaning (mismatch, untrusted key, crypto fail), not one generic failure.",
+    "Keep binary material out of shell variables; write it to a tightly-scoped temp file.",
+    "Re-zero the exact variables a record will set before you source it, so the ambient environment cannot contaminate the record.",
+    "Source only records whose path/location is itself trusted-by-content; never source from an unverified or remote path."
+  ]
+}

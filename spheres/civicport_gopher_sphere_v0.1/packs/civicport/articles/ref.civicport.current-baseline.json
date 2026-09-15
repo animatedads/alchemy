@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "ref.civicport.current-baseline",
+  "version": "0.1",
+  "sphere": "civicport",
+  "title": "Current CivicPort baseline and dependency pins",
+  "summary": "The authoritative CivicPort continuation baseline represented by this sphere is standalone civicport_v0.14.zip, SHA-256 b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe. It was qualified against ooRexx 5.3.0 r13196 and the 2026-08-28 consolidated stack.",
+  "authority": "project-release-evidence",
+  "invariants": [
+    "CivicPort v0.14 is newer than the v0.12 copy that appeared in some later consolidated roll-ups; do not silently regress to an older embedded copy.",
+    "The v0.14 queue-ingress dependency evidence is JMS Queue Bridge 0.1-dev7-fb1, consuming only the unchanged Java-neutral TEXT handoff.",
+    "Secret Broker v0.2 is bridge-side and is not loaded by CivicPort NOTAM surfaces.",
+    "HardWorld v0.31-work is used only for inherited promotion regression; v0.14 adds no NOTAM promotion rule."
+  ],
+  "procedure": [
+    "Check VERSION.txt and VALIDATION.txt in the exact CivicPort artifact.",
+    "Verify all 24 src/*.cls compile under the qualified runtime.",
+    "Treat dependency generation changes as explicit requalification work, not filename substitution."
+  ],
+  "provenance": [
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "VALIDATION.txt",
+      "line_start": 15,
+      "line_end": 32,
+      "claim": "Exact v0.14 qualification baseline and dependency generations."
+    },
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "VALIDATION.txt",
+      "line_start": 63,
+      "line_end": 76,
+      "claim": "Complete deterministic result and source compilation count."
+    }
+  ]
+}

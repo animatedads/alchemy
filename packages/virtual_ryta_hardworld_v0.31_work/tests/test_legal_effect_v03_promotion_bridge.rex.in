@@ -1,0 +1,52 @@
+say 'LEGAL EFFECT V0.3 -> EVIDENCE PROMOTION -> HARDWORLD V0.18 START'
+
+source = .NormativeSource~new('C-1', 'CONTRACT', 'Synthetic contract')
+norm = .LegalNorm~new('C-1-11', 'C-1', '11.12', 'CONTRACT_TERM', 'RATE_CHANGE', 'CONTRACT_BREACH')
+ignored = norm~addCondition(.LegalPredicate~new('RATE_CHANGE', 'KNOWN_TRUE'))
+generation = .LegalRuleGeneration~new('G-HW-V03', '0.3')
+ignored = generation~addSource(source)
+ignored = generation~addNorm(norm)
+ignored = generation~seal
+
+context = .LegalContext~new('E-1', '2026-08-20')
+ignored = context~bindSource(source~sourceId, 'contract applies to actor')
+action = .LegalAction~new('RATE_CHANGE')
+ignored = action~setFact('RATE_CHANGE', .true)
+
+pinned = .LegalEffectV03PinnedEvaluator~evaluate(.LegalEffectEngine~new, action, generation, context)
+call AssertTrue pinned~ok, 'v0.3 pinned evaluation succeeds'
+call AssertEqual 'BLOCKED', pinned~envelope~assessment~status, 'assessment blocked'
+call AssertTrue pinned~envelope~generationSnapshot~semanticIdentityHash <> '', 'semantic hash exposed'
+call AssertTrue pinned~envelope~generationSnapshot~executionIdentity <> '', 'execution hash exposed'
+
+promotionSet = .LegalEffectV03PromotionAdapter~promotionsFrom(pinned~envelope)
+call AssertEqual 3, promotionSet~count, 'three explicit legal status promotions'
+
+world = .RYTAWorldState~new('LEGAL-V03-WORLD')
+applyStatus = .EvidencePromotionApplier~apply(promotionSet, world)
+call AssertEqual 3, applyStatus~applied, 'three promotions applied'
+call AssertTrue world~isKnownTrue('LEGAL_ACTION_BLOCKED'), 'blocked true'
+call AssertTrue world~isKnownFalse('LEGAL_ACTION_REVIEW_REQUIRED'), 'review false'
+call AssertTrue world~isKnownFalse('LEGAL_ACTION_CONDITIONAL'), 'conditional false'
+
+blockedFact = world~fact('LEGAL_ACTION_BLOCKED')
+blockedPromotion = blockedFact~evidence~promotions[1]
+call AssertTrue blockedPromotion~evidence~isA(.LegalEffectV03AssessmentEvidence), 'v0.3 assessment evidence retained'
+call AssertTrue blockedPromotion~sourceObject == pinned~envelope~assessment, 'native LegalEffectAssessment retained'
+call AssertTrue blockedPromotion~authority~pos('LEGAL_EFFECT/0.3/G-HW-V03@') = 1, 'authority binds v0.3 semantic/execution closure'
+
+say 'LEGAL EFFECT V0.3 -> EVIDENCE PROMOTION -> HARDWORLD V0.18: OK'
+exit 0
+
+::routine AssertTrue
+  use arg condition, label
+  if \condition then raise syntax 88.900 array('ASSERT TRUE FAILED: ' || label)
+  return 0
+::routine AssertEqual
+  use arg expected, actual, label
+  if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: ' || label || ' expected=' || expected || ' actual=' || actual)
+  return 0
+
+::requires 'LegalEffect.cls'
+::requires '../integration/LegalEffectV03PromotionAdapter.cls'
+::requires '../HardWorld.cls'

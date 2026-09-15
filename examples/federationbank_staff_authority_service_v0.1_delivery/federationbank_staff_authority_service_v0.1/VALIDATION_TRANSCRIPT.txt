@@ -1,0 +1,33 @@
+FederationBank Staff Authority Service v0.1 validation transcript
+Date: 2026-08-26
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+
+== Service tests ==
+== test_context_and_maker_authorise.rex ==
+PASS: service stores authoritative staff context and issues maker authority
+== test_approval_workflow.rex ==
+PASS: service maker/checker workflow
+== test_idempotency.rex ==
+PASS: durable command identity is semantic
+== test_outbox_retry.rex ==
+PASS: staff authority outbox is at-least-once
+== test_persistence_restart.rex ==
+PASS: staff authority state/idempotency recover across restart
+== test_queue_persistent_recovery.rex ==
+PASS: permanent Queue Fabric recovers typed staff authority command graph
+== test_service_to_core_binding.rex ==
+PASS: service authority crosses boundary only as exact command evidence
+== test_runtime_module.rex ==
+PASS: runtime service boundary
+
+== rexxc package .cls files ==
+PASS rexxc integration/FederationBankStaffAuthorityServicePersistence.cls
+PASS rexxc integration/FederationBankStaffAuthorityServiceQueue.cls
+PASS rexxc runtime/FederationBankStaffAuthorityServiceRuntimeModule.cls
+PASS rexxc src/FederationBankStaffAuthorityService.cls
+PASS rexxc tests/TestSupport.cls
+PASS rexxc total=5

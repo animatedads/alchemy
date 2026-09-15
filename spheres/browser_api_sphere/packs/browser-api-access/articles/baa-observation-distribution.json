@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "baa-observation-distribution",
+  "version": "0.1",
+  "sphere": "browser-api-access",
+  "title": "Observation stream, queue service and backpressure",
+  "summary": "Observation distributes detached semantic state through a neutral stream/service with independent stream sequence, consumer checkpoints, leases/backpressure and Queue Fabric delivery.",
+  "authority": "project-authority",
+  "invariants": [
+    "Engine generation, observation stream sequence, Queue Fabric delivery identity and consumer checkpoint are different clocks/identities.",
+    "WLU-throttled Queue delivery must not delete or rewrite retained semantic observation history.",
+    "Consumer checkpoints are monotonic durable processing boundaries.",
+    "Subscriber congestion is an observer problem and must not stall the terminal/browser execution engine.",
+    "Queue Fabric remains transport authority; Observation does not become a message broker.",
+    "Observation producer/stream descriptors carry node identity, capability generation and proofRef without creating a separate trust system."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_observation_v0.5.zip",
+      "sha256": "0f604f78d5d198190ae209c813fd287967f94ddaf6116dfa83b4e1904a9f6ed7",
+      "member": "oorexx_observation_v0.5/README.md",
+      "line_start": 3,
+      "line_end": 9,
+      "claim": "Observation v0.5 defines Queue service, replay/checkpoints, WLU delivery separation, stable node identity, capability generation and proofRef.",
+      "note": "Authoritative executable-candidate grounding."
+    }
+  ]
+}

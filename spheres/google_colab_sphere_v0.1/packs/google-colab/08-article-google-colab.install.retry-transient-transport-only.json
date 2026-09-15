@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "google-colab.install.retry-transient-transport-only",
+  "version": "0.1",
+  "sphere": "google-colab",
+  "title": "Retry transient install transport loss in the same session; fail fast on deterministic errors",
+  "summary": "Package installation is a separate failure plane. A live T4 job reached installation and returned RuntimeError: Connection was lost; destroying the whole allocation was unnecessarily brittle. The repaired adapter retries only recognizable transport failures in the same allocated session with bounded backoff. Dependency-resolution errors, bad package names, authorization errors and other deterministic install failures do not retry.",
+  "evidence_note": "Live dev17 qualification: a simulated Connection was lost retried exactly once and then succeeded; a deterministic bad-package failure stopped immediately. The same behavior was then exercised in live Colab where installation retry worked and execution continued.",
+  "invariants": [
+    "Retry classification is narrow and evidence-bearing.",
+    "A transport retry reuses the same named session if it is still alive.",
+    "Bound retries and backoff; never turn a deterministic packaging error into a long retry loop.",
+    "Record each attempt without exposing secret material."
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "ac.transport-boundary",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Transport materializes; it does not decide",
+  "summary": "Local directory, managed ZIP and Git branch transports all converge on the same AlchemyMaterializedPackage shape. The transport layer owns safe materialization and source provenance, not domain planning or execution policy.",
+  "authority": "project-authority",
+  "invariants": [
+    "Every materialized package must contain integration.json at its root.",
+    "Git branch transport reads an exact immutable commit/subtree; branch checkout/merge is not required.",
+    "Managed ZIP transport validates archive paths before extraction.",
+    "Transport source records kind, locator, immutable identity, submission id and package path."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_transport_v0.4/src/AlchemyTransport.cls",
+      "line_start": 1,
+      "line_end": 50,
+      "claim": "Transport boundary and common materialized-package contract."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_transport_v0.4/src/AlchemyTransport.cls",
+      "line_start": 172,
+      "line_end": 225,
+      "claim": "Managed ZIP and Git branch materialization implementations."
+    }
+  ]
+}

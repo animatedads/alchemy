@@ -1,0 +1,106 @@
+Alchemy Objects v0.8 validation
+Date: 2026-08-24
+
+Runtime used for build validation:
+  Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+  supplied package: oorexx-5.3.0-13196.ubuntu1604debug.x86_64(2).deb
+  package SHA-256: 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Current project/API roll-up reviewed:
+  oorexxapis(20260824-162508).zip
+  SHA-256: 0ef6ed3c7afc68be24092c609d87a6e112401d075ae4014f5a7f9ba7521e8658
+  current/alchemy_objects_v0.7.zip: a8e8e1fc080091650ee1791c997ea35ae74904b2cb658cdfdadff2a8fb7d0ee3
+  current/oorexx_logging_v0.3.zip: a8d5e7ea1e1c1001528c99a58c68f3ff6703a7a43c551505aeee2337882a8a11
+  current/runtime_registry_v0.13.zip: 93b29bda0ed24cbd042d7f1a2c20db70189195ce69decf6f95b6d20424c10988
+  current/oorexx_crypto_v0.1.zip: 3eab23b5138cba889eb11ea5b93747eb14fca8da0fd4ac936a70174349ae8f3a
+
+External crypto dependency:
+  oorexx_crypto_v0.1/src/crypto.cls
+  source archive SHA-256: 3eab23b5138cba889eb11ea5b93747eb14fca8da0fd4ac936a70174349ae8f3a
+
+Core test result: 27/27 executable test programs have PASS evidence on the exact release tree.
+
+One serial run PASSed the following 14 programs before the surrounding debug-runtime/tool CPU budget issued HALT during test_test_support.rex:
+  test_load.rex
+  test_base.rex
+  test_base_dispatch_isolation.rex
+  test_security_runtime_probe.rex
+  test_security_manager_contract.rex
+  test_security_capability_method.rex
+  test_security_requires_gap.rex
+  test_security_manager_immutability.rex
+  test_composite_policy.rex
+  test_method_telemetry.rex
+  test_execution_provenance.rex
+  test_cooperative_interposition.rex
+  test_capability_expiry.rex
+  test_trace_compliance_data.rex
+
+Unchanged tail PASS evidence from isolated/fresh groups:
+  test_test_support.rex                       PASS (20.58s isolated)
+  test_security_quota.rex                    PASS
+  test_locked_method.rex                     PASS
+  test_locked_method_security_manager.rex    PASS
+  test_locked_method_envelope.rex            PASS
+  test_method_policy_relationships.rex       PASS
+  test_requirements_instrumentation_rules.rex PASS
+  test_protected_policy_mutations.rex        PASS
+  test_adoption_verifier.rex                 PASS
+  test_adoption_checkpoint.rex               PASS (6.38s isolated after grouped cutoff)
+  test_inspector_key_boundary.rex            PASS (16.80s)
+  test_inspector_bridge.rex                  PASS (5.86s)
+  test_full_snapshot.rex                     PASS (12.86s isolated after grouped cutoff)
+
+v0.8-specific cooperative-interposition acceptance includes:
+  - standalone Alchemy retains the historical direct object wrapper
+  - an already-active generic coordinator is detected structurally
+  - Alchemy registers provider ALCHEMY.EXECUTION_PROVENANCE at priority 1000
+  - coordinator-first operation retains exactly one physical wrapper while two providers observe the call
+  - Alchemy can withdraw its coordinated provider without disabling the other provider
+  - public cooperative callbacks reject a forged call lacking the opaque per-object token
+  - alchemyBaseState reports cooperative protocol availability and coordinated instrumentation count without disclosing token/interceptor objects
+  - sealed introspection includes alchemy.objects.method-interposition/0.1 structural evidence
+  - INSTRUMENTMETHOD, INSTRUMENTREGISTEREDMETHODS and UNINSTRUMENTMETHOD are PROTECTED
+  - hosted Security Manager policy can deny customer instrumentation installation/removal without mutating the object
+  - a direct Alchemy layer refuses unsafe removal while an outer coordinator owns the current method
+
+Actual ooRexx Logging v0.3 integration result: 3/3 PASS.
+  Logging package regression unchanged:
+    PASS test_alchemy_preexisting_telemetry
+  Alchemy-owned integration cases:
+    PASS test_logging_first_alchemy
+    PASS test_alchemy_first_remove_while_logging
+
+The Logging integration confirms both installation orders and fail-safe release order against the supplied oorexx_logging_v0.3 package, while the core Alchemy runtime retains no Logging dependency.
+
+Static/package checks PASS:
+  - sh -n run_tests.sh
+  - sh -n run_logging_integration.sh
+  - every metadata/*.json parses
+  - no executable BFSProxy/BSFProxy/AlchemyBsfProxy dependency
+  - no self~VERSION or self~SCHEMA base-invariant dispatch
+  - no stale v0.7 package/base/test/house-standard identifiers in current source/tests/examples/metadata
+  - package/base/test metadata version 0.8
+  - house standard ALCHEMY-HOUSE-OBJECT-0.8
+  - 27 core test_*.rex programs present
+  - 2 Alchemy-owned optional Logging integration programs present
+  - example demo executes under the supplied runtime
+
+Inspector boundary additions:
+  - AlchemyInspectorBridge does not follow or emit ALCHEMYINTERPOSITIONTOKEN
+  - AlchemyInspectorBridge does not follow or emit ALCHEMYINTERPOSITIONINTERCEPTOR
+  - AlchemyInspectorBridge does not follow external __MISLOTS coordinator state
+  - existing sealer/capability-authority/locked-vault suppressions remain intact
+
+Known platform evidence carried forward, not re-labelled as v0.8 field validation:
+  - project-host ooRexx 5.2.0 r0 completed the 22-test v0.4.3 suite uninterrupted in 15.940s
+  - that run independently reproduced the static ::REQUIRES Security Manager supervision gap
+  - v0.8 requires its own field rerun before claiming release-level 5.2.0 validation
+
+Important scope/limitations:
+  - cooperative interposition is an instrumentation compatibility protocol, not an authority source
+  - a host must trust the active coordinator implementation before treating coordinated telemetry as high-assurance provenance
+  - automatic instrumentation still refuses PROTECTED, PRIVATE, PACKAGE-scope and reserved AlchemyObject methods
+  - execution history remains bounded and dropped/evicted evidence is counted rather than hidden
+  - abrupt interpreter/process termination can leave a retained execution record incomplete
+  - static ::REQUIRES remains outside the observed per-routine Security Manager checkpoint path on the validated platform lineage

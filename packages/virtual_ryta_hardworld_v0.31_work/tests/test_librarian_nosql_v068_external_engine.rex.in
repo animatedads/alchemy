@@ -1,0 +1,144 @@
+/* Stock NoSQLServer v0.68 + Librarian Algorithm Relation integration. */
+parse arg root
+if root == '' then root = '/tmp/librarian_nosql_v09'
+
+say 'LIBRARIAN NOSQLSERVER V0.68 EXTERNAL ENGINE START'
+packageRoot = directory('..')
+topics = packageRoot || '/librarian/fixtures/librarian_topics.txt'
+factory = .LibrarianDeterministicAnalyzerFactory~new(topics)
+modelManifest = .LibrarianDeterministicFixture~buildModelManifest(packageRoot, topics)
+modelFingerprint = modelManifest~hash
+provider = .LibrarianTextAlgorithmProvider~new(factory, 'LIBRARIAN-FIXTURE', '1', modelManifest, packageRoot)
+algorithmEngine = .AlgorithmRelationEngine~new
+call assert algorithmEngine~addProvider(provider), 'provider registration'
+
+inputSchema = .AlgorithmSchema~new('LIBRARIAN_TEXT_SOURCE')
+inputSchema~add('DOCUMENT_ID', 'TEXT', .false)
+inputSchema~add('TEXT', 'TEXT', .false)
+builder = .AlgorithmInputRelationBuilder~new(inputSchema, 'LIBRARIAN_TEXT_SOURCE', .AlgorithmInputRelationConstant~BAG_UNORDERED)
+values = .directory~new
+values['DOCUMENT_ID'] = 'DOC-NOSQL-1'
+values['TEXT'] = 'We sell product. Warning danger. Medication warning.'
+call assert builder~addValues(values), 'input row accepted'
+inputSnapshot = builder~freeze('LIBRARIAN-NOSQL-INPUT-1', 'fixture text', 'LIBRARIAN_TEST')
+call assert inputSnapshot \== .nil, 'input snapshot frozen'
+ctx = .AlgorithmExecutionContext~new('LIB-NOSQL-INV-1', inputSnapshot~sourceOid)
+
+nosqlClasses = .directory~new
+nosqlClasses['TABLE_DEFINITION'] = .TableDefinition
+nosqlClasses['DATABASE_ROW'] = .DatabaseRow
+nosqlClasses['DATABASE_RESULT'] = .DatabaseResult
+nosqlClasses['TABLE_METADATA'] = .DatabaseTableMetadata
+
+bindings = .directory~new
+bindings['LIBRARIAN_DOCUMENT_ANALYSIS'] = 'librarian_documents'
+bindings['LIBRARIAN_SENTENCE_ANALYSIS'] = 'librarian_sentences'
+bindings['LIBRARIAN_WORD_OBSERVATIONS'] = 'librarian_words'
+bindings['LIBRARIAN_TARGET_HITS'] = 'librarian_hits'
+bindings['LIBRARIAN_ANALYSIS_ERRORS'] = 'librarian_errors'
+bindings['LIBRARIAN_TRACE'] = 'librarian_trace'
+
+external = .NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine, 'LIBRARIAN_TEXT', inputSnapshot, ctx, nosqlClasses, bindings)
+call assert external~isReady, 'external engine ready' external~lastError
+call assert provider~invocationCount = 0, 'construction does not execute Librarian'
+
+fed = .FederatedDatabaseEngine~new(root)
+ignore = fed~addEngine(external)
+sql = .NoSQLServerSQL~new(fed)
+
+catalog = fed~readCatalog
+call assert catalogHas(catalog, 'librarian_hits'), 'catalog contains librarian_hits'
+call assert catalogHas(catalog, 'librarian_documents'), 'catalog contains librarian_documents'
+call assert provider~invocationCount = 0, 'catalog does not execute Librarian'
+meta = fed~tableMetadata('librarian_hits')
+call assert meta \== .nil, 'target-hit metadata exists'
+call assert meta~columns~items = 28, 'target-hit metadata has 28 provenance/consistency columns'
+call assert provider~invocationCount = 0, 'metadata does not execute Librarian'
+
+safety = sql~execute("SELECT target_key,weight,section FROM librarian_hits WHERE section='SAFETY' ORDER BY weight DESC,target_key")
+call ok safety
+call assert safety~rows~items = 4, 'four safety target hits'
+call assert provider~invocationCount = 1, 'first row read executes Librarian once'
+
+commercial = sql~execute("SELECT target_key,weight FROM librarian_hits WHERE section='COMMERCIAL' ORDER BY target_key")
+call ok commercial
+call assert commercial~rows~items = 2, 'two commercial target hits'
+call assert provider~invocationCount = 1, 'second SQL read reuses materialization'
+
+doc = sql~execute("SELECT document_id,target_score,concepts FROM librarian_documents")
+call ok doc
+call assert doc~rows~items = 1, 'one document analysis row'
+call assert doc~rows[1]['target_score'] = 46, 'document target score 46'
+call assert provider~invocationCount = 1, 'second relation shares materialization'
+
+call ok sql~execute("CREATE TABLE librarian_section_labels (section VARCHAR PRIMARY KEY, label VARCHAR)")
+call ok sql~execute("INSERT INTO librarian_section_labels VALUES ('SAFETY','Safety evidence'),('COMMERCIAL','Commercial evidence')")
+joined = sql~execute("SELECT h.target_key,h.weight,l.label FROM librarian_hits h JOIN librarian_section_labels l ON h.section=l.section WHERE h.section='SAFETY' ORDER BY h.weight DESC,h.target_key")
+call ok joined
+call assert joined~rows~items = 4, 'persisted/Librarian join rows'
+call assert joined~rows[1]['l.label'] = 'Safety evidence', 'joined section label'
+call assert provider~invocationCount = 1, 'join does not rerun Librarian'
+
+bad = sql~execute("UPDATE librarian_hits SET weight=999 WHERE target_key='DANGER'")
+call assert bad~status \= .Error~SUCCESS, 'Algorithm Relation mutation rejected'
+call assert provider~invocationCount = 1, 'failed update does not rerun Librarian'
+
+-- Lazy source-closure drift must fail before provider execution.
+driftTopics = '/tmp/librarian_v010_drift_' || random(100000,999999) || '.txt'
+inStream = .Stream~new(topics)
+driftText = inStream~charin(1, inStream~chars)
+inStream~close
+outStream = .Stream~new(driftTopics)
+ignore = outStream~open('WRITE REPLACE')
+ignore = outStream~charout(driftText)
+ignore = outStream~close
+driftFactory = .LibrarianDeterministicAnalyzerFactory~new(driftTopics)
+driftManifest = .LibrarianDeterministicFixture~buildModelManifest(packageRoot, driftTopics)
+driftProvider = .LibrarianTextAlgorithmProvider~new(driftFactory, 'LIBRARIAN-FIXTURE', '1', driftManifest, packageRoot)
+driftAlgorithmEngine = .AlgorithmRelationEngine~new
+call assert driftAlgorithmEngine~addProvider(driftProvider), 'drift provider registration'
+driftCtx = .AlgorithmExecutionContext~new('LIB-NOSQL-DRIFT', inputSnapshot~sourceOid)
+driftExternal = .NoSQLAlgorithmRelationExternalEngine~new(driftAlgorithmEngine, 'LIBRARIAN_TEXT', inputSnapshot, driftCtx, nosqlClasses, bindings)
+call assert driftExternal~isReady, 'drift external engine ready' driftExternal~lastError
+call assert driftProvider~invocationCount = 0, 'drift provider unexecuted before source mutation'
+outStream = .Stream~new(driftTopics)
+ignore = outStream~open('WRITE APPEND')
+ignore = outStream~lineout('EXTRA TEST N 1')
+ignore = outStream~close
+driftRows = driftExternal~rowsFor('LIBRARIAN_TARGET_HITS')
+call assert driftRows~items = 0, 'drifted source returns no rows'
+call assert driftExternal~lastError = 'SOURCE_MANIFEST_CHANGED_BEFORE_MATERIALIZATION', 'model drift rejected before materialization' driftExternal~lastError
+call assert driftProvider~invocationCount = 0, 'model drift rejected before provider execution'
+ignore = SysFileDelete(driftTopics)
+
+say '  provider_invocations=' || provider~invocationCount
+say '  target_hits=' || fed~tableRowCount('librarian_hits')
+say '  materialization_id=' || external~algorithmResult~materializationId
+say 'LIBRARIAN NOSQLSERVER V0.68 EXTERNAL ENGINE: OK'
+exit 0
+
+catalogHas: procedure
+  use arg catalog, wanted
+  do actual over catalog['tables']
+    if actual~caselessEquals(wanted) then return .true
+  end
+  return .false
+
+ok: procedure
+  use arg rs
+  if rs~status \= .Error~SUCCESS then do
+    say 'FAILED:' rs~status rs~error rs~message
+    exit 1
+  end
+  return .true
+
+assert: procedure
+  use arg condition, message, detail = ''
+  if condition then return .true
+  say 'ASSERT FAILED:' message detail
+  exit 1
+
+::requires '__NOSQLSERVER_CLS__'
+::requires '../librarian/LibrarianDeterministicFixture.cls'
+::requires '../integration/LibrarianTextAlgorithmProvider.cls'
+::requires '../integration/NoSQLServerAlgorithmRelationExternalEngine.cls'

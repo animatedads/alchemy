@@ -1,0 +1,106 @@
+--- a/src/FederationBankAtmGateway.cls
++++ b/src/FederationBankAtmGateway.cls
+@@ -166,8 +166,10 @@
+ ::method publish private
+   expose topics authorities
+   use arg record
+-  authorities[record["offlineAuthorityId"]] = record
+-  if topics == .nil then return .FederationBankResult~success(record)
++  if topics == .nil then do
++    authorities[record["offlineAuthorityId"]] = record
++    return .FederationBankResult~success(record)
++  end
+   options = .table~new
+   token = record["offlineAuthorityId"]~string~changestr("/","_")~changestr(" ","_")
+   options["subtopic"] = "authority/" || token
+@@ -176,6 +178,8 @@
+   options["correlationId"] = record["offlineAuthorityId"]
+   r = topics~publish(.FederationBankServiceTopology~ATM_OFFLINE_AUTHORITY_TOPIC, record, options, .FederationBankServiceTopology~ATM_GATEWAY)
+   if \r~ok then return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_PERSIST_FAILED", r~code || ":" || r~detail, r)
++  /* The in-memory state must never run ahead of its retained durable fact. */
++  authorities[record["offlineAuthorityId"]] = record
+   return .FederationBankResult~success(record)
+ ::method issue
+   use arg authorityId, modeArg, terminalId, customerId, accountId, currencyArg, maxMinorArg, holdIdArg, rulesetId, rulesVersion, requestedAt, ttlSecondsArg = 600, decision = .nil
+@@ -212,6 +216,47 @@
+   use arg authorityId
+   if \authorities~hasIndex(authorityId~string) then return .nil
+   return authorities[authorityId~string]
++::method beginRelease
++  use arg authorityId, terminalId, customerId, releaseIdempotencyKey
++  rec = self~authority(authorityId)
++  if rec == .nil then return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_UNKNOWN", authorityId)
++  if rec["terminalId"] <> terminalId~string then return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_TERMINAL_MISMATCH")
++  if rec["customerId"] <> customerId~string then return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_CUSTOMER_MISMATCH")
++  status = rec["status"]~string
++  existingKey = ""
++  if rec~hasIndex("releaseIdempotencyKey") then existingKey = rec["releaseIdempotencyKey"]~string
++  if status = "CONSUMED" then return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_ALREADY_CONSUMED", authorityId)
++  if status = "RELEASED" then do
++    if existingKey = releaseIdempotencyKey~string then return .FederationBankResult~success(rec,"ATM_OFFLINE_AUTHORITY_RELEASE_REPLAY")
++    return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_ALREADY_RELEASED", authorityId)
++  end
++  if status = "RELEASE_PENDING" then do
++    if existingKey = releaseIdempotencyKey~string then return .FederationBankResult~success(rec,"ATM_OFFLINE_AUTHORITY_RELEASE_RESUME")
++    return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_RELEASE_IN_PROGRESS", authorityId)
++  end
++  if status <> "ACTIVE" then return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_NOT_ACTIVE", status)
++  next = rec~copy
++  next["status"] = "RELEASE_PENDING"
++  next["releaseIdempotencyKey"] = releaseIdempotencyKey~string
++  next["releaseRequestedAt"] = .DateTime~new~utcIsoDate
++  return self~publish(next)
++::method markReleased
++  use arg authorityId, releaseIdempotencyKey
++  rec = self~authority(authorityId)
++  if rec == .nil then return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_UNKNOWN", authorityId)
++  status = rec["status"]~string
++  existingKey = ""
++  if rec~hasIndex("releaseIdempotencyKey") then existingKey = rec["releaseIdempotencyKey"]~string
++  if status = "RELEASED" then do
++    if existingKey = releaseIdempotencyKey~string then return .FederationBankResult~success(rec,"already released")
++    return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_ALREADY_RELEASED", authorityId)
++  end
++  if status <> "RELEASE_PENDING" then return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_RELEASE_STATE_INVALID", status)
++  if existingKey <> releaseIdempotencyKey~string then return .FederationBankResult~failure("ATM_OFFLINE_AUTHORITY_RELEASE_IDEMPOTENCY_MISMATCH", authorityId)
++  next = rec~copy
++  next["status"] = "RELEASED"
++  next["releasedAt"] = .DateTime~new~utcIsoDate
++  return self~publish(next)
+ ::method validateAdvice
+   expose authorities
+   use arg authorityId, terminalId, customerId, accountId, currencyArg, amountMinorArg, rulesetId, rulesVersion, adviceIdempotencyKey, physicalTransactionId
+@@ -455,6 +500,33 @@
+       else code="OFFLINE_STANDIN_AUTHORITY_ISSUED"
+       return self~response(req,.true,code,"",out)
+     end
++    when op="RELEASE_OFFLINE_ALLOWANCE" then do
++      /* Cancellation is two phase across retained authority state and Ledger:
++       * make the authority non-vendable durably, release any backing hold with
++       * a stable sub-idempotency key, then publish RELEASED. */
++      s=self~sessionFor(req,.true); if \s~ok then return self~failure(req,s)
++      prepared=offlineAuthorities~beginRelease(d["offlineAuthorityId"],req["terminalId"],s~value["customerId"],req["idempotencyKey"])
++      if \prepared~ok then return self~failure(req,prepared)
++      authority=prepared~value
++      if authority["status"]="RELEASED" then do
++        out=authority~copy
++        return self~response(req,.true,"OFFLINE_ALLOWANCE_RELEASED","replay",out)
++      end
++      mode=authority["authorityMode"]~string
++      if mode="RESERVED_ALLOWANCE" then do
++        holdId=authority["holdId"]~string
++        if holdId="" then return self~response(req,.false,"OFFLINE_ALLOWANCE_RELEASE_HOLD_MISSING",authority["offlineAuthorityId"])
++        holdReq=req~copy; holdReq["commandId"]=req["commandId"]||"-HOLD"; holdReq["idempotencyKey"]=req["idempotencyKey"]||"-HOLD"
++        hd=.directory~new; hd["holdId"]=holdId
++        hc=self~bankCommand(holdReq,"RELEASE_HOLD",authority["customerId"],authority["accountId"],authority["currency"],0,hd)
++        hr=self~pumpPayment(hc)
++        if \hr~ok then return self~response(req,.false,"OFFLINE_ALLOWANCE_RELEASE_PENDING",hr~code||":"||hr~detail,authority)
++      end
++      marked=offlineAuthorities~markReleased(authority["offlineAuthorityId"],req["idempotencyKey"])
++      if \marked~ok then return self~response(req,.false,"OFFLINE_ALLOWANCE_RELEASE_FINALIZE_FAILED",marked~code||":"||marked~detail,authority)
++      out=marked~value~copy
++      return self~response(req,.true,"OFFLINE_ALLOWANCE_RELEASED","",out)
++    end
+     when op="WITHDRAW_AUTHORISE" then do
+       s=self~sessionFor(req); if \s~ok then return self~failure(req,s)
+       holdId="ATM-HOLD-"||req["idempotencyKey"]; authId="WDAUTH-"||req["idempotencyKey"]

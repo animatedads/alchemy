@@ -1,0 +1,37 @@
+Runtime baseline:
+- ooRexx 5.3.0 r13196 Internal Test Version
+- supplied package: oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20260828-120345).deb
+
+Current integration/API roll-up:
+- oorexxapis(20260828-191905).zip
+  SHA-256: 5885f1906dc5ae7307e6fc7d557b88d1770b0c401f5a62063b999834222d5d66
+- contains an exact copy of all_japan_insurance_v0.9.zip
+  SHA-256: 4c487185296c18eff70357fe69fa52482486d3aa1403c533d4fe8cf85548098d
+- relevant current components include Accounting Core v0.7, Wire UI Server v0.17,
+  Wire UI Builder v0.11, Queue Fabric v0.9-dev4, Runtime Reference v0.2,
+  Runtime Registry v0.14, Crypto v0.5, Institutional Policy v0.8,
+  Legal Effect v0.14, Security Effect v0.10 and Access Permissions v0.1.
+- AJI v0.10 in this delivery supersedes the embedded AJI v0.9 copy.
+
+Accounting dependency:
+- accounting_core_v0.7.zip from the current roll-up
+  SHA-256: 95b694d76e388613cafed39f752efe32ff8ce5d46401766aa2d63b9c147a5c76
+- API contracts consumed directly by AJI:
+  - accounting.posting/0.2
+  - accounting.event/0.1
+  - accounting.transaction/0.1
+  - accounting.store/0.1
+- Accounting Core v0.7 additionally exposes tax, scope/reporting and settlement
+  contracts. AJI v0.10 qualifies their presence but does not move rating, billing,
+  insurance-tax law or settlement authority into Accounting Core.
+- byte-identical upstream Accounting Core v0.7 `src/` is retained under
+  `vendor/accounting_core_v0.7/src` solely for self-contained qualification.
+
+Reference implementation inspected previously, not a runtime dependency:
+- federationbank_merchant_accounting_adapter_v0.3(1).zip
+  SHA-256: ba812a11d619d0e7af8aa4cf74151c2dede2a3c91a04258bbb9a1cc455cff835
+- Merchant Bank semantics and accounts are not imported into AJI.
+
+Workstream boundaries:
+- Federation Intermediaries remains separate.
+- VMM remains an arm's-length external counterparty/interface and is not an AJI runtime dependency.

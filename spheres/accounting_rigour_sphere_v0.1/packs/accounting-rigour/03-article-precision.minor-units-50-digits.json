@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "accounting-rigour.precision.minor-units-50-digits",
+  "version": "0.1",
+  "sphere": "accounting-rigour",
+  "title": "Money is exact whole-number minor units under NUMERIC DIGITS 50",
+  "summary": "Accounting amounts are not generic numerics and are not binary floats. They are canonical, non-negative, whole-number integer minor-unit strings under an explicit 50-digit context. Everything thicker than 50 significant integer digits is rejected rather than rounded.",
+  "why_this_is_not_always_a_language_rule": "The 50-digit context is a semantic contract, not pure syntax: DATATYPE(...,'W') answers differently depending on the active arithmetic context. Detection needs the whole-number guard order and target rounding context, which is why one narrow mechanical guard exists as a rule while this article carries the context.",
+  "evidence_note": "Accounting Core v0.4 made NUMERIC DIGITS 50 an explicit arithmetic contract and added ::OPTIONS DIGITS 50 to every Accounting Core source package. The v0.3.1/0.4.1 sibling repair is the root-cause incident: the whole-number guard must run under numeric digits 50 before DATATYPE(...,'W'), or a legitimate 12,000,000,000 exact-minor-unit transaction is mis-evaluated.",
+  "invariants": [
+    "A whole-number check and DATATYPE(...,'W') depend on the active arithmetic context; establish the 50-digit context (::OPTIONS DIGITS 50 at package and/or numeric digits 50 in scope) BEFORE the whole-number guard.",
+    "Amounts wider than 50 significant integer digits are rejected, never silently rounded.",
+    "A concrete AccountingPolicy package that compiles below 50 digits has its registration rejected.",
+    "Money is carried as exact minor-unit whole integers, not as a decimal or float that must be re-multiplied later."
+  ]
+}

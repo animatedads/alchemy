@@ -1,0 +1,46 @@
+{
+  "kind": "access-policy",
+  "id": "vector-meridian-markets-access",
+  "version": "0.1",
+  "rules": [
+    {
+      "effect": "allow",
+      "roles": [
+        "llm",
+        "developer",
+        "operator",
+        "admin"
+      ],
+      "actions": [
+        "read"
+      ],
+      "resource": "*"
+    },
+    {
+      "effect": "allow",
+      "roles": [
+        "llm",
+        "developer",
+        "operator",
+        "admin"
+      ],
+      "actions": [
+        "exec"
+      ],
+      "resource": "capability:corpus.record.lookup"
+    },
+    {
+      "effect": "allow",
+      "roles": [
+        "llm",
+        "developer",
+        "operator",
+        "admin"
+      ],
+      "actions": [
+        "exec"
+      ],
+      "resource": "service:core.corpus.record.lookup"
+    }
+  ]
+}

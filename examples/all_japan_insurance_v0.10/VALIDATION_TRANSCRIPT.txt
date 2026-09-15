@@ -1,0 +1,172 @@
+ALL JAPAN INSURANCE v0.10 FINAL VALIDATION TRANSCRIPT
+====================================================
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+
+--- Accounting Core v0.7 independent suite ---
+==> test_civic_assessment.rex
+civic assessment assertions= 13 failures= 0
+==> test_companies_house_walkabout.rex
+walkabout filing assertions= 31 failures= 0
+==> test_core.rex
+core assertions= 14 failures= 0
+==> test_durable_transactions.rex
+durable transaction assertions= 9 failures= 0
+==> test_four_company_chain.rex
+four-company chain assertions= 16 failures= 0
+==> test_precision_persistence.rex
+precision/persistence assertions= 26 failures= 0
+==> test_scope_persistence.rex
+scope persistence assertions= 9 failures= 0
+==> test_scopes_reporting.rex
+scope/reporting assertions= 30 failures= 0
+==> test_settlement_persistence.rex
+settlement persistence assertions= 12 failures= 0
+==> test_settlement_rounding.rex
+settlement rounding assertions= 32 failures= 0
+==> test_tax_determination.rex
+tax determination assertions= 49 failures= 0
+==> test_tax_persistence.rex
+tax persistence assertions= 15 failures= 0
+==> test_transactions.rex
+transaction assertions= 41 failures= 0
+==> test_reference_projection.py
+reference projection assertions=10 failures=0
+
+--- AJI v0.10 suite ---
+COMPILE AllJapanInsurance.cls
+COMPILE AllJapanInsuranceAccounting.cls
+COMPILE AllJapanInsuranceContract.cls
+COMPILE AllJapanInsuranceProductRating.cls
+COMPILE AllJapanInsuranceRating.cls
+COMPILE AllJapanInsuranceTransactions.cls
+COMPILE AccountingTestSupport.cls
+COMPILE ProductTestSupport.cls
+COMPILE TestSupport.cls
+=== test_accounting_core_v07_compat.rex ===
+PASS AJI consumes Accounting Core v0.7 while retaining ordinary event/transaction accounting semantics
+=== test_accounting_durable_restart_replay.rex ===
+PASS AJI Accounting Core v0.7 retains durable restart, replay and policy identity
+=== test_accounting_replay_identity.rex ===
+PASS AJI accounting uses Accounting Core replay-before-policy identity
+=== test_accounting_v04_precision_contract.rex ===
+PASS AJI and Accounting Core v0.7 retain the v0.4 exact 50-digit whole-yen arithmetic contract
+=== test_aji_accounting_jpy_book.rex ===
+PASS AJI accounting book is legal-entity isolated and JPY-only
+=== test_billing_cancellation_reinstatement.rex ===
+PASS cancellation credits and no-gap reinstatement debits remain distinct billing items and allocate deterministically
+=== test_billing_overpayment_accounting.rex ===
+PASS overpayments become explicit unapplied cash, later auto-allocate, and accounting replay remains receipt-time stable
+=== test_billing_subledger_revision.rex ===
+PASS billing subledger replaces only open future instalments, preserves amount and rejects stale schedule branches
+=== test_bind_and_claim.rex ===
+PASS bind creates policy truth and covered loss opens claim
+=== test_bound_contract_survives_ruleset_change.rex ===
+PASS bound term keeps old rules; new business and renewal adopt new rules
+=== test_cancellation_short_rate_refund.rex ===
+PASS cancellation is calculation-backed, short-rate explicit, coverage-ending and refundable in JPY
+=== test_car_multiple_risks.rex ===
+PASS Car rating supports multiple insured vehicle risk objects
+=== test_catalogue.rex ===
+PASS acquired product catalogue
+=== test_claim_coverage_period.rex ===
+PASS claim loss date must fall inside policy coverage
+=== test_claim_payment_accounting.rex ===
+PASS claim payments are authoritative, cumulative and reserve-aware in JPY accounting
+=== test_claim_reserve_accounting.rex ===
+PASS claim assessments create explicit JPY reserve increases and releases
+=== test_commission_clawback_recovery.rex ===
+PASS paid producer commission is clawed back only through explicit authorised recovery and attributable cash receipt
+=== test_commission_settlement_and_clawback_guard.rex ===
+PASS commission settlement is bank-attributed and post-payment clawback fails closed
+=== test_contract_locks_rating_function.rex ===
+PASS contract and bound term retain executable rating function identity
+=== test_contract_locks_rating_plan.rex ===
+PASS contract release can lock the permitted rating-plan release
+=== test_contract_rejects_rating_function_mismatch.rex ===
+PASS contract release can constrain executable rating-function release
+=== test_contract_version_ambiguity.rex ===
+PASS overlapping contract releases are ambiguous
+=== test_contract_version_approval_and_identity.rex ===
+PASS contract releases require approval and unique immutable identity
+=== test_contract_version_resolution.rex ===
+PASS effective-dated contract version resolution
+=== test_coverage_ratebook_resolution.rex ===
+PASS rate-book resolution includes coverage identity
+=== test_endorsement_premium_adjustment_accounting.rex ===
+PASS endorsements require executable-rating calculation evidence and post signed premium deltas
+=== test_factor_table_fail_closed.rex ===
+PASS factor-table gaps fail closed rather than silently defaulting
+=== test_factor_table_rating.rex ===
+PASS versioned factor table adjusts selected rating target with evidence
+=== test_group_ownership_no_authority.rex ===
+PASS group ownership does not inherit insurance authority
+=== test_home_multi_coverage_rating.rex ===
+PASS Home rating aggregates separate building and contents coverages
+=== test_jpy_currency_semantics.rex ===
+PASS JPY is one-yen minor unit and every rated cost carries currency
+=== test_midterm_exposure_rerating.rex ===
+PASS mid-term exposure changes are re-rated as pinned before/after product states with transaction proration
+=== test_minimum_premium.rex ===
+PASS minimum premium is an explicit rated cost rather than a hidden clamp
+=== test_multidimensional_factor_ambiguity.rex ===
+PASS multidimensional factor overlap fails closed
+=== test_multidimensional_factor_missing_fact.rex ===
+PASS multidimensional table requires every declared fact
+=== test_multidimensional_factor_table.rex ===
+PASS multidimensional exact/band factor row executes deterministically
+=== test_nonpayment_cancellation_reinstatement.rex ===
+PASS non-payment requires arrears notice/cure period and reinstatement is explicit, arrears-cured and no-gap
+=== test_payout_function_version_identity.rex ===
+PASS payout function identity is versioned and cannot be silently replaced
+=== test_pi_product_rating.rex ===
+PASS PI product rating retains policy-risk-coverage evidence
+=== test_policy_bind_requires_contract_version.rex ===
+PASS policy bind requires an effective approved contract version
+=== test_policy_bound_accounting.rex ===
+PASS rated JPY policy decomposes into AJI accounting control balances
+=== test_premium_collection_accounting.rex ===
+PASS JPY premium collection clears premium receivable without rerating policy
+=== test_premium_instalments_arrears.rex ===
+PASS premium instalments, failed collection, arrears and bank-attributed collection are explicit
+=== test_product_policy_identity.rex ===
+PASS product policy identity cannot cross lines
+=== test_product_program_pinning.rex ===
+PASS product rating program pins complete immutable coverage-plan set
+=== test_product_rating_contract_lock.rex ===
+PASS aggregate product rating flows through quote and immutable policy contract lock
+=== test_product_risk_schema.rex ===
+PASS PI/Home/Car product schemas enforce risk and coverage facts
+=== test_proration_policy.rex ===
+PASS transaction proration is explicit and cost-code aware
+=== test_quote_requires_accept.rex ===
+PASS quote requires accepted underwriting decision
+=== test_rate_plan_immutable_identity.rex ===
+PASS rate-plan release identity is immutable
+=== test_ratebook_ambiguity.rex ===
+PASS overlapping effective rate plans are ambiguous
+=== test_ratebook_effective_date.rex ===
+PASS effective-dated rate-book resolution
+=== test_rated_quote_authority.rex ===
+PASS rated quotation is calculation-backed and arbitrary premium is gated
+=== test_rating_below_threshold.rex ===
+PASS below-step and below-underwriting-risk path
+=== test_rating_formula.rex ===
+PASS quotation formula fixed + stepped proportions + UW fee + overage + sales + tax
+=== test_rating_function_identity.rex ===
+PASS rating function identity changes executable premium semantics
+=== test_rating_function_registry.rex ===
+PASS rating function registry is immutable and publication-gated
+=== test_rating_rounding.rex ===
+PASS exact rational component rounding
+=== test_sales_cost_gross_up.rex ===
+PASS commission gross-up and additive sales loading are distinct
+=== test_schedule_modifier_authority.rex ===
+PASS schedule modifiers are bounded and evidence-bearing
+=== test_tax_basis.rex ===
+PASS explicit tax bases avoid hidden tax ordering assumptions
+=== test_tax_remittance_recovery.rex ===
+PASS premium tax remittance and post-remittance recovery are explicit, authority-gated and bank-attributed

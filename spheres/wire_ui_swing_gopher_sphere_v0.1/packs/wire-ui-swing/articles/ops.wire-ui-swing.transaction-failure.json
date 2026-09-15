@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "ops.wire-ui-swing.transaction-failure",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Transactional rendering and failure containment",
+  "summary": "Incoming snapshots/patches are validated against a semantic mirror before any Swing mutation. Ordinary Wire/application/rendering faults are contained at property/component/subtree/patch/window scope rather than escaping through the EDT or terminating the process.",
+  "authority": "renderer-runtime-invariant",
+  "invariants": [
+    "Patch preflight completes before visual commit.",
+    "Revision/view/parent/definition/order invariants are checked before Swing mutation.",
+    "A rejected structural patch retains the previously committed component tree.",
+    "Unknown/unsupported primitives produce controlled placeholders or local errors rather than process failure.",
+    "A stale or malformed patch requests resynchronisation where appropriate; it is never applied optimistically.",
+    "PROCESS scope is not used for ordinary renderer faults."
+  ],
+  "procedure": [
+    "Build a proposed semantic state from the patch.",
+    "Validate exact definitions, revision continuity and structural relationships.",
+    "Prepare a commit plan.",
+    "Marshal one bounded commit to the EDT.",
+    "On failure, retain previous committed state and emit bounded renderer evidence."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev5.zip",
+      "sha256": "a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271",
+      "member": "wire_ui_swing_v0.2-dev5/DESIGN.md",
+      "claim": "Preflight-before-EDT-commit and bounded failure scopes."
+    }
+  ],
+  "failure_scopes": [
+    "PROPERTY",
+    "COMPONENT",
+    "SUBTREE",
+    "PATCH",
+    "WINDOW",
+    "PROCESS"
+  ]
+}

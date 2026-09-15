@@ -1,0 +1,30 @@
+LLM Gopher Web Explorer v0.1-dev1 qualification
+Date: 2026-09-02
+
+PASS static package checks
+PASS Python compile
+PASS JavaScript syntax check (node --check)
+PASS Gopher setup against supplied ooRexx 5.3.0 r13196 Debian package
+PASS discovery: 23 sphere ZIPs discovered / 23 profile identities loadable by explicit Gopher override
+PASS live Gopher round-trip on maths:
+  sphere load -> ACTIVATED
+  context --full -> OPENED
+  article open -> OPENED
+  corpus search -> FOUND
+PASS HTTP boundary:
+  /api/status
+  /api/spheres
+  /api/sphere
+  /api/article
+  /api/search
+  /api/lookup
+PASS semantic non-zero preservation:
+  historical runtime-registry activates, then current Gopher reports context NOT_FOUND;
+  explorer returns and displays that Gopher envelope instead of converting it into a generic HTTP failure.
+
+Security/authority boundary checked:
+- listener defaults to 127.0.0.1
+- sphere ZIPs are never modified
+- HTTP API exposes only activation/context/open/search/lookup
+- no arbitrary Gopher exec/edit/package/authoring endpoint
+- subprocess calls use argument vectors, not shell interpolation

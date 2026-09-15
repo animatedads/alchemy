@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.quoting.quote-and-array-survival",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Quote every expansion and build commands with arrays so spaces and newlines stay inside their one argument",
+  "summary": "Bash splits unquoted expansions on whitespace, so a variable holding 'a b' or an empty-looking-but-present value silently becomes several arguments or vanishes. The fix is to double-quote every expansion and, when composing a command to run, push the arguments into an array and execute that array as one unit instead of reassembling a string.",
+  "technique": "Store a command as an array, optionally prefix it (bash -x ahead of user args), wrap it in further wrappers, then run exactly that array with quoted slices; the values with spaces/newlines travel intact. Never rebuild the command string by hand.",
+  "evidence_note": "bin/queue-dev-timeout:67 builds `cmd=(\"$@\")`, composes `runner=(timeout --signal=TERM --kill-after=\"${kill_after}s\" \"${timeout_sec}s\" \"${cmd[@]}\")`, then runs `\"${runner[@]}\"`. queuebash.sh:96 uses `\"${matches[@]}\"` after a read loop.",
+  "invariants": [
+    "Double-quote every variable, array-slice and $( ) substitution you pass as an argument.",
+    "Compose commands-to-run as arrays and expand them quoted (\"${cmd[@]}\"), never by string concatenation.",
+    "Quote $@ in place: \"$@\", \"${*:...}\" for the forms you actually need.",
+    "Know the difference between ${arr[@]} (each element one word) and ${arr[*]} (joined by IFS)."
+  ]
+}

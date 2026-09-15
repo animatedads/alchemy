@@ -1,0 +1,21 @@
+Runtime Reference v0.4 thread-safety validation
+
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version
+
+PASS test_runtime_reference_threads.rex
+- 8 real ooRexx activities dispatched through RuntimeImplementationSwitch~invokePure.
+- Shared RuntimeImplementationBroker and RuntimeObjectImplementationProvider.
+- Provider target method declared UNGUARDED and held in-flight for 80 ms.
+- Observed provider overlap >= 2.
+- Process-global lastEvidence remained a valid COMPLETED record.
+
+Control proof:
+- The same concurrency test against Runtime Reference v0.3 FAILS at `provider calls overlap across ooRexx activities`, confirming v0.3 serialized the provider call path.
+
+Full v0.4 suite:
+PASS test_runtime_reference
+PASS Runtime Reference real activity concurrency
+PASS test_runtime_reference_tcp_state live
+PASS test_runtime_reference_tcp_state dead
+
+Wire protocol remains runtime.reference/0.1.

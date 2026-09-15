@@ -1,0 +1,2 @@
+bs=.FBExtBranchAdapterTest~branchService; sh=.FBExtBranchAdapterTest~shipment("I1","INBOUND",25000); au=.FBExtBranchAdapterTest~authority(sh); reg=.FBExtBranchAdapterTest~registryFor(bs,sh,au); p=.FederationBankExternalBranchCashVaultPort~new(bs,reg); r=p~acceptInbound(sh,au,.FBExtBranchAdapterTest~receipt(sh)); .FBExtBranchAdapterTest~assertTrue(r~ok,r~code); .FBExtBranchAdapterTest~assertEq(125000,bs~state~vault("VAULT-1")~expectedMinor); say "PASS: external inbound shipment changes actual Branch Cash vault custody"
+::requires "TestSupport.cls"

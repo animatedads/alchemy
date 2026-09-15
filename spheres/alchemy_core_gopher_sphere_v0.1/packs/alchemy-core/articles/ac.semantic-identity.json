@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "ac.semantic-identity",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Manifest-first dependency identity",
+  "summary": "Accepted package identity comes from integration.json when present. Directory names are a legacy layout fallback only. A present malformed manifest is corruption and must fail closed.",
+  "authority": "project-authority",
+  "invariants": [
+    "Semantic identity is package.name + package.version from integration.json.",
+    "A directory name may disagree with semantic identity; the manifest wins.",
+    "Directory parsing is permitted only when integration.json is absent.",
+    "Decode failure of a present integration.json must not silently downgrade to directory-name inference.",
+    "The catalogue records whether identity came from MANIFEST or DIRECTORY_FALLBACK."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/README.md",
+      "line_start": 9,
+      "line_end": 16,
+      "claim": "Core rules make integration.json semantic identity and directory naming legacy fallback."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_dependency_floor_v0.5/src/AlchemyDependencyFloor.cls",
+      "line_start": 254,
+      "line_end": 322,
+      "claim": "Manifest-first repository catalogue and explicit corruption behavior."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/GIT_SUBMISSION.md",
+      "line_start": 20,
+      "line_end": 33,
+      "claim": "Producer contract repeats manifest-first accepted identity."
+    }
+  ]
+}

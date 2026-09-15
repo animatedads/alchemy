@@ -1,0 +1,94 @@
+parse arg root
+if root == '' then root='/tmp/legal_promotion_v071'
+say 'LEGAL PROMOTION ALGREL -> NOSQL V0.71 START'
+
+source=.NormativeSource~new('C-SQL','CONTRACT','SQL-visible legal authority specimen')
+norm=.LegalNorm~new('C-SQL-1','C-SQL','1','CONTRACT_TERM','SHIP','CONTRACT_BREACH')
+ignored=norm~addCondition(.LegalPredicate~new('READY','KNOWN_TRUE'))
+generation=.LegalRuleGeneration~new('LEGAL-SQL-GEN','1')
+ignored=generation~addSource(source); ignored=generation~addNorm(norm); ignored=generation~seal
+facts=.LegalFactSet~new; ignored=facts~putKnown('READY',.true,.nil,'TEST')
+context=.LegalContext~new('LEGAL-SQL-EVENT','2026-08-20','2026-08-20',facts)
+ignored=context~bindSource('C-SQL','contract binding')
+action=.LegalAction~new('SHIP')
+pinned=.LegalEffectPinnedEvaluator~evaluate(.LegalEffectEngine~new,action,generation,context)
+call Assert pinned~ok,'pinned legal evaluation'
+promotions=.LegalEffectPromotionAdapter~promotionsFrom(pinned~envelope)
+
+fed=.FederatedDatabaseEngine~new(root)
+sql=.NoSQLServerSQL~new(fed)
+algorithmEngine=.AlgorithmRelationEngine~new
+provider=.EvidencePromotionAlgorithmProvider~new('..')
+call Assert algorithmEngine~addProvider(provider),'promotion provider registration'
+classes=.directory~new
+classes['TABLE_DEFINITION']=.TableDefinition
+classes['DATABASE_ROW']=.DatabaseRow
+classes['DATABASE_RESULT']=.DatabaseResult
+bindings=.directory~new
+bindings['EVIDENCE_PROMOTIONS']='evidence_promotions'
+bindings['EVIDENCE_PROMOTION_BASIS']='evidence_promotion_basis'
+bindings['EVIDENCE_PROMOTION_TRACE']='evidence_promotion_trace'
+ctx=.AlgorithmExecutionContext~new('LEGAL-PROMO-SQL-INV','LEGAL-PROMO-SET','LEGAL-PROMO-WORLD')
+external=.NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine,'EVIDENCE_PROMOTIONS',promotions,ctx,classes,bindings)
+call Assert external~isReady,'promotion external engine ready' external~lastError
+ignored=fed~addEngine(external)
+call Assert provider~invocationCount=0,'registration is observational'
+meta=fed~tableMetadata('evidence_promotions')
+call Assert meta \== .nil,'promotion metadata visible'
+call Assert provider~invocationCount=0,'metadata does not execute promotion projection'
+
+rs=sql~execute("SELECT target_fact, value_boolean, authority, promotion_status, policy_id, rule_id FROM evidence_promotions ORDER BY target_fact")
+call Ok rs
+call Assert rs~rows~items=3,'three legal status promotions visible'
+call Assert provider~invocationCount=1,'first promotion row demand materializes once'
+blockedFound=.false
+reviewFound=.false
+do r over rs~rows
+  if r['target_fact']='LEGAL_ACTION_BLOCKED' then do
+    blockedFound=.true
+    call Assert r['value_boolean']=.true,'blocked promotion true'
+    call Assert r['promotion_status']='AUTHORIZED','blocked promotion authorized'
+    call Assert r['authority']~pos('LEGAL_EFFECT/LEGAL-SQL-GEN@')=1,'authority binds legal generation closure'
+  end
+  if r['target_fact']='LEGAL_ACTION_REVIEW_REQUIRED' then reviewFound=.true
+end
+call Assert blockedFound,'blocked row visible'
+call Assert reviewFound,'review row visible'
+
+basis=sql~execute("SELECT promotion_id, basis_kind, basis_id FROM evidence_promotion_basis ORDER BY promotion_id, basis_ordinal")
+call Ok basis
+call Assert basis~rows~items>=9,'promotion basis rows remain normalized/auditable'
+call Assert provider~invocationCount=1,'basis relation shares one materialization'
+
+/* SQL can inspect a promotion but cannot apply or rewrite it. */
+mutation=sql~execute("UPDATE evidence_promotions SET promotion_status='AUTHORIZED' WHERE target_fact='LEGAL_ACTION_BLOCKED'")
+call Assert mutation~error=.Error~SQLUNSUPPORTED,'promotion audit relation read-only at owning external provider'
+call Assert provider~invocationCount=1,'mutation rejection does not rerun provider'
+
+/* Application remains an explicit out-of-band authority step. */
+world=.RYTAWorldState~new('LEGAL-PROMO-WORLD')
+applied=.EvidencePromotionApplier~apply(promotions,world)
+call Assert applied~applied=3,'explicit promotion application works'
+call Assert world~isKnownTrue('LEGAL_ACTION_BLOCKED'),'HardWorld receives blocked fact only after explicit apply'
+call Assert provider~invocationCount=1,'HardWorld application is not SQL provider execution'
+
+say 'provider invocations:' provider~invocationCount
+say 'LEGAL PROMOTION ALGREL -> NOSQL V0.71: OK'
+exit 0
+
+Ok: procedure
+  use arg rs
+  if rs~status=.Error~SUCCESS then return .true
+  raise syntax 93.900 additional('SQL failed: ' || rs~error || ' ' || rs~message)
+
+Assert: procedure
+  use arg condition,message,detail=''
+  if condition then return .true
+  raise syntax 93.900 additional('ASSERT FAILED: ' || message || ' ' || detail)
+
+::requires '__NOSQLSERVER_CLS__'
+::requires 'LegalEffect.cls'
+::requires '../HardWorld.cls'
+::requires '../integration/LegalEffectPromotionAdapter.cls'
+::requires '../integration/EvidencePromotionAlgorithmProvider.cls'
+::requires '../integration/NoSQLServerAlgorithmRelationExternalEngine.cls'

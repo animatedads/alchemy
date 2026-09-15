@@ -1,0 +1,38 @@
+Qualification runtime: Open Object Rexx 5.3.0 r13196 Internal Test Version (build 2026-08-03).
+
+PASS Native database capability model
+  - priority selects PostgreSQL Foreign Runtime primary
+  - capability requirement can select a lower-priority fallback
+  - absent capability is UNKNOWN, not silently UNSUPPORTED
+
+PASS PostgreSQL native offline
+  - Foreign Runtime v0.22.2 loads libpq
+  - PQlibVersion = 170010 on qualification host
+  - capability and limitation publication available before session acquisition
+  - deterministic connection failure produces evidence and no fabricated result
+
+PASS PostgreSQL Database Core adapter
+  - PostgreSQLNativeCommandExecutor satisfies DatabaseCommandExecutor contract
+  - current PostgreSQLEngine remains the SQL/transaction compiler
+  - failed native connection maps through Database Core as CONNECTIONFAILED
+  - NoSQL/data semantics are not copied into this package
+
+PASS PostgreSQL process fallback contract
+  - uses existing DatabaseProcessCommandExecutor
+  - explicitly separate implementation identity and limitations
+  - psql was not installed on qualification host; live process fallback was not executed
+
+PASS GeoPackage ooRexx portable backend
+  - uses NoSQLServer v0.79 GeoPackageDatabaseEngine by package reference
+  - direct pure-ooRexx binary reader discovers 3 tables in bundled fixture
+  - SELECT sample_address LIMIT 2 returns 2 rows
+  - accessPath = GEOPACKAGE_NATIVE_SQLITE_SCAN
+  - mutation is explicitly UNSUPPORTED
+  - FOREIGN_ACCELERATION is CONDITIONAL, not required
+
+Design acceptance:
+  - backend selection occurs before acquisition
+  - NativeDatabaseBackendLease pins implementation identity
+  - no mid-session / mid-transaction replay through a fallback
+  - capabilities, limitations, requirements, implementation kind and qualification status are machine-readable
+  - pure ooRexx GIS remains the portable no-external-library baseline; Foreign Runtime acceleration is additive

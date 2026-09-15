@@ -1,0 +1,45 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": {
+    "provider": "native",
+    "names": [
+      "./bridge/liboorexx_api_h2.so",
+      "bridge/liboorexx_api_h2.so",
+      "liboorexx_api_h2.so"
+    ],
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "functions": {
+    "h2_client_new": {
+      "symbol": "api_h2_client_new",
+      "return": {"type":"pointer","object":"api_h2_client","ownership":"owned","destructor":"api_h2_client_free"},
+      "args": []
+    },
+    "h2_submit": {
+      "symbol": "api_h2_submit",
+      "return": "i32",
+      "args": ["pointer","utf8","utf8","utf8","utf8","utf8","bytes","size_t"]
+    },
+    "h2_next_output": {
+      "symbol": "api_h2_next_output",
+      "return": "ssize_t",
+      "args": ["pointer",{"type":"pointer","direction":"out"},"size_t"]
+    },
+    "h2_feed": {
+      "symbol": "api_h2_feed",
+      "return": "ssize_t",
+      "args": ["pointer","bytes","size_t"]
+    },
+    "h2_status": {"symbol":"api_h2_status","return":"i32","args":["pointer"]},
+    "h2_complete": {"symbol":"api_h2_complete","return":"i32","args":["pointer"]},
+    "h2_stream_error": {"symbol":"api_h2_stream_error","return":"i32","args":["pointer"]},
+    "h2_body_length": {"symbol":"api_h2_body_length","return":"size_t","args":["pointer"]},
+    "h2_copy_body": {"symbol":"api_h2_copy_body","return":"size_t","args":["pointer",{"type":"pointer","direction":"out"},"size_t"]},
+    "h2_headers_length": {"symbol":"api_h2_headers_length","return":"size_t","args":["pointer"]},
+    "h2_copy_headers": {"symbol":"api_h2_copy_headers","return":"size_t","args":["pointer",{"type":"pointer","direction":"out"},"size_t"]},
+    "h2_error_string": {"symbol":"api_h2_error_string","return":"utf8","args":["i32"]},
+    "ssl_set_client_alpn": {"symbol":"api_ssl_set_client_alpn","return":"i32","args":["pointer","i32"]},
+    "ssl_selected_alpn": {"symbol":"api_ssl_selected_alpn","return":"utf8","args":["pointer"]}
+  }
+}

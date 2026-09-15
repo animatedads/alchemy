@@ -1,0 +1,19 @@
+SAFETY7 VALIDATION
+
+Permanent change: System/370 AF / MONITOR CALL masked/no-op path only.
+
+- 83 .cls/.rex sources compile under supplied ooRexx 5.3.0 r13196 debug runtime
+- all 39 tests/test_*.rex scripts pass or expected-skip when external real media
+  is not passed
+- both historical MVT media tests pass explicitly against supplied MVTRES.350
+- focused MC test proves valid masked no-op, class-selective CR8 masking,
+  unchanged CC, reserved-nibble rejection, and fail-closed enabled-class path
+- journal/live MC trial proves trial insertion survives architectural rewind and
+  same-name OPAF replacement supersedes the earlier candidate
+- generic live-method replacement regression remains green after AF promotion
+- freeze/journal separation regressions remain green
+- fresh whole-trajectory permanent-source MVT replay passes the old AF frontier
+  and stops at B0, IA 018A72, ICOUNT 511782, bytes B05458F0B094
+- no 3215 output divergence is observed on that replay
+- SSC v0.2.2 qualification remains pending because that exact dependency was
+  not supplied/recoverable; v0.2.3 is deliberately not substituted

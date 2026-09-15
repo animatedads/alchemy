@@ -1,0 +1,59 @@
+Vector Meridian Markets Wire UI Web v0.2 validation
+===================================================
+
+Runtime used for ooRexx qualification
+--------------------------------------
+Open Object Rexx 5.3.0 r13196 - Internal Test Version
+
+Dependencies used
+-----------------
+Wire UI Builder v0.11
+Wire UI Server v0.17
+Alchemy Wire UI JS v0.4-dev4
+Alchemy Objects v0.8
+ooRexx Crypto v0.5
+Queue Fabric v0.9-dev4 (live architecture dependency; not directly invoked by semantic fixture tests)
+VMM v0.11 semantic/runtime baseline (not modified by this package)
+
+Browser/package tests
+---------------------
+./run_tests.sh
+PASS
+
+Coverage:
+- browser-safe bootstrap contract
+- live projection shell boundary
+- no VMM business/action literals in live index/js
+- non-authoritative preview/no-network boundary
+- exact compiled release structure/action/journey checks
+- canonical preview starter and HTTP health smoke
+
+Builder/Server qualification
+----------------------------
+./run_qualification.sh with the qualified dependency roots
+PASS
+
+Builder semantic fixture:
+- package VECTOR_MERIDIAN_MARKETS_OPERATIONS@2
+- 23 exact HUMAN_VISUAL projections
+- one HUMAN_VISUAL journey plan
+- four states: DEALING / INSTITUTIONAL / TREASURY / EXCEPTIONS
+- operator action definitions compile exactly
+- no VMM business-object references in compiled release
+
+Reproducibility:
+- rebuilt compiled/vector_meridian_markets_operations_v0.2.json byte-for-byte
+- shipped compiled package contentAddress: wuid01-407E883C
+
+Wire UI Server v0.17 authority regression:
+- action rejected before server action availability is projected
+- available cancel intent reaches server dispatcher
+- invented VMM.ORDER.EXECUTE rejected as ACTION_NOT_BOUND_TO_ELEMENT
+- Federation Merchant access point rejected as ACCESS_POINT_OWNERSHIP_MISMATCH
+- mismatched site release content address rejected as SITE_RELEASE_MISMATCH
+- fixture dispatcher contains no VMM business implementation
+
+Syntax qualification
+--------------------
+rexxc wire_ui/VMMWireUIDesignFixture.cls        PASS
+rexxc tests/test_server_action_authority.rex    PASS

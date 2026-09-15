@@ -1,0 +1,17 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {"name":"oorexx_native_database_backends","version":"0.1","kind":"oorexx"},
+  "environment": {
+    "set": {
+      "DB_CORE_ROOT": "${REPO_ROOT}/packages/oorexx_db_skeleton_v0_46",
+      "FOREIGN_RUNTIME_ROOT": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.2"
+    }
+  },
+  "tests": [{
+    "name":"native-database-backends-v01",
+    "argv":["sh","run_tests.sh"],
+    "timeout_seconds":120,
+    "environment":{"require_dirs":["DB_CORE_ROOT","FOREIGN_RUNTIME_ROOT"],"report":["DB_CORE_ROOT","FOREIGN_RUNTIME_ROOT"]}
+  }],
+  "publish":{"tree":{"source":".","path":"packages/oorexx_native_database_backends_v0.1"}}
+}

@@ -1,0 +1,33 @@
+--- a/src/FederationBankEngine.cls
++++ b/src/FederationBankEngine.cls
+@@ -1330,7 +1330,11 @@
+   hold = self~hold(holdId)
+   if hold == .nil then return .FederationBankResult~failure("HOLD_NOT_FOUND", holdId)
+   if hold~status <> "ACTIVE" then return .FederationBankResult~failure("HOLD_NOT_ACTIVE", holdId)
+-  if hold~accountId <> customerAccountId | hold~currency <> currency | hold~amountMinor <> amount then return .FederationBankResult~failure("ATM_HOLD_MISMATCH", holdId)
++  /* A single-use ATM reservation may settle less than its ceiling when the
++     physical dispenser reports a partial dispense.  More than the reserved
++     amount is never permitted; the unused reservation is released below with
++     the hold because this authority cannot be reused for another cash event. */
++  if hold~accountId <> customerAccountId | hold~currency <> currency | amount > hold~amountMinor then return .FederationBankResult~failure("ATM_HOLD_MISMATCH", holdId)
+   customerAccount = self~account(customerAccountId); cashAccount = self~account(cashAccountId)
+   if customerAccount == .nil then return .FederationBankResult~failure("DEBIT_ACCOUNT_NOT_FOUND", customerAccountId)
+   if cashAccount == .nil | cashAccount~internalAccount = .false then return .FederationBankResult~failure("ATM_CASH_ACCOUNT_NOT_FOUND", cashAccountId)
+@@ -1348,6 +1352,7 @@
+   do posting over postingSet; postings~append(posting); end
+   transactions[tx] = postingSet; holds[holdId] = releasedHold
+   d = self~fundsState(customerAccountId); d["postings"] = postingSet; d["transactionId"] = tx; d["holdId"] = holdId; d["cashSettlementAccountId"] = cashAccountId
++  d["reservedMinor"] = hold~amountMinor; d["unusedReservedMinor"] = hold~amountMinor - amount
+   if databaseCommit <> .nil then do key over .array~of("databaseTransactionId","databaseOutcome","databaseAttempts","databaseOperationCount"); d[key]=databaseCommit~value[key]; end
+   return .FederationBankResult~success(d)
+ 
+--- a/src/FederationBankAtmGateway.cls
++++ b/src/FederationBankAtmGateway.cls
+@@ -507,6 +507,7 @@
+     end
+     when op="OFFLINE_WITHDRAWAL_ADVICE" then do
+       s=self~sessionFor(req,.true); if \s~ok then return self~failure(req,s)
++      if d~hasIndex("dispensedMinor") then if d["dispensedMinor"] + 0 <> d["amountMinor"] + 0 then return self~response(req,.false,"ATM_OFFLINE_DISPENSE_AMOUNT_MISMATCH","amountMinor must equal physical dispensedMinor")
+       validated=offlineAuthorities~validateAdvice(d["offlineAuthorityId"],req["terminalId"],s~value["customerId"],d["accountId"],d["currency"],d["amountMinor"],req["rulesetId"],req["rulesVersion"],req["idempotencyKey"],d["physicalTransactionId"])
+       if \validated~ok then return self~failure(req,validated)
+       authority=validated~value; mode=authority["authorityMode"]

@@ -1,0 +1,80 @@
+== compile ==
+ooRexx Reputation Feed 0.12
+78
+== alchemy-inheritance ==
+PASS test_reputation_feed_alchemy_inheritance classes=72
+== alchemy-base ==
+PASS test_reputation_feed_alchemy_base base=0.8 api=reputation.feed/0.12
+== event-alchemy-base ==
+PASS test_reputation_feed_event_alchemy_base base=0.8 api=reputation.feed/0.12
+== acquisition-alchemy-base ==
+PASS test_acquisition_alchemy_base base=0.8 api=reputation.feed/0.12
+== acquisition-adapters ==
+PASS test_acquisition_adapter_diversity api= reputation.feed/0.12
+== source-authentication ==
+PASS test_source_authentication api=reputation.feed/0.12
+== source-history-replay ==
+PASS test_source_history_replay events=7
+== source-auth-claim-bridge ==
+PASS test_source_auth_claim_bridge confidence=73
+== source-history-corroboration ==
+PASS test_source_history_corroboration_bridge history=HISTORY:NEWS-COMP:2026-08-24T21:10:27.233790
+== alchemy-v08-adoption ==
+PASS test_alchemy_v08_adoption objects=5
+== librarian-claim-bridge ==
+PASS test_librarian_claim_bridge api= reputation.feed/0.12
+== librarian-assertion-ancestry ==
+PASS test_librarian_assertion_ancestry_bridge family=ASSERTION:BOEING-PR-X
+== librarian-lineage ==
+PASS test_librarian_paragraph_lineage
+== reach-range-lineage ==
+PASS test_reach_range_lineage_separation
+== transitive-lineage ==
+PASS test_lineage_transitive_group
+== branching-lineage ==
+PASS test_lineage_branching_group
+== provenance-corroboration ==
+PASS test_provenance_aware_corroboration eligible=2 discovery=2
+== assertion-ancestry-corroboration ==
+PASS test_assertion_ancestry_corroboration publications=4 assertion_roots=2
+== interaction-assertion-root-dedup ==
+PASS test_interaction_assertion_root_dedup families=2
+== event-corroboration ==
+PASS test_event_corroboration_lineage_threshold status= CORROBORATED families= 2/2 confidence=86/70
+== correction-replay ==
+PASS test_event_contested_correction_replay before=CORROBORATED after=CORROBORATING contested=CONTESTED
+== watch-salience ==
+PASS test_watchset_geographic_salience watch=100 GB=HIGH GR=LOW
+== interaction-event-acquisition ==
+PASS test_interaction_event_acquisition_bridge items=4 assessments=1
+== structured-utterance-acquisition ==
+PASS test_structured_utterance_acquisition_bridge tokens=19
+== interaction-alchemy-v08-adoption ==
+PASS test_interaction_alchemy_v08_adoption objects=4
+== effect-bridge ==
+PASS test_effect_bridge
+== hypothesis-effect-bridge ==
+PASS test_hypothesis_effect_observation_bridge observations= 2 blocked= 0
+== queue-fabric-bridge ==
+PASS test_queue_fabric_bridge payload_identity=7 authority_boundary=preserved persistence=registered decision_trace=1
+== queue-persistence-codec ==
+PASS test_queue_persistence_codec types=7 nested_claim=1 interaction_evidence=1 decision_trace=1
+== queue-fabric-persistence ==
+PASS test_queue_fabric_persistence restart=1 retained=1 types=7 rich_objects=preserved interaction=1 decision_trace=1
+== institutional-policy-governance ==
+PASS test_institutional_policy_governance before=CORROBORATED after=CORROBORATING counterfactual=CORROBORATING
+== institutional-policy-deployment-topology ==
+PASS test_institutional_policy_deployment_topology active=RF-DEP-GLOBAL staged=POLICY_STAGED pilot=RF-DEP-KZ-PILOT
+== institutional-policy-progressive-rollout ==
+PASS test_institutional_policy_progressive_rollout normal=1.0 pilot=2.0 cut=2.0 rollback=1.0
+== governed-decision-trace ==
+PASS test_governed_decision_trace status=CORROBORATING eligible=1 discovery=1 reasons=2
+== logging-decision-trace ==
+PASS test_logging_decision_trace_bridge events=1 payload_object=preserved policy_owned_by=logging
+== governed-effect-bridge ==
+PASS test_governed_effect_bridge allowed=2 strict=HYPOTHESIS_NOT_CORROBORATED counterfactual=COUNTERFACTUAL_NOT_PROMOTABLE
+== governed-effect-deployment ==
+PASS test_governed_effect_deployment_evidence observations=2
+== runtime-registry ==
+PASS test_runtime_registry
+REPUTATION FEED V0.12 ALL REQUESTED TESTS: OK

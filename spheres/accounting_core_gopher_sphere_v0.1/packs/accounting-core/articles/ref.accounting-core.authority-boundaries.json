@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "ref.accounting-core.authority-boundaries",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "Authority boundaries: event, policy, posting and evidence",
+  "summary": "The preferred integration path is authoritative AccountingEvent -> effective legal-entity AccountingPolicy -> validated AccountingJournalDraft -> immutable AccountingBook entry. The core validates identities, period/chart/currency mechanics and evidence binding; it does not decide the legal or economic substance of the source event.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Operational systems do not normally post journals directly; they emit normalized AccountingEvent evidence.",
+    "The accounting engine checks legalEntityId and source replay/conflict before policy execution.",
+    "AccountingPolicy has both a semantic policyRef and immutable policyIdentity; the resulting journal retains both.",
+    "An accepted policy draft must remain bound to the source event, event fingerprint, correlation, counterparty, source authority and evidence refs.",
+    "Exact replay returns DUPLICATE before policy dispatch; changed reuse of a source identity is SOURCE_EVENT_CONFLICT.",
+    "Lower-level direct posting remains for controlled accountant/manual/migration workflows but is not silently adopted as event-transaction truth later."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/ACCOUNTING_EVENT_TRANSACTION_CONTRACT.md",
+      "claim": "Operational event, policy identity, proposal binding, replay and company-isolation authority boundaries."
+    }
+  ]
+}

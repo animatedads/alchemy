@@ -1,0 +1,25 @@
+Alchemy Wire UI JS v0.4-dev4 validation
+========================================
+Date: 2026-08-25
+
+Reconciles two colliding v0.4-dev3 archives:
+- material branch d1851655daee3ff882ca7f948a5ea06111e1c8faecc7431882f52ef504f62d45
+- FlyLo full-booking branch 05a19d07ec9a8802dcf654123b4a474633542fcfb962f3e2093d7c5f0ed675be
+
+Validated against:
+- Wire UI Server v0.10
+- Wire UI Builder v0.2
+- Queue Fabric v0.9-dev4
+- Queue Fabric Web Gateway v0.2
+- Alchemy Objects v0.8
+- FlyLo v0.3.1
+
+Acceptance:
+- npm test: 45/45 PASS
+- exact material version/content-address immutability PASS
+- FORM/OFFER_LIST/SEMANTIC_RECORD rendering PASS
+- CHOICE_LIST/TOKEN_FORM rendering PASS
+- semantic interaction profile / render profile separation PASS
+- CREATE_INSTANCE cold-cache definition barrier PASS
+- current Queue Fabric Web Gateway suite PASS
+- FlyLo SEARCH -> OFFERS -> PASSENGERS -> ASK -> EXTRAS -> REVIEW -> PAYMENT -> CONFIRMED over real WebSocket/Queue Fabric PASS

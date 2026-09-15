@@ -1,0 +1,171 @@
+say 'STRUCTURED RELATION V0.7 -> HARDWORLD RICH EVIDENCE START'
+
+/* Actual XML / EDIFACT / X12 facts from the supplied structured-source plugin. */
+xmlDoc=.XmlDocumentContext~new('__PLUGIN_FIXTURES__/orders.xml')
+xmlDoc~registerNamespace('o','urn:example:orders')
+xmlDoc~registerNamespace('c','urn:example:common')
+xmlProvider=.XmlRelationProvider~new(.BridgeResult)
+xmlDef=xmlProvider~defineRelation('xml_lines',xmlDoc,'/o:Orders/o:Order/o:Line')
+xmlDef~columnMap('business_id','../@id')
+xmlFact=xmlProvider~table('xml_lines')~readRows[1]~fact('business_id')
+xmlFact~annotate('bridgeTest','preserved')
+
+ediDoc=.EdiFactDocumentContext~new('__PLUGIN_FIXTURES__/orders.edi')
+ediProvider=.EdiFactRelationProvider~new(.BridgeResult)
+ediDef=ediProvider~defineRelation('edi_orders',ediDoc,'MESSAGE:ORDERS')
+ediDef~columnMap('business_id','BGM/2')
+ediFact=ediProvider~table('edi_orders')~readRows[1]~fact('business_id')
+
+x12Doc=.X12DocumentContext~new('__PLUGIN_FIXTURES__/purchase_order.x12')
+x12Provider=.X12RelationProvider~new(.BridgeResult)
+x12Def=x12Provider~defineRelation('x12_orders',x12Doc,'TRANSACTION:850')
+x12Def~columnMap('business_id','BEG/3')
+x12Fact=x12Provider~table('x12_orders')~readRows[1]~fact('business_id')
+
+xmlRich=.StructuredRelationRichEvidenceAdapter~adaptFact(xmlFact,'FROZEN_OBSERVATION','STRUCTURED-V07-XML')
+ediRich=.StructuredRelationRichEvidenceAdapter~adaptFact(ediFact,'FROZEN_OBSERVATION','STRUCTURED-V07-EDI')
+x12Rich=.StructuredRelationRichEvidenceAdapter~adaptFact(x12Fact,'FROZEN_OBSERVATION','STRUCTURED-V07-X12')
+
+call Assert xmlRich~nativeObject == xmlFact~source, 'XML native source object survives bridge'
+call Assert ediRich~nativeObject == ediFact~source, 'EDIFACT native source object survives bridge'
+call Assert x12Rich~nativeObject == x12Fact~source, 'X12 native source object survives bridge'
+call Assert xmlRich~sources[1]~sourceFormat='XML', 'XML source format'
+call Assert ediRich~sources[1]~sourceFormat='EDIFACT', 'EDIFACT source format'
+call Assert x12Rich~sources[1]~sourceFormat='X12', 'X12 source format'
+call Assert xmlRich~sources[1]~sourcePath=xmlFact~sourcePath, 'XML native path survives'
+call Assert ediRich~sources[1]~sourcePath=ediFact~sourcePath, 'EDIFACT native path survives'
+call Assert x12Rich~sources[1]~sourcePath=x12Fact~sourcePath, 'X12 native path survives'
+call Assert xmlRich~processingHistory~items=xmlFact~processingHistory~items, 'XML processing history count'
+call Assert ediRich~processingHistory~items=ediFact~processingHistory~items, 'EDIFACT processing history count'
+call Assert x12Rich~processingHistory~items=x12Fact~processingHistory~items, 'X12 processing history count'
+call Assert xmlRich~processingHistory[1]~nativeObject == xmlFact~processingHistory[1], 'XML processing event identity preserved'
+call Assert xmlRich~contexts~items=1, 'XML projection context preserved'
+call Assert xmlRich~contexts[1]~nativeFact == xmlFact, 'original RichBusinessFact identity preserved'
+call Assert xmlRich~contexts[1]~nativeRow == xmlFact~row, 'original projected row identity preserved'
+call Assert xmlRich~contexts[1]~annotations['bridgeTest']='preserved', 'fact annotation preserved in frozen context'
+call Assert ediRich~processingHistory[1]~nativeObject == ediFact~processingHistory[1], 'EDIFACT processing event identity preserved'
+call Assert x12Rich~processingHistory[1]~nativeObject == x12Fact~processingHistory[1], 'X12 processing event identity preserved'
+
+/* Re-parsing identical bytes later creates different runtime/timestamp objects but
+   must retain the same deterministic evidence identity. */
+xmlDoc2=.XmlDocumentContext~new('__PLUGIN_FIXTURES__/orders.xml')
+xmlDoc2~registerNamespace('o','urn:example:orders'); xmlDoc2~registerNamespace('c','urn:example:common')
+xmlProvider2=.XmlRelationProvider~new(.BridgeResult)
+xmlDef2=xmlProvider2~defineRelation('xml_lines',xmlDoc2,'/o:Orders/o:Order/o:Line')
+xmlDef2~columnMap('business_id','../@id')
+xmlFact2=xmlProvider2~table('xml_lines')~readRows[1]~fact('business_id')
+xmlFact2~annotate('bridgeTest','preserved')
+xmlRich2=.StructuredRelationRichEvidenceAdapter~adaptFact(xmlFact2,'FROZEN_OBSERVATION','STRUCTURED-V07-XML')
+call Assert xmlRich2~nativeObject \== xmlRich~nativeObject, 'repeat parse has different runtime native object'
+call Assert xmlRich2~algorithmCanonicalText=xmlRich~algorithmCanonicalText, 'wall-clock parse/history timestamps excluded from semantic evidence identity'
+
+/* The bridged objects are real RICH_OBJECT cells, not scalar surrogates. */
+schema=.AlgorithmSchema~new('STRUCTURED_RICH_INPUT')
+schema~add('FACT_ID','TEXT',.false); schema~add('RICH_VALUE','RICH_OBJECT',.false)
+builder=.AlgorithmInputRelationBuilder~new(schema,'STRUCTURED_RICH_INPUT')
+do item over .array~of(.array~of('XML_BUSINESS_ID',xmlRich),.array~of('EDI_BUSINESS_ID',ediRich),.array~of('X12_BUSINESS_ID',x12Rich))
+  vals=.directory~new; vals['FACT_ID']=item[1]; vals['RICH_VALUE']=item[2]
+  call Assert builder~addValues(vals), 'structured rich row accepted'
+end
+snapshot=builder~freeze('STRUCTURED-V07-CROSS-FORMAT')
+provider=.RichBusinessFactAlgorithmProvider~new('__RYTA_ROOT__')
+engine=.AlgorithmRelationEngine~new
+call Assert engine~addProvider(provider), 'rich fact provider registered'
+ctx=.AlgorithmExecutionContext~new('STRUCTURED-V07-INV-1',snapshot~sourceOid,snapshot~sourceOid)
+algorithmResult=engine~execute('RICH_BUSINESS_FACTS',snapshot,ctx)
+call Assert algorithmResult \== .nil, 'structured rich result materialised'
+summary=algorithmResult~relation('RICH_FACT_SUMMARY')
+sources=algorithmResult~relation('RICH_FACT_SOURCES')
+call Assert summary~rows~items=3, 'three cross-format fact summaries'
+call Assert sources~rows~items=3, 'three native source rows, not comma-flattened'
+call Assert provider~invocationCount=1, 'one provider execution'
+
+formats=.set~new
+paths=.set~new
+do row over sources~rows
+  formats~put(row~value('SOURCE_FORMAT'))
+  paths~put(row~value('SOURCE_PATH'))
+  call Assert row~value('NATIVE_OBJECT_PRESERVED')=.true, 'SQL projection reports retained native source object'
+end
+call Assert formats~hasIndex('XML'), 'XML relation source emitted'
+call Assert formats~hasIndex('EDIFACT'), 'EDIFACT relation source emitted'
+call Assert formats~hasIndex('X12'), 'X12 relation source emitted'
+call Assert paths~items=3, 'native paths remain distinct'
+
+/* HardWorld gets explicit fact truth plus rich evidence; evidence is not authority. */
+world=.RYTAWorldState~new('WORLD-STRUCTURED-V07')
+world~putKnown('HAS_QUERY',.true)
+world~putKnown('PRODUCT_RELEVANT',.false)
+world~putKnown('PRODUCT_VALUE_HIGH',.false)
+world~putKnown('UPSELL_OPPORTUNITY',.false)
+world~putKnown('ESSENTIAL_MEDICATION',.true,'TEST_ONLY_STRUCTURED_PROMOTION','TEST_POLICY',xmlRich)
+world~putKnown('IMMEDIATE_ACCESS',.true)
+world~putKnown('GUARANTEED_CUSTODY',.false)
+call Assert world~fact('ESSENTIAL_MEDICATION')~evidence == xmlRich, 'HardWorld retains actual structured evidence bridge object'
+rytaProvider=.RYTAAlgorithmProvider~new(.nil,'__RYTA_ROOT__')
+rytaEngine=.AlgorithmRelationEngine~new
+call Assert rytaEngine~addProvider(rytaProvider), 'RYTA provider registered'
+rytaCtx=.AlgorithmExecutionContext~new('STRUCTURED-RYTA-1','WORLD-STRUCTURED-V07','WORLD-STRUCTURED-V07')
+rytaResult=rytaEngine~execute('VIRTUAL_RYTA',world,rytaCtx)
+call Assert rytaResult~relation('RYTA_ACTION_DECISIONS')~rows[1]~value('STATE')='REMEDIATION_REQUIRED', 'explicit HardWorld rule outcome remains deterministic'
+call Assert world~fact('ESSENTIAL_MEDICATION')~source='TEST_ONLY_STRUCTURED_PROMOTION', 'promotion policy remains explicit, not inferred by adapter'
+
+/* Real invalid XML evidence retains its diagnostic object through the bridge. */
+badDoc=.XmlDocumentContext~new('__PLUGIN_FIXTURES__/plain_order_invalid.xml')
+badProvider=.XmlRelationProvider~new(.BridgeResult)
+badDef=badProvider~defineRelation('bad_lines',badDoc,'/Order/Line')
+badDef~columnMap('quantity','Quantity','INTEGER')
+badFact=badProvider~table('bad_lines')~readRows[1]~fact('quantity')
+call Assert badFact~diagnostics~items=1, 'fixture has diagnostic'
+badRich=.StructuredRelationRichEvidenceAdapter~adaptFact(badFact)
+call Assert badRich~diagnostics~items=1, 'diagnostic survives bridge'
+call Assert badRich~diagnostics[1]~nativeObject == badFact~diagnostics[1], 'diagnostic object identity preserved'
+call Assert badRich~projectionState=.RichEvidenceProjectionState~SCALAR_REFUSED, 'invalid scalar is not flattened into a value'
+
+/* Real cross-format disagreement: XML line 2 says quantity 50; X12 PO1 says 2.
+   The builder preserves both sources and refuses latest-write-wins flattening. */
+xmlQtyProvider=.XmlRelationProvider~new(.BridgeResult)
+xmlQtyDef=xmlQtyProvider~defineRelation('xml_qty',xmlDoc,'/o:Orders/o:Order/o:Line')
+xmlQtyDef~columnMap('quantity','c:Quantity','INTEGER')
+xmlQtyFact=xmlQtyProvider~table('xml_qty')~readRows[2]~fact('quantity')
+x12QtyProvider=.X12RelationProvider~new(.BridgeResult)
+x12QtyDef=x12QtyProvider~defineRelation('x12_qty',x12Doc,'TRANSACTION:850')
+x12QtyDef~columnMap('quantity','PO1/2','INTEGER')
+x12QtyFact=x12QtyProvider~table('x12_qty')~readRows[1]~fact('quantity')
+call Assert xmlQtyFact~value=50, 'real XML fixture quantity 50'
+call Assert x12QtyFact~value=2, 'real X12 fixture quantity 2'
+qtyEvidence=.StructuredRelationRichEvidenceAdapter~combineFacts('ORDER_QUANTITY',.array~of(xmlQtyFact,x12QtyFact),'FROZEN_OBSERVATION','STRUCTURED-V07-QTY-CONFLICT')
+call Assert qtyEvidence~evidenceState='CONFLICT', 'cross-format quantity disagreement is conflict'
+call Assert qtyEvidence~projectionState=.RichEvidenceProjectionState~SCALAR_REFUSED, 'conflict refuses scalar projection'
+call Assert qtyEvidence~scalarValue == .nil, 'no latest-write-wins quantity invented'
+call Assert qtyEvidence~sourceCount=2, 'both quantity evidence sources survive'
+qtyFormats=.set~new
+do sr over qtyEvidence~sources; qtyFormats~put(sr~sourceFormat); end
+call Assert qtyFormats~hasIndex('XML'), 'conflict keeps XML source'
+call Assert qtyFormats~hasIndex('X12'), 'conflict keeps X12 source'
+qtyEvidenceReverse=.StructuredRelationRichEvidenceAdapter~combineFacts('ORDER_QUANTITY',.array~of(x12QtyFact,xmlQtyFact),'FROZEN_OBSERVATION','STRUCTURED-V07-QTY-CONFLICT')
+call Assert qtyEvidenceReverse~algorithmCanonicalText=qtyEvidence~algorithmCanonicalText, 'cross-format evidence set identity is input-order independent'
+
+say 'STRUCTURED RELATION V0.7 -> HARDWORLD RICH EVIDENCE: OK'
+exit 0
+
+Assert: procedure
+  use arg condition,message
+  if \condition then raise syntax 93.900 additional('ASSERT FAILED: ' || message)
+  return
+
+::class BridgeResult public
+::method init
+  use arg operation='SELECT'
+
+::requires '__PLUGIN_ROOT__/src/XmlRelationAdapter.cls'
+::requires '__PLUGIN_ROOT__/src/EdiFactRelationAdapter.cls'
+::requires '__PLUGIN_ROOT__/src/X12RelationAdapter.cls'
+::requires '__RYTA_ROOT__/algorithm/AlgorithmRelation.cls'
+::requires '__RYTA_ROOT__/algorithm/AlgorithmInputRelation.cls'
+::requires '__RYTA_ROOT__/algorithm/AlgorithmIntegrity.cls'
+::requires '__RYTA_ROOT__/algorithm/RichEvidence.cls'
+::requires '__RYTA_ROOT__/algorithm/RYTAAlgorithmProvider.cls'
+::requires '__RYTA_ROOT__/integration/RichBusinessFactAlgorithmProvider.cls'
+::requires '__RYTA_ROOT__/integration/StructuredRelationRichEvidenceAdapter.cls'
+::requires '__RYTA_ROOT__/HardWorld.cls'

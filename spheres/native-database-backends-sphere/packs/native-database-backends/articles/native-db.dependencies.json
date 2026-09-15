@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "native-db.dependencies",
+  "version": "0.1",
+  "sphere": "native-database-backends",
+  "title": "Dependency boundary: reference external packages; do not vendor the stack",
+  "summary": "Native Database Backends intentionally vendors none of Database Core, Foreign Runtime, NoSQLServer, Alchemy Objects, Crypto, libpq or GIS runtime source/binaries. Runtime packages are resolved externally. This prevents stale embedded copies from shadowing canonical components and keeps backend qualification tied to exact companion versions.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Do not copy NoSQLServer, Database Core or Foreign Runtime source into the backend package.",
+    "Qualification records exact companion versions rather than assuming any newer package is compatible.",
+    "A newer roll-up component is available evidence, not automatic requalification of an older backend release.",
+    "Host libraries such as libpq remain external implementation requirements.",
+    "Transitive Alchemy/Crypto requirements belong to the selected external packages unless this component directly acquires such a dependency."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/SOURCE_PROVENANCE.md",
+      "line_start": 3,
+      "line_end": 15,
+      "claim": "Native Database Backends intentionally vendors none of its runtime/database dependencies and records exact qualification companions."
+    },
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/README.md",
+      "line_start": 41,
+      "line_end": 45,
+      "claim": "v0.2 explicitly states that NoSQLServer, Database Core, Foreign Runtime, Alchemy Objects, Crypto, libpq and GIS binaries/source are not vendored."
+    }
+  ]
+}

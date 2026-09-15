@@ -1,0 +1,116 @@
+{
+  "kind": "corpus",
+  "id": "bash-best-practices.guides",
+  "sphere": "bash-best-practices",
+  "title": "Bash best-practice records",
+  "records": [
+    {
+      "aliases": ["topic:strict-mode","set -e","errexit","set -u","pipefail","sourced lib","executed tool","source vs execute"],
+      "topic": "strict-mode-scope",
+      "rule": "Put set -euo pipefail in executed tools, not in files you intend to source; gate side effects on whether you were executed.",
+      "source": "queuebash.sh (no top set) vs bin/queue-* (set -euo pipefail)"
+    },
+    {
+      "aliases": ["topic:child-rc","capture rc","$?","wait","set +e","job code","exit code"],
+      "topic": "child-rc",
+      "rule": "To survive a failing child, scope errexit off for it and read its code into rc at once; decode the code into meaning.",
+      "source": "queuebash.sh worker wait + reserved codes"
+    },
+    {
+      "aliases": ["topic:quoting","double quote","word splitting","spaces","array","$@","$@ quoted"],
+      "topic": "quoting-arrays",
+      "rule": "Quote every expansion; build commands-to-run as arrays and run \"${cmd[@]}\" so spaces/newlines stay within one argument.",
+      "source": "bin/queue-dev-timeout runner array"
+    },
+    {
+      "aliases": ["topic:globs","compgen","bare glob","IFS","read -r","declare -p","csv","tab"],
+      "topic": "glob-ifs-parsing",
+      "rule": "Expand globs via compgen and filter, and scope IFS to the single delimiter for a structured read; re-read persisted arrays via source + declare -p.",
+      "source": "queuebash.sh compgen; assets.d/queue.sh IFS/round-trip"
+    },
+    {
+      "aliases": ["topic:atomic-write","mktemp","temp","atomic rename","mv on same fs","verify before publish","file mail-out"],
+      "topic": "atomic-file-write",
+      "rule": "Write a candidate in the destination dir, verify your own output, then publishing with one atomic mv; clean up on every failure.",
+      "source": "queuebash.sh candidate writes; docs/IPC.md"
+    },
+    {
+      "aliases": ["topic:arithmetic","validate numeric","^[0-9]+$","regex before arithmetic","duration suffix","normalize case","${VAR^^}"],
+      "topic": "numeric-validate",
+      "rule": "Validate an all-digits integer before arithmetic; re-normalize; reject a non-positive bound rather than disabling the protection.",
+      "source": "bin/queue-dev-timeout; assets.d/queue.sh durations"
+    },
+    {
+      "aliases": ["topic:cli-args","arg parse","--flag value","= value","unknown flag","arity","usage exit","--"],
+      "topic": "cli-args",
+      "rule": "Parse exact: both value forms, check arity, reject unknown flags with a usage exit code, and stop at the first positional.",
+      "source": "bin/queue-vcs-assert"
+    },
+    {
+      "aliases": ["topic:json","json emit","escape order","backslash first","python heredoc","sort_keys","stdout only","schema"],
+      "topic": "json-emit",
+      "rule": "Serialize JSON with a real parser (python heredoc) or bounded backslash-first escaping; keep JSON on stdout and version the schema.",
+      "source": "bin/queue-vcs-probe; queuebash.sh escape helper; docs/QUEUE_COMMAND_CONTRACT.md"
+    },
+    {
+      "aliases": ["topic:heredoc","quote delimiter","<<'EOF'","unquoted","verbatim","literal","$ expansion"],
+      "topic": "heredoc-quoting",
+      "rule": "Quote the heredoc delimiter (<<'EOF') whenever the body must be literal; keep an unquoted heredoc only where expansion is wanted.",
+      "source": "providers.d/ask/*.sh static JSON; embedded tool heredocs"
+    },
+    {
+      "aliases": ["topic:data-not-shell","never eval","never source output","provider output","output is data","curl|sh","backtick"],
+      "topic": "output-is-data",
+      "rule": "Treat any provider/remote/renderer output as data, never execute it: no eval, no source, no piped sh, no backtick-into-command.",
+      "source": "docs/ACL_PROVIDER_CONTRACT.md; EU_SOVEREIGN_PROVIDER_CONTRACTS.md; PLAN_ADAPTER_CONTRACT.md"
+    },
+    {
+      "aliases": ["topic:evidence","acceptance","not acceptance","validation output","authority","review"],
+      "topic": "evidence-not-acceptance",
+      "rule": "Treat green test/helper output as evidence for review, never self-authored acceptance or authority.",
+      "source": "docs/QUEUE_DEV_AI_LESSONS.md:33; QUEUE_DEV_ATTEMPT_EVIDENCE.md:29"
+    },
+    {
+      "aliases": ["topic:fail-closed","deny","ambiguous","absent","malformed","missing fixture","deny not allow"],
+      "topic": "fail-closed",
+      "rule": "Deny on ambiguity, malformed input or absence; fail closed and never treat 'no answer' as an allow.",
+      "source": "docs/REMOTE_QUEUE_SERVICE_PROVIDER.md; OCI_EXPLAINABILITY.md"
+    },
+    {
+      "aliases": ["topic:path-safety","symlink","mount","verified object","trusted parent","shared /tmp","magiclink"],
+      "topic": "path-safety",
+      "rule": "Read/write only paths you verified (object or parent), keep untrusted work in a private workspace, and reject path/type crossings into bare shared scratch.",
+      "source": "docs/PROFILING_PATH_LOCK_CONTRACT.md"
+    },
+    {
+      "aliases": ["topic:hash","sha256","signature","verify","trusted key","re-zero","source hygiene","ambient env"],
+      "topic": "hash-source-hygiene",
+      "rule": "Verify integrity against a trusted expectation and re-zero the exact variables a record will set before sourcing it.",
+      "source": "queuebash.sh sha/signature verify; AUTHORISATION re-zero"
+    },
+    {
+      "aliases": ["topic:exit-codes","helper","external command","exit","propagate code","|| exit $?","cannot exit caller"],
+      "topic": "helper-exit",
+      "rule": "An external helper cannot exit its parent; propagate with `helper ... || exit $?` or branch on its code yourself.",
+      "source": "docs/IPC.md external helper model"
+    },
+    {
+      "aliases": ["topic:scope","dynamic scope","mode switch","state leak","QUEUEBASH_OUTPUT_JSON","json leak"],
+      "topic": "dynamic-mode-scope",
+      "rule": "Keep a one-off mode switch scoped to the single invocation and clear/restore it before later commands.",
+      "source": "docs/BOB28_DIRECT_SOURCE_AND_JSON_CONTRACT.md"
+    },
+    {
+      "aliases": ["topic:portability","stat","BSD","date","LF","CRLF","line ending","GNU"],
+      "topic": "portability-lineendings",
+      "rule": "Try GNU then BSD forms with a safe fallback, and keep scripts LF only (CRLF breaks shebang parsing).",
+      "source": "queuebash.sh stat; docs/WINDOWS_WSL2_QUICKSTART.md"
+    },
+    {
+      "aliases": ["topic:namespacing","function prefix","underscore private","local","plugin facade"],
+      "topic": "namespacing",
+      "rule": "Prefix a domain and an underscore for private helpers, keep a stable public facade, and always declare locals.",
+      "source": "assets.d/* plugins (queue_asset_*)"
+    }
+  ]
+}

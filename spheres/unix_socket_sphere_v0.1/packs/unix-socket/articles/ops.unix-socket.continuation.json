@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "ops.unix-socket.continuation",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Continuation doctrine for future Unix Socket work",
+  "summary": "Continue from the semantic/Foreign Runtime split and preserve the safety boundaries already forced by v0.6. New feature work should extend semantics or add separately qualified platform profiles without reopening settled ownership and ABI questions casually.",
+  "authority": "project-authority",
+  "invariants": [
+    "Do not modify stock socket.cls merely to obtain AF_UNIX.",
+    "Do not reintroduce a dedicated Unix-socket native shared library without demonstrated necessity.",
+    "Do not expose raw unpinned pointer graphs, partial ancillary descriptor sets, or ambiguous descriptor ownership.",
+    "Do not weaken CLOEXEC defaults, sendAll nonblocking refusal, pathname socket-only guards, or ABI fail-closed behavior.",
+    "Preserve v0.3-v0.6 observable qualified semantics unless a versioned compatibility break is intentional and documented."
+  ],
+  "procedure": [
+    "Identify whether proposed work is semantic, Foreign Runtime capability, ABI-profile, or OS-specific feature work.",
+    "Add/modify the smallest authoritative layer.",
+    "Add a forcing or regression test for the new invariant.",
+    "Run Foreign Runtime forcing tests when the binding contract changes.",
+    "Run the full Unix Socket suite and fresh-extraction seal before superseding the baseline.",
+    "Update this sphere separately from the executable package."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/INSTALL.md",
+      "line_start": 49,
+      "line_end": 55,
+      "claim": "Release runner explicitly fails on native-shim regression, hard-coded ABI magic, profile/header disagreement, or failure to reject a mismatched profile before native loading.",
+      "note": "Continuation negative controls."
+    }
+  ]
+}

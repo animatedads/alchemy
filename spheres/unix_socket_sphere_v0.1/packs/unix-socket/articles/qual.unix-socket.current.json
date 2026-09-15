@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "qual.unix-socket.current",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Current qualification and negative controls",
+  "summary": "v0.6 passed the inherited stream/datagram/seqpacket, abstract/pathname/unnamed address, poll/nonblocking, descriptor/credential, filesystem-safety and ABI-profile suites under ooRexx 5.3.0 r13196 with source-rebuilt Foreign Runtime v0.22.6.",
+  "authority": "project-authority",
+  "invariants": [
+    "Release qualification includes an independent compiled C-header forcing probe for 67 profile constants and six struct layouts.",
+    "A separate 18-assertion Rexx forcing test checks the actual ABI-native method/field declarations.",
+    "The mismatched ABI test must reject before dlopen.",
+    "Release tests must fail if a dedicated librxunixsocket.so or old rxunixsocket native requirement reappears.",
+    "Vulkan hardware skip in Foreign Runtime qualification is unrelated to Unix Socket semantics and does not weaken the socket qualification claim."
+  ],
+  "procedure": [
+    "Before sealing a successor, rerun the complete Unix Socket suite from a fresh extraction against the exact intended Foreign Runtime and ooRexx runtime."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/QUALIFICATION.md",
+      "line_start": 71,
+      "line_end": 105,
+      "claim": "Qualification records the complete v0.6 semantic regression result and narrowed portability claim.",
+      "note": "Current release qualification."
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "qual.queue-transport.current",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Current qualification evidence",
+  "summary": "Queue Transport v0.1 knowledge is grounded in Queue Fabric v0.9-dev5, qualified on ooRexx 5.3.0 r13196 with accelerated HMAC-SHA-512 and ChaCha20 through Foreign Runtime/OpenSSL. The transport/security slice and broad inherited Queue Fabric behavior are green within recorded scope; several release-level checks remain explicit non-claims.",
+  "authority": "qualification-evidence",
+  "invariants": [
+    "All 14 first-party source classes compile and the ooRexx message-style gate passes.",
+    "Exact IPv4 policy: 11 assertions PASS; encrypted socket transport: 6 assertions PASS; socket security: 13 assertions PASS; encrypted health/failover: 15 assertions PASS.",
+    "Cross-session replay, wrong-direction, tamper, correct-key/wrong-IP pre-auth rejection, and stale-IP removal are executable evidence.",
+    "Foreign Runtime accelerated crypto resolves to /lib/x86_64-linux-gnu/libcrypto.so.3 in this qualification environment.",
+    "Do not promote exact v0.8.2 bilateral compatibility, the uncompleted tail of the long crypto matrix, or Alchemy Autobuild to fresh PASS evidence for dev5."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/VALIDATION.txt",
+      "line_start": 35,
+      "line_end": 49,
+      "claim": "Runtime, accelerated crypto provider and version/identity boundary."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/VALIDATION.txt",
+      "line_start": 73,
+      "line_end": 113,
+      "claim": "Executable secure-transport and broad inherited qualification results."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/VALIDATION.txt",
+      "line_start": 114,
+      "line_end": 124,
+      "claim": "Explicit qualification non-claims."
+    }
+  ]
+}

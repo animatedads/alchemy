@@ -1,0 +1,22 @@
+Job-to-Node Allocator network extension 0.1
+Core allocator: exact source of job_node_allocator_v0.6 (byte-identical)
+Network API: job.node.allocator.network/0.1
+Transport qualification: Queue Fabric v0.9-dev5 queue.transport/2
+
+Qualified behaviours:
+- primitive request/lease/decision network codec
+- PLAN advisory selection without admission/ownership mutation
+- ALLOCATE authoritative delegation to JobNodeAllocator v0.6
+- CHECK exact lease verification
+- RENEW authoritative renewal
+- RELEASE authoritative ownership/admission release
+- per-client operation and ownerNodeId authorization
+- administrator-bound reply routes; wire cannot select arbitrary reply queue
+- requestId idempotent replay
+- requestId conflicting-content rejection
+- durable request-ledger replay across service restart
+- two-process encrypted TCP request/reply over Queue Fabric socket transport
+
+The network adapter does not replace JobNodeAllocator authority. Queue Fabric owns
+transport/authenticated peer delivery; JobNodeAllocator owns placement/admission/
+ownership; the network request ledger owns duplicate request suppression only.

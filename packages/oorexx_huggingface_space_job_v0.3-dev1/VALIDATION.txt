@@ -1,0 +1,18 @@
+ooRexx Hugging Face Space Job v0.3-dev1 validation
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version (user-supplied .deb, isolated extraction)
+
+PASS:
+- tests/test_core.rex
+- tests/test_allocator.rex
+- tests/test_discovery.rex
+- tests/test_receipts.rex
+  - managed artifact SHA-256/size verification
+  - HFArtifactReceipt exposure
+  - payload/control parameter collision rejection before upload
+
+Known environment fixture failure (not introduced by v0.3-dev1):
+- tests/test_https_end_to_end.rex reaches upload then API Client transport returns status 0 / UPLOAD_FAILED:0.
+- The unmodified v0.2.1 baseline fails at the identical stage with the identical evidence under this container/runtime.
+- Therefore native HTTPS end-to-end is not claimed as requalified by this dev increment.
+
+No live Hugging Face Space was modified and no ZeroGPU quota was consumed.

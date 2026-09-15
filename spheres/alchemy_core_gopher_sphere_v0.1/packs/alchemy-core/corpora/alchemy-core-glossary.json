@@ -1,0 +1,200 @@
+{
+  "kind": "corpus",
+  "id": "alchemy-core-glossary",
+  "sphere": "alchemy-core",
+  "title": "Alchemy Core authoritative glossary",
+  "records": [
+    {
+      "id": "term.accepted-main",
+      "term": "accepted main",
+      "definition": "The remote main branch is the accepted-state ledger. It is read through exact detached snapshots and written through separate detached main transactions, not by mutating the ordinary checkout.",
+      "related": [
+        "ac.accepted-main"
+      ]
+    },
+    {
+      "id": "term.ordinary-checkout",
+      "term": "ordinary checkout",
+      "definition": "A local Git checkout used as a repository handle. It may be dirty or stale and is deliberately not the execution or acceptance workspace.",
+      "related": [
+        "ac.accepted-main",
+        "ac.runtime-capsule"
+      ]
+    },
+    {
+      "id": "term.repository-lease",
+      "term": "AlchemyRepositoryLease",
+      "definition": "Kernel-backed cross-process coordination for local Git ref/object/worktree mutation, owned by an ooRexx lifecycle object with a flock(2) holder.",
+      "related": [
+        "ac.repository-lease"
+      ]
+    },
+    {
+      "id": "term.materialized-package",
+      "term": "AlchemyMaterializedPackage",
+      "definition": "Transport-neutral local package root plus source provenance; requires package-root integration.json.",
+      "related": [
+        "ac.transport-boundary"
+      ]
+    },
+    {
+      "id": "term.integration-manifest",
+      "term": "integration.json",
+      "definition": "Package-root declarative identity, exact dependencies, test/environment contract and publication intent.",
+      "related": [
+        "ac.package-model",
+        "ac.semantic-identity"
+      ]
+    },
+    {
+      "id": "term.semantic-identity",
+      "term": "semantic package identity",
+      "definition": "Manifest package.name@package.version when integration.json exists; directory spelling is not authoritative.",
+      "related": [
+        "ac.semantic-identity"
+      ]
+    },
+    {
+      "id": "term.directory-fallback",
+      "term": "DIRECTORY_FALLBACK",
+      "definition": "Legacy identity derivation used only when integration.json is absent.",
+      "related": [
+        "ac.semantic-identity"
+      ]
+    },
+    {
+      "id": "term.dependency-floor",
+      "term": "dependency floor",
+      "definition": "Exact package-root availability map consumed by planning; bootstrap availability is not acceptance.",
+      "related": [
+        "ac.dependency-floor"
+      ]
+    },
+    {
+      "id": "term.execution-plan",
+      "term": "AlchemyExecutionPlan",
+      "definition": "Resolved per-package plan containing exact dependency roots and planned tests with argv/cwd/timeout/environment.",
+      "related": [
+        "ac.package-model",
+        "ac.execution"
+      ]
+    },
+    {
+      "id": "term.rexx-path-precedence",
+      "term": "REXX_PATH precedence",
+      "definition": "Base environment, dependency entries, package environment, then test environment; later layers may prepend/append/replace as declared.",
+      "related": [
+        "ac.package-model"
+      ]
+    },
+    {
+      "id": "term.submission-branch",
+      "term": "submission branch",
+      "definition": "autobuild-submit/<submission-id> transport envelope carrying package body then ready marker; never merged into accepted main.",
+      "related": [
+        "ac.submission-protocol"
+      ]
+    },
+    {
+      "id": "term.ready-marker",
+      "term": "ready.json",
+      "definition": "Immutable Git submission go-marker committed after the package body.",
+      "related": [
+        "ac.submission-protocol"
+      ]
+    },
+    {
+      "id": "term.package-tree",
+      "term": "package tree",
+      "definition": "Exact Git tree object for autobuild/inbox/<id>/package used to deduplicate/conflict-check a submission identity.",
+      "related": [
+        "ac.inbox"
+      ]
+    },
+    {
+      "id": "term.receipt",
+      "term": "terminal receipt",
+      "definition": "autobuild/receipts/<submission-id>.json; terminal idempotency evidence that suppresses reprocessing.",
+      "related": [
+        "ac.evidence",
+        "ac.inbox"
+      ]
+    },
+    {
+      "id": "term.result-evidence",
+      "term": "result.json",
+      "definition": "Durable run evidence containing source, package, publication, per-test status, bounded environment and log paths.",
+      "related": [
+        "ac.evidence"
+      ]
+    },
+    {
+      "id": "term.runtime-capsule",
+      "term": "runtime capsule",
+      "definition": "Versioned immutable local copy of Alchemy Core packages/tools used by the resident systemd service.",
+      "related": [
+        "ac.runtime-capsule"
+      ]
+    },
+    {
+      "id": "term.publish-collision",
+      "term": "publish collision",
+      "definition": "Existing accepted target with different content; a hard error rather than overwrite.",
+      "related": [
+        "ac.publication"
+      ]
+    },
+    {
+      "id": "term.bootstrap-only",
+      "term": "BOOTSTRAP_ONLY_NOT_ACCEPTANCE",
+      "definition": "Ledger semantics stating that dependency seeding establishes availability only.",
+      "related": [
+        "ac.dependency-floor"
+      ]
+    },
+    {
+      "id": "term.prebase",
+      "term": "prebase",
+      "definition": "Development source checkpoint before RC qualification; never equivalent to an accepted runtime release.",
+      "related": [
+        "ac.v06-continuation",
+        "ac.versioning"
+      ]
+    },
+    {
+      "id": "term.standard-adoption",
+      "term": "STANDARD adoption",
+      "definition": "Alchemy Objects readiness level requiring BASE plus purpose, package version, authorship, implemented standards and explicit design limitations metadata.",
+      "related": [
+        "ac.object-foundation",
+        "ac.v06-continuation"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/README.md",
+      "line_start": 1,
+      "line_end": 34,
+      "claim": "Accepted Core architecture vocabulary."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/GIT_SUBMISSION.md",
+      "line_start": 1,
+      "line_end": 33,
+      "claim": "Submission vocabulary and invariants."
+    },
+    {
+      "artifact": "alchemy_objects_v0.8.zip",
+      "sha256": "7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073",
+      "member": "alchemy_objects_v0.8/README.md",
+      "line_start": 13,
+      "line_end": 29,
+      "claim": "Alchemy Objects adoption vocabulary."
+    }
+  ]
+}

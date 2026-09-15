@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "qt.failure-semantics",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Security failure semantics",
+  "summary": "Transport security failures are fail-closed and must not mutate queue state. Wrong IP fails before HELLO, wrong PSK fails handshake authentication, modified secure frames fail MAC verification before application processing, and listeners with no trusted source addresses refuse to start.",
+  "authority": "project-authority",
+  "invariants": [
+    "Wrong source IP: close before HELLO, increment ipRejectedCount, no queue mutation.",
+    "Allowed IP with wrong PSK: fail HELLO authentication, no queue mutation.",
+    "Modified ciphertext or tag: fail authentication before decrypt/application processing.",
+    "Empty trusted-source set: listener start fails closed.",
+    "A security failure must never be converted into a successful queue operation merely to enable failover."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/OCI_TWO_NODE_DEPLOYMENT.md",
+      "line_start": 67,
+      "line_end": 73,
+      "claim": "Published expected failure semantics for wrong IP, wrong PSK, tamper/replay and empty peer set."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 790,
+      "line_end": 819,
+      "claim": "Listener start fails when trusted source allowlist is empty."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 829,
+      "line_end": 864,
+      "claim": "Wrong source IP is closed and counted before connection handling."
+    }
+  ]
+}

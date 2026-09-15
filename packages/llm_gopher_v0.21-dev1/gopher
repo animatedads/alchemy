@@ -1,0 +1,171 @@
+#!/bin/sh
+set -eu
+
+ROOT=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+
+
+print_setup_help() {
+cat <<'EOF'
+LLM GOPHER SETUP / BOOTSTRAP
+============================
+
+usage: gopher setup [--env DIR] [--oorexx-deb FILE] [--profile NAME] [--no-launch] [-- GOPHER_ARGS...]
+
+SETUP is the first operation. It is handled by the shell launcher before Python is required.
+
+It:
+  1. checks the required tools;
+  2. checks for an already-usable ooRexx runtime;
+  3. checks explicit/configured/common mount locations for an ooRexx .deb;
+  4. creates a private mode-0700 environment (runtime/work/state);
+  5. privately unpacks ooRexx if required;
+  6. writes state/setup.json;
+  7. launches Gopher unless --no-launch was requested.
+
+Safety:
+  - no downloads;
+  - no host package installation;
+  - no system runtime replacement;
+  - exact resolved paths are recorded.
+
+options:
+  --env DIR          Private environment root.
+  --oorexx-deb FILE  Exact ooRexx Debian package.
+  --profile NAME     Default sphere/profile after setup (default: oorexx).
+  --no-launch        Prepare only; report environment state.
+  -- GOPHER_ARGS...  Launch normal Gopher with these arguments.
+  -h, --help         Show setup help without changing the environment.
+
+environment:
+  LLM_GOPHER_PYTHON
+  LLM_GOPHER_OOREXX_DEB
+  OOREXX_DEB
+  LLM_GOPHER_ENV
+
+examples:
+  gopher setup
+  gopher setup --no-launch
+  gopher setup --oorexx-deb /mnt/data/oorexx-5.3.0-13196.deb --no-launch
+  gopher setup -- --profile oorexx context oorexx
+EOF
+}
+
+json_escape() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
+find_python() {
+  if [ -n "${LLM_GOPHER_PYTHON:-}" ] && command -v "$LLM_GOPHER_PYTHON" >/dev/null 2>&1; then printf '%s\n' "$LLM_GOPHER_PYTHON"; return 0; fi
+  command -v python3 2>/dev/null && return 0
+  command -v python 2>/dev/null && return 0
+  return 1
+}
+find_oorexx_deb() {
+  if [ -n "${LLM_GOPHER_OOREXX_DEB:-}" ] && [ -f "$LLM_GOPHER_OOREXX_DEB" ]; then printf '%s\n' "$LLM_GOPHER_OOREXX_DEB"; return 0; fi
+  if [ -n "${OOREXX_DEB:-}" ] && [ -f "$OOREXX_DEB" ]; then printf '%s\n' "$OOREXX_DEB"; return 0; fi
+  for d in "$ROOT" "$ROOT/dependencies" /mnt/data "${HOME:-}/Downloads"; do
+    [ -d "$d" ] || continue
+    f=$(find "$d" -maxdepth 1 -type f -name 'oorexx-*.deb' 2>/dev/null | sort | tail -n 1 || true)
+    if [ -n "$f" ]; then printf '%s\n' "$f"; return 0; fi
+  done
+  return 1
+}
+
+
+if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+  print_setup_help
+  printf '\n'
+  PY=$(find_python || true)
+  REXX_HELP=$(command -v rexx 2>/dev/null || true)
+  if [ -z "$REXX_HELP" ] && [ -n "${LLM_GOPHER_ENV:-}" ] && [ -x "$LLM_GOPHER_ENV/runtime/oorexx/usr/local/bin/rexx" ]; then
+    REXX_HELP="$LLM_GOPHER_ENV/runtime/oorexx/usr/local/bin/rexx"
+  fi
+  PY_OK=0
+  REXX_OK=0
+  if [ -n "$PY" ] && "$PY" -c 'import sys' >/dev/null 2>&1; then PY_OK=1; fi
+  if [ -n "$REXX_HELP" ] && "$REXX_HELP" -v >/dev/null 2>&1; then REXX_OK=1; fi
+  if [ "$PY_OK" -eq 1 ] && [ "$REXX_OK" -eq 1 ]; then
+    printf '%s\n' 'Environment check: Python and ooRexx execute successfully.'
+    printf '\n'
+    "$PY" "$ROOT/engine/gopher.py" --profile "${LLM_GOPHER_HELP_PROFILE:-oorexx}" help "${LLM_GOPHER_HELP_PROFILE:-oorexx}" --text || true
+  else
+    printf '%s\n' 'Environment check: setup is not yet proven READY.'
+    printf '%s\n' '> YOU SHOULD RUN: gopher setup'
+    printf '%s\n' 'After setup, -h will append live help generated from the installed sphere/pages/services.'
+  fi
+  exit 0
+fi
+
+if [ "${1:-}" = "setup" ]; then
+  shift
+  if [ "${1:-}" = "-h" ] || [ "${1:-}" = "--help" ]; then
+    print_setup_help
+    exit 0
+  fi
+  ENV_DIR="${LLM_GOPHER_ENV:-${TMPDIR:-/tmp}/llm-gopher-${USER:-user}}"
+  DEB=""
+  LAUNCH=1
+  PROFILE=oorexx
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --env) [ $# -ge 2 ] || { echo 'setup: --env requires a path' >&2; exit 2; }; ENV_DIR=$2; shift 2;;
+      --oorexx-deb) [ $# -ge 2 ] || { echo 'setup: --oorexx-deb requires a path' >&2; exit 2; }; DEB=$2; shift 2;;
+      --profile) [ $# -ge 2 ] || { echo 'setup: --profile requires a name' >&2; exit 2; }; PROFILE=$2; shift 2;;
+      --no-launch) LAUNCH=0; shift;;
+      --) shift; break;;
+      *) break;;
+    esac
+  done
+  umask 077
+  mkdir -p "$ENV_DIR" "$ENV_DIR/runtime" "$ENV_DIR/work" "$ENV_DIR/state"
+  chmod 700 "$ENV_DIR" "$ENV_DIR/runtime" "$ENV_DIR/work" "$ENV_DIR/state" 2>/dev/null || true
+
+  PY=$(find_python || true)
+  DPKG=$(command -v dpkg-deb 2>/dev/null || true)
+  AR=$(command -v ar 2>/dev/null || true)
+  TAR=$(command -v tar 2>/dev/null || true)
+  if [ -n "$DPKG" ] && [ -z "$TAR" ]; then DPKG=""; fi
+  if [ -z "$DEB" ]; then DEB=$(find_oorexx_deb || true); fi
+  REXX=$(command -v rexx 2>/dev/null || true)
+  REXXC=$(command -v rexxc 2>/dev/null || true)
+  RUNTIME_SOURCE=system
+
+  if [ -z "$REXX" ] && [ -n "$DEB" ]; then
+    RT="$ENV_DIR/runtime/oorexx"
+    if [ ! -x "$RT/usr/local/bin/rexx" ]; then
+      rm -rf "$RT"; mkdir -p "$RT"
+      if [ -n "$DPKG" ]; then
+        "$DPKG" -x "$DEB" "$RT"
+      elif [ -n "$AR" ] && [ -n "$TAR" ]; then
+        TMP="$ENV_DIR/work/deb-unpack"; rm -rf "$TMP"; mkdir -p "$TMP"
+        (cd "$TMP" && "$AR" x "$DEB")
+        DATA=$(find "$TMP" -maxdepth 1 -type f -name 'data.tar.*' | head -n 1 || true)
+        [ -n "$DATA" ] || { echo 'setup: Debian package has no data archive' >&2; exit 3; }
+        "$TAR" -xf "$DATA" -C "$RT"
+      else
+        echo 'setup: ooRexx .deb found but neither dpkg-deb nor ar+tar is available' >&2; exit 3
+      fi
+    fi
+    [ -x "$RT/usr/local/bin/rexx" ] && REXX="$RT/usr/local/bin/rexx"
+    [ -x "$RT/usr/local/bin/rexxc" ] && REXXC="$RT/usr/local/bin/rexxc"
+    RUNTIME_SOURCE=deb-private
+    PATH="$RT/usr/local/bin:$PATH"; export PATH
+    if [ -d "$RT/usr/local/lib" ]; then LD_LIBRARY_PATH="$RT/usr/local/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"; export LD_LIBRARY_PATH; fi
+  fi
+
+  [ -n "$PY" ] || { printf '%s\n' '{"schema":"llm-gopher/setup/1","setup_status":"UNAVAILABLE","missing":["python3-or-python"]}' >&2; exit 127; }
+  [ -n "$REXX" ] || { printf '%s\n' '{"schema":"llm-gopher/setup/1","setup_status":"UNAVAILABLE","missing":["oorexx-runtime"],"download_attempted":false}' >&2; exit 127; }
+  export LLM_GOPHER_PYTHON="$PY" LLM_GOPHER_ENV="$ENV_DIR" REXX
+  [ -n "$REXXC" ] && export REXXC
+  MAN="$ENV_DIR/state/setup.json"
+  printf '{\n  "schema":"llm-gopher/setup/1",\n  "setup_status":"READY",\n  "environment":"%s",\n  "python":"%s",\n  "rexx":"%s",\n  "rexxc":"%s",\n  "oorexx_deb":"%s",\n  "runtime_source":"%s",\n  "download_attempted":false\n}\n' \
+    "$(json_escape "$ENV_DIR")" "$(json_escape "$PY")" "$(json_escape "$REXX")" "$(json_escape "$REXXC")" "$(json_escape "$DEB")" "$RUNTIME_SOURCE" > "$MAN"
+  cat "$MAN"
+  if [ "$LAUNCH" -eq 0 ]; then exit 0; fi
+  if [ $# -eq 0 ]; then set -- --profile "$PROFILE" context "$PROFILE"; fi
+  exec "$PY" "$ROOT/engine/gopher.py" "$@"
+fi
+
+PYTHON=$(find_python || true)
+if [ -z "$PYTHON" ]; then
+  printf '%s\n' '{"schema":"llm-gopher/0.14","tool_status":{"rc":1,"class":"UNAVAILABLE"},"operation_status":{"rc":1,"class":"UNAVAILABLE"},"result":{"capability":"runtime.python","reason":"no Python interpreter found","tried":["LLM_GOPHER_PYTHON","python3","python"]}}' >&2
+  exit 127
+fi
+exec "$PYTHON" "$ROOT/engine/gopher.py" "$@"

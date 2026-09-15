@@ -1,0 +1,62 @@
+OOREXX AI ACCESS V0.6 VALIDATION
+================================
+Status: PASS (manual packaging workflow)
+Interpreter: Open Object Rexx 5.3.0 r13196 Internal Test/debug build
+Package release: 0.6
+Public provider API: ai.provider.access/0.5
+
+Baseline from supplied oorexxapis(20260824-165007).zip
+------------------------------------------------------
+oorexx_ai_access_v0.5
+SHA-256 124640f45ee7ef9dc2826a42d07566f1be3f5075afee81a1c51b7ede88cf5030
+
+Companions used for acceptance
+------------------------------
+runtime_registry_v0.14
+SHA-256 b8748634f271f5389b9e7e4fd7089eda314b0eea90ab6e47151ae1de270c6209
+
+alchemy_objects_v0.7
+SHA-256 a8e8e1fc080091650ee1791c997ea35ae74904b2cb658cdfdadff2a8fb7d0ee3
+
+oorexx_crypto_v0.1
+SHA-256 3eab23b5138cba889eb11ea5b93747eb14fca8da0fd4ac936a70174349ae8f3a
+
+oorexx_work_load_units_v0.12 (optional integration exercised)
+SHA-256 b5f6cd8230daa26c227b93032d42b4263c5fcb3b40838359aeab3421cf0ab75a
+
+v0.6 repair / qualification
+---------------------------
+- AIProviderAdapterBase and AIProviderRuntimeCapability use preferred non-virtual
+  Alchemy Objects v0.7 INIT construction.
+- Both common behavioural objects provide complete STANDARD adoption metadata:
+  AUTHORSHIP, STANDARDS and DESIGN_LIMITATIONS.
+- AlchemyAdoptionVerifier STANDARD passes with zero warnings.
+- construction provenance entrypoint is INIT for both fixture objects.
+- reserved Alchemy base override count is zero for both fixture objects.
+- Runtime Registry qualification advanced to v0.14.
+- optional WLU qualification advanced to v0.12 / work.load.units/0.12.
+- public AI provider access API intentionally remains ai.provider.access/0.5;
+  this release changes foundation/qualification, not provider request semantics.
+
+Executable gates
+----------------
+PASS test_ai_alchemy_object.rex (29 assertions)
+PASS test_ai_provider_contract.rex
+PASS test_ai_tool_proposal.rex
+PASS test_ai_conversation.rex
+PASS test_ai_registry_http.rex against Runtime Registry v0.14
+PASS test_ai_provider_wlu.rex against Work Load Units v0.12
+  spent_micro_wlu=700000
+  provider_invocations=3
+
+Compile / shell gate
+--------------------
+PASS 10/10 shipped .cls/.rex compile with rexxc
+PASS bash -n run_tests.sh
+
+Authority boundary retained
+---------------------------
+Plain provider request/reply/usage/tool/message values remain non-Alchemy DTOs.
+Provider receives no Runtime Registry lifecycle authority, Ability session,
+credential/broker authority, WLU account/rate-card/reservation authority or
+provider dispatch authority merely through AIProviderRequest.

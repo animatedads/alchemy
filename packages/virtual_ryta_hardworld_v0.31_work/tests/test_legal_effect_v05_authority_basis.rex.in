@@ -1,0 +1,101 @@
+say 'LEGAL EFFECT V0.5 EFFECTIVE / SUPPRESSED AUTHORITY BASIS V0.18 START'
+
+unit = .LegalCompilationUnit~new('AUTH-BASIS', '0.5', 'test-compiler', '1')
+call AddSource unit, 'LAW', 'LEGISLATION', 'law-expr', .array~of('1')
+call AddSource unit, 'CONTRACT', 'CONTRACT', 'contract-expr', .array~of('2')
+call AddSource unit, 'AUTH', 'LEGISLATION', 'auth-expr', .array~of('3')
+
+prohibited = .LegalNorm~new('LAW-N', 'LAW', '1', 'PROHIBITION', 'ACT', 'PROHIBITED', 'TEST', 'synthetic', .nil, 'BASE', 'ACT-LEGALITY')
+p1 = .LegalCompileProposal~new('P-LAW', 'NORM', prohibited, 'test', 'HUMAN', '1')
+ignored = p1~addEvidenceReference(unit~provisionReference('LAW','1'))
+ignored = unit~addProposal(p1)
+
+permitted = .LegalNorm~new('CONTRACT-N', 'CONTRACT', '2', 'PERMISSION', 'ACT', 'PERMITTED', 'TEST', 'synthetic', .nil, 'BASE', 'ACT-LEGALITY')
+p2 = .LegalCompileProposal~new('P-CONTRACT', 'NORM', permitted, 'test', 'HUMAN', '1')
+ignored = p2~addEvidenceReference(unit~provisionReference('CONTRACT','2'))
+ignored = unit~addProposal(p2)
+
+authorityRule = .LegalAuthorityRule~new('PERMISSION-WINS', 'AUTH', '3', 'CONTRACT', 'LAW', 'DEROGATES_FROM', 'TEST', 'ACT', .nil, 'CONTRACT-N', 'LAW-N', 'synthetic explicit derogation')
+p3 = .LegalCompileProposal~new('P-AUTH', 'AUTHORITY_RULE', authorityRule, 'test', 'HUMAN', '1')
+ignored = p3~addEvidenceReference(unit~provisionReference('AUTH','3'))
+ignored = unit~addProposal(p3)
+
+report = .LegalRuleCompiler~new~compile(unit)
+call AssertTrue report~ok, 'authority graph compiles'
+generation = report~generation
+context = .LegalContext~new('AUTH-EVENT', '2026-08-20')
+ignored = context~bindSource('CONTRACT', 'party')
+pinned = .LegalEffectV05PinnedEvaluator~evaluate(.LegalEffectEngine~new, .LegalAction~new('ACT'), generation, context)
+call AssertTrue pinned~ok, 'resolved authority evaluation pins'
+assessment = pinned~envelope~assessment
+call AssertEqual 'ADMISSIBLE', assessment~status, 'permission winner leaves action admissible'
+call AssertEqual 1, assessment~resolvedConflicts~items, 'resolved conflict retained'
+call AssertEqual 1, assessment~suppressedMatches~items, 'losing prohibition suppressed'
+call AssertEqual 'LAW-N', assessment~suppressedMatches[1]~norm~normId, 'suppressed norm is prohibition'
+call AssertEqual 'CONTRACT-N', assessment~effectiveMatches[1]~norm~normId, 'effective norm is permission'
+
+promotionSet = .LegalEffectV05PromotionAdapter~promotionsFrom(pinned~envelope)
+blockedPromotion = FindPromotion(promotionSet, 'LEGAL_ACTION_BLOCKED')
+call AssertTrue blockedPromotion \== .nil, 'blocked promotion exists'
+call AssertTrue blockedPromotion~proposedValue == .false, 'blocked projection false'
+call AssertTrue \HasBasisId(blockedPromotion, 'LEGAL_NORM_EFFECTIVE', 'LAW-N'), 'suppressed prohibition not cited as effective basis'
+call AssertTrue HasBasisId(blockedPromotion, 'LEGAL_AUTHORITY_RULE', 'PERMISSION-WINS'), 'controlling authority rule cited'
+call AssertTrue HasBasisKind(blockedPromotion, 'LEGAL_COMPILATION_CERTIFICATE'), 'compilation certificate cited'
+call AssertTrue HasBasisKind(blockedPromotion, 'LEGAL_VERIFIED_SOURCE'), 'verified source cited'
+call AssertTrue HasBasisKind(blockedPromotion, 'LEGAL_VERIFIED_PROVISION'), 'verified provision cited'
+
+say 'LEGAL EFFECT V0.5 EFFECTIVE / SUPPRESSED AUTHORITY BASIS V0.18: OK'
+exit 0
+
+::routine AddSource
+  use arg unit, sourceId, sourceKind, expressionId, provisionIds
+  sourceText = ''
+  do pid over provisionIds
+    sourceText = sourceText || sourceId || ' provision ' || pid || '0a'x
+  end
+  verified = .LegalSourceVerifier~verifyText(sourceId, sourceKind, expressionId, 'urn:test:' || sourceId, sourceText, 'AUTH', 'TEST')
+  if \verified~ok then raise syntax 88.900 array('source verification failed:' sourceId)
+  identity = verified~value~identity
+  ignored = unit~addSource(identity, .NormativeSource~new(sourceId, sourceKind, sourceId, 'AUTH', 'TEST'))
+  do pid over provisionIds
+    lexical = sourceId || ' provision ' || pid
+    verifiedProvision = .LegalSourceVerifier~verifyProvisionText(identity, pid, 'p.' || pid, lexical)
+    if \verifiedProvision~ok then raise syntax 88.900 array('provision verification failed:' sourceId pid)
+    ignored = unit~addProvision(verifiedProvision~value~reference, .LegalProvision~new(sourceId, pid, 'ACTIVE', 'BASE', lexical))
+  end
+  return 0
+
+::routine FindPromotion
+  use arg promotionSet, targetName
+  do p over promotionSet~promotions
+    if p~targetFactName == targetName then return p
+  end
+  return .nil
+
+::routine HasBasisKind
+  use arg promotion, kind
+  do item over promotion~basis
+    if item~basisKind == kind then return .true
+  end
+  return .false
+
+::routine HasBasisId
+  use arg promotion, kind, id
+  do item over promotion~basis
+    if item~basisKind == kind then do
+      if item~basisId == id then return .true
+    end
+  end
+  return .false
+
+::routine AssertTrue
+  use arg condition, label
+  if \condition then raise syntax 88.900 array('ASSERT TRUE FAILED: ' || label)
+  return 0
+::routine AssertEqual
+  use arg expected, actual, label
+  if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: ' || label || ' expected=' || expected || ' actual=' || actual)
+  return 0
+
+::requires 'LegalEffect.cls'
+::requires '../integration/LegalEffectV05PromotionAdapter.cls'

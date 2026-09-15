@@ -1,0 +1,14 @@
+{
+  "id": "wlu-forecasts-and-standby",
+  "title": "Live Forecasts and Standby Intent",
+  "summary": "WLU supports authenticated forecasts and standby claims to allow schedulers to provision rescue capacity before a fallback is triggered.",
+  "why": "Avoids 'blind' fallback where a rescue path is chosen only to find it cannot be admitted due to capacity, while avoiding the waste of reserving a real reservation for every possible path.",
+  "invariants": [
+    "Forecasts: Non-entitling observations of remaining budget (WITHIN_BUDGET, AT_RISK, EXPECTED_OVER_BUDGET).",
+    "Standby: Authenticated intent for a rescue stage; reserves 0 account/hierarchy WLU and 0 WLU/s.",
+    "Promotion: The explicit act of converting a standby intent into a hard reservation.",
+    "A failed promotion leaves the standby active so the scheduler can still react."
+  ],
+  "evidence_note": "Source: oorexx_work_load_units_v0.12/README.md:185-215. Line 190: 'A standby is deliberately weaker than a reservation... reserves 0 account WLU'.",
+  "grounding": "oorexx-grounded"
+}

@@ -1,0 +1,21 @@
+book=.AJITestSupport~contractBook(.array~of(.AJITestSupport~contractVersion("AJI-CONTRACT-HOME-JP/1","HOME","JP","2026-01-01","")))
+a=.AllJapanInsuranceAuthority~new(.nil,book)
+channel=.AJITestSupport~actor("DIRECT-WEB",.AllJapanInsuranceBuild~ROLE_DISTRIBUTION)
+uw=.AJITestSupport~actorRoles("UW-1",.array~of(.AllJapanInsuranceBuild~ROLE_UNDERWRITER,.AllJapanInsuranceBuild~ROLE_RATE_OVERRIDE))
+pa=.AJITestSupport~actor("POLICY-1",.AllJapanInsuranceBuild~ROLE_POLICY)
+ci=.AJITestSupport~actor("CLAIMS-1",.AllJapanInsuranceBuild~ROLE_CLAIMS_INTAKE)
+s=.AllJapanInsuranceRiskSubmission~new("S-HOME-1","HOME","REL-44","HOME-44","JP","2026-08-28")
+ignored=.AJITestSupport~must(a~submitRisk(channel,s),"submit")
+d=.AllJapanInsuranceUnderwritingDecision~new("D-HOME-1","S-HOME-1","HOME","ACCEPT","AJI-PRODUCT-HOME/0.1","UW-1","2026-08-28T12:00:00","EVID-HOME-1")
+ignored=.AJITestSupport~must(a~recordDecision(uw,d),"decision")
+q=.AllJapanInsuranceQuote~new("Q-HOME-1","D-HOME-1","S-HOME-1","HOME",250000,"JPY","2026-09-05T23:59:59","2026-08-28T12:02:00","","","MANUAL_OVERRIDE","legacy lifecycle fixture")
+ignored=.AJITestSupport~must(a~issueQuote(uw,q),"quote")
+p=.AllJapanInsurancePolicy~new("P-HOME-1","Q-HOME-1","REL-44","HOME","HOME-44","2026-09-01","2027-09-01","2026-08-29T10:00:00")
+ignored=.AJITestSupport~must(a~bindPolicy(pa,p),"bind")
+c=.AllJapanInsuranceClaim~new("C-HOME-1","P-HOME-1","REL-44","2027-01-02","2027-01-03T09:00:00","LOSS-1")
+ignored=.AJITestSupport~must(a~openClaim(ci,c),"claim")
+snap=a~snapshot
+ignored=.AJITestSupport~assert(snap["policyCount"]=1,"policy truth exists")
+ignored=.AJITestSupport~assert(snap["claimCount"]=1,"claim truth exists")
+say "PASS bind creates policy truth and covered loss opens claim"
+::requires "TestSupport.cls"

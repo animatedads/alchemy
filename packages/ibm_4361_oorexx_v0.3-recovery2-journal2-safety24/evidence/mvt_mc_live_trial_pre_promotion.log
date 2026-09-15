@@ -1,0 +1,15 @@
+PRE-PROMOTION LIVE-TRIAL EVIDENCE
+Boundary inherited from real-MVT UNPK retry:
+  IA=016606 ICOUNT=511776 INST=AF030FFF4703 OP=AF
+Path invariant before AF promotion:
+  CPU reset initializes CR8=00000000 and no implemented/executed path writes a control register.
+Trial sequence:
+  - first executor step returned UNSUPPORTED atomically at the boundary
+  - Candidate A OPAF#OBJECT inserted inside a journal instruction checkpoint
+  - CR8/GPR/RAM deliberately dirtied then abortInstruction rewound them
+  - live method remained installed and exact AF invocation retried as masked no-op
+  - OPAF replaced in-place by Candidate B with class-selective CR8 mask semantics
+  - state rewound again; Candidate B superseded A and the same invocation retried
+  - enabling class 3 made Candidate B fail closed rather than fabricating a monitor-event interruption
+Observed test result before permanent OPAF promotion:
+  PASS test_mvt_mc_live_journal_trial

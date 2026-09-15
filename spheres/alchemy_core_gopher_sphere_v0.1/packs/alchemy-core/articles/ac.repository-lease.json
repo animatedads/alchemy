@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "ac.repository-lease",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "One kernel-backed repository lease",
+  "summary": "All local Git ref/object/worktree mutation is coordinated by one AlchemyRepositoryLease. The ooRexx object owns policy/lifecycle while a tiny shell holder owns flock(2); owner death releases the kernel lock without stale-directory heuristics.",
+  "authority": "project-authority",
+  "invariants": [
+    "Do not create per-component lock conventions for sender, seeder, inbox, snapshots or publication.",
+    "The lease is bound to the ordinary repository handle's .git lock path, not to a disposable worktree.",
+    "The holder reports LOCKED only after flock succeeds.",
+    "If the owning Rexx process disappears, becomes a zombie, or is replaced, the helper exits and the kernel releases the lock.",
+    "There is no stale lock-directory recovery protocol."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_repository_lease_v0.2/src/AlchemyRepositoryLease.cls",
+      "line_start": 1,
+      "line_end": 32,
+      "claim": "Lease authority, flock carrier and no-stale-lock doctrine."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_repository_lease_v0.2/src/AlchemyRepositoryLease.cls",
+      "line_start": 40,
+      "line_end": 130,
+      "claim": "Acquisition, owner liveness and release lifecycle."
+    }
+  ]
+}

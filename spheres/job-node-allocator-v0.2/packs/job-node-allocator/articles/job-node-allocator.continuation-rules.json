@@ -1,0 +1,26 @@
+{
+  "id": "job-node-allocator.continuation-rules",
+  "title": "Continuation rules for future implementation",
+  "section": "qualification",
+  "summary": "Future changes should preserve the ordering and authority boundaries before adding optimisation features. New cost, locality, energy, latency or utilisation preferences belong only in ranking after mandatory eligibility. New hard constraints belong in requirements/capability/authority evidence and must be digest-bound and independently verified.",
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "job-node-allocator",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6.zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "claim": "Grounded in Job-to-Node Allocator v0.6.",
+      "line_start": 5,
+      "line_end": 15
+    }
+  ],
+  "invariants": [
+    "Never implement a hard rule as a weighted score.",
+    "New lease-relevant evidence must be bound into canonical evidence/digests and checked on renewal/verification.",
+    "New node-loss/restart paths must preserve monotonic ownership fencing.",
+    "Do not introduce a second trust/key-management system inside the allocator."
+  ]
+}

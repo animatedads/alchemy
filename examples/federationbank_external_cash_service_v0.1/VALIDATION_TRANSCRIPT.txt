@@ -1,0 +1,32 @@
+=== External Cash Service v0.1 ===
+Runtime: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+--- test_idempotency.rex ---
+PASS: external cash commands are semantically idempotent
+--- test_inbound_full_chain.rex ---
+PASS: inbound external cash completes only after branch vault acceptance
+--- test_outbound_full_chain.rex ---
+PASS: outbound external cash leaves branch custody before carrier/cash-centre completion
+--- test_outbox_retry.rex ---
+PASS: external cash outbox retries without losing committed state
+--- test_queue_persistent_recovery.rex ---
+PASS: permanent Queue Fabric recovers typed External Cash shipment command
+--- test_receipt_discrepancy.rex ---
+PASS: manifest/count mismatch becomes explicit reconciliation work
+--- test_restart_recovery.rex ---
+PASS: in-transit external cash survives durable service restart
+--- test_runtime_module.rex ---
+PASS: external cash service runtime module
+RESULT 8 PASS / 0 FAIL
+=== COMPILE CHECKS ===
+PASS rexxc integration/FederationBankExternalCashServicePersistence.cls
+PASS rexxc integration/FederationBankExternalCashServiceQueue.cls
+PASS rexxc runtime/FederationBankExternalCashServiceRuntimeModule.cls
+PASS rexxc src/FederationBankExternalCashService.cls
+COMPILE RESULT 4 PASS / 0 FAIL
+=== ALL .CLS COMPILE CHECKS ===
+PASS rexxc integration/FederationBankExternalCashServicePersistence.cls
+PASS rexxc integration/FederationBankExternalCashServiceQueue.cls
+PASS rexxc runtime/FederationBankExternalCashServiceRuntimeModule.cls
+PASS rexxc src/FederationBankExternalCashService.cls
+PASS rexxc tests/TestSupport.cls
+ALL .CLS COMPILE RESULT 5 PASS / 0 FAIL

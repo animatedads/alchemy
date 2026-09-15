@@ -1,0 +1,21 @@
+{
+  "kind": "article",
+  "id": "arch.vmm.ui-row-list-contract",
+  "version": "0.1",
+  "sphere": "vector-meridian-markets",
+  "title": "VMM worklists: stable semantic rows and independent revisions",
+  "summary": "All VMM operational worklists must use the shared authoritative 0/1/N row model. Row position is presentation only; identity, selection and actions bind to stable server-owned semantic identities across sort/filter/page operations.",
+  "implementation_status": "Required baseline for the next VMM UI increment; this article records project doctrine and does not claim Wire UI Web v0.3 already implements the complete list platform contract.",
+  "invariants": [
+    "Server-authoritative collections render predictably as 0, 1 or N semantic rows.",
+    "Collection values and *Count values are separate facts.",
+    "Every row has a stable server-owned semanticRowId such as VMM-ORD-00019281; row index is never authority.",
+    "Sorting preserves selection when membership is unchanged.",
+    "Filtering or scope changes invalidate selection when the selected semantic row is no longer a member.",
+    "Paging/windowing does not change semantic row identity.",
+    "queryRevision, scopeRevision, orderRevision, selectionRevision and resultRevision are distinct.",
+    "Stale rendered contexts, forged row IDs and invalid selections fail closed.",
+    "Orders, fills, positions, synthetic contracts, funding/collateral and exceptions must all use this model."
+  ],
+  "authority": "project-doctrine"
+}

@@ -1,0 +1,24 @@
+{
+  "id": "https-server.admission-liveness",
+  "title": "Bounded connection admission is the liveness fix",
+  "section": "architecture",
+  "summary": "The accepted architecture uses fixed worker activities plus bounded FIFO, not one activity per unauthenticated accepted peer. Default workers=16 and pending=64; overflow closes the just-accepted socket and releases pinned resources immediately.",
+  "invariants": [
+    "Do not reintroduce conn~start fan-out per pre-TLS peer.",
+    "A Foreign Runtime introspection race fix is separate from HTTPS reset-storm liveness.",
+    "Pin TLS/config generation at accept/enqueue time.",
+    "Queue overflow must not retain leases/resources."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "https-server",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_https_server_v0.4.4.zip",
+      "sha256": "aad4305c2495b13145a71938c59af86bc8d128be8d466aaf7b3548468a252d56",
+      "member": "oorexx_https_server_v0.4.4/HANDOVER.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

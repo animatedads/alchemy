@@ -1,0 +1,73 @@
+--- "/mnt/data/Pasted text(20260906-160606).txt"	2026-09-06 17:13:09.541377139 +0000
++++ integration/audio/AudioSearchExperiment.rex	2026-09-06 17:16:29.142969058 +0000
+@@ -70,17 +70,23 @@
+ 
+ runGA: procedure
+   use strict arg ctx,limit,records,cache
+-  if limit<20 then limit=20; popSize=30; if limit<30 then popSize=limit
+-  generations=(limit+popSize-1)%popSize
++  if limit<20 then limit=20
++  plan=.MLGABudgetPlan~forCandidateLimit(limit,30,3,4); popSize=plan~populationSize
+   rng=.MLDeterministicRNG~new(20903,'AUDIO-C-RNG'); cursor=rng~cursor; initial=.array~new
+   do i=1 to popSize
+     genes=.array~new; do j=1 to 10; genes~append(cursor~nextUnit); end; initial~append(genes)
+   end
+   ignored=rng~commitCursor(cursor,'AUDIO_INITIAL_POPULATION')
+-  pop=.MLPopulation~new(initial,'AUDIO-C-POPULATION'); exp=.MLExperiment~new('AUDIO-C-SEARCH'); ga=.MLGeneticAlgorithm~new(pop,rng,exp,.25,.12,.80,2); evaluator=.AudioGAEvaluator~new(ctx,records,cache)
+-  do g=1 to generations
+-    step=ga~step(evaluator); say 'GA generation='g'/'generations 'unique='records~items 'bestFitness='step['evaluatedGeneration']~bestFitness
+-  end
++  pop=.MLPopulation~new(initial,'AUDIO-C-POPULATION'); exp=.MLExperiment~new('AUDIO-C-SEARCH')
++  policy=.MLGeneticPolicy~new(.25,.12,.80,2)
++  objective=.MLObjective~new('audio-recovered-reference-distance','MINIMIZE','0.35*global+0.40*window_median+0.10*window_p25+0.15*temporal+18*pre_limiter_over+40*post_limiter_clip','lower is better; penalty weights require perceptual calibration')
++  scoreEvaluator=.AudioGAScoreEvaluator~new(ctx,records,cache)
++  evaluator=.MLObjectiveFitnessAdapter~new(objective,scoreEvaluator)
++  ga=.MLGeneticAlgorithm~fromPolicy(pop,policy,rng,exp)
++  run=ga~run(evaluator,plan~breedingSteps)
++  say plan~canonicalText
++  say run~canonicalText
++  say 'GA finalGeneration='run~finalPopulationGeneration 'unique='records~items 'bestFitness='run~finalEvaluation~bestFitness
+   return
+ 
+ gridA: procedure
+@@ -150,7 +156,7 @@
+   s=.stream~new(path); s~open('write replace')
+   s~lineout('{')
+   s~lineout('  "schema": "audio.search.result/rexx-native-0.12-dev1",')
+-  s~lineout('  "engine": "ooRexx 5.3.0 r13196 + ooRexx ML v0.1-dev2 + Foreign Runtime native DSP",')
++  s~lineout('  "engine": "ooRexx 5.3.0 r13196 + ooRexx ML v0.1-dev4 + Foreign Runtime native DSP",')
+   s~lineout('  "python_execution": false,')
+   s~lineout('  "node": 'jstr(job['node'])',')
+   s~lineout('  "strategy": 'jstr(job['strategy'])',')
+@@ -167,7 +173,7 @@
+   s~lineout('  "sample_manifest": "SAMPLES.sha256",')
+   s~lineout('  "alignment": {"offset_sec": 'align['offset_sec']', "drift_ppm": 'align['drift_ppm']', "correlation": 'align['correlation']', "offset_min_sec": 'align['offset_min_sec']', "offset_max_sec": 'align['offset_max_sec']', "nominal_offset_sec": 'align['nominal_offset_sec']'},')
+   s~lineout('  "shared_component_diagnostics": 'sharedJson(shared)',')
+-  s~lineout('  "ml": {"implementation": "ooRexx ML v0.1-dev2", "strategy_c": "MLGeneticAlgorithm with MLDeterministicRNG seed 20903 and branchable experiment state"},')
++  s~lineout('  "ml": {"implementation": "ooRexx ML v0.1-dev4", "strategy_c": "bounded MLGeneticAlgorithm run; final bred generation scored; MLObjective owns lower-is-better sign; MLDeterministicRNG seed 20903"},')
+   s~lineout('  "results": [')
+   do i=1 to results~items
+     r=results[i]; c=r['config']; comma=','; if i=results~items then comma=''
+@@ -210,18 +216,18 @@
+   t=x~string; t=t~changeStr('\\','\\\\')~changeStr('"','\\"')~changeStr('0a'x,'\\n')~changeStr('0d'x,'\\r')
+   return '"'||t||'"'
+ 
+-::class AudioGAEvaluator public
++::class AudioGAScoreEvaluator public
+ ::method init
+   expose ctx records cache
+   use strict arg ctx,records,cache
+-::method fitness
++::method score
+   expose ctx records cache
+   use strict arg genome
+   c=self~decodeGenome(genome); key=self~configKey(c)
+-  if cache~hasIndex(key) then return -cache[key]['score']
++  if cache~hasIndex(key) then return cache[key]['score']
+   st=ctx~evaluate(c); r=.directory~new; r['config']=self~copyConfig(c); r['score']=st['score']; r['pcm_hash64']=st['pcm_hash64']; r['global_distance']=st['global_distance']; r['window_median_distance']=st['window_median_distance']; r['window_p25_distance']=st['window_p25_distance']; r['temporal_distance']=st['temporal_distance']; r['silence_fraction']=st['silence_fraction']; r['post_limiter_clip_fraction']=st['post_limiter_clip_fraction']; r['pre_limiter_over_fraction']=st['pre_limiter_over_fraction']; r['pre_filter_peak']=st['pre_filter_peak']; r['chain']=self~chainText(c)
+   records~append(r); cache[key]=r
+-  return -r['score']
++  return r['score']
+ ::method decodeGenome private
+   use strict arg genome
+   c=.directory~new

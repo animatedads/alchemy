@@ -1,0 +1,131 @@
+{
+  "schema": "oorexx.foreign/0.11",
+  "library": {
+    "provider": "native",
+    "names": [
+      "libavcodec.so.61",
+      "libavcodec.so"
+    ]
+  },
+  "types": {
+    "AVPacket": {
+      "kind": "struct",
+      "size": 104,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "stream_index",
+          "type": "i32",
+          "offset": 36
+        }
+      ]
+    },
+    "AVCodecParameters": {
+      "kind": "struct",
+      "size": 16,
+      "alignment": 8,
+      "fields": []
+    }
+  },
+  "functions": {
+    "version": {
+      "symbol": "avcodec_version",
+      "return": "u32",
+      "args": []
+    },
+    "alloc_context": {
+      "symbol": "avcodec_alloc_context3",
+      "return": {
+        "type": "pointer",
+        "object": "AVCodecContext",
+        "ownership": "owned",
+        "destructor": "avcodec_free_context",
+        "destructorPointerDepth": 2
+      },
+      "args": [
+        {
+          "type": "pointer",
+          "object": "AVCodec"
+        }
+      ]
+    },
+    "parameters_to_context": {
+      "symbol": "avcodec_parameters_to_context",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "AVCodecContext"
+        },
+        {
+          "type": "pointer",
+          "object": "AVCodecParameters"
+        }
+      ]
+    },
+    "open_codec": {
+      "symbol": "avcodec_open2",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "AVCodecContext"
+        },
+        {
+          "type": "pointer",
+          "object": "AVCodec"
+        },
+        "pointer"
+      ]
+    },
+    "packet_alloc": {
+      "symbol": "av_packet_alloc",
+      "return": {
+        "type": "pointer",
+        "object": "AVPacket",
+        "ownership": "owned",
+        "destructor": "av_packet_free",
+        "destructorPointerDepth": 2
+      },
+      "args": []
+    },
+    "packet_unref": {
+      "symbol": "av_packet_unref",
+      "return": "void",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "AVPacket"
+        }
+      ]
+    },
+    "send_packet": {
+      "symbol": "avcodec_send_packet",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "AVCodecContext"
+        },
+        {
+          "type": "pointer",
+          "object": "AVPacket"
+        }
+      ]
+    },
+    "receive_frame": {
+      "symbol": "avcodec_receive_frame",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "AVCodecContext"
+        },
+        {
+          "type": "pointer",
+          "object": "AVFrame"
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,61 @@
+ooRexx ML Graph v0.1-dev4 qualification
+
+Runtime:
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+
+Compilation:
+PASS rexxc across 20 source/test/example surfaces
+
+Executable regression suite:
+PASS MLGraph model 14 assertions
+PASS MLGraph views 11 assertions
+PASS MLGraph SVG 7 assertions
+PASS MLGraph 3D SVG 5 assertions
+PASS MLGraph SVG views 10 assertions
+PASS MLGraph pattern adapter 5 assertions
+PASS MLGraph temporal adapter 8 assertions
+PASS MLGraph temporal market 4 assertions
+PASS MLGraph difference annotations 10 assertions
+PASS MLGraph matplotlib 4 assertions
+PASS MLGraph matplotlib views 5 assertions
+PASS MLGraph matplotlib temporal 3 assertions
+
+Total: 86 assertions across 12 test programs.
+
+View/projection contract:
+- NATIVE view preserves the original graph dimensionality;
+- SHAPE/TOP selects existing CYLINDER_X and CYLINDER_Y axes and declares aspect=EQUAL;
+- TIME_X/SIDE_X selects existing CYLINDER_X and TIME axes;
+- TIME_Y/SIDE_Y selects existing CYLINDER_Y and TIME axes;
+- generic 3D Cartesian graphs expose XY/XZ/YZ axis-pair views;
+- no view creates, normalizes, resamples, or replaces ML point coordinates/evidence;
+- reference SVG now supports native 2D Cartesian and 3D axis-pair views;
+- matplotlib implements the same view contract and honors semanticKey presentation identity.
+
+Difference-authority contract from dev3 remains unchanged:
+- annotation retains the exact upstream difference object;
+- SUMMARY annotations are explicitly non-locatable;
+- graph metadata records difference.location=UNPUBLISHED;
+- no point/segment location is inferred from dev10 internals.
+
+Examples:
+PASS pattern_hash_graph
+PASS pattern_hash_graph_matplotlib
+PASS spacetime_3d
+PASS cylindrical_market_graph
+PASS cylindrical_market_graph_matplotlib
+PASS cylindrical_market_views (one dev10 temporal hash rendered as NATIVE, SHAPE, TIME_X, TIME_Y)
+
+Upstream semantic authority:
+PASS ALL ooRexx ML v0.1-dev10 TESTS (57 files)
+
+Downstream compatibility:
+PASS supplied ooRexx ML Crypto Failure Demo v0.1-dev2 contract (15 assertions) against Graph dev4
+PASS supplied crypto demo core and Foreign Runtime/matplotlib run unchanged against Graph dev4
+Observed controlled result remains dominant temporal difference TURN/VALUE delta=350.
+
+Optional provider stack observed:
+Foreign Runtime v0.22.6
+Python 3.13.5
+matplotlib 3.10.8
+NumPy 2.3.5

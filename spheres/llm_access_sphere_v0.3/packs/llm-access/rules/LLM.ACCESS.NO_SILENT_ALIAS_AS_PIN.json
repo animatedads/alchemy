@@ -1,0 +1,27 @@
+{
+  "kind": "language-rule",
+  "id": "LLM.ACCESS.NO_SILENT_ALIAS_AS_PIN",
+  "version": "0.3",
+  "language": "any",
+  "title": "Do not pin production on latest / vendor aliases",
+  "purpose": "Aliases move under you. Retired slugs may remap instead of 404.",
+  "trigger": "Code uses latest, grok-latest, claude-3-haiku, grok-4-fast as a durable production pin.",
+  "correct": "Pin a documented snapshot ID. Treat aliases as moving pointers. Test that the billed model matches the named model.",
+  "fixability": "REQUIRED",
+  "classification": "freshness_and_integration",
+  "detection": "contextual",
+  "severity": "WARNING",
+  "authority": "provider-primary-snapshot",
+  "fix": {
+    "class": "SUGGESTED"
+  },
+  "legacy_evidence_note": "Eval tooling has reported xAI retired slugs remapping onto a newer slug at a different price.",
+  "provenance": [
+    {
+      "artifact": "llm_access_sphere_v0.2.zip",
+      "sha256": "eaaf9ffd12c3734143c6721753d057caf02f20c2ac05783662627e33bb2b2ae6",
+      "member": "llm_access_sphere_v0.1/packs/llm-access/rules/02-silent-alias.json",
+      "claim": "Rule preserved from v0.2; classification metadata added conservatively."
+    }
+  ]
+}

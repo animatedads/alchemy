@@ -1,0 +1,54 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.patterns",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Polar pattern hashing \u2014 pattern, not number",
+  "summary": "dev9 adds curve-relative polar pattern hashing: source minimum is the centre, amplitude becomes normalized radius, sample position becomes angular progress, and radius/slope/curvature differences are ordered by significance so one major shape disagreement dominates many small ones.",
+  "authority": "Executable dev9 source/tests and the self-generating polar SVG demo are authoritative. Pattern hashing complements, rather than replaces, dev8 scalar close-neighbour hashing.",
+  "invariants": [
+    "Pattern identity is about relative curve geometry, not absolute source offset, amplitude or source sample count.",
+    "The canonical reference representation is a circular polar grid: source minimum maps to radius 0, source maximum to radius 1, and source samples are resampled onto a fixed angular grid.",
+    "Original minimum, maximum, sample count and canonical rotation remain evidence even when they do not define pattern identity.",
+    "The signature retains quantized radius, first circular difference and second circular difference; curvature policy may carry greater significance than residual radius.",
+    "Pattern distance is lexicographic over weighted local differences sorted largest-first. The largest structural disagreement dominates collections of smaller disagreements.",
+    "Rotation invariance is explicit policy; reversal invariance is opt-in because traversal direction can carry domain meaning.",
+    "MLPatternIndex is a driveable historical object. Alternative pattern schemas or invariance policies should be branched and compared rather than overwriting the only fitted index.",
+    "A pattern match is candidate evidence, not a causal or cryptanalytic conclusion."
+  ],
+  "procedure": [
+    "Create MLPatternHashPolicy with angular resolution, radial quantization and radius/slope/curvature significance weights.",
+    "Use MLPatternHashSchema to encode a source curve; inspect polarPoints when visual explanation matters.",
+    "Use rotationInvariant only when the starting phase/index is not semantic; enable reversalInvariant only when forward/backward traversal are genuinely equivalent.",
+    "Build MLPatternCorpus and MLPatternIndex for recognition over variable-length curves with stable sample ids.",
+    "Compare matches using MLPatternHashDifference dominantDelta and the full significance-ordered rank, not opaque integer subtraction.",
+    "Run examples/pattern_hash_polar_demo.rex and inspect its generated SVG before deploying the technique to a new domain.",
+    "For cryptanalytic, audio, camera or telemetry work, treat recurrence as a lead for further domain analysis, never as standalone proof."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev9.zip",
+      "sha256": "32f4c570d282b2fb4ea7c9e870611d4ae8dccbd0121952add66afb97746fb702",
+      "member": "oorexx_ml_v0.1-dev9/src/MLPatternHash.cls",
+      "claim": "Executable polar pattern-hash, significance-difference and historical index contracts."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev9.zip",
+      "sha256": "32f4c570d282b2fb4ea7c9e870611d4ae8dccbd0121952add66afb97746fb702",
+      "member": "oorexx_ml_v0.1-dev9/examples/pattern_hash_polar_demo.rex",
+      "claim": "Self-generating polar demonstration and angle/radius evidence."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev9.zip",
+      "sha256": "32f4c570d282b2fb4ea7c9e870611d4ae8dccbd0121952add66afb97746fb702",
+      "member": "oorexx_ml_v0.1-dev9/examples/pattern_hash_polar_demo.svg",
+      "claim": "Visual proof that affine/sample-density variants overlay while changed turning structure diverges."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev9.zip",
+      "sha256": "32f4c570d282b2fb4ea7c9e870611d4ae8dccbd0121952add66afb97746fb702",
+      "member": "oorexx_ml_v0.1-dev9/qualification/QUALIFICATION_DEV9.txt",
+      "claim": "49-test, rexxc and SSC sourceLevel-10 qualification summary."
+    }
+  ]
+}

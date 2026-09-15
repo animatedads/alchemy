@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.capacity",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Capacity domains, reservations and workspace",
+  "summary": "Workspace capacity is accounted against the real underlying capacity domain, not against pathnames. Reservations claim space before work starts and safety floors protect the host from consuming every free byte.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Several paths on the same filesystem share one capacity domain and must not have their free bytes added together.",
+    "Separate nodes/devices/filesystems remain separate capacity domains unless an explicit storage layer combines them.",
+    "Two 30 GiB nodes are two 30 GiB candidates, not one 60 GiB workspace for an ordinary non-distributed job.",
+    "Workspace allocation is a reservation/claim, not merely a contemporaneous df observation.",
+    "A pool can advertise WORKSPACE, DURABLE or BOTH physical roles while lifecycle safety separately determines whether it counts as durable."
+  ],
+  "procedure": [],
+  "topics": [
+    "capacity-domain",
+    "workspace",
+    "reservation"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_capacity_domains.rex",
+      "claim": "Regression proves shared-filesystem capacity-domain deduplication and reservation accounting."
+    }
+  ]
+}

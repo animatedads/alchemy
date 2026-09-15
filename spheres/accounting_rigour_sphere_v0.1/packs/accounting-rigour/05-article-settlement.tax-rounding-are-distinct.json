@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "accounting-rigour.settlement.tax-rounding-are-distinct",
+  "version": "0.1",
+  "sphere": "accounting-rigour",
+  "title": "Settlement rounding and tax rounding are separate decisions",
+  "why_this_is_not_a_language_rule": "There is no reliable syntactic trigger: two different rounding passes legitimately share the same codec and tax-point fields. Telling them apart requires understanding what the determination is for, so this is an article, not a rule.",
+  "summary": "Tax determination decides the legally relevant tax amount; settlement rounding decides the amount actually collected or paid once an obligation already exists. A settlement adjustment is never allowed to rewrite the previously determined tax amount. Election identity, ruleset identity and rounding algorithm are explicit and effective-dated, never inferred from country defaults.",
+  "evidence_note": "SETTLEMENT_ROUNDING_CONTRACT v0.7 and CHANGELOG v0.7: election/effective-dated and tied to jurisdiction, currency, exact ruleset identity, rounding algorithm, integer-minor-unit quantum and explicit tender classes. The core does not infer settlement rounding is cash-only; `*` and physical-cash-only scopes are both supported. Overlapping date ranges are allowed only where tender scopes are disjoint.",
+  "invariants": [
+    "A settlement rounding pass must not alter tax amounts already recognised; tax policy and settlement policy remain separate dispatch decisions.",
+    "Rounding policy is selected by exact rulesetIdentity frozen in an effective-dated election, not by legal-entity domicile or mutable defaults.",
+    "Rounding happens as integer-minor-unit quantum rounding (roundToQuantum) under NUMERIC DIGITS 50; HALF_EVEN is neutral support, its legal applicability left to external policy.",
+    "Do not import one jurisdiction's rounding or one codebase's rebooking rule into another jurisdiction's file."
+  ]
+}

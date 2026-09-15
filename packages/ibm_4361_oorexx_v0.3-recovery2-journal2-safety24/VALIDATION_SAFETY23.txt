@@ -1,0 +1,20 @@
+Safety23 validation
+===================
+BASE Safety22 SHA-256 bd4ada1fe3ad6da3b97cbfe645e1130b7f0e625c6e3cd2d13a53d50239968f91
+IBM DOC GX20-1850-5: X'70' = STE / Store, Short / RX
+IBM DOC GA22-7000-6: short/long HFP register selectors are 0,2,4,6; invalid selector suppresses operation with specification exception
+MVTRES.350 SHA-256 095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49
+PASS focused exact X'70' permanent specification exception
+PASS valid STE selectors 0/2/4/6 remain UNSUPPORTED while OP70 absent
+PASS invalid-R1 preflight wins over dummy live OP70
+PASS X'70' live pre-promotion unsupported/atomic then classifier rewind/retry
+PASS X'70' live classifier -> rewind -> remove -> permanent equivalence
+PASS exact real-MVT journal retry PGMOLD 0004000690000086 / PGMNEW 00040000000002CA
+PASS 32 further guest instructions -> EX 44 @ 0004B6 / ICOUNT 539205
+PASS EX target identified as 70E005C84780; current boundary is target-exception propagation
+PASS independent permanent whole-MVT replay reproduces the exact X'70' interruption and EX target boundary
+PASS complete qualification: 157 .cls/.rex sources compile / 84 runtime tests pass
+PASS original MVTRES.350 media test
+PASS real MVT IPL PSW=0000000000000080 CCHHR=0/0/4
+PASS LLM Gopher v0.21 package check: 0 breaches / 0 blockers
+AUDIT no OP70; OP44 already exists and remains unchanged in Safety23

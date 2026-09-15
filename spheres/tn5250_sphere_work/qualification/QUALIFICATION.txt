@@ -1,0 +1,59 @@
+Terminal Machine / TN5250 Gopher sphere v0.1 qualification
+Date: 2026-09-02
+
+AUTHORITATIVE IMPLEMENTATION BASELINE
+=====================================
+oorexx_terminal_machine_v0.21.zip
+SHA-256 64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5
+
+The sphere documents the generic Terminal Machine and its TN5250/IBM i personality while
+keeping executable code outside the sphere. It records the v0.21 persistent ownership/broker
+line and the emulator-only recovery boundary. It does not claim that Gopher is execution
+authority for terminal mutation.
+
+AUTHORING / RUNTIME COMPATIBILITY
+=================================
+Qualified with LLM Gopher v0.19-dev1 editor/runtime surface:
+  sphere edit validate
+  sphere edit lint
+  context
+  open
+  exact corpus lookup
+  sphere edit package
+
+STRUCTURE
+=========
+Expected canonical objects: 19
+  sphere: 1
+  access policy: 1
+  articles: 16
+  corpora: 1 (21 durable reasoning records)
+
+RETRIEVAL GATES
+===============
+- terminal-machine context opens and exposes the release, architecture, one-writer,
+  known-state and continuation material.
+- exact topic=one-writer-many-readers lookup returns EXACT_FIELD.
+- secret-boundary article opens and preserves NONDISPLAY/raw-credential secrecy.
+- exact topic=emulator-only-rewind lookup preserves the LIVE_HOST no-rewind boundary.
+
+IMPLEMENTATION EVIDENCE RETAINED IN SPHERE
+==========================================
+Articles carry structured provenance to exact members of the v0.21 archive and its exact
+SHA-256. Key retained invariants include:
+- transport/protocol/model/semantic-state separation;
+- one writer, many readers and generation-fenced mutation;
+- one persistent real IBM i session rather than probe/session proliferation;
+- external WLU admission before mutation;
+- raw credential/NONDISPLAY secrecy;
+- exact known-state gating before PUB400 automation/signoff;
+- strict DEVNAME collision semantics;
+- exact-owned TLS helper cleanup;
+- semantic host state distinct from local operator condition;
+- emulator checkpoint/rollback/retry authority never confers live-host rewind authority.
+
+LIVE-HOST SCOPE
+===============
+No PUB400 login, password submission, or live-host mutation was performed for sphere
+qualification. Qualification is documentation/retrieval only and reuses the implementation's
+recorded v0.21 evidence rather than generating new live-host claims.

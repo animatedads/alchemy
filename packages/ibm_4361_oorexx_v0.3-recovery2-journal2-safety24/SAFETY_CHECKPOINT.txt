@@ -1,0 +1,33 @@
+IBM 4361 ooRexx v0.3 recovery2 journal2 safety checkpoint
+Date: 2026-08-26
+Status: IN-PROGRESS SAFETY CUT - not a final v0.3 release.
+
+Purpose:
+  Preserve the current reconstructed IBM 4361/MVT implementation before
+  further archaeology/performance work.
+
+Important separation:
+  Freeze files remain durable complete machine evidence.
+  Journal-pointed state remains live rewind/fork/retry development history.
+  This package does not redefine the freeze format.
+
+Current proven/reconstructed work retained in this cut includes:
+  - real MVTRES.350 IPL path and 16 MiB bootstrap clear/key accelerators;
+  - corrected BC IPL low-core device-address timing;
+  - ordinary SIO/TIO completion/CSW handling;
+  - chain-local 3330 Set File Mask state;
+  - BBCCHH SEEK decoding and CKD search semantics;
+  - Search Key EQUAL/HIGH/EQUAL-OR-HIGH distinctions and residual handling;
+  - multitrack Read Count File Protect only on prohibited EOT advance;
+  - sparse/null CCKD track handling;
+  - corrected EX sequencing: normal executed target returns to instruction after EX;
+  - permanent MVT-demanded CPU operations reconstructed to current source frontier;
+  - journal-aware storage/channel recovery and freeze fail-closed protections;
+  - host-only execution optimisations proven not to alter architectural state;
+  - focused archaeology probes retained under tests/.
+
+Current live frontier:
+  The corrected IEAIPL relocation path reaches the finite high-memory loader
+  loop around FFE164-FFE224 / CCHHR 3/4/34. The loop counter is sane and is
+  being allowed to complete naturally. Further optimisation/archaeology is
+  still in progress.

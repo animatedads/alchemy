@@ -1,0 +1,24 @@
+=== Java strict headless ===
+PASS 32/32
+
+=== Xvfb desktop + executable JAR ===
+PASS WireSwingDesktopWindow visible/capture/resize-stress/dispose
+PASS executable JAR manifest/version
+PASS java -jar --smoke-window under Xvfb
+PASS exact no-argument java -jar launch under Xvfb
+
+=== ooRexx / BSF / Server / Builder ===
+2026-08-26T11:16:13.162669 BSF.CLS NOTE: Picked up 'BSF4Rexx_JavaStartupOptions': [-Djava.awt.headless=true]
+ooRexx= VERSION
+helloType= UI_HELLO
+protocol= WIRE-UI/0.1
+toolkit= JAVA_SWING
+headlessRootClass= javax.swing.JPanel
+2026-08-26T11:16:13.453458 BSF.CLS NOTE: Picked up 'BSF4Rexx_JavaStartupOptions': [-Djava.awt.headless=true]
+PASS ooRexx -> BSF -> WireSwingRuntime snapshot/patch roundtrip revision=2
+2026-08-26T11:16:13.750305 BSF.CLS NOTE: Picked up 'BSF4Rexx_JavaStartupOptions': [-Djava.awt.headless=true]
+PASS Wire UI Server v0.11 objects -> ooRexx bridge -> Swing revision=1
+2026-08-26T11:16:14.136270 BSF.CLS NOTE: Picked up 'BSF4Rexx_JavaStartupOptions': [-Djava.awt.headless=true]
+PASS Builder v0.8.3 compiled GRID12 -> ooRexx/BSF -> Swing widths=12,3,5,4,12
+2026-08-26T11:16:17.127251 BSF.CLS NOTE: Picked up 'BSF4Rexx_JavaStartupOptions': [-Djava.awt.headless=false]
+PASS ooRexx -> BSF -> WireSwingDesktopWindow real JFrame show/dispose

@@ -1,0 +1,15 @@
+ABILITY-PROFILE/1
+profile-id: customer-bot
+revision: 1
+client-id: client-acme
+description: Customer chatbot ability profile
+runtime: data|data.orders|ability:data:1
+runtime: rules|rules.customer|ability:rules:1
+ability: query|QUERY|true|data|Bounded federated query
+ability-input-schema: query|{"type":"object","required":["resource"],"properties":{"resource":{"type":"string","minLength":1},"limit":{"type":"integer","minimum":1,"maximum":200}},"additionalProperties":false}
+ability-output-schema: query|{"type":"object","additionalProperties":true}
+ability: evaluate|EVALUATE|true|rules,data|Rule evaluation
+ability-input-schema: evaluate|{"type":"object","required":["action"],"properties":{"action":{"type":"string","minLength":1}},"additionalProperties":true}
+ability-output-schema: evaluate|{"type":"object","additionalProperties":true}
+data: orders|data|customer_orders|READ
+rule: customer-policy|rules|customer-policy

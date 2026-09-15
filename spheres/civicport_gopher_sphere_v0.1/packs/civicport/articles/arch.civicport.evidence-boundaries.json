@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "arch.civicport.evidence-boundaries",
+  "version": "0.1",
+  "sphere": "civicport",
+  "title": "Evidence hierarchy and authority separation",
+  "summary": "CivicPort separates immutable source evidence, named mapping results, read-only projections, observations and explicit world-state promotion. A URL, broker, provider, SQL row or Runtime contract is evidence/projection infrastructure and never becomes authority merely by delivering data.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "CivicDocument/CivicQueueDocument retain exact source evidence and provenance before mapping.",
+    "Missing and PRESENT_NULL remain distinct; UNKNOWN is not silently converted to known nil.",
+    "Mappings are generation-pinned and may fail closed without destroying the source document.",
+    "SQL and Runtime Registry are projection surfaces, not network or promotion authorities.",
+    "HardWorld promotion is explicit, authority/policy/rule pinned, and can retain conflict rather than overwrite."
+  ],
+  "procedure": [
+    "Identify the richest retained source object first.",
+    "Define the exact mapping generation separately from parse success.",
+    "Add projections only after mapping semantics are explicit.",
+    "If promotion is required, use the generic explicit promotion seam and preserve source/provenance identity."
+  ],
+  "provenance": [
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "ARCHITECTURE.md",
+      "line_start": 273,
+      "line_end": 329,
+      "claim": "Evidence hierarchy: document -> mapping -> SQL/Runtime/observation -> explicit promotion."
+    }
+  ]
+}

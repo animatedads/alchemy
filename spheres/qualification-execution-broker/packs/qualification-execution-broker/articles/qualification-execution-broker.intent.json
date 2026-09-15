@@ -1,0 +1,24 @@
+{
+  "id": "qualification-execution-broker.intent",
+  "title": "Frozen exact execution intent",
+  "section": "operations",
+  "summary": "After successful preflight, the broker freezes an exact, deterministic intent and hashes its canonical representation.",
+  "invariants": [
+    "Artifact/data/runtime/sandbox/test-plan/target hashes are bound.",
+    "Exact test commands, writable scopes, network policy and resource ceilings are bound.",
+    "The intent includes requester, run ID, nonce and authorization expiry.",
+    "Material drift after signing produces INTENT_STALE."
+  ],
+  "kind": "article",
+  "version": "0.1-dev1",
+  "sphere": "qualification-execution-broker",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "qualification_execution_broker_v0.1-dev1.zip",
+      "sha256": "ecbd9419343f11e96e112679fd0a1f54308c2bb293a849d6de613d40cac7487f",
+      "member": "qualification_execution_broker_v0.1-dev1/src/QualificationExecutionBroker.cls",
+      "claim": "Canonical intent/material hashing and drift detection."
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "llm-containment.channels.constrained-token-not-free-prose",
+  "version": "0.1",
+  "sphere": "llm-containment",
+  "title": "When behaviour must stay interpretable, speak in frozen classified tokens, not free prose",
+  "summary": "The safety property of constrained model output is that it is semantically frozen and replayable: the model selects from a fixed catalog, an authoritative classifier accepts only exact known tokens, and unknown or invalid items are discarded rather than guessed. This keeps the live actor's intent interpretable and auditable.",
+  "evidence_note": "HardWorld table-talk is deliberately NOT free text. PokerTableTalkLibrarian performs exact token classification of a frozen dictionary; the live AI mouth accepts only ACTION/AMOUNT/TALK/TALK_TARGET/SOCIAL_EVIDENCE machine lines and unknown/free-form tokens and invalid targets are discarded.",
+  "invariants": [
+    "Model-free-form output only where the system truly tolerates it; where effect must be auditable, constrain to the catalog.",
+    "The classifier, not the model, remains authoritative for phrase, class, pressure and provocation deltas.",
+    "Reject (do not silently correct) an unknown token; a hallucinated or stale claim is retained as evidence of what was claimed and marked invalid.",
+    "A detached model seat cannot emit a phrase from the same decision the unavailable fallback never truly made."
+  ]
+}

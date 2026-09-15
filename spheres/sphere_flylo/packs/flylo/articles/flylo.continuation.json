@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "flylo.continuation",
+  "version": "0.2",
+  "sphere": "flylo",
+  "title": "FlyLo continuation rules",
+  "summary": "Continue airline functionality on top of the shared engine and Wire UI components. Row/list mechanics are platform work; FlyLo should consume the current qualified shared implementation and spend application effort on airline semantics such as flight status and disruption servicing.",
+  "rules": [
+    "Before row/list work, inspect current Wire UI documentation/artifacts and reuse the shared implementation.",
+    "Keep ./flylo the single operational launcher.",
+    "Keep Grok real-time, structured and non-authoritative; no passenger-chat Batch path.",
+    "Preserve durable Queue/accounting state and exact semantic identities across restart.",
+    "Treat Flight Status and disruption information as Operations authority; rebooking/refund requires a separate controlled command path.",
+    "Do not activate tax, settlement or other newer Accounting Core policy merely because the APIs exist; airline policy must be explicit."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_builder_v0.12-dev1.zip",
+      "sha256": "73dea2f650dddeba862b8402b52b0a7c97d6d385b970ebaf746814174aa3b88c",
+      "member": "wire_ui_builder_v0.12-dev1/ROW_COLLECTIONS.md",
+      "line_start": 38,
+      "line_end": 40,
+      "claim": "Shared row/list capability is a Federation-company platform concern."
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.storage",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Storage Fabric durability boundary",
+  "summary": "dev6 integrates Storage Fabric v0.1-dev7 without creating a private ML storage authority. ML exports value-only checkpoint/frontier identity; Storage Fabric owns workspace placement, lifecycle, verification, replica safety and durable-completion truth.",
+  "authority": "Storage Fabric dev7 is authoritative for storage semantics; ooRexx ML dev6 bridge/tests are authoritative for the ML boundary.",
+  "invariants": [
+    "A workspace may be execution-feasible without being a durable destination.",
+    "A verified copy on disposable, temporary, expiring or otherwise non-durable capacity does not satisfy durable completion.",
+    "MLStorageCheckpointValue contains identity/value evidence only; it never exports live journal/controller/foreign handles.",
+    "MLDurableFrontierValue carries retained feasible frontier identity and objective scores, not storage ownership.",
+    "MLStorageFabricBridge delegates placement and durable-completion decisions to Storage Fabric objects.",
+    "ML must not treat successful scratch evaluation as durable experiment completion."
+  ],
+  "procedure": [
+    "Export a value-only MLStorageCheckpointValue at the desired historical experiment point.",
+    "Export a bounded MLDurableFrontierValue for promoted feasible Pareto points.",
+    "Ask StoragePlacementAdvisor for workspace/destination placement under declared capacity and lifecycle.",
+    "Use StorageDurableCompletionPolicy to determine whether a safe/stable verified replica exists.",
+    "Keep scratch/disposable results provisional until Storage Fabric reports durable completion."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/src/StorageFabric.cls",
+      "claim": "Authoritative workspace safety, service lifecycle, placement and durable-completion semantics consumed by ML."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev6.zip",
+      "sha256": "200132b208d7a19fc89764f8555aa74a30dbca6b9e98b73fa82678fe3f297091",
+      "member": "oorexx_ml_v0.1-dev6/integration/storage/MLStorageFabricBridge.cls",
+      "claim": "Value-only ML checkpoint/frontier exports and delegation bridge to Storage Fabric."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev6.zip",
+      "sha256": "200132b208d7a19fc89764f8555aa74a30dbca6b9e98b73fa82678fe3f297091",
+      "member": "oorexx_ml_v0.1-dev6/tests/test_storage_fabric_bridge.rex",
+      "claim": "Regression proves disposable verified workspace is not durable completion and safe/stable verified replica is."
+    }
+  ]
+}

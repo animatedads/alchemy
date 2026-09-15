@@ -1,0 +1,34 @@
+LLM Gopher v0.5-dev1 qualification
+Schema: llm-gopher/0.5
+Date: 2026-09-02
+
+Supplied runtime:
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug 3 2026
+Addressing mode: 64
+Runtime probe: PASS OOREXX RUNTIME PROBE
+
+Supplied real archive:
+/mnt/data/oorexxapis(20260902-003405).zip
+
+Regression suites:
+PASS ALL LLM GOPHER v0.2-dev1 TESTS
+PASS ALL LLM GOPHER v0.3 PAGE TESTS
+PASS ALL LLM GOPHER v0.4 IN-ZIP TESTS
+PASS ALL LLM GOPHER v0.5 LLM-USABILITY TESTS
+
+v0.5 practical checks:
+- --profile oorexx resolves package-local pack set.
+- describe archive.zip.text.search publishes required/optional parameters, types, bounds, examples, supports and expected result shape.
+- missing path for archive.zip.text.search returns tool_status=OK / operation_status=INVALID_ARGUMENT and CLI rc=2.
+- argparse-level missing --in is also emitted as structured JSON INVALID_ARGUMENT.
+- context oorexx is compact/task-oriented and does not publish raw service implementation details.
+- composite examine source on real nested Maths.cls returns 33 classes / 318 methods.
+- --symbol MathInteger selects structural ooRexx declaration at line 777 and returns a bounded five-line excerpt.
+- omitting --nested auto-resolves current/oorexx_maths_v0.5.zip without extraction.
+- query produces a bounded PLANNED result and does not execute arbitrary shell work.
+
+Four-pack merge digest:
+962288b65f69be23e0270532e0117931247fcd4a1c8fd73e2a208a6ded4fc807
+
+Merge remains fail-closed on identity collisions; prior merge/fallback/access regression suite passes unchanged.

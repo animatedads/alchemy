@@ -1,0 +1,14 @@
+{
+  "kind": "article",
+  "id": "ssc.external-operations",
+  "version": "0.1-dev1",
+  "sphere": "semantic-source-control",
+  "title": "External operation identity follows historical continuity, not table similarity",
+  "summary": "SSC tracks SQL/CLI/external-operation identity across refactors. A moved operation can retain identity only with unambiguous historical continuity. Same SQL kind/table/source is compatibility evidence, never enough to consume an existing identity; one-to-many same-table additions remain new proposals.",
+  "invariants": [
+    "Relocation is one-old to one-new after continuing locations are retained.",
+    "Ambiguous relocation remains a new/review proposal.",
+    "Method extraction does not erase the tracked external operation when continuity is unambiguous.",
+    "Gopher should render pending proposals and evidence but must not silently accept them."
+  ]
+}

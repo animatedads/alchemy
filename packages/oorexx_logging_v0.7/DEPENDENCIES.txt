@@ -1,0 +1,30 @@
+ooRexx Logging Framework v0.7 dependencies
+
+Core LoggingCore.cls + MethodInterposition.cls:
+- ooRexx 5.3.0 r13196 or compatible
+
+Institutional logging policy integration (LoggingPolicy.cls):
+- institutional_policy_v0.6
+- alchemy_objects_v0.8 (transitive requirement of Institutional Policy)
+- oorexx_crypto_v0.1 (transitive requirement of Alchemy Objects)
+
+NoSQL projections (LoggingNoSQL.cls and LoggingControl.cls runtime adapter):
+- nosqlserver_v0.77
+
+Queue direct/topic/persistence targets:
+- oorexx_queue_fabric_v0.9-dev4
+- alchemy_objects_v0.8
+- oorexx_crypto_v0.1
+
+Validated roll-up:
+- oorexxapis(20260824-191406).zip
+
+The logging core deliberately does not require Institutional Policy merely to
+carry deployment provenance: LogDeploymentContext is a neutral LoggingCore value
+object created at activation time.
+
+Security Effect v0.8 remains above/beside Logging rather than a logging-core
+dependency because security effects may themselves require logging. The JMS
+bridge v0.1-dev2 remains an explicit Queue Fabric boundary concern; its live
+adapter is TextMessage-oriented, so v0.7 does not silently flatten LogEvent
+objects into JMS text.

@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "ref.accounting-core.rounding-layers",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "Calculation precision, tax rounding and settlement rounding are separate layers",
+  "summary": "Accounting Core deliberately separates high-precision calculation from tax rounding and from settlement rounding. A jurisdiction tax policy chooses how and when a fractional tax result becomes legal whole minor units; a separate settlement policy may later alter the amount actually paid without rewriting the tax determination.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Tax arithmetic can retain an exact rational numerator/denominator; ledger postings remain exact whole minor units.",
+    "A tax election carries the exact rounding algorithm reference and calculation granularity applicable to that tax registration and period.",
+    "Settlement rounding begins from an already-accounted obligation and produces a separate signed rounding difference.",
+    "Settlement tender applicability is explicit; Accounting Core never assumes cash-only rounding.",
+    "Neutral rounding primitives are mechanics, not law. A jurisdiction policy decides whether HALF_UP, HALF_EVEN, TRUNCATE, FLOOR, CEILING or another method is legally appropriate.",
+    "A settlement adjustment must never change the tax amount that was already legally determined."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/TAX_DETERMINATION_CONTRACT.md",
+      "claim": "Tax calculations may retain exact rational sub-minor-unit amounts and jurisdiction policy selects legal rounding."
+    },
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/SETTLEMENT_ROUNDING_CONTRACT.md",
+      "claim": "Settlement rounding is independent of tax rounding, has explicit tender applicability and cannot rewrite determined tax."
+    }
+  ]
+}

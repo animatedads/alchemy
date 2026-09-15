@@ -1,0 +1,81 @@
+{
+  "schema": "alchemy.autobuild.integration/0.4",
+  "package": {
+    "name": "alchemy_orchestrator",
+    "version": "0.5",
+    "kind": "oorexx"
+  },
+  "dependencies": [
+    {
+      "name": "alchemy_package_model",
+      "version": "0.3"
+    },
+    {
+      "name": "alchemy_transport",
+      "version": "0.4"
+    },
+    {
+      "name": "alchemy_repository_lease",
+      "version": "0.2"
+    },
+    {
+      "name": "alchemy_dependency_floor",
+      "version": "0.5"
+    },
+    {
+      "name": "alchemy_executor",
+      "version": "0.4"
+    },
+    {
+      "name": "alchemy_publisher",
+      "version": "0.4"
+    },
+    {
+      "name": "alchemy_core_component",
+      "version": "0.1"
+    },
+    {
+      "name": "alchemy_objects",
+      "version": "0.4.3"
+    },
+    {
+      "name": "oorexx_crypto",
+      "version": "0.1"
+    }
+  ],
+  "tests": [
+    {
+      "name": "orchestrator-acceptance",
+      "argv": [
+        "rexx",
+        "run_tests.rex"
+      ],
+      "timeout_seconds": 240,
+      "environment": {
+        "rexx_path": {
+          "mode": "prepend",
+          "entries": [
+            "${PACKAGE_ROOT}/src",
+            "${PACKAGE_ROOT}/tests",
+            "${REPO_ROOT}/packages/alchemy_package_model_v0.3/src",
+            "${REPO_ROOT}/packages/alchemy_transport_v0.4/src",
+            "${REPO_ROOT}/packages/alchemy_repository_lease_v0.2/src",
+            "${REPO_ROOT}/packages/alchemy_dependency_floor_v0.5/src",
+            "${REPO_ROOT}/packages/alchemy_executor_v0.4/src",
+            "${REPO_ROOT}/packages/alchemy_publisher_v0.4/src",
+            "${REPO_ROOT}/packages/alchemy_core_component_v0.1/src",
+            "${REPO_ROOT}/packages/alchemy_objects_v0.4.3/src",
+            "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+          ],
+          "require_entries": true
+        }
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/alchemy_orchestrator_v0.5"
+    }
+  }
+}

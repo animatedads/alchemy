@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "flylo.current-baseline",
+  "version": "0.2",
+  "sphere": "flylo",
+  "title": "Current FlyLo continuation baseline",
+  "summary": "FlyLo v0.4.11 is the current continuation baseline. It retains the durable v0.4.10 airline runtime, Accounting Core v0.7 and Wire UI Server v0.17, and fixes the sales passenger-step collection/count ambiguity. The canonical website startup is one package-root command: ./flylo.",
+  "baseline": {
+    "release": "flylo_v0.4.11.zip",
+    "sha256": "21c2076fe74616ea72de6c13430d7f7b55d249113a2c2549d7b7955f43511160",
+    "launcher": "./flylo",
+    "default_data_root": "~/.flylo",
+    "wire_ui_server": "0.17",
+    "accounting_core": "0.7"
+  },
+  "invariants": [
+    "Do not regress to multi-terminal or Python-sidecar startup.",
+    "Booking/inventory/passenger state is durable across launcher restarts.",
+    "passengerCount is numeric traveller count; passengers is the passenger-record collection.",
+    "Stable passenger identities use PAX-... semantic IDs.",
+    "The browser, Grok and Wire UI do not own booking/inventory/payment/accounting authority."
+  ],
+  "provenance": [
+    {
+      "artifact": "flylo_v0.4.11.zip",
+      "sha256": "21c2076fe74616ea72de6c13430d7f7b55d249113a2c2549d7b7955f43511160",
+      "member": "flylo_v0.4.11/README.md",
+      "line_start": 1,
+      "line_end": 31,
+      "claim": "FlyLo v0.4.11 passenger count/collection repair, durable baseline, launcher and dependency versions."
+    }
+  ]
+}

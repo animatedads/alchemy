@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.ssc",
+  "version": "0.2",
+  "sphere": "oorexx-ml",
+  "title": "Code timeline versus learned-state timeline",
+  "summary": "Semantic Source Control and ML Journal state are separate timelines. A model generation may identify both its source revision and its journal point; rewinding one must never silently imply rewinding the other.",
+  "authority": "Executable source/tests and supplied upstream API artifacts are authoritative; this sphere preserves architecture and continuity.",
+  "invariants": [
+    "Stable source entity identity is distinct from source revision.",
+    "Learned-state rollback does not automatically change executing code.",
+    "Generation provenance should record source lineage/revision when material to reproducibility."
+  ],
+  "procedure": [
+    "Dogfood ML source through SSC.",
+    "Attach MLSourceIdentity to published generations.",
+    "When a live code repair changes behavior, preserve both the source revision and the pre-repair learned checkpoint for comparison."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_semantic_source_control_v0.2.3.zip",
+      "sha256": "8b3aa4ddf05f9e4b4e4e6d593f7d36dea79a4b49493bb1442404376a6d16a97b",
+      "member": "oorexx_semantic_source_control_v0.2.3/src/SemanticSourceControl.cls",
+      "claim": "Stable source entities and revision IDs."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev2.zip",
+      "sha256": "66bd14e51181a54db58b7b40d3a323b82c09d0248a172e89e212befbfa5d90a3",
+      "member": "oorexx_ml_v0.1-dev2/qualification/SSC_BASELINE_LEVEL3.txt",
+      "claim": "OorexxML MAIN source level 3 accepted: 6 packages, 244 methods, 140 attributes, no external-operation proposals."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev1.zip",
+      "sha256": "450a8fe846fe7a07e453a830bedb3e7127ff6f3f1e7f734595ac1b39eb95e98f",
+      "member": "oorexx_ml_v0.1-dev1/qualification/SSC_BASELINE_LEVEL2.txt",
+      "claim": "OorexxML MAIN level-2 SSC baseline evidence."
+    }
+  ]
+}

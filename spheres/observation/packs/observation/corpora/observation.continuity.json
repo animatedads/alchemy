@@ -1,0 +1,49 @@
+{
+  "kind": "corpus",
+  "id": "observation.continuity",
+  "sphere": "observation",
+  "title": "ooRexx Observation engineering sphere continuity records",
+  "records": [
+    {
+      "topic": "baseline",
+      "value": "Observation v0.5",
+      "sha256": "0f604f78d5d198190ae209c813fd287967f94ddaf6116dfa83b4e1904a9f6ed7"
+    },
+    {
+      "topic": "semantic generation",
+      "rule": "Engine snapshot generation is semantic state revision."
+    },
+    {
+      "topic": "stream sequence",
+      "rule": "Observation stream sequence is retained observation ordering and replay key."
+    },
+    {
+      "topic": "queue identity",
+      "rule": "Queue package/correlation identity is delivery state, not observation identity."
+    },
+    {
+      "topic": "checkpoint",
+      "rule": "Consumer checkpoint is last durably consumed stream sequence and is monotonic."
+    },
+    {
+      "topic": "lease",
+      "rule": "Observation subscriber lease is temporary read authority."
+    },
+    {
+      "topic": "WLU",
+      "rule": "WLU delivery admission can delay Queue delivery but cannot remove/alter retained semantic history."
+    },
+    {
+      "topic": "trust",
+      "rule": "proofRef/capability generation are integration seams, not self-validating trust claims."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_observation_v0.5.zip",
+      "sha256": "0f604f78d5d198190ae209c813fd287967f94ddaf6116dfa83b4e1904a9f6ed7",
+      "member": "oorexx_observation_v0.5/src/Observation.cls",
+      "claim": "Current source/package identity for continuity records."
+    }
+  ]
+}

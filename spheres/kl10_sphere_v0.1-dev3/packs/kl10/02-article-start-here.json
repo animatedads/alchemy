@@ -1,0 +1,25 @@
+{
+  "kind": "article",
+  "id": "kl10.start-here",
+  "version": "0.1-dev2",
+  "sphere": "kl10",
+  "title": "KL10 engineering evidence hierarchy",
+  "summary": "Use primary DEC architecture and production microcode to decide machine semantics; use TOPS-20 source to decide what the guest intended; use reference emulators as implementation evidence rather than architectural authority.",
+  "procedure": [
+    "Identify the exact machine question: instruction semantics, paging, interrupt/APR behavior, I/O channel behavior, or guest policy.",
+    "Consult DEC processor/technical documentation for the architectural contract.",
+    "For microcoded edge cases, inspect production KL10 Model-B microcode before generalizing from another simulator.",
+    "Use TOPS-20 V7 monitor/BOOT/POSTLD source to establish what the guest is deliberately doing at the observed PC.",
+    "Only then compare Cornwell/SIMH or other emulator implementations for a practical implementation model.",
+    "Replay from the last qualified checkpoint and reject any downstream state whose upstream machine history is architecturally impossible.",
+    "Open kl10.current-continuation before resuming the live TOPS-20 line so stale downstream fixtures are not mistaken for qualified state."
+  ],
+  "invariants": [
+    "A reference emulator is not the architecture specification.",
+    "An APR condition bit, page-fail word, and CPU-visible cycle outcome are distinct evidence.",
+    "Extended-section control flow must preserve the full 30-bit PC where the Model-B architecture requires it.",
+    "Installed physical memory capacity is a machine property; sparse host storage must not silently create nonexistent guest core.",
+    "Never promote a checkpoint merely because it reaches a familiar address."
+  ],
+  "selectors": []
+}

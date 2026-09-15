@@ -1,0 +1,36 @@
+make: Entering directory '/tmp/fr171src'
+rm -f build/libforeign_runtime.so build/libforeign_python.so examples/libforeign_test.so
+g++ -std=c++17 -O2 -fPIC -Wall -Wextra -I/tmp/oorexx53/usr/local/include -shared -o build/libforeign_runtime.so src/foreign_runtime.cpp -ldl
+cc -O2 -fPIC -shared -o examples/libforeign_test.so examples/testlib.c
+make[1]: Entering directory '/tmp/fr171src'
+g++ -std=c++17 -O2 -fPIC -Wall -Wextra -I/tmp/oorexx53/usr/local/include -I/usr/include/python3.13 -I/usr/include/python3.13 -shared -o build/libforeign_python.so src/foreign_python.cpp -L/usr/lib/python3.13/config-3.13-x86_64-linux-gnu -L/usr/lib/x86_64-linux-gnu -lpython3.13 -ldl  -lm 
+make[1]: Leaving directory '/tmp/fr171src'
+make: Leaving directory '/tmp/fr171src'
+PASS thread-safety activities
+PASS 128 assertions
+PASS library candidate fallback
+PASS metadata-gated UNKNOWN rejects undefined method
+PASS provider serialized threading policy
+PASS cross-thread callback rejected by call-thread policy
+PASS Foreign Runtime -> POSIX openpty/poll/exact-binary/errno
+PASS Python provider 17 assertions
+PASS Python provider v0.16 19 assertions
+PASS Python provider v0.17 zero-copy 11 assertions
+PASS optional NumPy zero-copy 4 assertions
+PASS Python provider activity stress
+PROVIDER /lib/x86_64-linux-gnu/libcrypto.so.3
+METHOD version(i32) -> utf8 [OpenSSL_version]
+OPENSSL OpenSSL 3.5.5 27 Jan 2026
+RUNTIME 0.17.1 INTERPRETER 5.3.0 RAW 328448
+PASS optional OpenSSL metadata probe
+SHA256 ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+PASS OpenSSL EVP SHA-256 via Foreign Runtime
+SHA256-AUTO ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+PASS automatic OpenSSL EVP SHA-256 outputs via Foreign Runtime
+PASS OpenSSL one-shot SHA-256/SHA-512 exact binary bytes via Foreign Runtime
+PASS Foreign Runtime -> FFmpeg avformat open/find/close
+FFmpeg AVChannelLayout: stereo
+channels: 2 mask: 3
+PASS Foreign Runtime -> FFmpeg AVChannelLayout struct
+PASS Foreign Runtime -> FFmpeg planar uint8_t **
+QUALIFICATION source-built interpreter=Open Object Rexx Version 5.3.0 r13196 - Internal Test Version

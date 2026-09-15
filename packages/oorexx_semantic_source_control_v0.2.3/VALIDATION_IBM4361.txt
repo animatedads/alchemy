@@ -1,0 +1,39 @@
+# IBM 4361 real-codebase validation — v0.2
+
+Corpus:
+  /tmp/ibm4361_recovery2/ibm4361_v03_rebuild
+  (real recovery2 tree recovered from the supplied ooRexx API roll-up)
+
+Current v0.2 baseline view:
+  release files: 28
+  ooRexx packages: 18
+  classes: 17
+  methods: 243
+  message-use evidence: 955
+
+Real-tree mutation acceptance:
+  1. IBM4361Machine.init
+       use strict arg storageSize=1048576
+     ->
+       use strict arg storageSize=1048576, storageObject=.nil
+
+     Result:
+       METHOD_CONTRACT_CHANGED IBM4361.IBM4361Machine.init
+       10 exact CONSTRUCTOR consumers
+       0 SUPER_MESSAGE false-positive impacts
+
+  2. IBM370CKDRecord one-line method
+       ::method cylinder; expose cyl; return cyl
+     ->
+       ::method cylinder; expose cyl; return cyl+0
+
+     Result:
+       METHOD_IMPLEMENTATION_CHANGED IBM4361.IBM370CKDRecord.cylinder
+
+Combined real-tree run:
+  exactly 2 semantic deltas
+  wall time approximately 7.8 seconds
+  max RSS approximately 25 MB
+
+The synthetic v0.2 suite separately verifies ::options, ::requires, inheritance,
+class/instance method-side separation and package executable constructor evidence.

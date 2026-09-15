@@ -1,0 +1,66 @@
+Structured Relation Plugin v0.9 validation
+==========================================
+Runtime: ooRexx 5.3.0 r13196 (internal test build, 3 Aug 2026)
+NoSQLServer: v0.73
+HardWorld bridge: virtual_ryta_hardworld v0.17
+Legal Effect bridge: v0.5
+
+v0.9 delta
+----------
+- Non-EDIFACT /* ... */ source annotations appearing between segments are preserved as
+  EdiFactSourceAnnotation objects with exact source spans and ignored by EDIFACT grammar.
+- UNG/UNE functional groups are first-class EdiFactFunctionalGroup objects.
+- Messages/segments retain functional-group identity; @groupReference is projectable.
+- Envelope validation checks functional-group message count/reference and uses group count
+  for UNZ control-count validation when functional groups are present.
+- Fictional OurLadyAir PNRGOV fixture retained as an adversarial source example.
+
+OurLadyAir fixture observed
+---------------------------
+segments:     187
+UNH messages: 16
+UNG groups:     7
+annotations:   17
+SSR segments:  28
+TIF segments:  25
+TKT segments:  25
+
+The source deliberately fails envelope validation with 17 findings, including an outer UNH
+without a matching UNT, per-message UNT segment-count mismatches, and UNZ count mismatch.
+The parser does not repair or hide those defects.
+
+NoSQL commercial-evidence smoke
+-------------------------------
+G07A MACLEOD/DECLAN  SSR NSST / SEAT NOT PURCHASED
+G07B ROBERTSON/NOOR  SSR NSST / SEAT NOT PURCHASED
+G07C OKAFOR/SUSAN    SSR NSST / SEAT NOT PURCHASED
+
+Compound join over group_ref + message_ref returns exactly 3 G07 passengers.
+Demo pricing rule supplied with fixture: EUR20 per unreserved seat => EUR60 total.
+G02 and G06 return zero NSST rows because they already carry SSR+SEAT even though seats
+are scattered; the parser/query layer does not infer a charge from descriptive comments.
+
+Regression
+----------
+Full Structured Relation suite: PASS
+XML/EDIFACT/X12/Git/GitHub/value-flow tests: PASS
+All existing NoSQL federation smokes against v0.73: PASS
+EDIFACT annotations/groups smoke: PASS
+OurLadyAir source smoke: PASS
+OurLadyAir NoSQL seat-offer smoke: PASS
+Structured Relation -> HardWorld v0.17 rich-evidence bridge: PASS
+Structured Relation -> Legal Effect v0.5 -> HardWorld v0.17 promotion bridge: PASS
+
+v0.77 federation compatibility refresh (24 Aug 2026)
+----------------------------------------------------
+NoSQLServer v0.77 metadata construction reads the neutral external-column `textMode`
+message. Structured Relation projection columns now expose `textMode = CLASSIC` while
+retaining their native source/value/provenance objects unchanged. This is an adapter
+surface compatibility addition only; SQL/text semantics remain owned by NoSQLServer.
+
+Observed against supplied NoSQLServer v0.77 + Alchemy Objects v0.8 + ooRexx crypto v0.1:
+XML relation federation smoke: PASS
+EDIFACT relation federation smoke: PASS
+X12 relation federation smoke: PASS
+Source-evidence relation federation smoke: PASS
+OurLadyAir PNRGOV NoSQL seat-offer smoke: PASS

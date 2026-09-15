@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "ref.accounting-core.tax-registration-election-determination",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "Tax registration, tax election and tax determination are different things",
+  "summary": "A TaxRegistration records the statutory relationship with a tax authority. An effective-dated TaxElection freezes the exact ruleset identity, rounding algorithm, calculation granularity and return scheme. A TaxDetermination applies the elected jurisdiction policy to exact supply evidence. None of those is inferred from domicile.",
+  "authority": "project-architecture",
+  "invariants": [
+    "TaxRegistration belongs to a legal entity independently of incorporation country or establishment.",
+    "One foreign legal entity may hold a GB VAT registration without a fictional UK company or UK establishment.",
+    "Changing an elected calculation/rounding method prospectively does not require inventing a new tax registration number.",
+    "Tax policy dispatch is by exact rulesetIdentity, not by country name or a mutable current-rules label.",
+    "The tax policy decides taxability, classification, rate/formula and legal rounding interpretation; Accounting Core supplies generic mechanics and validates evidence binding.",
+    "Tax determination does not choose GL accounts; it produces an evidence-bound result that enters the ordinary legal-entity accounting-policy path.",
+    "Already-accounted tax requests are replay-checked before newer tax/accounting policies can reinterpret them."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/SCOPES_AND_REPORTING_BOUNDARIES.md",
+      "claim": "TaxRegistration is distinct from effective-dated TaxElection and from legal-entity domicile/establishment."
+    },
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/TAX_DETERMINATION_CONTRACT.md",
+      "claim": "Generic tax determination dispatches exact jurisdiction ruleset identity and produces evidence-bound results without embedding tax law in the ledger."
+    }
+  ]
+}

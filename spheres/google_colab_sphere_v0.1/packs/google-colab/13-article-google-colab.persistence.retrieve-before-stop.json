@@ -1,0 +1,14 @@
+{
+  "kind": "article",
+  "id": "google-colab.persistence.retrieve-before-stop",
+  "version": "0.1",
+  "sphere": "google-colab",
+  "title": "Treat /content and the runtime filesystem as ephemeral",
+  "summary": "Results that matter must be downloaded or otherwise materialized into a durable controller-owned artifact before the session is stopped. The remote /content workspace is convenient working storage, not the authoritative result repository. Preserve exact manifests/digests for returned artifacts and verify them locally before promotion.",
+  "evidence_note": "Current upstream uses /content as the normal runtime working directory and documents explicit upload/download operations. Live recovery jobs returned tarred artifact sets with manifests before cleanup.",
+  "invariants": [
+    "Never make post-stop correctness depend on a remote temporary path.",
+    "Return immutable artifacts before teardown.",
+    "Verify downloaded output identity before accepting/publishing it."
+  ]
+}

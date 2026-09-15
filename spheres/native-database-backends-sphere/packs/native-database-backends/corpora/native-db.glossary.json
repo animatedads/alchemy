@@ -1,0 +1,88 @@
+{
+  "kind": "corpus",
+  "id": "native-db.glossary",
+  "sphere": "native-database-backends",
+  "title": "Native Database Backends glossary",
+  "records": [
+    {
+      "term": "backend family",
+      "definition": "One provider-neutral contract implemented by multiple database/provider-specific routes."
+    },
+    {
+      "term": "implementation kind",
+      "definition": "Declared technology category such as OOREXX_NATIVE, FOREIGN_RUNTIME or PROCESS_BRIDGE."
+    },
+    {
+      "term": "capability",
+      "definition": "A machine-readable statement that an implementation can perform a named behavior, with explicit status."
+    },
+    {
+      "term": "limitation",
+      "definition": "A separately published boundary/constraint explaining what an implementation cannot or does not yet do."
+    },
+    {
+      "term": "SUPPORTED",
+      "definition": "Capability is implemented and eligible subject to requirements/policy."
+    },
+    {
+      "term": "UNSUPPORTED",
+      "definition": "Capability is explicitly absent and makes a hard requirement ineligible."
+    },
+    {
+      "term": "CONDITIONAL",
+      "definition": "Capability may exist only under extra conditions and is not treated as satisfied without those conditions."
+    },
+    {
+      "term": "UNKNOWN",
+      "definition": "Capability state is not established; never treated as implicit support."
+    },
+    {
+      "term": "backend assessment",
+      "definition": "Planner output describing eligibility and rejection reasons such as UNAVAILABLE, FAMILY_MISMATCH or MISSING_CAPABILITY:name."
+    },
+    {
+      "term": "pinning",
+      "definition": "Binding an acquired session/transaction to one selected backend implementation for its lifetime."
+    },
+    {
+      "term": "fallback",
+      "definition": "A separately declared alternative implementation selected only at a safe pre-acquisition boundary."
+    },
+    {
+      "term": "structured native result",
+      "definition": "Provider-neutral NativeDatabaseExecution/Result/Column/Row preserving provider metadata and SQL NULL without mandatory text flattening."
+    },
+    {
+      "term": "compatibility renderer",
+      "definition": "Adapter that renders structured results into an older Database Core text/tabular framing without redefining native result semantics."
+    },
+    {
+      "term": "portable GIS baseline",
+      "definition": "The pure-ooRexx GeoPackage direct reader that works cross-platform without external GIS/sqlite libraries."
+    },
+    {
+      "term": "GIS accelerator",
+      "definition": "Future optional Foreign Runtime sqlite3/spatial implementation providing speed/pushdown while leaving portable ooRexx correctness path intact."
+    },
+    {
+      "term": "outbound MySQL backend",
+      "definition": "Future client-side MySQL/MariaDB native connector belonging to this backend family."
+    },
+    {
+      "term": "msqlshim",
+      "definition": "Separate inbound MySQL/MariaDB classic-wire compatibility server in front of NoSQLServer; not the outbound MySQL backend."
+    },
+    {
+      "term": "qualification",
+      "definition": "Executed evidence that a specific component/version/companion set satisfies claimed behavior; availability alone is not qualification."
+    },
+    {
+      "term": "non-claim",
+      "definition": "Explicitly published capability absence or unimplemented feature retained as evidence until implementation and qualification exist."
+    },
+    {
+      "term": "native",
+      "definition": "Direct implementation route from ooRexx perspective; may be pure ooRexx or Foreign Runtime and must not be assumed to mean FFI."
+    }
+  ]
+}

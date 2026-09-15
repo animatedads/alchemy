@@ -1,0 +1,70 @@
+FederationBank Merchant Wire UI Web v0.6 validation
+
+Target stack:
+- FederationBank Merchant Bank v0.15
+- FederationBank Merchant Risk Service v0.5 (separately sealed lane baseline)
+- FederationBank Merchant Accounting Adapter v0.5
+- Accounting Core v0.8 (Merchant Accounting Adapter v0.5 compatible unchanged)
+- ooRexx Journal Pointed State v0.1
+- ooRexx 5.3.0 r13196 Internal Test Version
+- Wire UI Builder v0.11
+- Wire UI Server v0.17
+- Alchemy Wire UI JS v0.4-dev4
+- ooRexx Queue Fabric v0.9-dev4
+- ooRexx Queue Fabric Web Gateway v0.2
+- Alchemy Objects v0.8
+- ooRexx Crypto v0.8.3
+
+Candidate consolidated provenance:
+- oorexxapis(20260901-111939).zip
+- SHA-256 9f95981d13a9cf6b51aaa032f6c7c401615b3f53609b4a240268bccd13cd5d63
+- roll-up Merchant Risk Service v0.4 and Merchant Wire UI Web v0.3 are stale and are not adopted over separately sealed v0.5 baselines.
+
+Qualified semantic release:
+- exact site release: FEDERATIONBANK_MERCHANT_OPERATIONS@2026.09.01.1
+- exact site release content address: sha512-f1da4f9d974a60d601ba7120e1898f42c22ba125f13e34ba8f57d0841206e4985942d623247bab316370c49b69df060ee803755cd284fc723e0509fb559fddb6
+- exact compiled package content address: wuid01-5D9E35D8
+- exact precompiled artifact: semantic/federationbank_merchant_operations_v0.6.json
+- exact definition count: 12
+- Builder v0.11 is authoring/qualification only; Wire UI Server v0.17 binds the precompiled artifact directly at runtime.
+
+Qualified browser/row authority behavior:
+- FBM.BOOKS remains a structural 0/1/N child-row collection; collection and count are separate.
+- stable semanticRowId equals Merchant rootTradeId; visible row position is never identity.
+- explicit windowOffset/windowLimit/windowTotalCount/visibleRowCount/windowRevision are preserved.
+- queryRevision/scopeRevision/orderRevision/selectionRevision/resultRevision remain independent.
+- sorting preserves semantic selection where membership is unchanged.
+- filtering changes membership scope and invalidates selection.
+- paging/windowing may move the selected row off-screen without changing semantic selection.
+- business/result changes advance resultRevision independently of selectionRevision.
+- server projects hidden FBM_WORKSPACE_CONTEXT@1 with the current server-issued workspace context.
+- MerchantWorkspaceContextEcho only echoes that context on outbound UI_ACTION; it does not author or validate revisions.
+- stale/tampered workspace context remains rejected by Wire UI Server v0.17.
+- each visible row has a server-created FBM_BOOK_OPEN@1 child action.
+- browser BOOK.OPEN sends the server-issued action instance plus workspace context and sends no rootTradeId.
+- server resolves semanticRowId from its own action instance before changing selection.
+- real transport regression proves three independent Merchant rows across Queue Fabric v0.9-dev4 -> Queue Fabric Web Gateway v0.2 WebSocket -> Alchemy Wire UI JS v0.4-dev4 BrowserRenderer -> UI_ACTION -> Wire UI Server v0.17.
+- authority adapter still reads actual Merchant Bank/Risk Service/Accounting Adapter state and emits bounded scalar projections only.
+- no trade, close, remediation, settlement, collateral, accounting, Ledger or Core Banking mutation surface is added.
+
+Work-tree acceptance:
+- browser bootstrap/config tests: PASS 2/2
+- projection shell/static authority boundary: PASS
+- workspace-context echo: PASS
+- preview boundary: PASS
+- early workspace: PASS
+- package-root starter: PASS
+- Builder semantic compile: PASS (12 definitions)
+- precompiled Builder -> Server deployment: PASS
+- server-authoritative workspace: PASS
+- first-class row/list/window/revision contract: PASS
+- real Merchant/Risk/Accounting authority projection: PASS
+- real WebSocket BrowserRenderer row/open-book roundtrip: PASS
+
+Compatibility requalification in the supplied ooRexx r13196 environment:
+- Merchant Bank v0.15: PASS 51/51
+- Merchant Risk Service v0.5: PASS 20/20
+- Merchant Accounting Adapter v0.5 against Accounting Core v0.8: PASS 19/19 test programs
+
+Sealing expectation:
+- MANIFEST.sha256 covers 45 payload files and excludes itself.

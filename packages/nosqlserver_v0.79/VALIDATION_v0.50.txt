@@ -1,0 +1,73 @@
+NoSQLServer v0.50 validation
+============================
+
+Focus
+-----
+Warm runtime primary-key cache + physical row locators, and corrected SQL
+single-row INSERT dispatch.
+
+Critical dispatch fix
+---------------------
+NoSQLServerSQL~executeInsert previously sent every VALUES statement through
+engine~insertMany(), even when the SQL contained exactly one tuple. That meant
+the v0.48 single-row append method was not used by normal SQL/PyMySQL traffic.
+
+v0.50 dispatches:
+  one VALUES tuple  -> engine~insert()
+  2+ VALUES tuples  -> engine~insertMany()
+
+Runtime PK cache
+----------------
+- Per-process, per-root/table disposable cache.
+- Built from authoritative storage when absent/stale.
+- Single-column PRIMARY KEY only in this release.
+- Maps PK signature to row + physical start line + physical line count.
+- Carries table generation and is used only when generation-current.
+- Single INSERT maintains the cache synchronously.
+- PK-changing single-row UPDATE replaces the old cache key and locator.
+- PK-equality DELETE removes the cache entry.
+- Whole-file rewrite and compaction invalidate the cache.
+- Restart simply rebuilds from authority; the cache is never authoritative.
+
+Fast mutation eligibility
+-------------------------
+- single-column PRIMARY KEY
+- equality predicate for UPDATE/DELETE
+- no additional UNIQUE constraint requiring separate scan
+- tombstone fast path enabled by storage size policy
+- single physical line for UPDATE/DELETE locator mutation
+
+SQL INSERT benchmark
+--------------------
+Direct engine, 5,000 separate ordinary SQL INSERT statements:
+
+  v0.50: 500 rows   ~4.76 sec
+  v0.50: 5,000 rows ~41.43 sec
+
+The packaged v0.49 path could not complete the 500-statement comparison within
+the execution ceiling because ordinary SQL still routed through insertMany and
+whole-file rewrite.
+
+A probe of the v0.50 journal confirms a one-tuple SQL INSERT records
+newPhysicalLine and leaves the runtime PK cache generation-current.
+
+Capabilities
+------------
+- RUNTIME_PK_CACHE
+- PK_PHYSICAL_LOCATOR
+- SQL_SINGLE_INSERT_APPEND
+- existing append/tombstone/compaction capabilities remain
+
+Regression evidence
+-------------------
+- v0.50 PK locator cache smoke: PASS
+- v0.49 tombstone storage: PASS
+- v0.48 append INSERT: PASS
+- v0.47 VALUES source: PASS
+- v0.46 ORDER BY optimizer: PASS
+- v0.45 staged mutation graph: PASS
+- FK/events/CTE/window/SQL-92/database_core gates: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 14/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

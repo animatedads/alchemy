@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "accounting-rigour.filings.no-overclaim-and-omitted-never-zero",
+  "version": "0.1",
+  "sphere": "accounting-rigour",
+  "title": "Real filings: no invented figures, and 'not filed' is not zero",
+  "summary": "When an LLM summarises or import a real accounting filing it must record exactly what the filing states. An intentionally omitted statement is evidence of omission, not of a zero; and a filed-accounts import never posts to the native going-concern ledger. Missing assurance on an arithmetic computation is not treated as a confidence in invented detail.",
+  "evidence_note": "v0.2 locked 'a filed-accounts import never posts to the native GL' and locked the rule that 'not filed != zero' semantics for intentionally omitted Income Statements. REAL_FILING_16024067_QUALIFICATION records that a filing states the Income Statement was not delivered; the assessment retains the profit fact found elsewhere without pretending the absent detail exists.",
+  "invariants": [
+    "Do not invent a figure the filing did not deliver, even to make a review read cleanly.",
+    "'Not presented in the filing' is recorded as an omission fact, never coerced to zero.",
+    "An external financial-statement assessment keeps its own book separate from the native ledger.",
+    "When a figure is asserted from a derived computation, bind it to the source figures and arithmetic profile instead of asserting authority you do not hold."
+  ]
+}

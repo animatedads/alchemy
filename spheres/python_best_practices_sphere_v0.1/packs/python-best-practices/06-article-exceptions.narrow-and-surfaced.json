@@ -1,0 +1,17 @@
+{
+  "kind": "article",
+  "id": "python-best-practices.exceptions.narrow-and-surfaced",
+  "version": "0.1",
+  "sphere": "python-best-practices",
+  "title": "Catch narrow, know what you can raise, and never swallow a failure into a falsy success",
+  "summary": "An LLM tends to wrap a whole operation in try/except Exception and return a default on failure so the caller 'does not crash'. That hides real faults behind a plausible value. Catch only the exception classes the failing call can raise for the reason you intend, and let genuine errors surface (or re-raise with context).",
+  "semantics": "except Exception catches KeyboardInterrupt-not but nearly every programming error including TypeError, ValueError, OSError; except BaseException also catches SystemExit/KeyboardInterrupt/GeneratorExit. An except clause is only entered because an actual exception of a matching class propagated.",
+  "why_this_is_a_language_factor_not_always_a_rule": "Which exception is 'correct' depends on the operation and the library; that is a judgement the article makes explicit.",
+  "evidence_note": "PLABEL: canonical. Reuses the engine's bare-except advisory but extends it, because broad/catch-all except hides more than a bare one does once the handler returns a default.",
+  "invariants": [
+    "Catch the narrowest named exception class that matches the failure you intend to handle.",
+    "Never let an except handler return a plausible falsy/default on a failure the caller should observe; prefer to re-raise with context via 'raise ... from exc' or an explicit Exception subclass.",
+    "An except Exception: pass with no handling is not safer than letting it propagate; it is just silently wrong.",
+    "When a function advertises Optional-return because a retrieval may genuinely miss, distinguish 'no such value' (returned None legitimately) from 'logical error' (raises)."
+  ]
+}

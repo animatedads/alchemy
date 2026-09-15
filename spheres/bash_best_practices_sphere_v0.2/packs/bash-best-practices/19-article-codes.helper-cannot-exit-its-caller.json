@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.codes.helper-cannot-exit-its-caller",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "An external helper cannot forcibly exit the parent script; propagate its code yourself",
+  "summary": "A validation command you call as an external helper returns a nonzero code; it cannot, by itself, abort the bash -c parent. If your parent runs without set -e you will sail past the failure. Capture the helper's return and either stand on it (`helper ... || exit $?`) or branch on it, instead of assuming the helper 'stopped the world'.",
+  "technique": "Run the requesting command, then call the validator and propagate its code when it fails, or copy the helper result file and run the check; never let a failed helper be silently ignored because the parent had no errexit.",
+  "evidence_note": "docs/IPC.md:190 'queue_require_file is an external helper command. It returns non-zero on validation failure; it cannot forcibly exit a parent bash -c script unless the script uses set -e, bash -e, or || exit $?'; the recommended forms appear at IPC.md:178-188 (cat \"$RESULT_PATH\" then queue_require_file RESULT_PATH || exit $?).",
+  "invariants": [
+    "When a required check is an external command, propagate its failure explicitly (|| exit $?) unless the script already runs under set -e.",
+    "Never call a validator and ignore its return code because 'it should have exited'.",
+    "Choose one model (errexit or explicit propagation) per script and be consistent, so a reader cannot misjudge whether a failed helper aborted.",
+    "After propagation, prefer to also retain the code so the caller can interpret why (distinct from a generic 1)."
+  ]
+}

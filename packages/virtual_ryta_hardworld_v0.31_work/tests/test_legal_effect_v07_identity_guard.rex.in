@@ -1,0 +1,109 @@
+say 'LEGAL EFFECT V0.7 SEMANTIC / EXECUTION IDENTITY GUARD V0.20 START'
+
+g1 = BuildAmbiguous('CONDITIONAL_FIRST')
+g2 = BuildAmbiguous('REVIEW_FIRST')
+
+call AssertTrue g1~publicationEligible, 'first generation compiler certified'
+call AssertTrue g2~publicationEligible, 'second generation compiler certified'
+call AssertEqual g1~semanticIdentity, g2~semanticIdentity, 'v0.7 semantic identity canonicalises insertion order'
+
+s1 = .LegalEffectV07GenerationSnapshot~new(g1)
+s2 = .LegalEffectV07GenerationSnapshot~new(g2)
+call AssertEqual s1~semanticIdentityHash, s2~semanticIdentityHash, 'semantic hashes equal'
+call AssertTrue s1~executionIdentity \== s2~executionIdentity, 'execution identities retain observable norm order'
+call AssertTrue s1~canonicalIdentity \== s2~canonicalIdentity, 'authority closure identities differ'
+
+ctx1 = .LegalContext~new('E1', '2026-08-20')
+ignored = ctx1~bindSource('LAW', 'test')
+ctx2 = .LegalContext~new('E2', '2026-08-20')
+ignored = ctx2~bindSource('LAW', 'test')
+
+raw1 = .LegalEffectEngine~new~evaluate(.LegalAction~new('AMB'), g1, ctx1)
+raw2 = .LegalEffectEngine~new~evaluate(.LegalAction~new('AMB'), g2, ctx2)
+call AssertTrue raw1~ok, 'first raw evaluation succeeds'
+call AssertTrue raw2~ok, 'second raw evaluation succeeds'
+call AssertTrue raw1~value~status \== raw2~value~status, 'v0.7 reducer remains insertion-order sensitive'
+
+p1 = .LegalEffectV07PinnedEvaluator~evaluate(.LegalEffectEngine~new, .LegalAction~new('AMB'), g1, ctx1)
+p2 = .LegalEffectV07PinnedEvaluator~evaluate(.LegalEffectEngine~new, .LegalAction~new('AMB'), g2, ctx2)
+call AssertTrue \p1~ok, 'first ambiguous reduction refused for authority'
+call AssertTrue \p2~ok, 'second ambiguous reduction refused for authority'
+call AssertEqual 'LEGAL_STATUS_REDUCTION_AMBIGUOUS', p1~code, 'first refusal code'
+call AssertEqual 'LEGAL_STATUS_REDUCTION_AMBIGUOUS', p2~code, 'second refusal code'
+
+say '  semantic_hash=' || s1~semanticIdentityHash
+say '  execution_A=' || s1~executionIdentity
+say '  execution_B=' || s2~executionIdentity
+say 'LEGAL EFFECT V0.7 SEMANTIC / EXECUTION IDENTITY GUARD V0.20: OK'
+exit 0
+
+::routine BuildAmbiguous
+  use arg order
+  provider = .LegalSha512DigestProvider~new('runtime-registry-sha512')
+  verifier = .LegalSourceVerifier~new(provider, 'hardworld-v020-ambiguity-' || order)
+
+  sourceText = 'Conditional provision. Review provision.'
+  sourceDoc = .directory~new
+  sourceDoc['kind'] = 'AMBIGUOUS_LEGAL_SOURCE'
+  sourceDoc['content'] = sourceText
+  identity = .LegalSourceIdentity~new('LAW', 'CONTRACT', 'expr', 'urn:test:amb-law', 'sha512:' || provider~digest(sourceText), 'PARTIES', '*', 'VERIFIED')
+  source = .NormativeSource~new('LAW', 'CONTRACT', 'ambiguous law', 'PARTIES')
+
+  conditionalText = 'Conditional provision.'
+  reviewText = 'Review provision.'
+  condRef = .LegalProvisionReference~new('LAW', '1', 'expr', 'clause 1', 'sha512:' || provider~digest(conditionalText), conditionalText, 'VERIFIED')
+  reviewRef = .LegalProvisionReference~new('LAW', '2', 'expr', 'clause 2', 'sha512:' || provider~digest(reviewText), reviewText, 'VERIFIED')
+
+  unit = .LegalCompilationUnit~new('AMB-G', '0.7', 'test-compiler', '1')
+  call MustOk unit~addSource(identity, source), 'add source'
+  call MustOk unit~addProvision(condRef, .LegalProvision~new('LAW', '1', 'ACTIVE', 'BASE', conditionalText)), 'add conditional provision'
+  call MustOk unit~addProvision(reviewRef, .LegalProvision~new('LAW', '2', 'ACTIVE', 'BASE', reviewText)), 'add review provision'
+
+  sourceMaterial = .LegalVerificationMaterial~fromText(sourceDoc, sourceText, 'urn:test:amb-law', 'RAW_NORMATIVE_SOURCE')
+  call MustOk unit~verifySource('LAW', sourceMaterial, verifier), 'verify source'
+  condMaterial = .LegalVerificationMaterial~fromText(sourceDoc, conditionalText, 'clause 1', 'PROVISION_LEXICAL_TEXT')
+  reviewMaterial = .LegalVerificationMaterial~fromText(sourceDoc, reviewText, 'clause 2', 'PROVISION_LEXICAL_TEXT')
+  call MustOk unit~verifyProvision('LAW', '1', condMaterial, verifier), 'verify conditional provision'
+  call MustOk unit~verifyProvision('LAW', '2', reviewMaterial, verifier), 'verify review provision'
+
+  condNorm = .LegalNorm~new('COND', 'LAW', '1', 'CONTRACT_TERM', 'AMB', 'REQUIRES_OBLIGATION')
+  condProposal = .LegalCompileProposal~new('P-COND', 'NORM', condNorm, 'test', 'HUMAN', '1')
+  call MustOk condProposal~addEvidenceReference(condRef), 'conditional evidence'
+
+  reviewNorm = .LegalNorm~new('REV', 'LAW', '2', 'CONTRACT_TERM', 'AMB', 'REVIEW')
+  reviewProposal = .LegalCompileProposal~new('P-REV', 'NORM', reviewNorm, 'test', 'HUMAN', '1')
+  call MustOk reviewProposal~addEvidenceReference(reviewRef), 'review evidence'
+
+  if order == 'CONDITIONAL_FIRST' then do
+    call MustOk unit~addProposal(condProposal), 'add conditional first'
+    call MustOk unit~addProposal(reviewProposal), 'add review second'
+  end
+  else do
+    call MustOk unit~addProposal(reviewProposal), 'add review first'
+    call MustOk unit~addProposal(condProposal), 'add conditional second'
+  end
+
+  report = .LegalRuleCompiler~new~compile(unit)
+  if \report~ok then do
+    if report~diagnostics~items > 0 then say report~diagnostics[1]
+    raise syntax 88.900 array('ambiguous generation compilation failed')
+  end
+  return report~generation
+
+::routine MustOk
+  use arg object, label
+  if \object~ok then raise syntax 88.900 array(label || ': ' || object~code || ' ' || object~detail)
+  return
+
+::routine AssertTrue
+  use arg conditionValue, label
+  if \conditionValue then raise syntax 88.900 array('ASSERT TRUE FAILED: ' || label)
+  return
+
+::routine AssertEqual
+  use arg expected, actual, label
+  if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: ' || label || ' expected=' || expected || ' actual=' || actual)
+  return
+
+::requires 'LegalRuntimeCryptoBridge.cls'
+::requires '../integration/LegalEffectV07PromotionAdapter.cls'

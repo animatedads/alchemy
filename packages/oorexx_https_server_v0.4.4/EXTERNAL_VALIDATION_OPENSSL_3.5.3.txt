@@ -1,0 +1,24 @@
+Independent host validation evidence supplied for v0.2 handshake repair
+
+Environment signal:
+  OpenSSL provider: /usr/lib64/glibc-hwcaps/x86-64-v3/libssl.so.3
+  OpenSSL version observed by server: 3.5.3
+  Foreign Runtime: 0.11.0
+  Dispatcher: libffi.so.8
+  TLS policy: min-proto-control
+
+Failure before repair:
+  curl: (35) Send failure: Broken pipe
+  SSL_do_handshake rc=-1
+  SSL_ERROR_WANT_READ(2)
+  TLS state: before SSL initialization
+  OpenSSL error queue: empty
+
+Repair applied externally to extracted v0.2 tree:
+  Retry SSL_ERROR_WANT_READ and SSL_ERROR_WANT_WRITE, bounded to 20 attempts.
+
+Observed after repair:
+  {"status":"ok","server":"oorexx-https/0.2"}
+  PASS ALL HTTPS SERVER v0.2 TESTS
+
+The v0.2.1 package incorporates the same handshake-state semantics.

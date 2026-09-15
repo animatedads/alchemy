@@ -1,0 +1,40 @@
+NoSQLServer v0.42 validation
+============================
+
+Focus
+-----
+Final-row limiting semantics and SQL:2008 FETCH FIRST ... WITH TIES.
+
+New SQL surface
+---------------
+- FETCH FIRST n ROWS WITH TIES
+- Requires ORDER BY.
+- Ties are compared against the complete final ORDER BY key.
+- LIMIT and FETCH FIRST may not be combined.
+- FETCH FIRST 0 ROWS WITH TIES returns an empty successful result.
+- v0.41 LIMIT/OFFSET is explicitly tested through joins, grouped aggregates,
+  derived relations, UNION, and window queries.
+
+Hell Corpus v2
+--------------
+PASS             13
+UNSUPPORTED       6
+PARSE_ERROR      11
+WRONG_RESULT      0
+EXECUTION_ERROR   0
+
+New oracle-backed PASS:
+- Q16 FETCH FIRST WITH TIES
+
+Regression evidence
+-------------------
+- v0.42 FETCH WITH TIES smoke: PASS
+- v0.42 LIMIT composition smoke: PASS
+- v0.41 LIMIT/OFFSET smoke: PASS
+- v0.40 SQL whitespace smoke: PASS
+- v0.39 INSERT grammar smoke: PASS
+- prior window/CTE/adapter/SQL-92 gates: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 13/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

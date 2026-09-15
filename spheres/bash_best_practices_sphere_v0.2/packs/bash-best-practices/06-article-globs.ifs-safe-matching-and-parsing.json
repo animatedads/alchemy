@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.globs.ifs-safe-matching-and-parsing",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Expand globs safely with compgen, and scope IFS for any structured parse",
+  "summary": "Do not let a pattern you mean to match explode as an unquoted argument, and do not split structured lines on the default IFS when the fields themselves can hold spaces. Expand into a variable via a bounded tool, and set IFS to the one delimiter you mean for the one read it trims, keeping the change local.",
+  "technique": "Compgen expands a glob into candidate matches that you then filter; a `while IFS= read -r m; do` loop with a local IFS safely splits CSV/tab text field by field; arrays written to a sourced file are re-read safely by sourcing and checking `declare -p` rather than text-slicing.",
+  "evidence_note": "queuebash.sh:96-104 expands with compgen -G and filters `[[ -d \"$m\" ]]`. assets.d/queue.sh:73 sets `local IFS=','` for a CSV scan, line 149 uses `IFS=$'\\t' read -r qid state name ts cmd`, and lines 84-93 source a job file then gate on `declare -p COMMAND`.",
+  "invariants": [
+    "Never let an unquoted glob expand directly in an argument position you only meant to test.",
+    "Scope IFS to the exact delimiter for the exact read/scan that needs splitting, via `local IFS=...` or a subshell.",
+    "Prefer structured re-reads (source + declare -p presence) over slicing persisted collections.",
+    "A split loop must treat an empty entry as still an entry, never accidentally skip it."
+  ]
+}

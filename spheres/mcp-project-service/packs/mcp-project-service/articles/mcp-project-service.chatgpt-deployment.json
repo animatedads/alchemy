@@ -1,0 +1,27 @@
+{
+  "id": "mcp-project-service.chatgpt-deployment",
+  "title": "ChatGPT deployment and discovery compatibility",
+  "section": "protocol",
+  "summary": "v0.2-dev5 preserves dual-era connector scanning, real HTTPS package binding and strict JSON booleans. ChatGPT and Claude have successfully discovered/invoked the coordination tools. Grok direct MCP calls also succeed, while its connector index has not published the tools; dev5 adds an underscore-only compatibility presentation to isolate client name-index behavior.",
+  "invariants": [
+    "Actual MCP traffic is POST /mcp; GET and HEAD are operator probes only.",
+    "Use No authentication only for initial tool-scan bring-up; write actions remain fail-closed without trusted mcp.principal.",
+    "Do not derive mcp.principal from clientInfo or any self-declared MCP metadata.",
+    "Keep HTTPS/TLS/firewall authority in ooRexx HTTPS Server v0.4.4 or its successor.",
+    "McpHttpsRoute must import https_server.cls directly; loading HTTPS and MCP as sibling packages does not import HttpResponse into the MCP package.",
+    "Tool schemas must serialize JSON booleans as JSON booleans, never Rexx numeric 0/1.",
+    "For Grok/name-index isolation, bind a separate compat adapter endpoint that advertises underscore aliases only; do not replace the canonical dotted API."
+  ],
+  "kind": "article",
+  "version": "0.2-dev7",
+  "sphere": "mcp-project-service",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_mcp_service_v0.2-dev7.zip",
+      "sha256": "0fda08557692c4011a43972a205d7e1a03a1a00bb5fb64a5469ce4a8b8322140",
+      "member": "oorexx_mcp_service_v0.2-dev7/README.md",
+      "claim": "Grounded in sealed MCP Project Service v0.2-dev7 package."
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "kind": "article",
+  "id": "ap-enforcement-seam",
+  "version": "0.3",
+  "sphere": "access-permissions",
+  "title": "Alchemy Security Manager is the enforcement point",
+  "summary": "AlchemyPermissionPolicyAdapter implements the existing Alchemy Security Manager policy contract for METHOD checkpoints. The adapter decides; Security Manager remains the component that prevents execution.",
+  "authority": "project-authority",
+  "invariants": [
+    "Security Manager enforces; PermissionAuthority authorizes.",
+    "The Access Permissions module does not replace or fork Alchemy Security Manager.",
+    "The adapter governs METHOD checkpoints and may delegate other checkpoint kinds to a fallback Security Manager policy.",
+    "A governed method must remain PROTECTED or implement an independent local gate, because policy cannot enforce a checkpoint the interpreter never emits."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AlchemyAccessPermissionsAdapter.cls",
+      "line_start": 1,
+      "line_end": 6,
+      "claim": "The adapter decides while Alchemy Security Manager remains the enforcement point; v0.3 separates live Permission policy changes from pinned Access Control policy identity.",
+      "note": "Source-level seam declaration."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AlchemyAccessPermissionsAdapter.cls",
+      "line_start": 83,
+      "line_end": 130,
+      "claim": "AlchemyPermissionPolicyAdapter implements METHOD evaluation and returns AlchemySecurityDecision after live session, policy, Security Effect and Permission checks.",
+      "note": "Executable Security Manager policy seam."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/README.md",
+      "line_start": 95,
+      "line_end": 97,
+      "claim": "Security Manager can enforce only interpreter-emitted METHOD checkpoints; governed methods must remain PROTECTED or have a local gate.",
+      "note": "Enforcement boundary caveat."
+    }
+  ]
+}

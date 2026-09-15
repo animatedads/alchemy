@@ -1,0 +1,157 @@
+{
+  "kind": "corpus",
+  "id": "wire-ui-swing.rules",
+  "sphere": "wire-ui-swing",
+  "title": "Wire UI Swing durable renderer rules",
+  "records": [
+    {
+      "aliases": [
+        "renderer-neutral",
+        "journey swing",
+        "builder swing"
+      ],
+      "topic": "architecture",
+      "rule": "Wire UI Swing is a renderer for compiled WIRE-UI/0.1 facts, not a parallel authoring system. Journey, business, release, experiment, authentication and permission authority remain outside Swing."
+    },
+    {
+      "aliases": [
+        "EDT",
+        "Swing event thread",
+        "invokeAndWait"
+      ],
+      "topic": "threading",
+      "rule": "Create and mutate Swing widgets on the EDT. Listeners capture local values/evidence, enqueue UI_ACTION and return; never synchronously call ooRexx, Queue Fabric, JMS/network or application logic from the EDT."
+    },
+    {
+      "aliases": [
+        "renderedRevision",
+        "event-time revision"
+      ],
+      "topic": "actions",
+      "rule": "Capture viewRef and renderedRevision when the Swing event is queued. A later incoming patch must not rewrite the historical revision against which the user acted."
+    },
+    {
+      "aliases": [
+        "preflight",
+        "transactional patch",
+        "half mutated"
+      ],
+      "topic": "transaction",
+      "rule": "Preflight revision, operation shape, instance/parent/order and exact-definition requirements against the semantic mirror before any EDT commit; reject the whole patch rather than leaving a half-mutated UI."
+    },
+    {
+      "aliases": [
+        "definition cache",
+        "manifest",
+        "UI_RENDER_PROFILE",
+        "UI_DEFINITION_MANIFEST"
+      ],
+      "topic": "definitions",
+      "rule": "Definition cache identity is immutable; the manifest is the current authorisation set. Inline UI_RENDER_PROFILE manifest is authoritative immediately, later manifests do not redefine/prune cached identity, and deauthorised visible widgets cannot emit actions."
+    },
+    {
+      "aliases": [
+        "UI_MATERIAL_SET",
+        "materials",
+        "recipes"
+      ],
+      "topic": "materials",
+      "rule": "Materials are exact presentation inputs. Interpret only an explicit safe token/recipe vocabulary; never execute Java/reflection/CSS/script/property paths from material data, and restyle existing components in place."
+    },
+    {
+      "aliases": [
+        "GRID12",
+        "GridBagLayout",
+        "span",
+        "rowSpan"
+      ],
+      "topic": "composition",
+      "rule": "Builder GRID12/FLOW placement is renderer-neutral semantic composition. Swing maps column/span/row/rowSpan/order/region to deterministic layout constraints and never writes absolute pixel coordinates back into Builder truth."
+    },
+    {
+      "aliases": [
+        "selection activation",
+        "list Enter",
+        "arrow keys"
+      ],
+      "topic": "collection activation",
+      "rule": "Local selection is not semantic activation. Arrow keys/focus/programmatic selection emit no application action; explicit click/Enter may activate, and outbound detail remains narrowed to index plus recognised server identity."
+    },
+    {
+      "aliases": [
+        "LIST_APPEND",
+        "LIST_MOVE",
+        "LIST_REMOVE",
+        "DESTROY_INSTANCE"
+      ],
+      "topic": "collection patches",
+      "rule": "Collection/window patches mutate authoritative semantic order/membership. LIST_MOVE must reuse unaffected JComponents; LIST_REMOVE/DESTROY_INSTANCE must follow protocol structure; malformed order/membership changes fail transactionally."
+    },
+    {
+      "aliases": [
+        "workspaceContext",
+        "workspaceRef",
+        "selectedIds"
+      ],
+      "topic": "workspace commands",
+      "rule": "For workspace-bound actions, workspaceContext is opaque server-owned evidence. Deep-freeze it at event time and return it unchanged; never manufacture selectedIds or revisions from local Swing selection/table state."
+    },
+    {
+      "aliases": [
+        "resultRevision",
+        "resultCurrent",
+        "resultQueryRevision"
+      ],
+      "topic": "workspace result freshness",
+      "rule": "Server v0.17 extends workspaceContext with resultRevision/resultQueryRevision/resultScopeRevision/resultOrderRevision/resultCurrent. Swing preserves unknown/current fields opaquely and lets the server reject stale or forged command context."
+    },
+    {
+      "aliases": [
+        "BSF4ooRexx",
+        "WireSwingRuntime.create",
+        "ooRexx Swing bridge"
+      ],
+      "topic": "interop",
+      "rule": "Keep ooRexx/BSF integration narrow: recursively convert Table/Directory/Array to Java Map/List, call WireSwingRuntime, drain plain outbound/action objects, and keep JComponents/JFrame private to Java."
+    },
+    {
+      "aliases": [
+        "desktop shell",
+        "JFrame",
+        "DISPOSE_ON_CLOSE"
+      ],
+      "topic": "desktop lifecycle",
+      "rule": "WireSwingDesktopWindow owns only JFrame lifecycle and a stable renderer host. DISPOSE_ON_CLOSE must not terminate the JVM or change journey state; any demo authority remains separate from WireSwingRuntime."
+    },
+    {
+      "aliases": [
+        "current baseline",
+        "sealed dev5",
+        "rollup dev3",
+        "dev6"
+      ],
+      "topic": "continuation",
+      "rule": "The 2026-08-28 19:19 roll-up bundles Swing dev3, Server v0.17 and Builder v0.11. Separate sealed Swing dev5 is newer and remains the recovery baseline; any successor must be requalified against Server v0.17/Builder v0.11 before superseding dev5."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev5.zip",
+      "sha256": "a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271",
+      "member": "wire_ui_swing_v0.2-dev5/DESIGN.md",
+      "claim": "Qualified renderer rules through sealed dev5."
+    },
+    {
+      "artifact": "wire_ui_server_v0.17.zip",
+      "sha256": "82c3a9d270d123dcbedabed1b57ed5e0944b828b1a184a5b71d47d9f9f188441",
+      "member": "wire_ui_server_v0.17/README.md",
+      "claim": "Current workspace/result/collection server contract."
+    },
+    {
+      "artifact": "wire_ui_builder_v0.11.zip",
+      "sha256": "dd48908e49e8ee00c94f931c3a1cfdfc8d5324e2e0fbf64e2cdd7d82c510ad3f",
+      "member": "wire_ui_builder_v0.11/README.md",
+      "claim": "Current renderer-neutral Builder composition doctrine."
+    }
+  ]
+}

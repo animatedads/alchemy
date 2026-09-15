@@ -1,0 +1,29 @@
+{
+  "schema": "oorexx.foreign/0.22.5",
+  "library": {
+    "provider": "native",
+    "path": "../examples/libforeign_test.so"
+  },
+  "constants": {
+    "ABI_MAGIC": {"type":"u32", "value":"1"}
+  },
+  "abiProfiles": {
+    "linux-x86_64-le-lp64": {
+      "constants": {
+        "ABI_MAGIC": {"type":"u32", "value":"0x225"},
+        "ABI_POINTER_BITS": {"type":"u32", "value":"64"}
+      },
+      "types": {
+        "abi_pair": {
+          "kind":"struct",
+          "size":16,
+          "alignment":8,
+          "fields":[
+            {"name":"tag", "type":"u32", "offset":0},
+            {"name":"value", "type":"u64", "offset":8}
+          ]
+        }
+      }
+    }
+  }
+}

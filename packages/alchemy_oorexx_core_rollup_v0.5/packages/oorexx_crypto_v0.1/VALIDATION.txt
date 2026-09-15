@@ -1,0 +1,76 @@
+ooRexx Crypto v0.1 validation
+==============================
+
+Runtime
+-------
+Open Object Rexx 5.3.0 r13196 - Internal Test Version
+64-bit debug/internal-test build supplied with this development line.
+
+Authoritative source provenance
+-------------------------------
+The starting crypto.cls was byte-identical in Queue Fabric v0.8.1,
+Runtime Registry v0.11 and Work Load Units v0.2.
+Original SHA-256:
+  b56e5e3d7547abc1202d200bfbb79b3e9df6523173cb95a35e47b0ad10c3e395
+
+Standalone test battery
+-----------------------
+PASS test_asymmetric_misc
+PASS test_chacha20
+PASS test_ed25519
+PASS test_hashes
+PASS test_hmac_sha512
+PASS test_input_validation
+PASS test_siphash128
+
+Known-answer/conformance coverage includes:
+- MD5 compatibility and SHA-512 known answers / streaming behaviour
+- RFC 4231 HMAC-SHA-512
+- SipHash-2-4-128 reference vectors, tamper rejection and key rotation
+- RFC 8032 Ed25519 vector 1 sign/verify path
+- RFC 8439 ChaCha20 encryption vector and round-trip
+- X25519 Diffie-Hellman symmetry
+- textbook/reference RSA arithmetic smoke coverage
+- malformed key/tag rejection
+
+Defects found by the new independent battery
+--------------------------------------------
+The inherited ChaCha20 implementation claimed RFC 8439 semantics but did not
+match the RFC vector. v0.1 fixes both causes:
+1. key/nonce 32-bit words are now decoded little-endian;
+2. the 16-word working state is copied explicitly. In ooRexx, `x. = s.` aliases
+   stems rather than making the independent working-state copy ChaCha requires.
+The RFC 8439 vector passes after these corrections.
+
+The inherited X25519 encryptStream/decryptStream wrapper does not provide a
+standards-defined construction and does not round-trip arbitrary strings
+cleanly. It is therefore explicitly outside the supported v0.1 security
+surface. X25519 key-agreement arithmetic is tested independently.
+
+The inherited Ed448 helper is likewise not represented as RFC 8032 Ed448: the
+source uses SHA-512 where standard Ed448 requires SHAKE256. It remains
+experimental/unsupported. RSA helpers remain textbook/reference RSA without
+modern padding. MD5 is compatibility-only.
+
+Informational fast-MAC benchmark
+--------------------------------
+Short reservation record, 10 iterations, same r13196 debug interpreter:
+  SipHash-2-4-128: 0.243355 s
+  HMAC-SHA-512:    5.455360 s
+  ratio:           22.4172916 x
+This is informational only; there is no timing pass/fail threshold.
+
+Consumer integration
+--------------------
+- WLU v0.2.1: complete eight-test suite passed using external crypto.cls.
+- Runtime Registry v0.11.1: complete non-optional suite passed using external
+  crypto.cls; optional component integrations skipped when their roots were not set.
+- Queue Fabric v0.8.2: shared-crypto known-answer, HMAC durability and Ed25519
+  checkpoint integration tests passed using external crypto.cls.
+- Legal Effect v0.10.1: source-authority Ed25519 and Runtime Registry immutable
+  bundle integration passed with crypto.cls supplied from this standalone package.
+
+Packaging invariant
+-------------------
+Updated consumers do not contain src/crypto.cls. The standalone crypto package
+is the sole authoritative source of crypto.cls in this release line.

@@ -1,0 +1,54 @@
+# FederationBank fee-round validation — Semantic Source Control v0.2.1
+
+Environment: ooRexx 5.3.0 r13196 debug build.
+
+Real sealed FederationBank v0.6 source scan:
+
+  v0.2 external candidates:    101
+  of which bogus SQL CALLs:     83
+  v0.2.1 external candidates:   18
+  expected real SQL boundaries: 18
+
+The false positives were ordinary package-level Rexx test statements such as:
+
+  call assert sql~pos("COMMIT;") > 0, "..."
+
+They are now retained as Rexx/message-use evidence and do not generate external
+SQL tracking proposals.
+
+Compatibility/evolution test used the original FederationBank level-5 semantic
+repository with only its first 18 accepted SQL decisions. No level-6 decisions
+or proposals were present before the test.
+
+Scanning the real sealed v0.6 source under v0.2.1 produced:
+
+  files=47
+  packages=37
+  classes=54
+  methods=323
+  messageUses=5486
+  externalCandidates=18
+  trackingProposalsPending=0
+  proposal ledger after scan=18
+
+All 18 candidates resolved to the 18 accepted level-5 external operations.
+The three SQL operations extracted from commitTransfer into
+commitTransferPostings retained their historical IDs:
+
+  EO-d1cde19036334db88939  INSERT FEDERATIONBANK_TRANSACTIONS
+  EO-3af70211afb0a518b3e3  INSERT FEDERATIONBANK_LEDGER_POSTINGS
+  EO-31849e81924c192ec8c7  INSERT FEDERATIONBANK_TRANSACTION_DECISIONS
+
+The v0.5 -> v0.6 semantic comparator reports 42 deltas:
+
+  3  CLASS_ADDED
+  2  PACKAGE_ADDED
+ 19  METHOD_ADDED
+  1  METHOD_REMOVED
+  4  METHOD_CONTRACT_CHANGED
+  9  METHOD_IMPLEMENTATION_CHANGED
+  3  SQL_WRITE_COLUMNS_CHANGED
+  1  SQL_PROJECTION_OR_ORDER_CHANGED
+
+This validates both the proposal-noise repair and external-operation identity
+continuity through the real FederationBank fee refactor.

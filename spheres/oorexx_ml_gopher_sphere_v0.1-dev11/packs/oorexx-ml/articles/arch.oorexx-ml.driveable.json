@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.driveable",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Driveable historical ML objects",
+  "summary": "Models, populations and learning state are journal-backed ooRexx objects that can be rewound, driven forward and branched without deleting retained futures.",
+  "authority": "Executable source/tests and supplied upstream API artifacts are authoritative; this sphere preserves architecture and continuity.",
+  "invariants": [
+    "Stable object identity is distinct from current learned state.",
+    "Every meaningful learned-state mutation is journalled.",
+    "Rollback preserves the prior future before a new future is created."
+  ],
+  "procedure": [
+    "Use MLDriveableObject for one semantic state owner.",
+    "Checkpoint before a risky or experimental learning step.",
+    "Rollback to a retained point, optionally name the preserved future, then mutate to create the alternate branch."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev1.zip",
+      "sha256": "450a8fe846fe7a07e453a830bedb3e7127ff6f3f1e7f734595ac1b39eb95e98f",
+      "member": "oorexx_ml_v0.1-dev1/src/MLCore.cls",
+      "claim": "MLDriveableObject and named branch semantics."
+    },
+    {
+      "artifact": "oorexx_journal_pointed_state_v0.1.zip",
+      "sha256": "8466bc2309213f3acc2de2afb6b2596123e446d779ca90c319aed676544c51d8",
+      "member": "oorexx_journal_pointed_state_v0.1/docs/DESIGN.md",
+      "claim": "Underlying branching journal preserves old futures after rewind."
+    }
+  ]
+}

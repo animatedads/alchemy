@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.datasets",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Dataset provenance and reproducible partitions",
+  "summary": "Datasets and partitions are immutable semantic evidence with stable sample identity, parent/transform provenance and optionally journalled RNG state for reproducible shuffled splits.",
+  "authority": "Executable source/tests and supplied upstream API artifacts are authoritative; this sphere preserves architecture and continuity.",
+  "invariants": [
+    "Evidence-grade datasets carry explicit stable identity and provenance/digest.",
+    "Derived train/test/fold datasets retain parent identity, transform and role.",
+    "Partition membership is explicit evidence, never an invisible temporary slice.",
+    "A shuffled partition is only replayable when its RNG state is replayable."
+  ],
+  "procedure": [
+    "Construct MLDataset with dataset id, provenance and sample ids when provenance matters.",
+    "Create holdout/k-fold plans through MLSplitter.",
+    "Supply MLDeterministicRNG when shuffled partition replay matters.",
+    "Retain the split/fold object with downstream validation evidence."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev2.zip",
+      "sha256": "66bd14e51181a54db58b7b40d3a323b82c09d0248a172e89e212befbfa5d90a3",
+      "member": "oorexx_ml_v0.1-dev2/src/MLStandard.cls",
+      "claim": "MLDatasetProvenance, dataset/sample identity and immutable subset derivation."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev2.zip",
+      "sha256": "66bd14e51181a54db58b7b40d3a323b82c09d0248a172e89e212befbfa5d90a3",
+      "member": "oorexx_ml_v0.1-dev2/src/MLValidation.cls",
+      "claim": "Explicit holdout/k-fold plans and deterministic RNG-backed partitioning."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev2.zip",
+      "sha256": "66bd14e51181a54db58b7b40d3a323b82c09d0248a172e89e212befbfa5d90a3",
+      "member": "oorexx_ml_v0.1-dev2/tests/test_dataset_split_provenance.rex",
+      "claim": "Regression proves provenance inheritance and split replay from restored RNG state."
+    }
+  ]
+}

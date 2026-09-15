@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "ref.accounting-core.precision-persistence",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "Exact money, DIGITS 50 and restart-safe books",
+  "summary": "Accounting money is exact whole-number minor units under a 50-digit arithmetic profile. Durable books use append-only records and protected scalar encodings so large JPY amounts and numeric-looking identifiers survive JSON persistence and restart without reinterpretation.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Every Accounting Core source package and executable accounting/tax policy package must operate with at least NUMERIC DIGITS 50.",
+    "Whole-number validation must occur under the 50-digit arithmetic context before numeric datatype checks can misclassify large institutional amounts.",
+    "Amounts wider than the supported 50 significant integer digits are rejected rather than rounded.",
+    "Money is persisted as explicit canonical integer text, not as a JSON number.",
+    "Numeric-looking opaque IDs and leading-zero evidence identifiers are protected from serializer coercion.",
+    "Persistence is append-only; one store contains one accounting book for one legal entity.",
+    "Recovery rebuilds source-event indexes as well as balances so replay/conflict semantics survive restart."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/PERSISTENCE_AND_PRECISION.md",
+      "claim": "Exact whole minor units, DIGITS 50, protected scalar persistence, append-only records and restart-safe source identity."
+    }
+  ]
+}

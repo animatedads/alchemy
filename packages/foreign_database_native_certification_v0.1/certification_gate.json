@@ -1,0 +1,98 @@
+{
+  "schema": "oorexx.api.release.native-database-gate/0.1",
+  "status": "BLOCKED_AWAITING_OWNER_CANDIDATES",
+  "known_baselines": {
+    "nosqlserver": {
+      "version": "0.79",
+      "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec",
+      "owner": "NoSQLServer v0.69 continuation"
+    },
+    "database_core": {
+      "version": "0.46",
+      "evidence": "Frankenstack v0.14 exercised Database Core v0.46 through MySQL wire",
+      "owner": "Oorexx Database Class Design"
+    },
+    "foreign_runtime": {
+      "version": "0.22.2",
+      "owner": "Foreign Runtime owner",
+      "note": "User supplied archive in current conversation; exact bytes are not mounted in this certification runtime, so no local SHA/test claim is made here."
+    }
+  },
+  "ownership": {
+    "database_core": [
+      "PostgreSQL native client provider",
+      "MySQL/MariaDB native client provider",
+      "common database result/transaction mapping"
+    ],
+    "nosqlserver": [
+      "SQLite/GeoPackage source provider selection",
+      "pure ooRexx SQLite fallback/reference",
+      "GDAL/OGR relation provider",
+      "GEOS optional spatial acceleration",
+      "PROJ explicit transform kernel",
+      "SQL/federation/spatial/geometry/SRID semantics"
+    ],
+    "msqlshim": [
+      "MySQL/MariaDB wire server framing/session/cursor compatibility only"
+    ]
+  },
+  "required_gates": [
+    {
+      "id": "NOSQL-SQLITE-AUTO-FOREIGN",
+      "requirement": "With compatible Foreign Runtime and libsqlite3 available, auto mode selects the foreign provider and reports it observably."
+    },
+    {
+      "id": "NOSQL-SQLITE-AUTO-FALLBACK",
+      "requirement": "With libsqlite3 deliberately unavailable, auto mode uses the existing pure-ooRexx SQLite implementation and reports the fallback reason."
+    },
+    {
+      "id": "NOSQL-SQLITE-FOREIGN-FAILCLOSED",
+      "requirement": "With libsqlite3 unavailable, forced foreign mode fails explicitly and never silently falls back."
+    },
+    {
+      "id": "NOSQL-SQLITE-NATIVE-FORCED",
+      "requirement": "Forced native mode uses the pure-ooRexx implementation even when libsqlite3 is present."
+    },
+    {
+      "id": "NOSQL-SQLITE-DIFFERENTIAL",
+      "requirement": "For the common supported GeoPackage surface, foreign and ooRexx providers agree on tables, schema, NULLs, scalar values, BLOB bytes, geometry bytes/type/SRID and query results."
+    },
+    {
+      "id": "NOSQL-CAPABILITY-HONESTY",
+      "requirement": "Each provider advertises only operations actually qualified; unsupported write/transaction/savepoint/WAL behavior fails explicitly."
+    },
+    {
+      "id": "NOSQL-GEOPACKAGE-SEMANTIC-STABILITY",
+      "requirement": "Provider selection does not change GeoPackage, geometry, SRID, federation or ST_* semantics."
+    },
+    {
+      "id": "DBCORE-POSTGRES-NATIVE-TX",
+      "requirement": "libpq path proves parameterized query and one-handle BEGIN/SAVEPOINT/ROLLBACK TO/COMMIT semantics."
+    },
+    {
+      "id": "DBCORE-MYSQL-NATIVE-TX",
+      "requirement": "libmariadb/libmysqlclient path proves parameterized query and one-handle transaction semantics."
+    },
+    {
+      "id": "MYSQL-MSQLSHIM-LOOPBACK",
+      "requirement": "Database Core native MySQL client successfully traverses real MySQL wire through unchanged msqlshim into NoSQLServer."
+    },
+    {
+      "id": "GIS-OGR-OBSERVATIONAL-METADATA",
+      "requirement": "OGR catalogue/schema discovery is observational; row materialisation occurs only on row demand."
+    },
+    {
+      "id": "GIS-GEOS-DIFFERENTIAL",
+      "requirement": "GEOS-backed supported predicates match the ooRexx reference implementation over deterministic and adversarial geometry corpora."
+    },
+    {
+      "id": "GIS-PROJ-EXPLICIT",
+      "requirement": "CRS transformation occurs only through an explicit transform operation; mixed-SRID predicates never trigger silent reprojection."
+    },
+    {
+      "id": "NATIVE-HANDLE-NONAUTHORITY",
+      "requirement": "PGconn/MYSQL/sqlite3/GDAL/GEOS/PROJ handles are never semantic identity, serialized authority, journal material or provenance identity."
+    }
+  ],
+  "release_rule": "Gate remains red until exact owner-produced candidate archives are supplied and all applicable required gates have executable evidence."
+}

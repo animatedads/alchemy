@@ -1,0 +1,67 @@
+NoSQLServer v0.78 validation
+Date: 2026-08-23
+Runtime: Open Object Rexx 5.3.0 r13196, 64-bit debug build
+House dependency: Alchemy Objects v0.5.1
+House standard: ALCHEMY-HOUSE-OBJECT-0.5
+Crypto dependency: oorexx_crypto_v0.1
+Unicode dependency: TUTOR 0.7 only when explicitly enabled
+
+New acceptance
+--------------
+  tests/v078_alchemy_adoption_smoke.rex                         PASS
+  tests/v077_alchemy_object_base_smoke.rex                      PASS
+
+The v0.78 adoption smoke proves:
+  - File/Object/JSON/SQLite/GeoPackage/Federated engines inherit AlchemyObject
+  - SQL executor, transaction and Database Core adapter satisfy STANDARD adoption
+  - v0.5.1 permits the existing NoSQLServerSQL~version business API
+  - required STANDARD metadata is present at the NoSQL house boundary
+  - default/unsecured objects remain STANDARD-ready
+  - SECURE_READY is not implied without host sealer/capability configuration
+  - capabilities ALCHEMY_OBJECT_BASE_0_5_1 and
+    ALCHEMY_OBJECT_STANDARD_0_5 are advertised
+
+Preserved current boundaries
+----------------------------
+  v0.76 POINT/POLYGON spatial predicates                        PASS
+  v0.75 optional TUTOR Unicode                                 PASS
+  v0.74 native SQLite/GeoPackage                               PASS
+  v0.73 JSON relation                                          PASS
+  v0.72 general INNER JOIN ON                                  PASS
+  v0.71 external mutation dispatch                             PASS
+  v0.70 external metadata boundary                             PASS
+  v0.69 DB Core compatibility                                  PASS
+  SQL-92 company smoke                                         PASS
+
+SQL correctness oracles
+-----------------------
+  torture_tiny_seed42                                          12/12
+  Hell v1                                                      24/25
+    WRONG_RESULT                                                    0
+    EXECUTION_ERROR                                                  0
+  Hell v2                                                      25/30
+    WRONG_RESULT                                                    0
+    EXECUTION_ERROR                                                  0
+  Progressive feature torture                                  72/72
+  SQL-92 company smoke                                           PASS
+
+Known SQL frontier remains unchanged
+------------------------------------
+  Hell v1: DISTINCT + ORDER BY non-projected aggregate          PARSE_ERROR
+  Hell v2: LATERAL joins                                        PARSE_ERROR
+  Hell v2: MERGE                                                 UNSUPPORTED
+  Hell v2: recursive SEARCH/CYCLE                                UNSUPPORTED
+  No wrong-result oracle regression is introduced by v0.78.
+
+Architecture boundary
+---------------------
+Alchemy Objects is applied to long-lived service/state objects only. Relational
+rows, scalar values, geometry objects, parser/expression nodes and other hot-path
+data remain lightweight. Alchemy identity/telemetry/evidence is infrastructure,
+not SQL/provider/legal authority.
+
+Packaging
+---------
+All shipped .cls/.rex targets are rexxc-compiled before freeze.
+MANIFEST.sha256 is regenerated from the final tree and verified after a fresh
+ZIP extraction.

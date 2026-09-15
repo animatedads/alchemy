@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "ref.accounting-core.legal-entity-company-isolation",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "Legal entity isolation and correlated economic chains",
+  "summary": "A single economic chain can create several independent accounting events and journals. Counterparties may legitimately recognise different amounts, dates, classifications or bases. Accounting Core preserves correlation while preventing one company from writing another company's books.",
+  "authority": "project-architecture",
+  "invariants": [
+    "One AccountingBook belongs to one legal entity.",
+    "An AccountingEngine rejects an AccountingEvent naming another legalEntityId.",
+    "Correlation is evidence linkage, not posting authority.",
+    "INTER_ESTABLISHMENT and INTERCOMPANY are different relationships; a branch or place of business is not automatically another legal entity.",
+    "A holistic report spanning multiple legal entities is not consolidation by fiat; source legalEntityId/bookId remain attached to every selected line."
+  ],
+  "procedure": [
+    "For multi-party chains, emit one event per affected legal entity, optionally sharing a common correlationRef.",
+    "Reconcile later across correlation/counterparty evidence rather than creating a shared journal."
+  ],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/ACCOUNTING_EVENT_TRANSACTION_CONTRACT.md",
+      "claim": "One company cannot post another company books; common correlation is evidence linkage rather than authority."
+    },
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/SCOPES_AND_REPORTING_BOUNDARIES.md",
+      "claim": "INTER_ESTABLISHMENT and INTERCOMPANY are distinct scope relationships."
+    }
+  ]
+}

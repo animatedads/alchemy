@@ -1,0 +1,42 @@
+Wire UI Swing Gopher sphere v0.1 qualification
+================================================
+Date: 2026-09-02
+Required engine: LLM Gopher v0.19-dev1+
+
+Authoring toolchain:
+- llm_gopher_v0.19-dev1(6).zip
+  SHA-256 d70b5e1e6a345197d32c1fac13de35aeb1c43333e2f1378b626fd7f9c35493ad
+- supplied sphere(5).zip
+  SHA-256 d7204aed51b8c8226a5b74efe27bb453ac558f82756dfcc20198dc24d54ac9b2
+- sphere_authoring_sphere_v0.2.zip
+  SHA-256 2eebff7d4485442e8db8f1a2ca29d3315609f3c3f8398a02854014287de59178
+
+Primary project provenance:
+- oorexxapis(20260828-191940).zip
+  SHA-256 5885f1906dc5ae7307e6fc7d557b88d1770b0c401f5a62063b999834222d5d66
+- current/wire_ui_server_v0.17.zip
+  SHA-256 82c3a9d270d123dcbedabed1b57ed5e0944b828b1a184a5b71d47d9f9f188441
+- current/wire_ui_builder_v0.11.zip
+  SHA-256 dd48908e49e8ee00c94f931c3a1cfdfc8d5324e2e0fbf64e2cdd7d82c510ad3f
+- current/alchemy_wire_ui_js_v0.4-dev4.zip
+  SHA-256 f7649a521de7ff9b619cc230e74d77fc2c8ae31884d5ce97c649bd862c41d205
+- current/wire_ui_swing_v0.2-dev3.zip
+  SHA-256 10823e3937eb02104c42b8990cef6349c4b587b5dbe198766d64804d89cbe9d3
+- separately sealed wire_ui_swing_v0.2-dev5.zip
+  SHA-256 a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271
+
+Qualification results:
+- PASS Sphere Editor canonical validation: 16 objects, zero problems/warnings.
+- PASS Sphere Editor lint: CLEAN, zero warnings.
+- PASS packaged sphere resolves as explicit override.
+- PASS packaged sphere activates into a fresh private Gopher environment.
+- PASS full context exposes architecture, continuation, workspace-context and definition-manifest articles.
+- PASS corpus search `workspaceContext`: finds opaque event-time evidence rule and v0.17 result-freshness rule.
+- PASS corpus search `GRID12`: finds renderer-neutral GridBag mapping rule.
+- PASS corpus search `sealed dev5`: finds dev5 recovery-baseline continuation rule.
+
+Continuity qualification:
+- The roll-up Swing v0.2-dev3 is intentionally not treated as the newest Swing candidate merely because it is bundled beside newer Server/Builder artifacts.
+- Separately sealed Swing v0.2-dev5 remains the implementation recovery baseline.
+- Unsealed/partially recovered dev6 work is not a release baseline.
+- A successor must be requalified against WIRE-UI/0.1 + Server v0.17 + Builder v0.11, including workspace result freshness evidence, before superseding dev5.

@@ -1,0 +1,59 @@
+ooRexx Foreign Runtime v0.22.6 validation
+
+Build target: supplied ooRexx 5.3.0 r13196 Internal Test Version headers/runtime.
+Native runtime, optional Python provider, Vulkan provider, tensor probe and C fixture compile cleanly with -Wall -Wextra.
+
+v0.22.6 forcing case: ABI-native C scalar aliases
+PASS ABI-native C scalar aliases 23 assertions
+  - runtime ABI profile = linux-x86_64-le-lp64
+  - long = i64 / 8 bytes
+  - unsigned long = u64 / 8 bytes
+  - size_t = u64 / 8 bytes
+  - ssize_t = i64 / 8 bytes
+  - ptrdiff_t = i64 / 8 bytes
+  - socklen_t = u32 / 4 bytes
+  - >32-bit long/size_t scalar round trips through real C functions
+  - signed >32-bit ptrdiff_t/ssize_t round trips
+  - ForeignStruct fields use the resolved widths and are read by native C
+  - runtime advertises abi-native-c-scalars
+
+Qualified ABI-specific profiles remain:
+  linux-x86_64-le-lp64
+
+Explicitly NOT qualified:
+  linux-aarch64-le-lp64
+  other Unix/Windows ABI layout/constant profiles
+
+Complete source-built gate: PASS
+Complete prebuilt-binary gate: PASS
+Complete runtime-only/no-headers gate: PASS
+PASS thread-safety activities
+PASS 128 inherited assertions
+PASS i8/u8 scalar and struct-field support 18 assertions
+PASS ABI profile qualification 17 assertions
+PASS ABI-native C scalar aliases 23 assertions
+PASS managed struct graph/buffer slices
+PASS library candidate fallback
+PASS metadata-gated UNKNOWN
+PASS serialized provider
+PASS callback thread policy
+PASS PTY/poll/errno
+PASS Python provider suites v0.15-v0.18
+PASS Python proxy argument marshalling v0.22.1
+PASS Python collection indexing v0.22.2
+PASS NumPy zero-copy and reverse import
+PASS native tensor descriptors/pinning
+PASS Python DLPack tensor
+PASS device-aware tensor v2
+PASS Python activity stress
+PASS OpenSSL metadata/EVP/one-shot exact-binary probes
+PASS FFmpeg avformat/channel-layout/planar probes
+OPTIONAL Vulkan-hardware SKIP reason=no-matching-non-CPU-Intel-device on qualification host
+
+Repeated concurrency: test_threads.rex PASS 5/5 on release binary.
+
+Consumer compatibility evidence from user-supplied oorexxapis(20260901-115539).zip:
+- Unix Socket v0.4: complete suite PASS against v0.22.6 after relaxing only its stale exact-version assertion from 0.22.3; functional/capability tests unchanged.
+- Maths v0.5: complete PURE/REFERENCE/exact/NumPy/SymPy/mpmath suite PASS against v0.22.6; optional python-flint/Arb remains SKIP because python-flint >=0.9.0 is not installed.
+
+Important compatibility rule: fixed-width metadata must use fixed-width names. C implementation types use the compiled host ABI, and structs containing them still require independently qualified profile layouts.

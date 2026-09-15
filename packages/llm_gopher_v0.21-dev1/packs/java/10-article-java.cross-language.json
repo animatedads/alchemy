@@ -1,0 +1,21 @@
+{
+  "kind": "article",
+  "id": "java.cross-language.numeric-and-time",
+  "version": "0.1",
+  "sphere": "java",
+  "title": "Cross-language Java: numeric promotion and timestamp precision can break contracts",
+  "summary": "The literal Java↔JMS↔ooRexx run found two failures that unit-shaped reasoning missed: a conditional expression promoted integer JSON tokens to Double and changed canonical signed JSON (`50000`→`50000.0`), and Java Instant nanosecond output exceeded the ooRexx DateTime input shape. The fix was explicit numeric branches and UTC timestamps capped at millisecond precision.",
+  "authoritative_sources": [
+    {
+      "archive": "oorexxapis(20260902-105429).zip",
+      "nested": "current/testapps/federationbank_java_atm_v0.1.9.zip",
+      "member": "federationbank_java_atm_v0.1.9/docs/FEDERATIONBANK_REAL_JMS_QUALIFICATION.md"
+    }
+  ],
+  "invariants": [
+    "Do not assume Java numeric-expression promotion preserves a wire representation.",
+    "Canonical signatures are over the exact cross-language representation, not the programmer's intended numeric category.",
+    "Timestamp precision is part of an interop contract when the receiver parser constrains it.",
+    "Stable command/idempotency identity must not depend on sub-millisecond timestamp precision."
+  ]
+}

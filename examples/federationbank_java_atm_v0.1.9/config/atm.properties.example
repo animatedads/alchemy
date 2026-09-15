@@ -1,0 +1,46 @@
+# FederationBank Java ATM v0.1.9
+atm.terminalId=ATM-IOM-001
+atm.networkId=FEDERATIONBANK-DEMO
+atm.ansi=auto
+atm.journalPath=var/atm-journal.jsonl
+atm.sequencePath=var/terminal-sequence.txt
+atm.rulesPath=var/atm-rules.json
+
+# Retail-bank transport: demo (default) or jms
+transport=demo
+
+# Brokerage/merchant-bank position source: auto, demo, jms, disabled.
+# auto => demo when the retail bank is demo; disabled when the retail bank is jms.
+# Production deployments must explicitly configure jms if the feature is enabled.
+brokerage.transport=auto
+
+# Retail-bank JMS/JNDI configuration. The provider client library is supplied at runtime.
+# jms.initialContextFactory=org.example.ProviderInitialContextFactory
+# jms.providerUrl=tcp://localhost:61616
+# jms.connectionFactoryJndi=ConnectionFactory
+# jms.requestQueueJndi=FB.ATM.REQUESTS
+# jms.replyQueueJndi=FB.ATM.REPLIES.ATM-IOM-001
+# jms.rulesTopicJndi=FB.ATM.RULES
+# jms.durableSubscriptionName=ATM-IOM-001-RULES
+# jms.requestTimeoutMillis=10000
+# jms.username=atm-iom-001
+# jms.passwordEnv=FB_ATM_JMS_PASSWORD
+
+# Separate brokerage/merchant-bank JMS/JNDI configuration.
+# This is deliberately NOT FB.ATM.REQUESTS.  It is a read-only cross-perimeter enquiry.
+# brokerage.jms.initialContextFactory=org.example.ProviderInitialContextFactory
+# brokerage.jms.providerUrl=tcp://brokerage-broker.example:61616
+# brokerage.jms.connectionFactoryJndi=BrokerageConnectionFactory
+# brokerage.jms.requestQueueJndi=FB.BROKERAGE.ATM.REQUESTS
+# brokerage.jms.replyQueueJndi=FB.BROKERAGE.ATM.REPLIES.ATM-IOM-001
+# brokerage.jms.requestTimeoutMillis=10000
+# brokerage.jms.username=atm-iom-001-position-enquiry
+# brokerage.jms.passwordEnv=FB_ATM_BROKERAGE_JMS_PASSWORD
+
+# X.509 SubjectPublicKeyInfo encoded Ed25519 public key, Base64.
+# Required for transport=jms. The corresponding private key remains bank-side.
+# For FederationBank engine v0.8 demo gateway only, either paste its public key:
+# bank.rules.publicKeyBase64=MCowBQYDK2VwAyEA7ndT6feJnfYbd0LC1yXNu1R3QGwUJsCa/+kuZKUp0MU=
+# ...or explicitly opt into the compiled public fixture key:
+# bank.rules.useFederationBankV08DemoKey=true
+# Production deployments should provision bank.rules.publicKeyBase64 themselves.

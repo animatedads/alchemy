@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "native-db.mysql-boundary",
+  "version": "0.1",
+  "sphere": "native-database-backends",
+  "title": "MySQL/MariaDB outbound native client and msqlshim inbound server are opposite boundaries",
+  "summary": "A future MySQL/MariaDB native outbound backend belongs in this backend family and will use the same capability/result/session contracts with exact target ABI handling for MYSQL_BIND. msqlshim is different: it is an inbound MySQL/MariaDB classic-wire compatibility server in front of NoSQLServer. The outbound client backend must not be coupled to msqlshim, and msqlshim must not absorb NoSQLServer source.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Outbound MySQL client integration and inbound MySQL wire impersonation solve opposite sides of the boundary.",
+    "The future outbound MySQL backend keeps its existing process/client route as fallback.",
+    "msqlshim owns classic MySQL/MariaDB wire/session compatibility; NoSQLServer owns SQL/storage semantics.",
+    "NoSQLServer remains package-reference-only from msqlshim; no embedded NoSQLServer.cls or vendor tree is permitted.",
+    "Native outbound MySQL work must satisfy the common backend capability/limitation publication contract."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/PLAN.md",
+      "line_start": 9,
+      "line_end": 12,
+      "claim": "A future outbound MySQL/MariaDB native backend uses the same common contracts and retains an existing fallback."
+    },
+    {
+      "artifact": "msqlshim_v0.21.2.zip",
+      "sha256": "f39bc8c58b2437d4cd45ef2443580785260a6d5dc85332a75bcb112ff026bfcc",
+      "member": "msqlshim_v0.21.2/DEPENDENCIES.md",
+      "line_start": 1,
+      "line_end": 20,
+      "claim": "msqlshim owns inbound MySQL/MariaDB classic wire/session compatibility and keeps NoSQLServer external by package reference."
+    }
+  ]
+}

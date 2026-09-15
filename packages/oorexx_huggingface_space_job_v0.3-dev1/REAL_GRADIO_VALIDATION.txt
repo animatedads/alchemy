@@ -1,0 +1,29 @@
+ooRexx Hugging Face Space Job v0.2 — actual Gradio integration evidence
+Date: 2026-09-01
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version
+Gradio: 6.5.1, local companion endpoint over HTTPS
+
+Flow exercised:
+  native ooRexx API Client TLS
+  -> authenticated multipart /gradio_api/upload
+  -> AUTO named-v2 submit attempt
+  -> HTTP 405 compatibility trigger
+  -> /gradio_api/info endpoint introspection
+  -> positional v1 /gradio_api/call/job_cpu submit
+  -> real Gradio queue/event id
+  -> chunked SSE completion
+  -> [result-json, gradio.FileData]
+  -> same-Space HTTPS artifact download
+  -> API egress session release
+
+PASS REAL GRADIO HTTPS AUTO V2-TO-V1 SSE FILEDATA CPU SMOKE
+
+Downloaded result ZIP contained:
+  job-result.json
+  logs/stdout.log
+  logs/stderr.log
+  outputs/smoke-result.json
+
+The result reported cleanup=DONE and the API session manager reported zero
+active sessions after completion. This was a local integration fixture: no
+live Hugging Face Space mutation, real token use or ZeroGPU quota consumption.

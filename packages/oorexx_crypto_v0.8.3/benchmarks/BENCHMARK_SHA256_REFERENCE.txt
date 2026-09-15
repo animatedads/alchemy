@@ -1,0 +1,16 @@
+Crypto v0.4 SHA-256 Runtime Reference benchmark
+Runtime: ooRexx 5.3.0 r13196 debug
+Provider: resident TCP Python service, hashlib.sha256
+Measurement: one end-to-end operation per payload, including broker, JSON, TCP, evidence and validation
+
+bytes=16     native_ms=64.854     reference_ms=3.988    speedup=16.26x
+bytes=1024   native_ms=990.924    reference_ms=9.805    speedup=101.06x
+bytes=4096   native_ms=3632.712   reference_ms=23.959   speedup=151.62x
+bytes=16384  native_ms=15082.886  reference_ms=92.078   speedup=163.81x
+
+Every referenced measurement asserted:
+  operation = crypto.sha256.digest/1
+  outcome   = COMPLETED
+  provider  = python.crypto.reference
+
+PASS SHA-256 runtime-reference performance benchmark

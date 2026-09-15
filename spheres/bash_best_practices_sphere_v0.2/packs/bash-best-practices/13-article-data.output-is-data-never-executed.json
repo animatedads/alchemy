@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.data.output-is-data-never-executed",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Output from a provider or helper is data, never shell; never evaluate or source it",
+  "summary": "When code returns a decision, a catalog or an answer from another component (an LLM, a provider, a remote, a fetched page), treat every returned string strictly as data. Do not eval it, source it, pipe it into sh, backtick it into a command, or expand its shell-looking fragments. A determination that 'knows' must be applied by your logic, not by executing the returned text.",
+  "technique": "bashqueues hard-wires that providers return normalized data and never supply shell; the core command logic enforces the provider's decision. Fields that could tell you to run something are surfaced as data with an explicit marker that this is not shell; renderers treat resource content as data and reject expansion-looking forms.",
+  "evidence_note": "docs/ACL_PROVIDER_CONTRACT.md:11 'Providers return data, never shell. Providers never supply shell.'; EU_SOVEREIGN_PROVIDER_CONTRACTS.md:13 requires normalized JSON only and explicitly forbids returning shell; QUEUE_DISPLAY_RESOURCES.md/QUEUE_XML_RESOURCES.md reject eval/source/expansion of resource content; PLAN_ADAPTER_CONTRACT.md flags eval/dynamic source/piped curl|sh as needs_review.",
+  "invariants": [
+    "Never execute output: no eval, no source, no backtick, no `curl ... | sh` on material that is data.",
+    "A returned answer is a normalized value for your logic to interpret, not a program to run.",
+    "Resource and display text is data; shell-looking fragments in it are invalid and should be rejected.",
+    "When your own earlier steps generated text you must re-run, use the allowed, bounded mechanism (heredoc template or an allowlisted interpreter), never eval-by-string."
+  ]
+}

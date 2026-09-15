@@ -1,0 +1,20 @@
+now = .DateTime~new
+start = now - .TimeSpan~new(0,0,1,0,0)
+profile = .InstitutionalPolicyAuthorityProfile~new('SECURITY-GOVERNANCE','1.0',start,.nil)
+ignored = profile~addGrant(.InstitutionalPolicyAuthorityGrant~new('AUTHOR','SECURITY_TEAM','AUTHOR','SECURITY-POLICY-CORE',start,.nil,'BOARD','')~seal)
+ignored = profile~addGrant(.InstitutionalPolicyAuthorityGrant~new('APPROVER','RISK_COMMITTEE','APPROVER','SECURITY-POLICY-CORE',start,.nil,'BOARD','')~seal)
+ignored = profile~addGrant(.InstitutionalPolicyAuthorityGrant~new('PUBLISHER','SECURITY_RELEASE','PUBLISHER','SECURITY-POLICY-CORE',start,.nil,'BOARD','')~seal)
+ignored = profile~addRule(.InstitutionalPolicyAuthorityRule~new('PUB','SECURITY-POLICY-CORE',.true,'OPTIONAL')~seal)
+ignored = profile~seal
+framework = .SecurityPolicyFramework~new('SECURITY-POLICY-CORE','5.0',now,.nil,'SECURITY_TEAM','RISK_COMMITTEE','')~seal
+request = .InstitutionalPolicyPublicationRequest~new(framework,'SECURITY_RELEASE',now)
+evaluator = .InstitutionalPolicyAuthorityEvaluator~new(profile)
+catalog = .SecurityPolicyCatalog~new(.nil,.nil,evaluator)
+result = catalog~publish(framework,request)
+say 'publish=' result~ok result~code
+record = catalog~publicationRecord('SECURITY-POLICY-CORE','5.0')~value
+say 'assurance=' record~assuranceMode
+say 'author-grant=' record~authorityDecision~authorGrantId
+say 'approver-grant=' record~authorityDecision~approverGrantId
+say 'publisher-grant=' record~authorityDecision~publisherGrantId
+::requires 'SecurityEffect.cls'

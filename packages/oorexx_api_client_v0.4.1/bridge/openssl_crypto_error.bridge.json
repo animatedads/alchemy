@@ -1,0 +1,34 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": {
+    "provider": "native",
+    "names": [
+      "libcrypto.so.3",
+      "libcrypto.so",
+      "libcrypto-3-x64.dll"
+    ],
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "functions": {
+    "err_get_error": {
+      "symbol": "ERR_get_error",
+      "return": "u64",
+      "args": []
+    },
+    "err_reason_error_string": {
+      "symbol": "ERR_reason_error_string",
+      "return": "utf8",
+      "args": [
+        "u64"
+      ]
+    },
+    "openssl_version": {
+      "symbol": "OpenSSL_version",
+      "return": "utf8",
+      "args": [
+        "i32"
+      ]
+    }
+  }
+}

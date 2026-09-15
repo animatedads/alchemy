@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "java.jms.request-reply",
+  "version": "0.1",
+  "sphere": "java",
+  "title": "JMS: explicit request/reply identity",
+  "summary": "The FederationBank Java ATM uses TextMessage JSON request/reply with stable command identity, JMSCorrelationID, JMSReplyTo, a bounded receive timeout, and correlation verification before accepting the reply.",
+  "authoritative_sources": [
+    {
+      "archive": "oorexxapis(20260902-105429).zip",
+      "nested": "current/testapps/federationbank_java_atm_v0.1.9.zip",
+      "member": "federationbank_java_atm_v0.1.9/ATM_JMS_CONTRACT.md"
+    },
+    {
+      "archive": "oorexxapis(20260902-105429).zip",
+      "nested": "current/testapps/federationbank_java_atm_v0.1.9.zip",
+      "member": "federationbank_java_atm_v0.1.9/src/main/java/com/federationbank/atm/bank/JndiJmsBankNetwork.java"
+    }
+  ],
+  "invariants": [
+    "A retransmission of one business action retains the same command/idempotency identity.",
+    "The consumer selector and received JMSCorrelationID are both tied to the command identity.",
+    "Human-readable detail is not parsed as business authority; structured fields drive behavior.",
+    "Transport success does not move bank authority into the Java ATM or JMS bridge."
+  ],
+  "correct": [
+    "Set JMSReplyTo explicitly for request/reply.",
+    "Bound receive time and surface timeout as a transport failure.",
+    "Verify the returned correlation ID before parsing the response as the requested result."
+  ]
+}

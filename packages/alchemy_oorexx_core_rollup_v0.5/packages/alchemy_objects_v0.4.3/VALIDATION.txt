@@ -1,0 +1,90 @@
+Alchemy Objects v0.4.3 validation
+Date: 2026-08-23
+
+Maintenance/runtime field-validation scope
+------------------------------------------
+v0.4.3 keeps the v0.4 object-house contract, v0.4.1 dependency-path fix and
+v0.4.2 live fail-closed Security Manager semantics probe. It adds a clearer
+runner interpreter contract and records project-host field validation on
+Open Object Rexx 5.2.0 r0.
+
+Build-environment validation
+----------------------------
+Validated during development against:
+  Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+  Build date: Aug 3 2026
+  Addressing mode: 64
+
+All 22 test programs have PASS evidence on the final v0.4.3 source lineage.
+The live runtime-profile tests establish:
+  .false -> continue/authorized
+  .true  -> Security Manager handled/substituted
+
+Project-host field validation (user supplied execution evidence)
+----------------------------------------------------------------
+Host runtime:
+  Open Object Rexx Version 5.2.0 r0
+  Build date: Jun 3 2026
+  Addressing mode: 64
+
+Command:
+  time ./run_tests.sh ../oorexx_crypto_v0.1/src/
+
+Result:
+  PASS test_load
+  PASS test_base
+  PASS test_security_runtime_probe
+  PASS test_security_manager_contract
+  PASS test_security_capability_method
+  PASS test_security_requires_gap
+  PASS test_security_manager_immutability
+  PASS test_composite_policy
+  PASS test_method_telemetry
+  PASS test_capability_expiry
+  PASS test_trace_compliance_data
+  PASS test_test_support
+  PASS test_security_quota
+  PASS test_locked_method
+  PASS test_locked_method_security_manager
+  PASS test_locked_method_envelope
+  PASS test_method_policy_relationships
+  PASS test_requirements_instrumentation_rules
+  PASS test_protected_policy_mutations
+  PASS test_inspector_key_boundary
+  PASS test_inspector_bridge
+  PASS test_full_snapshot
+
+Host timing:
+  real 0m15.940s
+  user 0m15.809s
+  sys  0m0.120s
+
+This is field evidence supplied from the project host, not an independent run
+inside the build container. It establishes compatibility evidence for ooRexx
+5.2.0 r0 and shows the static ::REQUIRES supervision gap is present there too.
+
+Runner interpreter contract
+---------------------------
+REXX and OOREXX_REXX identify ONE executable pathname/name. They are not shell
+command strings. For example:
+  OOREXX_REXX=/usr/local/bin/rexx ./run_tests.sh ../oorexx_crypto_v0.1/src
+
+Do NOT set:
+  REXX="time rexx"
+
+To time the suite portably:
+  time ./run_tests.sh ../oorexx_crypto_v0.1/src
+
+Both crypto dependency forms are accepted:
+  ./run_tests.sh ../oorexx_crypto_v0.1/src
+  ./run_tests.sh ../oorexx_crypto_v0.1/src/crypto.cls
+
+Static/package checks
+---------------------
+PASS: run_tests.sh parses with sh -n.
+PASS: metadata JSON parses.
+PASS: AlchemyObject package version is 0.4.3.
+PASS: AlchemyTestRun stamps package_version 0.4.3.
+PASS: house-standard identifier remains ALCHEMY-HOUSE-OBJECT-0.4.
+PASS: no executable ::requires directive references BFSProxy, BSFProxy or AlchemyBsfProxy.
+PASS: packaged InspectorClouseau retains the prior single removal of the obsolete AlchemyBsfProxy ::requires line.

@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "ops.federationbank.start",
+  "version": "0.1",
+  "sphere": "federationbank",
+  "title": "Start here: ask the authority map before writing banking code",
+  "summary": "FederationBank is intentionally a system of disagreeing authorities. Use the sphere to identify which component owns a fact, then inspect the current package before changing code. A convenient object graph is not the architecture.",
+  "authority": "federationbank-project-doctrine",
+  "invariants": [
+    "Channels request; backend authorities decide and execute.",
+    "Do not merge Account, Payments, Ledger, physical cash custody, Staff Authority, or Merchant Banking merely because one demo flow crosses them.",
+    "A newer package in the workspace overrides an older sphere observation; inspect the package and revise the sphere rather than coding from stale memory.",
+    "Fixtures are test policy/data, not real regulatory facts."
+  ],
+  "procedure": [
+    "Run `gopher --profile federationbank context federationbank --full`.",
+    "Search the corpus for the operation or invariant, for example `gopher --profile federationbank search \"physical cash\" --sphere federationbank`.",
+    "Open the most relevant article with `gopher --profile federationbank open <article-id>`.",
+    "Before editing implementation, inspect the actual current ZIP/member with Gopher archive services; source/package evidence beats recollection.",
+    "After a material architectural correction, revise the smallest responsible sphere object and attach provenance."
+  ],
+  "provenance": [
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/README.md",
+      "line_start": 3,
+      "line_end": 65,
+      "claim": "Core authority split and channel/backend rule."
+    }
+  ]
+}

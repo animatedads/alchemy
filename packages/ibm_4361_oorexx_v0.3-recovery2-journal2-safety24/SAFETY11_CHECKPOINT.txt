@@ -1,0 +1,15 @@
+IBM 4361 / OS/360 MVT ooRexx safety11 checkpoint
+
+Permanent promotion: X'5E' AL / Add Logical only.
+Exact live frontier: 0154D0 / ICOUNT 511943 / 5E60C888.
+Live retry: R6 80016A60 + [015D50] 40000000 -> C0016A60, CC1, IA 0154D4.
+Guest progress after retry: 296 instructions.
+Next untouched boundary: X'56' at 0146FC / ICOUNT 512240 / 561C0004501C.
+
+Live archaeology now supports object-scope insertion/replacement/removal.
+Removal is intentionally outside journalled machine state; machine rewind does
+not resurrect a withdrawn executable hypothesis.  AL candidate->permanent
+microstate equivalence is regression-tested.
+
+Freeze files remain separate durable evidence artifacts.
+SSC v0.2.2 qualification remains pending; v0.2.3 is not substituted.

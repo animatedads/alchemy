@@ -1,0 +1,50 @@
+ooRexx AI Provider - Anthropic v0.2 validation
+===============================================
+Runtime: Open Object Rexx 5.3.0 r13196 - Internal Test Version
+Date: 2026-08-24
+
+Qualified dependency baseline:
+- alchemy_objects_v0.8
+- oorexx_ai_access_v0.6 (public ai.provider.access/0.5)
+- oorexx_secret_broker_v0.2 (secret.broker/0.2)
+- oorexx_crypto_v0.1
+
+Public Anthropic API remains ai.provider.anthropic/0.1.
+
+Compile/static gates:
+PASS bash -n run_tests.sh
+PASS all 8 shipped .cls/.rex programs compile with rexxc r13196
+
+Non-network acceptance:
+PASS test_capability_selector.rex
+  - capability floor + sovereignty filtering unchanged
+  - batch/cost ordering and job-cost ledger unchanged
+PASS test_transport_loads.rex
+  - AI Access adapter constructs
+  - missing credential fails closed before network use
+PASS test_secret_broker_transport.rex
+  - real-time and Batch paths acquire through SecretBroker v0.2
+  - fake curl rejects secret material on argv
+  - curl credential config is mode 0600
+  - x-api-key exists only in trusted curl config boundary
+  - both leases retired; activeLeaseCount returns 0
+  - secret marker absent from broker/provider instrumentation evidence
+  - Batch create executes and records estimated job cost
+PASS test_alchemy_v08_adoption.rex
+  - AnthropicCapabilitySelector, AnthropicProvider and AnthropicBatchProvider
+    all pass Alchemy v0.8 STANDARD adoption
+  - zero adoption warnings
+  - zero reserved-base overrides
+  - preferred INIT construction provenance
+
+Optional external-network probe with deliberately invalid ANTHROPIC_API_KEY:
+- real-time: AI_ANTHROPIC_TRANSPORT
+- Batch:     AI_ANTHROPIC_TRANSPORT
+External endpoint reachability was therefore UNPROVEN in this sandbox and is
+not claimed as release evidence. The deterministic fake-curl test is the
+credential-boundary acceptance authority for this cut.
+
+Scope retained:
+- direct Anthropic Messages/Batch transport is implemented;
+- Bedrock/Vertex routes remain selection/handoff models only; cloud-specific
+  signing and transport remain outside this package.

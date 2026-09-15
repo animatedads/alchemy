@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "ac.doctrine.model-first",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Model the thing, then move the thing",
+  "summary": "Alchemy Core keeps domain/package semantics in ooRexx models and treats Git, ZIP, directory and process mechanisms as replaceable transport/execution edges. The resident service is composition, not a second implementation of package semantics.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Package identity, exact dependencies, environment composition, tests and publication intent belong to the package model.",
+    "Transport materializes bytes and provenance only; it does not resolve dependencies, compose REXX_PATH, execute tests or decide publication.",
+    "The orchestrator composes transport, accepted-main dependency catalogue, executor and publisher rather than duplicating their logic.",
+    "Product business logic is ooRexx. Shell is permitted as a thin OS/launcher carrier; Python is not the Alchemy Core architectural default."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/README.md",
+      "line_start": 3,
+      "line_end": 16,
+      "claim": "Core rules state modelled semantics, replaceable transport and immutable runtime rules."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_transport_v0.4/src/AlchemyTransport.cls",
+      "line_start": 1,
+      "line_end": 7,
+      "claim": "Transport boundary is explicit in source."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_orchestrator_v0.5/src/AlchemyOrchestrator.cls",
+      "line_start": 1,
+      "line_end": 8,
+      "claim": "Orchestrator is explicitly composition-only."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.6-pre2-source.zip",
+      "sha256": "3b0a18732a6ec33fc55ac35cf4589fb931623796cd0d628062a83c2cfcac914b",
+      "member": "alchemy_oorexx_core_rollup_v0.6-pre2-source/PREBASE_STATUS.txt",
+      "line_start": 12,
+      "line_end": 20,
+      "claim": "v0.6 prebase retains ooRexx package trees and zero Python product source."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+FederationBank Branch Day Service v0.1 validation transcript
+UTC 2026-08-26T09:17:51Z
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+
+## executable tests
+== test_failed_close_remains_closing.rex ==
+PASS: failed end-of-day certification leaves the day explicitly CLOSING
+== test_full_lifecycle.rex ==
+PASS: Branch Day service durably models create/open/closing/closed lifecycle
+== test_outbox_retry.rex ==
+PASS: Branch Day events are durable and retried at least once
+== test_queue_persistent_recovery.rex ==
+PASS: permanent Queue Fabric recovers typed Branch Day evidence graph before consumption
+== test_restart_recovery.rex ==
+PASS: durable restart preserves branch-day evidence and resumes closing
+== test_runtime_module.rex ==
+PASS: Branch Day service runtime module
+== test_service_idempotency.rex ==
+PASS: semantic command replay cannot open or close a branch day twice
+
+## rexxc
+PASS rexxc integration/FederationBankBranchDayServicePersistence.cls
+PASS rexxc integration/FederationBankBranchDayServiceQueue.cls
+PASS rexxc runtime/FederationBankBranchDayServiceRuntimeModule.cls
+PASS rexxc src/FederationBankBranchDayService.cls
+PASS rexxc tests/TestSupport.cls

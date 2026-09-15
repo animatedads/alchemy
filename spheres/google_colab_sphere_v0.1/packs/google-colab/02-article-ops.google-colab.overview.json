@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "ops.google-colab.overview",
+  "version": "0.1",
+  "sphere": "google-colab",
+  "title": "Google Colab is an ephemeral provider, not the job authority",
+  "summary": "Colab is best treated as a provider adapter behind an explicit job/resource contract. The controller decides what is required, asks Colab for an allocation, stages bounded inputs, executes, retrieves immutable outputs, and always tears the session down. Provider admission is not evidence that the worker actually has the required RAM, GPU memory, disk, libraries, or application state; verify those again inside the worker before expensive work begins.",
+  "evidence_note": "Grounded in the live Gemma-ooRexx Colab recovery sequence on 2026-09-01/02 and aligned with the sibling placement-layers and work-load-units spheres. Google Colab CLI upstream describes explicit session provisioning/execution/stop primitives; this sphere records the stronger managed-compute discipline learned from using them repeatedly.",
+  "invariants": [
+    "Keep job semantics, security policy, grading and promotion authority outside the Colab provider adapter.",
+    "Hard eligibility is checked before optimization or dispatch; actual runtime resources are re-verified after allocation.",
+    "A Colab session is disposable infrastructure. Durable evidence and outputs must be returned before teardown.",
+    "Every failure path still performs cleanup and secret retirement."
+  ]
+}

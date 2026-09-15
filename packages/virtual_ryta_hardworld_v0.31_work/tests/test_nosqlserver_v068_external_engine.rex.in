@@ -1,0 +1,228 @@
+/*
+ * Stock NoSQLServer v0.68 external-engine Algorithm Relation integration.
+ */
+parse arg root
+if root == '' then root = '/tmp/virtual_ryta_nosql_v07'
+
+say 'NOSQLSERVER V0.68 ALGORITHM RELATION EXTERNAL ENGINE START'
+
+fed = .FederatedDatabaseEngine~new(root)
+sql = .NoSQLServerSQL~new(fed)
+
+world = .RYTAWorldState~new('WORLD-NOSQL-EXT-1')
+world~putKnown('HAS_QUERY', .true)
+world~putKnown('PRODUCT_RELEVANT', .true)
+world~putKnown('PRODUCT_VALUE_HIGH', .true)
+world~putKnown('UPSELL_OPPORTUNITY', .true)
+world~putKnown('ESSENTIAL_MEDICATION', .true)
+world~putKnown('IMMEDIATE_ACCESS', .true)
+world~putKnown('GUARANTEED_CUSTODY', .false)
+
+provider = .RYTAAlgorithmProvider~new(.nil, '..')
+algorithmEngine = .AlgorithmRelationEngine~new
+call assert algorithmEngine~addProvider(provider), 'provider registration'
+ctx = .AlgorithmExecutionContext~new('NOSQL-EXT-INV-1', world~snapshotOid, world~snapshotOid)
+
+nosqlClasses = .directory~new
+nosqlClasses['TABLE_DEFINITION'] = .TableDefinition
+nosqlClasses['DATABASE_ROW'] = .DatabaseRow
+nosqlClasses['DATABASE_RESULT'] = .DatabaseResult
+nosqlClasses['TABLE_METADATA'] = .DatabaseTableMetadata
+
+bindings = .directory~new
+bindings['RYTA_ACTION_DECISIONS'] = 'ryta_actions'
+bindings['RYTA_DECISION_TRACE'] = 'ryta_trace'
+external = .NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine, 'VIRTUAL_RYTA', world, ctx, nosqlClasses, bindings)
+call assert external~isReady, 'external engine ready' external~lastError
+call assert provider~invocationCount = 0, 'construction does not invoke provider'
+ignore = fed~addEngine(external)
+
+/* Catalog, metadata, table object and row-count discovery are pure. */
+catalog = fed~readCatalog
+call assert catalogHas(catalog, 'ryta_actions'), 'catalog contains ryta_actions'
+call assert catalogHas(catalog, 'ryta_trace'), 'catalog contains ryta_trace'
+call assert provider~invocationCount = 0, 'catalog does not invoke provider'
+
+meta = fed~tableMetadata('ryta_actions')
+call assert meta \== .nil, 'metadata exists'
+call assert meta~columns~items = 20, 'actions metadata has 20 columns'
+call assert provider~invocationCount = 0, 'metadata does not invoke provider'
+call assert fed~table('ryta_actions') \== .nil, 'table discovery'
+call assert provider~invocationCount = 0, 'table discovery does not invoke provider'
+call assert fed~tableRowCount('ryta_actions') == .nil, 'pre-materialization row count unknown'
+call assert provider~invocationCount = 0, 'row-count estimate does not invoke provider'
+
+/* First read lazily crosses the execution barrier once. */
+query = "SELECT action_code, disposition FROM ryta_actions WHERE disposition='PROHIBITED' ORDER BY action_code"
+rs = sql~execute(query)
+call ok rs
+call assert rs~rows~items = 2, 'two prohibited actions'
+call assert rs~rows[1]['action_code'] = 'BIG_UPSELL', 'BIG_UPSELL prohibited'
+call assert rs~rows[2]['action_code'] = 'UPSELL', 'UPSELL prohibited'
+call assert provider~invocationCount = 1, 'first SQL read invokes provider once'
+call assert rs~accessPath = 'ALGORITHM_RELATION_MATERIALIZED_SCAN', 'external scan access path'
+call assert fed~tableRowCount('ryta_actions') = 7, 'post-materialization row count known'
+
+/* Rescan and second relation reuse the same result. */
+rs = sql~execute(query)
+call ok rs
+call assert provider~invocationCount = 1, 'rescan does not rerun provider'
+trace = sql~execute('SELECT COUNT(*) AS n FROM ryta_trace')
+call ok trace
+call assert trace~rows[1]['n'] = 26, 'trace relation row count'
+call assert provider~invocationCount = 1, 'second relation shares materialization'
+
+/* Persisted + lazy Algorithm Relation join. */
+call ok sql~execute("CREATE TABLE action_labels (action_code VARCHAR PRIMARY KEY, label VARCHAR)")
+call ok sql~execute("INSERT INTO action_labels VALUES ('WARNING','Safety warning'),('UPSELL','Upsell'),('BIG_UPSELL','Large upsell')")
+joined = sql~execute("SELECT a.action_code,a.disposition,l.label FROM ryta_actions a JOIN action_labels l ON a.action_code=l.action_code WHERE a.disposition='PROHIBITED' ORDER BY a.action_code")
+call ok joined
+call assert joined~rows~items = 2, 'persisted/algorithm join rows'
+call assert joined~rows[1]['l.label'] = 'Large upsell', 'joined BIG_UPSELL label'
+call assert joined~rows[2]['l.label'] = 'Upsell', 'joined UPSELL label'
+call assert provider~invocationCount = 1, 'join does not rerun provider'
+
+/* Mutation is not delegated to the external read-only provider. */
+bad = sql~execute("UPDATE ryta_actions SET disposition='PERMITTED' WHERE action_code='BIG_UPSELL'")
+call assert bad~status \= .Error~SUCCESS, 'external Algorithm Relation update rejected'
+call assert provider~invocationCount = 1, 'failed update does not rerun provider'
+
+/* Input may not change between catalog registration and first read. */
+world2 = .RYTAWorldState~new('WORLD-NOSQL-EXT-MUTATED')
+world2~putKnown('HAS_QUERY', .true)
+world2~putKnown('ESSENTIAL_MEDICATION', .true)
+world2~putKnown('IMMEDIATE_ACCESS', .true)
+world2~putKnown('GUARANTEED_CUSTODY', .false)
+provider2 = .RYTAAlgorithmProvider~new(.nil, '..')
+algorithmEngine2 = .AlgorithmRelationEngine~new
+call assert algorithmEngine2~addProvider(provider2), 'second provider registration'
+ctx2 = .AlgorithmExecutionContext~new('NOSQL-EXT-INV-2', world2~snapshotOid, world2~snapshotOid)
+bindings2 = .directory~new
+bindings2['RYTA_ACTION_DECISIONS'] = 'ryta_mutated_input'
+external2 = .NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine2, 'VIRTUAL_RYTA', world2, ctx2, nosqlClasses, bindings2)
+call assert external2~isReady, 'second external engine ready' external2~lastError
+ignore = fed~addEngine(external2)
+world2~putKnown('GUARANTEED_CUSTODY', .true)
+mutated = sql~execute('SELECT action_code FROM ryta_mutated_input')
+call assert mutated~error = .Error~SQLERROR, 'input mutation fails closed'
+call assert external2~lastError = 'INPUT_CHANGED_BEFORE_MATERIALIZATION', 'input mutation diagnostic'
+call assert provider2~invocationCount = 0, 'mutated input never invokes provider'
+
+/* Simultaneous first readers must cross the lazy boundary exactly once. */
+world3 = .RYTAWorldState~new('WORLD-NOSQL-EXT-CONCURRENT')
+world3~putKnown('HAS_QUERY', .true)
+world3~putKnown('ESSENTIAL_MEDICATION', .true)
+world3~putKnown('IMMEDIATE_ACCESS', .true)
+world3~putKnown('GUARANTEED_CUSTODY', .false)
+slowDelegate = .RYTAAlgorithmProvider~new(.nil, '..')
+slowProvider = .SlowAlgorithmProvider~new(slowDelegate, 0.20)
+algorithmEngine3 = .AlgorithmRelationEngine~new
+call assert algorithmEngine3~addProvider(slowProvider), 'slow provider registration'
+ctx3 = .AlgorithmExecutionContext~new('NOSQL-EXT-INV-3', world3~snapshotOid, world3~snapshotOid)
+bindings3 = .directory~new
+bindings3['RYTA_ACTION_DECISIONS'] = 'ryta_concurrent'
+external3 = .NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine3, 'VIRTUAL_RYTA', world3, ctx3, nosqlClasses, bindings3)
+call assert external3~isReady, 'concurrent external engine ready' external3~lastError
+concurrentTable = external3~table('ryta_concurrent')
+msg1 = .Message~new(concurrentTable, 'READROWS')
+msg2 = .Message~new(concurrentTable, 'READROWS')
+msg1~start
+msg2~start
+msg1~wait
+msg2~wait
+call assert msg1~errorCondition == .nil, 'first concurrent read completes'
+call assert msg2~errorCondition == .nil, 'second concurrent read completes'
+call assert msg1~result~items = 7, 'first concurrent read rows'
+call assert msg2~result~items = 7, 'second concurrent read rows'
+call assert slowProvider~invocationCount = 1, 'concurrent first reads invoke provider exactly once'
+
+say 'provider invocations:' provider~invocationCount
+say 'materialization id:' external~algorithmResult~materializationId
+say 'provider execution id:' external~algorithmResult~providerExecutionId
+say 'NOSQLSERVER V0.68 ALGORITHM RELATION EXTERNAL ENGINE: OK'
+exit 0
+
+catalogHas: procedure
+  use arg catalog, wanted
+  do actual over catalog['tables']
+    if actual~caselessEquals(wanted) then return .true
+  end
+  return .false
+
+ok: procedure
+  use arg rs
+  if rs~status \= .Error~SUCCESS then do
+    say 'FAILED:' rs~status rs~error rs~message
+    exit 1
+  end
+  return .true
+
+assert: procedure
+  use arg condition, message, detail = ''
+  if condition then return .true
+  say 'ASSERT FAILED:' message detail
+  exit 1
+
+::class SlowAlgorithmProvider public
+::attribute delegate get
+::attribute delaySeconds get
+
+::method init
+  expose delegate delaySeconds
+  use arg delegateArg, delayArg = 0.20
+  delegate = delegateArg
+  delaySeconds = delayArg
+
+::method invocationCount
+  expose delegate
+  return delegate~invocationCount
+::method algorithmId
+  expose delegate
+  return delegate~algorithmId
+::method algorithmVersion
+  expose delegate
+  return delegate~algorithmVersion
+::method sourceComponent
+  expose delegate
+  return delegate~sourceComponent
+::method sourceVersion
+  expose delegate
+  return delegate~sourceVersion
+::method sourceFingerprint
+  expose delegate
+  return delegate~sourceFingerprint
+::method sourceManifestHash
+  expose delegate
+  return delegate~sourceManifestHash
+::method sourceManifestMode
+  expose delegate
+  return delegate~sourceManifestMode
+::method determinism
+  expose delegate
+  return delegate~determinism
+::method sideEffectClass
+  expose delegate
+  return delegate~sideEffectClass
+::method defaultMaterializePolicy
+  expose delegate
+  return delegate~defaultMaterializePolicy
+::method inputContract
+  expose delegate
+  return delegate~inputContract
+::method canonicalInput
+  expose delegate
+  use arg inputObject, context
+  return delegate~canonicalInput(inputObject, context)
+::method declaredSchemas
+  expose delegate
+  return delegate~declaredSchemas
+::method evaluate
+  expose delegate delaySeconds
+  use arg inputObject, context
+  call SysSleep delaySeconds
+  return delegate~evaluate(inputObject, context)
+
+::requires '__NOSQLSERVER_CLS__'
+::requires '../integration/NoSQLServerAlgorithmRelationExternalEngine.cls'
+::requires '../algorithm/RYTAAlgorithmProvider.cls'
+::requires '../HardWorld.cls'

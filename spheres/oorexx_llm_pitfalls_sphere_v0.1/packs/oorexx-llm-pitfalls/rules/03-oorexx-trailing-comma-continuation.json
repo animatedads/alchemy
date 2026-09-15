@@ -1,0 +1,13 @@
+{
+  "kind": "language-rule",
+  "id": "OOREXX.SYNTAX.TRAILING_COMMA_CONTINUATION",
+  "version": "0.1",
+  "language": "oorexx",
+  "title": "Trailing comma is the line-continuation character, including inside argument lists",
+  "purpose": "Prevent silent blank-concatenation of the next line's token onto the current one, which produces a value that is subtly wrong rather than a syntax error.",
+  "trigger": "A line ends with a bare trailing comma. In ooRexx a trailing comma at the end of ANY line continues that logical line onto the next -- this applies inside a multi-line method-call argument list exactly as it does anywhere else, which is easy to miss coming from languages where a trailing comma in an argument list is either meaningless or an explicit multi-element separator convention.",
+  "correct": "Either keep every argument of one call on a single line, or build intermediate variables and pass them, rather than relying on a trailing comma to continue an argument list across lines.",
+  "fixability": "SUGGESTED",
+  "compiler_relationship": "This is standard ooRexx line-continuation syntax working exactly as specified; the rule exists because the specific consequence inside an argument list is non-obvious, not because the language is misbehaving.",
+  "return_semantics": "A LanguageRulePage may be opened and then return to the originating cycle selector."
+}

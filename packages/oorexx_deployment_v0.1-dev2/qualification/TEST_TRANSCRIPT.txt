@@ -1,0 +1,13 @@
+GENERAL OOREXX DEPLOYMENT v0.1-dev2 QUALIFICATION
+Date: 2026-09-10
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version (user-supplied .deb extracted privately)
+
+PASS deployment model: plan/apply/fresh verify/idempotent no-op
+PASS hosted module model: staged -> loadable -> composed -> activated -> probed-active
+PASS native artifact model: target probe/rebuild semantics
+PASS local content-addressed reconciliation including simulated post-deployment drift repair
+PASS rexxc for Deployment.cls, NativeDeployment.cls, HostedModuleDeployment.cls and their Rexx tests
+PASS shell syntax for deployment scripts
+PASS external real package-boundary check: current McpHttpsRoute loaded and test_https_route.rex passed against real ooRexx HTTPS Server v0.4.4, Wire UI Server v0.17 and Foreign Runtime v0.22.6.
+
+Hosted activation note: HTTPS Server v0.4.4 routes are immutable after start, so hosted module activation is compose-before-start/new-host-generation plus live endpoint probe.

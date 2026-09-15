@@ -1,0 +1,15 @@
+fx=.FBRelationshipServiceTestSupport~transaction("IDEM")
+port=.FakeRelationshipBankPort~new; svc=.FederationBankRelationshipAdapterService~new(.FBRelationshipServiceTestSupport~fixture,port)
+e=.FederationBankRelationshipServiceEnvelope~new("IDEMP-CMD","FBREL.ACTION.SUBMIT","TEL-1","TELLER",fx)
+r1=svc~handle(e); r2=svc~handle(e)
+.FBRelationshipServiceTestSupport~assertTrue(r1~ok & r2~ok,"both")
+.FBRelationshipServiceTestSupport~assertEq("IDEMPOTENT_REPLAY",r2~code,"replay")
+.FBRelationshipServiceTestSupport~assertEq(1,port~commands~items,"no duplicate bank submit")
+fx2=.FBRelationshipServiceTestSupport~transaction("OTHER")
+e2=.FederationBankRelationshipServiceEnvelope~new("IDEMP-CMD","FBREL.ACTION.SUBMIT","TEL-1","TELLER",fx2)
+r3=svc~handle(e2)
+.FBRelationshipServiceTestSupport~assertFalse(r3~ok,"conflict")
+.FBRelationshipServiceTestSupport~assertEq("COMMAND_ID_CONFLICT",r3~code,"semantic conflict")
+.FBRelationshipServiceTestSupport~pass("service idempotency protects bank command submission")
+::requires "FakeBankPort.cls"
+::requires "TestSupport.cls"

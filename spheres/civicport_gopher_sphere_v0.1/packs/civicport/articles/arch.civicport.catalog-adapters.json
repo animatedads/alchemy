@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "arch.civicport.catalog-adapters",
+  "version": "0.1",
+  "sphere": "civicport",
+  "title": "Source catalogue, adapter generations and source multiplicity",
+  "summary": "CivicSourceCatalog negotiates exact caller-accepted generations without semver guessing. Built-in adapters preserve singular versus collection source shape and pin endpoint/query/credential policy/Runtime contract metadata without performing I/O.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "latest, wildcard, empty and duplicate generation tokens fail closed.",
+    "Caller ordering is preference order; the catalogue does not infer newest or semver precedence.",
+    "Adapter implementation selection is closed/explicit, not reflection-based.",
+    "Postcode uses postcodes.io.postcode/0.2; Companies House uses companieshouse.company-profile/0.1; AWC METAR uses aviationweather.metar/0.1.",
+    "METAR remains zero-to-many; no element-zero/latest guess is permitted.",
+    "Structured source members such as METAR clouds and company SIC arrays remain in native evidence unless an explicit projection is designed."
+  ],
+  "procedure": [
+    "Add a source descriptor only after endpoint/query and mapping generation are pinned.",
+    "Expose mapAll(document) so generic callers can preserve multiplicity.",
+    "Cross-check descriptor mapping/ability/contract pins against Runtime Registry in integration tests."
+  ],
+  "provenance": [
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "ARCHITECTURE.md",
+      "line_start": 226,
+      "line_end": 270,
+      "claim": "Exact-generation source catalogue, closed adapter selection, fixed non-secret metadata and Runtime cross-check."
+    },
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "ARCHITECTURE.md",
+      "line_start": 345,
+      "line_end": 368,
+      "claim": "METAR collection validity and preservation of structured/union source members."
+    }
+  ]
+}

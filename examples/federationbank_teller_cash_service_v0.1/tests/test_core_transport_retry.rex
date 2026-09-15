@@ -1,0 +1,23 @@
+e=.FBTellerCashTestSupport~engine
+.FBTellerCashTestSupport~openCustomerAccount(e)
+.FBTellerCashTestSupport~seedCustomer(e,"GBP-SRC",2000000)
+ctx=.FBTellerCashTestSupport~custody
+till=.FederationBankTellerTill~new("TILL-04","DOUGLAS","GBP")
+.FBTellerCashTestSupport~openTill(till,ctx,1000000)
+delegate=.FBTellerCashFailOnceCorePort~new(.FederationBankStaffChannelEngineCorePort~new(e))
+stack=.FBTellerCashTestSupport~stack(e,till,"",delegate)
+svc=.FederationBankTellerCashService~new(stack["channelService"],stack["cashPort"])
+req=.FBTellerCashTestSupport~cashRequest("RETRY","WITHDRAWAL",10000)
+inst=.FBTellerCashTestSupport~instruction("RETRY",req,"WITHDRAWAL",10000,"TILL-04",ctx)
+env=.FBTellerCashTestSupport~envelope("RETRY",req,inst,.FBTellerCashTestSupport~contexts(.FBTellerCashTestSupport~context))
+r1=svc~handle(env)
+.FBTellerCashTestSupport~assertFalse(r1~ok,"transport outage remains pending")
+.FBTellerCashTestSupport~assertEq("READY_FOR_CORE",r1~value~state)
+.FBTellerCashTestSupport~assertEq(2000000,e~ledger~balanceMinor("GBP-SRC"),"no movement on outage")
+r2=svc~handle(env)
+.FBTellerCashTestSupport~assertTrue(r2~ok,"same semantic command recovers")
+.FBTellerCashTestSupport~assertEq("COMPLETED",r2~value~state)
+.FBTellerCashTestSupport~assertEq(1990000,e~ledger~balanceMinor("GBP-SRC"),"exact Core command committed once")
+.FBTellerCashTestSupport~assertEq(990000,till~expectedMinor,"cash released once")
+.FBTellerCashTestSupport~pass("Core transport outage retains READY_FOR_CORE and exact replay semantics")
+::requires "TestSupport.cls"

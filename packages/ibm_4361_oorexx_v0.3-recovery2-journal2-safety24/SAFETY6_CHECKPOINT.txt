@@ -1,0 +1,15 @@
+IBM 4361 / OS/360 MVT ooRexx safety6 checkpoint
+
+This checkpoint promotes only System/370 UNPK (opcode F3), previously proved by
+an exact journal rewind/retry at the real MVT frontier.
+
+The next instruction AF / Monitor Call remains unimplemented in this package.
+
+Key preserved boundaries:
+- freeze files: durable whole-machine evidence/replay
+- journal-pointed state: live rewind/fork/diff/retry history
+- object-scope live methods: executable trial layer outside journalled machine
+  state, intentionally surviving rewind and replaceable in place
+- guest 3215 console separate from physical 4361 operator/control console
+
+See docs/LIVE_ARCHAEOLOGY.md and HANDOVER_SAFETY6.md.

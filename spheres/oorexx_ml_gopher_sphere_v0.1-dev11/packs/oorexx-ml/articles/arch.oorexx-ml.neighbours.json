@@ -1,0 +1,60 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.neighbours",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Close-neighbour hashing and bounded approximate retrieval",
+  "summary": "dev8 adds significance-preserving ordered hashes and multi-probe neighbour lookup: the largest weighted quantised discrepancy dominates hash distance, small bin changes remain close, and good-enough retrieval quality is measured against an exact oracle.",
+  "authority": "Executable dev8 source/tests are authoritative. The design generalises the audio-landmark near-bucket requirement without making Audio own a private neighbour-search framework.",
+  "invariants": [
+    "Close hashes are distance-bearing ordered coordinates, not cryptographic digests and not collision-probability-only LSH.",
+    "Hash difference is dominated by the largest weighted coordinate discrepancy, then the next largest; one serious mismatch cannot be hidden by many tiny agreements.",
+    "Adjacent quantisation cells remain adjacent even across conventional binary carry boundaries; do not infer closeness from packed-binary integer subtraction.",
+    "Exact-bucket lookup is radius 0. Tolerance is expressed as bounded query-side multi-probe over neighbouring cells rather than duplicating tolerant variants into the source index.",
+    "Probe-bucket and candidate budgets are explicit. Oversized probe requests fail closed rather than silently truncating an arbitrary subset.",
+    "Out-of-domain values fail by default. CLAMP must be explicit schema policy.",
+    "Approximate quality is evidence: compare against MLExactNeighbourIndex and report recall@k plus candidate fraction examined.",
+    "MLCloseNeighbourIndex is an MLDriveableObject; alternative schemas/resolutions/probe policies should be retained as historical branches rather than overwriting the only index state."
+  ],
+  "procedure": [
+    "Declare one MLCloseHashDimension per ordered numeric feature: range, bin count, significance weight and range policy.",
+    "Build MLCloseHashSchema and fit MLCloseNeighbourIndex from an MLDataset with stable unique sample ids.",
+    "Choose MLCloseNeighbourPolicy with k, probe radius, candidate cap, HASH or exact-Euclidean rerank mode, and max probe buckets.",
+    "Use radius 0 for exact bucket semantics; increase radius only as needed for recall.",
+    "Qualify the chosen policy with MLCloseNeighbourAssessment against the exact oracle on representative evidence.",
+    "For audio landmark/fingerprint matching, keep the persisted exact 6+6+6-style coordinate index and use neighbouring-bucket probes for one-bin/tolerance recovery rather than exploding the source index.",
+    "Branch and compare schema/weight/radius alternatives using historical-object semantics when tuning good-enough retrieval."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev8.zip",
+      "sha256": "f3a7cc6f9a358fed8b14885d9e05154f424b2438a2ddc08b6929f18c5fcfeb8b",
+      "member": "oorexx_ml_v0.1-dev8/src/MLCloseNeighbour.cls",
+      "claim": "Executable ordered-hash, multi-probe index, exact oracle and assessment contracts."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev8.zip",
+      "sha256": "f3a7cc6f9a358fed8b14885d9e05154f424b2438a2ddc08b6929f18c5fcfeb8b",
+      "member": "oorexx_ml_v0.1-dev8/tests/test_close_hash_significance.rex",
+      "claim": "Regression proving dominant-difference ordering."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev8.zip",
+      "sha256": "f3a7cc6f9a358fed8b14885d9e05154f424b2438a2ddc08b6929f18c5fcfeb8b",
+      "member": "oorexx_ml_v0.1-dev8/tests/test_close_hash_boundary.rex",
+      "claim": "Regression proving adjacent bins remain close across binary carry boundaries."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev8.zip",
+      "sha256": "f3a7cc6f9a358fed8b14885d9e05154f424b2438a2ddc08b6929f18c5fcfeb8b",
+      "member": "oorexx_ml_v0.1-dev8/tests/test_audio_landmark_close_hash.rex",
+      "claim": "18-bit-like temporal/frequency multi-probe audio-landmark regression."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev8.zip",
+      "sha256": "f3a7cc6f9a358fed8b14885d9e05154f424b2438a2ddc08b6929f18c5fcfeb8b",
+      "member": "oorexx_ml_v0.1-dev8/qualification/QUALIFICATION_DEV8.txt",
+      "claim": "42-test, rexxc and SSC sourceLevel-9 qualification summary."
+    }
+  ]
+}

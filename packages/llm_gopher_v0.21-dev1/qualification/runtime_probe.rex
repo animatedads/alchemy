@@ -1,0 +1,2 @@
+say 'PASS OOREXX RUNTIME PROBE'
+exit 0

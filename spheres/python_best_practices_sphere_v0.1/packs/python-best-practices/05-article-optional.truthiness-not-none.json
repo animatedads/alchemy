@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "python-best-practices.optional.truthiness-not-none-minus",
+  "version": "0.1",
+  "sphere": "python-best-practices",
+  "title": "Check for None with is None, not by truthiness, on values where falsy is legitimate",
+  "summary": "Truthiness is not None-ness. An empty list, dict, string, or a 0/0.0/0j is falsy, so ``if not value:`` or ``if value:`` conflates 'None' with 'legitimate falsy'. For Optional[str], Optional[list], counts, and amounts, an LLM's habit of `not x` misclassifies a real empty/falsy result as absent.",
+  "semantics": "bool(0)==False, bool('')==False, bool([])==False, bool(None)==False. Only the identity object None denotes absence when the type is Optional.",
+  "evidence_note": "PLABEL: canonical. CPython truthiness of the empty/zero literals and None.",
+  "invariants": [
+    "For an Optional[collection] or Optional[int/float/Decimal], branch with 'value is None' / 'value is not None'.",
+    "Use booliness alone only when the value's only 'absent' meaning is also its only falsy meaning (rare for amounts or strings).",
+    "After confirming value is not None, then test emptiness ('' , 0, []) separately if semantics requires it.",
+    "Do not substitute a different falsy sentinel to force a truthiness test; that hides the type contract."
+  ]
+}

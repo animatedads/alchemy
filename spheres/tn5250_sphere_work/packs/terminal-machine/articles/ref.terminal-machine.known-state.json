@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "ref.terminal-machine.known-state",
+  "version": "0.1",
+  "sphere": "terminal-machine",
+  "title": "Known semantic state versus local operator condition",
+  "summary": "KnownTerminalState identifies host/application semantics; operator-error state describes the local keyboard/cursor condition. Moving into protected space does not create a new semantic host state.",
+  "authority": "terminal-machine-project",
+  "invariants": [
+    "Known-state matchers should ignore transient cursor placement unless semantically required.",
+    "PRE_HELP_ERROR/PROTECTED_AREA may coexist with the same IBM_I_CHANGE_PASSWORD state.",
+    "Automation requires unique semantic matching before sensitive action."
+  ],
+  "procedure": [],
+  "topics": [
+    "terminal",
+    "tn5250"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_terminal_machine_v0.21.zip",
+      "sha256": "64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5",
+      "member": "oorexx_terminal_machine_v0.21/src/Terminal5250.cls",
+      "claim": "Supports this Terminal Machine/TN5250 continuity article."
+    }
+  ]
+}

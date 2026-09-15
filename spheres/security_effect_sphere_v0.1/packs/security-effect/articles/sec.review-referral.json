@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "sec.review-referral",
+  "version": "0.1",
+  "sphere": "security-effect",
+  "title": "REVIEW_REQUIRED creates durable work without creating decision authority",
+  "summary": "A sealed SecurityReviewReferralPolicy can map an exact Security assessment to a Relationship Case. The bridge attaches subject, assessment and policy references, but never manufactures DECISION or ACCOUNT_CONTROL authority.",
+  "authority": "project-authority",
+  "invariants": [
+    "Flag for review != action authorised.",
+    "Referral is idempotent for the exact Security assessment.",
+    "Relationship Case owns review workflow; downstream business authority owns any eventual mutation.",
+    "An ALLOW action can produce NO_REFERRAL."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "security_effect_v0.14.zip",
+      "sha256": "c9d481140552073c8b9ea4ea81feb93aef03208b5e8a939b9af382d30b9a1935",
+      "member": "security_effect_v0.14/REVIEW_REFERRAL.md",
+      "claim": "Review referral documentation defines the exact non-authoritative Relationship Case hand-off."
+    }
+  ]
+}

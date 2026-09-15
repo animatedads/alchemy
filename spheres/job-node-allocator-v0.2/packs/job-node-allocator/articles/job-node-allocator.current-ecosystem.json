@@ -1,0 +1,30 @@
+{
+  "id": "job-node-allocator.current-ecosystem",
+  "title": "Tested baseline versus current ecosystem",
+  "section": "integration",
+  "summary": "Allocator v0.6 remains runtime-qualified against the versions recorded in its own README/VALIDATION. The 2026-09-06 API roll-up contains newer neighbouring packages in some areas (including API Client v0.3, Security Effect v0.14, Access Permissions v0.2 and Queue Fabric v0.9-dev5). Presence in the newer roll-up is not evidence that allocator v0.6 was qualified against those newer interfaces.",
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "job-node-allocator",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6.zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/VALIDATION.txt",
+      "claim": "Grounded in Job-to-Node Allocator v0.6.",
+      "line_start": 1,
+      "line_end": 25
+    },
+    {
+      "artifact": "oorexxapis(20260906-192502).zip",
+      "sha256": "aa1709f24b4a8473fcfb99f36c11c4bb718b9ce0e30d7a4f439d5df8cbdfeafb",
+      "member": "current/job_node_allocator_v0.6.zip",
+      "claim": "Current ecosystem roll-up retains the exact v0.6 allocator artifact."
+    }
+  ],
+  "invariants": [
+    "Never silently upgrade a qualification claim from package presence alone.",
+    "Re-run allocator mesh/authority/dispatch tests before claiming compatibility with a newer neighbouring authority version."
+  ]
+}

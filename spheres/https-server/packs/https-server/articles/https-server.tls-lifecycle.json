@@ -1,0 +1,23 @@
+{
+  "id": "https-server.tls-lifecycle",
+  "title": "TLS context generation, reload and drain",
+  "section": "architecture",
+  "summary": "Certificate/key validation, optional mTLS, generation-pinned hot TLS context replacement, atomic failed reload and graceful drain are part of the retained server contract.",
+  "invariants": [
+    "Failed reload must not disturb the active generation.",
+    "Existing accepted/active connections keep the generation they pinned.",
+    "Graceful drain is distinct from abrupt listener shutdown."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "https-server",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_https_server_v0.4.4.zip",
+      "sha256": "aad4305c2495b13145a71938c59af86bc8d128be8d466aaf7b3548468a252d56",
+      "member": "oorexx_https_server_v0.4.4/SECURITY.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

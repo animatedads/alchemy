@@ -1,0 +1,24 @@
+{
+  "id": "mcp-project-service.mcp-2026",
+  "title": "MCP modern protocol and connector compatibility",
+  "section": "protocol",
+  "summary": "Primary protocol is MCP 2026-07-28 with stateless server/discover, tools/list and tools/call. v0.2-dev1 also accepts initialize-era 2025-03-26, 2025-06-18 and 2025-11-25 clients in stateless compatibility mode so connector scanners can interoperate during rollout.",
+  "invariants": [
+    "Never mint or trust Mcp-Session-Id; initialize-era compatibility is stateless and transport-only.",
+    "MCP-Protocol-Version and Mcp-Method must match modern requests; Mcp-Name must match tools/call name.",
+    "The seven project tools map to semantic Wire operations in both eras.",
+    "MCP clientInfo is diagnostic metadata and never establishes project authority."
+  ],
+  "kind": "article",
+  "version": "0.2-dev7",
+  "sphere": "mcp-project-service",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_mcp_service_v0.2-dev7.zip",
+      "sha256": "0fda08557692c4011a43972a205d7e1a03a1a00bb5fb64a5469ce4a8b8322140",
+      "member": "oorexx_mcp_service_v0.2-dev7/docs/MCP_TOOL_CONTRACTS.md",
+      "claim": "Grounded in sealed MCP Project Service v0.2-dev7 package."
+    }
+  ]
+}

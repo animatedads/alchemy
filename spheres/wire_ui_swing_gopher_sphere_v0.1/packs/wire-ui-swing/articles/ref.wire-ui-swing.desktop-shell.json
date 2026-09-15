@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.desktop-shell",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Desktop shell is lifecycle only",
+  "summary": "WireSwingDesktopWindow provides a real JFrame host while keeping journey/business authority in the Wire stack. It attaches the runtime stable host once, owns show/hide/dispose/title/size/capture lifecycle, and does not interpret semantic transitions.",
+  "authority": "renderer-desktop-contract",
+  "invariants": [
+    "Use DISPOSE_ON_CLOSE rather than terminating the JVM.",
+    "A stable renderer host prevents snapshot replacement from invalidating the JFrame attachment.",
+    "Window close may signal a narrow lifecycle callback for host cleanup but cannot alter Wire journey state.",
+    "The standalone executable demo may contain a separate demo authority, but WireSwingRuntime itself remains passive."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev5.zip",
+      "sha256": "a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271",
+      "member": "wire_ui_swing_v0.2-dev5/README.md",
+      "claim": "Qualified desktop shell lifecycle and JFrame encapsulation."
+    }
+  ]
+}

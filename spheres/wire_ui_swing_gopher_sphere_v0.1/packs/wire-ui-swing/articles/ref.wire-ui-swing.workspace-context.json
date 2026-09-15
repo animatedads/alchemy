@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.workspace-context",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Workspace command context is opaque event-time evidence",
+  "summary": "Wire UI Server v0.17 requires elements carrying slots.workspaceRef to return an exact UI_ACTION.detail.workspaceContext. The context binds current query/scope/order/selection revisions, selected semantic identities and result-freshness evidence. Swing must preserve and echo this server-projected context; it must never manufacture it from local table/list state.",
+  "authority": "wire-ui-server-v0.17-contract",
+  "invariants": [
+    "workspaceContext is server-owned semantic evidence, not renderer-derived state.",
+    "Capture/deep-freeze workspaceContext at the same event-time boundary as renderedRevision.",
+    "Do not replace queued action context with a newer context if patches arrive before transport drains the action.",
+    "Local JList/JTable selection cannot forge or widen selectedIds.",
+    "A workspaceRef mismatch, absent required context, or otherwise unusable context must fail closed locally rather than emitting a superficially valid command.",
+    "Unknown future context fields are preserved opaquely so renderer releases do not need to understand every server freshness field.",
+    "Server v0.17 resultRevision/resultQueryRevision/resultScopeRevision/resultOrderRevision/resultCurrent must cross the existing workspaceContext seam unchanged."
+  ],
+  "procedure": [
+    "Project/store the exact workspaceContext associated with the actionable semantic instance.",
+    "On explicit activation, deep-freeze the projected context together with viewRef/renderedRevision.",
+    "Queue UI_ACTION.detail.workspaceContext unchanged.",
+    "Let the server perform authoritative stale/forged/result-current validation before dispatch."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_server_v0.17.zip",
+      "sha256": "82c3a9d270d123dcbedabed1b57ed5e0944b828b1a184a5b71d47d9f9f188441",
+      "member": "wire_ui_server_v0.17/src/WireUIWorkspaceCommandContext.cls",
+      "claim": "Exact current workspace command context fields including result freshness evidence."
+    },
+    {
+      "artifact": "wire_ui_server_v0.17.zip",
+      "sha256": "82c3a9d270d123dcbedabed1b57ed5e0944b828b1a184a5b71d47d9f9f188441",
+      "member": "wire_ui_server_v0.17/tests/cross_language/cross_workspace_context_js.mjs",
+      "claim": "Workspace context crosses UI_ACTION.detail.workspaceContext unchanged."
+    }
+  ]
+}

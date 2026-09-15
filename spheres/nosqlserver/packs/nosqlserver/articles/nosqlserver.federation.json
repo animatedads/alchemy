@@ -1,0 +1,24 @@
+{
+  "id": "nosqlserver.federation",
+  "title": "Provider-neutral federation metadata and mutation dispatch",
+  "section": "integration",
+  "summary": "Federation owns neutral metadata construction and discovers external relations by capability/message shape rather than provider class. v0.71 similarly resolves the owning provider before mutation and returns SQLUNSUPPORTED for a real read-only relation instead of misleading file-table NOTFOUND.",
+  "invariants": [
+    "Do not require an external provider to construct NoSQLServer implementation classes.",
+    "Do not special-case GeoPackage, Camera, Librarian, Algorithm Relation or other providers by class name.",
+    "Read-only external mutation is SQLUNSUPPORTED, not fake NOTFOUND.",
+    "Provider resolution is capability-shaped and additive."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "nosqlserver",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "nosqlserver_v0.79.zip",
+      "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec",
+      "member": "nosqlserver_v0.79/README.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "kind": "corpus",
+  "id": "maths.continuity",
+  "sphere": "maths",
+  "title": "ooRexx Maths durable continuity ledger",
+  "records": [
+    {"topic":"baseline","package":"oorexx_maths_v0.7.zip","sha256":"b2385efc83aa525392f6c804327f7d370abd6c06d04a7d31855803e62f95c19d","status":"current continuation candidate"},
+    {"topic":"dependency rollup","package":"oorexxapis(20260901-121025).zip","sha256":"b3166841ae88ac582e57d278ba862fab79b1ffb6da578e6e42d7ee6c3d084640","foreign_runtime":"v0.22.5"},
+    {"topic":"precision","rule":"Default decimal mathematical context requests 50 digits plus explicit guard digits. Binary64 is opt-in and every lossy transition is evidence."},
+    {"topic":"exact number hierarchy","rule":"MathExactNumber -> MathRational -> MathInteger/MathFraction. Canonical denominator-one rational values become MathInteger."},
+    {"topic":"fraction regression","rule":"1/3 + 1/3 + 1/3 retains natural unreduced path 3/3 and canonicalizes to exact integer 1."},
+    {"topic":"fraction regression","rule":"(2/3) * 3 / 2 returns exact MathInteger 1. Decimal formatting may show a rounded expansion but must never alter the stored rational."},
+    {"topic":"rational round trip","rule":"For i=1..25, fraction(i,3*i) canonicalizes to 1/3 and multiplication by 3*i returns exact MathInteger(i); no tolerance is permitted."},
+    {"topic":"recurring decimal","rule":"MathDecimalExpansion represents exact recurring notation such as 2/3 = 0.(6); complete cycle discovery is required before calling an expansion exact."},
+    {"topic":"proof","rule":"A proof applies to a MathClaim under MathAssumptions. Outcome and evidence strength are separate."},
+    {"topic":"proof","rule":"STANDARD, STRONG, CERTIFIED and DIAGNOSTIC are proof policies. Obligation routes and support routes are distinct."},
+    {"topic":"proof","rule":"The adversarial Hilbert solve regression must be capable of returning DISAGREEMENT/CORROBORATION_REQUIRED rather than rubber-stamping plausible binary64 output."},
+    {"topic":"interval dependency","rule":"For x in [0,1], direct interval evaluation of 2*x - 2*x can validly enclose [-2,2] while symbolic algebra proves the stronger identity 0. Valid evidence may be weak evidence."},
+    {"topic":"quantization","rule":"Lossy representations retain payload plus quantization state: scheme, block size, codebook, scales, source/compute/storage dtypes, provider/version and error evidence."},
+    {"topic":"quantization","rule":"PURE v0.7 reference quantizer supports SYMMETRIC_INT8 and declared-codebook NF4 using exact rational replay over retained represented source values."},
+    {"topic":"quantization","rule":"Nested/double quantization is represented but PURE execution fails closed until the second representation transition has explicit evidence."},
+    {"topic":"mixed precision","rule":"MathPrecisionPolicy preserves exact values by default and can protect semantic roles/small tensors while quantizing eligible approximate tensors."},
+    {"topic":"operator semantics","rule":"Use overloaded operators wherever semantics are unambiguous. ooRexx dispatches from the left operand, so exact-object-left forms such as fraction * 3 are the supported lossless route."},
+    {"topic":"provider boundary","rule":"Providers supply computation but do not own mathematical meaning, precision policy, claim semantics or proof acceptance."},
+    {"topic":"qualification","rule":"Assistant-host v0.7 qualification is 269/269 PASS. v0.7 FLINT-ARB 8-assertion lane remains to be rerun on the user's FLINT-enabled host before claiming 277/277."},
+    {"topic":"next","rule":"Next likely exact-algebra work: polynomials/quadratics and optimized simultaneous systems, preserving exact/symbolic/rigorous/numerical proof distinctions."},
+    {"topic":"next","rule":"Future reusable families include tensors, sparse matrices, statistics/distributions, numerical calculus, optimization, stochastic processes, transforms, geometry and graph/network mathematics."},
+    {"topic":"negative control","rule":"Magrathea may return 42, but satisfaction statistics are not a MathProof."}
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "id": "pl-hard-eligibility",
+  "title": "Hard Eligibility vs Optimization",
+  "summary": "The Job Node Allocator enforces hard eligibility constraints before considering optimization metrics like cost or speed.",
+  "why": "Security, legal, and access constraints are binary requirements; no amount of idle CPU or low cost can justify placing a job on an ineligible node.",
+  "invariants": [
+    "Hard eligibility is evaluated before optimisation.",
+    "Security, legal, access, runtime/software, architecture, liveness, and mandatory resource constraints are never soft scores.",
+    "Hard constraints cannot be outweighed by idle CPU, free storage, cost, or speed."
+  ],
+  "evidence_note": "Source: job_node_allocator_v0.6/README.md:8-12. Line 9: 'Hard eligibility is evaluated before optimisation.'",
+  "grounding": "oorexx-grounded"
+}

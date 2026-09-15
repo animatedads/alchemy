@@ -1,0 +1,44 @@
+{
+  "kind": "article",
+  "id": "branch.federationbank.physical-custody",
+  "version": "0.1",
+  "sphere": "federationbank",
+  "title": "Teller Till, Branch Cash and Branch Day own physical custody evidence",
+  "summary": "Teller Till and Branch Cash model physical counter/vault custody, while Branch Day certifies opening/closing from typed evidence. None owns customer balances or Ledger state.",
+  "authority": "federationbank-project-doctrine",
+  "invariants": [
+    "Teller Till is not an ATM and does not own customer account or Ledger truth.",
+    "A bank transaction and a physical till movement are separate facts correlated by an orchestration boundary.",
+    "Branch Cash preserves released cash as explicit in-transit custody until another endpoint accepts it; cash cannot disappear into a generic transfer-failed state.",
+    "Branch Cash authority binds exact transfer semantics, independent checker approval, staff authority and policy result.",
+    "Branch Day coordinates evidence only; opening/closing is blocked by cash in transit, unresolved reconciliation or physical discrepancy.",
+    "Internal replenishment/skim/till-to-till movements are custody changes and net to zero at branch level."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "federationbank_teller_till_v0.2(1).zip",
+      "sha256": "7b7ba74a81098bccd6264ae42c5ee456283269eabb6c8efe959cf4b84732da79",
+      "member": "federationbank_teller_till_v0.2/README.md",
+      "line_start": 3,
+      "line_end": 9,
+      "claim": "Teller Till owns physical custody, not customer/Ledger truth, and internal branch cash is separate from customer cash."
+    },
+    {
+      "artifact": "federationbank_branch_cash_v0.2(1).zip",
+      "sha256": "3bdf4c9d027134f4ee4eab1dea008903384e0147ff19ca65940a291a2aabc519",
+      "member": "federationbank_branch_cash_v0.2/README.md",
+      "line_start": 3,
+      "line_end": 12,
+      "claim": "Branch Cash owns physical custody, in-transit state and exact-action authority envelope."
+    },
+    {
+      "artifact": "federationbank_branch_day_v0.1(1).zip",
+      "sha256": "b42c7be130b2a12749a4dec6c962dfa2994d5d214cc50dab4b5ff542000b67e3",
+      "member": "federationbank_branch_day_v0.1/README.md",
+      "line_start": 3,
+      "line_end": 16,
+      "claim": "Branch Day coordinates typed physical evidence and blocks close on in-transit/discrepancy/reconciliation."
+    }
+  ]
+}

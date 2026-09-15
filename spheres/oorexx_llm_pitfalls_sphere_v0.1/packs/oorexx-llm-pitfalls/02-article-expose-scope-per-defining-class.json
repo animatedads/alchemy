@@ -1,0 +1,14 @@
+{
+  "kind": "article",
+  "id": "ops.oorexx.expose-scope-per-defining-class",
+  "version": "0.1",
+  "sphere": "oorexx-llm-pitfalls",
+  "title": "expose is scoped per defining class, not per object",
+  "summary": "In most object-oriented languages an object's instance variables form one flat namespace regardless of which class in the hierarchy defines the accessing method. ooRexx instead gives each class in the hierarchy its own private instance-variable pool for the names it exposes -- a subclass method that does `expose pot` does not automatically read or write the SAME `pot` a superclass method also exposes, even on the identical object instance, unless that exact method is inherited rather than newly defined on the subclass.",
+  "evidence_note": "Directly hit this session: a test-only subclass added `::method setPotForTest; expose pot; use arg p; pot = p` intending to set the real PokerTable's pot for a controlled test. It compiled and ran without error, but the superclass's own methods continued to read pot as 0 -- the subclass's `expose pot` was a distinct variable pool from the superclass's, despite the identical name and the identical object. The fix was not a syntax change; it required a different approach entirely (driving the setup through the real public API instead of a private-state shortcut).",
+  "why_this_is_not_a_language_rule": "This is not mechanically flagged as a rule pack because there is no reliable syntactic trigger: a subclass exposing the same variable name as an ancestor is frequently intentional (deliberate shadowing/private subclass state) and frequently a mistake, and telling them apart requires understanding the author's intent, not just the source text.",
+  "invariants": [
+    "A subclass method's expose only shares a variable pool with an ancestor method's expose of the same name if that specific method body is the one actually inherited and executed -- not merely because the name matches and the object is the same.",
+    "When a test or adapter genuinely needs to influence a superclass's private state, prefer driving it through the class's own real public API over a same-named expose in a subclass, since the latter silently fails to alias rather than raising an error."
+  ]
+}

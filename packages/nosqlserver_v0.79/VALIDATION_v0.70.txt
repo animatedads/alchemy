@@ -1,0 +1,146 @@
+NoSQLServer v0.70 validation
+============================
+
+Date
+----
+19 August 2026
+
+Base
+----
+NoSQLServer v0.69 SHA-256:
+  4f1abd48c52b9d9f976cb9a6f702239551b88fe71c5e05592e86ef5c88102a55
+
+Runtime
+-------
+Open Object Rexx 5.3.0 r13196 Internal Test Version
+Build date 3 August 2026, 64 bit
+
+Defect reproduced
+-----------------
+Virtual RYTA / HardWorld v0.11 external-engine regression:
+
+  stock NoSQLServer v0.68                         PASS
+  NoSQLServer v0.69                               FAIL during table metadata
+
+v0.69 failure occurred before provider execution because federation delegated
+metadata construction into the independently packaged external adapter, where
+`.DatabaseTableMetadata` was not visible.
+
+v0.70 repair
+------------
+FederatedDatabaseEngine owns metadata construction from the relation object.
+Optional relation methods geometryColumn / geometryType / srid enrich metadata.
+No provider identity branch was added.
+
+Focused shipped regression
+---------------------------
+tests/v070_external_metadata_boundary_smoke.rex: PASS
+
+The test uses an independent helper package whose legacy tableMetadata() would
+fail if called.  Federation obtains schema + POLYGON / SRID 27700 metadata from
+the relation object and proves helper metadata call count remains zero through
+both native and Database Core metadata paths.
+
+Companion package integration
+-----------------------------
+Virtual RYTA / HardWorld v0.11 -> NoSQLServer v0.70 external engine:
+  PASS; provider invocations after SQL/rescan path: 1
+
+Librarian v0.11 -> NoSQLServer v0.70 external engine:
+  PASS; provider invocations: 1; target hits: 6
+
+Camera Behaviour ooRexx v0.26 native tests:
+  current-condition snapshot                        PASS
+  complete materialized-state snapshot              PASS
+  current-condition model                           PASS
+
+Camera v0.26 materialized state -> generic NoSQLServer SNAPSHOT relations:
+  PASS
+  - condition snapshot relation
+  - completed regime relation
+  - regime-class relation
+  - regime/class SQL join
+  - Database Core relational-source discovery
+  - live Camera mutation does not alter frozen relation
+  - snapshot UPDATE rejected as SQLUNSUPPORTED
+
+HardWorld v0.11 legacy Camera Algorithm Relation adapter using supplied
+Camera v0.26 class as a backwards-compatibility probe:
+  PASS; provider invocation count remains 1
+
+msqlshim v0.10 rebound to NoSQLServer v0.70:
+  ooRexx compile                                    PASS
+  text protocol smoke                              PASS
+  idle multi-client isolation                      PASS
+  compressed protocol                              PASS
+  utility command surface                          PASS
+  binary prepared statements                       PASS
+  read-only prepared cursor / COM_STMT_FETCH        PASS
+  mixed compressed/uncompressed concurrency         PASS
+  FIFO backend fairness                             PASS
+
+Observed reduced-size concurrency validation:
+  mixed unread compressed stream: second client query completed in 0.010s
+  fairness: queued COUNT completed in 0.112s while writer remained active
+
+NoSQLServer regression surface
+------------------------------
+Self-contained historical/current Rexx tests: 70 successful exits
+(including the GeoPackage live test's normal SKIP when external full OS datasets
+are not mounted).
+
+Usage-oriented storage/planner/concurrency smokes against packaged demo root:
+  sql_smoke                                         PASS
+  smoke                                             PASS
+  v02                                               PASS
+  v03                                               PASS
+  v04                                               PASS
+  v05                                               PASS
+  v06                                               PASS
+  v07                                               PASS
+  v051                                              PASS
+
+Known obsolete historical harness:
+  v061_torture_harness_smoke.rex is not an acceptance gate because it asserts
+  foreign-key DDL must be rejected.  It fails identically on accepted v0.68
+  after FK support was added later.
+
+Oracle / torture gates
+----------------------
+Claude torture seed-42:       12/12 PASS
+Hell Corpus v1:               24/25 PASS
+                              1 PARSE_ERROR
+                              0 WRONG_RESULT
+                              0 EXECUTION_ERROR
+Hell Corpus v2:               25/30 PASS
+                              2 UNSUPPORTED
+                              3 PARSE_ERROR
+                              0 WRONG_RESULT
+                              0 EXECUTION_ERROR
+Progressive SQL torture:      72/72 PASS
+SQL-92 company smoke:         PASS
+
+Spatial honesty
+---------------
+GEOMETRY / subtype / SRID transport remains supported.
+SPATIALFUNCTIONS remains unadvertised.  No ST_* predicate was invented.
+
+Final package audit
+-------------------
+Fresh extraction of the delivery ZIP:
+  manifest payload entries                           156
+  manifest verification                              156/156 PASS
+  shipped .cls/.rex compile targets                  87
+  rexxc failures                                     0
+  v070 external metadata boundary                    PASS
+  v069 DB Core v0.34 geometry compatibility          PASS
+  v068 external federated facade                     PASS
+  v066 legacy federated facade                       PASS
+
+Independent companion packages rerun against the freshly extracted source:
+  Virtual RYTA / HardWorld v0.11 external engine     PASS; invocations 1
+  Librarian v0.11 external engine                    PASS; invocations 1
+  legacy Camera Algorithm Relation + Camera v0.26    PASS; invocations 1
+
+No source changes were made to msqlshim, Camera Behaviour, or Virtual
+RYTA/HardWorld for this NoSQLServer release.

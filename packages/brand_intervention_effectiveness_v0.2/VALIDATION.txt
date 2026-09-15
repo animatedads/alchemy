@@ -1,0 +1,72 @@
+Brand Intervention Effectiveness v0.2 validation
+Date: 2026-08-24
+
+Runtime:
+  Open Object Rexx 5.3.0 r13196 - Internal Test Version
+
+Validation basis:
+  oorexxapis(20260824-brand-journey-population-v0.2).zip
+  SHA-256 f84722276fba402569fb4b1a2461420ecfe6ca80788959bb2ecdb47e83eb5eab
+
+Additional current dependency:
+  brand_intervention_v0.2.zip
+  SHA-256 22b4fc43952e20c9640e93832f1985e45d400fb3bca860e40c7d9b649b0eeed6
+
+Validated component line:
+  Alchemy Objects v0.8
+  ooRexx Crypto v0.1
+  Brand Interaction Effect v0.6
+  Brand Journey v0.1
+  Brand Journey Population v0.2
+  Brand Intervention v0.2
+  Runtime Registry v0.14
+
+Direct package suite:
+  compile_smoke                                  PASS
+  primary_benefit_association                    PASS
+  confidence_overlap_not_promising               PASS
+  confidence_gate_optional                       PASS
+  multi_outcome_mixed_effects                    PASS
+  guardrail_insufficient_forces_review           PASS
+  randomized_still_not_self_causal               PASS
+  temporal_release_effectiveness                 PASS
+  outcome_bridge_eligibility                     PASS
+  evidence_point_privacy                         PASS
+  alchemy_privacy                                PASS
+  runtime_registry                               PASS
+
+Syntax/compile sweep:
+  rexxc .rex/.cls                                PASS 16/16
+  bash -n run_tests.sh                           PASS
+
+v0.1 regression reproduced before fix:
+  applied outcomes:       40 / 500 = 8%
+  not-applied outcomes:   50 / 500 = 10%
+  desired effect:         +2 percentage points
+  applied Wilson 95%:     5.92978024 .. 10.7106877
+  control Wilson 95%:     7.66771860 .. 12.9422508
+  interval separation:    false
+  v0.1 status:             PROMISING_ASSOCIATION
+
+v0.2 acceptance invariant:
+  statistical sufficient = true
+  effect material         = true
+  confidence gate         = false
+  status                  = NO_CLEAR_ASSOCIATION
+  reason                  = CONFIDENCE_INTERVALS_OVERLAP
+
+Explicit policy test:
+  REQUIRE_INTERVAL_SEPARATION=false is preserved in canonical reasoning
+  material and permits the caller to relax the confidence gate deliberately.
+
+Downstream Governance v0.1 qualification:
+  complete suite                                   PASS
+  overlapping-interval cross-layer probe:
+    effectiveness status                           NO_CLEAR_ASSOCIATION
+    governance disposition                         HOLD_BASELINE
+    result                                          PASS
+
+Causal boundary retained:
+  assignment method remains provenance only
+  all analyses remain ASSOCIATION_ONLY
+  randomized study design does not self-promote causal authority

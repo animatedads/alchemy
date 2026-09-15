@@ -1,0 +1,18 @@
+Safety21 validation
+===================
+BASE Safety20 SHA-256 7e7019c503ae62ef738315e154e533acb3e7fbc19be26dd69838ddc102645913
+RECOVERED SPHERE s370mvs v0.2-dev1 SHA-256 bd20213258b94004774e5b01ae266e40909953c24d96447b98af54716e53ed5f
+COMPILE PASS 147 sources
+RUNTIME PASS 78 tests
+MVTRES.350 SHA-256 095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49
+PASS real media
+PASS real MVT IPL PSW=0000000000000080 CCHHR=0/0/4
+PASS exact X'65' permanent microstate operation exception
+PASS X'65' live pre-promotion unsupported/atomic then classifier rewind/retry
+PASS X'65' live classifier -> rewind -> remove -> permanent equivalence
+PASS exact old PSW 00040001A000006A
+PASS complete new PSW 00040000000002CA
+AUDIT no OP65
+AUDIT no OP02
+RECOVERED exact guest forward proof: 1703 instructions -> X'02' @ 00006E / ICOUNT 534665
+QUALIFICATION acceleration: Crypto v0.8.3 through its Foreign Runtime/OpenSSL provider, Foreign Runtime v0.22.6 + Runtime Reference v0.4

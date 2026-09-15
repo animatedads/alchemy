@@ -1,0 +1,29 @@
+## domain tests
+== test_teller_maker_authority.rex ==
+PASS: teller maker authority is policy-bound
+== test_maker_checker.rex ==
+PASS: maker/checker separation of duties
+== test_branch_and_session_scope.rex ==
+PASS: branch/desk/session context is authority evidence
+== test_bounded_delegation.rex ==
+PASS: delegation is bounded and cannot increase policy authority
+== test_temporary_elevation.rex ==
+PASS: temporary elevation is explicit, bounded and evidenced
+== test_command_binding.rex ==
+PASS: staff authority binds exact Core Banking command
+== test_core_staff_policy_separation.rex ==
+PASS: staff authority and Core Banking policy remain independent
+== test_authority_scope_separation.rex ==
+PASS: customer and institutional staff authority scopes remain disjoint
+== test_runtime_module.rex ==
+PASS: runtime module boundary
+## integration tests
+== test_relationship_staff_core_chain.rex ==
+PASS: relationship authority + staff authority + Core Banking policy chain
+## compile
+COMPILE PASS: examples/FederationBankStaffAuthorityPolicyFixtures.cls
+COMPILE PASS: integration/FederationBankRelationshipStaffAuthorityBridge.cls
+COMPILE PASS: integration/FederationBankStaffCorePolicyFixtures.cls
+COMPILE PASS: runtime/FederationBankStaffAuthorityRuntimeModule.cls
+COMPILE PASS: src/FederationBankStaffAuthority.cls
+COMPILE PASS: tests/TestSupport.cls

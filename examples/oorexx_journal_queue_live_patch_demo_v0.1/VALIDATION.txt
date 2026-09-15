@@ -1,0 +1,69 @@
+ooRexx Journal + Queue Fabric live patch demo validation
+Runtime: ooRexx 5.3.0 r13196 supplied deb
+Result: PASS
+
+--- runner output ---
+LIVE PATCH RUNNER READY
+  queue store : /mnt/data/livepatch_queue_store_final
+  queue       : PATCH.INBOX (PERMANENT)
+  initial X   : X.v1(i) = i*10
+  range       : 1..18
+  command     : rexx send_patch.rex /mnt/data/livepatch_queue_store_final X X_v2.method 5
+
+  1 | X.v1(1)=10 | state-head=ROOT
+  2 | X.v1(2)=20 | state-head=N1
+  3 | X.v1(3)=30 | state-head=N2
+  4 | X.v1(4)=40 | state-head=N3
+  5 | X.v1(5)=50 | state-head=N4
+*** PATCH 1 INSTALLED: X rewind=5
+*** abandoned branch demo-runner-state@N5 had NEXT=6
+*** restored SOTN-2 => NEXT=1
+*** replaying 1 through 5 with new code
+  1 | X.v2-PATCHED(1)=1 | state-head=ROOT
+  2 | X.v2-PATCHED(2)=4 | state-head=N6
+  3 | X.v2-PATCHED(3)=9 | state-head=N7
+  4 | X.v2-PATCHED(4)=16 | state-head=N8
+  5 | X.v2-PATCHED(5)=25 | state-head=N9
+  6 | X.v2-PATCHED(6)=36 | state-head=N10
+  7 | X.v2-PATCHED(7)=49 | state-head=N11
+  8 | X.v2-PATCHED(8)=64 | state-head=N12
+  9 | X.v2-PATCHED(9)=81 | state-head=N13
+*** PATCH 2 INSTALLED: X rewind=3
+*** abandoned branch demo-runner-state@N14 had NEXT=10
+*** restored SOTN-13 => NEXT=7
+*** replaying 7 through 9 with new code
+  7 | X.v3-AGAIN(7)=1007 | state-head=N11
+  8 | X.v3-AGAIN(8)=1008 | state-head=N15
+  9 | X.v3-AGAIN(9)=1009 | state-head=N16
+ 10 | X.v3-AGAIN(10)=1010 | state-head=N17
+ 11 | X.v3-AGAIN(11)=1011 | state-head=N18
+ 12 | X.v3-AGAIN(12)=1012 | state-head=N19
+ 13 | X.v3-AGAIN(13)=1013 | state-head=N20
+ 14 | X.v3-AGAIN(14)=1014 | state-head=N21
+ 15 | X.v3-AGAIN(15)=1015 | state-head=N22
+ 16 | X.v3-AGAIN(16)=1016 | state-head=N23
+ 17 | X.v3-AGAIN(17)=1017 | state-head=N24
+ 18 | X.v3-AGAIN(18)=1018 | state-head=N25
+
+RUN COMPLETE
+  NEXT=19
+  retained journal nodes=26
+  abandoned branch pointers=2
+    demo-runner-state@N5 reconstructs NEXT=6
+    demo-runner-state@N14 reconstructs NEXT=10
+
+--- sender 1 ---
+PATCH QUEUED
+  store  : /mnt/data/livepatch_queue_store_final
+  package: pkg-109912-1
+  method : X
+  source : X_v2.method
+  rewind : 5
+
+--- sender 2 ---
+PATCH QUEUED
+  store  : /mnt/data/livepatch_queue_store_final
+  package: pkg-924023-1
+  method : X
+  source : X_v3.method
+  rewind : 3

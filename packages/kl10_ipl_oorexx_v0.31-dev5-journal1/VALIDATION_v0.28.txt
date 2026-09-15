@@ -1,0 +1,54 @@
+KL10 IPL ooRexx v0.28 validation
+================================
+Runtime: ooRexx 5.3.0 r13196 (Internal Test Version, build 2026-08-03)
+Input prompt state: user-supplied mtboot_prompt_v0.27(1).kl10state
+State schema: KL10_STATE/1 / dd12699496f2a068969f504c24cbce720bfcfee52d4e45a18eac88e84434e222
+
+Compile validation
+------------------
+106/106 .cls/.rex sources compile with rexxc.
+
+Regression validation
+---------------------
+46/46 no-argument runtime regressions pass, including CPU, pager, address-space,
+I/O bus, DTE20, state freeze/load, BinarySheet/OctalBits-facing, and randomized
+.LROct tests.
+
+Prompt-state regressions:
+PASS test_cpu_dte_input
+PASS test_console_keyboard
+PASS test_console_prompt_enter
+PASS test_console_state_roundtrip
+
+Observed prompt fixture
+-----------------------
+DTE output bytes render as:
+
+  <CR><LF>BOOT V11.0(315)<CR><LF><CR><LF>MTBOOT>
+
+The supplied state is at PC 773466, ICOUNT 273187, with empty RX and the guest
+waiting on SKIPN 765456 / DTMTI.
+
+Real ENTER-key probe
+--------------------
+KL10ConsoleKeyboard~press("ENTER") queues exactly 0D through KL10Dte RX.
+KL10Console~pump(200,"WAIT") executes 20 successful guest instructions.
+MTBOOT emits one additional 0D byte through its existing MONO output path.
+The next instruction is then refused at PC 773446:
+
+  136240,,000007  IDPB
+
+The pump result is EXECUTION_REFUSED and the architectural state can be saved
+and reloaded at that exact boundary. No IDPB semantics or completed monitor
+command are fabricated.
+
+Security / boundary checks
+--------------------------
+- KL10Console exposes no CPU, DTE, memory, or I/O-bus getter.
+- KL10ConsoleKeyboard exposes no DTE getter.
+- optional stateToken rejects stale actions before queue mutation.
+- non-7-bit text is rejected instead of folded modulo 128.
+- BREAK is explicitly unsupported because no DTE signal path is modeled.
+- snapshots expose queued-input byte count but not queued-input contents.
+- console facade state is not serialized separately; queued input remains
+  ordinary KL10_DTE_STATE/4 and round-trips through KL10_STATE/1.

@@ -1,0 +1,68 @@
+Bash Best Practices Gopher sphere v0.2
+=======================================
+
+Purpose
+-------
+LLM-focused bash best practice grounded in /usr/local/share/bashqueues (0.18.139),
+layered onto LLM Gopher without changing engine semantics. The bash-best-practices
+profile loads core + bash-best-practices and publishes technique articles, doctrine
+articles, a searchable corpus, and reference rule documents for bash.
+
+Posture
+-------
+bashqueues-grounded. Every article cites a real bashqueues file (queuebash.sh,
+bin/queue-*, providers, or docs/*_CONTRACT.md) and generalizes the form as best
+practice. Claimed bash semantics are the language facts; claims about why bashqueues
+chose a form are cited to the file.
+
+Engine reality
+--------------
+- rules check executes only oorexx/python evaluators; there is no built-in bash rule
+  evaluator. The five language-bash rule documents here are reference guidance shown
+  by `rules show`, each with an assess object and concrete correction.
+- Articles carry the semantics; corpus records make the guides searchable.
+
+v0.2 change
+-----------
+Addresses the external review challenge to the single `fixability` field. Adopted a
+structured `assess` object on each bash rule (classification, detection_certainty,
+violation, suggested_correction, auto_rewrite) and added the `ops.rule-classification`
+article that documents the model. Reconciled the quoting rule from a blanket AUTOMATIC
+to contextual / MANUAL, because intentional word-splitting/globbing exists and an
+automatic rewrite would be unsafe without intent. JSON concatenation, unvalidated
+arithmetic and swallowed-return rules moved to contextual/SUGGESTED with provenance
+hints; eval/dynamic-source remains a deterministic authority hazard with no automatic
+rewrite.
+
+Headline lessons (selected)
+---------------------------
+Technique: sourced-lib vs executed-tool strict-mode scope; capture child rc without
+abort; quote and array survival; compgen + scoped-IFS parsing; temp-in-destination
+write then verify then mv; validate-numeric before arithmetic; exact CLI arg parsing;
+JSON via serializer or backslash-first escaping; quote heredoc delimiters; decode
+returns instead of masking; portability stat/date and LF endings.
+
+Doctrine: provider/helper output is data, never executed; evidence is not acceptance;
+versioned structured fail-closed envelopes; path grants to verified objects; hash +
+re-zero-before-source hygiene; keep a one-off mode switch scoped.
+
+Qualification results
+---------------------
+PASS tests/run_bash_best_practices_sphere.sh
+PASS semantic pack merge: MERGED, zero (kind,id) conflicts
+PASS context publishes the article set (includes ops.rule-classification)
+PASS search 'never executable' returns the data-never-shell corpus record
+PASS lookup topic=json-emit returns exact typed record (EXACT_FIELD)
+PASS rules show BASH.QUOTING.UNQUOTED_EXPANSION opens with assess.violation contextual
+     and fixability MANUAL (no unsafe AUTOMATIC)
+PASS sphere resolve FOUND / sphere load ACTIVATED for the delivered archive (v0.2).
+
+Sphere contents
+---------------
+- overview + source-reference articles + rule-classification model article
+- 21 technique/doctrine articles (manifests, quoting, json, atomic file writes,
+  numeric/args/enums, output-is-data, evidence, fail-closed, path safety,
+  hash/source hygiene, heredocs, exit-code decoding, dynamic-mode scope,
+  portability/line-endings, source-ref)
+- bash-best-practices.guides corpus (18 records)
+- five reference language-bash rule documents, each with an assess object

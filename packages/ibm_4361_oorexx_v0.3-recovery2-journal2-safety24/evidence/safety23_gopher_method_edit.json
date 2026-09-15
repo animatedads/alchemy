@@ -1,0 +1,95 @@
+{
+  "schema": "llm-gopher/0.21",
+  "tool_status": {
+    "rc": 0,
+    "class": "OK"
+  },
+  "operation_status": {
+    "rc": 0,
+    "class": "UPDATED"
+  },
+  "result": {
+    "path": "/mnt/data/s370_cont/s23/ibm_4361_oorexx_v0.3-recovery2-journal2-safety23/IBM370Executor.cls",
+    "language": "oorexx",
+    "class": "IBM370Executor",
+    "method": "architecturalSpecificationException",
+    "operation": "REPLACE",
+    "changed_range": {
+      "start_line": 59,
+      "end_line_before": 68
+    },
+    "before_sha256": "eac20aaef86ce075df7f1f8801493526e456d24c38e3b45affbebe152a1401b0",
+    "after_sha256": "69977a8e80860a5d7c3fd9e4555a9acb2e13756df98ed38829f6ce1d68841f48",
+    "diff": {
+      "lines": [
+        "--- /mnt/data/s370_cont/s23/ibm_4361_oorexx_v0.3-recovery2-journal2-safety23/IBM370Executor.cls (before)",
+        "+++ /mnt/data/s370_cont/s23/ibm_4361_oorexx_v0.3-recovery2-journal2-safety23/IBM370Executor.cls (after)",
+        "@@ -58,13 +58,17 @@",
+        " ",
+        " ::method architecturalSpecificationException",
+        "   /* Specification exceptions are instruction/operand validity checks, not",
+        "-   * implementation-coverage decisions.  Safety19 proves System/370 D (5D)",
+        "+   * implementation-coverage decisions. Safety19 proves System/370 D (5D)",
+        "    * requires an even R1 register pair and that this check precedes divisor",
+        "-   * fetch/divide processing. */",
+        "+   * fetch/divide processing. Safety23 proves System/370 STE (70) permits only",
+        "+   * short-HFP register selectors 0,2,4,6; any other R1 raises specification",
+        "+   * exception before normal STE implementation coverage is considered. */",
+        "   use strict arg raw",
+        "   if raw~length<4 then return .false",
+        "   op=raw~left(2)~translate",
+        "-  if op=\"5D\" then return x2d(raw~substr(3,1))//2=1",
+        "+  r1=x2d(raw~substr(3,1))",
+        "+  if op=\"5D\" then return r1//2=1",
+        "+  if op=\"70\" then return r1<>0 & r1<>2 & r1<>4 & r1<>6",
+        "   return .false",
+        " ",
+        " ::method programInterruptSpecification"
+      ],
+      "line_count": 23,
+      "truncated": false
+    },
+    "validation": {
+      "validator": "/mnt/data/s370_cont/gopher_env/runtime/oorexx/usr/local/bin/rexxc",
+      "rc": 0,
+      "stdout": "Open Object Rexx Version 5.3.0 r13196 - Internal Test Version\nBuild date: Aug  3 2026\nAddressing mode: 64\nCopyright (c) 1995, 2004 IBM Corporation. All rights reserved.\nCopyright (c) 2005-2026 Rexx Language Association. All rights reserved.\nThis program and the accompanying materials are made available under the terms\nof the Common Public License v1.0 which accompanies this distribution or at\nhttps://www.oorexx.org/license.html\n",
+      "stderr": ""
+    },
+    "language_rules": {
+      "language": "oorexx",
+      "path": "/tmp/tmp557dhhgq.cls",
+      "rules_checked": 3,
+      "breaches": [],
+      "breach_count": 0,
+      "blockers": 0,
+      "advisories": 0,
+      "cycle": "cycle://language-rules/de4bd2f2e3cb6158",
+      "resume": "cycle://language-rules/de4bd2f2e3cb6158"
+    },
+    "committed": true,
+    "task": "edit method",
+    "capability": "source.oorexx.method.edit"
+  },
+  "service_proxy": {
+    "kind": "service-proxy",
+    "service": "oorexx.source.method.edit",
+    "capability": "source.oorexx.method.edit",
+    "operations": [
+      "exec"
+    ],
+    "rank": 10
+  },
+  "route": {
+    "requested_capability": "source.oorexx.method.edit",
+    "service": "oorexx.source.method.edit",
+    "implementation": "builtin.source.oorexx.method.edit",
+    "fallback_depth": 0,
+    "attempts": [
+      {
+        "service": "oorexx.source.method.edit",
+        "implementation": "builtin.source.oorexx.method.edit",
+        "tool_status": "OK"
+      }
+    ]
+  }
+}

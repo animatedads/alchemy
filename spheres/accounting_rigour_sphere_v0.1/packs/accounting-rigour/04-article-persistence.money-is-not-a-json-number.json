@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "accounting-rigour.persistence.money-is-not-a-json-number",
+  "version": "0.1",
+  "sphere": "accounting-rigour",
+  "title": "Never let money be emitted or persisted as a JSON number",
+  "summary": "Rexx strings have numeric semantics and json.cls may emit a numeric-looking Rexx string as a JSON number. Money and opaque identifiers are therefore always encoded with a protection prefix on the persisted wire, and money is reconstructed through the same 50-digit validator on recovery.",
+  "evidence_note": "PERSISTENCE_AND_PRECISION_CONTRACT v0.6: because json.cls can coerce numeric-looking Rexx strings, all persisted data scalars carry a storage protection prefix. Physical JSONL represents an amount as the string \"S:I:<digits>\"; the S: layer also preserves opaque leading-zero identifiers and evidence references such as 00123456 and 000123.",
+  "invariants": [
+    "A monetary amount is represented as an I:-prefixed canonical minor-unit string, never as a bare JSON number.",
+    "Persisted scalars carry an S: storage layer so opaque identifiers and evidence references survive a JSON round-trip; on recovery S: is removed, I: is validated, and the digits pass through the 50-digit whole-minor-unit validator.",
+    "Do not let a persistence or transport boundary convert a large numeric string into a JSON number and back.",
+    "One durable store holds one accounting book for one legal entity; a store does not create cross-company authority."
+  ]
+}

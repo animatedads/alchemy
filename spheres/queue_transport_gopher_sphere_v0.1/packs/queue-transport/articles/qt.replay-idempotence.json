@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "qt.replay-idempotence",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Replay separation and receiver idempotence are different controls",
+  "summary": "Session crypto rejects a secure frame replayed into a fresh nonce/transcript-bound connection, while legitimate fresh-session retransmission remains safe because durable Queue Fabric transfer receipts make receiver insertion idempotent by transferId.",
+  "authority": "project-authority",
+  "invariants": [
+    "Cryptographic replay separation is session-local and does not replace durable transferId idempotence.",
+    "A fresh legitimate retransmission may authenticate successfully and must still be deduplicated by the receiver receipt.",
+    "Do not treat an IP address, nonce or HMAC tag as the application delivery identity."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 35,
+      "line_end": 43,
+      "claim": "Cross-session secure-frame replay fails while durable transferId receipts remain the receiver-side idempotence authority."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/OCI_TWO_NODE_DEPLOYMENT.md",
+      "line_start": 67,
+      "line_end": 73,
+      "claim": "Failure expectations distinguish fresh-session replay rejection from legitimate fresh-session transferId idempotence."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/VALIDATION.txt",
+      "line_start": 78,
+      "line_end": 86,
+      "claim": "Qualification includes cross-session replay rejection and legitimate fresh-connection receiver idempotence."
+    }
+  ]
+}

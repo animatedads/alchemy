@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "google-colab.compat.installed-cli-is-authority",
+  "version": "0.1",
+  "sphere": "google-colab",
+  "title": "Feature-detect the installed CLI; do not program against GitHub main",
+  "summary": "The installed command surface is the runtime authority. Record colab version, inspect colab <command> -h, and adapt only to flags actually present. A live google-colab-cli 0.6.0 installation rejected colab exec --env and its colab new help did not expose --high-mem, while later upstream main documentation advertises --high-mem. This is a concrete example of documentation/version drift: never make a managed-compute adapter depend on a flag because current main or a newer design document mentions it.",
+  "evidence_note": "Live project qualification on Linux with google-colab-cli 0.6.0; PyPI records 0.6.0 as released 2026-06-16. Current upstream GitHub main, consulted 2026-09-02, documents --high-mem on new/run/ssh, demonstrating why installed-help probing is necessary.",
+  "invariants": [
+    "Persist the installed CLI version as execution evidence.",
+    "Probe subcommand help before emitting optional flags.",
+    "Unsupported provider flags must be omitted while the generic resource requirement remains in the job contract.",
+    "Do not silently downgrade a hard requirement; if the provider cannot express it, verify it in the worker or reject before work."
+  ]
+}

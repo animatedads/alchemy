@@ -1,0 +1,46 @@
+{
+  "kind": "access-policy",
+  "id": "semantic-source-control-access",
+  "version": "0.1-dev1",
+  "rules": [
+    {
+      "effect": "deny",
+      "roles": [
+        "llm",
+        "developer",
+        "operator"
+      ],
+      "actions": [
+        "exec"
+      ],
+      "resource": "capability:source.semantic.accept"
+    },
+    {
+      "effect": "deny",
+      "roles": [
+        "llm",
+        "developer",
+        "operator"
+      ],
+      "actions": [
+        "exec"
+      ],
+      "resource": "capability:source.semantic.proposal.decide"
+    },
+    {
+      "effect": "allow",
+      "roles": [
+        "llm",
+        "developer",
+        "operator",
+        "reviewer",
+        "admin"
+      ],
+      "actions": [
+        "read",
+        "exec"
+      ],
+      "resource": "*"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.constraints",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Hard feasibility before Pareto ranking",
+  "summary": "dev6 makes feasibility a separate authority layer. An infeasible candidate may remain search/evidence, but no objective advantage can buy its way into a Pareto front or promotion set.",
+  "authority": "Executable ooRexx ML dev6 MLConstraints.cls and regressions are authoritative.",
+  "invariants": [
+    "Hard constraints are gates, not objectives and not large penalty weights.",
+    "MLConstrainedEvaluatorAdapter evaluates constraints before expensive objective scoring and publishes no objective vector for an infeasible subject.",
+    "Infeasible candidates remain evidence; they may be ordered by violation count only as a search-recovery heuristic.",
+    "Only feasible candidates participate in Pareto dominance/front construction.",
+    "Only feasible Pareto points may enter MLConstrainedParetoRetentionSelector promotion output.",
+    "MLConstrainedParetoGeneticAlgorithm preserves transactional checkpoint, deterministic RNG, rollback/replay and final-bred-generation evaluation semantics."
+  ],
+  "procedure": [
+    "Declare non-tradable requirements as MLHardConstraint objects and group them in MLConstraintSet.",
+    "Wrap the domain evaluator in MLConstrainedEvaluatorAdapter so infeasible inputs fail before scores().",
+    "Analyze with MLConstrainedParetoAnalyzer; inspect infeasible assessments separately from feasible fronts.",
+    "Use MLConstrainedParetoRetentionSelector for bounded promotion.",
+    "For GA search, use MLConstrainedParetoGeneticAlgorithm; never scalarize hard violations into the objective vector."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev6.zip",
+      "sha256": "200132b208d7a19fc89764f8555aa74a30dbca6b9e98b73fa82678fe3f297091",
+      "member": "oorexx_ml_v0.1-dev6/src/MLConstraints.cls",
+      "claim": "Hard constraints, constrained evaluation, constrained Pareto analysis/retention and constrained Pareto GA implementation."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev6.zip",
+      "sha256": "200132b208d7a19fc89764f8555aa74a30dbca6b9e98b73fa82678fe3f297091",
+      "member": "oorexx_ml_v0.1-dev6/tests/test_hard_constraints_pareto.rex",
+      "claim": "Regression proves an objectively superior hard-constraint violator is retained as evidence but excluded from frontier and promotion."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev6.zip",
+      "sha256": "200132b208d7a19fc89764f8555aa74a30dbca6b9e98b73fa82678fe3f297091",
+      "member": "oorexx_ml_v0.1-dev6/tests/test_constrained_evaluator_fail_closed.rex",
+      "claim": "Regression proves infeasible subjects are rejected before expensive scoring and receive no objective vector."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev6.zip",
+      "sha256": "200132b208d7a19fc89764f8555aa74a30dbca6b9e98b73fa82678fe3f297091",
+      "member": "oorexx_ml_v0.1-dev6/tests/test_constrained_pareto_ga_replay.rex",
+      "claim": "Regression proves constrained Pareto rollback/replay reproduces offspring and RNG state."
+    }
+  ]
+}

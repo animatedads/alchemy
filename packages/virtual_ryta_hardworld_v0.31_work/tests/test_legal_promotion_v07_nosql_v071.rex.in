@@ -1,0 +1,108 @@
+parse arg root
+if root == '' then root = '/tmp/legal_promotion_v07_v071'
+say 'LEGAL EFFECT V0.7 PROMOTION ALGREL -> NOSQL V0.71 V0.20 START'
+
+providerDigest = .LegalSha512DigestProvider~new('runtime-registry-sha512')
+verifier = .LegalSourceVerifier~new(providerDigest, 'ryta-v020-nosql-verifier')
+legalText = 'SQL-visible synthetic legal authority specimen.'
+sourceCarrier = .directory~new; sourceCarrier['text'] = legalText
+sourceMaterial = .LegalVerificationMaterial~fromText(sourceCarrier, legalText, 'urn:test:c-sql-v07', 'RAW_NORMATIVE_SOURCE')
+sourceDigest = 'sha512:' || providerDigest~digest(sourceMaterial~material)
+identity = .LegalSourceIdentity~new('C-SQL', 'CONTRACT', 'expr-v07', 'urn:test:c-sql-v07', sourceDigest, 'PARTIES', '*', 'VERIFIED')
+source = .NormativeSource~new('C-SQL', 'CONTRACT', 'SQL-visible legal authority specimen')
+referenceMaterial = .LegalVerificationMaterial~fromText(sourceCarrier, legalText, 'clause 1', 'PROVISION_TEXT')
+referenceDigest = 'sha512:' || providerDigest~digest(referenceMaterial~material)
+reference = .LegalProvisionReference~new('C-SQL', '1', 'expr-v07', 'clause 1', referenceDigest, legalText, 'VERIFIED')
+
+unit = .LegalCompilationUnit~new('LEGAL-SQL-GEN', '0.7', 'hardworld-v020-test-compiler', '1')
+call MustOk unit~addSource(identity, source), 'add source'
+call MustOk unit~addProvision(reference, .LegalProvision~new('C-SQL', '1', 'ACTIVE', 'BASE', legalText)), 'add provision'
+sourceVerify = unit~verifySource('C-SQL', sourceMaterial, verifier)
+provisionVerify = unit~verifyProvision('C-SQL', '1', referenceMaterial, verifier)
+call Assert sourceVerify~ok & provisionVerify~ok, 'v0.7 verifier evidence binds'
+
+norm = .LegalNorm~new('C-SQL-1', 'C-SQL', '1', 'CONTRACT_TERM', 'SHIP', 'CONTRACT_BREACH')
+call MustOk norm~addCondition(.LegalPredicate~new('READY', 'KNOWN_TRUE')), 'add condition'
+proposal = .LegalCompileProposal~new('P-C-SQL-1', 'NORM', norm, 'hardworld-v020-test', 'HUMAN', '1')
+call MustOk proposal~addEvidenceReference(reference), 'attach evidence'
+call MustOk unit~addProposal(proposal), 'add proposal'
+compileReport = .LegalRuleCompiler~new~compile(unit)
+call Assert compileReport~ok, 'legal generation compiler certified'
+generation = compileReport~generation
+facts = .LegalFactSet~new; ignored = facts~putKnown('READY', .true, .nil, 'TEST')
+context = .LegalContext~new('LEGAL-SQL-EVENT', '2026-08-20', '2026-08-20', facts)
+ignored = context~bindSource('C-SQL', 'contract binding')
+pinned = .LegalEffectV07PinnedEvaluator~evaluate(.LegalEffectEngine~new, .LegalAction~new('SHIP'), generation, context)
+call Assert pinned~ok, 'pinned v0.7 legal evaluation'
+promotions = .LegalEffectV07PromotionAdapter~promotionsFrom(pinned~envelope)
+
+fed = .FederatedDatabaseEngine~new(root); sql = .NoSQLServerSQL~new(fed); algorithmEngine = .AlgorithmRelationEngine~new
+provider = .EvidencePromotionAlgorithmProvider~new('..'); call Assert algorithmEngine~addProvider(provider), 'promotion provider registration'
+classes = .directory~new; classes['TABLE_DEFINITION'] = .TableDefinition; classes['DATABASE_ROW'] = .DatabaseRow; classes['DATABASE_RESULT'] = .DatabaseResult
+bindings = .directory~new; bindings['EVIDENCE_PROMOTIONS'] = 'evidence_promotions'; bindings['EVIDENCE_PROMOTION_BASIS'] = 'evidence_promotion_basis'; bindings['EVIDENCE_PROMOTION_TRACE'] = 'evidence_promotion_trace'
+ctx = .AlgorithmExecutionContext~new('LEGAL-PROMO-SQL-INV', 'LEGAL-PROMO-SET', 'LEGAL-PROMO-WORLD')
+external = .NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine, 'EVIDENCE_PROMOTIONS', promotions, ctx, classes, bindings)
+call Assert external~isReady, 'promotion external engine ready', external~lastError
+ignored = fed~addEngine(external)
+call Assert provider~invocationCount = 0, 'registration observational'
+meta = fed~tableMetadata('evidence_promotions'); call Assert meta \== .nil, 'metadata visible'; call Assert provider~invocationCount = 0, 'metadata no execution'
+rs = sql~execute("SELECT target_fact, value_boolean, authority, promotion_status FROM evidence_promotions ORDER BY target_fact")
+call Ok rs
+call Assert rs~rows~items = 3, 'three status promotions visible'; call Assert provider~invocationCount = 1, 'first read materializes once'
+blocked = .false
+do r over rs~rows
+  if r['target_fact'] = 'LEGAL_ACTION_BLOCKED' then do
+    blocked = .true
+    call Assert r['value_boolean'] = .true, 'blocked true'
+    call Assert r['promotion_status'] = 'AUTHORIZED', 'blocked authorized'
+    call Assert r['authority']~pos('LEGAL_EFFECT/0.7/LEGAL-SQL-GEN@') = 1, 'authority v0.7 namespace'
+  end
+end
+call Assert blocked, 'blocked row visible'
+
+basis = sql~execute("SELECT basis_kind, basis_id, native_object_preserved FROM evidence_promotion_basis ORDER BY promotion_id, basis_ordinal")
+call Ok basis
+call Assert provider~invocationCount = 1, 'basis shares materialization'
+sourceVerifierRows = 0; provisionVerifierRows = 0
+do r over basis~rows
+  if r['basis_kind'] = 'LEGAL_SOURCE_VERIFICATION_EVIDENCE' then do
+    sourceVerifierRows += 1
+    call Assert r['native_object_preserved'] = .true, 'source verification snapshot retained'
+  end
+  if r['basis_kind'] = 'LEGAL_PROVISION_VERIFICATION_EVIDENCE' then do
+    provisionVerifierRows += 1
+    call Assert r['native_object_preserved'] = .true, 'provision verification snapshot retained'
+  end
+end
+call Assert sourceVerifierRows = 3, 'source verifier basis once per promotion'
+call Assert provisionVerifierRows = 3, 'provision verifier basis once per promotion'
+
+mutation = sql~execute("UPDATE evidence_promotions SET promotion_status='AUTHORIZED' WHERE target_fact='LEGAL_ACTION_BLOCKED'")
+call Assert mutation~error = .Error~SQLUNSUPPORTED, 'promotion relation read-only'; call Assert provider~invocationCount = 1, 'mutation rejection no rerun'
+world = .RYTAWorldState~new('LEGAL-PROMO-WORLD'); applied = .EvidencePromotionApplier~apply(promotions, world)
+call Assert applied~applied = 3, 'explicit application works'; call Assert world~isKnownTrue('LEGAL_ACTION_BLOCKED'), 'HardWorld changes only after explicit apply'
+say 'LEGAL EFFECT V0.7 PROMOTION ALGREL -> NOSQL V0.71 V0.20: OK'
+exit 0
+
+::routine Ok
+  use arg rs
+  if rs~status = .Error~SUCCESS then return .true
+  raise syntax 93.900 additional('SQL failed: ' || rs~error || ' ' || rs~message)
+
+::routine MustOk
+  use arg object, label
+  if \object~ok then raise syntax 93.900 additional(label || ': ' || object~code || ' ' || object~detail)
+  return .true
+
+::routine Assert
+  use arg condition, message, detail = ''
+  if condition then return .true
+  raise syntax 93.900 additional('ASSERT FAILED: ' || message || ' ' || detail)
+
+::requires '__NOSQLSERVER_CLS__'
+::requires 'LegalRuntimeCryptoBridge.cls'
+::requires '../algorithm/AlgorithmIntegrity.cls'
+::requires '../HardWorld.cls'
+::requires '../integration/LegalEffectV07PromotionAdapter.cls'
+::requires '../integration/EvidencePromotionAlgorithmProvider.cls'
+::requires '../integration/NoSQLServerAlgorithmRelationExternalEngine.cls'

@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.validation",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Validation evidence and retained-future comparison",
+  "summary": "Validation returns evidence objects with fold membership, expected/predicted values and frozen model state. Retained model branches can be compared without changing the caller's live branch/controller position.",
+  "authority": "Executable source/tests and supplied upstream API artifacts are authoritative; this sphere preserves architecture and continuity.",
+  "invariants": [
+    "A validation score is accompanied by dataset/plan/model-state evidence.",
+    "Each cross-validation fold trains an independent model on its explicit train subset.",
+    "Branch comparison evaluates the same evidence dataset against both retained futures.",
+    "Analytical comparison restores the original live journal point and does not silently promote either branch."
+  ],
+  "procedure": [
+    "Build an immutable k-fold plan.",
+    "Use MLCrossValidator with a model factory and explicit metric.",
+    "Inspect MLValidationEvidence/MLFoldResult rather than relying on a bare aggregate.",
+    "Use MLBranchComparator to rank retained futures under explicit minimize/maximize direction."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev2.zip",
+      "sha256": "66bd14e51181a54db58b7b40d3a323b82c09d0248a172e89e212befbfa5d90a3",
+      "member": "oorexx_ml_v0.1-dev2/src/MLValidation.cls",
+      "claim": "Cross-validation evidence and non-destructive branch comparison."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev2.zip",
+      "sha256": "66bd14e51181a54db58b7b40d3a323b82c09d0248a172e89e212befbfa5d90a3",
+      "member": "oorexx_ml_v0.1-dev2/tests/test_cross_validation.rex",
+      "claim": "Regression proves per-fold validation evidence."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev2.zip",
+      "sha256": "66bd14e51181a54db58b7b40d3a323b82c09d0248a172e89e212befbfa5d90a3",
+      "member": "oorexx_ml_v0.1-dev2/tests/test_branch_comparison.rex",
+      "claim": "Regression proves branch comparison restores the original live point."
+    }
+  ]
+}

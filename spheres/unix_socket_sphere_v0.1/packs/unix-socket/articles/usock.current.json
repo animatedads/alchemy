@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "usock.current",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Current Unix Socket authority and scope",
+  "summary": "The current sealed implementation baseline is oorexx_unix_socket_v0.6.zip. It is a native ooRexx semantic AF_UNIX library implemented over Foreign Runtime v0.22.6 and libc, not a replacement for stock socket.cls and not a dedicated Unix-socket native extension.",
+  "authority": "project-authority",
+  "invariants": [
+    "oorexx_unix_socket_v0.6.zip supersedes v0.5 for continuation.",
+    "unixsocket.cls owns Unix-domain semantic API and safety/ownership rules; Foreign Runtime owns native binding, managed resources and ABI enforcement.",
+    "No librxunixsocket.so belongs in the qualified release.",
+    "The only qualified aggregate ABI profile in v0.6 is linux-x86_64-le-lp64."
+  ],
+  "procedure": [
+    "Start new work from the sealed v0.6 artifact and its exact dependency/qualification record rather than reconstructing the library from examples."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/README.md",
+      "line_start": 1,
+      "line_end": 11,
+      "claim": "README identifies v0.6, its Foreign Runtime implementation, absence of a Unix-specific native extension, stock socket.cls separation, and migration history.",
+      "note": "Current baseline statement."
+    }
+  ]
+}

@@ -1,0 +1,49 @@
+ooRexx AI Provider - Grok (xAI) v0.4 validation
+Interpreter target: Open Object Rexx 5.3.0 r13196 Internal Test Version
+
+Package release: 0.4
+Public APIs intentionally stable at v0.3:
+  ai.provider.grok/0.3
+  ai.provider.grok.capability/0.3
+  ai.provider.grok.batch/0.3
+  ai.provider.grok.wlu/0.3
+  ai.provider.grok.batch.wlu/0.3
+
+Qualified dependencies:
+  oorexx_ai_access_v0.6
+  oorexx_secret_broker_v0.2
+  alchemy_objects_v0.8
+  oorexx_crypto_v0.1
+Optional WLU qualification:
+  runtime_registry_v0.14
+  oorexx_work_load_units_v0.12
+  work.load.units/0.12
+
+Acceptance markers observed under r13196:
+  GROK ALCHEMY V0.8 ADOPTION: OK
+  GROK CAPABILITY SELECTOR V0.4: OK
+  GROK PROVIDER V0.4: OK
+  GROK RUNTIME MODULE V0.4: OK
+  GROK BATCH PROVIDER V0.4: OK
+  GROK REAL CURL: OK
+  GROK WLU PLANNER V0.4: OK
+  GROK WLU HTTP V0.4: OK
+  GROK BATCH WLU PLANNER V0.4: OK
+
+Proven:
+- seven core Grok behavioural objects pass Alchemy v0.8 STANDARD adoption with zero warnings, zero reserved-base overrides and INIT construction provenance;
+- real-time and Batch WLU planner/estimator pairs also pass Alchemy v0.8 STANDARD adoption with zero warnings and INIT construction provenance;
+- every direct Grok Alchemy object has migrated off compatibility initAlchemy();
+- real-time POSTJSON and batch REQUESTJSON are protected security-sensitive transport surfaces;
+- Secret Broker v0.2 trusted-consumer materialization is used on both real-time and Batch transport paths;
+- the Batch curl fixture proves mode-0600 credential config materialization and no secret value on argv;
+- a Batch lease is active inside trusted transport and retired after return;
+- rejected Batch model policy does not acquire a credential lease;
+- real installed curl fixture passes and secrets remain outside argv/instrumentation;
+- real-time provider model/output policy executes before credential acquisition;
+- capability selector enforces tier/zone/cost constraints and raises for impossible combinations;
+- corrected economy cost-ceiling fixture uses 300 micro-USD: the economy route is 250 and STANDARD routes exceed the ceiling;
+- Batch API no longer uses Rexx special variable RESULT as a mutable Directory;
+- WLU v0.12 HTTP path reserves conservative 2,900,000 micro-WLU, settles provider-reported 500,000 micro-WLU, refunds unused capacity, and rejects exhausted-capacity work before provider invocation;
+- Batch WLU remains long-horizon with distinct AI_BATCH_* facts and zero default delivery rate;
+- prompts and raw credentials remain absent from Alchemy instrumentation.

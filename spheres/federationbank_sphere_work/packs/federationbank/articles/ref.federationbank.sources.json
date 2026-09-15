@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "ref.federationbank.sources",
+  "version": "0.1",
+  "sphere": "federationbank",
+  "title": "Ground-truth package lineage and how to update this sphere",
+  "summary": "The current observed Core baseline is federationbank_engine_v0.9.2.zip. Boundary articles are grounded in the supplied Teller Till v0.2, Branch Cash v0.2, Branch Day v0.1 and Merchant Bank v0.2 packages. When newer packages arrive, inspect them first and revise only the affected sphere objects.",
+  "authority": "federationbank-project-doctrine",
+  "invariants": [
+    "Package/source evidence is authoritative over stale sphere prose when a newer artifact is supplied.",
+    "Do not silently promote an unqualified implementation or reconstruct release status from filenames alone.",
+    "Keep Core and Merchant source lineage separate even when one workflow spans both perimeters.",
+    "Preserve the reason for material rules such as PHANTOM_FUNDS, replay safety and physical/monetary separation."
+  ],
+  "procedure": [
+    "Use `archive.zip.member.find` to locate README/ARCHITECTURE/CHANGELOG and exact source files.",
+    "Use `archive.zip.member.read` for bounded line-numbered evidence.",
+    "Compare package manifests/digests before calling two drops identical or one a successor.",
+    "Revise this sphere through the Sphere Editor and attach structured artifact/member/line provenance."
+  ],
+  "provenance": [
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/README.md",
+      "line_start": 1,
+      "line_end": 5,
+      "claim": "Observed Core baseline and architectural rule."
+    },
+    {
+      "artifact": "federationbank_merchant_bank_v0.2(1).zip",
+      "sha256": "4c07643588f22a71a817a73de6e06960805c67700698dc73aa0bff8dbec8ed41",
+      "member": "federationbank_merchant_bank_v0.2/README.md",
+      "line_start": 1,
+      "line_end": 7,
+      "claim": "Observed Merchant boundary baseline."
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "kind": "corpus",
+  "id": "accounting-rigour.rules",
+  "sphere": "accounting-rigour",
+  "title": "Money-accounting rigour records",
+  "records": [
+    {
+      "aliases": ["topic:digits","topic:precision","numeric-digits","50-digits","DIGITS 50","digits:50"],
+      "topic": "precision",
+      "rule": "Money is exact whole-number minor units under NUMERIC DIGITS 50.",
+      "guard_order": "establish numeric digits 50 before the whole-number guard and before DATATYPE(...,'W')",
+      "source": "PERSISTENCE_AND_PRECISION.md + CHANGELOG 0.3.1/0.4.1",
+      "incident": "12,000,000,000 exact-minor-unit transaction mis-evaluated under an inadequate arithmetic context until the order was fixed."
+    },
+    {
+      "aliases": ["topic:money-encoding","I:","S:","money-prefix","json-number","storage prefix","opaque id"],
+      "topic": "money-encoding",
+      "rule": "Never emit or persist money as a JSON number; use I:<digits> with an S: storage layer on the wire.",
+      "reason": "json.cls can reclassify numeric-looking Rexx strings as JSON numbers; S: preserves opaque leading-zero identifiers and evidence references.",
+      "source": "PERSISTENCE_AND_PRECISION.md v0.6"
+    },
+    {
+      "aliases": ["topic:rounding","settlement rounding","tax rounding","HALF_EVEN","rounding-quantum","settlement vs tax"],
+      "topic": "rounding",
+      "rule": "Settlement rounding and tax determination rounding are separate decisions; a settlement adjustment never rewrites the previously determined tax amount.",
+      "dispatch": "policy selected by exact rulesetIdentity frozen in an effective-dated election, never by domicile or mutable defaults",
+      "source": "SETTLEMENT_ROUNDING_CONTRACT.md"
+    },
+    {
+      "aliases": ["topic:replay","duplicate","conflict","exact replay","idempotency","SOURCE_TAX_EVENT_CONFLICT","SOURCE_SETTLEMENT_EVENT_CONFLICT","DUPLICATE","redeliver"],
+      "topic": "replay",
+      "rule": "Exact replay of a completed transaction returns DUPLICATE; changed reuse of the same source identity is SOURCE_*_EVENT_CONFLICT before policy dispatch.",
+      "note": "restart resolves reuse against the durable journal, not blind re-execution",
+      "source": "CHANGELOG 0.6/0.7/0.9 + PERSISTENCE_AND_PRECISION.md"
+    },
+    {
+      "aliases": ["topic:lifecycle","supersede","SUPERSEDED","amendment","correction","immutable filing","substantial supersession"],
+      "topic": "lifecycle",
+      "rule": "A later or superseding figure adds bound lifecycle observations; it never rewrites what was actually approved or filed.",
+      "lineage": "ORIGINAL/AMENDMENT/CORRECTION with exact predecessor fingerprint binding",
+      "source": "CHANGELOG 0.8..0.10 REPORTING_LIFECYCLE_CONTRACT.md"
+    },
+    {
+      "aliases": ["topic:omitted","not filed","not zero","no-invent","missing statement","real filing"],
+      "topic": "real-filing",
+      "rule": "An intentionally omitted statement is evidence of omission, never coerced to zero; never invent a figure the filing did not deliver.",
+      "companion": "a filed-accounts import never posts to the native GL",
+      "source": "REAL_FILING_16024067_QUALIFICATION.md; CHANGELOG 0.2"
+    },
+    {
+      "aliases": ["topic:cross-company","scope","reporting boundary","consolidation","INTERCOMPANY","INTER_ESTABLISHMENT","one entity one book"],
+      "topic": "scope",
+      "rule": "Reporting can span multiple legal entities while retaining each line's exact legal-entity/book identity; it is not consolidation by fiat.",
+      "note": "distinguish INTER_ESTABLISHMENT from INTERCOMPANY; do not infer legal entities from places of business",
+      "source": "CHANGELOG 0.5/0.8; SCOPES_AND_REPORTING_BOUNDARIES.md"
+    },
+    {
+      "aliases": ["topic:store","append-only","JSONL","persistence","restart","book recovery","one store one book"],
+      "topic": "store",
+      "rule": "Persistence is append-only JSONL; one store holds one accounting book for one legal entity; recovery rebuilds the source index before policy dispatch.",
+      "source": "PERSISTENCE_AND_PRECISION.md"
+    }
+  ]
+}

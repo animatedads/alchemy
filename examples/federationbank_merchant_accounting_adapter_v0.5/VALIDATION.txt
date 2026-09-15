@@ -1,0 +1,55 @@
+FederationBank Merchant Accounting Adapter v0.5 qualification
+Date: 2026-08-28
+Runtime: ooRexx 5.3.0 r13196 - Internal Test Version (64-bit debug build supplied in this conversation)
+Runtime package SHA-256: 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Consolidated provenance:
+- oorexxapis(20260828-192610).zip SHA-256 5885f1906dc5ae7307e6fc7d557b88d1770b0c401f5a62063b999834222d5d66
+- embedded Merchant Bank v0.15 is byte-identical to sealed v0.15 SHA-256 dc8df7104d7cc45ebb97d79f99cc221444042da667d73b17c69567e7156aeaff
+- embedded Merchant Accounting Adapter v0.4 is byte-identical to sealed v0.4 SHA-256 d06a1c911f767f4db9817db9781a50dde8b9c64d3530cb5d615bf5e8c6bf5826
+- roll-up embeds Merchant Risk Service v0.4; it is not adopted because the separately sealed Merchant Risk Service v0.5 remains the current Merchant service baseline.
+
+Dependency baselines:
+- Accounting Core v0.7 ZIP SHA-256 95b694d76e388613cafed39f752efe32ff8ce5d46401766aa2d63b9c147a5c76
+- FederationBank Merchant Bank v0.15 sealed ZIP SHA-256 dc8df7104d7cc45ebb97d79f99cc221444042da667d73b17c69567e7156aeaff
+- FederationBank Merchant Risk Service v0.5 sealed ZIP SHA-256 4b9d6b1b0c5585c4c3bfa633ed8bf72c666464b5275fbb77836052817460abcb (compatibility only)
+- oorexx_journal_pointed_state_v0.1 ZIP SHA-256 8466bc2309213f3acc2de2afb6b2596123e446d779ca90c319aed676544c51d8
+
+Accounting Core v0.7 qualification (unchanged dependency):
+- MANIFEST.sha256 verified from supplied package
+- 13/13 ooRexx test programs green
+- 297/297 ooRexx assertions green
+- Python reference projection 10/10 green
+- accounting.event/0.1, accounting.transaction/0.1, accounting.posting/0.2 and accounting.store/0.1 remain compatible
+- accounting.settlement/0.1 settlement request/determination path green
+
+FederationBank Merchant Bank v0.15 qualification:
+- 51/51 regression tests green
+- no Merchant source modification for this adapter cut
+
+Merchant Accounting Adapter v0.5 qualification:
+- 19/19 test programs green
+- 168 assertions, 0 failures
+- all 17 v0.4 test programs remain green unchanged against Accounting Core v0.7
+- settlement amount requests derive contractual amount/currency/side/counterparty from the already-accounted Merchant obligation journal
+- caller currency minor exponent must exactly match MBAccountingCurrencyScaleEvidence
+- configured Accounting Core settlement election/tender/ruleset/executable-policy identities are retained in bounded determination evidence
+- non-zero settlement rounding determination is non-posting and returns postingState MERCHANT_SETTLEMENT_AMOUNT_AUTHORITY_REQUIRED
+- explicit postSettlementAmountDetermination() rejects non-zero determination with MERCHANT_SETTLEMENT_AMOUNT_AUTHORITY_REQUIRED
+- exact zero-difference determination remains non-posting and returns postingState MERCHANT_SETTLEMENT_OBSERVATION_REQUIRED
+- explicit postSettlementAmountDetermination() rejects exact determination with SETTLEMENT_COMPLETION_EVIDENCE_REQUIRED
+- tender mismatch, scale mismatch and unaccounted obligation fail closed with zero new journals
+- v0.4 settlement observation, over-clear protection, durable replay, exact scale, NUMERIC DIGITS 50, sign crossing, CFD-close retention and lifecycle settlement gates remain green
+
+Compatibility requalification without sibling source modification:
+- FederationBank Merchant Risk Service v0.5: 20/20 green against sealed Merchant Bank v0.15
+- Merchant Reference Adapter v0.8: 7/7 green against Merchant Bank v0.15
+- Merchant Position Service v0.1.10: 5/5 green against Merchant Bank v0.15
+- Merchant Collateral Adapter v0.1.11: 1/1 green against Merchant Bank v0.15
+
+Lane boundary:
+- Accounting Core v0.7 was consumed and qualified but not modified or versioned.
+- Merchant Bank v0.15, Risk Service v0.5 and Merchant-facing sibling adapters were requalified but not modified.
+- The stale Risk Service v0.4 embedded in the consolidated roll-up was not adopted.
+- No VMM source/package/version was modified.
+- No Retail/Core Banking, Ledger, Staff Authority, Staff Channel or other Core-side service was modified.

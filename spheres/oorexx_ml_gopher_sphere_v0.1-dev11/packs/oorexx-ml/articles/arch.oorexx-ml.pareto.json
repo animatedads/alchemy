@@ -1,0 +1,59 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.pareto",
+  "version": "0.2",
+  "sphere": "oorexx-ml",
+  "title": "Pareto frontier and multi-objective evolution",
+  "summary": "dev6 retains dev5 independent objective vectors/frontiers and adds a hard-feasibility gate before dominance. Pareto rank describes tradeoffs only among candidates that are allowed to compete.",
+  "authority": "Executable ooRexx ML dev6 source/tests are authoritative; dev5 establishes Pareto mechanics and dev6 establishes constrained-Pareto semantics.",
+  "invariants": [
+    "MLObjectiveSet preserves each MLObjective and its MINIMIZE/MAXIMIZE direction independently.",
+    "A candidate dominates another only when it is no worse on every objective and strictly better on at least one.",
+    "Crowding distance is diversity evidence inside a Pareto front, not a replacement objective.",
+    "MLParetoGeneticAlgorithm uses deterministic rank/crowding selection and the same journalled RNG/State-of-the-Nation rollback discipline as the scalar GA.",
+    "A complete Pareto GA run evaluates and publishes the final bred population before returning.",
+    "Human review may choose among frontier tradeoffs without rewriting objective evidence or pretending one non-dominated candidate is mathematically superior.",
+    "Hard feasibility is decided before Pareto dominance; an infeasible candidate cannot enter any Pareto front regardless of objective values."
+  ],
+  "procedure": [
+    "Assess hard constraints before constructing objective vectors/fronts when non-tradable eligibility requirements exist.",
+    "Declare two or more MLObjective objects in an MLObjectiveSet.",
+    "Evaluate each candidate to an MLObjectiveVector with one score per objective.",
+    "Compute fronts with MLParetoAnalyzer and retain rank/crowding evidence.",
+    "For evolution, drive MLParetoGeneticAlgorithm under MLGeneticPolicy and deterministic RNG.",
+    "Use MLParetoRetentionSelector to bound durable material while preserving frontier diversity.",
+    "Route remaining frontier choices to human/policy review rather than inventing hidden scalar weights."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev5.zip",
+      "sha256": "b9aa9b80031743508b025c69d3819f00ea2a8e93aeb00f7ccc22691a0866c122",
+      "member": "oorexx_ml_v0.1-dev5/src/MLMultiObjective.cls",
+      "claim": "Objective sets/vectors, Pareto fronts, crowding, bounded retention and branchable Pareto GA implementation."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev5.zip",
+      "sha256": "b9aa9b80031743508b025c69d3819f00ea2a8e93aeb00f7ccc22691a0866c122",
+      "member": "oorexx_ml_v0.1-dev5/tests/test_pareto_ga_final_generation_scored.rex",
+      "claim": "Regression proves the final bred Pareto population is evaluated before a complete run returns."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev5.zip",
+      "sha256": "b9aa9b80031743508b025c69d3819f00ea2a8e93aeb00f7ccc22691a0866c122",
+      "member": "oorexx_ml_v0.1-dev5/tests/test_pareto_ga_replay.rex",
+      "claim": "Regression proves rollback/replay reproduces Pareto offspring and deterministic RNG state."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev5.zip",
+      "sha256": "b9aa9b80031743508b025c69d3819f00ea2a8e93aeb00f7ccc22691a0866c122",
+      "member": "oorexx_ml_v0.1-dev5/integration/audio/AudioParetoObjectives.cls",
+      "claim": "Recovered-audio reference distance, pre-limiter over-range and post-limiter clipping are exposed as independent objectives."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev6.zip",
+      "sha256": "200132b208d7a19fc89764f8555aa74a30dbca6b9e98b73fa82678fe3f297091",
+      "member": "oorexx_ml_v0.1-dev6/src/MLConstraints.cls",
+      "claim": "Adds hard-feasibility gating around Pareto analysis and evolution without changing dev5 objective-vector semantics."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "llm-access.procedure",
+  "version": "0.3",
+  "sphere": "llm-access",
+  "title": "How to name a model in generated code",
+  "procedure": [
+    "Do not write a model string from memory.",
+    "Open the provider models page listed in this sphere (primary URL).",
+    "Call the provider list-models route with the caller's key if a live check is available.",
+    "Record slug, observed_as_of (ISO date), and source URL next to the recommendation.",
+    "If sources disagree (common: aggregator still listing last month's flagship), prefer the provider docs date and say the disagreement out loud.",
+    "Never treat an alias such as latest or grok-latest as a stable production pin.",
+    "If you cannot check, emit STALE-UNKNOWN rather than a confident old slug."
+  ],
+  "invariants": [
+    "Silent success against a redirected slug is a defect, not a pass.",
+    "Chat product names (ChatGPT, Claude.ai, Grok.com) are not API model IDs."
+  ],
+  "authority": "provider-primary-snapshot",
+  "provenance": [
+    {
+      "artifact": "llm_access_sphere_v0.2.zip",
+      "sha256": "eaaf9ffd12c3734143c6721753d057caf02f20c2ac05783662627e33bb2b2ae6",
+      "member": "llm_access_sphere_v0.1/packs/llm-access/03-article-procedure.json",
+      "claim": "Content preserved from v0.2 during structural normalization."
+    }
+  ],
+  "summary": "Procedure preserved from the v0.2 provider-access sphere; follow the listed steps rather than relying on model-memory slugs.",
+  "section": "procedure"
+}

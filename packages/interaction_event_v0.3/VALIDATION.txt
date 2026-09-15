@@ -1,0 +1,33 @@
+Interaction Event v0.3 qualification validation
+Date: 2026-08-24
+Interpreter: Open Object Rexx 5.3.0 r13196 Internal Test Version
+Current API baseline: oorexxapis(4).zip supplied in this qualification
+
+Dependencies used:
+- Alchemy Objects v0.8 (v0.7+ adoption surface)
+- ooRexx Crypto v0.1
+- Runtime Registry v0.14
+
+Direct package result: PASS (12/12 requested tests)
+
+Validated surfaces:
+- rich append-only event capture and stable INTERACTION_EVENT:* points
+- assessment disagreement and assessment provenance
+- privacy projection and UNKNOWN fail-closed behavior
+- native InteractionInformationUseEvidence / InteractionGenerationIntentEvidence / InteractionDerivedFinding
+- native child evidence seals on attachment and duplicate ids are rejected
+- native evidence participates in event canonicalisation
+- customer-sensitive sourceRef is removed by deidentified projection while privacy/use/intent/finding residue survives
+- constructor metadata is defensively copied; caller-owned tables cannot mutate sealed canonical event evidence
+- Runtime Registry v0.14 lifecycle
+
+Downstream compatibility evidence:
+- Structured Utterance v0.3 complete suite: PASS (15/15)
+- Brand Interaction Effect v0.6 complete suite: PASS (24/24), including native evidence authority and sensitive-information commercial-repurposing
+- Reputation Feed v0.10 Interaction Event acquisition bridge: PASS
+- Security Effect v0.8 Interaction Event integration: PASS
+
+Boundary evidence:
+- No Brand-specific rule/class/token semantics are implemented in InteractionEvent.cls or InteractionEventRuntimeModule.cls. Brand Interaction Effect consumes the generic native evidence surface and owns Brand decisions.
+
+See VALIDATION_TRANSCRIPT.txt for the direct executed suite.

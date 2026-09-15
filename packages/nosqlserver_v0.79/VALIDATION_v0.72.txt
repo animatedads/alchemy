@@ -1,0 +1,157 @@
+NoSQLServer v0.72 validation
+============================
+
+Date
+----
+20 August 2026
+
+Base
+----
+NoSQLServer v0.71 SHA-256:
+  8d5bf2fc42de185ed9c086dec0fde506921fc99b88c8aa625bd656661dc38874
+
+Runtime
+-------
+Open Object Rexx 5.3.0 r13196 Internal Test Version
+Build date 3 August 2026, 64 bit
+
+Defect reproduced
+-----------------
+Against untouched v0.71, this valid two-table INNER JOIN predicate:
+
+  ON l.order_id=r.order_id AND l.product=r.product
+
+returned:
+
+  NOTEXECUTED SQLPARSEERROR Unknown or ambiguous JOIN right column
+
+The specialised two-table path used the first '=' character as a structural
+split and treated the entire remaining expression as one right column name.
+The alias-aware inner-chain evaluator already parsed and executed the complete
+predicate correctly.
+
+v0.72 repair
+------------
+The SQL predicate parser is now authoritative for INNER JOIN ON semantics.
+
+  one plain column equality
+      -> existing specialised two-table path retained
+
+  general predicate with a safe equality connector
+      -> alias-aware hash candidate generation
+      -> complete ON predicate evaluated on each combined candidate row
+
+  general predicate without a safe equality connector
+      -> candidate-pair predicate evaluation
+
+Equality is therefore a join access-path optimisation, not a grammar
+restriction.  No provider identity or structured-source semantics participate
+in this decision.
+
+Feature flag:
+
+  INNER_JOIN_GENERAL_ON_PREDICATE
+
+Access paths:
+
+  INNER_HASH_CHAIN        safe equality connector used
+  INNER_PREDICATE_CHAIN   general predicate fallback
+
+Focused shipped regression
+---------------------------
+tests/v072_general_join_on_smoke.rex: PASS
+
+The regression proves:
+  compound equality ON                         PASS
+  equality + nested OR residual                PASS
+  top-level OR                                 PASS
+  non-equality column ON                       PASS
+  expression ON using UPPER                    PASS
+  hash connector remains an optimisation       PASS
+  no-connector predicate fallback              PASS
+  feature advertisement                        PASS
+
+Relevant compatibility gates
+----------------------------
+  v016 multi INNER JOIN / expressions          PASS
+  v059 scalar subquery in JOIN ON               PASS
+  v08 multi-join DISTINCT                       PASS
+  v010 LEFT JOIN / anti-join                    PASS
+  v065 NATURAL JOIN                             PASS
+  v068 external federated facade                PASS
+  v070 external metadata boundary               PASS
+  v071 external mutation boundary               PASS
+
+Broad regression surface
+------------------------
+  self-contained historical/current scripts    71/71 PASS
+
+Source-root storage/index/planner/concurrency regressions:
+  smoke.rex                                     PASS
+  sql_smoke.rex                                 PASS
+  v02 relational                                PASS
+  v03 index concurrency                         PASS
+  v04 index planner                             PASS
+  v05 join-map planner                          PASS
+  v06 projection/alias planner                  PASS
+  v07 cost/cross-join                           PASS
+  v051 concurrency hardening                    PASS
+
+Oracle / torture gates
+----------------------
+Claude torture seed-42:                         12/12 PASS
+Hell Corpus v1:                                 24/25 PASS
+                                                1 PARSE_ERROR
+                                                0 WRONG_RESULT
+                                                0 EXECUTION_ERROR
+Hell Corpus v2:                                 25/30 PASS
+                                                2 UNSUPPORTED
+                                                3 PARSE_ERROR
+                                                0 WRONG_RESULT
+                                                0 EXECUTION_ERROR
+Progressive SQL torture:                        72/72 PASS
+SQL-92 company smoke:                           PASS
+
+Compile
+-------
+Shipped .cls/.rex compile targets:              90
+rexxc failures:                                 0
+
+msqlshim v0.10 integration
+---------------------------
+msqlshim v0.10 was rebound to the v0.72 NoSQLServer.cls without shim source
+changes.
+
+  MySQLWireServer.cls rexxc                      PASS
+  text protocol smoke                            PASS
+  idle multiclient isolation                     PASS
+  raw COM_QUERY compound INNER JOIN ON           PASS
+
+The wire-level compound query returned exactly:
+
+  1 | A | A
+  3 | C | C
+
+for the same `id=id AND product=product` predicate shape.
+
+Scope boundary
+--------------
+v0.72 broadens INNER JOIN ON only.  LEFT/RIGHT/FULL JOIN retain their previous
+implementation surface.  No spatial predicate, structured-source semantic,
+Camera rule, Algorithm Relation rule, or provider-specific branch was added.
+
+Final candidate package audit
+-----------------------------
+A fresh extraction of the candidate ZIP verified:
+  manifest payload entries                       162/162 PASS
+  shipped .cls/.rex compile targets              90
+  rexxc failures                                 0
+  v072 general INNER JOIN ON                     PASS
+  v071 external mutation boundary                PASS
+  v070 external metadata boundary                PASS
+  v068 external federated facade                 PASS
+
+msqlshim v0.10 was then rebound to the freshly extracted NoSQLServer.cls and
+the raw COM_QUERY compound INNER JOIN regression passed with rows 1/A/A and
+3/C/C.  The tested NoSQLServer.cls is unchanged by the documentation/manifest
+rebuild that follows this audit.

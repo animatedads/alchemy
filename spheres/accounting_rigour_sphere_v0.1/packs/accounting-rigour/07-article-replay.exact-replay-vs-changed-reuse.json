@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "accounting-rigour.replay.exact-replay-vs-changed-reuse",
+  "version": "0.1",
+  "sphere": "accounting-rigour",
+  "title": "Distinguish exact replay from changed reuse of a completed transaction",
+  "summary": "Once an accounting event or transaction is accounted, re-invoking the identical request is exact replay and must return the original result (DUPLICATE). Reusing the same source identity with changed contents is a conflict (SOURCE_*_EVENT_CONFLICT) detected before settlement/accounting/tax policy dispatch, even after restart. The durable journal is the authority for what was completed.",
+  "why_this_is_not_a_language_rule": "Whether a call is duplicate or conflicting is decided by comparing durable request fingerprints with the already-recorded journal, not by source text. It needs the store, so it is an article.",
+  "evidence_note": "CHANGELOG v0.6/v0.7/v0.9 and persistence contract: durable tax/settlement replay returns DUPLICATE before policy dispatch and changed reuse becomes SOURCE_TAX_EVENT_CONFLICT / SOURCE_SETTLEMENT_EVENT_CONFLICT even after restart. Restart rebuilds sourceIndex so source replay/conflict resolution occurs before policy dispatch.",
+  "invariants": [
+    "Do not manufacture a completion: an ACK/DIRECT completion is recorded only when the durable journal has committed the post.",
+    "Re-invocation after restart is resolved against the journal, not re-executed blindly.",
+    "Recovery rejects sequence gaps, duplicate book creation, incompatible arithmetic profiles, unknown record types, journal replay failures, deterministic entry-ID mismatch and journal fingerprint mismatch."
+  ]
+}

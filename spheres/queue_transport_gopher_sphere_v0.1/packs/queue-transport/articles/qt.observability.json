@@ -1,0 +1,49 @@
+{
+  "kind": "article",
+  "id": "qt.observability",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Transport observability without secret disclosure",
+  "summary": "Queue Transport exposes endpoint/listener health and counters through NoSQL projection, including endpoint identity, host, port, principal, keyId, attempts, health outcomes and listener connection/rejection counters. Raw PSK material is deliberately absent.",
+  "authority": "project-authority",
+  "invariants": [
+    "keyId may be projected as metadata; keyHex/raw PSK must not be projected.",
+    "Observability should expose enough identity and outcome metadata to diagnose transport health without becoming a secret store.",
+    "Source-IP rejection has a dedicated listener counter in the runtime object; future projection changes should preserve that distinction rather than folding it invisibly into generic rejection."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueTransportNoSQL.cls",
+      "line_start": 28,
+      "line_end": 76,
+      "claim": "NoSQL adapter projects endpoint/listener metadata and counters."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueTransportNoSQL.cls",
+      "line_start": 78,
+      "line_end": 118,
+      "claim": "Endpoint row exposes keyId and health/attempt metadata but no keyHex field."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 703,
+      "line_end": 769,
+      "claim": "Listener runtime state includes ipRejectedCount and transport metadata."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/VALIDATION.txt",
+      "line_start": 90,
+      "line_end": 92,
+      "claim": "Transport NoSQL tests pass and raw transport key is not projected."
+    }
+  ]
+}

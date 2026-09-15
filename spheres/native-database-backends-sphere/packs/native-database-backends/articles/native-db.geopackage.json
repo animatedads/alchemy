@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "native-db.geopackage",
+  "version": "0.1",
+  "sphere": "native-database-backends",
+  "title": "GeoPackage/GIS: pure ooRexx remains the portable correctness route",
+  "summary": "The GeoPackage baseline is a pure-ooRexx direct reader and is therefore cross-platform and independent of external GIS/sqlite libraries. A future Foreign Runtime sqlite3/spatial accelerator may be a faster, higher-priority implementation of the same upper contract, but it does not replace the portable reader; the ooRexx implementation remains the dependency-free reference/fallback and correctness oracle.",
+  "authority": "project-architecture",
+  "invariants": [
+    "OOREXX_NATIVE is a first-class implementation kind, not a synonym for slow fallback.",
+    "The portable GeoPackage reader must remain usable without sqlite3, GDAL or platform-native GIS libraries.",
+    "Foreign Runtime acceleration is optional and separately qualified.",
+    "The accelerated implementation must publish capability differences rather than pretending exact parity.",
+    "The pure ooRexx path remains the correctness/reference route when acceleration is absent or ineligible."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/README.md",
+      "line_start": 33,
+      "line_end": 39,
+      "claim": "The GeoPackage pure-ooRexx direct reader is the portable native baseline; future Foreign Runtime acceleration is separate and does not replace it."
+    },
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/PLAN.md",
+      "line_start": 9,
+      "line_end": 10,
+      "claim": "The planned GeoPackage accelerator preserves GeoPackageOoRexxBackend as dependency-free reference/fallback and correctness oracle."
+    }
+  ]
+}

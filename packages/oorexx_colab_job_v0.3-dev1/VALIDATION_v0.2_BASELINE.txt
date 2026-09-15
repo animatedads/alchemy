@@ -1,0 +1,35 @@
+ooRexx Colab Job v0.2 validation — 2026-09-01
+
+Runtime:
+- Open Object Rexx 5.3.0 r13196 Internal Test Version
+- supplied Debian package SHA-256 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Dependency baselines exercised:
+- Job-to-Node Allocator v0.6 ZIP SHA-256 58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead
+- Secret Broker v0.2 ZIP SHA-256 c063a8e863547e8d5af427daee9b887590fdad76a65bc042b8f853acfd51e623
+- Alchemy Objects v0.8 ZIP SHA-256 7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073
+- Crypto v0.8.3 ZIP SHA-256 5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49
+
+PASS Colab Job core lifecycle/resource citizenship
+PASS allocator adapter hard-resource mapping
+PASS Colab Job Secret Broker reference seam / HF_TOKEN redaction
+PASS Secret Broker v0.2 core
+PASS Secret Broker mapped-environment provider
+PASS Secret Broker Alchemy adoption
+
+Secret-specific acceptance proves:
+- obvious secret-shaped environment names including HF_TOKEN are rejected as literal job environment values before allocation;
+- secret-bound jobs require a broker implementing acquire(reference);
+- unavailable references allocate no Colab VM;
+- local materialisation is under a 0700 private directory with a 0600 value file;
+- CLI argv contains only the temporary filename, not the secret value;
+- generated Python driver contains environment-variable name + ordinal secret path but neither secret value nor Secret Broker reference;
+- remote secret directory is 0700 and driver chmods each staged secret file 0600 before reading it;
+- driver unlinks each secret immediately after loading it into os.environ;
+- runner redacts known secret values from returned stdout/stderr, job evidence and the exported Colab log;
+- Secret Broker leases retire on finalisation;
+- a retained Colab session still receives explicit secret-directory cleanup.
+
+The current googlecolab/google-colab-cli main source was inspected at repository revision a834bfabd711afd457f96921007fec66cb4629de. Its --env implementation builds values into executed Python source and records executed source/output in history. Colab Job v0.2 therefore deliberately does not use --env for secret bindings.
+
+Qualification is intentionally offline. Fake command execution is used, so no Google Colab VM, accelerator allocation or user credential was consumed. A live acceptance remains a separate explicitly authorised test.

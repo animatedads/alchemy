@@ -1,0 +1,23 @@
+{
+  "id": "foreign-runtime.device-abi",
+  "title": "Device execution context and ABI profiles",
+  "section": "integration",
+  "summary": "Tensor descriptor ABI v2 adds execution provider, stream/fence handles, sync policy and affinity. This describes coordination, not permission to dereference. ABI-qualified bridge metadata is currently proven only for linux-x86_64-le-lp64.",
+  "invariants": [
+    "Do not copy x86-64 struct layouts/constants to AArch64/Windows without separate qualification.",
+    "Plain C char signedness is intentionally unspecified; use i8/u8/signed char/unsigned char.",
+    "Host-native scalar aliases do not make containing struct layouts portable."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "foreign-runtime",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6.zip",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "member": "oorexx_foreign_runtime_v0.22.6/SCHEMA.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

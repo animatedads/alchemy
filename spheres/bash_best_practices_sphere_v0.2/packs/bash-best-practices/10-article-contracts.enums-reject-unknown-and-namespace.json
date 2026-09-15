@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.contracts.enums-reject-unknown-and-namespace",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Model enums as exact allowed-set matches that reject anything else, and namespace your helper functions",
+  "summary": "When a parameter must be one of a few values, encode the allowed set and reject the rest, rather than letting an unlisted string fall through to a default that hides the mistake. Keep related functions discoverable with a shared prefix and a clear public/private boundary, and declare locals up front.",
+  "technique": "A case that matches the exact allowed words and otherwise returns an error; a small canonicalizing function that maps synonyms and returns a failure code for anything it does not know; function names prefixed by a domain (public) or with a leading underscore (private), e.g. a plugin facade with the same entry points in every file.",
+  "evidence_note": "bin/queue-vcs-probe:41-50 normal_type() returns a canonical name or `return 1`; the caller rejects an empty canonical as unknown (lines 83-84). It also uses ${TYPE^^} style normalization before matching. assets.d/* plugins all expose the shared queue_asset_facilities/hints/check_* facade; private helpers are _queue_asset_*.",
+  "invariants": [
+    "Model a small closed set as an explicit match that returns an error for everything outside it.",
+    "Do not let an unknown enum silently become a default; surface it as unknown.",
+    "Namespace private helpers with a domain prefix and a leading underscore to signal intent; keep a stable public facade.",
+    "Always declare function-local variables with local so they cannot leak into the caller's namespace."
+  ]
+}

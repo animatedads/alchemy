@@ -1,0 +1,124 @@
+{
+  "kind": "corpus",
+  "id": "queue-transport-continuity",
+  "sphere": "queue-transport",
+  "title": "Queue Transport durable reasoning records",
+  "records": [
+    {
+      "id": "reason.ip-before-hello",
+      "trigger": "Designing or modifying listener admission",
+      "rule": "Keep exact source-IP rejection before HELLO parsing and before cryptographic work; an unknown address should reveal as little protocol surface as practical.",
+      "related": [
+        "qt.admission-order"
+      ]
+    },
+    {
+      "id": "reason.ip-not-identity",
+      "trigger": "Considering IP whitelisting sufficient authentication",
+      "rule": "Reject that reasoning. IP is an admission fact only; require the PSK-authenticated peer handshake and later receiver authority.",
+      "related": [
+        "qt.peer-authentication"
+      ]
+    },
+    {
+      "id": "reason.dual-layer",
+      "trigger": "Deploying between two OCI nodes",
+      "rule": "Apply both OCI /32 network filtering and Queue Fabric exact-IP peer binding. Neither replaces the other.",
+      "related": [
+        "qt.oci-two-node"
+      ]
+    },
+    {
+      "id": "reason.no-local-encryption-tax",
+      "trigger": "Considering encryption of all internal queue operations",
+      "rule": "Keep confidentiality at the remote socket boundary unless another boundary independently requires it; in-process queue semantics are unchanged.",
+      "related": [
+        "qt.boundary"
+      ]
+    },
+    {
+      "id": "reason.no-score-substitution",
+      "trigger": "Allocator considers node lacking secure transport",
+      "rule": "When the job requires secure remote dispatch, absence of QUEUE_SECURE_TRANSPORT_V2 is hard ineligibility; capacity/fitness/cost cannot compensate.",
+      "related": [
+        "qt.allocator-seam"
+      ]
+    },
+    {
+      "id": "reason.retry-vs-replay",
+      "trigger": "A delivery is retried on a fresh legitimate connection",
+      "rule": "Cryptographic session replay separation and durable transferId idempotence solve different problems; retain both.",
+      "related": [
+        "qt.replay-idempotence"
+      ]
+    },
+    {
+      "id": "reason.multi-command-warning",
+      "trigger": "Optimising by reusing one authenticated TCP connection for many commands",
+      "rule": "Do not reuse the current single derived nonce repeatedly. Design a sequence/nonce construction and version/qualify the protocol first.",
+      "related": [
+        "qt.connection-lifecycle",
+        "qt.session-crypto"
+      ]
+    },
+    {
+      "id": "reason.secret-reference",
+      "trigger": "Moving endpoint configuration into production wiring",
+      "rule": "Resolve PSK via Secret Broker reference at the trusted runtime boundary; do not put raw keyHex in allocator, NoSQL, logs, command lines or durable definitions.",
+      "related": [
+        "qt.secret-authority"
+      ]
+    },
+    {
+      "id": "reason.no-forward-secrecy-claim",
+      "trigger": "Describing security properties to operators or reviewers",
+      "rule": "State confidentiality/integrity/mutual PSK authentication/transcript binding, but explicitly state no forward secrecy for dev5.",
+      "related": [
+        "qt.forward-secrecy"
+      ]
+    },
+    {
+      "id": "reason.version-separation",
+      "trigger": "Changing socket protocol",
+      "rule": "Treat wire identity and durable persistence identity as separate versioning axes; do not rewrite durable records merely because queue.transport advances.",
+      "related": [
+        "qt.version-boundary"
+      ]
+    },
+    {
+      "id": "reason.peer-reregister",
+      "trigger": "Changing a trusted peer address",
+      "rule": "Rebuild aggregate pre-auth source set from current peer table so stale addresses lose admission immediately.",
+      "related": [
+        "qt.ip-policy"
+      ]
+    },
+    {
+      "id": "reason.observation-without-secrets",
+      "trigger": "Adding transport observability",
+      "rule": "Project identity, counters and health evidence, never raw secret material; keyId is safe metadata but not authority.",
+      "related": [
+        "qt.observability",
+        "qt.secret-authority"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 3,
+      "line_end": 62,
+      "claim": "Durable reasoning records summarize explicit transport doctrine."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/VALIDATION.txt",
+      "line_start": 51,
+      "line_end": 145,
+      "claim": "Qualification and boundary record grounds failure, allocator and secret rules."
+    }
+  ]
+}

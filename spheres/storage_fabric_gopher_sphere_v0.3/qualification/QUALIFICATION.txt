@@ -1,0 +1,40 @@
+ooRexx Storage Fabric LLM Gopher sphere v0.3 qualification
+Date: 2026-09-06
+
+Implementation continuity baseline:
+  oorexx_storage_fabric_v0.1-dev7.zip
+  SHA-256 5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f
+  API storage.fabric/0.1 plus unchanged streaming/Drive/API Client bridge seams.
+
+Implementation runtime qualification baseline:
+  Open Object Rexx 5.3.0 r13196, 64-bit, build date 2026-08-03
+  supplied package oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20260905-145845).deb
+  SHA-256 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Sphere authoring/qualification tool:
+  LLM Gopher v0.19-dev1
+
+v0.3 authority additions:
+  - stable nodeId is separate from provider and endpoint observation;
+  - block-device presence is separate from explicit WORKSPACE/DURABLE/BOTH admission;
+  - unknown/unqualified capacity is never invented into placement evidence;
+  - StorageFleetPlacementAdvisor emits a per-node evidence matrix and does not select the Job-to-Node winner;
+  - current ED209 test identities are recorded: ed209a/ed209b Oracle, ed209c Microsoft Azure, ed209d AWS;
+  - ed209c Azure trial remains disposable working space and cannot satisfy durable-replica safety;
+  - separate Oracle nodes/capacity domains do not aggregate into one ordinary workspace.
+
+Required qualification:
+  - canonical Sphere Editor validation with zero problems;
+  - clean lint;
+  - 20 canonical objects including node-inventory article;
+  - exact packaged sphere resolves and activates as explicit override;
+  - searches recover node/device-admission/ED209 doctrine plus inherited TVFS, lifecycle, locality, Drive and transfer doctrine;
+  - packaged sphere tests pass.
+
+Executable baseline qualification:
+  - rexxc all 34 source/test/example files: PASS;
+  - tests/run.sh with API Client v0.3 bridge: 25 behavioural tests PASS;
+  - final package SHA256SUMS verification: PASS;
+  - final packaged artifact re-extraction and full test rerun: PASS.
+
+The sphere is documentation/continuity authority only. Executable behavior remains qualified by the separate Storage Fabric dev7 package, and final node eligibility/ranking/lease authority remains with Job-to-Node Allocation.

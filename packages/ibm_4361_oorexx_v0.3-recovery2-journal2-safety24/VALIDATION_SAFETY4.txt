@@ -1,0 +1,53 @@
+# IBM 4361 safety4 validation
+
+Runtime:
+- ooRexx 5.3.0 r13196 debug build
+
+Focused source regressions:
+- PASS test_cpu_sra
+- PASS test_executor_live_method_seam
+- PASS test_cpu_sla
+- PASS test_cpu_tch
+
+Full package validation:
+- COMPILE PASS 70 sources
+- RUNTIME PASS 31 tests
+- test_real_media: SKIP unless explicit MVTRES path is supplied
+- test_real_mvt_ipl: SKIP unless explicit MVTRES path is supplied
+
+Real-MVT discovery replay:
+- old frontier reproduced exactly:
+    IA=FF717E
+    ICOUNT=511635
+    INST=8A3000021B43
+    OP=8A
+    PSW=0004000060FF717E
+    R3=000001D8
+
+Journal/live object-scope retry:
+- FIRST_TRY ST=UNSUPPORTED, no IA/IC/R3 movement
+- REWOUND IA=FF717E IC=511635 R3=000001D8 HASOP8A=1
+- RETRY ST=OK IA=FF7182 IC=511636 R3=00000076 CC=2
+- guest then ran 128 more instructions before next unsupported boundary
+
+Permanent-source real-MVT replay:
+- old FF717E boundary is passed
+- next stop:
+    IA=FF71B0
+    ICOUNT=511763
+    INST=4E10D677F332
+    OP=4E
+    ST=UNSUPPORTED
+
+Probe media equivalence:
+- PASS logical CCKD track equivalence
+- tracks_checked=3252
+- null_tracks=4424
+- logical_sha256=ce0c49bf558074fb9860f680aa9b6284b4fd5c59634d405f988ddc37ea69ca65
+- original MVTRES.350 sha256=095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49
+
+SSC:
+- REQUIRED baseline from safety3 handover: oorexx_semantic_source_control_v0.2.2
+- exact v0.2.2 package not present in supplied continuation files
+- v0.2.3 was present but was NOT substituted
+- v0.2.2 qualification remains PENDING

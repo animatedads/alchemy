@@ -1,0 +1,22 @@
+{
+  "kind": "article",
+  "id": "tn5250-standards.start",
+  "version": "0.1",
+  "sphere": "tn5250-standards",
+  "title": "Start here: source hierarchy and reading workflow",
+  "summary": "Use primary protocol and IBM sources before implementation folklore. RFC 1205 defines the base 5250 Telnet interface and explicitly delegates the workstation data stream to IBM SA21-9247. RFC 4777 supplies current published TN5250E/iSeries Telnet enhancements and obsoletes RFC 2877. IBM i documentation is operational authority for current IBM i server/client behaviour. Historical SA21-9247 editions remain the principal data-stream reference, with RFC 1205 section 5 carrying corrections/enhancements to SA21-9247-6.",
+  "procedure": [
+    "For Telnet framing/negotiation, start with RFC 1205.",
+    "For TN5250E device naming, environment negotiation, auto-signon, password substitution/encryption and printer extensions, start with RFC 4777; use RFC 2877 only for history/delta archaeology.",
+    "For 5250 commands/orders/fields/AID/error/help semantics, navigate SA21-9247-6 and then check RFC 1205 section 5 for corrections/enhancements.",
+    "For current IBM i operational behaviour, verify against IBM Documentation for the applicable IBM i release.",
+    "Keep printed/manual page numbers distinct from physical PDF pages; use Gopher reference locate/read/move rather than guessing offsets."
+  ],
+  "invariants": [
+    "A link is a locator, not evidence that a claimed behaviour exists; open and read the bounded source.",
+    "RFC 2877 is obsolete and must not silently override RFC 4777.",
+    "RFC 1205 and RFC 4777 do not replace the IBM 5250 data-stream manual.",
+    "Historical manual wording and current IBM i behaviour are separate authority layers."
+  ],
+  "authority": "project-reference-doctrine grounded in RFC Editor, IBM publication metadata, and IBM Documentation"
+}

@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "ac.inbox",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Inbox discovery is idempotent and history-aware",
+  "summary": "AlchemyGitInbox owns the question 'what is pending?'. It finds compatible main-inbox and submission-branch ready markers, ignores ready markers inherited from accepted main, suppresses already-receipted submissions, deduplicates identical same-id package trees, and turns conflicting same-id trees into an explicit conflict candidate.",
+  "authority": "project-authority",
+  "invariants": [
+    "The resident service must consume inbox candidates; it must not reimplement Git history scanning.",
+    "A branch ready marker counts only when added after the branch's merge-base with accepted main.",
+    "A terminal receipt suppresses reprocessing.",
+    "Identical same-id package trees may deduplicate; different package trees under one submission id are a conflict."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_inbox_v0.3/src/AlchemyInbox.cls",
+      "line_start": 1,
+      "line_end": 12,
+      "claim": "Inbox purpose and inherited-marker doctrine."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_inbox_v0.3/src/AlchemyInbox.cls",
+      "line_start": 63,
+      "line_end": 137,
+      "claim": "Pending scan over accepted main and remote branches."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_inbox_v0.3/src/AlchemyInbox.cls",
+      "line_start": 138,
+      "line_end": 206,
+      "claim": "Candidate merge/dedupe/conflict and receipt suppression."
+    }
+  ]
+}

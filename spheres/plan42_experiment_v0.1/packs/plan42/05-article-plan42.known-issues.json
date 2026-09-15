@@ -1,0 +1,11 @@
+{
+  "kind":"article","id":"plan42.known-issues","version":"0.1","sphere":"plan42","title":"Plan42 known issues and repair guidance","authority":"project framework","summary":"Plan42 guidance and executable evidence for plan42.known-issues",
+  "issues":[
+    {"id":"BUG-001","area":"ooRexx runner","status":"likely-resolved-needs-live-retest","symptom":"generated entry routine was previously called as MAIN","evidence":"docs/KNOWN_ISSUES.md"},
+    {"id":"BUG-002","area":"Bash runner","status":"open","symptom":"generated shebang was treated as a command","repair":"invoke bash with the generated script path","evidence":"docs/KNOWN_ISSUES.md"},
+    {"id":"BUG-003","area":"Python emitter","status":"fixed","symptom":"call expression emitted a placeholder","repair":"emit the routine call expression","evidence":"docs/KNOWN_ISSUES.md"},
+    {"id":"BUG-004","area":"Python preferred helpers","status":"needs-verification","symptom":"generated helper call may lack injected definition","repair":"inject only referenced preferred helpers into the preamble","evidence":"docs/KNOWN_ISSUES.md"},
+    {"id":"BUG-005","area":"Python emitter","status":"fixed","symptom":"FORMAT/DICT/LIST syntax generation failures","evidence":"docs/KNOWN_ISSUES.md"}
+  ],
+  "rule":"An issue is not closed by a static claim; close it with a reproducible target-runtime test and retained report."
+}

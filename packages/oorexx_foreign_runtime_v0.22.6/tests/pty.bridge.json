@@ -1,0 +1,39 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": {
+    "provider": "native",
+    "names": ["libc.so.6"],
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "types": {
+    "pollfd": {
+      "kind": "struct",
+      "size": 8,
+      "alignment": 4,
+      "fields": [
+        {"name":"fd", "type":"i32", "offset":0},
+        {"name":"events", "type":"i16", "offset":4},
+        {"name":"revents", "type":"i16", "offset":6}
+      ]
+    }
+  },
+  "constants": {
+    "POLLIN": {"type":"i16", "value":1}
+  },
+  "functions": {
+    "openpty": {
+      "symbol": "openpty",
+      "return": "i32",
+      "errno": true,
+      "args": [
+        {"name":"master", "type":"pointer", "direction":"out", "size":4, "resultType":"handle", "resource":"POSIX_FD", "carrier":"i32", "ownership":"owned", "destructor":"close", "invalid":-1, "outputsOnReturn":"zero"},
+        {"name":"slave", "type":"pointer", "direction":"out", "size":4, "resultType":"handle", "resource":"POSIX_FD", "carrier":"i32", "ownership":"owned", "destructor":"close", "invalid":-1, "outputsOnReturn":"zero"},
+        "pointer", "pointer", "pointer"
+      ]
+    },
+    "write": {"return":"i64", "errno":true, "args":["i32","bytes","u64"]},
+    "read": {"return":"i64", "errno":true, "args":["i32","pointer","u64"]},
+    "poll": {"return":"i32", "errno":true, "args":["pointer","u64","i32"]}
+  }
+}

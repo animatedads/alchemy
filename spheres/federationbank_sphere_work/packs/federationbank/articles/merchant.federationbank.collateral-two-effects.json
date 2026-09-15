@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "merchant.federationbank.collateral-two-effects",
+  "version": "0.1",
+  "sphere": "federationbank",
+  "title": "Derivative close-out and Core collateral realisation are two effects",
+  "summary": "Merchant close-out authority and Core collateral realisation authority are deliberately separate. A Merchant collateral candidate is not usable collateral until Core returns an exact control receipt; later realisation/cash movement must cross the arm’s-length Core perimeter.",
+  "authority": "federationbank-project-doctrine",
+  "invariants": [
+    "Merchant collateral candidate != usable collateral.",
+    "Usable collateral requires a Core-issued control receipt matching agreement, asset, owner/provider, currency and controlled amount.",
+    "Merchant-side haircuts apply only after enforceable Core control exists.",
+    "Merchant default/close-out may create a settlement obligation but cannot directly post the Retail/Core Ledger.",
+    "Core independently decides asset existence, ownership, validity/enforceability, priority and controlled amount."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "federationbank_merchant_bank_v0.2(1).zip",
+      "sha256": "4c07643588f22a71a817a73de6e06960805c67700698dc73aa0bff8dbec8ed41",
+      "member": "federationbank_merchant_bank_v0.2/README.md",
+      "line_start": 81,
+      "line_end": 99,
+      "claim": "Usable collateral requires exact Core control evidence; close-out and Core settlement remain separate."
+    }
+  ]
+}

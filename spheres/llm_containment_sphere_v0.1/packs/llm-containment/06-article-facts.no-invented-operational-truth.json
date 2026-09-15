@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "llm-containment.facts.no-invented-operational-truth",
+  "version": "0.1",
+  "sphere": "llm-containment",
+  "title": "A helper never invents an operational fact, entitlement, or capability",
+  "summary": "An LLM explanation boundary explains an already-derived assessment; it does not create, waive or alter an entitlement, and it does not guess an outcome-relevant fact that is unresolved. When a fact that matters is unknown, the honest result is REVIEW_REQUIRED, not a confident answer. When a credential is absent or rejected, the feature fails closed instead of silently substituting another model or route.",
+  "evidence_note": "FlyLo legal-effect model: the application derives operational facts such as FLIGHT_CANCELLED and EXTRAORDINARY_CIRCUMSTANCES; if that is unresolved the compensation assessment becomes REVIEW_REQUIRED 'rather than allowing an LLM to guess'. Grok 'cannot create, waive, or alter an entitlement'. GROK_INTEGRATION: production must fail closed if the credential is absent or rejected and 'must not substitute another model silently'.",
+  "invariants": [
+    "The AI layer is an explanation boundary, not a transaction engine.",
+    "Rebooking, cancellation, refund and compensation execution remain separate authorised transactional abilities.",
+    "No known outcome-relevant state becomes a guess; an unresolved gate becomes REVIEW_REQUIRED.",
+    "Credential absent or rejected -> fail closed; no silent substitute model unless an explicitly published policy authorises it.",
+    "Do not present a read-only or assessment result as if it had the authority to mutate an entitlement."
+  ]
+}

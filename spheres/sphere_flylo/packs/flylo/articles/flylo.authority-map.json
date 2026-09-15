@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "flylo.authority-map",
+  "version": "0.2",
+  "sphere": "flylo",
+  "title": "FlyLo authority map",
+  "summary": "FlyLo composes separate airline authorities rather than allowing UI or model prose to transact. Journey/Inventory owns route, fare and seat facts; Booking owns booking and ancillary servicing; Operations owns operational status; Payment owns authorisation/capture; Accounting consumes normalized capture evidence; Wire UI projects server-owned state; Grok handles structured language only.",
+  "authorities": {
+    "Journey/Inventory": "authoritative route construction, fare revalidation and seat capacity/commitment",
+    "Booking": "booking identity, confirmation, passenger identities and ancillary servicing",
+    "Operations": "flight operational status and disruption facts",
+    "Payment": "authorisation and explicit capture evidence",
+    "Accounting": "independent accounting.event processing and durable book; never invents booking/payment facts",
+    "Wire UI": "authoritative presentation/workspace revisions and semantic action validation; not business authority",
+    "Grok": "strict structured interpretation/response planning; proposal/conversation only, never transaction authority",
+    "AS400 boundary": "production host boundary remains explicit; development fixtures are not silently relabelled as production"
+  },
+  "provenance": [
+    {
+      "artifact": "flylo_v0.4.11.zip",
+      "sha256": "21c2076fe74616ea72de6c13430d7f7b55d249113a2c2549d7b7955f43511160",
+      "member": "flylo_v0.4.11/README.md",
+      "line_start": 34,
+      "line_end": 90,
+      "claim": "Accounting, booking, Wire UI and Grok authority boundaries."
+    }
+  ]
+}

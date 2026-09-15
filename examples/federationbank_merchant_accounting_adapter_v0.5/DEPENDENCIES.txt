@@ -1,0 +1,28 @@
+Accounting Core v0.7
+- accounting.core/0.1
+- accounting.posting/0.2
+- accounting.event/0.1
+- accounting.transaction/0.1
+- accounting.store/0.1
+- accounting.settlement/0.1
+- accounting.settlement.request/0.1
+- accounting.settlement.determination/0.1
+- arithmetic profile accounting.integer-minor-unit.numeric-digits-50/0.1
+- ZIP SHA-256 95b694d76e388613cafed39f752efe32ff8ce5d46401766aa2d63b9c147a5c76
+
+FederationBank Merchant Bank v0.15
+- required by federationbank.merchant.accounting.projection/0.2
+- sealed ZIP SHA-256 dc8df7104d7cc45ebb97d79f99cc221444042da667d73b17c69567e7156aeaff
+
+oorexx_journal_pointed_state_v0.1
+- transitive Merchant Bank runtime dependency
+- ZIP SHA-256 8466bc2309213f3acc2de2afb6b2596123e446d779ca90c319aed676544c51d8
+
+Consolidated provenance
+- oorexxapis(20260828-192610).zip SHA-256 5885f1906dc5ae7307e6fc7d557b88d1770b0c401f5a62063b999834222d5d66
+- the roll-up's Merchant Bank v0.15 and Accounting Adapter v0.4 are byte-identical to the separately sealed artifacts
+- the roll-up contains Merchant Risk Service v0.4; this package is qualified with the separately sealed Merchant Risk Service v0.5 and does not treat the stale roll-up copy as a superseding service baseline
+
+The adapter owns an independent FEDERATIONBANK_MERCHANT_BANK AccountingBook. Merchant contracts, valuation, lifecycle, risk, settlement obligations, settlement instructions, external settlement observations and contractual settlement/discharge state remain Merchant-domain authority. Accounting Core is posting/event/persistence and optional settlement-determination infrastructure only.
+
+Qualified with ooRexx 5.3.0 r13196 debug package SHA-256 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae.

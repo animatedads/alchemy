@@ -1,0 +1,273 @@
+=== STRUCTURED RELATION V0.8 ===
+compile smoke
+XML NATIVE MODEL SMOKE: OK
+XML NATIVE STRUCTURE PRESERVATION SMOKE: OK
+XML INFORMATION PRESERVATION SMOKE: OK
+RICH PROJECTION FACT SMOKE: OK
+XML NATIVE VALIDATION SMOKE: OK
+XML NATIVE TRANSFORM SMOKE: OK
+XML NATIVE TRANSFORM SECURITY SMOKE: OK
+EDIFACT NATIVE MODEL SMOKE: OK
+EDIFACT REPETITION PRESERVATION SMOKE: OK
+EDIFACT ENVELOPE VALIDATION SMOKE: OK
+EDIFACT INFORMATION PRESERVATION SMOKE: OK
+EDIFACT DECIMAL LEXICAL SMOKE: OK
+X12 COMPILE SMOKE: OK
+X12 ADAPTER COMPILE SMOKE: OK
+X12 NATIVE MODEL SMOKE: OK
+X12 REPETITION PRESERVATION SMOKE: OK
+X12 ENVELOPE VALIDATION SMOKE: OK
+X12 INFORMATION PRESERVATION SMOKE: OK
+CROSS FORMAT BUSINESS FACT SMOKE: OK
+GIT COMPILE SMOKE: OK
+GIT NATIVE MODEL SMOKE: OK
+CODE SEMANTIC MODEL SMOKE: OK
+CODE SEMANTIC RULES SMOKE: OK
+CODE VALUE FLOW COMPILE SMOKE: OK
+CODE VALUE FLOW SMOKE: OK
+CODE OWNERSHIP FLOW SMOKE: OK
+GITHUB BITCOIN CORPUS SMOKE: OK
+REMOTE BLOB IDENTITY SMOKE START
+REMOTE BLOB IDENTITY SMOKE: OK
+GITHUB BITCOIN SEMANTIC SMOKE: OK
+GITHUB BITCOIN VALUE FLOW SMOKE: OK
+CODE EVIDENCE RULE SMOKE: OK
+NOSQLSERVER_ROOT not set; skipping NoSQLServer v0.71 federation smokes
+=== LEGAL EFFECT V0.7 ===
+== core ==
+LEGAL EFFECT V0.7 CORE START
+  assertions=20
+LEGAL EFFECT V0.7 CORE: OK
+== temporal-jurisdiction ==
+LEGAL EFFECT V0.7 TEMPORAL/JURISDICTION START
+  assertions=3
+LEGAL EFFECT V0.7 TEMPORAL/JURISDICTION: OK
+== modification-effects ==
+LEGAL EFFECT V0.7 MODIFICATION EFFECTS START
+  assertions=38
+LEGAL EFFECT V0.7 MODIFICATION EFFECTS: OK
+== rule-sealing ==
+LEGAL EFFECT V0.7 RULE SEALING START
+  assertions=17
+LEGAL EFFECT V0.7 RULE SEALING: OK
+== semantic-identity ==
+LEGAL EFFECT V0.7 SEMANTIC IDENTITY START
+  assertions=6
+LEGAL EFFECT V0.7 SEMANTIC IDENTITY: OK
+== authority-conflicts ==
+LEGAL EFFECT V0.7 AUTHORITY / CONFLICT START
+  assertions=26
+LEGAL EFFECT V0.7 AUTHORITY / CONFLICT: OK
+== conflict-of-laws ==
+LEGAL EFFECT V0.7 CONFLICT OF LAWS START
+  assertions=8
+LEGAL EFFECT V0.7 CONFLICT OF LAWS: OK
+== compiler-boundary ==
+LEGAL EFFECT V0.7 COMPILER BOUNDARY START
+  assertions=29
+LEGAL EFFECT V0.7 COMPILER BOUNDARY: OK
+== compiler-semantic-kinds ==
+LEGAL EFFECT V0.7 COMPILER SEMANTIC KINDS START
+  assertions=12
+LEGAL EFFECT V0.7 COMPILER SEMANTIC KINDS: OK
+== source-verification ==
+LEGAL EFFECT V0.7 SOURCE VERIFICATION START
+LEGAL EFFECT V0.7 SOURCE VERIFICATION: OK assertions=22
+== structured-relation ==
+LEGAL EFFECT V0.7 STRUCTURED RELATION BRIDGE START
+LEGAL EFFECT V0.7 STRUCTURED RELATION BRIDGE: OK
+== structured-source-verification ==
+LEGAL EFFECT V0.7 STRUCTURED SOURCE VERIFICATION START
+LEGAL EFFECT V0.7 STRUCTURED SOURCE VERIFICATION: OK assertions=25
+== hardworld ==
+LEGAL EFFECT V0.7 HARDWORLD BRIDGE START
+LEGAL EFFECT V0.7 HARDWORLD BRIDGE: OK
+== runtime-registry ==
+LEGAL EFFECT V0.7 RUNTIME REGISTRY BRIDGE START
+  old=DEMO-LEGAL-V1 new=DEMO-LEGAL-V2
+LEGAL EFFECT V0.7 RUNTIME REGISTRY BRIDGE: OK
+== runtime-registry-v08-bundle ==
+LEGAL EFFECT V0.7 RUNTIME REGISTRY V0.8 BUNDLE START
+  bundle_units=4 lines=5453 local_requires=3
+  runtime_generation=g000000001 legal_generation=DEMO-LEGAL-V1
+LEGAL EFFECT V0.7 RUNTIME REGISTRY V0.8 BUNDLE: OK
+== runtime-evidence-chain ==
+LEGAL EFFECT V0.7 RUNTIME EVIDENCE CHAIN START
+  analysis_generation=g000000001
+  analysis_artifact=structured-semantic:legal-input:v0.8
+  legal_generation=g000000002
+  legal_artifact=legal:code-evidence:v0.7
+  legal_semantic=LEGAL-EFFECT-SEMANTIC/1GENERATION_ID:18:DE...
+  source_blob=0796bbeb3271a210ed7ed5d85a82fc76939db61a
+  status=REVIEW_REQUIRED
+LEGAL EFFECT V0.7 RUNTIME EVIDENCE CHAIN: OK
+== hardworld-v018-promotion-compat ==
+LEGAL EFFECT V0.7 -> HARDWORLD V0.18 PROMOTION COMPAT START
+  legal_api=legal.effect/0.7
+  adapter_authority=LEGAL_EFFECT/0.5/COMPILED-G@c7c969ce860495d5f585faa2dbe9ada7a1ae823790036c863eae015d7ae719c3+9ad01abdcb63c404530c1885569586885b918e40e08ed40760f8657f723e49f8+cert:6bf132c5d67416c951c194cc1a0aa1ef9132e92dbdb373f8f264ad7819169c41+verified:8f73f07db6344e103284d475c17d79828fdaf7bda5ed7144ff20d5f2298a0cd5
+  disposition=BLOCKED
+LEGAL EFFECT V0.7 -> HARDWORLD V0.18 PROMOTION COMPAT: OK
+== food-delivery-demo ==
+LEGAL EFFECT V0.7 FOOD DELIVERY SYNTHETIC DEMO
+
+Los Angeles scheduling change: REVIEW_REQUIRED newly-applicable=1
+Sydney rate change (event 2026-08-18): CONDITIONAL
+London scheduling change: REVIEW_REQUIRED newly-applicable=1
+Contract rate change: BLOCKED dispositions=1
+
+Business facts remain business facts: recruitment burden=15%, new-driver productivity=80% for 30 days.
+Legal Effect constrains the feasible action space; it does not choose the business optimum.
+== framework-snapshot-demo ==
+LEGAL EFFECT V0.7 FRAMEWORK SNAPSHOT SYNTHETIC DEMO
+
+Sydney 2026-08-16: material=BASE result=ADMISSIBLE
+Sydney 2026-08-18: material=ORDER_2026 result=CONDITIONAL
+  lineage effects=1
+
+The contract is loaded but is not yet applicable to this transaction:
+  result=CONDITIONAL
+After explicit contract binding:
+  result=BLOCKED dispositions=2
+
+Same sealed generation; different legal framework selected by place, time and source relations.
+== authority-conflict-demo ==
+LEGAL EFFECT V0.7 AUTHORITY / CONFLICT SYNTHETIC DEMO
+
+Both norms apply, but no authority relation is loaded:
+  status=REVIEW_REQUIRED unresolved_conflicts=1 effective_dispositions=0
+
+After adding an explicit evidence-bearing authority relation:
+  status=BLOCKED disposition=PROHIBITED
+  winner=ACT-12 loser=CONTRACT-7
+  authority=ACT-NON-DEROGATION
+== compiler-boundary-demo ==
+LEGAL EFFECT V0.7 COMPILER BOUNDARY SYNTHETIC DEMO
+
+LLM proposal -> verifier -> compiler:
+  source_verified= VERIFIED provision_verified= VERIFIED
+  compiled= 1 sealed= 1 publication_eligible= 1
+  verification_snapshots= 2
+  producer= LLM
+
+Deterministic evaluation after compilation:
+  status= CONDITIONAL dispositions= 1
+
+Caller asserted VERIFIED but supplied no verifier evidence:
+  compiled= 0 generation= The NIL object
+  diagnostic= SOURCE_VERIFICATION_EVIDENCE_MISSING
+
+The source verifier proves bytes. The compiler admits semantics. Runtime proves what executed.
+LEGAL EFFECT V0.7 ALL REQUESTED TESTS: OK
+=== RUNTIME REGISTRY V0.8 ===
+RUNTIME REGISTRY V0.1 ACCEPTANCE START
+  assertions=77
+  test_active=2.0.0
+  live_active=1.0.0
+  prod_capability_active=1.0.0
+  prod_rules_active=2.0.0
+RUNTIME REGISTRY V0.1 ACCEPTANCE: OK
+RUNTIME REGISTRY V0.1 CONCURRENCY START
+  held_v1_leases=8
+  post_publish_v1=0
+  post_publish_v2=4000
+  errors=0
+RUNTIME REGISTRY V0.1 CONCURRENCY: OK
+RUNTIME REGISTRY V0.2 DEPENDENCIES START
+  pinned_dependency_generation=g000000001
+  rules1_state=DRAINING leases=1
+  rules2_state=ACTIVE leases=0
+RUNTIME REGISTRY V0.2 DEPENDENCIES: OK
+RUNTIME REGISTRY V0.3 BUNDLE BUILDER START
+  bundle1_lines=20
+  bundle2_lines=20
+  old_state=RETIRED
+RUNTIME REGISTRY V0.3 BUNDLE BUILDER: OK
+ABILITY PROFILE LOADER V0.1 START
+  profile_identity=client-acme/customer-bot@1
+  runtime_bindings=2
+  abilities=2
+ABILITY PROFILE LOADER V0.1: OK
+ABILITY REGISTRY V0.1 ACCEPTANCE START
+  p1=ability-gen-1 state=RELEASED
+  p2=ability-gen-2 state=ACTIVE
+  runtime_data_active=g000000003
+  runtime_rules_active=g000000004
+ABILITY REGISTRY V0.1 ACCEPTANCE: OK
+ABILITY REGISTRY V0.1 CONCURRENCY START
+  held_p1_sessions=8
+  post_publish_p1=0
+  post_publish_p2=4000
+  errors=0
+ABILITY REGISTRY V0.1 CONCURRENCY: OK
+ABILITY HTTP SERVER V0.2 ACCEPTANCE START
+  port=34235
+  profile_generation=ability-gen-1
+ABILITY HTTP SERVER V0.2 ACCEPTANCE: OK
+RUNTIME REGISTRY LIVE RELOAD DEMO
+old request before upgrade: ONE:request-A
+old request after upgrade:  ONE:request-A
+new request after upgrade:  TWO:request-B
+old generation state:       DRAINING leases=1
+new generation state:       ACTIVE leases=1
+old generation after drain: RETIRED
+rollback request:            ONE:request-C
+RUNTIME REGISTRY LIVE RELOAD DEMO: OK
+RUNTIME REGISTRY V0.2 CRYPTO KNOWN-ANSWER START
+  ed25519_rfc8032_vector=OK
+  sha512_abc_vector=OK
+RUNTIME REGISTRY V0.2 CRYPTO KNOWN-ANSWER: OK
+RUNTIME REGISTRY V0.2 CRYPTO VERIFIER START
+  crypto_verifications=1
+  cache_hits=1
+RUNTIME REGISTRY V0.2 CRYPTO VERIFIER: OK
+RUNTIME REGISTRY V0.8 STRUCTURED RELATION BUNDLE START
+  plugin_version=0.8
+  source_units=15
+  bundle_units=16
+  bundle_lines=9974
+  local_requires_bound=17
+  fact_source_path=/Order[1]/Quantity[1]
+RUNTIME REGISTRY V0.8 STRUCTURED RELATION BUNDLE: OK
+RUNTIME REGISTRY V0.8 STRUCTURED SEMANTIC RUNTIME START
+  bundle_units=16
+  bundle_lines_A=9965
+  local_requires_bound=17
+  generation_A=g000000001
+  generation_B=g000000002
+  finding=BOUNDS_VALUE_FLOW_PROTECTION_PRESERVED
+  source_blob=0796bbeb3271a210ed7ed5d85a82fc76939db61a
+RUNTIME REGISTRY V0.8 STRUCTURED SEMANTIC RUNTIME: OK
+RUNTIME REGISTRY V0.8 HARDWORLD CURRENT BUNDLE START
+  bundle_units=6
+  bundle_lines=1473
+  local_requires_bound=6
+  prod_old_state=RETIRED
+  prod_active=g000000002
+  test_active=g000000003
+  hardworld_version=0.20
+RUNTIME REGISTRY V0.8 HARDWORLD CURRENT BUNDLE: OK
+RUNTIME REGISTRY V0.8 HARDWORLD RICH DEPENDENCY START
+  structured_version=0.8
+  hardworld_version=0.20
+  structured_s1=g000000001 state=RELEASED
+  structured_s2=g000000003 state=ACTIVE
+  hardworld_h1=g000000002 state=RELEASED
+  hardworld_h2=g000000004 state=ACTIVE
+  evidence_source_path=/Order[1]/Quantity[1]
+RUNTIME REGISTRY V0.8 HARDWORLD RICH DEPENDENCY: OK
+ABILITY REGISTRY V0.1 REAL STACK START
+  structured_version=0.8
+  p1=ability-gen-1 state=RELEASED
+  p2=ability-gen-2 state=ACTIVE
+  rich_source_path=/Order[1]/Quantity[1]
+  hardworld_big_upsell=PROHIBITED
+ABILITY REGISTRY V0.1 REAL STACK: OK
+ABILITY HTTP V0.2 REAL STACK START
+  http_port=33941
+  structured_version=0.8
+  p1=ability-gen-1 state=RELEASED
+  p2=ability-gen-2 state=ACTIVE
+  rich_source_path=/Order[1]/Quantity[1]
+  hardworld_big_upsell=PROHIBITED
+ABILITY HTTP V0.2 REAL STACK: OK
+ABILITY HTTP QUEUE FABRIC INTEGRATION: SKIP (set QUEUE_FABRIC_ROOT)

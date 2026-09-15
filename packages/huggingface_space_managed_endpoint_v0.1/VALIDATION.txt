@@ -1,0 +1,16 @@
+Hugging Face Space Managed Endpoint v0.1
+Qualified: 2026-09-01
+
+PASS python3 -m py_compile managed_compute_core.py managed_space_endpoints.py managed_smoke.py
+PASS 8 pytest cases
+PASS Gradio API graph exposes /job_cpu /job_large /job_xlarge
+PASS named parameters: request, input_bundle, _job
+PASS local Gradio 6.5.1 companion integration through ooRexx AUTO v2-to-v1 fallback
+PASS CPU smoke execution produces evidence/result ZIP and removes workspace
+PASS CPU operation rejected on ZeroGPU tier
+PASS missing Gemma implementation fails closed
+PASS cleanup_remote mandatory
+PASS unsafe ZIP traversal rejected
+PASS caller HF_TOKEN not inherited by child process
+
+No live Hugging Face Space was mutated and no ZeroGPU quota was consumed.

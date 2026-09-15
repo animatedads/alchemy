@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.semantic-parity",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Browser semantic-adapter parity",
+  "summary": "Swing should match the semantic action/value rules of the first-party Alchemy Wire UI JS renderer even though its presentation toolkit differs. Display conveniences must not widen authority-bearing action detail.",
+  "authority": "cross-renderer-contract",
+  "invariants": [
+    "Builder top-level bindings are retained.",
+    "CHOICE_LIST server identity fields such as saleId remain string identities, not checkbox booleans.",
+    "Actionable collections return only index plus recognised server identity rather than echoing the whole display object.",
+    "FORM/TOKEN_FORM/CHOICE_LIST rich composition uses semantic Continue submission rather than deriving action text from a display label.",
+    "Typed field hints may affect presentation/accessibility but Wire values remain exact strings unless the semantic contract says otherwise.",
+    "Human-facing cell labels/titles/names are display data and do not become authority data."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev4.zip",
+      "sha256": "f7649a521de7ff9b619cc230e74d77fc2c8ae31884d5ce97c649bd862c41d205",
+      "member": "alchemy_wire_ui_js_v0.4-dev4/src/wire-ui/runtime.js",
+      "claim": "First-party browser semantic action/revision seam used as cross-renderer parity reference."
+    },
+    {
+      "artifact": "wire_ui_swing_v0.2-dev5.zip",
+      "sha256": "a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271",
+      "member": "wire_ui_swing_v0.2-dev5/README.md",
+      "claim": "Qualified Swing browser-parity rules for bindings, rich forms and action payload narrowing."
+    }
+  ]
+}

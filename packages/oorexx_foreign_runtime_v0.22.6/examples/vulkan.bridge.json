@@ -1,0 +1,14 @@
+{
+  "schema": "oorexx.foreign/0.22",
+  "library": {"provider":"native", "path":"libforeign_vulkan.so", "threading":"serialized", "affinity":"none"},
+  "functions": {
+    "available": {"symbol":"foreign_vulkan_available", "return":"i32", "args":["u32"]},
+    "fill_tensor": {"symbol":"foreign_vulkan_fill_tensor", "return":"u64", "args":["u32","u32","u32"]},
+    "device_name": {"symbol":"foreign_vulkan_last_device_name", "return":"utf8", "args":[]},
+    "vendor_id": {"symbol":"foreign_vulkan_last_vendor_id", "return":"u32", "args":[]},
+    "device_id": {"symbol":"foreign_vulkan_last_device_id", "return":"u32", "args":[]},
+    "device_type": {"symbol":"foreign_vulkan_last_device_type", "return":"u32", "args":[]},
+    "read_u32": {"symbol":"foreign_vulkan_tensor_read_u32", "return":"u32", "args":["u64","u32"]},
+    "tensor_close": {"symbol":"foreign_vulkan_tensor_close", "return":"i32", "args":["u64"]}
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "schema": "oorexx.foreign/0.11",
+  "library": {"provider":"native", "names":["libavutil.so.59","libavutil.so"]},
+  "types": {
+    "AVChannelLayout": {
+      "kind":"struct", "size":24, "alignment":8,
+      "fields":[
+        {"name":"order","type":"i32","offset":0},
+        {"name":"nb_channels","type":"i32","offset":4},
+        {"name":"mask","type":"u64","offset":8},
+        {"name":"opaque","type":"pointer","offset":16}
+      ]
+    }
+  },
+  "functions": {
+    "version": {"symbol":"avutil_version","return":"u32","args":[]},
+    "version_info": {"symbol":"av_version_info","return":"utf8","args":[]},
+    "license": {"symbol":"avutil_license","return":"utf8","args":[]},
+    "sample_format_from_name": {"symbol":"av_get_sample_fmt","return":"i32","args":["utf8"]},
+    "sample_format_name": {"symbol":"av_get_sample_fmt_name","return":"utf8","args":["i32"]},
+    "sample_format_bytes": {"symbol":"av_get_bytes_per_sample","return":"i32","args":["i32"]},
+    "sample_format_planar": {"symbol":"av_sample_fmt_is_planar","return":"i32","args":["i32"]},
+    "error_text": {"symbol":"av_strerror","return":"i32","args":["i32","pointer","u64"]},
+    "layout_default": {"symbol":"av_channel_layout_default","return":"void","args":["pointer","i32"]},
+    "layout_describe": {"symbol":"av_channel_layout_describe","return":"i32","args":["pointer","pointer","u64"]},
+    "layout_uninit": {"symbol":"av_channel_layout_uninit","return":"void","args":["pointer"]}
+  }
+}

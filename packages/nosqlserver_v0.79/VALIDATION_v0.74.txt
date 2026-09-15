@@ -1,0 +1,139 @@
+NoSQLServer v0.74 validation
+============================
+
+Runtime
+-------
+ooRexx 5.3.0 r13196 (64-bit, build 3 August 2026)
+Installed and executed from the user-supplied Debian package.
+
+Scope
+-----
+v0.74 replaces the GeoPackage C/SQLite helper transport with a native ooRexx
+SQLite 3 binary storage reader and exposes the same storage reader as a generic
+read-only SQLite relation provider.
+
+No runtime SQLite library, helper executable, Python process or C process is
+used by the v0.74 SQLite/GeoPackage providers.
+
+Focused native fixture
+----------------------
+tests/fixtures/v074_sqlite_native_fixture.sqlite
+  page size                                      512 bytes
+  page count                                     83
+  SHA-256                                        3e40d0d4cdad313f02aa938526616faa8608aeae2171dd0aa22ad33635d1b05b
+
+The fixture exercises:
+  sqlite_schema discovery                       PASS
+  interior table b-tree traversal               PASS (400-row table)
+  leaf table b-tree traversal                   PASS
+  INTEGER PRIMARY KEY rowid alias               PASS
+  signed integer -123                           PASS
+  signed 64-bit maximum                         PASS
+  signed 64-bit minimum                         PASS
+  negative 48-bit integer                       PASS
+  IEEE-754 REAL pi                              PASS
+  negative REAL                                 PASS
+  UTF-8 text                                    PASS
+  NULL                                           PASS
+  binary BLOB                                   PASS
+  1800-byte overflow TEXT                       PASS
+  2048-byte overflow BLOB                       PASS
+  field alignment after overflow                PASS
+  table-level composite PK metadata             PASS
+  WITHOUT ROWID detection                       PASS
+  WITHOUT ROWID read rejection                  PASS (explicit boundary)
+
+Focused v0.74 smoke
+-------------------
+tests/v074_sqlite_native_smoke.rex: PASS
+
+The smoke additionally proves:
+  generic SQLiteDatabaseEngine discovery        PASS
+  NoSQL SELECT over native SQLite               PASS
+  access path SQLITE_NATIVE_SCAN                PASS
+  generic storage identity                      SQLITE_NATIVE_READONLY
+  GeoPackage discovery with nonexistent bridge  PASS
+  GeoPackage row decoding                       PASS
+  GeoPackage typed geometry                     PASS
+  GeoPackage GP binary magic preserved          PASS
+  NoSQL SELECT over native GeoPackage            PASS
+  access path GEOPACKAGE_NATIVE_SQLITE_SCAN      PASS
+  GeoPackage storage identity                   SQLITE_GPKG_NATIVE_READONLY
+  SQLITE_NATIVE_BINARY_READ capability          PASS
+
+C bridge retirement
+-------------------
+The v0.74 package contains none of:
+  tools/gpkg_bridge
+  tools/gpkg_bridge.c
+  tools/build_gpkg_bridge.sh
+
+The GeoPackage constructor's historical second bridge argument remains accepted
+for source compatibility but is inert and is never executed.
+
+GeoPackage / federation compatibility
+--------------------------------------
+tests/v067_geopackage_smoke.rex                    PASS
+tests/v068_federated_facade_external_smoke.rex    PASS
+tests/v069_dbcore_v034_compat_smoke.rex            PASS
+tests/v070_external_metadata_boundary_smoke.rex   PASS
+tests/v071_external_mutation_dispatch_smoke.rex   PASS
+tests/v072_general_join_on_smoke.rex               PASS
+tests/v073_json_relation_smoke.rex                 PASS
+
+The v0.69 gate confirms Database Core v0.34 still receives typed geometry,
+geometry subtype, SRID and GPKGBLOBHEX encoding through federation.
+
+Historical versioned gates
+--------------------------
+Versioned smoke scripts through v0.74, excluding the intentionally obsolete
+v061_torture_harness_smoke assertion:
+  PASS                                             77
+  expected live-data SKIP                           1
+  regression failures                               0
+
+The seven historical scripts that require a nonempty DATABASE_ROOT command-line
+argument were invoked with a disposable test argument and all passed. The live
+GeoPackage test skips because its original large OS source datasets are not
+mounted; the bundled GeoPackage regression passes natively.
+
+Oracle / torture gates
+----------------------
+Claude torture seed-42:                             12/12 PASS
+Hell Corpus v1:                                     24/25 PASS
+                                                    1 PARSE_ERROR
+                                                    0 WRONG_RESULT
+Hell Corpus v2:                                     25/30 PASS
+                                                    2 UNSUPPORTED
+                                                    3 PARSE_ERROR
+                                                    0 WRONG_RESULT
+Progressive SQL feature torture:                    72/72 PASS
+SQL-92 company smoke:                               PASS
+
+Compile
+-------
+Shipped .cls/.rex compile targets before packaging: 92
+rexxc failures:                                      0
+
+Storage boundary
+----------------
+Implemented:
+  SQLite 3 header and page sizing
+  table b-tree interior/leaf pages
+  SQLite varints
+  rowids
+  record serial types NULL/integer/REAL/TEXT/BLOB
+  overflow payload chains
+  UTF-8 text
+  ordinary rowid table schema and rows
+
+Explicitly unsupported in v0.74:
+  mutation
+  WAL / rollback-journal replay
+  WITHOUT ROWID payload reads
+  virtual table implementations
+  UTF-16le / UTF-16be text
+  SQLite VM / trigger execution
+  index-btree query execution
+
+These surfaces fail or remain unadvertised rather than being guessed.

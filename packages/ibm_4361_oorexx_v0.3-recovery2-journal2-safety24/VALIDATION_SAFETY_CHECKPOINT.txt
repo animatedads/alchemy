@@ -1,0 +1,31 @@
+IBM 4361 ooRexx v0.3 recovery2 journal2 safety checkpoint validation
+Date: 2026-08-26
+Runtime: Open Object Rexx 5.3.0 r13196 - Internal Test Version
+Status: IN-PROGRESS SAFETY CUT
+
+Compilation:
+  IBM370Architecture.cls PASS
+  IBM370DASD.cls         PASS
+  IBM370Executor.cls     PASS
+  IBM370IO.cls           PASS
+  IBM370Media.cls        PASS
+  IBM4361.cls            PASS
+  IBM4361Journal.cls     PASS
+  IBM4361State.cls       PASS
+
+Focused regression tests:
+  test_cpu_ex_sequencing.rex                 PASS
+  test_3330_search_key_semantics.rex         PASS
+  test_3330_mt_read_count_file_mask.rex      PASS
+  test_clock_one_instruction_equivalence.rex PASS
+  test_storage_small_fastpath.rex            PASS
+  test_freeze_replay.rex                     PASS
+  test_journal_freeze_separation.rex         PASS
+  test_journal_instruction_rewind.rex        PASS
+
+This is intentionally not a final v0.3 acceptance cut. It is a recovery/safety
+checkpoint preserving the current implementation and archaeology probes before
+continuing the finite relocated-IEAIPL loader loop investigation.
+
+External dependencies and historical media remain external by reference and are
+not vendored into this package.

@@ -1,0 +1,25 @@
+## service tests
+== test_context_and_maker_authorise.rex ==
+PASS: service stores authoritative staff context and issues maker authority
+== test_approval_workflow.rex ==
+PASS: service maker/checker workflow
+== test_idempotency.rex ==
+PASS: durable command identity is semantic
+== test_outbox_retry.rex ==
+PASS: staff authority outbox is at-least-once
+== test_persistence_restart.rex ==
+PASS: staff authority state/idempotency recover across restart
+== test_queue_persistent_recovery.rex ==
+PASS: permanent Queue Fabric recovers typed staff authority command graph
+== test_service_to_core_binding.rex ==
+PASS: service authority crosses boundary only as exact command evidence
+== test_authority_scope_persistence.rex ==
+PASS: institutional staff authority scope survives durable service restart
+== test_runtime_module.rex ==
+PASS: runtime service boundary
+## compile
+COMPILE PASS: integration/FederationBankStaffAuthorityServicePersistence.cls
+COMPILE PASS: integration/FederationBankStaffAuthorityServiceQueue.cls
+COMPILE PASS: runtime/FederationBankStaffAuthorityServiceRuntimeModule.cls
+COMPILE PASS: src/FederationBankStaffAuthorityService.cls
+COMPILE PASS: tests/TestSupport.cls

@@ -1,0 +1,49 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.continuation",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Qualified baselines and continuation policy",
+  "summary": "The 2026-08-28 19:19 ooRexx API roll-up carries Wire UI Swing v0.2-dev3 together with Builder v0.11, Server v0.17 and Alchemy Wire UI JS v0.4-dev4. A separately sealed v0.2-dev5 is newer than the roll-up Swing artifact and remains the latest qualified Swing candidate. Any unsealed dev6 work must be reconstructed/rebased from dev5 and requalified against the current Server v0.17/Builder v0.11 contracts before it can supersede dev5.",
+  "authority": "project-continuity",
+  "invariants": [
+    "Do not silently downgrade to roll-up Swing dev3 merely because it is bundled with newer Server/Builder components.",
+    "Do not treat unsealed development notes or partially recovered trees as a release baseline.",
+    "Use sealed dev5 as the Swing implementation recovery point until a newer candidate passes complete qualification.",
+    "Requalification target is current WIRE-UI/0.1 with Server v0.17 and Builder v0.11, including workspace command/result context.",
+    "Keep generic Java Swing rules in the java sphere; keep Wire-specific renderer/protocol/qualification knowledge in this sphere."
+  ],
+  "procedure": [
+    "Resolve exact source artifacts by digest.",
+    "Rebase implementation from sealed dev5.",
+    "Apply current Server/Builder compatibility changes.",
+    "Run strict Java, real-window, executable-JAR, ooRexx/BSF, actual Server and actual Builder acceptance.",
+    "Only then seal a successor and update this sphere continuity record."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexxapis_20260828-191940.zip",
+      "sha256": "5885f1906dc5ae7307e6fc7d557b88d1770b0c401f5a62063b999834222d5d66",
+      "member": "current/wire_ui_swing_v0.2-dev3.zip",
+      "claim": "The current roll-up carries Swing v0.2-dev3."
+    },
+    {
+      "artifact": "oorexxapis_20260828-191940.zip",
+      "sha256": "5885f1906dc5ae7307e6fc7d557b88d1770b0c401f5a62063b999834222d5d66",
+      "member": "current/wire_ui_server_v0.17.zip",
+      "claim": "The current roll-up carries Wire UI Server v0.17."
+    },
+    {
+      "artifact": "oorexxapis_20260828-191940.zip",
+      "sha256": "5885f1906dc5ae7307e6fc7d557b88d1770b0c401f5a62063b999834222d5d66",
+      "member": "current/wire_ui_builder_v0.11.zip",
+      "claim": "The current roll-up carries Wire UI Builder v0.11."
+    },
+    {
+      "artifact": "wire_ui_swing_v0.2-dev5.zip",
+      "sha256": "a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271",
+      "member": "wire_ui_swing_v0.2-dev5/VALIDATION.txt",
+      "claim": "Separately sealed Swing v0.2-dev5 qualification evidence."
+    }
+  ]
+}

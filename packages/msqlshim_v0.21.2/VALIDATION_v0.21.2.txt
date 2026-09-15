@@ -1,0 +1,81 @@
+msqlshim v0.21.2 validation
+Date: 2026-08-25
+Runtime: Open Object Rexx 5.3.0 r13196, 64-bit debug build
+
+Validated package references
+-----------------------------
+nosqlserver_v0.79
+alchemy_objects_v0.8
+oorexx_crypto_v0.1
+
+Release purpose
+---------------
+v0.21.2 preserves the v0.21.1 native zlib/DEFLATE arithmetic-precision repair
+(`::options digits 30`) and repairs split package identity/provenance that left
+Alchemy metadata and @@msqlshim_version at v0.20 while the compatibility snapshot
+reported v0.21.1.  All public identity surfaces now agree on v0.21.2.
+
+Architecture / dependency
+-------------------------
+dependency boundary smoke                                      PASS
+MySQLWireServer rexxc                                          PASS
+server Alchemy STANDARD adoption                               PASS
+backend gate Alchemy STANDARD adoption                         PASS
+connection Alchemy STANDARD adoption                           PASS
+all three construction provenance entrypoints                  INIT
+server adoption checkpoint round-trip                          PASS
+referenced NoSQLServer release / SQL level                     0.79 / 0.79
+GeoPackage/native SQLite/JSON/spatial/optional-Unicode classes PASS
+NoSQLServer remains package-reference only                     PASS
+
+Precision / compression repair
+------------------------------
+100000-byte Adler-32 expected E20C346E                         PASS
+native zlib round-trip                                         PASS
+CLIENT_COMPRESS raw-wire regression                            PASS
+
+Wire protocol suite
+-------------------
+classic text protocol                                           PASS
+idle multi-client isolation                                     PASS
+modern optional metadata / deprecated EOF                       PASS
+utility commands                                                PASS
+CLIENT_QUERY_ATTRIBUTES                                         PASS
+CLIENT_CONNECT_ATTRS + handshake database selection             PASS
+SHOW PROCESSLIST / COM_PROCESS_INFO                              PASS
+truthful system identity                                        PASS
+prepared statements                                             PASS
+read-only prepared cursors                                      PASS
+FLOAT/DOUBLE + temporal parameters                              PASS
+mixed compressed/uncompressed concurrency (20,000 rows)         PASS
+FIFO backend fairness (80 writes)                               PASS
+
+Identity evidence
+-----------------
+compatibilitySnapshot msqlshim_version = 0.21.2                 PASS
+Alchemy metadata PACKAGE_VERSION = 0.21.2                       PASS
+@@msqlshim_version = 0.21.2                                     PASS
+@@nosqlserver_release = 0.79                                    PASS
+@@nosqlserver_sql_level = 0.79                                  PASS
+@@alchemy_object_version = 0.8                                  PASS
+
+Deliberately absent / unchanged
+-------------------------------
+TLS                                                              absent
+authentication authority                                         absent
+zstd compression                                                 absent
+NoSQLServer source/vendor tree                                   absent
+TUTOR                                                            optional external dependency only
+
+Execution note
+--------------
+The package's aggregate run_tests.sh was exercised as its constituent tests under
+the same environment because the hosted execution wrapper imposes a wall-clock
+limit shorter than the cumulative repeated-listener suite.  The protocol suite
+through prepared statements passed in the aggregate run; the two long stress
+regressions were then run separately at the run_tests.sh validation loads shown
+above.  No constituent acceptance failed.
+
+Final package marker
+--------------------
+MSQLSHIM V0.21.2 PACKAGE SUITE PASS (constituent validation)

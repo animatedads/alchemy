@@ -1,0 +1,43 @@
+ooRexx ML v0.1-dev9 qualification
+================================
+
+Runtime: ooRexx 5.3.0 r13196 (Internal Test Version)
+
+New semantic surface:
+- MLPatternHash.cls
+- polar minimum-centred normalized radial representation
+- fixed angular resampling (sample-density invariant)
+- explicit rotation invariance; reversal invariance opt-in
+- radial / first-difference / second-difference signature
+- significance-ordered lexicographic difference, largest disagreement first
+- MLPatternCorpus / MLPatternIndex historical fitted state
+- self-generating polar SVG demo using standard ooRexx RxMath
+
+Regression evidence:
+- 49/49 executable tests PASS
+- all 42 dev8 tests remain PASS
+- 7 new pattern-hash tests PASS
+- affine offset/amplitude invariance PASS
+- doubled sample-density invariance PASS
+- small-vs-structural shape significance PASS
+- rotation policy PASS
+- reversal policy PASS
+- polar angle/radius grid PASS
+- pattern-index rollback/roll-forward PASS
+
+Compilation:
+- 16 source/integration surfaces compile with rexxc r13196
+
+Semantic Source Control v0.2.3:
+- scan: 13 files / 13 packages / 726 methods / 291 attributes
+- externalCandidates=0
+- pending proposals=0
+- accepted OorexxML / MAIN / sourceLevel 10
+
+Demo evidence:
+- base source range 0..10
+- affine source range 100..200 => identical pattern hash
+- same curve at twice source sample density => identical pattern hash
+- small deformation => dominant difference 20
+- changed turning structure => dominant difference 110
+- generated examples/pattern_hash_polar_demo.svg with centre=min, radius=normalized value, angle=normalized curve progress

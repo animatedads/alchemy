@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "usock.poll-nonblocking",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Nonblocking and poll semantics avoid ambiguous retries",
+  "summary": "The library wraps poll readiness in semantic watch/result objects and treats nonblocking behavior deliberately. sendAll refuses nonblocking descriptors because a partial prefix followed by EAGAIN cannot be blindly retried without duplication risk.",
+  "authority": "project-authority",
+  "invariants": [
+    "UnixPoll exposes readable/writable/priority/error/hangup/invalid semantics rather than requiring application code to decode raw poll bitmasks.",
+    "wouldBlock classifies EAGAIN/EWOULDBLOCK explicitly.",
+    "sendAll is a blocking-only convenience and must refuse a nonblocking descriptor.",
+    "A poll watch resolves the target descriptor at wait time; it must not intentionally retain a stale fd after target close/release."
+  ],
+  "procedure": [
+    "For nonblocking protocols, drive send/receive progress from semantic readiness and track application-level partial progress explicitly."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/unixsocket.cls",
+      "line_start": 281,
+      "line_end": 362,
+      "claim": "UnixPollWatch/UnixPoll/UnixPollResult implement semantic poll readiness over profile-defined poll bits.",
+      "note": "Semantic poll implementation."
+    },
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/unixsocket.cls",
+      "line_start": 455,
+      "line_end": 542,
+      "claim": "Nonblocking mode, wouldBlock and sendAll blocking-only refusal are implemented in the class.",
+      "note": "Nonblocking safety implementation."
+    }
+  ]
+}

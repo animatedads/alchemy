@@ -1,0 +1,14 @@
+{
+  "id": "wlu-logical-jobs-fallback",
+  "title": "Logical Jobs and Fallback Graphs",
+  "summary": "A logical job represents a business obligation that may be fulfilled by one or more implementation stages.",
+  "why": "Allows a conversation to move from a cheap script to an expensive LLM (Gemma -> Grok -> OpenAI) while remaining under one business budget.",
+  "invariants": [
+    "A logical job has one parent budget lease.",
+    "Each implementation stage receives a child WLUReservation, not the whole parent budget.",
+    "Fallback branches are alternatives; the strategy ceiling is the maximum of the current stage plus the maximum successor path, not the sum.",
+    "A budget may admit a job with a 'PARTIAL_STRATEGY' if the total budget is less than the full fallback graph but fits the current path."
+  ],
+  "evidence_note": "Source: oorexx_work_load_units_v0.12/README.md:150-175. Line 152: 'One chat/session may legitimately move through several execution implementations while remaining one WLU budget.'",
+  "grounding": "oorexx-grounded"
+}

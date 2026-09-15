@@ -1,0 +1,21 @@
+{
+  "kind": "article",
+  "id": "ref.bash-best-practices.sources",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Ground-truth source files for the bash lessons",
+  "summary": "The authoritative backing for the lessons here lives in bashqueues. Consult the named files before deviating from any invariant this sphere restates.",
+  "procedure": [
+    "For sourced-library vs executed-tool roles and strict-mode scope read /usr/local/share/bashqueues/queuebash.sh near the direct-execution guard and the bin/queue-* tools.",
+    "For child rc capture and reserved codes read queuebash.sh in the worker wait region and the bin wrappers.",
+    "For argument/enum parsing and quoting read bin/queue-vcs-assert, bin/queue-vcs-probe, bin/queue-dev-timeout.",
+    "For file/write hygiene and command building read queuebash.sh (atomic candidate writes) and docs/IPC.md.",
+    "For JSON discipline read docs/QUEUE_COMMAND_CONTRACT.md, docs/QUEUE_DEV_CONTRACT.md and the bin/* JSON-emitting tools.",
+    "For the doctrine read docs/ACL_PROVIDER_CONTRACT.md, docs/QUEUE_DEV_AI_LESSONS.md, docs/QUEUE_DEV_ATTEMPT_EVIDENCE.md, docs/PLAN_ADAPTER_CONTRACT.md, docs/PROFILING_PATH_LOCK_CONTRACT.md, docs/QUEUE_DEV_SECURITY_MODEL.md."
+  ],
+  "invariants": [
+    "A newer bashqueues file supersedes a quote restated here if they disagree.",
+    "Line numbers are observation anchors, not a contract; prefer the concrete file when verifying.",
+    "These are lessons and best practice, not a substitute for the authoritative source when you have it open."
+  ]
+}

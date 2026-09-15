@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "ap-composition-flow",
+  "version": "0.3",
+  "sphere": "access-permissions",
+  "title": "Executable authority composition",
+  "summary": "The protected-domain runtime composes attribution, Access Control, a guarded admitted session, Security Manager, live Permission policy resolution, Security Effect, Permission, and the protected method without collapsing their authority roles.",
+  "authority": "project-authority",
+  "invariants": [
+    "Runtime path: attributed principal -> domain entry -> Access Control -> admitted session -> session guard -> Security Manager -> live Permission policy -> Security Effect -> Permission -> protected method.",
+    "Domain entry fails closed unless attribution, domain binding, policy resolution, Access Control ALLOW, proof requirements, and admission-policy liveness all succeed.",
+    "The Access Control receipt remains evidence and is never accepted as method authority."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/ARCHITECTURE.md",
+      "line_start": 40,
+      "line_end": 55,
+      "claim": "The runtime composes attribution, Access Control, admitted session, guard, Security Manager, live Permission policy, Security Effect, Permission and protected method, with fail-closed entry conditions.",
+      "note": "Authoritative composition flow."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/src/AlchemyAccessPermissionsAdapter.cls",
+      "line_start": 250,
+      "line_end": 279,
+      "claim": "AlchemyAccessControlledDomain.enter resolves and evaluates Access Control, requires proof by default, rechecks admission-policy liveness, builds guard/adapter/Security Manager/session, and keeps Permission independently enforced.",
+      "note": "Executable composition."
+    }
+  ]
+}

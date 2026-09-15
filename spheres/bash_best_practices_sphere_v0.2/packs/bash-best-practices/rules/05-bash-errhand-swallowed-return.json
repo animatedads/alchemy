@@ -1,0 +1,20 @@
+{
+  "kind": "language-rule",
+  "id": "BASH.ERRHANDL.SWALLOWED_RETURN",
+  "version": "0.1",
+  "language": "bash",
+  "title": "A deciding command's nonzero return masked by an unconditional true",
+  "purpose": "Prevent a real failure being silently erased by following the deciding command with `; true`, a blanket default, or `|| true` on the wrong (value-deciding) command instead of on an incidental cleanup.",
+  "trigger": "A command whose success/failure determines the result is immediately followed by a construct that forces a true/zero status (`; true`, `|| true`, returning a default) rather than propagating/branching on its code.",
+  "correct": "Branch on the compound status or capture/read the code and decode it; reserve `|| true` strictly for incidental loggers/cleanup so they cannot add a nonzero, and never on the command that owns the outcome.",
+  "fixability": "SUGGESTED",
+  "assess": {
+    "classification": "correctness-contract",
+    "detection_certainty": "heuristic_on_call_graph",
+    "violation": "contextual",
+    "suggested_correction": "available",
+    "auto_rewrite": "unsafe_without_intent"
+  },
+  "evidence_note": "Grounded in queuebash.sh, which keeps the worker decision code by reading rc after wait and uses || true only on incidental loggers; docs/IPC.md propagates an external helper with || exit $?.",
+  "return_semantics": "A reference rule page; shown for LLM author guidance, not executed by rules check."
+}

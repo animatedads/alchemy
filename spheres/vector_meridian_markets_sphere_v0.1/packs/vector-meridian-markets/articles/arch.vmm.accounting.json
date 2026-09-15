@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "arch.vmm.accounting",
+  "version": "0.1",
+  "sphere": "vector-meridian-markets",
+  "title": "Accounting is downstream evidence: one VMM book, many reporting views",
+  "summary": "VMM has one durable statutory book and uses Accounting Core events/policies/journals as downstream accounting truth. Reporting boundaries project immutable journals; they do not create desk companies, duplicate ledgers or operational truth.",
+  "invariants": [
+    "Statutory identity is VECTOR_MERIDIAN_MARKETS_LTD / VMM-STAT / ENTITY_GAAP.",
+    "Current VMM accounting protocols are vmm.accounting/0.11, vmm.accounting.persistence/0.11 and vmm.accounting.reporting/0.11.",
+    "VMM accounting policy code compiles with 50-digit precision.",
+    "AccountingFileStore recovery preserves journal/source/policy and period evidence, but does not reconstruct trading, synthetic or Queue Fabric state.",
+    "Federation may appear as lender/counterparty dimension but never as VMM reporting entity or book authority.",
+    "CVA/FVA and collateral haircuts remain accounting/risk evidence and cannot rewrite contractual payoff truth."
+  ],
+  "authority": "artifact-grounded",
+  "provenance": [
+    {
+      "artifact": "vector_meridian_markets_v0.11.zip",
+      "sha256": "4ebde9b8ca4ca158906bd42d4367bb3040b83b598b8bd41850addfe6518e3509",
+      "member": "vector_meridian_markets_v0.11/docs/ACCOUNTING_BOUNDARY.md",
+      "line_start": 1,
+      "line_end": 96,
+      "claim": "One-way accounting authority, one-book reporting, replay, close-out/netting mappings, precision and durable store."
+    }
+  ]
+}

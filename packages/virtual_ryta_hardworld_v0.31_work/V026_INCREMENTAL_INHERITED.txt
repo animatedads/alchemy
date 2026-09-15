@@ -1,0 +1,45 @@
+Virtual RYTA / HardWorld v0.26-work inherited-suite evidence
+=============================================================
+
+Acceptance model
+----------------
+v0.26-work uses incremental acceptance for the inherited self-contained corpus.
+The monolithic tests/run_all.sh was attempted under the exact user-supplied
+Open Object Rexx 5.3.0 r13196 64-bit debug interpreter. It progressed green
+through the unchanged early Algorithm Relation tests, then the outer execution
+window interrupted the unchanged test_algorithm_relation_librarian.rex while
+AlgorithmIntegrity was inside an ADDRESS SYSTEM digest command. ooRexx reported
+Error 98.923 / "Address command redirection failed (Interrupted system call)".
+
+This is recorded as an orchestration/resource timeout, not a semantic PASS and
+not a product FAIL.
+
+Why inherited evidence can be carried forward
+----------------------------------------------
+A mechanical SHA-256 comparison against v0.25-work proves 297 inherited files
+byte-for-byte identical, with zero unexpected changed, new, or missing files.
+The unchanged Algorithm Relation/Librarian/HardWorld implementation therefore
+retains the v0.25-work green inherited evidence.
+
+Fresh v0.26 execution
+---------------------
+The code paths changed for v0.26 were freshly executed, including:
+- Queue Fabric authority lifetime / V2 ledger regression;
+- Legal Effect v0.10 completed-work ACK recovery;
+- retained authority v0.25 compatibility on the V2 executor;
+- Queue authority execution v0.21 compatibility / legacy V1 ledger path;
+- complete promoted current-stack v0.26 roll-up;
+- 40/40 .cls compilation under rexxc;
+- 25/25 RYTA adversarial corpus;
+- 64-vector coverage (0 holes, 0 ambiguous winners);
+- 16/16 mutants killed;
+- 18/18 table-fed authority vectors;
+- 162/162 consistency x authority vectors;
+- core VirtualRYTA authority/action/approval/capability/safety tests;
+- static, Librarian source-audit and special-variable guards.
+
+Conclusion
+----------
+Incremental inherited acceptance: PASS.
+Monolithic run_all completion: NOT CLAIMED.
+No semantic failure was observed in the interrupted unchanged Librarian test.

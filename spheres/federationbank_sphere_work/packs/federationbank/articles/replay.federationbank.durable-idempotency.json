@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "replay.federationbank.durable-idempotency",
+  "version": "0.1",
+  "sphere": "federationbank",
+  "title": "Durable replay: SQL commit survives worker and queue failure",
+  "summary": "Banking transaction identity is durable logical identity. If SQL committed but queue completion did not, redelivery recovers the original receipt and SQL state; it does not perform the debit, reservation or cash settlement again.",
+  "authority": "federationbank-project-doctrine",
+  "invariants": [
+    "Restart reconstruction is authority-specific: convenience projections may rebuild from retained Queue Fabric facts, but monetary postings/balances and holds rebuild from SQL truth.",
+    "A worker crash after SQL commit but before queue completion must not create a second debit, hold or customer credit.",
+    "Replay returns the already-committed result when the same durable identity is redelivered.",
+    "Retained topics are not substitutes for Ledger SQL monetary truth."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/README.md",
+      "line_start": 258,
+      "line_end": 269,
+      "claim": "Restart reconstruction and durable receipt replay."
+    }
+  ]
+}

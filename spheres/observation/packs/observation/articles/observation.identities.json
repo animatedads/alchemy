@@ -1,0 +1,23 @@
+{
+  "id": "observation.identities",
+  "title": "Keep semantic, stream, queue and checkpoint identities separate",
+  "section": "architecture",
+  "summary": "Engine snapshot generation, observation stream sequence, Queue Fabric package/correlation identity, consumer checkpoint and subscriber lease are independent state/identity domains.",
+  "invariants": [
+    "Replay is by observation stream sequence, never Queue message number.",
+    "Consumer checkpoints are monotonic and reject regression.",
+    "Subscriber lease is temporary read authority, not semantic state generation."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "observation",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_observation_v0.5.zip",
+      "sha256": "0f604f78d5d198190ae209c813fd287967f94ddaf6116dfa83b4e1904a9f6ed7",
+      "member": "oorexx_observation_v0.5/ARCHITECTURE.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+say 'LEGAL EFFECT V0.6 RETAINED OBJECT DRIFT BOUNDARY V0.19 START'
+provider=.V06TestDigestProvider~new; verifier=.LegalSourceVerifier~new(provider,'ryta-v019-drift-verifier')
+text='Original authoritative representation.'
+sourceCarrier=.directory~new; sourceCarrier['text']=text
+provisionCarrier=.directory~new; provisionCarrier['text']=text
+unit=.LegalCompilationUnit~new('DRIFT-G','0.6','ryta-v019-test','1')
+identity=.LegalSourceIdentity~new('SRC','CONTRACT','expr','urn:test:drift','sha256:'||provider~digest(text),'AUTH','*','VERIFIED')
+ignored=unit~addSource(identity,.NormativeSource~new('SRC','CONTRACT','drift source'))
+reference=.LegalProvisionReference~new('SRC','1','expr','clause 1','sha256:'||provider~digest(text),text,'VERIFIED')
+ignored=unit~addProvision(reference,.LegalProvision~new('SRC','1','ACTIVE','BASE',text))
+sv=unit~verifySource('SRC',.LegalVerificationMaterial~fromText(sourceCarrier,text,'urn:test:drift','RAW_TEXT'),verifier)
+pv=unit~verifyProvision('SRC','1',.LegalVerificationMaterial~fromText(provisionCarrier,text,'clause 1','PROVISION_TEXT'),verifier)
+call Assert sv~ok & pv~ok,'verification binds'
+norm=.LegalNorm~new('N','SRC','1','CONTRACT_TERM','ACT','PROHIBITED')
+proposal=.LegalCompileProposal~new('P','NORM',norm,'test','HUMAN','1'); ignored=proposal~addEvidenceReference(reference); ignored=unit~addProposal(proposal)
+report=.LegalRuleCompiler~new~compile(unit); call Assert report~ok,'compile succeeds'
+g=report~generation
+s1=.LegalEffectV06GenerationSnapshot~new(g)
+sourceCarrier['text']='MUTATED AFTER VERIFICATION'
+provisionCarrier['text']='MUTATED AFTER VERIFICATION'
+s2=.LegalEffectV06GenerationSnapshot~new(g)
+call Assert s1~canonicalIdentity=s2~canonicalIdentity,'authority snapshot remains bound to verified digest/certificate, not current mutable object state'
+call Assert s1~verificationClosureHash=s2~verificationClosureHash,'verification closure stable after retained-object mutation'
+certSource=.nil
+certProvision=.nil
+do snap over report~certificate~verificationEvidence
+ if snap~subjectKind='SOURCE' then certSource=snap
+ if snap~subjectKind='PROVISION' then certProvision=snap
+end
+call Assert certSource~sourceObject == sourceCarrier,'certificate still retains same source object identity'
+call Assert certProvision~sourceObject == provisionCarrier,'certificate still retains same provision object identity'
+call Assert certSource~sourceObject['text']='MUTATED AFTER VERIFICATION','retained object can visibly drift; digest evidence does not claim otherwise'
+call Assert certSource~actualDigest='sha256:'||provider~digest(text),'certificate digest remains the representation verified at verification time'
+say 'LEGAL EFFECT V0.6 RETAINED OBJECT DRIFT BOUNDARY V0.19: OK'
+exit 0
+::class V06TestDigestProvider public
+::method algorithm
+ return 'SHA256'
+::method digest
+ use arg material
+ return .AlgorithmDigest~sha256Text(material)
+::routine Assert
+ use arg condition,message
+ if \condition then raise syntax 88.900 array('ASSERT FAILED: '||message)
+ return 0
+::requires 'LegalEffect.cls'
+::requires '__RYTA_ROOT__/algorithm/AlgorithmIntegrity.cls'
+::requires '__RYTA_ROOT__/integration/LegalEffectV06PromotionAdapter.cls'

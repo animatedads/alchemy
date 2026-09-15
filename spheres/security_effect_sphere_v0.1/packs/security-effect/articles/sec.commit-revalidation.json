@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "sec.commit-revalidation",
+  "version": "0.1",
+  "sphere": "security-effect",
+  "title": "Irreversible commit requires fresh Security revalidation",
+  "summary": "v0.14 closes the TOCTOU gap between initial method admission and later irreversible publication. A continuation requires host evidence that work actually started; immediately before commit, exact staged-state/context identity and a fresh Security snapshot/assessment are required.",
+  "authority": "project-authority",
+  "invariants": [
+    "Initial Security ALLOW is not authority to commit later.",
+    "Security validation alone is not proof that staged work actually started.",
+    "Changed staged state or context invalidates commit evidence.",
+    "New adverse evidence can change commit from ALLOW to HOLD.",
+    "Successful commit validation is single-use and fail-closed under consumption races.",
+    "Access Permissions still separately decides the exact COMMIT method authority."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "security_effect_v0.14.zip",
+      "sha256": "c9d481140552073c8b9ea4ea81feb93aef03208b5e8a939b9af382d30b9a1935",
+      "member": "security_effect_v0.14/CONTINUATION_COMMIT.md",
+      "claim": "v0.14 continuation/commit contract defines exact state/context freshness, start provenance and separate Permission authority."
+    },
+    {
+      "artifact": "security_effect_v0.14.zip",
+      "sha256": "c9d481140552073c8b9ea4ea81feb93aef03208b5e8a939b9af382d30b9a1935",
+      "member": "security_effect_v0.14/VALIDATION.txt",
+      "claim": "Executable qualification proves state/context substitution, new account-takeover evidence, expiry and replay barriers."
+    }
+  ]
+}

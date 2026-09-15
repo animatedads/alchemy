@@ -1,0 +1,25 @@
+{
+  "kind": "article",
+  "id": "kl10.io",
+  "version": "0.1",
+  "sphere": "kl10",
+  "title": "KL10 I/O channels, RH20 and Massbus",
+  "summary": "Reference set for channel-visible memory addressing, RH20 command lists, DMA completion/error behavior and Massbus controller expectations.",
+  "procedure": [
+    "Use the Processor Reference KL10 system-operations chapter for channel and RH20 programmer-visible behavior.",
+    "Use DEC STD 159 for Massbus protocol details when the question is bus/controller semantics.",
+    "Use Cornwell kx10_rh.c and kx10_df.c as secondary implementation references, especially NXM completion behavior."
+  ],
+  "invariants": [
+    "DMA must respect installed physical memory boundaries.",
+    "Channel NXM must be reported through channel status/completion semantics rather than silently materializing memory.",
+    "Do not confuse CPU virtual paging with channel physical-address behavior."
+  ],
+  "documents": [
+    "dec.processor-reference.1982",
+    "dec.massbus.standard.159",
+    "cornwell.kx10-rh",
+    "cornwell.kx10-df"
+  ],
+  "selectors": []
+}

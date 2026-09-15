@@ -1,0 +1,44 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.review",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Human review and objective calibration",
+  "summary": "Human interpretation is explicit evidence, not an overwrite of model output. Pairwise preference judgements can test whether a numerical objective orders real outputs in a way reviewers actually prefer.",
+  "authority": "Executable dev4 MLReview source/tests are authoritative. The recovered-audio 18/40 artefact weights remain experimental until calibrated.",
+  "invariants": [
+    "Model output, human review decision and policy action are distinct objects.",
+    "Review decisions remain historical evidence even after a case is reopened.",
+    "Review/calibration state can be rolled back, rolled forward and branched like other driveable ML state.",
+    "UNDECIDABLE is first-class; reviewers are not forced into false pairwise preferences.",
+    "Objective calibration reports agreement evidence but does not silently bless or refit weights.",
+    "Calibration thresholds are explicit policy and can fail closed."
+  ],
+  "procedure": [
+    "Present candidate pairs and record MLPreferenceJudgement evidence.",
+    "Build MLObjectiveCalibrationReport from the same declared MLObjective and candidate scores.",
+    "Inspect comparable, undecidable, concordant and discordant counts plus agreement rate.",
+    "Apply MLObjectiveCalibrationQualification thresholds.",
+    "If inadequate, fork the scoring policy and replay retained evidence rather than rewriting history."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev4.zip",
+      "sha256": "ea9992023e3d5a318d5e69d07bb7edc3bc1a82e14a2172aac3c00f8fda1fa73b",
+      "member": "oorexx_ml_v0.1-dev4/src/MLReview.cls",
+      "claim": "Branchable review cases, pairwise preference evidence and objective calibration."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev4.zip",
+      "sha256": "ea9992023e3d5a318d5e69d07bb7edc3bc1a82e14a2172aac3c00f8fda1fa73b",
+      "member": "oorexx_ml_v0.1-dev4/tests/test_review_calibration.rex",
+      "claim": "Regression proves review history, reopen semantics and calibration qualification."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev4.zip",
+      "sha256": "ea9992023e3d5a318d5e69d07bb7edc3bc1a82e14a2172aac3c00f8fda1fa73b",
+      "member": "oorexx_ml_v0.1-dev4/docs/OBJECTIVE_CALIBRATION.md",
+      "claim": "Policy for perceptual calibration and held-out future fitting discipline."
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "kind": "corpus",
+  "id": "kl10.documents",
+  "sphere": "kl10",
+  "title": "KL10/PDP-10 primary and secondary engineering documents",
+  "records": [
+    {
+      "id": "dec.processor-reference.1982",
+      "authority": "PRIMARY_DEC_ARCHITECTURE",
+      "title": "DECsystem-10/DECSYSTEM-20 Processor Reference Manual",
+      "date": "1982-06",
+      "url": "https://www.bitsavers.org/pdf/dec/pdp10/TOPS10_softwareNotebooks/vol05/AA-H391A-TK_DECsystem-10_DECSYSTEM-20_Processor_Reference_Jun1982.pdf",
+      "topics": ["instruction-set", "effective-address", "BLT", "paging", "APR", "PI", "KL10", "RH20", "memory"],
+      "use": "First source for programmer-visible PDP-10/KL10 instruction and system-operation semantics. Chapter 3 is especially important for KL10 paging, PI/APR and RH20 behavior."
+    },
+    {
+      "id": "dec.kl10-techref.1984",
+      "authority": "PRIMARY_DEC_HARDWARE",
+      "title": "KL10 Technical Reference Manual",
+      "date": "1984-08",
+      "url": "https://www.bitsavers.org/pdf/dec/pdp10/KL10/EK-OKL10-TM_KL10_TechRef_Aug84.pdf",
+      "topics": ["KL10-R", "model-B", "EBOX", "MBOX", "memory", "channels", "hardware"],
+      "use": "Hardware-level reference. The manual describes KL10-R systems as having at least 512K words of memory except the 1091, making it the primary source for the minimum-memory question in the current boot work."
+    },
+    {
+      "id": "dec.extended-addressing",
+      "authority": "PRIMARY_DEC_ARCHITECTURE",
+      "title": "Extended Addressing on the DECSYSTEM-20: Programming Implications and Methodology",
+      "author": "Dan Murphy",
+      "url": "https://github.com/PDP-10/tops20-build/blob/456fed1f22b196f987375d35a1145f4d41c35703/src/documentation/eapgmg.mem",
+      "topics": ["model-B", "30-bit-PC", "sections", "local-address", "global-address", "IFIW", "EFIW", "XMOVEI", "XJRST"],
+      "use": "Primary explanation of Model-B extended effective-address computation and section-aware control flow. Use whenever execution leaves section zero."
+    },
+    {
+      "id": "dec.massbus.standard.159",
+      "authority": "PRIMARY_DEC_STANDARD",
+      "title": "DEC STD 159 Massbus Specification",
+      "url": "https://bitsavers.org/pdf/dec/standards/DEC_STD_159_Massbus_Specificaton.pdf",
+      "topics": ["Massbus", "RH20", "controller", "DMA", "I/O"],
+      "use": "Bus-level reference for Massbus details that are below the processor programmer model."
+    },
+    {
+      "id": "kl10.production-microcode.repo",
+      "authority": "PRIMARY_MICROCODE_PRESERVATION",
+      "title": "KL10 Model-B production microcode preservation / emulator repository",
+      "url": "https://github.com/alanmimms/kl10-microcode",
+      "topics": ["microcode", "KL10-PV", "model-B", "CRAM", "DRAM", "instruction-sequencing"],
+      "use": "Contains the recovered final TOPS-20-capable KL10 Model-B microcode and source-level organization. Use for exact micro-sequencing questions after establishing the architectural contract."
+    },
+    {
+      "id": "kl10.production-microcode.blt",
+      "authority": "PRIMARY_MICROCODE_PRESERVATION",
+      "title": "KL10 production BLT microcode",
+      "url": "https://github.com/alanmimms/kl10-microcode/blob/master/kl10-source/blt.mic",
+      "topics": ["BLT", "clear-core", "page-fault", "restart", "parity"],
+      "use": "Use for BLT normal-copy versus clear-core paths, parity wait, and restart/fixup sequencing."
+    },
+    {
+      "id": "cornwell.kx10-cpu",
+      "authority": "SECONDARY_REFERENCE_IMPLEMENTATION",
+      "title": "Richard Cornwell PDP-10 KL/KI/KS CPU implementation",
+      "url": "https://github.com/rcornwell/sims/blob/master/PDP10/kx10_cpu.c",
+      "topics": ["emulator", "KL10", "paging", "extended-addressing", "page-fault", "instruction-set"],
+      "use": "Practical secondary reference for how another emulator implements KL10 behavior. Verify important semantics against DEC documentation or microcode before adopting."
+    },
+    {
+      "id": "cornwell.kx10-rh",
+      "authority": "SECONDARY_REFERENCE_IMPLEMENTATION",
+      "title": "Richard Cornwell RH10/RH20 interface implementation",
+      "url": "https://github.com/rcornwell/sims/blob/master/PDP10/kx10_rh.c",
+      "topics": ["RH20", "Massbus", "DMA", "NXM", "channel-status"],
+      "use": "Useful secondary implementation model for channel transfer and NXM completion/status behavior."
+    },
+    {
+      "id": "cornwell.kx10-df",
+      "authority": "SECONDARY_REFERENCE_IMPLEMENTATION",
+      "title": "Richard Cornwell DF10 common channel implementation",
+      "url": "https://github.com/rcornwell/sims/blob/master/PDP10/kx10_df.c",
+      "topics": ["DF10", "DMA", "memory-boundary", "channel", "NXM"],
+      "use": "Shows explicit DMA memory-boundary checks and channel completion on nonexistent memory; useful when auditing our channel paths."
+    }
+  ]
+}

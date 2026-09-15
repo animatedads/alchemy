@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.experiments",
+  "version": "0.2",
+  "sphere": "oorexx-ml",
+  "title": "State-of-the-Nation ML experiments",
+  "summary": "Coordinated learning state is checkpointed as a group so model, optimizer, training session, RNG, population and cursors move through history atomically.",
+  "authority": "Executable source/tests and supplied upstream API artifacts are authoritative; this sphere preserves architecture and continuity.",
+  "invariants": [
+    "A multi-object learning step must not restore only part of its state.",
+    "Experiment branches are State-of-the-Nation checkpoint pointers.",
+    "Random state and optimizer/session state are part of reproducible continuation when they affect the next step."
+  ],
+  "procedure": [
+    "Register every driveable participant before taking the run initial checkpoint.",
+    "Take a checkpoint immediately before the learning event.",
+    "On success checkpoint the coherent new world; on failure restore the before-checkpoint.",
+    "Preserve an alternate future when rolling back for a new policy/hypothesis."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev2.zip",
+      "sha256": "66bd14e51181a54db58b7b40d3a323b82c09d0248a172e89e212befbfa5d90a3",
+      "member": "oorexx_ml_v0.1-dev2/src/MLTraining.cls",
+      "claim": "MLTrainingRun coordinates model, optimizer and training session through MLExperiment/State-of-the-Nation."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev1.zip",
+      "sha256": "450a8fe846fe7a07e453a830bedb3e7127ff6f3f1e7f734595ac1b39eb95e98f",
+      "member": "oorexx_ml_v0.1-dev1/src/MLCore.cls",
+      "claim": "MLExperiment composes StateOfNationController."
+    },
+    {
+      "artifact": "oorexx_journal_pointed_state_v0.1.zip",
+      "sha256": "8466bc2309213f3acc2de2afb6b2596123e446d779ca90c319aed676544c51d8",
+      "member": "oorexx_journal_pointed_state_v0.1/tests/test_state_of_nation.rex",
+      "claim": "Coordinated rollback and roll-forward across participants."
+    }
+  ]
+}

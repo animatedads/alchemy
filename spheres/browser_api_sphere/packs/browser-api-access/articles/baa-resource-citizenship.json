@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "baa-resource-citizenship",
+  "version": "0.1",
+  "sphere": "browser-api-access",
+  "title": "Resource suppression and polite web behaviour",
+  "summary": "Virtual Browser must understand why resources are requested so it can suppress irrelevant browser traffic and police application polling before API Client performs network admission.",
+  "authority": "project-authority",
+  "invariants": [
+    "HTML, JavaScript and application data may be fetched when required for semantics.",
+    "Images, fonts, media, analytics and advertising are not fetched merely because markup references them.",
+    "Application polling intervals may be clamped to policy minimums instead of blindly reproducing consumer-browser cadence.",
+    "Browser resource policy may be stricter than API Client policy but must never weaken API Client route/rate/security policy.",
+    "Page-level budgets and per-origin request limits are legitimate browser policy even when API Client has spare capacity."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_api_client_v0.3.zip",
+      "sha256": "07a22f3d4c04f0589c7f6453c555f8fe8e4176b077c934d276648774dd4adfbc",
+      "member": "oorexx_api_client_v0.3/README.md",
+      "line_start": 20,
+      "line_end": 27,
+      "claim": "API Client bounds transport and leaves higher-level request semantics to callers.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "virtual_browser_v0.9.zip",
+      "sha256": "cf252cb1c713c9bad9a458b526d5159ed66964da75899de22b8cca349d0b9a2e",
+      "member": "virtual_browser_v0.9/README.md",
+      "line_start": 3,
+      "line_end": 5,
+      "claim": "Virtual Browser remains authoritative for browser semantics while API Client remains authoritative for outbound traffic.",
+      "note": "Authoritative executable-candidate grounding."
+    }
+  ]
+}

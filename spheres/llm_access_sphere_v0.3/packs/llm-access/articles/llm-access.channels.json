@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "llm-access.channels",
+  "version": "0.3",
+  "sphere": "llm-access",
+  "title": "Same model, different channel ID",
+  "summary": "Direct API, Bedrock, Vertex, Azure/Foundry, and OpenRouter do not share slugs. Copying a Claude API ID into Bedrock is the second-most common stale-access failure after Haiku 3.",
+  "examples": [
+    "claude-haiku-4-5-20251001 (Anthropic API) vs anthropic.claude-haiku-4-5-20251001-v1:0 (Bedrock) vs claude-haiku-4-5@20251001 (Vertex)",
+    "OpenAI-compatible base_url on api.x.ai/v1 still needs XAI keys and xAI slugs",
+    "Gemini AI Studio key is not a Vertex service account"
+  ],
+  "observed_as_of": "2026-09-02",
+  "authority": "provider-primary-snapshot",
+  "provenance": [
+    {
+      "artifact": "llm_access_sphere_v0.2.zip",
+      "sha256": "eaaf9ffd12c3734143c6721753d057caf02f20c2ac05783662627e33bb2b2ae6",
+      "member": "llm_access_sphere_v0.1/packs/llm-access/09-article-channels.json",
+      "claim": "Content preserved from v0.2 during structural normalization."
+    }
+  ],
+  "section": "channels"
+}

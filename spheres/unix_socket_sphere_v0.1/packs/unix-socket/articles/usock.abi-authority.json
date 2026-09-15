@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "usock.abi-authority",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Executable ABI profiles are binding authority",
+  "summary": "ABI-specific constants and aggregate layouts belong to Foreign Runtime bridge profiles. Foreign Runtime selects a profile for the actual process ABI and rejects mismatched or unqualified profiles before dlopen.",
+  "authority": "project-authority",
+  "invariants": [
+    "AF/socket/message/fcntl/poll constants, sockaddr_un facts, aggregate layouts and CMSG alignment belong to the qualified profile.",
+    "unixsocket.cls must not grow a parallel set of x86-64 ABI magic.",
+    "A profile label is insufficient by itself: release qualification independently compares profile values with compiled C headers.",
+    "A deliberately mismatched AArch64 profile must fail before the native provider is opened."
+  ],
+  "procedure": [
+    "Add a new ABI only with independent header evidence plus Foreign Runtime qualification; never copy and rename the x86-64 profile."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/ARCHITECTURE.md",
+      "line_start": 24,
+      "line_end": 47,
+      "claim": "Architecture makes Foreign Runtime executable ABI profiles authoritative for constants/layouts while describing profile-owned and runtime-native facts.",
+      "note": "ABI authority statement."
+    }
+  ]
+}

@@ -1,0 +1,233 @@
+{
+  "kind": "corpus",
+  "id": "accounting-core.lessons",
+  "sphere": "accounting-core",
+  "title": "Accounting Core durable reasoning lessons",
+  "records": [
+    {
+      "topic": "whose-books",
+      "aliases": [
+        "legal entity",
+        "book ownership",
+        "whose books",
+        "company isolation"
+      ],
+      "rule": "One AccountingBook belongs to one legal entity. Shared infrastructure and shared correlation never imply shared posting authority."
+    },
+    {
+      "topic": "event-first",
+      "aliases": [
+        "operational evidence",
+        "source event",
+        "AccountingEvent"
+      ],
+      "rule": "Normal operational integration emits authoritative AccountingEvent evidence; it does not start by manufacturing debit/credit lines."
+    },
+    {
+      "topic": "policy-boundary",
+      "aliases": [
+        "accounting policy",
+        "substance",
+        "recognition",
+        "treatment"
+      ],
+      "rule": "Executable entity policy decides accounting treatment from authoritative evidence; Accounting Core enforces mechanics and evidence binding."
+    },
+    {
+      "topic": "replay",
+      "aliases": [
+        "DUPLICATE",
+        "SOURCE_EVENT_CONFLICT",
+        "idempotency"
+      ],
+      "rule": "Check source identity/fingerprint before policy dispatch: exact replay returns DUPLICATE; changed reuse is a conflict."
+    },
+    {
+      "topic": "correlation",
+      "aliases": [
+        "economic chain",
+        "correlationRef",
+        "counterparty"
+      ],
+      "rule": "Correlation connects independent company records for later reconciliation but grants no authority to post another entity's books."
+    },
+    {
+      "topic": "establishment",
+      "aliases": [
+        "branch",
+        "place of business",
+        "office"
+      ],
+      "rule": "An establishment/place of business is a scope of a legal entity, not automatically a separate company or intercompany counterparty."
+    },
+    {
+      "topic": "tax-registration",
+      "aliases": [
+        "VAT number",
+        "GST registration",
+        "foreign seller",
+        "tax domicile"
+      ],
+      "rule": "Tax registration is an independent statutory relationship of the legal entity; do not infer it from domicile or require a fictional local company."
+    },
+    {
+      "topic": "tax-election",
+      "aliases": [
+        "rounding election",
+        "calculation granularity",
+        "return scheme"
+      ],
+      "rule": "TaxRegistration is stable statutory identity; effective-dated TaxElection freezes exact ruleset, rounding, granularity and return-scheme identity."
+    },
+    {
+      "topic": "tax-determination",
+      "aliases": [
+        "VAT calculation",
+        "GST calculation",
+        "tax ruleset"
+      ],
+      "rule": "Jurisdiction policy determines tax at high precision under the exact elected ruleset; the determination then enters ordinary accounting policy for GL treatment."
+    },
+    {
+      "topic": "tax-rounding",
+      "aliases": [
+        "pre-round precision",
+        "fractional penny",
+        "exact rational"
+      ],
+      "rule": "Tax rounding is a legal tax-policy decision applied to high-precision exact arithmetic; generic rounding primitives are not themselves tax law."
+    },
+    {
+      "topic": "settlement-rounding",
+      "aliases": [
+        "cash rounding",
+        "Swedish rounding",
+        "rounding difference"
+      ],
+      "rule": "Settlement rounding begins from an already-accounted obligation, has explicit tender applicability, and never rewrites the tax amount."
+    },
+    {
+      "topic": "precision",
+      "aliases": [
+        "DIGITS 50",
+        "JPY",
+        "large amount",
+        "minor units"
+      ],
+      "rule": "Accounting money is exact whole minor units under NUMERIC DIGITS 50; unsupported width is rejected rather than rounded."
+    },
+    {
+      "topic": "persistence",
+      "aliases": [
+        "JSONL",
+        "restart",
+        "durable book",
+        "S:I:"
+      ],
+      "rule": "Durable books are append-only and preserve money/opaque identifiers as protected strings; recovery rebuilds replay identity as well as balances."
+    },
+    {
+      "topic": "external-assessment",
+      "aliases": [
+        "Companies House",
+        "Civic",
+        "filed accounts",
+        "assessment book"
+      ],
+      "rule": "External statutory accounts are assessment evidence, never implicit native GL postings. Preserve mapping/evidence identity and omission semantics."
+    },
+    {
+      "topic": "not-filed",
+      "aliases": [
+        "omitted",
+        "missing income statement",
+        "not zero"
+      ],
+      "rule": "A statement intentionally not delivered is evidence of omission, not a zero and not permission to invent the missing detail."
+    },
+    {
+      "topic": "client-money",
+      "aliases": [
+        "Client Account",
+        "trust account",
+        "safeguarded funds"
+      ],
+      "rule": "Client-money arrangements retain establishment/regulator/currency/matter attribution, while substantive safeguarding rules remain regulator-specific policy."
+    },
+    {
+      "topic": "reporting-boundary",
+      "aliases": [
+        "regulatory view",
+        "tax return view",
+        "management accounts"
+      ],
+      "rule": "A ReportingBoundary selects immutable journal evidence across exact scopes; it does not repost the book or redefine legal entities."
+    },
+    {
+      "topic": "sealed-snapshot",
+      "aliases": [
+        "REPORT_POPULATION_STALE",
+        "VALID_SOURCE_ADVANCED",
+        "regulator report"
+      ],
+      "rule": "A sealed snapshot freezes exact source population. Later out-of-scope journals may leave it valid; later in-scope/backdated journals make the population stale without rewriting the snapshot."
+    },
+    {
+      "topic": "attestation",
+      "aliases": [
+        "signature",
+        "authority identity",
+        "submission evidence"
+      ],
+      "rule": "Attestation binds the exact snapshot plus asserted authority/key identity; Accounting records the assertion but external authority/security/legal systems decide whether it was valid."
+    },
+    {
+      "topic": "filing-lifecycle",
+      "aliases": [
+        "correction",
+        "amendment",
+        "superseded",
+        "withdrawn",
+        "rejected"
+      ],
+      "rule": "Corrections and regulator workflow are append-only lineage. New truth is added; prior accounting, reports, signatures, receipts and decisions are never rewritten."
+    },
+    {
+      "topic": "inter-establishment-vs-intercompany",
+      "aliases": [
+        "INTER_ESTABLISHMENT",
+        "INTERCOMPANY"
+      ],
+      "rule": "Do not fabricate intercompany receivables/payables for activity between establishments of the same legal entity; preserve the relationship kind explicitly."
+    },
+    {
+      "topic": "multi-currency",
+      "aliases": [
+        "FX",
+        "currency balance",
+        "GBP AUD"
+      ],
+      "rule": "A journal may contain multiple currencies only when every currency balances independently; reporting aggregation never adds incompatible currencies."
+    },
+    {
+      "topic": "exotic-structures",
+      "aliases": [
+        "trust",
+        "SPV",
+        "hypothecation",
+        "rehypothecation",
+        "beneficial owner"
+      ],
+      "rule": "Carry exotic legal/economic facts as evidence/dimensions and let versioned policy decide treatment; do not modify core double-entry mechanics to encode one structure."
+    },
+    {
+      "topic": "reporting-not-consolidation",
+      "aliases": [
+        "holistic report",
+        "multi-entity report",
+        "consolidation"
+      ],
+      "rule": "A reporting boundary may span legal entities while every line keeps its original entity/book identity; that is not consolidation or elimination by fiat."
+    }
+  ]
+}

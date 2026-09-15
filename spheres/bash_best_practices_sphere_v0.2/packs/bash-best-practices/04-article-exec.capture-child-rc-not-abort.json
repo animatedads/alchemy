@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.exec.capture-child-rc-not-abort",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "To measure a child's exit code, suspend errexit for that command and capture $?; never let a predictable failure kill your loop",
+  "summary": "Under set -e a command that returns nonzero is meant to abort. But when you must keep running and just record why a child stopped, you have to turn errexit off for exactly that child and read $? immediately. The same discipline applies to commands whose nonzero return is a normal 'found nothing' signal rather than a fault.",
+  "technique": "Run the volatile step with errexit disabled, wait the pid, capture its code, then restore normal flow; clean incidental side processes with an explicit `|| true` instead of a bare semicolon so the earlier code is preserved. Reserve a small set of nonzero codes to carry a diagnosis rather than flattening everything into one exit 1.",
+  "evidence_note": "queuebash.sh:27618-27625 uses `set +e; wait \"$cmd_pid\"; rc=\"$?\"` to run a job worker and keep going, then maps overflow into a sentinel like rc=96; it also uses `... || true` to tidy loggers without swallowing the worker code. queue-vcs-probe:165 uses `... || true` on a probe that must not abort.",
+  "invariants": [
+    "When you must survive a failing child, scope errexit off for that invocation and read its code into $? / a named rc at once.",
+    "Keep real stages under set -e; do not globally disable it to dodge a bug.",
+    "Let a 'nothing found / not a repo / no such row' state be a distinct first-class result, not a fake success or a crash.",
+    "Treat reserved nonzero codes as carrying meaning (log cap, caps violated, usage, missing tool) rather than a single generic failure."
+  ]
+}

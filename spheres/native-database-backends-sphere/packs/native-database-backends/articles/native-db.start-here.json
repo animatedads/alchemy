@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "native-db.start-here",
+  "version": "0.1",
+  "sphere": "native-database-backends",
+  "title": "Start here: one backend family, several implementation technologies",
+  "summary": "The Native Database Backends family presents a stable provider-neutral contract above several implementation technologies. 'Native' is not synonymous with FFI: PostgreSQL may use Foreign Runtime/libpq, GeoPackage has a portable pure-ooRexx direct reader, and process/bridge routes remain explicit fallbacks. Higher layers select by capability, qualification and policy, then pin the chosen implementation for the acquired session/transaction.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Interchangeability means contract compatibility, not pretending all backends have identical capabilities.",
+    "Pure ooRexx, Foreign Runtime and process/bridge implementations are distinct implementation kinds under one upper contract.",
+    "Capability and limitation publication is part of the backend contract, not optional documentation.",
+    "Fallback is selected before session acquisition; work is never silently replayed through another implementation after session/transaction acquisition."
+  ],
+  "procedure": [
+    "Read backend capabilities, limitations, requirements, qualification state and implementation identity.",
+    "Assess implementations against request requirements.",
+    "Select an eligible implementation according to explicit priority/policy.",
+    "Acquire and pin that implementation for the session/transaction.",
+    "Surface post-acquisition failures rather than replaying through a fallback."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_native_database_backends_v0.2.zip",
+      "sha256": "c87731ff59d378a1bbe9470b103fe36f96e4d0a7f808c2fcdc7ac53dd9ff066b",
+      "member": "oorexx_native_database_backends_v0.2/README.md",
+      "line_start": 1,
+      "line_end": 45,
+      "claim": "v0.2 defines a provider-neutral backend family where native may be pure ooRexx or Foreign Runtime, with explicit fallbacks and no vendored dependencies."
+    }
+  ]
+}

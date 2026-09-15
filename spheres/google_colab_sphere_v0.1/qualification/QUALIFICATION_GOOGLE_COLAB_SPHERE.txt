@@ -1,0 +1,51 @@
+Google Colab Gopher sphere v0.1
+==============================
+
+Purpose
+-------
+A data-only sphere for reliable Google Colab / google-colab-cli use in managed compute.
+It preserves live project incidents together with current public provider references,
+while explicitly separating durable doctrine from version-sensitive command surfaces.
+
+Primary lessons
+---------------
+- Installed CLI version/help is execution authority; upstream main is reference evidence.
+- Named explicit session lifecycle for multi-stage managed jobs.
+- Requested accelerator != observed runtime resources; verify GPU/RAM/disk inside worker.
+- Secret references travel on a separate plane and raw values never enter argv/log/source.
+- Retry only transient transport faults; deterministic dependency failures fail fast.
+- Compact/authenticate large payloads locally before upload; do not infer universal limits.
+- Classify ALLOCATION/UPLOAD/INSTALL/WORKER/EXECUTE/OUTPUT/GRADING/CLEANUP separately.
+- Stop/secret-retire are finally-path duties.
+- Training/execution success is separate from promotion/grading success.
+
+Grounding / volatility
+----------------------
+Public sources checked 2026-09-02:
+- PyPI google-colab-cli: 0.6.0 release metadata (released 2026-06-16).
+- googlecolab/google-colab-cli upstream README/operator guidance.
+- Google Colab local-runtime security documentation.
+
+Project incidents are exact qualified observations from the 2026-09-01/02 Gemma-ooRexx
+managed-compute work. They are deliberately not generalized into provider guarantees.
+The installed 0.6.0 command help differed from later upstream-main documentation; that
+mismatch is encoded as a first-class capability-detection lesson.
+
+Rule posture
+------------
+No language-rule files. These are lifecycle/provider/version facts whose correct trigger
+requires runtime context; weak source-text rules would create false positives.
+
+Qualification results
+---------------------
+PASS data-only test: tests/run_google_colab_sphere.sh against supplied LLM Gopher v0.16-dev1
+PASS context publishes overview, compatibility, secret and failure-stage articles
+PASS open compatibility article resolves installed-CLI authority doctrine
+PASS search 'Connection was lost' resolves bounded same-session transport-retry record
+PASS exact lookup topic=resources returns T4/14912 MiB worker-observation guidance
+PASS exact lookup topic=upload returns 480178064 -> 77062608 compaction incident
+PASS exact lookup topic=secrets returns separate-plane / SECRET_RETIRE guidance
+PASS JSON parse and unique semantic (kind,id) audit
+PASS package MANIFEST hashes
+PASS external sphere resolve/load by embedded profile identity under supplied Gopher v0.16-dev1
+PASS activated external profile exact lookup in fresh private Gopher environment

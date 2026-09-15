@@ -1,0 +1,38 @@
+KL10 IPL ooRexx v0.31-dev validation
+
+Runtime: ooRexx 5.3.0 r13196
+
+Compilation:
+  122 / 122 Rexx/class/tool sources compile
+
+Execution accelerator regressions:
+  PASS test_execution_clear_accelerator
+  PASS test_execution_probe_accelerator
+  PASS test_execution_probe_modified_map
+
+Historical evidence:
+  first-read state:
+    PC 774445
+    ICOUNT 276997
+    tape position 2568
+
+  probe cycle:
+    32 historical instructions per steady candidate page
+    742000..776000 eligible only after MAP validation
+    777000 explicitly refused to accelerator
+
+  real 777000 path:
+    AC13 000000,,777000
+      ADDI 13,001000
+    AC13 000001,,000000
+    exit to 774664
+    MOVEI AC1,000020
+    clear-loop entry 774670
+
+  observed clear collapses:
+    000020..000777 = 1487 architectural instructions
+    001000..001777 = 1535 architectural instructions
+
+  1200 runner work units:
+    5119 architectural instructions
+    31 accelerations

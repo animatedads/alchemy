@@ -1,0 +1,26 @@
+FederationBank Relationship Adapter v0.1 validation
+UTC: 2026-08-26T02:19:23Z
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+
+== test_raw_crm_not_authority.rex ==
+PASS: raw CRM/service directive cannot authorise Core Banking
+== test_external_signal_not_authority.rex ==
+PASS: external political/reputation signal cannot become a bank command
+== test_no_action_decision.rex ==
+PASS: explicit NO_BANK_ACTION is durable integration outcome
+== test_case_decision_binding.rex ==
+PASS: case decision reference and authority are bound to bank command
+== test_scope_and_expiry.rex ==
+PASS: decision temporal and customer scopes enforced
+== test_core_final_authority.rex ==
+PASS: relationship authority cannot bypass FederationBank policy/legal/Ledger chain
+== test_runtime_module.rex ==
+PASS: runtime module boundary
+
+PASS rexxc examples/FederationBankRelationshipPolicyFixtures.cls
+PASS rexxc runtime/FederationBankRelationshipAdapterRuntimeModule.cls
+PASS rexxc src/FederationBankRelationshipAdapter.cls
+PASS rexxc tests/TestSupport.cls
+PASS rexxc total=4

@@ -1,0 +1,111 @@
+{
+  "kind": "corpus",
+  "id": "browser-api-access-glossary",
+  "sphere": "browser-api-access",
+  "title": "Virtual Browser and API Access authoritative glossary",
+  "records": [
+    {
+      "id": "term.placement-lease",
+      "term": "Placement lease",
+      "definition": "General allocator evidence that a job may execute on a particular node under exact policy/capability/capacity generations; not an API egress reservation."
+    },
+    {
+      "id": "term.egress-session",
+      "term": "API egress session",
+      "definition": "Explicit reservable/releasable outbound route/session selected by API Client for a particular operation; distinct from job placement."
+    },
+    {
+      "id": "term.browser-session",
+      "term": "Virtual browser session",
+      "definition": "Long-lived web-application state containing semantic document/origin/cookie/storage/checkpoint state; distinct from placement and network sessions."
+    },
+    {
+      "id": "term.observation-lease",
+      "term": "Observation lease",
+      "definition": "Short-lived read-side authority for an observer/subscriber; grants visibility but never terminal/browser control."
+    },
+    {
+      "id": "term.route-requirement",
+      "term": "ApiRouteRequirement",
+      "definition": "Declarative hard outbound constraints such as country, VPN, network, egress class and required tags."
+    },
+    {
+      "id": "term.semantic-render",
+      "term": "Semantic render",
+      "definition": "Deterministic non-rasterised projection of document/application state for humans or AI, compatible with the terminal-shaped Observation surface."
+    },
+    {
+      "id": "term.resource-citizenship",
+      "term": "Resource citizenship",
+      "definition": "Browser/API behaviour that suppresses unnecessary resources and respects rate, burst, polling and remote-service limits."
+    },
+    {
+      "id": "term.wlu",
+      "term": "Work Load Units",
+      "definition": "Amount-of-work accounting/admission dimension; priority and desired WLU/second are separate concepts."
+    },
+    {
+      "id": "term.proofref",
+      "term": "proofRef",
+      "definition": "Reference to attributable capability/policy evidence. It is evidence linkage, not a bearer capability."
+    },
+    {
+      "id": "term.capability-generation",
+      "term": "Capability generation",
+      "definition": "Monotonic identity for an advertised capability state used to detect stale/equivocating placement or egress evidence."
+    },
+    {
+      "id": "term.engine-generation",
+      "term": "Observation engine generation",
+      "definition": "Semantic state revision produced by a terminal/browser observer; distinct from observation stream sequence."
+    },
+    {
+      "id": "term.stream-sequence",
+      "term": "Observation stream sequence",
+      "definition": "Ordering of detached records in an Observation stream; distinct from engine generation and Queue Fabric delivery identity."
+    },
+    {
+      "id": "term.full-browser",
+      "term": "FULL_BROWSER_REQUIRED",
+      "definition": "Exceptional placement/runtime capability for sites that genuinely require a real rendering/browser engine; not the default Virtual Browser path."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_api_client_v0.3.zip",
+      "sha256": "07a22f3d4c04f0589c7f6453c555f8fe8e4176b077c934d276648774dd4adfbc",
+      "member": "oorexx_api_client_v0.3/README.md",
+      "line_start": 3,
+      "line_end": 11,
+      "claim": "API Client terminology grounding.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "oorexx_observation_v0.5.zip",
+      "sha256": "0f604f78d5d198190ae209c813fd287967f94ddaf6116dfa83b4e1904a9f6ed7",
+      "member": "oorexx_observation_v0.5/README.md",
+      "line_start": 3,
+      "line_end": 9,
+      "claim": "Observation terminology grounding.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "job_node_allocator_v0.6(1).zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "line_start": 7,
+      "line_end": 15,
+      "claim": "Placement/WLU authority grounding.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "virtual_browser_v0.9.zip",
+      "sha256": "cf252cb1c713c9bad9a458b526d5159ed66964da75899de22b8cca349d0b9a2e",
+      "member": "virtual_browser_v0.9/README.md",
+      "line_start": 3,
+      "line_end": 5,
+      "claim": "Virtual Browser boundary grounding.",
+      "note": "Authoritative executable-candidate grounding."
+    }
+  ]
+}

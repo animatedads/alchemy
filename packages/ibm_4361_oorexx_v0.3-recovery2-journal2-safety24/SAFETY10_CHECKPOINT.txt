@@ -1,0 +1,19 @@
+IBM 4361 / OS/360 MVT ooRexx safety10 checkpoint
+
+Promotes only System/370 X'14' NR / And Register.
+
+Exact real-MVT frontier before retry:
+  IA 01464C / ICOUNT 511897 / instruction 1420
+  R2=00029960 / R0=00FFFFFF / CC0
+
+A live OP14 survived journal rewind while deliberately dirtied GPR/RAM state
+was restored. Retrying the identical invocation produced R2=00029960, CC1 and
+allowed 45 further guest instructions before:
+  IA 0154D0 / ICOUNT 511943 / bytes 5E60C8884710 / opcode 5E
+
+Permanent source reproduces the same next boundary. X'5E' is not implemented
+in safety10.
+
+Freeze remains durable evidence/replay; journal state remains live
+rewind/fork/diff/retry; object-scope methods remain independently replaceable
+executable hypotheses which intentionally survive architectural rewind.

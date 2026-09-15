@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.json.emit-and-protect",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Emit JSON with the right tool: python for arbitrary text, bounded escaping for fixed small fields, and stdout-only",
+  "summary": "JSON built by string concatenation corrupts the moment a value holds a quote, a backslash, a newline or non-ASCII text. For real serialization, hand raw arguments to a Python heredoc that does genuine json.dumps. Reserve hand-rolled bash escaping for tiny, known-safe fixed structures, and escape in the order backslash first, then quote, then the control characters. Keep all JSON on stdout and diagnostics on stderr.",
+  "technique": "The dominant safe path is `python3 - \"$a\" \"$b\" ... <<'PY'` building a dict and printing json.dumps(..., sort_keys=True, separators=(\",\",\":\")) for deterministic compact output. The bounded bash-only escape helper first doubles backslashes, then backslash-escapes double quotes, then folds newline/carriage/tab to C escapes.",
+  "evidence_note": "bin/queue-vcs-probe:195-204 builds a JSON probe via a python heredoc with sort_keys/separators. queuebash.sh:6-13 `_queuebash_direct_execution_json_escape_early` escapes in the `\\ -> \" -> controls` order for a small known-safe string; docs/QUEUE_COMMAND_CONTRACT.md states JSON output is parseable on stdout only with diagnostics to stderr.",
+  "invariants": [
+    "Do not build a JSON document from unknown input by string concatenation; use a real serializer.",
+    "For pure-bash escaping, substitute backslash first, then double quote, then control characters, and only for a bounded, single-type field you control.",
+    "Emit exactly one JSON document on stdout in JSON mode; keep human warnings and logs off stdout (stderr/audit).",
+    "Mark documented envelopes with a versioned schema field so a change is a new schema, not a silent reshape."
+  ]
+}

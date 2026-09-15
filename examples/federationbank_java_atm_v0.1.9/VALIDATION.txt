@@ -1,0 +1,81 @@
+FederationBank Java ATM v0.1.9 validation
+=========================================
+Date: 2026-08-26
+Baseline: oorexxapis(20260826-014545).zip
+Runtime: Java 21 (source target Java 17); existing FederationBank/ooRexx qualification retained from prior cuts
+
+JAVA ACCEPTANCE / REGRESSION
+  22 passed, 0 failed
+
+New v0.1.8/v0.1.9 regressions:
+  - newer signed DENY overrides a cached unused offline authority before dispense
+  - revoked/unused reserved authority can still be returned to restore availability
+  - brokerage request is a separate schema/operation and carries no bank accountId
+  - brokerage request carries no brokerage account selector
+  - brokerage owns customer-to-relationship linkage
+  - MerchantPositionSummary is narrow and contains no individual trade object
+  - large derivatives market value / available margin do not alter Retail Bank book or available balance
+  - brokerage position is not persisted into the ATM physical-cash recovery journal
+  - no-linked brokerage relationship returns a neutral no-link result
+  - brokerage outage after a successful read is not served from cache as current
+  - Retail Bank balance remains available while brokerage is independently offline
+
+INTERACTIVE DEMO EVIDENCE
+  Linked demo customer (CUST-002) displays:
+    Market value          AUD 72,440.00
+    Unrealised P/L        +AUD 3,215.00
+    Realised P/L          +AUD 840.00
+    Collateral            AUD 9,500.00
+    Required margin       AUD 5,380.00
+    Available margin      AUD 4,120.00
+    Position count        2
+    Valuation status      CURRENT
+
+  Independent-outage probe:
+    Retail Bank           ONLINE
+    Brokerage             toggled OFFLINE
+    position enquiry      REFUSED / no cached current copy
+    bank balance enquiry  PASS (AUD 4,100.00)
+
+BROKERAGE PERIMETER
+  Java source provides separate:
+    BrokerageNetwork
+    DemoBrokerageNetwork
+    JndiJmsBrokerageNetwork
+    BrokerageService
+    MerchantPositionSummary
+
+  Wire operation:
+    GET_MERCHANT_POSITION_SUMMARY
+
+  Request schema:
+    federationbank.brokerage.atm.request/0.1
+
+  Response schema:
+    federationbank.brokerage.atm.response/0.1
+
+  Recommended queues:
+    FB.BROKERAGE.ATM.REQUESTS
+    FB.BROKERAGE.ATM.REPLIES.<terminalId>
+
+  Live brokerage endpoint qualification is NOT claimed yet.  The brokerage task/source
+  has not yet supplied its server implementation.  The Java client, demo source and
+  explicit wire contract are ready for that integration.
+
+RETAIL BANK / CASH REGRESSION STATUS
+  Existing 18 cash/bank tests remain green, including:
+    withdrawal lost-reply exactly-once
+    dispenser failure cancel
+    offline deposit recovery
+    rule signature/tamper rejection
+    pending deposit/cancel/offline advice LOGOFF protection
+    bank-issued offline authority
+    unused-authority release and lost-release replay
+    zero-cash claim release
+    partial cash settlement
+    crash-after-dispense-start authority quarantine
+
+ARCHITECTURAL INVARIANT
+  Brokerage position truth is display-only.  It cannot alter Retail Bank available
+  balance without a separate arm's-length settlement completing and Retail Bank Ledger
+  truth recording the resulting money.

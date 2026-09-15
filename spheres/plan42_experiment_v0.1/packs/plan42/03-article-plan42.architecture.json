@@ -1,0 +1,7 @@
+{
+  "kind":"article","id":"plan42.architecture","version":"0.1","sphere":"plan42","title":"Plan42 architecture and pipeline","authority":"project framework","summary":"Plan42 guidance and executable evidence for plan42.architecture",
+  "facts":["ProgramSpec loads a JSON specification.","CodeGenerator walks the specification and emits target code.","PreferredModule supplies reusable capability implementations.","Contract and Inspector components provide explicit verification boundaries.","ProviderAgents and live bridges are separate from deterministic static-test agents.","Inspector Clouseau is opt-in runtime verification and writes machine-readable evidence."],
+  "pipeline":["specification","parse and validate","resolve preferred/domain operations","generate target","compile or parse target","run bounded smoke","record report"],
+  "design_rules":["Keep domain-specific operations in impl nodes.","Do not duplicate mature provider functionality.","Preserve exact boundary semantics such as lt versus lte.","Treat generated output as untrusted until target validation passes."],
+  "source_files":["ARCHITECTURE.md","spec/ProgramSpec.cls","spec/CodeGenerator.cls","preferred/PreferredModule.cls","monitors/InspectorClouseau.cls"]
+}

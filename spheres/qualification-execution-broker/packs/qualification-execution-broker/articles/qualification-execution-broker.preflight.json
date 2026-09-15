@@ -1,0 +1,26 @@
+{
+  "id": "qualification-execution-broker.preflight",
+  "title": "Preflight before any key ceremony",
+  "section": "operations",
+  "summary": "Runnability is proven before an authorization challenge can exist.",
+  "invariants": [
+    "Artifact must already be signed, checked and deployed.",
+    "Data must be authorised and available with a manifest hash.",
+    "Runtime, sandbox and target must be available; target must be eligible.",
+    "Test plan commands come from an operator-controlled test-plan identity.",
+    "Runtime and WLU limits must fit sandbox policy.",
+    "Failed preflight creates no run/authorization journal state."
+  ],
+  "kind": "article",
+  "version": "0.1-dev1",
+  "sphere": "qualification-execution-broker",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "qualification_execution_broker_v0.1-dev1.zip",
+      "sha256": "ecbd9419343f11e96e112679fd0a1f54308c2bb293a849d6de613d40cac7487f",
+      "member": "qualification_execution_broker_v0.1-dev1/src/QualificationExecutionBroker.cls",
+      "claim": "Catalog-backed preflight and request ordering."
+    }
+  ]
+}

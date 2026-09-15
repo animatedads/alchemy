@@ -1,0 +1,14 @@
+{
+  "kind": "article",
+  "id": "google-colab.compat.kernelclient-exact-environment",
+  "version": "0.1",
+  "sphere": "google-colab",
+  "title": "Repair CLI Python dependencies in the exact tool environment",
+  "summary": "A CLI failure can originate in the CLI's own Python environment rather than in Colab. In the qualified 0.6.0 installation, AttributeError: module 'jupyter_kernel_client' has no attribute 'KernelClient' prevented even a secret-free probe. Installing jupyter-kernel-client==0.9.0 into the exact uv-managed interpreter restored KernelClient and Colab operation. Treat this as a version-specific incident: introspect first, repair the exact CLI environment, then re-run a secret-free allocation/exec/stop probe before enabling credential-bearing jobs.",
+  "evidence_note": "Live compatibility incident from the Gemma-ooRexx managed Colab path. The important lesson is environment identity and a secret-free probe; the 0.9.0 pin is evidence for that exact 0.6.0 tool environment, not a universal future requirement.",
+  "invariants": [
+    "Identify the interpreter/environment that owns colab before changing dependencies.",
+    "Never repair a system Python when colab is running from a separate uv/pipx/tool environment.",
+    "Qualify the fix with a minimal secret-free create/exec/stop cycle before real jobs."
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "sec.permissions-boundary",
+  "version": "0.1",
+  "sphere": "security-effect",
+  "title": "Security meaning, Permissions authority and Security Manager enforcement are separate",
+  "summary": "Security Effect describes the security meaning of an exact method invocation. Access Permissions decides whether the exact subject may invoke the exact method on the exact object. Alchemy Security Manager physically enforces that decision.",
+  "authority": "project-authority",
+  "invariants": [
+    "Security ALLOW grants no method authority by itself.",
+    "Permission ALLOW cannot erase Security HOLD or REVIEW_REQUIRED.",
+    "Exact permission for one object does not float to another object of the same class.",
+    "Dependency direction stays non-circular: Security emits binding; Permissions consumes it."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "security_effect_v0.14.zip",
+      "sha256": "c9d481140552073c8b9ea4ea81feb93aef03208b5e8a939b9af382d30b9a1935",
+      "member": "security_effect_v0.14/PERMISSIONS_INTEGRATION.md",
+      "claim": "Security v0.14 documents exact Security-to-Permissions binding and Security Manager enforcement."
+    },
+    {
+      "artifact": "oorexx_access_permissions_v0.2.zip",
+      "sha256": "44f6b92c9834bffd2699261520e03c820aee9773b94d3e4adcb23af2ceb1e5d5",
+      "member": "oorexx_access_permissions_v0.2/README.md",
+      "claim": "Access Permissions v0.2 defines attribution, Access Control, exact method/object Permission, and Security Manager enforcement boundaries."
+    }
+  ]
+}

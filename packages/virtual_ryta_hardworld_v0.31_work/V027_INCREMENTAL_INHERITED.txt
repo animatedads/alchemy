@@ -1,0 +1,55 @@
+Virtual RYTA / HardWorld v0.27-work inherited-suite evidence
+=============================================================
+
+Acceptance model
+----------------
+v0.27-work uses incremental acceptance for the unchanged inherited corpus.
+The resource-heavy monolithic inherited runner is not claimed as a fresh
+end-to-end completion for this cut. v0.26-work had already demonstrated that
+this unchanged Librarian/Algorithm Relation path can exceed the outer execution
+window under the exact user-supplied ooRexx 5.3.0 r13196 debug interpreter.
+
+Rather than turn an unchanged stress-path timeout into either a fake PASS or a
+fake product FAIL, v0.27-work carries inherited evidence only where byte identity
+proves the implementation is unchanged, and freshly executes every changed
+security/authority path plus the core authority matrices.
+
+Fresh v0.27 execution
+---------------------
+The v0.27 code paths were freshly executed, including:
+- authenticated/chained QueueAuthorityExecutionLedger V3;
+- forged/modified COMPLETE rejection;
+- record-reordering rejection;
+- V3-open-without-keyring refusal;
+- key rotation and historical-key-loss refusal;
+- legacy V2 COMPLETE refusal for automatic recovery;
+- checkpoint comparison and valid-prefix rollback detection when an external
+  expected checkpoint is supplied;
+- authenticated Queue Fabric transfer/receipt replay behavior;
+- Legal Effect v0.10 retained-work completion, restart, RuntimeLease release,
+  and ACK-only recovery using authenticated COMPLETE;
+- new retained Legal work after lease release still requiring fresh authority;
+- promoted current-stack acceptance in isolated groups;
+- 40/40 .cls compilation under rexxc;
+- 25/25 RYTA adversarial corpus;
+- 64-vector coverage (0 holes, 0 ambiguous winners);
+- 16/16 mutants killed;
+- 18/18 table-fed authority vectors;
+- 162/162 consistency x authority vectors;
+- core VirtualRYTA authority/action/approval/capability/safety tests;
+- static, Librarian source-audit and special-variable guards.
+
+Security qualification
+----------------------
+V3 proves authenticity and ordering of the records that are observed. A local
+MAC chain by itself cannot prove that a valid older prefix was not restored.
+Rollback/truncation detection therefore requires a separately retained trusted
+or monotonic checkpoint. QueueAuthorityExecutionLedger exposes checkpoint text
+and can require an expected checkpoint at open; v0.27 does not claim the local
+ledger is independently rollback-proof.
+
+Conclusion
+----------
+Incremental inherited acceptance: PASS.
+Monolithic inherited run completion: NOT CLAIMED for v0.27-work.
+Changed v0.27 authority paths: freshly executed and PASS.

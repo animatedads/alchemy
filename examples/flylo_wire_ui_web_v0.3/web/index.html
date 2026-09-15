@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>FlyLo</title>
+  <link rel="stylesheet" href="flylo-wire-ui.css">
+</head>
+<body>
+  <header class="flylo-topbar">
+    <a class="flylo-brand" href="/" aria-label="FlyLo home"><span aria-hidden="true">✦</span> FLYLO</a>
+    <div id="wire-ui-connection" class="wire-ui-connection" role="status" aria-live="polite">Connecting…</div>
+  </header>
+  <main>
+    <section class="flylo-hero" aria-label="FlyLo">
+      <div class="flylo-hero-copy">
+        <p class="flylo-route">GLASGOW PRESTWICK <span aria-hidden="true">→</span> NEWARK</p>
+        <h1>Go somewhere interesting.</h1>
+        <p class="flylo-intro">The interaction below is projected from FlyLo’s authoritative Wire UI release.</p>
+      </div>
+      <div class="flylo-mark" aria-hidden="true">✈</div>
+    </section>
+    <section class="wire-ui-stage" aria-label="FlyLo booking and service">
+      <div id="wire-ui-root" class="wire-ui-root"></div>
+    </section>
+  </main>
+  <footer>FlyLo · Wire UI browser projection</footer>
+
+  <!-- Inject only a browser-safe bootstrap URL. The gateway returns the exact session/queue binding. -->
+  <script id="flylo-wire-ui-config" type="application/json">{"bootstrapUrl":"/wire-ui/bootstrap"}</script>
+  <script type="module" src="flylo-wire-ui.js"></script>
+</body>
+</html>

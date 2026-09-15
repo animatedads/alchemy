@@ -1,0 +1,83 @@
+say 'LEGAL EFFECT V0.1 -> EVIDENCE PROMOTION -> HARDWORLD START'
+
+a = .LegalPromotionAcceptance~new
+exit a~run
+
+::class LegalPromotionAcceptance
+::method run
+  source = .NormativeSource~new('C-1', 'CONTRACT', 'Synthetic contract')
+  norm = .LegalNorm~new('C-1-11', 'C-1', '11.12', 'CONTRACT_TERM', 'RATE_CHANGE', 'CONTRACT_BREACH')
+  ignored = norm~addCondition(.LegalPredicate~new('RATE_CHANGE', 'KNOWN_TRUE'))
+  generation = .LegalRuleGeneration~new('G-HW', '1')
+  ignored = generation~addSource(source)
+  ignored = generation~addNorm(norm)
+  ignored = generation~seal
+
+  context = .LegalContext~new('E-1', '2026-08-20')
+  ignored = context~bindSource(source~sourceId, 'contract applies to actor')
+  action = .LegalAction~new('RATE_CHANGE')
+  ignored = action~setFact('RATE_CHANGE', .true)
+
+  directEvaluation = .LegalEffectEngine~new~evaluate(action, generation, context)
+  call AssertTrue directEvaluation~ok, 'direct legal evaluation ok'
+  directAssessment = directEvaluation~value
+  call AssertEqual 'BLOCKED', directAssessment~status, 'direct assessment blocked'
+  unpinnedSet = .LegalEffectPromotionAdapter~promotionsFrom(directAssessment)
+  unpinnedWorld = .RYTAWorldState~new('UNPINNED-WORLD')
+  unpinnedApply = .EvidencePromotionApplier~apply(unpinnedSet, unpinnedWorld)
+  call AssertEqual 3, unpinnedApply~skipped, 'unpinned legal promotions refused'
+  call AssertEqual 'UNKNOWN', unpinnedWorld~knowledgeOf('LEGAL_ACTION_BLOCKED'), 'unpinned assessment cannot directly promote authority fact'
+
+  pinned = .LegalEffectPinnedEvaluator~evaluate(.LegalEffectEngine~new, action, generation, context)
+  call AssertTrue pinned~ok, 'pinned legal evaluation ok'
+  assessment = pinned~envelope~assessment
+  call AssertEqual 'BLOCKED', assessment~status, 'pinned assessment blocked'
+  promotionSet = .LegalEffectPromotionAdapter~promotionsFrom(pinned~envelope)
+  call AssertEqual 3, promotionSet~count, 'three explicit legal status promotions'
+
+  world = .RYTAWorldState~new('LEGAL-PROMOTION-WORLD')
+  applyStatus = .EvidencePromotionApplier~apply(promotionSet, world)
+  call AssertEqual 3, applyStatus~applied, 'three facts applied'
+  call AssertEqual 0, applyStatus~conflicts, 'no promotion conflicts'
+  call AssertTrue world~isKnownTrue('LEGAL_ACTION_BLOCKED'), 'blocked promoted true'
+  call AssertTrue world~isKnownFalse('LEGAL_ACTION_REVIEW_REQUIRED'), 'review promoted false'
+  call AssertTrue world~isKnownFalse('LEGAL_ACTION_CONDITIONAL'), 'conditional promoted false'
+
+  blockedFact = world~fact('LEGAL_ACTION_BLOCKED')
+  call AssertTrue blockedFact~evidence~isA(.EvidencePromotionBundle), 'HardWorld retains promotion bundle'
+  blockedPromotion = blockedFact~evidence~promotions[1]
+  call AssertTrue blockedPromotion~evidence~isA(.LegalEffectAssessmentEvidence), 'promotion retains assessment evidence snapshot'
+  call AssertTrue blockedPromotion~evidence~nativeObject == assessment, 'native LegalEffectAssessment identity retained'
+  call AssertTrue blockedPromotion~sourceObject == assessment, 'promotion source object retained'
+  call AssertTrue blockedPromotion~authority~pos('LEGAL_EFFECT/G-HW@') = 1, 'authority bound to generation closure hash'
+
+  pinnedIdentity = promotionSet~algorithmCanonicalText
+  closureBefore = pinned~envelope~generationSnapshot~canonicalIdentity
+  norm~conditions~append(.LegalPredicate~new('SECOND_FLAG', 'KNOWN_TRUE'))
+  closureAfter = .LegalEffectGenerationSnapshot~new(generation)~canonicalIdentity
+  call AssertTrue closureAfter \== closureBefore, 'post-seal collection mutation changes derived legal closure identity'
+  call AssertEqual pinnedIdentity, promotionSet~algorithmCanonicalText, 'already captured promotion remains frozen after upstream mutation'
+
+  changedAssessment = .LegalEffectEngine~new~evaluate(action, generation, context)~value
+  call AssertEqual 'REVIEW_REQUIRED', changedAssessment~status, 'upstream v0.1 post-seal mutation actually changes legal outcome'
+  changedUnpinned = .LegalEffectPromotionAdapter~promotionsFrom(changedAssessment)
+  changedWorld = .RYTAWorldState~new('CHANGED-UNPINNED')
+  changedApply = .EvidencePromotionApplier~apply(changedUnpinned, changedWorld)
+  call AssertEqual 3, changedApply~skipped, 'changed unpinned assessment still cannot promote'
+
+  say 'LEGAL EFFECT V0.1 -> EVIDENCE PROMOTION -> HARDWORLD: OK'
+  return 0
+
+::routine AssertTrue
+  use arg condition, label
+  if \condition then raise syntax 88.900 array('ASSERT TRUE FAILED: ' || label)
+  return 0
+
+::routine AssertEqual
+  use arg expected, actual, label
+  if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: ' || label || ' expected=' || expected || ' actual=' || actual)
+  return 0
+
+::requires 'LegalEffect.cls'
+::requires '../integration/LegalEffectPromotionAdapter.cls'
+::requires '../HardWorld.cls'

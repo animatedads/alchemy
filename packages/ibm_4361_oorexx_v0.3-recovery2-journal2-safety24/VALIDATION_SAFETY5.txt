@@ -1,0 +1,55 @@
+# IBM 4361 safety5 validation
+
+Runtime:
+- ooRexx 5.3.0 r13196 debug build
+
+Focused CVD regressions:
+- PASS test_cpu_cvd
+- PASS test_cpu_cvd_live_trial
+- PASS test_cpu_sra
+- PASS test_cpu_tch
+
+Exact-state journal/live retry at safety4 frontier:
+- BOUNDARY IA=FF71B0 ICOUNT=511763 INST=4E10D677F332 OP=4E
+- PRE R1=0000000D EA=FFD470 MEM=0000000000000000 CC=3
+- FIRST ST=UNSUPPORTED; state unchanged
+- PATCH OP4E#OBJECT installed
+- REWIND IA=FF71B0 IC=511763 R1=0000000D MEM=0000000000000000 CC=3
+- RETRY ST=OK IA=FF71B4 IC=511764 MEM=000000000000013C CC=3
+- NEXT STOP IA=FF71B4 IC=511764 INST=F332D643D67C OP=F3
+
+Permanent-source real-MVT replay:
+- PASS probe_mvt_safety5_frontier
+- old FF71B0 CVD boundary is passed
+- next stop IA=FF71B4 ICOUNT=511764 INST=F332D643D67C OP=F3
+- ST=UNSUPPORTED
+- 3215 output count=0
+
+Full package validation:
+- COMPILE PASS 74 sources
+- RUNTIME PASS 33 tests
+- freeze/journal separation tests PASS
+
+Explicit real-media validation on supplied MVTRES.350:
+- SHA256=095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49
+- PASS test_real_media
+- PASS test_real_mvt_ipl PSW=0000000000000080 CCHHR=0/0/4
+
+Probe media equivalence:
+- PASS logical CCKD track equivalence
+- tracks_total=7676
+- tracks_checked=3252 non-null
+- null_tracks=4424
+- original SHA256=095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49
+- probe-container SHA256=3b1fce935fcc18a10408a03d124f0750a1feb823139ae418b12d68f3ed12d1a5
+
+SSC:
+- REQUIRED baseline: oorexx_semantic_source_control_v0.2.2
+- exact artifact absent from supplied continuation files
+- Library search did not recover exact v0.2.2
+- v0.2.3 NOT substituted
+- v0.2.2 qualification PENDING
+
+Safety boundary:
+- X'F3' independently identified as UNPK for next work
+- OPF3 is NOT implemented or trialled in safety5

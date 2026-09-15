@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.camera",
+  "version": "0.1",
+  "sphere": "oorexx-ml",
+  "title": "Camera Behaviour inheritance",
+  "summary": "Camera Behaviour supplies the precedent for learned-world generations, materialized immutable snapshots, source barriers and cautious behavioural evidence.",
+  "authority": "Executable source/tests and supplied upstream API artifacts are authoritative; this sphere preserves architecture and continuity.",
+  "invariants": [
+    "Superseded learned generations remain inspectable.",
+    "Live model mutation must not mutate a historical snapshot.",
+    "A genuine source discontinuity must not silently inherit incompatible learned nuisance/scene state."
+  ],
+  "procedure": [
+    "Map Camera learned generations to MLLearnedGeneration.",
+    "Map source discontinuity to MLLearningBarrier.",
+    "Keep camera-specific behaviour semantics in Camera, not ML Core."
+  ],
+  "provenance": [
+    {
+      "artifact": "camera_behaviour_oorexx_v0.56.zip",
+      "sha256": "7586ae52f61f9bf465f3002c8d2c07b14ab68e659d2a46364f0f53b96261cc21",
+      "member": "CameraCore.cls",
+      "claim": "CameraLearnedGeneration, snapshots and registry."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev1.zip",
+      "sha256": "450a8fe846fe7a07e453a830bedb3e7127ff6f3f1e7f734595ac1b39eb95e98f",
+      "member": "oorexx_ml_v0.1-dev1/docs/AUDIO_VIDEO_INHERITANCE.md",
+      "claim": "Explicit Camera-to-ML generalization."
+    }
+  ]
+}

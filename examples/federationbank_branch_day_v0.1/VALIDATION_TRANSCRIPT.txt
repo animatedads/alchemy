@@ -1,0 +1,29 @@
+FederationBank Branch Day v0.1 validation transcript
+UTC 2026-08-26T09:17:51Z
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+
+## executable tests
+== test_adjustment_requires_authority.rex ==
+PASS: end-of-day cash adjustment cannot exist without an authority reference
+== test_approval_exact_binding.rex ==
+PASS: branch open/close approval binds to the exact evidence set
+== test_close_balances_cash_control.rex ==
+PASS: end-of-day closes only when physical custody matches authoritative cash control totals
+== test_close_blocks_reconciliation.rex ==
+PASS: end-of-day refuses to close around unresolved physical-cash work
+== test_close_blocks_unbalanced_control.rex ==
+PASS: a superficially balanced drawer cannot close a day when cash control totals do not explain it
+== test_open_balanced.rex ==
+PASS: balanced physical branch evidence can open the business day under dual approval
+== test_open_blocks_discrepancy.rex ==
+PASS: branch opening cannot hide a vault/till physical discrepancy
+== test_open_blocks_in_transit.rex ==
+PASS: branch day cannot open while physical cash remains in transit
+== test_runtime_module.rex ==
+PASS: Branch Day runtime module
+
+## rexxc
+PASS rexxc runtime/FederationBankBranchDayRuntimeModule.cls
+PASS rexxc src/FederationBankBranchDay.cls
+PASS rexxc tests/TestSupport.cls

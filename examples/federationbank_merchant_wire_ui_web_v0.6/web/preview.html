@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Federation Bank Australia IOM · Merchant Bank · Early UI</title>
+  <link rel="stylesheet" href="merchant-wire-ui.css">
+  <link rel="stylesheet" href="preview.css">
+</head>
+<body>
+  <header class="fbm-topbar">
+    <div class="fbm-brand">
+      <img src="assets/federationbank-mark.png" alt="" class="fbm-mark">
+      <span class="fbm-brand-copy"><strong>Federation Bank Australia IOM</strong><span>Merchant Bank</span></span>
+    </div>
+    <div class="fbm-session-strip">
+      <span class="fbm-perimeter">Merchant Banking perimeter</span>
+      <div class="wire-ui-connection" data-state="sync">NON-AUTHORITATIVE FRONT-END FIXTURE</div>
+    </div>
+  </header>
+
+  <nav class="preview-nav" aria-label="Merchant Banking preview navigation" role="tablist">
+    <strong>Alan Corp Pensions</strong><span class="preview-separator"></span>
+    <button data-preview-tab="overview" role="tab">Overview</button>
+    <button data-preview-tab="positions" role="tab">Positions</button>
+    <button data-preview-tab="remediation" role="tab">Remediation</button>
+    <button data-preview-tab="settlement" role="tab">Settlement</button>
+    <button data-preview-tab="accounting" role="tab">Accounting</button>
+    <button data-preview-tab="market" role="tab">Market structure</button>
+    <span class="preview-nav-spacer"></span><span class="preview-time">As at 20:26:11 · GBP</span>
+  </nav>
+
+  <main class="preview-main">
+    <div class="preview-boundary-banner"><b>View-first early UI.</b> All states below are projections. This fixture cannot trade, cure risk, settle cash, alter collateral, post journals or move Core Banking balances.</div>
+
+    <section data-preview-view="overview">
+      <section class="preview-heading">
+        <div><p class="fbm-eyebrow">Portfolio MB-PF-817</p><h1>Merchant Banking overview</h1><p>Client state, contract truth, risk truth, settlement truth and accounting truth deliberately shown separately.</p></div>
+        <div class="preview-badges"><span class="badge neutral">PROFESSIONAL CLIENT</span><span class="badge warning">1 REMEDIATION OPEN</span><span class="badge danger">1 HEDGE IMPAIRED</span></div>
+      </section>
+
+      <section class="preview-summary" aria-label="Portfolio summary">
+        <div><label>Gross contractual notional</label><strong>£21.0m</strong><small>Live promises</small></div>
+        <div><label>Net directional exposure</label><strong>£0</strong><small>Does not erase risk</small></div>
+        <div><label>Counterparty exposure</label><strong>£420k</strong><small>3 external dealers</small></div>
+        <div><label>Required margin</label><strong>£1.20m</strong><small>Policy MB-RISK-42</small></div>
+        <div><label>Available margin</label><strong class="warning-text">£700k</strong><small>Deficit £500k</small></div>
+        <div><label>Settlement obligations</label><strong>£1.235m</strong><small>1 active / 1 completed</small></div>
+      </section>
+
+      <section class="truth-strip" aria-label="Selected position truth">
+        <div><label>Client</label><strong>CLOSED</strong><small>Presentation state</small></div>
+        <div><label>Contracts</label><strong>ACTIVE ×2</strong><small>Original + reversing leg</small></div>
+        <div><label>Economic</label><strong>NET ZERO</strong><small>Directional only</small></div>
+        <div class="warn"><label>Risk</label><strong>HEDGE IMPAIRED</strong><small>Custody restriction</small></div>
+        <div><label>Settlement</label><strong>COMPLETE</strong><small>Cash evidence observed</small></div>
+        <div class="warn"><label>Accounting</label><strong>CONTROL OPEN</strong><small>Derivative derecognition unproved</small></div>
+      </section>
+
+      <section class="preview-alert danger-alert">
+        <div class="alert-icon">!</div>
+        <div><strong>Client CLOSED does not mean Merchant risk closed</strong><span>NWG ordinary / ADR remains an impaired hedge set. Historical equivalence evidence is retained; custody and deliverability restrictions continue to drive remediation.</span></div>
+        <span class="alert-ref">MSE-ADR-77 · HEQ v2</span>
+      </section>
+
+      <section class="overview-grid">
+        <section class="preview-card work-card">
+          <div class="card-head"><div><h2>Priority work</h2><p>Authoritative work projections; changing a work status cannot cure financial risk.</p></div><span class="badge danger">2 URGENT</span></div>
+          <div class="work-list">
+            <article><span class="work-severity critical">URGENT</span><div><b>Execution divergence · RP-221</b><small>Approved BUY +100; observed SELL -100. Actual book -200.</small></div><em>OPEN</em></article>
+            <article><span class="work-severity high">HIGH</span><div><b>Hedge remediation · H-1260</b><small>Custody route restricted; replacement equivalence must be re-proved.</small></div><em>ESCALATED</em></article>
+            <article><span class="work-severity normal">REVIEW</span><div><b>Settlement accounting control · OBL-778</b><small>Cash settled; derivative carrying-value derecognition still requires evidence.</small></div><em>OPEN</em></article>
+          </div>
+        </section>
+
+        <section class="preview-card evidence-card">
+          <div class="card-head"><div><h2>Evidence timeline</h2><p>Facts arrive from different authorities.</p></div></div>
+          <ol class="compact-timeline">
+            <li><time>10:01:48</time><div><b>Market structure event</b><small>MSE-ADR-77 · custody/legal transfer restricted</small></div></li>
+            <li><time>10:01:50</time><div><b>Whole-book assessment</b><small>NET_ZERO_WITH_IMPAIRED_CONTRACTS</small></div></li>
+            <li><time>10:14:03</time><div><b>Remediation plan approved</b><small>Maker/checker · projected peak |exposure| 100</small></div></li>
+            <li><time>10:17:24</time><div><b>Execution checkpoint diverged</b><small>WRONG_WAY_EXECUTION · actual -200</small></div></li>
+            <li><time>11:42:09</time><div><b>Settlement observation complete</b><small>External receipt SR-8841 · cash evidence only</small></div></li>
+          </ol>
+        </section>
+      </section>
+    </section>
+
+    <section data-preview-view="positions" hidden>
+      <section class="preview-heading"><div><p class="fbm-eyebrow">Contracts remain first-class</p><h1>Positions &amp; hedge sets</h1><p>Client state is not contractual state; net-zero is not risk-zero.</p></div><div class="preview-badges"><span class="badge neutral">4 HEDGE ROOTS</span><span class="badge danger">1 IMPAIRED</span></div></section>
+      <section class="preview-card positions-card">
+        <div class="position-table">
+          <div class="position-row header"><span>Contract / underlying</span><span>Line</span><span>Client</span><span>Economic</span><span>Market value</span><span>P/L</span><span>Risk</span></div>
+          <div class="position-row selected"><span><b>SHEL CFD · H-1042</b><small>2 live contracts · original + reversing</small></span><span><b>XLON ↔ XAMS</b><small>GBP / EUR</small></span><span><em class="status closed">CLOSED</em><small>client view</small></span><span><em class="status netzero">NET ZERO</em><small>directional</small></span><span><b>£1.09m</b><small>gross translated</small></span><span class="negative"><b>−£91k</b><small>FX drift</small></span><span><em class="risk-chip amber">FX · BASIS</em><small>open</small></span></div>
+          <div class="position-row"><span><b>RIO DLC hedge · H-1188</b><small>Rio plc / Rio Limited</small></span><span><b>XLON ↔ XASX</b><small>GBP / AUD</small></span><span><em class="status closed">CLOSED</em></span><span><em class="status hedged">CROSS HEDGED</em></span><span><b>£2.31m</b></span><span class="positive"><b>+£24k</b></span><span><em class="risk-chip amber">DLC · FX</em></span></div>
+          <div class="position-row impaired"><span><b>NWG ordinary / ADR · H-1260</b><small>Depositary representation</small></span><span><b>XLON ↔ XNYS</b><small>GBP / USD · 2:1</small></span><span><em class="status closed">CLOSED</em></span><span><em class="status impaired-status">HEDGE IMPAIRED</em></span><span><b>£780k</b></span><span class="negative"><b>−£38k</b></span><span><em class="risk-chip red">SANCTIONS</em><small>custody blocked</small></span></div>
+          <div class="position-row"><span><b>Imported Index CFD · H-1301</b><small>customer + External-MM-42</small></span><span><b>OTC</b><small>dealer hedge</small></span><span><em class="status closed">CLOSED</em></span><span><em class="status netzero">NET ZERO</em></span><span><b>£3.86m</b></span><span><b>£0</b></span><span><em class="risk-chip amber">CP £120k</em><small>replacement open</small></span></div>
+        </div>
+      </section>
+      <section class="preview-card contract-graph-card">
+        <div class="card-head"><div><h2>Selected reversal graph · H-1042</h2><p>Close intent creates an opposite economic leg. Neither contract is destroyed.</p></div><span class="badge neutral">2 ACTIVE CONTRACTS</span></div>
+        <div class="contract-graph"><div><label>Original</label><b>C-55201 · SHORT 10,000</b><small>ACTIVE · GBP · XLON settlement line</small></div><span>+</span><div><label>Reversing</label><b>C-55892 · LONG 10,000</b><small>ACTIVE · EUR representation</small></div><span>=</span><div><label>Directional result</label><b>NET ZERO</b><small>FX / basis / counterparty retained</small></div></div>
+      </section>
+    </section>
+
+    <section data-preview-view="remediation" hidden>
+      <section class="preview-heading"><div><p class="fbm-eyebrow">Whole-book remediation</p><h1>Remediation &amp; execution checkpoints</h1><p>Approved plan ≠ executed result. Every observed fill gets a fresh whole-book checkpoint.</p></div><div class="preview-badges"><span class="badge danger">RP-221 DEVIATED</span><span class="badge warning">OBLIGATION OPEN</span></div></section>
+      <section class="remediation-layout">
+        <section class="preview-card plan-card">
+          <div class="card-head"><div><h2>Approved plan · RP-221</h2><p>Maker: M-104 · Checker: M-208 · bound to assessment A-881</p></div><span class="badge neutral">APPROVED</span></div>
+          <div class="plan-metrics"><div><label>Starting exposure</label><b>−100</b></div><div><label>Projected peak |exposure|</label><b>100</b></div><div><label>Projected final exposure</label><b>0</b></div></div>
+          <div class="plan-steps"><article><span>S1</span><div><b>BUY +100</b><small>Neutralise old impaired short leg</small></div><em>APPROVED</em></article><article><span>S2</span><div><b>SELL −100</b><small>Establish replacement hedge on proved line</small></div><em>PENDING</em></article></div>
+        </section>
+        <section class="preview-card divergence-card">
+          <div class="card-head"><div><h2>Actual execution</h2><p>Attributable observations, not operator assertions.</p></div><span class="badge danger">EXECUTION_DIVERGENCE</span></div>
+          <div class="execution-comparison"><div><label>Approved S1</label><strong class="positive">BUY +100</strong></div><div class="versus">≠</div><div><label>Observed</label><strong class="negative">SELL −100</strong></div></div>
+          <div class="divergence-result"><label>Fresh whole-book assessment</label><strong>Actual exposure −200</strong><small>WRONG_WAY_EXECUTION · remediation remains OPEN · urgent work raised</small></div>
+        </section>
+      </section>
+      <section class="preview-card checkpoint-card">
+        <div class="card-head"><div><h2>Execution checkpoint ledger</h2><p>Later repair cannot erase an earlier breach.</p></div></div>
+        <div class="checkpoint-table"><div class="checkpoint-row header"><span>Time</span><span>Step</span><span>Observation</span><span>Actual book</span><span>Envelope</span><span>Assessment</span></div><div class="checkpoint-row"><span>10:17:24</span><span>S1</span><span>PARTIAL SELL −40</span><span>−140</span><span>|100|</span><strong class="negative">DIVERGED</strong></div><div class="checkpoint-row"><span>10:18:03</span><span>S1</span><span>FULL cumulative −100</span><span>−200</span><span>|100|</span><strong class="negative">DIVERGED</strong></div><div class="checkpoint-row"><span>10:23:18</span><span>Recovery</span><span>BUY +200</span><span>0</span><span>final 0</span><strong class="warning-text">PRIOR DIVERGENCE RETAINED</strong></div></div>
+      </section>
+    </section>
+
+    <section data-preview-view="settlement" hidden>
+      <section class="preview-heading"><div><p class="fbm-eyebrow">Settlement evidence</p><h1>Obligations, instructions &amp; observations</h1><p>An obligation, an instruction and externally observed settlement are separate facts.</p></div><div class="preview-badges"><span class="badge neutral">OBL-778</span><span class="badge neutral">COMPLETE</span></div></section>
+      <section class="settlement-grid">
+        <section class="preview-card settlement-chain-card">
+          <div class="card-head"><div><h2>Settlement chain · OBL-778</h2><p>GBP receivable · Counterparty DEALER-42</p></div><span class="badge neutral">£1,234.69</span></div>
+          <div class="settlement-chain">
+            <article><span class="step-index">1</span><div><label>Obligation</label><b>£1,234.69 RECEIVABLE</b><small>Merchant-domain obligation created</small></div><em>LIVE</em></article>
+            <article><span class="step-index">2</span><div><label>Instruction</label><b>INST-41 · £1,234.69</b><small>Dispatched to settlement channel</small></div><em>NO CASH YET</em></article>
+            <article><span class="step-index">3</span><div><label>Observation</label><b>PARTIAL · £734.69</b><small>External receipt SR-8839</small></div><em>OBSERVED</em></article>
+            <article><span class="step-index">4</span><div><label>Observation</label><b>COMPLETE · +£500.00</b><small>External receipt SR-8841 · cumulative £1,234.69</small></div><em>SETTLED</em></article>
+          </div>
+        </section>
+        <aside class="preview-card settlement-guard-card">
+          <div class="card-head"><div><h2>Guardrails</h2><p>Rejected before state advancement.</p></div></div>
+          <ul class="guard-list"><li><b>Wrong party</b><small>Observation debtor/creditor mismatch</small></li><li><b>Wrong currency</b><small>Cannot settle GBP obligation with unrelated currency evidence</small></li><li><b>Over-settlement</b><small>Cumulative observation may not exceed instruction</small></li><li><b>Duplicate external receipt</b><small>(sourceAuthority, externalSettlementRef) is idempotent</small></li></ul>
+        </aside>
+      </section>
+    </section>
+
+    <section data-preview-view="accounting" hidden>
+      <section class="preview-heading"><div><p class="fbm-eyebrow">Independent Merchant book</p><h1>Accounting evidence</h1><p>Cash settlement does not prove derivative derecognition or realised P&amp;L.</p></div><div class="preview-badges"><span class="badge neutral">ACCOUNTING CORE v0.7</span><span class="badge warning">CONTROL OPEN</span></div></section>
+      <section class="accounting-grid">
+        <section class="preview-card journal-card">
+          <div class="card-head"><div><h2>OBL-778 accounting sequence</h2><p>Immutable journals in FEDERATIONBANK_MERCHANT_BANK book.</p></div></div>
+          <div class="journal-list"><article><span>J-88201</span><div><b>Recognise settlement receivable</b><small>Dr settlement receivable £1,234.69 · Cr derivative-settlement control £1,234.69</small></div><em>POSTED</em></article><article class="no-post"><span>INST-41</span><div><b>Settlement instruction</b><small>Operational evidence only</small></div><em>NO JOURNAL</em></article><article><span>J-88207</span><div><b>Observed partial cash</b><small>Dr cash-at-settlement-agent £734.69 · Cr settlement receivable £734.69</small></div><em>POSTED</em></article><article><span>J-88211</span><div><b>Observed completion</b><small>Dr cash-at-settlement-agent £500.00 · Cr settlement receivable £500.00</small></div><em>POSTED</em></article></div>
+        </section>
+        <section class="preview-card accounting-state-card">
+          <div class="card-head"><div><h2>What remains open?</h2><p>Cash complete ≠ accounting complete.</p></div></div>
+          <div class="state-stack"><div><label>Settlement receivable</label><b class="positive">£0.00</b><small>Fully cleared by observed cash</small></div><div><label>Cash-at-settlement-agent</label><b>£1,234.69</b><small>Observed settlement evidence</small></div><div class="attention"><label>Derivative-settlement control</label><b>£1,234.69 OPEN</b><small>Requires separate carrying-value / derecognition evidence</small></div></div>
+        </section>
+      </section>
+      <section class="preview-card determination-card">
+        <div class="card-head"><div><h2>Settlement amount determination</h2><p>Accounting Core may determine an amount; it cannot amend Merchant's contractual obligation.</p></div><span class="badge warning">NON-POSTING</span></div>
+        <div class="determination-flow"><div><label>Contractual/accounted</label><b>£1,234.69</b><small>Recovered from immutable obligation journal</small></div><span>→</span><div><label>Exact selected ruleset</label><b>Cash tender policy R-17</b><small>Policy identity retained</small></div><span>→</span><div><label>Determined</label><b>£1,234.70</b><small>Difference +£0.01</small></div><span>→</span><div class="attention"><label>Authority result</label><b>MERCHANT_SETTLEMENT_AMOUNT_AUTHORITY_REQUIRED</b><small>0 new journals</small></div></div>
+      </section>
+    </section>
+
+    <section data-preview-view="market" hidden>
+      <section class="preview-heading"><div><p class="fbm-eyebrow">Conditional equivalence</p><h1>Market structure &amp; hedge equivalence</h1><p>Same ticker, ISIN or venue never proves exact offset identity.</p></div><div class="preview-badges"><span class="badge danger">1 IMPAIRED</span></div></section>
+      <section class="preview-card market-card">
+        <div class="market-table"><div class="market-row header"><span>Hedge set</span><span>Classification</span><span>Settlement line</span><span>Evidence</span><span>Current result</span></div><div class="market-row"><span><b>SHEL H-1042</b><small>XLON / XAMS</small></span><span>SETTLEMENT_LINE_HEDGE</span><span>GBP vs EUR route</span><span>HEQ v1</span><strong class="warning-text">FX / BASIS OPEN</strong></div><div class="market-row"><span><b>RIO H-1188</b><small>DLC</small></span><span>RELATED_HEDGE</span><span>XLON / XASX</span><span>HEQ v3</span><strong class="positive">HEALTHY</strong></div><div class="market-row impaired"><span><b>NWG H-1260</b><small>ordinary / ADR</small></span><span>CROSS_LISTED_HEDGE</span><span>XLON / XNYS custody route</span><span>HEQ v2</span><strong class="negative">HEDGE_IMPAIRED</strong></div></div>
+      </section>
+      <section class="preview-alert danger-alert"><div class="alert-icon">!</div><div><strong>Legal/custody event invalidated prior equivalence without a price tick</strong><span>Historical HEQ v1 remains retained. MSE-ADR-77 produced HEQ v2 and an immediate whole-book reassessment.</span></div><span class="alert-ref">MSE-ADR-77</span></section>
+    </section>
+  </main>
+
+  <footer><span>Federation Bank Australia IOM · Merchant Bank</span><span>Early operator UI · server-authoritative live path · fixture state only</span></footer>
+  <script type="module" src="preview.js"></script>
+</body>
+</html>

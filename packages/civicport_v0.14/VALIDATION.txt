@@ -1,0 +1,91 @@
+CivicPort v0.14 release qualification record
+===========================================
+
+Scope
+-----
+- Preserve v0.13 narrow FAA/SWIM runway-closure mapping generation:
+  faa.swim.aim-fns.notam-runway-closure/0.1
+- Add durable-journal projection/diagnostics.
+- Add read-only NoSQLServer NOTAM relation snapshot.
+- Add Runtime Registry NOTAM evidence contract.
+- Rebase queue-ingress dependency evidence to consolidated JMS Queue Bridge
+  0.1-dev7-fb1 while consuming only its unchanged Java-neutral TEXT handoff.
+- Add no NOTAM HardWorld promotion and no operational-use semantics.
+
+Qualification baseline
+----------------------
+oorexxapis(20260828-141725).zip
+SHA-256 a130157f425ac71f734a217b7dfd4a111bad356bc9633516c15d5f258d95c4b2
+
+ooRexx runtime:
+  Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit
+
+Dependencies exercised:
+  Alchemy Objects v0.8
+  ooRexx Crypto v0.3
+  Runtime Registry v0.14
+  NoSQLServer v0.79
+  Structured Relation v0.9 compatibility
+  Queue Fabric v0.9-dev4
+  JMS Queue Bridge v0.1-dev7-fb1
+  Secret Broker v0.2 (bridge side; not loaded by CivicPort NOTAM surfaces)
+  HardWorld v0.31-work (inherited regression only)
+
+Focused v0.14 acceptance
+------------------------
+PASS test_notam_surface_boundary_v014
+PASS test_capabilities_v014
+PASS test_notam_journal_v014
+PASS test_runtime_notam_v014
+PASS test_relation_notam_v014
+PASS examples/notam_journal_surface_fixture.rex
+
+Important focused assertions:
+- supported + unsupported journal records => one typed projection + one explicit diagnostic;
+- diagnostic retains exact Civic journal record/source identity and failure stage;
+- first SQL SELECT freezes the journal snapshot;
+- later journal appends do not mutate the materialized relation;
+- a fresh relation sees later durable evidence;
+- Runtime input accepts only source_identity and rejects queue/journal/JMS/URL/credential selectors;
+- numeric-looking YYMMDDHHMM tokens are explicit JsonString values;
+- no numeric coercion, DateTime construction, century/timezone inference or active-state calculation;
+- SQL/Runtime output carries NOT_FOR_OPERATIONAL_USE and
+  EVIDENCE_ONLY_NOT_FOR_OPERATIONAL_USE;
+- no JMS provider, Secret Broker lease, Queue claim/ACK/NACK, HardWorld or
+  promotion authority appears in the new v0.14 NOTAM surface files.
+
+Complete deterministic suite
+----------------------------
+The environment execution ceiling interrupts the monolithic runner during an
+inherited slow NoSQL batch. Qualification therefore ran the same run_tests.sh
+surface in deterministic continuation batches from the interrupted test.
+
+Result across the complete surface:
+  PASS 81
+  FAIL 0
+  SKIP 4 optional live-network probes
+
+The four skips are:
+  test_live_optional
+  test_companies_house_live_optional
+  test_companies_house_sandbox_live_optional
+  test_aviationweather_live_optional
+
+Source compilation
+------------------
+All 24 src/*.cls compile with rexxc from ooRexx 5.3.0 r13196.
+
+Static release scans
+--------------------
+PASS no ordinary RESULT/result assignment trap in src/ or tests/
+PASS no JMS provider / Secret Broker lease / Queue settlement / HardWorld /
+     promotion dependency in CivicNotamJournal.cls, CivicNotamRelation.cls or
+     CivicNotamRuntime.cls
+PASS no effective_start_datetime/effective_end_datetime/current_active/is_active
+     operational inference in the v0.14 NOTAM surfaces
+PASS release tree contains no generated tmp_* runtime stores
+
+Fixture honesty
+---------------
+The FAA/SWIM AIM-FNS JYR XML is synthetic deterministic fixture data. It is not
+a live FAA capture and the package does not claim operational suitability.

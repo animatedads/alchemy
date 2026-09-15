@@ -1,0 +1,74 @@
+NoSQLServer v0.46 validation
+============================
+
+Focus
+-----
+ORDER BY execution complexity exposed by a real MariaDB/PyMySQL workload.
+
+Observed external baseline
+--------------------------
+On the user's real wire-protocol workload with 5,007 rows:
+
+  SELECT COUNT(*) FROM customer;
+    0.358 sec
+
+  SELECT * FROM customer ORDER BY name DESC LIMIT 50;
+    60.887 sec
+
+Source diagnosis
+----------------
+The v0.45 ORDER BY path used stable insertion sort:
+  O(n^2) comparisons
+
+and compareOrderRows reparsed each textual ORDER BY specification on every
+comparison. LIMIT was applied only after the complete sort.
+
+v0.46 implementation
+--------------------
+- ORDER BY specifications are compiled once per query.
+- General ORDER BY uses stable iterative merge sort: O(n log n).
+- Ordinary SELECT with LIMIT/OFFSET passes offset+limit as a bounded-sort hint.
+- Bounded ORDER BY uses a max-heap of size offset+limit followed by a stable
+  sort of only the retained rows: approximately O(n log k), k=offset+limit.
+- Stable input-order semantics are retained for equal sort keys.
+- Existing ASC/DESC, multi-key, and NULLS FIRST/LAST semantics are unchanged.
+- LIMIT remains semantically after ORDER BY.
+- FETCH FIRST WITH TIES remains correctness-first and uses the complete final
+  ordering boundary.
+
+Local read-only benchmark
+-------------------------
+Synthetic NoSQLServer table with 5,007 rows, seeded directly in native storage
+to isolate read/sort cost from INSERT cost:
+
+  SELECT * FROM customer ORDER BY name DESC
+    approx 1.07 sec wall
+
+  SELECT * FROM customer ORDER BY name DESC LIMIT 50
+    approx 0.58 sec wall
+
+The local and external environments are not controlled-identical, so these
+numbers are not presented as a formal speedup ratio. They demonstrate removal
+of the pathological quadratic ORDER BY cost. The authoritative end-to-end
+comparison should be the user's same MariaDB query against v0.46.
+
+Capabilities
+------------
+- ORDER_BY_MERGESORT
+- ORDER_BY_TOP_N
+
+Regression evidence
+-------------------
+- v0.46 ORDER BY optimizer smoke: PASS
+- v0.45 staged mutation graph: PASS
+- v0.44 FK/event: PASS
+- v0.43 database events: PASS
+- v0.42 LIMIT/FETCH composition: PASS
+- v0.41 LIMIT/OFFSET: PASS
+- v0.38 NULL ordering: PASS
+- database_core adapter: PASS
+- SQL-92 company: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 13/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

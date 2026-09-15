@@ -1,0 +1,2 @@
+bs=.FBExtBranchAdapterTest~branchService; sh=.FBExtBranchAdapterTest~shipment("M1","OUTBOUND",10000); au=.FBExtBranchAdapterTest~authority(sh); p=.FederationBankExternalBranchCashVaultPort~new(bs,.FederationBankExternalBranchCashControlRegistry~new); r=p~releaseOutbound(sh,au); .FBExtBranchAdapterTest~assertEq("VAULT_EXTERNAL_CONTROL_REQUIRED",r~code); .FBExtBranchAdapterTest~assertEq(100000,bs~state~vault("VAULT-1")~expectedMinor); say "PASS: adapter cannot manufacture branch vault dual-control consent"
+::requires "TestSupport.cls"

@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.materials",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Semantic material delivery and safe Swing interpretation",
+  "summary": "UI_MATERIAL_SET is versioned presentation input, not application authority. Swing caches exact immutable material content and interprets only a bounded, explicit token/recipe vocabulary; materials can restyle existing components in place without changing semantic revision or action payloads.",
+  "authority": "renderer-presentation-contract",
+  "invariants": [
+    "Exact material identity is materialId@version plus immutable contentAddress/tokens/recipes.",
+    "siteRelease is delivery provenance, not material identity; the same exact material may be reused by another release.",
+    "Recipes are semantic identifiers, never executable Java/reflection/CSS/script/property paths.",
+    "Material refresh does not change view revision, recreate semantic instances, widen actions or discard unsent local edits.",
+    "Unsupported/malformed material values are ignored or contained rather than executed."
+  ],
+  "procedure": [
+    "Validate exact material identity/content.",
+    "Interpret only explicitly supported tokens/recipes.",
+    "Reapply presentation to existing component objects on EDT."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev5.zip",
+      "sha256": "a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271",
+      "member": "wire_ui_swing_v0.2-dev5/DESIGN.md",
+      "claim": "Qualified exact material identity, safe interpretation and in-place refresh rules."
+    }
+  ]
+}

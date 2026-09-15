@@ -1,0 +1,27 @@
+{
+  "kind": "language-rule",
+  "id": "LLM.ACCESS.AUTH_SHAPE_FROM_PRIMARY",
+  "version": "0.3",
+  "language": "any",
+  "title": "Auth header names come from current primary docs",
+  "purpose": "Cutoff memory invents OpenAI-only Bearer on Anthropic, or omits anthropic-version.",
+  "trigger": "Generated client uses the wrong header set for the provider (Authorization vs x-api-key, missing anthropic-version, Gemini key on Vertex, OpenAI key on api.x.ai).",
+  "correct": "Copy the header set from the provider article in this sphere for the observed_as_of date, then re-check docs if the date is stale.",
+  "fixability": "REQUIRED",
+  "classification": "freshness_and_integration",
+  "detection": "contextual",
+  "severity": "WARNING",
+  "authority": "provider-primary-snapshot",
+  "fix": {
+    "class": "SUGGESTED"
+  },
+  "legacy_evidence_note": "Public shapes only. This rule does not describe how to obtain or steal keys.",
+  "provenance": [
+    {
+      "artifact": "llm_access_sphere_v0.2.zip",
+      "sha256": "eaaf9ffd12c3734143c6721753d057caf02f20c2ac05783662627e33bb2b2ae6",
+      "member": "llm_access_sphere_v0.1/packs/llm-access/rules/03-auth-shape.json",
+      "claim": "Rule preserved from v0.2; classification metadata added conservatively."
+    }
+  ]
+}

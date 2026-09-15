@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "qt.allocator-seam",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Job-to-Node Allocator seam",
+  "summary": "The allocator may require evidence that a node supports the secure Queue Transport path, but it does not implement the encryption. Model secure Queue Transport as a durable node ability such as QUEUE_SECURE_TRANSPORT_V2 and make it a hard job requirement when dispatch depends on it.",
+  "authority": "project-authority",
+  "invariants": [
+    "Secure transport capability is hard eligibility, not a score bonus.",
+    "Capacity, cost, fitness or ranking must not compensate for the absence of a required secure-transport ability.",
+    "The allocator advertises/selects capability; Queue Fabric owns the transport implementation and proof behavior."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 56,
+      "line_end": 59,
+      "claim": "Allocator relationship defines QUEUE_SECURE_TRANSPORT_V2 as a hard ability and keeps encryption out of allocator."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/VALIDATION.txt",
+      "line_start": 133,
+      "line_end": 138,
+      "claim": "Validation restates the allocator boundary and hard-requirement semantics."
+    }
+  ]
+}

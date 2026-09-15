@@ -1,0 +1,176 @@
+--- /mnt/data/ml_dev6_dep_latest/audio/audio_rexx_search_v0.12-dev5/bin/AudioSearchExperiment.rex	2026-09-06 18:08:03.000000000 +0000
++++ /mnt/data/ml_dev6_work/oorexx_ml_v0.1-dev6/integration/audio/AudioSearchExperiment.rex	2026-09-06 19:36:47.519995261 +0000
+@@ -10,7 +10,7 @@
+ say 'REXX AUDIO SEARCH node='job['node'] 'strategy='strategy 'limit='limit 'sr='ctx~sampleRate 'duration='ctx~duration
+ align=ctx~alignment
+ say 'ALIGN offset='align['offset_sec'] 'drift_ppm='align['drift_ppm'] 'correlation='align['correlation']
+-records=.array~new; cache=.directory~new; runMeta=.directory~new
++records=.array~new; cache=.directory~new; runMeta=.directory~new; paretoPromotions=.array~new
+ workspaceGiB=job['workspace_budget_gib']+0; retainCount=job['shortlist_count']+0
+ workspace=.MLWorkspaceBudget~gib(workspaceGiB,1,workspaceGiB+1,retainCount,'NONE','FAIL_CLOSED')
+ retention=.MLRetentionPolicy~new(retainCount,'PCM_HASH','PROMOTED_ONLY')
+@@ -21,19 +21,28 @@
+ else if strategy='D' then call runGrid ctx,gridD(),limit,records,cache
+ else if strategy='C' then call runGA ctx,limit,records,cache,runMeta
+ else if strategy='E' then call runCheckpointedExploration ctx,limit,records,cache,runMeta,value('AUDIO_SEARCH_STATE_DIR',,'ENVIRONMENT')
++else if strategy='P' then call runParetoGA ctx,limit,records,cache,runMeta,retention,paretoPromotions
+ else do; say 'unsupported strategy' strategy; ctx~close; exit 3; end
+-records~sortWith(.AudioRecordComparator~new)
+-shortlist=retention~retainCount; if shortlist<1 then shortlist=12; if shortlist>records~items then shortlist=records~items
+ results=.array~new
+-seen=.directory~new
+-rank=0
+-do r over records
+-  h=r['pcm_hash64']~string
+-  if seen~hasIndex(h) then iterate
+-  seen[h]=1; rank=rank+1
+-  name='rank_'||right(rank,2,'0')||'.wav'; path=outDir'/'name
+-  ctx~render(r['config'],path); r['output']=name; results~append(r)
+-  if rank>=shortlist then leave
++if strategy='P' then do
++  rank=0
++  do r over paretoPromotions
++    rank=rank+1; name='rank_'||right(rank,2,'0')||'.wav'; path=outDir'/'name
++    ctx~render(r['config'],path); r['output']=name; results~append(r)
++  end
++end
++else do
++  records~sortWith(.AudioRecordComparator~new)
++  shortlist=retention~retainCount; if shortlist<1 then shortlist=12; if shortlist>records~items then shortlist=records~items
++  seen=.directory~new; rank=0
++  do r over records
++    h=r['pcm_hash64']~string
++    if seen~hasIndex(h) then iterate
++    seen[h]=1; rank=rank+1
++    name='rank_'||right(rank,2,'0')||'.wav'; path=outDir'/'name
++    ctx~render(r['config'],path); r['output']=name; results~append(r)
++    if rank>=shortlist then leave
++  end
+ end
+ call writeResults outDir'/results.json',job,sourcePath,companionPath,align,ctx~sharedDiagnostics,runMeta,records~items,results
+ call writeReviewCatalog outDir'/review_candidates.tsv',job,results
+@@ -125,6 +134,41 @@
+   return
+ 
+ 
++runParetoGA: procedure
++  use strict arg ctx,limit,records,cache,runMeta,retention,paretoPromotions
++  plan=.MLGABudgetPlan~forCandidateLimit(limit,30,3,4); policy=.MLGeneticPolicy~new(.25,.12,.80,2)
++  objectives=.AudioParetoObjectives~create
++  hard=.array~new
++  hard~append(.MLSearchSpaceConstraint~new('audio-shared-domain',sharedSpaceC(),'P candidates must remain inside the declared shared C domain'))
++  hard~append(.AudioChainConstraint~new('audio-chain-valid','processor chain parameter interdependencies must be canonical'))
++  constraints=.MLConstraintSet~new('RECOVERED-AUDIO-HARD-V1',hard,'hard configuration validity; not traded against quality objectives')
++  rng=.MLDeterministicRNG~new(20906,'AUDIO-P-RNG'); cursor=rng~cursor; initial=.array~new
++  do i=1 to plan~populationSize
++    genes=.array~new; do j=1 to 10; genes~append(cursor~nextUnit); end; initial~append(genes)
++  end
++  ignored=rng~commitCursor(cursor,'AUDIO_P_INITIAL_POPULATION')
++  pop=.MLPopulation~new(initial,'AUDIO-P-POPULATION'); exp=.MLExperiment~new('AUDIO-P-SEARCH')
++  decoder=.AudioGAScoreEvaluator~new(ctx,records,cache); delegate=.AudioParetoDelegate~new(decoder,cache)
++  evaluator=.MLConstrainedEvaluatorAdapter~new(objectives,constraints,delegate)
++  ga=.MLConstrainedParetoGeneticAlgorithm~new(pop,objectives,constraints,rng,exp,policy)
++  run=ga~run(evaluator,plan~breedingSteps); final=run~finalEvaluation~result
++  selected=.MLConstrainedParetoRetentionSelector~select(final,retention)
++  if selected~items=0 then raise syntax 88.900 array('Pareto search produced no feasible promotable candidate')
++  do point over selected
++    r=delegate~recordFor(point~subject)
++    if r==.nil then raise syntax 88.900 array('Pareto frontier record missing from evaluation cache',point~subjectId)
++    r['pareto_rank']=point~rank; r['pareto_crowding']=point~crowdingDistance; r['pareto_objectives']=point~objectiveVector~canonicalText
++    paretoPromotions~append(r)
++  end
++  runMeta['pareto_objective_set']=objectives~id; runMeta['hard_constraint_set']=constraints~id
++  runMeta['pareto_feasible_final']=final~feasibleCount; runMeta['pareto_infeasible_final']=final~infeasibleCount; runMeta['pareto_front1_final']=final~nonDominated~items
++  runMeta['pareto_promoted']=selected~items; runMeta['pareto_final_generation']=run~finalPopulationGeneration; runMeta['pareto_generation_registry_count']=ga~generationRegistry~count
++  runMeta['ga_budget_plan']=plan~canonicalText; runMeta['ga_policy']=policy~canonicalText; runMeta['final_population_evaluated']=1
++  say run~canonicalText
++  say 'PARETO feasible='final~feasibleCount 'infeasible='final~infeasibleCount 'front1='final~nonDominated~items 'promoted='selected~items
++  return
++
++
+ runCheckpointedExploration: procedure
+   use strict arg ctx,limit,records,cache,runMeta,stateDir
+   if limit<1 then limit=1
+@@ -334,7 +378,7 @@
+   s=.stream~new(path); s~open('write replace')
+   s~lineout('{')
+   s~lineout('  "schema": "audio.search.result/rexx-native-0.12-dev5",')
+-  s~lineout('  "engine": "ooRexx 5.3.0 r13196 + ooRexx ML v0.1-dev4 + Foreign Runtime native DSP",')
++  s~lineout('  "engine": "ooRexx 5.3.0 r13196 + ooRexx ML v0.1-dev6 + Foreign Runtime native DSP",')
+   s~lineout('  "python_execution": false,')
+   s~lineout('  "node": 'jstr(job['node'])',')
+   s~lineout('  "strategy": 'jstr(job['strategy'])',')
+@@ -401,9 +445,10 @@
+ mlJson: procedure
+   use strict arg job,meta
+   strategy=job['strategy']~upper
+-  if strategy='C' then return '{"implementation": "ooRexx ML v0.1-dev4", "search_driver": "MLGeneticAlgorithm~run", "seed": 20903, "objective": {"id": '||jstr(meta['objective_id'])||', "direction": '||jstr(meta['objective_direction'])||'}, "population_size": '||meta['population_size']||', "evaluated_population_rounds": '||meta['evaluated_population_rounds']||', "breeding_steps": '||meta['breeding_steps']||', "evaluation_slots": '||meta['evaluation_slots']||', "unused_slots": '||meta['unused_slots']||', "final_population_evaluated": true, "final_population_generation": '||meta['final_population_generation']||', "generation_registry_count": '||meta['generation_registry_count']||', "mutation_rate": '||meta['mutation_rate']||', "mutation_scale": '||meta['mutation_scale']||', "crossover_rate": '||meta['crossover_rate']||', "elite_count": '||meta['elite_count']||', "shared_parameter_domain": "C is an explicit superset of A/B/D shared gain/filter/denoise ranges", "space_relations": {"A_to_C": '||jstr(meta['space_a_to_c'])||', "B_to_C": '||jstr(meta['space_b_to_c'])||', "D_to_C": '||jstr(meta['space_d_to_c'])||'}}'
+-  if strategy='E' then return '{"implementation": "ooRexx ML v0.1-dev4", "search_driver": "MLDeterministicRNG checkpointed exploration", "seed": '||meta['checkpoint_seed']||', "resume_supported": true, "processed_before_resume": '||meta['processed_before_resume']||', "processed_slots": '||meta['processed_slots']||', "checkpoint_records_loaded": '||meta['checkpoint_records_loaded']||', "checkpoint_interval_candidates": '||meta['checkpoint_interval_candidates']||', "shared_parameter_domain": "same semantic genome decoder as strategy C"}'
+-  return '{"implementation": "ooRexx ML v0.1-dev4", "search_driver": "deterministic grid"}'
++  if strategy='C' then return '{"implementation": "ooRexx ML v0.1-dev6", "search_driver": "MLGeneticAlgorithm~run", "seed": 20903, "objective": {"id": '||jstr(meta['objective_id'])||', "direction": '||jstr(meta['objective_direction'])||'}, "population_size": '||meta['population_size']||', "evaluated_population_rounds": '||meta['evaluated_population_rounds']||', "breeding_steps": '||meta['breeding_steps']||', "evaluation_slots": '||meta['evaluation_slots']||', "unused_slots": '||meta['unused_slots']||', "final_population_evaluated": true, "final_population_generation": '||meta['final_population_generation']||', "generation_registry_count": '||meta['generation_registry_count']||', "mutation_rate": '||meta['mutation_rate']||', "mutation_scale": '||meta['mutation_scale']||', "crossover_rate": '||meta['crossover_rate']||', "elite_count": '||meta['elite_count']||', "shared_parameter_domain": "C is an explicit superset of A/B/D shared gain/filter/denoise ranges", "space_relations": {"A_to_C": '||jstr(meta['space_a_to_c'])||', "B_to_C": '||jstr(meta['space_b_to_c'])||', "D_to_C": '||jstr(meta['space_d_to_c'])||'}}'
++  if strategy='P' then return '{"implementation": "ooRexx ML v0.1-dev6", "search_driver": "MLConstrainedParetoGeneticAlgorithm~run", "objective_set": '||jstr(meta['pareto_objective_set'])||', "hard_constraint_set": '||jstr(meta['hard_constraint_set'])||', "feasible_final": '||meta['pareto_feasible_final']||', "infeasible_final": '||meta['pareto_infeasible_final']||', "front1_final": '||meta['pareto_front1_final']||', "promoted": '||meta['pareto_promoted']||', "final_population_evaluated": true}'
++  if strategy='E' then return '{"implementation": "ooRexx ML v0.1-dev6", "search_driver": "MLDeterministicRNG checkpointed exploration", "seed": '||meta['checkpoint_seed']||', "resume_supported": true, "processed_before_resume": '||meta['processed_before_resume']||', "processed_slots": '||meta['processed_slots']||', "checkpoint_records_loaded": '||meta['checkpoint_records_loaded']||', "checkpoint_interval_candidates": '||meta['checkpoint_interval_candidates']||', "shared_parameter_domain": "same semantic genome decoder as strategy C"}'
++  return '{"implementation": "ooRexx ML v0.1-dev6", "search_driver": "deterministic grid"}'
+ 
+ executionJson: procedure
+   use strict arg job
+@@ -481,6 +526,54 @@
+   if c['compress'] then s=s||' -> compressor='self~canonicalNumber(c['compress_ratio'])':1'
+   return s||' -> soft_limiter=.88/.98'
+ 
++
++::class AudioParetoDelegate public
++::method init
++  expose decoder cache
++  use strict arg decoder,cache
++::method constraintSubject
++  expose decoder
++  use strict arg genome
++  c=decoder~decodeGenome(genome); d=.directory~new; do k over c; d[k]=c[k]; end
++  if d~hasIndex('denoise_nf') then if d['denoise_nf']==.nil then d['denoise_nf']=999
++  return d
++::method scores
++  expose decoder cache
++  use strict arg genome
++  ignored=decoder~score(genome); r=self~recordFor(genome)
++  if r==.nil then raise syntax 88.900 array('audio Pareto score record unavailable',genome~id)
++  return .AudioParetoObjectives~scoresFromStats(r)
++::method evidence
++  use strict arg genome
++  return self~recordFor(genome)
++::method recordFor
++  expose decoder cache
++  use strict arg genome
++  c=decoder~decodeGenome(genome); key=self~configKey(c)
++  if cache~hasIndex(key) then return cache[key]
++  return .nil
++::method configKey private
++  use strict arg c
++  keys=.array~of('gain_db','highpass','lowpass','denoise_nf','echo_delay_ms','echo_gain','cancel_strength','cancel_tweak_ms','compress','compress_ratio','compress_threshold_db','reject_bands'); s=''
++  do k over keys
++    if c~hasIndex(k) then do; if c[k]==.nil then v='NONE'; else v=self~canonicalNumber(c[k]); end; else v=''
++    s=s||k||'='||v||';'
++  end
++  return s
++::method canonicalNumber private
++  use strict arg v
++  s=v~string; if s~left(1)='.' then return '0'||s; if s~left(2)='-.' then return '-0'||s~substr(2); return s
++
++::class AudioChainConstraint subclass MLHardConstraint public
++::method assess
++  use strict arg c
++  if c~isA(.MLFrozenMap) then c=c~toDirectory
++  if \c~isA(.Directory) then return .MLConstraintResult~new(self~id,.false,'CONFIGURATION_NOT_AVAILABLE')
++  if c['highpass']>=c['lowpass'] then return .MLConstraintResult~new(self~id,.false,'HIGHPASS_NOT_BELOW_LOWPASS')
++  if c['echo_delay_ms']=0 & c['echo_gain']<>0 then return .MLConstraintResult~new(self~id,.false,'ECHO_GAIN_WITHOUT_DELAY')
++  if c['cancel_strength']=0 & c['cancel_tweak_ms']<>0 then return .MLConstraintResult~new(self~id,.false,'CANCEL_TWEAK_WITHOUT_CANCELLATION')
++  return .MLConstraintResult~new(self~id,.true,'OK')
++
+ ::class AudioRecordComparator public
+ ::method compare
+   use strict arg a,b
+@@ -489,3 +582,4 @@
+   return 0
+ ::requires 'AudioSearchNative.cls'
+ ::requires 'OorexxML.cls'
++::requires 'AudioParetoObjectives.cls'

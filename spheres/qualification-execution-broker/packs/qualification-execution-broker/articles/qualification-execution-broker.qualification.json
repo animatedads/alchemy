@@ -1,0 +1,25 @@
+{
+  "id": "qualification-execution-broker.qualification",
+  "title": "Qualification evidence",
+  "section": "qualification",
+  "summary": "Behavioral qualification covers cryptographic known answer, preflight ordering, durable restart, local-key gating, drift rejection and worker-only execution.",
+  "invariants": [
+    "RFC 8032 Ed25519 verify passes.",
+    "Failed preflight writes no run state.",
+    "JSONL restart preserves authorized grant and sealed result.",
+    "Local NO path does not open the private key.",
+    "Packaged artifact manifest and suites are rerun from exact extracted archive."
+  ],
+  "kind": "article",
+  "version": "0.1-dev1",
+  "sphere": "qualification-execution-broker",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "qualification_execution_broker_v0.1-dev1.zip",
+      "sha256": "ecbd9419343f11e96e112679fd0a1f54308c2bb293a849d6de613d40cac7487f",
+      "member": "qualification_execution_broker_v0.1-dev1/VALIDATION.txt",
+      "claim": "Qualification result and test scope."
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "ref.accounting-core.reporting-evidence",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "Reporting boundaries and sealed snapshots preserve what was actually assessed",
+  "summary": "Live reporting views select immutable journals. A sealed ReportingSnapshot freezes the exact boundary, selected lines and source-book cutoffs so a regulator-facing report can later prove which accounting population was assessed without creating new accounting truth.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Reporting can span books/legal entities while retaining every line's legalEntityId and bookId; this is not consolidation.",
+    "A sealed snapshot freezes exact entry/line fingerprints and ordered source-book cutoffs.",
+    "VALID means source journals still match the sealed state; VALID_SOURCE_ADVANCED means later journals exist but none entered the sealed population.",
+    "REPORT_POPULATION_STALE means later/backdated evidence would now enter that population; the old snapshot remains immutable evidence of what was originally reported.",
+    "Reporting boundaries do not perform eliminations, tax determination or regulator-specific substantive tests.",
+    "Currency remains part of every reporting aggregation key."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/SEALED_REPORTING_SNAPSHOT_CONTRACT.md",
+      "claim": "Sealed snapshot freezes exact selected population and distinguishes VALID, VALID_SOURCE_ADVANCED and REPORT_POPULATION_STALE."
+    },
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/SCOPES_AND_REPORTING_BOUNDARIES.md",
+      "claim": "ReportingBoundary selects immutable accounting evidence across exact dimensions without reposting or redefining legal entities."
+    }
+  ]
+}

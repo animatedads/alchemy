@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.architecture",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Journey to Swing: renderer architecture",
+  "summary": "Wire UI Swing is a renderer/runtime for compiled WIRE-UI/0.1 facts, not a parallel UI authoring system. Builder journeys, semantic elements, projections, composition, materials and server state remain renderer-neutral; Swing converts the current authoritative semantic view into JComponents.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Builder authoring truth is semantic and renderer-neutral; DOM, CSS and Swing classes are not authoring truth.",
+    "Swing is a renderer profile/capability target, not an interaction-profile fork.",
+    "The same compiled release may be rendered by browser and Swing without duplicating journey/business logic.",
+    "Swing never becomes journey-transition, business-state, release-selection, experiment, authentication or permission authority."
+  ],
+  "procedure": [
+    "Consume server-selected render profile, exact definition manifest, definitions, material set, snapshot and patches.",
+    "Maintain an immutable semantic mirror separate from JComponent state.",
+    "Translate renderer-neutral composition and primitives into Swing only after semantic preflight."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev5.zip",
+      "sha256": "a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271",
+      "member": "wire_ui_swing_v0.2-dev5/DESIGN.md",
+      "claim": "Qualified Swing renderer authority boundary and passive-renderer architecture."
+    },
+    {
+      "artifact": "wire_ui_builder_v0.11.zip",
+      "sha256": "dd48908e49e8ee00c94f931c3a1cfdfc8d5324e2e0fbf64e2cdd7d82c510ad3f",
+      "member": "wire_ui_builder_v0.11/README.md",
+      "claim": "Builder is a fact editor for flow and remains renderer-neutral."
+    }
+  ],
+  "related": [
+    "ref.wire-ui-swing.builder-composition",
+    "ops.wire-ui-swing.edt-action-boundary",
+    "ref.wire-ui-swing.definition-manifest"
+  ]
+}

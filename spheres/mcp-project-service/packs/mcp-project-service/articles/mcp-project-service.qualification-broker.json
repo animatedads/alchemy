@@ -1,0 +1,33 @@
+{
+  "id": "mcp-project-service.qualification-broker",
+  "title": "Qualification Execution Broker MCP integration",
+  "section": "operations",
+  "summary": "v0.2-dev8 optionally projects Qualification Execution Broker v0.1-dev1 into MCP as seven control/evidence tools while preserving worker execution as a separate authority.",
+  "invariants": [
+    "qualification.plan performs preflight and never creates authorization state.",
+    "qualification.request freezes the exact runnable intent before human approval.",
+    "authorization.challenge exposes frozen intent/hash and public verification-key identities only.",
+    "authorization.submit accepts runId, approverKeyId and detached signature; never a private key.",
+    "status/results support long-running qualification beyond chat execution windows.",
+    "cancel cannot become an execute primitive.",
+    "No broker configured preserves the eight-tool project-only surface."
+  ],
+  "kind": "article",
+  "version": "0.2-dev8",
+  "sphere": "mcp-project-service",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_mcp_service_v0.2-dev8.zip",
+      "sha256": "56a38180ae1d2f712ba9afc3f9f2aa5bd528bc04a5c976510167faf6f98287d3",
+      "member": "oorexx_mcp_service_v0.2-dev8/tests/test_mcp_qualification.rex",
+      "claim": "MCP qualification tool count, schemas, dispatch and no-execute invariant."
+    },
+    {
+      "artifact": "qualification_execution_broker_v0.1-dev1.zip",
+      "sha256": "ecbd9419343f11e96e112679fd0a1f54308c2bb293a849d6de613d40cac7487f",
+      "member": "qualification_execution_broker_v0.1-dev1/SECURITY.md",
+      "claim": "Underlying qualification authority and local-key invariants."
+    }
+  ]
+}

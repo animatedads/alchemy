@@ -1,0 +1,37 @@
+Crypto v0.6.1 thread-safe SHA validation
+
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version
+Runtime Reference: v0.4
+Foreign Runtime: user-supplied v0.8.1
+Provider: OpenSSL libcrypto one-shot SHA256/SHA512
+
+PASS Foreign Runtime v0.8.1 source build and full suite
+- PASS 54 assertions
+- PASS real ooRexx activity/thread-safety suite
+- PASS one-shot SHA-256/SHA-512 exact binary embedded-NUL probes
+
+PASS Runtime Reference v0.4 full suite
+- PASS real activity overlap through Switch -> Broker -> Object Provider
+- v0.3 control test fails overlap assertion, proving old monitor serialization
+
+PASS Crypto v0.6.1 full suite
+- PASS native crypto algorithms
+- PASS shared Foreign/OpenSSL SHA provider
+- PASS 12-activity SHA-256/SHA-512 binary stress
+- PASS live TCP provider tests
+- PASS Foreign -> TCP -> native failover
+- PASS service-absent native fallback
+
+Thread stress:
+- 12 activities
+- 40 SHA-256 + SHA-512 pairs per activity
+- payload 86,016 bytes, includes embedded NUL and 0xff
+- 960 total digests
+- all fixed known digests matched
+
+Four-activity 1 MiB benchmark, 160 MiB total per run:
+- run 1: sequential 0.393 s, parallel 0.086 s, 4.59x, 1867.4 MiB/s
+- run 2: sequential 0.342 s, parallel 0.096 s, 3.54x, 1659.5 MiB/s
+- run 3: sequential 0.343 s, parallel 0.103 s, 3.32x, 1547.6 MiB/s
+
+PASS Runtime Registry v0.14 full non-optional suite against Crypto v0.6.1.

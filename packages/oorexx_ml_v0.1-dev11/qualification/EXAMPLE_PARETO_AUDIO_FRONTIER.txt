@@ -1,0 +1,19 @@
+OBJECTIVE_SET=RECOVERED-AUDIO-PARETO-V1|description=audio quality/artefact tradeoffs retained explicitly
+OBJECTIVE=reference_distance|direction=MINIMIZE|formula=0.35*global + 0.40*window_median + 0.10*window_p25 + 0.15*temporal|description=recovered-reference resemblance without clipping penalty scalarization
+OBJECTIVE=pre_limiter_over_fraction|direction=MINIMIZE|formula=pre_limiter_over_fraction|description=fraction exceeding pre-limiter reference range
+OBJECTIVE=post_limiter_clip_fraction|direction=MINIMIZE|formula=post_limiter_clip_fraction|description=fraction clipped after limiter
+PARETO_FRONTS=2
+NON_DOMINATED=4
+PARETO_POINT=cleaner|rank=1|crowding=1E99|OBJECTIVE_VECTOR=RECOVERED-AUDIO-PARETO-V1|post_limiter_clip_fraction=.0001
+pre_limiter_over_fraction=.010
+reference_distance=1.0050
+PARETO_POINT=natural|rank=1|crowding=1E99|OBJECTIVE_VECTOR=RECOVERED-AUDIO-PARETO-V1|post_limiter_clip_fraction=.0000
+pre_limiter_over_fraction=.020
+reference_distance=0.9375
+PARETO_POINT=aggressive|rank=1|crowding=1E99|OBJECTIVE_VECTOR=RECOVERED-AUDIO-PARETO-V1|post_limiter_clip_fraction=.0060
+pre_limiter_over_fraction=.080
+reference_distance=0.7345
+PARETO_POINT=balanced|rank=1|crowding=2.59093829|OBJECTIVE_VECTOR=RECOVERED-AUDIO-PARETO-V1|post_limiter_clip_fraction=.0005
+pre_limiter_over_fraction=.025
+reference_distance=0.8430
+RETAINED=3

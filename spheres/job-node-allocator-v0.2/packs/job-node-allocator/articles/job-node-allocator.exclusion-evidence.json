@@ -1,0 +1,24 @@
+{
+  "id": "job-node-allocator.exclusion-evidence",
+  "title": "Structured exclusion evidence",
+  "section": "operations",
+  "summary": "Eligibility assessments retain stable reason codes for why each node was excluded, including jurisdiction/legal/trust/authority/ability/runtime/tag/architecture/resource/API-route/freshness failures plus external authority reasons. This evidence is operationally distinct from ranking score.",
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "job-node-allocator",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6.zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/src/JobNodeAllocator.cls",
+      "claim": "Grounded in Job-to-Node Allocator v0.6.",
+      "line_start": 266,
+      "line_end": 331
+    }
+  ],
+  "invariants": [
+    "NO_NODE should be diagnosable as an eligibility/admission problem, not reduced to an opaque scheduling failure.",
+    "Reason codes are evidence for operations and policy analysis; they are not negative scores."
+  ]
+}

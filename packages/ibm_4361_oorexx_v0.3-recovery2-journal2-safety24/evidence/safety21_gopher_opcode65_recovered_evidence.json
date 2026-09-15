@@ -1,0 +1,68 @@
+{
+  "schema": "llm-gopher/0.18",
+  "tool_status": {
+    "rc": 0,
+    "class": "OK"
+  },
+  "operation_status": {
+    "rc": 0,
+    "class": "FOUND"
+  },
+  "result": {
+    "field": "opcode",
+    "value": "65",
+    "match_kind": "EXACT_FIELD",
+    "hits": [
+      {
+        "corpus": "s370.opcodes",
+        "record": 15,
+        "field": "opcode",
+        "value": "65",
+        "match_kind": "EXACT_FIELD",
+        "data": {
+          "aliases": [
+            "opcode:65",
+            "x65"
+          ],
+          "opcode": "65",
+          "assigned": false,
+          "behavior": "operation exception",
+          "project_status": "guest-and-permanent-replay qualified; no OP65; Safety21 packaging pending",
+          "project_evidence": {
+            "frontier_ia": "000066",
+            "frontier_icount": 532961,
+            "bytes": "65F000040000",
+            "program_old_psw": "00040001A000006A",
+            "program_new_psw": "00040000000002CA",
+            "forward_instructions": 1703,
+            "next_frontier": "02 @ 00006E / ICOUNT 534665"
+          }
+        }
+      }
+    ],
+    "count": 1,
+    "fallback_used": false
+  },
+  "service_proxy": {
+    "kind": "service-proxy",
+    "service": "core.corpus.record.lookup",
+    "capability": "corpus.record.lookup",
+    "operations": [
+      "exec"
+    ],
+    "rank": 10
+  },
+  "route": {
+    "requested_capability": "corpus.record.lookup",
+    "service": "core.corpus.record.lookup",
+    "implementation": "builtin.corpus.record.lookup",
+    "fallback_depth": 0,
+    "attempts": [
+      {
+        "service": "core.corpus.record.lookup",
+        "implementation": "builtin.corpus.record.lookup",
+        "tool_status": "OK"
+      }
+    ]
+  }
+}

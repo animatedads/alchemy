@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "ledger.federationbank.monetary-truth",
+  "version": "0.1",
+  "sphere": "federationbank",
+  "title": "Ledger monetary truth is atomic and double-entry",
+  "summary": "A banking economic event is visible only when its complete journal, authority provenance and durable receipt commit atomically. Same-currency transactions sum to zero; FX balances independently per currency. A business reversal is a new event, not repair for a failed atomic commit.",
+  "authority": "federationbank-project-doctrine",
+  "invariants": [
+    "Transaction header, every posting leg, decision provenance and durable receipt commit in one SERIALIZABLE transaction or none become visible.",
+    "For each committed same-currency transaction, sum of posting minor units is zero.",
+    "For FX, the zero-sum invariant is applied independently to each currency; unlike currencies are never summed together.",
+    "A hold is not a posting: hold state/event/provenance/receipt commit atomically while the reservation itself creates zero Ledger postings.",
+    "Internal settlement/fee/FX accounts are Ledger-owned infrastructure; channels do not nominate arbitrary internal GL accounts."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/README.md",
+      "line_start": 49,
+      "line_end": 65,
+      "claim": "Ledger owns monetary truth and durable receipts."
+    },
+    {
+      "artifact": "federationbank_engine_v0.9.2.zip",
+      "sha256": "fd03bc1be21258928ba99deff370dcbab82c98798e79cfe4e929fc814d6505a4",
+      "member": "federationbank_engine_v0.9.2/README.md",
+      "line_start": 271,
+      "line_end": 289,
+      "claim": "Balanced journal, atomic commit and hold invariants."
+    }
+  ]
+}

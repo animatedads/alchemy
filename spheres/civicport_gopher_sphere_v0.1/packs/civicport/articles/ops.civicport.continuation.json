@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "ops.civicport.continuation",
+  "version": "0.1",
+  "sphere": "civicport",
+  "title": "Safe continuation from v0.14",
+  "summary": "Continue by extending evidence semantics above existing durability boundaries, not by moving transport authority upward. Candidate work includes broader explicitly-versioned NOTAM forms and an AVWX bearer-authenticated aviation source, but neither is part of the v0.14 contract.",
+  "authority": "project-author",
+  "invariants": [
+    "New NOTAM grammar generations must not silently widen faa.swim.aim-fns.notam-runway-closure/0.1.",
+    "Operational NOTAM interpretation, if ever required, must be a separately governed authority/effect layer and must not inherit authority from SCDS transport.",
+    "AVWX must use Authorization: BEARER injected at transport; token-in-query must not be used because URL/cache/journal evidence would retain the secret.",
+    "New providers sharing a semantic domain must keep provider-specific source/provenance/cache identities distinct.",
+    "Do not pull Java/JMS code into CivicPort to simplify a semantic adapter."
+  ],
+  "procedure": [
+    "Reconcile the newest consolidated dependency roll-up against this sphere before development.",
+    "If a consolidated package is older than the sealed project head, preserve the newer project head unless explicitly superseded.",
+    "Advance mapping/API generations only for semantic contract changes.",
+    "Amend this authoritative sphere after sealing a new project release."
+  ],
+  "provenance": [
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "CHANGELOG.md",
+      "line_start": 3,
+      "line_end": 30,
+      "claim": "Current v0.14 scope and explicit non-goals that continuation must not silently widen."
+    }
+  ]
+}

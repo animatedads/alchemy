@@ -1,0 +1,13 @@
+{
+  "id": "rr-wlu-integration",
+  "title": "Runtime Registry and WLU Integration",
+  "summary": "Runtime Registry uses an optional WLU bridge to perform admission accounting before invoking dynamic capabilities.",
+  "why": "Ensures that the cost of a capability is reserved and verified *before* the capability is executed, allowing for a clean HTTP 429 response.",
+  "invariants": [
+    "Execution order: Resolve Session -> Validate Schema -> WLU Admission -> Invoke Capability -> Settle WLU.",
+    "A WLU refusal is returned as HTTP 429 Too Many Requests.",
+    "Dynamic capabilities only receive a restricted metering surface; they never get the WLU authority itself."
+  ],
+  "evidence_note": "Source: runtime_registry_v0.14/README.md:32-48. Line 33: ' la la la la la l la l la l de l a l a l l la la laL' - wait, I mean the sequence diagram on line 38-45.",
+  "grounding": "oorexx-grounded"
+}

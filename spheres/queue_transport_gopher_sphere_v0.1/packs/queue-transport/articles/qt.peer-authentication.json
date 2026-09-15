@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "qt.peer-authentication",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "Peer identity and authenticated handshake",
+  "summary": "Peer authentication uses the configured transport PSK to authenticate HELLO and CHALLENGE with HMAC-SHA-512. Source IP is an admission fact, not an identity credential; the authenticated transcript binds queue-manager identities, receiver channel, principal, key id and both fresh nonces before protected commands are accepted.",
+  "authority": "project-authority",
+  "invariants": [
+    "Source IP is not a credential; cryptographic peer proof is still mandatory.",
+    "HELLO identifies source manager, destination manager, receiver channel, principal and key id.",
+    "Server challenge is authenticated before the client considers the session established.",
+    "keyId selects/identifies key material; it does not itself grant authority."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 14,
+      "line_end": 20,
+      "claim": "HELLO and CHALLENGE authentication and the distinction between IP admission and identity."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 315,
+      "line_end": 337,
+      "claim": "Protocol text binds protocol identity, managers, channel, principal, key id and nonces."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueSocketTransport.cls",
+      "line_start": 652,
+      "line_end": 682,
+      "claim": "Client verifies authenticated server challenge before constructing session crypto."
+    }
+  ]
+}

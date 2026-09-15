@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "ac.publication",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Publication is gated and collision-safe",
+  "summary": "Publication is a separate accepted-main operation. Failed execution does not publish; successful source publication is either a new immutable tree, an identical no-op, or a hard collision when an existing target differs.",
+  "authority": "project-authority",
+  "invariants": [
+    "FAIL never publishes source.",
+    "An existing identical target is a no-op, not a rewrite.",
+    "An existing different target is a hard publish collision; accepted version directories are never overwritten.",
+    "Publication occurs through AlchemyGitMainTransaction rather than direct mutation of the ordinary checkout."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_publisher_v0.4/src/AlchemyPublisher.cls",
+      "line_start": 16,
+      "line_end": 58,
+      "claim": "Publisher PASS gate, no-op/collision semantics and Git main transaction."
+    }
+  ]
+}

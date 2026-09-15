@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "ref.accounting-core.scopes-are-orthogonal",
+  "version": "0.1",
+  "sphere": "accounting-core",
+  "title": "Legal entity, establishment, tax, regulator and client-money scopes are orthogonal",
+  "summary": "Accounting Core treats establishment/place of business, tax registration, tax election, regulatory registration, client-money arrangement and reporting boundary as independent relationships of a legal entity. These scopes annotate and select one entity's economic books; they do not redefine the entity.",
+  "authority": "project-architecture",
+  "invariants": [
+    "A legal entity can have several establishments and several tax/regulatory registrations without becoming several accounting companies.",
+    "A foreign tax registration does not imply a local establishment or local subsidiary.",
+    "A client-money arrangement associates exact establishment/regulator/currency context but does not encode regulator-specific safeguarding rules.",
+    "Journal line dimensions preserve exact scope identities so historical reporting does not depend only on mutable current registries.",
+    "A ReportingBoundary selects existing immutable lines; it does not copy, rewrite or repost them.",
+    "Currency remains part of aggregation identity so multi-currency reports do not add incompatible monetary units."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "accounting_core_v0.10.zip",
+      "sha256": "f9050d02af18cdcac0f59287229490cce29acd9721a5f4d2b4a7c8713c342c00",
+      "member": "accounting_core_v0.10/docs/SCOPES_AND_REPORTING_BOUNDARIES.md",
+      "claim": "Legal entity, establishment, tax registration/election, regulatory registration, client money and reporting boundaries are independent concepts."
+    }
+  ]
+}

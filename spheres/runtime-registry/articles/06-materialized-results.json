@@ -1,0 +1,13 @@
+{
+  "id": "rr-materialized-results",
+  "title": "Materialized Result Lifecycle",
+  "summary": "Query and evaluation results are materialised once and stored, preventing repeated execution of the same capability.",
+  "why": "Optimizes performance and ensures consistency for paginated results; paging only reads the stored row array.",
+  "invariants": [
+    "A result is bound to the AbilitySession that created it.",
+    "Paging (cursor) is over the stored row array only; it never invokes the capability again.",
+    "Results are released when their TTL expires or they are explicitly deleted."
+  ],
+  "evidence_note": "Source: runtime_registry_v0.14/README.md:75-90. Line 78: 'Query/evaluation creation is resource-oriented'. Line 88: 'Cursor paging is over the stored row array only.'",
+  "grounding": "oorexx-grounded"
+}

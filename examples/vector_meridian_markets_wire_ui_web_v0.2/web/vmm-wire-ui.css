@@ -1,0 +1,47 @@
+:root{
+  --vmm-navy:#071525;
+  --vmm-navy-2:#0b1d31;
+  --vmm-gold:#c6a15b;
+  --vmm-gold-soft:#e1c98e;
+  --vmm-steel:#8895a5;
+  --vmm-ink:#dce5ef;
+  --vmm-paper:#0c1b2d;
+  --vmm-panel:#102238;
+  --vmm-ground:#06111e;
+  --vmm-line:#263b52;
+  --vmm-muted:#93a0ae;
+  --vmm-success:#67c6a3;
+  --vmm-warning:#e3bd72;
+  --vmm-danger:#f08b83;
+  --vmm-control-radius:6px;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  color:var(--vmm-ink);background:var(--vmm-ground)
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(circle at 18% -12%,#142a44 0,transparent 36%),linear-gradient(180deg,#071525 0,#06111e 100%);color:var(--vmm-ink)}
+.vmm-topbar{min-height:74px;padding:9px clamp(18px,3vw,46px);display:flex;align-items:center;justify-content:space-between;gap:20px;background:rgba(7,21,37,.96);border-bottom:1px solid #334963;position:sticky;top:0;z-index:30;box-shadow:0 8px 30px rgba(0,0,0,.28)}
+.vmm-brand{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--vmm-gold-soft)}
+.vmm-glyph{width:54px;height:54px;border-radius:8px;object-fit:cover}
+.vmm-brand-copy{display:grid;gap:2px}.vmm-brand-copy strong{font-size:15px;letter-spacing:.24em;font-weight:600}.vmm-brand-copy span{font-size:10px;letter-spacing:.42em;color:var(--vmm-steel)}
+.vmm-session-strip{display:flex;align-items:center;gap:14px}.vmm-perimeter{font-size:10px;text-transform:uppercase;letter-spacing:.14em;color:var(--vmm-muted);padding-right:14px;border-right:1px solid var(--vmm-line)}
+.wire-ui-connection{font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--vmm-muted)}.wire-ui-connection[data-state=live]{color:var(--vmm-success)}.wire-ui-connection[data-state=sync]{color:var(--vmm-warning)}.wire-ui-connection[data-state=error],.wire-ui-connection[data-state=closed]{color:var(--vmm-danger)}
+.vmm-main{width:min(1600px,calc(100% - 30px));margin:0 auto}.vmm-context{display:flex;align-items:end;justify-content:space-between;gap:32px;padding:26px 4px 18px}.vmm-eyebrow{margin:0 0 5px;color:var(--vmm-gold);font-size:10px;font-weight:800;letter-spacing:.16em;text-transform:uppercase}.vmm-context h1{margin:0;color:#f0f4f8;font-size:31px;font-weight:560;letter-spacing:-.025em}.vmm-context-note{max-width:650px;margin:0;text-align:right;font-size:12px;line-height:1.55;color:var(--vmm-muted)}
+.wire-ui-stage{padding-bottom:40px}.wire-ui-root{display:grid;gap:14px}.wire-ui-root>*,.wui-dashboard,.wui-portfolio-summary,.wui-risk-panel,.wui-position-grid,.wui-margin-panel,.wui-settlement-panel,.wui-contract-panel,.wui-market-structure-panel{background:var(--vmm-paper);border:1px solid var(--vmm-line);border-radius:7px;box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.wui-portfolio-summary{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));overflow:hidden}.wui-summary-cell{padding:15px 17px;border-right:1px solid var(--vmm-line)}.wui-summary-cell:last-child{border-right:0}.wui-summary-label{font-size:9px;text-transform:uppercase;letter-spacing:.1em;font-weight:800;color:var(--vmm-muted)}.wui-summary-value{margin-top:5px;font-size:23px;font-variant-numeric:tabular-nums;font-weight:650;color:#f2f5f8}
+.wui-risk-alert,[data-wire-material-role="risk.alert"]{padding:14px 18px;border-left:4px solid var(--vmm-warning);background:#1f2b2f;color:#f2dfb5;font-weight:650}.wui-risk-alert[data-severity=critical]{border-left-color:var(--vmm-danger);background:#301f28;color:#ffd0cc}
+.wui-position-grid{overflow:auto}.wui-position-grid .wui-collection-item{display:grid;grid-template-columns:minmax(180px,1.5fr) 1fr 1fr 1fr 1fr 1fr;gap:12px;align-items:center;width:100%;padding:13px 15px;border:0;border-bottom:1px solid var(--vmm-line);background:var(--vmm-paper);text-align:left;color:var(--vmm-ink);font:inherit;cursor:pointer}.wui-position-grid .wui-collection-item:hover{background:#132943}.wui-position-grid .wui-collection-item:focus-visible{outline:2px solid var(--vmm-gold);outline-offset:-2px}
+.wui-record-field{display:grid;grid-template-columns:minmax(160px,.35fr) 1fr;gap:18px;padding:11px 15px;border-bottom:1px solid var(--vmm-line)}.wui-record-label{color:var(--vmm-muted);font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em}.wui-record-value{font-variant-numeric:tabular-nums;line-height:1.45}
+.wui-primary-action{border:1px solid var(--vmm-gold);border-radius:var(--vmm-control-radius);padding:10px 15px;background:#1b3048;color:#f6e8c7;font:inherit;font-size:12px;font-weight:800;cursor:pointer}.wui-secondary-action{background:transparent;color:var(--vmm-gold-soft)}
+.wui-field{display:grid;gap:6px;font-size:9px;text-transform:uppercase;letter-spacing:.08em;font-weight:800;color:var(--vmm-muted)}.wui-field input,.wui-record-input{width:100%;padding:10px 11px;border:1px solid #41576e;border-radius:var(--vmm-control-radius);background:#091827;color:var(--vmm-ink);font:inherit;outline:none}.wui-field input:focus,.wui-record-input:focus{border-color:var(--vmm-gold);box-shadow:0 0 0 2px rgba(198,161,91,.16)}
+.wire-ui-bootstrap-error{padding:24px;background:#301f28;border:1px solid #6d3e48;border-left:4px solid var(--vmm-danger);border-radius:7px;color:#ffd0cc}
+footer{min-height:58px;padding:18px clamp(18px,3vw,46px);display:flex;justify-content:space-between;gap:18px;background:#071525;border-top:1px solid var(--vmm-line);font-size:10px;font-weight:650;letter-spacing:.06em;color:var(--vmm-muted)}
+@media(max-width:1000px){.wui-portfolio-summary{grid-template-columns:repeat(3,1fr)}.wui-summary-cell:nth-child(3){border-right:0}.vmm-context{align-items:flex-start;flex-direction:column}.vmm-context-note{text-align:left}.vmm-perimeter{display:none}}
+@media(max-width:640px){.vmm-main{width:calc(100% - 16px)}.vmm-topbar{padding:8px 10px}.vmm-glyph{width:44px;height:44px}.vmm-brand-copy strong{font-size:12px}.vmm-brand-copy span{font-size:9px}.wui-portfolio-summary{grid-template-columns:1fr 1fr}.wui-summary-cell:nth-child(2n){border-right:0}footer{flex-direction:column}.vmm-context h1{font-size:27px}}
+/* v0.2 semantic-release roles. These style exact server-installed definitions;
+   they do not infer action availability or business state. */
+.wui-vmm-summary{padding:14px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--vmm-line)}
+.wui-vmm-summary .wui-record-field{display:grid;grid-template-columns:1fr;gap:3px;background:var(--vmm-paper);border:0;min-height:76px}
+.wui-vmm-worklist{overflow:auto;min-height:72px}.wui-vmm-worklist .wui-collection-item{width:100%;display:block;text-align:left;border:0;border-bottom:1px solid var(--vmm-line);background:var(--vmm-paper);color:var(--vmm-ink);padding:12px 14px;font:inherit}.wui-vmm-worklist .wui-collection-item:hover{background:#132943}.wui-vmm-worklist .wui-collection-item:focus-visible{outline:2px solid var(--vmm-gold);outline-offset:-2px}
+.wui-vmm-detail{overflow:hidden}.wui-vmm-detail .wui-record-field:last-child{border-bottom:0}
+.wui-vmm-action,.wui-vmm-action-danger,.wui-vmm-nav{border:1px solid #41576e;border-radius:var(--vmm-control-radius);padding:9px 12px;background:#10243a;color:var(--vmm-ink);font:inherit;font-size:11px;font-weight:800;cursor:pointer}.wui-vmm-action-danger{border-color:#6b4548;color:#f2a19a}.wui-vmm-nav{border-color:#334963;color:var(--vmm-gold-soft);background:#0b1d31}
+.wui-vmm-action:disabled,.wui-vmm-action-danger:disabled,.wui-vmm-nav:disabled{opacity:.38;cursor:not-allowed}

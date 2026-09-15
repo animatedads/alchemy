@@ -1,0 +1,102 @@
+/* NoSQLServer v0.70 DB Core v0.34 relational-source facade over Algorithm Relation. */
+parse arg root
+if root == '' then root = '/tmp/virtual_ryta_nosql_v070_dbcore'
+
+say 'NOSQLSERVER V0.70 DBCORE ALGORITHM RELATION START'
+
+fed = .FederatedDatabaseEngine~new(root)
+world = .RYTAWorldState~new('WORLD-NOSQL-DBCORE-1')
+world~putKnown('HAS_QUERY', .true)
+world~putKnown('PRODUCT_RELEVANT', .true)
+world~putKnown('PRODUCT_VALUE_HIGH', .true)
+world~putKnown('UPSELL_OPPORTUNITY', .true)
+world~putKnown('ESSENTIAL_MEDICATION', .true)
+world~putKnown('IMMEDIATE_ACCESS', .true)
+world~putKnown('GUARANTEED_CUSTODY', .false)
+
+provider = .RYTAAlgorithmProvider~new(.nil, '..')
+algorithmEngine = .AlgorithmRelationEngine~new
+call assert algorithmEngine~addProvider(provider), 'provider registration'
+ctx = .AlgorithmExecutionContext~new('DBCORE-ALGREL-INV-1', world~snapshotOid, world~snapshotOid)
+classes = .directory~new
+classes['TABLE_DEFINITION'] = .TableDefinition
+classes['DATABASE_ROW'] = .DatabaseRow
+classes['DATABASE_RESULT'] = .DatabaseResult
+bindings = .directory~new
+bindings['RYTA_ACTION_DECISIONS'] = 'ryta_actions'
+bindings['RYTA_DECISION_TRACE'] = 'ryta_trace'
+external = .NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine, 'VIRTUAL_RYTA', world, ctx, classes, bindings)
+call assert external~isReady, 'external ready' external~lastError
+ignore = fed~addEngine(external)
+call assert provider~invocationCount = 0, 'registration is observational'
+call assert external~metadataFactoryCalls = 0, 'legacy external metadata factory untouched at registration'
+
+core = fed~databaseCore
+source = core~relationalSource
+call assert source~identity~product = 'NoSQLServer', 'endpoint product'
+call assert source~supports(.NoSQLDatabaseCoreCapability~TABLEDISCOVERY), 'table discovery capability'
+call assert source~supports(.NoSQLDatabaseCoreCapability~TYPEDRESULTS), 'typed result capability'
+
+/* Discovery and describe must stay on the metadata side of the execution barrier. */
+descriptors = source~tables
+call assert descriptorExists(descriptors, 'ryta_actions'), 'actions relation descriptor'
+call assert descriptorExists(descriptors, 'ryta_trace'), 'trace relation descriptor'
+call assert provider~invocationCount = 0, 'relationalSource tables does not execute provider'
+
+actions = source~table('ryta_actions')
+meta = actions~metadata
+call assert meta~columns~items = 20, 'DB Core actions metadata columns'
+description = actions~describe
+call assert description['name']~caselessEquals('ryta_actions'), 'describe name'
+call assert description['metadata']~columns~items = 20, 'describe metadata'
+call assert provider~invocationCount = 0, 'table metadata/describe does not execute provider'
+call assert external~metadataFactoryCalls = 0, 'v0.70 federation owns metadata construction'
+
+/* First row demand executes exactly once through queryTable/adaptation. */
+rows = actions~rows
+call assert rows~status = .Error~SUCCESS, 'actions rows status'
+call assert rows~rows~items = 7, 'actions row count'
+call assert rows~rows[1]~isA(.NoSQLDatabaseCoreRow), 'DB Core adapted row type'
+call assert provider~invocationCount = 1, 'first DB Core rows executes provider once'
+call assert hasAction(rows~rows, 'BIG_UPSELL', 'PROHIBITED'), 'BIG_UPSELL prohibited through DB Core'
+call assert hasAction(rows~rows, 'WARNING', 'REQUIRED'), 'WARNING required through DB Core'
+
+/* Second relation and query route reuse the same materialisation. */
+trace = source~table('ryta_trace')~rows
+call assert trace~status = .Error~SUCCESS, 'trace rows status'
+call assert trace~rows~items = 26, 'trace row count'
+call assert provider~invocationCount = 1, 'trace reuses provider materialisation'
+selected = actions~query("SELECT action_code FROM ryta_actions WHERE final_selected=1 ORDER BY action_code")
+call assert selected~status = .Error~SUCCESS, 'tableSource query status'
+call assert selected~rows~items = 2, 'selected row count'
+call assert provider~invocationCount = 1, 'tableSource query does not rerun provider'
+call assert external~metadataFactoryCalls = 0, 'metadata factory still unused after reads'
+
+say 'provider invocations:' provider~invocationCount
+say 'legacy metadata factory calls:' external~metadataFactoryCalls
+say 'NOSQLSERVER V0.70 DBCORE ALGORITHM RELATION: OK'
+exit 0
+
+descriptorExists: procedure
+  use arg descriptors, wanted
+  do descriptor over descriptors
+    if descriptor~name~caselessEquals(wanted) then return .true
+  end
+  return .false
+
+hasAction: procedure
+  use arg rows, wantedAction, wantedDisposition
+  do row over rows
+    if row~valueAt('action_code') = wantedAction & row~valueAt('disposition') = wantedDisposition then return .true
+  end
+  return .false
+
+assert: procedure
+  use arg condition, message, detail = ''
+  if condition then return .true
+  raise syntax 93.900 additional('ASSERT FAILED: ' || message || ' ' || detail)
+
+::requires '__NOSQLSERVER_CLS__'
+::requires '../integration/NoSQLServerAlgorithmRelationExternalEngine.cls'
+::requires '../algorithm/RYTAAlgorithmProvider.cls'
+::requires '../HardWorld.cls'

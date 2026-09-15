@@ -1,0 +1,37 @@
+LLM Gopher s370mvs sphere v0.3-dev1 qualification
+Date: 2026-09-06
+
+Base tool:
+- LLM Gopher v0.21-dev1
+- SHA-256 6fc0114f730a64470a4e4a819832f933bfc5e628af19bb8b920d860b205fe477
+- supplied inside oorexxapis(20260906-192237).zip
+
+Authored sphere scope:
+- authoritative System/370 opcode/rule/source navigation with evidence authority separated by claim type
+- exact IBM 4361/MVT checkpoint evidence and maturity
+- sealed Safety20 D1/MVN provenance
+- sealed Safety21 X'65' operation-exception provenance
+- sealed Safety22 primary X'02' operation-exception provenance
+- sealed Safety23 X'70'/STE invalid-register specification-exception provenance
+- X'44'/EX exact next causal boundary and transient target 70E005C84780
+- short/long HFP selector rule: FPR 0/2/4/6 only
+- ooRexx use-arg object identity discipline
+- independent sphere/emulator artifact lifecycles
+
+Qualification results:
+- Gopher sphere validate: VALID, 12 objects, 0 problems
+- Gopher sphere lint: CLEAN, 0 warnings
+- PASS ALL s370mvs SPHERE v0.3-dev1 TESTS
+- explicit-override activation under Gopher v0.21: ACTIVATED
+- typed opcode=5D lookup preserves odd-R1 exception precedence
+- typed opcode=D1 lookup preserves exact Safety20 MVT evidence
+- typed opcode=02 lookup resolves sealed Safety22 operation-exception evidence
+- typed opcode=70 lookup preserves valid FPR selector rule and sealed Safety23 evidence
+- typed opcode=44 lookup exposes exact transient target 70E005C84780
+- typed checkpoint=safety21/safety22/safety23 lookups return SEALED_CHECKPOINT
+- textual use arg / object identity rule lookup passes
+- conflicting s370mvs identity merge fails closed with CONFLICT
+- Gopher package.stage.check: READY, 0 breaches, 0 blockers
+
+No LLM Gopher engine code was modified.
+No emulator source is bundled in this sphere.

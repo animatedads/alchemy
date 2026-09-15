@@ -1,0 +1,41 @@
+{
+  "schema": "ibm4361.safety23.guest-proof/1",
+  "base": {
+    "artifact": "ibm_4361_oorexx_v0.3-recovery2-journal2-safety22.zip",
+    "sha256": "bd4ada1fe3ad6da3b97cbfe645e1130b7f0e625c6e3cd2d13a53d50239968f91"
+  },
+  "frontier": {
+    "opcode": "70",
+    "mnemonic": "STE",
+    "ia": "000082",
+    "icount": 539172,
+    "bytes": "70E000000000",
+    "psw": "0004000190000082",
+    "r1": "E"
+  },
+  "pre_promotion": {
+    "status": "UNSUPPORTED",
+    "atomic": true,
+    "op70_present": false
+  },
+  "journal_retry": {
+    "program_old_psw": "0004000690000086",
+    "program_new_psw": "00040000000002CA",
+    "icount_after": 539173,
+    "op70_present": false
+  },
+  "forward_progress": {
+    "successful_instructions_after_retry": 32,
+    "next_boundary": {
+      "opcode": "44",
+      "mnemonic": "EX",
+      "ia": "0004B6",
+      "icount": 539205,
+      "bytes": "440004F45010",
+      "psw": "00040000800004B6",
+      "executor_status": "UNSUPPORTED_EX_TARGET",
+      "effective_target_instruction": "70E005C84780"
+    }
+  },
+  "causal_interpretation": "OP44 exists. EX preflight rejects the target because OP70 is absent before applying target architectural specification-exception classification. Safety24 must propagate target architectural exceptions through EX rather than add OP44 or normal OP70."
+}

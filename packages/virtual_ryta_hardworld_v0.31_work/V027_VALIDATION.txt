@@ -1,0 +1,87 @@
+Virtual RYTA / HardWorld v0.27-work validation
+==============================================
+
+Status
+------
+v0.27-work is the authenticated authority-ledger development checkpoint over
+corrected v0.26-work. Sealed v0.23 remains the release checkpoint.
+
+Interpreter
+-----------
+Open Object Rexx 5.3.0 r13196, 64-bit Internal Test Version, build date 3 Aug 2026.
+User-supplied debug .deb executed from an isolated extraction under /tmp.
+
+Canonical library
+-----------------
+oorexx-libs(20260822-crypto-consolidated)(7).zip
+SHA-256 e95f489b0088c7d11d31f3b04ac7d2bc766661c6e103a0cfaec8292ffe5203c1
+CURRENT_STACK_LOCK.sha256: 29/29 data entries PASS.
+
+Authenticated authority ledger V3
+---------------------------------
+PASS: V3 records are authenticated with host-supplied CryptoMacKeyRing keys.
+PASS: V3 records are globally sequence/tag chained; record reordering fails closed.
+PASS: modified/forged COMPLETE records fail MAC verification and never become trusted state.
+PASS: opening authenticated history without the required keyring fails closed.
+PASS: key rotation is supported because each record retains algorithm/key-id/tag.
+PASS: loss of a historical verification key fails closed rather than silently trusting later history.
+PASS: keys and claimToken are not written to ledger canonical material.
+PASS: V1/V2 history remains readable evidence but is untrusted for automatic ACK-only recovery.
+PASS: direct legacy writes are disabled once an authenticated ledger/keyring is in use.
+PASS: only trusted V3 COMPLETE may authorize ACK-only transport cleanup.
+
+Checkpoint / rollback boundary
+------------------------------
+PASS: authenticated tail checkpoint can be exported and compared.
+PASS: opening with a mismatching externally retained expected checkpoint fails closed.
+PASS: a valid older prefix can still verify cryptographically on its own; therefore local MAC chaining alone is NOT claimed to provide rollback/truncation resistance.
+Required boundary: rollback resistance needs the exported checkpoint retained by a separate trusted/monotonic host store.
+
+Legal Effect v0.10 completed-work recovery
+-----------------------------------------
+PASS: fresh retained work requires live consumer-time Legal Effect v0.10 evaluation.
+PASS: live Legal authority applies before a deliberately failed ACK and authenticated V3 COMPLETE is recorded.
+PASS: ledger restarts from disk with keyring + expected checkpoint.
+PASS: after RuntimeLease release, redelivery of that exact completed envelope performs ACK-only cleanup without new Legal authority and without reapplying HardWorld mutation.
+PASS: different/new retained work after the same lease release is still refused by fresh Legal evaluation before ledger START.
+PASS: known LEGAL_STATUS_REDUCTION_AMBIGUOUS guard remains in force.
+
+Fresh regression evidence
+-------------------------
+PASS: authenticated ledger adversarial suite.
+PASS: authenticated Queue Fabric transport/transfer receipt suite.
+PASS: authenticated Legal v0.10 completed-work recovery suite.
+PASS: promoted current-stack gates in two isolated groups.
+PASS: 25/25 adversarial corpus.
+PASS: 64 rules vectors; 0 holes; 0 ambiguous winners.
+PASS: 16/16 mutants killed.
+PASS: 18/18 table-fed authority vectors.
+PASS: 162/162 consistency x authority vectors.
+PASS: rexxc 40/40 .cls files.
+PASS: static/Librarian source audits and special-variable guards.
+PASS: current library lock 29/29.
+PASS: exercised upstream package trees byte-identical to fresh extraction.
+PASS: package manifest 339/339 entries.
+PASS: inherited byte identity 315 unchanged files; 8 expected existing-file changes; zero unexpected deltas.
+
+Inherited-suite qualification
+-----------------------------
+The unchanged resource-heavy inherited Librarian path is accepted incrementally:
+byte identity against corrected v0.26-work is mechanically recorded, while every
+changed v0.27 authority/security path and the core authority matrices were freshly
+executed. Monolithic inherited run completion is NOT claimed for this cut.
+See V027_INCREMENTAL_INHERITED.txt and V027_INHERITED_BYTE_IDENTITY.txt.
+
+Ownership
+---------
+PASS byte-for-byte fresh-extraction comparison:
+- alchemy_objects_v0.4.3
+- oorexx_crypto_v0.1
+- camera_behaviour_oorexx_v0.36
+- structured_relation_plugin_v0.9
+- legal_effect_v0.10.1
+- runtime_registry_v0.12(1)
+- oorexx_queue_fabric_v0.8.2
+- nosqlserver_v0.75
+
+Only the RYTA v0.27-work tree was modified.

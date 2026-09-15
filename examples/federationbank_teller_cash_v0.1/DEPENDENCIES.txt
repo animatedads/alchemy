@@ -1,0 +1,27 @@
+FederationBank Teller Cash v0.1 qualified dependency closure
+
+Runtime:
+- ooRexx 5.3.0 r13196 — Internal Test Version
+
+Direct/domain:
+- federationbank_staff_channel v0.1
+- federationbank_teller_till v0.1
+- federationbank_teller_till_service v0.1
+- federationbank_engine v0.9 (FederationBankCommand/Core integration)
+
+Policy/authority closure used in qualification:
+- federationbank_staff_authority v0.1
+- federationbank_staff_authority_service v0.1
+- federationbank_staff_channel_service v0.1
+- institutional_policy v0.8
+- alchemy_objects v0.8
+
+Infrastructure/integration closure:
+- oorexx_queue_fabric v0.9-dev4
+- oorexx_jms_queue_bridge v0.1-dev7-fb1
+- legal_effect v0.14
+- security_effect v0.10
+- oorexx_db_skeleton v0.46
+- oorexx_crypto v0.1
+
+The package intentionally has no Wire UI/browser dependency and no ATM dependency.

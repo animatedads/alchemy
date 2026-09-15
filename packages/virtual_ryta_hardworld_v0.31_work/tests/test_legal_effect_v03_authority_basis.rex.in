@@ -1,0 +1,93 @@
+say 'LEGAL EFFECT V0.3 AUTHORITY BASIS V0.18 START'
+
+statute = .NormativeSource~new('LAW', 'LEGISLATION', 'Synthetic prohibition', 'PARLIAMENT', 'TEST')
+contract = .NormativeSource~new('CONTRACT', 'CONTRACT', 'Synthetic permission', 'PARTIES', '*')
+authoritySource = .NormativeSource~new('AUTH', 'LEGISLATION', 'Synthetic derogation authority', 'PARLIAMENT', 'TEST')
+
+prohibited = .LegalNorm~new('LAW-N', 'LAW', '1', 'PROHIBITION', 'ACT', 'PROHIBITED', 'TEST', 'synthetic', .nil, '*', 'ACT-LEGALITY')
+permitted = .LegalNorm~new('CONTRACT-N', 'CONTRACT', '2', 'PERMISSION', 'ACT', 'PERMITTED', 'TEST', 'synthetic', .nil, '*', 'ACT-LEGALITY')
+authorityRule = .LegalAuthorityRule~new('PERMISSION-WINS', 'AUTH', '3', 'CONTRACT', 'LAW', 'DEROGATES_FROM', 'TEST', 'ACT', .nil, 'CONTRACT-N', 'LAW-N', 'synthetic explicit derogation')
+
+generation = .LegalRuleGeneration~new('AUTH-BASIS', '0.3')
+ignored = generation~addSource(statute)
+ignored = generation~addSource(contract)
+ignored = generation~addSource(authoritySource)
+ignored = generation~addNorm(prohibited)
+ignored = generation~addNorm(permitted)
+ignored = generation~addAuthorityRule(authorityRule)
+ignored = generation~seal
+
+context = .LegalContext~new('AUTH-EVENT', '2026-08-20')
+ignored = context~bindSource('CONTRACT', 'party')
+action = .LegalAction~new('ACT')
+
+pinned = .LegalEffectV03PinnedEvaluator~evaluate(.LegalEffectEngine~new, action, generation, context)
+call AssertTrue pinned~ok, 'resolved authority evaluation pins'
+assessment = pinned~envelope~assessment
+call AssertEqual 'ADMISSIBLE', assessment~status, 'permission winner leaves action admissible'
+call AssertEqual 1, assessment~resolvedConflicts~items, 'resolved conflict retained'
+call AssertEqual 1, assessment~suppressedMatches~items, 'losing prohibition suppressed'
+call AssertEqual 'LAW-N', assessment~suppressedMatches[1]~norm~normId, 'suppressed norm is prohibition'
+call AssertEqual 'CONTRACT-N', assessment~effectiveMatches[1]~norm~normId, 'effective norm is permission'
+
+promotionSet = .LegalEffectV03PromotionAdapter~promotionsFrom(pinned~envelope)
+blockedPromotion = FindPromotion(promotionSet, 'LEGAL_ACTION_BLOCKED')
+call AssertTrue blockedPromotion \== .nil, 'blocked promotion exists'
+call AssertTrue blockedPromotion~proposedValue == .false, 'blocked projection false'
+
+hasSuppressedProhibitionBasis = .false
+hasAuthorityBasis = .false
+do basisItem over blockedPromotion~basis
+  if basisItem~basisKind == 'LEGAL_NORM_EFFECTIVE' then do
+    if basisItem~basisId == 'LAW-N' then hasSuppressedProhibitionBasis = .true
+  end
+  if basisItem~basisKind == 'LEGAL_AUTHORITY_RULE' then do
+    if basisItem~basisId == 'PERMISSION-WINS' then hasAuthorityBasis = .true
+  end
+end
+call AssertTrue \hasSuppressedProhibitionBasis, 'suppressed prohibition is not cited as effective blocked basis'
+call AssertTrue hasAuthorityBasis, 'controlling authority rule is explicit promotion basis'
+
+/* Same conflicting norms without authority: effective dispositions withheld and
+   promotion review basis must expose the unresolved conflict. */
+generation2 = .LegalRuleGeneration~new('AUTH-NONE', '0.3')
+statute2 = .NormativeSource~new('LAW', 'LEGISLATION', 'Synthetic prohibition', 'PARLIAMENT', 'TEST')
+contract2 = .NormativeSource~new('CONTRACT', 'CONTRACT', 'Synthetic permission', 'PARTIES', '*')
+ignored = generation2~addSource(statute2); ignored = generation2~addSource(contract2)
+ignored = generation2~addNorm(.LegalNorm~new('LAW-N', 'LAW', '1', 'PROHIBITION', 'ACT', 'PROHIBITED', 'TEST', 'synthetic', .nil, '*', 'ACT-LEGALITY'))
+ignored = generation2~addNorm(.LegalNorm~new('CONTRACT-N', 'CONTRACT', '2', 'PERMISSION', 'ACT', 'PERMITTED', 'TEST', 'synthetic', .nil, '*', 'ACT-LEGALITY'))
+ignored = generation2~seal
+ctx2 = .LegalContext~new('NO-AUTH', '2026-08-20')
+ignored = ctx2~bindSource('CONTRACT', 'party')
+pin2 = .LegalEffectV03PinnedEvaluator~evaluate(.LegalEffectEngine~new, .LegalAction~new('ACT'), generation2, ctx2)
+call AssertTrue pin2~ok, 'unresolved legal conflict is still a determinate REVIEW_REQUIRED assessment'
+call AssertEqual 'REVIEW_REQUIRED', pin2~envelope~assessment~status, 'unresolved authority means review'
+set2 = .LegalEffectV03PromotionAdapter~promotionsFrom(pin2~envelope)
+reviewPromotion = FindPromotion(set2, 'LEGAL_ACTION_REVIEW_REQUIRED')
+hasConflictBasis = .false
+do basisItem over reviewPromotion~basis
+  if basisItem~basisKind == 'LEGAL_CONFLICT_UNRESOLVED' then hasConflictBasis = .true
+end
+call AssertTrue hasConflictBasis, 'unresolved authority conflict is explicit review promotion basis'
+
+say 'LEGAL EFFECT V0.3 AUTHORITY BASIS V0.18: OK'
+exit 0
+
+::routine FindPromotion
+  use arg promotionSet, targetName
+  do p over promotionSet~promotions
+    if p~targetFactName == targetName then return p
+  end
+  return .nil
+
+::routine AssertTrue
+  use arg condition, label
+  if \condition then raise syntax 88.900 array('ASSERT TRUE FAILED: ' || label)
+  return 0
+::routine AssertEqual
+  use arg expected, actual, label
+  if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: ' || label || ' expected=' || expected || ' actual=' || actual)
+  return 0
+
+::requires 'LegalEffect.cls'
+::requires '../integration/LegalEffectV03PromotionAdapter.cls'

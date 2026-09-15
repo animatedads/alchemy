@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "tn5250-standards.authority-map",
+  "version": "0.1",
+  "sphere": "tn5250-standards",
+  "title": "Which source wins for which question?",
+  "summary": "A compact authority map prevents an emulator trace, old manual, obsolete RFC, or current IBM i setting from being mistaken for universal protocol truth.",
+  "map": [
+    {
+      "question": "5250 command/order/field/AID semantics",
+      "primary": "SA21-9247-6",
+      "check": "RFC 1205 section 5 corrections/enhancements"
+    },
+    {
+      "question": "base 5250-over-Telnet framing and negotiation",
+      "primary": "RFC 1205",
+      "support": "RFC 854/855/856/885/1091"
+    },
+    {
+      "question": "TN5250E enhanced negotiation/device name/auto-signon/printer",
+      "primary": "RFC 4777",
+      "support": "RFC 1572",
+      "historical": "RFC 2877 only for provenance"
+    },
+    {
+      "question": "current IBM i command/configuration/host behaviour",
+      "primary": "IBM Documentation for exact IBM i release"
+    },
+    {
+      "question": "observed PUB400 or other host behaviour",
+      "primary": "trace/test evidence",
+      "constraint": "observation does not override protocol authority; record host/release/context"
+    }
+  ],
+  "authority": "project authority doctrine derived from referenced primary-source relationships"
+}

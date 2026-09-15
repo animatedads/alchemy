@@ -1,0 +1,30 @@
+IBM 4361 / OS/360 MVT ooRexx safety11 validation
+
+Runtime: ooRexx 5.3.0 r13196 supplied debug build.
+Dependencies loaded externally from the supplied API roll-up:
+- Alchemy Objects v0.8
+- ooRexx Crypto v0.1
+- msqlshim v0.21.2 (`MySQLDeflate.cls` carries `::options digits 30`)
+- Journal Pointed State v0.1
+
+MVTRES.350 SHA-256:
+095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49
+
+Results:
+- 102 .cls/.rex sources compile
+- all 48 tests/test_*.rex runtime scripts pass
+- test_real_media.rex PASS
+- test_real_mvt_ipl.rex PASS, PSW=0000000000000080, CCHHR=0/0/4
+- AL native/live regressions PASS across all four carry/zero CC outcomes
+- live method insertion/replacement/removal regressions PASS
+- AL live-candidate -> permanent exact-microstate equivalence PASS
+- freeze/journal separation PASS
+- exact real-MVT pre-promotion journal retry from sealed safety10 PASS
+- live AL retry advances 296 instructions to X'56' at IA 0146FC / ICOUNT 512240
+
+Evidence:
+- evidence/mvt_safety11_al_journal_retry.log
+- evidence/safety11_full_suite.log
+
+Safety11 deliberately contains no OP56 implementation.
+Exact SSC v0.2.2 remains unavailable; v0.2.3 is not substituted.

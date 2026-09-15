@@ -1,0 +1,13 @@
+{
+  "id": "rr-runtime-lifecycle",
+  "title": "Runtime Lifecycle: Activation and Draining",
+  "summary": "Runtimes move through a strict state machine to ensure safe transitions between active and retired code.",
+  "why": "Allows for 'zero-downtime' upgrades where the old version continues to serve existing requests while the new version takes over new requests.",
+  "invariants": [
+    "Active -> Draining: The generation no longer accepts new requests but remains warm for in-flight ones.",
+    "Draining -> Retired: All pinned sessions have released their leases.",
+    "Failed quiesce aborts activation: If the previous active generation fails to quiesce, the new candidate is not published."
+  ],
+  "evidence_note": "Source: runtime_registry_v0.14/README.md:148-155. Line 154: 'Failed quiesce aborts activation'.",
+  "grounding": "oorexx-grounded"
+}

@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.removable-performance",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Removable media, availability and observed performance",
+  "summary": "USB/removable drives are normal providers. Their stable provider/volume identity is independent of the current mount path; catalogue knowledge survives disconnection. Availability and performance are separate observations.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "An offline removable replica remains in the catalogue with OFFLINE state.",
+    "A removable provider offers workspace only while connected and admitted.",
+    "Performance is measured/observed rather than inferred from labels such as USB or cloud.",
+    "Intermittent availability is not equivalent to poor throughput; a connected USB hard disk may be preferable to a slow remote provider.",
+    "Planner logic may prefer waiting for a known fast removable provider over beginning a very slow remote materialisation when policy permits."
+  ],
+  "procedure": [],
+  "topics": [
+    "removable",
+    "USB",
+    "performance",
+    "availability"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_removable_provider.rex",
+      "claim": "Regression proves stable removable-provider identity, offline catalogue continuity and observed performance semantics."
+    }
+  ]
+}

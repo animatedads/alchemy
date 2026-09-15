@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.node-inventory",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Node identity, endpoint observations and device admission",
+  "summary": "Storage Fabric keeps stable node identity separate from provider, routable endpoint, observed block devices and admitted workspace capacity. A visible disk is not allocatable until explicitly admitted, and Storage fleet assessment emits per-node storage evidence without taking Job-to-Node placement authority.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "nodeId is the stable join key; provider and IP/endpoint are attributes/observations, not identity.",
+    "A block device discovered by fdisk or equivalent is evidence of presence, not workspace admission.",
+    "UNQUALIFIED devices create no StoragePool and contribute no allocatable bytes.",
+    "Unknown capacity is not invented; a node with no admitted pool/capacity observation is storage-INFEASIBLE.",
+    "Separate nodes and separate capacity domains are never summed into one ordinary workspace.",
+    "StorageFleetPlacementAdvisor returns a matrix of storage evidence and does not select the final placement winner.",
+    "Endpoint reachability is not authenticated liveness; Job-to-Node retains liveness, hard eligibility, ranking and lease authority.",
+    "Disposable service lifecycle still dominates physical media quality: Azure trial capacity is working space, not durable safety."
+  ],
+  "procedure": [],
+  "topics": [
+    "node-inventory",
+    "device-admission",
+    "ed209",
+    "capacity-domain",
+    "job-to-node"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_node_inventory.rex",
+      "claim": "Regression proves stable node/provider/endpoint separation, device-admission persistence and disposable Azure lifecycle."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_fleet_placement_matrix.rex",
+      "claim": "Regression proves four-node ED209 storage matrix, no invented AWS capacity, no aggregation of Oracle nodes, and no use of unqualified Azure devices."
+    }
+  ]
+}

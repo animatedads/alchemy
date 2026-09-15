@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "sphere-authoring.anatomy.conventions",
+  "version": "0.3",
+  "sphere": "sphere-authoring",
+  "title": "Follow the pack/profile/qualification anatomy and naming",
+  "summary": "The Sphere Editor owns the canonical new layout. Authors should request templates and bounded mutations rather than memorising filenames. Legacy layouts remain readable; new/editor-managed writes use the canonical packs/<sphere>/{articles,corpora,rules,services,languages} structure plus profile/tests/qualification/changelog.",
+  "anatomy": {
+    "packs_&_profile": "packs/<id>/NN.json objects plus profiles/<id>.json; profile lists ['packs/core','packs/<id>'] unless engine services (packs/core or packs/oorexx) are needed.",
+    "object_kinds": "sphere (manifest), access-policy, article, corpus, service, language-rule",
+    "human_entry": "a top <ID>_SPHERE.md, plus tests/run_<id>.sh and qualification/QUALIFICATION.txt + MANIFEST.sha256",
+    "versioning": "bump the sphere/prod object's version for a material change (e.g. a doctrinal fix), do not silently reshape an id"
+  },
+  "evidence_note": "accounting-rigour, llm-containment, python-best-practices and bash-best-practices all share this shape and were loadable via `sphere resolve/load` and had zero (kind,id) collisions.",
+  "invariants": [
+    "Use unique (kind,id) pairs and let the editor choose canonical paths.",
+    "Use the profile to compose core/shared packs and the sphere pack.",
+    "Ship an access policy appropriate to the intended readers/operators.",
+    "Do not destructively rearrange a qualified legacy sphere merely for cosmetic conformity."
+  ],
+  "section": "sphere-internals",
+  "topics": [
+    "layout",
+    "profile",
+    "qualification"
+  ],
+  "authority": "project-doctrine"
+}

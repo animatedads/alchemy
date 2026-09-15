@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "ac.versioning",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Accepted package versions are immutable",
+  "summary": "Alchemy releases are versioned closures. Once a package version is accepted, fixes that change its source or dependency closure cut a new version; final releases do not silently rewrite accepted directories.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "v0.5 was frozen from accepted RC2 product source without post-acceptance product-source changes.",
+    "Changing a package dependency manifest is a source/closure change and requires a new component version.",
+    "A future foundation uplift belongs to Core v0.6, not a retrofit of frozen Core v0.5.",
+    "Development labels (prebase/RC) and accepted release labels must remain distinct."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/RELEASE_STATUS.txt",
+      "line_start": 1,
+      "line_end": 27,
+      "claim": "Frozen v0.5 status, freeze rule and exact component closure."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.6-pre2-source.zip",
+      "sha256": "3b0a18732a6ec33fc55ac35cf4589fb931623796cd0d628062a83c2cfcac914b",
+      "member": "alchemy_oorexx_core_rollup_v0.6-pre2-source/PREBASE_STATUS.txt",
+      "line_start": 1,
+      "line_end": 18,
+      "claim": "v0.6 is a new line explicitly preserving v0.5."
+    }
+  ]
+}

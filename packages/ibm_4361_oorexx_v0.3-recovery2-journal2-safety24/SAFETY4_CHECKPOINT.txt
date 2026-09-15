@@ -1,0 +1,40 @@
+IBM 4361 ooRexx v0.3 recovery2 journal2 safety4
+
+Purpose: in-progress durable checkpoint after the real-MVT discovery,
+object-scope journal retry, and permanent implementation of System/370 SRA
+(opcode X'8A').
+
+Newly preserved since safety3:
+- Exact old frontier reproduced at IA FF717E / ICOUNT 511635 with instruction
+  bytes 8A3000021B43, opcode 8A.
+- Hercules 2.17.1 source independently identifies X'8A' as SRA and supplies
+  the comparison semantics used for the focused regression.
+- Object-scope OP8A trial completed under journal control:
+    first try  -> UNSUPPORTED at the unchanged pre-instruction state
+    rewind     -> IA FF717E, ICOUNT 511635, R3 000001D8 restored exactly
+    retry      -> OK, IA FF7182, ICOUNT 511636, R3 00000076, CC2
+- The executor now exposes a narrow public installLiveMethod() seam so the
+  optional journal recovery coordinator can install OPxx#OBJECT trials without
+  making the core executor depend on Journal Pointed State.
+- Permanent OP8A/SRA source and focused test_cpu_sra.rex regression added.
+- Full suite: 70 sources compile; 31 runtime tests pass (real-media tests skip
+  unless explicitly enabled).
+- Permanent-source real-MVT replay proceeds 128 instructions beyond the old
+  boundary and stops at the next unsupported opcode X'4E' at IA FF71B0,
+  ICOUNT 511763. X'4E' is deliberately NOT implemented in this checkpoint.
+
+The fast real-MVT probe used a probe-only uncompressed CCKD container derived
+from the supplied historical MVTRES.350. All 3252 non-null logical tracks were
+byte-compared against the original compressed container; logical track
+identity passed. The historical media itself is not vendored in this package.
+
+This is NOT a release. Durable freeze files and live journal-pointed state
+remain separate mechanisms with separate purposes. The guest-visible IBM 3215
+channel console also remains separate from the physical IBM 4361 operator
+console.
+
+Source-control qualification note:
+The safety3 handover requires ooRexx Semantic Source Control v0.2.2. The files
+supplied to this continuation contain v0.2.3 but not the exact v0.2.2 package.
+No silent substitution was made. The v0.2.2 SSC pass therefore remains pending
+for this checkpoint.

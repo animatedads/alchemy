@@ -1,0 +1,158 @@
+{
+  "schema": "oorexx.foreign/0.20",
+  "library": {
+    "provider": "native",
+    "path": "../examples/libtensor_probe.so"
+  },
+  "functions": {
+    "rank": {
+      "symbol": "tensor_rank",
+      "return": "i32",
+      "args": [
+        "u64"
+      ]
+    },
+    "dim": {
+      "symbol": "tensor_dim",
+      "return": "i64",
+      "args": [
+        "u64",
+        "u64"
+      ]
+    },
+    "stride": {
+      "symbol": "tensor_stride",
+      "return": "i64",
+      "args": [
+        "u64",
+        "u64"
+      ]
+    },
+    "dtype_bits": {
+      "symbol": "tensor_dtype_bits",
+      "return": "i32",
+      "args": [
+        "u64"
+      ]
+    },
+    "device_type": {
+      "symbol": "tensor_device_type",
+      "return": "i32",
+      "args": [
+        "u64"
+      ]
+    },
+    "sum_u8": {
+      "symbol": "tensor_sum_u8",
+      "return": "i64",
+      "args": [
+        "u64"
+      ]
+    },
+    "fill_u8": {
+      "symbol": "tensor_fill_u8",
+      "return": "i32",
+      "args": [
+        "u64",
+        "u32"
+      ]
+    },
+    "probe_reset": {
+      "symbol": "tensor_probe_reset",
+      "return": "i32",
+      "args": []
+    },
+    "probe_started": {
+      "symbol": "tensor_probe_is_started",
+      "return": "i32",
+      "args": []
+    },
+    "delayed_sum": {
+      "symbol": "tensor_delayed_sum_u8",
+      "return": "i64",
+      "args": [
+        "u64",
+        "u32"
+      ]
+    },
+    "fake_device_new": {
+      "symbol": "tensor_fake_device_new",
+      "return": "u64",
+      "args": []
+    },
+    "v2_device_type": {
+      "symbol": "tensor_v2_device_type",
+      "return": "i32",
+      "args": [
+        "u64"
+      ]
+    },
+    "v2_stream": {
+      "symbol": "tensor_v2_stream",
+      "return": "u64",
+      "args": [
+        "u64"
+      ]
+    },
+    "v2_fence": {
+      "symbol": "tensor_v2_fence",
+      "return": "u64",
+      "args": [
+        "u64"
+      ]
+    },
+    "v2_sync_policy": {
+      "symbol": "tensor_v2_sync_policy",
+      "return": "i32",
+      "args": [
+        "u64"
+      ]
+    },
+    "v2_affinity": {
+      "symbol": "tensor_v2_affinity",
+      "return": "i32",
+      "args": [
+        "u64"
+      ]
+    },
+    "v2_provider_ok": {
+      "symbol": "tensor_v2_provider_is_synthetic_cuda",
+      "return": "i32",
+      "args": [
+        "u64"
+      ]
+    },
+    "v2_cpu_deref_allowed": {
+      "symbol": "tensor_v2_cpu_deref_allowed",
+      "return": "i32",
+      "args": [
+        "u64"
+      ]
+    },
+    "v2_close": {
+      "symbol": "tensor_v2_close",
+      "return": "i32",
+      "args": [
+        "u64"
+      ]
+    },
+    "v2_probe_reset": {
+      "symbol": "tensor_v2_probe_reset",
+      "return": "i32",
+      "args": []
+    },
+    "v2_probe_is_started": {
+      "symbol": "tensor_v2_probe_is_started",
+      "return": "i32",
+      "args": []
+    },
+    "v2_delayed_context": {
+      "symbol": "tensor_v2_delayed_context",
+      "return": "i32",
+      "args": [
+        "u64",
+        "u32"
+      ]
+    }
+  }
+}

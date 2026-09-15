@@ -1,0 +1,88 @@
+{
+  "kind": "corpus",
+  "id": "java.lessons",
+  "sphere": "java",
+  "title": "Java/Swing/JMS lessons learned in the ooRexx API projects",
+  "records": [
+    {
+      "topic": "baseline",
+      "area": "java",
+      "rule": "Java language support is first-class in LLM Gopher v0.17-dev1 through a language-module descriptor, source.java.examine, source.symbol.lookup and source.java.compile."
+    },
+    {
+      "topic": "source layout",
+      "area": "java",
+      "rule": "Prefer src/ source roots; Java projects commonly use src/main/java and src/test/java. Exact source member and exact declaration lookup precede text fallback."
+    },
+    {
+      "topic": "compile",
+      "area": "java",
+      "rule": "FederationBank Java ATM compiles main/test sources with javac --release 17 -Xlint:all and runs tests with java -ea."
+    },
+    {
+      "topic": "swing",
+      "area": "edt",
+      "rule": "Swing widget access belongs on the EDT; WireSwingEdt marshals with invokeAndWait and restores interrupt status on InterruptedException."
+    },
+    {
+      "topic": "swing",
+      "area": "authority",
+      "rule": "Swing listeners capture local value state and enqueue UI_ACTION; they do not call application logic, ooRexx, Queue Fabric, JMS/network code, or wait for a server response."
+    },
+    {
+      "topic": "swing",
+      "area": "transaction",
+      "rule": "Preflight semantic patch validity before EDT commit so a later invalid operation cannot leave a half-mutated UI."
+    },
+    {
+      "topic": "swing",
+      "area": "revision",
+      "rule": "Stamp viewRef/revision when the Swing action is queued, not later when transport drains it."
+    },
+    {
+      "topic": "swing",
+      "area": "state",
+      "rule": "Relayout existing JComponent instances rather than reconstructing unrelated siblings when the semantic protocol did not replace them."
+    },
+    {
+      "topic": "jms",
+      "area": "request-reply",
+      "rule": "Set JMSCorrelationID=commandId and JMSReplyTo; use a selector/correlation check and a bounded receive timeout."
+    },
+    {
+      "topic": "jms",
+      "area": "identity",
+      "rule": "A retransmission of one business action retains the same commandId and idempotencyKey."
+    },
+    {
+      "topic": "jms",
+      "area": "resources",
+      "rule": "Own and close consumer, producer, session, connection and naming context at the transport boundary even on failure."
+    },
+    {
+      "topic": "jms",
+      "area": "credentials",
+      "rule": "The Java ATM reads a JMS password from a configured environment-variable name; missing required configuration fails explicitly."
+    },
+    {
+      "topic": "jms",
+      "area": "authority",
+      "rule": "A successful JMS exchange is transport evidence; it does not transfer bank/business authority into the ATM or bridge."
+    },
+    {
+      "topic": "interop",
+      "area": "json-number",
+      "rule": "A Java conditional expression once promoted integer JSON tokens to Double, changing signed canonical JSON from 50000 to 50000.0; use explicit numeric branches where representation matters."
+    },
+    {
+      "topic": "interop",
+      "area": "timestamp",
+      "rule": "Java Instant nanosecond output exceeded the ooRexx DateTime parser contract; ATM requests cap UTC timestamp output at millisecond precision."
+    },
+    {
+      "topic": "testing",
+      "area": "literal-cross-language",
+      "rule": "The real Java→ActiveMQ→ooRexx→bank→JMS round trip found defects that local unit-shaped reasoning did not."
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "id": "qualification-execution-broker.authority",
+  "title": "Authority boundaries",
+  "section": "architecture",
+  "summary": "The broker separates requesting LLM, human approver, public-key verifier/execution node and qualification worker. It is not a remote shell.",
+  "invariants": [
+    "LLMs select only operator-catalogued identities, never arbitrary paths or commands.",
+    "Human approval does not grant login or general execution authority.",
+    "Worker execution transition is not dispatched through MCP.",
+    "Authentication of the LLM and authorization by the human are distinct authorities."
+  ],
+  "kind": "article",
+  "version": "0.1-dev1",
+  "sphere": "qualification-execution-broker",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "qualification_execution_broker_v0.1-dev1.zip",
+      "sha256": "ecbd9419343f11e96e112679fd0a1f54308c2bb293a849d6de613d40cac7487f",
+      "member": "qualification_execution_broker_v0.1-dev1/SECURITY.md",
+      "claim": "Security and authority invariants."
+    }
+  ]
+}

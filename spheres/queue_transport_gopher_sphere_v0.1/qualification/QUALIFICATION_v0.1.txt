@@ -1,0 +1,35 @@
+Queue Transport Gopher Sphere v0.1
+Qualification record
+
+Primary implementation artifact:
+  oorexx_queue_fabric_v0.9-dev5.zip
+  SHA-256 05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262
+
+Authoring/reference inputs:
+  llm_gopher_v0.19-dev1(20260902-162827).zip
+  SHA-256 d70b5e1e6a345197d32c1fac13de35aeb1c43333e2f1378b626fd7f9c35493ad
+
+  sphere(20260902-162826).zip
+  SHA-256 4ce4e36729b0daaf0f258b8cabab947e01447094b87f62851570986e4061a2ff
+  Used as sibling-sphere/layout reference; no sibling sphere is made authoritative for Queue Transport behavior.
+
+Implementation qualification inherited as evidence, not rerun by the sphere itself:
+  ooRexx 5.3.0 r13196
+  Foreign Runtime/OpenSSL accelerated HMAC-SHA-512 and ChaCha20
+  exact IPv4 policy PASS 11 assertions
+  encrypted socket transport PASS 6 assertions
+  socket security PASS 13 assertions
+  encrypted health/failover PASS 15 assertions
+  cross-session replay / wrong-direction / tamper / wrong-IP / stale-IP-removal evidence PASS
+  See the source artifact VALIDATION.txt for the complete PASS and non-claim boundary.
+
+Sphere qualification steps:
+  - canonical Sphere Editor validate
+  - canonical Sphere Editor lint with zero warnings
+  - tests/run.sh
+  - package with --require-clean-lint
+  - clean temporary Gopher environment: load packaged sphere by explicit override
+  - compact/full context retrieval
+  - representative lookup/open of security, OCI and allocator doctrine
+
+The final result file is written after these steps complete.

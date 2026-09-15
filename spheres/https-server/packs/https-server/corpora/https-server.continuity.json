@@ -1,0 +1,53 @@
+{
+  "kind": "corpus",
+  "id": "https-server.continuity",
+  "sphere": "https-server",
+  "title": "ooRexx HTTPS Server engineering sphere continuity records",
+  "records": [
+    {
+      "topic": "baseline",
+      "value": "ooRexx HTTPS Server v0.4.4",
+      "sha256": "aad4305c2495b13145a71938c59af86bc8d128be8d466aaf7b3548468a252d56"
+    },
+    {
+      "topic": "socket ownership",
+      "rule": "RxSock owns accepted descriptors and all network I/O."
+    },
+    {
+      "topic": "TLS path",
+      "rule": "OpenSSL memory BIO only; no accepted socket descriptor handed to OpenSSL."
+    },
+    {
+      "topic": "native lane",
+      "rule": "One short serialized Foreign Runtime/OpenSSL lane; readiness/network waits outside lane."
+    },
+    {
+      "topic": "admission",
+      "rule": "Fixed 16 workers + bounded 64 FIFO defaults; overflow closes immediately."
+    },
+    {
+      "topic": "liveness",
+      "rule": "Do not confuse Foreign Runtime introspection race repair with HTTPS reset-storm liveness repair."
+    },
+    {
+      "topic": "HTTP",
+      "rule": "Malformed framing, duplicate Content-Length and unsupported transfer encoding fail closed."
+    },
+    {
+      "topic": "reload",
+      "rule": "TLS context hot replacement is generation-pinned and failed reload is atomic."
+    },
+    {
+      "topic": "wire ui",
+      "rule": "HTTPS is secure transport/host edge; Wire UI Server remains semantic/session authority."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_https_server_v0.4.4.zip",
+      "sha256": "aad4305c2495b13145a71938c59af86bc8d128be8d466aaf7b3548468a252d56",
+      "member": "oorexx_https_server_v0.4.4/rexx/https_server.cls",
+      "claim": "Current source/package identity for continuity records."
+    }
+  ]
+}

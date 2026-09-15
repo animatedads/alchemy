@@ -1,0 +1,54 @@
+ooRexx 5.3.0 r13196
+Legal Effect v0.14
+Institutional Policy v0.8
+Alchemy Objects v0.8
+ooRexx Crypto v0.5
+Structured Utterance v0.3-qualified
+Wire UI Builder v0.11
+Wire UI Server v0.17
+Alchemy Wire UI JS v0.4-dev4
+ooRexx Queue Fabric v0.9-dev4, including ObjectQueueTopics and durable queue roots
+ooRexx Queue Fabric Web Gateway v0.2
+Accounting Core v0.7 (`accounting.event/0.1`, `accounting.transaction/0.1`, `accounting.store/0.1`)
+ooRexx AI Access v0.6
+ooRexx AI Provider Grok v0.4 (real-time path only)
+ooRexx Secret Broker v0.2
+ooRexx AI Tool Broker v0.4
+ooRexx AI Tool Orchestrator v0.3
+
+Current consolidated qualification roll-up:
+- oorexxapis(20260828-192827).zip
+- SHA-256 16bbf64cc9aec97ae0dec1d4100bc823092fda06e01aea890dfb91db181c5288
+
+Key embedded component ZIP identities from that roll-up:
+- accounting_core_v0.7.zip: 95b694d76e388613cafed39f752efe32ff8ce5d46401766aa2d63b9c147a5c76
+- wire_ui_server_v0.17.zip: 82c3a9d270d123dcbedabed1b57ed5e0944b828b1a184a5b71d47d9f9f188441
+- wire_ui_builder_v0.11.zip: dd48908e49e8ee00c94f931c3a1cfdfc8d5324e2e0fbf64e2cdd7d82c510ad3f
+- oorexx_crypto_v0.5.zip: fede97fdce138377b93ad0e7fbc21116211769ad94921402a12ff0032393d424
+- oorexx_queue_fabric_v0.9-dev4.zip: 9c1487f8dc878ae21a19e8fc8a139c801a80a97acd2c6575635003e6f8069898
+- oorexx_ai_provider_grok_v0.4.zip: 384347f1bd3f037af74f4da38d980d3eb90fdf3a040cf475121a97542d0cfea3
+- structured_utterance_v0.3-qualified.zip: c5dfe06fb7d85080990024c24d45023e4ef1e9e69bdbb10cfec6a9d2ed0dfa79
+
+Qualified ooRexx runtime package:
+- oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20260827-091239).deb
+- SHA-256 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Design reference only, not a runtime dependency:
+- FederationBank Engine split-authority / Queue Fabric backend pattern
+
+FlyLo v0.4.10 one-command runtime vendors the source slices required to run its public backend and assistant without assembling a second service:
+- Accounting Core v0.7
+- Wire UI Server v0.17 + Builder v0.11
+- Queue Fabric v0.9-dev4
+- Crypto v0.5
+- Grok provider v0.4 real-time path only; no Batch provider/WLU
+- AI Access v0.6 + Secret Broker v0.2
+- Structured Utterance v0.3
+- Alchemy Objects v0.8
+- Legal Effect v0.14
+- exact ooRexx r13196 `json.cls` compatibility slice for structured output
+
+Host tools: ooRexx, Node.js, curl
+Default live credential environment: XAI_API_KEY
+Canonical website/chat startup: ./flylo
+Default durable data root: ~/.flylo (override with FLYLO_DATA_DIR)

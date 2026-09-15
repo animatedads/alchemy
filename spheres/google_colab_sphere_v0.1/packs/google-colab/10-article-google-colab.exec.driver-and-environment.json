@@ -1,0 +1,14 @@
+{
+  "kind": "article",
+  "id": "google-colab.exec.driver-and-environment",
+  "version": "0.1",
+  "sphere": "google-colab",
+  "title": "Use exec for code, and keep ordinary environment separate from secret transport",
+  "summary": "Current Colab CLI can execute a local Python file with colab exec -s NAME -f script.py; the CLI reads the file locally and sends its contents to the remote kernel, so a separate upload of the entrypoint is not inherently required. The qualified 0.6.0 build did not support exec --env. For that build, ordinary non-secret configuration was materialized inside the generated driver while secrets remained separately staged. This is a compatibility adaptation, not permission to embed secrets in source.",
+  "evidence_note": "Current upstream documentation states that exec -f reads the local file and transmits it to the VM. Live 0.6.0 qualification rejected --env, so the adapter avoided the unsupported argv surface.",
+  "invariants": [
+    "Never invent an --env surface without probing the installed CLI.",
+    "Ordinary configuration and secret material are different planes.",
+    "Driver generation is evidence-bearing source; anything embedded there may be logged or retained and must therefore be non-secret."
+  ]
+}

@@ -1,0 +1,47 @@
+FederationBank Teller Till v0.2 qualification transcript
+Date: 2026-08-26
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+of the Common Public License v1.0 which accompanies this distribution or at
+https://www.oorexx.org/license.html
+
+=== executable tests ===
+== test_amount_binding.rex ==
+PASS: counted physical cash must equal authorised action amount
+== test_cash_in_out.rex ==
+PASS: physical cash custody moves independently of banking ledger
+== test_checker_threshold.rex ==
+PASS: high-value cash movement requires exact-action checker
+== test_discrepancy.rex ==
+PASS: discrepancy blocks closure and remains explicit
+== test_internal_exact_approval.rex ==
+PASS: internal till checker approval binds to exact transfer
+== test_internal_idempotency.rex ==
+PASS: exact internal transfer replay cannot move till cash twice
+== test_internal_no_customer_semantics.rex ==
+PASS: internal till movement carries no customer/Core transaction fields
+== test_internal_replenishment.rex ==
+PASS: till replenishment uses explicit internal cash semantics
+== test_internal_skim.rex ==
+PASS: till skim is internal custody movement, not customer cash out
+== test_internal_wrong_custodian.rex ==
+PASS: Branch Cash authority does not bypass current till custody
+== test_not_custodian.rex ==
+PASS: custody is bound to the assigned teller
+== test_open_close.rex ==
+PASS: open/count/close with dual control
+== test_runtime_module.rex ==
+PASS: runtime module
+
+=== rexxc ===
+[1] rexxc runtime/FederationBankTellerTillRuntimeModule.cls
+PASS
+[2] rexxc src/FederationBankTellerTill.cls
+PASS
+[3] rexxc tests/TestSupport.cls
+PASS
+rexxc total: 3/3 PASS

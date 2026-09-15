@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.transfer",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Bounded-memory resumable transfer and replica safety",
+  "summary": "Large media moves through ranged StorageByteSource/StorageByteSink adapters and a resumable transfer engine. COPY, VERIFY and COMMIT are deliberately separate states so an interrupted or merely copied object is not confused with durable completion.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Transfer memory is governed by bounded chunks rather than whole-object size.",
+    "Sink flush occurs before durable checkpoint progress advances.",
+    "Two-generation checksummed checkpoints allow fallback from a torn newest checkpoint.",
+    "Resume is fenced by source identity so stale evidence cannot continue against a changed local source.",
+    "COPIED is not VERIFIED and VERIFIED is not COMMITTED.",
+    "The last safe replica may not be evicted merely because another unverified or disposable copy exists.",
+    "Before restoring a COPYING transfer, a capable remote sink may reconcile the checkpoint offset against provider-authoritative resume evidence.",
+    "Partial remote acknowledgement advances only the acknowledged prefix and reopens the source at that exact offset; the suffix is retransmitted."
+  ],
+  "procedure": [],
+  "topics": [
+    "streaming",
+    "resumable",
+    "checkpoint",
+    "verification",
+    "replica"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/src/StorageStreaming.cls",
+      "claim": "Implements bounded transfer, provider-authoritative resume reconciliation, partial-ack replay, checkpoint and verification contracts."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_google_drive_resume_reconcile.rex",
+      "claim": "Regression proves provider evidence can repair a stale/torn local checkpoint before resumed transfer."
+    }
+  ]
+}

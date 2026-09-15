@@ -1,0 +1,129 @@
+parse arg dbRoot
+say 'STRUCTURED RELATION V0.5 -> ALGREL -> NOSQL V0.71 START'
+
+fed=.FederatedDatabaseEngine~new(dbRoot)
+sql=.NoSQLServerSQL~new(fed)
+
+xmlDoc=.XmlDocumentContext~new('__PLUGIN_FIXTURES__/orders.xml')
+xmlDoc~registerNamespace('o','urn:example:orders'); xmlDoc~registerNamespace('c','urn:example:common')
+xmlProvider=.XmlRelationProvider~new(.DatabaseResult)
+xmlDef=xmlProvider~defineRelation('xml_lines',xmlDoc,'/o:Orders/o:Order/o:Line')
+xmlDef~columnMap('business_id','../@id')
+xmlFact=xmlProvider~table('xml_lines')~readRows[1]~fact('business_id')
+
+ediDoc=.EdiFactDocumentContext~new('__PLUGIN_FIXTURES__/orders.edi')
+ediProvider=.EdiFactRelationProvider~new(.DatabaseResult)
+ediDef=ediProvider~defineRelation('edi_orders',ediDoc,'MESSAGE:ORDERS')
+ediDef~columnMap('business_id','BGM/2')
+ediFact=ediProvider~table('edi_orders')~readRows[1]~fact('business_id')
+
+x12Doc=.X12DocumentContext~new('__PLUGIN_FIXTURES__/purchase_order.x12')
+x12Provider=.X12RelationProvider~new(.DatabaseResult)
+x12Def=x12Provider~defineRelation('x12_orders',x12Doc,'TRANSACTION:850')
+x12Def~columnMap('business_id','BEG/3')
+x12Fact=x12Provider~table('x12_orders')~readRows[1]~fact('business_id')
+
+inputSchema=.AlgorithmSchema~new('STRUCTURED_RICH_INPUT')
+inputSchema~add('FACT_ID','TEXT',.false); inputSchema~add('RICH_VALUE','RICH_OBJECT',.false)
+builder=.AlgorithmInputRelationBuilder~new(inputSchema,'STRUCTURED_RICH_INPUT')
+items=.array~of(.array~of('XML_BUSINESS_ID',xmlFact),.array~of('EDI_BUSINESS_ID',ediFact),.array~of('X12_BUSINESS_ID',x12Fact))
+do item over items
+  rich=.StructuredRelationRichEvidenceAdapter~adaptFact(item[2],'FROZEN_OBSERVATION','STRUCTURED-V05-NOSQL')
+  vals=.directory~new; vals['FACT_ID']=item[1]; vals['RICH_VALUE']=rich
+  call Assert builder~addValues(vals), 'rich input row accepted'
+end
+
+/* Real XML/X12 disagreement from the supplied fixtures. */
+xmlQtyProvider=.XmlRelationProvider~new(.DatabaseResult)
+xmlQtyDef=xmlQtyProvider~defineRelation('xml_qty',xmlDoc,'/o:Orders/o:Order/o:Line')
+xmlQtyDef~columnMap('quantity','c:Quantity','INTEGER')
+xmlQtyFact=xmlQtyProvider~table('xml_qty')~readRows[2]~fact('quantity')
+x12QtyProvider=.X12RelationProvider~new(.DatabaseResult)
+x12QtyDef=x12QtyProvider~defineRelation('x12_qty',x12Doc,'TRANSACTION:850')
+x12QtyDef~columnMap('quantity','PO1/2','INTEGER')
+x12QtyFact=x12QtyProvider~table('x12_qty')~readRows[1]~fact('quantity')
+qtyEvidence=.StructuredRelationRichEvidenceAdapter~combineFacts('ORDER_QUANTITY',.array~of(xmlQtyFact,x12QtyFact),'FROZEN_OBSERVATION','STRUCTURED-V05-NOSQL-QTY')
+vals=.directory~new; vals['FACT_ID']='ORDER_QUANTITY'; vals['RICH_VALUE']=qtyEvidence
+call Assert builder~addValues(vals), 'cross-format quantity conflict row accepted'
+
+snapshot=builder~freeze('STRUCTURED-V05-NOSQL')
+
+provider=.RichBusinessFactAlgorithmProvider~new('__RYTA_ROOT__')
+algorithmEngine=.AlgorithmRelationEngine~new
+call Assert algorithmEngine~addProvider(provider), 'provider registration'
+ctx=.AlgorithmExecutionContext~new('STRUCTURED-V05-NOSQL-INV',snapshot~sourceOid,snapshot~sourceOid)
+classes=.directory~new
+classes['TABLE_DEFINITION']=.TableDefinition
+classes['DATABASE_ROW']=.DatabaseRow
+classes['DATABASE_RESULT']=.DatabaseResult
+bindings=.directory~new
+bindings['RICH_FACT_SUMMARY']='structured_fact_summary'
+bindings['RICH_FACT_SOURCES']='structured_fact_sources'
+bindings['RICH_FACT_TRACE']='structured_fact_trace'
+external=.NoSQLAlgorithmRelationExternalEngine~new(algorithmEngine,'RICH_BUSINESS_FACTS',snapshot,ctx,classes,bindings)
+call Assert external~isReady, 'external engine ready' external~lastError
+ignore=fed~addEngine(external)
+call Assert provider~invocationCount=0, 'catalog registration does not execute provider'
+
+meta=fed~tableMetadata('structured_fact_sources')
+call Assert meta \== .nil, 'metadata visible'
+call Assert provider~invocationCount=0, 'metadata observational'
+
+rs=sql~execute("SELECT fact_id, source_format, source_kind, source_path, lexical_value, native_object_preserved FROM structured_fact_sources ORDER BY fact_id")
+call Ok rs
+call Assert rs~rows~items=5, 'five source rows including two conflict sources'
+call Assert provider~invocationCount=1, 'first data read executes once'
+formats=.set~new; paths=.set~new
+do row over rs~rows
+  formats~put(row['source_format']); paths~put(row['source_path'])
+  call Assert row['native_object_preserved']=.true, 'native object retained behind scalar projection'
+end
+call Assert formats~hasIndex('XML'), 'XML visible as scalar provenance'
+call Assert formats~hasIndex('EDIFACT'), 'EDIFACT visible as scalar provenance'
+call Assert formats~hasIndex('X12'), 'X12 visible as scalar provenance'
+call Assert paths~items=5, 'native paths remain separate rows'
+
+rs2=sql~execute("SELECT fact_id, evidence_state, projection_state, scalar_value, authority_disposition FROM structured_fact_summary ORDER BY fact_id")
+call Ok rs2
+call Assert rs2~rows~items=4, 'four summaries including quantity conflict'
+qtySummary=.nil
+do row over rs2~rows
+  call Assert row['authority_disposition']='EVIDENCE_ONLY', 'structured adapter does not manufacture authority'
+  if row['fact_id']='ORDER_QUANTITY' then qtySummary=row
+end
+call Assert qtySummary \== .nil, 'quantity conflict summary present'
+call Assert qtySummary['evidence_state']='CONFLICT', 'cross-format disagreement stays conflict in SQL projection'
+call Assert qtySummary['projection_state']='SCALAR_REFUSED', 'SQL projection refuses conflict scalar'
+call Assert qtySummary['scalar_value']==.nil, 'SQL sees NULL rather than latest-write-wins quantity'
+call Assert provider~invocationCount=1, 'second relation reuses materialisation'
+
+bad=sql~execute("UPDATE structured_fact_summary SET scalar_value='flattened' WHERE fact_id='XML_BUSINESS_ID'")
+call Assert bad~status=.Error~NOTEXECUTED, 'projection remains read only'
+call Assert bad~error=.Error~SQLUNSUPPORTED, 'v0.71 external owner rejects mutation'
+call Assert provider~invocationCount=1, 'mutation rejection does not execute provider'
+
+say 'provider invocations:' provider~invocationCount
+say 'STRUCTURED RELATION V0.5 -> ALGREL -> NOSQL V0.71: OK'
+exit 0
+
+Ok: procedure
+  use arg rs
+  if rs~status=.Error~SUCCESS then return .true
+  raise syntax 93.900 additional('SQL failed: ' || rs~error || ' ' || rs~message)
+
+Assert: procedure
+  use arg condition,message,detail=''
+  if condition then return .true
+  raise syntax 93.900 additional('ASSERT FAILED: ' || message || ' ' || detail)
+
+::requires '__NOSQLSERVER_CLS__'
+::requires '__PLUGIN_ROOT__/src/XmlRelationAdapter.cls'
+::requires '__PLUGIN_ROOT__/src/EdiFactRelationAdapter.cls'
+::requires '__PLUGIN_ROOT__/src/X12RelationAdapter.cls'
+::requires '__RYTA_ROOT__/algorithm/AlgorithmRelation.cls'
+::requires '__RYTA_ROOT__/algorithm/AlgorithmInputRelation.cls'
+::requires '__RYTA_ROOT__/algorithm/AlgorithmIntegrity.cls'
+::requires '__RYTA_ROOT__/algorithm/RichEvidence.cls'
+::requires '__RYTA_ROOT__/integration/RichBusinessFactAlgorithmProvider.cls'
+::requires '__RYTA_ROOT__/integration/StructuredRelationRichEvidenceAdapter.cls'
+::requires '__RYTA_ROOT__/integration/NoSQLServerAlgorithmRelationExternalEngine.cls'

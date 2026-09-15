@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "wire-ui.builder-trivial-authoring",
+  "version": "0.1",
+  "sphere": "wire-ui",
+  "title": "Builder authoring for lists must be trivial",
+  "summary": "A designer should declare an authoritative collection, stable row identity, visible fields and optional selection/filter/sort/actions. The Builder and renderer own the repetitive mechanics; application authors should not write DOM loops or invent per-app row identity rules.",
+  "minimum_authoring_shape": {
+    "collectionSlot": "authoritative row collection",
+    "countSlot": "optional explicit authoritative count",
+    "identityField": "required stable semantic row identity",
+    "rowFields": "explicit displayed field order",
+    "selectionMode": "NONE, SINGLE or MULTI",
+    "workspaceContextSlot": "opaque authoritative workspace context when applicable",
+    "emptyPolicy": "ALLOW_EMPTY or FAIL_CLOSED",
+    "filters_sorts": "positive-list semantic fields/actions"
+  },
+  "invariants": [
+    "Builder-generated definitions should encode the row contract declaratively.",
+    "Renderer code should not guess identity from generic keys such as id, key, code or ref.",
+    "Filter and sort affordances emit semantic intent; they do not locally redefine authoritative membership.",
+    "Invalid required collection state must not leave an enabled Continue/Submit/row-action control.",
+    "The same authored pattern should work for passenger lists, bank worklists, claims, cases, positions, orders and staff rows."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_builder_v0.12-dev1.zip",
+      "sha256": "73dea2f650dddeba862b8402b52b0a7c97d6d385b970ebaf746814174aa3b88c",
+      "member": "wire_ui_builder_v0.12-dev1/ROW_COLLECTIONS.md",
+      "line_start": 3,
+      "line_end": 40,
+      "claim": "Builder row authoring shape and authority rules."
+    }
+  ]
+}

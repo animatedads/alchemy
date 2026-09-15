@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.lifecycle-safety",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Service lifecycle is part of storage safety",
+  "summary": "Storage safety depends on the lifecycle of the provider/account/service as well as the physical medium. Fast, large storage on a temporary trial can be excellent working space while being explicitly unsafe as the sole durable copy.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "SAFE/DISPOSABLE/UNKNOWN safety is distinct from STABLE/TEMPORARY/CREDIT_LIMITED/EXPIRING/TERMINATING lifecycle state.",
+    "Only AVAILABLE, VERIFIED, SAFE, STABLE locations count as durable replicas in v0.1-dev5.",
+    "A verified disposable copy does not authorize eviction of the last safe durable replica.",
+    "A pool whose service lifecycle is non-STABLE cannot satisfy durable safety even if the underlying media is physically persistent.",
+    "TERMINATING service capacity accepts no new workspace allocation.",
+    "Disposable capacity is valid for scratch, intermediates, caches, replicated inputs and recomputable outputs, but required durable results must be committed elsewhere before completion."
+  ],
+  "procedure": [],
+  "topics": [
+    "lifecycle",
+    "disposable",
+    "durability",
+    "safety"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
+      "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
+      "member": "oorexx_storage_fabric_v0.1-dev7/tests/test_disposable_lifecycle.rex",
+      "claim": "Regression proves disposable/credit-limited workspace is not durable safety, including eviction protection and terminating-state admission."
+    }
+  ]
+}

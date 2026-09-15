@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "baa-browser-session-state",
+  "version": "0.1",
+  "sphere": "browser-api-access",
+  "title": "Browser session state and migration",
+  "summary": "A VirtualBrowserSession is a long-lived application state object and is not the same thing as a network connection, egress lease or placement lease.",
+  "authority": "project-authority",
+  "invariants": [
+    "Browser session state may include cookies, origin/application state, storage, navigation/checkpoints and timer state.",
+    "Credentials remain external capability/secret references and must not be serialized as ordinary session state.",
+    "A browser session can acquire and release many API egress sessions during its lifetime.",
+    "A job being relocatable does not imply that authenticated browser state is legally or securely relocatable.",
+    "Session-state migration must be independently policy-authorised and may require restart from a semantic checkpoint instead of transferring credentials/cookies."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "virtual_browser_v0.9.zip",
+      "sha256": "cf252cb1c713c9bad9a458b526d5159ed66964da75899de22b8cca349d0b9a2e",
+      "member": "virtual_browser_v0.9/README.md",
+      "line_start": 3,
+      "line_end": 5,
+      "claim": "Browser observer/state remains distinct from Queue Fabric and API Client responsibilities.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "job_node_allocator_v0.6(1).zip",
+      "sha256": "58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead",
+      "member": "job_node_allocator_v0.6/README.md",
+      "line_start": 56,
+      "line_end": 78,
+      "claim": "Allocator durability/recovery preserves placement/admission evidence without taking ownership of application session state.",
+      "note": "Authoritative executable-candidate grounding."
+    }
+  ]
+}

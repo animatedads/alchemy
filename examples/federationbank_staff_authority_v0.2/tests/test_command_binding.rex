@@ -1,0 +1,15 @@
+e=.FBStaffTestSupport~engine
+ctx=.FBStaffTestSupport~context("TELLER-04","TELLER","S-BIND")
+a=.FBStaffTestSupport~action("A-BIND","TELLER-04","S-BIND",250000)
+auth=e~authorise("ENV-BIND",a,.FBStaffTestSupport~contexts(ctx))
+.FBStaffTestSupport~assertTrue(auth~ok,"authority")
+cmd=.FederationBankCommand~new(a~commandId,a~operation,a~idempotencyKey,a~customerId,a~sourceAccountId,a~targetAccountId,a~currency,a~amountMinor,"STAFF",a~staffId,a~requestedAt)
+r=.FederationBankStaffCommandBinder~bind(a,auth~value["envelope"],cmd)
+.FBStaffTestSupport~assertTrue(r~ok,"exact command binds")
+.FBStaffTestSupport~assertEq("ENV-BIND",r~value~detail("staffAuthorityEnvelopeId"),"authority evidence embedded")
+tampered=.FederationBankCommand~new(a~commandId,a~operation,a~idempotencyKey,a~customerId,a~sourceAccountId,a~targetAccountId,a~currency,a~amountMinor+1,"STAFF",a~staffId,a~requestedAt)
+r=.FederationBankStaffCommandBinder~bind(a,auth~value["envelope"],tampered)
+.FBStaffTestSupport~assertFalse(r~ok,"amount tamper fails")
+.FBStaffTestSupport~assertEq("STAFF_AUTHORITY_COMMAND_MISMATCH",r~code,"exact action binding")
+.FBStaffTestSupport~pass("staff authority binds exact Core Banking command")
+::requires "TestSupport.cls"

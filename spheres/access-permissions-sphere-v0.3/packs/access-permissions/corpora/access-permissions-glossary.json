@@ -1,0 +1,96 @@
+{
+  "kind": "corpus",
+  "id": "access-permissions-glossary",
+  "sphere": "access-permissions",
+  "title": "Access Permissions authoritative glossary",
+  "records": [
+    {
+      "id": "term.authentication-attribution",
+      "term": "Authentication attribution",
+      "definition": "Cryptographic attribution/integrity for exact evidence. It grants no Access Control or method Permission.",
+      "related": [
+        "ap-authentication-attribution",
+        "ap-three-layers"
+      ]
+    },
+    {
+      "id": "term.access-control",
+      "term": "Access Control",
+      "definition": "Coarse authority to cross a protected domain boundary: permission to enter the building.",
+      "related": [
+        "ap-domain-admission",
+        "ap-session-policy-pinning"
+      ]
+    },
+    {
+      "id": "term.permission",
+      "term": "Permission",
+      "definition": "Exact authority for a subject to invoke a specific method on a specific object after Security Effect evaluation.",
+      "related": [
+        "ap-method-permissions",
+        "ap-live-permission-policy"
+      ]
+    },
+    {
+      "id": "term.security-manager",
+      "term": "Alchemy Security Manager",
+      "definition": "The enforcement point that prevents protected operations when policy returns deny. It consumes Permission decisions but does not become PermissionAuthority.",
+      "related": [
+        "ap-enforcement-seam"
+      ]
+    },
+    {
+      "id": "term.security-effect",
+      "term": "Security Effect",
+      "definition": "Independent semantic assessment bound into PermissionRequest; Permission consumes its disposition, policy identity, trace identity, and constraints.",
+      "related": [
+        "ap-method-permissions"
+      ]
+    },
+    {
+      "id": "term.access-session",
+      "term": "Access-controlled session",
+      "definition": "In-process admission state created after Access Control ALLOW, pinned to the exact admission-policy identity and guarded before protected METHOD evaluation.",
+      "related": [
+        "ap-session-policy-pinning",
+        "ap-session-close-revocation"
+      ]
+    },
+    {
+      "id": "term.decision-proof",
+      "term": "Decision proof",
+      "definition": "Cryptographic evidence that a particular Access Control or Permission decision is authentic. It is not a bearer capability.",
+      "related": [
+        "ap-cryptographic-evidence"
+      ]
+    },
+    {
+      "id": "term.policy-resolver",
+      "term": "AccessPermissionsPolicyResolver",
+      "definition": "Resolver for a sealed fixed policy or live Institutional Policy catalog policy at an exact authorization time.",
+      "related": [
+        "ap-policy-resolution"
+      ]
+    },
+    {
+      "id": "term.deny-wins",
+      "term": "DENY-wins tie",
+      "definition": "When matching rules have equal priority and mixed actions, DENY wins. Same-action ties use lexical rule id.",
+      "related": [
+        "ap-domain-admission",
+        "ap-method-permissions"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_access_permissions_v0.3.zip",
+      "sha256": "e6421888aa40e302dcd1262cc4289ff6ab8df7c8c389595491d843973d52281e",
+      "member": "oorexx_access_permissions_v0.3/README.md",
+      "line_start": 5,
+      "line_end": 11,
+      "claim": "Core glossary terms derive from the project separation of authentication attribution, Access Control, Permissions and Security Manager enforcement.",
+      "note": "Glossary grounding."
+    }
+  ]
+}

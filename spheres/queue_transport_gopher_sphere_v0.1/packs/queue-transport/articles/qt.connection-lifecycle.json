@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "qt.connection-lifecycle",
+  "version": "0.1",
+  "sphere": "queue-transport",
+  "title": "One command-response exchange per connection",
+  "summary": "Queue Transport intentionally uses one delivery or probe request per TCP connection. This gives simple reconnect/failure boundaries and means each derived directional nonce is consumed once in the current protocol design.",
+  "authority": "project-authority",
+  "invariants": [
+    "The session-nonce safety argument depends on the one-command/response-per-connection lifecycle.",
+    "Store-and-forward and retry remain channel responsibilities, not an excuse to keep a socket session open indefinitely.",
+    "Changing to multiple commands per session would require a new nonce/sequence construction and fresh qualification; do not merely loop the current secure-frame code."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/README.md",
+      "line_start": 67,
+      "line_end": 73,
+      "claim": "README states one delivery per TCP connection, bounded framing, authentication and fresh-connection idempotence."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/SECURE_TRANSPORT.md",
+      "line_start": 35,
+      "line_end": 35,
+      "claim": "Documentation ties once-per-direction nonce use to one command/response per TCP connection."
+    }
+  ]
+}

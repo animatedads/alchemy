@@ -1,0 +1,24 @@
+{
+  "id": "nosqlserver.unicode-and-spatial",
+  "title": "Optional Unicode and bounded spatial SQL",
+  "section": "integration",
+  "summary": "Classic strings remain default. TUTOR Unicode is explicitly enabled per text profile and fails closed if requested but unavailable. Spatial SQL currently covers typed POINT/POLYGON accessors and point/polygon WITHIN/INTERSECTS; it does not claim full Simple Features or reprojection.",
+  "invariants": [
+    "Installing TUTOR alone must not change CLASSIC columns.",
+    "UNICODE uses strict UTF-8, NFC and grapheme-aware operations where documented.",
+    "ST_WITHIN excludes polygon boundary; ST_INTERSECTS includes it.",
+    "Do not claim distance, reprojection, polygon/polygon topology, LINESTRING/MULTI* or spatial indexing at v0.79."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "nosqlserver",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "nosqlserver_v0.79.zip",
+      "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec",
+      "member": "nosqlserver_v0.79/README.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

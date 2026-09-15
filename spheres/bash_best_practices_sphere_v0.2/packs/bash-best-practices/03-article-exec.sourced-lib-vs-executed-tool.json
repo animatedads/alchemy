@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "bash-best-practices.exec.sourced-lib-vs-executed-tool",
+  "version": "0.1",
+  "sphere": "bash-best-practices",
+  "title": "Know whether your file is sourced or executed, and scope strict mode accordingly",
+  "summary": "A script that installs functions for the user to call (a sourced library) must NOT impose set -e on the host shell; an executed tool should. Getting this wrong is why a sourced 'loader' aborts on a harmless false test, or why a plain `bash file.sh` appears to do nothing. Detect the mode explicitly and only act when executed.",
+  "technique": "bashqueues distinguishes the two roles explicitly. queuebash.sh is a library with no top-level set; when sourced by an interactive shell it installs the queue function, and when run directly it prints guidance and exits 2. queuemgr.sh only resolves its own dir and sources the library inside the executed branch.",
+  "evidence_note": "queuebash.sh:42 `if [[ \"${BASH_SOURCE[0]:-}\" == \"${0:-}\" ]]` drives direct-execution advice; lines 59-62 test interactivity with `case $- in *i*)` and return harmlessly when not interactive; queuemgr.sh:9 sources queuebash.sh only in the `BASH_SOURCE==$0` executed branch.",
+  "invariants": [
+    "A file meant to be sourced sets no unrevisited set -e / set -u; executed child commands inside it may set strict mode locally or be emitted as standalone tools that do.",
+    "Executed entry tools open with set -euo pipefail (uniform in this system's bin/ tools).",
+    "Detect sourced-vs-executed with `[[ \"${BASH_SOURCE[0]:-}\" == \"${0:-}\" ]]` and gate the side effects on it.",
+    "A source intended to be interactive returns (not exits) when the shell is non-interactive, unless a non-interactive mode is explicitly allowed."
+  ]
+}

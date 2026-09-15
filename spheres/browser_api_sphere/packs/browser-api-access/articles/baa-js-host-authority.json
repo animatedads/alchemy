@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "baa-js-host-authority",
+  "version": "0.1",
+  "sphere": "browser-api-access",
+  "title": "JavaScript gets language semantics, not network authority",
+  "summary": "The ECMAScript engine is a pluggable execution provider beneath Virtual Browser. Browser host objects remain controlled by Virtual Browser and all network activity is mediated by API Client.",
+  "authority": "project-authority",
+  "invariants": [
+    "The ECMAScript engine must not receive independent socket authority.",
+    "fetch, XMLHttpRequest, navigation, form submission and script loading pass through Virtual Browser host objects and API Client.",
+    "document, window, cookies, storage, timers and events are Virtual Browser-owned host semantics.",
+    "Foreign Runtime supplies the native runtime-binding substrate; it does not grant web-origin authority.",
+    "Engine replacement must not change placement, egress, WLU, rate or observation authority boundaries."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_api_client_v0.3.zip",
+      "sha256": "07a22f3d4c04f0589c7f6453c555f8fe8e4176b077c934d276648774dd4adfbc",
+      "member": "oorexx_api_client_v0.3/README.md",
+      "line_start": 5,
+      "line_end": 11,
+      "claim": "API Client provides the outbound request/session/transport seam used by higher-level adapters.",
+      "note": "Authoritative executable-candidate grounding."
+    },
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6(2).zip",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "member": "oorexx_foreign_runtime_v0.22.6/README.md",
+      "line_start": 4,
+      "line_end": 8,
+      "claim": "Foreign Runtime v0.22.6 provides ABI-native C scalar aliases for portable native bindings.",
+      "note": "Authoritative executable-candidate grounding."
+    }
+  ]
+}

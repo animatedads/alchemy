@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "usock.migration-history",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Why the implementation moved from native shim to Foreign Runtime",
+  "summary": "v0.1-v0.3 used a dedicated native AF_UNIX implementation to establish and test the required semantics. Once Foreign Runtime gained managed nested pointer graphs and exact binary buffer slices in v0.22.3, v0.4 moved the binding to Foreign Runtime; v0.5 added executable ABI authority and v0.6 added ABI-native C scalar types.",
+  "authority": "project-authority",
+  "invariants": [
+    "The native shim phase was useful as a semantic forcing/reference implementation, not a mistake to erase from history.",
+    "The reason for migration was capability: Foreign Runtime became able to express sockaddr_un and msghdr safely with managed lifetimes.",
+    "Do not regress to raw addresses or unpinned nested pointers merely to avoid improving Foreign Runtime.",
+    "General FFI deficiencies belong in Foreign Runtime; Unix Socket should not accumulate private replacements for them."
+  ],
+  "procedure": [
+    "When a future socket feature appears difficult, first decide whether it is Unix semantics or a reusable Foreign Runtime capability gap."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/README.md",
+      "line_start": 7,
+      "line_end": 11,
+      "claim": "README records v0.1-v0.3 native semantic establishment, v0.4 Foreign Runtime migration, v0.5 executable ABI authority, and v0.6 native C scalar separation.",
+      "note": "Architecture lineage."
+    },
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6(1).zip",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "member": "oorexx_foreign_runtime_v0.22.6/README.md",
+      "line_start": 14,
+      "line_end": 16,
+      "claim": "Managed pointer graphs and binary slices entered Foreign Runtime in v0.22.3.",
+      "note": "Foreign Runtime side of migration rationale."
+    }
+  ]
+}

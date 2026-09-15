@@ -1,0 +1,77 @@
+  expose cpu storage clock lastStatus lastIA lastOpcode lastInstruction
+  ia=cpu~psw~instructionAddress
+  raw=storage~fetchHex(ia,6)
+  op=x2d(raw~left(2)); len=self~instructionLength(op)
+  inst=raw~left(len*2)
+  lastIA=ia; lastOpcode=op; lastInstruction=inst
+  /* Operand-encoding specification checks have architectural priority over
+   * implementation coverage.  Keeping this before supportsInstruction() also
+   * preserves the check when a normal OP5D implementation is added later. */
+  if self~architecturalSpecificationException(inst) then do
+    ist=self~programInterruptSpecification(inst,ia,len)
+    if ist="OK" then do
+      cpu~noteInstruction
+      lastStatus="OK"
+      return "OK"
+    end
+    lastStatus=ist
+    return ist
+  end
+
+  if \self~supportsInstruction(inst) then do
+    /* An architecturally undefined instruction may be a guest-visible program
+     * interruption rather than an emulator coverage gap.  Keep classification
+     * and interruption handling outside the OPxx namespace so no synthetic
+     * OP00 (or other undefined operation) is ever created. */
+    if self~architecturalOperationException(inst) then do
+      ist=self~programInterruptOperation(inst,ia,len)
+      if ist="OK" then do
+        cpu~noteInstruction
+        lastStatus="OK"
+        return "OK"
+      end
+      lastStatus=ist
+      return ist
+    end
+    lastStatus="UNSUPPORTED"
+    return "UNSUPPORTED"
+  end
+
+  /* EX executes a transiently modified target instruction, but exceptions
+   * raised by that target are attributed to EX itself: use EX's IA and ILC in
+   * the saved old PSW.  Perform this before the generic unsupported-target
+   * boundary so an architecturally invalid target becomes a guest-visible
+   * specification interruption rather than an emulator coverage gap. */
+  if op=x2d("44") then do
+    target=self~exTargetInstruction(inst)
+    if self~architecturalSpecificationException(target) then do
+      lastInstruction=inst||"->"||target
+      ist=self~programInterruptSpecification(target,ia,len)
+      if ist="OK" then do
+        cpu~noteInstruction
+        lastStatus="OK"
+        return "OK"
+      end
+      lastStatus=ist
+      return ist
+    end
+    if \self~supportsInstruction(target) then do
+      lastStatus="UNSUPPORTED_EX_TARGET"
+      lastInstruction=inst||"->"||target
+      return "UNSUPPORTED"
+    end
+  end
+
+  next=self~dispatch(inst,ia,0)
+  /* LPSW replaces the complete current PSW.  Do not stamp the old
+   * instruction's ILC/next-IA into the newly loaded PSW. */
+  if op=x2d("82") then do
+    cpu~noteInstruction
+    lastStatus="OK"
+    return "OK"
+  end
+  cpu~psw~setInstructionLength(len)
+  cpu~psw~setInstructionAddress(next)
+  cpu~noteInstruction
+  lastStatus="OK"
+  return "OK"

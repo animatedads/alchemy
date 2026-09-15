@@ -1,0 +1,52 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.ga",
+  "version": "0.3",
+  "sphere": "oorexx-ml",
+  "title": "Genetic and evolutionary learning",
+  "summary": "The scalar GA treats each generation as a replayable machine event; dev5 adds a separate Pareto-ranked GA that reuses the same deterministic historical machinery without scalarizing independent objectives.",
+  "authority": "Executable source/tests and supplied upstream API artifacts are authoritative; this sphere preserves architecture and continuity.",
+  "invariants": [
+    "Genome objects are immutable.",
+    "Population and deterministic RNG state are restored together.",
+    "MLGeneticAlgorithm.step evaluates the current population and breeds the replacement; the new population is explicitly unevaluated.",
+    "MLGeneticAlgorithm.run performs breeding steps and then evaluates/publishes the final bred population.",
+    "Candidate budgets are planned in evaluated populations, not merely breeding calls.",
+    "Same checkpoint + same code/policy reproduces the same generation; changing policy creates a deliberate alternate future.",
+    "Pareto-ranked evolution is a separate objective-vector path; do not force it through scalar fitness or claim full NSGA-II conformance."
+  ],
+  "procedure": [
+    "Create a named MLGeneticPolicy and MLGABudgetPlan.",
+    "Checkpoint before each generation.",
+    "Evaluate fitness without mutating genomes.",
+    "Commit RNG cursor and next population only after the generation succeeds.",
+    "For a complete search call run(), so the terminal offspring population is evaluated and published.",
+    "Retain evaluated-generation evidence and all alternate futures."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ml_v0.1-dev5.zip",
+      "sha256": "b9aa9b80031743508b025c69d3819f00ea2a8e93aeb00f7ccc22691a0866c122",
+      "member": "oorexx_ml_v0.1-dev5/src/MLMultiObjective.cls",
+      "claim": "Pareto-ranked deterministic GA reuses population/RNG/experiment state and complete final-generation evaluation."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev4.zip",
+      "sha256": "ea9992023e3d5a318d5e69d07bb7edc3bc1a82e14a2172aac3c00f8fda1fa73b",
+      "member": "oorexx_ml_v0.1-dev4/src/MLEvolution.cls",
+      "claim": "Corrected complete-run semantics, named policy and bounded evaluated-generation budget."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev4.zip",
+      "sha256": "ea9992023e3d5a318d5e69d07bb7edc3bc1a82e14a2172aac3c00f8fda1fa73b",
+      "member": "oorexx_ml_v0.1-dev4/tests/test_ga_final_generation_scored.rex",
+      "claim": "Regression proves final bred population is scored before complete run returns."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev4.zip",
+      "sha256": "ea9992023e3d5a318d5e69d07bb7edc3bc1a82e14a2172aac3c00f8fda1fa73b",
+      "member": "oorexx_ml_v0.1-dev4/tests/test_ga_budget_plan.rex",
+      "claim": "Regression proves bounded evaluated-generation planning."
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "kind": "corpus",
+  "id": "qualification-execution-broker.continuity",
+  "sphere": "qualification-execution-broker",
+  "title": "Qualification Execution Broker durable continuation records",
+  "records": [
+    {
+      "topic": "baseline",
+      "value": "qualification_execution_broker_v0.1-dev1.zip",
+      "sha256": "ecbd9419343f11e96e112679fd0a1f54308c2bb293a849d6de613d40cac7487f"
+    },
+    {
+      "topic": "private key",
+      "rule": "Private signing key exists only on the local human workstation; server/MCP/LLM/ed209XX hold public verification material only."
+    },
+    {
+      "topic": "ordering",
+      "rule": "Preflight must prove runnability before intent freeze and before any authorization challenge."
+    },
+    {
+      "topic": "intent",
+      "rule": "Human signature is over domain-separated SHA-256 of the complete frozen intent; material drift invalidates authorization."
+    },
+    {
+      "topic": "surface",
+      "rule": "LLM operations are PLAN, REQUEST, AUTHORIZATION.CHALLENGE, AUTHORIZATION.SUBMIT, STATUS, RESULTS and CANCEL; there is no EXECUTE operation."
+    },
+    {
+      "topic": "worker",
+      "rule": "Only worker authority may transition AUTHORIZED to RUNNING, after pre-execution revalidation."
+    },
+    {
+      "topic": "results",
+      "rule": "Worker seals outcome and evidence manifest hash; chat may retrieve status/results later without maintaining an execution session."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "qualification_execution_broker_v0.1-dev1.zip",
+      "sha256": "ecbd9419343f11e96e112679fd0a1f54308c2bb293a849d6de613d40cac7487f",
+      "member": "qualification_execution_broker_v0.1-dev1/VALIDATION.txt",
+      "claim": "Sealed executable qualification baseline."
+    }
+  ]
+}

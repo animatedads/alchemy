@@ -1,0 +1,25 @@
+ooRexx Crypto v0.6 Foreign Runtime SHA qualification
+
+PASS Foreign Runtime v0.7.1 source build and 52 core assertions
+PASS Foreign Runtime OpenSSL metadata probe
+PASS Foreign Runtime EVP SHA-256
+PASS Foreign Runtime one-shot SHA-256/SHA-512 exact binary bytes
+PASS Runtime Reference v0.3 core + TCP state suites
+PASS Crypto v0.6 native full suite
+PASS Crypto v0.6 Foreign Runtime SHA-256/SHA-512 exact binary provider
+PASS existing TCP/Python SHA/curve/RSA reference suite with RuntimeExactBytes wire normalization
+PASS Foreign Runtime -> TCP -> native SHA failover chain
+PASS Runtime Reference v0.2 compatibility for Crypto core/TCP reference path
+PASS Runtime Registry v0.14 full non-optional suite against Crypto v0.6
+
+Native comparison benchmark (r13196):
+SHA256 16 B   82.086 ms -> 0.2396 ms = 342.56x
+SHA256 1 KiB 1062.765 ms -> 0.2597 ms = 4091.67x
+SHA256 4 KiB 4441.091 ms -> 0.2621 ms = 16942.75x
+SHA512 16 B  129.418 ms -> 0.1937 ms = 668.01x
+SHA512 1 KiB 896.337 ms -> 0.1873 ms = 4786.67x
+SHA512 4 KiB 4049.895 ms -> 0.2804 ms = 14442.59x
+
+Accelerated-only 1 MiB:
+SHA256 1.9705 ms ~= 507.50 MiB/s
+SHA512 2.1493 ms ~= 465.28 MiB/s

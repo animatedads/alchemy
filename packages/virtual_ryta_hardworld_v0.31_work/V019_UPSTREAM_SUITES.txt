@@ -1,0 +1,110 @@
+=== Structured Relation v0.7 own suite + NoSQLServer v0.71 ===
+compile smoke
+XML NATIVE MODEL SMOKE: OK
+XML NATIVE STRUCTURE PRESERVATION SMOKE: OK
+XML INFORMATION PRESERVATION SMOKE: OK
+RICH PROJECTION FACT SMOKE: OK
+XML NATIVE VALIDATION SMOKE: OK
+XML NATIVE TRANSFORM SMOKE: OK
+XML NATIVE TRANSFORM SECURITY SMOKE: OK
+EDIFACT NATIVE MODEL SMOKE: OK
+EDIFACT REPETITION PRESERVATION SMOKE: OK
+EDIFACT ENVELOPE VALIDATION SMOKE: OK
+EDIFACT INFORMATION PRESERVATION SMOKE: OK
+EDIFACT DECIMAL LEXICAL SMOKE: OK
+X12 COMPILE SMOKE: OK
+X12 ADAPTER COMPILE SMOKE: OK
+X12 NATIVE MODEL SMOKE: OK
+X12 REPETITION PRESERVATION SMOKE: OK
+X12 ENVELOPE VALIDATION SMOKE: OK
+X12 INFORMATION PRESERVATION SMOKE: OK
+CROSS FORMAT BUSINESS FACT SMOKE: OK
+GIT COMPILE SMOKE: OK
+GIT NATIVE MODEL SMOKE: OK
+CODE SEMANTIC MODEL SMOKE: OK
+CODE SEMANTIC RULES SMOKE: OK
+CODE VALUE FLOW COMPILE SMOKE: OK
+CODE VALUE FLOW SMOKE: OK
+CODE OWNERSHIP FLOW SMOKE: OK
+GITHUB BITCOIN CORPUS SMOKE: OK
+GITHUB BITCOIN SEMANTIC SMOKE: OK
+GITHUB BITCOIN VALUE FLOW SMOKE: OK
+CODE EVIDENCE RULE SMOKE: OK
+XML RELATION NOSQL V0.71 SMOKE: OK
+EDIFACT RELATION NOSQL V0.71 SMOKE: OK
+X12 RELATION NOSQL V0.71 SMOKE: OK
+SOURCE EVIDENCE RELATION NOSQL V0.71 SMOKE: OK
+=== Legal Effect v0.6 available suite + Structured v0.7 + HardWorld v0.19 ===
+== core ==
+LEGAL EFFECT V0.6 CORE START
+  assertions=20
+LEGAL EFFECT V0.6 CORE: OK
+== temporal-jurisdiction ==
+LEGAL EFFECT V0.6 TEMPORAL/JURISDICTION START
+  assertions=3
+LEGAL EFFECT V0.6 TEMPORAL/JURISDICTION: OK
+== modification-effects ==
+LEGAL EFFECT V0.6 MODIFICATION EFFECTS START
+  assertions=38
+LEGAL EFFECT V0.6 MODIFICATION EFFECTS: OK
+== rule-sealing ==
+LEGAL EFFECT V0.6 RULE SEALING START
+  assertions=17
+LEGAL EFFECT V0.6 RULE SEALING: OK
+== semantic-identity ==
+LEGAL EFFECT V0.6 SEMANTIC IDENTITY START
+  assertions=6
+LEGAL EFFECT V0.6 SEMANTIC IDENTITY: OK
+== authority-conflicts ==
+LEGAL EFFECT V0.6 AUTHORITY / CONFLICT START
+  assertions=26
+LEGAL EFFECT V0.6 AUTHORITY / CONFLICT: OK
+== conflict-of-laws ==
+LEGAL EFFECT V0.6 CONFLICT OF LAWS START
+  assertions=8
+LEGAL EFFECT V0.6 CONFLICT OF LAWS: OK
+SKIP compiler/source-verification tests (set RUNTIME_REGISTRY_ROOT for SHA-512 provider)
+== structured-relation ==
+LEGAL EFFECT V0.6 STRUCTURED RELATION BRIDGE START
+LEGAL EFFECT V0.6 STRUCTURED RELATION BRIDGE: OK
+== hardworld ==
+LEGAL EFFECT V0.6 HARDWORLD BRIDGE START
+LEGAL EFFECT V0.6 HARDWORLD BRIDGE: OK
+SKIP Runtime Registry bridge (set RUNTIME_REGISTRY_ROOT)
+SKIP runtime evidence chain (set RUNTIME_REGISTRY_ROOT and STRUCTURED_RELATION_ROOT)
+== food-delivery-demo ==
+LEGAL EFFECT V0.6 FOOD DELIVERY SYNTHETIC DEMO
+
+Los Angeles scheduling change: REVIEW_REQUIRED newly-applicable=1
+Sydney rate change (event 2026-08-18): CONDITIONAL
+London scheduling change: REVIEW_REQUIRED newly-applicable=1
+Contract rate change: BLOCKED dispositions=1
+
+Business facts remain business facts: recruitment burden=15%, new-driver productivity=80% for 30 days.
+Legal Effect constrains the feasible action space; it does not choose the business optimum.
+== framework-snapshot-demo ==
+LEGAL EFFECT V0.6 FRAMEWORK SNAPSHOT SYNTHETIC DEMO
+
+Sydney 2026-08-16: material=BASE result=ADMISSIBLE
+Sydney 2026-08-18: material=ORDER_2026 result=CONDITIONAL
+  lineage effects=1
+
+The contract is loaded but is not yet applicable to this transaction:
+  result=CONDITIONAL
+After explicit contract binding:
+  result=BLOCKED dispositions=2
+
+Same sealed generation; different legal framework selected by place, time and source relations.
+== authority-conflict-demo ==
+LEGAL EFFECT V0.6 AUTHORITY / CONFLICT SYNTHETIC DEMO
+
+Both norms apply, but no authority relation is loaded:
+  status=REVIEW_REQUIRED unresolved_conflicts=1 effective_dispositions=0
+
+After adding an explicit evidence-bearing authority relation:
+  status=BLOCKED disposition=PROHIBITED
+  winner=ACT-12 loser=CONTRACT-7
+  authority=ACT-NON-DEROGATION
+SKIP compiler-boundary demo (set RUNTIME_REGISTRY_ROOT)
+LEGAL EFFECT V0.6 ALL REQUESTED TESTS: OK
+NOTE: Legal Effect v0.6 compiler/source-verification SHA-512 and Runtime Registry tests are skipped because Runtime Registry v0.4 is not part of the current companion handoff.

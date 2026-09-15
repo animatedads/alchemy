@@ -1,0 +1,120 @@
+say 'LEGAL EFFECT COMPLETE INPUT PINNING V0.17 START'
+
+source = .NormativeSource~new('SRC','CONTRACT','Pinned input test')
+norm = .LegalNorm~new('N1','SRC','P1','CONTRACT_TERM','SHIP','CONTRACT_BREACH')
+ignored = norm~addCondition(.LegalPredicate~new('READY','KNOWN_TRUE'))
+generation = .LegalRuleGeneration~new('PIN-GEN','1')
+ignored = generation~addSource(source)
+ignored = generation~addNorm(norm)
+ignored = generation~seal
+
+facts = .LegalFactSet~new
+ignored = facts~putKnown('READY',.true,.nil,'TEST')
+context = .LegalContext~new('EV1','2026-08-20','2026-08-20',facts)
+ignored = context~bindSource('SRC','test binding')
+action = .LegalAction~new('SHIP','ship it')
+
+normal = .LegalEffectPinnedEvaluator~evaluate(.LegalEffectEngine~new,action,generation,context)
+call AssertTrue normal~ok, 'normal generation/action/context closure pins'
+call AssertEqual 'PINNED', normal~envelope~integrityStatus, 'normal envelope pinned'
+call AssertTrue normal~envelope~inputSnapshot~canonicalIdentity <> '', 'input closure identity exposed'
+
+/* The engine changes the proposed action after the pre-evaluation snapshot. */
+action2 = .LegalAction~new('SHIP','ship it')
+mutAction = .LegalEffectPinnedEvaluator~evaluate(.MutatingLegalEngine~new('ACTION'),action2,generation,context)
+call AssertTrue \mutAction~ok, 'action mutation is refused'
+call AssertEqual 'LEGAL_ACTION_CHANGED_DURING_EVALUATION', mutAction~code, 'action mutation failure code'
+call AssertTrue mutAction~envelope == .nil, 'action mutation cannot issue authority envelope'
+
+/* The engine changes current-context metadata after the pre-evaluation snapshot. */
+facts3 = .LegalFactSet~new
+ignored = facts3~putKnown('READY',.true,.nil,'TEST')
+context3 = .LegalContext~new('EV3','2026-08-20','2026-08-20',facts3)
+ignored = context3~bindSource('SRC','test binding')
+mutContext = .LegalEffectPinnedEvaluator~evaluate(.MutatingLegalEngine~new('CONTEXT'),.LegalAction~new('SHIP'),generation,context3)
+call AssertTrue \mutContext~ok, 'context mutation is refused'
+call AssertEqual 'LEGAL_CONTEXT_CHANGED_DURING_EVALUATION', mutContext~code, 'context mutation failure code'
+call AssertTrue mutContext~envelope == .nil, 'context mutation cannot issue authority envelope'
+
+/* Authority-bearing source evidence must have an explicit canonical contract. */
+facts4 = .LegalFactSet~new
+ignored = facts4~putKnown('READY',.true,.OpaqueLegalSource~new,'TEST')
+context4 = .LegalContext~new('EV4','2026-08-20','2026-08-20',facts4)
+ignored = context4~bindSource('SRC','test binding')
+unpinnable = .LegalEffectPinnedEvaluator~evaluate(.LegalEffectEngine~new,.LegalAction~new('SHIP'),generation,context4)
+call AssertTrue \unpinnable~ok, 'opaque fact source is refused before authoritative evaluation'
+call AssertEqual 'LEGAL_EVALUATION_INPUT_UNPINNABLE', unpinnable~code, 'opaque source failure code'
+call AssertTrue unpinnable~envelope == .nil, 'opaque source cannot issue authority envelope'
+
+/* Metadata is part of authority input identity even though v0.1 does not currently consume it. */
+facts5a = .LegalFactSet~new; ignored = facts5a~putKnown('READY',.true,.nil,'TEST')
+ctx5a = .LegalContext~new('EV5','2026-08-20','2026-08-20',facts5a); ignored = ctx5a~bindSource('SRC','test binding'); ctx5a~metadata['MODE']='A'
+facts5b = .LegalFactSet~new; ignored = facts5b~putKnown('READY',.true,.nil,'TEST')
+ctx5b = .LegalContext~new('EV5','2026-08-20','2026-08-20',facts5b); ignored = ctx5b~bindSource('SRC','test binding'); ctx5b~metadata['MODE']='B'
+pin5a = .LegalEffectPinnedEvaluator~evaluate(.LegalEffectEngine~new,.LegalAction~new('SHIP'),generation,ctx5a)
+pin5b = .LegalEffectPinnedEvaluator~evaluate(.LegalEffectEngine~new,.LegalAction~new('SHIP'),generation,ctx5b)
+call AssertTrue pin5a~ok, 'metadata A pins'
+call AssertTrue pin5b~ok, 'metadata B pins'
+call AssertTrue pin5a~envelope~inputSnapshot~canonicalIdentity \== pin5b~envelope~inputSnapshot~canonicalIdentity, 'context metadata changes legal input identity'
+call AssertTrue pin5a~envelope~assessmentEvidence~canonicalIdentity \== pin5b~envelope~assessmentEvidence~canonicalIdentity, 'assessment evidence identity binds input closure'
+
+/* v0.1 status reduction has no explicit precedence between REVIEW and
+   REQUIRES_OBLIGATION. Refuse that authority combination rather than relying
+   on .Table iteration order. */
+ambSourceA = .NormativeSource~new('AMB-A','CONTRACT','ambiguous A')
+ambSourceB = .NormativeSource~new('AMB-B','CONTRACT','ambiguous B')
+condNorm = .LegalNorm~new('AMB-COND','AMB-A','1','CONTRACT_TERM','AMB_ACT','REQUIRES_OBLIGATION')
+reviewNorm = .LegalNorm~new('AMB-REVIEW','AMB-B','2','CONTRACT_TERM','AMB_ACT','REVIEW')
+ambGen = .LegalRuleGeneration~new('AMB-GEN','1')
+ignored=ambGen~addSource(ambSourceA); ignored=ambGen~addSource(ambSourceB)
+ignored=ambGen~addNorm(condNorm); ignored=ambGen~addNorm(reviewNorm); ignored=ambGen~seal
+ambCtx = .LegalContext~new('AMB-EVENT','2026-08-20')
+ignored=ambCtx~bindSource('AMB-A','test'); ignored=ambCtx~bindSource('AMB-B','test')
+ambPinned = .LegalEffectPinnedEvaluator~evaluate(.LegalEffectEngine~new,.LegalAction~new('AMB_ACT'),ambGen,ambCtx)
+call AssertTrue \ambPinned~ok, 'ambiguous legal status reduction is refused for authority'
+call AssertEqual 'LEGAL_STATUS_REDUCTION_AMBIGUOUS', ambPinned~code, 'ambiguous reduction failure code'
+call AssertTrue ambPinned~envelope == .nil, 'ambiguous reduction cannot issue authority envelope'
+
+/* Generation identity is conservatively order-sensitive wherever v0.1
+   executes ordered collections. */
+ambGenRev = .LegalRuleGeneration~new('AMB-GEN','1')
+ambSourceA2 = .NormativeSource~new('AMB-A','CONTRACT','ambiguous A')
+ambSourceB2 = .NormativeSource~new('AMB-B','CONTRACT','ambiguous B')
+condNorm2 = .LegalNorm~new('AMB-COND','AMB-A','1','CONTRACT_TERM','AMB_ACT','REQUIRES_OBLIGATION')
+reviewNorm2 = .LegalNorm~new('AMB-REVIEW','AMB-B','2','CONTRACT_TERM','AMB_ACT','REVIEW')
+ignored=ambGenRev~addSource(ambSourceA2); ignored=ambGenRev~addSource(ambSourceB2)
+ignored=ambGenRev~addNorm(reviewNorm2); ignored=ambGenRev~addNorm(condNorm2); ignored=ambGenRev~seal
+call AssertTrue .LegalEffectGenerationSnapshot~new(ambGen)~canonicalIdentity \== .LegalEffectGenerationSnapshot~new(ambGenRev)~canonicalIdentity, 'generation norm order is represented in authority closure identity'
+
+say 'LEGAL EFFECT COMPLETE INPUT PINNING V0.17: OK'
+exit 0
+
+::class MutatingLegalEngine public
+::attribute mode get
+::method init
+  expose mode
+  use arg modeArg
+  mode = modeArg~string~upper
+::method evaluate
+  expose mode
+  use arg action, generation, context
+  if mode == 'ACTION' then ignored = action~addMutation(.LegalFactMutation~new('INJECTED',.true,'KNOWN',.nil,'MUTATOR'))
+  if mode == 'CONTEXT' then context~metadata['MUTATED_DURING_EVALUATION'] = 'YES'
+  return .LegalEffectEngine~new~evaluate(action,generation,context)
+
+::class OpaqueLegalSource public
+::method marker
+  return 'opaque'
+
+::routine AssertTrue
+  use arg condition, label
+  if \condition then raise syntax 88.900 array('ASSERT TRUE FAILED: ' || label)
+  return 0
+
+::routine AssertEqual
+  use arg expected, actual, label
+  if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: ' || label || ' expected=' || expected || ' actual=' || actual)
+  return 0
+
+::requires 'LegalEffect.cls'
+::requires '../integration/LegalEffectPromotionAdapter.cls'

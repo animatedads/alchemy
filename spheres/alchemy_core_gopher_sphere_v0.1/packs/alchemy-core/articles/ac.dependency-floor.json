@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "ac.dependency-floor",
+  "version": "0.1",
+  "sphere": "alchemy-core",
+  "title": "Dependency floor is bootstrap availability, not acceptance",
+  "summary": "Dependency-floor seeding establishes exact package trees needed so later plans can resolve. It preserves existing package trees, adds missing trees and writes a bootstrap ledger; it never converts mere availability into acceptance.",
+  "authority": "project-authority",
+  "invariants": [
+    "BOOTSTRAP_ONLY_NOT_ACCEPTANCE is a semantic boundary, not wording.",
+    "Existing accepted package directories are preserved rather than overwritten.",
+    "A floor is consumed by the planner; it is not proof that dependencies have passed fresh qualification.",
+    "Repository catalogue identity is manifest-first even when the floor was seeded from bundle layout."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/VALIDATION.txt",
+      "line_start": 34,
+      "line_end": 44,
+      "claim": "Independent acceptance records dependency-floor seed counts and BOOTSTRAP_ONLY_NOT_ACCEPTANCE."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_dependency_floor_v0.5/src/AlchemyDependencyFloor.cls",
+      "line_start": 141,
+      "line_end": 239,
+      "claim": "Seeder creates package trees and bootstrap ledger through main transaction."
+    },
+    {
+      "artifact": "alchemy_oorexx_core_rollup_v0.5.zip",
+      "sha256": "2238db47c130f5c71e825fb49c50037a2f41c910005d10bf2175483162606548",
+      "member": "alchemy_oorexx_core_rollup_v0.5/packages/alchemy_dependency_floor_v0.5/src/AlchemyDependencyFloor.cls",
+      "line_start": 268,
+      "line_end": 322,
+      "claim": "Accepted dependency catalogue is manifest-first."
+    }
+  ]
+}

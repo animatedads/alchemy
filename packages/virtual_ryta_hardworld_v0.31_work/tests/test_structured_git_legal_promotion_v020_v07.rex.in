@@ -1,0 +1,151 @@
+say 'STRUCTURED V0.8 GIT -> LEGAL EFFECT V0.7 -> HARDWORLD V0.20 START'
+
+/* Public code evidence: exact Bitcoin Core predecessor/successor blobs. */
+change = .BitcoinCorePublicCorpus~semantic35688
+beforeRevision = change~beforeSymbol~sourceSpan~fileRevision
+afterRevision = change~afterSymbol~sourceSpan~fileRevision
+call AssertEqual 'VERIFIED', beforeRevision~blobVerificationState, 'base Git blob verified'
+call AssertEqual 'GIT_BLOB_BOUND', beforeRevision~provenance['identityStrength'], 'base Git evidence strongly bound'
+call AssertEqual '0796bbeb3271a210ed7ed5d85a82fc76939db61a', beforeRevision~computedBlobSha, 'base Git blob identity'
+call AssertEqual 'VERIFIED', afterRevision~blobVerificationState, 'head Git blob verified'
+call AssertEqual 'GIT_BLOB_BOUND', afterRevision~provenance['identityStrength'], 'head Git evidence strongly bound'
+call AssertEqual 'd9e16f361107c6d66f32ad8050c658d3b01f9241', afterRevision~computedBlobSha, 'head Git blob identity'
+
+beforeFlow = .CxxValueFlowAnalyzer~analyze(change~beforeSymbol)
+afterFlow = .CxxValueFlowAnalyzer~analyze(change~afterSymbol)
+finding = .MemoryValueFlowHistoryRule~assess(change, beforeFlow, afterFlow)
+call AssertEqual 'BOUNDS_VALUE_FLOW_PROTECTION_PRESERVED', finding~classification, 'public value-flow finding'
+richFact = finding~asBusinessFact
+call AssertEqual 'code_finding', richFact~name, 'business fact name'
+call AssertEqual finding~classification, richFact~value, 'business fact value'
+call AssertTrue richFact~source == change, 'rich fact retains semantic-change object'
+
+legalFacts = .LegalEffectStructuredRelationBridge~factSetFrom(.array~of(richFact), 'FROZEN_OBSERVATION', 'BITCOIN-35688-V08')
+legalFact = legalFacts~fact('code_finding')
+call AssertTrue legalFact \== .nil, 'legal fact imported'
+call AssertTrue legalFact~source~nativeObject == change, 'Legal Effect import retains semantic-change object'
+
+/* Separate legal authority: compiler-certified and source-verified under v0.7. */
+provider = .LegalSha512DigestProvider~new('runtime-registry-sha512')
+verifier = .LegalSourceVerifier~new(provider, 'hardworld-v020-bitcoin-policy-verifier')
+sourceText = 'A cryptographic code change with preserved bounds-value-flow protection requires human review before deployment.'
+sourceObject = .directory~new
+sourceObject['kind'] = 'SYNTHETIC_CODE_REVIEW_POLICY'
+sourceObject['text'] = sourceText
+sourceMaterial = .LegalVerificationMaterial~fromText(sourceObject, sourceText, 'memory:code-review-policy-v020', 'RAW_NORMATIVE_SOURCE')
+sourceDigest = 'sha512:' || provider~digest(sourceMaterial~material)
+identity = .LegalSourceIdentity~new('CODE-REVIEW-POLICY', 'POLICY', 'expr-v1', 'memory:code-review-policy-v020', sourceDigest, 'TEST-AUTH', '*', 'VERIFIED')
+source = .NormativeSource~new('CODE-REVIEW-POLICY', 'POLICY', 'code review policy', 'TEST-AUTH')
+
+provisionText = 'Preserved bounds-value-flow protection in cryptographic code still requires deployment review.'
+provisionObject = .directory~new
+provisionObject['kind'] = 'SYNTHETIC_CODE_REVIEW_PROVISION'
+provisionObject['text'] = provisionText
+provisionMaterial = .LegalVerificationMaterial~fromText(provisionObject, provisionText, 'clause 1', 'PROVISION_LEXICAL_TEXT')
+provisionDigest = 'sha512:' || provider~digest(provisionMaterial~material)
+reference = .LegalProvisionReference~new('CODE-REVIEW-POLICY', '1', 'expr-v1', 'clause 1', provisionDigest, provisionText, 'VERIFIED')
+provision = .LegalProvision~new('CODE-REVIEW-POLICY', '1', 'ACTIVE', 'BASE', provisionText)
+
+unit = .LegalCompilationUnit~new('CODE-REVIEW-GEN', '0.7', 'hardworld-v020-test-compiler', '1')
+call MustOk unit~addSource(identity, source), 'add policy source'
+call MustOk unit~addProvision(reference, provision), 'add policy provision'
+call MustOk unit~verifySource('CODE-REVIEW-POLICY', sourceMaterial, verifier), 'verify policy source'
+call MustOk unit~verifyProvision('CODE-REVIEW-POLICY', '1', provisionMaterial, verifier), 'verify policy provision'
+
+norm = .LegalNorm~new('CRYPTO-CHANGE-REVIEW', 'CODE-REVIEW-POLICY', '1', 'ADMINISTRATIVE_POLICY', 'DEPLOY_CRYPTO_CHANGE', 'REVIEW', 'TEST', 'verified code-review policy')
+call MustOk norm~addCondition(.LegalPredicate~new('code_finding', 'EQUALS', 'BOUNDS_VALUE_FLOW_PROTECTION_PRESERVED')), 'add code finding condition'
+proposal = .LegalCompileProposal~new('P-CRYPTO-CHANGE-REVIEW', 'NORM', norm, 'structured-v08', 'DETERMINISTIC', '1')
+call MustOk proposal~addEvidenceReference(reference), 'attach provision evidence'
+call MustOk unit~addProposal(proposal), 'add policy proposal'
+report = .LegalRuleCompiler~new~compile(unit)
+call AssertTrue report~ok, 'verified legal generation compiles'
+generation = report~generation
+call AssertTrue generation~publicationEligible, 'legal generation publication eligible'
+
+context = .LegalContext~new('BITCOIN-35688-DEPLOY', '2026-08-20', '2026-08-20', legalFacts)
+ignored = context~bindSource('CODE-REVIEW-POLICY', 'verified synthetic deployment policy')
+action = .LegalAction~new('DEPLOY_CRYPTO_CHANGE', 'deploy the reviewed crypto change')
+pinned = .LegalEffectV07PinnedEvaluator~evaluate(.LegalEffectEngine~new, action, generation, context)
+if \pinned~ok then say '  pinned_failure=' || pinned~code || ' ' || pinned~detail
+call AssertTrue pinned~ok, 'native v0.7 pinned evaluation'
+call AssertEqual 'REVIEW_REQUIRED', pinned~envelope~assessment~status, 'code finding requires review'
+
+promotions = .LegalEffectV07PromotionAdapter~promotionsFrom(pinned~envelope)
+reviewPromotion = FindPromotion(promotions, 'LEGAL_ACTION_REVIEW_REQUIRED')
+call AssertTrue reviewPromotion \== .nil, 'review promotion exists'
+call AssertEqual 'AUTHORIZED', reviewPromotion~promotionStatus, 'review promotion authorized'
+call AssertTrue reviewPromotion~authority~pos('LEGAL_EFFECT/0.7/') == 1, 'native v0.7 authority namespace'
+call AssertTrue HasBasis(reviewPromotion, 'LEGAL_GENERATION_V07'), 'legal generation basis retained'
+call AssertTrue HasBasis(reviewPromotion, 'LEGAL_COMPILATION_CERTIFICATE'), 'compiler certificate basis retained'
+call AssertTrue HasBasis(reviewPromotion, 'LEGAL_VERIFIED_SOURCE'), 'verified source basis retained'
+call AssertTrue HasBasis(reviewPromotion, 'LEGAL_VERIFIED_PROVISION'), 'verified provision basis retained'
+call AssertTrue HasBasis(reviewPromotion, 'LEGAL_SOURCE_VERIFICATION_EVIDENCE'), 'source verifier snapshot basis retained'
+call AssertTrue HasBasis(reviewPromotion, 'LEGAL_PROVISION_VERIFICATION_EVIDENCE'), 'provision verifier snapshot basis retained'
+sourceVerificationBasis = FindBasis(reviewPromotion, 'LEGAL_SOURCE_VERIFICATION_EVIDENCE')
+provisionVerificationBasis = FindBasis(reviewPromotion, 'LEGAL_PROVISION_VERIFICATION_EVIDENCE')
+call AssertTrue sourceVerificationBasis~nativeObject~sourceObject == sourceObject, 'source verifier snapshot retains original policy carrier'
+call AssertTrue provisionVerificationBasis~nativeObject~sourceObject == provisionObject, 'provision verifier snapshot retains original policy carrier'
+
+world = .RYTAWorldState~new('BITCOIN-35688-HARDWORLD-V020')
+applyStatus = .EvidencePromotionApplier~apply(promotions, world)
+call AssertEqual 3, applyStatus~applied, 'three legal status facts applied'
+call AssertTrue world~isKnownTrue('LEGAL_ACTION_REVIEW_REQUIRED'), 'HardWorld receives review-required fact'
+call AssertTrue world~isKnownFalse('LEGAL_ACTION_BLOCKED'), 'HardWorld does not invent blocked status'
+
+retainedAssessment = world~fact('LEGAL_ACTION_REVIEW_REQUIRED')~evidence~promotions[1]~evidence~nativeObject
+retainedRich = retainedAssessment~currentContext~facts~fact('code_finding')~source
+call AssertTrue retainedRich~nativeObject == change, 'HardWorld evidence reaches exact semantic-change object'
+retainedBase = retainedRich~nativeObject~beforeSymbol~sourceSpan~fileRevision
+retainedHead = retainedRich~nativeObject~afterSymbol~sourceSpan~fileRevision
+call AssertEqual 'GIT_BLOB_BOUND', retainedBase~provenance['identityStrength'], 'HardWorld reaches bound base Git object'
+call AssertEqual '0796bbeb3271a210ed7ed5d85a82fc76939db61a', retainedBase~computedBlobSha, 'HardWorld reaches exact base Git blob'
+call AssertEqual 'GIT_BLOB_BOUND', retainedHead~provenance['identityStrength'], 'HardWorld reaches bound head Git object'
+call AssertEqual 'd9e16f361107c6d66f32ad8050c658d3b01f9241', retainedHead~computedBlobSha, 'HardWorld reaches exact head Git blob'
+
+say '  authority=' || reviewPromotion~authority
+say '  base_blob=' || retainedBase~computedBlobSha
+say '  head_blob=' || retainedHead~computedBlobSha
+say '  disposition=' || pinned~envelope~assessment~status
+say 'STRUCTURED V0.8 GIT -> LEGAL EFFECT V0.7 -> HARDWORLD V0.20: OK'
+exit 0
+
+::routine FindPromotion
+  use arg setObject, target
+  do promotion over setObject~promotions
+    if promotion~targetFactName == target then return promotion
+  end
+  return .nil
+
+::routine HasBasis
+  use arg promotion, kind
+  return FindBasis(promotion, kind) \== .nil
+
+::routine FindBasis
+  use arg promotion, kind
+  do item over promotion~basis
+    if item~basisKind == kind then return item
+  end
+  return .nil
+
+::routine MustOk
+  use arg object, label
+  if \object~ok then raise syntax 88.900 array(label || ': ' || object~code || ' ' || object~detail)
+  return 0
+
+::routine AssertTrue
+  use arg conditionValue, label
+  if \conditionValue then raise syntax 88.900 array('ASSERT TRUE FAILED: ' || label)
+  return 0
+
+::routine AssertEqual
+  use arg expected, actual, label
+  if expected \== actual then raise syntax 88.900 array('ASSERT EQUAL FAILED: ' || label || ' expected=' || expected || ' actual=' || actual)
+  return 0
+
+::requires 'BitcoinCorePublicCorpus.cls'
+::requires 'CodeValueFlowRules.cls'
+::requires 'LegalRuntimeCryptoBridge.cls'
+::requires '../integration/StructuredRelationRichEvidenceAdapter.cls'
+::requires '../integration/LegalEffectStructuredRelationBridge.cls'
+::requires '../integration/LegalEffectV07PromotionAdapter.cls'
+::requires '../HardWorld.cls'

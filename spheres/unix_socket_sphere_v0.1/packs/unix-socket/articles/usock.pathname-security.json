@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "usock.pathname-security",
+  "version": "0.1",
+  "sphere": "unix-socket",
+  "title": "Filesystem socket helpers are socket-only and authority-conscious",
+  "summary": "Pathname helpers deliberately refuse generic filesystem mutation. chmod/chown pin a verified socket inode with O_PATH|O_NOFOLLOW before mutation; unlink verifies a socket and refuses ordinary files but still depends on parent-directory authority.",
+  "authority": "project-authority",
+  "invariants": [
+    "Never silently unlink an arbitrary pre-existing path during bind.",
+    "chmodSocketPath and chownSocketPath must not become generic chmod/chown helpers.",
+    "O_PATH|O_NOFOLLOW plus stat verification pins the inode used for chmod/chown on the qualified Linux profile.",
+    "unlinkPath refuses non-sockets, but Linux has no general unlink-by-open-fd primitive; safe deployment must control the parent directory.",
+    "Socket-option mutation is an explicit whitelist, not an arbitrary setsockopt escape hatch."
+  ],
+  "procedure": [
+    "Treat creation/removal of pathname sockets as filesystem authority operations, not merely socket API calls."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_unix_socket_v0.6.zip",
+      "sha256": "aea3f193e910b216b051b046cc9ea695089e7ed67013a1a1a412d1324199e326",
+      "member": "oorexx_unix_socket_v0.6/unixsocket.cls",
+      "line_start": 764,
+      "line_end": 818,
+      "claim": "Path helpers inspect socket inode type, pin chmod/chown targets with O_PATH|O_NOFOLLOW, refuse non-socket safe-unlink, and keep raw unlink separate.",
+      "note": "Executable pathname safety boundary."
+    }
+  ]
+}

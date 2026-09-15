@@ -1,0 +1,2 @@
+i=.FederationBankBranchCashExternalInstruction~new("EXT-N","IOM-DOUGLAS","INBOUND","VAULT-1",10000,"GBP","EXTAUTH:N","MAN:N","SEAL:N","STAFF-A"); .FBBranchCashTestSupport~assertTrue(\i~hasMethod("CUSTOMERID")); .FBBranchCashTestSupport~assertTrue(\i~hasMethod("ACCOUNTID")); .FBBranchCashTestSupport~assertTrue(\i~hasMethod("BANKINGCOMMANDID")); say "PASS: external vault movement contains no customer/Core monetary semantics"
+::requires "TestSupport.cls"

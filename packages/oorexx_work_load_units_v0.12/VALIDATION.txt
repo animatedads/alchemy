@@ -1,0 +1,87 @@
+ooRexx Work Load Units v0.12 validation
+=======================================
+
+Runtime used
+------------
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug 3 2026
+Addressing mode: 64
+
+External source dependencies
+----------------------------
+- oorexx_crypto_v0.1/src/crypto.cls
+- alchemy_objects_v0.7/src/AlchemyObject.cls and AlchemyAdoption.cls source closure
+- institutional_policy_v0.1/src/InstitutionalPolicy.cls for route-decision policy lifecycle
+
+The WLU package contains no crypto.cls and no vendored Alchemy Objects or
+Institutional Policy source.
+
+Acceptance results
+------------------
+PASS test_alchemy_object_integration
+PASS test_alchemy_v07_adoption
+PASS test_authenticated_ledger
+PASS test_authority
+PASS test_billing_reporting
+PASS test_contingency_standby
+PASS test_contingency_standby_direct
+PASS test_enterprise_acceleration
+PASS test_external_execution_plan_import
+PASS test_fast_mac
+PASS test_hierarchical_budget
+PASS test_hierarchical_job_budget
+PASS test_job_budget_escalation
+PASS test_live_forecast
+PASS test_route_advisory
+PASS test_route_analytics
+PASS test_route_decision_policy
+PASS test_route_execution_evidence
+PASS test_route_journal
+PASS test_route_journal_rotation
+PASS test_terminal_client
+PASS test_units_ratecard
+
+Alchemy Objects v0.7 migration
+------------------------------
+- All ten long-lived WLU behavioral objects use the preferred
+  self~init:super(...) construction path rather than compatibility initAlchemy().
+- STANDARD adoption reports zero LEGACY_INIT_ENTRYPOINT warnings and zero
+  reserved-base overrides for WLUAuthority, hierarchy/job managers, external
+  plan importer, authenticated ledgers/journal, route analytics/advisor and the
+  new route-decision gate.
+- WLUAuthority retains SECURE_READY qualification on the supplied r13196 runtime.
+- Common metadata claims ALCHEMY-HOUSE-OBJECT-0.7.
+
+Authenticated advisory evidence
+-------------------------------
+- WLURouteAdvisoryResult is SipHash authenticated by WLUFastMacKeyRing.
+- The canonical proof covers verified analytics source sequence/tag, advisory
+  threshold policy, ordered candidate assessments/reasons and the selected
+  recommendation or explicit no-recommendation outcome.
+- A changed recommendation carrying the old proof is rejected.
+
+Institutional route-decision policy
+-----------------------------------
+- WLURouteDecisionRules owns only deterministic WLU route-selection semantics.
+- InstitutionalPolicyRelease/Catalog owns policy id/version, authorship and
+  approver identifiers, effective [from,until) windows, supersession,
+  publication records and FIXED_REVIEWABLE_VERSIONED_ARTIFACT declaration.
+- WLUJobRouteDecisionGate verifies the advisory before policy resolution.
+- Operative decisions retain the exact rich policy release, immutable
+  publication record, policy semantic identity, action time, evaluation mode,
+  advisory source sequence/tag and advisory proof key/tag.
+- Counterfactual decisions are explicitly COUNTERFACTUAL and do not fabricate
+  an operative publication record.
+- compare() uses InstitutionalPolicyComparison to distinguish changed business
+  outcome from changed policy/trace identity.
+- Route-decision evaluation accepts no WLUAuthority/job/hierarchy/provider
+  authority object and reserves/spends zero WLU.
+
+Regression/runtime note
+-----------------------
+All 22 executable package tests produced PASS under r13196 in fresh interpreter
+processes. The Internal Test/debug interpreter can occasionally linger or halt
+inside repeated pure-ooRexx crypto work during long aggregate batches; the same
+individual executables pass when run as fresh processes. Acceptance therefore
+records each executable assertion result independently rather than requiring one
+long-lived debug interpreter session.

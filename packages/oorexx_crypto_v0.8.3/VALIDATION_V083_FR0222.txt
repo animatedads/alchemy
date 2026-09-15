@@ -1,0 +1,51 @@
+Crypto v0.8.3 / Foreign Runtime v0.22.2 qualification
+
+Runtime: supplied ooRexx 5.3.0 r13196 Internal Test Version
+Crypto implementation/tests: byte-identical to sealed v0.8.2
+Runtime Reference: sealed v0.4 unchanged
+Foreign Runtime: user-supplied v0.22.2 archive
+Foreign Runtime archive SHA-256: b4ed0572247cb68755f259b5403b9e06ace0d8a06bde39991c24416641e9def2
+Runtime Reference archive SHA-256: c42a0c51cc5f5e26056d22db97d53eae2633141a7cebe3304b5f19b1847f957a
+Prior Crypto v0.8.2 archive SHA-256: 6d99200ca29e30854ed91488b0e204fb59c379ec6dd58222fbe363e606916e27
+
+Foreign Runtime v0.22.2:
+PASS pristine supplied prebuilt complete suite
+PASS fresh source build and complete source-built suite
+PASS thread-safety activities
+PASS 128 inherited deterministic assertions
+PASS library candidate fallback
+PASS metadata-gated UNKNOWN rejection
+PASS provider serialized threading policy
+PASS callback cross-thread rejection under call-thread policy
+PASS POSIX openpty/poll/exact-binary/errno
+PASS Python provider v0.15-v0.18 inherited suites
+PASS Python proxy argument marshalling v0.22.1
+PASS Python collection indexing v0.22.2
+PASS NumPy zero-copy and reverse import
+PASS native tensor descriptor/pinning and device-aware descriptor v2
+PASS Python DLPack tensor / activity stress
+PASS OpenSSL metadata / EVP SHA-256 / automatic output / exact-binary one-shot SHA-256/SHA-512
+PASS FFmpeg avformat / AVChannelLayout / planar pointer-array probes
+Vulkan hardware path: SKIP on qualification host because no matching non-CPU Intel Vulkan device; optional provider build/load path is present in the supplied package
+
+Crypto v0.8 implementation on Foreign Runtime v0.22.2:
+PASS all native Crypto compatibility tests
+PASS direct SHA-256/SHA-512 exact-binary equivalence
+PASS direct SHA shared-provider concurrency
+PASS direct HMAC-SHA-512 / ChaCha20 / Ed25519 / RSA equivalence
+PASS compatibility Edwards25519 / unclamped X25519 / experimental Ed448 equivalence
+PASS expensive-operation shared-provider concurrency
+PASS direct-libcrypto / compatibility-shim isolation in both failure directions
+PASS live TCP provider tests for Ed25519/X25519/RSA/SHA-256/SHA-512
+PASS Foreign -> TCP -> native SHA failover
+PASS Foreign -> TCP -> native expensive-operation failover
+PASS dead TCP -> native fallback
+
+Outer framework qualification:
+PASS Runtime Reference v0.4 complete suite
+PASS Runtime Registry v0.14 complete non-optional suite against exact Crypto implementation
+PASS Runtime Registry runtime and ability concurrency tests
+PASS Runtime Registry shared SHA-512 / Ed25519 known-answer and verifier tests
+
+Conclusion:
+Foreign Runtime v0.22.2 is a qualified replacement substrate for v0.14.0 under the Crypto v0.8 direct-libcrypto/five-function-compat architecture. Crypto v0.8.3 changes qualification/provenance/version documentation only; no Crypto implementation, native compatibility code, test, operation id, public API, TCP wire, or fallback semantic changes.

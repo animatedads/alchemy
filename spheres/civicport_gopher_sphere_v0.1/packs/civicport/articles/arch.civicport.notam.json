@@ -1,0 +1,44 @@
+{
+  "kind": "article",
+  "id": "arch.civicport.notam",
+  "version": "0.1",
+  "sphere": "civicport",
+  "title": "NOTAM evidence is narrow, lexical and non-operational",
+  "summary": "CivicPort v0.14 supports only faa.swim.aim-fns.notam-runway-closure/0.1 above already-durable SWIM simpleText. It retains unsupported/malformed evidence as diagnostics and exposes read-only SQL/Runtime evidence surfaces while refusing operational interpretation.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Accepted grammar is the exact seven-token domestic runway closure shape !<accountable> <NN/NNN> <location> RWY <designator> CLSD <start>-<end>.",
+    "YYMMDDHHMM, EST and PERM remain lexical source tokens; no DateTime, century, timezone or current-active inference is allowed.",
+    "Taxiway notices, non-CLSD conditions, extra clauses and malformed shapes fail closed.",
+    "CivicNotamJournalProjector retains unsupported/malformed records as explicit diagnostics instead of dropping them.",
+    "civic_notam_runway_closure is a first-read frozen read-only snapshot.",
+    "Runtime ability civic.notam.runway-closure.evidence/0.1 accepts only source_identity.",
+    "Outputs carry NOT_FOR_OPERATIONAL_USE and EVIDENCE_ONLY_NOT_FOR_OPERATIONAL_USE.",
+    "There is no NOTAM-specific HardWorld promotion rule in v0.14."
+  ],
+  "procedure": [
+    "Start from CivicQueueJournal, never JMS.",
+    "Parse rich SWIM XML and AIM FNS simpleText before applying the narrow NOTAM adapter.",
+    "Preserve exact raw text, source XML path, queue evidence identity and lexical fields.",
+    "Route unsupported forms to projection diagnostics.",
+    "Keep SQL/Runtime surfaces evidence-only until a separately governed operational semantics project exists."
+  ],
+  "provenance": [
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "README.md",
+      "line_start": 9,
+      "line_end": 71,
+      "claim": "v0.14 durable-journal NOTAM SQL/Runtime evidence surfaces and non-operational boundary."
+    },
+    {
+      "artifact": "civicport_v0.14.zip",
+      "sha256": "b72fca8afa28f36b583e263f35ed0a9c1a18e3ac3523a333a1c3070586de61fe",
+      "member": "README.md",
+      "line_start": 73,
+      "line_end": 132,
+      "claim": "Narrow fail-closed runway-closure grammar and lexical time semantics."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+Safety24 validation
+===================
+BASE Safety23 SHA-256 78ec6e899ac4825658116326fe25395efe821c06d0745475bd8cec206c1dcefc
+MVTRES.350 SHA-256 095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49
+PASS exact pre-Safety24 EX target UNSUPPORTED_EX_TARGET remains atomic
+PASS live Safety24 step survives journal rewind while deliberate GPR/RAM dirt is discarded
+PASS exact EX-target specification retry PGMOLD 00040006800004BA / PGMNEW 00040000000002CA
+PASS permanent EX target specification microstate
+PASS live candidate -> rewind -> remove -> permanent same-state equivalence
+PASS no OP70; existing OP44 remains authoritative EX implementation
+PASS independent permanent whole-MVT replay reproduces exact EX interruption
+PASS 102530 further guest instructions -> 4B @ FFB5A8 / ICOUNT 641735 / bytes 4B80D24B1684
+PASS 162 .cls/.rex sources compile under ooRexx 5.3.0 r13196
+PASS 87/87 runtime tests
+PASS original MVTRES.350 media test
+PASS real MVT IPL PSW=0000000000000080 CCHHR=0/0/4
+QUALIFICATION NOTE durable-freeze test processes used supplied Crypto v0.8.3 Foreign Runtime v0.22.6/OpenSSL provider as an acceleration-only implementation reference; production emulator dependencies unchanged
+NEXT System/370 X'4B' SH / Subtract Halfword exact guest proof

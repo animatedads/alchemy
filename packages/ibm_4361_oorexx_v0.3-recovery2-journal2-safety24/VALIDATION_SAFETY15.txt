@@ -1,0 +1,16 @@
+SAFETY15 VALIDATION
+COMPILE PASS 120 sources
+RUNTIME PASS 60 tests
+REAL MEDIA PASS: MVTRES.350 SHA-256 095b44517a85bfdd65764d22af8378e30c1437cd8539ed582e1eb45fea7c5b49
+REAL IPL PASS: PSW=0000000000000080 CCHHR=0/0/4
+MVT ALR RETRY PASS:
+  IA=01A482 IC=513307 instruction=1EAB
+  R10=20000000 R11=40000002 CC1
+  first ALR on sealed safety14 parent=UNSUPPORTED and atomic
+  journal handoff verified
+  live retry result R10=60000002 CC1 IA=01A484 IC=513308
+  guest forward progress=7844 additional successful instructions
+  next boundary=FF @ 000020 IC=521152 fetch=FF04000D0001
+ALR CANDIDATE->PERMANENT EQUIVALENCE PASS
+NO OPFF METHOD; X'FF' deliberately untouched pending independent classification.
+NEXT: seal safety15, then investigate why execution reaches 000020 / X'FF' before implementing anything.

@@ -1,0 +1,70 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-ml.audio-search",
+  "version": "0.2",
+  "sphere": "oorexx-ml",
+  "title": "Recovered-audio GA and constrained-Pareto integration",
+  "summary": "The supplied audio_rexx_search_v0.12-dev5 remains the authoritative A/B/C/D/E caller. dev6 rebases onto it and adds non-breaking Strategy P using hard configuration constraints plus the recovered-audio Pareto objective vector.",
+  "authority": "Supplied audio_rexx_search_v0.12-dev5 defines inherited A/B/C/D/E behaviour; the dev6 integration replacement defines Strategy P and ML provenance.",
+  "invariants": [
+    "The audio score is lower-is-better; the evaluator returns the natural score and MLObjectiveFitnessAdapter performs inversion.",
+    "Normalized configuration caching remains authoritative for unique-evaluation counting.",
+    "GA search can use a narrower domain than grid lanes only if the difference is declared rather than silently compared as equivalent.",
+    "Final bred population must be scored before ranking/shortlisting ends.",
+    "The current 18/40 clipping penalties are experimental pending perceptual calibration.",
+    "Strategy P is additive; it must not silently change A/B/C/D/E search semantics inherited from the supplied audio v0.12-dev5 source.",
+    "Strategy P hard configuration/domain validity is assessed before objective scoring and cannot be traded against resemblance or clipping.",
+    "Strategy P materializes only the bounded feasible promoted frontier."
+  ],
+  "procedure": [
+    "Use MLGABudgetPlan for candidate-limit planning.",
+    "Create MLGeneticPolicy(.25,.12,.80,2) by name rather than opaque positional intent.",
+    "Wrap AudioGAScoreEvaluator with MLObjectiveFitnessAdapter.",
+    "Call ga~run(plan~breedingSteps), not a terminal loop of ga~step().",
+    "Rank unique scored records, then materialize only the declared shortlist.",
+    "Feed pairwise listening evidence into MLObjectiveCalibration before treating objective weights as calibrated.",
+    "For Strategy P, combine AudioParetoObjectives with MLConstraintSet and MLConstrainedEvaluatorAdapter.",
+    "Run MLConstrainedParetoGeneticAlgorithm under MLGABudgetPlan/MLGeneticPolicy and promote with MLConstrainedParetoRetentionSelector.",
+    "Fail closed if no feasible candidate can be promoted."
+  ],
+  "provenance": [
+    {
+      "artifact": "Pasted text(20260906-160606).txt",
+      "sha256": "3ea0d42d45e14ba689b352ab4d3c6b7ceaaa28d3dec8092acba0127e82aebb43",
+      "member": "Pasted text(20260906-160606).txt",
+      "line_start": 71,
+      "line_end": 83,
+      "claim": "Pre-migration Strategy C used a terminal ga~step loop after constructing the deterministic initial population."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev4.zip",
+      "sha256": "ea9992023e3d5a318d5e69d07bb7edc3bc1a82e14a2172aac3c00f8fda1fa73b",
+      "member": "oorexx_ml_v0.1-dev4/integration/audio/AudioSearchExperiment.rex",
+      "claim": "Complete replacement caller uses bounded planning, MLObjectiveFitnessAdapter and ga~run."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev4.zip",
+      "sha256": "ea9992023e3d5a318d5e69d07bb7edc3bc1a82e14a2172aac3c00f8fda1fa73b",
+      "member": "oorexx_ml_v0.1-dev4/docs/AUDIO_SEARCH_GA_MIGRATION.md",
+      "claim": "Migration rationale and preserved cache/budget semantics."
+    },
+    {
+      "artifact": "audio_rexx_search_v0.12-dev5.zip",
+      "sha256": "a2143e50e5061077cd10acfaac763857520e2f1bb375f60ce112c04123b60ae9",
+      "member": "audio_rexx_search_v0.12-dev5/bin/AudioSearchExperiment.rex",
+      "claim": "Latest supplied recovered-audio caller inherited for A/B/C/D/E semantics."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev6.zip",
+      "sha256": "200132b208d7a19fc89764f8555aa74a30dbca6b9e98b73fa82678fe3f297091",
+      "member": "oorexx_ml_v0.1-dev6/integration/audio/AudioSearchExperiment.rex",
+      "claim": "Adds Strategy P constrained-Pareto path while retaining supplied A/B/C/D/E paths."
+    },
+    {
+      "artifact": "oorexx_ml_v0.1-dev6.zip",
+      "sha256": "200132b208d7a19fc89764f8555aa74a30dbca6b9e98b73fa82678fe3f297091",
+      "member": "oorexx_ml_v0.1-dev6/integration/audio/AudioParetoObjectives.cls",
+      "claim": "Recovered-audio resemblance, pre-limiter over-range and post-limiter clipping remain independent Pareto objectives."
+    }
+  ]
+}
