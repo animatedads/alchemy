@@ -1,156 +1,88 @@
-# OORexx Crypto class 
-crypto.cls  —  OORexx Cryptography Library
+# Alchemy: a large open ooRexx toolkit estate
 
- Inheritance tree:
+**Alchemy is a public collection of reusable Open Object Rexx (ooRexx) libraries, runtimes, services, infrastructure components, experiments and complete worked applications.**
 
-   CryptoHash (abstract)
-     ├── MD5       — streaming MD5, little-endian int32
-     └── SHA512    — streaming SHA-512, big-endian int64
+This repository is deliberately broader than a single framework. It is the home for a substantial body of ooRexx work covering the kinds of problems that normally force developers to leave Rexx, glue together unrelated tools, or start again in another language.
 
-   CurvePoint (abstract)
-     ├── EdwardsPoint  — twisted Edwards  Ed25519 (255-bit)
-     └── GoldilocksPoint — untwisted Edwards  Ed448  (448-bit)
+The aim is practical: make modern systems work available as inspectable, composable ooRexx components, while keeping authority, provenance, dependencies and runtime boundaries explicit.
 
-   Ed25519    — keypair, sign, verify  (needs SHA512)
-   Ed448      — keypair, sign, verify  (needs SHA512; Goldilocks curve)
-   X25519     — key exchange, shared secret
-   ChaCha20   — stream cipher (RFC 8439); key=256-bit, nonce=96-bit
-   RSA        — keypair(p,q), encrypt, decrypt, sign, verify
-              — generateKeypair() generates fresh 1024-bit primes
-   RSAStream  — hybrid RSA+ChaCha20: session scalar RSA-wrapped, bulk ChaCha20
+## What is in here?
 
-   CryptoStream — wraps OORexx Stream with crypto operations
-     hash(algo)  → MD5 or SHA512 digest of stream content
-     sign(key)   → Ed25519 hex signature
-     verify(sig,key) → boolean
-     encrypt/decrypt → X25519-CBC stream cipher
+The estate spans a wide range of problem domains, including:
 
-   Word helpers (not public API):
-     int32  — 32-bit little-endian word for MD5
-     int64  — 64-bit big-endian word for SHA-512
+- **queues, scheduling and distributed work** — Queue Fabric, QueueRexx, job-to-node placement, workload units, managed-node profiles and migration-oriented components;
+- **storage and movement of data** — Storage Fabric, resumable/range transfer, storage evacuation, durable checkpoint movement and provider adapters;
+- **AI and LLM integration** — provider adapters, model routing, tool brokers/orchestration, managed endpoints, API access, LLM Gopher and safety/authority boundaries;
+- **web, UI and interaction** — Wire UI server/builder/Swing/JavaScript components, virtual browser tooling, structured interaction and observation layers;
+- **security, identity and governance** — cryptography, access permissions, secret brokering, institutional policy, legal/security effects, qualification and authority services;
+- **databases and data systems** — database skeletons, native backends, NoSQL, SQL shims, journalling and semantic source-control components;
+- **maths, ML, signal and media analysis** — maths libraries, ML/graph tooling, camera behaviour, layered audio, motion analysis and visualisation demonstrations;
+- **enterprise and domain modelling** — accounting, relationship/case/CRM, brand interaction/journey/intervention, reputation and evidence-oriented components;
+- **systems and emulation** — foreign-runtime integration, runtime registry/reference, Unix sockets, HTTPS/MCP, terminal machinery and mainframe/minicomputer emulation work;
+- **complete applications and integration examples** — banking, markets, insurance, airline, UI, queue and recovery examples which exercise the component estate together;
+- **LLM Gopher knowledge spheres** — curated implementation/standards/continuity knowledge kept separately from executable source.
 
- Routines (::routine directives at bottom of file):
-   Curve:    rx_mod_inverse, rx_pow_mod, rx_recover_x
-             rx_x25519_ladder, rx_mod_inverse_x, rx_pow_mod_x
-   Encoding: rx_le_hex_encode/decode, rx_be_hex_encode/decode
-             rx_string_to_int, rx_int_to_string
-             rx_compress_point, rx_clamp_scalar
-   64-bit:   rx_add64, rx_and64, rx_or64, rx_xor64, rx_shr64
-             rx_rotr64, rx_shr_large, rx_xor_large
-   Cipher:   rx_encrypt_stream, rx_decrypt_stream
-             rx_chacha20_block, rx_chacha20_crypt (fixed)
-             rx_le_hex_encode32, rx_xor32, rx_add32, rx_rotl32
-   Extern:   sin (rxmath)
+This is not intended to be a giant flattened source dump. Each component remains a first-class project tree with its own source, tests, documentation, examples, schemas and provenance.
 
+## Repository structure
 
-# OORexx Runtime Object Serializer v2
+| Path | Purpose |
+| --- | --- |
+| `packages/` | Reusable libraries, runtimes, services and tools |
+| `examples/` | Complete applications, demonstrations and integration examples |
+| `spheres/` | LLM Gopher knowledge/documentation spheres |
+| `docs/` | Repository-level architecture, publication and historical material |
+| `autobuild/` | Alchemy managed build/test evidence, artifacts and receipts |
+| `tools/` | Repository publication/build tooling |
+| `mesh/` | Alchemy control/coordination material |
+| `CATALOG.md` | Human-readable index of the current published estate |
 
-Modernised from the original `rto.cls` by Tom Dyer.
+Alchemy's existing managed-autobuild machinery remains in place. `GIT_SUBMISSION.md` and `MANAGED_ZIP.md` document the managed integration protocol for components that use it.
 
-## What it does
+## Dependency rule: do not smuggle another project into a source tree
 
-Serializes a live OORexx object — including its class definition,
-all attribute values, and running state — to a JSON payload that can
-be transported to another process or machine and reconstructed there
-without the original class definition being present.
+A distribution ZIP may contain a `deps/`, `vendor/`, `third_party/`, `third-party/` or `externals/` directory so that a particular delivery can run in isolation. **That does not make those dependency sources part of the component.**
 
-## Pipeline
+For the GitHub source publication:
 
-```
-OORexx object
-    ↓  RTOSerializer~serialize
-JSON (class source + attribute values)
-    ↓  RTOTransport~toBase64
-base64 (single line, no wrapping)
-    ↓  RTOTransport~md5  +  envelope
-{"schema":"oorexx.transport.v1", "md5":"...", "payload":"..."}
-    ↓  RTOTransport~_pushToQueue
-OORexx .Queue  (in-process via .local)
-+  /tmp/rto_transport_queue.json  (cross-process file queue)
-    ↑  RTOTransport~receive
-verify MD5
-    ↑  fromBase64  →  JSON  →  RTOSerializer~deserialize
-reconstructed object  (class rebuilt from stored method source)
-```
+1. project-owned source, tests, docs, schemas, fixtures and examples are published normally;
+2. embedded dependency payloads are omitted from that project's source tree;
+3. the dependency directory is replaced with a small provenance note describing what was omitted;
+4. the dependency should be consumed from its own first-class Alchemy tree or its upstream project.
 
-## The alarm that survives transport
+This avoids stale duplicate source, accidental forks, ambiguous licensing, and the misleading impression that one component owns another component's code. See `docs/publication/DEPENDENCY_POLICY.md`.
 
-`Ticker.cls` runs a `.Alarm` that fires `~tick` every N seconds.
-The serializer:
-1. Records `_running = .true` in the payload
-2. Skips the `.Alarm` instance itself (it is a system timer)
-3. On the receiver side, after restoring all attributes,
-   detects `_running = .true` and calls `~start` automatically
+## Source versus runtime state
 
-The alarm resumes on the receiving side. Ticks continue from
-the count recorded at serialization time.
+The same rule applies to generated/runtime state. Queue roots, caches, logs, build debris, machine-local state and secrets are not source merely because they were present in a delivery archive. Publication keeps the material required to understand, build, test and use the project; transient machine state stays out of the source tree.
 
-## Type spectrum covered
+## Where should I start?
 
-| OORexx type | Serialized as |
-|-------------|---------------|
-| `.nil` | `{"$t":"nil"}` |
-| `.true` / `.false` | `{"$t":"bool","v":1/0}` |
-| String / Integer / Decimal | `{"$t":"str","v":"..."}` |
-| Array | `{"$t":"arr","$id":N,"v":[...]}` |
-| Directory | `{"$t":"dir","$id":N,"v":{...}}` |
-| OrderedCollection | `{"$t":"oc","$id":N,"v":[...]}` |
-| Queue | `{"$t":"queue","$id":N,"v":[...]}` |
-| List | `{"$t":"list","$id":N,"v":[...]}` |
-| Set | `{"$t":"set","$id":N,"v":[...]}` |
-| Bag | `{"$t":"bag","$id":N,"v":[...]}` |
-| Custom object | `{"$t":"obj","cls":"NAME","mixins":[...],"attrs":{...}}` |
+If you are looking for a particular capability, start with `CATALOG.md` and then the component's own README/tests.
 
-Circular references: every collection and object gets an `$id`.
-On second encounter a `{"$ref":N}` is emitted instead.
+A few useful families to explore are:
 
-## Running the demo
+- QueueRexx / Queue Fabric / Job-to-Node for distributed work and placement;
+- Storage Fabric for durable data movement and resumable storage operations;
+- API Client / Virtual Browser / HTTPS / MCP for external systems and service integration;
+- Wire UI for user-facing applications;
+- Crypto / Access Permissions / Secret Broker / Institutional Policy for authority and security boundaries;
+- ooRexx ML / Maths / Graph for analytical work;
+- the mainframe, terminal and runtime components for systems work;
+- the worked applications under `examples/` to see larger compositions rather than isolated classes.
 
-```bash
-chmod +x run_demo.sh
-./run_demo.sh
-```
+For shell-oriented queue orchestration, see the companion **[BashQueues](https://github.com/animatedads/bashqueues)** project. BashQueues has first-class ooRexx frontage but remains its own repository because it is a substantial Bash-based platform in its own right.
 
-Expected output:
+## Publication provenance
 
-```
-SENDER  (has Ticker.cls)
-[MyTicker]  alarm started — interval: 2s
-Waiting for 3 ticks...
-[MyTicker]  tick 1 at 10:23:41.123456
-[MyTicker]  tick 2 at 10:23:43.234567
-[MyTicker]  tick 3 at 10:23:45.345678
-...
-[Transport]  sent 4821 bytes  →  b64: 6428  md5: a3f2b1c9...
+The September 2026 estate publication is built from the supplied current API/component bundle, Gopher sphere bundle, and separately supplied current component deliveries. The publication manifest records source archive names and SHA-256 values so that a Git tree can be traced back to the exact delivery it came from.
 
-RECEIVER  (no Ticker.cls — class from serialized source)
-[Transport]  MD5 verified: a3f2b1c9...
-[RTOSerializer]  object was running — restarting...
-[MyTicker]  alarm started — interval: 2s
-Object received and reconstructed:
-  Class:     TICKER
-  Ticks so far: 3
-  Was running:  1
-...
-[MyTicker]  tick 4 at 10:23:57.456789   ← alarm alive on receiver
-[MyTicker]  tick 5 at 10:23:59.567890
-[MyTicker]  tick 6 at 10:24:01.678901
-```
+Historical root documentation has been retained under `docs/history/` rather than discarded during the repository clean-up.
 
-## Files
+## Project status
 
-| File | Purpose |
-|------|---------|
-| `RTOSerializer.cls` | Serialize/deserialize, full type spectrum, circular refs |
-| `RTOTransport.cls` | Base64, MD5, in-process Queue + file queue |
-| `sender/Ticker.cls` | Demo class — alarm + all collection types |
-| `sender/sender.rex` | Create, run, serialize, transport |
-| `receiver/receiver.rex` | Receive, reconstruct, verify alarm resumes |
-| `run_demo.sh` | Run both in sequence |
+Alchemy contains components at different maturity levels: experiments, development candidates, qualified components and larger worked systems. A directory being public does not by itself mean that every component is production-certified. Read the component's own qualification, compatibility, safety and dependency documentation.
 
-## Requirements
+## Why ooRexx?
 
-- Open Object Rexx 5.x
-- `json.cls` (standard ooRexx 5.x package)
-- `base64` command
-- `md5sum` command
+ooRexx remains unusually good at readable automation, object-oriented scripting, systems integration and long-lived operational code. Alchemy is an attempt to give it a much larger modern component estate: not a toy showcase, but enough real machinery that substantial applications can stay in Rexx when Rexx is the right tool.
