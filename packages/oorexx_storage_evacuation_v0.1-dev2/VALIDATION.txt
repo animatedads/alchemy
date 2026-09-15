@@ -1,0 +1,18 @@
+Qualification target: ooRexx 5.3.0 r13196 supplied package
+Storage Fabric: vendored v0.1-dev7 baseline
+
+Canonical test:
+  tests/test_local_evacuation.rex
+
+Covers:
+- recursive NUL-safe inventory
+- regular-file transfer and independent content verification
+- directory and symlink materialisation
+- hard-link structural reconstruction/device+inode verification
+- mode and mtime reconstruction
+- durable manifest save/load
+- two-equivalent-generation sealing
+- changed-generation refusal
+- same-second stale-dispatch source fencing
+
+ACL/xattr restore paths are conditional on getfacl/setfacl/getfattr/setfattr being present.  The qualification container does not expose those executables; dev2 therefore records their absence and does not claim that branch as exercised here.
