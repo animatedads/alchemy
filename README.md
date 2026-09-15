@@ -39,6 +39,18 @@ This is not intended to be a giant flattened source dump. Each component remains
 
 Alchemy's existing managed-autobuild machinery remains in place. `GIT_SUBMISSION.md` and `MANAGED_ZIP.md` document the managed integration protocol for components that use it.
 
+## Repeatable publication
+
+Publication is itself a repository-owned command:
+
+```sh
+./bin/alchemy-publish --help
+```
+
+`alchemy-publish estate` rebuilds the public Alchemy tree from supplied API, sphere and current-component deliveries; `alchemy-publish bashqueues` applies the corresponding source/runtime-state rules to a BashQueues full delivery. Both are audit/dry-run by default and can publish a review branch explicitly with `--apply` / `--push`.
+
+The command records source hashes, dependency omissions and publication decisions so that the exercise can be repeated by a human, Codex or automation without reconstructing a private sequence of shell commands. See **`PUBLISHING.md`** for the contract and the September 2026 baseline commands.
+
 ## Dependency rule: do not smuggle another project into a source tree
 
 A distribution ZIP may contain a `deps/`, `vendor/`, `third_party/`, `third-party/` or `externals/` directory so that a particular delivery can run in isolation. **That does not make those dependency sources part of the component.**
