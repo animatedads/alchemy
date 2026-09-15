@@ -49,6 +49,72 @@ The same command publishes a BashQueues delivery while excluding queue/runtime s
 
 Known runtime roots such as `.queuebash`, `.qbroot`, pending/running/done/failed state buckets, logs, workers and the `testr` runtime mirror are omitted and recorded. The repository's public `README.md` is retained; a delivery README is preserved under `docs/history/` instead of replacing the public front door.
 
+## September 2026 estate baseline
+
+For the September 15, 2026 publication, place the supplied archives in one directory and run this audit first:
+
+```sh
+./bin/alchemy-publish estate \
+  --api-archive 'oorexxapis(20260915-080909).zip' \
+  --sphere-archive 'sphere(20260915-080907).zip' \
+  --overlay 'queuerexx_v0.1-dev12(2)(5).zip' \
+  --overlay 'job_node_allocator_v0.6-network1(4).zip' \
+  --overlay 'oorexx_storage_evacuation_v0.1-dev2(1).zip' \
+  --overlay 'fd_door_micro_motion_v0.2-dev5(1).zip' \
+  --overlay 'oorexx_llm_pa_v0.1-dev9-candidate1(1).zip' \
+  --json
+```
+
+The known-good dry-run summary for those exact inputs is:
+
+```text
+components:                 195
+files_published:            8131
+bytes_published:            56460838
+dependency_roots_omitted:   12
+files_omitted:              688
+```
+
+Treat a different result as a review point, not as permission to continue automatically. In particular, the publisher must detect copied dependency bytes outside their original dependency folder; current examples include Storage Evacuation's copied `StorageFabric.cls` and Virtual Browser's copied `ApiClient.cls`.
+
+After that audit matches, publish the estate to a review branch:
+
+```sh
+./bin/alchemy-publish estate \
+  --repo . \
+  --branch 'publication/2026-09-15-oorexx-estate' \
+  --api-archive 'oorexxapis(20260915-080909).zip' \
+  --sphere-archive 'sphere(20260915-080907).zip' \
+  --overlay 'queuerexx_v0.1-dev12(2)(5).zip' \
+  --overlay 'job_node_allocator_v0.6-network1(4).zip' \
+  --overlay 'oorexx_storage_evacuation_v0.1-dev2(1).zip' \
+  --overlay 'fd_door_micro_motion_v0.2-dev5(1).zip' \
+  --overlay 'oorexx_llm_pa_v0.1-dev9-candidate1(1).zip' \
+  --push --json
+```
+
+For the companion BashQueues delivery, the corresponding audit is:
+
+```sh
+/path/to/alchemy/bin/alchemy-publish bashqueues \
+  --archive 'bashqueues_0.18.144_BOB27_lock_tree_ownership_hotfix_full_delivery(2).zip' \
+  --version-label 0.18.144 \
+  --json
+```
+
+The known-good BashQueues result is **2619 published source files** and **1355 omitted runtime-state files**. Publish it only after that audit is understood:
+
+```sh
+/path/to/alchemy/bin/alchemy-publish bashqueues \
+  --repo /path/to/bashqueues \
+  --branch 'publication/2026-09-15-bashqueues-0.18.144' \
+  --archive 'bashqueues_0.18.144_BOB27_lock_tree_ownership_hotfix_full_delivery(2).zip' \
+  --version-label 0.18.144 \
+  --push --json
+```
+
+The command publishes branches; promotion to `main` remains a separate review/merge decision.
+
 ## Manifest
 
 Every applied publication commits a JSON manifest under `publication/manifests/`. It contains source archive names, SHA-256 hashes, component destinations, published counts, dependency roots and every omitted file/reason. Local absolute source paths are deliberately not written to the public manifest.
