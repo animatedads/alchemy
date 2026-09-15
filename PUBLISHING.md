@@ -77,12 +77,12 @@ files_omitted:              688
 
 Treat a different result as a review point, not as permission to continue automatically. In particular, the publisher must detect copied dependency bytes outside their original dependency folder; current examples include Storage Evacuation's copied `StorageFabric.cls` and Virtual Browser's copied `ApiClient.cls`.
 
-After that audit matches, publish the estate to a review branch:
+After that audit matches, publish the estate to a fresh review branch:
 
 ```sh
 ./bin/alchemy-publish estate \
   --repo . \
-  --branch 'publication/2026-09-15-oorexx-estate' \
+  --branch 'publication/2026-09-15-oorexx-estate-final' \
   --api-archive 'oorexxapis(20260915-080909).zip' \
   --sphere-archive 'sphere(20260915-080907).zip' \
   --overlay 'queuerexx_v0.1-dev12(2)(5).zip' \
@@ -92,6 +92,8 @@ After that audit matches, publish the estate to a review branch:
   --overlay 'oorexx_llm_pa_v0.1-dev9-candidate1(1).zip' \
   --push --json
 ```
+
+The `-final` suffix is intentional: earlier publication transport experiments used the unsuffixed branch name, and the final publication must not depend on or overwrite those abandoned transport branches.
 
 For the companion BashQueues delivery, the corresponding audit is:
 
