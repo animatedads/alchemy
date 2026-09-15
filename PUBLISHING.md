@@ -121,6 +121,14 @@ The command publishes branches; promotion to `main` remains a separate review/me
 
 Every applied publication commits a JSON manifest under `publication/manifests/`. It contains source archive names, SHA-256 hashes, component destinations, published counts, dependency roots and every omitted file/reason. Local absolute source paths are deliberately not written to the public manifest.
 
+## Result contract and Structured Response
+
+The command's current machine-readable contract is `alchemy.publication/0.1`. It is intentionally narrow: it records the publication occurrence, provenance, decisions, exclusions and resulting Git action.
+
+It is **not** an attempt to define a second estate-wide Structured Response API. The September 2026 source deliveries available to this publisher do not currently expose a first-class Structured Response implementation that the command can import directly. When that authority is published, `alchemy-publish` should gain an adapter/projection onto that common response vocabulary rather than inventing a competing response model.
+
+Until then, consumers should treat `alchemy.publication/0.1` as a stable publication manifest and evidence record, not as a general-purpose tool-response standard.
+
 ## Safety properties
 
 - dry-run unless `--apply` or `--push` is explicitly supplied;
