@@ -1,0 +1,18 @@
+'use strict';
+const assert = require('node:assert/strict');
+const { BidirectionalRegistry, RexxCondition, OMITTED } = require('../javascript/bidirectional_registry');
+const r = new BidirectionalRegistry();
+const js = { name: 'javascript' };
+const jsProjection = r.toRexx(js);
+assert.strictEqual(r.toJS(jsProjection), js);
+assert.strictEqual(r.toRexx(js).__alchemyJsHandle, jsProjection.__alchemyJsHandle);
+const rexx = {value:7,add(n){this.value+=n;return this;},echoForeign(x){return x;},fail(){throw new Error('REXX-FAIL');}};
+const rp = r.toJS(rexx);
+assert.strictEqual(r.toJS(rexx), rp);
+assert.strictEqual(r.toRexx(rp), rexx);
+assert.equal(rp.value, 7); rp.value=9; assert.equal(rexx.value,9); assert.strictEqual(rp.add(3),rp); assert.equal(rexx.value,12);
+assert.strictEqual(rp.echoForeign(js), js);
+assert.throws(() => rp.fail(), e => e instanceof RexxCondition && e.condition.message === 'REXX-FAIL');
+const promise = Promise.resolve(42); assert.strictEqual(r.toJS(r.toRexx(promise)), promise);
+assert.notStrictEqual(undefined,null); assert.notStrictEqual(OMITTED,undefined); assert.notStrictEqual(OMITTED,null); assert.notStrictEqual('',null);
+console.log('bidirectional-semantics-ok');

@@ -1,0 +1,16 @@
+'use strict';
+const target={foo(){return 'J1'}};
+const publicSelector={identity:{}};
+let override=null;
+const call=()=>override ? override() : target.foo();
+const wrapperIdentity=publicSelector.identity;
+if(call()!=='J1') throw Error('J1');
+target.foo=()=> 'J2';
+if(call()!=='J2'||publicSelector.identity!==wrapperIdentity) throw Error('J2');
+override=()=> 'R1';
+if(call()!=='R1') throw Error('R1');
+target.foo=()=> 'J3';
+if(call()!=='R1'||publicSelector.identity!==wrapperIdentity) throw Error('hidden J3');
+override=null;
+if(call()!=='J3'||publicSelector.identity!==wrapperIdentity) throw Error('reveal J3');
+console.log('semantic-target-mutation=PASS');
