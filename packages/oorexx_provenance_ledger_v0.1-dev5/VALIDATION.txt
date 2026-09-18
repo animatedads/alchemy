@@ -1,0 +1,16 @@
+ooRexx Provenance Ledger v0.1-dev5 validation
+
+Runtime: user-supplied ooRexx 5.3.0 r13196 debug build
+Crypto: exact oorexx_crypto_v0.8.3 from user-supplied 2026-09-17 API roll-up
+Storage qualification: user-supplied oorexx_storage_fabric_v0.1-dev17
+
+PASS tests/test_media_adapter.rex
+  media-neutral duck-typed sequential image; MANIFEST/ANCHOR/SEGMENT envelopes; exact payload round-trip; SHA-256 envelope verification.
+PASS tests/test_storage_sequential_adapter.rex
+  real StorageTapeVolumeCodec dev17; DATA records separated by FILEMARKs; exact payload recovery; no production Storage Fabric dependency.
+PASS tests/test_adapters.rex
+  prior StorageRef/accounting adapter regression.
+PASS tests/test_segments.rex
+  prior durable signed segment/checkpoint regression.
+
+Dev5 adds only the media-carriage seam. Storage Fabric dev17 is unmodified.
