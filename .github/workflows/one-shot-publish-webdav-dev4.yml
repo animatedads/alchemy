@@ -3,11 +3,12 @@ on:
   push:
     branches: [main]
     paths:
-      - '.alchemy-staging/oorexx_webdav_v0.1-dev4.zip'
+      - '.alchemy-staging/**'
 permissions:
   contents: write
 jobs:
   publish:
+    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -17,6 +18,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          test -f .alchemy-staging/oorexx_webdav_v0.1-dev4.zip
           rm -rf /tmp/webdav-publish
           mkdir -p /tmp/webdav-publish
           unzip -q .alchemy-staging/oorexx_webdav_v0.1-dev4.zip -d /tmp/webdav-publish
@@ -25,9 +27,8 @@ jobs:
           rm -rf packages/oorexx_webdav_v0.1-dev4
           mkdir -p packages/oorexx_webdav_v0.1-dev4
           cp -a /tmp/webdav-publish/webdav_dev4/. packages/oorexx_webdav_v0.1-dev4/
-          rm -f .alchemy-staging/oorexx_webdav_v0.1-dev4.zip
+          rm -rf .alchemy-staging
           rm -f .github/workflows/one-shot-publish-webdav-dev4.yml
-          rmdir .alchemy-staging 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
