@@ -1,0 +1,974 @@
+/* ooRexx Cognitive Continuity v0.1-dev6-exp1
+ * Experimental dog-food cut of the Cognitive Continuity / Memory Fabric architecture.
+ *
+ * IMPORTANT: CognitiveResult is an internal compatibility outcome for this cut.
+ * External/common response ownership remains with the platform Structured Response API.
+ * See integration/CognitiveStructuredResponseBridge.cls and docs/STRUCTURED_RESPONSE_COMPAT.md.
+ */
+
+::class CognitiveBuild public
+::constant VERSION "0.1-dev6-exp1"
+::constant API "oorexx.cognitive.continuity/0.1"
+::constant EVENT_SCHEMA "oorexx.cognitive.event/2"
+::constant EFFECT_SCHEMA "cognitive.effect.proposal/0.2"
+::constant MODEL_CONTEXT_SCHEMA "cognitive.model-context/0.1"
+::constant LEARNING_API "cognitive.learning/0.1"
+::constant LEARNING_REQUEST_SCHEMA "cognitive.learning.request/2"
+::constant LEARNING_RESULT_SCHEMA "cognitive.learning.result/2"
+::constant MEASUREMENT_SCHEMA "oorexx.cognitive.measurement/1"
+
+/* Internal operation outcome. Not the platform Structured Response contract. */
+::class CognitiveResult public
+::attribute ok get
+::attribute code get
+::attribute detail get
+::attribute value get
+::method init
+  expose ok code detail value
+  use strict arg okArg, codeArg, detailArg='', valueArg=.nil
+  ok=okArg; code=codeArg; detail=detailArg; value=valueArg
+::method success class
+  use strict arg valueArg=.nil, codeArg='OK', detailArg=''
+  return self~new(.true,codeArg,detailArg,valueArg)
+::method failure class
+  use strict arg codeArg, detailArg='', valueArg=.nil
+  return self~new(.false,codeArg,detailArg,valueArg)
+
+::class CognitiveUtil public
+::method string class
+  use strict arg value, defaultValue=''
+  if value == .nil then return defaultValue
+  return value~string
+::method required class
+  use strict arg args, name
+  if args == .nil | \args~hasIndex(name) then return ''
+  return self~string(args[name])~strip
+::method optional class
+  use strict arg args, name, defaultValue=''
+  if args == .nil | \args~hasIndex(name) then return defaultValue
+  return self~string(args[name],defaultValue)
+::method now class
+  return date('S') || 'T' || time('L')
+::method copyDirectory class
+  use strict arg source
+  out=.directory~new
+  if source == .nil then return out
+  do key over source
+    out[key]=source[key]
+  end
+  return out
+::method arrayCopy class
+  use strict arg source
+  out=.array~new
+  if source == .nil then return out
+  do item over source; out~append(item); end
+  return out
+::method makeId class
+  use strict arg prefix
+  return prefix || '-' || date('S') || '-' || time('L')~changestr(':','')~changestr('.','') || '-' || random(100000,999999)
+::method arrayHas class
+  use strict arg source, value
+  if source == .nil then return .false
+  do item over source
+    if item~string == value~string then return .true
+  end
+  return .false
+::method int class
+  use strict arg value, defaultValue=0
+  text=self~string(value,defaultValue~string)~strip
+  if \datatype(text,'W') then return defaultValue
+  return text+0
+
+/* Capability+scope policy. Identity is supplied out-of-band. */
+::class CognitiveAccessPolicy public
+::method init
+  expose capabilities scopes
+  capabilities=.directory~new
+  scopes=.directory~new
+::method grant
+  expose capabilities scopes
+  use strict arg actorId, capability, scope='*'
+  actorId=actorId~string~strip
+  capability=capability~string~strip
+  scope=scope~string~strip
+  if actorId='' | capability='' then return .false
+  key=actorId || '09'x || capability
+  capabilities[key]=1
+  scopes[key || '09'x || scope]=1
+  return .true
+::method allows
+  expose capabilities scopes
+  use strict arg actorId, capability, scope=''
+  actorId=actorId~string~strip; capability=capability~string~strip; scope=scope~string~strip
+  key=actorId || '09'x || capability
+  if \capabilities~hasIndex(key) then return .false
+  if scope='' then return .true
+  if scopes~hasIndex(key || '09'x || '*') then return .true
+  return scopes~hasIndex(key || '09'x || scope)
+::method canPropose
+  use strict arg actorId, scope=''
+  if self~allows(actorId,'cognitive.effects.propose.operator',scope) then return .true
+  if self~allows(actorId,'cognitive.effects.propose.model',scope) then return .true
+  if self~allows(actorId,'cognitive.effects.propose.analysis',scope) then return .true
+  /* dev1 compatibility capability names */
+  if self~allows(actorId,'cognitive.effects.submit.operator',scope) then return .true
+  if self~allows(actorId,'cognitive.effects.submit.model',scope) then return .true
+  return .false
+::method originFor
+  use strict arg actorId, scope=''
+  if self~allows(actorId,'cognitive.effects.propose.operator',scope) | self~allows(actorId,'cognitive.effects.submit.operator',scope) then return 'HUMAN'
+  if self~allows(actorId,'cognitive.effects.propose.analysis',scope) then return 'DERIVED_ANALYSIS'
+  if self~allows(actorId,'cognitive.effects.propose.model',scope) | self~allows(actorId,'cognitive.effects.submit.model',scope) then return 'MODEL'
+  return 'UNKNOWN'
+::method decisionAuthorityFor
+  use strict arg actorId, scope=''
+  if self~allows(actorId,'cognitive.authority.project_owner',scope) then return 'PROJECT_OWNER'
+  if self~allows(actorId,'cognitive.authority.subject_owner',scope) then return 'SUBJECT_OWNER'
+  if self~allows(actorId,'cognitive.authority.operator',scope) then return 'OPERATOR'
+  if self~allows(actorId,'cognitive.authority.domain',scope) then return 'DOMAIN_AUTHORITY'
+  return 'NONE'
+::method assertionClass
+  use strict arg actorId, scope=''
+  origin=self~originFor(actorId,scope)
+  if origin='HUMAN' then return 'OPERATOR_ASSERTED'
+  if origin='MODEL' then return 'MODEL_ASSERTED'
+  if origin='DERIVED_ANALYSIS' then return 'ANALYSIS_PROPOSED'
+  return ''
+
+::class CognitiveMemoryJournal public
+::method init
+  expose journalEvents
+  journalEvents=.array~new
+::method append
+  expose journalEvents
+  use strict arg event
+  journalEvents~append(event)
+  return event
+::method events
+  expose journalEvents
+  return .CognitiveUtil~arrayCopy(journalEvents)
+
+::class CognitiveJsonlJournal public
+::attribute path get
+::method init
+  expose path
+  use strict arg path
+  path=path~string~strip
+  if path='' then raise syntax 40.900 array('Cognitive journal path is required')
+::method append
+  expose path
+  use strict arg event
+  result=stream(path,'c','open write append')
+  if result~left(5) <> 'READY' & result~left(6) <> 'NORMAL' then -
+    raise syntax 40.900 array('Unable to open cognitive journal',path,result)
+  call lineout path,.json~toJSON(event)
+  call stream path,'c','close'
+  return event
+::method events
+  expose path
+  out=.array~new
+  if stream(path,'c','query exists')='' then return out
+  result=stream(path,'c','open read')
+  if result~left(5) <> 'READY' & result~left(6) <> 'NORMAL' then -
+    raise syntax 40.900 array('Unable to read cognitive journal',path,result)
+  lineNo=0
+  do while lines(path)>0
+    line=linein(path); lineNo+=1
+    if line~strip='' then iterate
+    event=.json~fromJSON(line)
+    if event == .nil | \event~hasIndex('schema') | \event~hasIndex('eventType') then -
+      raise syntax 40.900 array('Invalid cognitive journal event',path,lineNo)
+    if event['schema'] <> .CognitiveBuild~EVENT_SCHEMA then -
+      raise syntax 40.900 array('Unsupported cognitive journal schema',path,lineNo,event['schema'])
+    out~append(event)
+  end
+  call stream path,'c','close'
+  return out
+
+/* Learning results are measurement evidence only.  These helpers validate nested
+ * provider output without promoting it into cognitive authority. */
+::class CognitiveLearningResultUtil public
+::method forbiddenKey class
+  use strict arg value
+  forbidden=.array~of('actor','actorId','principalId','authority','origin','epistemicState','decisionAuthority','verificationState','toolVerified','qualified','admitted','recordIdOverride','serverTimestamp')
+  if value==.nil then return ''
+  if value~isA(.Directory) then do
+    do key over value
+      if forbidden~hasItem(key~string)>0 then return key~string
+      nested=self~forbiddenKey(value[key])
+      if nested<>'' then return nested
+    end
+  end
+  else if value~isA(.Array) then do item over value
+    nested=self~forbiddenKey(item)
+    if nested<>'' then return nested
+  end
+  return ''
+::method evidenceRefs class
+  use strict arg request
+  refs=.array~new
+  if request~hasIndex('records') & request['records']~isA(.Array) then do rec over request['records']
+    if rec~isA(.Directory) & rec~hasIndex('recordId') then refs~append(rec['recordId'])
+  end
+  do family over .array~of('projectionReceipts','projectionOutcomes','dogfoodObservations')
+    if request~hasIndex(family) & request[family]~isA(.Array) then do item over request[family]
+      if item~isA(.Directory) then do
+        if item~hasIndex('measurementId') then refs~append(item['measurementId'])
+        if item~hasIndex('projectionId') then refs~append(item['projectionId'])
+      end
+    end
+  end
+  return refs
+::method validateProposalBasis class
+  use strict arg learnResult, allowedRefs
+  families=.array~of('classificationProposals','classificationAnomalies','conceptProposals','lessonCandidates','procedureCandidates','toolCandidates','projectionFindings','integrationProposals')
+  do family over families
+    if \learnResult~hasIndex(family) | \learnResult[family]~isA(.Array) then return 'LEARNING_RESULT_ARRAY_INVALID:'||family
+    do item over learnResult[family]
+      if \item~isA(.Directory) then return 'LEARNING_RESULT_ITEM_INVALID:'||family
+      if \item~hasIndex('basisRefs') then return 'LEARNING_RESULT_BASIS_REFS_REQUIRED:'||family
+      if \item['basisRefs']~isA(.Array) then return 'LEARNING_RESULT_BASIS_REFS_INVALID:'||family
+      do ref over item['basisRefs']
+        if \.CognitiveUtil~arrayHas(allowedRefs,ref) then return 'LEARNING_RESULT_BASIS_REF_UNKNOWN:'||ref
+      end
+    end
+  end
+  return ''
+
+/* Deterministic baseline classifier. Nearline ML may propose richer dimensions later. */
+/* Projection/model-feed measurement is deliberately separate from cognitive authority. */
+::class CognitiveMeasurementMemoryJournal public
+::method init
+  expose measurementEvents
+  measurementEvents=.array~new
+::method append
+  expose measurementEvents
+  use strict arg event
+  measurementEvents~append(event)
+  return event
+::method events
+  expose measurementEvents
+  return .CognitiveUtil~arrayCopy(measurementEvents)
+
+::class CognitiveJsonlMeasurementJournal public
+::attribute path get
+::method init
+  expose path
+  use strict arg path
+  path=path~string~strip
+  if path='' then raise syntax 40.900 array('Cognitive measurement journal path is required')
+::method append
+  expose path
+  use strict arg event
+  result=stream(path,'c','open write append')
+  if result~left(5) <> 'READY' & result~left(6) <> 'NORMAL' then -
+    raise syntax 40.900 array('Unable to open cognitive measurement journal',path,result)
+  call lineout path,.json~toJSON(event)
+  call stream path,'c','close'
+  return event
+::method events
+  expose path
+  out=.array~new
+  if stream(path,'c','query exists')='' then return out
+  result=stream(path,'c','open read')
+  if result~left(5) <> 'READY' & result~left(6) <> 'NORMAL' then -
+    raise syntax 40.900 array('Unable to read cognitive measurement journal',path,result)
+  lineNo=0
+  do while lines(path)>0
+    line=linein(path); lineNo+=1
+    if line~strip='' then iterate
+    event=.json~fromJSON(line)
+    if event == .nil | \event~hasIndex('schema') | \event~hasIndex('measurementType') then -
+      raise syntax 40.900 array('Invalid cognitive measurement event',path,lineNo)
+    if event['schema'] <> .CognitiveBuild~MEASUREMENT_SCHEMA then -
+      raise syntax 40.900 array('Unsupported cognitive measurement schema',path,lineNo,event['schema'])
+    out~append(event)
+  end
+  call stream path,'c','close'
+  return out
+
+::class CognitiveBaselineClassifier public
+::method classifyKind class
+  use strict arg kind
+  kind=kind~string~upper
+  out=.directory~new
+  select
+    when kind='CLAIM' then family='CLAIM'
+    when kind='DECISION' | kind='ASSUMPTION' | kind='PLAN_CREATE' | kind='PLAN_ITEM_ADD' | kind='PLAN_ITEM_STATE_PROPOSAL' | kind='PLAN_CHANGE' | kind='DEPENDENCY' | kind='COMMITMENT' | kind='OPEN_QUESTION' | kind='QUESTION_RESOLVED' | kind='BLOCKER' | kind='RISK' then family='CONTINUITY'
+    when kind='ARGUMENT_EDGE' | kind='ARGUMENT_CLAIM' | kind='ARGUMENT_SUPPORT' | kind='ARGUMENT_OBJECTION' | kind='ARGUMENT_REBUTTAL' then family='ARGUMENT'
+    when kind='SKILL_EPISODE_HINT' then family='PROCEDURAL_EPISODE_HINT'
+    when kind='LESSON' | kind='PROCEDURE' | kind='TOOL_CANDIDATE' | kind='CONCEPT' | kind='CONCEPT_RELATION' then family='INTEGRATED_KNOWLEDGE'
+    when kind='CLASSIFICATION_HINT' then family='CLASSIFICATION_EVIDENCE'
+    otherwise family='OTHER'
+  end
+  out['memoryClass']=family
+  if family='PROCEDURAL_EPISODE_HINT' | family='INTEGRATED_KNOWLEDGE' then out['learningEligible']=.true; else out['learningEligible']=.false
+  out['classificationSource']='DETERMINISTIC_BASELINE'
+  out['classificationVersion']='baseline/0.2-task-aware'
+  return out
+::method selectionReason class
+  use strict arg kind
+  kind=kind~string~upper
+  select
+    when kind='DECISION' then return 'CURRENT_DECISION'
+    when kind='OPEN_QUESTION' then return 'OPEN_QUESTION_DEPENDENCY'
+    when kind='PLAN_CREATE' | kind='PLAN_ITEM_ADD' | kind='PLAN_ITEM_STATE_PROPOSAL' | kind='PLAN_CHANGE' | kind='DEPENDENCY' then return 'ACTIVE_PLAN_DEPENDENCY'
+    when kind='ASSUMPTION' then return 'ACTIVE_ASSUMPTION'
+    when kind='COMMITMENT' then return 'ACTIVE_COMMITMENT'
+    when kind='BLOCKER' then return 'ACTIVE_BLOCKER'
+    when kind='RISK' then return 'ACTIVE_RISK'
+    when kind='LESSON' then return 'RELEVANT_LESSON'
+    when kind='PROCEDURE' then return 'RELEVANT_PROCEDURE'
+    when kind='CONCEPT' | kind='CONCEPT_RELATION' then return 'INTEGRATED_KNOWLEDGE'
+    when kind='CLAIM' then return 'ACTIVE_CLAIM'
+    when kind='SKILL_EPISODE_HINT' then return 'HISTORICAL_EPISODE_HINT'
+    when kind='TOOL_CANDIDATE' then return 'TOOL_CANDIDATE'
+    otherwise return 'VISIBLE_SCOPE_RECORD'
+  end
+
+::method taskTokens class
+  use strict arg textArg
+  text=textArg~string~lower
+  do ch over .array~of(',', ';', ':', '(', ')', '[', ']', '{', '}', '"', "'", '?', '!', '=', '/', '\', '.', '-', '_', '|')
+    text=text~changestr(ch,' ')
+  end
+  out=.array~new; seen=.directory~new
+  do i=1 to words(text)
+    token=word(text,i)~strip
+    if token~length<3 then iterate
+    if self~genericTaskToken(token) then iterate
+    if seen~hasIndex(token) then iterate
+    seen[token]=1; out~append(token)
+  end
+  return out
+
+::method genericTaskToken class
+  use strict arg tokenArg
+  token=tokenArg~string~lower
+  generic=.array~of('the','and','for','with','from','into','this','that','then','than','what','when','where','which','who','why','how','use','using','used','work','working','current','continue','next','task','project','plan','status','check','verify','verified','run','running','test','tests','package','local','latest','actual','real','need','needs','should','would','could','about','against','before','after','while','only','exact','exactly','first','last','long')
+  return generic~hasItem(token)>0
+
+::method taskRelevanceScore class
+  use strict arg record, taskArg
+  task=taskArg~string~strip
+  if task='' then return 0
+  tokens=self~taskTokens(task)
+  if tokens~items=0 then return 0
+  hay=''
+  do name over .array~of('subjectRef','objectRef','relation','statement','state','kind','memoryClass')
+    if record~hasIndex(name) then hay=hay || ' ' || record[name]~string~lower
+  end
+  do ch over .array~of(',', ';', ':', '(', ')', '[', ']', '{', '}', '"', "'", '?', '!', '=', '/', '\', '.', '-', '_', '|')
+    hay=hay~changestr(ch,' ')
+  end
+  compactHay=hay~changestr(' ','')
+  score=0
+  do token over tokens
+    if hay~pos(token)>0 | compactHay~pos(token)>0 then do
+      if token~length>=8 then score+=4
+      else if token~length>=6 then score+=3
+      else if token~length>=4 then score+=2
+      else score+=1
+    end
+  end
+  return score
+
+::method taskRelevant class
+  use strict arg record, taskArg
+  task=taskArg~string~strip
+  if task='' then return .true
+  tokens=self~taskTokens(task)
+  if tokens~items=0 then return .true
+  subject=''
+  if record~hasIndex('subjectRef') then subject=record['subjectRef']~string~lower~strip
+  if subject='global' | subject='*' then return .true
+  return self~taskRelevanceScore(record,task)>0
+
+::class CognitiveContinuityService public
+::attribute journal get
+::attribute policy get
+
+::method init
+  expose journal policy records sequence projections measurementJournal measurementEvents measurementSequence
+  use strict arg journalArg, policyArg, measurementJournalArg=.nil
+  if journalArg == .nil then raise syntax 40.900 array('Cognitive journal is required')
+  if policyArg == .nil then raise syntax 40.900 array('Cognitive access policy is required')
+  journal=journalArg; policy=policyArg
+  if measurementJournalArg == .nil then measurementJournal=.CognitiveMeasurementMemoryJournal~new; else measurementJournal=measurementJournalArg
+  records=.array~new; sequence=0; projections=.directory~new
+  measurementEvents=.array~new; measurementSequence=0
+  self~replay
+  self~replayMeasurements
+
+::method dispatch
+  use strict arg operation, args=.nil, actorId=''
+  operation=operation~string~upper
+  select
+    when operation='COGNITIVE.EFFECTS.PROPOSE' then return self~effectsPropose(args,actorId)
+    when operation='COGNITIVE.EFFECTS.SUBMIT' then return self~effectsPropose(args,actorId)
+    when operation='COGNITIVE.RECORDS.QUERY' then return self~recordsQuery(args,actorId)
+    when operation='COGNITIVE.CONTINUITY.QUERY' then return self~continuityQuery(args,actorId)
+    when operation='COGNITIVE.CONTEXT.PROJECT' then return self~contextProject(args,actorId)
+    when operation='COGNITIVE.CONTEXT.EXPORT' then return self~contextExport(args,actorId)
+    when operation='COGNITIVE.CONTEXT.EXPLAIN' then return self~contextExplain(args,actorId)
+    when operation='COGNITIVE.CLASSIFICATION.EXPLAIN' then return self~classificationExplain(args,actorId)
+    when operation='COGNITIVE.LEARNING.DELTA' then return self~learningDelta(args,actorId)
+    when operation='COGNITIVE.LEARNING.BUNDLE' then return self~learningBundle(args,actorId)
+    when operation='COGNITIVE.PROJECTION.RECEIPTS' then return self~projectionReceipts(args,actorId,'PROJECTION_RECEIPT')
+    when operation='COGNITIVE.PROJECTION.OUTCOMES' then return self~projectionReceipts(args,actorId,'PROJECTION_OUTCOME')
+    when operation='COGNITIVE.PROJECTION.OUTCOME' then return self~projectionOutcome(args,actorId)
+    when operation='COGNITIVE.DOGFOOD.OBSERVE' then return self~dogfoodObserve(args,actorId)
+    when operation='COGNITIVE.DOGFOOD.OBSERVATIONS' then return self~projectionReceipts(args,actorId,'DOGFOOD_OBSERVATION')
+    when operation='COGNITIVE.LEARNING.RESULT.RECORD' then return self~learningResultRecord(args,actorId)
+    when operation='COGNITIVE.LEARNING.RESULTS' then return self~learningResults(args,actorId)
+    otherwise return .CognitiveResult~failure('UNKNOWN_OPERATION','Unknown cognitive operation: ' || operation)
+  end
+
+::method effectsPropose
+  expose journal policy records sequence
+  use strict arg args, actorId=''
+  actorId=actorId~string~strip
+  if actorId='' then return .CognitiveResult~failure('AUTHENTICATED_PRINCIPAL_REQUIRED')
+  if args == .nil | \args~hasIndex('effects') then return .CognitiveResult~failure('EFFECTS_REQUIRED')
+  scope=.CognitiveUtil~optional(args,'scopeRef','')~strip
+  if scope='' then return .CognitiveResult~failure('SCOPE_REQUIRED')
+  if \policy~canPropose(actorId,scope) then return .CognitiveResult~failure('COGNITIVE_WRITE_FORBIDDEN',actorId || ':' || scope)
+  origin=policy~originFor(actorId,scope)
+  decisionAuthority=policy~decisionAuthorityFor(actorId,scope)
+  assertionClass=policy~assertionClass(actorId,scope)
+  effects=args['effects']
+  if effects == .nil | \effects~isA(.Array) then return .CognitiveResult~failure('EFFECTS_MUST_BE_ARRAY')
+  evidenceManifest=.array~new
+  if args~hasIndex('evidenceManifest') & args['evidenceManifest']<>.nil then do
+    if \args['evidenceManifest']~isA(.Array) then return .CognitiveResult~failure('EVIDENCE_MANIFEST_MUST_BE_ARRAY')
+    evidenceManifest=.CognitiveUtil~arrayCopy(args['evidenceManifest'])
+  end
+  proposalId=.CognitiveUtil~makeId('cep')
+  dispositions=.array~new
+  index=0
+  do effect over effects
+    index+=1
+    checked=self~validateEffect(effect,evidenceManifest)
+    if \checked~ok then do
+      row=.directory~new; row['index']=index; row['disposition']='REJECTED'; row['code']=checked~code; row['detail']=checked~detail
+      dispositions~append(row)
+      iterate
+    end
+    kind=.CognitiveUtil~required(effect,'kind')~upper
+    if kind='CONTEXT_RETRIEVAL_HINT' then do
+      row=.directory~new; row['index']=index; row['disposition']='NOT_DURABLE_HINT'; row['recordRef']=''
+      dispositions~append(row)
+      iterate
+    end
+    sequence+=1
+    event=.directory~new
+    event['schema']=.CognitiveBuild~EVENT_SCHEMA
+    event['eventType']='COGNITIVE_RECORD_ADMITTED'
+    event['sequence']=sequence
+    event['recordId']='cog-' || sequence~string~right(9,'0')
+    event['proposalId']=proposalId
+    event['effectId']=.CognitiveUtil~optional(effect,'effectId','e-'||index)
+    event['kind']=kind
+    event['scopeRef']=scope
+    event['subjectRef']=.CognitiveUtil~optional(effect,'subjectRef','')
+    event['objectRef']=.CognitiveUtil~optional(effect,'objectRef','')
+    event['relation']=.CognitiveUtil~optional(effect,'relation','')
+    event['statement']=.CognitiveUtil~optional(effect,'statement','')
+    event['state']=.CognitiveUtil~optional(effect,'state','')
+    event['aimScope']=.CognitiveUtil~optional(effect,'aimScope','TASK')~upper
+    event['durabilityHint']=.CognitiveUtil~optional(effect,'durabilityHint','TASK')~upper
+    event['verificationNeed']=.CognitiveUtil~optional(effect,'verificationNeed','NONE')~upper
+    event['confidencePct']=.CognitiveUtil~int(.CognitiveUtil~optional(effect,'confidencePct','0'),0)
+    event['actorId']=actorId
+    event['origin']=origin
+    event['assertionClass']=assertionClass
+    event['decisionAuthority']=decisionAuthority
+    if origin='MODEL' | origin='DERIVED_ANALYSIS' then event['epistemicState']='PROPOSED'; else event['epistemicState']='ASSERTED'
+    event['timestamp']=.CognitiveUtil~now
+    event['status']='ACTIVE'
+    event['basisRefs']=.array~new
+    if effect~hasIndex('basisRefs') & effect['basisRefs']<>.nil then event['basisRefs']=.CognitiveUtil~arrayCopy(effect['basisRefs'])
+    event['evidenceBound']=.true
+    classInfo=.CognitiveBaselineClassifier~classifyKind(kind)
+    event['memoryClass']=classInfo['memoryClass']
+    event['classificationSource']=classInfo['classificationSource']
+    event['classificationVersion']=classInfo['classificationVersion']
+    event['learningEligible']=classInfo['learningEligible']
+    if kind='DECISION' then do
+      if origin='HUMAN' & decisionAuthority<>'NONE' then event['decisionState']='ACCEPTED'; else event['decisionState']='PROPOSED'
+    end
+    if kind='SKILL_EPISODE_HINT' then event['verificationState']='PENDING_EVIDENCE'
+    else if origin='MODEL' then event['verificationState']='UNVERIFIED_MODEL_PROPOSAL'
+    else if origin='DERIVED_ANALYSIS' then event['verificationState']='UNVERIFIED_ANALYSIS_PROPOSAL'
+    else event['verificationState']='ASSERTED_BY_OPERATOR'
+    journal~append(event)
+    records~append(event)
+    row=.directory~new
+    row['index']=index
+    row['recordRef']=event['recordId']
+    if kind='SKILL_EPISODE_HINT' then row['disposition']='PENDING_EVIDENCE'
+    else if origin='MODEL' & kind='CLAIM' then row['disposition']='ADMITTED_MODEL_ASSERTION'
+    else if origin='HUMAN' & kind='CLAIM' then row['disposition']='ADMITTED_OPERATOR_ASSERTION'
+    else if kind='DECISION' & event['decisionState']='PROPOSED' then row['disposition']='ADMITTED_DECISION_PROPOSAL'
+    else if kind='DECISION' & event['decisionState']='ACCEPTED' then row['disposition']='ADMITTED_ACCEPTED_DECISION'
+    else row['disposition']='ADMITTED_COGNITIVE_RECORD'
+    dispositions~append(row)
+  end
+  value=.directory~new
+  value['schema']='oorexx.cognitive.effect.proposal-result/2'
+  value['proposalId']=proposalId
+  value['scopeRef']=scope
+  value['results']=dispositions
+  value['corpusPointId']='cp-'||sequence
+  return .CognitiveResult~success(value,'COGNITIVE_EFFECTS_PROCESSED')
+
+::method recordsQuery
+  expose policy records
+  use strict arg args, actorId=''
+  actorId=actorId~string~strip
+  scope=.CognitiveUtil~optional(args,'scopeRef','')~strip
+  if actorId='' then return .CognitiveResult~failure('AUTHENTICATED_PRINCIPAL_REQUIRED')
+  if scope='' then return .CognitiveResult~failure('SCOPE_REQUIRED')
+  if \policy~allows(actorId,'cognitive.records.query',scope) then return .CognitiveResult~failure('COGNITIVE_READ_FORBIDDEN',actorId || ':' || scope)
+  kindFilter=.CognitiveUtil~optional(args,'kind','')~upper~strip
+  familyFilter=.CognitiveUtil~optional(args,'memoryClass','')~upper~strip
+  out=.array~new
+  do rec over records
+    if rec['scopeRef']<>scope then iterate
+    if kindFilter<>'' & rec['kind']<>kindFilter then iterate
+    if familyFilter<>'' & rec['memoryClass']<>familyFilter then iterate
+    out~append(.CognitiveUtil~copyDirectory(rec))
+  end
+  value=.directory~new; value['schema']='oorexx.cognitive.records/2'; value['scopeRef']=scope; value['records']=out; value['count']=out~items
+  return .CognitiveResult~success(value,'COGNITIVE_RECORDS_LISTED')
+
+::method continuityQuery
+  use strict arg args, actorId=''
+  query=self~recordsQuery(args,actorId)
+  if \query~ok then return query
+  out=.array~new
+  do rec over query~value['records']
+    if rec['memoryClass']='CONTINUITY' | rec['memoryClass']='ARGUMENT' then out~append(rec)
+  end
+  value=.directory~new; value['schema']='oorexx.cognitive.continuity/2'; value['scopeRef']=query~value['scopeRef']; value['records']=out; value['count']=out~items
+  return .CognitiveResult~success(value,'COGNITIVE_CONTINUITY_LISTED')
+
+::method contextProject
+  expose policy records sequence projections
+  use strict arg args, actorId=''
+  actorId=actorId~string~strip
+  scope=.CognitiveUtil~optional(args,'scopeRef','')~strip
+  if actorId='' then return .CognitiveResult~failure('AUTHENTICATED_PRINCIPAL_REQUIRED')
+  if scope='' then return .CognitiveResult~failure('SCOPE_REQUIRED')
+  if \policy~allows(actorId,'cognitive.context.project',scope) then return .CognitiveResult~failure('COGNITIVE_CONTEXT_FORBIDDEN',actorId || ':' || scope)
+  limit=.CognitiveUtil~int(.CognitiveUtil~optional(args,'limit','32'),32)
+  if limit<1 then limit=1; if limit>128 then limit=128
+  task=.CognitiveUtil~optional(args,'task','')~strip
+  visible=.array~new; source=.array~new; taskRejected=.array~new
+  do rec over records
+    if rec['scopeRef']<>scope then iterate
+    visible~append(rec)
+    relevance=.CognitiveBaselineClassifier~taskRelevanceScore(rec,task)
+    if task<>'' & \.CognitiveBaselineClassifier~taskRelevant(rec,task) then do
+      rejected=.CognitiveUtil~copyDirectory(rec)
+      rejected['taskRelevanceScore']=relevance
+      taskRejected~append(rejected)
+      iterate
+    end
+    eligible=.CognitiveUtil~copyDirectory(rec)
+    eligible['taskRelevanceScore']=relevance
+    source~append(eligible)
+  end
+  selected=.array~new; trace=.array~new; seen=.directory~new
+  priority=.array~of('DECISION','OPEN_QUESTION','BLOCKER','PLAN_ITEM_STATE_PROPOSAL','PLAN_CHANGE','PLAN_ITEM_ADD','PLAN_CREATE','DEPENDENCY','ASSUMPTION','COMMITMENT','RISK','LESSON','PROCEDURE','CONCEPT','CONCEPT_RELATION','CLAIM','SKILL_EPISODE_HINT','TOOL_CANDIDATE')
+  do wanted over priority while selected~items<limit
+    do i=source~items to 1 by -1 while selected~items<limit
+      rec=source[i]
+      if rec['kind']<>wanted then iterate
+      if seen~hasIndex(rec['recordId']) then iterate
+      item=.CognitiveUtil~copyDirectory(rec)
+      reason=.CognitiveBaselineClassifier~selectionReason(rec['kind'])
+      item['selectionReason']=reason
+      selected~append(item); seen[rec['recordId']]=1
+      tr=.directory~new; tr['recordId']=rec['recordId']; tr['kind']=rec['kind']; tr['included']=.true; tr['reason']=reason; tr['taskRelevanceScore']=rec['taskRelevanceScore']
+      trace~append(tr)
+    end
+  end
+  /* Any remaining task-eligible records fill spare capacity, newest first. */
+  do i=source~items to 1 by -1 while selected~items<limit
+    rec=source[i]
+    if seen~hasIndex(rec['recordId']) then iterate
+    item=.CognitiveUtil~copyDirectory(rec); reason=.CognitiveBaselineClassifier~selectionReason(rec['kind']); item['selectionReason']=reason
+    selected~append(item); seen[rec['recordId']]=1
+    tr=.directory~new; tr['recordId']=rec['recordId']; tr['kind']=rec['kind']; tr['included']=.true; tr['reason']=reason; tr['taskRelevanceScore']=rec['taskRelevanceScore']
+    trace~append(tr)
+  end
+  do rec over source
+    if seen~hasIndex(rec['recordId']) then iterate
+    tr=.directory~new; tr['recordId']=rec['recordId']; tr['kind']=rec['kind']; tr['included']=.false; tr['reason']='BUDGET_LIMIT'; tr['taskRelevanceScore']=rec['taskRelevanceScore']
+    trace~append(tr)
+  end
+  do rec over taskRejected
+    tr=.directory~new; tr['recordId']=rec['recordId']; tr['kind']=rec['kind']; tr['included']=.false; tr['reason']='TASK_FILTER_MISMATCH'; tr['taskRelevanceScore']=rec['taskRelevanceScore']
+    trace~append(tr)
+  end
+  projectionId=.CognitiveUtil~makeId('proj')
+  value=.directory~new
+  value['schema']='oorexx.cognitive.context-projection/2'
+  value['projectionId']=projectionId
+  value['scopeRef']=scope
+  value['task']=task
+  value['records']=selected
+  value['selectionTrace']=trace
+  value['count']=selected~items
+  value['visibleCount']=visible~items
+  value['eligibleCount']=source~items
+  value['taskFilterApplied']=(task<>'' & .CognitiveBaselineClassifier~taskTokens(task)~items>0)
+  value['authoritative']=.false
+  value['disposition']='DERIVED_DISPOSABLE_PROJECTION'
+  value['generatedAt']=.CognitiveUtil~now
+  value['corpusPointId']='cp-'||sequence
+  projections[projectionId]=value
+  return .CognitiveResult~success(value,'COGNITIVE_CONTEXT_PROJECTED')
+
+::method contextExport
+  use strict arg args, actorId=''
+  projected=self~contextProject(args,actorId)
+  if \projected~ok then return projected
+  p=projected~value
+  items=.array~new
+  do rec over p['records']
+    item=.directory~new
+    do name over .array~of('recordId','kind','memoryClass','subjectRef','objectRef','relation','statement','state','origin','epistemicState','decisionState','verificationState','selectionReason','taskRelevanceScore')
+      if rec~hasIndex(name) then item[name]=rec[name]
+    end
+    item['basisRefs']=.CognitiveUtil~arrayCopy(rec['basisRefs'])
+    items~append(item)
+  end
+  model=.directory~new
+  model['schema']=.CognitiveBuild~MODEL_CONTEXT_SCHEMA
+  model['projectionId']=p['projectionId']
+  model['scopeRef']=p['scopeRef']
+  model['task']=p['task']
+  model['corpusPointId']=p['corpusPointId']
+  model['items']=items
+  model['generatedAt']=p['generatedAt']
+  out=.directory~new
+  out['schema']='oorexx.cognitive.model-feed/1'
+  out['projectionId']=p['projectionId']
+  out['modelInput']=model
+  out['modelInputJson']=.json~toJSON(model)
+  out['projectionTrace']=p['selectionTrace']
+  out['disposition']='EXACT_MODEL_INPUT_EXPORT'
+  receiptArgs=.directory~new
+  receiptArgs['projectionId']=p['projectionId']; receiptArgs['scopeRef']=p['scopeRef']; receiptArgs['task']=p['task']
+  receiptArgs['corpusPointId']=p['corpusPointId']; receiptArgs['modelInputJson']=out['modelInputJson']; receiptArgs['selectionTrace']=p['selectionTrace']
+  receipt=self~recordProjectionReceipt(receiptArgs,actorId)
+  if receipt~ok then out['measurementReceiptId']=receipt~value['measurementId']
+  return .CognitiveResult~success(out,'COGNITIVE_CONTEXT_EXPORTED')
+
+::method contextExplain
+  expose policy projections
+  use strict arg args, actorId=''
+  actorId=actorId~string~strip
+  scope=.CognitiveUtil~optional(args,'scopeRef','')~strip
+  projectionId=.CognitiveUtil~optional(args,'projectionId','')~strip
+  if actorId='' then return .CognitiveResult~failure('AUTHENTICATED_PRINCIPAL_REQUIRED')
+  if scope='' then return .CognitiveResult~failure('SCOPE_REQUIRED')
+  if \policy~allows(actorId,'cognitive.context.explain',scope) & \policy~allows(actorId,'cognitive.context.project',scope) then return .CognitiveResult~failure('COGNITIVE_CONTEXT_FORBIDDEN')
+  if projectionId='' | \projections~hasIndex(projectionId) then return .CognitiveResult~failure('PROJECTION_NOT_FOUND',projectionId)
+  p=projections[projectionId]
+  if p['scopeRef']<>scope then return .CognitiveResult~failure('PROJECTION_SCOPE_MISMATCH')
+  out=.directory~new; out['schema']='oorexx.cognitive.projection-explanation/1'; out['projectionId']=projectionId; out['scopeRef']=scope; out['selectionTrace']=p['selectionTrace']; out['task']=p['task']; out['corpusPointId']=p['corpusPointId']
+  return .CognitiveResult~success(out,'COGNITIVE_PROJECTION_EXPLAINED')
+
+::method classificationExplain
+  expose policy records
+  use strict arg args, actorId=''
+  actorId=actorId~string~strip; scope=.CognitiveUtil~optional(args,'scopeRef','')~strip; recordId=.CognitiveUtil~optional(args,'recordId','')~strip
+  if actorId='' then return .CognitiveResult~failure('AUTHENTICATED_PRINCIPAL_REQUIRED')
+  if scope='' | recordId='' then return .CognitiveResult~failure('SCOPE_AND_RECORD_REQUIRED')
+  if \policy~allows(actorId,'cognitive.records.query',scope) then return .CognitiveResult~failure('COGNITIVE_READ_FORBIDDEN')
+  do rec over records
+    if rec['scopeRef']=scope & rec['recordId']=recordId then do
+      out=.directory~new; out['schema']='oorexx.cognitive.classification-explanation/1'; out['recordId']=recordId; out['kind']=rec['kind']; out['memoryClass']=rec['memoryClass']; out['classificationSource']=rec['classificationSource']; out['classificationVersion']=rec['classificationVersion']; out['learningEligible']=rec['learningEligible']; out['selectionReason']=.CognitiveBaselineClassifier~selectionReason(rec['kind'])
+      return .CognitiveResult~success(out,'COGNITIVE_CLASSIFICATION_EXPLAINED')
+    end
+  end
+  return .CognitiveResult~failure('RECORD_NOT_FOUND',recordId)
+
+::method learningDelta
+  expose policy records sequence
+  use strict arg args, actorId=''
+  actorId=actorId~string~strip; scope=.CognitiveUtil~optional(args,'scopeRef','')~strip
+  if actorId='' then return .CognitiveResult~failure('AUTHENTICATED_PRINCIPAL_REQUIRED')
+  if scope='' then return .CognitiveResult~failure('SCOPE_REQUIRED')
+  if \policy~allows(actorId,'cognitive.learning.delta',scope) then return .CognitiveResult~failure('COGNITIVE_LEARNING_FORBIDDEN')
+  since=.CognitiveUtil~int(.CognitiveUtil~optional(args,'sinceSequence','0'),0)
+  outRecords=.array~new
+  do rec over records
+    if rec['scopeRef']<>scope then iterate
+    if rec['sequence']<=since then iterate
+    outRecords~append(.CognitiveUtil~copyDirectory(rec))
+  end
+  out=.directory~new
+  out['schema']='oorexx.cognitive.learning-delta/1'
+  out['scopeRef']=scope
+  out['fromCorpusPointId']='cp-'||since
+  out['toCorpusPointId']='cp-'||sequence
+  out['fromSequence']=since
+  out['toSequence']=sequence
+  out['records']=outRecords
+  out['count']=outRecords~items
+  out['generatedAt']=.CognitiveUtil~now
+  return .CognitiveResult~success(out,'COGNITIVE_LEARNING_DELTA')
+
+::method recordProjectionReceipt private
+  expose measurementJournal measurementEvents measurementSequence
+  use strict arg args, actorId=''
+  measurementSequence+=1
+  event=.directory~new
+  event['schema']=.CognitiveBuild~MEASUREMENT_SCHEMA
+  event['measurementType']='PROJECTION_RECEIPT'
+  event['measurementSequence']=measurementSequence
+  event['measurementId']='measure-' || measurementSequence~string~right(9,'0')
+  event['projectionId']=.CognitiveUtil~optional(args,'projectionId','')
+  event['scopeRef']=.CognitiveUtil~optional(args,'scopeRef','')
+  event['task']=.CognitiveUtil~optional(args,'task','')
+  event['corpusPointId']=.CognitiveUtil~optional(args,'corpusPointId','')
+  event['modelInputJson']=.CognitiveUtil~optional(args,'modelInputJson','')
+  event['consumerActor']=actorId~string
+  event['generatedAt']=.CognitiveUtil~now
+  event['selectionTrace']=.array~new
+  if args~hasIndex('selectionTrace') & args['selectionTrace']<>.nil then event['selectionTrace']=.CognitiveUtil~arrayCopy(args['selectionTrace'])
+  measurementJournal~append(event); measurementEvents~append(event)
+  return .CognitiveResult~success(.CognitiveUtil~copyDirectory(event),'COGNITIVE_PROJECTION_RECEIPT_RECORDED')
+
+::method projectionReceipts
+  expose policy measurementEvents
+  use strict arg args, actorId='', measurementType=''
+  actorId=actorId~string~strip; scope=.CognitiveUtil~optional(args,'scopeRef','')~strip
+  if actorId='' then return .CognitiveResult~failure('AUTHENTICATED_PRINCIPAL_REQUIRED')
+  if scope='' then return .CognitiveResult~failure('SCOPE_REQUIRED')
+  if \policy~allows(actorId,'cognitive.context.explain',scope) & \policy~allows(actorId,'cognitive.context.project',scope) then return .CognitiveResult~failure('COGNITIVE_CONTEXT_FORBIDDEN')
+  since=.CognitiveUtil~int(.CognitiveUtil~optional(args,'sinceMeasurementSequence','0'),0)
+  outEvents=.array~new
+  do event over measurementEvents
+    if event['scopeRef']<>scope then iterate
+    if event['measurementSequence']<=since then iterate
+    if measurementType<>'' & event['measurementType']<>measurementType then iterate
+    outEvents~append(.CognitiveUtil~copyDirectory(event))
+  end
+  out=.directory~new; out['schema']='oorexx.cognitive.projection-measurements/1'; out['scopeRef']=scope; out['measurements']=outEvents; out['count']=outEvents~items
+  return .CognitiveResult~success(out,'COGNITIVE_PROJECTION_MEASUREMENTS_LISTED')
+
+::method projectionOutcome
+  expose policy measurementJournal measurementEvents measurementSequence projections
+  use strict arg args, actorId=''
+  actorId=actorId~string~strip; scope=.CognitiveUtil~optional(args,'scopeRef','')~strip; projectionId=.CognitiveUtil~optional(args,'projectionId','')~strip
+  if actorId='' then return .CognitiveResult~failure('AUTHENTICATED_PRINCIPAL_REQUIRED')
+  if scope='' | projectionId='' then return .CognitiveResult~failure('SCOPE_AND_PROJECTION_REQUIRED')
+  if \policy~allows(actorId,'cognitive.projection.outcome',scope) then return .CognitiveResult~failure('COGNITIVE_OUTCOME_FORBIDDEN')
+  found=.false
+  if projections~hasIndex(projectionId) then do
+    if projections[projectionId]['scopeRef']<>scope then return .CognitiveResult~failure('PROJECTION_SCOPE_MISMATCH')
+    found=.true
+  end
+  if \found then do event over measurementEvents
+    if event['measurementType']='PROJECTION_RECEIPT' & event['projectionId']=projectionId & event['scopeRef']=scope then do; found=.true; leave; end
+  end
+  if \found then return .CognitiveResult~failure('PROJECTION_NOT_FOUND',projectionId)
+  outcome=.CognitiveUtil~optional(args,'outcome','UNKNOWN')~upper
+  if .array~of('USEFUL','PARTIAL','FAILED','UNKNOWN')~hasItem(outcome)=0 then return .CognitiveResult~failure('PROJECTION_OUTCOME_INVALID',outcome)
+  measurementSequence+=1
+  event=.directory~new
+  event['schema']=.CognitiveBuild~MEASUREMENT_SCHEMA; event['measurementType']='PROJECTION_OUTCOME'; event['measurementSequence']=measurementSequence
+  event['measurementId']='measure-' || measurementSequence~string~right(9,'0'); event['projectionId']=projectionId; event['scopeRef']=scope; event['outcome']=outcome
+  event['recordedBy']=actorId; event['recordedAt']=.CognitiveUtil~now
+  do name over .array~of('usefulRecordIds','irrelevantRecordIds','missingKinds')
+    event[name]=.array~new
+    if args~hasIndex(name) & args[name]<>.nil then do
+      if \args[name]~isA(.Array) then return .CognitiveResult~failure('PROJECTION_OUTCOME_ARRAY_INVALID',name)
+      event[name]=.CognitiveUtil~arrayCopy(args[name])
+    end
+  end
+  event['note']=.CognitiveUtil~optional(args,'note','')
+  if event['note']~length>2048 then return .CognitiveResult~failure('PROJECTION_OUTCOME_NOTE_TOO_LONG')
+  measurementJournal~append(event); measurementEvents~append(event)
+  return .CognitiveResult~success(.CognitiveUtil~copyDirectory(event),'COGNITIVE_PROJECTION_OUTCOME_RECORDED')
+
+::method dogfoodObserve
+  expose policy measurementJournal measurementEvents measurementSequence
+  use strict arg args, actorId=''
+  actorId=actorId~string~strip; scope=.CognitiveUtil~optional(args,'scopeRef','')~strip
+  if actorId='' then return .CognitiveResult~failure('AUTHENTICATED_PRINCIPAL_REQUIRED')
+  if scope='' then return .CognitiveResult~failure('SCOPE_REQUIRED')
+  if \policy~allows(actorId,'cognitive.dogfood.observe',scope) then return .CognitiveResult~failure('COGNITIVE_DOGFOOD_OBSERVE_FORBIDDEN')
+  cls=.CognitiveUtil~optional(args,'observationClass','')~upper~strip
+  allowed=.array~of('CLIENT_REPLY_CORRELATION_FAILURE','COGNITIVE_CONTEXT_BYPASS','PROJECTION_OVERINCLUSION','PROJECTION_UNDERINCLUSION','PROJECTION_IRRELEVANCE','PROJECTION_SUCCESS','CLASSIFICATION_MISS','RETRIEVAL_FILTER_MISS','PROCEDURAL_SUCCESS','TOOLING_SUCCESS')
+  if allowed~hasItem(cls)=0 then return .CognitiveResult~failure('DOGFOOD_OBSERVATION_CLASS_INVALID',cls)
+  expected=.CognitiveUtil~optional(args,'expectedBehavior','')
+  observed=.CognitiveUtil~optional(args,'observedBehavior','')
+  note=.CognitiveUtil~optional(args,'note','')
+  if expected~length>2048 | observed~length>2048 | note~length>2048 then return .CognitiveResult~failure('DOGFOOD_OBSERVATION_TEXT_TOO_LONG')
+  evidenceManifest=.array~new
+  if args~hasIndex('evidenceManifest') & args['evidenceManifest']<>.nil then do
+    if \args['evidenceManifest']~isA(.Array) then return .CognitiveResult~failure('EVIDENCE_MANIFEST_MUST_BE_ARRAY')
+    evidenceManifest=.CognitiveUtil~arrayCopy(args['evidenceManifest'])
+  end
+  evidenceRefs=.array~new
+  if args~hasIndex('evidenceRefs') & args['evidenceRefs']<>.nil then do
+    if \args['evidenceRefs']~isA(.Array) then return .CognitiveResult~failure('DOGFOOD_EVIDENCE_REFS_MUST_BE_ARRAY')
+    do ref over args['evidenceRefs']
+      if \.CognitiveUtil~arrayHas(evidenceManifest,ref) then return .CognitiveResult~failure('DOGFOOD_EVIDENCE_REF_NOT_IN_MANIFEST',ref)
+      evidenceRefs~append(ref)
+    end
+  end
+  measurementSequence+=1
+  event=.directory~new
+  event['schema']=.CognitiveBuild~MEASUREMENT_SCHEMA; event['measurementType']='DOGFOOD_OBSERVATION'; event['measurementSequence']=measurementSequence
+  event['measurementId']='measure-' || measurementSequence~string~right(9,'0'); event['scopeRef']=scope; event['observationClass']=cls
+  event['task']=.CognitiveUtil~optional(args,'task',''); event['expectedBehavior']=expected; event['observedBehavior']=observed; event['note']=note
+  event['evidenceRefs']=evidenceRefs; event['evidenceBound']=.true; event['recordedBy']=actorId; event['recordedAt']=.CognitiveUtil~now
+  event['disposition']='MEASUREMENT_ONLY_NOT_COGNITIVE_AUTHORITY'
+  measurementJournal~append(event); measurementEvents~append(event)
+  return .CognitiveResult~success(.CognitiveUtil~copyDirectory(event),'COGNITIVE_DOGFOOD_OBSERVATION_RECORDED')
+
+::method learningResultRecord
+  expose policy measurementJournal measurementEvents measurementSequence
+  use strict arg args, actorId=''
+  actorId=actorId~string~strip
+  if actorId='' then return .CognitiveResult~failure('AUTHENTICATED_PRINCIPAL_REQUIRED')
+  if args==.nil | \args~hasIndex('learningRequest') | \args~hasIndex('learningResult') then return .CognitiveResult~failure('LEARNING_REQUEST_AND_RESULT_REQUIRED')
+  request=args['learningRequest']; learnResult=args['learningResult']
+  if \request~isA(.Directory) | \learnResult~isA(.Directory) then return .CognitiveResult~failure('LEARNING_REQUEST_AND_RESULT_MUST_BE_OBJECTS')
+  if \request~hasIndex('schema') | request['schema']<>.CognitiveBuild~LEARNING_REQUEST_SCHEMA then return .CognitiveResult~failure('LEARNING_REQUEST_SCHEMA_UNSUPPORTED')
+  if \learnResult~hasIndex('schema') | learnResult['schema']<>.CognitiveBuild~LEARNING_RESULT_SCHEMA then return .CognitiveResult~failure('LEARNING_RESULT_SCHEMA_UNSUPPORTED')
+  scope=.CognitiveUtil~optional(request,'scopeRef','')~strip
+  if scope='' then return .CognitiveResult~failure('SCOPE_REQUIRED')
+  if \policy~allows(actorId,'cognitive.learning.result.record',scope) then return .CognitiveResult~failure('COGNITIVE_LEARNING_RESULT_RECORD_FORBIDDEN')
+  if .CognitiveUtil~optional(learnResult,'requestId','')<>.CognitiveUtil~optional(request,'requestId','') then return .CognitiveResult~failure('LEARNING_RESULT_REQUEST_MISMATCH')
+  if .CognitiveUtil~optional(learnResult,'scopeRef','')<>scope then return .CognitiveResult~failure('LEARNING_RESULT_SCOPE_MISMATCH')
+  if .CognitiveUtil~optional(learnResult,'disposition','')<>'PROPOSALS_ONLY_NOT_ADMITTED' then return .CognitiveResult~failure('LEARNING_RESULT_DISPOSITION_INVALID')
+  bad=.CognitiveLearningResultUtil~forbiddenKey(learnResult)
+  if bad<>'' then return .CognitiveResult~failure('LEARNING_RESULT_AUTHORITY_FIELD_FORBIDDEN',bad)
+  allowedRefs=.CognitiveLearningResultUtil~evidenceRefs(request)
+  basisError=.CognitiveLearningResultUtil~validateProposalBasis(learnResult,allowedRefs)
+  if basisError<>'' then do
+    parse var basisError code ':' detail
+    return .CognitiveResult~failure(code,detail)
+  end
+  incomingJson=.json~toJSON(learnResult)
+  do prior over measurementEvents
+    if prior['measurementType']<>'LEARNING_RESULT' then iterate
+    if prior['scopeRef']<>scope | prior['requestId']<>request['requestId'] then iterate
+    if prior~hasIndex('learningResultJson') & prior['learningResultJson']=incomingJson then return .CognitiveResult~success(.CognitiveUtil~copyDirectory(prior),'COGNITIVE_LEARNING_RESULT_REPLAYED')
+    return .CognitiveResult~failure('LEARNING_RESULT_REQUEST_CONFLICT',request['requestId'])
+  end
+  measurementSequence+=1
+  event=.directory~new
+  event['schema']=.CognitiveBuild~MEASUREMENT_SCHEMA; event['measurementType']='LEARNING_RESULT'; event['measurementSequence']=measurementSequence
+  event['measurementId']='measure-' || measurementSequence~string~right(9,'0'); event['scopeRef']=scope
+  event['requestId']=request['requestId']; event['workerId']=.CognitiveUtil~optional(learnResult,'workerId',''); event['modelId']=.CognitiveUtil~optional(learnResult,'modelId','')
+  event['fromCorpusPointId']=.CognitiveUtil~optional(request,'fromCorpusPointId',''); event['toCorpusPointId']=.CognitiveUtil~optional(request,'toCorpusPointId','')
+  event['fromMeasurementSequence']=.CognitiveUtil~int(.CognitiveUtil~optional(request,'fromMeasurementSequence','0'),0)
+  event['toMeasurementSequence']=.CognitiveUtil~int(.CognitiveUtil~optional(request,'toMeasurementSequence','0'),0)
+  event['learningResult']=learnResult; event['learningResultJson']=incomingJson; event['knownEvidenceRefs']=allowedRefs; event['recordedBy']=actorId; event['recordedAt']=.CognitiveUtil~now
+  event['disposition']='MEASUREMENT_ONLY_NOT_COGNITIVE_AUTHORITY'
+  measurementJournal~append(event); measurementEvents~append(event)
+  return .CognitiveResult~success(.CognitiveUtil~copyDirectory(event),'COGNITIVE_LEARNING_RESULT_RECORDED')
+
+::method learningResults
+  expose policy measurementEvents
+  use strict arg args, actorId=''
+  actorId=actorId~string~strip; scope=.CognitiveUtil~optional(args,'scopeRef','')~strip
+  if actorId='' then return .CognitiveResult~failure('AUTHENTICATED_PRINCIPAL_REQUIRED')
+  if scope='' then return .CognitiveResult~failure('SCOPE_REQUIRED')
+  if \policy~allows(actorId,'cognitive.learning.result.query',scope) then return .CognitiveResult~failure('COGNITIVE_LEARNING_RESULT_QUERY_FORBIDDEN')
+  since=.CognitiveUtil~int(.CognitiveUtil~optional(args,'sinceMeasurementSequence','0'),0)
+  outEvents=.array~new
+  do event over measurementEvents
+    if event['scopeRef']<>scope | event['measurementSequence']<=since then iterate
+    if event['measurementType']<>'LEARNING_RESULT' then iterate
+    outEvents~append(.CognitiveUtil~copyDirectory(event))
+  end
+  out=.directory~new; out['schema']='oorexx.cognitive.learning-results/1'; out['scopeRef']=scope; out['results']=outEvents; out['count']=outEvents~items
+  return .CognitiveResult~success(out,'COGNITIVE_LEARNING_RESULTS_LISTED')
+
+::method learningBundle
+  expose policy measurementEvents measurementSequence
+  use strict arg args, actorId=''
+  delta=self~learningDelta(args,actorId)
+  if \delta~ok then return delta
+  scope=delta~value['scopeRef']
+  sinceMeasurement=.CognitiveUtil~int(.CognitiveUtil~optional(args,'sinceMeasurementSequence','0'),0)
+  receipts=.array~new; outcomes=.array~new; observations=.array~new
+  do event over measurementEvents
+    if event['scopeRef']<>scope | event['measurementSequence']<=sinceMeasurement then iterate
+    if event['measurementType']='PROJECTION_RECEIPT' then receipts~append(.CognitiveUtil~copyDirectory(event))
+    else if event['measurementType']='PROJECTION_OUTCOME' then outcomes~append(.CognitiveUtil~copyDirectory(event))
+    else if event['measurementType']='DOGFOOD_OBSERVATION' then observations~append(.CognitiveUtil~copyDirectory(event))
+  end
+  out=.directory~new
+  out['schema']='oorexx.cognitive.learning-bundle/2'; out['scopeRef']=scope
+  out['fromCorpusPointId']=delta~value['fromCorpusPointId']; out['toCorpusPointId']=delta~value['toCorpusPointId']; out['fromSequence']=delta~value['fromSequence']; out['toSequence']=delta~value['toSequence']
+  out['records']=delta~value['records']; out['recordCount']=delta~value['count']
+  out['fromMeasurementSequence']=sinceMeasurement; out['toMeasurementSequence']=measurementSequence
+  out['projectionReceipts']=receipts; out['projectionReceiptCount']=receipts~items; out['projectionOutcomes']=outcomes; out['projectionOutcomeCount']=outcomes~items
+  out['dogfoodObservations']=observations; out['dogfoodObservationCount']=observations~items
+  out['generatedAt']=.CognitiveUtil~now
+  return .CognitiveResult~success(out,'COGNITIVE_LEARNING_BUNDLE')
+
+::method validateEffect private
+  use strict arg effect, evidenceManifest
+  if effect == .nil | \effect~isA(.Directory) then return .CognitiveResult~failure('EFFECT_MUST_BE_OBJECT')
+  forbidden=.array~of('actorId','principalId','authority','assertionClass','origin','epistemicState','decisionAuthority','verificationState','toolVerified','operatorAsserted','serverTimestamp','recordId')
+  do name over forbidden
+    if effect~hasIndex(name) then return .CognitiveResult~failure('FORBIDDEN_AUTHORITY_FIELD',name)
+  end
+  allowedFields=.directory~new
+  do name over .array~of('effectId','kind','subjectRef','objectRef','relation','statement','state','basisRefs','aimScope','durabilityHint','verificationNeed','confidencePct'); allowedFields[name]=1; end
+  do name over effect
+    if \allowedFields~hasIndex(name) then return .CognitiveResult~failure('COGNITIVE_EFFECT_FIELD_INVALID',name)
+  end
+  kind=.CognitiveUtil~required(effect,'kind')~upper
+  allowed=.array~of('CLAIM','DECISION','ASSUMPTION','PLAN_CREATE','PLAN_ITEM_ADD','PLAN_ITEM_STATE_PROPOSAL','PLAN_CHANGE','DEPENDENCY','COMMITMENT','OPEN_QUESTION','QUESTION_RESOLVED','BLOCKER','RISK','ARGUMENT_EDGE','ARGUMENT_CLAIM','ARGUMENT_SUPPORT','ARGUMENT_OBJECTION','ARGUMENT_REBUTTAL','SKILL_EPISODE_HINT','CONTEXT_RETRIEVAL_HINT','LESSON','PROCEDURE','TOOL_CANDIDATE','CONCEPT','CONCEPT_RELATION','CLASSIFICATION_HINT','SUPERSESSION_PROPOSAL','CONTRADICTION_PROPOSAL')
+  if allowed~hasItem(kind)=0 then return .CognitiveResult~failure('COGNITIVE_EFFECT_KIND_INVALID',kind)
+  if .CognitiveUtil~required(effect,'statement')='' & kind<>'CONCEPT_RELATION' then return .CognitiveResult~failure('COGNITIVE_EFFECT_STATEMENT_REQUIRED',kind)
+  if effect~hasIndex('basisRefs') & effect['basisRefs']<>.nil then do
+    if \effect['basisRefs']~isA(.Array) then return .CognitiveResult~failure('BASIS_REFS_MUST_BE_ARRAY')
+    do basis over effect['basisRefs']
+      if \.CognitiveUtil~arrayHas(evidenceManifest,basis) then return .CognitiveResult~failure('BASIS_REF_NOT_IN_MANIFEST',basis)
+    end
+  end
+  if effect~hasIndex('confidencePct') then do
+    confidence=.CognitiveUtil~int(effect['confidencePct'],-1)
+    if confidence<0 | confidence>100 then return .CognitiveResult~failure('CONFIDENCE_PCT_INVALID')
+  end
+  return .CognitiveResult~success(.true)
+
+::method replay private
+  expose journal records sequence
+  sequence=0
+  events=journal~events
+  do event over events
+    if event['schema']<>.CognitiveBuild~EVENT_SCHEMA then -
+      raise syntax 40.900 array('Unsupported cognitive event schema',event['schema'])
+    records~append(event)
+    if event~hasIndex('sequence') then n=event['sequence']; else do; id=.CognitiveUtil~optional(event,'recordId',''); parse var id 'cog-' n; end
+    if datatype(n,'W') & n>sequence then sequence=n
+  end
+
+::method replayMeasurements private
+  expose measurementJournal measurementEvents measurementSequence
+  measurementSequence=0
+  events=measurementJournal~events
+  do event over events
+    if event['schema']<>.CognitiveBuild~MEASUREMENT_SCHEMA then -
+      raise syntax 40.900 array('Unsupported cognitive measurement schema',event['schema'])
+    measurementEvents~append(event)
+    if event~hasIndex('measurementSequence') then n=event['measurementSequence']; else n=0
+    if datatype(n,'W') & n>measurementSequence then measurementSequence=n
+  end
+
+::requires 'json.cls'
