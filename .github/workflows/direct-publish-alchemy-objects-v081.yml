@@ -1,0 +1,219 @@
+name: Direct publish Alchemy Objects v0.8.1
+on:
+  push:
+    paths:
+      - '.github/workflows/direct-publish-alchemy-objects-v081.yml'
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Publish repaired Inspector package
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf packages/alchemy_objects_v0.8.1
+          cp -a packages/alchemy_objects_v0.8 packages/alchemy_objects_v0.8.1
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("packages/alchemy_objects_v0.8.1/inspector/InspectorClouseau.cls")
+          s=p.read_text()
+          s=s.replace('  itemCount = self~safeString(self~safeSend0(obj, "items", 0))','  itemCount = 0\n  if self~declaresMethod(obj, "ITEMS") then itemCount = self~safeString(self~safeSend0(obj, "items", 0))',1)
+          s=s.replace('    rec~put(self~safeLogical(self~safeSend0(obj, "isEmpty", .false)), "is_empty")','    if self~declaresMethod(obj, "ISEMPTY") then rec~put(self~safeLogical(self~safeSend0(obj, "isEmpty", .false)), "is_empty")',1)
+          old='''  items = self~safeSend0(obj, "items", .nil)
+  indexes = self~safeSend0(obj, "allIndexes", .nil)
+  if items \\== .nil & indexes \\== .nil then return .true'''
+          new='''  /* Passive inspection must never use UNKNOWN as capability discovery. */
+  if self~declaresMethod(obj, "ITEMS") & self~declaresMethod(obj, "ALLINDEXES") then return .true'''
+          if old not in s: raise SystemExit("collection probe anchor missing")
+          s=s.replace(old,new,1)
+          s=s.replace('''  if coll == .nil then return out
+
+  signal on syntax name noIndexes''','''  if coll == .nil then return out
+
+  if \\self~declaresMethod(coll, "ALLINDEXES") then return out
+  signal on syntax name noIndexes''',1)
+          anchor='''::method safeAt private
+  use strict arg coll, idx, defaultValue
+  if coll == .nil then return defaultValue'''
+          repl='''::method declaresMethod private
+  use strict arg obj, methodName
+  if obj == .nil then return .false
+  signal on syntax name noMethod
+  has = obj~hasMethod(methodName)
+  signal off syntax
+  return has == .true
+noMethod:
+  signal off syntax
+  return .false
+
+::method safeAt private
+  use strict arg coll, idx, defaultValue
+  if coll == .nil then return defaultValue
+  if \\self~declaresMethod(coll, "AT") then return defaultValue'''
+          if anchor not in s: raise SystemExit("safeAt anchor missing")
+          s=s.replace(anchor,repl,1)
+          # Cooperative trigger path: insert before legacy hidden-selector surgery.
+          anchor='''  if original == .nil then return .false
+
+  /* Never proxy a method that contains FORWARD. */'''
+          repl='''  if original == .nil then return .false
+
+  /* Current Alchemy/Logging path: join the receiver's cooperative coordinator.
+     Inspector owns no application Method object on this path. */
+  if self~supportsCooperativeInterposition(obj) then do
+    cooperative = self~installCooperativeMethodTrigger(obj, methodName, rule)
+    if cooperative then return .true
+  end
+
+  /* Never proxy a method that contains FORWARD. */'''
+          if anchor not in s: raise SystemExit("trigger anchor missing")
+          s=s.replace(anchor,repl,1)
+          # Add helpers immediately before legacy trigger installer.
+          marker='''::method installOneMethodTrigger private'''
+          helper='''::method supportsCooperativeInterposition private
+  use strict arg target
+  return self~declaresMethod(target, "__METHODINTERPOSITIONADD") & -
+         self~declaresMethod(target, "__METHODINTERPOSITIONREMOVE") & -
+         self~declaresMethod(target, "METHODINTERPOSITIONSTATUS")
+
+::method installCooperativeMethodTrigger private
+  use strict arg obj, methodName, rule
+  /* Generic BEFORE/AFTER/FAILURE cannot expose method-local variables or an
+     instruction trace; keep those source-rewriting rules on the legacy path. */
+  if rule~condition_variable \\== .nil then return .false
+  if rule~collect_trace then return .false
+  self~triggerCounter = self~triggerCounter + 1
+  triggerKey = "method-" || self~triggerCounter
+  providerId = "INSPECTOR.CLOUSEAU." || triggerKey
+  interceptor = .InspectorClouseauMethodInterceptor~new(self, triggerKey)
+  signal on syntax name coopFailed
+  obj~__methodInterpositionAdd(methodName, providerId, interceptor, 500)
+  signal off syntax
+  meta = .directory~new
+  meta~put(obj, "object")
+  meta~put(methodName, "method_name")
+  meta~put(rule, "rule")
+  meta~put(providerId, "provider_id")
+  meta~put("cooperative-interposition", "install_mode")
+  self~methodTriggers~put(meta, triggerKey)
+  return .true
+coopFailed:
+  signal off syntax
+  return .false
+
+::method installOneMethodTrigger private'''
+          if marker not in s: raise SystemExit("installer marker missing")
+          s=s.replace(marker,helper,1)
+          # Public interceptor class before requires directives.
+          marker='''::requires "json.cls"'''
+          cls='''::class InspectorClouseauMethodInterceptor public
+::method init
+  expose inspector triggerKey
+  use strict arg inspector, triggerKey
+::method before
+  expose inspector triggerKey
+  use strict arg receiver, methodName, arguments
+  signal on syntax name ignored
+  inspector~triggerInspection(triggerKey, receiver)
+ignored:
+  signal off syntax
+  return triggerKey
+::method after
+  use strict arg receiver, methodName, token, result
+  return .true
+::method failure
+  use strict arg receiver, methodName, token, conditionObject
+  return .true
+
+::requires "json.cls"'''
+          if marker not in s: raise SystemExit("requires marker missing")
+          s=s.replace(marker,cls,1)
+          p.write_text(s)
+          PY
+          cat > packages/alchemy_objects_v0.8.1/integration/test_inspector_cooperative_interposition.rex <<'REXX'
+          ::requires "../inspector/InspectorClouseau.cls"
+          ::requires "MethodInterposition.cls"
+
+          obj = .CoopWidget~new
+          obj~__methodInterpositionAdd("WORK", "TEST.LOGGING", .NoopInterceptor~new, 100)
+          before = obj~methodInterpositionStatus("WORK")
+          if before~physical_wrappers <> 1 then call fail "expected one coordinator wrapper before Inspector"
+
+          inspector = .InspectorClouseau~new
+          rule = .directory~new
+          rule~put("WORK", "method_name")
+          ok = inspector~installOneMethodTrigger(obj, "WORK", rule)
+          if \ok then call fail "Inspector cooperative trigger install failed"
+
+          after = obj~methodInterpositionStatus("WORK")
+          if after~physical_wrappers <> 1 then call fail "Inspector installed a second physical wrapper"
+          if after~provider_count <> 2 then call fail "expected Logging-style + Inspector providers"
+          if obj~work("a") <> "worked:a" then call fail "method result changed"
+          say "PASS test_inspector_cooperative_interposition"
+          exit 0
+          fail: procedure
+            parse arg why
+            say "FAIL" why
+            exit 1
+
+          ::class CoopWidget public inherit MethodInterpositionParticipant
+          ::method init
+            self~initMethodInterposition
+          ::method work
+            use strict arg value
+            return "worked:" || value
+
+          ::class NoopInterceptor public
+          ::method before
+            use strict arg receiver, methodName, arguments
+            return .nil
+          ::method after
+            use strict arg receiver, methodName, token, result
+            return .true
+          ::method failure
+            use strict arg receiver, methodName, token, conditionObject
+            return .true
+          REXX
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("packages/alchemy_objects_v0.8.1/run_logging_integration.sh")
+          s=p.read_text()
+          if 'test_inspector_cooperative_interposition.rex' not in s:
+              s += '\n"$REXX" integration/test_inspector_cooperative_interposition.rex\n'
+          p.write_text(s)
+          PY
+          cat >> packages/alchemy_objects_v0.8.1/CHANGELOG.md.tmp <<'EOF'
+          EOF
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path("packages/alchemy_objects_v0.8.1/CHANGELOG.md")
+          s=p.read_text()
+          h="# Changelog\n"
+          note="""# Changelog
+
+## v0.8.1 - 2026-09-18
+
+- Inspector Clouseau ordinary method triggers now join the current Alchemy/Logging cooperative method-interposition coordinator instead of stashing and replacing same-scope Method objects.
+- Passive collection inspection no longer discovers ITEMS/ALLINDEXES/ISEMPTY/AT by speculative dispatch through UNKNOWN.
+- Source-rewriting-only Inspector features retain their legacy path where BEFORE/AFTER/FAILURE cannot represent their semantics.
+
+"""
+          if s.startswith(h): s=note+s[len(h):]
+          p.write_text(s)
+          Path("packages/alchemy_objects_v0.8.1/CHANGELOG.md.tmp").unlink(missing_ok=True)
+          PY
+          (
+            cd packages/alchemy_objects_v0.8.1
+            find . -type f ! -name MANIFEST.sha256 -print0 | sort -z | xargs -0 sha256sum > MANIFEST.sha256
+          )
+          rm .github/workflows/direct-publish-alchemy-objects-v081.yml
+          git config user.name "ChatGPT"
+          git config user.email "chatgpt@users.noreply.github.com"
+          git add packages/alchemy_objects_v0.8.1 .github/workflows/direct-publish-alchemy-objects-v081.yml
+          git commit -m "alchemy objects: publish v0.8.1 Inspector repair"
+          git push origin HEAD:main
