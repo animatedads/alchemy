@@ -1,0 +1,10 @@
+ooRexx Provenance Ledger v0.1-dev4 validation
+Date: 2026-09-18
+Runtime: supplied ooRexx 5.3.0 r13196 Ubuntu debug build
+
+New dev4 qualification:
+- PASS tests/test_sequential_media_adapter.rex using a qualification-only Crypto API stub to exercise adapter/event logic.
+- Existing dev3 ledger/adapter/segment tests rerun with the same stub to check regression structure.
+
+Cryptographic qualification is inherited, not newly claimed: dev4 does not change CryptoHash/Ed25519 algorithms or the existing signed block/segment paths. Requalification against exact oorexx_crypto_v0.8.3 is still required before treating dev4 as a cryptographically re-sealed release.
+- PASS tests/test_storage_media_integration.rex against actual Storage Fabric dev17 StorageRef/TAPE_VOLUME classes, using the same qualification-only Crypto API stub.

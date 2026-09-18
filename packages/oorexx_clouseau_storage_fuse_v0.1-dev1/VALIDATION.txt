@@ -1,0 +1,23 @@
+Qualified: 2026-09-18
+Runtime: ooRexx 5.3.0 r13196 supplied by Architect
+Inspector authority: oorexxapis(20260917-220404).zip -> current/alchemy_oorexx_core_rollup_v0.5.zip -> alchemy_objects_v0.4.3/inspector/InspectorClouseau.cls
+Storage authority: oorexx_storage_fabric_v0.1-dev17.zip, storage.fabric.fuse/0.1
+
+PASS run-tests.sh
+  - real InspectorClouseau instance enabled
+  - multiple inheritance / mixin fixture
+  - live object projected under /live/test/objects
+  - observed CHILDVALUE exposed as virtual attribute file
+  - normal application change alpha -> beta visible after observation refresh
+  - MIXED method resolved to MIXEDCAPABILITY
+  - method origin kind inherited_mixin_or_secondary_superclass
+
+PASS illuminating demo
+  - PriorityOrder state visible through FUSE semantic projection
+  - PRIORITY 4 -> 7
+  - STATE NEW -> PACKED
+  - ID / CUSTOMER / TOTAL remain visible
+  - ADVANCE origin = inherited_superclass / ORDER
+  - FUSE virtual classes/methods/objects/attributes trees readable
+
+The package qualifies the Storage Fabric FUSE operation core. A real kernel /dev/fuse mount was not performed in this build container; Storage Fabric's existing native FUSE3 shim/RPC seam remains the kernel-facing authority.

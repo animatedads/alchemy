@@ -1,0 +1,31 @@
+ooRexx Storage Fabric v0.1-dev17 validation
+Date: 2026-09-17
+
+Runtime:
+- ooRexx 5.3.0 r13196 (user-supplied runtime)
+
+New dev17 qualification:
+- PASS Hercules 1403/3211 printer-file import to canonical PAPER_LISTING
+- PASS blank printed lines and form-feed page boundaries preserved
+- PASS paper listing host projection round trip
+- PASS 1403 configuration fragment generation
+- PASS canonical TAPE_VOLUME -> AWSTAPE -> canonical TAPE_VOLUME
+- PASS 70,000-byte logical tape block through multi-segment AWSTAPE
+- PASS tape filemark preservation
+- PASS AWSTAPE file import/export and 3420 configuration fragment
+- PASS malformed/truncated AWSTAPE fail-closed checks
+- PASS zero-length canonical data block rejected rather than aliasing tape mark
+
+Regression:
+- PASS ALL STORAGE FABRIC v0.1-dev17 CORE TESTS
+- Includes capacity/catalogue, namespace/views, environments, removable storage,
+  FUSE/RPC, streaming/checkpoint, Google Drive, application bindings, virtual
+  random-access media, sequential media, Hercules card bridge, peer protocol,
+  QueueRexx adapter and FUSE3 native stub qualification.
+
+Authority/loss boundary:
+- Hercules 1403/3211 host files have already had carriage-control interpreted
+  and trailing blanks removed; dev17 preserves observable lines/page boundaries
+  and does not claim to reconstruct original printer CCWs or trailing blanks.
+- AWSTAPE is an edge codec only. Canonical Storage tape identity remains ordered
+  blocks and filemarks. HET compression is not implemented in dev17.

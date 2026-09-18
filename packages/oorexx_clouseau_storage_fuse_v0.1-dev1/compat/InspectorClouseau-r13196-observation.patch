@@ -1,0 +1,80 @@
+--- /mnt/data/oorexx_clouseau_storage_fuse_v0.1-dev1/vendor/inspector/InspectorClouseau.authority.cls	2026-09-18 13:49:51.205749293 +0000
++++ /mnt/data/oorexx_clouseau_storage_fuse_v0.1-dev1/vendor/inspector/InspectorClouseau.cls	2026-09-18 13:54:57.982870295 +0000
+@@ -2029,6 +2029,8 @@
+   node~put(self~safeString(self~safeSend0(obj, "identityHash", "")), "identity_hash")
+   node~put(self~objectKind(obj), "kind")
+   node~put(depth, "depth")
++  __icClass = self~safeClassName(obj)~translate
++  if __icClass = "STRING" | __icClass = "NUMBERSTRING" | __icClass = "INTEGER" then node~put(self~safeString(obj), "value")
+ 
+   cls = self~safeSend0(obj, "class", .nil)
+   if cls \== .nil then self~inspectClass(cls, .nil)
+@@ -2977,9 +2979,17 @@
+   use strict arg cls, name
+ 
+   signal on syntax name failed
+-  m = cls~method(name)
++  supplier = cls~methods
++  do while supplier~available
++    if self~safeString(supplier~index)~translate = self~safeString(name)~translate then do
++      m = supplier~item
++      signal off syntax
++      return m
++    end
++    supplier~next
++  end
+   signal off syntax
+-  return m
++  return .nil
+ failed:
+   signal off syntax
+   return .nil
+@@ -4678,6 +4688,28 @@
+   end
+   return .nil
+ 
++::method refreshObservation public
++  expose roots objects objectQueue edges queues findings variableReports walkedObjects visitedObjects oidCounter inheritanceMaps triggerActive
++  previousTriggerActive = triggerActive
++  triggerActive = .true
++  objects = .directory~new
++  objectQueue = .queue~new
++  edges = .array~new
++  queues = .array~new
++  findings = .array~new
++  variableReports = .array~new
++  walkedObjects = .identityTable~new
++  visitedObjects = .identityTable~new
++  oidCounter = 0
++  do r over roots
++    objectQueue~append(self~makeObjectWork(r~at("object"), "root:" || r~at("name"), .nil, r~at("name"), 0))
++  end
++  self~walkObjectUniverse
++  self~detectIdentityFindings
++  inheritanceMaps = self~buildInheritanceMaps
++  triggerActive = previousTriggerActive
++  return .true
++
+ ::method refreshLiveObjectGraphForTrigger private
+   expose roots objects objectQueue edges queues findings variableReports walkedObjects visitedObjects oidCounter
+   use strict arg triggeringObject, event
+@@ -4738,7 +4770,8 @@
+ 
+   sourceText = self~sourceTextForRuntimeMethod(source)
+   signal on syntax name methodBuildFailed
+-  m = .Method~new(self~safeString(methodName), sourceText)
++  if self~safeClassName(source)~translate~pos("ARRAY") > 0 then m = .Method~new(self~safeString(methodName), source)
++  else m = .Method~new(self~safeString(methodName), sourceText)
+   signal off syntax
+   return m
+ 
+@@ -4787,6 +4820,9 @@
+     src~append("if symbol('" || slot || "') = 'VAR' then do")
+     src~append("  __icSlots~put(" || slot || ", '" || slot || "')")
+     src~append("end")
++    src~append("else if self~hasMethod('" || slot || "') then do")
++    src~append("  __icSlots~put(self~send('" || slot || "'), '" || slot || "')")
++    src~append("end")
+     src~append("else do")
+     src~append("  __icMissing~append('" || slot || "')")
+     src~append("end")
