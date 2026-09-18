@@ -1,0 +1,24 @@
+{
+  "name": "oorexx-webdav",
+  "version": "0.1-dev4",
+  "api": "webdav.gateway/0.1",
+  "entrypoints": [
+    "src/WebDavCore.cls",
+    "src/WebDavRepresentations.cls",
+    "src/WebDavHttpsAdapter.cls",
+    "src/WebDavQueue.cls",
+    "src/WebDavTapeCodecs.cls"
+  ],
+  "dependencies": {
+    "storage.fabric": "0.1-dev16",
+    "https.server": "0.4.4",
+    "queue.fabric": "0.9-dev6"
+  },
+  "authority": {
+    "https": "TLS and HTTP transport",
+    "webdav": "DAV protocol, properties, preconditions and path projection",
+    "queue.fabric": "durable command delivery",
+    "storage.fabric": "namespace, object identity, write policy, generations, transfer verification and commit",
+    "hercules": "sibling device/media authority; never controlled internally by WebDAV"
+  }
+}
