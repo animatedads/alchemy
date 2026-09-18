@@ -17,6 +17,16 @@
 ::method unknown
   use strict arg messageName, arguments
   return self~nativeInvoke(messageName, arguments)
+
+::method installRexxMemberOverride
+  use strict arg memberName, providerId, interceptor, priority = 700
+  return self~__methodInterpositionAdd(memberName, providerId, interceptor, priority)
+::method removeRexxMemberOverride
+  use strict arg memberName, providerId
+  return self~__methodInterpositionRemove(memberName, providerId)
+::method dotNetMemberInterpositionStatus
+  use strict arg memberName
+  return self~methodInterpositionStatus(memberName)
 ::method nativeInvoke0 external "LIBRARY alchemy_clr_package dotnet_invoke0"
 ::method nativeInvoke external "LIBRARY alchemy_clr_package dotnet_invoke"
 
