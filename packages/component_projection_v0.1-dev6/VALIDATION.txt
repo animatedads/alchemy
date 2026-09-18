@@ -1,0 +1,26 @@
+component_projection_v0.1-dev6 qualification
+
+Runtime: ooRexx 5.3.0 r13196 from supplied package
+Exact current API baselines checked:
+- Alchemy Objects v0.8 / InspectorClouseau.cls
+- NoSQLServer v0.79
+- ooRexx Crypto v0.8.3 dependency chain
+- Provenance Ledger v0.1-dev5 present in qualification environment (not a Component Projection dependency)
+
+PASS component projection core
+PASS QueueRexx component projection adapter contract
+PASS Inspector Clouseau component projection adapter contract
+PASS Inspector Clouseau v0.8 actual live-state projection adapter
+PASS Component Projection NoSQL renderer contract
+PASS Component Projection NoSQLServer v0.79 actual snapshot renderer
+
+Semantics additionally checked:
+- Inspector adapter reads InspectorClouseau~asDirectory only.
+- Inspector adapter does not call snapshot(), refreshObservation(), object-graph walking, snapshot writers, or trace-request scanning.
+- Inspector dynamic rule Directory fields are projected without imposing a fixed rule schema.
+- process/object-tree publication remains outside this adapter.
+- NoSQL renderer uses real ObjectDatabaseEngine registerSnapshot() tables.
+- NoSQL snapshots are frozen: later source mutation does not alter an existing snapshot.
+- building a new snapshot observes the later live value.
+- write-only CONTROL endpoints are absent from the NoSQL value snapshot.
+- NoSQL value_text does not inherit the FUSE/file trailing newline.
