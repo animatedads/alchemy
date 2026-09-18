@@ -1,0 +1,8 @@
+ooRexx: 5.3.0-13196 ubuntu1604debug x86_64 (user supplied)
+Python: host Python 3.13
+BUILD_TARGET=host ./build.sh: PASS
+./run-tests.sh with supplied ooRexx runtime: PASS (rc=0)
+Reverse argument result:
+  REXX -> PYTHON OMITTED != NIL != EMPTY POC PASS
+The packaged artifact intentionally excludes the host-built .so; Android/Termux
+builds its native extension locally with the default BUILD_TARGET=android.
