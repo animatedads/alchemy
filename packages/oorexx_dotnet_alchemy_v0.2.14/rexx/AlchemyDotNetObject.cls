@@ -1,10 +1,11 @@
 /* AlchemyDotNetObject.cls - CLR participation in the shared Alchemy foreign-object pattern. */
-::class AlchemyDotNetObject public subclass AlchemyForeignObject
+::class AlchemyDotNetObject public subclass AlchemyForeignObject inherit MethodInterpositionParticipant
 ::attribute foreignHandle get
 ::method init
   expose foreignHandle
   use strict arg foreignHandle
   self~init:super
+  self~initMethodInterposition
   self~nativeInit(foreignHandle)
 ::method foreignRuntime
   return 'dotnet'
@@ -83,3 +84,5 @@
 ::method nativeInvoke0 external "LIBRARY alchemy_clr_package dotnet_invoke0"
 ::method nativeInvoke external "LIBRARY alchemy_clr_package dotnet_invoke"
 ::method alchemyHandle external "LIBRARY alchemy_clr_package dotnet_handle"
+
+::requires 'MethodInterposition.cls'
