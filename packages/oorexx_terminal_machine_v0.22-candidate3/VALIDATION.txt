@@ -1,0 +1,158 @@
+ooRexx Terminal Machine v0.21 validation
+========================================
+
+Runtime
+-------
+Executable validation uses the supplied ooRexx 5.3.0 r13196 debug runtime:
+  oorexx-5.3.0-13196.ubuntu1604debug.x86_64(4).deb
+
+Accepted parent
+---------------
+  oorexx_terminal_machine_v0.20.zip
+  SHA-256 24c8eff38d7ca7b77e2f25add46ed502cde017ac23ba0e59e820c1b97f4ad6c4
+
+External dependency identities
+------------------------------
+Alchemy Objects v0.8:
+  SHA-256 7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073
+
+ooRexx Crypto v0.1:
+  SHA-256 3eab23b5138cba889eb11ea5b93747eb14fca8da0fd4ac936a70174349ae8f3a
+
+ooRexx Work Load Units v0.12:
+  SHA-256 b5f6cd8230daa26c227b93032d42b4263c5fcb3b40838359aeab3421cf0ab75a
+
+ooRexx Journal Pointed State v0.1:
+  SHA-256 8466bc2309213f3acc2de2afb6b2596123e446d779ca90c319aed676544c51d8
+
+Dependencies remain external and are not vendored into Terminal Machine.
+
+Semantic Source Control dogfood
+-------------------------------
+User-supplied ooRexx Semantic Source Control v0.2.2:
+  SHA-256 1bbea26bb5b2bdf62965726b8df1d10b1627dde93a6c57145aab6c10f138c742
+
+Its complete supplied r13196 executable suite passed:
+  PASS test_semantic_source_control
+  PASS test_cli_intake
+  PASS test_v02_regressions
+  PASS test_v021_dogfood
+  PASS test_v021_cli_pending
+  PASS test_v022_terminal_dogfood
+  PASS test_v022_hash_batch sha256Invocations=1
+  PASS test_v02_performance identicalBaselineSeconds=3
+
+The exact Terminal Machine reproducer that exposed the v0.2/v0.2.1 directive
+blind spot now reports first-class semantic changes:
+  ::constant MODE "A" -> "B"  => CONSTANT_VALUE_CHANGED
+  ::attribute value get -> set => ATTRIBUTE_ACCESS_CHANGED
+
+Explicit attribute getter/setter bodies are also tracked independently as
+ATTRIBUTE_GETTER_IMPLEMENTATION_CHANGED / ATTRIBUTE_SETTER_IMPLEMENTATION_CHANGED.
+The hash warm-up path retains SHA-256 repository identity while batching unique
+entity payloads instead of launching one sha256sum process per entity.
+
+A real Terminal production-source scale probe was then run against the complete
+30-file v0.20 src/ tree (851 methods, 522 attributes, 196 constants):
+  baseline accepted in 23.16 seconds
+
+The corresponding v0.21 production-source `scan` did not finish inside a
+360-second certification window and was interrupted in the analyzer warm-up
+path. A whole-release-tree baseline similarly exceeded a 420-second window.
+Therefore v0.2.2 fixes the semantic blind spot but is still supplementary
+release evidence for Terminal Machine until the remaining scan/full-tree
+scaling path is repaired. No SSC timeout is permitted to weaken the ordinary
+manifest, compiler, executable, integration or security-boundary gates.
+
+v0.21 starts an explicit Semantic Source Control lineage:
+  SSC_MANIFEST
+  component=TerminalMachine
+  lineage=MAIN
+  sourceLevel=1
+
+sourceLevel=1 is an explicit semantic-source level, not an inference from the
+v0.21 product release number.
+
+v0.21 scope
+-----------
+Added TerminalEmulatorOrchestration.cls above the v0.20 exact-token execution
+boundary:
+  - fixed instruction FETCH -> DECODE -> EXECUTE orchestration;
+  - fixed one-phase non-instruction event handling;
+  - checkpoint before every accepted handler attempt;
+  - exact execution ticket retained only inside the orchestrator;
+  - automatic rollback on failed TerminalResult or trapped ooRexx SYNTAX;
+  - linked explicit retry only from retained ROLLED_BACK attempts;
+  - bounded immutable/value-free event-history evidence;
+  - handler marker/method validation before checkpoint creation;
+  - no arbitrary caller-supplied handler method names.
+
+The orchestration layer remains local EMULATOR / TESTBED / REPLAY_SANDBOX
+machinery. It adds no authority over TN5250LiveSession, TerminalSessionOwner,
+broker/service capabilities, credentials, WLU admission or IBM i host state.
+
+Worktree executable acceptance
+------------------------------
+  - 93 / 93 source/test/tool ooRexx compile targets PASS.
+  - 3 / 3 example ooRexx compile targets PASS.
+  - bash -n PASS for run_tests.sh and all cross-process test scripts.
+  - 45 / 45 self-contained run_tests.sh functional .rex cases PASS in bounded
+    partitions under the r13196 debug runtime.
+
+New/changed v0.21 regressions:
+  - test_terminal_emulator_orchestration.rex PASS:
+      fixed phase ordering, exact pre-event checkpoint, successful commit,
+      post-mutation TerminalResult failure rollback, missing-opcode rollback,
+      linked repaired retry, retained failed-checkpoint materialisation,
+      trapped handler SYNTAX rollback, device-event commit, bounded detached
+      history, retry refusal for committed attempts, and pre-checkpoint marker
+      validation.
+  - test_terminal_emulator_journal_alchemy.rex PASS with expanded checks that
+      orchestration machine/boundary/history/historyById live references are
+      absent from FULL state while safe scalar counts remain inspectable.
+  - examples/emulator_instruction_orchestration.rex compiles and executes:
+      missing opcode -> PC restored to 4096 -> repaired linked retry -> PC 4100.
+
+Retained integration acceptance
+-------------------------------
+  - v0.16 authenticated socket suite PASS (15 assertions).
+  - v0.17 persistent authenticated multi-client service suite PASS:
+      service=DRAINED; listener=STOPPED; connections=2; peak=2; completed=2;
+      authenticated=2.
+  - v0.18 operational supervisor cross-process service suite PASS:
+      health=QUIESCED; protocol=QUIESCED; broker=OPEN; broker_close=0;
+      connections=2; peak=2; authenticated=2.
+  - External WLU v0.12 terminal-control integration PASS.
+  - TCP loopback transport PASS.
+  - Verified TLS loopback transport PASS.
+  - Forced stopped-helper TERM -> KILL lifecycle PASS.
+
+Fresh-package acceptance
+------------------------
+The release candidate was extracted into a clean directory and accepted again
+under ooRexx 5.3.0 r13196 with the external dependency roots above:
+  - 105 / 105 manifest entries verified before final documentation refresh.
+  - 93 / 93 source/test/tool ooRexx compile targets PASS.
+  - 3 / 3 example ooRexx compile targets PASS.
+  - 45 / 45 self-contained functional .rex cases PASS in three bounded groups.
+  - authenticated local socket suite PASS (15 assertions).
+  - persistent authenticated multi-client service PASS (peak=2).
+  - operational supervisor service PASS; lifecycle/protocol QUIESCED and broker OPEN.
+  - external WLU v0.12 terminal-control integration PASS.
+  - TCP loopback PASS.
+  - verified TLS loopback PASS.
+  - forced TLS-helper lifecycle / TERM->KILL cleanup PASS.
+
+The final release documentation was then updated only to record completed
+acceptance and SSC v0.2.2 dogfood. The source/test/tool/example/SSC_MANIFEST
+payload is byte-identical to the fully accepted candidate. After the final
+documentation refresh, MANIFEST.sha256 was regenerated and verified 105 / 105;
+93 / 93 source/test/tool and 3 / 3 example compile targets were rechecked PASS,
+and bash syntax checks remained clean.
+
+PUB400 / live-host note
+-----------------------
+No PUB400 credentials were requested and no live PUB400 login/session was
+opened for v0.21 acceptance. Network-bearing tests used local loopback
+fixtures. No surviving actual `socat ... OPENSSL:pub400.com:992` helper was
+present after testing.
