@@ -12,12 +12,15 @@ status = proxy~dotNetMemberInterpositionStatus("SPEAK")
 return during1 || "|" || g2 || "|" || during2 || "|" || revealed || "|" || status["physical_wrappers"]
 
 ::class RexxSpeakOverride
+/* Token is deliberately inert: the provider observes/overrides the call, not the underlying CLR implementation. */
 ::method before public unguarded
   use strict arg receiver, methodName, arguments
   return "override"
+/* Replace the visible result while leaving the coordinator's physical wrapper and CLR target untouched. */
 ::method after public unguarded
   use strict arg receiver, methodName, token, result
   return "REXX-OVERRIDE"
+/* Do not translate target failures here; foreign failure authority remains with the CLR bridge. */
 ::method failure public unguarded
   use strict arg receiver, methodName, token, conditionObject
   return .true
