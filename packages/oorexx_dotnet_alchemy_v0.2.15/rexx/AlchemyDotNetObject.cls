@@ -1,29 +1,36 @@
 /* AlchemyDotNetObject.cls - CLR participation in the shared Alchemy foreign-object pattern. */
 ::class AlchemyDotNetObject public subclass AlchemyForeignObject inherit MethodInterpositionParticipant
 ::attribute foreignHandle get
+/* Bind this Rexx proxy to one stable CLR registry handle and initialise the shared interposition coordinator. */
 ::method init
   expose foreignHandle
   use strict arg foreignHandle
   self~init:super
   self~initMethodInterposition
   self~nativeInit(foreignHandle)
+/* Identify the owning foreign runtime without weakening CLR System.Type authority. */
 ::method foreignRuntime
   return 'dotnet'
 ::method nativeInit external "LIBRARY alchemy_clr_package dotnet_init"
 ::method alchemyHandle external "LIBRARY alchemy_clr_package dotnet_handle"
 ::method dotNetIsA external "LIBRARY alchemy_clr_package dotnet_isa"
+/* Return the authoritative CLR System.Type projection for this object's current CLR type. */
 ::method dotNetClass
   return self~nativeInvoke("DOTNETCLASS", .array~new)
+/* Project otherwise-unknown Rexx messages into CLR reflection dispatch. Existing Rexx methods win first. */
 ::method unknown
   use strict arg messageName, arguments
   return self~nativeInvoke(messageName, arguments)
 
+/* Register a semantic Rexx override as a cooperative provider; never stash or replace the CLR target. */
 ::method installRexxMemberOverride
   use strict arg memberName, providerId, interceptor, priority = 700
   return self~__methodInterpositionAdd(memberName, providerId, interceptor, priority)
+/* Remove only this provider. The coordinator then reveals whatever CLR target is current at dispatch time. */
 ::method removeRexxMemberOverride
   use strict arg memberName, providerId
   return self~__methodInterpositionRemove(memberName, providerId)
+/* Expose coordinator state for diagnostics/qualification without granting target ownership. */
 ::method dotNetMemberInterpositionStatus
   use strict arg memberName
   return self~methodInterpositionStatus(memberName)
