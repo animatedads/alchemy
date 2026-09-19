@@ -1,11 +1,31 @@
-# ooRexx .NET Alchemy v0.2.14
+# ooRexx .NET Alchemy v0.2.15
 
-Concurrent behaviour-generation qualification candidate.
+Maintainability and live CLR-member interposition candidate, based on the phone-qualified v0.2.14 generation/Inspector baseline.
 
-v0.2.13 establishes a stable emitted CLR type implementing a real CLR interface while the same object retains identity across C# -> ooRexx -> C# behaviour replacement.
+## Authority model
 
-v0.2.14 tightens the authority rule: an invocation snapshots one immutable behaviour generation before entering the implementation. Concurrent C# and ooRexx publication may advance the current generation, but an in-flight invocation completes against the generation it captured. Publication uses compare/exchange; object identity and emitted CLR type remain stable.
+CLR object identity and `System.Type` remain authoritative. Rexx member overrides, Inspector Clouseau, Logging, and future observers are cooperative providers attached to the shared method-interposition coordinator; they do not own or save the underlying CLR implementation.
 
-Qualification adds an overlapping-call gate in which generation 1 is deliberately held in-flight, generation 2 is published from ooRexx, generation 3 is published from C#, and the held generation-1 call is then released. Expected results are OLD=C#-CONCURRENT-1, current=C#-CONCURRENT-3, generations 1/2/3, stable identity/type, and ISpeaker remains true.
+The managed reflection bridge resolves the current CLR member at invocation time. Removing a Rexx override therefore reveals the CLR target that is current when the next call occurs, rather than restoring a stale target captured when the override was installed.
 
-The next boundary after this candidate is cooperative Inspector/Clouseau interposition over the same generation authority, not raw wrapper stacking.
+## v0.2.15 qualification boundary
+
+The first new torture sequence is:
+
+1. publish C# `SPEAK` generation 1;
+2. install a cooperative Rexx override;
+3. verify calls expose the Rexx result;
+4. publish C# generation 2 while the override remains installed;
+5. verify the Rexx result still wins;
+6. remove only the Rexx provider;
+7. verify the next call exposes C# generation 2;
+8. verify the physical coordinator remains singular.
+
+Expected probe:
+
+```text
+override-reveal-current=REXX-OVERRIDE|2|REXX-OVERRIDE|C#-UNDER-OVERRIDE-2|1
+REXX OVERRIDE REMOVAL REVEALS CURRENT CLR TARGET PASS
+```
+
+This is intentionally distinct from replacing a saved Rexx `Method`: no stale CLR target is stored by the override mechanism.
