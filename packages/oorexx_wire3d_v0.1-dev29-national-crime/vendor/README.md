@@ -1,6 +1,6 @@
 # Dependency payload omitted from published source
 
-`oorexx_wire3d_v0.1-dev29.3-national-crime-search.zip` contained a dependency payload at `vendor/`. Alchemy does not treat bundled dependency source as source owned by this component. Obtain it from its own first-class component or upstream distribution.
+`oorexx_wire3d_v0.1-dev29.6-ward-geography.zip` contained a dependency payload at `vendor/`. Alchemy does not treat bundled dependency source as source owned by this component. Obtain it from its own first-class component or upstream distribution.
 
 Omitted files: **562**  
 Dependency-set digest: `0a0019643a02fa89e81fdb4f39a1946e0338f410da7ed74ef4c2c1186dc39e3d`

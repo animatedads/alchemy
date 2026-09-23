@@ -12,3 +12,6 @@ examples continue to run, but consumers should treat the explicit dependency pat
 above as the dependency declaration.
 
 Other Wire3D dependencies remain under `dependencies/` as supplied package ZIPs.
+
+## Ward geography qualification fixtures (dev29.6)
+Four user-supplied TopoJSON ward files from the UK-GeoJSON project are retained verbatim in `dependencies/ward_geography_fixtures/`. They are qualification/history inputs, not current electoral authority.

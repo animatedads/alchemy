@@ -31,11 +31,26 @@ button.active{background:#24434e;border-color:#78a6b6}.legend{display:flex;gap:4
 <div class="controls"><span class="sub">ZOOM</span><button id="zoomOut">−</button><button id="zoomReset">HOME</button><button id="frameSelection">FRAME</button><button id="zoomIn">+</button><b id="zoomValue" class="sub">1.0×</b><span class="sub">PERIOD</span><button data-period="2025-08">AUG 2025</button><button data-period="2025-09" class="active">SEP 2025</button><span class="sub">METRIC</span><button class="active">COUNT</button><div class="legend"><span>LOW</span><i></i><i></i><i></i><i></i><i></i><span>HIGH</span></div></div></section>
 <aside class="panel">
 <h2>FIND GEOGRAPHY</h2>
-<div class="searchbox"><input id="geoSearch" autocomplete="off" placeholder="LSOA code or name…"><button id="geoFind">FIND</button></div>
+<div class="searchbox"><input id="geoSearch" autocomplete="off" placeholder="LSOA, built-up area or ward…"><button id="geoFind">FIND</button><button id="geoClear">CLEAR</button></div>
 <div id="geoResults" class="results"></div>
 <div style="height:14px"></div>
+<h2>GEOGRAPHY CONTEXT</h2>
+<div class="searchbox"><button id="buaToggle">BUILT-UP AREAS</button><button id="wardToggle">WARDS</button></div>
+<p class="note" id="wardQualification">Ward layer is a historic qualification geography; it is not labelled as current electoral boundaries.</p>
+<div class="row"><span>Context geography</span><b id="contextGeography">LSOA 2021</b></div>
+<div style="height:14px"></div>
+<h2>ACTIVITY LAYER</h2>
+<div class="searchbox"><button id="layerCrime">STREET CRIME</button><button id="layerStop">STOP &amp; SEARCH</button></div>
+<div id="stopControls" style="display:none">
+  <div class="row"><span>Object</span><select id="stopObject"><option value="ALL">ALL SEARCHES</option><option value="Controlled drugs">CONTROLLED DRUGS</option></select></div>
+  <div class="row"><span>Hour</span><b id="hourLabel">ALL DAY</b></div>
+  <input id="hourRange" type="range" min="-1" max="23" value="-1" style="width:100%">
+  <canvas id="hourGraph" height="80" style="width:100%;height:80px"></canvas>
+  <div class="sub">MIDNIGHT/DATE-ONLY UNCERTAINTY IS NOT TREATED AS PRECISE TIME EVIDENCE</div>
+</div>
+<div style="height:16px"></div>
 <h2>CRIME FILTER</h2>
-<div class="searchbox"><input id="crimeSearch" autocomplete="off" placeholder="Crime category…"></div>
+<div class="searchbox"><input id="crimeSearch" autocomplete="off" placeholder="Crime category…"><button id="crimeClear">CLEAR</button></div>
 <div id="crimeResults" class="results"></div>
 <div class="row"><span>Selected category</span><b id="crimeCategory">ALL CRIME</b></div>
 <div style="height:20px"></div><h2>SELECTED AREA</h2><div class="badge">COMPACT → FULL ON SELECTION</div><div class="big" id="areaCode">—</div><div class="muted" id="areaName">Select an LSOA polygon</div>

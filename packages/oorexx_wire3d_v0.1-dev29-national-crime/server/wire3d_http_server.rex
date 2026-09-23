@@ -19,6 +19,13 @@ server~route('GET','/wire3d.js',static,'renderer')
 server~route('GET','/wire3d-live.js',static,'liveRenderer')
 server~route('GET','/scene.json',static,'scene')
 server~route('GET','/health',static,'health')
+server~route('GET','/national-crime.html',static,'nationalCrimeHtml')
+server~route('GET','/national-crime.js',static,'nationalCrimeJs')
+server~route('GET','/national-crime.geojson',static,'nationalCrimeGeojson')
+server~route('GET','/national-crime-summary.json',static,'nationalCrimeSummary')
+server~route('GET','/stop-search.json',static,'stopSearch')
+server~route('GET','/bua-2024.geojson',static,'buaGeojson')
+server~route('GET','/wards-historic.geojson',static,'wardGeojson')
 server~route('GET','/assets/demo-interview.wav',static,'asset')
 do i=1 to 7
   server~route('GET','/assets/people/subject-'right(i,2,'0')'.png',static,'asset')
@@ -66,6 +73,29 @@ exit 0
     if n>=1 & n<=7 then return self~file('assets/people/subject-'right(n,2,'0')'.png','image/png')
   end
   return .HttpResponse~text('not found',404)
+
+::method nationalCrimeHtml
+  use strict arg request
+  return self~file('national-crime.html','text/html; charset=utf-8')
+::method nationalCrimeJs
+  use strict arg request
+  return self~file('national-crime.js','text/javascript; charset=utf-8')
+::method nationalCrimeGeojson
+  use strict arg request
+  return self~file('national-crime.geojson','application/geo+json; charset=utf-8')
+::method nationalCrimeSummary
+  use strict arg request
+  return self~file('national-crime-summary.json','application/json; charset=utf-8')
+::method stopSearch
+  use strict arg request
+  return self~file('stop-search.json','application/json; charset=utf-8')
+::method buaGeojson
+  use strict arg request
+  return self~file('bua-2024.geojson','application/geo+json; charset=utf-8')
+::method wardGeojson
+  use strict arg request
+  return self~file('wards-historic.geojson','application/geo+json; charset=utf-8')
+
 ::method health
   use strict arg request
   return .HttpResponse~text('WIRE3D HTTP OK')
