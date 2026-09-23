@@ -1,0 +1,281 @@
+ooRexx Identity Directory / LDAP v0.1-dev9 validation
+Date: 2026-09-23
+
+QUALIFICATION RUNTIME
+---------------------
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug 3 2026
+Addressing mode: 64
+
+Supplied runtime package:
+  oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20260921-223149).deb
+  SHA-256 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+SOURCE / DEPENDENCY BASIS
+-------------------------
+oorexxapis(20260921-192614).zip
+  SHA-256 bd12388cdb358fd8d318fcdee84f13d6b77eee81e8066b2e209a5ccb37018352
+
+oorexx_crypto_v0.8.3.zip
+  SHA-256 5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49
+
+oorexx_secret_broker_v0.2.zip
+  SHA-256 c063a8e863547e8d5af427daee9b887590fdad76a65bc042b8f853acfd51e623
+
+alchemy_objects_v0.8.zip
+  SHA-256 7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073
+
+nosqlserver_v0.79.zip
+  SHA-256 076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec
+
+oorexx_access_permissions_v0.2.zip
+  SHA-256 44f6b92c9834bffd2699261520e03c820aee9773b94d3e4adcb23af2ceb1e5d5
+
+runtime_reference_v0.4.zip
+  SHA-256 c42a0c51cc5f5e26056d22db97d53eae2633141a7cebe3304b5f19b1847f957a
+
+oorexx_foreign_runtime_v0.22.6.zip
+  SHA-256 25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465
+
+oorexx_https_server_v0.4.4.zip
+  SHA-256 aad4305c2495b13145a71938c59af86bc8d128be8d466aaf7b3548468a252d56
+
+oorexx_api_client_v0.4.1.zip
+  SHA-256 9542e8cb9fcdefd42f32115a63034a7cc75ce8580a1356b6f58945e3f0401c37
+
+Institutional Policy v0.8 and Security Effect v0.14 from the supplied API estate
+were used for the optional Access Permissions adapter qualification.
+
+STATIC CHECKS
+-------------
+PASS  bash -n run_tests.sh tests/wire_smoke.sh tests/sync_persist_wire_smoke.sh
+      tests/tls_wire_smoke.sh tests/ldaps_wire_smoke.sh
+      tests/access_permissions_smoke.sh
+PASS  python3 -m py_compile tests/python_ldap_wire_client.py
+      tests/python_ldap_sync_persist.py tests/python_ldap_starttls_sasl.py
+      tests/python_ldap_ldaps.py
+PASS  python3 -m json.tool integration.json
+PASS  MANIFEST.sha256 covers 82 payload files and verifies cleanly
+
+FULL PRIMARY QUALIFICATION
+--------------------------
+PASS  run_tests.sh
+Observed elapsed time in the supplied construction environment: 10.86 seconds.
+
+The runner selected Crypto v0.8.3's Foreign Runtime acceleration lane because
+Runtime Reference v0.4 and Foreign Runtime v0.22.6 were available. This is a
+qualification acceleration only: semantic hashing still crosses the qualified
+Crypto API/provider seam; the LDAP package contains no private hash substitute.
+
+WIRE ACCEPTANCE MARKERS
+-----------------------
+  WIRE STEP connect
+  WIRE STEP root-dse
+  WIRE STEP subschema
+  WIRE STEP alice-bind
+  WIRE STEP paging
+  WIRE STEP sync-initial
+  WIRE STEP sync-incremental
+  WIRE STEP alice-search
+  WIRE STEP complex-filter
+  WIRE STEP alice-compare
+  WIRE STEP add
+  WIRE STEP modify
+  WIRE STEP modify-dn
+  WIRE STEP renamed-search
+  WIRE STEP delete
+  WIRE STEP bob
+  LDAP WIRE OOREXX CLIENT: OK
+  LDAP WIRE PYTHON CLIENT: OK
+  LDAP WIRE SERVER: OK
+
+PERSISTENT SYNC WIRE ACCEPTANCE MARKERS
+---------------------------------------
+  LDAP SYNC PERSIST + CANCEL OOREXX CLIENT: OK
+  LDAP SYNC PERSIST + CANCEL PYTHON CLIENT: OK
+  LDAP SYNC PERSIST + CANCEL SERVER: OK
+
+The persistent-sync qualification proves the dev9 outstanding-operation path:
+- refreshAndPersist mode is accepted on the Sync Request control;
+- the initial refresh uses Sync State entries;
+- refresh completion is a Sync Info IntermediateResponse, not SearchResultDone;
+- a Modify is issued on the same LDAP association while the persistent Search remains outstanding;
+- ooRexx and independent Python clients demultiplex responses by LDAP message ID;
+- the accepted Modify is projected as a persistent MODIFY state with a new cookie;
+- RFC 3909 Cancel terminates the target Search with `canceled(118)` while the Cancel operation receives its own success response;
+- repeated Cancel of that completed Search returns `tooLate(120)`;
+- a normal Search succeeds on the same association after Cancel, proving Cancel does not imply Unbind/connection close;
+- same-cookie idle Sync Info heartbeat messages do not create semantic changes.
+
+The ordinary wire qualification proves real TCP LDAPv3 framing, Root DSE,
+Secret Broker-backed simple Bind, operation authority after attribution,
+Search/Compare/Add/Modify/ModifyDN/Delete, independent Python interoperability,
+RFC 2696 paged enumeration/abandonment, and RFC 4533 refreshOnly initial + incremental conversations. Sync State uses a
+16-octet entry UUID distinct from the stable platform oorexxEntityId.
+
+RFC 2696 PAGED RESULTS ACCEPTANCE
+---------------------------------
+The ordinary wire qualification also proves the paging conversation:
+- Root DSE advertises control OID `1.2.840.113556.1.4.319`;
+- the ooRexx DUA retrieves successive pages while changing page size;
+- the continuation cookie rotates after each page;
+- replay of an older cookie returns `unwillingToPerform(53)`;
+- page size zero plus the latest cookie abandons the sequence without closing
+  the LDAP association;
+- association-local paging state is bounded to 64 live result sets;
+- the independent Python BER client enumerates all 11 fixture entries over
+  multiple pages and observes an empty final cookie and total-size estimate.
+
+LDAP DN / FILTER / SUBSCHEMA ACCEPTANCE
+--------------------------------------
+The dev9 interoperability qualification proves:
+- escaped separators, hexadecimal escapes and multi-valued RDN parsing/serialization;
+- equivalent multi-valued RDN AVA ordering and case-insensitive current-profile comparison;
+- BASE/ONE/SUB scope by parsed RDN hierarchy rather than raw comma suffixes;
+- ModifyDN parent composition with escaped commas preserved correctly;
+- RFC 4515-oriented AND/OR/NOT, equality, presence, substring, greater-or-equal, less-or-equal and approximate filter parsing/evaluation;
+- BER encode/decode of those qualified filter choices and independent Python BER use of AND/OR/NOT plus substring matching;
+- malformed filter escapes fail closed and LDAP extensibleMatch remains unsupported rather than guessed;
+- Root DSE subschemaSubentry resolves to a real read-only BASE-searchable `cn=subschema` entry;
+- ooRexx and independent Python clients discover native objectClass/attributeType declarations;
+- `schemaEnforcement=false` and the explicit DN comparison profile prevent the discovery projection from being mistaken for a general schema/matching-rule authority.
+
+TLS / SASL ACCEPTANCE MARKERS
+-----------------------------
+  LDAP STARTTLS + SASL PLAIN OOREXX CLIENT: OK
+  LDAP STARTTLS + SASL PLAIN PYTHON CLIENT: OK
+  LDAP STARTTLS SERVER: OK
+
+The TLS qualification proves both directions of the ooRexx network seam:
+- DSA advertises and accepts the StartTLS extended operation;
+- DUA sends StartTLS on the existing LDAP connection and upgrades that socket;
+- OpenSSL is driven through Foreign Runtime memory BIOs while RxSock owns I/O;
+- client certificate-chain verification is enabled with the generated CA/cert;
+- the ooRexx client binds certificate identity to host `localhost`;
+- LDAP authentication state is reset by StartTLS and SASL Bind happens after
+  the protected transport is active;
+- reference SASL PLAIN is refused on an unprotected connection and accepted on
+  TLS;
+- SASL success supplies attribution only; LDAP operation authority is still
+  evaluated separately;
+- an authorized Search succeeds over the encrypted transport;
+- Python's independent TLS/BER stack repeats the DSA proof.
+
+DIRECT TLS / LDAPS ACCEPTANCE MARKERS
+-------------------------------------
+  LDAP LDAPS OOREXX CLIENT: OK
+  LDAP LDAPS PYTHON CLIENT: OK
+  LDAP LDAPS SERVER: OK
+
+The direct-TLS qualification proves that TLS can be established immediately
+after TCP accept/connect, before the first LDAP PDU. The ooRexx DUA verifies
+the certificate chain and requested host; SASL PLAIN and authorized Search then
+run over the protected association. Python independently repeats the DSA proof.
+
+SEMANTIC / STORE ACCEPTANCE MARKERS
+-----------------------------------
+  IDENTITY CORE: OK
+  DATETIME LIFECYCLE: OK
+  KEY LIFECYCLE: OK
+  LDAP MODIFY: OK
+  LDAP PERSONALITY: OK
+  PERSONALITY FILTER: OK
+  REPLICATION: OK
+  CONVERSATION AUTHORITY: OK
+  SECRET BROKER BIND: OK
+  LDAP BER: OK
+  LDAP SASL PROVIDER: OK
+  LDAP SYNC: OK
+  LDAP WIRE CAPABILITIES: OK
+  LDAP CANCEL CODEC: OK
+  LDAP PAGING: OK
+  LDAP DN SYNTAX: OK
+  LDAP FILTER SEMANTICS: OK
+  LDAP SCHEMA DISCOVERY: OK
+  DIRECTORY STORE: OK
+  NOSQL DIRECTORY STORE: OK
+  LDAP IDENTITY UNIT SUITE: OK
+
+DateTime proof includes:
+- credential/key notBefore and notAfter are ooRexx `.DateTime` objects;
+- key rotateAt is `.DateTime`;
+- entity/change createdAt and entity updatedAt are `.DateTime`;
+- validity ordering and activation/effective-window checks are semantic DateTime
+  comparisons, not lexical string comparisons;
+- canonical UTC text is emitted only at LDAP/persistence/evidence boundaries;
+- recovery reconstructs `.DateTime` values.
+
+DirectoryStore proof includes:
+- provider-neutral identity.directory.store/0.1;
+- write-before-memory commit: failed durable append leaves revision/state
+  unchanged;
+- NoSQLServer v0.79 FILE engine provider;
+- durable peer/schema binding and append-only semantic changes;
+- restart reconstruction of principal, credential, resource and ACL state;
+- numeric-looking identifiers remain strings through json.cls persistence;
+- credentials persist secretRef only;
+- remote changes retain their source peer/sequence and do not consume local
+  origin sequence.
+
+LDAP / SYNC codec proof includes:
+- known-answer BER Bind framing;
+- Modify, general control, SASL Bind and ExtendedRequest/Response coding;
+- RFC 4533 request/state/done control coding plus Sync Info IntermediateResponse coding;
+- RFC 3909 Cancel requestValue BER coding and association-local result semantics for success, `noSuchOperation(119)`, `tooLate(120)` and `cannotCancel(121)`;
+- RFC 2696 paged-results request/response control coding, rotating opaque cookies, page-size changes, size-zero abandonment, old-cookie refusal and bounded association-local result-set state;
+- completed message IDs report `tooLate`, but do not become permanently reserved: after completion the same LDAP message ID can be reused for a new outstanding operation;
+- two association-local registries may independently own the same message ID without cross-cancellation;
+- State controls reject trailing fields rather than accepting ambiguous data;
+- refreshOnly initial ADD and incremental ADD/MODIFY/DELETE projection;
+- refreshAndPersist initial refresh plus persistent ADD/MODIFY/DELETE notification projection;
+- cookies are opaque, query-bound, peer-bound and fail closed to
+  SYNC_REFRESH_REQUIRED when malformed or incompatible;
+- LdapSyncRecord exposes canonical UUID text plus an explicit 16-octet UUID
+  form so wire and semantic callers do not rely on context-dependent typing.
+
+ACCESS PERMISSIONS INTEGRATION
+------------------------------
+PASS  tests/access_permissions_smoke.sh
+  ACCESS PERMISSIONS LDAP ADAPTER: OK
+Observed elapsed time: 0.17 seconds.
+
+The adapter preserves the platform boundary:
+  authentication attribution != Access Control != exact method Permission
+
+PERSONALITY BOUNDARY
+--------------------
+PASS  NativeLdapPersonality projects neutral semantic identity.
+PASS  FilteredDirectoryPersonality translates external vocabulary at the edge.
+PASS  filtered Modify maps external attributes back to neutral mutations.
+PASS  no AD/Entra/vendor field is promoted into core policy by the filter.
+
+TRUTHFUL DEVELOPMENT LIMITS
+----------------------------
+Not claimed in v0.1-dev9:
+- complete OpenLDAP syncrepl provider/consumer compatibility beyond the qualified RFC 4533 conversation;
+- cancellation of arbitrary in-flight point operations: the qualified cancellable outstanding class is refreshAndPersist Search;
+- arbitrary concurrent point-operation execution; message-ID multiplexing is qualified while `concurrentDispatch=false`;
+- automatic application of generic LDAP Sync content as the richer platform
+  semantic peer-change/provenance contract;
+- schema/matching-rule-aware DN comparison beyond `oorexx-ldap-dn-case-ignore/0.1`;
+- LDAP `extensibleMatch` and a general matching-rule engine;
+- general schema enforcement, dynamic schema mutation or a production ooRexx OID allocation claim;
+- server-side sorting / VLV-style controls beyond RFC 2696 simple paging;
+- SASL mechanisms beyond the TLS-required reference PLAIN provider;
+- mutual-TLS client-certificate policy qualification;
+- durable-log checkpoint/compaction;
+- atomicity across a multi-change higher-level operation such as key rollover;
+- AD/Entra domain-controller semantics, Kerberos, DNS integration or Microsoft
+  replication protocols.
+
+RESULT
+------
+PASS — v0.1-dev9 retains the neutral Identity Directory, `.DateTime` lifecycle,
+durable NoSQL store, Secret Broker, Access/Permission, TLS/SASL, Content Sync,
+Cancel/message multiplexing and paging boundaries and adds standards-oriented LDAP
+DN parsing, richer RFC 4515 filter semantics and real read-only subschema
+discovery. DN/filter/schema behavior remains an LDAP edge concern: stable platform
+identity and policy stay neutral. Schema-aware matching rules, extensibleMatch,
+general schema enforcement, full OpenLDAP syncrepl interoperability, arbitrary
+point-operation cancellation/concurrency and AD/Entra domain-controller semantics
+remain deliberately outside the claim.

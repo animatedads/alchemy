@@ -1,0 +1,42 @@
+Audio V9 Voice Recovery v0.1-dev8 — bounded calibration repair qualification
+Date: 2026-09-11
+Runtime: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Base: sealed audio_v9_voice_recovery_v0.1-dev7.zip
+Base SHA-256: 14ef2d580850e1dbef79bfb06ad6e84c210d59a0e27c2d6fc9e94abad61b6f23
+
+Field trigger:
+- dev7 fleet execution was non-uniform: ed209c and ed209h completed six edges each quickly; other workers entered multi-hour acoustic analysis / I/O pressure.
+- therefore root cause is data-dependent scaling, not a fixed 120-second decode cost.
+
+Dev8 repair:
+- seam-local calibration interval: 8 s before + 8 s after exact edge (16 s total, clipped to plan bounds)
+- calibration-only acoustic analyzer: six acoustic authority TSVs only; no TF mask; no spectral relation graph
+- bounded source-family comparison budget with CALIBRATION_COMPLEXITY_EXCEEDED fail-closed status
+- conservative overflow diarisation: excess voice-like families collapse to one speaker group
+- default acoustic watchdog: timeout -k 30 300
+- per-edge PROGRESS.tsv, CALIBRATION_WINDOW.tsv, acoustic.log and FAILED.tsv
+- completed dev7 edge directories remain resumable authority and are skipped by COMPLETE.tsv
+
+New qualification:
+PASS calibration bounded acoustic assertions=4
+PASS calibration runtime bounds assertions=10
+PASS calibration 16s pipeline assertions=10 elapsed_seconds=21..23
+16s fixture characters=1740 tracks=778 families=52
+16s measured wall=22.29 s peak_rss=203568 KiB in local qualification probe
+
+Full inherited Audio master gate: PASS
+Explicit assertion total: 32717
+Coordinator order-independence: PASS 32405 assertions
+TF mask audio: PASS voice_ratio=1.199770 alarm_ratio=0.250116
+Graph: PASS 38-edge regression; quality pipeline PASS characters=1276 edges=6020 masks=1276 replay=deterministic
+ML dev11: PASS ALL 63 test files
+
+No real campaign CLOCK_MEASURED map is claimed by this qualification.
+
+Static/precision/native:
+- rex numeric digits 30 roots: 43/43
+- cls numeric inherit packages: 13/13
+- shell syntax files: 38
+- Rexx compile roots: 56
+- native reproducibility hashes unchanged from sealed dev7 (5 artifacts)
+- ML Graph dev3 base assertions: 53; optional Foreign/Matplotlib assertions: +7 (60 total)

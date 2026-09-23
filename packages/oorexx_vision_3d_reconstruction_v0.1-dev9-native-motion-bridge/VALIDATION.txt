@@ -1,0 +1,36 @@
+ooRexx Vision 3D Reconstruction v0.1-dev9-native-motion-bridge validation
+Date: 2026-09-23
+Runtime: supplied ooRexx 5.3.0 r13196
+Dependencies: Maths v0.8; Vision dev14 V5V/high-res; Line Assessment dev1; Wire3D dev30-compatible source; stock json.cls
+
+Result: PASS
+
+35 test programs passed with zero FAIL lines, including all inherited reconstruction,
+plan, camera-path and pose-cloud tests plus new dev9 tests:
+- test_native_cadence_policy.rex
+- test_native_line_tracking.rex
+- test_native_motion_interpreter.rex
+- test_native_motion_constraint_builder.rex
+- test_native_motion_loop.rex
+- test_layout_hypothesis_evaluator.rex
+- test_dual_source_layout_evaluator.rex
+- test_recorded_motion_trace_adapter.rex
+
+rexxc qualification:
+- src/Vision3DNativeMotion.cls: PASS
+- src/Vision3DPoseCloud.cls: PASS after inherited eager-boolean guard repair
+
+Real-video qualification:
+- camera A: 1000060609.mp4, 1641 source frames, ~29.9729 fps
+- camera B: VID_20260923_050113.mp4, 1615 source frames, ~30.0390 fps
+- every source frame retained for the 55x98 5-bit qualification trace
+- fuzzy common motion lag clusters around 20-21 frames in the passthrough extraction
+- full retained trace: qualification/DUAL_CAMERA_NATIVE_5BIT_TRACE.json
+- recorded-trace replay into dev9 constraints: PASS
+- first 120 native steps per source replayed through pose-cloud machinery in a deliberately broad qualification open-space geometry: PASS
+- synchronized overlap checked at lag 20: 101 common pose-cloud frames; PASS
+
+Important boundary:
+The broad open-space replay is only an integration qualification. It is NOT the inferred apartment floor plan. The next solver increment must add view/reprojection constraints so observed wall/opening geometry prunes layout hypotheses rather than merely physical motion constraints.
+
+Known apartment topology remains qualification ground truth only and is not encoded into the blind solve.

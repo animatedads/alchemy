@@ -1,0 +1,13 @@
+Alchemy Tcl v0.1-dev10 candidate
+
+Established target authority:
+- dev8: Architect-qualified Android/aarch64, ooRexx 5.3.0 r13196, Tcl 8.6.
+- dev9: predecessor TclOO authority candidate.
+
+dev10 adds Tcl_Obj vector dispatch with Tcl_NewStringObj + Tcl_EvalObjv.
+Its new gate verifies values containing spaces, braces, semicolons, Tcl substitutions and newlines cross as literal values and are not reparsed as Tcl source.
+
+This environment no longer has the supplied ooRexx native headers/runtime mounted, so no new assistant-side compile PASS is claimed for dev10. Android/aarch64 compilation and behavior remain pending target execution.
+
+Expected final:
+PASS Tcl_Obj vector codec preserves arbitrary values without script re-parse

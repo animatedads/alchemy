@@ -1,0 +1,60 @@
+AUDIO V9 VOICE RECOVERY v0.1-dev3 — QUALITY / SOURCE UNDERSTANDING
+Date: 2026-09-10
+
+BASE
+  Supplied audio_v9_voice_recovery_v0.1-dev2(1).zip
+  SHA-256 c5496ec6f7a68eebe8e6b48a46012e2141a5b9a2a5a5b6ba4857e5ed7f2821d2
+  Internal manifest: PASS
+
+SEPARATE DEPLOYMENT COMPONENT
+  oorexx_deployment_v0.1-dev2(1).zip
+  SHA-256 305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9
+  Internal manifest: PASS
+  Behavioral suite under r13196: PASS
+
+RUNTIME
+  Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+  numeric digits 30 executable-root contract: PASS
+  ::options numeric inherit package contract: PASS
+
+MERGED BEHAVIORAL SUITE
+  corpus authority structure/filenames: PASS
+  exact decoded geometry: 4 assertions PASS
+  campaign contract: 16 assertions PASS
+  spatial evidence: 13 assertions PASS
+  spatial native provider: 7 assertions PASS
+  acoustic character / temporal / prototype / anonymous speaker: 15 assertions PASS
+  soft reconstruction / gain / impulse / native plan renderer: 12 assertions PASS
+  campaign acoustic coordinator: 10 assertions PASS
+  distributed spatial coordinator/order independence: 32,405 assertions PASS
+
+  Explicit numbered assertions: 32,482 PASS
+  Shell static gates: PASS
+  rexxc for package .cls files: PASS
+
+TEMPORAL PRECISION REPAIR
+  Absolute CCTV millisecond epochs are not used as ML temporal-series coordinates.
+  Each acoustic track hashes relative event milliseconds from its own start.
+  Regression with 63832500000000-class epoch values: PASS.
+
+END-TO-END ACOUSTIC BENCHMARK
+  Fixture duration: 12 s, dual feed, 8 kHz f32
+  box characters: 1,276
+  temporal tracks: 564
+  recurring source families: 49
+  anonymous voice clusters: 13
+  elapsed: 18.06 s
+  user CPU: 17.86 s
+  system CPU: 0.18 s
+  max RSS: 143,824 KiB
+
+QUALITY SEMANTICS
+  Soft A/B spatial reconstruction is time varying.
+  Gain is bounded and rate limited.
+  Impulses hold the speech-gain trajectory and receive local peak protection.
+  Coarse source labels annotate but cannot hard mute possible speech.
+  Campaign speaker IDs are anonymous and recomputed from merged families.
+
+NON-CLAIM
+  This qualification does not assert real-person identity, final cat/alarm classification,
+  full 18-hour source-family completion, or final best_voice.ogg quality.

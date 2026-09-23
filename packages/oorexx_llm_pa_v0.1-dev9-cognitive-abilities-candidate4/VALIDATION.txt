@@ -1,0 +1,62 @@
+ooRexx LLM Personal Assistant 0.1-dev9-cognitive-abilities-candidate4 validation
+=============================================================================
+
+Runtime:
+- Open Object Rexx 5.3.0 r13196 Internal Test, 64 bit
+- exact interpreter: /mnt/data/oorexx-r13196-root/usr/local/bin/rexx
+
+Cognitive Continuity dependency:
+- oorexx_cognitive_continuity_v0.1-dev2-exp1(1).zip
+- SHA-256 0e5d3fca25455afa76e0c7742c345fc492c1c7a86353cf95ef0a921bc791708c
+- vendored unchanged as a sealed delivery dependency
+- upstream package suite: 8/8 PASS
+  * cognitive continuity/admission
+  * JSONL replay
+  * LLMPA adapter
+  * projection/model feed
+  * Queue Fabric learning adapter
+  * Structured Response compatibility bridge
+  * schema/MCP
+  * MCP protocol
+
+LLMPA deterministic suite:
+- 33/33 PASS under r13196
+- new test_cognitive_abilities.rex proves:
+  * directory-loaded cognitive abilities are discoverable through the same registry
+  * model DECISION is MODEL_ASSERTED / PROPOSED with decisionAuthority=NONE
+  * model caller cannot inject authority into cognitive.effects.propose
+  * classification.explain reports CONTINUITY / CURRENT_DECISION
+  * context.export returns exact cognitive.model-context/0.1 plus projection trace
+  * continuity.current uses COGNITIVE_CONTINUITY_EVENTS when configured
+  * legacy prose handoff remains PROJECTION_ONLY
+  * fresh service + registry reconstruct the exact durable record from JSONL
+  * fresh projection is regenerated without chat transcript or handoff brief
+
+Static qualification:
+- rexxc PASS: src/LlmPaCognitiveRuntime.cls
+- rexxc PASS: src/LlmPaWorker.cls
+- rexxc PASS: abilities.d/CognitiveAbilities.cls
+- rexxc PASS: abilities.d/CoreAbilities.cls
+- rexxc PASS: bin/pa-tool.rex
+- rexxc PASS: bin/llmpad.rex
+- rexxc PASS: tests/test_cognitive_abilities.rex
+- bash -n PASS: bin/llmpa, bin/llmpad, bin/pa-tool, bin/llmpa-env.sh, run_tests.sh
+
+Release-analysis boundary:
+- zero blocking release conflicts
+- two pre-existing test-local duplicate-class observations only:
+  FAKEMODELRESULT and FAKEORCHESTRATOR
+- source tree is not modified by release publication
+
+Architectural boundary:
+- inference context/projections may compact or be discarded
+- durable cognitive state is not compacted to satisfy model token budgets
+- ML/classifiers may propose classification/learning outputs; they do not self-admit authority
+- LLMPA does not replace the estate Structured Response API
+- POSIX/process/archive mechanics remain external platform-provider concerns
+
+Not claimed:
+- no live Gemma/Ollama qualification in this packaging sandbox
+- no ED209 fleet qualification in this packaging sandbox
+- no real ML worker/promotion path beyond the upstream experimental Cognitive Continuity cut
+- candidate4 is not declared a sealed replacement for the previously accepted dev8 lineage

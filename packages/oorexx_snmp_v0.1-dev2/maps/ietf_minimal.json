@@ -1,0 +1,166 @@
+{
+  "schema": "snmp.implementation.map/0.2",
+  "name": "ietf-minimal",
+  "objects": [
+    {
+      "name": "sysDescr",
+      "oid": "1.3.6.1.2.1.1.1.0",
+      "kind": "scalar",
+      "syntax": "DisplayString",
+      "access": "read-only"
+    },
+    {
+      "name": "sysObjectID",
+      "oid": "1.3.6.1.2.1.1.2.0",
+      "kind": "scalar",
+      "syntax": "OBJECT IDENTIFIER",
+      "access": "read-only"
+    },
+    {
+      "name": "sysUpTime",
+      "oid": "1.3.6.1.2.1.1.3.0",
+      "kind": "scalar",
+      "syntax": "TimeTicks",
+      "access": "read-only"
+    },
+    {
+      "name": "sysContact",
+      "oid": "1.3.6.1.2.1.1.4.0",
+      "kind": "scalar",
+      "syntax": "DisplayString",
+      "access": "read-write"
+    },
+    {
+      "name": "sysName",
+      "oid": "1.3.6.1.2.1.1.5.0",
+      "kind": "scalar",
+      "syntax": "DisplayString",
+      "access": "read-write"
+    },
+    {
+      "name": "ifIndex",
+      "oid": "1.3.6.1.2.1.2.2.1.1",
+      "kind": "column",
+      "table": "ifTable",
+      "syntax": "INTEGER",
+      "access": "read-only"
+    },
+    {
+      "name": "ifDescr",
+      "oid": "1.3.6.1.2.1.2.2.1.2",
+      "kind": "column",
+      "table": "ifTable",
+      "syntax": "DisplayString",
+      "access": "read-only"
+    },
+    {
+      "name": "ifAdminStatus",
+      "oid": "1.3.6.1.2.1.2.2.1.7",
+      "kind": "column",
+      "table": "ifTable",
+      "syntax": "INTEGER",
+      "access": "read-write",
+      "enum": {
+        "1": "up",
+        "2": "down",
+        "3": "testing"
+      }
+    },
+    {
+      "name": "ifOperStatus",
+      "oid": "1.3.6.1.2.1.2.2.1.8",
+      "kind": "column",
+      "table": "ifTable",
+      "syntax": "INTEGER",
+      "access": "read-only",
+      "enum": {
+        "1": "up",
+        "2": "down",
+        "3": "testing",
+        "4": "unknown",
+        "5": "dormant",
+        "6": "notPresent",
+        "7": "lowerLayerDown"
+      },
+      "events": {
+        "up->down": "INTERFACE.LINK.DOWN",
+        "*->up": "INTERFACE.LINK.UP"
+      }
+    }
+  ],
+  "tables": [
+    {
+      "name": "ifTable",
+      "oid": "1.3.6.1.2.1.2.2",
+      "index": [
+        "ifIndex"
+      ]
+    }
+  ],
+  "notifications": [
+    {
+      "name": "linkDown",
+      "oid": "1.3.6.1.6.3.1.1.5.3",
+      "eventType": "INTERFACE.LINK.DOWN",
+      "targetTable": "ifTable",
+      "indexVarbind": "ifIndex"
+    },
+    {
+      "name": "linkUp",
+      "oid": "1.3.6.1.6.3.1.1.5.4",
+      "eventType": "INTERFACE.LINK.UP",
+      "targetTable": "ifTable",
+      "indexVarbind": "ifIndex"
+    }
+  ],
+  "aliases": [
+    {
+      "name": "name",
+      "target": "sysName",
+      "kind": "property",
+      "scope": "AGENT"
+    },
+    {
+      "name": "description",
+      "target": "sysDescr",
+      "kind": "property",
+      "scope": "AGENT"
+    },
+    {
+      "name": "uptime",
+      "target": "sysUpTime",
+      "kind": "property",
+      "scope": "AGENT"
+    },
+    {
+      "name": "interfaces",
+      "target": "ifTable",
+      "kind": "table",
+      "scope": "AGENT"
+    },
+    {
+      "name": "interfaceIndex",
+      "target": "ifIndex",
+      "kind": "property",
+      "scope": "TABLE:ifTable"
+    },
+    {
+      "name": "description",
+      "target": "ifDescr",
+      "kind": "property",
+      "scope": "TABLE:ifTable"
+    },
+    {
+      "name": "adminStatus",
+      "target": "ifAdminStatus",
+      "kind": "property",
+      "scope": "TABLE:ifTable"
+    },
+    {
+      "name": "operStatus",
+      "target": "ifOperStatus",
+      "kind": "property",
+      "scope": "TABLE:ifTable"
+    }
+  ]
+}

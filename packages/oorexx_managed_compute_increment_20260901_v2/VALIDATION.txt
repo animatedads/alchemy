@@ -1,0 +1,21 @@
+ooRexx Managed Compute Increment 2026-09-01 v2
+
+API Client v0.3: r13196-qualified native HTTPS/HTTP/SSE baseline.
+Colab Job v0.1: r13196-qualified lifecycle + allocator seam using fake colab CLI.
+HF Space Job v0.2 clean extraction:
+  PASS HF SPACE CORE CREDENTIAL ZEROGPU QUOTA ENDPOINT POLICY
+  PASS HF SPACE JOB NODE ALLOCATOR HARD ELIGIBILITY
+  PASS HF SPACE HUB DISCOVERY THROUGH APICLIENT
+  PASS HF SPACE API CLIENT HTTPS UPLOAD V2 SUBMIT SSE DOWNLOAD CLEANUP
+  PASS HF SPACE AUTO V2-TO-V1 INTROSPECTED FALLBACK
+HF Managed Endpoint v0.1 clean extraction:
+  PASS 8 pytest cases
+  PASS Gradio endpoint graph: job_cpu/job_large/job_xlarge
+  PASS logical parameter schema: request/input_bundle/_job
+Actual local Gradio integration:
+  PASS REAL GRADIO HTTPS AUTO V2-TO-V1 SSE FILEDATA CPU SMOKE
+  result bundle: job-result.json, stdout/stderr logs, smoke-result.json
+  API egress sessions after run: 0
+
+No live Hugging Face Space mutation, real HF token use, ZeroGPU consumption or
+Colab allocation occurred during qualification.

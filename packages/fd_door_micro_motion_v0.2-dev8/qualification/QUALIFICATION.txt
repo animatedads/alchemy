@@ -1,0 +1,255 @@
+FD Door Micro Motion v0.2-dev8 qualification
+============================================
+
+Scope
+-----
+v0.2-dev8 is a video-processing hardening release.  It keeps the visual-only
+F11 door analysis boundary and the v0.2-dev7 multi-timescale temporal model,
+then adds coherent local source-file stability fencing using ooRexx POSIX
+Foundation v0.1-dev1.
+
+The scientific path remains blind to audio.  Visual events are observations of
+mechanical/door response only; unavailable geometry, camera relocation,
+photometric instability, excluded scene intervals, and failed reacquisition are
+not converted into negative door evidence.
+
+Current scientific/video improvements
+-------------------------------------
+PASS multi-confirmation night-IR F11 fingerprint acquisition.
+PASS three-height door/frame tracking (upper/lower/bottom) and vertical shear
+     validation; inconsistent geometry fails closed.
+PASS broad-field camera-motion guard, independent of local door response.
+PASS photometric/IR exposure-transition suspension.
+PASS clipped gradients + sub-pixel edge localisation.
+PASS instantaneous coherent door residual path retained.
+PASS slow relative door-gap temporal model retained; gradual/sustained
+     displacement is observable separately as FD_DOOR_SUSTAINED_DEFLECTION.
+PASS temporal state is checkpointed/restored across migration.
+
+Source-file stability added in dev8
+-----------------------------------
+Production tools/run_fd_worker.rex constructs FDSourceStabilityGuard using
+PosixGapFactory.  The guard requires coherent POSIX stat/lstat evidence and
+binds local execution to:
+
+  target device/inode/type
+  target size
+  target mtime seconds + nanoseconds
+  target ctime seconds + nanoseconds
+  lstat identity/type/times
+  raw symlink target (when the source path is a symlink)
+
+The source must be unchanged across the initial quiet interval.  It is checked
+again after FFmpeg opens the decoder, periodically while decoding, before a
+migration checkpoint, and before declaring successful completion.
+
+Changing/growing/truncated/replaced/retargeted input fails closed as one of:
+
+  SOURCE_NOT_STABLE_AT_START
+  SOURCE_MUTATED
+  SOURCE_STAT_FAILED
+
+Device/inode identity is local provenance only.  source_evidence_ref remains
+the portable cross-node content identity.
+
+A failed source-stability preflight writes control provenance to
+state/source.guard.failure.tsv and DOES NOT overwrite an existing scientific
+.run.tsv.  This specifically protects an already-valid source-side run artifact
+when a destination RESUME discovers an unstable local copy before opening
+FFmpeg.
+
+Exact dependency baselines
+--------------------------
+ooRexx 5.3.0 r13196
+
+Migratable Job v0.2.5
+  API: migratable.job/0.2
+  standard starter: migratable.job.start/1
+  managed placement: migratable.job.placement/1
+  remote NEW start: migratable.job.remote-start/1
+  archive SHA-256:
+  e44cf0c4894917ba773222408631ed3d7bd6c88aa4e5a4fa61f3c4243206d72f
+
+ooRexx POSIX Foundation v0.1-dev1
+  API: oorexx.posix/0.1
+  archive SHA-256:
+  7d13f10268b0801caeec5482601aa3af21af8f9139a553bef8a99275a7591d29
+
+Job-to-Node Allocator v0.6 core
+  API: job.node.allocator/0.6
+  archive SHA-256:
+  58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead
+
+Job-to-Node network1
+  API: job.node.allocator.network/0.1
+  archive SHA-256:
+  e6ea65304f51e16ee336a27783d185b09cdfff7117b4abe8ed8afabe2cb03b1f
+
+Foreign Runtime v0.22.6
+Crypto v0.8.3
+Runtime Reference v0.4
+Queue Fabric v0.9-dev5 (qualification scaffolding only; production wiring is
+owned by QueueRexx)
+
+Evidence schemas
+----------------
+version:          0.2-dev8
+sample:           FD_DOOR_MICRO_SAMPLE_V5
+event:            FD_VISUAL_MECHANICAL_EVENT_V4
+run:              FD_DOOR_MICRO_RUN_V7
+migration bundle: FD_MIGRATION_BUNDLE_V3
+compact config:   FDDMM7
+
+The FDDMM7 config carries source-stability quiet-window and frame-poll settings,
+so migration/restart cannot silently change the guard cadence.
+
+POSIX Foundation qualification
+------------------------------
+The exact supplied POSIX archive was extracted, its native rxposixgap provider
+was built against the local ooRexx 5.3.0 headers, and its supplied suite passed:
+
+  PASS test_smoke
+  PASS test_failures
+  PASS test_xattr_contract
+  PASS test_directory_names
+
+FD source-integrity qualification
+---------------------------------
+PASS coherent stable regular-file guard:
+     test_source_stability_guard.rex
+     - stable source admitted
+     - append mutation detected
+     - symlink retarget detected
+
+PASS active-run mutation abort:
+     test_source_mutation_abort.rex
+     checks=4
+     status=SOURCE_MUTATED
+     merged partial evidence is marked ABORTED and run provenance records the
+     source-guard failure.
+
+PASS preflight instability:
+     status=SOURCE_NOT_STABLE_AT_START
+     state/source.guard.failure.tsv written
+     existing scientific .run.tsv sentinel preserved byte/field logically
+     rather than overwritten by the failed RESUME preflight.
+
+PASS real POSIX + real FFmpeg guarded worker on the synthetic MP4:
+     test_worker_posix_guard.rex
+     source guard provider=rxposixgap+rxunixsys
+     checks=6
+     status=STABLE
+     mutation_detected=0
+
+Scientific regression qualification
+-----------------------------------
+PASS night locator:
+     reference_frame_x=438.000
+     shifted_frame_x=519.000
+     shift_px=81.000
+     fingerprint score=31.826
+
+PASS video hardening synthetic:
+     camera_dx=1.122
+     broad-field matches=8
+     photometric step=28.000
+
+PASS temporal deflection synthetic:
+     baseline=10.0546
+     final_deflection=-0.0146
+     relative_delta=0.600
+
+PASS occluded F11 geometry rejected.
+
+PASS exclusion scope:
+     TP00002 wall 03:12:00-03:28:00 maps to media [605000,1565000) ms.
+     TP00000/1/3 do not inherit that exclusion.
+
+PASS four-file wall-clock mapping:
+     TP00000 midnight start media_ms=5995000
+     TP00003 05:00 end media_ms=5056000
+
+PASS synthetic wall-window worker:
+     rows=25
+     excluded_frames=15
+
+PASS stock ooRexx CSVStream control/checkpoint round trip, including empty
+     trailing values, quotes, embedded TAB, and spaces.
+
+PASS synthetic worker status=OK.
+
+PASS migration bundle tamper rejected at digest-bound materialization.
+
+PASS pause -> bundle -> path-rebased destination restore/replay -> completion
+     is evidence-equivalent for samples/events/epochs/relocations/exclusions:
+     sha256:26ab0a54a806818cb7ac69e433d36b51334eb03407cb7863c01a3e500a842106
+
+PASS direct payload entry is blocked; fresh NEW execution may not be started by
+     invoking run_fd_worker.rex as an authoritative entry point.
+
+Migratable Job v0.2.5 integration qualification
+-----------------------------------------------
+PASS Migratable Job v0.2.5 execution-adapter load/binding.
+
+PASS standard FILE HANDOFF enters migratable.job.start/1, preserves the
+     coordinator-committed destination node/placement/ownership epoch, and
+     suppresses duplicate destination execution.
+
+PASS remote NEW-start integration using the supplied v0.2.5 upstream protocol:
+     authoritative placed lease -> remote request/reply -> destination exact
+     lease re-verification -> standard starter.
+     Exact replay produced no second worker; changed authority binding under
+     the same startId failed REQUEST_ID_CONFLICT.
+     Result:
+       worker_count=1
+       placement=PLACE-1-FD-REMOTE-025
+
+Production infrastructure is deliberately outside FD.  QueueRexx owns the
+central Job-to-Node authority service, Queue Fabric inter-machine routes,
+client authorization, network request replay, and service lifecycle.  FD has no
+local-authority or direct-worker fallback.
+
+Static qualification
+--------------------
+PASS rexxc under ooRexx 5.3.0 r13196 for all six package source classes:
+
+  src/FDDoorMicroMotion.cls
+  src/FDDoorMicroMotionHandoff.cls
+  src/FDDoorMicroMotionManagedPlacement.cls
+  src/FDDoorMicroMotionMigratable.cls
+  src/FDDoorMicroMotionRemoteStart.cls
+  src/FDDoorMicroMotionStarter.cls
+
+PASS rexxc for all ten deployment/control tools in tools/*.rex, including the
+private POSIX-guarded worker entry.
+
+Harness boundary
+----------------
+The core tests were run individually and passed as listed above.  A single
+aggregate run_tests.sh invocation hit the outer execution-time limit while
+entering the real POSIX-guarded worker after the first five tests; that worker
+then passed when run individually (11.72 s).  The long real managed-starter E2E
+test was not used as a dev8 qualification claim because it exceeded this
+session's single-command execution budget.  The lower-level real FFmpeg worker,
+scientific migration equivalence, standard HANDOFF, and v0.2.5 remote-start
+contracts were all exercised separately.
+
+The full TP00000-TP00003 night corpus is not present in this packaging
+container and was not re-analysed here.  Real-corpus qualification remains the
+ED209 campaign task.  No thresholds were changed on the basis of audio.
+
+Campaign source bindings
+------------------------
+ed209c / TP00003 source SHA-256:
+158321e60849bdd1692bf5d2de595538e998845c1d959150dd99097296c84235
+
+ed209d / TP00000 source SHA-256:
+b1f9332583f6ceb20424dbc564687688718c48207ca474004c386ac40fddc17
+
+ed209h / TP00001 source SHA-256:
+0ea25da2dd4c2cf9d96ed04c1392d332d8335694db0fcc2af399ed6eeaa05cc3
+
+ed209i / TP00002 source SHA-256:
+301b519e9894758cb9086b68d0b0691328d172977fd9a95f773eb3ea3ad8ad61
+
+Legacy ed209e / TP00009 remains outside this campaign restart.

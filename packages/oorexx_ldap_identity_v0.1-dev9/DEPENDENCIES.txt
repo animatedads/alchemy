@@ -1,0 +1,39 @@
+Required for core semantic/runtime operation:
+- ooRexx 5.3.0 r13196 or compatible
+- ooRexx Crypto v0.8.3 (`crypto.cls`)
+- ooRexx distribution `json.cls` when a DirectoryStore codec/provider is used
+
+Required for the durable NoSQL DirectoryStore provider and full dev8 qualification:
+- NoSQLServer v0.79
+
+Required for Secret Broker simple-Bind adapter/test:
+- ooRexx Secret Broker v0.2
+- Alchemy Objects v0.8 (Secret Broker's current compatible object baseline)
+
+Optional LDAP TLS providers (`LdapOpenSslTls.cls`, `LdapOpenSslClientTls.cls`) and their StartTLS/direct-TLS qualification:
+- Foreign Runtime v0.22.6
+- Runtime Reference v0.4
+- OpenSSL 3.x shared libraries reachable by Foreign Runtime
+- server and client bridge descriptors under `bridge/`
+The provider-neutral `ldap.tls/0.1` seam and semantic/BER/wire core do not require OpenSSL. The OpenSSL DUA provider verifies peers by default using a supplied CA file or the system trust store and verifies the requested host name.
+
+Optional Access Permissions LDAP authority adapter/test:
+- Access Permissions v0.2
+- Institutional Policy v0.8
+- Security Effect v0.14
+- Alchemy Objects v0.8
+- ooRexx Crypto v0.8.3
+
+Optional qualification acceleration for the supplied debug runtime:
+- Runtime Reference v0.4
+- Foreign Runtime v0.22.6
+These enable Crypto's existing Foreign Runtime provider seam and are also the dependencies used by the supplied OpenSSL TLS provider. They do not change Identity Directory semantics.
+
+Architecture/integration companions, not hard-loaded by the semantic core:
+- Runtime Registry v0.14
+- Observation / Journal / Provenance Ledger
+
+Vendored/adapted material:
+- `src/LdapOpenSslTls.cls` is adapted from the supplied qualified ooRexx HTTPS Server v0.4.4 OpenSSL/Foreign Runtime TLS substrate.
+- `src/LdapOpenSslClientTls.cls` and `bridge/openssl_tls_client.bridge.json` follow the supplied ooRexx API Client v0.4.1 OpenSSL client path for chain/hostname verification.
+- `bridge/openssl_tls.bridge.json`, `bridge/openssl_bio.bridge.json`, and `bridge/openssl_crypto_error.bridge.json` are carried from the qualified HTTPS TLS substrate and are documented in SOURCE_PROVENANCE.md.

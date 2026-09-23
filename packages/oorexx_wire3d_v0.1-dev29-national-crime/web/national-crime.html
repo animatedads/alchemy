@@ -1,0 +1,46 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Wire national crime analytics</title>
+<style>
+:root{font-family:system-ui,sans-serif;color:#d8e3e8;background:#071015}
+*{box-sizing:border-box} body{margin:0;overflow:hidden;background:radial-gradient(circle at 35% 30%,#13242c,#071015 62%)}
+header{height:54px;display:flex;align-items:center;gap:18px;padding:0 20px;border-bottom:1px solid #29404a;background:#09151bcc}
+.brand{font-weight:700;letter-spacing:.16em}.sub{font-size:12px;color:#7f9ba7;letter-spacing:.12em}
+.stat{margin-left:auto;font:12px ui-monospace,monospace;color:#91b7c6}
+main{display:grid;grid-template-columns:minmax(0,1fr) 330px;height:calc(100vh - 54px)}
+.mapwrap{position:relative;min-width:0} canvas{width:100%;height:100%;display:block}
+.panel{border-left:1px solid #29404a;background:#0a151be8;padding:18px;overflow:auto}
+h2{font-size:12px;letter-spacing:.16em;color:#8eabb6;margin:0 0 12px} .big{font-size:30px;font-weight:650;margin:2px 0}
+.muted{color:#7f98a3;font-size:12px}.row{display:flex;justify-content:space-between;border-top:1px solid #20343d;padding:10px 0;font-size:13px}
+.controls{position:absolute;left:18px;bottom:18px;right:18px;background:#08141be8;border:1px solid #2c4753;padding:12px 14px;display:flex;gap:14px;align-items:center;backdrop-filter:blur(8px)}
+button{background:#10242d;border:1px solid #31505c;color:#c9dce3;padding:8px 13px;font:12px ui-monospace,monospace;cursor:pointer}
+button.active{background:#24434e;border-color:#78a6b6}.legend{display:flex;gap:4px;align-items:center;margin-left:auto;font-size:11px;color:#78939d}
+.legend i{width:25px;height:8px;display:block}.legend i:nth-child(1){background:#17252b}.legend i:nth-child(2){background:#29434c}.legend i:nth-child(3){background:#426b77}.legend i:nth-child(4){background:#6595a1}.legend i:nth-child(5){background:#a9d2d9}
+.tip{position:absolute;pointer-events:none;background:#071015ee;border:1px solid #385965;padding:7px 9px;font:11px ui-monospace,monospace;display:none}
+.badge{display:inline-block;border:1px solid #35515c;padding:4px 7px;font:10px ui-monospace,monospace;color:#8fb2bf;margin-bottom:12px}
+.spark{height:90px;width:100%;margin-top:10px}
+.note{font-size:11px;color:#6f8994;line-height:1.5;margin-top:16px}
+
+.searchbox{display:flex;gap:6px}.searchbox input{min-width:0;flex:1;background:#071116;border:1px solid #31505c;color:#d6e4e9;padding:9px 10px;outline:none}
+.searchbox input:focus{border-color:#7fa8b6}.results{max-height:190px;overflow:auto;margin-top:5px;border:1px solid #20343d;display:none}
+.result{padding:8px 9px;border-bottom:1px solid #1b3038;cursor:pointer;font-size:11px}.result:last-child{border:0}.result:hover,.result.active{background:#18303a}
+.result b{display:block;font:11px ui-monospace,monospace}.result span{color:#829ca6}.empty{padding:8px;color:#718a94;font-size:11px}
+</style></head>
+<body><header><div class="brand">ALCHEMY SYSTEMS</div><div class="sub">ENGLAND &amp; WALES CRIME ANALYTICS</div><div class="stat" id="headerStat">LOADING SEMANTIC FRAME…</div></header>
+<main><section class="mapwrap"><canvas id="map"></canvas><div class="tip" id="tip"></div>
+<div class="controls"><span class="sub">ZOOM</span><button id="zoomOut">−</button><button id="zoomReset">HOME</button><button id="frameSelection">FRAME</button><button id="zoomIn">+</button><b id="zoomValue" class="sub">1.0×</b><span class="sub">PERIOD</span><button data-period="2025-08">AUG 2025</button><button data-period="2025-09" class="active">SEP 2025</button><span class="sub">METRIC</span><button class="active">COUNT</button><div class="legend"><span>LOW</span><i></i><i></i><i></i><i></i><i></i><span>HIGH</span></div></div></section>
+<aside class="panel">
+<h2>FIND GEOGRAPHY</h2>
+<div class="searchbox"><input id="geoSearch" autocomplete="off" placeholder="LSOA code or name…"><button id="geoFind">FIND</button></div>
+<div id="geoResults" class="results"></div>
+<div style="height:14px"></div>
+<h2>CRIME FILTER</h2>
+<div class="searchbox"><input id="crimeSearch" autocomplete="off" placeholder="Crime category…"></div>
+<div id="crimeResults" class="results"></div>
+<div class="row"><span>Selected category</span><b id="crimeCategory">ALL CRIME</b></div>
+<div style="height:20px"></div><h2>SELECTED AREA</h2><div class="badge">COMPACT → FULL ON SELECTION</div><div class="big" id="areaCode">—</div><div class="muted" id="areaName">Select an LSOA polygon</div>
+<div style="height:20px"></div><h2>STREET CRIME</h2><div class="row"><span>Current period</span><b id="current">—</b></div><div class="row"><span>Previous period</span><b id="previous">—</b></div><div class="row"><span>Change</span><b id="change">—</b></div>
+<canvas class="spark" id="spark"></canvas>
+<div style="height:20px"></div><h2>SEMANTIC STATE</h2><div class="row"><span>Layer</span><b>STREET CRIME</b></div><div class="row"><span>Metric</span><b>COUNT</b></div><div class="row"><span>Precision</span><b>LSOA</b></div><div class="row"><span>Geometry</span><b>NoSQL GIS REF</b></div>
+<p class="note">National display uses the COMPACT presentation shape. Polygon simplification is renderer LOD only; each feature retains its authoritative geometry reference and LSOA identity. Selecting an area is the boundary at which a scoped FULL analytical request can be issued.</p>
+</aside></main><script type="module" src="./national-crime.js"></script></body></html>

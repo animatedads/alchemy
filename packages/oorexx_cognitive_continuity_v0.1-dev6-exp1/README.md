@@ -8,6 +8,7 @@
 - An explicit broad projection remains available by omitting `task`; continuity rendering can therefore inspect the whole scope without weakening ordinary request isolation.
 - Regression coverage reproduces the observed Safety29/QueueRexx cross-task leak and proves the QueueRexx decision is retained but excluded from the Safety29 model feed.
 
+
 Experimental executable cut of the AI Cognitive Continuity / Memory Fabric v0.5 architecture.
 
 This cut is intended to be **dog-fooded with LLMPA, ChatGPT and Codex**. It focuses on making the cognitive boundary observable before adding expensive ML behaviour.
@@ -42,6 +43,7 @@ The package intentionally keeps remote ML out of the online correctness path.
 Run: `./run_tests.sh`
 
 Dog-food demonstration: `rexx examples/dogfood_seed.rex`
+
 
 ## Real dog-food observation lane (dev5)
 

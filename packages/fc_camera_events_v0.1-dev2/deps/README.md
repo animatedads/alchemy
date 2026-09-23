@@ -1,6 +1,6 @@
 # Dependency payload omitted from published source
 
-`oorexxapis.zip:current/fc_camera_events_v0.1-dev2.zip` contained a dependency payload at `deps/`. Alchemy does not treat bundled dependency source as source owned by this component. Obtain it from its own first-class component or upstream distribution.
+`fc_camera_events_v0.1-dev2.zip` contained a dependency payload at `deps/`. Alchemy does not treat bundled dependency source as source owned by this component. Obtain it from its own first-class component or upstream distribution.
 
 Omitted files: **1**  
 Dependency-set digest: `eb7c031080f6a466698092617a133d660e94fcafe4a6f9e93eabfeb1041396f3`

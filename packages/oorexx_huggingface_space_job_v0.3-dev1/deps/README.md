@@ -1,6 +1,6 @@
 # Dependency payload omitted from published source
 
-`oorexxapis.zip:current/oorexx_huggingface_space_job_v0.3-dev1.zip` contained a dependency payload at `deps/`. Alchemy does not treat bundled dependency source as source owned by this component. Obtain it from its own first-class component or upstream distribution.
+`oorexx_huggingface_space_job_v0.3-dev1.zip` contained a dependency payload at `deps/`. Alchemy does not treat bundled dependency source as source owned by this component. Obtain it from its own first-class component or upstream distribution.
 
 Omitted files: **4**  
 Dependency-set digest: `24134243c743e71c4d080e0683d146127d370282ded0c1f46b357c200592441f`

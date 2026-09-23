@@ -1,0 +1,62 @@
+Audio V9 Voice Recovery v0.1-dev10 qualification
+================================================
+
+Purpose
+-------
+Move into full-campaign processing without making unresolved global file-edge
+clock calibration a blocking dependency.
+
+Processing contract
+-------------------
+* Final canonical timeline: exactly 18 h at 8 kHz = 518,400,000 samples.
+* Seven logical worker cores remain the authoritative ownership partition.
+* Each owned piece is decoded with 4 s context on both sides.
+* Local FC/FD spatial lag is rescanned from the actual audio using 8 s windows
+  advancing every 2 s. Global unresolved file-edge corrections are not invented.
+* AudioV9SoftReconstructionPolicy performs soft dual-feed fusion, dominant-feed
+  fallback at low coherence, up to +32 dB bounded gain, impulse gain hold and
+  peak guard. Low energy never means non-speech.
+* Context is cropped away before a chunk becomes authoritative; only owned core
+  samples are retained.
+* Chunk parts are independently hashed and resume-safe. A verified completed
+  part is not decoded or analyzed again after restart.
+* Worker voice.f32 outputs are exact float masters. The final campaign is
+  encoded to OGG exactly once after all seven logical worker hashes and sample
+  counts verify.
+* The first full processing pass intentionally omits the expensive acoustic
+  graph / TF-mask stage. Those remain optional second-pass enhancement evidence.
+
+Pinned qualification runtime
+----------------------------
+Open Object Rexx 5.3.0 r13196 - Internal Test Version
+
+Observed release-gate results
+-----------------------------
+PASS test_spatial_native_provider assertions=7
+PASS test_soft_reconstruction assertions=12
+PASS test_campaign_contract assertions=16
+PASS TSV CSVStream assertions=10
+PASS reconstruction processing samples=160000 rows=7
+PASS campaign processing samples=518400000
+PASS rexxc tools/render_reconstruction_chunk.rex
+PASS rexxc tools/plan_reconstruction_workers.rex
+PASS shell syntax processing tools/tests
+
+Worker exact sample ownership
+-----------------------------
+ed209a  74,056,000
+ed209b  74,056,000
+ed209c  74,056,000
+ed209d  74,064,000
+ed209e  74,056,000
+ed209h  74,056,000
+ed209i  74,056,000
+TOTAL   518,400,000
+
+Qualification scope note
+------------------------
+The inherited full calibration master suite was not used as the dev10 release
+gate because its historical 16-second calibration/acoustic test again entered
+the known high-cost calibration path in this packaging environment. Dev10 does
+not modify that calibration path. Processing-specific and directly inherited
+spatial/reconstruction contracts were qualified independently as listed above.

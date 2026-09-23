@@ -1,0 +1,30 @@
+ooRexx SNMP v0.1-dev2 validation
+Date: 2026-09-22
+
+Runtime:
+  Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+  Build date: Aug 3 2026
+
+Required qualification dependency:
+  ooRexx Event Runtime v0.1-dev1 / event.runtime/0.1
+
+Optional integration qualified:
+  ooRexx Observation v0.5 / observation.readonly/0.5
+
+Executable qualification results:
+  PASS UNKNOWN GET/SET projection
+  PASS table/index projection
+  PASS refresh -> semantic registered event
+  PASS notification OID -> row event projection
+  PASS layered map adoption and override cleanup
+  PASS semantic aliases through UNKNOWN
+  PASS table walk -> managed row enumeration
+  PASS map-defined threshold semantics + named event registration
+  PASS notification evidence seeds managed state before semantic event
+  PASS implementation-map /0.1 compatibility
+  PASS Observation v0.5 shape + retained SNMP snapshots
+
+Important scope:
+  SnmpMemoryTransport is the qualification transport for this cut.
+  No claim is made here that BER/PDU or live UDP SNMP transport is implemented.
+  No Python, Java, Net-SNMP CLI, shell command, or generated Rexx MIB class is used by the qualified object/projection path.

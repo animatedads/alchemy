@@ -1,0 +1,365 @@
+{
+  "schema_version": "v10_site_model_1",
+  "name": "fcpaphos_house_dual_approx",
+  "description": "Approximate acoustic site model for the FCPaphos location based on supplied street-view, balcony, door, stairwell, and rough map/layout images. Supports dual-mic localisation: Cam A external balcony/front and Cam B internal entrance/stairwell.",
+  "notes": [
+    "This is a first-pass intelligence model, not surveyed CAD.",
+    "Coordinates are local metric coordinates in an approximate building frame.",
+    "x increases from front facade inward toward rear of building.",
+    "y increases from viewer-left to viewer-right when facing the front facade.",
+    "z increases upward.",
+    "Cam A is the outside/front balcony camera with mic facing the road/front approach.",
+    "Cam B is the inside entrance/stairwell camera with mic covering the front door, hall and stairs.",
+    "Use known impulsive events (door knock, door slam, footsteps on stairs, speech near doorway) later for calibration."
+  ],
+  "geodetic_reference": {
+    "site_name": "12 Agios Neofytos Ave., Tremithousa, Paphos",
+    "crs": "WGS84",
+    "exact_lat_lon": null,
+    "source": "user-supplied imagery and screenshots"
+  },
+  "bounds": {
+    "xmin": -8.0,
+    "xmax": 20.0,
+    "ymin": -8.0,
+    "ymax": 14.0
+  },
+  "building_wall_height_m": 6.2,
+  "candidate_source_heights_m": [
+    1.2,
+    1.7,
+    2.5
+  ],
+  "grid_step_m": 1.5,
+  "mics": {
+    "Cam A": {
+      "x": -1.2,
+      "y": 2.2,
+      "z": 4.2,
+      "label": "External balcony/front camera",
+      "orientation_deg_from_x": -20.0,
+      "orientation_note": "Facing generally toward the front road/open area."
+    },
+    "Cam B": {
+      "x": 6.2,
+      "y": 1.6,
+      "z": 2.0,
+      "label": "Internal entrance/stairwell camera",
+      "orientation_deg_from_x": -160.0,
+      "orientation_note": "Facing from interior hall area back toward the front door/stair landing."
+    }
+  },
+  "mic": {
+    "x": -1.2,
+    "y": 2.2,
+    "z": 4.2,
+    "label": "Fallback mono mic = Cam A"
+  },
+  "walls": [
+    {
+      "name": "front_facade_plane",
+      "axis": "x",
+      "value": 0.0,
+      "material": "concrete_plaster"
+    },
+    {
+      "name": "rear_wall_plane",
+      "axis": "x",
+      "value": 12.0,
+      "material": "concrete_plaster"
+    },
+    {
+      "name": "left_wall_plane",
+      "axis": "y",
+      "value": 0.0,
+      "material": "concrete_plaster"
+    },
+    {
+      "name": "right_wall_plane",
+      "axis": "y",
+      "value": 6.0,
+      "material": "concrete_plaster"
+    },
+    {
+      "name": "stair_core_plane",
+      "axis": "y",
+      "value": 3.7,
+      "material": "concrete_internal"
+    },
+    {
+      "name": "balcony_front_plane",
+      "axis": "x",
+      "value": -2.0,
+      "material": "metal_rail_open"
+    }
+  ],
+  "zones": {
+    "interior_margin_m": 2.2,
+    "north_label": "right_side_zone",
+    "south_label": "left_side_zone",
+    "west_label": "front_zone",
+    "east_label": "rear_zone",
+    "interior_label": "interior_core"
+  },
+  "structure": {
+    "levels": [
+      {
+        "id": "ground",
+        "z_floor_m": 0.0,
+        "z_ceil_m": 2.8
+      },
+      {
+        "id": "first",
+        "z_floor_m": 3.0,
+        "z_ceil_m": 5.8
+      }
+    ],
+    "spaces": [
+      {
+        "id": "front_road_open_area",
+        "label": "Road / frontage outside the property",
+        "polygon_xy_m": [
+          [
+            -8.0,
+            -6.0
+          ],
+          [
+            0.0,
+            -6.0
+          ],
+          [
+            0.0,
+            12.0
+          ],
+          [
+            -8.0,
+            12.0
+          ]
+        ],
+        "z_range_m": [
+          0.0,
+          3.0
+        ],
+        "acoustic_type": "open_outdoor"
+      },
+      {
+        "id": "front_balcony",
+        "label": "External front balcony / terrace outside upper level",
+        "polygon_xy_m": [
+          [
+            -2.0,
+            0.0
+          ],
+          [
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            4.4
+          ],
+          [
+            -2.0,
+            4.4
+          ]
+        ],
+        "z_range_m": [
+          3.0,
+          5.5
+        ],
+        "acoustic_type": "semi_open"
+      },
+      {
+        "id": "front_door_landing",
+        "label": "Inside front door landing / small hall",
+        "polygon_xy_m": [
+          [
+            0.0,
+            0.0
+          ],
+          [
+            3.2,
+            0.0
+          ],
+          [
+            3.2,
+            3.0
+          ],
+          [
+            0.0,
+            3.0
+          ]
+        ],
+        "z_range_m": [
+          0.0,
+          2.8
+        ],
+        "acoustic_type": "hard_interior"
+      },
+      {
+        "id": "stairwell",
+        "label": "Main stairwell zone",
+        "polygon_xy_m": [
+          [
+            3.2,
+            0.0
+          ],
+          [
+            7.0,
+            0.0
+          ],
+          [
+            7.0,
+            3.2
+          ],
+          [
+            3.2,
+            3.2
+          ]
+        ],
+        "z_range_m": [
+          0.0,
+          5.8
+        ],
+        "acoustic_type": "hard_reverberant"
+      },
+      {
+        "id": "upper_landing",
+        "label": "Upper landing / corridor outside F11",
+        "polygon_xy_m": [
+          [
+            4.0,
+            0.0
+          ],
+          [
+            9.0,
+            0.0
+          ],
+          [
+            9.0,
+            2.6
+          ],
+          [
+            4.0,
+            2.6
+          ]
+        ],
+        "z_range_m": [
+          3.0,
+          5.8
+        ],
+        "acoustic_type": "hard_interior"
+      },
+      {
+        "id": "f11_entry_room",
+        "label": "Entry room / interior hall near F11 door where people are speaking",
+        "polygon_xy_m": [
+          [
+            5.0,
+            2.6
+          ],
+          [
+            10.0,
+            2.6
+          ],
+          [
+            10.0,
+            5.8
+          ],
+          [
+            5.0,
+            5.8
+          ]
+        ],
+        "z_range_m": [
+          0.0,
+          2.8
+        ],
+        "acoustic_type": "hard_interior"
+      },
+      {
+        "id": "rear_empty_rooms",
+        "label": "Further interior empty rooms",
+        "polygon_xy_m": [
+          [
+            10.0,
+            0.0
+          ],
+          [
+            12.0,
+            0.0
+          ],
+          [
+            12.0,
+            6.0
+          ],
+          [
+            10.0,
+            6.0
+          ]
+        ],
+        "z_range_m": [
+          0.0,
+          2.8
+        ],
+        "acoustic_type": "emptier_reverberant"
+      }
+    ]
+  },
+  "candidate_regions": [
+    {
+      "id": "outside_front",
+      "label": "Outside front road/approach",
+      "default_action": "suppress_nuisance_outdoor"
+    },
+    {
+      "id": "balcony_area",
+      "label": "External balcony",
+      "default_action": "protect"
+    },
+    {
+      "id": "front_entry",
+      "label": "Front entry / threshold",
+      "default_action": "protect"
+    },
+    {
+      "id": "stair_core",
+      "label": "Stairwell core",
+      "default_action": "protect"
+    },
+    {
+      "id": "inside_speaking_area",
+      "label": "Interior speech area",
+      "default_action": "protect"
+    },
+    {
+      "id": "rear_rooms",
+      "label": "Empty rear rooms",
+      "default_action": "neutral"
+    }
+  ],
+  "nuisance_zone_policy_suggestions": {
+    "likely_vehicle_zones": [
+      "front_zone"
+    ],
+    "likely_wind_zones": [
+      "front_zone",
+      "left_side_zone",
+      "right_side_zone"
+    ],
+    "default_protect_zones": [
+      "interior_core",
+      "rear_zone"
+    ],
+    "speech_priority_spaces": [
+      "front_door_landing",
+      "stairwell",
+      "upper_landing",
+      "f11_entry_room"
+    ]
+  },
+  "camera_assignment_summary": {
+    "Cam A": "External balcony/front view camera with outside mic.",
+    "Cam B": "Internal corridor/door/stairwell camera with inside mic."
+  }
+}

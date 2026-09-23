@@ -1,0 +1,407 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": {
+    "provider": "native",
+    "path": "./libaudio_search_native.so",
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "functions": {
+    "context_new_corpus": {
+      "symbol": "as_context_new_corpus",
+      "return": {
+        "type": "pointer",
+        "object": "as_context",
+        "ownership": "owned",
+        "destructor": "as_context_free"
+      },
+      "args": [
+        "utf8",
+        "utf8",
+        "utf8"
+      ]
+    },
+    "context_new": {
+      "symbol": "as_context_new",
+      "return": {
+        "type": "pointer",
+        "object": "as_context",
+        "ownership": "owned",
+        "destructor": "as_context_free"
+      },
+      "args": [
+        "utf8",
+        "utf8",
+        "utf8",
+        "utf8"
+      ]
+    },
+    "context_sample_rate": {
+      "symbol": "as_context_sample_rate",
+      "return": "u32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "as_context"
+        }
+      ]
+    },
+    "context_duration": {
+      "symbol": "as_context_duration",
+      "return": "f64",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "as_context"
+        }
+      ]
+    },
+    "context_alignment": {
+      "symbol": "as_context_alignment",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "as_context"
+        },
+        {
+          "type": "pointer"
+        }
+      ]
+    },
+    "evaluate": {
+      "symbol": "as_evaluate",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "as_context"
+        },
+        {
+          "type": "pointer"
+        },
+        {
+          "type": "pointer"
+        }
+      ]
+    },
+    "render": {
+      "symbol": "as_render",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "as_context"
+        },
+        {
+          "type": "pointer"
+        },
+        "utf8"
+      ]
+    },
+    "output_rms_db": {
+      "symbol": "as_output_rms_db",
+      "return": "f64",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "as_context"
+        },
+        {
+          "type": "pointer"
+        }
+      ]
+    },
+    "evaluate_additive_mix": {
+      "symbol": "as_evaluate_additive_mix",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "as_context"
+        },
+        {
+          "type": "pointer"
+        },
+        {
+          "type": "pointer"
+        },
+        "f64",
+        "f64",
+        {
+          "type": "pointer"
+        }
+      ]
+    },
+    "render_additive_mix": {
+      "symbol": "as_render_additive_mix",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "as_context"
+        },
+        {
+          "type": "pointer"
+        },
+        {
+          "type": "pointer"
+        },
+        "f64",
+        "f64",
+        "utf8"
+      ]
+    },
+    "shared_alpha": {
+      "symbol": "as_shared_alpha",
+      "return": "f64",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "as_context"
+        },
+        "i32"
+      ]
+    },
+    "shared_correlation": {
+      "symbol": "as_shared_correlation",
+      "return": "f64",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "as_context"
+        },
+        "i32"
+      ]
+    }
+  },
+  "types": {
+    "as_context": {
+      "kind": "struct",
+      "size": 8,
+      "alignment": 8,
+      "fields": []
+    },
+    "as_params": {
+      "kind": "struct",
+      "size": 184,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "gain_db",
+          "type": "f64",
+          "offset": 0
+        },
+        {
+          "name": "highpass_hz",
+          "type": "f64",
+          "offset": 8
+        },
+        {
+          "name": "lowpass_hz",
+          "type": "f64",
+          "offset": 16
+        },
+        {
+          "name": "denoise_floor_db",
+          "type": "f64",
+          "offset": 24
+        },
+        {
+          "name": "echo_delay_ms",
+          "type": "f64",
+          "offset": 32
+        },
+        {
+          "name": "echo_gain",
+          "type": "f64",
+          "offset": 40
+        },
+        {
+          "name": "cancel_strength",
+          "type": "f64",
+          "offset": 48
+        },
+        {
+          "name": "cancel_tweak_ms",
+          "type": "i32",
+          "offset": 56
+        },
+        {
+          "name": "compress",
+          "type": "i32",
+          "offset": 60
+        },
+        {
+          "name": "compress_ratio",
+          "type": "f64",
+          "offset": 64
+        },
+        {
+          "name": "compress_threshold_db",
+          "type": "f64",
+          "offset": 72
+        },
+        {
+          "name": "reject_band_count",
+          "type": "i32",
+          "offset": 80
+        },
+        {
+          "name": "reject_reserved",
+          "type": "i32",
+          "offset": 84
+        },
+        {
+          "name": "reject_band1_lo_hz",
+          "type": "f64",
+          "offset": 88
+        },
+        {
+          "name": "reject_band1_hi_hz",
+          "type": "f64",
+          "offset": 96
+        },
+        {
+          "name": "reject_band2_lo_hz",
+          "type": "f64",
+          "offset": 104
+        },
+        {
+          "name": "reject_band2_hi_hz",
+          "type": "f64",
+          "offset": 112
+        },
+        {
+          "name": "reject_band3_lo_hz",
+          "type": "f64",
+          "offset": 120
+        },
+        {
+          "name": "reject_band3_hi_hz",
+          "type": "f64",
+          "offset": 128
+        },
+        {
+          "name": "reject_band4_lo_hz",
+          "type": "f64",
+          "offset": 136
+        },
+        {
+          "name": "reject_band4_hi_hz",
+          "type": "f64",
+          "offset": 144
+        },
+        {
+          "name": "reject_band5_lo_hz",
+          "type": "f64",
+          "offset": 152
+        },
+        {
+          "name": "reject_band5_hi_hz",
+          "type": "f64",
+          "offset": 160
+        },
+        {
+          "name": "reject_band6_lo_hz",
+          "type": "f64",
+          "offset": 168
+        },
+        {
+          "name": "reject_band6_hi_hz",
+          "type": "f64",
+          "offset": 176
+        }
+      ]
+    },
+    "as_stats": {
+      "kind": "struct",
+      "size": 72,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "global_distance",
+          "type": "f64",
+          "offset": 0
+        },
+        {
+          "name": "window_median_distance",
+          "type": "f64",
+          "offset": 8
+        },
+        {
+          "name": "window_p25_distance",
+          "type": "f64",
+          "offset": 16
+        },
+        {
+          "name": "temporal_distance",
+          "type": "f64",
+          "offset": 24
+        },
+        {
+          "name": "silence_fraction",
+          "type": "f64",
+          "offset": 32
+        },
+        {
+          "name": "post_limiter_clip_fraction",
+          "type": "f64",
+          "offset": 40
+        },
+        {
+          "name": "pre_limiter_over_fraction",
+          "type": "f64",
+          "offset": 48
+        },
+        {
+          "name": "pre_filter_peak",
+          "type": "f64",
+          "offset": 56
+        },
+        {
+          "name": "pcm_hash64",
+          "type": "u64",
+          "offset": 64
+        }
+      ]
+    },
+    "as_alignment": {
+      "kind": "struct",
+      "size": 48,
+      "alignment": 8,
+      "fields": [
+        {
+          "name": "offset_sec",
+          "type": "f64",
+          "offset": 0
+        },
+        {
+          "name": "drift_ppm",
+          "type": "f64",
+          "offset": 8
+        },
+        {
+          "name": "correlation",
+          "type": "f64",
+          "offset": 16
+        },
+        {
+          "name": "offset_min_sec",
+          "type": "f64",
+          "offset": 24
+        },
+        {
+          "name": "offset_max_sec",
+          "type": "f64",
+          "offset": 32
+        },
+        {
+          "name": "nominal_offset_sec",
+          "type": "f64",
+          "offset": 40
+        }
+      ]
+    }
+  }
+}

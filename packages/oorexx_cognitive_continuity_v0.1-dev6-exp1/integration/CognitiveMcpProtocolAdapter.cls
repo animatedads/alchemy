@@ -1,22 +1,26 @@
 /* MCP 2026-07-28 stateless JSON-RPC protocol binding for Cognitive Continuity.
  * HTTPS/authentication supplies actorId. This class owns protocol translation only.
  */
+
 ::class CognitiveMcpHttpResult public
 ::attribute status get
 ::attribute jsonText get
 ::method init
   expose status jsonText
   use strict arg status, jsonText
+
 ::class CognitiveMcpProtocolAdapter public
 ::constant PROTOCOL_VERSION "2026-07-28"
 ::constant SERVER_NAME "oorexx-cognitive-continuity"
 ::constant SERVER_VERSION "0.1-dev6-exp1"
+
 ::method init
   expose semantic tools
   use strict arg semanticAdapter
   if semanticAdapter == .nil then raise syntax 40.900 array('Cognitive MCP semantic adapter is required')
   semantic=semanticAdapter
   tools=semantic~tools
+
 ::method handle
   use strict arg headers, bodyText, actorId=''
   signal on syntax name parseError
@@ -38,6 +42,7 @@
   end
 parseError:
   return self~rpcError(.nil,-32700,'Parse error',400)
+
 ::method validateEnvelope private
   use strict arg headers, request, method
   protocol=.CognitiveUtil~optional(headers,'mcp-protocol-version','')
@@ -63,6 +68,7 @@ parseError:
   end
   else if headerName<>'' then return 'Mcp-Name must be absent for this MCP method'
   return ''
+
 ::method discover private
   out=.directory~new
   out['resultType']='complete'
@@ -70,10 +76,12 @@ parseError:
   caps=.directory~new; caps['tools']=.directory~new; out['capabilities']=caps
   out['instructions']='Cognitive Continuity MCP. Context projections are disposable; cognitive effects are admission proposals. Authenticated transport identity is authoritative.'
   return self~stamp(out)
+
 ::method toolList private
   expose tools
   out=.directory~new; out['resultType']='complete'; out['tools']=tools; out['ttlMs']=30000; out['cacheScope']='private'
   return self~stamp(out)
+
 ::method callTool private
   expose semantic
   use strict arg id, request, actorId
@@ -91,27 +99,32 @@ parseError:
   else content['text']='ERROR '||serviceResult~code||': '||serviceResult~detail
   toolResult['content']=.array~of(content)
   return self~rpcSuccess(id,self~stamp(toolResult))
+
 ::method brief private
   use strict arg value
   if value==.nil then return ''
   text=.json~toJSON(value)
   if text~length>500 then return text~left(497)||'...'
   return text
+
 ::method stamp private
   use strict arg out
   meta=.directory~new; info=.directory~new
   info['name']=self~SERVER_NAME; info['version']=.JsonString~new(self~SERVER_VERSION)
   meta['io.modelcontextprotocol/serverInfo']=info; out['_meta']=meta
   return out
+
 ::method rpcSuccess private
   use strict arg id, payload
   response=.directory~new; response['jsonrpc']=.JsonString~new('2.0'); response['id']=id; response['result']=payload
   return .CognitiveMcpHttpResult~new(200,.json~toJSON(response))
+
 ::method rpcError private
   use strict arg id, code, message, status=400
   response=.directory~new; response['jsonrpc']=.JsonString~new('2.0'); response['id']=id
   error=.directory~new; error['code']=code; error['message']=message; response['error']=error
   return .CognitiveMcpHttpResult~new(status,.json~toJSON(response))
+
 ::requires 'CognitiveMcpAdapter.cls'
 ::requires 'CognitiveStructuredResponseBridge.cls'
 ::requires 'CognitiveContinuity.cls'

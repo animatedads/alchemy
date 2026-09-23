@@ -1,0 +1,83 @@
+ooRexx Storage Fabric v0.1-dev22 validation
+
+New dev22 durable-checkpoint gate:
+- Checkpoint sequence/total/progress/chunk/checksum fields are serialized as canonical unsigned decimal text.
+- Scientific/exponent checksum text such as 2.18468359E+9 is rejected fail-closed.
+- Large-file regression remains at exact production size 2005735208 under caller NUMERIC DIGITS 9.
+- Packaging-container structural checks performed; execute the Rexx regression under the target r13196 runtime before resuming production backup.
+Date: 2026-09-21
+
+Production incident reproduced from operator evidence:
+- source: `/srv/space/bodycam/DCIM/VIDEO/NOR_OPHARDC_HC0303_20250607_034648_0235.AVI`
+- fenced source size: 2005735208 bytes
+- dev20 failure: `StorageStreaming.cls` Error 88.900 `short source read`
+- root cause: >9-digit byte counts/offsets were converted under ooRexx default NUMERIC DIGITS 9, allowing exact source size/progress to round before the final read.
+
+Dev21 repair:
+- `src/StorageFabric.cls`: package-owned `::options digits 30` for Storage sizes/transfer counters.
+- `src/StorageStreaming.cls`: package-owned `::options digits 30`; local readChunk accepts positive short reads and fails only on zero progress before fenced EOF.
+- `src/StorageHostFilesystem.cls`: package-owned `::options digits 30` for host size fences, sink sizes and copy results.
+- added `tests/test_large_file_precision.rex`, using a sparse 2,005,735,208-byte source while the test caller remains at NUMERIC DIGITS 9.
+
+Current build-environment limitation:
+- this packaging container does not contain the supplied ooRexx r13196 interpreter, so the new Rexx regression and inherited suite are included but are NOT claimed rerun here.
+- source review and package construction/checksum verification are performed here; the first operator-side gate should run `rexx tests/test_large_file_precision.rex` before resuming the large-file queue.
+
+Inherited dev20 qualification follows for unchanged backup-floor semantics:
+
+ooRexx Storage Fabric v0.1-dev20 validation
+Date: 2026-09-21
+
+Runtime:
+- ooRexx 5.3.0 r13196, 64-bit, supplied debug build
+
+New dev20 host-filesystem / backup-floor qualification:
+- PASS `storage.fabric.host-filesystem/0.1` compile smoke under r13196.
+- PASS `native/storage_host_commit.c` build with -std=c11 -Wall -Wextra -Werror and helper self-sync.
+- PASS READ_ONLY host mount enumeration and regular-file metadata.
+- PASS symlink observation without silently following the symlink as file content.
+- PASS `..`, absolute/ambiguous relative path and source canonical-root escape defenses.
+- PASS destination directory symlink-component escape defense.
+- PASS pre-planted symlink defense at deterministic partial and final pathnames.
+- PASS WRITE_COMMIT regular-file transfer through bounded StorageResumableTransferEngine.
+- PASS deliberate pause after one 1 MiB chunk: final pathname absent; one hidden partial retained.
+- PASS restart/resume from the same two-slot Storage checkpoint and deterministic partial object.
+- PASS partial flush durability ordering: native fdatasync occurs before checkpoint progress is advanced.
+- PASS independent SHA-256 source/destination verification before publication.
+- PASS source fingerprint re-probe immediately before publication.
+- PASS no-replace publication through renameat2(RENAME_NOREPLACE) where available with hard-link fallback; published-file fdatasync and parent-directory fsync retained.
+- PASS idempotent same-content replay returns ALREADY_COMMITTED.
+- PASS different content at an already committed final pathname fails closed and leaves the prior committed file unchanged.
+- PASS source mutation between paused runs invalidates the existing checkpoint identity and never publishes the stale transfer.
+- PASS source content used by the principal transfer remains unchanged by the backup floor.
+- PASS source root filesystem identity and cross-filesystem byte-read fence (`/proc` boundary qualification).
+- PASS production preflight rejects same-filesystem source/destination; qualification override is explicit.
+- PASS destination commit-filesystem self-probe before user-data admission.
+- PASS `bin/storage-host-backup-floor` distinct-filesystem preflight -> copy -> verify flow (`/tmp` source to `/dev/shm` destination).
+- PASS destination-resident `.storage-fabric/checkpoints` creation.
+- PASS `SFHOST1` machine framing with hex-valued paths/results.
+
+Regression:
+- PASS ALL STORAGE FABRIC v0.1-dev20 CORE TESTS.
+- PASS compile smoke for every `src/*.cls` file under r13196.
+- Existing dev18 coverage retained: SSH/SFTP Storage backend, FUSE/RPC, atomic generations, streaming/checkpoint, Google Drive, application bindings, virtual/sequential media, Hercules bridges, peer protocol and QueueRexx carrier.
+- Existing native FUSE3 protocol/syntax/self-probe qualification remains green against the package stub.
+
+Qualification scope / non-claims:
+- Tests use throwaway source/destination directories only. No user files, root filesystem or USB backup media were modified.
+- READ_ONLY is a Storage policy guarantee. `kernelReadOnly` separately reports the Linux mount option; the throwaway test filesystem is intentionally rw.
+- Actual rescue/runlevel-1 source remount and actual USB3 mount identity/free-space checks are deployment-time preflight facts owned by the backup task.
+- dev20 provides byte movement, checkpoint, verification, preflight and no-replace publication mechanics; it does not choose backup priority, retention or source deletion.
+- Symlink/device/socket/FIFO reconstruction and richer POSIX ACL/xattr/hard-link preservation remain higher backup/evacuation semantics, not implicit regular-file behaviour.
+
+Inherited dev18 authority boundary:
+- SSH owns encrypted transport, identity attribution and endpoint authority.
+- SFTP owns SFTP protocol semantics and protocol handles.
+- Storage Fabric owns namespace/object identity, versions, streams, write semantics and verification/lifecycle policy.
+- SCP remains unclaimed until an actual SCP protocol engine consumes the Storage authority seam.
+
+Packaging-container checks performed for dev21:
+- PASS exact package-manifest hash reconstruction.
+- PASS SHA256SUMS self-consistency after the final native-helper rebuild.
+- PASS `native/build-host-filesystem.sh` helper build/self-sync in this container.
+- ooRexx runtime execution remains explicitly pending on the operator machine because this container has no r13196 interpreter.

@@ -1,0 +1,41 @@
+ooRexx POSIX Foundation v0.1-dev1 validation
+================================================
+
+Runtime:
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+
+Compiler:
+g++ (Debian 14.2.0-19) 14.2.0
+
+Native build:
+make: Entering directory '/mnt/data/oorexx_posix_v0.1-dev1/native'
+rm -f librxposixgap.so librxposixgap.dylib *.o
+g++ -I/mnt/data/_oorexx530/usr/local/include -O2 -fPIC -Wall -Wextra -Werror -shared -o librxposixgap.so rxposixgap.cpp
+make: Leaving directory '/mnt/data/oorexx_posix_v0.1-dev1/native'
+
+Behaviour tests:
+== test_smoke.rex ==
+PASS test_smoke
+== test_failures.rex ==
+PASS test_failures
+== test_xattr_contract.rex ==
+PASS test_xattr_contract
+== test_directory_names.rex ==
+PASS test_directory_names
+PASS test_gap_provider
+
+Static external-command boundary:
+PASS no forbidden external-command markers in production source
+
+Native library dependencies:
+	linux-vdso.so.1 (0x00007f30b15fb000)
+	libc.so.6 => /lib/x86_64-linux-gnu/libc.so.6 (0x00007f30b13e9000)
+	/lib64/ld-linux-x86-64.so.2 (0x00007f30b15fd000)
+
+Known runtime defect probe:
+  Missing SysGetgrnam/SysGetgrgid records were isolated in subprocess probes and returned rc=139 (SIGSEGV).
+  Public lookupGroup therefore fails closed without invoking those routines.

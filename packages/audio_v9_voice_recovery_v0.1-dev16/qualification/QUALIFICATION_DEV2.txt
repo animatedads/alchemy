@@ -1,0 +1,19 @@
+AUDIO V9 VOICE RECOVERY v0.1-dev2 — DEPLOYMENT CORRECTION
+Date: 2026-09-10
+
+PURPOSE
+  Preserve dev1 audio/spatial semantics while correcting heterogeneous-worker deployment.
+
+CURRENT FLEET CONTRACT
+  x86_64 and ooRexx 5.3.0 r13196 are mandatory and already present on the declared fleet.
+  unzip, sha256sum and ffmpeg are readiness requirements.
+  Foreign Runtime acceptance is a real ooRexx load probe on the target.
+  If the packaged Foreign Runtime fails that probe, only then is libforeign_runtime.so rebuilt from packaged source using the target toolchain/ooRexx headers.
+  Spatial native provider follows the same reuse-if-loadable-else-rebuild rule.
+  Corpus verification remains mandatory before explicit worker start.
+
+KNOWN ABI INCIDENT ADDRESSED
+  A packaged Foreign Runtime object may require GLIBC_2.38 while a target provides an older glibc. dev2 does not attempt to repair this with LD_LIBRARY_PATH. It rebuilds host-native and repeats the exact runtime probe.
+
+NON-CLAIM
+  This package does not claim that remote workers were started by local qualification. Deployment/readiness and launch are deliberately separate.

@@ -1,0 +1,36 @@
+ooRexx WebDAV Gateway v0.1-dev1 validation
+
+Qualified locally against:
+- ooRexx 5.3.0 r13196 (user supplied debug build)
+- ooRexx Storage Fabric v0.1-dev13
+- ooRexx HTTPS Server v0.4.4
+- ooRexx Queue Fabric v0.9-dev6
+- ooRexx Foreign Runtime v0.22.6 (HTTPS package load dependency)
+- Alchemy Objects v0.8 + Crypto v0.8.3 (Queue Fabric package load dependencies)
+
+PASS test_core.rex
+  StorageNamespace-backed MKCOL/PUT/GET/replacement/DELETE
+  Storage Environment generation advancement
+  strong package-local ETag identity and If-Match rejection/acceptance
+  PROPFIND multistatus generation
+  DELETE removes namespace binding, not Storage object destruction
+
+PASS test_https_adapter.rex
+  arbitrary DAV method front controller through HTTPS request model
+  OPTIONS, MKCOL, PUT, PROPFIND Depth:1, GET
+  DAV and ETag headers
+  no modification to HTTPS Server source
+
+PASS test_queue.rex
+  distinct edge PUT and worker GET queue authorities
+  DAV.PUT command delivery through real ObjectQueueManager
+  Storage mutation through WebDavStorageAdapter
+  ACK after processing and zero remaining queue depth
+
+Known dev1 limits:
+- Content bytes use injected WebDavMemoryContentStore by default. Provider-backed
+  StorageByteSource/StorageByteSink streaming is intentionally deferred.
+- Collections are DAV gateway metadata because Storage Fabric dev13 namespace
+  bindings do not model directory inode objects.
+- PROPPATCH/COPY/MOVE/LOCK/UNLOCK/REPORT and HTTP Range are not implemented yet.
+- No claim is made that dev1 is a complete RFC 4918 implementation.

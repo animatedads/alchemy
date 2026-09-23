@@ -1,0 +1,123 @@
+Crime Area Analytics v0.3 validation
+====================================
+Date: 2026-09-22
+Runtime: Open Object Rexx 5.3.0 r13196 - Internal Test Version
+Runtime package: user-supplied Ubuntu x86_64 debug build
+API family: crime.area.analytics/0.3
+
+STRUCTURED I/O AUTHORITY
+------------------------
+PASS police CSV uses ooRexx csvStream.cls / CsvStream
+PASS snapshot relations use CsvStream
+PASS category shards + manifest use CsvStream
+PASS denominator relation uses CsvStream
+PASS GIS-neighbour relation uses CsvStream
+PASS JSON filter-catalog load uses ooRexx json.cls / .json~fromJsonFile
+PASS no package-local CSV parser / quote balancer / comma splitter / writer
+PASS no package-local JSON tokenizer/parser
+PASS quoted comma, quoted quote and multiline CSV values through CsvStream
+
+CORE REGRESSION / FUNCTIONAL SMOKE
+----------------------------------
+PASS tests/smoke.rex
+PASS tests/ingest_smoke.rex
+PASS tests/map_service_smoke.rex
+PASS tests/spatial_association_smoke.rex
+PASS tests/platform_io_smoke.rex
+PASS tests/denominator_io_smoke.rex
+PASS tests/normalized_map_smoke.rex
+PASS tests/spatial_context_cluster_smoke.rex
+PASS tests/compact_map_smoke.rex
+PASS tests/sparse_shard_smoke.rex
+
+V0.3 FUNCTIONAL COVERAGE
+------------------------
+PASS COUNT metric
+PASS RATE_PER_1000 with evidence-bearing POPULATION denominator
+PASS DENSITY_PER_KM2 with evidence-bearing AREA_KM2 denominator
+PASS missing denominator fails closed with explicit unavailable reason
+PASS VALUE / ABSOLUTE_CHANGE / PERCENT_CHANGE comparisons
+PASS zero-baseline percent-change state NEW_FROM_ZERO
+PASS six-period temporal evidence / trend path
+PASS GIS-neighbour CsvStream import
+PASS immediate-neighbour context assessment
+PASS connected hotspot clusters
+PASS normalized-metric spatial association path
+PASS FULL scoped map projection
+PASS COMPACT national-style map projection
+PASS sparse category-shard writer avoids category x full-area rescans
+PASS snapshot reader preserves areas whose geometry_ref field is empty
+
+ACTUAL POLICE SOURCE QUALIFICATION
+----------------------------------
+Input: supplied police archive, City of London files from both supplied monthly partitions.
+Reference: complete supplied 35,672-row LSOA reference relation.
+
+PASS street rows       1,477
+PASS outcome rows      1,450
+PASS stop/search rows    473
+PASS seeded LSOAs     35,672
+PASS populated frames     62
+PASS outcome cells        101
+
+End-to-end snapshot write including sparse category shards completed successfully.
+Observed qualification-container wall time: ~25.8 seconds on the supplied debug runtime.
+This time is evidence for this run, not a cross-machine performance contract.
+
+The written snapshot was then reopened through CrimeMapSnapshotReader:
+PASS areas             35,672
+PASS periods                2
+PASS populated frames      62
+PASS national COMPACT layer 35,672 entries
+Observed COMPACT frame build: ~11.3 seconds on the supplied debug runtime.
+
+SOURCE ARCHIVE PROFILE
+----------------------
+Source SHA-256: 9e65357c919c4ccfa5c9103feab0ab4f97af66db013edace617c79a15b290813
+Partitions: 2025-08, 2025-09
+Street rows: 1,001,088
+Outcome rows: 833,821
+Stop/search rows: 84,970
+Published street-crime categories: 14
+
+These full-archive counts are the preserved supplied-source profile.  The v0.3 release
+qualification above uses the real two-month City of London subset plus the complete LSOA
+universe; it does not claim that the complete ~1.9M-row archive was re-ingested during this
+specific debug-runtime release pass.
+
+PERFORMANCE / DATA-SHAPE REPAIR
+-------------------------------
+The v0.2 category-shard writer scanned every LSOA for every category.  v0.3 instead:
+1. discovers categories from existing frames;
+2. opens one CsvStream per category;
+3. walks existing frames once;
+4. routes each non-zero category cell to its shard;
+5. writes a CsvStream manifest with non-zero cell counts.
+
+This changes the shard projection from an artificial category x period x full-area scan to
+work proportional to existing non-zero category cells, while keeping CsvStream as the sole
+CSV syntax authority.
+
+SEMANTIC LOCKS
+--------------
+- stop/search is not recorded crime
+- published street points are PUBLISHED_ANONYMISED
+- police-published LSOA remains source evidence
+- COUNT, RATE_PER_1000 and DENSITY_PER_KM2 are distinct metrics
+- hotspot metric and peer population remain explicit
+- short temporal windows remain evidence-graded
+- spatial lag / neighbour patterns are statistical association, not offender movement
+- geometry/topology remains NoSQLServer GIS authority
+- public area analytics do not auto-attach to CriminalEnterprise / Person / Incident
+- map frame is semantic; styling, mesh, camera and animation belong to the renderer
+
+OPTIONAL FULL-SNAPSHOT TESTS
+----------------------------
+The following tests are retained for a complete derived national snapshot and are not part of
+the self-contained core smoke pass:
+- tests/full_snapshot_smoke.rex
+- tests/full_change_map_smoke.rex
+- tests/full_category_map_smoke.rex
+- tests/trend_viewport_smoke.rex
+
+The package intentionally excludes the large reproducible derived national snapshot.

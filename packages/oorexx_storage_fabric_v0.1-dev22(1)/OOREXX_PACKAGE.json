@@ -1,0 +1,729 @@
+{
+  "schema": "oorexx.package/0.1",
+  "name": "oorexx-storage-fabric",
+  "lineage": "MAIN",
+  "moduleLevel": 22,
+  "displayVersion": "0.1-dev22",
+  "rexxPath": [
+    "src"
+  ],
+  "requires": [],
+  "optionalRequires": [],
+  "foreign": [
+    {
+      "id": "storage-fuse3",
+      "binary": "build/storage-fuse3",
+      "policy": "reuse-if-loadable-else-rebuild",
+      "sourceRoot": ".",
+      "probe": {
+        "argv": [
+          "./native/probe-fuse3.sh"
+        ],
+        "cwd": ".",
+        "timeoutMs": 30000
+      },
+      "build": {
+        "argv": [
+          "./native/build-fuse3.sh"
+        ],
+        "cwd": ".",
+        "timeoutMs": 120000,
+        "outputs": [
+          "build/storage-fuse3"
+        ]
+      }
+    },
+    {
+      "id": "storage-host-commit",
+      "binary": "build/storage-host-commit",
+      "policy": "reuse-if-loadable-else-rebuild",
+      "sourceRoot": ".",
+      "probe": {
+        "argv": [
+          "./build/storage-host-commit",
+          "probe",
+          "build"
+        ],
+        "cwd": ".",
+        "timeoutMs": 30000
+      },
+      "build": {
+        "argv": [
+          "./native/build-host-filesystem.sh"
+        ],
+        "cwd": ".",
+        "timeoutMs": 120000,
+        "outputs": [
+          "build/storage-host-commit"
+        ]
+      }
+    }
+  ],
+  "qualification": [
+    {
+      "id": "fuse-native-precommit",
+      "argv": [
+        "./native/qualify-fuse3.sh"
+      ],
+      "cwd": ".",
+      "timeoutMs": 120000,
+      "required": true
+    },
+    {
+      "id": "fuse-colon-paths",
+      "argv": [
+        "rexx",
+        "tests/test_fuse_colon_paths.rex"
+      ],
+      "cwd": ".",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "fuse-atomic-snapshot",
+      "argv": [
+        "rexx",
+        "tests/test_fuse_atomic_snapshot.rex"
+      ],
+      "cwd": ".",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "fuse-prepared-snapshot",
+      "argv": [
+        "rexx",
+        "tests/test_fuse_prepared_snapshot_ref.rex"
+      ],
+      "cwd": ".",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "peer-protocol",
+      "argv": [
+        "rexx",
+        "tests/test_peer_protocol.rex"
+      ],
+      "cwd": ".",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "peer-materialise",
+      "argv": [
+        "rexx",
+        "tests/test_peer_materialise.rex"
+      ],
+      "cwd": ".",
+      "timeoutMs": 60000,
+      "required": true
+    },
+    {
+      "id": "peer-queuerexx-adapter",
+      "argv": [
+        "rexx",
+        "tests/test_peer_queuerexx_adapter.rex"
+      ],
+      "cwd": ".",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "relation-query-readonly",
+      "argv": [
+        "rexx",
+        "tests/test_relation_query.rex"
+      ],
+      "cwd": ".",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "relation-query-fuse-rpc",
+      "argv": [
+        "rexx",
+        "tests/test_relation_fuse_rpc.rex"
+      ],
+      "cwd": ".",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "sequential-media",
+      "argv": [
+        "rexx",
+        "tests/test_sequential_media_contract.rex"
+      ],
+      "cwd": ".",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "host-filesystem-backup-floor",
+      "argv": [
+        "rexx",
+        "tests/test_host_filesystem_provider.rex"
+      ],
+      "cwd": ".",
+      "timeoutMs": 120000,
+      "required": true
+    },
+    {
+      "id": "host-backup-floor-cli",
+      "argv": [
+        "./tests/test_host_backup_floor_cli.sh"
+      ],
+      "cwd": ".",
+      "timeoutMs": 120000,
+      "required": true
+    }
+  ],
+  "files": [
+    {
+      "path": "ARCHITECTURE.md",
+      "sha256": "28e602ddf9099fb1977e48782c95c749320961fc48d250b36c9a27e9bd325c54",
+      "role": "documentation"
+    },
+    {
+      "path": "BASELINES.txt",
+      "sha256": "8cd6f82717d2f7e67c9310a4bb66613df0e10d34f467e3fb7ef470d9a4d1a98e",
+      "role": "data"
+    },
+    {
+      "path": "DEV21_TO_DEV22_CHECKPOINT_HOTFIX.md",
+      "sha256": "0646deab545d125f9b8b99d8b756c0740554cacb2497d056759bb7c2804e0dd2",
+      "role": "documentation"
+    },
+    {
+      "path": "FOREIGN_FUSE.md",
+      "sha256": "8ac79679800c9c523a48e501d528d229980d1260a527576b37bd311472e01611",
+      "role": "documentation"
+    },
+    {
+      "path": "FUSE3_INTEGRATION.md",
+      "sha256": "0df9a5da28d763398a7e938ab21d6183a0a9d885f2e950104c1341e11dce6e6b",
+      "role": "documentation"
+    },
+    {
+      "path": "HOST_FILESYSTEM.md",
+      "sha256": "11817dc723bf9ace42d62722273058f86043a6e2bb62a6b9b68aa042baf2e95b",
+      "role": "documentation"
+    },
+    {
+      "path": "INTEGRATION.md",
+      "sha256": "213d31150dcb2ad76809e613f88ad546fb75077845600b56c883938c25cd78b4",
+      "role": "documentation"
+    },
+    {
+      "path": "PEER_FABRIC.md",
+      "sha256": "b05ae5e2db46d10d2c498eb05952600a9feeefd9535beadf73948f526d6f90df",
+      "role": "documentation"
+    },
+    {
+      "path": "README.md",
+      "sha256": "abad085ffb32d64a013e207bd70611ad56a21007a81e418681b3bf3707c49f36",
+      "role": "documentation"
+    },
+    {
+      "path": "REFERENCES.md",
+      "sha256": "ab4ed6dabc38725afe4a8c18bb5e4d3cd9be1da6d446291a190d0f9112fd1002",
+      "role": "documentation"
+    },
+    {
+      "path": "RELATION_QUERY.md",
+      "sha256": "addcae2b337d52f4e973d941cf08bb28f5d1a588ed077082f0b7ea88ecc31a74",
+      "role": "documentation"
+    },
+    {
+      "path": "SSH_SFTP_INTEGRATION.md",
+      "sha256": "e59631b8bc05dfa390b6870d5d5416dd53476dfa755d21e6cd83d881a150fede",
+      "role": "documentation"
+    },
+    {
+      "path": "VALIDATION.txt",
+      "sha256": "2e0b896abd1517fa1ac20ee30ba7d053860ed42323116353dc6983ffc0034eda",
+      "role": "data"
+    },
+    {
+      "path": "VERSION.txt",
+      "sha256": "6f176e2f03bb2d317c2629ef2418b83dbd07623ff9f0e09cfd3af62312036d5b",
+      "role": "data"
+    },
+    {
+      "path": "bin/storage-fuse-rpcd.rex",
+      "sha256": "3b7f25905d311ae268f0810dc8a6f7fb2e611f693a8d713d382c63086ef960c6",
+      "role": "source"
+    },
+    {
+      "path": "bin/storage-host-backup-floor",
+      "sha256": "a1a65d717130831fcccf3d0cb989625a2c92650e0305e0f5af8444df36c007dc",
+      "role": "source"
+    },
+    {
+      "path": "bin/storage-host-backup-floor.rex",
+      "sha256": "2d584fde9a2183ee88602d5388f9b9d76f40bff4ca98175884cad8b5092ac647",
+      "role": "source"
+    },
+    {
+      "path": "bin/storage-peer-queuerexx-client.rex",
+      "sha256": "a56a74c80bfb9491dedfe03b03a38d6cb2150630ef27de105a83379a8f43f4d9",
+      "role": "source"
+    },
+    {
+      "path": "bin/storage-peer-queuerexx-server.rex",
+      "sha256": "3ead40c203a7b9b6e4af143f812dbea290d95b63af6c31b98561dfd60e9be98a",
+      "role": "source"
+    },
+    {
+      "path": "build/storage-fuse3-protocol-test",
+      "sha256": "bde4ecd9ac6ef178b767a9891cf0d232cf05fc2bbc752d6cb2942ec9a1419331",
+      "role": "data"
+    },
+    {
+      "path": "build/storage-host-commit",
+      "sha256": "e0d233cd3a8d647f17a461724aa0407919fb44d6e84ad01ed48d0d1a3343f0a8",
+      "role": "data"
+    },
+    {
+      "path": "deploy/fuse-preflight.sh",
+      "sha256": "aedfaa8c4eba2f43dc79df0907babd07d2992938b1eab02a41192bab02d2ab83",
+      "role": "source"
+    },
+    {
+      "path": "deploy/fuse-soak.sh",
+      "sha256": "27e8737d77ab95276a88585c1d9d421ac83edb726bc59b0022a88b02d2183131",
+      "role": "source"
+    },
+    {
+      "path": "deploy/peer-queuerexx-preflight.sh",
+      "sha256": "cafd00e7e472b39115f3736b9b7974d7dd3d3c1ee667aec0981d38dcf42fcf4b",
+      "role": "source"
+    },
+    {
+      "path": "deploy/qualify-fuse-mount.sh",
+      "sha256": "606f892f7469572ffda2af1b74c30aa9cf0e1aa9a8ddf415bbb7deb26acb23ac",
+      "role": "source"
+    },
+    {
+      "path": "deploy/start-fuse.sh",
+      "sha256": "0aea34f40152a2d5ceb7e42232f425123a1d387965592440a1e4b75f328410f8",
+      "role": "source"
+    },
+    {
+      "path": "deploy/stop-fuse.sh",
+      "sha256": "de27cc396e8136c9da95c87d16a531243c2e1f0a8ad829624c3fb6a9f4883a69",
+      "role": "source"
+    },
+    {
+      "path": "deploy/two-node-soak-controller.sh",
+      "sha256": "e0eca32bf18e1533a1d3277c9d68ef7527a5ee8ecb50ffb941bbc535174f4b2b",
+      "role": "source"
+    },
+    {
+      "path": "examples/application_bindings.rex",
+      "sha256": "64e2a2c317f688e72f134e5a139a9c872bba381821504aa21fec2bae8153d905",
+      "role": "source"
+    },
+    {
+      "path": "examples/ed209_fleet.rex",
+      "sha256": "614c075079a8d4e1734fc53158e8ea115096520ba6acccea97bda0d83501b16c",
+      "role": "source"
+    },
+    {
+      "path": "examples/fuse_snapshot.rex",
+      "sha256": "ecc8a91f0407e5431679fac97c990f45bfcd7815fb089dde902709c5d0b75dbd",
+      "role": "source"
+    },
+    {
+      "path": "examples/host_backup_floor.rex",
+      "sha256": "8c14c463ebd9108b812349b8e950a0904de3b212b0244b704708da2f0a280065",
+      "role": "source"
+    },
+    {
+      "path": "examples/namespace_views.rex",
+      "sha256": "1cf13791f8c6a64038a63087e2562fb108c85a6c761bd8fbd9e08556013c2e56",
+      "role": "source"
+    },
+    {
+      "path": "examples/peer_transfer.rex",
+      "sha256": "d64d7d691500ce9b96ab19957cb1822a3d6b903eb902299fc8c8a0aacc414ac7",
+      "role": "source"
+    },
+    {
+      "path": "examples/resumable_copy.rex",
+      "sha256": "6bc533f536735046b5ff9cd1b372572a0876936319949c0b02e5d1bfa630cd20",
+      "role": "source"
+    },
+    {
+      "path": "examples/tom_space.rex",
+      "sha256": "a4072b619d1d134d6b63aa6cd98054b9df6b9c4df6f4846efc9329289f37cfef",
+      "role": "source"
+    },
+    {
+      "path": "examples/tvfs_union.rex",
+      "sha256": "977734681ab51f164030cc52fb5c1ec82d44405d0d279c656f54d4a302bb00bd",
+      "role": "source"
+    },
+    {
+      "path": "foreign/storage-fuse3.json",
+      "sha256": "8d15427e21a5566c4429765de85b750ce73513c152f61d8516b615ded7ad2292",
+      "role": "data"
+    },
+    {
+      "path": "native/build-fuse3.sh",
+      "sha256": "e5aa0c7293df828d0060e3d9368864a373862f7ca749688cbe6e6ed316ece30c",
+      "role": "source"
+    },
+    {
+      "path": "native/build-host-filesystem.sh",
+      "sha256": "caf60ddb5549eaf37b499fe2fc21c730c0cffc1428b6f2661587881485527c3c",
+      "role": "source"
+    },
+    {
+      "path": "native/probe-fuse3.sh",
+      "sha256": "d94b0bcb5c505271b9bfcbaeb9d9a96b66d4a724bfe880c74d08809a6899c2c4",
+      "role": "source"
+    },
+    {
+      "path": "native/qualify-fuse3.sh",
+      "sha256": "1bc57c4ac0a18722e5f37b3b24b45765a39ae051bcd6a00e76408d580f5dfdd3",
+      "role": "source"
+    },
+    {
+      "path": "native/storage_fuse3.c",
+      "sha256": "573ca443154fdf8037d690b81ca818ba41c2cff375bd675575c01cdc4ef70cbb",
+      "role": "source"
+    },
+    {
+      "path": "native/storage_host_commit.c",
+      "sha256": "20e9fd18e371c84703415cfe5c5d0af4fd96fa0e455647f4fc5a14f9acba4254",
+      "role": "source"
+    },
+    {
+      "path": "native/test-fuse3-self-probe-stub.sh",
+      "sha256": "75368fa2b0c0a173ef3a81c1cd1f9d37076c889e77c546e908fac65cdc495684",
+      "role": "source"
+    },
+    {
+      "path": "native/test-fuse3-syntax.sh",
+      "sha256": "459bfd6ffe519b1f65001c53314614339477752adb1e6676ece86336295013c5",
+      "role": "source"
+    },
+    {
+      "path": "native/test-protocol.sh",
+      "sha256": "881fc1a4b9e08fa0e040bc1142e24446292fef61dca79c93aa7ea75232809b95",
+      "role": "source"
+    },
+    {
+      "path": "src/StorageApiClientBridge.cls",
+      "sha256": "366718c175626732d5d500b5d99c3d244a7cce664f9d728a6a85864fc6b86422",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageBinding.cls",
+      "sha256": "737a14014e3d3f714482166bf0c139c0128fdbe7e96b33480efe592089a54b57",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageFabric.cls",
+      "sha256": "cc238b876c370317cef6d29f08b5b78d7aa2664d7c6c361ff4faa31273d2794e",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageFuse.cls",
+      "sha256": "c6eb8633837c7e2c3738bef336fef526c90521940a9270f94860c8331a878ed8",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageFuseRpc.cls",
+      "sha256": "661350912adcc9254cff3748427a008cf821daf5ac17759689275990b5c59aa4",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageGoogleDrive.cls",
+      "sha256": "673c10d47dcc8803910bbdd83d76fe315c2454957ef4d1a10ef354a2e81d61f0",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageHerculesSequentialMedia.cls",
+      "sha256": "e25ae83dda702f263e228d7f10f5a31563cbe90e4e5d52928d083365f8a1fb38",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageHostFilesystem.cls",
+      "sha256": "dfa48b8c62c1b266cf763dfadb85784d34ef0a3d317d4fc242d7d3a4d2f40d5e",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StoragePeer.cls",
+      "sha256": "0b090169b4f1572c0c223cac7796a2db38fd77db23bcb7d59a8d09998d5ad393",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageRelation.cls",
+      "sha256": "5f550d48b930ffb4e15c51eb66a3a159dfbf64500de1b7e1ad31ed52524f251b",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageSequentialMedia.cls",
+      "sha256": "9962e65de71f3977541f64ffafdf6fc44ea861cf5e788e2c778ac9db604d624e",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageSftp.cls",
+      "sha256": "d645010cad990abdf9426ad2b822f47728ec0359e3617c291fc3e448293b2870",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageStreaming.cls",
+      "sha256": "5e9bbb3a9f6705399982f10eb2fc8366d0dacd19c2ba3ec2b9f92b2068ab8a5f",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/StorageVirtualMedia.cls",
+      "sha256": "60730746d84826ae8fd2cc2c46d24a4954991ec945bb92344b3f2747af457c93",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "tests/fuse3_stub/fuse3/fuse.h",
+      "sha256": "4b86999f9e539343f5f0a70b710e6194844db152eb98684f838c310a0f39c101",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/fuse3_stub/fuse_stub.c",
+      "sha256": "32a4e0eb6939662e683bd3f41e15e44b9d637aa9aa5b81deb286cb7832e0637b",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/run.sh",
+      "sha256": "89fe4a08b33fb0479dfa25f764481a5e82579ccd0ded05737701c85caed22a16",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_alias_views.rex",
+      "sha256": "e925bd7ce8e6b07464f4c92aac391bf32167f88747196a88b08f176b1fa30197",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_api_client_bridge.rex",
+      "sha256": "cc03447d1d09fe3bce9ba8ef35c4f8b1bfaabead9cd53d0000e102b126db9031",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_application_bindings.rex",
+      "sha256": "03f8da1cdab381c5f3b9c9529e34196087b8074df9cd9bbf7748d640d54137aa",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_capacity_domains.rex",
+      "sha256": "e835f43b82c4961ae8eb411979436795484e6e2c481714f57ab8758caee3184b",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_catalogue.rex",
+      "sha256": "89aad6ab9b15555387be3104f2af43a3c3c8ce6de6b2c7ae10c7eed26bc79111",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_disposable_lifecycle.rex",
+      "sha256": "8f96fb53e8b3398b83752a0b46a061367c36df449a01e8db5f4edfc72506bddf",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_environment_journal.rex",
+      "sha256": "a61dd256b2969e6b59961aa636ab06ef29c172882da7f078a489a298c808721d",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_environment_overlays.rex",
+      "sha256": "7e5f088967f0ca4c7f4a4710c3f24fecc73ca6fc70de99a4b649300ec9b69ab3",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_fleet_placement_matrix.rex",
+      "sha256": "830573af502dc5a95602f78b72c207db1ee641eb4f61ac248cfd181d3c600b1a",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_foreign_fuse_declaration.py",
+      "sha256": "1ff952845f066d19926130e190774a3a7b1a50ee191c5b8029c83c73aaf5a64c",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_fuse_atomic_snapshot.rex",
+      "sha256": "95cce8aac7d77826232b209580ba887e3eaf007a5734a698b9df25401ce03666",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_fuse_colon_paths.rex",
+      "sha256": "2f6b6228e7a839ec2bd05cc005dd1526b0775a19ae943092a5d2a44a0ac6cfba",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_fuse_prepared_snapshot_ref.rex",
+      "sha256": "ac20751bc18865dd1a3095687df1b1844ef60a0500422df1b55a3bd19a14b289",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_fuse_rpc_daemon.sh",
+      "sha256": "2a0212fc597de434fe55d108e8438599e1494a80ae5726557ccf9d90dd23f76c",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_fuse_rpc_dispatcher.rex",
+      "sha256": "2ebd6e535d782345804b3c3a77847ac875f8ee128fd471ad666e4b3b81b4b7d2",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_google_drive_http_adapter.rex",
+      "sha256": "89ea49316d9f76b2517216d568159e1c83218ae16cc157d14c5d9067dfb9500f",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_google_drive_protocol.rex",
+      "sha256": "738900813a4ee76d64f7ffc779d3c5fdd3726fa7969b413960af1f1761f25702",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_google_drive_resume_reconcile.rex",
+      "sha256": "633e58ef351d81c278bd34df7d629d3c4493d7eb72ddfe55d8ac016a8a94ba1c",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_google_drive_streaming_sink.rex",
+      "sha256": "f498e96b60e3632df352a147762e0832c5f8e347725e693f1db45a73181e5a55",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_hercules_printer_tape.rex",
+      "sha256": "ac41714a9fc7a86b14bf94048b8ea7fbb84790fc6edda5b5725947922e9209cd",
+      "role": "source"
+    },
+    {
+      "path": "tests/test_hercules_sequential_media.rex",
+      "sha256": "8d482ee779efa9faf3a1d9970f925194f647dd366a4ca1538b6f209b17314a2d",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_host_backup_floor_cli.sh",
+      "sha256": "236b504a456e1d864ebc559340444b3b821c0a10d188bf31db109042dbba1d4a",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_host_filesystem_provider.rex",
+      "sha256": "2aa5683add13bc69b78f4804f1c4a37658bb3927b12fe7e649abc8e13c84ad92",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_large_file_precision.rex",
+      "sha256": "6110a46ac747fc9fffe763b15ab641ac281c0cbce6417bbfedde6d9f8817fe77",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_local_scan.rex",
+      "sha256": "58b0d71a8bbaeacd7d5bc13a5f6c2bcba47dff7a87bf96e554a32af106e55618",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_locality_placement.rex",
+      "sha256": "1f7c797c96f8210600026a4020d9959f3ceb42be12ef74bc00453c87a6fb652f",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_namespace_inheritance_list.rex",
+      "sha256": "beaf135e17ae7da98669835e67c37b685afab6731b4df8cc3aab0e369c3df99a",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_namespace_views.rex",
+      "sha256": "5b0d403233b3e66b0cbb057e2b0968a9bbec7f54680c2481800d6de0b5330526",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_node_inventory.rex",
+      "sha256": "2d86fdc937df4d2f4f587333b8cd260da589e57359afabcd8d7520f341edb0fd",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_peer_materialise.rex",
+      "sha256": "72eb342134dcc89f14d4c69f0a1fb06ae31049502afc2033cc1ef4ddae681ccd",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_peer_protocol.rex",
+      "sha256": "3b7bc6e76d1b9e93953da68769d63945c071057f07815c8f725e3d714cca94c8",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_peer_queuerexx_adapter.rex",
+      "sha256": "c40d996b2646cbf10298c14f20430b86c327494ee2e875ace06d043b4d64ac12",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_posix_probe.rex",
+      "sha256": "d7585cee61057c73e5879f06720772508c32da8ca3f6100f197722b89bc3ef9d",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_provider_contracts.rex",
+      "sha256": "39c84436c4262ee373844a8ef189df8f993de767f0e32e1eb8938579de4647a9",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_relation_fuse_rpc.rex",
+      "sha256": "fd2c4d5a2898620a7b3a91cc884a21b46624baebc2f102709cf5aeedc58e3d90",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_relation_query.rex",
+      "sha256": "bce7840030310a43392ba1f14859e2ddb0aa9711ea43b782c12b55432de5f63d",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_removable_provider.rex",
+      "sha256": "31458ae41a8e0edaa333cfa9744171c9a3be254b04b25b95747dce9759c01029",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_route_write_semantics.rex",
+      "sha256": "2e2c65d1287a5bbf2cc34a030cc53d2fba98a7ca5ab5c5d40296d13fd844cbe0",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_sequential_media_contract.rex",
+      "sha256": "177b259cac9ee6ee8d468d21d54693c9930e93cd794e7db7ed9670479f3b3772",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_sftp_backend.rex",
+      "sha256": "2890838887610908ef5d8d237582cb5d183b1ccf9a28ff2b95df6af5816abf8a",
+      "role": "source"
+    },
+    {
+      "path": "tests/test_streaming_checkpoint.rex",
+      "sha256": "d9fb38ee0896040979aafb09fb9e5f0ae71f93949ad66c4ea9295d16f84e72ae",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_streaming_transfer.rex",
+      "sha256": "f952940f3bc96f309680c6f5359f5b7485d8000d625f3cf246cffdcde1383fac",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_transfer_safety.rex",
+      "sha256": "b99bff2887073a7a61c526a2e0d22226820f5d687028f87de0623e92c7841eea",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_union_search_path.rex",
+      "sha256": "51e927b20e127c0c9fe89af43889c198c25a31e3047e830b9c5c5a87c77a4a00",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_virtual_media_contract.rex",
+      "sha256": "6ee6ccbdaec3ed3024acc48f14ddd85e89838f8c262c50283de91a63b7eb15e3",
+      "role": "qualification"
+    }
+  ]
+}

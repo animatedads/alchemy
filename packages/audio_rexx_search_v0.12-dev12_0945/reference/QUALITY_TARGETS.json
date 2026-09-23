@@ -1,0 +1,59 @@
+{
+  "schema": "audio.quality.targets/2",
+  "target_set_id": "AUDIO-QUALITY-TARGETS-V2",
+  "corpus_manifest": "QUALITY_CORPUS.tsv",
+  "profile_semantics": "unweighted robust reference-level median/MAD plus nearest two-second reference-window support across every manifest entry",
+  "preparation": "decode/downmix/resample only; 16kHz mono PCM16; selected source windows are sample-exact; no denoise/compression/gating/loudness-normalization/peak-normalization",
+  "score_compatibility": "NOT_COMPARABLE_WITH_PRE_V2_REFERENCE_PROFILE",
+  "deduplication": "byte-identical source or prepared audio is represented once; repeated uploads do not increase reference weight",
+  "targets": [
+    {
+      "id": "quality_target_01_whatsapp",
+      "source_name": "24 August Threats from Benjamin Lea to Thomas DyerWhatsApp Audio 2022-08-24 between 6 and 7 PM 1(1).mp3",
+      "source_sha256": "f59b6f88ac7693655d0a1610e8380442853afcb6a94534d2d28b48a45c17c867",
+      "prepared": "prepared/quality_target_01_whatsapp_16k_mono_pcm16.wav",
+      "prepared_sha256": "60cd59d1256db067de6042b6c3fdb4e69525fd2c95c0412697e35bf37aa00e0f",
+      "prepared_duration_sec": 46.5,
+      "coverage": "legacy real-speech contrast"
+    },
+    {
+      "id": "quality_target_02_upspeak",
+      "source_name": "Upspeak The Habit that Makes It Impossible to Sound Intelligent.ogg",
+      "source_sha256": "4cc94893f77e8631971c0dbc6b06e466e60c345114e585003048ae6f65f5ee71",
+      "prepared": "prepared/quality_target_02_upspeak_16k_mono_pcm16.wav",
+      "prepared_sha256": "2b4d5583ce8e1179e69451ae3321e65e42933dab6c68504f6b98fa06d0c1f3ce",
+      "prepared_duration_sec": 56.81925,
+      "coverage": "legacy brighter-speech contrast"
+    },
+    {
+      "id": "quality_target_03_quiet_voice",
+      "source_name": "WhatsApp Audio 2026-09-08 at 17.15.39.mp4",
+      "source_sha256": "a3cb001a35a1567cdfc91d076a8c3ce7f062c189c31021f2b205c5add583c2bb",
+      "source_window_start_sec": 489.0,
+      "source_window_end_sec": 537.0,
+      "prepared": "prepared/quality_target_03_quiet_voice_16k_mono_pcm16.wav",
+      "prepared_sha256": "7961f844949ec99298c7528fb4b349ae788cfed7175ac9355b3a4bd2c5f903b4",
+      "prepared_duration_sec": 48.0,
+      "coverage": "quiet speech/high-register voice coverage; source level preserved"
+    },
+    {
+      "id": "quality_target_04_high_register",
+      "source_name": "WhatsApp Audio 2026-09-08 at 17.15.39.mp4",
+      "source_sha256": "a3cb001a35a1567cdfc91d076a8c3ce7f062c189c31021f2b205c5add583c2bb",
+      "source_window_start_sec": 765.0,
+      "source_window_end_sec": 813.0,
+      "prepared": "prepared/quality_target_04_high_register_16k_mono_pcm16.wav",
+      "prepared_sha256": "d5477826055e0f30918a6f28642dddfb9c830418fc4940138c9b186fc6b9b70d",
+      "prepared_duration_sec": 48.0,
+      "coverage": "brighter/high-register voice coverage; source level preserved"
+    }
+  ],
+  "duplicate_source_evidence": [
+    {
+      "uploaded_name": "24 August Threats from Benjamin Lea to Thomas DyerWhatsApp Audio 2022-08-24 between 6 and 7 PM 1(2).mp3",
+      "sha256": "f59b6f88ac7693655d0a1610e8380442853afcb6a94534d2d28b48a45c17c867",
+      "same_as": "quality_target_01_whatsapp",
+      "action": "not added a second time"
+    }
+  ]
+}

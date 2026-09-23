@@ -1,0 +1,158 @@
+{
+  "schema": "oorexx.package/0.1",
+  "name": "oorexx-ssh",
+  "lineage": "MAIN",
+  "moduleLevel": 1,
+  "displayVersion": "0.1-dev1",
+  "files": [
+    {
+      "path": "API.md",
+      "sha256": "5165a8abb929578012831afd7427ae1b340273d9be6668c42402fb4f19e0354f",
+      "role": "documentation"
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "sha256": "0f952de8349e23c730571802e1c072cc09d636d1caf3fb27dca5ec3e68ef9d86",
+      "role": "documentation"
+    },
+    {
+      "path": "DEPENDENCIES.md",
+      "sha256": "691f3ac7f43983d8928acdfe02f694564a43c6b80a330f4114ea055a1f4acfd3",
+      "role": "documentation"
+    },
+    {
+      "path": "KNOWN_GAPS.md",
+      "sha256": "6a04c2b642a25110b8f7d0daab169c7a5e9bce20e4377edeea2f7599d29b99bb",
+      "role": "documentation"
+    },
+    {
+      "path": "PACKAGER.md",
+      "sha256": "069f5e774002722cf9314638c447a8c40b44c4aa40105d7e2384f400aaef18fc",
+      "role": "documentation"
+    },
+    {
+      "path": "QUALIFICATION.md",
+      "sha256": "41351e6ad3dfefd558c9dfda10653315521a1ff48673c8c85b54663a5a169fd2",
+      "role": "documentation"
+    },
+    {
+      "path": "README.md",
+      "sha256": "8be4443d2652c6df187ec9dbc0e7683076fd79fd9b7a98e75887a47cc15a0c80",
+      "role": "documentation"
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "113c45fc1d1d58ec736f770750899dce47218447fd519902fadf26ed1f7bdaf9",
+      "role": "documentation"
+    },
+    {
+      "path": "SOURCE_PROVENANCE.md",
+      "sha256": "17f0372006a459eb9384f15fff44e46185c7d7802014f02fffc774fb4d76905c",
+      "role": "documentation"
+    },
+    {
+      "path": "VALIDATION.txt",
+      "sha256": "6780b814cad3b03d771322fe280279dd4699390390d85dc59acf816d12fe798d",
+      "role": "documentation"
+    },
+    {
+      "path": "VERSION",
+      "sha256": "4ba2944c7e9bc8b35745534e2d252a3572d4937e0309f8733506281fcf0c0fbb",
+      "role": "data"
+    },
+    {
+      "path": "bridge/libssh.bridge.json",
+      "sha256": "6defb70c8a90f1b8c17d04fc057e8d5719e018c3647bd3c266f6857670e14e38",
+      "role": "data"
+    },
+    {
+      "path": "examples/endpoint_registry.rex",
+      "sha256": "133404779a76eaafbc154b74d63ebf08e53aa67d36cf18a37f6d4962b07d88d9",
+      "role": "data"
+    },
+    {
+      "path": "src/SshCore.cls",
+      "sha256": "d5e5804b01ed7ac8619209850f0cd5bb96dae7423de84ce318502e2e231123b6",
+      "role": "data"
+    },
+    {
+      "path": "tests/run.sh",
+      "sha256": "c10715f7e3e2ac15207ab4867cddb39791ae433b1e74b6eadbf32bcea7e4ed1a",
+      "role": "data"
+    },
+    {
+      "path": "tests/test_authority.rex",
+      "sha256": "9bb896a349fee00da23d3ac6ff72042e26ef0b76f9f9f3b627f260f7fd6e9c83",
+      "role": "data"
+    },
+    {
+      "path": "tests/test_foreign_libssh.rex",
+      "sha256": "700f5ac0f9ed89a576c71af8af4943c67028b2b1e721ef3306b366edaac47244",
+      "role": "data"
+    },
+    {
+      "path": "tests/test_registry.rex",
+      "sha256": "139064592e52d06c334fd024585e27aa8dbd937075929a0ddda639f04ab739da",
+      "role": "data"
+    },
+    {
+      "path": "tests/test_version_gate.rex",
+      "sha256": "28f3f43e98b64f0660cbab27afd11e76a09af828529690489f77553e54ebadfe",
+      "role": "data"
+    }
+  ],
+  "rexxPath": [
+    "src"
+  ],
+  "requires": [
+    {
+      "name": "oorexx-foreign-runtime",
+      "lineage": "MAIN",
+      "minimumModuleLevel": 22,
+      "purpose": "mandatory native SSH boundary"
+    }
+  ],
+  "optionalRequires": [],
+  "qualification": [
+    {
+      "id": "registry",
+      "argv": [
+        "rexx",
+        "test_registry.rex"
+      ],
+      "cwd": "tests",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "authority",
+      "argv": [
+        "rexx",
+        "test_authority.rex"
+      ],
+      "cwd": "tests",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "foreign-libssh",
+      "argv": [
+        "rexx",
+        "test_foreign_libssh.rex"
+      ],
+      "cwd": "tests",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "version-gate",
+      "argv": [
+        "rexx",
+        "test_version_gate.rex"
+      ],
+      "cwd": "tests",
+      "timeoutMs": 30000,
+      "required": true
+    }
+  ]
+}

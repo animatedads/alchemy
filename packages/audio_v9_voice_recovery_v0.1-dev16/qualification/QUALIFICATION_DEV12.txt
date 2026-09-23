@@ -1,0 +1,114 @@
+Audio V9 Voice Recovery v0.1-dev12 — feed-relative echo survey qualification
+============================================================================
+
+Scope
+-----
+Dev12 preserves the dev11 loud-event survey API/TSV for exact reproducibility,
+adds a v2 feed-relative survey API/TSV, and promotes presentation-only ML Graph
+from v0.1-dev3 to v0.1-dev5 after direct downstream qualification.  No existing
+dev11 survey output or audio sample is rewritten.
+
+Pinned runtime
+--------------
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+
+Pinned dependencies
+-------------------
+Audio V9 Pattern Locator v0.1-dev5-hotfix1
+  6d2716b5f697b9b705214dcc6bd8f93c62b5072111174dd6f3a485334ae5ecd8
+ooRexx ML v0.1-dev11
+  713c4998c67aed9b526f3e20f7b2f14de4b355939259bff55beebe9133980c79
+ooRexx ML Graph v0.1-dev5
+  24659562d1e5ca86a08bc3156f838eebd1e320a45e3e8969979fe7dde3b69d40
+ooRexx Foreign Runtime v0.22.6
+  25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465
+
+Real-survey trigger
+-------------------
+See DEV11_REAL_SURVEY_FINDINGS.txt.  The frozen eight-hour dev11 survey contains
+467 events but all are FC-triggered; the largest FD peak is below dev11's shared
+0.50 absolute floor.  74/402 high-cross rows hit a +/-1 ms family boundary and
+family score overlap is widespread.
+
+V2 semantic repair
+------------------
+* FC and FD candidate admission is independent and relative to each feed's own
+  guarded one-second RMS baseline.
+* A very low absolute numerical safety floor (default 0.001) remains configurable.
+* A refractory cluster chooses the largest peak-to-own-baseline ratio, not the
+  largest raw amplitude.
+* trigger_feed is separate from cross-feed acoustic leader.
+* leader is UNRESOLVED below the strong cross-score threshold.
+* best_echo_feed is separate from best_echo_family.
+* every feed/family pair retains measured lag samples, measured lag ms, score,
+  and search-boundary contact.
+* best/second score margin, strong-family count, strong feed/family count and
+  boundary-hit count are first-class evidence.
+* default family radius is widened from +/-1 ms to +/-4 ms, still bounded.
+* overlapping family windows are intentionally retained as competing evidence.
+* pattern_hint requires strong local echo and strong cross-feed evidence and is
+  still diagnostic only.
+
+Compatibility qualification
+---------------------------
+PASS dev11 loud echo survey assertions=16 events=3
+PASS dev12 loud echo v2 survey assertions=19 events=4
+The fourth fixture event has FD absolute peak ~=0.182 (< dev11 0.50 floor) but
+FD peak-to-own-baseline ~=39 and is admitted by v2.  Its long-return maximum is
+placed at the +4 ms search boundary and boundary evidence is retained.
+
+ML Graph dev5 qualification against exact ML dev11
+---------------------------------------------------
+PASS MLGraph model 14 assertions
+PASS MLGraph point series 4 assertions
+PASS MLGraph views 11 assertions
+PASS MLGraph SVG 7 assertions
+PASS MLGraph 3D SVG 5 assertions
+PASS MLGraph SVG views 10 assertions
+PASS MLGraph pattern adapter 5 assertions
+PASS MLGraph temporal adapter 8 assertions
+PASS MLGraph temporal market 4 assertions
+PASS MLGraph difference annotations 10 assertions
+PASS MLGraph wobbly adapter 30 assertions
+PASS MLGraph wobbly SVG 6 assertions
+Total: 114 assertions.
+
+Audio downstream regression with Graph dev5
+-------------------------------------------
+PASS corpus authority 120 entries / filenames
+PASS decode geometry assertions=4
+PASS campaign contract assertions=16
+PASS spatial evidence assertions=13
+PASS spatial native provider assertions=7
+PASS acoustic character assertions=15
+PASS soft reconstruction assertions=12
+PASS acoustic coordinator assertions=10
+PASS bounded calibration assertions=4
+PASS TSV CSVStream assertions=10
+PASS calibration runtime bounds assertions=10
+PASS calibration 16s pipeline assertions=10
+PASS spatial coordinator assertions=32405
+PASS file-edge alignment assertions=22
+PASS file-edge calibration v2 assertions=24
+PASS file-edge pipeline assertions=15
+PASS edge plan / legacy refusal / source selection / masks / source-conditioned
+     path, job, merge and complexity continuation tests
+PASS TF mask policy assertions=11 and audio behavior
+PASS evidence graph assertions=83 edges=38
+PASS graph wobble assertions=10 distance=3 sets=2
+PASS graph archive assertions=21
+PASS graph renderer views=4
+PASS quality graph pipeline characters=1276 edges=6020 masks=1276 replay=deterministic
+PASS reconstruction processing samples=160000 rows=7
+
+The monolithic run_tests.sh was also executed.  It passed through graph archive
+before the external 300-second container command budget halted during the quality
+graph pipeline.  The interrupted quality-graph pipeline was immediately rerun in
+isolation and passed in 21.43 s; reconstruction then passed in 0.23 s.  This is an
+outer execution-budget interruption, not an Audio assertion failure.
+
+Native/static gates
+-------------------
+Native spatial provider builds with -std=c11 -O3 -Wall -Wextra -Werror.
+The full wrapper completed its Rexx compile sweep before behavioral execution.
+All shell roots are checked separately with sh -n.

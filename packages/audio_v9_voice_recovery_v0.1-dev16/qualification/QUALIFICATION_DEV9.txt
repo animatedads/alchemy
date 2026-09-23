@@ -1,0 +1,62 @@
+Audio V9 Voice Recovery v0.1-dev9 — source-path trajectory and CSVStream qualification
+Date: 2026-09-11
+Runtime: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Base: sealed Audio V9 Voice Recovery v0.1-dev8
+Base SHA-256: 3b6508875335c37616ab9cbb35c5c74250d70530e4debf171575a5fbc315413e
+
+Field trigger:
+- completed dev8 transferred bundles represented 30 logical edges across A/B/D/E/I;
+- 8 complexity cases were correctly governed UNRESOLVED, proving the bounded runtime repair worked;
+- all five transferred worker-level source_path_evidence.tsv files nevertheless contained 0 data rows;
+- successful edges with admitted source groups still emitted no exact path evidence.
+
+Root cause:
+- dev8 retained an 8 s spatial scan window / 4 s step while reducing per-edge calibration material to a 16 s seam-local interval;
+- this geometry provides only one complete BEFORE and one complete AFTER point per source/path;
+- AudioV9EdgePathContinuityFitter intentionally requires >=3 points per side;
+- the dev8 32 s synthetic path fixture masked the production geometry mismatch.
+
+Dev9 semantic repair:
+- source-conditioned path scan = 4 s window / 2 s step;
+- 16 s seam-local acoustic interval unchanged;
+- continuity fitter minimum remains 3 points per side (not weakened);
+- exact-authority ENVELOPE exclusion unchanged;
+- dev6 independent-group CLOCK_MEASURED rule unchanged.
+
+16 s source-conditioned regression:
+PASS source-conditioned path extraction 16s trajectory assertions=8
+PASS source-conditioned path points groups=2 points=36 scan_window_ms=4000 scan_step_ms=2000
+PASS source-conditioned edge evidence=4 rejected_path_fits=2 insufficient_trajectory=0
+SRC_A DIRECT step=-3 samples, RMS=0
+SRC_A REFINED step=-3 samples, RMS=0
+Periodic SRC_B remains conflicting rather than being averaged into authority.
+
+Structured TSV repair:
+- new AudioV9TsvReader uses stock ooRexx CsvStream with delimiter='09'x;
+- parsed records are Arrays;
+- adjacent empty fields are retained;
+- adapter restores the one trailing empty field omitted by stock r13196 CsvStream when rawText ends in TAB;
+- empty ed209e WORKERS.tsv login remains a seven-field row;
+- plain one-column filename/path lists remain ordinary streams.
+PASS TSV CSVStream assertions=10
+PASS source-conditioned job plan assertions=6
+PASS v2 file-edge calibration pipeline assertions=15
+PASS edge calibration plan assertions=3
+PASS legacy dev4 map refusal assertions=3
+
+Full integrated master gate under exact r13196: PASS
+Key inherited/new results:
+- calibration bounded acoustic: PASS assertions=4
+- calibration runtime bounds: PASS assertions=10
+- calibration 16s pipeline: PASS assertions=10
+- distributed spatial coordinator: PASS assertions=32405
+- file-edge alignment: PASS assertions=22
+- file-edge calibration v2: PASS assertions=24
+- source masks: PASS assertions=4
+- source-conditioned paths: PASS assertions=8
+- source-conditioned worker merge: PASS assertions=5
+- evidence graph: PASS assertions=83
+- deterministic quality graph pipeline: PASS characters=1276 edges=6020 masks=1276 replay=deterministic
+- final master marker: PASS audio_v9_voice_recovery_v0.1-dev9
+
+No real campaign CLOCK_MEASURED map is claimed by package qualification. The dev8 transferred evidence exposed the geometry bug and must not be promoted as zero-clock proof. Corrected dev9 source-conditioned evidence must be regenerated before campaign clock authority is advanced.

@@ -1,0 +1,82 @@
+AUDIO V9 VOICE RECOVERY v0.1-dev1 — FINAL QUALIFICATION
+Date: 2026-09-10
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version
+Runtime package SHA-256: 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+STATUS
+  Executable dev1 spatial-first recovery checkpoint qualified for distribution.
+  New downstream component; NOT a byte recovery of lost Audio V9 dev6.
+
+CAMPAIGN CONTRACT
+  2023-10-09 21:00:00 -> 2023-10-10 15:00:00 = 64,800 seconds.
+  Seven adjacent deterministic worker core intervals.
+  Semantic halo: 120 seconds per worker.
+  Corpus authority: FC=95, FD=25, total=120, bytes=4,292,920,762.
+  Source filename planning verified at campaign start/end.
+
+CORPUS SHA-256 AUTHORITY
+  Embedded: campaign/FCPAPHOS_ORIGINALS_SHA256SUMS
+  Authority SHA-256: a168f7d82f603f8d1671a7debf5a3aaae4a71a9c33f10cf2d22bff2e5453fae9
+  Entries: 120 unique paths/hashes; FC=95; FD=25.
+  Filename sets exactly match campaign/FC_FILES.txt and campaign/FD_FILES.txt.
+  Worker preflight fails closed unless inventory, 4,292,920,762-byte total,
+  and all 120 canonical SHA-256 checks pass.
+  The local qualification host does not contain the 4.29 GB OGG corpus;
+  deployed-worker preflight is the executable source-byte verification gate.
+
+SPATIAL PHASE CONTRACT
+  Analysis representation: mono f32, 8 kHz.
+  Window: 8,000 ms.
+  Step: 4,000 ms.
+  Semantic chunk: 60 s; decode length: 64 s (4 s right decode halo).
+  Expected complete campaign owned windows: 16,200.
+  Core-start ownership only; halo observations cannot duplicate authority.
+
+NATIVE SYNTHETIC DELAY FIXTURE
+  Synthetic B delay: 120 ms.
+  Envelope estimator recovered approximately 120 ms.
+  Refined waveform estimator recovered approximately 120 ms.
+  Refined correlation > 0.8.
+  Local-support coherence > 0.5.
+  64 s scan emitted exactly 15 starts for one semantic minute, including 56,000 ms.
+
+ML DEV11 REGRESSION
+  Six delayed observations: 80,80,80,140,140,140 ms.
+  Constant-delay active fit with maxRemovals=3.
+  distanceToFit=3.
+  minimal restoring sets=2.
+  participation=0.5 for every observation.
+  No observation deleted or labelled noise by the fit operation.
+
+COORDINATOR REGRESSION
+  Synthetic worker evidence written in reverse time order.
+  Merge reconstructed strict 4 s global phase from campaign authority.
+  Exactly 16,200 owned windows.
+  Owner of every merged row matches the worker core partition.
+  Test reported 32,405 assertions PASS.
+
+FINAL TEST PASS
+  corpus authority static contract: PASS
+  test_campaign_contract.rex: 16 assertions PASS
+  test_spatial_evidence.rex: 13 assertions PASS
+  test_spatial_native_provider.rex: 7 assertions PASS
+  test_spatial_coordinator.rex: 32,405 assertions PASS
+  Total ooRexx behavioural assertions: 32,441 PASS.
+  rexxc: 13 package .cls/.rex files PASS under exact r13196.
+  Bash syntax: all package .sh files PASS.
+  Precision contract: all executable .rex roots use `numeric digits 30`;
+  all package .cls files use `::options numeric inherit`.
+  Native provider rebuilt successfully for the qualification host.
+
+KNOWN PERFORMANCE BOUNDARY
+  A 12 s synthetic existing Audio V9 spectral run completed and produced field/segment/box evidence.
+  A continuous 64 s invocation of the existing dev5 ooRexx spectral segment analyser exceeded the surrounding 45 s execution harness during segment summarisation.
+  This is recorded as a scaling/performance boundary, not a semantic test failure.
+  dev1 therefore defaults workers to the native spatial census. `full` remains explicit/optional while detailed spectral processing is optimised/targeted.
+
+NON-CLAIMS
+  No final HUMAN_VOICE / CAMERA_PLAYBACK / ALARM / ANIMAL / BACKGROUND / UNCERTAIN classification yet.
+  No destructive source suppression.
+  No best_voice.ogg yet.
+  No remote-worker launch is claimed by this local seal.
+  No claim that the old site model is surveyed geometry; it remains advisory prior evidence.

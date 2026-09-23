@@ -1,0 +1,68 @@
+{
+  "probe": "dual-camera-native-cadence-motion-alignment",
+  "reduction": {
+    "working_surface": [
+      96,
+      171
+    ],
+    "temporal_cadence": "every source frame",
+    "motion_probe_note": "5-bit luminance proxy used for qualification; not a replacement for the project V5V palette authority"
+  },
+  "video_A": {
+    "path_basename": "1000060609.mp4",
+    "fps": 29.972906878811557,
+    "frame_count": 1641,
+    "duration_s": 54.74944444444444
+  },
+  "video_B": {
+    "path_basename": "VID_20260923_050113.mp4",
+    "fps": 30.039047661955625,
+    "frame_count": 1615,
+    "duration_s": 53.763355555555556
+  },
+  "channel_alignment": {
+    "dx": {
+      "lag_frames": 22,
+      "correlation": 0.9718405059668567,
+      "overlap_frames": 1614
+    },
+    "dy": {
+      "lag_frames": 22,
+      "correlation": 0.9307248451022573,
+      "overlap_frames": 1614
+    },
+    "roll": {
+      "lag_frames": 22,
+      "correlation": 0.9064294127232424,
+      "overlap_frames": 1614
+    },
+    "logscale": {
+      "lag_frames": 23,
+      "correlation": 0.53306304806747,
+      "overlap_frames": 1614
+    },
+    "flowmag": {
+      "lag_frames": 22,
+      "correlation": 0.9723537167892043,
+      "overlap_frames": 1614
+    }
+  },
+  "consensus": {
+    "lag_frames_A_after_B": 22,
+    "offset_seconds_using_A_fps": 0.7339962082740876,
+    "meaning": "A[lag+i] aligns with B[i]",
+    "aligned_correlations": {
+      "dx": 0.9718405059668567,
+      "dy": 0.9307248451022573,
+      "roll": 0.9064294127232424,
+      "logscale": 0.5291307653639273,
+      "flowmag": 0.9723537167892043
+    }
+  },
+  "physical_policy": {
+    "max_translation_mps": 3.0,
+    "max_angular_rate_deg_s": 360.0,
+    "example_90deg_over_0_5s_deg_s": 180.0,
+    "native_timestamps_required": true
+  }
+}

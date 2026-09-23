@@ -1,0 +1,110 @@
+Audio V9 Voice Recovery v0.1-dev14 — prior-free recurrence/censoring qualification
+Date: 2026-09-12
+
+BASE
+  sealed dev13 SHA-256:
+  d1fe5dde38b2f013793407ac633ac57839d15ea740f9e9f2ae1775e20154bb06
+
+REAL DEV12 OVERNIGHT EVIDENCE
+  archive: ed209c_dev12_echo_51jobs_2100_0530.tar.gz
+  SHA-256: 1168d49aeef2093003691cb189e4e8f00675c08bef8cb72f2001f78d4183aed0
+  coverage: 51/51 ten-minute jobs, 2023-10-09 21:00 through 2023-10-10 05:30
+  events: 10983
+  trigger FC: 5767
+  trigger FD: 5216
+  MULTI_FAMILY: 9759
+  SINGLE_FAMILY: 400
+  WEAK: 824
+  best-family boundary: 539/10983 (4.91%)
+  any named-family boundary: 7208/10983 (65.63%)
+  cross-camera exact +/-35 ms endpoint: 96 rows; 45 with cross_score >= 0.70
+
+  An FC-zero interval is visible while FD remains active.  Event rows with
+  peak_fc=0 and baseline_fc=0 span approximately 2023-10-10 00:06:14.398125
+  through 00:34:31.263125 (369 rows).  Dev12 correctly continues FD-relative
+  admission instead of fabricating cross-camera evidence.
+
+CALIBRATION LANDMARK
+  The 04:16 screenshot alignment is represented by four dev12 events around
+  2023-10-10 04:16:46.4.  The row at 04:16:46.528000 has FC peak ~=0.992,
+  cross_score ~=0.968319, and fd_minus_fc ~=+27.75 ms.  All seven named delay
+  families are strong, so its best-family label is not promoted to room-path
+  truth.  See CALIBRATION_CANDIDATE_20231010_041646.tsv.
+
+V3 SEMANTIC INCREMENT
+  * The complete v2 row remains the leading contract.
+  * cross_boundary explicitly identifies a cross-camera optimum censored by the
+    existing +/-35 ms direct-arrival search.
+  * cross_search_radius_ms records that bound.
+  * fc_local_nonzero / fd_local_nonzero and per-feed baseline coverage expose
+    local availability rather than making zero signal look like negative evidence.
+  * A prior-free same-feed matched-filter search spans 6..80 ms by default.
+  * It reports four strongest non-max-suppressed recurrence peaks per feed, with
+    3 ms minimum separation and search-completeness evidence.
+  * The prior-free search never consults the seven named room-delay centres.
+  * The seven named hypotheses remain alongside it for predicted-vs-discovered
+    comparison; v1 and v2 scanners remain callable and behavior-compatible.
+  * The direct FC/FD search is not blindly widened; endpoint values are marked
+    censored because widening may confuse reflected paths with direct arrival.
+
+SYNTHETIC V3 QUALIFICATION
+  PASS loud echo survey assertions=16 events=3
+  PASS loud echo v2 survey assertions=19 events=5
+  PASS loud echo v3 survey assertions=15 events=5
+
+  Prior-free recovery demonstrates, without named-family centring:
+    FD ~23.32 ms (about 187 samples)
+    FD ~58.30 ms (about 466 samples)
+    FC 17.50 ms (140 samples)
+    unconstrained artificial 35 ms recurrence (280 samples)
+  A fifth low-gain fixture places direct FC/FD arrival exactly at +35 ms;
+  v3 records cross_boundary=1 instead of presenting the endpoint as an
+  unconstrained exact physical delay.
+
+WOBBLE METHODOLOGY NOTE
+  A real long-return subset selected inside the named 58.30 ms +/-4 ms window
+  fitted ONE_COHERENT_REFINED_DELAY with mean 58.7045 ms, RMS 1.787 ms and
+  distance-to-fit 0 under the existing 3 ms criterion.  This is not independent
+  proof of a room path because the selection was already constrained by that
+  named window.  V3's prior-free recurrence output exists specifically to remove
+  that circularity before ML contextual-fit interpretation.
+
+FULL REGRESSION GATES
+  PASS campaign contract assertions=16
+  PASS spatial evidence assertions=13
+  PASS spatial native provider assertions=7
+  PASS search landmark assertions=9 anchor=63832518792
+  PASS acoustic character assertions=15
+  PASS soft reconstruction assertions=12
+  PASS acoustic coordinator assertions=10
+  PASS bounded calibration assertions=4
+  PASS TSV CSVStream assertions=10
+  PASS calibration runtime bounds assertions=10
+  PASS calibration 16s pipeline assertions=10
+  PASS spatial coordinator assertions=32405
+  PASS file-edge alignment assertions=22
+  PASS file-edge calibration v2 assertions=24
+  PASS file-edge pipeline assertions=15
+  PASS source selection / source-conditioned plan/path/merge/complexity gates
+  PASS TF mask policy assertions=11 and audio behavior
+  PASS evidence graph assertions=83 edges=38
+  PASS graph wobble assertions=10 distance=3 sets=2
+  PASS graph archive assertions=21
+  PASS quality graph pipeline characters=1276 edges=6020 masks=1276 replay=deterministic
+  PASS reconstruction processing samples=160000 rows=7
+  PASS quality graph renderer views=4
+  PASS corpus authority fc=95 fd=25 entries=120
+  PASS decode geometry assertions=4
+  PASS rexxc roots=69
+  PASS shell syntax roots
+
+PINNED PRESENTATION/ML
+  ooRexx ML v0.1-dev11 remains semantic authority for contextual fit.
+  ooRexx ML Graph v0.1-dev5 remains presentation adapter; renderer has no
+  authority to invent recurrence, source identity, or classifications.
+
+HARNESS NOTE
+  One manual grouped invocation called test_spatial_native_provider before its
+  a120/b120 fixture preparation and correctly failed closed (rc 168).  It was
+  rerun with the master fixture ordering and passed.  This was a qualification
+  driver ordering error, not a product semantic failure.

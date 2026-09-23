@@ -1,0 +1,29 @@
+ooRexx Units v0.1-dev2 validation
+=================================
+
+Runtime:
+Open Object Rexx 5.3.0 r13196 Internal Test Version
+User-supplied debug build: oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20260922-175048).deb
+
+Qualification:
+PASS test_dimensions
+PASS test_maths_contract
+PASS test_units
+PASS test_dev2
+PASS examples/physics_and_rexxtronics.rex
+PASS rexxc rexx/Units.cls
+
+dev2 coverage:
+- absolute temperature and delta arithmetic
+- compound unit construction and parsing
+- prefix factory
+- volume/density/pressure/eV engineering conversions
+- metadata schema and round-trip reconstruction
+- UTF-8 input aliases (ohm and degree symbols)
+- semantic-family equality guard
+- 50-digit conversion arithmetic boundaries
+
+Maths compatibility lock:
+The vector qualification double implements vector * scalar and deliberately has no
+vector / scalar. UnitQuantity division therefore remains compatible with authoritative
+Maths v0.8 by scaling through multiplication by the reciprocal.

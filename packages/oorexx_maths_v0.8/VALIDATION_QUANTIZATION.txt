@@ -1,0 +1,17 @@
+SOURCE
+[1/3 1/2]
+[-1 0]
+
+INT8 state: quantstate[scheme=quantization[name=SYMMETRIC_INT8;bits=8;blockSize=4;storage=INT8;compute=FLOAT32;codebook=NONE;nested=0;rounding=NEAREST_EVEN;providerHint=PURE];shape=matrix:2x2;provider=PURE;providerVersion=0.8;sourceContext=digits=50;guard=0;domain=RATIONAL;provider=PURE;loss=FORBID;rtol=0;atol=0;verifyExtra=0;scales=1/127;maxAbsError=1/254;maxErrorBound=1/254;details=Exact rational block absmax/127 scaling; signed payload [-127,127]; nearest-even code selection.]
+INT8 exact max reconstruction error: 1/254
+INT8 exact declared bound: 1/254
+INT8 dequantized:
+[42/127 64/127]
+[-1 0]
+
+claim <= 1/200: PROVED EXACT_BOUND_CERTIFIED
+NF4 state: quantstate[scheme=quantization[name=NF4;bits=4;blockSize=4;storage=UINT8;compute=BFLOAT16;codebook=NF4-BNB-CODEBOOK;nested=0;rounding=NEAREST_CODE_LOWER_TIE;providerHint=BITSANDBYTES-CONCEPT];shape=matrix:2x2;provider=PURE;providerVersion=0.8;sourceContext=digits=50;guard=0;domain=RATIONAL;provider=PURE;loss=FORBID;rtol=0;atol=0;verifyExtra=0;scales=1;maxAbsError=2964508533477783/50000000000000000;maxErrorBound=3038071990013123/20000000000000000;details=Exact rational replay using declared 16-value NF4 decimal codebook and per-block absmax scaling; payload is unpacked code indices 0..15.]
+NF4 exact max reconstruction error: 2964508533477783/50000000000000000
+NF4 exact declared bound: 3038071990013123/20000000000000000
+
+mixed precision: mixedPrecision[default=quantization[name=NF4;bits=4;blockSize=64;storage=UINT8;compute=BFLOAT16;codebook=NF4-BNB-CODEBOOK;nested=0;rounding=NEAREST_CODE_LOWER_TIE;providerHint=BITSANDBYTES-CONCEPT];high=dtype[name=FLOAT32;bits=32;kind=BINARY_FLOAT;exact=0];outlierThreshold=6;policy=precisionPolicy[minElements=4096;preserveExact=1;protected=BIAS]]

@@ -1,0 +1,192 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_queue_fabric",
+    "version": "0.9-dev6",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src",
+      "NOSQL_SRC": "${REPO_ROOT}/packages/nosqlserver_v0.77/src",
+      "RUNTIME_REGISTRY_SRC": "${REPO_ROOT}/packages/runtime_registry_v0.12/src",
+      "ALCHEMY_OBJECTS_SRC": "${REPO_ROOT}/packages/alchemy_objects_v0.5/src",
+      "WLU_SRC": "${REPO_ROOT}/packages/oorexx_work_load_units_v0.6/src",
+      "QF_V082_SRC": "${REPO_ROOT}/packages/oorexx_queue_fabric_v0.8.2/src"
+    },
+    "rexx_path": {
+      "mode": "replace",
+      "entries": [
+        "${PACKAGE_ROOT}/src",
+        "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src",
+        "${REPO_ROOT}/packages/nosqlserver_v0.77/src",
+        "${REPO_ROOT}/packages/runtime_registry_v0.12/src",
+        "${REPO_ROOT}/packages/alchemy_objects_v0.5/src",
+        "${REPO_ROOT}/packages/oorexx_work_load_units_v0.6/src"
+      ],
+      "require_entries": true
+    },
+    "require_dirs": [
+      "CRYPTO_SRC",
+      "NOSQL_SRC",
+      "RUNTIME_REGISTRY_SRC",
+      "ALCHEMY_OBJECTS_SRC",
+      "WLU_SRC",
+      "QF_V082_SRC"
+    ],
+    "report": [
+      "CRYPTO_SRC",
+      "NOSQL_SRC",
+      "RUNTIME_REGISTRY_SRC",
+      "ALCHEMY_OBJECTS_SRC",
+      "WLU_SRC",
+      "QF_V082_SRC"
+    ]
+  },
+  "tests": [
+    {
+      "name": "manifest",
+      "argv": ["sha256sum", "-c", "MANIFEST.sha256"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "style",
+      "argv": ["bash", "run_tests.sh", "style"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "compile",
+      "argv": ["bash", "run_tests.sh", "compile"],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "core",
+      "argv": ["bash", "run_tests.sh", "core"],
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "topics",
+      "argv": ["bash", "run_tests.sh", "topics"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "distributed-topics",
+      "argv": ["bash", "run_tests.sh", "distributed-topics"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "transport-core",
+      "argv": ["bash", "run_tests.sh", "transport-core"],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "socket-transport",
+      "argv": ["bash", "run_tests.sh", "socket-transport"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "socket-security",
+      "argv": ["bash", "run_tests.sh", "socket-security"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "socket-health-failover",
+      "argv": ["bash", "run_tests.sh", "socket-health"],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "service",
+      "argv": ["bash", "run_tests.sh", "service"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "registry",
+      "argv": ["bash", "run_tests.sh", "registry"],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "wlu",
+      "argv": ["bash", "run_tests.sh", "wlu"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "release-boundary",
+      "argv": ["bash", "run_tests.sh", "release-boundary"],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "compat-v082-to-v09",
+      "argv": ["bash", "run_tests.sh", "compat-v082-v09"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "compat-v082-to-v09-authenticated",
+      "argv": ["bash", "run_tests.sh", "compat-v082-v09-auth"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "compat-v09-to-v082",
+      "argv": ["bash", "run_tests.sh", "compat-v09-v082"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "compat-v09-to-v082-authenticated",
+      "argv": ["bash", "run_tests.sh", "compat-v09-v082-auth"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "crypto-known-answer",
+      "argv": ["bash", "run_tests.sh", "crypto-known-answer"],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "crypto-hmac-durability",
+      "argv": ["bash", "run_tests.sh", "crypto-hmac"],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "crypto-ed25519-checkpoint",
+      "argv": ["bash", "run_tests.sh", "crypto-checkpoint"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "crypto-hmac-rotation",
+      "argv": ["bash", "run_tests.sh", "crypto-rotation"],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "crypto-torn-tail-recovery",
+      "argv": ["bash", "run_tests.sh", "crypto-recovery"],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "crypto-checkpoint-keyring",
+      "argv": ["bash", "run_tests.sh", "crypto-keyring"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "crypto-authenticated-uow",
+      "argv": ["bash", "run_tests.sh", "crypto-uow"],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "crypto-authenticated-channel",
+      "argv": ["bash", "run_tests.sh", "crypto-channel"],
+      "timeout_seconds": 1200
+    },
+    {
+      "name": "crypto-authenticated-topic",
+      "argv": ["bash", "run_tests.sh", "crypto-topic"],
+      "timeout_seconds": 1800
+    },
+    {
+      "name": "crypto-authenticated-distributed-topic",
+      "argv": ["bash", "run_tests.sh", "crypto-distributed-topic"],
+      "timeout_seconds": 1800
+    }
+  ],
+  "publish": {
+    "artifact_only": true
+  }
+}

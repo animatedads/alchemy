@@ -1,0 +1,47 @@
+ooRexx Pharo Alchemy v0.1-dev6-review qualification
+
+PASS  dev6 review contract
+PASS  inherited static message/UNKNOWN contract
+PASS  dependency authority advanced to Alchemy Objects v0.8.1 inspector-repaired(2)
+PASS  live-inspection/dispatch separation contract
+PASS  Foreign Runtime v0.22.6 retained as native substrate
+PASS  method-level comments added across ooRexx and Pharo bridge/proxy methods
+PASS  PharoMessage argument normalization made consistent with sendPharo
+
+Previously established executable baselines retained as provenance:
+- ooRexx 5.3.0 r13196
+- Pharo 12 VM/image semantic probes
+- Alchemy Foreign Object v0.2 real dependency-chain test
+
+NOT CLAIMED in this review package:
+- native ooRexx <-> Pharo resident message crossing
+- cross-runtime identity round trip
+- exception/re-entry execution across the native boundary
+
+DEV7 EXECUTED
+PASS  native C core compiles -std=c11 -Wall -Wextra -Werror -pthread
+PASS  PHARO ALCHEMY native lifecycle/shape core PASS
+PASS  nested/reverse pin during dispatch (proves registry mutex not held across foreign execution)
+PASS  generation 1 revoke -> generation 2 republish; stale/revoked generation cannot bind new call
+PASS  sparse positional shape 3 slots with presence [true,false,true]
+PASS  call-id correlation retained
+PASS  inherited static contract rerun: PHARO ALCHEMY static contract PASS
+NOT RUN  Pharo VM native send through this core
+NOT RUN  ooRexx -> Pharo -> ooRexx live reverse re-entry
+
+DEV8 EXECUTED
+PASS  clean C11 -Wall -Wextra -Werror build
+PASS  PHARO ALCHEMY runtime adapter seam PASS
+PASS  passive live discovery; same handle sees amendment
+PASS  existing-method exception remains foreign exception
+NOT RUN  concrete Pharo 12 VM adapter
+
+DEV9 LIVE PHARO 12 EXECUTED
+PASS  Pharo12.0.0SNAPSHOT from supplied VM/image
+PASS  same resident object: respondsTo #alchemyValue: false -> true after live compile
+PASS  perform #alchemyValue: with 41 -> 42
+PASS  existing #explode method raises Error and is classified separately
+PASS  absent #notThere raises MessageNotUnderstood
+PASS  BlockClosure value: 41 -> 42; resident identity self-check true
+NOT RUN  C adapter entering Pharo VM in-process
+NOT RUN  ooRexx -> Pharo -> ooRexx live re-entry

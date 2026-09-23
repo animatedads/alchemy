@@ -1,0 +1,32 @@
+--- /mnt/data/oorexx_platform_gap_specification_v0.2.md	2026-09-15 09:54:18.185434787 +0000
++++ /mnt/data/oorexx_platform_gap_specification_v0.3.md	2026-09-15 09:57:54.690242649 +0000
+@@ -2,7 +2,7 @@
+ 
+ **Review basis:** static architectural review of the supplied ooRexx estate. No ooRexx interpreter was used and no runtime behaviour is asserted from execution. The review intentionally looks for repeated *responsibilities*, not merely duplicate text.
+ 
+-**POSIX revision basis (v0.2):** the POSIX recommendations were additionally checked against the supplied ooRexx 5.3.0 r13196 package, including the shipped `RxUnixSys` Unix Extensions library (`::requires "rxunixsys" LIBRARY`) and RexxUtil file functions. The platform design below therefore treats those facilities as existing authority and adds wrappers or new native primitives only where their contracts are insufficient.
++**POSIX revision basis (v0.3):** the POSIX recommendations were additionally checked against the supplied ooRexx 5.3.0 r13196 package, including the shipped `RxUnixSys` Unix Extensions library (`::requires "rxunixsys" LIBRARY`) and RexxUtil file functions. The platform design below therefore treats those facilities as existing authority and adds wrappers or new native primitives only where their contracts are insufficient.
+ 
+ ## 1. Executive conclusion
+ 
+@@ -202,9 +202,9 @@
+ ProcessHandle~pid / wait / terminate / kill / alive / startIdentity
+ ```
+ 
+-**Implementation boundary:** do not duplicate the process primitives already supplied by `RxUnixSys`. Unix providers should use `SysGetpid`, `SysGetppid`, `SysGettid`, `SysKill`, process-group/session functions and the Unix credential functions where applicable. RexxUtil `SysCreatePipe` may be used where its simple unnamed-pipe contract is sufficient.
++**Implementation boundary:** do not duplicate the process primitives already supplied by `RxUnixSys`. Unix providers should use `SysGetpid`, `SysGetppid`, `SysGettid`, `SysKill`, process-group/session functions and the Unix credential functions where applicable. RexxUtil `SysCreatePipe`, `SysFork` and `SysWait` should be used where their simple pipe/fork/wait contracts are sufficient.
+ 
+-The actual platform gap is **process creation and supervision**: argv-preserving spawn/exec, `waitpid`, child stdio actions, cwd/environment setup, timeout/cancellation and reliable start identity. The preferred native implementation is `posix_spawn[p]` plus file actions where the target supports it, with `fork`/`execve` only where required. These missing primitives may initially be supplied by Foreign Runtime; if they prove generally useful, they should move down into `RxUnixSys` rather than remain duplicated bindings forever.
++RexxUtil additionally supplies `SysFork()` and `SysWait()`, so fork/wait are not wholly absent. Reuse them where their simple contracts are sufficient. The remaining platform gap is **managed process creation and supervision**: argv-preserving spawn/exec, targeted `waitpid`-class waiting, child stdio actions, cwd/environment setup, timeout/cancellation and reliable start identity. The preferred native implementation is `posix_spawn[p]` plus file actions where the target supports it; `SysFork()` remains useful for direct fork semantics but does not replace an argv-safe execution API. These missing primitives may initially be supplied by Foreign Runtime; if they prove generally useful, they should move down into the ooRexx Unix/RexxUtil layer rather than remain duplicated bindings forever.
+ 
+ The normal path MUST NOT invoke a shell. A separate explicit `ShellCommand` adapter may exist for the few integrations that genuinely require shell language semantics.
+ 
+@@ -227,6 +227,8 @@
+ 
+ **Placement:** `oorexxapis/current/oorexx_posix_v0.1/`
+ 
++**Detailed design:** see `oorexx_posix_v0.1_design_spec.md`. It defines the exact RxUnixSys/RexxUtil reuse matrix, coherent-stat requirement, descriptor-relative traversal boundary, capability model, error normalization, qualification cases and minimal RxUnixSys extension set.
++
+ **Core objects:**
+ 
+ ```text

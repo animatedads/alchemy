@@ -1,0 +1,19 @@
+Qualified 2026-09-15 with user-supplied ooRexx 5.3.0 r13196 runtime.
+PASS local evacuation dev2 semantics on POSIX-backed inventory/fencing
+PASS dev3 QueueRexx binding and bandwidth governor
+PASS dev4 source consistency
+PASS dev5 consistency groups
+PASS dev8 operational policy/session/planner
+
+Dev7/dev8 additions:
+- manifest-derived semantic work intentions;
+- bounded batching rather than one QueueRexx job per filesystem object;
+- large-file BULK isolation;
+- idempotent per-object completion application;
+- explicit include/exclude selection policy;
+- bandwidth/concurrency/minimum-replica operational policy;
+- dry-run selection report;
+- persistent-session domain object and status/convergence counters.
+
+No new POSIX subprocess mechanics were added. POSIX v0.1-dev1 remains the
+filesystem fact authority.

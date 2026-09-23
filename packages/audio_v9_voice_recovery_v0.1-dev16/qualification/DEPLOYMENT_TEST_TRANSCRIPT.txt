@@ -1,0 +1,24 @@
+AUDIO V9 VOICE RECOVERY v0.1-dev2 DEPLOYMENT QUALIFICATION
+Date: 2026-09-10
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version
+Qualification host: Linux x86_64, glibc 2.41, g++ 14.2
+
+UNCHANGED SEMANTIC REGRESSION
+PASS corpus authority: FC=95 FD=25 entries=120
+PASS test_campaign_contract: 16 assertions
+PASS test_spatial_evidence: 13 assertions
+PASS test_spatial_native_provider: 7 assertions
+PASS test_spatial_coordinator: 32,405 assertions
+TOTAL behavioral assertions: 32,441 PASS
+
+DEPLOYMENT REGRESSION
+PASS worker discovery/static deployment gates
+PASS exact ooRexx r13196 readiness gate
+PASS actual Foreign Runtime v0.22.6 load probe using packaged binary
+PASS forced actual Foreign Runtime source rebuild with its native Makefile-equivalent -O0 flags; rebuilt object passed the same ooRexx load probe
+PASS forced actual spatial-provider C rebuild; rebuilt object passed Foreign Runtime load probe
+PASS native readiness cache prevents repeating expensive load/rebuild work for every worker chunk while preserving selected hashes
+PASS rebuild provenance is retained under run/deployment rather than erased by later reuse
+PASS worker launch remains explicit; readiness does not start processing
+
+Observed supplied Foreign Runtime binary requires GLIBC_2.38. dev2 does not treat LD_LIBRARY_PATH as an ABI repair. Older-glibc workers take the rebuild branch; compatible workers retain the supplied object.

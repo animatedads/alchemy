@@ -1,0 +1,84 @@
+Audio V9 Voice Recovery v0.1-dev11 — loud-event echo survey qualification
+========================================================================
+
+Scope
+-----
+Diagnostic-only room-geometry survey.  Dev10 reconstruction behavior and final
+sample ownership are unchanged.
+
+Pinned runtime
+--------------
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+
+Physical hypotheses under test
+------------------------------
+8.75 ms, 17.50 ms, 22.09 ms, 23.32 ms, 24.74 ms, 26.04 ms, 58.30 ms.
+At 8 kHz: approximately 70, 140, 177, 187, 198, 208, 466 samples.
+These are soft search centres; the audio determines the measured delay.
+
+Algorithm safety
+----------------
+* Diagnostic only: no audio samples changed.
+* Peak admission uses a local preceding RMS, not low-energy/non-speech logic.
+* 120 ms clustering prevents an echo inside the modeled <80 ms search from
+  becoming a second event.
+* FC/FD arrival is independently matched within +/-35 ms.
+* Same-feed echo matching uses short sample-level normalized correlation around
+  each physical delay family.
+* A numerical best score below 0.70 remains WEAK_OR_UNMODELED.
+* Pattern hints do not assert event identity (cat/bang/car/siren).
+* TSV validation is through AudioV9TsvReader / stock CSVStream TAB records.
+
+Synthetic qualification
+-----------------------
+FD-side fixture:
+  FC/FD measured delta = -177 samples (-22.125 ms)
+  FD 23.32-ms family score > 0.80
+  FD 58.30-ms family score > 0.80
+  pattern = FD_STAIRWELL_PATTERN
+
+FC-side fixture:
+  FC/FD measured delta = +140 samples (+17.50 ms)
+  FC 17.50-ms family score > 0.80
+  pattern = FC_ROAD_SIDE_PATTERN
+
+Unconstrained fixture:
+  cross-feed match remains strong
+  deliberately unmodeled 35-ms reflection is not promoted
+  echo_match = WEAK_OR_UNMODELED
+  pattern = UNRESOLVED_PATTERN
+
+Observed targeted gate
+----------------------
+PASS loud echo survey assertions=16 events=3
+PASS loud echo scan events=3
+PASS native provider builds with -Wall -Wextra -Werror
+PASS Rexx compiler for new tools/tests under r13196
+PASS shell syntax for scan_loud_echo_interval.sh
+
+Inherited changed-surface regression
+-----------------------------------
+PASS test_campaign_contract assertions=16
+PASS test_soft_reconstruction assertions=12
+PASS test_spatial_native_provider assertions=7
+PASS TSV CSVStream assertions=10
+PASS reconstruction processing samples=160000 rows=7
+
+Static/reproducibility
+----------------------
+PASS rexxc src/AudioV9SpatialNativeProvider.cls
+PASS rexxc tools/scan_loud_echo_events.rex
+PASS rexxc tools/wallclock_to_serial.rex
+PASS rexxc tests/test_loud_echo_scan.rex
+PASS sh -n native/build_fixture.sh native/build_native.sh tools/scan_loud_echo_interval.sh run_tests.sh
+PASS native provider byte-reproducible across consecutive O3 builds
+
+Full-suite note
+---------------
+The historical all-tests wrapper was also attempted in this container.  Its
+outer 240-second execution budget expired during the broad Rexx compile sweep
+after the corpus/decode gates, before behavioral tests began.  No dev11 failure
+was observed.  Because dev11 changes only the native spatial provider binding
+and adds diagnostic tools, the release gate is the changed-surface plus directly
+inherited spatial/reconstruction set listed above, mirroring dev10's bounded
+processing release-gate practice.

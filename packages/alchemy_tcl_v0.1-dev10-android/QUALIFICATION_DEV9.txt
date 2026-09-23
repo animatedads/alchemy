@@ -1,0 +1,15 @@
+Alchemy Tcl v0.1-dev9
+
+dev8: Architect-qualified Android/aarch64, ooRexx 5.3.0 r13196, Tcl 8.6.
+dev9: assistant compiled with clang++ C++17 -Wall -Wextra -Werror against the supplied ooRexx 5.3.0 r13196 package and exercised with real libtcl8.6.so.
+
+Assistant-observed PASS before packaging:
+PASS synchronous re-entry + persistent Tcl callback command across separate evaluations
+PASS retained exact Rexx identity across native calls; generation fence; revoke/release
+PASS later Tcl evaluation -> generation-fenced retained Rexx identity -> Tcl continuation; revoke fails closed
+PASS persistent Tcl projection; Tcl rename/delete authoritative; retained target generation fenced
+PASS nested Tcl re-entry without deadlock; projection lifecycle/pin cleanup
+PASS structured Tcl completion preserves result, errorCode and errorInfo
+PASS TclOO live object/class authority; method amendment; rename; destruction
+
+Android/aarch64 dev9 remains the target confirmation gate.

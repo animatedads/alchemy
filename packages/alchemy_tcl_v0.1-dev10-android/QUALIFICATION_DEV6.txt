@@ -1,0 +1,12 @@
+Alchemy Tcl v0.1-dev6 Android candidate
+
+Observed predecessor on target Android/aarch64:
+PASS dev3 resident/re-entry
+PASS dev4 retained exact Rexx identity across native calls; generation fence; revoke/release
+PASS dev5 later Tcl evaluation -> retained Rexx identity -> Tcl continuation; revoke fails closed
+
+New gate:
+  tests/run_dev6.sh
+
+Expected final:
+  PASS persistent Tcl projection; Tcl rename/delete authoritative; retained target generation fenced

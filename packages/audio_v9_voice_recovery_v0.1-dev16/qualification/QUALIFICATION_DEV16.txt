@@ -1,0 +1,82 @@
+Audio V9 Voice Recovery v0.1-dev16 — reflection-aware whisper reconstruction planning qualification
+Date: 2026-09-12
+
+BASE
+  dev15 candidate SHA-256:
+  578751260b1084dc6a1532331fa4336ac85e0f1599e7687f9e5d812656c9fd4f
+  dev15 was independently rerun from the supplied archive under the supplied
+  ooRexx r13196 runtime package and completed its full master gate with RC=0.
+
+QUALIFICATION RUNTIME
+  Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+  supplied package SHA-256:
+  8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+  Runtime was extracted into an isolated qualification prefix; the host system
+  runtime was not substituted.
+
+DEV16 SEMANTIC INCREMENT
+  * Adds AudioV9PropagationReconstruction.cls.
+  * Audio evidence establishes acoustic propagation/reflection paths.
+  * Video/vehicle geometry may corroborate an existing audio observation but
+    cannot create acoustic fusion authority by itself.
+  * Low-level whisper gain reference is updated only from non-loud,
+    non-transient windows.
+  * Transient vehicle/reflection gain does not redefine source loudness.
+  * Loud/impulsive observations are explicitly marked for a separate stem and
+    do not reset whisper AGC/reference state.
+  * Compatible static/transient reflections may join a fusion plan only after
+    passing the audio gate. Reflected contribution is bounded and all weights
+    are normalized rather than blindly summed.
+  * Adds correlate_vehicle_reflections.rex as the ingestion seam for pending
+    video-processing evidence.
+  * No native DSP, loud-echo v1/v2/v3, clock authority, TF-mask policy,
+    ML dev11, ML Graph dev5, corpus authority, or campaign evidence was changed.
+  * Final multi-path audio rendering is intentionally deferred until real
+    video/audio reflector evidence is available for tuning/qualification.
+
+NEW TARGETED QUALIFICATION
+  PASS reflection-aware reconstruction assertions=20
+       final gain=23.5109717868338557993730407524
+       reference_rms=0.00255200
+       static reflection weight=0.15488
+  PASS vehicle reflection correlation authority rows=2
+       strong audio + video -> AUDIO_PLUS_VIDEO
+       weak audio + strong video -> VISUAL_ONLY_CANDIDATE
+  New .cls/.rex sources compile successfully under pinned r13196.
+
+LEGACY/MASTER REGRESSION
+  The dev16 master run passed every gate through quality-graph archive/renderer,
+  including:
+    PASS calibration 16s pipeline assertions=10
+    PASS spatial coordinator assertions=32405
+    PASS file-edge alignment assertions=22
+    PASS file-edge calibration v2 assertions=24
+    PASS source-conditioned worker merge assertions=5
+    PASS source-conditioned complexity continuation assertions=15
+    PASS TF-mask policy assertions=11
+    PASS TF-mask audio voice_ratio=1.199770 alarm_ratio=0.250116
+    PASS evidence graph assertions=83 edges=38
+    PASS graph wobble assertions=10 distance=3 sets=2
+    PASS quality graph archive assertions=21
+    PASS quality graph renderer views=4
+  No FAIL/Error was present. The outer 240-second execution budget interrupted
+  the known expensive quality-graph pipeline after the renderer. The exact same
+  dev16 tree then passed the interrupted tail independently:
+    PASS quality graph pipeline characters=1276 edges=6020 masks=1276 replay=deterministic
+    PASS shell syntax roots
+    PASS discover_worker
+    PASS reconstruction processing samples=160000 rows=7
+  This is an execution-budget split, not a semantic qualification exception.
+
+CHANGE AUDIT VS DEV15 BEFORE THIS QUALIFICATION LEDGER
+  added: 4
+    src/AudioV9PropagationReconstruction.cls
+    tests/test_reflection_aware_reconstruction.rex
+    tests/test_vehicle_reflection_correlation.sh
+    tools/correlate_vehicle_reflections.rex
+  changed: 4
+    PROVENANCE.md
+    README.md
+    VERSION
+    run_tests.sh
+  removed: 0

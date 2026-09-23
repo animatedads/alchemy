@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+HERE=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+ROOT=$(dirname "$HERE")
+REXX_BIN=${REXX_BIN:-rexx}
+hex_arg() {
+  LC_ALL=C printf '%s' "$1" | od -An -v -tx1 | tr -d ' \n'
+}
+payload='SFHOSTARGS1'
+for a in "$@"; do
+  payload="$payload $(hex_arg "$a")"
+done
+cd "$ROOT"
+exec "$REXX_BIN" bin/storage-host-backup-floor.rex "$payload"

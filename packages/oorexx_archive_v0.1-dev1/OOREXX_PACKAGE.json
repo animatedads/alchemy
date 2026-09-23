@@ -1,0 +1,137 @@
+{
+  "schema": "oorexx.package/0.1",
+  "name": "oorexx-archive",
+  "lineage": "MAIN",
+  "moduleLevel": 1,
+  "displayVersion": "0.1-dev1",
+  "files": [
+    {
+      "path": "API.md",
+      "sha256": "c2a9b8a09ada58bd984032f5adcd6f7a98e09d9073f3353dd7f888e00db025ff",
+      "role": "documentation"
+    },
+    {
+      "path": "QUALIFICATION.md",
+      "sha256": "45dc99900ab37ae23c587778e7051c16171b8e4ee5cc65c97f18fcae2819dd11",
+      "role": "documentation"
+    },
+    {
+      "path": "README.md",
+      "sha256": "acdd03029b9b019e60cb6253680bf81eebbb4131394e192f43c371efaf0037c6",
+      "role": "documentation"
+    },
+    {
+      "path": "SECURITY.md",
+      "sha256": "949d22eecef8f7a5fd5cd350297e93488479e1338ce0f11d5c910a3d1e273f58",
+      "role": "documentation"
+    },
+    {
+      "path": "VERSION",
+      "sha256": "4ba2944c7e9bc8b35745534e2d252a3572d4937e0309f8733506281fcf0c0fbb",
+      "role": "data"
+    },
+    {
+      "path": "bin/oorexx-archive.rex",
+      "sha256": "8be74608da588d75843df0fd5f3b5edf39088b646e6cba52d0f60f9fcb1a9534",
+      "role": "source"
+    },
+    {
+      "path": "examples/read_zip.rex",
+      "sha256": "80f666b66db1c7e092978c13caf48189fa0e36a4e075cfe4f9b91d5e62e60a09",
+      "role": "source"
+    },
+    {
+      "path": "src/Archive.cls",
+      "sha256": "ee9499927c5acfe3ae1587a6545e11bc01350659b210f7215c8dd6c17663251d",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/ZipArchive.cls",
+      "sha256": "73423657f7256657456c7313b05a1620da45dd063654227edf109c0e34838ee9",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/ZipBinary.cls",
+      "sha256": "bddaa64674f2fd5b08d1207451c3755b3af3b999d480cf86aa4954a2b13426a1",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/ZipEntry.cls",
+      "sha256": "bdce64f836be2d3dcb59cf9634e6040cb2fc8c02ab9f3ecef05b12c2d4ffe0b6",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/ZipPathPolicy.cls",
+      "sha256": "d6d895365f0fcea3c2e799fbf92cae816c0c0882bae4849d2609f6caa9a47ba9",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/ZipWriter.cls",
+      "sha256": "9b639bf6957902762c97d2ad9d60408d336501885a65d0c65d9a28a523f46daa",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "tests/read_fixture.rex",
+      "sha256": "6c998f93a3bd7738fc0b4437593d6beb61b2a52142483c9f677ac67fcf918b44",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/run_all.sh",
+      "sha256": "354c802896c8b1c93d10d12e622f626584287428cd1beb60152a14c64a2c9a4b",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/run_interop.sh",
+      "sha256": "b1f1ac657382d49a2c63bf57432e5fe6c2b77211f6967463d3da5ae8167092cb",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/run_native.sh",
+      "sha256": "919090013006a69252bd513f2ac0cd0cd8992ab4cf31aad66693654c643079f7",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_native.rex",
+      "sha256": "b6df71fc5e6462fc204f0fe220d00783cec703e2149e162ef9726d7e440b4a21",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/write_fixture.rex",
+      "sha256": "6be3e6c12829c84f9820fdeaf3b755d63f723eb33f124d3d419054e6142e0c23",
+      "role": "qualification"
+    }
+  ],
+  "rexxPath": [
+    "src"
+  ],
+  "requires": [
+    {
+      "name": "oorexx-compress",
+      "lineage": "MAIN",
+      "minimumModuleLevel": 4
+    }
+  ],
+  "optionalRequires": [],
+  "qualification": [
+    {
+      "id": "native-zip",
+      "argv": [
+        "rexx",
+        "test_native.rex"
+      ],
+      "cwd": "tests",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "zip-reference-interop",
+      "argv": [
+        "sh",
+        "run_interop.sh"
+      ],
+      "cwd": "tests",
+      "timeoutMs": 30000,
+      "required": false
+    }
+  ]
+}

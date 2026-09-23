@@ -1,0 +1,96 @@
+Audio V9 Voice Recovery v0.1-dev15 — priority landmark v3 execution qualification
+Date: 2026-09-12
+
+BASE
+  sealed dev14 SHA-256:
+  9ca316c1eb0c4d08c482689680ccde27713ee62cac5906788565105a24799546
+
+COMPLETE DEV12 CAMPAIGN EVIDENCE
+  first half: ed209c_dev12_echo_51jobs_2100_0530.tar.gz
+  SHA-256: 1168d49aeef2093003691cb189e4e8f00675c08bef8cb72f2001f78d4183aed0
+  second half: ed209h_dev12_echo_51jobs_0530_1400.tar.gz
+  SHA-256: db1c6e4cbeaeaf2b5fd7e067d9f0983b3f299fb63530d68bb43f921c55e4f4ac
+  coverage: 102 consecutive ten-minute jobs, 2023-10-09 21:00 through 2023-10-10 14:00
+  total events: 33288
+  trigger FC: 21987
+  trigger FD: 11301
+  MULTI_FAMILY: 31262
+  SINGLE_FAMILY: 759
+  WEAK: 1267
+  non-zero cross-camera results exactly at +/-35 ms: 292
+  of those with cross_score >= 0.70: 205
+  rows with peak_fc=0 and baseline_fc=0: 369, localized to the overnight FC-loss interval
+
+PHONE LANDMARK REAL DEV12 CONTEXT
+  user anchor: 2023-10-10 07:13:12 in FC raw video 20231010_070249_tp00019.mp4
+  verified whole-second file offset: +623 s
+  project clock anchor: 63832518792 s / 63832518792000 ms
+  nearest dev12 loud-event row: 2023-10-10 07:13:11.774125
+  delta from user anchor: -225.875 ms
+  trigger/leader: FC/FC
+  cross_score: 0.917485817
+  fd_minus_fc: +29.625 ms
+  This is temporal coincidence evidence only. Loud-event detection is not speech identity.
+
+04:16 CALIBRATION LANDMARK
+  screenshot-derived anchor: 2023-10-10 04:16:46.400
+  nominal corpus source: 20231010_041038_tp00014_original.ogg
+  whole-second offset: +368 s; sub-second offset: +400 ms
+  project clock anchor: 63832508206400 ms
+  default bounded probe: 04:16:40 through 04:16:55
+  The landmark is DERIVED_CANDIDATE, not source identity truth.
+
+DEV15 SEMANTIC INCREMENT
+  * Native DSP, reconstruction, clock authority, ML dev11, ML Graph dev5 and
+    loud-echo v1/v2/v3 algorithms are unchanged from dev14.
+  * SEARCH_LANDMARKS.tsv now carries anchor_subsecond_ms and per-landmark
+    default pre/post bounds.
+  * The preferred probe_search_landmark.sh now calls scan_loud_echo_events_v3.rex.
+  * The previous v2 landmark behavior remains callable as probe_search_landmark_v2.sh.
+  * summarize_search_landmark_v3.rex filters immutable v3 rows around the exact
+    millisecond anchor and adds only landmark_id/anchor/delta presentation fields.
+  * probe_priority_landmarks_v3.sh executes both current high-priority landmarks
+    through one bounded corpus workflow.
+  * Absence of a loud-event row remains explicitly non-evidence about speech.
+
+TARGETED QUALIFICATION — exact ooRexx 5.3.0 r13196
+  PASS loud echo survey assertions=16 events=3
+  PASS loud echo v2 survey assertions=19 events=5
+  PASS loud echo v3 survey assertions=15 events=5
+  PASS search landmark assertions=18 phone_anchor=63832518792 calibration_anchor_ms=63832508206400
+  PASS search landmark v3 summary assertions=7 delta_ms=1.875000000
+  PASS quality graph pipeline characters=1276 edges=6020 masks=1276 replay=deterministic
+  PASS reconstruction processing samples=160000 rows=7
+
+PLANNER OUTPUTS
+  phone:
+    start=63832518732 anchor=63832518792 anchor_ms=63832518792000 end=63832519032
+    default window=60 s before / 240 s after
+  calibration:
+    start=63832508200 anchor=63832508206 anchor_ms=63832508206400 end=63832508215
+    default window=6 s before / 9 s after
+
+CHANGE AUDIT VS SEALED DEV14 BEFORE QUALIFICATION LEDGER
+  added: 4
+    tests/test_search_landmark_summary.rex
+    tools/probe_priority_landmarks_v3.sh
+    tools/probe_search_landmark_v2.sh
+    tools/summarize_search_landmark_v3.rex
+  changed: 8
+    PROVENANCE.md README.md VERSION reference/SEARCH_LANDMARKS.tsv run_tests.sh
+    tests/test_search_landmark.rex tools/plan_search_landmark.rex tools/probe_search_landmark.sh
+  removed: 0
+  unchanged: 173
+
+FULL MASTER GATE NOTE
+  The monolithic run_tests.sh passed every gate through quality-graph archive and
+  renderer, including spatial coordinator assertions=32405, before the outer
+  600-second command budget interrupted test_quality_graph_pipeline.sh during ML
+  box construction. No assertion failed. The interrupted tail was rerun from the
+  same dev15 tree as independent gates:
+    PASS quality graph pipeline characters=1276 edges=6020 masks=1276 replay=deterministic
+    PASS shell syntax roots
+    PASS discover_worker
+    PASS reconstruction processing samples=160000 rows=7
+  This is the same known aggregate execution-budget/scaling characteristic seen
+  in the dev14 line, not a dev15 semantic regression.

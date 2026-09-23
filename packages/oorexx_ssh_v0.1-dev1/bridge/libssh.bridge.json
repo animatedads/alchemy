@@ -1,0 +1,71 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": {
+    "provider": "native",
+    "names": ["libssh.so.4", "libssh.so"],
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "constants": {
+    "SSH_REQUEST_AUTH": {"type":"i32","value":1},
+    "SSH_REQUEST_CHANNEL_OPEN": {"type":"i32","value":2},
+    "SSH_REQUEST_CHANNEL": {"type":"i32","value":3},
+    "SSH_REQUEST_SERVICE": {"type":"i32","value":4},
+    "SSH_CHANNEL_SESSION": {"type":"i32","value":1},
+    "SSH_CHANNEL_REQUEST_EXEC": {"type":"i32","value":2},
+    "SSH_CHANNEL_REQUEST_SHELL": {"type":"i32","value":3},
+    "SSH_CHANNEL_REQUEST_SUBSYSTEM": {"type":"i32","value":5},
+    "SSH_AUTH_METHOD_PASSWORD": {"type":"u32","value":2},
+    "SSH_AUTH_METHOD_PUBLICKEY": {"type":"u32","value":4}
+  },
+  "functions": {
+    "version": {"symbol":"ssh_version","return":"utf8","args":["i32"]},
+    "session_new": {
+      "symbol":"ssh_new",
+      "return":{"type":"pointer","object":"ssh_session","ownership":"owned","destructor":"ssh_free"},
+      "args":[]
+    },
+    "bind_new": {
+      "symbol":"ssh_bind_new",
+      "return":{"type":"pointer","object":"ssh_bind","ownership":"owned","destructor":"ssh_bind_free"},
+      "args":[]
+    },
+    "bind_option_string": {
+      "symbol":"ssh_bind_options_set","return":"i32",
+      "args":[{"type":"pointer","object":"ssh_bind"},"i32","utf8"]
+    },
+    "bind_listen": {"symbol":"ssh_bind_listen","return":"i32","args":[{"type":"pointer","object":"ssh_bind"}]},
+    "bind_accept": {"symbol":"ssh_bind_accept","return":"i32","args":[{"type":"pointer","object":"ssh_bind"},{"type":"pointer","object":"ssh_session"}]},
+    "handle_key_exchange": {"symbol":"ssh_handle_key_exchange","return":"i32","args":[{"type":"pointer","object":"ssh_session"}]},
+    "set_auth_methods": {"symbol":"ssh_set_auth_methods","return":"void","args":[{"type":"pointer","object":"ssh_session"},"i32"]},
+    "message_get": {
+      "symbol":"ssh_message_get",
+      "return":{"type":"pointer","object":"ssh_message","ownership":"owned","destructor":"ssh_message_free"},
+      "args":[{"type":"pointer","object":"ssh_session"}]
+    },
+    "message_type": {"symbol":"ssh_message_type","return":"i32","args":[{"type":"pointer","object":"ssh_message"}]},
+    "message_subtype": {"symbol":"ssh_message_subtype","return":"i32","args":[{"type":"pointer","object":"ssh_message"}]},
+    "message_auth_user": {"symbol":"ssh_message_auth_user","return":"utf8","args":[{"type":"pointer","object":"ssh_message"}]},
+    "message_auth_reply_success": {"symbol":"ssh_message_auth_reply_success","return":"i32","args":[{"type":"pointer","object":"ssh_message"},"i32"]},
+    "message_reply_default": {"symbol":"ssh_message_reply_default","return":"i32","args":[{"type":"pointer","object":"ssh_message"}]},
+    "message_channel_open_accept": {
+      "symbol":"ssh_message_channel_request_open_reply_accept",
+      "return":{"type":"pointer","object":"ssh_channel","ownership":"owned","destructor":"ssh_channel_free"},
+      "args":[{"type":"pointer","object":"ssh_message"}]
+    },
+    "message_channel": {
+      "symbol":"ssh_message_channel_request_channel",
+      "return":{"type":"pointer","object":"ssh_channel","ownership":"borrowed"},
+      "args":[{"type":"pointer","object":"ssh_message"}]
+    },
+    "message_channel_command": {"symbol":"ssh_message_channel_request_command","return":"utf8","args":[{"type":"pointer","object":"ssh_message"}]},
+    "message_channel_subsystem": {"symbol":"ssh_message_channel_request_subsystem","return":"utf8","args":[{"type":"pointer","object":"ssh_message"}]},
+    "message_channel_reply_success": {"symbol":"ssh_message_channel_request_reply_success","return":"i32","args":[{"type":"pointer","object":"ssh_message"}]},
+    "channel_write": {"symbol":"ssh_channel_write","return":"i32","args":[{"type":"pointer","object":"ssh_channel"},"bytes","u32"]},
+    "channel_is_open": {"symbol":"ssh_channel_is_open","return":"i32","args":[{"type":"pointer","object":"ssh_channel"}]},
+    "channel_is_eof": {"symbol":"ssh_channel_is_eof","return":"i32","args":[{"type":"pointer","object":"ssh_channel"}]},
+    "channel_send_eof": {"symbol":"ssh_channel_send_eof","return":"i32","args":[{"type":"pointer","object":"ssh_channel"}]},
+    "channel_close": {"symbol":"ssh_channel_close","return":"i32","args":[{"type":"pointer","object":"ssh_channel"}]},
+    "disconnect": {"symbol":"ssh_disconnect","return":"void","args":[{"type":"pointer","object":"ssh_session"}]}
+  }
+}

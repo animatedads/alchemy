@@ -1,6 +1,6 @@
 # Dependency payload omitted from published source
 
-`oorexxapis.zip:current/accounting_core_v0.10.zip` contained a dependency payload at `vendor/`. Alchemy does not treat bundled dependency source as source owned by this component. Obtain it from its own first-class component or upstream distribution.
+`accounting_core_v0.10.zip` contained a dependency payload at `vendor/`. Alchemy does not treat bundled dependency source as source owned by this component. Obtain it from its own first-class component or upstream distribution.
 
 Omitted files: **3**  
 Dependency-set digest: `472efa863f895e47301af192c3f9f69523912e3fd59b6522905c85a16ffcc952`

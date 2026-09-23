@@ -1,0 +1,22 @@
+MANAGED COMPUTE v6-dev2 DELTA VALIDATION
+
+Inherited unchanged from v6-dev1:
+PASS uploaded Oracle Managed Node / Work Bundle package qualification under r13196
+PASS Managed Node Host Profile identity/bootstrap/capacity/boot-generation/twin eligibility
+PASS Job-to-Node Allocator v0.6 / Queue Fabric / HF Space / API Client dependency closure retained byte-identically
+PASS duplicate Remote Host queued execution contract remains absent
+
+v6-dev2 delta:
+PASS Colab Job v0.2 core lifecycle/resource citizenship under r13196
+PASS Colab Job v0.2 allocator hard-resource mapping against Job-to-Node Allocator v0.6
+PASS Colab Job v0.2 Secret Broker reference seam / HF_TOKEN redaction
+PASS Secret Broker v0.2 core against Alchemy Objects v0.8 / Crypto v0.8.3
+PASS Secret Broker v0.2 mapped environment provider
+PASS Secret Broker v0.2 Alchemy adoption
+PASS clean-extraction component manifests
+
+Colab secret contract now guarantees that a job specification carries only an opaque secret reference. Literal HF_TOKEN and other obvious credential-shaped environment values fail before Colab allocation. Resolved values are absent from CLI argv, generated driver source and Colab Job evidence; local materialisation is 0700/0600, remote secret storage is ordinal/private/transient, exported evidence is redacted and leases retire on finalisation.
+
+No live OCI node was modified by this delta qualification.
+No SSH session, Colab VM, Hugging Face Space, or ZeroGPU allocation was used.
+No user secret/token was used; the credential test value is an isolated fixture.

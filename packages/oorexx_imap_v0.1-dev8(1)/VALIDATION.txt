@@ -1,0 +1,40 @@
+oorexx-imap v0.1-dev8 validation
+=================================
+Runtime: ooRexx 5.3.0 r13196 (supplied debug build)
+
+Required dependency-free suite:
+  PASS 16/16 from package root
+  PASS 16/16 from unrelated /tmp working directory
+
+Optional integration qualification:
+  PASS API Client / Foreign Runtime adapter load
+  PASS Storage Fabric dev13 literal adapter
+  PASS Storage Fabric dev13 projection
+  PASS NoSQLServer v0.79 derived index integration
+  PASS ooRexx Logging v0.7 integration
+
+Local real-socket TLS qualification:
+  PASS IMPLICIT_TLS session
+  PASS STARTTLS_REQUIRED session
+  PASS native UID MOVE path over TLS
+  PASS UID COPY + STORE \\Deleted + UID EXPUNGE fallback over TLS
+
+Dev8 live remote mutation status:
+  NOT RUN in build environment. New Gmail MOVE and APPEND/verify/delete probes
+  are opt-in and require operator-held credentials plus explicit mutation gates.
+
+Carried-forward live evidence:
+  dev6 was Preferred-Packager generation-2 committed and live Gmail APPEND/
+  BODY.PEEK byte-roundtrip qualified (323 exact bytes, UIDVALIDITY 13, UID 1).
+  dev4 read-only Gmail and 196,662-message Dovecot metadata qualifications also
+  remain prior operational evidence.
+
+Safety properties exercised in dev8:
+  * no plain EXPUNGE fallback
+  * no source deletion after COPY failure
+  * no expunge after mark-deleted failure
+  * no source removal before explicit cross-transfer commit
+  * read-only selection cannot authorize source removal
+  * same-mailbox high-level move rejected
+  * destination role required and non-ordinary roles fail closed
+  * COPYUID UID mapping remains compact/non-materializing

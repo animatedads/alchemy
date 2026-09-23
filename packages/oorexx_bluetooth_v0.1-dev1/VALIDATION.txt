@@ -1,0 +1,21 @@
+ooRexx Bluetooth v0.1-dev1 validation
+Date: 2026-09-22
+Runtime: Open Object Rexx 5.3.0 r13196 - Internal Test Version
+Foreign Runtime: v0.22.6
+
+Qualification:
+  BLUETOOTH CORE: OK
+  BLUETOOTH PROFILE MAP: OK
+  BLUETOOTH RFCOMM CODEC: OK
+  thermometer example: Temperature changed to 21.75
+
+Native RFCOMM environment note:
+  socket(AF_BLUETOOTH, SOCK_STREAM, BTPROTO_RFCOMM) returned errno 97
+  (address family unsupported by this execution environment/kernel).
+  Therefore dev1 does NOT claim a live RFCOMM connection or physical Bluetooth
+  qualification. The ABI-qualified Foreign Runtime descriptor and Bluetooth
+  address codec were loaded/qualified; live hardware qualification remains for
+  a host exposing AF_BLUETOOTH.
+
+No shell Bluetooth CLI, Python Bluetooth package, Java Bluetooth stack or
+Bluetooth-specific compiled ooRexx extension is used by the API.

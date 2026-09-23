@@ -1,0 +1,101 @@
+Rexx-tronics v0.1-dev5 qualification
+=====================================
+
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+
+[Rexx-tronics regression suite]
+REXX-TRONICS SIMULATION TIME: OK
+simulated elapsed ms: 20
+measured oscillator Hz: 500
+scope samples: 1001
+net transitions: 21
+REXX-TRONICS ALIASING BOUNDARY: OK
+authoritative transitions: 21
+undersampled observations: 5
+poor-scope measured Hz: 100
+REXX-TRONICS TOPOLOGY/PATH: OK
+path pin hops: 4
+R1.A -> R1.B -> R2.A -> R2.B
+REXX-TRONICS DC VOLTAGE DIVIDER: OK
+VCC: 9 V
+MID: 6 V
+current: 0.003 A
+R1 power: 0.009000 W
+R2 power: 0.018000 W
+REXX-TRONICS DC CURRENT SOURCE: OK
+NODE: 2 V
+R1 current: 0.002 A
+REXX-TRONICS VARIABLE RESISTOR: OK
+position 0 OUT: 5 V
+position 1 OUT: 1 V
+REXX-TRONICS POTENTIOMETER: OK
+wiper at 75 percent: 7.5000000046875000029296875018310546886444091804028 V
+REXX-TRONICS SWITCH: OK
+open LOAD: 0.000000005 V
+closed LOAD: 4.9999950000049999950000049999950000049999950000050 V
+REXX-TRONICS RC TRANSIENT: OK
+RC at t=0 ms: 0 V
+RC at t=2 ms (1 tau after step): 3.1697464752475247524752475247524752475247524752476 V
+RC at t=6 ms (5 tau after step): 4.9658050495049504950495049504950495049504950495050 V
+transient points: 601
+REXX-TRONICS SCHEDULED SWITCH TRANSIENT: OK
+before close: 0.000000005 V
+after close: 4.9999950000049999950000049999950000049999950000050 V
+REXX-TRONICS SHARED UNITS INTEGRATION: OK
+MID: 6 V
+R1 current: 3 mA
+scope: 500 Hz
+RC at 2 ms: 3.1697464752475247524752475247524752475247524752476 V
+REXX-TRONICS UNITS DEV2 CONTRACT: OK
+precision: 3.1697464752475247524752475247524752475
+parsed resistance: 4.7000 kOhm
+metadata schema: oorexx.units.quantity/0.1
+REXX-TRONICS INDUCTOR TRANSIENT: OK
+one-tau current mA: 3.1697464736287128712871287128712871287128712871286
+five-tau current mA: 4.9658050681831683168316831683168316831683168316830
+stored energy J: 0.000012329609987596820468036577296343495735712185079893
+
+[Pinned ooRexx Units v0.1-dev2 regression suite]
+PASS test_dimensions
+PASS test_maths_contract
+PASS test_units
+PASS test_dev2
+weight: 19.61330 N
+current: 1.0638297872340425531914893617021276595744680851064 mA
+room: 69.800000000000000000000000000000000000000000000003 degF
+canonical K: 294.15
+source unit: degree Celsius
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+Copyright (c) 2005-2026 Rexx Language Association. All rights reserved.
+This program and the accompanying materials are made available under the terms
+of the Common Public License v1.0 which accompanies this distribution or at
+https://www.oorexx.org/license.html
+PASS rexxc Units.cls
+
+[Source compile]
+PASS rexxc RexxTronicsDC.cls
+PASS rexxc RexxTronicsDevices.cls
+PASS rexxc RexxTronicsElectrical.cls
+PASS rexxc RexxTronicsTime.cls
+PASS rexxc RexxTronicsTransient.cls
+PASS rexxc RexxTronicsUnits.cls
+
+[Mixed-unit example]
+Supply: 9000 mV
+Middle: 6 V
+Current: 3 mA
+R1: 1.000 kohm
+R2: 2.000000 kohm
+
+[RL transient example]
+t=2ms current: 3.1697464736287128712871287128712871287128712871286 mA
+t=6ms current: 4.9658050681831683168316831683168316831683168316830 mA
+stored energy: 0.000012329609987596820468036577296343495735712185079893 J

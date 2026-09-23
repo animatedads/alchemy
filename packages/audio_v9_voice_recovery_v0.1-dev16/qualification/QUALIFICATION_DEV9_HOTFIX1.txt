@@ -1,0 +1,32 @@
+Audio V9 Voice Recovery v0.1-dev9-hotfix1 — governed complexity continuation
+Date: 2026-09-11
+Base: sealed Audio V9 Voice Recovery v0.1-dev9
+Base SHA-256: 0d011a6a88319506e9da704b69e883e6f46d4c18763f12f4e0f784ebdb4b0938
+
+Field trigger:
+- dev9 acoustic/path semantics behaved boundedly on fleet;
+- logical E stopped at edge 018 with exit 168 / CALIBRATION_COMPLEXITY_EXCEEDED;
+- logical D stopped at edge 016 with the same outcome;
+- sealed dev9 omitted the dev8 operator continuation patch.
+
+Hotfix semantics:
+- exact exit 168 + exact FAILED reason CALIBRATION_COMPLEXITY_EXCEEDED => governed UNRESOLVED;
+- FAILED diagnostic preserved as COMPLEXITY_DETAIL.tsv;
+- pre-existing sealed-dev9 complexity failure is promoted on resume without rerun;
+- COMPLETE or UNRESOLVED is a terminal edge state for resume;
+- unresolved edges contribute zero source-path evidence rows;
+- worker continues later assigned edges;
+- any other nonzero edge result remains fatal.
+
+Dedicated regression:
+PASS source-conditioned complexity continuation assertions=15
+
+No calibration evidence semantics, clock-authority rules, corpus contract,
+source-path trajectory geometry, or CSVStream behavior are weakened by this hotfix.
+
+Validation under exact ooRexx 5.3.0 r13196:
+- PASS source-conditioned job plan assertions=6
+- PASS source-conditioned complexity continuation assertions=15
+- PASS source-conditioned worker merge assertions=5
+- integrated master gate passed every test through quality graph renderer; outer harness interrupted only the inherited final deterministic quality-graph tail;
+- independent final tail: PASS quality graph pipeline characters=1276 edges=6020 masks=1276 replay=deterministic (22.84 s).

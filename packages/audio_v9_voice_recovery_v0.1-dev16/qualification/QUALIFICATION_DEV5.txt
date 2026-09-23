@@ -1,0 +1,96 @@
+Audio V9 Voice Recovery v0.1-dev5 qualification
+Date: 2026-09-10
+Runtime:
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+
+Runtime authority package SHA-256:
+8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Embedded dependency authority:
+Audio V9 Pattern Locator v0.1-dev5-hotfix1  6d2716b5f697b9b705214dcc6bd8f93c62b5072111174dd6f3a485334ae5ecd8
+ooRexx ML v0.1-dev11                       713c4998c67aed9b526f3e20f7b2f14de4b355939259bff55beebe9133980c79
+ooRexx ML Graph v0.1-dev3                  a4ee63c48eab3ac27166607998071800f32b9af0cf6c3dbba12e08fa6627402a
+ooRexx Foreign Runtime v0.22.6              25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465
+
+Audio master gate:
+ELAPSED_SECONDS=29
+EXPLICIT_ASSERTION_COUNT=32640
+
+PASS corpus authority fc=95 fd=25 entries=120
+PASS corpus authority filenames
+PASS test_decode_geometry assertions=4
+TEST test_campaign_contract.rex
+PASS test_campaign_contract assertions=16
+TEST test_spatial_evidence.rex
+PASS test_spatial_evidence assertions=13
+TEST test_spatial_native_provider.rex
+PASS test_spatial_native_provider assertions=7
+TEST test_acoustic_character.rex
+PASS test_acoustic_character assertions=15
+TEST test_soft_reconstruction.rex
+PASS test_soft_reconstruction assertions=12
+TEST test_acoustic_coordinator.rex
+PASS test_acoustic_coordinator assertions=10
+TEST test_spatial_coordinator.rex
+PASS test_spatial_coordinator assertions=32405
+TEST test_file_edge_alignment.rex
+PASS test_file_edge_alignment assertions=22
+PASS test_file_edge_pipeline assertions=6
+PASS test_observe_spatial_edges assertions=2
+PASS test_observe_decode_edges assertions=3
+TEST test_tf_mask_policy.rex
+PASS test_tf_mask_policy assertions=11
+PASS tf mask audio voice_ratio=1.199770 alarm_ratio=0.250116
+TEST test_evidence_graph.rex
+PASS test_evidence_graph assertions=83 edges=38
+TEST test_graph_wobble.rex
+PASS test_graph_wobble assertions=10 distance=3 sets=2
+TEST test_quality_graph_archive.rex
+PASS test_quality_graph_archive assertions=21 archive=/mnt/data/audio_v9_voice_recovery_v0.1-dev5/run/test/quality_graphs.tsv edges=38
+PASS test_quality_graph_renderer views=4
+PASS quality graph pipeline characters=1276 edges=6020 masks=1276 replay=deterministic
+PASS audio_v9_voice_recovery_v0.1-dev5
+
+Dependency requalification:
+ooRexx ML v0.1-dev11: PASS 63/63 test files
+ooRexx ML Graph v0.1-dev3: PASS 53 assertions
+  model=14
+  svg=7
+  svg3d=5
+  pattern_adapter=5
+  temporal_adapter=8
+  temporal_market=4
+  difference_annotations=10
+
+End-to-end quality/graph fixture:
+characters=1276
+tracks=564
+families=49
+anonymous_speakers=13
+graph_relations=6020
+tf_mask_rows=1276
+graph_views_worker_default=0
+bounded_svg_views=4
+replay=byte-identical
+
+Canonical graph/wobble fixture:
+boxes=12
+continuation=9
+adjacent_band=8
+diagonal_migration=12
+delayed_recurrence=9
+total_relations=38
+one_delay_wobble_distance=3
+one_delay_wobble_normalized=0.5
+one_delay_wobble_minimal_sets=2
+
+TF reconstruction fixture:
+voice_band_ratio=1.199770
+alarm_band_ratio=0.250116
+
+Qualification notes:
+- TOPOLOGY is the fleet graph-evidence default; MLGraph scene/SVG construction is diagnostic replay only.
+- Bounded graph replay rejects relations whose source owner_start_ms is at/after the requested window before node lookup; this is a performance-only optimization and does not alter relation selection semantics.
+- Semantic evidence remains TSV authority; SVG and optional MLGraph archives have no semantic authority.
+- Source-family labels are evidence/prototype grounded; speaker IDs are anonymous acoustic clusters unless externally labelled.
+- Post-archive clean-reextract verification is an external seal gate by design; embedding the final archive hash inside the same archive would be self-referential.

@@ -1,0 +1,15 @@
+Alchemy Tcl v0.1-dev3 qualification
+Basis: supplied ooRexx 5.3.0 r13196 debug package.
+Observed: tests/run_roundtrip.sh
+exit=0
+stdout:
+provider=libtcl8.6.so
+PASS synchronous re-entry + persistent Tcl callback command across separate evaluations
+
+stderr:
+
+
+Claim boundary:
+PASS proves resident Tcl state, synchronous Rexx re-entry, and a Tcl callback command
+remaining live across two distinct Tcl evaluations within one native Rexx call.
+It does NOT claim that RexxCallContext survives return from a native routine.

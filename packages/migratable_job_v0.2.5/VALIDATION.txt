@@ -1,0 +1,105 @@
+Migratable Job v0.2.5 qualification
+Date: 2026-09-15
+Runtime: Open Object Rexx 5.3.0 r13196 - Internal Test Version
+
+Primary APIs:
+  migratable.job/0.2
+  migratable.job.start/1
+  migratable.job.placement/1
+  migratable.job.remote-start/1
+  migratable.job.status/1
+
+Qualified upstreams:
+  Job-to-Node Allocator v0.6
+  Job-to-Node Allocator Network 0.6-network1 / job.node.allocator.network/0.1
+  Crypto v0.8.3
+  Runtime Reference v0.4
+  Foreign Runtime v0.22.6
+  Storage Fabric v0.1-dev7
+  Queue Fabric v0.9-dev5
+  Alchemy Objects v0.8
+  Runtime Registry v0.14
+  Access Permissions v0.2
+
+Full packaged regression run: PASS
+
+Core migration / authority:
+  PASS test_load.rex
+  PASS test_planned_migration.rex
+  PASS test_durable_load.rex
+  PASS test_durable_restart.rex
+  PASS test_hardening.rex
+  PASS test_fail_closed.rex
+  PASS test_handoff_load.rex
+  PASS test_intrinsic_durability.rex
+  PASS test_authority_reconcile.rex
+  PASS test_file_handoff.rex
+
+Standard starter / durable start identity:
+  PASS test_standard_starter_new.rex
+  PASS test_standard_starter_recover.rex
+  PASS test_standard_starter_handoff.rex
+  PASS test_standard_starter_bridge.rex
+  PASS test_standard_starter_receipt_integrity.rex
+  PASS test_standard_starter_layout.rex
+  PASS test_starter_epoch_precision.rex
+
+Durable time/provenance precision:
+  PASS test_durable_epoch_precision.rex
+  Exact 13-digit epoch milliseconds survive starter receipt, migration journal
+  and provenance append/reload/digest validation without DIGITS 9 rounding.
+
+Managed initial placement:
+  PASS test_managed_placement.rex
+  PASS test_managed_placement_failure.rex
+  Job-to-Node remains placement/admission/ownership authority. Failed or
+  uncertain starts retain placement until an explicit managed release.
+
+Storage Fabric:
+  PASS test_storage_load.rex
+  PASS test_storage_resume.rex
+  Resumable checkpoint transfer pauses and resumes at durable byte offset and is
+  verified before migration execution commit.
+
+Queue Fabric / status:
+  PASS test_queue_load.rex
+  PASS test_queue_dispatch.rex
+  PASS test_queue_remote_handoff.rex
+  PASS test_status_topic.rex
+  Queue/file handoff remains transport-neutral. Live status remains retained
+  publish/subscribe observation; migration commands/acks remain direct traffic.
+
+Remote initial placed start (v0.2.5):
+  PASS test_remote_placed_start.rex
+    Queue Fabric request/reply NEW start; destination rechecks the exact lease;
+    durable RPC/service restart replay does not start the workload twice; changed
+    lease binding under the same startId fails REQUEST_ID_CONFLICT. Transport
+    sentEpochMs is audit metadata, not semantic replay identity.
+  PASS test_remote_start_pending.rex
+    Dispatch/reply uncertainty returns START_PENDING_PLACEMENT_HELD and never
+    auto-releases a placement whose execution outcome may be unknown.
+  PASS test_remote_start_network_verifier.rex
+    Destination lease verification uses authoritative
+    job.node.allocator.network/0.1 CHECK with a fresh per-check request id. A
+    released/stale lease is rejected.
+
+Crypto:
+  PASS test_foreign_runtime_digest.rex
+  JobNode/Migratable Job SHA-256 uses Crypto v0.8.3 with the Foreign Runtime /
+  OpenSSL provider during qualification.
+
+Known upstream precision issue (not forked in Migratable Job):
+  Exact Job-to-Node Allocator v0.6 currently assigns JobNodePlacementLease
+  issuedEpochMs/expiresEpochMs using default-precision `+0`. At contemporary Unix
+  epoch-millisecond magnitudes this can round values under ooRexx DIGITS 9.
+  v0.2.5 corrects all Migratable Job-owned epoch values and avoids using rounded
+  epoch text as an RPC uniqueness source, but leaves Job-to-Node source unchanged.
+  This should be corrected and separately qualified in the Job-to-Node project.
+
+Authority invariants retained:
+- Initial NEW execution is post-placement and cannot make the starter a scheduler.
+- Destination execution revalidates placement immediately before the runtime side effect.
+- Planned migration remains separate from node-loss recovery.
+- Source checkpoint precedes ownership fencing; replacement placement follows fencing.
+- RUNNING requires destination execution evidence/acknowledgement, not mere queue insertion.
+- File/manual and Queue Fabric handoff remain peer transports over the same authority state machine.

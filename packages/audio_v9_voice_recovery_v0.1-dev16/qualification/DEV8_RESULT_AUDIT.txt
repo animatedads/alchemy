@@ -1,0 +1,33 @@
+Audio V9 Voice Recovery — dev8 transferred-result audit
+Date: 2026-09-11
+Purpose: preserve the field evidence that triggered the dev9 source-path repair.
+
+Input bundles:
+9b3e296d76de56e1124b74020984ade10b513f3c4e26d78f37377af757f7c1a3  audio_v9_dev8_results_ed209c.tar.gz
+0d273508a0b8ee783f9dfc3e6e57bca0994a4bd4352d6b348658f5fe3f0ccae2  audio_v9_dev8_results_ed209h.tar.gz
+
+Logical workers present in these transfer bundles:
+- ed209a: 6 edge directories, 6 COMPLETE, 0 UNRESOLVED
+- ed209b: 4 edge directories, 4 COMPLETE, 0 UNRESOLVED
+- ed209e: 7 edge directories, 7 COMPLETE, 5 governed UNRESOLVED
+- ed209d: 6 edge directories, 6 COMPLETE, 1 governed UNRESOLVED
+- ed209i: 7 edge directories, 7 COMPLETE, 2 governed UNRESOLVED
+Total represented here: 30 edges.
+
+Complexity-governed unresolved edges:
+- ed209e: 018, 019, 020, 022, 038
+- ed209d: 016
+- ed209i: 030, 041
+Reason in each case: CALIBRATION_COMPLEXITY_EXCEEDED.
+
+Transferred worker evidence audit:
+- ed209a evidence/source_path_evidence.tsv: 0 data rows
+- ed209b evidence/source_path_evidence.tsv: 0 data rows
+- ed209e evidence/source_path_evidence.tsv: 0 data rows
+- ed209d evidence/source_path_evidence.tsv: 0 data rows
+- ed209i evidence/source_path_evidence.tsv: 0 data rows
+
+Important interpretation:
+Zero source-path evidence is not equivalent to zero source information. Successful dev8 edges including B007, B008, D014, E039 and I032 contain non-empty source calibration groups/path material, yet exact source-conditioned evidence remained zero. Dev8 used an 8 s spatial window / 4 s step inside a 16 s seam-local interval, yielding only one complete BEFORE and one complete AFTER observation per path. AudioV9EdgePathContinuityFitter requires >=3 points per side, so those paths were rejected by construction.
+
+The original logical ed209c and ed209h full result roots are not present in these two transfer bundles. Their earlier completion is not substituted for missing source evidence here. A final seven-logical-worker campaign merge still requires the full original C/H evidence roots or an explicit governed regeneration.

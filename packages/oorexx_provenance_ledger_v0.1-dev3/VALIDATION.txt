@@ -1,0 +1,15 @@
+ooRexx Provenance Ledger v0.1-dev3 validation
+Date: 2026-09-18
+Runtime: supplied ooRexx 5.3.0 r13196 Ubuntu debug build
+Crypto: exact oorexx_crypto_v0.8.3 from supplied oorexxapis(20260917-220404).zip
+Storage boundary: remains adapter-only; no Storage Fabric runtime dependency.
+Accounting boundary: unchanged; Accounting Core remains semantic/authoritative for accounting history.
+
+PASS tests/test_ledger.rex
+  signed chained ledger and Merkle verification (regression)
+PASS tests/test_adapters.rex
+  StorageRef adapter, receipt, Accounting evidence seam (regression)
+PASS tests/test_segments.rex
+  deterministic checkpoint state root; signed two-block durable segment export/import; import cryptographically verifies every block before commit; restored head equals source head
+
+Note: supplied debug ooRexx/Crypto Ed25519 path is intentionally slow; segment import verification is therefore the expensive part of this test.

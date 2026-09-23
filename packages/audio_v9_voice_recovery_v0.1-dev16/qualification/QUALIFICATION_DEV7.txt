@@ -1,0 +1,96 @@
+Audio V9 Voice Recovery v0.1-dev7 — qualification
+Date: 2026-09-10
+Runtime: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Base: sealed audio_v9_voice_recovery_v0.1-dev6.zip
+Base SHA-256: 9ea009c5fe3b33dc36ef208bfb6c6de4cea91365dda8a67c4b63197cd15cb19b
+
+Purpose: source-conditioned path-point evidence production for the 42 in-campaign file edges; no real campaign CLOCK_MEASURED map is claimed by this qualification.
+
+--- AUDIO MASTER GATE ---
+PASS corpus authority fc=95 fd=25 entries=120
+PASS corpus authority filenames
+PASS test_decode_geometry assertions=4
+TEST test_campaign_contract.rex
+PASS test_campaign_contract assertions=16
+TEST test_spatial_evidence.rex
+PASS test_spatial_evidence assertions=13
+TEST test_spatial_native_provider.rex
+PASS test_spatial_native_provider assertions=7
+TEST test_acoustic_character.rex
+PASS test_acoustic_character assertions=15
+TEST test_soft_reconstruction.rex
+PASS test_soft_reconstruction assertions=12
+TEST test_acoustic_coordinator.rex
+PASS test_acoustic_coordinator assertions=10
+TEST test_spatial_coordinator.rex
+PASS test_spatial_coordinator assertions=32405
+TEST test_file_edge_alignment.rex
+PASS test_file_edge_alignment assertions=22
+TEST test_file_edge_calibration_v2.rex
+PASS file-edge calibration v2 assertions=24
+PASS test_file_edge_calibration_pipeline_v2 assertions=15
+PASS test_edge_calibration_plan assertions=3
+PASS test_legacy_edge_map_refusal assertions=3
+PASS source selection native keep=0.119797796309 reject=9.9656448073e-07
+PASS source calibration masks assertions=4
+PASS source-conditioned path extraction assertions=4
+PASS source-conditioned job plan assertions=6
+PASS source-conditioned worker merge assertions=5
+TEST test_tf_mask_policy.rex
+PASS test_tf_mask_policy assertions=11
+PASS tf mask audio voice_ratio=1.199770 alarm_ratio=0.250116
+TEST test_evidence_graph.rex
+PASS test_evidence_graph assertions=83 edges=38
+TEST test_graph_wobble.rex
+PASS test_graph_wobble assertions=10 distance=3 sets=2
+TEST test_quality_graph_archive.rex
+PASS test_quality_graph_archive assertions=21 archive=/mnt/data/audio_v9_voice_recovery_v0.1-dev7/run/test/quality_graphs.tsv edges=38
+PASS test_quality_graph_renderer views=4
+PASS quality graph pipeline characters=1276 edges=6020 masks=1276 replay=deterministic
+PASS audio_v9_voice_recovery_v0.1-dev7
+master_elapsed_seconds=34.42
+assertion_count_from_assertions_fields=32693
+
+--- SOURCE-CONDITIONED CALIBRATION FINGERPRINT ---
+campaign_edges=42 fc=32 fd=10
+worker_distribution=ed209a:6,ed209b:4,ed209c:6,ed209d:6,ed209e:7,ed209h:6,ed209i:7
+synthetic_path_points=36
+synthetic_exact_source=SRC_A DIRECT=-3 REFINED=-3
+synthetic_conflicting_source=SRC_B DIRECT=255
+synthetic_solver_status=CLOCK_CANDIDATE reason=insufficient_independent_agreement
+ENVELOPE=diagnostic_only_for_sample_exact_clock
+
+--- ML DEV11 ---
+PASS ALL ooRexx ML v0.1-dev11 TESTS (63 files)
+
+--- ML GRAPH DEV3 ---
+PASS MLGraph model 14 assertions
+PASS MLGraph SVG 7 assertions
+PASS MLGraph 3D SVG 5 assertions
+PASS MLGraph pattern adapter 5 assertions
+PASS MLGraph temporal adapter 8 assertions
+PASS MLGraph temporal market 4 assertions
+PASS MLGraph difference annotations 10 assertions
+
+--- STATIC / PRECISION / NATIVE ---
+numeric_digits_30_rex_roots=41
+numeric_inherit_cls_packages=12
+shell_syntax_files=36
+rexxc_roots=53
+native_reproducible_artifacts=5
+2a1d5afde4a389f93fb8b04854533ddba4a595950962ce91ffb89c73b61b9734  native/libav9_spatial_provider.so
+c280f04649eed5ef1ae0b28700a5d06da8d45a7f4b748c53d456a1830a2473fa  native/make_spatial_fixture
+0707a307ac655aa5284ad9a9cfaad26641ad1a83ad57af9f704675446b1d9233  native/make_tf_mask_fixture
+21a3344944c9e66b4afeb0925a58108ce8764ff405154b5d5b8fe0bc4542ca72  native/measure_tone
+dba52f24abbdbe03bcd62ebec704bec64f923fa017da04dcb9b99f28e0fbc54c  native/make_edge_calibration_fixture
+
+--- SAFETY / AUTHORITY ---
+aggregate_spatial_rows_never_relabelled_as_independent_source votes=PASS
+four_quadrant_source_admission=PASS
+anonymous_speaker_family_collapse=PASS
+unknown_worker_before_corpus_gate=PASS
+worker_complete_requires_all_assigned_edges=PASS
+campaign_merge_requires_7_complete_workers_and_sha256=PASS
+missing_worker_rejected=PASS
+corrupted_worker_evidence_rejected=PASS
+legacy_dev4_clock_map_refused=PASS

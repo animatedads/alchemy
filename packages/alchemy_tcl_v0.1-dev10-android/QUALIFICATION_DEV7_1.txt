@@ -1,0 +1,20 @@
+Alchemy Tcl v0.1-dev7.1 repair qualification
+
+Repair:
+- dynamic Tcl API does not include tcl.h, so use the already-declared raw Tcl_SetResult free-proc pointer type;
+- TCL_VOLATILE ABI sentinel corrected to pointer value 1;
+- mark unused ooRexx macro contexts explicitly.
+
+Assistant-side qualification performed against:
+- supplied ooRexx 5.3.0 r13196 headers/runtime
+- host libtcl8.6.so
+- C++17 -Wall -Wextra -Werror
+
+Observed:
+PASS synchronous re-entry + persistent Tcl callback command across separate evaluations
+PASS retained exact Rexx identity across native calls; generation fence; revoke/release
+PASS later Tcl evaluation -> generation-fenced retained Rexx identity -> Tcl continuation; revoke fails closed
+PASS persistent Tcl projection; Tcl rename/delete authoritative; retained target generation fenced
+PASS nested Tcl re-entry without deadlock; projection lifecycle/pin cleanup
+
+Android/aarch64 dev7.1 remains to be confirmed on the target phone.

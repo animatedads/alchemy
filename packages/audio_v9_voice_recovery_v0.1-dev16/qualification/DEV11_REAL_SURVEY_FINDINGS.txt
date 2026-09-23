@@ -1,0 +1,43 @@
+Audio V9 dev11 real echo survey findings used to design dev12
+===========================================================
+
+Frozen inputs
+-------------
+night archive  : dfc1a8c6141530a145047068085a1a1428321e84d5cfcbecef2719381a091fd3
+day archive    : 6a8615d3b946851f3d6c716980948807273a486170a27f6303d15fd5b7ff4f20
+analysis bundle: b98e1ba31d4c49ce318f56a027bbd66be0a82395ad505d8dbe083c0575532c98
+
+Coverage
+--------
+night: 24/24 ten-minute TSV outputs + 24/24 metadata outputs
+day  : 24/24 ten-minute TSV outputs + 24/24 metadata outputs
+merged events: 467 (night=5, day=462)
+
+Observed dev11 admission bias
+-----------------------------
+trigger/leader field in all 467 admitted rows: FC
+FD_STAIRWELL_PATTERN rows: 0
+day median FC peak: approximately 0.719
+day median FD peak: approximately 0.0072
+maximum FD peak in the eight-hour survey: approximately 0.318
+dev11 shared MIN_PEAK default: 0.50
+
+Interpretation: these observations demonstrate that dev11 cannot be used as a
+fair two-feed event census on this gain geometry.  They do not demonstrate that
+FD-side events are absent.
+
+Observed family ambiguity
+-------------------------
+day rows with >=2 modeled families scoring >=0.70 somewhere: 436/462
+day rows with all seven families scoring >=0.70 somewhere: 276/462
+median best-vs-second family score gap: approximately 0.0143
+
+Observed search clipping
+------------------------
+high-cross rows (cross_score >= 0.70): 402
+selected maxima exactly on +/-1 ms family search boundary: 74/402 (18.4%)
+
+Authority
+---------
+These are measurements of the frozen dev11 TSV evidence.  They motivate dev12
+measurement changes but do not relabel any dev11 event and do not modify audio.

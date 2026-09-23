@@ -1,0 +1,32 @@
+{
+  "schema": "wire3d.package/1",
+  "api": "wire3d/0.1",
+  "wireProtocol": "WIRE-3D/0.1",
+  "version": "0.1-dev9",
+  "authorityRule": "projection-does-not-own-domain-authority",
+  "aiPresentationRule": "NO_MASCOT",
+  "mobile": "first-class",
+  "packageVersion": "0.1-dev9",
+  "invariants": [
+    "resolution-is-not-certainty",
+    "raster-lod-is-renderer-owned",
+    "source-evidence-remains-authoritative",
+    "measurement-does-not-promote-source-evidence-class",
+    "claims-evidence-qualification-remain-distinct",
+    "show-evidence-is-passive"
+  ],
+  "deltaProtocol": "WIRE-3D-DELTA/0.1",
+  "rotation": "quaternion-x-y-z-w",
+  "revisionFence": "baseRevision-must-match",
+  "clientCamera": "local",
+  "jsonCodec": "ooRexx-system-json.cls",
+  "liveDelivery": {
+    "transportAuthority": "Queue Fabric / existing Web Gateway",
+    "semanticOrdering": "serialized",
+    "deliverySequence": "monotonic-when-present",
+    "sceneFence": "delta-must-match-active-scene",
+    "resynchronisation": "snapshot",
+    "ack": "after-semantic-apply",
+    "failure": "nack"
+  }
+}

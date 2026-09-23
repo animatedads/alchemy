@@ -1,0 +1,60 @@
+Audio V9 Voice Recovery v0.1-dev13 — search landmark qualification
+Date: 2026-09-11
+
+BASE
+  sealed dev12 SHA-256:
+  22ec1d0b3f1015aca942b71e0240579f7ef6af55cea49abb9f8ac5fba10c39e8
+
+SCOPE
+  Search/provenance increment only. No dev12 native echo-scanner, clock-solver,
+  reconstruction, ML, or ML Graph semantics changed.
+
+FIRST LANDMARK
+  id: LMK-20231010-FC-071312-PHONE
+  feed: FC
+  source: /run/media/hc3/1A52-190F/masvid/Master Video Library/fc/20231010_070249_tp00019.mp4
+  file nominal start: 2023-10-10 07:02:49
+  user-observed anchor: 2023-10-10 07:13:12
+  verified offset: 623 seconds
+  file serial: 63832518169
+  anchor serial: 63832518792
+  listening evidence: USER / GROUND_TRUTH_LISTEN / VLC_200_PERCENT
+  content cue: phone call; discussion about international police coordination
+  follow-on cue: following audio user identifies as intercepted
+  status: USER_ANNOTATED
+
+SEMANTIC BOUNDARY
+  The user's follow-on interpretation is preserved as annotation and is not
+  promoted to detector truth. A loud-echo probe is auxiliary evidence only;
+  zero loud-event rows are not negative speech evidence.
+
+DEFAULT PROBE WINDOW
+  pre: 60 seconds
+  post: 240 seconds
+  total: 300 seconds
+  start serial: 63832518732
+  anchor serial: 63832518792
+  end serial: 63832519032
+  diagnostic hard cap: 600 seconds
+
+QUALIFICATION
+  PASS search landmark assertions=9 anchor=63832518792
+  PASS loud echo survey assertions=16 events=3
+  PASS loud echo v2 survey assertions=19 events=4
+  PASS quality graph pipeline characters=1276 edges=6020 masks=1276 replay=deterministic
+  PASS reconstruction processing samples=160000 rows=7
+  PASS rexxc roots=67
+  PASS shell syntax roots=45
+
+HARNESS NOTE
+  An initial targeted invocation called test_loud_echo_scan.rex before creating
+  the standard loud-echo fixture and correctly failed closed (native rc 168).
+  The test was rerun using the same fixture-preparation ordering as run_tests.sh
+  and passed. This was a qualification-driver ordering error, not a product
+  semantic failure.
+
+LIVE CORPUS NOTE
+  probe_search_landmark.sh was syntax-checked and its planner/clock/TSV boundary
+  is executable-qualified. The five-minute landmark probe itself was not run in
+  the packaging container because the user's canonical CCTV corpus path is not
+  mounted there. It is intended for a corpus-bearing worker/node.
