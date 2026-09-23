@@ -1,0 +1,14 @@
+v0.10 construction qualification
+
+Static/package checks performed by assistant:
+- Python sources compile with py_compile.
+- shell scripts pass sh -n.
+- native source contains create_guarded export and prior build path unchanged.
+- archive integrity checked after creation.
+
+Runtime qualification required on the target Android/Termux ooRexx build:
+  ./build.sh
+  python python/guarded_start_demo.py
+  ./run-tests.sh
+
+The assistant environment does not contain the target Android ooRexx runtime, so the START/GUARD behavior is deliberately marked as an experiment until the target run passes.

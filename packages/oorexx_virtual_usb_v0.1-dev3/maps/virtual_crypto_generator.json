@@ -1,0 +1,56 @@
+{
+  "schema": "oorexx.virtual.usb.device/0.2",
+  "sourceId": "board:crypto-prototype",
+  "metadata": {
+    "purpose": "development-only virtual USB crypto-generator prototype"
+  },
+  "device": {
+    "vendorId": "0xCAFE",
+    "productId": "0x4001",
+    "bcdUSB": "0x0200",
+    "bcdDevice": "0x0100",
+    "class": 0,
+    "subclass": 0,
+    "protocol": 0,
+    "maxPacketSize0": 64,
+    "manufacturerIndex": 1,
+    "productIndex": 2,
+    "serialIndex": 3,
+    "configurations": 1
+  },
+  "strings": [
+    {"index": 1, "value": "ooRexx Labs"},
+    {"index": 2, "value": "Virtual Crypto Generator"},
+    {"index": 3, "value": "DEV0002"}
+  ],
+  "configurations": [
+    {
+      "value": 1,
+      "name": "default",
+      "attributes": "0x80",
+      "maxPowerMa": 100,
+      "functions": [
+        {
+          "name": "crypto",
+          "interfaces": [
+            {
+              "name": "cryptoControl",
+              "number": 0,
+              "class": "0xFF",
+              "subclass": "0x42",
+              "protocol": "0x01",
+              "endpoints": [
+                {"name": "randomIn", "address": "0x81", "transferType": "BULK", "maxPacketSize": 64},
+                {"name": "commandOut", "address": "0x01", "transferType": "BULK", "maxPacketSize": 64}
+              ]
+            }
+          ],
+          "controls": [
+            {"name": "GET_RANDOM", "requestType": "0xC1", "request": 1, "value": 0, "index": 0},
+            {"name": "GET_STATUS_WORD", "requestType": "0xC1", "request": 2, "value": 0, "index": 0}
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schema":"oorexx.foreign/0.22.6",
+  "library":{"provider":"native","names":["libutil.so.1","libc.so.6"],"threading":"thread-safe","affinity":"none"},
+  "abiProfile":"linux-x86_64-le-lp64",
+  "functions":{
+    "openpty":{"return":"i32","errno":true,"args":[
+      {"name":"master","type":"pointer","direction":"out","size":4,"resultType":"handle","resource":"POSIX_FD","carrier":"i32","ownership":"owned","destructor":"close","invalid":-1,"outputsOnReturn":"zero"},
+      {"name":"slave","type":"pointer","direction":"out","size":4,"resultType":"handle","resource":"POSIX_FD","carrier":"i32","ownership":"owned","destructor":"close","invalid":-1,"outputsOnReturn":"zero"},
+      "pointer","pointer","pointer"
+    ]},
+    "ttyname":{"return":"cstring","errno":true,"args":["i32"]},
+    "read":{"return":"ssize_t","errno":true,"args":["i32","pointer","size_t"]},
+    "write":{"return":"ssize_t","errno":true,"args":["i32","bytes","size_t"]},
+    "poll":{"return":"i32","errno":true,"args":["pointer","unsigned long","i32"]}
+  }
+}

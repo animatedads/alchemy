@@ -1,0 +1,36 @@
+{
+  "schema": "oorexx.foreign/0.22.6",
+  "library": {
+    "provider": "native",
+    "names": ["libc.so.6"],
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "abiProfiles": {
+    "linux-x86_64-le-lp64": {
+      "constants": {
+        "POLLIN": {"type":"short","value":1}
+      },
+      "types": {
+        "pollfd": {
+          "kind":"struct",
+          "size":8,
+          "alignment":4,
+          "fields":[
+            {"name":"fd","type":"i32","offset":0},
+            {"name":"events","type":"short","offset":4},
+            {"name":"revents","type":"short","offset":6}
+          ]
+        }
+      }
+    }
+  },
+  "functions": {
+    "posix_poll": {
+      "symbol":"poll",
+      "return":"i32",
+      "errno":true,
+      "args":["pointer","unsigned long","i32"]
+    }
+  }
+}

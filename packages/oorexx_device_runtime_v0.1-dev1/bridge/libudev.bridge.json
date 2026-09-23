@@ -1,0 +1,69 @@
+{
+  "schema": "oorexx.foreign/0.22.6",
+  "library": {
+    "provider": "native",
+    "names": ["libudev.so.1"],
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "abiProfiles": {
+    "linux-x86_64-le-lp64": {
+      "constants": {}
+    }
+  },
+  "functions": {
+    "udev_new": {
+      "return": {"type":"pointer","object":"udev","ownership":"owned","destructor":"udev_unref"},
+      "args": []
+    },
+    "udev_unref": {"return":"pointer","args":["pointer"]},
+
+    "udev_enumerate_new": {
+      "return": {"type":"pointer","object":"udev_enumerate","ownership":"owned","destructor":"udev_enumerate_unref"},
+      "args": ["pointer"]
+    },
+    "udev_enumerate_unref": {"return":"pointer","args":["pointer"]},
+    "udev_enumerate_add_match_subsystem": {"return":"i32","args":["pointer","utf8"]},
+    "udev_enumerate_scan_devices": {"return":"i32","args":["pointer"]},
+    "udev_enumerate_get_list_entry": {
+      "return": {"type":"pointer","object":"udev_list_entry","ownership":"borrowed"},
+      "args": ["pointer"]
+    },
+
+    "udev_list_entry_get_next": {
+      "return": {"type":"pointer","object":"udev_list_entry","ownership":"borrowed"},
+      "args": ["pointer"]
+    },
+    "udev_list_entry_get_name": {"return":"utf8","args":["pointer"]},
+    "udev_list_entry_get_value": {"return":"utf8","args":["pointer"]},
+
+    "udev_device_new_from_syspath": {
+      "return": {"type":"pointer","object":"udev_device","ownership":"owned","destructor":"udev_device_unref"},
+      "args": ["pointer","utf8"]
+    },
+    "udev_device_unref": {"return":"pointer","args":["pointer"]},
+    "udev_device_get_syspath": {"return":"utf8","args":["pointer"]},
+    "udev_device_get_sysname": {"return":"utf8","args":["pointer"]},
+    "udev_device_get_subsystem": {"return":"utf8","args":["pointer"]},
+    "udev_device_get_devnode": {"return":"utf8","args":["pointer"]},
+    "udev_device_get_devtype": {"return":"utf8","args":["pointer"]},
+    "udev_device_get_action": {"return":"utf8","args":["pointer"]},
+    "udev_device_get_properties_list_entry": {
+      "return": {"type":"pointer","object":"udev_list_entry","ownership":"borrowed"},
+      "args": ["pointer"]
+    },
+
+    "udev_monitor_new_from_netlink": {
+      "return": {"type":"pointer","object":"udev_monitor","ownership":"owned","destructor":"udev_monitor_unref"},
+      "args": ["pointer","utf8"]
+    },
+    "udev_monitor_unref": {"return":"pointer","args":["pointer"]},
+    "udev_monitor_filter_add_match_subsystem_devtype": {"return":"i32","args":["pointer","utf8","utf8"]},
+    "udev_monitor_enable_receiving": {"return":"i32","args":["pointer"]},
+    "udev_monitor_get_fd": {"return":"i32","args":["pointer"]},
+    "udev_monitor_receive_device": {
+      "return": {"type":"pointer","object":"udev_device","ownership":"owned","destructor":"udev_device_unref"},
+      "args": ["pointer"]
+    }
+  }
+}

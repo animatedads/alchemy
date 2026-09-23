@@ -1,0 +1,115 @@
+{
+  "schema": "oorexx.foreign/0.22.6",
+  "library": {
+    "provider": "native",
+    "names": ["libc.so.6"],
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "abiProfiles": {
+    "linux-x86_64-le-lp64": {
+      "types": {
+        "termios": {
+          "kind":"struct", "size":60, "alignment":4,
+          "fields":[
+            {"name":"c_iflag","type":"u32","offset":0},
+            {"name":"c_oflag","type":"u32","offset":4},
+            {"name":"c_cflag","type":"u32","offset":8},
+            {"name":"c_lflag","type":"u32","offset":12},
+            {"name":"c_line","type":"u8","offset":16},
+            {"name":"vtime","type":"u8","offset":22},
+            {"name":"vmin","type":"u8","offset":23},
+            {"name":"c_ispeed","type":"u32","offset":52},
+            {"name":"c_ospeed","type":"u32","offset":56}
+          ]
+        },
+        "pollfd": {
+          "kind":"struct", "size":8, "alignment":4,
+          "fields":[
+            {"name":"fd","type":"i32","offset":0},
+            {"name":"events","type":"i16","offset":4},
+            {"name":"revents","type":"i16","offset":6}
+          ]
+        }
+      },
+      "constants": {
+        "O_RDWR":{"type":"i32","value":2},
+        "O_NOCTTY":{"type":"i32","value":256},
+        "O_NONBLOCK":{"type":"i32","value":2048},
+        "O_CLOEXEC":{"type":"i32","value":524288},
+        "TCSANOW":{"type":"i32","value":0},
+        "TCIFLUSH":{"type":"i32","value":0},
+        "TCOFLUSH":{"type":"i32","value":1},
+        "TCIOFLUSH":{"type":"i32","value":2},
+        "CLOCAL":{"type":"u32","value":2048},
+        "CREAD":{"type":"u32","value":128},
+        "CSIZE":{"type":"u32","value":48},
+        "CS5":{"type":"u32","value":0},
+        "CS6":{"type":"u32","value":16},
+        "CS7":{"type":"u32","value":32},
+        "CS8":{"type":"u32","value":48},
+        "CSTOPB":{"type":"u32","value":64},
+        "PARENB":{"type":"u32","value":256},
+        "PARODD":{"type":"u32","value":512},
+        "CRTSCTS":{"type":"u32","value":2147483648},
+        "IXON":{"type":"u32","value":1024},
+        "IXOFF":{"type":"u32","value":4096},
+        "IXANY":{"type":"u32","value":2048},
+        "B50":{"type":"u32","value":1},
+        "B75":{"type":"u32","value":2},
+        "B110":{"type":"u32","value":3},
+        "B134":{"type":"u32","value":4},
+        "B150":{"type":"u32","value":5},
+        "B200":{"type":"u32","value":6},
+        "B300":{"type":"u32","value":7},
+        "B600":{"type":"u32","value":8},
+        "B1200":{"type":"u32","value":9},
+        "B1800":{"type":"u32","value":10},
+        "B2400":{"type":"u32","value":11},
+        "B4800":{"type":"u32","value":12},
+        "B9600":{"type":"u32","value":13},
+        "B19200":{"type":"u32","value":14},
+        "B38400":{"type":"u32","value":15},
+        "B57600":{"type":"u32","value":4097},
+        "B115200":{"type":"u32","value":4098},
+        "B230400":{"type":"u32","value":4099},
+        "B460800":{"type":"u32","value":4100},
+        "B921600":{"type":"u32","value":4103},
+        "TIOCMGET":{"type":"unsigned long","value":21525},
+        "TIOCMSET":{"type":"unsigned long","value":21528},
+        "TIOCMBIS":{"type":"unsigned long","value":21526},
+        "TIOCMBIC":{"type":"unsigned long","value":21527},
+        "TIOCM_DTR":{"type":"i32","value":2},
+        "TIOCM_RTS":{"type":"i32","value":4},
+        "TIOCM_CTS":{"type":"i32","value":32},
+        "TIOCM_CAR":{"type":"i32","value":64},
+        "TIOCM_RNG":{"type":"i32","value":128},
+        "TIOCM_DSR":{"type":"i32","value":256},
+        "FIONREAD":{"type":"unsigned long","value":21531},
+        "POLLIN":{"type":"i16","value":1},
+        "POLLOUT":{"type":"i16","value":4},
+        "POLLERR":{"type":"i16","value":8},
+        "POLLHUP":{"type":"i16","value":16}
+      }
+    }
+  },
+  "functions": {
+    "posix_open": {
+      "symbol":"open",
+      "return":{"type":"i32","resource":"POSIX_FD","carrier":"i32","ownership":"owned","destructor":"close","invalid":-1},
+      "errno":true,
+      "args":["utf8","i32"]
+    },
+    "read":{"return":"ssize_t","errno":true,"args":["i32","pointer","size_t"]},
+    "write":{"return":"ssize_t","errno":true,"args":["i32","bytes","size_t"]},
+    "poll":{"return":"i32","errno":true,"args":["pointer","unsigned long","i32"]},
+    "tcgetattr":{"return":"i32","errno":true,"args":["i32","pointer"]},
+    "tcsetattr":{"return":"i32","errno":true,"args":["i32","i32","pointer"]},
+    "cfmakeraw":{"return":"void","args":["pointer"]},
+    "cfsetispeed":{"return":"i32","errno":true,"args":["pointer","u32"]},
+    "cfsetospeed":{"return":"i32","errno":true,"args":["pointer","u32"]},
+    "tcflush":{"return":"i32","errno":true,"args":["i32","i32"]},
+    "tcsendbreak":{"return":"i32","errno":true,"args":["i32","i32"]},
+    "ioctl_ptr":{"symbol":"ioctl","return":"i32","errno":true,"args":["i32","unsigned long","pointer"]}
+  }
+}

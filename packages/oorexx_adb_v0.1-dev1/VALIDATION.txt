@@ -1,0 +1,28 @@
+ooRexx ADB v0.1-dev1 validation
+Date: 2026-09-23
+
+Qualified runtime:
+  Open Object Rexx 5.3.0 r13196 - Internal Test Version
+
+Dependencies used for qualification:
+  Event Runtime v0.1-dev1 / event.runtime/0.1
+  ooRexx Crypto v0.8.3
+  Foreign Runtime v0.22.6
+
+Results:
+  ADB WIRE: OK
+  ADB SESSION: OK
+  ADB AUTH: OK
+  ADB NATIVE TCP FOREIGN BRIDGE: OK
+
+Authentication qualification includes a deterministic RSA-2048 fixture checked against an independently generated PKCS#1 v1.5 / SHA-1 DigestInfo signature and complete Android ADB 524-byte public-key encoding.
+
+Native TCP qualification loads the ABI-qualified libc bridge, creates the native socket crossing and exercises the expected failed-connect cleanup path against loopback port 1. It does not claim that a live Android adbd TCP endpoint was present in this execution environment.
+
+Not yet qualified / deliberately not claimed:
+  - live Android USB bulk transport
+  - physical Android authorization prompt
+  - modern STLS/TLS transport handshake
+  - wireless-debugging pairing protocol
+  - shell-v2 framing and exit-code projection
+  - sync-v2 file transfer

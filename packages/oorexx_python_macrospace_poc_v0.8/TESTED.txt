@@ -1,0 +1,21 @@
+oorexx_python_macrospace_poc_v0.8
+
+Build/package checks performed by delivery environment:
+- Python demo sources compile with py_compile.
+- build.sh and run-tests.sh pass sh -n.
+- Package contains no prebuilt native extension.
+
+Target qualification required on the Android/Termux ooRexx host:
+  ./build.sh
+  ./run-tests.sh
+
+v0.8 adds:
+- UNKNOWN forwarding of 0, 1, or 2 scalar arguments.
+- Rexx integer-looking arguments tagged and reconstructed as Python int.
+- Rexx string arguments reconstructed as Python str.
+- Non-scalar Python return values retained under identity-stable foreign handles.
+- ooRexx UNKNOWN converts returned @PYOBJ handles into PythonObjectProxy objects.
+- send0_handle() lets the Python harness retain an object-valued Rexx result without stringifying it.
+- arguments_return_object_demo.py proves feed("biscuit", 2) and Python object return/re-dispatch.
+
+This is intentionally still a bounded proof of concept, not a general marshaller.

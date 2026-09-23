@@ -1,0 +1,64 @@
+{
+  "schema": "oorexx.foreign/0.22.6",
+  "library": {
+    "provider": "native",
+    "names": ["libc.so.6"],
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "abiProfiles": {
+    "linux-x86_64-le-lp64": {
+      "constants": {
+        "AF_INET": {"type":"i32","value":2},
+        "SOCK_STREAM": {"type":"i32","value":1},
+        "SOCK_CLOEXEC": {"type":"i32","value":524288},
+        "POLLIN": {"type":"i16","value":1},
+        "MSG_NOSIGNAL": {"type":"i32","value":16384},
+        "EINTR": {"type":"i32","value":4},
+        "SOCKADDR_IN_SIZE": {"type":"u32","value":16},
+        "SIN_FAMILY_OFFSET": {"type":"u32","value":0},
+        "SIN_PORT_OFFSET": {"type":"u32","value":2},
+        "SIN_ADDR_OFFSET": {"type":"u32","value":4},
+        "IN_ADDR_SIZE": {"type":"u32","value":4}
+      },
+      "types": {
+        "pollfd": {"kind":"struct","size":8,"alignment":4,"fields":[
+          {"name":"fd","type":"i32","offset":0},
+          {"name":"events","type":"short","offset":4},
+          {"name":"revents","type":"short","offset":6}
+        ]}
+      }
+    },
+    "linux-aarch64-le-lp64": {
+      "constants": {
+        "AF_INET": {"type":"i32","value":2},
+        "SOCK_STREAM": {"type":"i32","value":1},
+        "SOCK_CLOEXEC": {"type":"i32","value":524288},
+        "POLLIN": {"type":"i16","value":1},
+        "MSG_NOSIGNAL": {"type":"i32","value":16384},
+        "EINTR": {"type":"i32","value":4},
+        "SOCKADDR_IN_SIZE": {"type":"u32","value":16},
+        "SIN_FAMILY_OFFSET": {"type":"u32","value":0},
+        "SIN_PORT_OFFSET": {"type":"u32","value":2},
+        "SIN_ADDR_OFFSET": {"type":"u32","value":4},
+        "IN_ADDR_SIZE": {"type":"u32","value":4}
+      },
+      "types": {
+        "pollfd": {"kind":"struct","size":8,"alignment":4,"fields":[
+          {"name":"fd","type":"i32","offset":0},
+          {"name":"events","type":"short","offset":4},
+          {"name":"revents","type":"short","offset":6}
+        ]}
+      }
+    }
+  },
+  "functions": {
+    "posix_socket": {"symbol":"socket","return":{"type":"i32","resource":"POSIX_FD","carrier":"i32","ownership":"owned","destructor":"close","invalid":-1},"errno":true,"args":["i32","i32","i32"]},
+    "posix_connect": {"symbol":"connect","return":"i32","errno":true,"args":["i32","pointer","socklen_t"]},
+    "posix_send": {"symbol":"send","return":"ssize_t","errno":true,"args":["i32","bytes","size_t","i32"]},
+    "posix_recv": {"symbol":"recv","return":"ssize_t","errno":true,"args":["i32","pointer","size_t","i32"]},
+    "posix_poll": {"symbol":"poll","return":"i32","errno":true,"args":["pointer","unsigned long","i32"]},
+    "posix_inet_pton": {"symbol":"inet_pton","return":"i32","errno":true,"args":["i32","utf8","pointer"]},
+    "posix_strerror": {"symbol":"strerror","return":"utf8","args":["i32"]}
+  }
+}
