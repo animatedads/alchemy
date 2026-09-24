@@ -115,7 +115,13 @@
     else if .PartResearchNormalizer~knownUnit(property['unit'])=.false then return .PartResearchNormalizer~error(outcome,'unknown unit '||property['unit'])
     if \property~hasIndex('provenance') then return .PartResearchNormalizer~error(outcome,'property provenance missing')
     if \property~hasIndex('confidence') then return .PartResearchNormalizer~error(outcome,'property confidence missing')
-    if property['value']~datatype('N') & property['value']<0 & .PartResearchNormalizer~dimensionName(property['name']) then return .PartResearchNormalizer~error(outcome,'negative dimension')
+    if property['value']~class == .Directory then do
+      if property['value']~hasIndex('min') & property['value']~hasIndex('max') then do
+        if property['value']['min']~datatype('N')=.false | property['value']['max']~datatype('N')=.false then return .PartResearchNormalizer~error(outcome,'range bounds must be numeric')
+        if property['value']['min']>property['value']['max'] then return .PartResearchNormalizer~error(outcome,'range minimum exceeds maximum')
+      end
+    end
+    else if property['value']~datatype('N') & property['value']<0 & .PartResearchNormalizer~dimensionName(property['name']) then return .PartResearchNormalizer~error(outcome,'negative dimension')
   end
   do role over candidate['materialRoles']
     if \role~hasIndex('role') | \role~hasIndex('materialId') then return .PartResearchNormalizer~error(outcome,'invalid material role')
@@ -154,9 +160,11 @@
   end
   if candidate~hasIndex('family')=.false then do
     if candidate~hasIndex('partFamily') then candidate['family']=candidate['partFamily']
+    else if response~hasIndex('partFamily') then candidate['family']=response['partFamily']
   end
   if candidate~hasIndex('description')=.false then do
     if candidate~hasIndex('partDescription') then candidate['description']=candidate['partDescription']
+    else if response~hasIndex('partDescription') then candidate['description']=response['partDescription']
     else candidate['description']=request['partDescription']
   end
   if candidate~hasIndex('properties') then candidate['properties']=self~propertyArray(candidate['properties'])
@@ -177,7 +185,7 @@
 
 ::method propertyArray class
   use strict arg source
-  if source~class~id~caselessEquals('ARRAY') then return source
+  if source~class == .Array then return source
   out=.array~new
   do key over source
     item=source[key]
@@ -193,11 +201,19 @@
 
 ::method materialArray class
   use strict arg source
-  if source~class~id~caselessEquals('ARRAY') then return source
+  if source~class == .Array then return source
   out=.array~new
   do key over source
     item=source[key]
     if item=.nil then iterate
+    if item~class == .String then do
+      value=.directory~new
+      value['role']=key
+      value['materialId']=item
+      value['provenance']='LLM response; material provenance not supplied'
+      out~append(value)
+      iterate
+    end
     if item~hasIndex('role')=.false then item['role']=key
     if item~hasIndex('materialId')=.false then item['materialId']='UNKNOWN'
     out~append(item)
@@ -216,7 +232,7 @@
 
 ::method knownUnit class
   use strict arg unit
-  allowed=.array~of('','1','Pa','MPa','GPa','N','N*m','kg','g','mm','cm','m','nm','mm2','mm3','Ohm','V','A','W','F','uF','nF','H','Hz','K','K/W','deg','rpm')
+  allowed=.array~of('','1','Pa','MPa','GPa','N','N*m','kg','g','mm','cm','m','nm','mm2','mm3','Ohm','ohm','V','A','W','watt','F','uF','nF','H','Hz','K','C','°C','K/W','deg','rpm','percent','count','materialId','ohm/ohm/°C')
   do item over allowed
     if unit~string=item then return .true
   end

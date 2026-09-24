@@ -18,6 +18,24 @@ raw=.directory~new; raw['requestId']='bearing-6203-reference'; raw['candidates']
 normalized=.PartResearchValidator~validate(raw,req~value,parts); if normalized['OK']<>.true then call fail 'live response normalization'; if raw['candidate']['id']<> 'AI-BEARING-6203-REFERENCE' then call fail 'normalized candidate id'
 if raw['candidate']['properties']~items<>1 then call fail 'normalized property map'; if raw['candidate']['materialRoles']~items<>1 then call fail 'normalized material map'
 
+/* Further live-shape replay: root family/description, categorical materialId,
+   compound units, and a bounded numeric range. */
+req=makeRequest('sensor-pt100','RTD','PT100 temperature sensor'); req~addProperty('R0'); req~addMaterialRole('element'); call addMaterials req,materials
+pt=.directory~new; pt['id']='AI-SENSOR-PT100'; pt['properties']=.directory~new
+p=.directory~new; p['value']=100; p['unit']='ohm'; p['provenance']='IEC 60751'; p['confidence']='HIGH'; pt['properties']['R0']=p
+p=.directory~new; p['value']='0.00385'; p['unit']='ohm/ohm/°C'; p['provenance']='IEC 60751'; p['confidence']='HIGH'; pt['properties']['temperatureCoefficient']=p
+r=.directory~new; r['min']=-200; r['max']=850; p=.directory~new; p['value']=r; p['unit']='°C'; p['provenance']='representative reference'; p['confidence']='MEDIUM'; pt['properties']['operatingRange']=p
+pt['materials']=.directory~new; pt['materials']['element']='CU-C110-REFERENCE'
+live=.directory~new; live['schema']='parts.research.response/0.1'; live['requestId']=req~value['requestId']; live['status']='ACCEPTED'; live['partFamily']='RTD'; live['partDescription']='PT100 temperature sensor'; live['partCandidate']=pt
+outcome=.PartResearchValidator~validate(live,req~value,parts); if \outcome['OK'] then call fail 'PT100 response normalization'; if live['candidate']['family']<>'RTD' then call fail 'root family normalization'; if live['candidate']['materialRoles']~items<>1 then call fail 'string material normalization'
+
+/* A bad model range is rejected, not silently clamped. */
+badValue=.directory~new; badValue['min']=10; badValue['max']=-10
+badProp=.directory~new; badProp['name']='RANGE'; badProp['value']=badValue; badProp['unit']='°C'; badProp['condition']='UNKNOWN'; badProp['provenance']='ESTIMATED'; badProp['confidence']='UNKNOWN'
+badCandidate=makeCandidate('BAD-RANGE','RTD','bad',.array~of(badProp),.array~of(role('ELEMENT','CU-C110-REFERENCE')))
+badRange=.directory~new; badRange['schema']='parts.research.response/0.1'; badRange['requestId']=req~value['requestId']; badRange['status']='ACCEPTED'; badRange['candidate']=badCandidate
+outcome=.PartResearchValidator~validate(badRange,req~value,parts); if outcome['OK'] then call fail 'accepted inverted range'
+
 req=makeRequest('resistor-1k','RESISTOR','1 kOhm resistor'); req~addProperty('resistance'); req~addMaterialRole('lead'); call addMaterials req,materials
 candidate=makeCandidate('RESISTOR-E24-1K','RESISTOR','E24 resistor',.array~of(prop('RESISTANCE','1000','Ohm','ENGINEERING_REFERENCE')),.array~of(role('LEAD','CU-C110-REFERENCE')))
 call accept req,candidate,parts
