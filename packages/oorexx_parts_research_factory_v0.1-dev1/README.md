@@ -15,3 +15,7 @@ and the acceptance tests consume no provider credit.
 This increment is deliberately offline by default. It contains no provider key and
 does not make network calls. Use `PartResearchFactory` with a provider callback or
 replay a cached response before enabling a paid transport.
+
+The recommended Azure Foundry routing is GPT-4o mini for text/datasheet extraction
+and GPT-4o for image or diagram requests. The planning prices are kept in
+`config/azure-foundry-gpt4o.json`; they are estimates, not billing authority.

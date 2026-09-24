@@ -275,4 +275,32 @@
   use strict arg request, validationErrors, previousCandidate
   d=.directory~new; d['schema']='parts.research.repair/0.1'; d['originalRequestId']=request~value['requestId']; d['validationErrors']=validationErrors; d['previousCandidate']=previousCandidate; d['instruction']='Correct only the listed validation defects; preserve all other fields and return the response schema.'; return d
 
+::class PartResearchModelPolicy public
+::attribute textModel get
+::attribute visionModel get
+::attribute inputUsdPerMillion get
+::attribute outputUsdPerMillion get
+
+::method init
+  expose textModel visionModel inputUsdPerMillion outputUsdPerMillion
+  use strict arg textModelArg='gpt-4o-mini', visionModelArg='gpt-4o', inputCostArg=0.15, outputCostArg=0.60
+  textModel=textModelArg; visionModel=visionModelArg; inputUsdPerMillion=inputCostArg; outputUsdPerMillion=outputCostArg
+
+::method modelFor
+  expose textModel visionModel
+  use strict arg task='TEXT_EXTRACTION', hasImages=.false
+  if hasImages=.true | task~string~upper='VISION_EXTRACTION' then return visionModel
+  return textModel
+
+::method estimateUsd
+  expose inputUsdPerMillion outputUsdPerMillion
+  use strict arg inputTokens, outputTokens
+  return (inputTokens*inputUsdPerMillion/1000000)+(outputTokens*outputUsdPerMillion/1000000)
+
+::method estimateRequests
+  use strict arg usdBudget, inputTokens=2000, outputTokens=300
+  cost=self~estimateUsd(inputTokens,outputTokens)
+  if cost=0 then return 0
+  return trunc(usdBudget/cost)
+
 ::requires 'json.cls'
