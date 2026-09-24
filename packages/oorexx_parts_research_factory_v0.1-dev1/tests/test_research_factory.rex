@@ -10,6 +10,14 @@ call addMaterials req,materials
 candidate=makeCandidate('BEARING-6203-REFERENCE','DEEP_GROOVE_BALL_BEARING','6203 reference',.array~of(prop('BORE','17','mm','STANDARD_DEFINED'),prop('OUTSIDE_DIAMETER','40','mm','STANDARD_DEFINED'),prop('WIDTH','12','mm','STANDARD_DEFINED')),.array~of(role('RINGS','STEEL-8.8-REFERENCE'),role('BALLS','STEEL-8.8-REFERENCE')))
 call accept req,candidate,parts
 
+/* Replay the two live response shapes: candidates[] and property/material maps. */
+rawCandidate=.directory~new; rawCandidate['partFamily']='FASTENER'; rawCandidate['partDescription']='M3 plain washer'
+rawProps=.directory~new; rawProps['bore']=.directory~new; rawProps['bore']['value']=3; rawProps['bore']['unit']='mm'; rawProps['bore']['provenance']='ISO 7089'; rawProps['bore']['confidence']='HIGH'; rawCandidate['properties']=rawProps
+rawMat=.directory~new; rawMat['body']=.directory~new; rawMat['body']['materialId']='STEEL-8.8-REFERENCE'; rawMat['body']['provenance']='reference'; rawCandidate['materials']=rawMat
+raw=.directory~new; raw['requestId']='bearing-6203-reference'; raw['candidates']=.array~of(rawCandidate)
+normalized=.PartResearchValidator~validate(raw,req~value,parts); if normalized['OK']<>.true then call fail 'live response normalization'; if raw['candidate']['id']<> 'AI-BEARING-6203-REFERENCE' then call fail 'normalized candidate id'
+if raw['candidate']['properties']~items<>1 then call fail 'normalized property map'; if raw['candidate']['materialRoles']~items<>1 then call fail 'normalized material map'
+
 req=makeRequest('resistor-1k','RESISTOR','1 kOhm resistor'); req~addProperty('resistance'); req~addMaterialRole('lead'); call addMaterials req,materials
 candidate=makeCandidate('RESISTOR-E24-1K','RESISTOR','E24 resistor',.array~of(prop('RESISTANCE','1000','Ohm','ENGINEERING_REFERENCE')),.array~of(role('LEAD','CU-C110-REFERENCE')))
 call accept req,candidate,parts
@@ -66,10 +74,7 @@ accept: procedure expose parts
   use arg request,candidate,parts
   response=makeResponse(request~value,candidate)
   outcome=.PartResearchValidator~validate(response,request~value,parts)
-  if \outcome['OK'] then do
-    say .JSON~toJSON(outcome)
-    call fail 'candidate rejected'
-  end
+  if \outcome['OK'] then call fail 'candidate rejected'
   parts~append(candidate['id'])
   source=.PartResearchGenerator~render(candidate); if source~pos('::method')=0 then call fail 'generator'
   return

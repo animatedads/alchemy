@@ -16,6 +16,11 @@ This increment is deliberately offline by default. It contains no provider key a
 does not make network calls. Use `PartResearchFactory` with a provider callback or
 replay a cached response before enabling a paid transport.
 
+The validator includes a bounded normalizer for common model shape drift such as
+`candidates[0]`, `partCandidate`, property maps, and material maps. Normalization is
+reported as warnings; it does not invent engineering values or permit unresolved
+material IDs.
+
 The configured Azure Foundry text route is GPT-4.1-mini, deployment
 `parts-research-gpt41-mini`, with GPT-4o reserved for future image or diagram
 requests. The planning prices and deployment metadata are kept in

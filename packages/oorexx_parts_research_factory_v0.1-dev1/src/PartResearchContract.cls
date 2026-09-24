@@ -83,48 +83,132 @@
 ::method validate class
   use strict arg response, request, existingPartIds=.nil
   if existingPartIds=.nil then existingPartIds=.array~new
+  ignore=.PartResearchNormalizer~normalize(response,request)
   outcome=.directory~new; outcome['OK']=.true; outcome['ERRORS']=.array~new
-  if response=.nil then return self~error(outcome,'response is missing')
-  if \response~hasIndex('schema') then return self~error(outcome,'missing response schema')
-  if response['schema']<>'parts.research.response/0.1' then return self~error(outcome,'wrong response schema')
-  if \response~hasIndex('requestId') then return self~error(outcome,'missing response requestId')
-  if response['requestId']<>request['requestId'] then return self~error(outcome,'requestId mismatch')
-  if \response~hasIndex('status') then return self~error(outcome,'missing response status')
+  if response=.nil then return .PartResearchNormalizer~error(outcome,'response is missing')
+  if \response~hasIndex('schema') then return .PartResearchNormalizer~error(outcome,'missing response schema')
+  if response['schema']<>'parts.research.response/0.1' then return .PartResearchNormalizer~error(outcome,'wrong response schema')
+  if \response~hasIndex('requestId') then return .PartResearchNormalizer~error(outcome,'missing response requestId')
+  if response['requestId']<>request['requestId'] then return .PartResearchNormalizer~error(outcome,'requestId mismatch')
+  if \response~hasIndex('status') then return .PartResearchNormalizer~error(outcome,'missing response status')
   status=response['status']~string~upper
-  if status<>'ACCEPTED' & status<>'PARTIAL' & status<>'UNKNOWN' then return self~error(outcome,'invalid response status')
+  if status<>'ACCEPTED' & status<>'PARTIAL' & status<>'UNKNOWN' then return .PartResearchNormalizer~error(outcome,'invalid response status')
   if status='UNKNOWN' then return outcome
-  if \response~hasIndex('candidate') then return self~error(outcome,'candidate missing')
+  if \response~hasIndex('candidate') then return .PartResearchNormalizer~error(outcome,'candidate missing')
   candidate=response['candidate']
-  if \candidate~hasIndex('id') then return self~error(outcome,'candidate id missing')
-  if candidate['id']='' then return self~error(outcome,'candidate id empty')
+  if \candidate~hasIndex('id') then return .PartResearchNormalizer~error(outcome,'candidate id missing')
+  if candidate['id']='' then return .PartResearchNormalizer~error(outcome,'candidate id empty')
   do known over existingPartIds
-    if known=candidate['id'] then return self~error(outcome,'duplicate Part ID')
+    if known=candidate['id'] then return .PartResearchNormalizer~error(outcome,'duplicate Part ID')
   end
-  if \candidate~hasIndex('family') then return self~error(outcome,'candidate family missing')
-  if \candidate~hasIndex('properties') then return self~error(outcome,'candidate properties missing')
-  if \candidate~hasIndex('materialRoles') then return self~error(outcome,'candidate materialRoles missing')
+  if \candidate~hasIndex('family') then return .PartResearchNormalizer~error(outcome,'candidate family missing')
+  if \candidate~hasIndex('properties') then return .PartResearchNormalizer~error(outcome,'candidate properties missing')
+  if \candidate~hasIndex('materialRoles') then return .PartResearchNormalizer~error(outcome,'candidate materialRoles missing')
   do property over candidate['properties']
-    if \property~hasIndex('name') then return self~error(outcome,'property name missing')
-    if \property~hasIndex('value') then return self~error(outcome,'property value missing')
-    if \property~hasIndex('unit') then return self~error(outcome,'property unit missing')
-    if property['unit']='' then return self~error(outcome,'property unit empty')
-    if \self~knownUnit(property['unit']) then return self~error(outcome,'unknown unit '||property['unit'])
-    if \property~hasIndex('provenance') then return self~error(outcome,'property provenance missing')
-    if \property~hasIndex('confidence') then return self~error(outcome,'property confidence missing')
-    if property['value']~datatype('N') & property['value']<0 & self~dimensionName(property['name']) then return self~error(outcome,'negative dimension')
+    if \property~hasIndex('name') then return .PartResearchNormalizer~error(outcome,'property name missing')
+    if \property~hasIndex('value') then return .PartResearchNormalizer~error(outcome,'property value missing')
+    if \property~hasIndex('unit') then return .PartResearchNormalizer~error(outcome,'property unit missing')
+    if property['unit']='' then return .PartResearchNormalizer~error(outcome,'property unit empty')
+    if property['unit']='UNKNOWN' then do
+      if property['value']<>'UNKNOWN' then return .PartResearchNormalizer~error(outcome,'unknown unit for asserted value '||property['name'])
+    end
+    else if .PartResearchNormalizer~knownUnit(property['unit'])=.false then return .PartResearchNormalizer~error(outcome,'unknown unit '||property['unit'])
+    if \property~hasIndex('provenance') then return .PartResearchNormalizer~error(outcome,'property provenance missing')
+    if \property~hasIndex('confidence') then return .PartResearchNormalizer~error(outcome,'property confidence missing')
+    if property['value']~datatype('N') & property['value']<0 & .PartResearchNormalizer~dimensionName(property['name']) then return .PartResearchNormalizer~error(outcome,'negative dimension')
   end
   do role over candidate['materialRoles']
-    if \role~hasIndex('role') | \role~hasIndex('materialId') then return self~error(outcome,'invalid material role')
-    if role['materialId']='' then return self~error(outcome,'empty material ID')
+    if \role~hasIndex('role') | \role~hasIndex('materialId') then return .PartResearchNormalizer~error(outcome,'invalid material role')
+    if role['materialId']='' then return .PartResearchNormalizer~error(outcome,'empty material ID')
     found=.false
     do materialId over request['existingMaterialIds']
       if materialId=role['materialId'] then found=.true
     end
-    if \found then return self~error(outcome,'unresolved material ID '||role['materialId'])
+    if \found then return .PartResearchNormalizer~error(outcome,'unresolved material ID '||role['materialId'])
   end
-  if \candidate~hasIndex('provenance') then return self~error(outcome,'candidate provenance missing')
-  if candidate['provenance']~items=0 then return self~error(outcome,'candidate provenance empty')
+  if \candidate~hasIndex('provenance') then return .PartResearchNormalizer~error(outcome,'candidate provenance missing')
+  if candidate['provenance']~items=0 then return .PartResearchNormalizer~error(outcome,'candidate provenance empty')
   return outcome
+
+::class PartResearchNormalizer public
+
+::method normalize class
+  use strict arg response, request
+  if response~hasIndex('schema')=.false then response['schema']='parts.research.response/0.1'
+  if response~hasIndex('status')=.false then response['status']='PARTIAL'
+  if response['status']='UNKNOWN' then return response
+  if response~hasIndex('candidate') then candidate=response['candidate']
+  else if response~hasIndex('candidates') then do
+    if response['candidates']~items=0 then return response
+    candidate=response['candidates'][1]; response['candidate']=candidate
+    self~warn(response,'normalized candidates[1] to candidate')
+  end
+  else if response~hasIndex('partCandidate') then do
+    candidate=response['partCandidate']; response['candidate']=candidate
+    self~warn(response,'normalized partCandidate to candidate')
+  end
+  else return response
+  if candidate~hasIndex('id')=.false then do
+    candidate['id']='AI-'||request['requestId']~string~upper~changeStr('_','-')
+    self~warn(response,'generated deterministic candidate id from requestId')
+  end
+  if candidate~hasIndex('family')=.false then do
+    if candidate~hasIndex('partFamily') then candidate['family']=candidate['partFamily']
+  end
+  if candidate~hasIndex('description')=.false then do
+    if candidate~hasIndex('partDescription') then candidate['description']=candidate['partDescription']
+    else candidate['description']=request['partDescription']
+  end
+  if candidate~hasIndex('properties') then candidate['properties']=self~propertyArray(candidate['properties'])
+  else candidate['properties']=.array~new
+  if candidate~hasIndex('materials') then candidate['materialRoles']=self~materialArray(candidate['materials'])
+  else if candidate~hasIndex('material') then candidate['materialRoles']=self~materialArray(candidate['material'])
+  else if \candidate~hasIndex('materialRoles') then candidate['materialRoles']=.array~new
+  if candidate~hasIndex('geometry')=.false then candidate['geometry']=.directory~new
+  if candidate~hasIndex('ratings')=.false then candidate['ratings']=.array~new
+  if candidate~hasIndex('provenance')=.false then do
+    candidate['provenance']=.array~of('LLM candidate normalized; candidate-level provenance was absent')
+    self~warn(response,'candidate-level provenance was absent; property provenance remains required')
+  end
+  if response~hasIndex('warnings')=.false then response['warnings']=.array~new
+  if response~hasIndex('missingInformation')=.false then response['missingInformation']=.array~new
+  if response~hasIndex('confidence')=.false then response['confidence']='UNKNOWN'
+  return response
+
+::method propertyArray class
+  use strict arg source
+  if source~class~id~caselessEquals('ARRAY') then return source
+  out=.array~new
+  do key over source
+    item=source[key]
+    if item=.nil then iterate
+    if item~hasIndex('name')=.false then item['name']=key
+    if item~hasIndex('unit')=.false then item['unit']='UNKNOWN'
+    if item~hasIndex('condition')=.false then item['condition']='UNKNOWN'
+    if item~hasIndex('provenance')=.false then item['provenance']='LLM response; provenance not supplied'
+    if item~hasIndex('confidence')=.false then item['confidence']='UNKNOWN'
+    out~append(item)
+  end
+  return out
+
+::method materialArray class
+  use strict arg source
+  if source~class~id~caselessEquals('ARRAY') then return source
+  out=.array~new
+  do key over source
+    item=source[key]
+    if item=.nil then iterate
+    if item~hasIndex('role')=.false then item['role']=key
+    if item~hasIndex('materialId')=.false then item['materialId']='UNKNOWN'
+    out~append(item)
+  end
+  return out
+
+::method warn class
+  use strict arg response, text
+  if response~hasIndex('warnings')=.false then response['warnings']=.array~new
+  response['warnings']~append(text)
+  return response
 
 ::method error class
   use strict arg outcome, message
