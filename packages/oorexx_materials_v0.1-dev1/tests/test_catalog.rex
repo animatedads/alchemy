@@ -1,6 +1,6 @@
 numeric digits 30
 a=.CommonMaterials~catalog
-if a~items<>19 then call fail 'catalog count'
+if a~items<>20 then call fail 'catalog count'
 do m over a
   if \m~validate then call fail 'validation'
 end
@@ -16,6 +16,8 @@ cf=.CommonMaterials~carbonFiberEpoxy
 if cf~value('DENSITY')<>1600 then call fail 'CFRP density'
 cc=.CommonMaterials~concreteC30
 if cc~value('COMPRESSIVE_STRENGTH')<>30000000 then call fail 'concrete strength'
+if .CommonMaterials~stainless304~value('YIELD_STRESS')<>215000000 then call fail 'stainless yield stress'
+if .CommonMaterials~steelFastener88~value('YIELD_STRESS')<>640000000 then call fail 'fastener steel yield stress'
 say 'PASS materials catalog' a~items 'definitions'
 exit 0
 fail: procedure

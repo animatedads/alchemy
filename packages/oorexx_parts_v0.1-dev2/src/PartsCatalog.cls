@@ -143,13 +143,25 @@
   return .PartDefinition~new('7SEG-RED-CC-GENERIC','SEVEN_SEGMENT_DISPLAY','Generic red common-cathode seven-segment display',p,m,g,mf,.nil,'GENERIC')
 
 ::method boltM6x30 class
+  use strict arg materialId='STEEL-8.8-REFERENCE'
+  material=.CommonMaterials~byId(materialId)
+  if material=.nil then raise syntax 93.900 array('unknown bolt material' materialId)
+  yieldStress=material~value('YIELD_STRESS')
+  shearFactor=0.6
+  /* Conservative geometric model: hex-head perimeter (34.64 mm) times
+     4 mm head thickness. Capacity is tau*A, retained as a reference model. */
+  headAreaMm2=138.56
+  headShearStress=yieldStress*shearFactor
+  headCapacity=headShearStress*headAreaMm2/1000000
   p=.directory~new
   p['NOMINAL_DIAMETER']='6 mm'; p['LENGTH']='30 mm'; p['PITCH']='1 mm'
   p['TENSILE_STRENGTH']='800 MPa'; p['PROOF_LOAD']='580 MPa'
-  m=.directory~new; m['BODY']='steel-metric-fastener'; m['NUT_COMPATIBILITY']='M6-1.0'
+  p['MATERIAL_ID']=material~id; p['HEAD_SHEAR_AREA']='138.56 mm2'
+  p['HEAD_SHEAR_STRESS']=headShearStress||' Pa'; p['HEAD_SHEAR_CAPACITY']=headCapacity||' N'
+  m=.directory~new; m['BODY']=material~id; m['NUT_COMPATIBILITY']='M6-1.0'
   g=.directory~new; g['FORM']='HEX_HEAD'; g['HEAD_SIZE']='10 mm'; g['SHANK_DIAMETER']='6 mm'
   mf=.directory~new; mf['PROCESS']='COLD_FORMED_AND_ROLLED'; mf['FINISH']='ZINC_REFERENCE'
-  return .PartDefinition~new('BOLT-M6X30-8.8','FASTENER','M6 x 30 mm property-class 8.8 bolt',p,m,g,mf,.nil,'ENGINEERING_REFERENCE')
+  return .PartDefinition~new('BOLT-M6X30-'||material~id,'FASTENER','M6 x 30 mm material-selectable bolt',p,m,g,mf,.nil,'ENGINEERING_REFERENCE')
 
 ::method plateAl6061T6 class
   p=.directory~new
@@ -194,6 +206,8 @@
   d['2N2222']=self~transistor2N2222
   d['7SEG_RED_CC']=self~sevenSegmentRed
   d['BOLT_M6X30']=self~boltM6x30
+  d['BOLT_M6X30_SS304']=self~boltM6x30('SS-304-REFERENCE')
+  d['BOLT_M6X30_AL6061']=self~boltM6x30('AL-6061-T6')
   d['PLATE_AL6061T6']=self~plateAl6061T6
   d['BEARING_608']=self~bearing608
   d['HEATSINK_TO220']=self~heatsinkTO220
@@ -220,3 +234,4 @@
 ::requires 'RexxTronicsDC.cls'
 ::requires 'RexxTronicsSemiconductors.cls'
 ::requires 'RexxTronicsDisplays.cls'
+::requires 'MaterialsCatalog.cls'

@@ -1,6 +1,6 @@
 numeric digits 50
 parts=.CommonParts~standardBenchSet
-if parts~items <> 17 then call fail 'expected 17 starter parts'
+if parts~items <> 19 then call fail 'expected 19 starter parts'
 r=parts['R_1K_5_025W']
 if r~family <> 'RESISTOR' then call fail 'resistor family'
 if r~material('LEAD') <> 'copper' then call fail 'resistor lead material'

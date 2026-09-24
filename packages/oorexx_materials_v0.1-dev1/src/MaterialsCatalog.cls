@@ -132,6 +132,16 @@
   b~add('SPECIFIC_HEAT',500,.Units~joule/(.Units~kilogram*.Units~deltaKelvin),c)
   b~add('THERMAL_CONDUCTIVITY','16.2',.Units~watt/(.Units~metre*.Units~deltaKelvin),c)
   b~add('YOUNG_MODULUS','193000000000',.Units~pascal,c)
+  b~add('YIELD_STRESS','215000000',.Units~pascal,c)
+  return b~build
+
+::method steelFastener88 class
+  c=self~referenceCondition
+  b=.MaterialBuilder~new('STEEL-8.8-REFERENCE','Property class 8.8 fastener steel reference','METAL','ENGINEERING_REFERENCE')
+  b~add('DENSITY',7850,.Units~kilogramPerCubicMetre,c)
+  b~add('YOUNG_MODULUS','200000000000',.Units~pascal,c)
+  b~add('YIELD_STRESS','640000000',.Units~pascal,c)
+  b~add('SHEAR_FACTOR','0.6',.Units~one,c)
   return b~build
 
 ::method brass class
@@ -256,7 +266,7 @@
   a~append(self~brass); a~append(self~silicon); a~append(self~fr4); a~append(self~glass)
   a~append(self~abs); a~append(self~nylon66); a~append(self~ptfe); a~append(self~rubber)
   a~append(self~water20C); a~append(self~air20C); a~append(self~epoxy); a~append(self~ferrite)
-  a~append(self~polycarbonate); a~append(self~carbonFiberEpoxy); a~append(self~concreteC30)
+  a~append(self~polycarbonate); a~append(self~carbonFiberEpoxy); a~append(self~concreteC30); a~append(self~steelFastener88)
   return a
 
 ::method byId class
