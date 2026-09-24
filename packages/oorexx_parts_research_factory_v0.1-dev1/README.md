@@ -16,6 +16,7 @@ This increment is deliberately offline by default. It contains no provider key a
 does not make network calls. Use `PartResearchFactory` with a provider callback or
 replay a cached response before enabling a paid transport.
 
-The recommended Azure Foundry routing is GPT-4o mini for text/datasheet extraction
-and GPT-4o for image or diagram requests. The planning prices are kept in
-`config/azure-foundry-gpt4o.json`; they are estimates, not billing authority.
+The configured Azure Foundry text route is GPT-4.1-mini, deployment
+`parts-research-gpt41-mini`, with GPT-4o reserved for future image or diagram
+requests. The planning prices and deployment metadata are kept in
+`config/azure-foundry-gpt41-mini.json`; they are estimates, not billing authority.

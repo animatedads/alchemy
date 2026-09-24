@@ -283,7 +283,7 @@
 
 ::method init
   expose textModel visionModel inputUsdPerMillion outputUsdPerMillion
-  use strict arg textModelArg='gpt-4o-mini', visionModelArg='gpt-4o', inputCostArg=0.15, outputCostArg=0.60
+  use strict arg textModelArg='gpt-4.1-mini', visionModelArg='gpt-4o', inputCostArg=0.40, outputCostArg=1.60
   textModel=textModelArg; visionModel=visionModelArg; inputUsdPerMillion=inputCostArg; outputUsdPerMillion=outputCostArg
 
 ::method modelFor
