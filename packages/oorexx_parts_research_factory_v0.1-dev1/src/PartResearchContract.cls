@@ -115,7 +115,7 @@
     else if .PartResearchNormalizer~knownUnit(property['unit'])=.false then return .PartResearchNormalizer~error(outcome,'unknown unit '||property['unit'])
     if \property~hasIndex('provenance') then return .PartResearchNormalizer~error(outcome,'property provenance missing')
     if \property~hasIndex('confidence') then return .PartResearchNormalizer~error(outcome,'property confidence missing')
-    if property['value']~class == .Directory then do
+    if property['value']~isA(.Directory) then do
       if property['value']~hasIndex('min') & property['value']~hasIndex('max') then do
         if property['value']['min']~datatype('N')=.false | property['value']['max']~datatype('N')=.false then return .PartResearchNormalizer~error(outcome,'range bounds must be numeric')
         if property['value']['min']>property['value']['max'] then return .PartResearchNormalizer~error(outcome,'range minimum exceeds maximum')
@@ -171,6 +171,7 @@
   else candidate['properties']=.array~new
   if candidate~hasIndex('materials') then candidate['materialRoles']=self~materialArray(candidate['materials'])
   else if candidate~hasIndex('material') then candidate['materialRoles']=self~materialArray(candidate['material'])
+  else if candidate~hasIndex('materialRoles') then candidate['materialRoles']=self~materialArray(candidate['materialRoles'])
   else if \candidate~hasIndex('materialRoles') then candidate['materialRoles']=.array~new
   if candidate~hasIndex('geometry')=.false then candidate['geometry']=.directory~new
   if candidate~hasIndex('ratings')=.false then candidate['ratings']=.array~new
@@ -185,28 +186,55 @@
 
 ::method propertyArray class
   use strict arg source
-  if source~class == .Array then return source
   out=.array~new
+  if source~isA(.Array) then do
+    do item over source
+      out~append(self~normalizeProperty(item,'UNKNOWN'))
+    end
+    return out
+  end
   do key over source
     item=source[key]
-    if item=.nil then iterate
-    if item~hasIndex('name')=.false then item['name']=key
-    if item~hasIndex('unit')=.false then item['unit']='UNKNOWN'
-    if item~hasIndex('condition')=.false then item['condition']='UNKNOWN'
-    if item~hasIndex('provenance')=.false then item['provenance']='LLM response; provenance not supplied'
-    if item~hasIndex('confidence')=.false then item['confidence']='UNKNOWN'
-    out~append(item)
+    out~append(self~normalizeProperty(item,key))
   end
   return out
 
+::method normalizeProperty class
+  use strict arg item, key
+    if item=.nil then return .directory~new
+    if item~hasIndex('name')=.false then item['name']=key
+    if item~hasIndex('unit')=.false then item['unit']='UNKNOWN'
+    if item['unit']='material' | item['unit']='material_id' then do
+      item['unit']='materialId'
+    end
+    else if item['unit']='UNKNOWN' then do
+      if item~hasIndex('value') then do
+        if item['value']~isA(.String) then do
+          if item['value']<>'UNKNOWN' then item['unit']='category'
+        end
+      end
+    end
+    if item~hasIndex('condition')=.false then item['condition']='UNKNOWN'
+    if item~hasIndex('provenance')=.false then item['provenance']='LLM response; provenance not supplied'
+    if item~hasIndex('confidence')=.false then item['confidence']='UNKNOWN'
+  return item
+
 ::method materialArray class
   use strict arg source
-  if source~class == .Array then return source
   out=.array~new
+  if source~isA(.Array) then do
+    do item over source
+      if item~isA(.String) then do
+        value=.directory~new; value['role']='material'; value['materialId']=item; value['provenance']='LLM response; material provenance not supplied'; out~append(value)
+      end
+      else out~append(item)
+    end
+    return out
+  end
   do key over source
     item=source[key]
     if item=.nil then iterate
-    if item~class == .String then do
+    if item~isA(.String) then do
       value=.directory~new
       value['role']=key
       value['materialId']=item
@@ -232,7 +260,7 @@
 
 ::method knownUnit class
   use strict arg unit
-  allowed=.array~of('','1','Pa','MPa','GPa','N','N*m','kg','g','mm','cm','m','nm','mm2','mm3','Ohm','ohm','V','A','W','watt','F','uF','nF','H','Hz','K','C','°C','K/W','deg','rpm','percent','count','materialId','ohm/ohm/°C')
+  allowed=.array~of('','1','Pa','MPa','GPa','N','N*m','N/m','kg','g','mm','cm','m','nm','mm2','mm3','Ohm','ohm','V','A','W','watt','F','uF','nF','pF','H','Hz','K','C','°C','K/W','deg','rad','rpm','percent','count','category','materialId','material_id','Nm/rad','ohm/ohm/°C')
   do item over allowed
     if unit~string=item then return .true
   end
