@@ -8,7 +8,8 @@
 
 `CommonParts~resistor(...)`, `~capacitor(...)`, `~diode1N4148`, `~diode1N4007`, `~ledRed5mm`, `~zener5V1`, `~standardBenchSet`.
 
-The engineering extension adds `~boltM6x30`, `~plateAl6061T6`, `~bearing608`
+The engineering extension adds `~metricBolt(size,length,materialId)`,
+`~boltM6x30`, `~plateAl6061T6`, `~bearing608`
 and `~heatsinkTO220`, each carrying dimensional, material and manufacturing
 metadata suitable for deterministic downstream checks.
 

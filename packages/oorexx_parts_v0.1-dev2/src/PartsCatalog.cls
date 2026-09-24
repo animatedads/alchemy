@@ -144,24 +144,33 @@
 
 ::method boltM6x30 class
   use strict arg materialId='STEEL-8.8-REFERENCE'
+  return self~metricBolt('M6','30 mm',materialId)
+
+::method metricBolt class
+  use strict arg nominalSize='M6', length='30 mm', materialId='STEEL-8.8-REFERENCE'
   material=.CommonMaterials~byId(materialId)
   if material=.nil then raise syntax 93.900 array('unknown bolt material' materialId)
   yieldStress=material~value('YIELD_STRESS')
   shearFactor=0.6
-  /* Conservative geometric model: hex-head perimeter (34.64 mm) times
-     4 mm head thickness. Capacity is tau*A, retained as a reference model. */
-  headAreaMm2=138.56
+  size=nominalSize~string~upper
+  if size='M3' then do; nominalDiameter='3 mm'; headAcross='5.5 mm'; headThickness='2 mm'; headAreaMm2=34.64; end
+  else if size='M4' then do; nominalDiameter='4 mm'; headAcross='7 mm'; headThickness='2.8 mm'; headAreaMm2=61.60; end
+  else if size='M5' then do; nominalDiameter='5 mm'; headAcross='8 mm'; headThickness='3.5 mm'; headAreaMm2=96.99; end
+  else if size='M6' then do; nominalDiameter='6 mm'; headAcross='10 mm'; headThickness='4 mm'; headAreaMm2=138.56; end
+  else if size='M8' then do; nominalDiameter='8 mm'; headAcross='13 mm'; headThickness='5.3 mm'; headAreaMm2=237.98; end
+  else raise syntax 93.900 array('unsupported metric bolt size' nominalSize)
   headShearStress=yieldStress*shearFactor
   headCapacity=headShearStress*headAreaMm2/1000000
   p=.directory~new
-  p['NOMINAL_DIAMETER']='6 mm'; p['LENGTH']='30 mm'; p['PITCH']='1 mm'
+  p['NOMINAL_SIZE']=nominalSize~string~upper; p['NOMINAL_DIAMETER']=nominalDiameter; p['LENGTH']=length; p['PITCH']='1 mm'
   p['TENSILE_STRENGTH']='800 MPa'; p['PROOF_LOAD']='580 MPa'
-  p['MATERIAL_ID']=material~id; p['HEAD_SHEAR_AREA']='138.56 mm2'
-  p['HEAD_SHEAR_STRESS']=headShearStress||' Pa'; p['HEAD_SHEAR_CAPACITY']=headCapacity||' N'
+  p['MATERIAL_ID']=material~id; p['HEAD_ACROSS_FLATS']=headAcross; p['HEAD_THICKNESS']=headThickness
+  p['HEAD_SHEAR_AREA']=headAreaMm2||' mm2'; p['HEAD_SHEAR_STRESS_PA']=headShearStress; p['HEAD_SHEAR_STRESS']=headShearStress||' Pa'
+  p['HEAD_SHEAR_CAPACITY_N']=headCapacity; p['HEAD_SHEAR_CAPACITY']=headCapacity||' N'
   m=.directory~new; m['BODY']=material~id; m['NUT_COMPATIBILITY']='M6-1.0'
   g=.directory~new; g['FORM']='HEX_HEAD'; g['HEAD_SIZE']='10 mm'; g['SHANK_DIAMETER']='6 mm'
   mf=.directory~new; mf['PROCESS']='COLD_FORMED_AND_ROLLED'; mf['FINISH']='ZINC_REFERENCE'
-  return .PartDefinition~new('BOLT-M6X30-'||material~id,'FASTENER','M6 x 30 mm material-selectable bolt',p,m,g,mf,.nil,'ENGINEERING_REFERENCE')
+  return .PartDefinition~new('BOLT-'||nominalSize~string~upper||'X'||length||'-'||material~id,'FASTENER',nominalSize~string~upper||' x '||length||' material-selectable bolt',p,m,g,mf,.nil,'ENGINEERING_REFERENCE')
 
 ::method plateAl6061T6 class
   p=.directory~new
