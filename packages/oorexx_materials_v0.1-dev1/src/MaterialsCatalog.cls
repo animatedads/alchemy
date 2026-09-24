@@ -113,6 +113,7 @@
   b~add('YOUNG_MODULUS','68900000000',.Units~pascal,c)
   b~add('POISSON_RATIO','0.33',.Units~one,c)
   b~add('YIELD_STRESS','276000000',.Units~pascal,c)
+  b~add('SHEAR_FACTOR','0.6',.Units~one,c)
   return b~build
 
 ::method mildSteel class
@@ -133,6 +134,7 @@
   b~add('THERMAL_CONDUCTIVITY','16.2',.Units~watt/(.Units~metre*.Units~deltaKelvin),c)
   b~add('YOUNG_MODULUS','193000000000',.Units~pascal,c)
   b~add('YIELD_STRESS','215000000',.Units~pascal,c)
+  b~add('SHEAR_FACTOR','0.6',.Units~one,c)
   return b~build
 
 ::method steelFastener88 class
@@ -140,9 +142,21 @@
   b=.MaterialBuilder~new('STEEL-8.8-REFERENCE','Property class 8.8 fastener steel reference','METAL','ENGINEERING_REFERENCE')
   b~add('DENSITY',7850,.Units~kilogramPerCubicMetre,c)
   b~add('YOUNG_MODULUS','200000000000',.Units~pascal,c)
-  b~add('YIELD_STRESS','640000000',.Units~pascal,c)
+  b~add('YIELD_STRESS','640000000',.Units~pascal,c); b~add('POISSON_RATIO','0.30',.Units~one,c)
   b~add('SHEAR_FACTOR','0.6',.Units~one,c)
   return b~build
+
+::method steelFastener48 class
+  c=self~referenceCondition; b=.MaterialBuilder~new('STEEL-4.8-REFERENCE','Property class 4.8 fastener steel reference','METAL','ENGINEERING_REFERENCE')
+  b~add('DENSITY',7850,.Units~kilogramPerCubicMetre,c); b~add('YOUNG_MODULUS','200000000000',.Units~pascal,c); b~add('YIELD_STRESS','320000000',.Units~pascal,c); b~add('POISSON_RATIO','0.30',.Units~one,c); b~add('SHEAR_FACTOR','0.6',.Units~one,c); return b~build
+
+::method steelFastener109 class
+  c=self~referenceCondition; b=.MaterialBuilder~new('STEEL-10.9-REFERENCE','Property class 10.9 fastener steel reference','METAL','ENGINEERING_REFERENCE')
+  b~add('DENSITY',7850,.Units~kilogramPerCubicMetre,c); b~add('YOUNG_MODULUS','200000000000',.Units~pascal,c); b~add('YIELD_STRESS','900000000',.Units~pascal,c); b~add('POISSON_RATIO','0.30',.Units~one,c); b~add('SHEAR_FACTOR','0.6',.Units~one,c); return b~build
+
+::method steelFastener129 class
+  c=self~referenceCondition; b=.MaterialBuilder~new('STEEL-12.9-REFERENCE','Property class 12.9 fastener steel reference','METAL','ENGINEERING_REFERENCE')
+  b~add('DENSITY',7850,.Units~kilogramPerCubicMetre,c); b~add('YOUNG_MODULUS','200000000000',.Units~pascal,c); b~add('YIELD_STRESS','1100000000',.Units~pascal,c); b~add('POISSON_RATIO','0.30',.Units~one,c); b~add('SHEAR_FACTOR','0.6',.Units~one,c); return b~build
 
 ::method brass class
   c=self~referenceCondition
@@ -260,13 +274,21 @@
   b~add('COMPRESSIVE_STRENGTH','30000000',.Units~pascal,c)
   return b~build
 
+::method pom class
+  c=self~referenceCondition; b=.MaterialBuilder~new('POM-GENERIC','Acetal/polyoxymethylene generic reference','POLYMER','GENERIC')
+  b~add('DENSITY',1410,.Units~kilogramPerCubicMetre,c); b~add('YOUNG_MODULUS','3000000000',.Units~pascal,c); b~add('THERMAL_CONDUCTIVITY','0.31',.Units~watt/(.Units~metre*.Units~deltaKelvin),c); return b~build
+
+::method pvc class
+  c=self~referenceCondition; b=.MaterialBuilder~new('PVC-GENERIC','Polyvinyl chloride generic reference','POLYMER','GENERIC')
+  b~add('DENSITY',1380,.Units~kilogramPerCubicMetre,c); b~add('YOUNG_MODULUS','3000000000',.Units~pascal,c); b~add('THERMAL_CONDUCTIVITY','0.19',.Units~watt/(.Units~metre*.Units~deltaKelvin),c); return b~build
+
 ::method catalog class
   a=.array~new
   a~append(self~copper); a~append(self~aluminium6061T6); a~append(self~mildSteel); a~append(self~stainless304)
   a~append(self~brass); a~append(self~silicon); a~append(self~fr4); a~append(self~glass)
   a~append(self~abs); a~append(self~nylon66); a~append(self~ptfe); a~append(self~rubber)
   a~append(self~water20C); a~append(self~air20C); a~append(self~epoxy); a~append(self~ferrite)
-  a~append(self~polycarbonate); a~append(self~carbonFiberEpoxy); a~append(self~concreteC30); a~append(self~steelFastener88)
+  a~append(self~polycarbonate); a~append(self~carbonFiberEpoxy); a~append(self~concreteC30); a~append(self~pom); a~append(self~pvc); a~append(self~steelFastener48); a~append(self~steelFastener88); a~append(self~steelFastener109); a~append(self~steelFastener129)
   return a
 
 ::method byId class

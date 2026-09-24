@@ -151,7 +151,7 @@
   material=.CommonMaterials~byId(materialId)
   if material=.nil then raise syntax 93.900 array('unknown bolt material' materialId)
   yieldStress=material~value('YIELD_STRESS')
-  shearFactor=0.6
+  shearFactor=material~value('SHEAR_FACTOR')
   size=nominalSize~string~upper
   if size='M3' then do; nominalDiameter='3 mm'; headAcross='5.5 mm'; headThickness='2 mm'; headAreaMm2=34.64; end
   else if size='M4' then do; nominalDiameter='4 mm'; headAcross='7 mm'; headThickness='2.8 mm'; headAreaMm2=61.60; end

@@ -1,6 +1,6 @@
 numeric digits 30
 a=.CommonMaterials~catalog
-if a~items<>20 then call fail 'catalog count'
+if a~items<>25 then call fail 'catalog count'
 do m over a
   if \m~validate then call fail 'validation'
 end
