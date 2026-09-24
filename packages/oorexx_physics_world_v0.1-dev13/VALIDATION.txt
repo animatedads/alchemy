@@ -1,0 +1,184 @@
+ooRexx Physics World v0.1-dev10 validation status
+===============================================
+
+Authority baseline
+------------------
+- Immediate source baseline: user-supplied Physics World v0.1-dev9(1)
+  SHA-256 89b83dee9fda3566291ac41b4a097db1ce3afbc318c3daf47762b346b8c0e5bd
+- Maths authority: ooRexx Maths v0.8
+  SHA-256 a28fdc39d375b5fa871fd229ee30ddcf2cdc3f2ee0c4e65861ad4907876d0793
+- Units authority: ooRexx Units v0.1-dev4
+  SHA-256 b0916df3d8b68f1681f219e0e8770e490a6f7c00165cc5959b84d14354d4fa46
+- Runtime: ooRexx 5.3.0 r13196 debug build supplied by the user
+
+Dev10 merge additions
+---------------------
+New source module:
+  rexx/FreeSurfaceFluids2D.cls
+
+New focused fixtures:
+  test_free_surface_2d_fail_closed.rex
+  test_free_surface_2d_forcing.rex
+  test_free_surface_2d_mass.rex
+  test_free_surface_2d_symmetry.rex
+  test_free_surface_2d_vessel_coupling.rex
+
+New example:
+  examples/sloshing_tank_2d.rex
+
+Fresh dev10 merge qualification on the supplied r13196 runtime:
+  PASS all five 2-D slosh fixtures
+  PASS representative inherited driven-acoustic, thermal, 1-D slosh, electromechanical and Rexx-tronics optical fixtures
+  PASS all 14 Physics .cls modules compile with rexxc
+
+Representative 2-D results:
+  diagonal forcing xCOM = -0.04229234124917865 m
+  diagonal forcing zCOM =  0.01047847854196457 m
+  forcing surface range = 0.151674100 m
+  symmetry fixture zCOM remains approximately 7.25e-51 m
+  vessel-coupled fluid load magnitude = 355.5606134307054 N
+  off-centre submitted torque magnitude = 32.66791101841475 N*m
+
+The inherited dev9 authority already records all 65 pre-merge Physics fixtures passing on r13196. Because dev10 does not replace any inherited executable source module, that evidence is retained; the merge qualification additionally executes the new solver and representative cross-domain inherited fixtures.
+
+Dev9 additions
+--------------
+New source modules:
+  rexx/DrivenAcoustics.cls
+  rexx/Thermal.cls
+
+New focused fixtures:
+  test_driven_acoustic_patch.rex
+  test_driven_acoustic_fail_closed.rex
+  test_electromechanical_speaker.rex
+  test_thermal_power.rex
+  test_thermal_transfer.rex
+  test_thermal_fail_closed.rex
+
+New examples:
+  examples/electromechanical_speaker.rex
+  examples/electrical_heat.rex
+
+Runtime qualification
+---------------------
+All 65 Physics Rexx fixtures pass when executed in independent process batches
+against r13196 + real Maths v0.8 + Units v0.1-dev4.
+
+New fixture results:
+  PASS PHYSICS DRIVEN ACOUSTIC PATCH
+  PASS PHYSICS DRIVEN ACOUSTIC FAIL-CLOSED
+  PASS PHYSICS ELECTROMECHANICAL SPEAKER
+  PASS PHYSICS THERMAL POWER
+  PASS PHYSICS THERMAL TRANSFER
+  PASS PHYSICS THERMAL FAIL-CLOSED
+
+Representative inherited results retained:
+  PASS Rexx-tronics dev8 optical contract (47086.0048 lx reference)
+  PASS mechanics force + momentum
+  PASS deformable -> acoustic impact
+  PASS finite contact + tumble
+  PASS fluid hydrostatics / pathline / laminar pipe / rigid coupling
+  PASS all six free-surface/slosh fixtures
+  PASS mechanical -> acoustic impact and energy guard
+  PASS retained-liquid drop impact audio
+  PASS underwater optical world
+
+Compilation
+-----------
+All 14 Physics source modules compile with r13196 rexxc:
+  Acoustics.cls
+  ContactDynamics.cls
+  Coupling.cls
+  Deformable.cls
+  DrivenAcoustics.cls
+  Electromechanics.cls
+  Fluids.cls
+  FreeSurfaceFluids.cls
+  FreeSurfaceFluids2D.cls
+  MechanicalAcoustics.cls
+  Mechanics.cls
+  PhysicsWorld.cls
+  Thermal.cls
+  VesselDynamics.cls
+
+Dependency qualification
+------------------------
+PASS Units v0.1-dev4 complete supplied run_tests.sh including Units.cls rexxc.
+PASS Maths v0.8 test_core.rex.
+PASS Maths v0.8 test_mixed_precision.rex.
+PASS Maths v0.8 test_math3d.rex (74 assertions).
+
+Physical qualification points
+-----------------------------
+Continuous radiating patch:
+  a_n = 1000 m/s^2, area = 0.01 m^2 -> dQ/dt = 10 m^3/s^2.
+  Receiver remains silent before propagation delay.
+  Pressure at matched retarded state follows 1/r; 1 m / 2 m pressure ratio = 2.
+
+End-to-end electromechanical speaker fixture:
+  sinusoidal electrical current -> reciprocal voice-coil force -> ordinary rigid
+  mechanics + explicit spring/damping -> actual diaphragm motion -> retained patch
+  motion -> retarded acoustic pressure. No electrical-current-to-pressure gain exists.
+
+Example 200 Hz development fixture:
+  microphone RMS pressure 0.0305104981 Pa
+  microphone peak pressure 0.0507911484 Pa
+  microphone RMS SPL 63.6683861 dB re 20 uPa
+  Values are fixture-specific, not loudspeaker calibration data.
+
+Thermal power fixture:
+  1 kg copper-approx body, constant c_p=385 J/(kg*K), insulated 10 W for 10 s
+  -> temperature increase 100/385 K = 0.2597402597 K.
+
+Thermal transfer fixture:
+  two 100 J/K nodes at 300 K and 320 K linked by 10 W/K exchange 200 W initially;
+  after 1 s explicit step -> 302 K / 318 K with equal/opposite conductive energy.
+  Convection and grey-body radiation signs/units are independently exercised.
+
+Static authority guards
+-----------------------
+PASS no PhysicsDimension / PhysicsUnit / PhysicsQuantity / Physics SI facade.
+PASS Maths vector scaling remains vector * scalar / reciprocal scalar; no Physics
+     extension of MathVector3 division is introduced.
+PASS thermal power is explicit evidence; electromechanical unassigned terminal power
+     is not silently reclassified as heat.
+PASS no Python physics solver is delivered.
+
+Honest dev10 boundary
+--------------------
+Driven radiation is a compact monopole-equivalent finite patch with retained
+mechanical history and direct-path acoustic propagation. It is not yet a finite
+piston directivity/baffle/diffraction solver and acoustic loading does not push back
+onto the diaphragm.
+
+Thermal is a lumped-capacitance explicit solver with constant supplied properties.
+It is not a continuum heat-equation mesh, phase-change solver, CFD-derived natural
+convection solver or temperature-dependent material engine.
+
+Earlier non-claims remain: automatic glass fracture, arbitrary mesh contact,
+general CFD beyond the explicit 1-D/2-D shallow-water tank models, fully 3-D free surfaces, spill/mass loss, field-level electromagnetics, granular mechanics and combustion/blast.
+
+
+Dev11 focused qualification (ooRexx 5.3.0 r13196):
+- PHYSICS CONTAINMENT BREACH MASS: OK
+- PHYSICS FRACTURE -> CONTAINMENT: OK
+- PHYSICS FRAGMENTED CONTAINMENT FAIL-CLOSED: OK
+- PHYSICS CONTAINMENT HYDROSTATIC HEAD: OK
+- all 16 Physics `.cls` modules compile with `rexxc`
+A complete inherited 78-fixture rerun was attempted but exceeded the execution window; dev11 therefore does not claim a fresh full-suite pass.
+
+
+Dev12 focused qualification (ooRexx 5.3.0 r13196):
+- PHYSICS ESCAPED FLUID BALLISTIC: OK
+- PHYSICS ESCAPED FLUID FLOOR CONTACT: OK
+- PHYSICS RETAINED + EXTERNAL FLUID MASS: OK
+- PHYSICS EXTERNAL FLUID PARCEL BOUNDARY: OK
+- all 17 Physics `.cls` modules compile with `rexxc`
+
+
+Dev13 focused qualification (ooRexx 5.3.0 r13196):
+- PHYSICS ROTOR IMBALANCE FORCE: OK force=2 N
+- PHYSICS COMPLIANT RADIAL BEARING: OK force=-100 N
+- PHYSICS ROTATIONAL FRICTION: OK power=200 W
+- PHYSICS HARMONIC OBSERVATION: OK 20 Hz≈3, 40 Hz≈0.4; unforced 30 Hz≈0
+- all 18 Physics `.cls` modules compile with `rexxc`

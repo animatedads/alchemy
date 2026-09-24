@@ -1,0 +1,44 @@
+Rexx-tronics v0.1-dev15 qualification
+
+Runtime
+-------
+ooRexx 5.3.0 r13196 (user-supplied debug build)
+Units v0.1-dev4
+Maths v0.8
+Physics World v0.1-dev10.1
+
+Fresh qualification
+-------------------
+- complete ./run_tests.sh: PASS
+- complete focused ./run_physics_tests.sh: PASS
+- rexxc compilation of Rexx-tronics src/*.cls: 18/18 PASS
+
+New dev15 fixtures
+------------------
+REXX-TRONICS BJT PIECEWISE-LINEAR MODEL: OK
+  NPN active Ic: 1.9536574334407298 mA
+  NPN active Ib: 19.536574303943873 uA
+  NPN saturation Vce: 0.2475247524752475 V
+  PNP active Ic: -1.9536574334407298 mA
+
+REXX-TRONICS SEVEN SEGMENT DISPLAY: OK
+  all seven branches conducting -> digit 8
+  segment A at 5 V / 1.7 V / 1 kOhm: 3.3 mA
+
+REXX-TRONICS MAXITRONIX 500 PROJECT 014: OK
+  PNP key pressed: SATURATED, LED lit, ~14.489796 mA
+  NPN key pressed: SATURATED, LED lit, ~6.960784 mA
+
+REXX-TRONICS MAXITRONIX 500 PROJECT 015: OK
+  key released: display dark
+  key pressed: Q1 SATURATED, all seven segments lit, digit 8
+  segment A current: ~6.635514 mA
+
+Evidence boundary
+-----------------
+The Project 14 resistor/source values and Project 15 9 V / 4.7 kOhm topology come
+from the supplied Hardware Entry Course.  Historical transistor gain/junction
+parameters and the built-in seven-segment resistor value are not supplied by an
+authoritative part-number datasheet in this package; their numerical values are
+therefore explicit solver-qualification parameters and are not presented as
+historical component specifications.
