@@ -1,0 +1,1032 @@
+{
+  "catalog_version": "0.4",
+  "context_schema": {
+    "application": "any or customer-service application name",
+    "language": "any or locked coding language",
+    "mode": "any|os|coding|customer_service"
+  },
+  "purpose": "Tiny Alchemy Cog deterministic learning library",
+  "recipes": [
+    {
+      "action": {
+        "kind": "pwd"
+      },
+      "application": "any",
+      "description": "Return the current Cog workspace directory.",
+      "id": "PWD",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "(?:pwd|where am i|show current directory|show working directory)"
+      ],
+      "priority": 100,
+      "required_params": [],
+      "side_effect": "read",
+      "source": "bootstrap"
+    },
+    {
+      "action": {
+        "kind": "list_dir",
+        "path": "."
+      },
+      "application": "any",
+      "description": "List the current Cog workspace directory.",
+      "id": "LIST_DIR_CURRENT",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "(?:list files|list directory)"
+      ],
+      "priority": 90,
+      "required_params": [],
+      "side_effect": "read",
+      "source": "bootstrap"
+    },
+    {
+      "action": {
+        "kind": "list_dir",
+        "path": "{path}"
+      },
+      "application": "any",
+      "description": "List one named directory under the Cog workspace.",
+      "id": "LIST_DIR_PATH",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "(?:list files|list directory) in (?P<path>.+)"
+      ],
+      "priority": 95,
+      "required_params": [
+        "path"
+      ],
+      "side_effect": "read",
+      "source": "bootstrap"
+    },
+    {
+      "action": {
+        "exist_ok": true,
+        "kind": "mkdir",
+        "parents": true,
+        "path": "{path}"
+      },
+      "application": "any",
+      "description": "Create a directory under the Cog workspace.",
+      "id": "MAKE_DIR",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "(?:make|create) directory"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "kind": "write_text",
+        "path": "{path}",
+        "text": "{text}"
+      },
+      "application": "any",
+      "description": "Write UTF-8 text to a workspace file.",
+      "id": "WRITE_TEXT",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "(?:write|create) text file"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path",
+        "text"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "python3",
+          "{path}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Run a Python source file using python3.",
+      "id": "RUN_PYTHON_FILE",
+      "language": "python",
+      "mode": "coding",
+      "patterns": [
+        "run python file"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-v"
+        ],
+        "cwd": "{path}",
+        "kind": "exec",
+        "timeout_seconds": 20
+      },
+      "application": "any",
+      "description": "Run Python unittest discovery in a workspace directory.",
+      "id": "RUN_UNITTEST",
+      "language": "python",
+      "mode": "coding",
+      "patterns": [
+        "run python unit tests"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "cc",
+          "-std=c11",
+          "-Wall",
+          "-Wextra",
+          "-pedantic",
+          "{path}",
+          "-o",
+          "{output}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Compile one C source file with a strict C11 warning set.",
+      "id": "COMPILE_C_FILE",
+      "language": "c",
+      "mode": "coding",
+      "patterns": [
+        "compile c file"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path",
+        "output"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "{path}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Run an executable file in the Cog workspace.",
+      "id": "RUN_EXECUTABLE",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "run executable"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "javac",
+          "{source1}",
+          "{source2}"
+        ],
+        "cwd": "{path}",
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Compile two Java source files in a workspace directory.",
+      "id": "COMPILE_JAVA_FILES",
+      "language": "java",
+      "mode": "coding",
+      "patterns": [
+        "compile java files"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path",
+        "source1",
+        "source2"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "java",
+          "-cp",
+          "{path}",
+          "{class}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Run a compiled Java class from a workspace directory.",
+      "id": "RUN_JAVA_CLASS",
+      "language": "java",
+      "mode": "coding",
+      "patterns": [
+        "run java class"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path",
+        "class"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "zip",
+          "-r",
+          "{output}",
+          "{path}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 60
+      },
+      "application": "any",
+      "description": "Create a recursive ZIP archive from one workspace directory.",
+      "id": "ZIP_DIRECTORY",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "zip directory"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path",
+        "output"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "kind": "read_text",
+        "path": "{path}"
+      },
+      "application": "any",
+      "description": "Read UTF-8 text from a workspace file.",
+      "id": "READ_TEXT",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "read text file"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path"
+      ],
+      "side_effect": "read",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "python3",
+          "cogoptimizer.py",
+          "--merge-run",
+          "{run}",
+          "--output",
+          "{report}",
+          "--write-merged-library",
+          "{merged}",
+          "--summary"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 60
+      },
+      "application": "any",
+      "description": "Run Cog optimizer against one additional manual Cog run, write a report, and write a review-only merged library candidate.",
+      "id": "RUN_COG_OPTIMIZER_MERGE",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "run cog optimizer merge"
+      ],
+      "priority": 50,
+      "required_params": [
+        "run",
+        "report",
+        "merged"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "python3",
+          "-m",
+          "py_compile",
+          "{path}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Compile-check one Python source file without running it.",
+      "id": "PYTHON_SYNTAX_CHECK",
+      "language": "python",
+      "mode": "coding",
+      "patterns": [
+        "check python syntax"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "unzip",
+          "-t",
+          "{path}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 60
+      },
+      "application": "any",
+      "description": "Integrity-test a ZIP archive with unzip -t.",
+      "id": "TEST_ZIP_ARCHIVE",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "test zip archive"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path"
+      ],
+      "side_effect": "read",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "sha256sum",
+          "{path}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Compute the SHA-256 digest of one file.",
+      "id": "SHA256_FILE",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "sha256 file"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path"
+      ],
+      "side_effect": "read",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "unzip",
+          "-Z1",
+          "{path}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "List archive members of a ZIP without extracting it.",
+      "id": "LIST_ZIP_ARCHIVE",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "list zip archive"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path"
+      ],
+      "side_effect": "read",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "kind": "sequence",
+        "steps": [
+          {
+            "exist_ok": true,
+            "kind": "mkdir",
+            "parents": true,
+            "path": "{dest}"
+          },
+          {
+            "argv": [
+              "unzip",
+              "-q",
+              "{path}",
+              "-d",
+              "{dest}"
+            ],
+            "kind": "exec",
+            "timeout_seconds": 60
+          }
+        ]
+      },
+      "application": "any",
+      "description": "Extract a ZIP archive into a destination directory, creating the destination first.",
+      "id": "EXTRACT_ZIP_ARCHIVE",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "extract zip archive"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path",
+        "dest"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "python3",
+          "-c",
+          "from pathlib import Path; import sys; p=Path(sys.argv[1]); old=sys.argv[2]; new=sys.argv[3]; s=p.read_text(encoding='utf-8'); c=s.count(old); assert c==1, f'expected exactly one occurrence, found {c}'; p.write_text(s.replace(old,new,1), encoding='utf-8')",
+          "{path}",
+          "{old}",
+          "{new}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Deprecated prototype; superseded by REPLACE_TEXT_LITERAL.",
+      "id": "REPLACE_TEXT_IN_FILE",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "deprecated replace text in file"
+      ],
+      "priority": 1,
+      "required_params": [
+        "path",
+        "old",
+        "new"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "python3",
+          "-c",
+          "from pathlib import Path; import sys; p=Path(sys.argv[1]); old=sys.argv[2]; new=sys.argv[3]; s=p.read_text(encoding='utf-8'); c=s.count(old); assert c==1, 'expected exactly one occurrence, found %d' % c; p.write_text(s.replace(old,new,1), encoding='utf-8')",
+          "{path}",
+          "{old}",
+          "{new}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Replace exactly one literal text occurrence in a UTF-8 file, failing if the needle is absent or non-unique.",
+      "id": "REPLACE_TEXT_LITERAL",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "replace text in file"
+      ],
+      "priority": 60,
+      "required_params": [
+        "path",
+        "old",
+        "new"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "python3",
+          "-c",
+          "from pathlib import Path; import json,sys; p=Path('cog_library.json'); d=json.loads(p.read_text(encoding='utf-8')); rid=sys.argv[1]; patch=json.loads(sys.argv[2]); hits=[r for r in d.get('recipes',[]) if r.get('id')==rid]; assert len(hits)==1, 'expected exactly one recipe'; hits[0].update(patch); p.write_text(json.dumps(d, indent=2, sort_keys=True, ensure_ascii=False)+'\\n', encoding='utf-8')",
+          "{recipe_id}",
+          "{patch_json}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Update selected fields of one recipe in cog_library.json from a JSON patch object.",
+      "id": "UPDATE_COG_RECIPE",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "update cog recipe"
+      ],
+      "priority": 70,
+      "required_params": [
+        "recipe_id",
+        "patch_json"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "python3",
+          "{path}"
+        ],
+        "argv_tail_param": "args_json",
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Run a Python source file with a JSON string-array of command-line arguments.",
+      "id": "RUN_PYTHON_WITH_ARGS",
+      "language": "python",
+      "mode": "coding",
+      "patterns": [
+        "run python program with arguments"
+      ],
+      "priority": 60,
+      "required_params": [
+        "path",
+        "args_json"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "{path}"
+        ],
+        "argv_tail_param": "args_json",
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Run an executable file with a JSON string-array of command-line arguments.",
+      "id": "RUN_EXECUTABLE_WITH_ARGS",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "run executable with arguments"
+      ],
+      "priority": 60,
+      "required_params": [
+        "path",
+        "args_json"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "java",
+          "-cp",
+          "{path}",
+          "{class}"
+        ],
+        "argv_tail_param": "args_json",
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Run a compiled Java class from a workspace directory with a JSON string-array of command-line arguments.",
+      "id": "RUN_JAVA_CLASS_WITH_ARGS",
+      "language": "java",
+      "mode": "coding",
+      "patterns": [
+        "run java class with arguments"
+      ],
+      "priority": 60,
+      "required_params": [
+        "path",
+        "class",
+        "args_json"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "javac"
+        ],
+        "argv_tail_param": "sources_json",
+        "cwd": "{path}",
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Compile an arbitrary JSON string-array of Java source files in a workspace directory.",
+      "id": "COMPILE_JAVA_SOURCES",
+      "language": "java",
+      "mode": "coding",
+      "patterns": [
+        "compile java sources"
+      ],
+      "priority": 60,
+      "required_params": [
+        "path",
+        "sources_json"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "cc",
+          "-std=c11",
+          "-Wall",
+          "-Wextra",
+          "-pedantic",
+          "{path}",
+          "-o",
+          "{output}"
+        ],
+        "argv_tail_param": "args_json",
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Compile one C source file with strict C11 warnings and append a JSON string-array of extra compiler/linker arguments.",
+      "id": "COMPILE_C_WITH_ARGS",
+      "language": "c",
+      "mode": "coding",
+      "patterns": [
+        "compile c file with arguments"
+      ],
+      "priority": 60,
+      "required_params": [
+        "path",
+        "output",
+        "args_json"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "python3",
+          "cogoptimizer.py",
+          "--output",
+          "{report}",
+          "--summary"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 60
+      },
+      "application": "any",
+      "description": "Run Cog optimizer against the current Cog home and write a full optimisation report.",
+      "id": "RUN_COG_OPTIMIZER_CURRENT",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "run cog optimizer current"
+      ],
+      "priority": 60,
+      "required_params": [
+        "report"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "cp",
+          "--",
+          "{source}",
+          "{dest}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Copy one workspace file to another path.",
+      "id": "COPY_FILE",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "copy file"
+      ],
+      "priority": 50,
+      "required_params": [
+        "source",
+        "dest"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "kind": "write_text",
+        "path": "{path}",
+        "text": "::class {class_name} public\n"
+      },
+      "application": "any",
+      "description": "Create a minimal public ooRexx class source file.",
+      "id": "OOREXX_CREATE_CLASS",
+      "language": "oorexx",
+      "mode": "coding",
+      "patterns": [
+        "(?:create|make)(?: oorexx)? class"
+      ],
+      "priority": 70,
+      "required_params": [
+        "path",
+        "class_name"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "kind": "append_text",
+        "path": "{path}",
+        "text": "{text}"
+      },
+      "application": "any",
+      "description": "Append UTF-8 text to a workspace file.",
+      "id": "APPEND_TEXT",
+      "language": "any",
+      "mode": "any",
+      "patterns": [
+        "append text file"
+      ],
+      "priority": 50,
+      "required_params": [
+        "path",
+        "text"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "kind": "append_text",
+        "path": "{path}",
+        "text": "\n::method {method_name}\n{body}"
+      },
+      "application": "any",
+      "description": "Append an ooRexx method directive and supplied method body to a class source file.",
+      "id": "OOREXX_ADD_METHOD",
+      "language": "oorexx",
+      "mode": "coding",
+      "patterns": [
+        "add(?: oorexx)? method"
+      ],
+      "priority": 70,
+      "required_params": [
+        "path",
+        "method_name",
+        "body"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "kind": "respond",
+        "text": "Open DemoApp and choose Status to view the current application state."
+      },
+      "application": "demoapp",
+      "description": "Explain how a DemoApp user checks application status.",
+      "id": "DEMOAPP_STATUS_HELP",
+      "language": "any",
+      "mode": "customer_service",
+      "patterns": [
+        "how do i check status"
+      ],
+      "priority": 70,
+      "required_params": [],
+      "side_effect": "none",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "python3",
+          "-m",
+          "py_compile"
+        ],
+        "argv_tail_param": "paths_json",
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Compile-check an arbitrary JSON string-array of Python source files without running them.",
+      "id": "PYTHON_SYNTAX_CHECK_MANY",
+      "language": "python",
+      "mode": "coding",
+      "patterns": [
+        "check python syntax many"
+      ],
+      "priority": 60,
+      "required_params": [
+        "paths_json"
+      ],
+      "side_effect": "execute",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "kind": "sequence",
+        "steps": [
+          {
+            "exist_ok": true,
+            "kind": "mkdir",
+            "parents": true,
+            "path": "{release_dir}"
+          },
+          {
+            "argv": [
+              "python3",
+              "-c",
+              "from pathlib import Path; import json,sys,shutil; files=json.loads(sys.argv[1]); dest=Path(sys.argv[2]); [(lambda src,out: (out.parent.mkdir(parents=True,exist_ok=True), shutil.copy2(src,out)))(Path(f),dest/Path(f)) for f in files]",
+              "{files_json}",
+              "{release_dir}"
+            ],
+            "kind": "exec",
+            "timeout_seconds": 30
+          },
+          {
+            "argv": [
+              "zip",
+              "-r",
+              "{output}",
+              "{release_dir}"
+            ],
+            "kind": "exec",
+            "timeout_seconds": 60
+          }
+        ]
+      },
+      "application": "any",
+      "description": "Assemble a review release directory from a JSON string-array of workspace files and create a ZIP archive.",
+      "id": "PACKAGE_COG_RELEASE",
+      "language": "any",
+      "mode": "os",
+      "patterns": [
+        "package cog release"
+      ],
+      "priority": 70,
+      "required_params": [
+        "release_dir",
+        "output",
+        "files_json"
+      ],
+      "side_effect": "write",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "kind": "respond",
+        "text": "{{\"tool\":\"github.fetch\",\"url\":\"https://api.github.com/repos/{repo}/contents/\"}}"
+      },
+      "application": "any",
+      "description": "Emit a structured GitHub MCP fetch request for a repository root directory.",
+      "id": "GITHUB_MCP_LIST_ROOT",
+      "language": "any",
+      "mode": "os",
+      "patterns": [
+        "inspect github repository structure",
+        "list github repository root"
+      ],
+      "priority": 70,
+      "required_params": [
+        "repo"
+      ],
+      "side_effect": "read",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "kind": "respond",
+        "text": "{{\"tool\":\"github.fetch\",\"url\":\"https://api.github.com/repos/{repo}/contents/{path}\"}}"
+      },
+      "application": "any",
+      "description": "Emit a structured GitHub MCP fetch request for one repository path.",
+      "id": "GITHUB_MCP_FETCH_PATH",
+      "language": "any",
+      "mode": "os",
+      "patterns": [
+        "fetch github path"
+      ],
+      "priority": 70,
+      "required_params": [
+        "repo",
+        "path"
+      ],
+      "side_effect": "read",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "kind": "respond",
+        "text": "{{\"tool\":\"github.search\",\"repository_name\":\"{repo}\",\"query\":\"{query}\"}}"
+      },
+      "application": "any",
+      "description": "Emit a structured GitHub MCP code-search request scoped to one repository.",
+      "id": "GITHUB_MCP_SEARCH_CODE",
+      "language": "any",
+      "mode": "os",
+      "patterns": [
+        "search github code"
+      ],
+      "priority": 70,
+      "required_params": [
+        "repo",
+        "query"
+      ],
+      "side_effect": "read",
+      "source": "learned_by_cogllm"
+    },
+    {
+      "action": {
+        "argv": [
+          "python3",
+          "-c",
+          "from pathlib import Path; import json,sys; root=Path(sys.argv[1]); out=dict((str(p.relative_to(root)),p.read_text(encoding='utf-8')) for p in root.rglob('*') if p.is_file() and '__pycache__' not in p.parts); print(json.dumps(out, ensure_ascii=False))",
+          "{path}"
+        ],
+        "kind": "exec",
+        "timeout_seconds": 30
+      },
+      "application": "any",
+      "description": "Export a workspace package as one JSON object mapping relative UTF-8 text paths to content, excluding Python cache directories.",
+      "id": "EXPORT_TEXT_PACKAGE_FOR_MCP",
+      "language": "any",
+      "mode": "os",
+      "patterns": [
+        "export text package for mcp"
+      ],
+      "priority": 70,
+      "required_params": [
+        "path"
+      ],
+      "side_effect": "read",
+      "source": "learned_by_cogllm"
+    }
+  ],
+  "selection_policy": {
+    "existing_recipe_reward": 1.0,
+    "inadequate_recipe_penalty": -10.0,
+    "new_recipe_reward": 0.1,
+    "rules": [
+      "Deterministic selection runs first.",
+      "cogllm must accept or amend every proposed plan before execution.",
+      "Execution evidence, not language, determines success.",
+      "Learn reusable parameterised recipes rather than one-off commands."
+    ]
+  }
+}

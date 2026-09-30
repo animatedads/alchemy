@@ -1,0 +1,31 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "alchemy_cog",
+    "version": "0.4-context-modes",
+    "kind": "python"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "python-syntax",
+      "argv": ["python3", "-m", "py_compile", "cog.py", "cogllm.py", "cogoptimizer.py"],
+      "timeout_seconds": 30
+    },
+    {
+      "name": "state-smoke",
+      "argv": ["python3", "cog.py", "--state"],
+      "timeout_seconds": 30
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/alchemy_cog_v0.4-context-modes"
+    }
+  }
+}
