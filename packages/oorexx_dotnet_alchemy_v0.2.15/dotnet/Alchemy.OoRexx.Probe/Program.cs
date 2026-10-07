@@ -14,7 +14,7 @@ public class Thing:BaseThing,IAlchemyMarker {
  public (long Generation,string Value) InvokeSnapshot(){var snapshot=Volatile.Read(ref behaviour);return(snapshot.Generation,snapshot.Speak());}
  public long InstallBlockingCSharp(string value,ManualResetEventSlim entered,ManualResetEventSlim release){while(true){var old=Volatile.Read(ref behaviour);var next=new BehaviourState(old.Generation+1,()=>{entered.Set();if(!release.Wait(TimeSpan.FromSeconds(10)))throw new TimeoutException("concurrent behaviour release timeout");return value;});if(ReferenceEquals(Interlocked.CompareExchange(ref behaviour,next,old),old))return next.Generation;}}
  public string Ping()=>"pong-from-clr"; public Thing Self()=>this; public string Explode()=>throw new InvalidOperationException("alchemy-clr-boom");
- public object Echo(object x)=>x; public long FortyTwo()=>42L; public double Pi()=>3.25; public RexxObject? RexxPeer { get; set; }
+ public object Echo(object x)=>x; public string Overload(string x)=>"string:"+x; public string Overload(object x)=>"object:"+x; public string Overload(Thing x)=>ReferenceEquals(this,x)?"thing:self":"thing:other"; public long FortyTwo()=>42L; public double Pi()=>3.25; public RexxObject? RexxPeer { get; set; }
  public Thing NestedSelf(){if(RexxPeer is null) throw new InvalidOperationException("RexxPeer not installed");using var echoed=RexxPeer.SendSparse("ECHOOBJECT",RexxPeer);using var same=RexxPeer.SendSparse("SAMEOBJECT",echoed);if(same.ToString()!="1") throw new InvalidOperationException("nested Rexx identity lost");return this;}
  public string Slots(object? a,object? b,object? c,object? d)=>string.Join("|",new[]{Tag(a),Tag(b),Tag(c),Tag(d)});
  static string Tag(object? v)=>ReferenceEquals(v,AlchemyOmitted.Value)?"OMITTED":v is null?"NIL":v is string s&&s.Length==0?"EMPTY":"VALUE:"+v;
@@ -69,6 +69,15 @@ class Program {
 
  // Qualifies CLR System.Type authority, CLR exception authority, and UNKNOWN composition/fallback rules.
  // Existing Rexx methods win; projected CLR failures never fall through to the preserved Rexx UNKNOWN.
+
+ // Proves CLR overload resolution uses decoded argument types rather than reflection enumeration order.
+ static void QualifyClrOverloadBinding(OoRexxHost host,ulong handle){
+  using var probe=host.CallProgram("rexx/clr_overload_binding.rex",handle.ToString());
+  Console.WriteLine($"clr-overload-binding={probe}");
+  Require(probe.ToString()=="string:text|thing:self",25);
+  Console.WriteLine("CLR OVERLOAD TYPE BINDING PASS");
+ }
+
  static void QualifyTypeExceptionsAndUnknown(OoRexxHost host,ulong handle){
   using(var typeprobe=host.CallProgram("rexx/type_authority.rex",handle.ToString())){Console.WriteLine($"clr-type-authority={typeprobe}");if(typeprobe.ToString()!="Thing|BaseThing|1|1|1|1")Environment.Exit(13);Console.WriteLine("CLR SYSTEM.TYPE AUTHORITY + IDENTITY PASS");}
   using(var exprobe=host.CallProgram("rexx/clr_exception.rex",handle.ToString())){Console.WriteLine($"clr-exception-condition={exprobe}");if(!exprobe.ToString().Contains("DOTNET_EXCEPTION")||!exprobe.ToString().Contains("alchemy-clr-boom"))Environment.Exit(11);}
@@ -81,5 +90,6 @@ class Program {
  QualifyConcurrentGenerationSnapshot(host);
  QualifyInspectorLiveReplacement(host);
  QualifyOverrideRevealCurrent(host);
+ QualifyClrOverloadBinding(host,h);
  QualifyTypeExceptionsAndUnknown(host,h);
 }}
