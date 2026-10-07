@@ -1,0 +1,41 @@
+ooRexx Source / Code / Class Editor v0.1-dev3 qualification
+Target runtime: ooRexx 5.3.0 r13196 (user-supplied debug distribution)
+
+Core suite:
+  PASS language cpp
+  PASS class start
+  PASS function start
+  PASS C++ save
+  PASS stale generation rejected
+  PASS language json
+  PASS json valid
+  PASS require resolved
+  PASS require inserted
+  PASS cpp member inserted
+  PASS find text comment
+  PASS find code ignores comment
+  PASS find code visible
+  PASS find code repeated
+  PASS grep regex code
+  PASS grep regex ignores comment
+  PASS grep regex text comment
+  PASS grep regex insensitive
+  PASS ooRexx source editor dev3
+
+Native grep qualification:
+  - SourceFinder~grep delegates regex matching to .RegularExpression from rxregexp.cls / librxregexp.
+  - Literal SourceFinder~find remains literal and does not reinterpret regex metacharacters.
+  - code mode preserves the existing language-aware comment projection and original source coordinates.
+  - self-grep: code-editor grep src/SourceEditor.cls SourceF[a-z]+ code sensitive returned SourceDocument call sites and SourceFinder.
+
+Dogfood qualification:
+  - dev3 SourceFinder replacement was published through SourceDocument~replaceSymbol + save.
+  - SourceDocument~grep convenience method was added through SourceDocument class editing.
+  - CLI grep branch and regression tests were inserted through SourceDocument generation-checked saves.
+  - rxregexp dependency and documentation were published through SourceDocument.
+
+Known publication limit:
+  save uses exact-generation recheck plus a complete sibling backup, but does not claim crash-durable atomic replacement. Wire oorexx_atomic_file when available.
+
+Known CLI limit:
+  the ooRexx launcher flattens the script command tail; the current small CLI parser cannot faithfully recover shell grouping for arbitrary multi-word patterns. The object API has no such restriction.

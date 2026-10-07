@@ -1,0 +1,259 @@
+========================================================================
+  OOREXX CODING STANDARDS ENFORCEMENT AUTHORITY
+  Subject: oorexx_smtp_secure_stack_v0.1-dev7-pre.zip
+  Files scanned: 30   Strict mode: off
+========================================================================
+
+--- oorexx_smtp_secure_stack_v0.1-dev7/src/SecureSocketOpenSslClient.cls -
+  [WARN] PRIVATE_METHOD :: line 113
+      > ::method waitReady private
+      Private method waitReady — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 124
+      > ::method receiveEncrypted private
+      Private method receiveEncrypted — private methods are invisible across a
+      Message activity boundary. If anything calls this asynchronously, you have
+      built a trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 134
+      > ::method sendRaw private
+      Private method sendRaw — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 145
+      > ::method drainOutput private
+      Private method drainOutput — private methods are invisible across a
+      Message activity boundary. If anything calls this asynchronously, you have
+      built a trap door and left the sign off.
+  [WARN] LOOP_INVARIANT :: line 156
+      > step=tls~sslStep("ssl_do_handshake",.array~of(ssl),ssl); rc=step[1]; ec=step[2]
+      Why oh why are you calculating tls~sslStep("ssl_do_handshake",.array~of in
+      a loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 160
+      > verify=tls~ssl_get_verify_result(ssl)
+      Why oh why are you calculating tls~ssl_get_verify_result(ssl) in a loop
+      when nothing about it changes with the loop variable? It's always going to
+      be the same value. You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 187
+      > step=tls~sslStep("ssl_read",.array~of(ssl,buffer,n),ssl); rc=step[1]; ec=step[2]
+      Why oh why are you calculating tls~sslStep("ssl_read",.array~of(ssl,buf in
+      a loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 193
+      > feed=self~receiveEncrypted(config~readTimeout)
+      Why oh why are you calculating self~receiveEncrypted(config~readTimeout in
+      a loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 210
+      > step=tls~sslStep("ssl_write",.array~of(ssl,chunk,n),ssl); rc=step[1]; ec=step[2]
+      Why oh why are you calculating tls~sslStep("ssl_write",.array~of(ssl,ch in
+      a loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 214
+      > feed=self~receiveEncrypted(config~readTimeout)
+      Why oh why are you calculating self~receiveEncrypted(config~readTimeout in
+      a loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+
+--- oorexx_smtp_secure_stack_v0.1-dev7/src/SecureSocketOpenSslServer.cls -
+  [WARN] PRIVATE_METHOD :: line 120
+      > ::method waitReady private
+      Private method waitReady — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 129
+      > ::method receiveEncrypted private
+      Private method receiveEncrypted — private methods are invisible across a
+      Message activity boundary. If anything calls this asynchronously, you have
+      built a trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 139
+      > ::method sendRaw private
+      Private method sendRaw — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 150
+      > ::method drainOutput private
+      Private method drainOutput — private methods are invisible across a
+      Message activity boundary. If anything calls this asynchronously, you have
+      built a trap door and left the sign off.
+  [WARN] LOOP_INVARIANT :: line 161
+      > step=tls~sslStep("ssl_do_handshake",.array~of(ssl),ssl); rc=step[1]; ec=step[2]
+      Why oh why are you calculating tls~sslStep("ssl_do_handshake",.array~of in
+      a loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 164
+      > protocol=tls~ssl_get_version(ssl); c=tls~ssl_get_current_cipher(ssl)
+      Why oh why are you calculating tls~ssl_get_version(ssl); c=tls~ssl_get_ in
+      a loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 187
+      > step=tls~sslStep("ssl_read",.array~of(ssl,buffer,n),ssl); rc=step[1]; ec=step[2]
+      Why oh why are you calculating tls~sslStep("ssl_read",.array~of(ssl,buf in
+      a loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 192
+      > feed=self~receiveEncrypted(readTimeout)
+      Why oh why are you calculating self~receiveEncrypted(readTimeout) in a
+      loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 208
+      > step=tls~sslStep("ssl_write",.array~of(ssl,chunk,n),ssl); rc=step[1]; ec=step[2]
+      Why oh why are you calculating tls~sslStep("ssl_write",.array~of(ssl,ch in
+      a loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 212
+      > feed=self~receiveEncrypted(readTimeout); if feed="data" | feed="retry" then iterate
+      Why oh why are you calculating self~receiveEncrypted(readTimeout); if f in
+      a loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+
+--- oorexx_smtp_secure_stack_v0.1-dev7/src/SmtpCore.cls -----------------
+  [WARN] PRIVATE_METHOD :: line 173
+      > ::method inspectDirection private
+      Private method inspectDirection — private methods are invisible across a
+      Message activity boundary. If anything calls this asynchronously, you have
+      built a trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 207
+      > ::method signatureEvidence private
+      Private method signatureEvidence — private methods are invisible across a
+      Message activity boundary. If anything calls this asynchronously, you have
+      built a trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 251
+      > ::method recordSignatureMetadata private
+      Private method recordSignatureMetadata — private methods are invisible
+      across a Message activity boundary. If anything calls this asynchronously,
+      you have built a trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 311
+      > ::method event private
+      Private method event — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+
+--- oorexx_smtp_secure_stack_v0.1-dev7/src/SmtpDurableDelivery.cls ------
+  [WARN] PRIVATE_METHOD :: line 184
+      > ::method appendJournalLine private
+      Private method appendJournalLine — private methods are invisible across a
+      Message activity boundary. If anything calls this asynchronously, you have
+      built a trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 195
+      > ::method splitTabs private
+      Private method splitTabs — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 220
+      > ::method writeMeta private
+      Private method writeMeta — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 238
+      > ::method readMeta private
+      Private method readMeta — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 249
+      > ::method enc private
+      Private method enc — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 252
+      > ::method dec private
+      Private method dec — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 303
+      > ::method domainOf private
+      Private method domainOf — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+
+--- oorexx_smtp_secure_stack_v0.1-dev7/src/SmtpOpenSslSmimeVerifier.cls -
+  [WARN] PRIVATE_METHOD :: line 80
+      > ::method q private
+      Private method q — private methods are invisible across a Message activity
+      boundary. If anything calls this asynchronously, you have built a trap
+      door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 88
+      > ::method readSmall private
+      Private method readSmall — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 99
+      > ::method cleanup private
+      Private method cleanup — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+
+--- oorexx_smtp_secure_stack_v0.1-dev7/src/SmtpOutboundDispatcher.cls ---
+  [WARN] PRIVATE_METHOD :: line 245
+      > ::method replyState private
+      Private method replyState — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 251
+      > ::method replyText private
+      Private method replyText — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 255
+      > ::method hasCapability private
+      Private method hasCapability — private methods are invisible across a
+      Message activity boundary. If anything calls this asynchronously, you have
+      built a trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 265
+      > ::method dotStuff private
+      Private method dotStuff — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 392
+      > ::method finalizeFromStates private
+      Private method finalizeFromStates — private methods are invisible across a
+      Message activity boundary. If anything calls this asynchronously, you have
+      built a trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 424
+      > ::method stateOf private
+      Private method stateOf — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 429
+      > ::method asLogical private
+      Private method asLogical — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+
+--- oorexx_smtp_secure_stack_v0.1-dev7/src/SmtpWireServer.cls -----------
+  [WARN] PRIVATE_METHOD :: line 54
+      > ::method sendLine private
+      Private method sendLine — private methods are invisible across a Message
+      activity boundary. If anything calls this asynchronously, you have built a
+      trap door and left the sign off.
+  [WARN] PRIVATE_METHOD :: line 61
+      > ::method decodeBase64 private
+      Private method decodeBase64 — private methods are invisible across a
+      Message activity boundary. If anything calls this asynchronously, you have
+      built a trap door and left the sign off.
+
+--- oorexx_smtp_secure_stack_v0.1-dev7/tests/review_repro_io.rex --------
+  [WARN] LOOP_INVARIANT :: line 32
+      > io=.SmtpClientIo~new(.ChunkListTransport~new(a))
+      Why oh why are you calculating .SmtpClientIo~new(.ChunkListTransport~ne in
+      a loop when nothing about it changes with the loop variable? It's always
+      going to be the same value. You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 33
+      > r=io~readReply
+      Why oh why are you calculating io~readReply in a loop when nothing about
+      it changes with the loop variable? It's always going to be the same value.
+      You are the weakest link. Goodbye.
+  [WARN] LOOP_INVARIANT :: line 53
+      > c=chunks[idx]; idx+=1; return c
+      Why oh why are you calculating chunks[idx]; idx+=1; return c in a loop
+      when nothing about it changes with the loop variable? It's always going to
+      be the same value. You are the weakest link. Goodbye.
+
+========================================================================
+  ERRORS: 0    WARNINGS: 46
+========================================================================
+
+  VERDICT: PASS
+  (46 warning(s) noted but not fatal. Don't get comfortable.)
+

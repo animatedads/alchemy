@@ -1,0 +1,55 @@
+{
+  "schema": "oorexx.odoo.discovery.operation/0.2",
+  "models": {
+    "res.partner": {
+      "mode": "EAGER",
+      "model_operations": {
+        "browse": {"remote_method": "read", "kind": "browse"},
+        "search": {"remote_method": "search", "kind": "search_objects"},
+        "searchRead": {"remote_method": "search_read", "kind": "search_read_objects"},
+        "create": {"remote_method": "create", "kind": "create_object"}
+      },
+      "operations": {
+        "refresh": {"remote_method": "read", "kind": "record_refresh"},
+        "messagePost": {"remote_method": "message_post", "kind": "record_operation"}
+      }
+    },
+    "crm.lead": {
+      "mode": "LAZY",
+      "model_operations": {
+        "browse": {"remote_method": "read", "kind": "browse"},
+        "search": {"remote_method": "search", "kind": "search_objects"},
+        "searchRead": {"remote_method": "search_read", "kind": "search_read_objects"},
+        "create": {"remote_method": "create", "kind": "create_object"}
+      },
+      "operations": {"refresh": {"remote_method": "read", "kind": "record_refresh"}}
+    },
+    "discuss.channel": {
+      "mode": "LAZY",
+      "model_operations": {
+        "browse": {"remote_method": "read", "kind": "browse"},
+        "search": {"remote_method": "search", "kind": "search_objects"},
+        "searchRead": {"remote_method": "search_read", "kind": "search_read_objects"}
+      },
+      "operations": {}
+    },
+    "discuss.call.history": {
+      "mode": "LAZY",
+      "model_operations": {
+        "browse": {"remote_method": "read", "kind": "browse"},
+        "search": {"remote_method": "search", "kind": "search_objects"},
+        "searchRead": {"remote_method": "search_read", "kind": "search_read_objects"}
+      },
+      "operations": {}
+    },
+    "mail.call.artifact": {
+      "mode": "LAZY",
+      "model_operations": {
+        "browse": {"remote_method": "read", "kind": "browse"},
+        "search": {"remote_method": "search", "kind": "search_objects"},
+        "searchRead": {"remote_method": "search_read", "kind": "search_read_objects"}
+      },
+      "operations": {}
+    }
+  }
+}

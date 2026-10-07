@@ -1,0 +1,27 @@
+ooRexx Python Macrospace POC v0.31.1 host qualification
+Date: 2026-09-27
+Baseline: v0.31.0, itself continued directly from user-supplied v0.30.3
+Target ooRexx: 5.3.0 r13196 user-supplied Ubuntu debug package
+
+PASS: Python source compilation (`python3 -m py_compile python/*.py`).
+PASS: native extension host build against extracted r13196 headers/libs.
+PASS: focused embedded ooRexx virtual-class proof:
+      VIRTUAL-PYTHON-CLASS-PASS
+PASS: fresh-process projected-class ownership proof:
+      VIRTUAL-PYTHON-CLASS-RELEASE-PASS
+      - loadCls acquires one Python registry ownership
+      - Rexx AlchemyPythonClass UNINIT releases it
+      - repeated UNINIT is idempotent
+      - native retain count after release is zero
+PASS: early aggregate smoke through object_demo, reversal_demo and
+      mixed_collection_demo against a test-only AlchemyObject stub.
+
+Aggregate-suite limitation: later package-space tests require the authoritative
+external Alchemy Objects/Crypto/platform-bin dependency set, which was not
+supplied in the v0.30.3 archive.  No claim is made that those unrun external-
+dependency tests passed.
+
+Qualification note: focused proofs used a test-only minimal AlchemyObject stub
+because authoritative Alchemy Objects is external to this distribution.  The
+stub is not shipped.  Production source still requires the authoritative
+AlchemyObject.cls.

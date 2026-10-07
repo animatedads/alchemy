@@ -1,0 +1,20 @@
+ooRexx NORM v0.1-dev1 validation record
+
+QUALIFICATION RUNTIME
+- ooRexx 5.3.0 r13196, extracted from the Architect-supplied Ubuntu debug .deb.
+
+PASS
+- SocketProvider dev8 compiled under r13196.
+- NormSocketProvider.cls compiled under r13196 once native package was present.
+- NORM SocketAddress contract: group, port, interface, node id, multicast family retained.
+- Native C++ package compiled with -Wall -Wextra -Werror against r13196 oorexxapi.h.
+- Native provider contract passed using a signature-compatible compile/test shim for libnorm API 1.5.10: version, sender creation, descriptor exposure, data enqueue and close.
+- SocketProvider dev8 full existing contract regression passed plus NORM/XTP negotiation test.
+
+UPSTREAM API CHECK
+- NRL normApi.h master blob SHA inspected: 0caa5c34e72e5fecd42c373bf49b7433530065be.
+- Functions used are public NORM C API functions from that header.
+
+NOT CLAIMED IN THIS BUILD ENVIRONMENT
+- No real libnorm binary was present in the execution container, so actual UDP/IP multicast transmission was not run here.
+- tests/environment_test.sh is the complete real-environment qualification script. With NORM_ROOT set to a built/installed NRL NORM tree, it builds the real binding; with NORM_LIVE_TEST=1 it launches an actual receiver and sender through SocketSelector on the configured multicast interface.

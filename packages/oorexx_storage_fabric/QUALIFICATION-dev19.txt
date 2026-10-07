@@ -1,0 +1,22 @@
+ooRexx Storage Fabric v0.1-dev19 qualification
+Date: 2026-10-07
+Runtime: ooRexx 5.3.0 r13196 supplied by Architect
+
+New dev19 qualification:
+- PASS Storage two-centre/two-vendor failure-domain replication policy
+- PASS two verified SAFE replicas across two vendor/site/failure domains satisfy StorageReplicaRequirement(2,2,2,2)
+- PASS two replicas in one vendor/site fail the independence requirement
+- PASS loss of mu-ed209c leaves the independent second-centre replica source-capable
+- PASS redundancy becomes DEGRADED after one centre is lost rather than pretending two copies still exist
+- PASS fallback execution node may materialise the same pinned StorageRef from the surviving centre; execution placement is not replica placement
+- PASS independent worker (e.g. mi-06ed209e) may consume/process another range from the same immutable StorageRef while retaining replica status
+
+Regression:
+- PASS all Storage Fabric dev18 tests
+- PASS mesh ACTIVE/SPARE/epoch authority projection
+- PASS comprehensive dynamic Storage intentions
+- PASS estate SocketProvider projection
+- PASS FUSE protocol/native-stub qualification
+
+Environment qualification marker:
+PASS STORAGE FABRIC v0.1-dev19 ENVIRONMENT QUALIFICATION

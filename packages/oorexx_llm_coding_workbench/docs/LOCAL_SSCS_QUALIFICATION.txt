@@ -1,0 +1,29 @@
+Local SSCS Runner v0.1 qualification
+Runtime: Open Object Rexx 5.3.0 r13196
+Semantic Source Store: dev23.12 Development Desk package
+NoSQLServer: v0.83 real runtime package
+Alchemy Objects: v0.8.2 semantic-target candidate
+Crypto: v0.8.3
+Transport: in-process only; no website, HTTP listener, or HTTPS MCP server
+
+PASS rexxc tools/local_sscs.rex
+PASS rexxc tools/local_sscs_session.rex
+PASS BOOTSTRAP real local SSCS database
+PASS PING backend=nosqlserver schema=13
+PASS Development Desk button discovery
+PASS CREATE_PACKAGE demo/local_runner.rex
+PASS CREATE_CLASS LocalRunnerDemo
+PASS ADD_ATTRIBUTE state
+PASS ADD_METHOD status
+PASS WRITE_METHOD body-only
+PASS VIEW_CLASS
+PASS VIEW_METHOD exact source via hex framing
+PASS MATERIALISE
+PASS rexxc materialised source under r13196
+
+Materialised source:
+::class LocalRunnerDemo
+::attribute state
+::method status
+  expose state
+  return state

@@ -1,0 +1,20 @@
+ooRexx Python Macrospace POC v0.31.0 host qualification
+Date: 2026-09-27
+Baseline: user-supplied v0.30.3
+Target ooRexx: 5.3.0 r13196 user-supplied Ubuntu debug package
+
+PASS: Python source compilation (`python3 -m py_compile python/*.py`).
+PASS: native extension host build against extracted r13196 headers/libs.
+PASS: focused embedded ooRexx virtual-class proof:
+      VIRTUAL-PYTHON-CLASS-PASS
+      - Rexx loads Python class VirtualCounter through AlchemyPythonClass~loadCls
+      - Rexx invokes Python classmethod FAMILY
+      - Rexx constructs Python instance through projected class ~new
+      - Rexx invokes DESCRIBE and BUMP on projected instance
+      - Python-authoritative isInstanceOfPython succeeds
+
+Qualification note: the focused proof used a test-only minimal AlchemyObject
+stub because the authoritative external Alchemy Objects package was not part of
+the supplied v0.30.3 archive.  The shipped source continues to require the
+external authoritative AlchemyObject.cls exactly as v0.30.3 did; no stub is
+included in this release.

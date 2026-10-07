@@ -1,0 +1,25 @@
+ooRexx Ruby Alchemy v0.1-dev17
+Status: QUALIFIED
+Runtime: ooRexx 5.3.0 r13196
+Baseline: dev16 SHA-256 4292929f64012bc8428a4202246696607dee3f9d73277b8c7b79ff24e469668f
+
+dev17 closes the asynchronous callback request-storage lifetime gap identified
+after the 2026-09-27 portfolio review. The callback queue now owns
+std::shared_ptr<AsyncRexxCall> rather than a pointer to worker-stack storage.
+The waiter and queue/pump therefore have independent request lifetime.
+
+Executed qualification:
+- Ruby projection identity/method_missing/kwargs/block/release
+- exact NoMethodError provenance and retained Ruby failures
+- structured synchronous ooRexx condition projection
+- generation/retain/revoke/invocation-pin lifecycle
+- cooperative Ruby-worker callback and pinned release race
+- structured asynchronous ooRexx condition projection
+- portfolio-review boundary contract
+- authoritative Alchemy Foreign Object / Alchemy Objects integration
+- warning-enabled native build
+- static proof that async queue and worker allocation use shared ownership
+
+Explicitly not claimed:
+- cancellation/shutdown semantics for outstanding requests
+- arbitrary multi-worker admission fairness

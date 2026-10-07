@@ -1,0 +1,19 @@
+oorexx_python_macrospace_poc_v0.31.4
+
+Change: arbitrary non-scalar ooRexx objects can cross the Rexx -> Python
+class-family argument boundary without stringification.  A typed native ooRexx
+method receives the real RexxObjectPtr, retains it as a global reference and
+encodes R:<handle>.  Python decodes that handle as a live RexxObject projection
+whose send() dispatches against the original object.  Projection destruction
+releases the transferred global reference.  The typed ooRexx package entry and
+CPython module deliberately share one DSO so the registries are not duplicated.
+
+Host qualification baseline:
+  ooRexx 5.3.0 r13196 from the user-supplied Ubuntu debug package
+  CPython 3.13 host runtime
+
+Focused result:
+  virtual_python_class_rexx_object_arg.rex -> VIRTUAL-PYTHON-CLASS-REXX-OBJECT-ARG-PASS
+
+The test constructs a Python class with an ordinary Rexx object, Python retains
+that object, then later sends DESCRIBE back to the same live Rexx instance.

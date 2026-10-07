@@ -1,0 +1,14 @@
+# Gateway-local policy.  The HTTPS/RexxOS client cannot alter these values.
+NODE_ID=GATEWAY
+HELPER=/usr/local/libexec/oorexx-firewall/firewall-nft
+LEDGER=/var/lib/oorexx-firewall/replay.tsv
+RECEIPTS=/var/log/oorexx-firewall/receipts.tsv
+
+# Queue Fabric peers authorised to report hostile sources.
+ALLOW_PEER=REXXOS1
+# ALLOW_PEER=REXXOS2
+
+# MUST include every administration source that must never be blocked.
+# Exact IPv4 and /24 are supported in v0.1.
+PROTECT=192.0.2.44
+# PROTECT=198.51.100.0/24

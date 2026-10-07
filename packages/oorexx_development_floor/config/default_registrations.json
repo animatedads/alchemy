@@ -1,0 +1,845 @@
+{
+  "schema": "development.floor.registrations/0.5",
+  "bots": [
+    {
+      "id": "development-manager",
+      "role": "DEVELOPMENT_MANAGER",
+      "purpose": "Own work allocation, specialist selection, bug allocation, execution-provider selection and acceptance routing.",
+      "status": "ACTIVE",
+      "capabilities": [
+        "ALLOCATE_WORK",
+        "ALLOCATE_BUG",
+        "SELECT_SPECIALIST",
+        "SELECT_EXECUTION_PROVIDER",
+        "REQUEST_DEPLOY_TO_TEST",
+        "SELECT_CONTROL_PLANE",
+        "INSPECT_NODE_PROJECTION",
+        "INSPECT_FIREWALL_PROJECTION",
+        "SELECT_APPLIANCE_PROFILE",
+        "INSPECT_DEPLOYMENT_LIFECYCLE"
+      ],
+      "constraints": {
+        "assignment_authority": true,
+        "acceptance_authority": true
+      }
+    },
+    {
+      "id": "coding-specialist",
+      "role": "SPECIALIST_TEMPLATE",
+      "purpose": "Execute a bounded coding assignment using persistent package/domain specialist knowledge.",
+      "status": "ACTIVE",
+      "capabilities": [
+        "CODE",
+        "RAISE_BUG",
+        "REQUEST_TEST",
+        "RETURN_BLOCKED",
+        "RETURN_SPECIFICATION_PROBLEM",
+        "AUTONOMOUS_CODING_LOOP",
+        "SECOND_BITE",
+        "BOUNDED_SOURCE_WRITE"
+      ],
+      "constraints": {
+        "assignment_required": true,
+        "bug_repair_requires_assignment": true,
+        "ownership_expansion_forbidden": true,
+        "wlu_accounting_required": true,
+        "active_wlu_reservation_required": true,
+        "model_shell_authority": false,
+        "model_filesystem_authority": false,
+        "structured_single_file_proposal": true,
+        "deterministic_second_bite_required": true
+      }
+    },
+    {
+      "id": "gwen-documentation",
+      "role": "DOCUMENTATION_SPECIALIST",
+      "purpose": "Write and refresh per-file, per-class and per-method documentation from the authoritative source graph.",
+      "status": "ACTIVE",
+      "capabilities": [
+        "DOCUMENT_CLASS",
+        "DOCUMENT_METHOD",
+        "RAISE_BUG"
+      ],
+      "constraints": {
+        "source_mutation_forbidden": true,
+        "bug_repair_requires_assignment": true,
+        "wlu_accounting_required": true,
+        "active_wlu_reservation_required": true
+      }
+    },
+    {
+      "id": "csm-reviewer",
+      "role": "INDEPENDENT_REVIEWER",
+      "purpose": "Perform an independent second-line review after specialist completion and deterministic sweeps.",
+      "status": "ACTIVE",
+      "capabilities": [
+        "REVIEW",
+        "RAISE_BUG",
+        "REQUEST_REWORK"
+      ],
+      "constraints": {
+        "direct_repair_forbidden": true,
+        "wlu_accounting_required": true,
+        "active_wlu_reservation_required": true
+      }
+    },
+    {
+      "id": "specification-authority",
+      "role": "SPECIFICATION_AUTHORITY",
+      "purpose": "Project structured requirements into authoritative acceptance criteria and hard tests.",
+      "status": "ACTIVE",
+      "capabilities": [
+        "COMPILE_SPECIFICATION",
+        "ISSUE_SPECIFICATION_REFERRAL"
+      ],
+      "constraints": {
+        "coding_worker_cannot_rewrite_authoritative_tests": true,
+        "wlu_accounting_required": true,
+        "active_wlu_reservation_required": true
+      }
+    },
+    {
+      "id": "cloud-infrastructure-specialist",
+      "role": "INFRASTRUCTURE_SPECIALIST",
+      "purpose": "Execute bounded assigned infrastructure work through registered control-plane and deployment authorities.",
+      "status": "ACTIVE",
+      "capabilities": [
+        "REQUEST_CLOUD_CONTROL",
+        "REQUEST_NODE_OPERATION",
+        "REQUEST_DEPLOY_TO_TEST",
+        "RAISE_BUG",
+        "RETURN_BLOCKED",
+        "OBSERVE_NODE",
+        "OBSERVE_FIREWALL"
+      ],
+      "constraints": {
+        "assignment_required": true,
+        "raw_provider_cli_forbidden": true,
+        "raw_ssh_forbidden": true,
+        "bug_repair_requires_assignment": true,
+        "wlu_accounting_required": true,
+        "active_wlu_reservation_required": true
+      }
+    },
+    {
+      "id": "test-deployment-coordinator",
+      "role": "DEPLOYMENT_COORDINATOR",
+      "purpose": "Orchestrate leased deploy-to-test transactions without granting coding workers host ownership.",
+      "status": "REGISTERED",
+      "capabilities": [
+        "REQUEST_RESOURCE_SET",
+        "RESERVE_WLU",
+        "LEASE_QEMU",
+        "LEASE_NETWORK",
+        "DEPLOY_TEST",
+        "COLLECT_EVIDENCE",
+        "CLEANUP",
+        "SELECT_APPLIANCE_PROFILE",
+        "RECORD_RUNTIME_EVIDENCE"
+      ],
+      "constraints": {
+        "ed209_transport": "sshnode.sh",
+        "cloud_control": "alchemy.cloud-control/0.1",
+        "wlu_accounting_required": true,
+        "active_wlu_reservation_required": true
+      }
+    },
+    {
+      "id": "deterministic-autotask-runner",
+      "role": "AUTOTASK_RUNNER",
+      "purpose": "Run zero-model-cost qualification and housekeeping tasks at defined lifecycle triggers.",
+      "status": "ACTIVE",
+      "capabilities": [
+        "RUN_AUTOTASKS"
+      ],
+      "constraints": {
+        "model_tokens": 0,
+        "wlu_accounting_required": true,
+        "standing_wlu_reservation_permitted": true
+      }
+    },
+    {
+      "id": "infrastructure-observer",
+      "role": "INFRASTRUCTURE_OBSERVER",
+      "purpose": "Refresh identity-preserving node and firewall projections from registered control-plane and host evidence without gaining mutation authority.",
+      "status": "ACTIVE",
+      "capabilities": [
+        "REFRESH_NODE_PROJECTION",
+        "REFRESH_FIREWALL_PROJECTION",
+        "RECORD_DIVERGENT_FACTS",
+        "RAISE_BUG"
+      ],
+      "constraints": {
+        "model_tokens": 0,
+        "read_only": true,
+        "raw_provider_cli_forbidden": true,
+        "raw_ssh_forbidden": true,
+        "mutation_authority": false,
+        "wlu_accounting_required": true,
+        "standing_wlu_reservation_permitted": true
+      }
+    },
+    {
+      "id": "rto-activation-specialist",
+      "role": "RTO_ACTIVATION_SPECIALIST",
+      "purpose": "Execute bounded assigned RexxOS activation work from a verified STAGED deployment through Alchemy RTO reconstruction, external binding and explicit activation.",
+      "status": "REGISTERED",
+      "capabilities": [
+        "RECONSTRUCT_RTO",
+        "BIND_EXTERNALS",
+        "REQUEST_ACTIVATION",
+        "RAISE_BUG",
+        "RETURN_BLOCKED"
+      ],
+      "constraints": {
+        "assignment_required": true,
+        "bug_repair_requires_assignment": true,
+        "state_transition_evidence_required": true,
+        "cannot_claim_active_from_staged": true,
+        "wlu_accounting_required": true,
+        "active_wlu_reservation_required": true
+      }
+    },
+    {
+      "id": "reasoning-manager",
+      "role": "MANAGEMENT",
+      "purpose": "Compare a worker claimed reasoning summary with Development Floor required reasoning obligations and report bounded semantic alignment.",
+      "specialist_id": "",
+      "capabilities": [
+        "REASONING_ALIGNMENT"
+      ],
+      "constraints": {
+        "PRIVATE_CHAIN_OF_THOUGHT": "FORBIDDEN",
+        "VERDICT_AUTHORITY": "DEVELOPMENT_FLOOR"
+      }
+    }
+  ],
+  "provider_accounts": [
+    {
+      "id": "oci-free",
+      "provider": "OCI",
+      "selector": "",
+      "expected_identity": "",
+      "funding_source": "FREE_ACCOUNT_DECLARED",
+      "status": "DECLARED_UNBOUND",
+      "metadata": {
+        "identity_binding_pending": true
+      }
+    },
+    {
+      "id": "azure-free",
+      "provider": "AZURE",
+      "selector": "",
+      "expected_identity": "",
+      "funding_source": "FREE_ACCOUNT_DECLARED",
+      "status": "DECLARED_UNBOUND",
+      "metadata": {
+        "identity_binding_pending": true
+      }
+    },
+    {
+      "id": "aws-free",
+      "provider": "AWS",
+      "selector": "",
+      "expected_identity": "",
+      "funding_source": "FREE_ACCOUNT_DECLARED",
+      "status": "DECLARED_UNBOUND",
+      "metadata": {
+        "identity_binding_pending": true
+      }
+    },
+    {
+      "id": "gcp-animated-ads-cy",
+      "provider": "GCP",
+      "selector": "animated-ads-cy",
+      "expected_identity": "animated.ads.cy@gmail.com",
+      "funding_source": "FREE_SERVICE_ENTITLEMENTS",
+      "status": "REGISTERED",
+      "metadata": {
+        "identity_selection_required": true,
+        "promotional_credit_active": false
+      }
+    },
+    {
+      "id": "gcp-bashqueue",
+      "provider": "GCP",
+      "selector": "bashqueue",
+      "expected_identity": "bashqueue@gmail.com",
+      "funding_source": "GOOGLE_TRIAL_CREDIT",
+      "status": "REGISTERED",
+      "metadata": {
+        "identity_selection_required": true,
+        "trial_credit_gbp": 226,
+        "trial_credit_used_gbp": 0,
+        "trial_credit_expires": "2027-01-03"
+      }
+    },
+    {
+      "id": "vultr-primary",
+      "provider": "VULTR",
+      "selector": "",
+      "expected_identity": "",
+      "funding_source": "ACCOUNT_DECLARED",
+      "status": "DECLARED_UNBOUND",
+      "metadata": {
+        "identity_binding_pending": true
+      }
+    },
+    {
+      "id": "vultr-free-1y",
+      "provider": "VULTR",
+      "selector": "",
+      "expected_identity": "",
+      "funding_source": "FREE_1Y_DECLARED",
+      "status": "DECLARED_UNBOUND",
+      "metadata": {
+        "identity_binding_pending": true
+      }
+    }
+  ],
+  "execution_providers": [
+    {
+      "id": "local-qwen-llamacpp",
+      "provider": "LLAMACPP",
+      "model_id": "Qwen/Qwen2.5-1.5B-Instruct-GGUF:Q4_K_M",
+      "transport": "AI_ACCESS_OPENAI_COMPAT",
+      "cost_model": "LOCAL_UNMETERED",
+      "routing_class": "LOCAL",
+      "status": "TRANSPORT_QUALIFIED_RUNTIME_UNPROBED",
+      "capabilities": [
+        "GENERAL",
+        "LOW_COST_WORKER",
+        "CODING",
+        "AUTONOMOUS_CODING"
+      ],
+      "metadata": {
+        "endpoint": "http://127.0.0.1:8080",
+        "health_required_before_use": true,
+        "provider_adapter": "ai.provider.openai-compat/0.6",
+        "auth_mode": "NONE",
+        "loopback_only": true,
+        "live_runtime_probe_required": true
+      }
+    },
+    {
+      "id": "zerogpu-gpt-oss-20b",
+      "provider": "HUGGINGFACE_ZEROGPU",
+      "model_id": "openai/gpt-oss-20b",
+      "transport": "ACCELERATOR_HOSTED",
+      "cost_model": "TIME_QUOTA",
+      "routing_class": "NORMAL",
+      "status": "CATALOGUED",
+      "capabilities": [
+        "CODING",
+        "REASONING"
+      ],
+      "metadata": {
+        "daily_gpu_seconds": 2400,
+        "accelerator_provider": "alchemy.accelerator/0.1"
+      }
+    },
+    {
+      "id": "azure-gpt-6-luna",
+      "provider": "AZURE_OPENAI",
+      "model_id": "gpt-6-luna",
+      "transport": "AI_ACCESS_AZURE_OPENAI",
+      "cost_model": "TOKEN_METERED",
+      "routing_class": "NORMAL",
+      "status": "LIVE_QUALIFIED",
+      "capabilities": [
+        "GENERAL",
+        "CODING",
+        "PLANNING",
+        "AUTONOMOUS_CODING"
+      ],
+      "metadata": {
+        "input_usd_per_million": 0.1,
+        "cached_input_usd_per_million": 0.01,
+        "output_usd_per_million": 0.5,
+        "context_tokens": 1050000,
+        "provider_adapter": "ai.provider.openai-compat/0.6",
+        "auth_mode": "API_KEY",
+        "auth_header": "api-key",
+        "secret_broker_required": true,
+        "live_credential_exercised": true,
+        "wire_api": "AZURE_RESPONSES_V1",
+        "api_version_required": false
+      }
+    },
+    {
+      "id": "azure-gpt-6.1-sol",
+      "provider": "AZURE_OPENAI",
+      "model_id": "gpt-6.1-sol",
+      "transport": "AI_ACCESS_AZURE_OPENAI",
+      "cost_model": "TOKEN_METERED",
+      "routing_class": "STRONG",
+      "status": "TRANSPORT_QUALIFIED_LIVE_UNTESTED",
+      "capabilities": [
+        "CODING",
+        "COMPLEX_REASONING",
+        "AGENTIC",
+        "AUTONOMOUS_CODING"
+      ],
+      "metadata": {
+        "context_tokens": 1050000,
+        "provider_adapter": "ai.provider.openai-compat/0.6",
+        "auth_mode": "API_KEY",
+        "auth_header": "api-key",
+        "secret_broker_required": true,
+        "live_credential_not_exercised": true,
+        "api_version_must_be_explicit": true
+      }
+    },
+    {
+      "id": "google-claude-opus-5",
+      "provider": "GCP_PARTNER_MODEL",
+      "model_id": "claude-opus-5",
+      "transport": "GCP_MODEL_ENDPOINT",
+      "cost_model": "TOKEN_METERED",
+      "routing_class": "PREMIUM_ESCALATION",
+      "provider_account_id": "gcp-bashqueue",
+      "status": "CATALOGUED",
+      "capabilities": [
+        "CODING",
+        "COMPLEX_REASONING",
+        "AGENTIC"
+      ],
+      "metadata": {
+        "funding_source": "GOOGLE_TRIAL_CREDIT",
+        "explicit_escalation_reason_required": true
+      }
+    }
+  ],
+  "resource_providers": [
+    {
+      "id": "ed209-host-resource",
+      "resource_kind": "HOST",
+      "authority": "ALCHEMY_CLOUD_CONTROL",
+      "operation_surface": "alchemy.cloud-control/0.1:NODE",
+      "status": "REGISTERED",
+      "metadata": {
+        "exclusive_host_transport": true,
+        "availability_is_observed_not_inferred": true,
+        "underlying_transport": "sshnode.sh"
+      },
+      "control_plane_id": "alchemy-cloud-control"
+    },
+    {
+      "id": "wlu-authority",
+      "resource_kind": "WLU",
+      "authority": "WORK_LOAD_UNITS",
+      "operation_surface": "work.load.units/0.12",
+      "status": "QUALIFIED_EXECUTABLE_ADAPTER",
+      "metadata": {
+        "api": "work.load.units/0.12",
+        "package_sha256": "b5f6cd8230daa26c227b93032d42b4263c5fcb3b40838359aeab3421cf0ab75a",
+        "mandatory_for_substantive_assignment_execution": true,
+        "authoritative_events": [
+          "RESERVE",
+          "CONSUME",
+          "SETTLED",
+          "RELEASED",
+          "EXPIRED"
+        ]
+      }
+    },
+    {
+      "id": "qemu-resource",
+      "resource_kind": "QEMU",
+      "authority": "QEMU_RESOURCE_PROVIDER",
+      "operation_surface": "alchemy.cloud-control/0.1:NODE",
+      "status": "REGISTERED_CONTRACT_ONLY",
+      "control_plane_id": "alchemy-cloud-control",
+      "metadata": {
+        "underlying_transport": "sshnode.sh",
+        "allocator_implementation_pending": true
+      }
+    },
+    {
+      "id": "network-lease",
+      "resource_kind": "NETWORK_LEASE",
+      "authority": "NETWORK_LEASE_PROVIDER",
+      "operation_surface": "alchemy.cloud-control/0.1:RESOURCE + NODE",
+      "status": "REGISTERED_INCOMPLETE",
+      "metadata": {
+        "temporary_rules_only": true,
+        "revoke_and_verify_on_cleanup": true,
+        "cloud_transport": "cloudctl.sh",
+        "node_transport": "sshnode.sh",
+        "firewall_list_available": true,
+        "firewall_add_remove_available": false
+      },
+      "control_plane_id": "alchemy-cloud-control"
+    },
+    {
+      "id": "alchemy-accelerator",
+      "resource_kind": "ACCELERATOR",
+      "authority": "ALCHEMY_ACCELERATOR",
+      "operation_surface": "alchemy.accelerator/0.1",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "queue-fabric",
+      "resource_kind": "TRANSPORT",
+      "authority": "QUEUE_FABRIC",
+      "operation_surface": "queue.transport/2",
+      "status": "REGISTERED"
+    },
+    {
+      "id": "cloud-resource-control",
+      "resource_kind": "CLOUD_RESOURCE",
+      "authority": "ALCHEMY_CLOUD_CONTROL",
+      "operation_surface": "alchemy.cloud-control/0.1:RESOURCE",
+      "control_plane_id": "alchemy-cloud-control",
+      "status": "QUALIFIED_LOCAL_NO_LIVE_PROVIDER_MUTATION",
+      "metadata": {
+        "underlying_transport": "cloudctl.sh",
+        "current_operations": [
+          "restart",
+          "firewall-list"
+        ],
+        "live_provider_mutation_qualified": false
+      }
+    },
+    {
+      "id": "cloud-service-control",
+      "resource_kind": "CLOUD_SERVICE",
+      "authority": "ALCHEMY_CLOUD_CONTROL",
+      "operation_surface": "alchemy.cloud-control/0.1:SERVICE",
+      "control_plane_id": "alchemy-cloud-control",
+      "status": "CONTRACT_QUALIFIED",
+      "metadata": {
+        "normalized_capabilities": [
+          "SERVERLESS_FUNCTION",
+          "SERVERLESS_CONTAINER",
+          "BUILD",
+          "WORKFLOW",
+          "ANALYTICS"
+        ],
+        "live_service_execution_qualified": false
+      }
+    },
+    {
+      "id": "node-observation-projection",
+      "resource_kind": "NODE_OBSERVATION",
+      "authority": "DEVELOPMENT_FLOOR_READ_MODEL",
+      "operation_surface": "development.floor.node-projection/0.1",
+      "status": "REGISTERED",
+      "control_plane_id": "alchemy-cloud-control",
+      "metadata": {
+        "read_only": true,
+        "identity_preserving": true,
+        "retains_divergent_evidence": true,
+        "mutation_delegates_to_registered_authority": true
+      }
+    },
+    {
+      "id": "firewall-projection",
+      "resource_kind": "FIREWALL",
+      "authority": "DEVELOPMENT_FLOOR_READ_MODEL",
+      "operation_surface": "development.floor.firewall/0.1",
+      "status": "REGISTERED",
+      "control_plane_id": "alchemy-cloud-control",
+      "metadata": {
+        "normal_surface": "FIREWALL",
+        "facets": [
+          "CLOUD",
+          "LOCAL",
+          "GUEST_INTERNAL"
+        ],
+        "facet_selection_required_only_for_internal_network_operations": true,
+        "read_only": true
+      }
+    },
+    {
+      "id": "development-floor-accounting-ledger",
+      "resource_kind": "ACCOUNTING_LEDGER",
+      "authority": "DEVELOPMENT_FLOOR_ACCOUNTING_PROJECTION",
+      "operation_surface": "development.floor.accounting/0.1",
+      "status": "QUALIFIED_DURABLE_NON_ENTITLING",
+      "metadata": {
+        "durable": true,
+        "append_only": true,
+        "can_grant_work": false,
+        "correlates_wlu_reservation": true,
+        "external_units_remain_native": true,
+        "example_units": [
+          "INPUT_TOKEN",
+          "OUTPUT_TOKEN",
+          "MICRO_CURRENCY",
+          "GPU_SECOND",
+          "WALL_MILLISECOND",
+          "CPU_MILLISECOND",
+          "BYTE"
+        ]
+      }
+    }
+  ],
+  "deployment_providers": [
+    {
+      "id": "rexxos-test-appliance",
+      "target_kind": "REXXOS_QEMU",
+      "deployment_mode": "IMAGE_MATERIALISATION",
+      "host_transport": "sshnode.sh",
+      "status": "REGISTERED",
+      "metadata": {
+        "app_deploy_api": "rexxos.app-deploy/0.1",
+        "queue_submission_is_asynchronous": true,
+        "verified_state_boundary": "STAGED",
+        "normal_crypto_profile": "FAST",
+        "node_operation_kind": "NODE",
+        "app_deploy_package": "rexxos_app_deploy_v0.1-dev3",
+        "appliance_profiles_package": "rexxos_appliance_profiles_v0.1-dev2",
+        "default_appliance_profile": "REXXOS_FAST",
+        "fallback_appliance_profile": "REXXOS_MINIMAL",
+        "private_key_profile": "REXXOS_CRYPTO",
+        "activation_sequence": [
+          "STAGED",
+          "RECONSTRUCTED",
+          "BOUND",
+          "ACTIVE"
+        ],
+        "fast_runtime_evidence_required": true,
+        "field_qualification_package": "rexxos_qemu_hello_deploy_v0.1-dev1",
+        "field_qualification_package_sha256": "d732e0ab0b2e9c54e1c0b443b94da0a35e66099ffc3f3a3ff7010724860c022e",
+        "field_qualification_expected_final_line": "PASS RexxOS QEMU boot -> signed HELLO deployment -> RTO activation -> HELLO WORLD",
+        "field_qualification_guest_memory_mib": 160,
+        "field_qualification_guest_vcpus": 1,
+        "field_qualification_result": "PENDING_ED209K"
+      },
+      "control_plane_id": "alchemy-cloud-control"
+    },
+    {
+      "id": "linux-test-box",
+      "target_kind": "LINUX_QEMU",
+      "deployment_mode": "POST_BOOT_DEPLOYMENT",
+      "host_transport": "sshnode.sh",
+      "status": "REGISTERED",
+      "control_plane_id": "alchemy-cloud-control",
+      "metadata": {
+        "node_operation_kind": "NODE"
+      }
+    }
+  ],
+  "hosts": [
+    {
+      "id": "ed209a",
+      "provider": "OCI",
+      "lifecycle": "ACTIVE",
+      "allocation_status": "RETRY_REQUIRED",
+      "capabilities": {
+        "qemu": "UNVERIFIED",
+        "oorexx_smoke": "UNVERIFIED"
+      },
+      "provider_account_id": "oci-free",
+      "metadata": {
+        "note": "SSH stopped responding during QEMU install attempt; recheck required."
+      }
+    },
+    {
+      "id": "ed209b",
+      "provider": "OCI",
+      "lifecycle": "ACTIVE",
+      "allocation_status": "AVAILABLE",
+      "capabilities": {
+        "qemu": "QUALIFIED",
+        "oorexx_smoke": "QUALIFIED"
+      },
+      "provider_account_id": "oci-free"
+    },
+    {
+      "id": "ed209c",
+      "provider": "AZURE",
+      "lifecycle": "ACTIVE",
+      "allocation_status": "AVAILABLE",
+      "capabilities": {
+        "qemu": "QUALIFIED",
+        "oorexx_smoke": "QUALIFIED"
+      },
+      "provider_account_id": "azure-free",
+      "metadata": {
+        "note": "Current inventory marks ED209C active."
+      }
+    },
+    {
+      "id": "ed209d",
+      "provider": "AWS",
+      "lifecycle": "ACTIVE",
+      "allocation_status": "AVAILABLE",
+      "capabilities": {
+        "qemu": "QUALIFIED",
+        "oorexx_smoke": "QUALIFIED"
+      },
+      "provider_account_id": "aws-free"
+    },
+    {
+      "id": "ed209e",
+      "provider": "GCP",
+      "lifecycle": "ACTIVE",
+      "allocation_status": "UNREACHABLE",
+      "capabilities": {
+        "qemu": "UNVERIFIED",
+        "oorexx_smoke": "UNVERIFIED"
+      },
+      "provider_account_id": "gcp-animated-ads-cy"
+    },
+    {
+      "id": "ed209h",
+      "provider": "VULTR",
+      "lifecycle": "TEMPORARILY_OFF",
+      "allocation_status": "NOT_ALLOCATABLE",
+      "capabilities": {
+        "qemu": "UNVERIFIED",
+        "oorexx_smoke": "UNVERIFIED"
+      },
+      "provider_account_id": "vultr-primary"
+    },
+    {
+      "id": "ed209i",
+      "provider": "AZURE",
+      "lifecycle": "ACTIVE",
+      "allocation_status": "AVAILABLE",
+      "capabilities": {
+        "qemu": "QUALIFIED",
+        "oorexx_smoke": "QUALIFIED"
+      },
+      "provider_account_id": "azure-free"
+    },
+    {
+      "id": "ed209j",
+      "provider": "GCP",
+      "lifecycle": "ACTIVE",
+      "allocation_status": "AVAILABLE",
+      "capabilities": {
+        "qemu": "QUALIFIED",
+        "oorexx_smoke": "QUALIFIED",
+        "oorexx_version": "5.3.0"
+      },
+      "provider_account_id": "gcp-bashqueue"
+    },
+    {
+      "id": "ed209k",
+      "provider": "VULTR",
+      "lifecycle": "ACTIVE",
+      "allocation_status": "UNKNOWN",
+      "capabilities": {
+        "qemu": "OBSERVED_PRESENT",
+        "oorexx_smoke": "UNVERIFIED",
+        "architecture": "x86_64"
+      },
+      "provider_account_id": "vultr-free-1y",
+      "metadata": {
+        "note": "Smallest current ED209 cloud node; explicitly selected for RexxOS QEMU HELLO deployment qualification. General allocator eligibility remains pending.",
+        "platform_observed": "Debian x86_64",
+        "free_root_gib_observed": "5.6",
+        "qualification_override_allowed": 1,
+        "qualification_target": "REXXOS_QEMU_HELLO_DEPLOY",
+        "smallest_machine": 1,
+        "qemu_executable_observed": "qemu-system-x86_64",
+        "qualification_result": "PENDING_FIELD_RUN"
+      }
+    },
+    {
+      "id": "ed209x",
+      "provider": "MOBILE",
+      "lifecycle": "ACTIVE",
+      "allocation_status": "UNREACHABLE",
+      "capabilities": {
+        "qemu": "UNVERIFIED",
+        "oorexx_smoke": "UNVERIFIED"
+      }
+    }
+  ],
+  "control_planes": [
+    {
+      "id": "alchemy-cloud-control",
+      "api": "alchemy.cloud-control/0.1",
+      "status": "QUALIFIED_LOCAL_NO_LIVE_PROVIDER_MUTATION",
+      "kinds": [
+        "SERVICE",
+        "RESOURCE",
+        "NODE"
+      ],
+      "metadata": {
+        "package": "alchemy_cloud_control_v0.1-dev2",
+        "package_sha256": "0a29487b499b19c164ffc6af481b6e9feebade01ba152a96b3e7ae60e6e12bf2",
+        "resource_transport": "cloudctl.sh",
+        "node_transport": "sshnode.sh",
+        "gcp_account_wrapper": "gcloud-account.sh",
+        "gcp_explicit_account_required": true,
+        "exact_oorexx_r13196_regressions_passed": true,
+        "live_cloud_mutation_qualified": false,
+        "cloudctl_sha256": "73eac5116d4e7f93f3450d71627070e67eb876e3993605b2c00188cd936d38be",
+        "gcloud_account_sha256": "27f408d4e1105c6b4b1bea8afe9afcf4a2812b19ed61fa933cc9de6b3dbac906",
+        "sshnode_sha256": "00aa70049b957f87a22235b27b50c59d063bfc07b180f8444bba4420da5bcc52",
+        "final_zip_extraction_qualified": true
+      }
+    }
+  ],
+  "appliance_profiles": [
+    {
+      "id": "REXXOS_MINIMAL",
+      "target_kind": "REXXOS_QEMU",
+      "crypto_api": "crypto/0.8.3",
+      "crypto_provider": "pure-rexx",
+      "foreign_runtime": "",
+      "native_provider": "",
+      "private_key_capability": false,
+      "status": "QUALIFIED_FALLBACK",
+      "capabilities": [
+        "crypto.sha512",
+        "crypto.ed25519.verify"
+      ],
+      "metadata": {
+        "profile_package": "rexxos_appliance_profiles_v0.1-dev2",
+        "qualification_seconds": 14.79,
+        "purpose": "bootstrap-portability-fallback"
+      }
+    },
+    {
+      "id": "REXXOS_FAST",
+      "target_kind": "REXXOS_QEMU",
+      "crypto_api": "crypto/0.8.3",
+      "crypto_provider": "foreign.openssl.crypto",
+      "foreign_runtime": "0.22.6",
+      "native_provider": "OpenSSL",
+      "private_key_capability": false,
+      "status": "QUALIFIED_DEFAULT",
+      "capabilities": [
+        "crypto.sha512",
+        "crypto.ed25519.verify",
+        "crypto.ed25519.sign"
+      ],
+      "metadata": {
+        "profile_package": "rexxos_appliance_profiles_v0.1-dev2",
+        "runtime_reference": "0.4",
+        "crypto_implementation": "openssl.libcrypto.hybrid.v2",
+        "native_provider_path": "/lib/x86_64-linux-gnu/libcrypto.so.3",
+        "qualification_seconds": 0.08,
+        "private_key_service_authority": false
+      }
+    },
+    {
+      "id": "REXXOS_CRYPTO",
+      "target_kind": "REXXOS_QEMU",
+      "crypto_api": "crypto/0.8.3",
+      "crypto_provider": "foreign.openssl.crypto",
+      "foreign_runtime": "0.22.6",
+      "native_provider": "OpenSSL",
+      "private_key_capability": true,
+      "status": "REGISTERED_UNQUALIFIED_PRIVATE_KEY_SERVICE",
+      "capabilities": [
+        "crypto.sha512",
+        "crypto.ed25519.verify",
+        "crypto.ed25519.sign",
+        "crypto.private-key.operations"
+      ],
+      "metadata": {
+        "profile_package": "rexxos_appliance_profiles_v0.1-dev2",
+        "runtime_reference": "0.4",
+        "private_key_service_authority": true,
+        "qualification_pending": "private-key-service-authority-path"
+      }
+    }
+  ]
+}

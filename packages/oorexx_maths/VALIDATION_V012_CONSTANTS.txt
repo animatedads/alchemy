@@ -1,0 +1,37 @@
+oorexx_maths v0.12 named pseudo-constant qualification
+====================================================
+
+Runtime:
+  oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20260925-083247).deb
+
+Focused named-constant regression:
+  tests/test_named_constants.rex
+  4/4 executed assertions PASS
+
+Pure/core package lane:
+  MATHS_TEST_NUMPY=0
+  MATHS_TEST_PROOF_PROVIDERS=0
+  MATHS_TEST_CRYPTO=0
+  ./run_tests.sh
+  rc=0
+
+Full accelerated qualification was attempted but the supplied ooRexx .deb does
+not contain python_foreign.cls, so the existing NumPy/foreign-provider lane
+cannot be rerun in this isolated runtime. The stop occurs at MathNumpyProvider's
+existing ::requires 'python_foreign.cls' boundary, not in named-constant code.
+
+Public contract added:
+  .Maths~namedConstant('pi', context)
+
+Compatibility:
+  .Maths~constant(value, context) is unchanged.
+  .Maths~pi(context) remains public and now delegates to the named-constant cache.
+
+Cache key:
+  constant name + numeric domain + MathContext working precision
+
+Observed representations:
+  decimal(30):
+    3.14159265358979323846264338327950288419716939937510582097494
+  decimal(70):
+    3.141592653589793238462643383279502884197169399375105820974944592307816406286208998628034825342117068

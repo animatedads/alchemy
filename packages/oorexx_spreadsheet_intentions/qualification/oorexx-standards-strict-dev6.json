@@ -1,0 +1,23 @@
+{
+  "zip": "oorexx_spreadsheet_intentions_v0.1-dev6.zip",
+  "files_scanned": 11,
+  "files_with_findings": 1,
+  "errors": 1,
+  "warnings": 0,
+  "strict": true,
+  "verdict": "FAIL",
+  "reports": [
+    {
+      "path": "oorexx_spreadsheet_intentions_v0.1-dev6/src/SpreadsheetInterchange.cls",
+      "findings": [
+        {
+          "rule": "AMPERSAND_SHORTCIRCUIT",
+          "severity": "ERROR",
+          "line": 397,
+          "message": "\"&\" does not short-circuit in ooRexx. Both sides evaluate. Every time. Nest your ifs like an adult.",
+          "snippet": "if (ch >= \"A\" & ch <= \"Z\") | (ch >= \"0\" & ch <= \"9\") | ch == \"_\" then out = out || ch"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+RULE_ID	SCOPE	STATEMENT
+GENERAL-LANE-001	general	A worker SHALL perform only work covered by its current assignment.
+GENERAL-BUG-001	general	Raising a bug records and routes a defect; it expressly prohibits investigation or repair until Development Manager assigns work covering that bug.
+GENERAL-EVIDENCE-001	general	Completion claims require current evidence from the authoritative source state and applicable qualification procedures.
+GENERAL-DOGFOOD-001	general	Development tools SHALL be qualified by running them against the development framework itself before they are accepted.
+GENERAL-DOC-001	general	Public source files, classes and methods are incomplete while required documentation is missing or stale.
+GENERAL-SPECIALIST-BOOTSTRAP-001	general	A qualified specialist bootstrap is durable domain knowledge; later package revisions SHALL update from source deltas rather than paying to rediscover the package from scratch.
+GENERAL-TEST-RESOURCE-001	general	Tests execute on leased test resources; a development workspace is not implicitly a test resource.
+GENERAL-SSHNODE-001	general	All ED209 host command and file-transfer access SHALL be mediated by sshnode.sh; workers SHALL NOT invent alternate SSH/SCP/cloud-shell paths.
+GENERAL-PROVIDER-ACCOUNT-001	general	Where a cloud has multiple provider accounts, every control-plane operation SHALL name and verify the provider account explicitly; ambient cloud identity is not authority.
+GENERAL-TEST-CLEANUP-001	general	Deploy-to-test SHALL preserve evidence before cleanup and SHALL revoke temporary network exposure and release resource/WLU leases even after test failure.
+GENERAL	WLU-EXECUTION	Substantive worker execution requires an active admitted work.load.units/0.12 reservation; provider/model binding alone never grants permission to execute.
+GENERAL	WLU-ACCOUNTING	WLU remains work authority. Dollars, tokens, GPU seconds, wall time, bytes and other resource quantities remain native accounting units correlated to the WLU reservation; they are not converted into fictional WLU by the Development Floor ledger.
+GENERAL	WLU-SETTLEMENT	Every admitted assignment must settle or release its WLU reservation, including failure and cleanup paths; consumed work is never refunded merely because the remainder is released.

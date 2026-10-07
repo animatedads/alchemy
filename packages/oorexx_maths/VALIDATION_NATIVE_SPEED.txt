@@ -1,0 +1,18 @@
+ooRexx Maths v0.10 native-speed benchmark
+Qualification host, ooRexx 5.3.0 r13196, Foreign Runtime v0.22.5, NumPy 2.3.5.
+Command: benchmark_guitar_boosters.rex PROVIDER 1024 64
+
+NUMPY: oscillator=0.037291 s, convolution=0.066891 s, rfft64=0.002705 s, matvec64=0.264643 s
+PURE:  oscillator=6.585933 s, convolution=0.748650 s, rfft64=2.578331 s, matvec64=0.242195 s
+
+Approximate speedup (PURE/NUMPY):
+oscillator bank: 176.6x
+convolution:      11.2x
+RFFT vs direct DFT: 953.2x
+64x64 matvec:     0.92x (native bridge overhead dominates this small microcase)
+
+Both providers produced matching benchmark checksums to binary64/reference tolerance:
+NUMPY checksum=-0.5787645291449458749
+PURE  checksum=-0.578764529144943336511647068854
+
+Interpretation: native acceleration is highly material for sampled/modal/spectral guitar and physics workloads, but provider selection should remain workload-aware.

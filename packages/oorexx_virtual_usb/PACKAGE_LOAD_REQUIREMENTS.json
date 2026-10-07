@@ -1,0 +1,85 @@
+{
+  "schema": "oorexx.package.load-requirements/0.1-dev1",
+  "consumer": {
+    "component": "oorexx_virtual_usb",
+    "releaseLabel": "0.1-dev9"
+  },
+  "entryPackages": [
+    "src/VirtualUsbRuntime.cls",
+    "src/Fido2Authenticator.cls",
+    "src/LinuxRawGadgetProvider.cls",
+    "examples/virtual_fido2_authenticator_raw.rex"
+  ],
+  "runtime": {
+    "implementation": "ooRexx",
+    "qualifiedVersion": "5.3.0",
+    "qualifiedRevision": 13196,
+    "packageExports": [
+      "json.cls"
+    ]
+  },
+  "packageLoads": [
+    {
+      "requires": "EventRuntime.cls",
+      "providerComponentHint": "oorexx_event_runtime",
+      "qualifiedArtifact": "oorexx_event_runtime_v0.1-dev1.zip",
+      "qualifiedExportPath": "src"
+    },
+    {
+      "requires": "crypto.cls",
+      "providerComponentHint": "oorexx_crypto",
+      "qualifiedArtifact": "oorexx_crypto_v0.8.3.zip",
+      "qualifiedExportPath": "src"
+    },
+    {
+      "requires": "foreign.cls",
+      "providerComponentHint": "oorexx_foreign_runtime",
+      "qualifiedArtifact": "oorexx_foreign_runtime_v0.22.6.zip",
+      "qualifiedExportPath": "rexx",
+      "nativeLoadPath": "build",
+      "nativeObject": "libforeign_runtime.so"
+    },
+    {
+      "requires": "json.cls",
+      "providerComponentHint": "oorexx-runtime",
+      "qualifiedExportPath": "bin"
+    }
+  ],
+  "packageOwnedRexxPath": [
+    "src",
+    "tests"
+  ],
+  "resourcePaths": [
+    "maps",
+    "bridge"
+  ],
+  "authority": {
+    "semanticDependencyAuthority": "SSC / Deployment dependency lock",
+    "rexxPathRole": "execution-state-only",
+    "qualifiedArtifactNamesAreVersionAuthority": false,
+    "failOnAmbiguousPackageProvider": true
+  },
+  "targetRequirements": {
+    "liveRawGadgetQualification": {
+      "platform": "Linux",
+      "characterDevice": "/dev/raw-gadget",
+      "kernelModules": [
+        "raw_gadget",
+        "dummy_hcd (or another suitable UDC)"
+      ],
+      "qualifiedUdc": {
+        "driver": "dummy_udc",
+        "device": "dummy_udc.0"
+      },
+      "privilege": "process must be able to open /dev/raw-gadget read/write",
+      "hostPreparation": {
+        "script": "tests/prepare_raw_gadget_host.sh",
+        "dummyHcdSourceDefault": "../dummy-hcd",
+        "moduleInstallPath": "/lib/modules/<running-kernel>/extra/oorexx-vusb/dummy_hcd.ko",
+        "rebuildPolicy": "reuse only when vermagic matches running kernel; otherwise rebuild against /lib/modules/<running-kernel>/build",
+        "kernelSourcePolicy": "prefer running-kernel source tree dummy_hcd.c when available",
+        "buildDependencies": ["kernel-default-devel", "kernel-devel", "kernel-source", "gcc", "make"]
+      }
+    }
+  }
+}

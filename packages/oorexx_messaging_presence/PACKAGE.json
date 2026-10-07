@@ -1,0 +1,22 @@
+{
+  "schema": "oorexx.messaging.presence.package/1",
+  "name": "oorexx_messaging_presence",
+  "version": "0.1-dev1",
+  "apis": [
+    "messaging/0.1",
+    "presence/0.1",
+    "messaging.presence.provider/0.1",
+    "messaging.presence.intention.discovery/0.1",
+    "messaging.presence.xmpp.provider/0.1"
+  ],
+  "service": "Messaging & Presence",
+  "provider": "XMPP",
+  "standards": {
+    "historical": ["RFC 3920", "RFC 3921"],
+    "current": ["RFC 6120", "RFC 6121", "RFC 7622", "RFC 9844"]
+  },
+  "dynamicIntentionDiscovery": true,
+  "socketIsolation": "XmppSocketTransport -> SocketProvider~streamSender(logicalName)",
+  "extensionsInCore": [],
+  "extensionPolicy": "separately registered plugin/provider layers only"
+}

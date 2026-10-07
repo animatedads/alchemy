@@ -1,0 +1,121 @@
+{
+  "authority": {
+    "does_not_own": [
+      "Physics meaning or force/material semantics",
+      "Rexx-tronics circuit/device meaning",
+      "Foreign Runtime object lifetime/bridge semantics",
+      "Crypto hash implementation"
+    ],
+    "owns": [
+      "mathematical value/domain semantics",
+      "precision-transition policy",
+      "proof/claim semantics",
+      "provider-neutral mathematical kernels"
+    ]
+  },
+  "consumer_design_inputs": [
+    {
+      "dependency": false,
+      "name": "Physics World"
+    },
+    {
+      "dependency": false,
+      "name": "Rexx-tronics / guitar synthesis"
+    }
+  ],
+  "optional_dependencies": [
+    {
+      "artifact": "oorexx_foreign_runtime_v0.22.6(8).zip",
+      "authority": "external",
+      "bundled": false,
+      "name": "ooRexx Foreign Runtime",
+      "qualification": "PASS",
+      "role": "resident Python/native provider bridge",
+      "sha256": "25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465",
+      "version": "0.22.6"
+    },
+    {
+      "name": "NumPy",
+      "qualification": "PASS",
+      "role": "BINARY64 array/matrix/signal provider",
+      "version": "2.3.5"
+    },
+    {
+      "name": "SciPy",
+      "qualification": "PASS",
+      "role": "BINARY64 second-order dynamics provider",
+      "version": "1.17.0"
+    },
+    {
+      "name": "SymPy",
+      "qualification": "PASS",
+      "role": "symbolic proof provider",
+      "version": "1.14.0"
+    },
+    {
+      "name": "mpmath",
+      "qualification": "PASS",
+      "role": "interval provider",
+      "version": "1.3.0"
+    },
+    {
+      "minimum_version": "0.9.0",
+      "name": "python-flint",
+      "qualification": "SKIP_NOT_AVAILABLE",
+      "role": "FLINT-ARB rigorous ball provider"
+    },
+    {
+      "name": "ooRexx Crypto",
+      "qualification": "NOT_RUN_NO_EXACT_ARTIFACT_IN_CURRENT_ENVIRONMENT",
+      "role": "optional evidence/proof sealing",
+      "version": "0.8.3"
+    },
+    {
+      "name": "Runtime Reference",
+      "qualification": "NOT_RUN_NO_EXACT_ARTIFACT_IN_CURRENT_ENVIRONMENT",
+      "role": "optional Crypto native execution dependency",
+      "version": "0.4"
+    }
+  ],
+  "package": {
+    "name": "oorexx_maths",
+    "semantic_api": "maths/0.17",
+    "version": "0.17"
+  },
+  "release_gates": {
+    "manifest": {
+      "entries": 109,
+      "scope": "all package files except MANIFEST.sha256 itself",
+      "status": "PASS"
+    },
+    "runtime_assertions": {
+      "crypto_assertions": "NOT_RUN",
+      "enabled_assertions": 599,
+      "flint_assertions": "SKIP_NOT_AVAILABLE",
+      "status": "PASS"
+    },
+    "standards_enforcer": {
+      "artifact": "oorexx_standards_enforcer.py",
+      "default_policy": "PASS",
+      "errors": 0,
+      "sha256": "978d0eb24cde13e014f2aeb61bccec1e6e6049792031c593e11407af17d545d8",
+      "strict_audit": "FAIL_REVIEWED_WARNINGS",
+      "warnings": 126
+    },
+    "zip_integrity": {
+      "status": "PASS"
+    }
+  },
+  "runtime": {
+    "artifact": "oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20260925-083247).deb",
+    "authority": "external",
+    "build_date": "2026-08-03",
+    "bundled": false,
+    "name": "ooRexx",
+    "revision": "r13196",
+    "role": "required qualification runtime",
+    "sha256": "8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae",
+    "version": "5.3.0"
+  },
+  "schema": "oorexx.compatibility-lock/1"
+}

@@ -1,0 +1,26 @@
+ooRexx Queue Fabric Web Gateway v0.2 validation
+================================================
+Date: 2026-08-24
+
+Validated against current roll-up oorexxapis(20260824-190948):
+- ooRexx 5.3.0 r13196
+- oorexx_queue_fabric_v0.9-dev4
+- alchemy_objects_v0.8
+- oorexx_crypto_v0.1
+- wire_ui_server_v0.8
+- alchemy_wire_ui_js_v0.4-dev3
+
+Acceptance results:
+- QUEUE FABRIC WEB GATEWAY BACKEND: OK
+- QUEUE FABRIC WEB GATEWAY ASYNC SAME-MANAGER: OK
+- WIRE UI WEB ACCESS POINT BINDING: OK
+- WebSocket edge tests: 3/3 PASS
+- versioned FlyLo material tokens delivered and applied before view rendering: OK
+- WIRE UI BROWSER SEARCH -> OFFERS -> SELECTION -> ASK OVER REAL QUEUE FABRIC: OK
+
+The browser-safe bootstrap is server/session-derived and does not contain the Queue Fabric
+OUT queue, Queue Fabric principal, private bridge token or Queue Fabric claim token.
+
+The end-to-end browser test preserves applicationId/sessionId/viewRef/renderedRevision,
+returns only the server-issued offerId plus display index for FLIGHT.SELECT, and returns only
+the typed assistant message field for ASSISTANT.ASK.

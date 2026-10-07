@@ -1,0 +1,13 @@
+oorexx_python_macrospace_poc_v0.31.2
+
+Change: removes the historical two-positional-scalar limit from projected Python
+class construction, instance UNKNOWN dispatch, and class UNKNOWN dispatch.
+
+The existing I:/S: scalar codec remains authoritative.  Multiple arguments are
+carried through a single @ARGS: length-framed packet, avoiding delimiter
+ambiguity and avoiding a second class-only marshalling model.
+
+Focused qualification target:
+  rexx/virtual_python_class_varargs.rex -> VIRTUAL-PYTHON-CLASS-VARARGS-PASS
+
+Also rerun the v0.31.0 class crossing and v0.31.1 release/lifetime crossing.

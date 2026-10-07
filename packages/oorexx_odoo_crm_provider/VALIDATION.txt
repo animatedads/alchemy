@@ -1,0 +1,39 @@
+ooRexx Odoo CRM Provider v0.1-dev7.1.1 validation
+Date: 2026-10-03
+
+BASELINE
+dev5 carried a recorded PASS on Open Object Rexx 5.3.0 r13196 for all source compilation and four runtime regressions.
+
+DEV6 WORKSPACE CHECKS
+PASS discovery.operation JSON parse
+PASS no Python requests/curl runtime transport references in src/ or tests/
+PASS archive/source manifest generation and verification
+PASS retained-query structural contract inspection
+PASS model query path now requires OdooModel~ensureDiscovery
+PASS dangerous nil-or-items guards repaired in model dispatcher
+
+DEV6 RUNTIME QUALIFICATION STATUS
+NOT RE-RUN in this active container: the user-supplied ooRexx 5.3.0 r13196 runtime is not mounted here.
+The included tests/test_live_query.rex is the new executable regression and must be run with the existing dev5 regression set under r13196 before promotion to a qualified baseline.
+
+DEV6 CONTRACT
+- OdooLiveQuery retains model/domain/fields/limit/order
+- first population is quiet
+- refresh reconciles by remote id
+- surviving OdooObject identity is retained
+- row changes merge into the surviving object with QUERY_REFRESH
+- query emits UPDATED / ADDED / REMOVED
+- stable refresh emits no query events
+- liveQuery cannot bypass discovery.operation
+
+dev7 adds `tests/test_identity_map.rex`, covering canonical `(model,id)`
+identity across direct object materialization, browse, searchRead and two live
+queries; seed merge into the canonical object; explicit eviction and fresh
+wrapper creation.  Full r13196 execution is pending in this container because
+the user-supplied internal runtime is not mounted here.
+
+
+dev7.1 repair
+- corrected test_identity_map.rex ooRexx negation spelling: c\==a and if \a
+- no provider/runtime semantic change from dev7
+- full r13196 rerun remains to be executed in the user runtime environment

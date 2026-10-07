@@ -1,0 +1,27 @@
+ooRexx Python Alchemy v0.30.0 host qualification
+Date: 2026-09-18
+Runtime: ooRexx 5.3.0 r13196, CPython 3.13, x86_64 Linux
+
+Focused concurrent torture: 5/5 PASS
+python-concurrent-results-authoritative-only: True
+rexx-concurrent-results-authoritative-only: True
+same-python-rexx-callable-identity-through-race: True
+revocation-race-no-use-after-free: True
+post-revocation-deterministic-failure: True
+CONCURRENT DUAL RUNTIME LIVE SURGERY PASS
+
+Reverse-direction v0.29 regression: PASS
+Dual-runtime v0.28 regression: PASS
+Returned foreign proxy lifetime: PASS
+Rexx-held foreign proxy lifetime: PASS
+Python object identity/lifetime: PASS
+Python class handle lifetime: PASS
+Python type authority: PASS
+Existing UNKNOWN relocation/composition: PASS
+Attached-thread guarded/unguarded concurrency: PASS (with package REXX_PATH)
+
+Native change: RexxLiveCallable attaches the calling Python thread to ooRexx,
+pins the current registry target with an invocation-owned global reference under
+the registry mutex, releases the mutex before dispatch, and releases that pin
+after dispatch. Revocation therefore affects future lookup without freeing an
+in-flight target.

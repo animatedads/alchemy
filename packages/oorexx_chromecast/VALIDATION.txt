@@ -1,0 +1,19 @@
+== runtime ==
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+== compile ==
+PASS rexxc src/CastDiscovery.cls
+PASS rexxc src/CastV2.cls
+PASS rexxc src/Chromecast.cls
+PASS rexxc tests/test_castv2_codec.rex
+PASS rexxc tests/test_device_objects.rex
+PASS rexxc tests/test_mdns_codec.rex
+== deterministic tests ==
+PASS CASTV2 codec
+PASS mDNS Chromecast discovery codec
+PASS Chromecast object/controller contract
+== live environment gate ==
+SKIP live Chromecast: set CAST_TARGET_IP after wiring the estate TLS SocketProvider security profile.
+PASS Chromecast v0.1-dev1 deterministic qualification

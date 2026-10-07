@@ -1,0 +1,117 @@
+{
+  "schema": "oorexx.socket.provider.package/1",
+  "name": "oorexx_socket_provider",
+  "version": "0.1-dev14",
+  "apis": [
+    "socket.provider/0.1",
+    "socket.address.provider/0.1",
+    "socket.family/0.1",
+    "socket.intention/0.1",
+    "socket.negotiation/0.1",
+    "socket.intention.discovery/0.1",
+    "socket.stream/0.1",
+    "socket.multicast.membership/0.1"
+  ],
+  "bindings": {
+    "TCP": "RxSock .Socket/.InetAddress",
+    "UNIX": "ooRexx Unix Socket .UnixSocket/.UnixAddress",
+    "TLS": "composed; security-profile authority injected",
+    "XTP": "bundled XtpSocketProvider.cls adapter for external libxtp/oorexx_xtp_native dev17",
+    "NORM": "external oorexx_norm provider; libnorm mechanics isolated below SocketProvider",
+    "UDP": "bundled ordinary IPv4 RxSock datagram binding plus injected RFC 3678 multicast backend"
+  },
+  "familyExample": "TLS over INET with security-profile-only address and injected material authority",
+  "intentions": {
+    "dynamicDiscovery": true,
+    "operations": [
+      "NEGOTIATE_SOCKET",
+      "OPEN_SOCKET",
+      "LISTEN_SOCKET",
+      "EXPLAIN_SOCKET_SELECTION"
+    ],
+    "authority": "Intention supplies semantic requirements; SocketNegotiator selects current qualified offer; SocketProvider alone acquires native handle"
+  },
+  "negotiation": {
+    "role_specific_offer_capabilities": true,
+    "xtp_dev9_rexx": "sender available; listener fail-closed; multicast not implemented by current executable profile",
+    "multicast": "requires multicast-capable current implementation and explicitly multicast endpoint address",
+    "norm_dev1": "superseded by oorexx_norm 0.1-dev2; NORM remains non-stream reliable multicast",
+    "xtp_dev10_rexx": "sender and listener available; multicast not implemented by current executable profile",
+    "xtp_dev12_rexx": "sender/listener plus XTP-owned multipath/path-health; multicast not implemented by current executable profile",
+    "xtp_dev14_rexx": "sender and listener available; multicast explicitly false in current executable profile",
+    "xtp_dev17_rexx": "sender/listener/stream/multicast available; multicast streaming is stream=true + multicast=true"
+  },
+  "compatibility": {
+    "oorexx_xtp": "0.1-dev17 current line: sender/listener/stream/multicast yes; ALLOC pacing and reject suppression remain XTP-owned",
+    "xtp": "dev9/dev10/dev12/dev14 retained as historical profiles; dev17 is current stream+multicast profile",
+    "oorexx_norm": "0.1-dev3 explicit membership plus descriptor/readiness; live IPv4/IPv6 libnorm qualification owned by NORM package",
+    "rxsock6": "oorexx_socket_provider_rxsock6_v0.1-dev1 + rxsock6 0.1.1; sibling TCP6/INET6 binding preserves native Inet6Address objects",
+    "quic": "oorexx_quic_socket_provider_v0.1-dev1; sibling OpenSSL QUIC binding behind SocketProvider"
+  },
+  "dynamic_intention_discovery": {
+    "per_turn": true,
+    "generation": true,
+    "add_remove_fail_closed": true,
+    "open_listen_only_when_currently_feasible": true
+  },
+  "stream_adapter": {
+    "methods": [
+      "READ",
+      "WRITE",
+      "PUMP",
+      "CLOSE"
+    ],
+    "preserves_socket_address_identity": true,
+    "debug_socket_transport_compatibility": "0.1-dev3"
+  },
+  "multicast_membership": {
+    "api": "socket.multicast.membership/0.1",
+    "explicit_join_leave": true,
+    "independent_of_listener_lifetime": true,
+    "request_fields": [
+      "address",
+      "interfaceName",
+      "sourceAddress",
+      "scope",
+      "metadata"
+    ],
+    "unsupported_binding_behavior": "fail closed; joinAt returns .nil"
+  },
+  "udp_ip_multicast": {
+    "address_factory": "SocketAddresses~ipMulticast supports legacy logical-name form and interface/source-aware form",
+    "family": "UDP / INET",
+    "multicast_capable": true,
+    "membership_api": "socket.multicast.membership/0.1",
+    "native_provider": "external; common provider does not issue RFC 3678 operations"
+  },
+  "descriptor_readiness": {
+    "listener_methods": [
+      "descriptor",
+      "waitReady",
+      "tryAccept"
+    ],
+    "sender_methods": [
+      "descriptor",
+      "waitDrained"
+    ],
+    "authority": "delegation only; transport/provider owns readiness mechanics"
+  },
+  "udp_datagram": {
+    "binding": "RxSockUdpBinding",
+    "endpoint": "ProviderDatagramEndpoint",
+    "listener_port_zero": true,
+    "multicast_backend": "RexxUdpSocketBinding remains separate injected provider seam"
+  },
+  "xtp_provider_merge": {
+    "source_package": "oorexx_xtp_v0.1-dev17",
+    "source_access_class": "rexx/XtpSocketProvider.cls",
+    "merged_access_class": "src/XtpSocketProvider.cls",
+    "native_runtime_external": true,
+    "native_library": "liboorexx_xtp_native.so",
+    "transport_library": "libxtp",
+    "standard_sender_listener_via_socket_selector": true,
+    "xtp_specific_multipath_access_retained": true,
+    "multicast": true,
+    "authority": "libxtp owns routes, carriers, replay, wire filters, path health, multipath and XTP multicast mechanics"
+  }
+}

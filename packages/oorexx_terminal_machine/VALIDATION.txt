@@ -1,0 +1,426 @@
+ooRexx Terminal Machine v0.21 validation
+========================================
+
+Runtime
+-------
+Executable validation uses the supplied ooRexx 5.3.0 r13196 debug runtime:
+  oorexx-5.3.0-13196.ubuntu1604debug.x86_64(4).deb
+
+Accepted parent
+---------------
+  oorexx_terminal_machine_v0.20.zip
+  SHA-256 24c8eff38d7ca7b77e2f25add46ed502cde017ac23ba0e59e820c1b97f4ad6c4
+
+External dependency identities
+------------------------------
+Alchemy Objects v0.8:
+  SHA-256 7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073
+
+ooRexx Crypto v0.1:
+  SHA-256 3eab23b5138cba889eb11ea5b93747eb14fca8da0fd4ac936a70174349ae8f3a
+
+ooRexx Work Load Units v0.12:
+  SHA-256 b5f6cd8230daa26c227b93032d42b4263c5fcb3b40838359aeab3421cf0ab75a
+
+ooRexx Journal Pointed State v0.1:
+  SHA-256 8466bc2309213f3acc2de2afb6b2596123e446d779ca90c319aed676544c51d8
+
+Dependencies remain external and are not vendored into Terminal Machine.
+
+Semantic Source Control dogfood
+-------------------------------
+User-supplied ooRexx Semantic Source Control v0.2.2:
+  SHA-256 1bbea26bb5b2bdf62965726b8df1d10b1627dde93a6c57145aab6c10f138c742
+
+Its complete supplied r13196 executable suite passed:
+  PASS test_semantic_source_control
+  PASS test_cli_intake
+  PASS test_v02_regressions
+  PASS test_v021_dogfood
+  PASS test_v021_cli_pending
+  PASS test_v022_terminal_dogfood
+  PASS test_v022_hash_batch sha256Invocations=1
+  PASS test_v02_performance identicalBaselineSeconds=3
+
+The exact Terminal Machine reproducer that exposed the v0.2/v0.2.1 directive
+blind spot now reports first-class semantic changes:
+  ::constant MODE "A" -> "B"  => CONSTANT_VALUE_CHANGED
+  ::attribute value get -> set => ATTRIBUTE_ACCESS_CHANGED
+
+Explicit attribute getter/setter bodies are also tracked independently as
+ATTRIBUTE_GETTER_IMPLEMENTATION_CHANGED / ATTRIBUTE_SETTER_IMPLEMENTATION_CHANGED.
+The hash warm-up path retains SHA-256 repository identity while batching unique
+entity payloads instead of launching one sha256sum process per entity.
+
+A real Terminal production-source scale probe was then run against the complete
+30-file v0.20 src/ tree (851 methods, 522 attributes, 196 constants):
+  baseline accepted in 23.16 seconds
+
+The corresponding v0.21 production-source `scan` did not finish inside a
+360-second certification window and was interrupted in the analyzer warm-up
+path. A whole-release-tree baseline similarly exceeded a 420-second window.
+Therefore v0.2.2 fixes the semantic blind spot but is still supplementary
+release evidence for Terminal Machine until the remaining scan/full-tree
+scaling path is repaired. No SSC timeout is permitted to weaken the ordinary
+manifest, compiler, executable, integration or security-boundary gates.
+
+v0.21 starts an explicit Semantic Source Control lineage:
+  SSC_MANIFEST
+  component=TerminalMachine
+  lineage=MAIN
+  sourceLevel=1
+
+sourceLevel=1 is an explicit semantic-source level, not an inference from the
+v0.21 product release number.
+
+v0.21 scope
+-----------
+Added TerminalEmulatorOrchestration.cls above the v0.20 exact-token execution
+boundary:
+  - fixed instruction FETCH -> DECODE -> EXECUTE orchestration;
+  - fixed one-phase non-instruction event handling;
+  - checkpoint before every accepted handler attempt;
+  - exact execution ticket retained only inside the orchestrator;
+  - automatic rollback on failed TerminalResult or trapped ooRexx SYNTAX;
+  - linked explicit retry only from retained ROLLED_BACK attempts;
+  - bounded immutable/value-free event-history evidence;
+  - handler marker/method validation before checkpoint creation;
+  - no arbitrary caller-supplied handler method names.
+
+The orchestration layer remains local EMULATOR / TESTBED / REPLAY_SANDBOX
+machinery. It adds no authority over TN5250LiveSession, TerminalSessionOwner,
+broker/service capabilities, credentials, WLU admission or IBM i host state.
+
+Worktree executable acceptance
+------------------------------
+  - 93 / 93 source/test/tool ooRexx compile targets PASS.
+  - 3 / 3 example ooRexx compile targets PASS.
+  - bash -n PASS for run_tests.sh and all cross-process test scripts.
+  - 45 / 45 self-contained run_tests.sh functional .rex cases PASS in bounded
+    partitions under the r13196 debug runtime.
+
+New/changed v0.21 regressions:
+  - test_terminal_emulator_orchestration.rex PASS:
+      fixed phase ordering, exact pre-event checkpoint, successful commit,
+      post-mutation TerminalResult failure rollback, missing-opcode rollback,
+      linked repaired retry, retained failed-checkpoint materialisation,
+      trapped handler SYNTAX rollback, device-event commit, bounded detached
+      history, retry refusal for committed attempts, and pre-checkpoint marker
+      validation.
+  - test_terminal_emulator_journal_alchemy.rex PASS with expanded checks that
+      orchestration machine/boundary/history/historyById live references are
+      absent from FULL state while safe scalar counts remain inspectable.
+  - examples/emulator_instruction_orchestration.rex compiles and executes:
+      missing opcode -> PC restored to 4096 -> repaired linked retry -> PC 4100.
+
+Retained integration acceptance
+-------------------------------
+  - v0.16 authenticated socket suite PASS (15 assertions).
+  - v0.17 persistent authenticated multi-client service suite PASS:
+      service=DRAINED; listener=STOPPED; connections=2; peak=2; completed=2;
+      authenticated=2.
+  - v0.18 operational supervisor cross-process service suite PASS:
+      health=QUIESCED; protocol=QUIESCED; broker=OPEN; broker_close=0;
+      connections=2; peak=2; authenticated=2.
+  - External WLU v0.12 terminal-control integration PASS.
+  - TCP loopback transport PASS.
+  - Verified TLS loopback transport PASS.
+  - Forced stopped-helper TERM -> KILL lifecycle PASS.
+
+Fresh-package acceptance
+------------------------
+The release candidate was extracted into a clean directory and accepted again
+under ooRexx 5.3.0 r13196 with the external dependency roots above:
+  - 105 / 105 manifest entries verified before final documentation refresh.
+  - 93 / 93 source/test/tool ooRexx compile targets PASS.
+  - 3 / 3 example ooRexx compile targets PASS.
+  - 45 / 45 self-contained functional .rex cases PASS in three bounded groups.
+  - authenticated local socket suite PASS (15 assertions).
+  - persistent authenticated multi-client service PASS (peak=2).
+  - operational supervisor service PASS; lifecycle/protocol QUIESCED and broker OPEN.
+  - external WLU v0.12 terminal-control integration PASS.
+  - TCP loopback PASS.
+  - verified TLS loopback PASS.
+  - forced TLS-helper lifecycle / TERM->KILL cleanup PASS.
+
+The final release documentation was then updated only to record completed
+acceptance and SSC v0.2.2 dogfood. The source/test/tool/example/SSC_MANIFEST
+payload is byte-identical to the fully accepted candidate. After the final
+documentation refresh, MANIFEST.sha256 was regenerated and verified 105 / 105;
+93 / 93 source/test/tool and 3 / 3 example compile targets were rechecked PASS,
+and bash syntax checks remained clean.
+
+PUB400 / live-host note
+-----------------------
+No PUB400 credentials were requested and no live PUB400 login/session was
+opened for v0.21 acceptance. Network-bearing tests used local loopback
+fixtures. No surviving actual `socat ... OPENSSL:pub400.com:992` helper was
+present after testing.
+
+
+v0.22-candidate4 focused 3270 qualification
+-------------------------------------------
+Lineage note: candidate4 is based directly on the user-supplied v0.22-candidate2
+archive.  A previously referenced candidate3 archive was not available, so this
+package does not claim byte or source lineage from that missing artifact.
+
+Qualification runtime:
+  ooRexx 5.3.0 r13196 debug build extracted from
+  oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20261006-183031).deb
+
+Focused executable acceptance under that runtime:
+  PASS test_3270_datastream.rex
+  PASS test_3270_aids.rex
+  PASS test_tn3270_wire.rex
+
+Focused compile acceptance under that runtime:
+  PASS src/DataStream3270.cls
+  PASS src/TN3270Wire.cls
+  PASS src/TN3270LiveSession.cls
+  PASS tests/test_3270_datastream.rex
+  PASS tests/test_3270_aids.rex
+  PASS tests/test_tn3270_wire.rex
+
+The focused run used a minimal test-only AlchemyObject stub solely because the
+external Alchemy Objects v0.8 dependency was not present in the supplied
+Terminal Machine archive or current sandbox.  No stub is included in this
+package and no production source was altered to depend on it.  Full run_tests.sh
+acceptance therefore remains to be repeated with the declared external Alchemy,
+Crypto and Journal Pointed State dependencies available.
+
+3270 changes exercised:
+  - numeric field-attribute/WCC bit handling under real r13196 semantics;
+  - READ BUFFER response construction with Start Field reconstruction;
+  - READ MODIFIED response construction for formatted/unformatted buffers;
+  - circular/wrapping field extents;
+  - WCC reset-MDT;
+  - automatic EOR-framed TN3270 replies to host READ BUFFER/READ MODIFIED.
+
+SSC sourceLevel advanced from 1 to 2 because candidate4 changes executable
+3270 semantic behaviour rather than documentation/release metadata only.
+
+
+v0.22-candidate5 focused 3270 qualification
+-------------------------------------------
+Candidate5 continues directly from candidate4 and keeps candidate4's recovered
+lineage note: the implementation base ultimately comes from the user-supplied
+v0.22-candidate2 archive because the previously referenced candidate3 source
+archive was unavailable.
+
+Qualification runtime:
+  ooRexx 5.3.0 r13196 debug build extracted from
+  oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20261006-183031).deb
+
+Focused executable acceptance under that runtime:
+  PASS test_3270_datastream.rex
+  PASS test_3270_aids.rex
+  PASS test_tn3270_wire.rex
+  PASS test_3270_extended_attributes.rex
+  PASS test_3270_operator_input.rex
+
+Focused compile acceptance under that runtime:
+  PASS src/DataStream3270.cls
+  PASS src/TN3270Wire.cls
+  PASS src/TN3270LiveSession.cls
+  PASS src/CodePage3270.cls
+
+Candidate5 changes exercised:
+  - SFE field creation with basic + extended attributes;
+  - SA character attribute runs and reset-all handling;
+  - MF basic/extended field modification with field-address validation;
+  - RA propagation and EUA removal of character attributes;
+  - READ BUFFER SFE/SA reconstruction;
+  - row/column address conversion and input-field discovery;
+  - coordinate and cursor-relative operator input;
+  - native MDT/READ MODIFIED output after operator editing;
+  - fail-closed truncated extended-order and protected/range cases.
+
+As in candidate4, the focused run used a minimal test-only AlchemyObject stub
+only because the external Alchemy Objects v0.8 dependency was not present in
+the current sandbox. No stub is shipped. Full run_tests.sh acceptance still
+requires the declared external Alchemy, Crypto, Journal Pointed State and WLU
+dependency roots.
+
+SSC sourceLevel advanced from 2 to 3 because candidate5 changes executable
+3270 presentation-space, wire reconstruction and operator-input semantics.
+
+v0.22-candidate6 focused 3270/TN3270E qualification
+----------------------------------------------------
+Candidate6 continues directly from candidate5.
+
+Qualification runtime:
+  ooRexx 5.3.0 r13196 debug build extracted from
+  oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20261006-183031).deb
+
+Focused executable acceptance under that runtime:
+  PASS test_3270_datastream.rex
+  PASS test_3270_aids.rex
+  PASS test_tn3270_wire.rex
+  PASS test_3270_extended_attributes.rex
+  PASS test_3270_operator_input.rex
+  PASS test_tn3270e_wire.rex
+
+Focused source-load/parse acceptance under that runtime:
+  PASS src/DataStream3270.cls
+  PASS src/TN3270Wire.cls
+  PASS src/TN3270LiveSession.cls
+  PASS src/TelnetProtocol.cls
+
+The focused run used the same minimal test-only AlchemyObject stub used for the
+candidate4/candidate5 isolated 3270 slice, because the declared external
+Alchemy Objects v0.8 dependency is not bundled in Terminal Machine.  No stub is
+included in this package.  Full run_tests.sh acceptance remains dependent on
+the declared external Alchemy/Crypto/Journal/WLU package closure.
+
+Candidate6 adds RFC 2355 basic TN3270E only: option 40 negotiation,
+DEVICE-TYPE REQUEST/IS, null FUNCTIONS REQUEST/IS, mandatory five-byte message
+headers for 3270-DATA, separate NVT-DATA retention, traditional TN3270 fallback,
+and no optional function claims.  RFC 2355 defines a null function list as
+basic TN3270E for terminal sessions.
+
+The candidate also includes tools/hercules_tn3270_probe.rex as a complete
+observation-only real-environment test.  It must be run on the actual Hercules
+host/network environment to qualify the real listener; no claim of live
+Hercules execution is made by this sandbox acceptance.
+
+SSC sourceLevel advanced from 3 to 4 because candidate6 changes executable
+TN3270/TN3270E wire semantics.
+
+v0.22-candidate8 focused 3270 structured-field qualification
+-----------------------------------------------------------
+Candidate8 continues directly from candidate6.
+
+Qualification runtime:
+  ooRexx 5.3.0 r13196 debug build extracted from
+  oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20261006-183031).deb
+
+Focused executable acceptance under that runtime:
+  PASS test_3270_datastream.rex
+  PASS test_3270_aids.rex
+  PASS test_tn3270_wire.rex
+  PASS test_3270_extended_attributes.rex
+  PASS test_3270_operator_input.rex
+  PASS test_tn3270e_wire.rex
+  PASS test_3270_structured_fields.rex
+  PASS test_tn3270_wsf_wire.rex
+
+Candidate8 changes exercised:
+  - Write Structured Field command recognition and bounded SF parsing;
+  - Read Partition Query and Query List;
+  - inbound AID X'88' Query Reply construction;
+  - honest Summary/Usable-Area/Color/Highlight capability replies;
+  - Null Query Reply for unsupported requested QCODEs;
+  - Set Reply Mode FIELD acceptance and richer-mode refusal;
+  - executable Read Modified All;
+  - Erase All Unprotected protected/unprotected/MDT semantics;
+  - TN3270 EOR framing of query replies and RMA responses.
+
+As in candidates4-6, the focused run uses a minimal test-only AlchemyObject
+stub because the declared external Alchemy Objects v0.8 dependency is not
+bundled in Terminal Machine and is not available in this sandbox. No stub is
+included in this package. Full run_tests.sh acceptance still requires the
+complete declared external dependency closure.
+
+The Query Reply implementation was cross-checked against IBM 3270 Data Stream
+Programmer's Reference semantics and the mature suite3270/x3270 structured-
+field implementation. Candidate8 deliberately omits capability codes whose
+execution semantics are not yet present.
+
+SSC sourceLevel advanced from 4 to 5 because candidate8 changes executable
+3270 host-command, presentation-space and terminal-generated wire semantics.
+
+
+v0.22-candidate8 focused 3270/socket qualification
+-------------------------------------------------
+Runtime:
+  oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20261007-113737).deb
+
+The supplied 2026-10-07 r13196 socket.cls/streamsocket.cls was compared with
+the 2026-10-06 18:30 r13196 package used for the preceding terminal work; the
+two shipped class files are byte-identical. Candidate8 nevertheless binds to
+the current socket contract explicitly: Socket~send returns the native byte
+count and can be short, recv returns .nil on error and an empty string on EOF,
+and select is the readiness boundary for TN3270. TcpTerminalTransport now
+completes short sends; TN3270 remains on raw Socket select/recv rather than
+StreamSocket record assumptions.
+
+Changed source/test compile under r13196:
+  PASS COMPILE DataStream3270.cls
+  PASS COMPILE TN3270Wire.cls
+  PASS COMPILE TN3270LiveSession.cls
+  PASS COMPILE TerminalTransport.cls
+  PASS COMPILE test_3270_partition_io.rex
+
+Focused executable 3270 suite:
+  PASS 3270 DATASTREAM
+  PASS 3270 AIDS
+  PASS 3270 EXTENDED ATTRIBUTES
+  PASS 3270 OPERATOR INPUT
+  PASS 3270 STRUCTURED FIELDS
+  PASS 3270 PARTITION IO
+  PASS TN3270 WIRE
+  PASS TN3270E WIRE
+  PASS TN3270 WSF WIRE
+
+Current socket integration fixture:
+  PASS test_tcp_transport
+
+The focused run uses a minimal test-only AlchemyObject stub because the declared
+external Alchemy Objects v0.8 dependency is not bundled in Terminal Machine and
+is not available in this sandbox. No stub is shipped in the package. Full
+run_tests.sh acceptance still requires the complete declared Alchemy Objects,
+Crypto, Journal Pointed State and optional WLU dependency closure.
+
+3270 semantic changes in candidate8:
+  - implicit-partition Read Partition Read Buffer / Read Modified / Read
+    Modified All;
+  - Outbound 3270DS Write / Erase-Write / Erase-Write-Alternate / Erase All
+    Unprotected for partition 00;
+  - explicit partitions remain fail-closed;
+  - Read Modified excludes protected MDT fields while Read Modified All includes
+    both protected and unprotected MDT fields.
+
+SSC sourceLevel advanced from 5 to 6 because candidate8 changes executable
+3270 structured-field/read semantics and the TCP transport send contract.
+
+v0.22-candidate9 focused native 3270 semantic qualification
+============================================================
+Runtime: user-supplied ooRexx 5.3.0 r13196 debug package
+        oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20261007-113737).deb
+
+Focused executable results:
+  PASS 3270 DATASTREAM
+  PASS 3270 AIDS
+  PASS TN3270 WIRE
+  PASS 3270 EXTENDED ATTRIBUTES
+  PASS 3270 OPERATOR INPUT
+  PASS TN3270E WIRE
+  PASS 3270 STRUCTURED FIELDS
+  PASS TN3270 WSF WIRE
+  PASS 3270 PARTITION IO
+  PASS 3270 SNAPSHOT
+  PASS MVS 3270 KNOWN STATE
+
+Compile/load qualification under r13196:
+  PASS src/TerminalCore.cls
+  PASS src/TN3270Snapshot.cls
+  PASS src/MVS3270KnownStates.cls
+  PASS src/TN3270LiveSession.cls
+  PASS tools/hercules_tn3270_semantic_probe.rex
+
+A minimal, non-shipped AlchemyObject test stub was used only to satisfy the
+external Alchemy Objects v0.8 dependency while loading TerminalCore.  No stub
+is included in this delivery and no full-repository dependency-closure claim is
+made.
+
+Socket Provider / XTP review:
+  The current oorexx_socket_provider_v0.1-dev2 provider gives applications
+  provider-selected endpoints and sendAll/recv, but its public connection
+  contract does not yet expose the readiness/select primitive required by the
+  EOR-driven long-lived TN3270 pump.  Candidate9 therefore does not tunnel
+  around that abstraction by reaching through SocketEndpoint~raw merely to
+  select().  Existing TcpTerminalTransport remains the qualified TN3270
+  transport until a provider-level readiness contract is available.
+
+SSC sourceLevel advanced from 6 to 7 because candidate9 changes executable
+3270 semantic/evidence behaviour.

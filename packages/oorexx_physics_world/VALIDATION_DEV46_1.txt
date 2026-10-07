@@ -1,0 +1,30 @@
+ooRexx Physics World v0.1-dev46.1 drum-kit repair qualification
+
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version (user supplied debug .deb)
+Maths dependency: oorexx_maths_v0.11
+Units dependency: oorexx_units_v0.1-dev4
+
+PASS test_drum_kit_history_prune.rex
+  - forces repeated bounded-history pruning
+  - compact queue head/tail remain addressable
+  - interpolation does not dispatch through .nil
+
+PASS test_drum_kit_sympathetic_structural.rex
+  - one snare strike only
+  - connected floor tom begins unstruck and acquires non-zero mechanical energy
+  - reciprocal structural links include spring energy in totalMechanicalEnergy
+  - symplectic-Euler peak energy excursion remains <= 2% at dt=0.0001 s
+  - damping reduces final total energy below injected energy
+
+PASS inherited test_drum_kit_physics.rex with stable dt=0.0001 s
+  - strike excitation
+  - freeze/restore
+  - room-pressure sympathetic excitation
+
+Performance microbenchmark, 2500 kit steps at dt=0.0001 s, same r13196 host:
+  untouched dev46: 16.90 s
+  dev46.1 cached:    4.99 s
+  observed speed-up: ~3.39x
+  final mechanical energy matched at displayed precision: 0.00000242691965 J
+
+Note: this cache repair is complementary to, not a replacement for, Maths v0.11 native second-order-system acceleration.

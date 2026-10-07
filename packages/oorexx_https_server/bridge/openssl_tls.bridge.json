@@ -1,0 +1,318 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": {
+    "provider": "native",
+    "names": [
+      "libssl.so.3",
+      "libssl.so",
+      "libssl-3-x64.dll"
+    ],
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "functions": {
+    "tls_server_method": {
+      "symbol": "TLS_server_method",
+      "return": {
+        "type": "pointer",
+        "object": "SSL_METHOD",
+        "ownership": "borrowed"
+      },
+      "args": []
+    },
+    "ctx_new": {
+      "symbol": "SSL_CTX_new",
+      "return": {
+        "type": "pointer",
+        "object": "SSL_CTX",
+        "ownership": "owned",
+        "destructor": "SSL_CTX_free"
+      },
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_METHOD"
+        }
+      ]
+    },
+    "ctx_use_certificate_chain_file": {
+      "symbol": "SSL_CTX_use_certificate_chain_file",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_CTX"
+        },
+        "utf8"
+      ]
+    },
+    "ctx_use_private_key_file": {
+      "symbol": "SSL_CTX_use_PrivateKey_file",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_CTX"
+        },
+        "utf8",
+        "i32"
+      ]
+    },
+    "ctx_check_private_key": {
+      "symbol": "SSL_CTX_check_private_key",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_CTX"
+        }
+      ]
+    },
+    "ctx_set_options": {
+      "symbol": "SSL_CTX_set_options",
+      "return": "u64",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_CTX"
+        },
+        "u64"
+      ]
+    },
+    "ctx_ctrl": {
+      "symbol": "SSL_CTX_ctrl",
+      "return": "i64",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_CTX"
+        },
+        "i32",
+        "i64",
+        "pointer"
+      ]
+    },
+    "ctx_set_cipher_list": {
+      "symbol": "SSL_CTX_set_cipher_list",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_CTX"
+        },
+        "utf8"
+      ]
+    },
+    "ctx_set_ciphersuites": {
+      "symbol": "SSL_CTX_set_ciphersuites",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_CTX"
+        },
+        "utf8"
+      ]
+    },
+    "ctx_load_verify_file": {
+      "symbol": "SSL_CTX_load_verify_file",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_CTX"
+        },
+        "utf8"
+      ]
+    },
+    "ctx_set_verify": {
+      "symbol": "SSL_CTX_set_verify",
+      "return": "void",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_CTX"
+        },
+        "i32",
+        "pointer"
+      ]
+    },
+    "ssl_new": {
+      "symbol": "SSL_new",
+      "return": {
+        "type": "pointer",
+        "object": "SSL",
+        "ownership": "owned",
+        "destructor": "SSL_free"
+      },
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_CTX"
+        }
+      ]
+    },
+    "ssl_read": {
+      "symbol": "SSL_read",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        },
+        "pointer",
+        "i32"
+      ]
+    },
+    "ssl_write": {
+      "symbol": "SSL_write",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        },
+        "bytes",
+        "i32"
+      ]
+    },
+    "ssl_get_error": {
+      "symbol": "SSL_get_error",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        },
+        "i32"
+      ]
+    },
+    "ssl_shutdown": {
+      "symbol": "SSL_shutdown",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        }
+      ]
+    },
+    "ssl_get_version": {
+      "symbol": "SSL_get_version",
+      "return": "utf8",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        }
+      ]
+    },
+    "ssl_get_current_cipher": {
+      "symbol": "SSL_get_current_cipher",
+      "return": {
+        "type": "pointer",
+        "object": "SSL_CIPHER",
+        "ownership": "borrowed"
+      },
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        }
+      ]
+    },
+    "ssl_cipher_get_name": {
+      "symbol": "SSL_CIPHER_get_name",
+      "return": "utf8",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL_CIPHER"
+        }
+      ]
+    },
+    "ssl_get1_peer_certificate": {
+      "symbol": "SSL_get1_peer_certificate",
+      "return": {
+        "type": "pointer",
+        "object": "X509",
+        "ownership": "owned",
+        "destructor": "X509_free"
+      },
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        }
+      ]
+    },
+    "ssl_set_accept_state": {
+      "symbol": "SSL_set_accept_state",
+      "return": "void",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        }
+      ]
+    },
+    "ssl_set0_rbio": {
+      "symbol": "SSL_set0_rbio",
+      "return": "void",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        },
+        {
+          "type": "pointer",
+          "object": "BIO"
+        }
+      ]
+    },
+    "ssl_set0_wbio": {
+      "symbol": "SSL_set0_wbio",
+      "return": "void",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        },
+        {
+          "type": "pointer",
+          "object": "BIO"
+        }
+      ]
+    },
+    "ssl_do_handshake": {
+      "symbol": "SSL_do_handshake",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        }
+      ]
+    },
+    "ssl_get_state": {
+      "symbol": "SSL_get_state",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        }
+      ]
+    },
+    "ssl_state_string_long": {
+      "symbol": "SSL_state_string_long",
+      "return": "utf8",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "SSL"
+        }
+      ]
+    }
+  }
+}

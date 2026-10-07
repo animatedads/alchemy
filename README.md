@@ -53,7 +53,7 @@ The command records source hashes, dependency omissions and publication decision
 
 ## Dependency rule: do not smuggle another project into a source tree
 
-A distribution ZIP may contain a `deps/`, `vendor/`, `third_party/`, `third-party/` or `externals/` directory so that a particular delivery can run in isolation. **That does not make those dependency sources part of the component.**
+A distribution ZIP may contain a `deps/`, `dependencies/`, `vendor/`, `third_party/`, `third-party/` or `externals/` directory so that a particular delivery can run in isolation. **That does not make those dependency sources part of the component.**
 
 For the GitHub source publication:
 

@@ -1,0 +1,31 @@
+Inspector Clouseau general-purpose v0.1-dev1
+Qualification date: 2026-10-04
+Runtime used locally: ooRexx 5.3.0 r13195 WASM / Emscripten 6.0.9 dev1
+
+PASS: focused scalar snapshot
+  output: alchemy.oorexx.inspector-clouseau.snapshot.v1 1
+
+PASS x3: cooperative probe-mode snapshot
+  output: CLOUSEAU probe objects=1 slots=0
+          PASS Inspector Clouseau cooperative probe-mode WASM smoke
+
+Dining Philosophers / START / GUARD qualification:
+  - one full Inspector + philosopher run completed and observed:
+      objects=10 phil=5 fork=5
+    followed by:
+      PASS Inspector Clouseau dining philosophers WASM qualification
+  - repeat stress testing of the old local dev1 WASM runtime exposed an
+    Emscripten pthread/worker instability.
+  - control test: unmodified baseline philfork.rex failed 5/5 repeated runs
+    in the same old dev1 runtime with null-function/memory traps, establishing
+    that the repeated failure is not caused by Inspector Clouseau.
+  - the current upstream/public ooRexx WASM browser runtime subsequently runs
+    Dining Philosophers successfully; tests/philfork_clouseau_wasm.rex is the
+    supplied Inspector qualification specimen for that current runtime.
+
+Conclusion:
+  Inspector Clouseau is operational as a general-purpose package under WASM for
+  focused snapshots and cooperative probe mode.  Concurrent philosopher
+  observation has a successful end-to-end run; repeated qualification should be
+  performed on the current upstream thread-capable WASM runtime rather than the
+  obsolete local dev1 thread runtime.

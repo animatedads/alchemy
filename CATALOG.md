@@ -64,6 +64,10 @@ The 56 `spheres/` trees cover implementation and continuity knowledge for major 
 - `fd_door_micro_motion_v0.2-dev5` — door/camera micro-motion analysis package;
 - `oorexx_llm_pa_v0.1-dev9-candidate1` — LLM Personal Assistant candidate (large `deps/` payload omitted from its source tree and represented by provenance instead).
 
+## Current ooRexx source update (7 October 2026)
+
+The latest ooRexx library source deliveries from the 10-day working window are available in stable, version-independent package paths. This update contains 60 library trees and 2,468 source, documentation, test and configuration files; it does not include package ZIPs. Embedded dependency copies are omitted and represented by provenance notes. See [the source update inventory](docs/publication/CURRENT_OOREXX_SOURCES_2026-10-07.md) for per-library delivery hashes and file counts.
+
 ## Source provenance
 
 The publication was prepared from these supplied archive snapshots:

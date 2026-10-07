@@ -1,0 +1,20 @@
+oorexx_python_macrospace_poc_v0.31.3
+
+Change: identity-bearing projected Python objects and classes can now cross the
+Rexx -> Python class-family call boundary as arguments without serialization.
+P:<handle> and C:<handle> extend the existing framed argument codec and pin the
+Python target for each in-flight call.  Python type objects returned from live
+instance/class dispatch are now reprojected as AlchemyPythonClass rather than a
+generic AlchemyPythonObject.
+
+Host qualification baseline:
+  ooRexx 5.3.0 r13196 from the user-supplied Ubuntu debug package
+  CPython 3.13 host runtime
+
+Focused embedded-interpreter results:
+  virtual_python_class_identity_args.rex -> VIRTUAL-PYTHON-CLASS-IDENTITY-ARGS-PASS
+  virtual_python_class_varargs.rex       -> VIRTUAL-PYTHON-CLASS-VARARGS-PASS
+  virtual_python_class.rex               -> VIRTUAL-PYTHON-CLASS-PASS
+
+The release probe remains harness-driven because its assertion observes the
+native Python retain-count after Rexx projection finalization.

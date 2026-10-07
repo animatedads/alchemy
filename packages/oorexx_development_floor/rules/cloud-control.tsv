@@ -1,0 +1,6 @@
+RULE_ID	SCOPE	STATEMENT
+CLOUD-CONTROL-001	general	Development Floor cloud and managed-node operations SHALL use the registered Alchemy Cloud Control authority; provider CLI and SSH mechanics remain beneath that boundary.
+CLOUD-NODE-001	resource=HOST	Every ED209 EXEC, TRANSFER or PULL operation SHALL ultimately pass through sshnode.sh; no worker may invent a raw SSH/SCP/provider-shell path.
+CLOUD-GCP-ACCOUNT-001	provider=GCP	Every GCP control-plane request SHALL carry an explicit registered account selector and the account wrapper SHALL verify the expected identity before execution.
+CLOUD-ALLOC-001	resource=HOST	A host-file entry or reachable cloud instance does not make a node allocatable; allocation requires current lifecycle and capability evidence.
+CLOUD-NETWORK-001	resource=NETWORK_LEASE	A cross-host network lease is not executable until temporary firewall add/remove and post-revocation verification are implemented; firewall listing alone is insufficient.

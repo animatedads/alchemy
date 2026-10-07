@@ -1,0 +1,50 @@
+ooRexx WebDAV Gateway v0.1-dev4 validation
+Date: 2026-10-07
+
+Runtime:
+- Open Object Rexx 5.3.0 r13196 (user-supplied Ubuntu debug package)
+
+Storage dependencies used:
+- StorageFabric.cls from current Library source
+- StorageStreaming.cls / storage.fabric.streaming/0.1 from current Library source
+- StorageSequentialMedia.cls from current Library source
+
+Local protocol qualification:
+PASS WEBDAV CORE
+PASS WEBDAV SEQUENTIAL MEDIA
+PASS WEBDAV HTTPS ADAPTER
+PASS WEBDAV DEV3 CORE FEATURES
+PASS WEBDAV DEV3 HTTPS SEMANTICS
+PASS WEBDAV DEV3 LOCK JOURNAL
+PASS WEBDAV DEV3 QUEUE OBJECTS
+PASS WEBDAV DEV4 IF/SHARED LOCKS
+PASS WEBDAV DEV4 SYNC REPORT
+PASS WEBDAV DEV4 SYNC JOURNAL
+PASS WEBDAV DEV4 BOUNDED BYTE PLANE
+PASS WEBDAV DEV4 LOCAL SUITE: 11/11
+
+dev4 evidence includes:
+- RFC 4918 If state-list core: OR lists, AND conditions, Not, lock token,
+  entity tag and tagged request-resource form
+- shared/shared coexistence and exclusive/shared lock conflict
+- WEBDAVLOCKS2 persistence plus dev3 lock journal compatibility
+- sync-collection REPORT initial and incremental paths
+- persisted WebDavSyncJournal restart/reload
+- deletion projection as HTTP 404 in sync multistatus
+- 20 MiB StorageByteSource ranged GET with a 100-byte source request
+- HEAD size projection without whole-source read
+- fail-closed unbounded full GET where HTTPS streaming response is unavailable
+- bounded source->StorageByteSink ingestion with 64 KiB chunks
+- streamed SHA-256 identity after bounded ingestion
+- bounded post-ingest range read
+- no WebDAV source working variable named RESULT/result
+
+Qualification boundaries:
+- HTTPS request/response semantics are tested with a package-local fixture; the
+  external HTTPS server runtime is not claimed requalified here.
+- Queue mutation object semantics retain the qualified dev3 fake-manager test;
+  the live Queue Fabric broker is not claimed requalified here.
+- Network request-body streaming and network streaming responses still depend
+  on HTTPS Server exposing suitable streaming APIs.
+- sync-collection implements the core token/change protocol, not every optional
+  RFC 6578 property-selection feature.

@@ -1,0 +1,38 @@
+{
+  "component": "libxtp",
+  "version": "0.1-dev18",
+  "capabilities": {
+    "unicast": true,
+    "listener": true,
+    "multipath": true,
+    "path_requalification": true,
+    "wire_filters": true,
+    "multicast": true,
+    "multicast_stream": true,
+    "rate_control": true
+  },
+  "multicast": {
+    "advertised": true,
+    "xtp_revision": "3.4 profile",
+    "multi_flag": "common-header OPTIONS byte 3 bit 3",
+    "carriers": [
+      "l2",
+      "raw36",
+      "udp"
+    ],
+    "reliable_mode": "go-back-n",
+    "noerr": true,
+    "acknowledgement_quorum": true,
+    "receiver_replay_suppression": true,
+    "slowest_receiver_alloc_pacing": true,
+    "multicast_reject_suppression": true,
+    "stream_profile": "FIRST plus DATA packets with byte sequence space",
+    "go_back_n": "receiver CNTL RSEQ selects rollback byte; sender resumes from containing segment",
+    "allocation_pacing": "sender advances only within minimum receiver ALLOC after population discovery",
+    "reject_suppression": "receiver multicasts reject notice and suppresses its own reject when an observed RSEQ is <= its required RSEQ",
+    "segment_bytes_default": 1200,
+    "binary_cli_file_io": true,
+    "receiver_rate_burst_pacing": true,
+    "rate_control": "sender honors minimum receiver RATE/BURST from CNTL; RATE=0xffffffff disables pacing"
+  }
+}

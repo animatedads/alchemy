@@ -1,0 +1,72 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": {
+    "provider": "native",
+    "names": [
+      "libcrypto.so.3",
+      "libcrypto.so",
+      "libcrypto-3-x64.dll"
+    ],
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "functions": {
+    "bio_free": {
+      "symbol": "BIO_free",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "BIO"
+        }
+      ]
+    },
+    "bio_s_mem": {
+      "symbol": "BIO_s_mem",
+      "return": {
+        "type": "pointer",
+        "object": "BIO_METHOD",
+        "ownership": "borrowed"
+      },
+      "args": []
+    },
+    "bio_new": {
+      "symbol": "BIO_new",
+      "return": {
+        "type": "pointer",
+        "object": "BIO",
+        "ownership": "borrowed"
+      },
+      "args": [
+        {
+          "type": "pointer",
+          "object": "BIO_METHOD"
+        }
+      ]
+    },
+    "bio_read": {
+      "symbol": "BIO_read",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "BIO"
+        },
+        "pointer",
+        "i32"
+      ]
+    },
+    "bio_write": {
+      "symbol": "BIO_write",
+      "return": "i32",
+      "args": [
+        {
+          "type": "pointer",
+          "object": "BIO"
+        },
+        "bytes",
+        "i32"
+      ]
+    }
+  }
+}

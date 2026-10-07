@@ -1,0 +1,33 @@
+Required for core semantic/runtime operation:
+- ooRexx 5.3.0 r13196 or compatible
+- ooRexx Crypto v0.8.3 (`crypto.cls`)
+- ooRexx distribution `json.cls` for durable store / peer request / ACK codecs
+
+Required for full dev14 qualification:
+- NoSQLServer v0.85 integer-precision line (qualified FILE engine inherited from dev12)
+- ooRexx Socket Provider v0.1-dev12 (current merged SocketSelector/SocketAddress contract)
+- ooRexx Secret Broker v0.2
+- Alchemy Objects v0.8
+
+Optional multicast carrier provider:
+- ooRexx NORM Socket Provider v0.1-dev3 — current executable reliable multicast provider behind Socket Provider; supports explicit membership, ASM/SSM, descriptor readiness and repair qualification.
+- The LDAP semantic peer layer does not depend on NORM. `IdentityPeerNativeMulticastTransport` accepts any `IdentityPeerMulticastChannel` which preserves one request identity and returns explicit per-peer ACK evidence.
+
+Optional LDAP TLS providers and accelerated qualification:
+- Runtime Reference v0.4
+- Foreign Runtime v0.22.6
+- OpenSSL 3.x shared libraries
+
+Optional Access Permissions integration:
+- Access Permissions v0.2
+- Institutional Policy v0.8
+- Security Effect v0.14
+- Alchemy Objects v0.8
+- ooRexx Crypto v0.8.3
+
+Architecture/integration companions, not hard-loaded by the semantic core:
+- ooRexx XTP v0.1-dev14 — current XTP provider. Its capability truth explicitly says XTP multicast=false; LDAP must not select XTP merely because a group-shaped address exists.
+- ooRexx NORM v0.1-dev3 — current multicast sibling provider when a deployment has a qualified multicast route/session.
+- RexxOS/RTO2 continuous ACTIVE/SPARE failover line — supplies external promotion/failover authority. dev14 retains dev12 epoch fencing and durable recovery semantics.
+- Intention Service v0.1-dev11 — optional at semantic runtime, required for the dev14 dynamic intention-integration qualification lane. Discovery is refreshed per fresh input; registrations do not grant execution authority.
+- Runtime Registry / Observation / Journal / Provenance Ledger as deployment companions.

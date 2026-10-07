@@ -1,0 +1,90 @@
+ooRexx Virtual USB v0.1-dev9 validation
+Date: 2026-10-07
+
+Qualified runtime baseline retained from the target package gate:
+  Open Object Rexx 5.3.0 r13196
+
+Dependencies:
+  Event Runtime event.runtime/0.1 / oorexx_event_runtime_v0.1-dev1
+  Crypto v0.8.3
+  Foreign Runtime v0.22.6
+  ooRexx 5.3.0 r13196 json.cls
+
+Target package-side evidence:
+  VIRTUAL USB DEPENDENCIES: OK
+  VIRTUAL USB CORE: OK
+  VIRTUAL USB CHAPTER9: OK
+  VIRTUAL USB PROFILE: OK
+  VIRTUAL USB CONFIGURATION STATE: OK
+  VIRTUAL USB FIDO HID PROFILE: OK
+  VIRTUAL USB FIDO CTAPHID: OK
+  VIRTUAL USB FIDO CTAP2 GETINFO: OK
+  VIRTUAL USB FIDO CTAP2 CREDENTIALS: OK
+  VIRTUAL USB RAW GADGET PRESENTATION ERROR: OK errno=2
+  VIRTUAL USB RAW GADGET CONTROL DIRECTION: OK
+  VIRTUAL USB RAW GADGET: AVAILABLE path=/dev/raw-gadget
+
+Raw Gadget substrate evidence:
+  running kernel 7.2.8-1-default
+  raw_gadget loaded
+  dummy_hcd loaded
+  /dev/raw-gadget ready
+  dummy_udc.0 ready
+
+dev8 live-result correction:
+  The dev8 live script reported:
+    USB enumeration OK: 5-1 CAFE:F1D0
+    no HID interface
+
+  That result is NOT accepted as evidence about the dev8 presenter.  The same
+  target diagnostic log later identifies the current presenter PID failing:
+    UDC core: USB Raw Gadget: couldn't find an available UDC or it's busy
+    misc raw-gadget: fail, usb_gadget_register_driver returned -16
+
+  Therefore the script had inspected a CAFE:F1D0 generation that pre-dated the
+  current presenter.  The actual dev8 presenter did not acquire dummy_udc.0.
+
+dev9 qualification repairs:
+  - selected UDC must be idle before presenter launch;
+  - processes holding /dev/raw-gadget are reported when a UDC is unexpectedly
+    active;
+  - presenter writes an out-of-band ready marker only after Raw Gadget RUN
+    succeeds;
+  - pre-existing CAFE:F1D0 devices are snapshotted as sysfs-name:devnum;
+  - only a new generation token can satisfy enumeration;
+  - cleanup escalates INT -> TERM -> KILL;
+  - provider trace can be persisted directly to a file, avoiding stdio
+    buffering at a blocked ioctl;
+  - tests/test_live_generation_guard.sh simulates stale 5-1/devnum 2 followed
+    by a new 5-1/devnum 3 and passes only the latter.
+
+Package-side/static validation performed for dev9:
+  - bash -n passes for all shell entry points.
+  - tests/test_live_generation_guard.sh passes in the qualification container.
+  - all JSON package/profile/bridge documents parse successfully.
+  - package source contains no result~ object-send use.
+  - package manifest is regenerated and verified after archive creation.
+
+Provider status:
+  The dev8 EP0 direction repair remains in place:
+    IN request                  -> EP0_WRITE(response)
+    OUT request, data length 0  -> EP0_READ(0)
+    OUT request, data length >0 -> one EP0_READ(length), no second EP0 ioctl
+
+  This is consistent with the Raw Gadget UAPI/reference keyboard behavior, but
+  it still requires a clean presenter-owned target generation before acceptance.
+
+Pending target-host acceptance:
+  Run tests/bringup_live_raw_gadget_fido.sh.
+  PASS requires:
+    current presenter owns dummy_udc.0
+    new CAFE:F1D0 generation
+    HID interface class 03
+    matching hidraw node
+  libfido2 discovery is additionally reported when fido2-token is installed.
+
+Security / conformance boundary:
+  The credential factory remains deterministic for development reproducibility.
+  This package does not claim production entropy, protected key storage, FIDO
+  certification, PIN/UV, CTAP1/U2F, production attestation, or browser/WebAuthn
+  enrollment until those are separately qualified.

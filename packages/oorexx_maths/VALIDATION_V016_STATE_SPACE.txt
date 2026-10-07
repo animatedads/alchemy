@@ -1,0 +1,43 @@
+ooRexx Maths v0.16 — discrete state-space qualification
+Runtime: user-supplied ooRexx 5.3.0 r13196 debug build
+Foreign Runtime: v0.22.6
+
+Focused tests:
+PASS oorexx_maths discrete state-space 19 assertions
+PASS oorexx_maths discrete state-space native 12 assertions
+max native-vs-PURE 256-sample fixture output difference: 5.04857767e-10
+FLINT-ARB: SKIP (python-flint >= 0.9.0 unavailable)
+
+Enabled-suite accounting:
+v0.15 completed enabled assertions: 568
+v0.16 new assertions:              31
+completed enabled total:           599 PASS
+
+Harness note:
+A monolithic run_tests.sh invocation reached 532 PASS lines before the bounded
+execution window interrupted a fresh Python-provider import.  No assertion
+failure was reported.  The remaining second-order I/O native, v0.16 native,
+SymPy/mpmath provider and provider-proof-planner lanes were completed
+individually and passed.  FLINT remained an explicit capability SKIP.
+
+Workload measurements on this qualification host:
+
+low-order bridge-dominated counterexample:
+  states=2 samples=12000
+  direct ooRexx scalar seconds=0.143071
+  NumPy/Foreign block seconds=15.644506
+  native/scalar ratio=0.009145127369314186
+  checksum difference=6.9420704e-9
+  final-state difference=3.05412622e-11
+
+larger state-space crossover:
+  states=32 samples=1200
+  generic PURE Maths seconds=2.445634
+  NumPy/Foreign block seconds=0.154795
+  native speedup=15.79917956006331x
+  final selected-output difference=9.6183645e-13
+
+AUTO policy consequence:
+Very small state counts and low state-work products remain PURE.  Larger
+BINARY64 AUTO workloads may select NumPy.  Explicit provider requests remain
+explicit and are not overridden by this heuristic.

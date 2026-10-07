@@ -1,0 +1,30 @@
+oorexx_python_macrospace_poc_v0.31.6
+
+Change: natural Python -> retained ooRexx dispatch now accepts ordinary positional
+arguments (None/.nil, bool, Int64, text, and retained Rexx projections) and
+projects non-string Rexx return objects back into Python as live RexxObject
+projections rather than stringifying them. A natural callable keeps its source
+projection alive, so chained temporary expressions such as peer.child().describe()
+do not revoke the child between attribute lookup and invocation.
+
+Host qualification baseline:
+  ooRexx 5.3.0 r13196 from the user-supplied Ubuntu debug package
+  CPython 3.13 host runtime
+  same external AlchemyObject.cls qualification dependency used by prior gates
+
+Focused result:
+  virtual_python_class_natural_rexx_args.rex
+    -> VIRTUAL-PYTHON-CLASS-NATURAL-REXX-ARGS-PASS
+
+Focused proof covers:
+  Python -> Rexx message with 3 positional scalar arguments
+  Rexx non-string object return -> live Python RexxObject projection
+  chained operation on returned Rexx object
+  returned Rexx object passed back into Rexx with identity preserved
+
+Regression results in the same embedded interpreter:
+  virtual_python_class_natural_rexx_dispatch.rex -> PASS
+  virtual_python_class_rexx_object_arg.rex -> PASS
+  virtual_python_class_identity_args.rex -> PASS
+  virtual_python_class_varargs.rex -> PASS
+  virtual_python_class.rex -> PASS

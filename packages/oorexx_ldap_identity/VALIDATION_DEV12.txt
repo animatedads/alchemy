@@ -1,0 +1,97 @@
+ooRexx Identity Directory / LDAP v0.1-dev12 validation
+Date: 2026-10-07
+Runtime: Open Object Rexx 5.3.0 r13196 internal test build
+
+PRIMARY QUALIFICATION
+---------------------
+PASS tests/wire_smoke.sh
+  LDAP WIRE OOREXX CLIENT: OK
+  LDAP WIRE PYTHON CLIENT: OK
+  LDAP WIRE SERVER: OK
+
+PASS tests/socket_provider_wire_smoke.sh
+  LDAP SOCKET PROVIDER CLIENT: OK
+  LDAP SOCKET PROVIDER SERVER: OK
+  Real TCP listener+sender are acquired through SocketSelector/SocketProvider v0.1-dev5.
+
+PASS tests/sync_persist_wire_smoke.sh
+  LDAP SYNC PERSIST + CANCEL OOREXX CLIENT: OK
+  LDAP SYNC PERSIST + CANCEL PYTHON CLIENT: OK
+  LDAP SYNC PERSIST + CANCEL SERVER: OK
+
+PASS tests/tls_wire_smoke.sh
+  LDAP STARTTLS + SASL PLAIN OOREXX CLIENT: OK
+  LDAP STARTTLS + SASL PLAIN PYTHON CLIENT: OK
+  LDAP STARTTLS SERVER: OK
+
+PASS tests/ldaps_wire_smoke.sh
+  LDAP LDAPS OOREXX CLIENT: OK
+  LDAP LDAPS PYTHON CLIENT: OK
+  LDAP LDAPS SERVER: OK
+
+PASS tests/all_unit_tests_fast.rex
+  IDENTITY CORE: OK
+  DATETIME LIFECYCLE: OK
+  KEY LIFECYCLE: OK
+  LDAP MODIFY: OK
+  LDAP PERSONALITY: OK
+  PERSONALITY FILTER: OK
+  REPLICATION: OK
+  IDENTITY PEER FABRIC: OK
+  CONVERSATION AUTHORITY: OK
+  SECRET BROKER BIND: OK
+  LDAP BER: OK
+  LDAP SASL PROVIDER: OK
+  LDAP SYNC: OK
+  LDAP WIRE CAPABILITIES: OK
+  LDAP CANCEL CODEC: OK
+  LDAP PAGING: OK
+  LDAP DN SYNTAX: OK
+  LDAP FILTER SEMANTICS: OK
+  LDAP MATCHING RULES: OK
+  LDAP SCHEMA DISCOVERY: OK
+  LDAP SCHEMA ENFORCEMENT: OK
+  DIRECTORY STORE: OK
+  NOSQL DIRECTORY STORE: OK
+  NOSQL IDENTITY PEER OUTBOX: OK
+  IDENTITY PEER FAILOVER RECOVERY: OK
+  LDAP IDENTITY UNIT SUITE: OK
+
+Observed full primary elapsed time: 16.94 seconds.
+
+DEV12 PEER/FAILOVER EVIDENCE
+----------------------------
+PASS one semantic request identity distributed to two peers.
+PASS QUORUM policy with one unavailable peer.
+PASS durable ACK state causes retry to send only the missing peer.
+PASS duplicate request/change delivery is idempotent and does not advance target revision.
+PASS same changeId with different semantic identity fails closed.
+PASS promotion seals old epoch at its committed origin sequence.
+PASS committed old-epoch replay remains legal after promotion.
+PASS future write from sealed stale epoch is rejected.
+PASS replacement runtime reopens peer-a NoSQL directory and peer outbox, recovers outstanding delivery, and continues peer-a origin sequence under the new epoch.
+PASS NoSQLServer v0.85 integer-precision FILE engine for both directory and peer delivery state.
+
+ACCESS PERMISSIONS INTEGRATION
+------------------------------
+PASS tests/access_permissions_smoke.sh
+  ACCESS PERMISSIONS LDAP ADAPTER: OK
+Observed elapsed time: 0.17 seconds.
+
+TRUTHFUL DEVELOPMENT LIMITS
+----------------------------
+Not claimed in v0.1-dev12:
+- a combined LDAP-on-RexxOS/RTO2 WAN kill/promote/rejoin field PASS; dev12 qualifies the corresponding durable semantic recovery boundary locally;
+- native XTP multicast in the current XTP v0.1-dev10 executable profile; peer request multicast currently falls back to unicast fan-out;
+- an LDAP peer wire protocol over XTP or transparent continuation of an existing public LDAP TCP association across host failover;
+- distributed consensus (Raft/Paxos) or automatic cluster-membership authority;
+- complete OpenLDAP syncrepl interoperability beyond the qualified RFC 4533 conversation;
+- arbitrary concurrent point-operation execution or cancellation of arbitrary in-flight point operations;
+- dynamic schema mutation, arbitrary schema modules/matching rules, standards-complete Unicode/StringPrep, or full RDN-value enforcement;
+- server-side sorting/VLV, broader SASL, mutual-TLS policy qualification;
+- durable-log checkpoint/compaction or atomicity across multi-change key rollover;
+- AD/Entra domain-controller, Kerberos, DNS or Microsoft replication semantics.
+
+RESULT
+------
+PASS — dev12 retains all dev11 LDAP/schema/security behavior and adds failover-safe logical peer identity, epoch fencing, semantic request multicast with explicit ACK policy, durable outstanding-delivery recovery, NoSQLServer v0.85 qualification, and real SocketProvider DSA/DUA acquisition without changing public LDAP semantics.

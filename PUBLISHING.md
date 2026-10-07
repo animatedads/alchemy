@@ -31,7 +31,7 @@ When the report is correct, publish a branch from a local checkout:
 
 ## Dependency boundary
 
-Directories named `deps`, `vendor`, `third_party`, `third-party`, or `externals` are treated as distribution dependencies, not source owned by the containing project. Their contents are not published into that component tree. A generated README is left at the dependency directory and the omitted file hashes are retained in the publication manifest.
+Directories named `deps`, `dependencies`, `vendor`, `third_party`, `third-party`, or `externals` are treated as distribution dependencies, not source owned by the containing project. Their contents are not published into that component tree. A generated README is left at the dependency directory and the omitted file hashes are retained in the publication manifest.
 
 The command also hashes dependency files and rejects their non-empty byte-identical copies elsewhere in the same component. This catches distributions that place an upstream dependency under `vendor/` and then copy the same file into `src/`.
 

@@ -1,0 +1,21 @@
+ooRexx Python Alchemy v0.30.3 focused host qualification
+Date: 2026-09-24
+Runtime: ooRexx 5.3.0 r13196 debug package
+Python: CPython 3.13 host extension
+Shared dependency under test: Alchemy Objects v0.8.2 semantic-target candidate
+
+PASS python/rexx_callable_live_surgery.py
+  Python callable identity stable
+  Alchemy wrapper identity stable R1 -> R2 -> R3 -> semantic revoke
+  semantic generations 1 -> 2 -> 3 -> 4
+  semantic revocation distinct from native handle revocation
+PASS python/live_dual_method_surgery.py
+  existing Python/Rexx live-surface semantics retained
+  expected missing-member path no longer dumps Python traceback to stderr
+
+Additional regressions run before final packaging:
+PASS python/concurrent_dual_runtime_surgery.py
+PASS python/registry_rollback_torture.py
+PASS python/rexx_held_proxy_lifetime_torture.py
+
+This is focused qualification, not a claim that the entire aggregate suite completed.

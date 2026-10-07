@@ -1,0 +1,21 @@
+{
+  "schema": "semantic-source.code-examiner.service/1",
+  "applicationId": "SSC-CODE-EXAMINER",
+  "accessPointId": "WEB",
+  "source": "SSC.CODE.EXAMINER.WEB",
+  "websocketUrl": "wss://HOST/wire-ui",
+  "outboundQueue": "SERVER-AUTHORISED-WIRE-IN-QUEUE",
+  "authenticationRequired": true,
+  "authentication": {
+    "scheme": "SSC-SIGNED-CHALLENGE-1",
+    "session": "opaque-bearer",
+    "principalSource": "verified-session",
+    "privilegedStepUp": [
+      "WORK.ACCEPT",
+      "WORK.REFUSE",
+      "BRANCH.CLASSIFY",
+      "BRANCH.PROTECT",
+      "BRANCH.CONFLICT.RESOLVE"
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+oorexx_python_macrospace_poc_v0.31.7
+
+Change: natural Python -> retained ooRexx dispatch now preserves the authoritative
+ooRexx condition as a Python RexxError rather than collapsing all Rexx failures
+to a generic RuntimeError. RexxError exposes code, rc, position, condition_name,
+rexx_message, program, and description.
+
+Library reconciliation 2026-10-07:
+  No newer Python/Macrospace source package was found in Library.
+  Current family reports continue to require bidirectional live objects/classes,
+  runtime-authoritative dispatch, retained exceptions, explicit ownership/thread
+  attachment, live mutation, controlled re-entry, and passive observation.
+  The separate upstream Python-for-ooRexx line remains out of scope.
+
+Host qualification baseline:
+  ooRexx 5.3.0 r13196 from the user-supplied Ubuntu debug package
+  CPython 3.13 host runtime
+
+Executed here:
+  native extension build -> PASS
+  Python source compile -> PASS
+  exported RexxError type / RuntimeError subclass probe -> PASS
+
+Prepared focused crossing:
+  rexx/virtual_python_class_rexx_exception.rex
+  This requires the same external authoritative AlchemyObject.cls dependency as
+  the v0.31.x class-family crossing tests; that dependency is not present in the
+  supplied v0.31.6 archive or current working container, so the crossing is
+  recorded as NOT_RUN rather than inferred PASS.

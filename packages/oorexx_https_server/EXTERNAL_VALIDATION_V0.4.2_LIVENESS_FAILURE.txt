@@ -1,0 +1,20 @@
+ooRexx HTTPS Server v0.4.2 external liveness result
+Date: 2026-08-30
+Target host OpenSSL: 3.5.3 (/usr/lib64/glibc-hwcaps/x86-64-v3/libssl.so.3)
+Foreign Runtime: v0.14.0
+
+Passed before failure:
+- memory-BIO RxSock network-I/O model
+- serialized native TLS lane
+- TLS 1.2/1.3 and protocol floor
+- multi-record body and 100-continue
+- HTTP routing/binary/HEAD/pipelining/hardening
+- ordinary 16-client concurrent HTTPS
+
+Failure:
+- first mixed stress wave (16 valid HTTPS clients + 16 incomplete-TLS-close peers)
+- multiple valid clients hit curl (28) connection timeout at ~2001-2002 ms
+- FAIL stress good client failed in wave 1
+
+Interpretation carried into v0.4.4:
+The same liveness failure survived socket BIO removal, memory-BIO transport, one native lane and four native lanes. The remaining common unsafe scaling behavior was one newly started ooRexx activity per accepted unauthenticated TCP socket. v0.4.4 therefore bounds connection execution before TLS instead of tuning OpenSSL lane count again.

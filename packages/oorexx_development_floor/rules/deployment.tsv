@@ -1,0 +1,9 @@
+RULE_ID	SCOPE	STATEMENT
+DEPLOY-REXXOS-001	package=REXXOS	RexxOS test deployment uses image materialisation: exact runtime, code, dependencies and test payload are built into a disposable appliance before QEMU execution.
+DEPLOY-REXXOS-CRYPTO-001	package=REXXOS	RexxOS application code depends on the Crypto semantic API; Foreign Runtime/OpenSSL are provider implementation details selected by the appliance profile.
+DEPLOY-REXXOS-KEYS-001	package=REXXOS	Ordinary RexxOS application/test nodes carry verification authority and public keys, not master or deployment signing private keys.
+DEPLOY-RTO-001	implementation=RTO_TEST	A standby/replay instance SHALL remain non-authoritative and non-executing until explicit promotion; bug discovery or state receipt does not confer execution authority.
+
+DEPLOY-REXXOS-PROFILE-001	package=REXXOS	REXXOS_FAST is the qualified default application/test appliance profile; REXXOS_MINIMAL is the qualified fallback and REXXOS_CRYPTO is a distinct private-key-authority service profile.
+DEPLOY-REXXOS-FAST-001	package=REXXOS	FAST verification runtime evidence SHALL be observed from the running composition and SHALL NOT be accepted solely from caller-supplied JSON.
+DEPLOY-REXXOS-LIFECYCLE-001	package=REXXOS	STAGED does not imply ACTIVE; activation proceeds only through STAGED -> RECONSTRUCTED -> BOUND -> ACTIVE with evidence at each transition.

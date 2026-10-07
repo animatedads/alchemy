@@ -1,0 +1,32 @@
+ooRexx Serial v0.1-dev1 validation
+Date: 2026-09-23
+
+Runtime:
+  Open Object Rexx 5.3.0 r13196 (supplied qualification baseline)
+
+Native dependency:
+  ooRexx Foreign Runtime v0.22.6
+  ABI: linux-x86_64-le-lp64
+
+Qualification results:
+  SERIAL CORE: OK
+  SERIAL FRAMING: OK
+  SERIAL EVENTS: OK
+  SERIAL POSIX PTY: OK
+  sensor line-framing example: OK
+
+Native PTY qualification covers:
+  - open a real POSIX PTY slave through LinuxPosixSerialProvider
+  - tcgetattr/cfmakeraw/cfsetispeed/cfsetospeed/tcsetattr
+  - 115200 8N1 configuration
+  - exact binary input including embedded NUL and 0xFF
+  - exact binary output including embedded NUL
+  - native poll/read/write through Foreign Runtime
+  - live baud reconfiguration to 57600
+  - tcsendbreak
+
+The termios and pollfd layouts/constants in bridge/linux-posix-serial.bridge.json
+are qualified only for linux-x86_64-le-lp64. No AArch64, macOS, BSD or Win32
+layout equivalence is claimed.
+
+Win32 provider parity is architectural/future work in this cut.

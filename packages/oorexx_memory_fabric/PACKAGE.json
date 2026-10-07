@@ -1,0 +1,33 @@
+{
+  "schema": "oorexx.memory.fabric.package/1",
+  "name": "oorexx_memory_fabric",
+  "version": "0.1-dev6",
+  "apis": [
+    "memory.fabric/0.1",
+    "registered.job.economic/0.1",
+    "registered.job.execution-context/0.1",
+    "memory.fabric.snapshot/0.1",
+    "memory.fabric.block/0.1",
+    "memory.fabric.lifecycle/0.1",
+    "memory.fabric.block.attachment/0.1",
+    "memory.fabric.paging/0.1"
+  ],
+  "integration": {
+    "mu": "discovery/deployment authority",
+    "providerKinds": [
+      "MU",
+      "MI"
+    ],
+    "rto": "MI providers may be reconstructed at a state point",
+    "jobToNode": "retains execution placement/admission authority",
+    "storageFabric": "checkpoint/reconstruction reference target",
+    "intentions": "dynamic management/negotiation consumer; no semantic changes in this package",
+    "placement": "jobs are placed into memory/storage execution contexts; Job-to-Node remains lease authority",
+    "multiProviderMemory": "logical requests may span explicit provider fragments; no transparent remote-pointer claim",
+    "snapshotSemantics": "parallel scan/computation/materialisation use immutable collection-membership epochs; application object internals are not deep-frozen",
+    "memoryBlockBag": "MU-resident page-aligned external memory container; native mapping/copy connector, QEMU/DMA implementation below ABI",
+    "providerLifecycle": "ACTIVE/SPARE/DRAINING/OFFLINE transitions are generation-controlled; reincarnation advances membership epoch and fences prior blocks",
+    "miBlockAttachment": "MI attachment leases bind an MI epoch to one MU bag incarnation; payload movement stays below the Rexx object/API boundary",
+    "rexxosPaging": "MI page groups retain ownership/dirty/pin/backing state; prepare/commit transfer plans fence MI and MU epochs while payload movement remains native QEMU/shared-memory/DMA"
+  }
+}

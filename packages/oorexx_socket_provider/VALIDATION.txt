@@ -1,0 +1,74 @@
+ooRexx Socket Provider v0.1-dev12 validation
+============================================
+
+Merge basis
+-----------
+Base: Socket Provider v0.1-dev11 collision-reconciled core.
+XTP provider source: oorexx_xtp_v0.1-dev14.zip
+XTP source SHA-256: 9ec0810f119e37edeaa16ec3a0a4ccc29c33e3bf730fceb61480e02f26d24e21
+Merged access class: src/XtpSocketProvider.cls
+The provider code body matches XTP dev14 rexx/XtpSocketProvider.cls exactly;
+the stale source-header label "libxtp v0.1-dev12" was corrected to v0.1-dev14.
+
+Runtime used
+------------
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Runtime package SHA-256: 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Compile/static gates
+--------------------
+PASS PACKAGE.json parse
+PASS bash -n qualification/run_environment_test.sh
+PASS bash -n qualification/run_xtp_dev14_environment_test.sh
+PASS bash -n tests/environment_test.sh
+PASS rexxc src/XtpSocketProvider.cls
+PASS rexxc tests/test_xtp_dev14_provider_merge.rex
+PASS rexxc tests/test_xtp_dev14_native_merged.rex
+PASS rexxc tests/test_xtp_dev14_multipath_merged.rex
+PASS merged XtpSocketProvider code matches XTP dev14 provider source
+
+Common Socket Provider contract suite
+-------------------------------------
+PASS socket.provider/0.1
+PASS socket.address.provider/0.1
+PASS TLS security-profile boundary
+PASS socket.family/0.1 TLS example
+PASS socket.intention/0.1
+PASS socket.negotiation/0.1
+PASS Socket Intention -> negotiation -> SocketProvider acquisition
+PASS XTP dev9 role-specific socket negotiation
+PASS XTP dev10 sender/listener socket negotiation
+PASS XTP dev12 capability truth: sender/listener yes, multicast not yet claimed
+PASS XTP dev14 capability truth
+PASS XTP dev10 Intention -> SocketProvider acquisition
+PASS dynamic per-turn socket intention discovery / add / remove / fail-closed
+PASS dynamic XTP role capability refresh
+PASS NORM/XTP best-protocol negotiation
+PASS NORM dev3 negotiation projection
+PASS multicast membership lifecycle contract
+PASS UDP/IP multicast SocketProvider + membership + negotiation contract
+PASS provider-neutral descriptor/readiness contract
+PASS Socket Provider dev12 collision merge retained
+PASS Socket Provider dev12 merged contract suite
+
+Real merged XTP dev14 qualification
+-----------------------------------
+Built liboorexx_xtp_native.so from the supplied dev14 source against the
+r13196 headers, leaving libxtp as XTP-owned runtime code.
+
+PASS XTP dev14 provider merge contract
+PASS merged native listener bytes=54
+PASS merged native sender bytes=54
+PASS Socket Provider dev12 merged XTP dev14 native sender/listener qualification
+PASS merged native Rexx multipath listener bytes=54
+PASS merged native Rexx multipath sender bytes=54
+PASS Socket Provider dev12 merged XTP dev14 multipath qualification
+
+Capability truth retained
+-------------------------
+XTP sender: true
+XTP listener: true
+XTP multipath: true
+XTP path requalification: true (libxtp-owned)
+XTP wire filters: true (libxtp-owned)
+XTP multicast: false

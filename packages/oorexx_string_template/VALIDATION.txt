@@ -1,0 +1,25 @@
+ooRexx String Template v0.1-dev1 qualification
+Date: 2026-10-07
+Runtime: Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit
+
+Executed in this build environment:
+PASS rexxc src/StringTemplate.cls
+PASS test_basic.rex
+PASS test_fail_closed.rex
+PASS test_formatters.rex
+PASS test_nested_and_object_view.rex
+PASS test_policies.rex
+PASS 5/5 runtime fixtures
+PASS ooRexx standards enforcer --strict --json (0 errors, 0 warnings)
+
+Security/semantic gates exercised:
+PASS strict missing value raises
+PASS arbitrary object traversal without explicit TemplateObjectView allowlist raises
+PASS malformed/unclosed expression raises
+PASS HTML escaping
+PASS JSON string-content escaping
+PASS literal placeholder escaping
+PASS custom registered formatter
+PASS inspectable unique variable inventory
+
+No INTERPRET is used by the package.

@@ -1,0 +1,27 @@
+Host: ooRexx 5.3.0 r13196 / Python 3.13
+Authoritative dependency inspected: Alchemy Objects v0.8 from supplied oorexxapis
+Native BUILD_TARGET=host: PASS
+Alchemy Rexx adoption probe: 1:1:1:0
+  isA(.AlchemyObject)=1
+  Alchemy base initialized=1
+  AlchemyObject present in lineage=1
+  reserved Alchemy surface overrides=0
+Rexx-facing Python class/inheritance focused test: PASS
+  real .AlchemyPythonObject -> .AlchemyPythonClass
+  Python class identity preserved
+  Python remains authoritative for instance/subclass relationships
+No Alchemy base source is vendored in this package.
+
+v0.19.1 focused Python type-authority torture: PASS
+  ABC virtual subclass authoritative despite absent MRO membership
+  metaclass + dynamically generated class
+  direct bases queried from Python
+  same module/qualname but distinct class identity remains distinct
+
+v0.20.0 shared Alchemy foreign-runtime/package-space qualification: PASS
+  fresh embedded interpreter
+  REXX_PATH established before RexxCreateInterpreter
+  AlchemyForeignObject entry package loaded with RexxThreadContext::LoadPackage
+  nested ::requires resolved by ooRexx
+  platform json.cls consumed from ooRexx installation
+  AlchemyPythonObject inherits shared AlchemyForeignObject

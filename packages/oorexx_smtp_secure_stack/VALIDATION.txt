@@ -1,0 +1,49 @@
+ooRexx SMTP Secure Stack v0.1-dev7 validation
+================================================
+Date: 2026-10-07
+Runtime: Open Object Rexx 5.3.0 r13196 Internal Test Version
+Runtime DEB SHA-256: 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Exact integration inputs
+------------------------
+Socket Provider v0.1-dev13:
+  b0772f42162aa814c6a8f5f76241dcd7ae80db61990509683b76665df180bd6f
+LDAP/Identity v0.1-dev14 (API/provenance review):
+  60f16d5c4cbdec0e0fde444e4adf075574740d38f42c6e1b895ae21338d35690
+MVS Alchemy Services v0.1-dev3-pre17-wire-typed-locked (mail boundary review):
+  24d8a2bbe72df9bc1bc75abd788205e407351db30366bf6e6bd993f4f400f505
+Storage Fabric v0.1-dev23:
+  6e80e4a95717709ad715ef26ad024cfd9361ddcfe33c9da2629df302b64d1814
+Foreign Runtime v0.22.6:
+  25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465
+
+PASS existing nine SMTP relay/inbound policy invariants
+PASS Access Permissions SMTP adapter
+PASS MAS/MAIL secure binding: submit(draft) without host principal fails closed
+PASS signed-relay invariant is non-configurable (read-only compatibility getter)
+PASS real OpenSSL S/MIME/CMS verifier policy tests
+PASS ordinary SMTP wire smoke
+PASS Storage Fabric durable delivery
+PASS outbound dispatcher authority/retry/partial-delivery/bounce tests
+PASS live outbound STARTTLS with Foreign Runtime v0.22.6
+PASS Socket Provider v0.1-dev13 senderAt() acquisition contract
+PASS live Socket Provider -> RxSock TCP -> SMTP STARTTLS -> DATA delivery
+PASS SMTP-001 failed journal write regression
+PASS SMTP-002 post-250 QUIT disconnect regression
+PASS SMTP-003 EOF / line-length / multiline reply-bound regressions
+PASS rexxc on every source class, including new MAS and Socket Provider adapters
+
+MVS qualification scope
+-----------------------
+The current pre17 MAS archive was inspected and its mail semantics were used as an
+integration input. This package does NOT claim to modify, assemble, run, or qualify
+the MVS guest transport. Guest VERIFIED/AUTHORIZED/EGRESS fields are deliberately
+not accepted as SMTP authority by SmtpMasMailProvider.
+
+Storage baseline note
+---------------------
+Storage Fabric dev23 remains the exact SMTP durable-delivery qualification input for
+this release. Later-edited Library branches/overlays were not silently substituted
+without a single newer full authoritative package.
+PASS Claude oorexx_standards_enforcer.py on dev7 tree: 0 errors, VERDICT PASS
+  46 non-fatal heuristic warnings remain (private synchronous helpers / loop heuristics).

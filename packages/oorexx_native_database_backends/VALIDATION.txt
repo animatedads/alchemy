@@ -1,0 +1,76 @@
+Qualification runtime: Open Object Rexx 5.3.0 r13196 Internal Test Version (build 2026-08-03).
+
+PASS Native database capability model
+  - priority selects PostgreSQL Foreign Runtime primary
+  - capability requirement can select a lower-priority fallback
+  - absent capability is UNKNOWN, not silently UNSUPPORTED
+
+PASS PostgreSQL native offline
+  - Foreign Runtime v0.22.2 loads libpq
+  - PQlibVersion = 170010 on qualification host
+  - capability and limitation publication available before session acquisition
+  - deterministic connection failure produces evidence and no fabricated result
+
+PASS PostgreSQL Database Core adapter
+  - PostgreSQLNativeCommandExecutor satisfies DatabaseCommandExecutor contract
+  - current PostgreSQLEngine remains the SQL/transaction compiler
+  - failed native connection maps through Database Core as CONNECTIONFAILED
+  - NoSQL/data semantics are not copied into this package
+
+PASS PostgreSQL process fallback contract
+  - uses existing DatabaseProcessCommandExecutor
+  - explicitly separate implementation identity and limitations
+  - psql was not installed on qualification host; live process fallback was not executed
+
+PASS GeoPackage ooRexx portable backend
+  - uses NoSQLServer v0.79 GeoPackageDatabaseEngine by package reference
+  - direct pure-ooRexx binary reader discovers 3 tables in bundled fixture
+  - SELECT sample_address LIMIT 2 returns 2 rows
+  - accessPath = GEOPACKAGE_NATIVE_SQLITE_SCAN
+  - mutation is explicitly UNSUPPORTED
+  - FOREIGN_ACCELERATION is CONDITIONAL, not required
+
+Design acceptance:
+  - backend selection occurs before acquisition
+  - NativeDatabaseBackendLease pins implementation identity
+  - no mid-session / mid-transaction replay through a fallback
+  - capabilities, limitations, requirements, implementation kind and qualification status are machine-readable
+  - pure ooRexx GIS remains the portable no-external-library baseline; Foreign Runtime acceleration is additive
+
+
+PostgreSQL v0.2 bulk-result increment (r13196 isolated producer test):
+PASS 1,400-row native-result-shaped materialisation
+  - one PGresult-shaped object -> one Array<Directory> pass
+  - native handle released exactly once after materialisation
+  - repeat asArray returns the same Array identity (no second tuple walk)
+  - 10-digit INTEGER and signed 64-bit maximum lexical INTEGER preserved as exact JSON numbers
+  - numeric-looking VARCHAR/TEXT, DATE/DATETIME and BYTEA preserved as JSON strings; JSONB stays structured
+  - BOOLEAN and NULL retain JSON semantics
+  - 1,400 x 12 synthetic fields materialise in ~0.52 s on qualification sandbox
+  - one json.cls serialization of the completed Array in ~1.14 s, ~363 KB
+
+Note: this isolated forcing test uses a fake libpq object implementing the exact PGresult accessor surface so the bulk materialiser can be timed deterministically without a PostgreSQL server. The original v0.1 package did not include a server fixture in this environment. Live network/server latency is therefore not claimed by this test.
+
+MySQL/MariaDB v0.3 bulk-result increment (r13196 isolated producer test):
+PASS native libmariadb shim build
+  - compiled with -Wall -Wextra -Werror against installed libmariadb
+  - 18 exported orx_mariadb_* symbols
+  - MYSQL_RES / MYSQL_ROW / MYSQL_FIELD remain inside the native shim
+PASS 1,400-row MariaDB-result-shaped materialisation
+  - one result object -> one Array<Directory> producer pass
+  - native result released exactly once after materialisation
+  - repeat asArray returns the same Array identity
+  - exactly one rewind and 1,400 next-row operations; no TSV/CSV render-and-reparse path
+  - signed and unsigned 64-bit INTEGER lexical values preserved exactly
+  - 10-digit population INTEGER preserved exactly
+  - DECIMAL, BOOLEAN, VARCHAR, DATETIME, BLOB, JSON and NULL JSON semantics qualified
+  - 1,400 x 12 synthetic fields materialise in 0.566698 s on qualification sandbox
+  - one json.cls serialization of the completed Array in 1.149401 s, 379432 bytes
+
+The MariaDB forcing test uses a fake native-library object implementing the exact shim-facing result API, so producer materialisation and JSON timing are deterministic without a live MariaDB server. The C shim itself was compiled and linked against the installed libmariadb.so. Live server/network timing is not claimed.
+
+v0.3.1 naming/boundary increment:
+PASS canonical inbound name changed in current architecture documentation to mysql_wire_bridge
+PASS outbound MySQLNativeBackend has no source dependency on mysql_wire_bridge or historical msqlshim
+PASS historical msqlshim name retained only as deprecated compatibility/history wording
+PASS packaged native .so documented as host qualification evidence, not cross-platform binary authority

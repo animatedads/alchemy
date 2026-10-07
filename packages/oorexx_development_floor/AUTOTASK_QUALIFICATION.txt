@@ -1,0 +1,70 @@
+== environment ==
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+overlay           32978704 196272  31088328       1% /
+== python deterministic tools ==
+PASS specialist registry logical=113 revisions=127 domain_rules=1270 output=state/specialist_registry.json
+PASS specialist registry machine validation
+== rexxc ==
+PASS rexxc src/DevelopmentFloor.cls
+PASS rexxc src/DocumentationPlanner.cls
+PASS rexxc src/InfrastructureProjection.cls
+PASS rexxc src/Registrations.cls
+PASS rexxc src/SourceGraph.cls
+PASS rexxc src/SpecialistBootstrap.cls
+PASS rexxc src/StructuredObjectGraph.cls
+PASS rexxc src/WorkAccounting.cls
+PASS rexxc tools/build_documentation_queue.rex
+PASS rexxc tools/build_source_graph.rex
+PASS rexxc tools/show_registrations.rex
+PASS rexxc tests/test_autotasks.rex
+PASS rexxc tests/test_bug_lane.rex
+PASS rexxc tests/test_deploy_contract.rex
+PASS rexxc tests/test_documentation_planner.rex
+PASS rexxc tests/test_documentation_segment.rex
+PASS rexxc tests/test_infrastructure_projection.rex
+PASS rexxc tests/test_qualification_host.rex
+PASS rexxc tests/test_registrations.rex
+PASS rexxc tests/test_result_special.rex
+PASS rexxc tests/test_rexxos_activation_contract.rex
+PASS rexxc tests/test_rules.rex
+PASS rexxc tests/test_source_graph.rex
+PASS rexxc tests/test_specialist_registry.rex
+PASS rexxc tests/test_structured_graph.rex
+PASS rexxc tests/test_wlu_accounting.rex
+== deterministic tests ==
+PASS test_rules
+PASS test_bug_lane
+PASS test_structured_graph
+PASS test_source_graph
+PASS test_documentation_segment
+PASS test_documentation_planner segments= 308
+PASS test_autotasks
+PASS test_result_special
+PASS test_registrations
+PASS test_qualification_host
+PASS test_infrastructure_projection
+PASS test_specialist_registry logical= 113 revisions= 127
+PASS test_deploy_contract
+PASS test_rexxos_activation_contract
+== registered Work Load Units dependency == 
+expected malformed accounting refusal rc= 93 sigl= 74 conditionC= SYNTAX conditionD= 
+expected WLU refusal rc= 93 sigl= 100 conditionC= SYNTAX conditionD= 
+PASS test_wlu_accounting
+== registered Alchemy Cloud Control dependency ==
+PASS entitlement policy load
+PASS separate GCP business-account ledgers
+PASS ambiguous business-account placement fails closed
+PASS one SERVERLESS_FUNCTION contract across GCP Azure AWS
+PASS cloudctl GCP account mapping
+PASS sshnode mapping preserves job/node/transfer semantics
+PASS early REPLY 0.000987
+== dogfood source graph ==
+SOURCE_GRAPH files= 8 output= state
+PASS test_dogfood_output classes=53 methods=255
+== dogfood documentation queue ==
+DOCUMENTATION_QUEUE segments= 308 output= state
+PASS dogfood documentation queue segments=308
+ALL PASS
+AUTOTASK_SWEEP PASS events=/mnt/data/devfloor_dev9_work/oorexx_development_floor_v0.1-dev9/state/autotask_events.jsonl

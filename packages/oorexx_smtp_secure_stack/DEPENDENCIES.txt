@@ -1,0 +1,26 @@
+ooRexx SMTP Secure Stack v0.1-dev7 dependencies
+
+Qualified runtime:
+- Open Object Rexx 5.3.0 r13196 Internal Test Version, SHA-256 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Exact dev7 integration inputs:
+- SMTP Secure Stack v0.1-dev6 base, SHA-256 fd025a600130ae0df768de8a025c7637fb1386a4843deafa7e970e635cecb4ec
+- ooRexx Socket Provider v0.1-dev13, SHA-256 b0772f42162aa814c6a8f5f76241dcd7ae80db61990509683b76665df180bd6f
+- LDAP/Identity v0.1-dev14, SHA-256 60f16d5c4cbdec0e0fde444e4adf075574740d38f42c6e1b895ae21338d35690
+- MVS Alchemy Services v0.1-dev3-pre17-wire-typed-locked, SHA-256 24d8a2bbe72df9bc1bc75abd788205e407351db30366bf6e6bd993f4f400f505
+- ooRexx Storage Fabric v0.1-dev23 qualification baseline, SHA-256 6e80e4a95717709ad715ef26ad024cfd9361ddcfe33c9da2629df302b64d1814
+- ooRexx Foreign Runtime v0.22.6, SHA-256 25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465
+- OpenSSL 3.x through the Foreign Runtime provider
+
+Current authority seams:
+- LDAP/Identity SASL -> authentication attribution only
+- Access Permissions -> `EMAIL_SEND` decision authority
+- message signature verifier -> cryptographic authorship evidence
+- Socket Provider -> native endpoint acquisition
+- secure.socket/OpenSSL -> TLS upgrade/session mechanics
+- Storage Fabric -> durable immutable message object and projections
+- QueueRexx / Queue Fabric -> persistent outbound dispatch scheduling/transport
+- deterministic SMTP policy + optional ML/LLM advisors -> ingress/egress inspection
+- event/audit sink -> observation only
+
+No SMTP-owned replacement LDAP, Access Permissions database, queue transport, storage authority, PKI, Socket Provider selection policy or model authority is introduced.

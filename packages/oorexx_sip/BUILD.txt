@@ -1,0 +1,14 @@
+Qualified build target: ooRexx 5.3.0 r13196 Ubuntu x86-64 supplied by the user.
+
+SIP native build:
+  make OOREXX_ROOT=/mnt/data/oorexx_runtime_530/usr/local
+
+Shared RTP dependency:
+  oorexx_rtp_v0.1-dev1 / rtp/0.1
+
+Compiler/linker: g++ C++17 shared objects, libcrypto for SIP Digest primitives.
+Compiler qualification flags: -Wall -Wextra -Wpedantic.
+
+Public SIP UDP signalling uses ooRexx RxSock. RTP packet I/O, G.711 conversion,
+sequence/timestamp state and the media UDP endpoint moved out of the SIP native
+library into the shared RTP package in dev9.
