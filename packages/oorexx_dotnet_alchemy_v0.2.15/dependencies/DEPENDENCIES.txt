@@ -1,6 +1,32 @@
-Bundled runtime dependency closure for offline/mobile qualification
-==================================================================
-alchemy_foreign_object_v0.2: AlchemyForeignObject.cls; shared authoritative foreign-object base.
-alchemy_objects_v0.8: AlchemyObject.cls, AlchemySecurity.cls, AlchemyLockedMethod.cls, AlchemyEvidence.cls.
-oorexx_runtime_support: crypto.cls and json.cls.
-Deployment copies are pinned for clean-machine/Termux qualification. .NET Alchemy does not claim ownership of the shared dependencies.
+Dependency authority and closure status for v0.2.15
+=================================================
+alchemy_foreign_object_v0.2
+  Shared authoritative foreign-object base. A pinned deployment copy is present.
+
+alchemy_objects_v0.8
+  AlchemyObject.cls, AlchemySecurity.cls, AlchemyLockedMethod.cls and AlchemyEvidence.cls.
+  These remain the pinned object-base dependency inherited from the qualified v0.2.14 line.
+
+Inspector Clouseau v0.8.1 repaired authority
+  REQUIRED by the Inspector/concurrency qualification.
+  Exact authority package: alchemy_objects_v0.8.1-inspector-repaired.zip
+  SHA-256: fcb299f27aa3226a7a0ff2a98b5f681286e1dd61ea634e955f87d88ec5bdad3a
+  Expected package path: dependencies/alchemy_objects_v0.8.1/inspector/InspectorClouseau.cls
+  Do not silently substitute the older v0.8 Inspector.
+
+oorexx_logging_v0.7
+  MethodInterposition.cls supplies the shared cooperative interposition coordinator.
+
+oorexx_runtime_support
+  crypto.cls/json.cls are runtime support dependencies. test.sh verifies both before building.
+
+CLOSURE RULE
+  A delivery is self-contained only when every path preflighted by test.sh is physically present.
+  An authority note or checksum is not a substitute for the dependency bytes. Missing closure is
+  a packaging failure and must be reported as such; it must never be converted into a test PASS.
+
+Library review 2026-10-07
+  The current Project Alchemy Component Register does not yet list .NET Alchemy.
+  The Library also contains a newer standalone/general-purpose Inspector Clouseau line. It is not
+  substituted here because v0.2.14/v0.2.15 specifically qualify the repaired v0.8.1 cooperative
+  interposition contract. Adoption of the standalone Inspector is a separate compatibility task.
