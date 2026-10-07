@@ -7,7 +7,10 @@ rexx_bin=$(command -v rexx 2>/dev/null || true); dotnet_bin=$(command -v dotnet 
 [ -n "$rexx_bin" ] || die "rexx not found on PATH"; [ -n "$dotnet_bin" ] || die "dotnet not found on PATH"
 FOREIGN="$ROOT/dependencies/alchemy_foreign_object_v0.2/src"; OBJECTS="$ROOT/dependencies/alchemy_objects_v0.8/src"; SUPPORT="$ROOT/dependencies/oorexx_runtime_support"; INSPECTOR="$ROOT/dependencies/alchemy_objects_v0.8.1/inspector"; INTERPOSITION="$ROOT/dependencies/oorexx_logging_v0.7/src"
 need_file(){ [ -f "$1" ] || die "bundled dependency missing: $1"; }
-need_file "$FOREIGN/AlchemyForeignObject.cls"; need_file "$OBJECTS/AlchemyObject.cls"; need_file "$OBJECTS/AlchemySecurity.cls"; need_file "$OBJECTS/AlchemyLockedMethod.cls"; need_file "$OBJECTS/AlchemyEvidence.cls"; need_file "$SUPPORT/crypto.cls"; need_file "$SUPPORT/json.cls"
+need_file "$FOREIGN/AlchemyForeignObject.cls"; need_file "$OBJECTS/AlchemyObject.cls"; need_file "$OBJECTS/AlchemySecurity.cls"; need_file "$OBJECTS/AlchemyLockedMethod.cls"; need_file "$OBJECTS/AlchemyEvidence.cls"
+# Inspector v0.8.1 is a semantic authority, not an optional test helper: fail before building if the exact repaired source is absent.
+need_file "$INSPECTOR/InspectorClouseau.cls"
+need_file "$SUPPORT/crypto.cls"; need_file "$SUPPORT/json.cls"
 say "Alchemy root       : $ROOT"; say "rexx               : $rexx_bin"; say "dotnet             : $dotnet_bin"; say "foreign-object base: $FOREIGN/AlchemyForeignObject.cls"; say "AlchemyObject      : $OBJECTS/AlchemyObject.cls"; say "runtime support    : $SUPPORT"
 ./build-native.sh
 say "native bridge      : $ROOT/build/libalchemy_rexx_bridge.so"; say "CLR package        : $ROOT/build/libalchemy_clr_package.so"
