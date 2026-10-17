@@ -1,0 +1,26 @@
+--- a/src/xtp_rexx_native.cpp
++++ b/src/xtp_rexx_native.cpp
+@@ -178,7 +178,8 @@
+         while(pos<=list.size()){
+             auto comma=list.find(',',pos);auto item=list.substr(pos,comma==std::string::npos?std::string::npos:comma-pos);
+             if(!item.empty()){if(!xtp::valid_service_name(item))throw std::runtime_error("invalid allowed service: "+item);options.allowed_services.push_back(item);}
+-            if(comma==std::string::npos)break;pos=comma+1;
++            if(comma==std::string::npos) break;
++            pos=comma+1;
+         }
+         if(options.allowed_services.empty()) throw std::runtime_error("at least one allowed service is required");
+         xtp::SocketProvider provider;auto listener=provider.listen(peer?peer:"",options);
+@@ -527,10 +528,13 @@
+ 
+ RexxRoutineEntry xtp_native_routines[] = {
+     REXX_TYPED_ROUTINE(xtpNativeListenerOpen, xtpNativeListenerOpen),
++    REXX_TYPED_ROUTINE(xtpNativeListenerOpenServices, xtpNativeListenerOpenServices),
++    REXX_TYPED_ROUTINE(xtpNativeListenerLastService, xtpNativeListenerLastService),
+     REXX_TYPED_ROUTINE(xtpNativeListenerOpenRoute, xtpNativeListenerOpenRoute),
+     REXX_TYPED_ROUTINE(xtpNativeListenerReceive, xtpNativeListenerReceive),
+     REXX_TYPED_ROUTINE(xtpNativeListenerClose, xtpNativeListenerClose),
+     REXX_TYPED_ROUTINE(xtpNativeSend, xtpNativeSend),
++    REXX_TYPED_ROUTINE(xtpNativeSendService, xtpNativeSendService),
+     REXX_TYPED_ROUTINE(xtpNativeSendRoute, xtpNativeSendRoute),
+     REXX_TYPED_ROUTINE(xtpNativeSendPriority, xtpNativeSendPriority),
+     REXX_TYPED_ROUTINE(xtpNativeMulticastListenerOpen, xtpNativeMulticastListenerOpen),
