@@ -1,8 +1,10 @@
 # Alchemy source provenance: `oorexx_webdav`
 
-- Source delivery: `oorexx_webdav_v0.1-dev4.zip`
-- Delivery SHA-256: `480a11b7ffb563a1f84e62fe229184b1bd07236416f6c5c93985f3c88d3a4395`
-- Delivery file timestamp: 2026-10-07T20:39:35+01:00
-- Published text/source files: 27
-- Embedded dependency files omitted: 0
-- Generated/machine-specific files omitted: 0
+- Source delivery: `oorexx_webdav_v0.1-dev5.zip`
+- Delivery SHA-256: `5ec140808cb95d1fbe2c6f99c2abf0f14d7f59f06fd387a490538da8aef83f2d`
+- Qualification runtime: ooRexx 5.3.0 r13196.
+- Delivery qualification: 14/14 local WebDAV regression tests PASS.
+- Delivery seal: 31 manifest-protected files; fresh extraction reported 0 mismatches.
+- Canonical repository source: `packages/oorexx_webdav`.
+- Embedded dependency files omitted: 0.
+- Generated/machine-specific files omitted: 0.
