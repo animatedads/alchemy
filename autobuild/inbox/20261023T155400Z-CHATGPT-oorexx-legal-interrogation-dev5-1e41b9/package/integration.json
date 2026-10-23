@@ -1,0 +1,31 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_legal_interrogation",
+    "version": "0.1-dev5",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "INTENTION_SERVICE_ROOT": "${REPO_ROOT}/packages/oorexx_intention_service"
+    }
+  },
+  "tests": [
+    {
+      "name": "legal-interrogation-dev5-suite",
+      "argv": ["bash", "run_tests.sh"],
+      "timeout_seconds": 180,
+      "environment": {
+        "require_dirs": ["INTENTION_SERVICE_ROOT"],
+        "report": ["INTENTION_SERVICE_ROOT"]
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_legal_interrogation_v0.1-dev5"
+    }
+  }
+}
