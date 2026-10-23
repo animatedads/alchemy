@@ -1,4 +1,10 @@
-/* Candidate-only handoff to NoSQLServer v0.90. No publishing authority. */
+/* CLI handoff to NoSQLServer's selected native SQLite read/write engine.
+ * Commands: init DATABASE
+ *           save DATABASE EXPORTED_JSON EXPECTED_NATIVE_REVISION
+ *           load DATABASE NEW_OUTPUT_JSON [REVISION (0 = latest)]
+ *           history DATABASE NEW_OUTPUT_TSV
+ * Strictly local, no HTTP server, editor approval, or deployment capability.
+ */
 numeric digits 20
 signal on syntax name failed
 signal on error name failed
@@ -29,7 +35,7 @@ select
               '"revision":' || record['revision'] || ',' || ,
               '"parent_revision":' || record['parent_revision'] || ',' || ,
               '"document":' || jsonQuote(record['document']) || '}'
-    call writeNew filename,payload
+    call writeNew filename, payload
     say 'LOADED_NATIVE_REVISION' record['revision'] filename
   end
   when action == 'verify' then do
@@ -59,7 +65,7 @@ readFile: procedure
   return content
 
 writeNew: procedure
-  use arg name,content
+  use arg name, content
   if stream(name,'C','QUERY EXISTS') \= '' then raise syntax 93.900 additional('Output exists: refusing overwrite')
   call stream name,'C','OPEN WRITE'
   call charout name,content,1

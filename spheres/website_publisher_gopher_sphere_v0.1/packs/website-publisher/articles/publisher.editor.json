@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "publisher.editor",
+  "version": "0.1",
+  "sphere": "website-publisher",
+  "title": "Visual editor and Rasenfalcon reference",
+  "section": "editor",
+  "summary": "Live split-screen editor permits original/draft comparison, responsive previews, candidate ZIP export, and explicit native CLI handoff. Fixture javascript is derived from upstream Rasenfalcon website builder; it is not a second publishing authority.",
+  "invariants": [
+    "Generated preview ZIP is CANDIDATE_ONLY; not production deployment.",
+    "HTML-like user content rendered safely as text; forbid script execution from content.",
+    "The browser never has the NoSQLServer file path, credentials, database handles or public publishing authority.",
+    "GitHub source import includes the exact editor HTML/CSS/JS, fixture and tests from v0.3; excludes bundled dependency ZIP and generated preview images."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "alchemy_website_publisher_v0.3.zip",
+      "sha256": "db61d4a62112fb8af1206935b121daa975e96366e11801e48be0b2e946ef2a89",
+      "claim": "Exact complete v0.3 publisher distribution used for source inventory and regression suite"
+    }
+  ],
+  "related": []
+}
