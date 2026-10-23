@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "arch.layered-audio.intentions",
+  "version": "0.3",
+  "sphere": "layered-audio",
+  "title": "Object-bound intentions and cross-domain federation",
+  "summary": "Layered Audio exposes intentions from the live Audio object graph. AudioRecording, AudioElement, AudioView and compound selections remain native objects; Intention Service interprets and READY-gates them, while Management Intention Discovery federates domain surfaces and follows Audio-owned relationships without becoming Audio or Storage authority.",
+  "authority": "project-integration-evidence",
+  "invariants": [
+    "Audio intention discovery is dynamic and side-effect-free; every discovery reads current Audio truth.",
+    "Intention candidates retain the actual Audio objects. IDs, paths and prose are evidence or join keys, never substitutes for the selected domain objects.",
+    "Multiple plausible selectable objects remain CLARIFY; the provider must not guess.",
+    "A compound Audio selection is itself an intention-capable object and is revalidated against current recording, view and element relationships.",
+    "Intention Service owns interpretation, clarification and READY gating; it does not own Audio semantics or mutate Audio evidence.",
+    "Management Intention Discovery owns federation and bounded traversal; it consumes Audio-owned relevance and relationships instead of copying Audio vocabulary.",
+    "Audio may publish relationships from recording to element or view, derived element to parent, view to source element, and element to an Audio-Storage binding.",
+    "Storage identity reached through an Audio binding remains Storage authority. Audio never turns a path, locator or materialisation lease into canonical Audio identity.",
+    "Related Storage intention surfaces are supplied by Storage and may be discovered through Management; they are not globally manufactured or reimplemented by Audio.",
+    "Installation uses Management's public source, relationship, related-discovery and explorer contracts. Audio wiring does not acquire lifecycle authority over Management directories.",
+    "A view or element that disappears from the live recording disappears from the next advertised Audio surface."
+  ],
+  "procedure": [
+    "Create the AudioIntentionProvider over the live recording and context.",
+    "Expose object-bound Audio surfaces for the recording and current child objects.",
+    "Install AudioManagementIntentionSource through ManagementSelfAssessingIntentionSurfaceSource.",
+    "Install AudioManagementRelationshipProvider through ManagementRelationshipProviderSource.",
+    "Build ManagementRelatedSurfaceDiscovery with AudioManagementRelatedIntentionSourceProvider when related authorities such as Storage are available.",
+    "Resolve and explore against fresh discovery; preserve exact object references in evidence and selections.",
+    "At dispatch, revalidate current Audio truth and refuse stale or newly ambiguous selections."
+  ],
+  "current_boundary": {
+    "layered_audio_intentions": "v0.22-dev8 / audio.intentions/0.8",
+    "audio_management_integration": "audio.intentions.management/0.2",
+    "intention_service": "v0.1-dev11 public dynamic discovery / READY-gated dispatch line",
+    "management_intention_discovery": "v0.1-dev8 exact Library package inspected; Management owns federation and bounded traversal",
+    "storage": "Storage durable identity, locality, materialisation and replica authority remain external",
+    "qualification": "dev8 strict standards/package integrity PASS; fresh ooRexx r13196 runtime execution pending in the current execution environment"
+  },
+  "provenance": [
+    {
+      "artifact": "layered_audio_oorexx_v0.22-dev8.zip",
+      "sha256": "5e639ad4a54a69b08c6ad56f3a3854eb97bd476bc71b665938ad87b04bf4fca6",
+      "claim": "Object-bound Audio intentions plus canonical Management installation overlay; static/package qualification PASS, runtime refresh pending."
+    },
+    {
+      "artifact": "oorexx_management_intention_discovery_v0.1-dev8.zip",
+      "claim": "Exact Library package inspected for self-assessing source, relationship source, related-surface discovery and explorer contracts."
+    }
+  ]
+}
