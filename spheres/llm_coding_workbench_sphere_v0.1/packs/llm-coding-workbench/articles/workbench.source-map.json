@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "workbench.source-map",
+  "version": "0.1",
+  "sphere": "llm-coding-workbench",
+  "section": "references",
+  "title": "Source map for Workbench continuity",
+  "summary": "Inspect these members before changing the Workbench. They separate orchestration, object-preserving instrumentation, external projection, model transport, semantic coding, verification, and local Semantic Source Control access.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Read Workbench source and tests before extending the architecture.",
+    "Treat Coding Intention as an external dependency unless this lane is explicitly assigned to change it.",
+    "Prefer object-native Rexx instrumentation over flattened Python controller logic."
+  ],
+  "procedure": [],
+  "source_map": {
+    "orchestration": ["src/LlmCodingWorkbench.cls", "src/LlmCodingHostLoop.cls"],
+    "instrumentation": ["src/LlmCodingInstrumentation.cls", "tests/test_rexx_object_instrumentation.rex"],
+    "projection_boundary": ["src/LlmCodingBoundaryAdapter.cls", "tests/test_rexx_api_boundary.rex", "tests/test_codec_boundary_delegation.rex"],
+    "model_transport": ["src/AzureLunaApiClientTransport.cls", "tests/test_api_client_luna_transport.rex"],
+    "semantic_coding": ["src/LlmSemanticCodingBridge.cls", "src/LlmRuntimeInterrogation.cls"],
+    "verification": ["src/LlmCodingMaterialisedVerifier.cls", "tests/test_materialised_verifier.rex"],
+    "local_sscs": ["tools/local_sscs.rex", "tools/local_sscs_session.rex", "docs/LOCAL_SSCS_RUNNER.md"],
+    "qualification": ["tools/run_environment_test.sh", "docs/QUALIFICATION_r13196.txt", "docs/DEV14_REQUALIFICATION.md"]
+  },
+  "provenance": [
+    {
+      "artifact": "oorexx_llm_coding_workbench_v0.1-dev14.zip",
+      "sha256": "04429c32acf45c8926dff41c16fb7e73a25d4480ba7fa199ff1b28d960032899",
+      "member": "README.md",
+      "claim": "Top-level Workbench architecture and continuation history."
+    }
+  ]
+}
