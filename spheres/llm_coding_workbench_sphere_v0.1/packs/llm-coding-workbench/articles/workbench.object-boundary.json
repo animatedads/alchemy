@@ -1,0 +1,57 @@
+{
+  "kind": "article",
+  "id": "workbench.object-boundary",
+  "version": "0.1",
+  "sphere": "llm-coding-workbench",
+  "section": "architecture",
+  "title": "Objects stay whole in Rexx; flatten only at an explicit external boundary",
+  "summary": "The Workbench keeps live ooRexx objects intact while objects, tools and API context coexist. Rexx-native instrumentation records those live references. LlmCodingBoundaryAdapter is the deliberate projection point for JSON/API/logging edges. dev14 closes the remaining compatibility-codec bypass by making LlmCodingJsonCodec delegate outbound turn projection to the boundary adapter.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Internal observation retains actual Rexx object identity rather than reconstructing meaning from flattened dictionaries, JSON or strings.",
+    "Python is not a Workbench semantic/controller or instrumentation layer; external-process transport may use non-Rexx machinery only where the external boundary requires it.",
+    "Outbound turn projection has one authority: LlmCodingBoundaryAdapter.",
+    "A compatibility API must delegate to the boundary rather than creating a second projection implementation.",
+    "Tests may use a spy boundary that projects for assertion, but production Workbench orchestration must not flatten a turn before the boundary."
+  ],
+  "procedure": [
+    "Instrument object reads, tool calls/results, model/API turns and verification evidence in Rexx.",
+    "Carry the exact LlmCodingTurn object to an object-aware transport.",
+    "Project to Directory/JSON only when constructing an external API/logging payload.",
+    "For compatibility encoding, inject or use LlmCodingBoundaryAdapter rather than calling turn~asDirectory directly."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_llm_coding_workbench_v0.1-dev14.zip",
+      "sha256": "04429c32acf45c8926dff41c16fb7e73a25d4480ba7fa199ff1b28d960032899",
+      "member": "src/LlmCodingInstrumentation.cls",
+      "line_start": 1,
+      "line_end": 70,
+      "claim": "Rexx-native trace events retain live subject/context references; summaries are explicit projections."
+    },
+    {
+      "artifact": "oorexx_llm_coding_workbench_v0.1-dev14.zip",
+      "sha256": "04429c32acf45c8926dff41c16fb7e73a25d4480ba7fa199ff1b28d960032899",
+      "member": "src/LlmCodingBoundaryAdapter.cls",
+      "line_start": 1,
+      "line_end": 40,
+      "claim": "Explicit external projection boundary for turns and trace summaries."
+    },
+    {
+      "artifact": "oorexx_llm_coding_workbench_v0.1-dev14.zip",
+      "sha256": "04429c32acf45c8926dff41c16fb7e73a25d4480ba7fa199ff1b28d960032899",
+      "member": "src/LlmCodingWorkbench.cls",
+      "line_start": 80,
+      "line_end": 94,
+      "claim": "dev14 compatibility codec delegates turn JSON projection to the configured boundary."
+    },
+    {
+      "artifact": "oorexx_llm_coding_workbench_v0.1-dev14.zip",
+      "sha256": "04429c32acf45c8926dff41c16fb7e73a25d4480ba7fa199ff1b28d960032899",
+      "member": "tests/test_codec_boundary_delegation.rex",
+      "line_start": 1,
+      "line_end": 40,
+      "claim": "Regression checks that the exact live turn reaches the compatibility codec boundary before projection."
+    }
+  ]
+}
