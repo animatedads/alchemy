@@ -1,5 +1,5 @@
 /* QuicSocketProvider.cls
- * ooRexx QUIC Socket Provider v0.1-dev2
+ * ooRexx QUIC Socket Provider v0.1-dev3
  *
  * Real QUIC socket family behind the common SocketProvider boundary.
  * Native transport is OpenSSL QUIC; address objects contain references to
@@ -7,7 +7,7 @@
  */
 
 ::class QuicSocketProviderBuild public
-::constant VERSION "0.1-dev2"
+::constant VERSION "0.1-dev3"
 ::constant API "quic.socket.provider/0.1"
 ::constant TRANSPORT "QUIC"
 ::constant SCHEME "quic"
@@ -131,7 +131,7 @@
   delegate=.RegisteredSocketOfferProvider~new
 ::method register
   expose delegate
-  use strict arg logicalName, offerId, address, priority=100, localityClass="REMOTE", available=.true, evidence="QUIC/TLS 1.3 stream available", providerId="quic-dev2"
+  use strict arg logicalName, offerId, address, priority=100, localityClass="REMOTE", available=.true, evidence="QUIC/TLS 1.3 stream available", providerId="quic-dev3"
   if address~transport<>.QuicSocketProviderBuild~TRANSPORT then raise syntax 88.900 array("QuicSocketOfferProvider requires QUIC address")
   caps=.SocketCapabilities~new(.QuicSocketProviderBuild~SCHEME,.QuicSocketProviderBuild~ADDRESS_FAMILY,.true,.true,.true,.true,.false)
   offer=.SocketNegotiationOffer~new(offerId,address,priority,localityClass,available,evidence,providerId,caps)
@@ -207,6 +207,96 @@
   rc=quicNativeClose(handle)
   if rc=0 then closed=.true
   return rc
+::method openStream
+  expose handle closed
+  use strict arg unidirectional=.false
+  if closed then return .nil
+  flag=0
+  if unidirectional then flag=1
+  sh=quicNativeOpenStream(handle,flag)
+  if sh=0 then return .nil
+  return .QuicStream~new(sh,self)
+::method acceptStream
+  expose handle closed
+  if closed then return .nil
+  sh=quicNativeAcceptStream(handle,0)
+  if sh=0 then return .nil
+  return .QuicStream~new(sh,self)
+::method tryAcceptStream
+  expose handle closed
+  if closed then return .nil
+  sh=quicNativeAcceptStream(handle,1)
+  if sh=0 then return .nil
+  return .QuicStream~new(sh,self)
+::method asStream
+  return .SocketStreamAdapter~new(self)
+
+::class QuicStream public
+::method init
+  expose handle connection closed
+  use strict arg nativeHandle, parentConnection
+  handle=nativeHandle
+  connection=parentConnection
+  closed=.false
+::attribute connection get
+::method address
+  expose connection
+  return connection~address
+::method socketAddress
+  expose connection
+  return connection~address
+::method raw
+  return self
+::method descriptor
+  expose connection closed
+  if closed then return -1
+  return connection~descriptor
+::method pump
+  expose connection closed
+  use strict arg timeoutMs=0
+  if closed then return .false
+  return connection~pump(timeoutMs)
+::method nativeHandle
+  expose handle
+  return handle
+::method streamId
+  expose handle closed
+  if closed then return -1
+  return quicNativeStreamId(handle)
+::method streamType
+  expose handle closed
+  if closed then return -1
+  return quicNativeStreamType(handle)
+::method send
+  expose handle closed
+  use strict arg bytes
+  if closed then return -1
+  return quicNativeStreamSend(handle,bytes)
+::method sendAll
+  expose handle closed
+  use strict arg bytes
+  if closed then return -1
+  remaining=bytes; total=0
+  do while length(remaining)>0
+    n=quicNativeStreamSend(handle,remaining)
+    if n<1 then return -1
+    total+=n
+    remaining=substr(remaining,n+1)
+  end
+  return total
+::method recv
+  expose handle closed
+  use strict arg maximumBytes
+  if closed then return .nil
+  bytes=quicNativeStreamRecv(handle,maximumBytes)
+  if bytes=.nil | length(bytes)=0 then return .nil
+  return bytes
+::method close
+  expose handle closed
+  if closed then return 0
+  rc=quicNativeStreamClose(handle)
+  if rc=0 then closed=.true
+  return rc
 ::method asStream
   return .SocketStreamAdapter~new(self)
 
@@ -273,6 +363,13 @@
 ::routine quicNativeListenerWaitReady external "library oorexx_quic_native quicNativeListenerWaitReady"
 ::routine quicNativeSend external "library oorexx_quic_native quicNativeSend"
 ::routine quicNativeRecv external "library oorexx_quic_native quicNativeRecv"
+::routine quicNativeOpenStream external "library oorexx_quic_native quicNativeOpenStream"
+::routine quicNativeAcceptStream external "library oorexx_quic_native quicNativeAcceptStream"
+::routine quicNativeStreamId external "library oorexx_quic_native quicNativeStreamId"
+::routine quicNativeStreamType external "library oorexx_quic_native quicNativeStreamType"
+::routine quicNativeStreamSend external "library oorexx_quic_native quicNativeStreamSend"
+::routine quicNativeStreamRecv external "library oorexx_quic_native quicNativeStreamRecv"
+::routine quicNativeStreamClose external "library oorexx_quic_native quicNativeStreamClose"
 ::routine quicNativeClose external "library oorexx_quic_native quicNativeClose"
 ::routine quicNativeListenerClose external "library oorexx_quic_native quicNativeListenerClose"
 ::routine quicNativePeerHost external "library oorexx_quic_native quicNativePeerHost"
