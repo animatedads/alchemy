@@ -13,4 +13,4 @@ for term in baseline 'security manager' epoch 'fixed point' trunk pbench2 plan42
     grep -q '"class": "FOUND"' $T.s || { echo "FAIL search $term"; exit 1; }
 done
 rm -f $T.ctx $T.s
-echo "PASS RX2CPP SPHERE v0.1"
+echo "PASS RX2CPP SPHERE v0.2"

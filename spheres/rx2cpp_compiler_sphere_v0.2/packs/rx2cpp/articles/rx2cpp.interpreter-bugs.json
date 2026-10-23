@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "rx2cpp.interpreter-bugs",
+  "version": "0.2",
+  "sphere": "rx2cpp",
+  "section": "references",
+  "title": "ooRexx interpreter bugs found by rx2cpp, and checking trunk first",
+  "summary": "Compiling real code exercises the native API harder than most users, and has found interpreter bugs. Status against trunk r13284 (2026-10-23): ReleaseGlobalReference adding a reference instead of removing one, fixed in r13257 (#2100); the uninit count bug (BUG_REPORTS.md bug 5), fixed in r13259 (#2102) before we found it; the SysStemSort crash, fixed in r13284 (#2120); the per-call /proc/self/maps read, fixed in r13267 (#2106). Still present in trunk a4210fc and ready to file (Tom Dyer files; TICKET_bug2.md, patch ooRexx-native-arg-error.patch): an argument error from processArguments of a native method called by native code leaves a NativeActivation with argList pointing at an unwound C stack; CheckCondition() answers false and the next garbage collection can crash. On a trunk build: unpatched segfault 3/3, patched no crash and CheckCondition=1 3/3. Likely cause of BSF4ooRexx crashes under object-creation pressure. Reproductions and patches: ootest/interpreter_bugs/.",
+  "procedure": [
+    "Reproduce with a minimal program and a control.",
+    "Check ooRexx trunk (GitHub mirror ooRexx/oorexx: commits and the bug tracker) for a fix before writing anything.",
+    "Build trunk from the GitHub mirror (cmake, Release) and run the reproduction unpatched and patched on it; record both results in the ticket.",
+    "If not fixed, write the ticket with the reproduction and a patch; Tom Dyer files it."
+  ],
+  "invariants": [
+    "Our test interpreter is r13196; trunk moves. A ticket written without checking trunk was stale once (bug 5) and must not happen again.",
+    "rx2cpp must be correct with or without an upstream fix (for example it no longer depends on global references for values)."
+  ],
+  "authority": "project-artifact",
+  "topics": [
+    "interpreter bugs",
+    "trunk",
+    "upstream",
+    "tickets"
+  ],
+  "provenance": [
+    {
+      "artifact": "rx2cpp-43b440e.zip",
+      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
+      "member": "oorexx2cpp/HANDOFF_2026-10-13.md",
+      "line_start": 595,
+      "line_end": 623,
+      "claim": "Interpreter bug status against trunk."
+    },
+    {
+      "artifact": "rx2cpp-43b440e.zip",
+      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
+      "member": "oorexx2cpp/ootest/interpreter_bugs/BUG_REPORTS.md",
+      "line_start": 1,
+      "line_end": 15,
+      "claim": "Status of every bug against trunk."
+    },
+    {
+      "artifact": "rx2cpp-43b440e.zip",
+      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
+      "member": "oorexx2cpp/ootest/interpreter_bugs/TICKET_bug2.md",
+      "claim": "Bug 2 ticket checked against trunk a4210fc, verified on a trunk build."
+    }
+  ]
+}
