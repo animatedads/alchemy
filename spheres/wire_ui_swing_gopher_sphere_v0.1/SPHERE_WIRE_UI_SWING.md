@@ -27,7 +27,7 @@ The 2026-08-28 19:19 roll-up contains the current Server/Builder line used for c
 - Alchemy Wire UI JS v0.4-dev4
 - Wire UI Swing v0.2-dev3
 
-The bundled Swing copy is not the newest qualified Swing implementation. Separately sealed `wire_ui_swing_v0.2-dev5.zip` is newer and remains the implementation recovery baseline until a successor is fully requalified.
+The historical roll-up copy is not the newest qualified Swing implementation. `wire_ui_swing_v0.2-dev10` is now the current source-qualified implementation baseline in this repository. It preserves the Server v0.17 authority/cache/workspace contracts, adds authoritative bounded virtual collection demand through `RangeRequested`, and adds the modern renderer-owned desktop material plus the NotNotes Java presentation fixture. Historical dev3/dev6 trees remain recovery evidence; new continuation should start from dev10.
 
 Server v0.17 adds result-freshness evidence to the existing workspace command context seam. A Swing successor must preserve `UI_ACTION.detail.workspaceContext` as opaque server-projected event-time evidence, including `resultRevision`, `resultQueryRevision`, `resultScopeRevision`, `resultOrderRevision` and `resultCurrent`. It must not derive those facts—or `selectedIds`—from local Swing table/list state.
 
