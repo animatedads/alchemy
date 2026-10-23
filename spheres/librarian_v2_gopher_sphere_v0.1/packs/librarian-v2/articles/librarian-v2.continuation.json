@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "librarian-v2.continuation",
+  "title": "Next increment — exact occurrence-level, bitemporal provenance",
+  "section": "qualification",
+  "version": "0.1",
+  "sphere": "librarian-v2",
+  "authority": "project-continuity",
+  "summary": "Introduce a new immutable-ish, evidence-only edge identity anchored to source unit revision and exact claim/quotation span, not only source ID; support multiple parents and per-edge valid/observed time plus supersession/retraction without deleting history. Use Single Time Service authority for temporal comparison. Provide a deterministic snapshot graph before using dependency groups in comparative positioning. Keep the existing dev8 graph as an experimental adapter, not as an authoritative truth engine.",
+  "invariants": [
+    "Define source edition and occurrence identifiers before designing graph edge dispatch.",
+    "Prove that historical as-of graph queries are insertion-order invariant for equivalent eligible evidence.",
+    "Retractions of provenance links must not imply falsity of the source claim.",
+    "Extend admission tests with contradictory evidence, multiple parents, deduplicated syndication, cross-span quotations, publication vs observation cutoffs and source replacement.",
+    "Retain old artifacts and qualification receipts; do not silently promote experimental head to production."
+  ],
+  "provenance": [
+    {
+      "artifact": "librarian_v2_dev8_20261023.zip",
+      "sha256": "17fd68b251e18ebe9f9c6902b6535db444bec1ce6a125ab6f2b8bd579250b742",
+      "member": "librarian_v2_dev3/src/LibrarianProvenanceGraph.cls",
+      "line_start": 3,
+      "line_end": 78,
+      "claim": "Dev8 structure and known absence of temporal/occurrence dimensions."
+    },
+    {
+      "artifact": "librarian_v2_dev8_20261023.zip",
+      "sha256": "17fd68b251e18ebe9f9c6902b6535db444bec1ce6a125ab6f2b8bd579250b742",
+      "member": "librarian_v2_dev3/DEV7_NOTES.md",
+      "line_start": 1,
+      "line_end": 9,
+      "claim": "Prior source-level limitations."
+    }
+  ]
+}
