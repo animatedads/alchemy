@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "ups.frontier",
+  "version": "0.2",
+  "sphere": "rexxos-virtual-ups",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "repository": "PDP-10/klh10",
+      "path": "doc/klt20.txt",
+      "revision": "6d733f2a47644964492fd864454cbe1331655e53"
+    },
+    {
+      "repository": "animatedads/alchemy",
+      "path": "packages/rexxos_virtual_ups_v0.2/README.md",
+      "claim": "reference implementation"
+    }
+  ],
+  "section": "frontier",
+  "title": "TOPS-20 MX, not a proven electrical UPS",
+  "summary": "KLH10 documentation connects the recurring 'Waiting for UPS:' text to MX process/Mails context; UPS expansion and mail transmission error are unverified.",
+  "invariants": [
+    "Never infer physical UPS failure from MX console text.",
+    "Treat operator mail failure theory as hypothesis.",
+    "Avoid touching 7-PTYCON.ATO, deleting MX jobs, or attaching guest power devices without explicit qualification.",
+    "Connect Selector, Instrumentation Mesh, Time Service and DEC adapter are not delivered."
+  ]
+}
