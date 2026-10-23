@@ -1,0 +1,21 @@
+{
+  "kind": "article",
+  "id": "arch.template.requirements",
+  "version": "0.1",
+  "sphere": "oorexx-string-template",
+  "title": "Compiled requirement introspection",
+  "authority": "project-authoritative",
+  "summary": "A compiled template can report unique variable paths and formatter names in first-use order. TemplateRequirements returns detached copies of those inventories without resolving context data, invoking object getters or running formatter code.",
+  "uses": [
+    "preflight whether required data is available",
+    "discover formatter dependencies before rendering",
+    "inspect report/message/prompt requirements without flattening object data"
+  ],
+  "invariants": [
+    "Requirement inspection is observation, not execution.",
+    "Unformatted substitutions explicitly require the identity formatter.",
+    "Requirement arrays returned to callers are detached copies."
+  ],
+  "related": ["arch.template.language", "ops.template.continuation"],
+  "provenance": [{"source": "repository", "path": "packages/oorexx_string_template/src/StringTemplate.cls"}]
+}

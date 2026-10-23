@@ -1,0 +1,20 @@
+{
+  "kind": "article",
+  "id": "arch.template.context-authority",
+  "version": "0.1",
+  "sphere": "oorexx-string-template",
+  "title": "Context and object authority",
+  "authority": "project-authoritative",
+  "summary": "TemplateContext owns named render inputs. Directory traversal is explicit. Ordinary objects are visible only through TemplateObjectView, where application code maps public template property names to allowlisted zero-argument messages.",
+  "boundaries": [
+    "Template text never discovers arbitrary object methods.",
+    "TemplateObjectView is an application-created projection, not reflection.",
+    "put and putObject reject blank context names.",
+    "Resolving a missing path fails closed unless the selected render policy explicitly keeps the original placeholder."
+  ],
+  "related": ["arch.template.language", "ref.template.api"],
+  "provenance": [
+    {"source": "repository", "path": "packages/oorexx_string_template/src/StringTemplate.cls"},
+    {"source": "repository", "path": "packages/oorexx_string_template/SECURITY.md"}
+  ]
+}

@@ -1,25 +1,28 @@
-ooRexx String Template v0.1-dev1 qualification
-Date: 2026-10-07
-Runtime: Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit
+ooRexx String Template v0.1-dev2 qualification
+Date: 2026-10-23
 
-Executed in this build environment:
+Inherited executable predecessor evidence
+----------------------------------------
+dev1 was executed under Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit:
 PASS rexxc src/StringTemplate.cls
-PASS test_basic.rex
-PASS test_fail_closed.rex
-PASS test_formatters.rex
-PASS test_nested_and_object_view.rex
-PASS test_policies.rex
-PASS 5/5 runtime fixtures
+PASS 5/5 dev1 runtime fixtures
 PASS ooRexx standards enforcer --strict --json (0 errors, 0 warnings)
 
-Security/semantic gates exercised:
-PASS strict missing value raises
-PASS arbitrary object traversal without explicit TemplateObjectView allowlist raises
-PASS malformed/unclosed expression raises
-PASS HTML escaping
-PASS JSON string-content escaping
-PASS literal placeholder escaping
-PASS custom registered formatter
-PASS inspectable unique variable inventory
+Dev2 current-session evidence
+-----------------------------
+The previously supplied r13196 Debian attachment is visible in conversation history, but its binary backing file is not materializable in this current tool session. Therefore dev2 does NOT claim a fresh r13196 runtime or rexxc PASS here.
 
-No INTERPRET is used by the package.
+The dev2 package is checked with:
+PASS bash syntax validation for run_tests.sh
+PASS deterministic manifest generation and verification
+PASS ZIP integrity testing
+PASS project ooRexx standards enforcer --strict --json: 0 errors, 0 warnings
+
+New runtime fixtures shipped for the next r13196 execution gate:
+- complete JSON control-byte escaping;
+- blank `putObject` context-name rejection;
+- unique variable and formatter requirement inventories;
+- detached TemplateRequirements snapshots;
+- renderTo output equivalence and submitted-character count.
+
+Do not promote these new dev2 runtime fixtures to PASS until they are actually executed by r13196.

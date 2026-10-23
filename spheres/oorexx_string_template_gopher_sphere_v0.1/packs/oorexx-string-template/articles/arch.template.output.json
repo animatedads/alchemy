@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "arch.template.output",
+  "version": "0.1",
+  "sphere": "oorexx-string-template",
+  "title": "Rendering, escaping and output ownership",
+  "authority": "project-authoritative",
+  "summary": "render and renderTo share the same segment resolution, formatting and render-policy semantics. render returns a String; renderTo submits each rendered segment to a caller-owned charOut sink and does not close or flush it.",
+  "policies": {
+    "missing": ["ERROR", "KEEP"],
+    "escape": ["PLAIN", "HTML", "JSON"]
+  },
+  "json_boundary": "JSON mode escapes substituted JSON string content, including all control bytes 00x..1fx, quote and backslash. It does not construct or validate a complete JSON document.",
+  "invariants": [
+    "The caller owns sink lifecycle and sink semantics.",
+    "Streaming is a destination choice, not a second template execution model.",
+    "Plain output makes no escaping claim."
+  ],
+  "related": ["arch.template.requirements", "ref.template.api"],
+  "provenance": [
+    {"source": "repository", "path": "packages/oorexx_string_template/API.md"},
+    {"source": "repository", "path": "packages/oorexx_string_template/SECURITY.md"}
+  ]
+}

@@ -22,6 +22,18 @@ expectedMethod:
   say "EXPECTED SYNTAX rc="rc "sigl="sigl "C="condition("C") "D="condition("D")
   signal off syntax
 
+signal on syntax name expectedBlankObjectName
+props = .Directory~new
+props["secret"] = "secret"
+ignore = .TemplateContext~new~putObject("   ", obj, props)
+signal off syntax
+say "FAIL blank object context name did not raise"
+exit 1
+
+expectedBlankObjectName:
+  say "EXPECTED SYNTAX rc="rc "sigl="sigl "C="condition("C") "D="condition("D")
+  signal off syntax
+
 signal on syntax name expectedParse
 ignore = .StringTemplate~new("${unterminated")
 signal off syntax

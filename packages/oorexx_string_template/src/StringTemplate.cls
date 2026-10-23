@@ -1,6 +1,6 @@
 /*
  * StringTemplate.cls
- * ooRexx String Template v0.1-dev1
+ * ooRexx String Template v0.1-dev2
  *
  * Safe, compiled string interpolation for ooRexx.
  * Template text is data.  It is never passed to INTERPRET and arbitrary
@@ -72,6 +72,8 @@
 ::method putObject
   expose _values
   use strict arg name, object, propertyMap
+  name = name~strip
+  if name = "" then raise syntax 88.900 array("template context name is required")
   if \propertyMap~isa(.Directory) then raise syntax 88.900 array("propertyMap must be a Directory")
   view = .TemplateObjectView~new(object)
   do propertyName over propertyMap
@@ -266,14 +268,38 @@
 
 ::method escapeJson
   use strict arg text
-  text = text~changestr("\\", "\\\\")
-  text = text~changestr('"', '\\"')
-  text = text~changestr("08"x, "\\b")
-  text = text~changestr("0c"x, "\\f")
-  text = text~changestr("0a"x, "\\n")
-  text = text~changestr("0d"x, "\\r")
-  text = text~changestr("09"x, "\\t")
-  return text
+  escaped = ""
+  do i = 1 to text~length
+    ch = text~substr(i, 1)
+    select
+      when ch = "5c"x then escaped ||= "5c5c"x
+      when ch = "22"x then escaped ||= "5c22"x
+      when ch = "08"x then escaped ||= "5c62"x
+      when ch = "0c"x then escaped ||= "5c66"x
+      when ch = "0a"x then escaped ||= "5c6e"x
+      when ch = "0d"x then escaped ||= "5c72"x
+      when ch = "09"x then escaped ||= "5c74"x
+      otherwise escaped ||= rx_string_template_json_fallback(ch)
+    end
+  end
+  return escaped
+
+
+::class TemplateRequirements public
+
+::method init
+  expose _variables _formatters
+  use strict arg variables, formatters
+  _variables = variables~copy
+  _formatters = formatters~copy
+
+::method variables
+  expose _variables
+  return _variables~copy
+
+::method formatters
+  expose _formatters
+  return _formatters~copy
 
 
 ::class TemplateSegment public
@@ -281,6 +307,9 @@
 ::method render abstract
 
 ::method variableName
+  return .nil
+
+::method formatterName
   return .nil
 
 
@@ -310,6 +339,10 @@
 ::method variableName
   expose _path
   return _path
+
+::method formatterName
+  expose _formatterName
+  return _formatterName
 
 ::method render
   expose _raw _path _formatterName _formatterArgument
@@ -432,7 +465,7 @@
 ::class StringTemplate public
 
 ::method init
-  expose _source _segments _variables _formatters
+  expose _source _segments _variables _formatterNames _formatters
   use strict arg source, formatters=.nil
   _source = source
   if formatters == .nil then formatters = .TemplateFormatterRegistry~default
@@ -440,6 +473,7 @@
   _formatters = formatters
   _segments = .TemplateParser~new~parse(source)
   _variables = self~collectVariables(_segments)
+  _formatterNames = self~collectFormatterNames(_segments)
 
 ::method source
   expose _source
@@ -452,6 +486,14 @@
 ::method variables
   expose _variables
   return _variables~copy
+
+::method formatterNames
+  expose _formatterNames
+  return _formatterNames~copy
+
+::method requirements
+  expose _variables _formatterNames
+  return .TemplateRequirements~new(_variables, _formatterNames)
 
 ::method formatters
   expose _formatters
@@ -476,6 +518,27 @@
   end
   return output
 
+::method renderTo
+  expose _segments _formatters
+  use strict arg sink, context, policy=.nil
+  if context~isa(.Directory) then do
+    converted = .TemplateContext~new
+    do key over context
+      converted~put(key, context[key])
+    end
+    context = converted
+  end
+  if \context~isa(.TemplateContext) then raise syntax 88.900 array("render context must be TemplateContext or Directory")
+  if policy == .nil then policy = .TemplateRenderPolicy~strictPlain
+  if \policy~isa(.TemplateRenderPolicy) then raise syntax 88.900 array("render policy must be TemplateRenderPolicy")
+  written = 0
+  do segment over _segments
+    text = segment~render(context, _formatters, policy)
+    if text \= "" then sink~charOut(text)
+    written += text~length
+  end
+  return written
+
 ::method collectVariables
   use strict arg segments
   variables = .Array~new
@@ -489,3 +552,24 @@
     end
   end
   return variables
+
+::method collectFormatterNames
+  use strict arg segments
+  names = .Array~new
+  seen = .Directory~new
+  do segment over segments
+    name = segment~formatterName
+    if name == .nil then iterate
+    if \seen~hasIndex(name) then do
+      seen[name] = .true
+      names~append(name)
+    end
+  end
+  return names
+
+
+::routine rx_string_template_json_fallback
+  use strict arg ch
+  code = c2d(ch)
+  if code < 32 then return "5c753030"x || d2x(code, 2)
+  return ch

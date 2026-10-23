@@ -6,6 +6,10 @@ call assertEq html, "&lt;tag a=&quot;b&quot;&gt;&amp;&#39;x&#39;&lt;/tag&gt;", "
 json = .StringTemplate~new("${json}")~render(ctx, .TemplateRenderPolicy~strictJson)
 call assertEq json, 'a\\"b\\nc\\\\d', "json escape"
 
+ctx["controls"] = "00"x || "01"x || "1f"x
+controls = .StringTemplate~new("${controls}")~render(ctx, .TemplateRenderPolicy~strictJson)
+call assertEq controls, "5c75303030305c75303030315c7530303146"x, "all JSON control bytes escaped"
+
 permissive = .StringTemplate~new("Hello ${missing}.")~render(.Directory~new, .TemplateRenderPolicy~permissivePlain)
 call assertEq permissive, "Hello ${missing}.", "keep missing"
 

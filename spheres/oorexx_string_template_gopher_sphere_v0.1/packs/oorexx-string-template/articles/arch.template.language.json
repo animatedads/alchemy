@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "arch.template.language",
+  "version": "0.1",
+  "sphere": "oorexx-string-template",
+  "title": "The template language stays deliberately small",
+  "authority": "project-authoritative",
+  "summary": "The supported language is interpolation, controlled path selection, registered formatting and literal placeholder escaping. Composition remains ordinary ooRexx rather than a second embedded programming language.",
+  "syntax": {
+    "value": "${name}",
+    "path": "${customer.address.city}",
+    "formatter": "${name|upper}",
+    "formatter_argument": "${code|prefix:ID-}",
+    "literal_placeholder": "$${name}"
+  },
+  "not_language_features": ["arbitrary expressions", "loops", "conditionals", "macros", "implicit method calls", "INTERPRET"],
+  "invariants": [
+    "A template cannot become a general Rexx evaluator by adding syntax convenience.",
+    "Future syntactic sugar must preserve the already-proved object and authority semantics."
+  ],
+  "related": ["arch.template.context-authority", "arch.template.requirements"],
+  "provenance": [{"source": "repository", "path": "packages/oorexx_string_template/ARCHITECTURE.md"}]
+}
