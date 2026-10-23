@@ -1,0 +1,75 @@
+using System.Collections.Concurrent;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+namespace Alchemy.OoRexx;
+internal static partial class Native {
+ const string Lib="alchemy_rexx_bridge";
+ [DllImport(Lib)] internal static extern nint ar_host_create(); [DllImport(Lib)] internal static extern void ar_host_destroy(nint h);
+ [DllImport(Lib)] internal static extern nint ar_call_program(nint h,[MarshalAs(UnmanagedType.LPUTF8Str)] string name,[MarshalAs(UnmanagedType.LPUTF8Str)] string arg); [DllImport(Lib)] internal static extern void ar_release(nint h,nuint o);
+ [DllImport(Lib)] internal static extern unsafe nint ar_send_slots(nint h,nuint o,[MarshalAs(UnmanagedType.LPUTF8Str)] string m,nuint argc,nint* tags,nint* texts,ulong* handles);
+ [DllImport(Lib)] internal static extern nint ar_send0(nint h,nuint o,[MarshalAs(UnmanagedType.LPUTF8Str)] string m); [DllImport(Lib)] internal static extern nint ar_send_string(nint h,nuint o,[MarshalAs(UnmanagedType.LPUTF8Str)] string m,[MarshalAs(UnmanagedType.LPUTF8Str)] string a);
+ [DllImport(Lib)] internal static extern nint ar_string(nint h,nuint o); [DllImport(Lib)] internal static extern void ar_free(nint p);
+ [DllImport("alchemy_clr_package")] internal static extern unsafe void ar_clr_callbacks(delegate* unmanaged<ulong,nint,nuint,nint*,nint*,ulong*,int> invoke,delegate* unmanaged<ulong,nint,int> isa,delegate* unmanaged<nint,void> free);
+}
+/// <summary>Maintains stable process-local CLR identities exported to ooRexx and owns native callback dispatch.</summary>
+public static unsafe class ClrObjectRegistry {
+ static readonly ConcurrentDictionary<ulong,object> objects=new(); static ulong next;
+ /// <summary>Returns the existing identity handle for an object, or allocates one without changing CLR identity.</summary>
+ public static ulong Register(object o){foreach(var p in objects)if(ReferenceEquals(p.Value,o))return p.Key;var id=Interlocked.Increment(ref next);objects[id]=o;return id;}
+ /// <summary>Resolves a previously exported CLR identity handle.</summary>
+ public static object Resolve(ulong h)=>objects[h];
+ /// <summary>Installs the managed reflection/type callbacks consumed by the native ooRexx package.</summary>
+ public static void Install()=>Native.ar_clr_callbacks(&Invoke,&IsA,&Free);
+ [UnmanagedCallersOnly] static int IsA(ulong h,nint typePtr){try{var name=Marshal.PtrToStringUTF8(typePtr)!;var o=Resolve(h);return Matches(o.GetType(),name)?1:0;}catch{return 0;}}
+ static bool Matches(Type t,string n)=>t.FullName==n||t.Name==n||t.GetInterfaces().Any(i=>i.FullName==n||i.Name==n)||t.BaseType is not null&&Matches(t.BaseType,n);
+ /// <summary>Dispatches a Rexx projection call against the object's current CLR member; no MethodInfo is retained between calls.</summary>
+ [UnmanagedCallersOnly] static int Invoke(ulong h,nint msgPtr,nuint argc,nint* slots,nint* text,ulong* returned){try{var o=Resolve(h);var msg=Marshal.PtrToStringUTF8(msgPtr)!;
+  object?[] Decode(){var a=new object?[(int)argc];for(var i=0;i<(int)argc;i++){var tag=Marshal.PtrToStringUTF8(slots[i])??"";a[i]=tag=="O"?AlchemyOmitted.Value:tag=="N"?null:tag.StartsWith("H",StringComparison.Ordinal)?Resolve(ulong.Parse(tag[1..],System.Globalization.CultureInfo.InvariantCulture)):tag.StartsWith("S",StringComparison.Ordinal)?tag[1..]:tag;}return a;}
+  int Return(object? r){if(r is null){*text=Marshal.StringToCoTaskMemUTF8("");return 1;}if(r is string s){*text=Marshal.StringToCoTaskMemUTF8("S"+s);return 1;}if(r is bool b){*text=Marshal.StringToCoTaskMemUTF8("I"+(b?"1":"0"));return 1;}if(r is int iv){*text=Marshal.StringToCoTaskMemUTF8("I"+iv.ToString(System.Globalization.CultureInfo.InvariantCulture));return 1;}if(r is long l){*text=Marshal.StringToCoTaskMemUTF8("I"+l.ToString(System.Globalization.CultureInfo.InvariantCulture));return 1;}if(r is double d){*text=Marshal.StringToCoTaskMemUTF8("D"+d.ToString("R",System.Globalization.CultureInfo.InvariantCulture));return 1;}*returned=Register(r);return r is Type?4:2;}
+  if(string.Equals(msg,"DOTNETCLASS",StringComparison.OrdinalIgnoreCase))return Return(o is Type?o:o.GetType());
+  if(o is Type t){var a=Decode(); if(string.Equals(msg,"NAME",StringComparison.OrdinalIgnoreCase))return Return(t.Name);if(string.Equals(msg,"FULLNAME",StringComparison.OrdinalIgnoreCase))return Return(t.FullName??t.Name);if(string.Equals(msg,"BASETYPE",StringComparison.OrdinalIgnoreCase))return Return(t.BaseType);if(string.Equals(msg,"ISINSTANCE",StringComparison.OrdinalIgnoreCase)&&a.Length==1)return Return(a[0] is not null&&t.IsInstanceOfType(a[0]));if(string.Equals(msg,"ISSUBCLASSOF",StringComparison.OrdinalIgnoreCase)&&a.Length==1&&a[0] is Type st)return Return(t.IsSubclassOf(st));if(string.Equals(msg,"ISASSIGNABLEFROM",StringComparison.OrdinalIgnoreCase)&&a.Length==1&&a[0] is Type at)return Return(t.IsAssignableFrom(at));return 0;}
+  var args=Decode();var m=BindCurrentMember(o.GetType(),msg,args);if(m is null)return 0;var r=m.Invoke(o,args);return Return(r);}catch(Exception ex){
+  var e=ex is TargetInvocationException tie && tie.InnerException is not null?tie.InnerException:ex;
+  *text=Marshal.StringToCoTaskMemUTF8(e.GetType().FullName+":"+e.Message);
+  return 3;
+ }}
+ /// <summary>Selects the most specific currently-visible CLR overload for the decoded Rexx arguments.</summary>
+ static MethodInfo? BindCurrentMember(Type type,string message,object?[] arguments){
+  MethodInfo? best=null;int bestScore=int.MaxValue;bool ambiguous=false;
+  foreach(var candidate in type.GetMethods(BindingFlags.Public|BindingFlags.Instance)){
+   if(!string.Equals(candidate.Name,message,StringComparison.OrdinalIgnoreCase))continue;
+   var parameters=candidate.GetParameters();if(parameters.Length!=arguments.Length)continue;
+   var score=0;var compatible=true;
+   for(var i=0;i<parameters.Length;i++){
+    var parameterType=parameters[i].ParameterType;var argument=arguments[i];
+    if(argument is null){
+     if(parameterType.IsValueType&&Nullable.GetUnderlyingType(parameterType) is null){compatible=false;break;}
+     score+=8;continue;
+    }
+    var argumentType=argument.GetType();
+    if(parameterType==argumentType)continue;
+    if(!parameterType.IsAssignableFrom(argumentType)){compatible=false;break;}
+    score+=InheritanceDistance(argumentType,parameterType);
+   }
+   if(!compatible)continue;
+   if(score<bestScore){best=candidate;bestScore=score;ambiguous=false;}
+   else if(score==bestScore){ambiguous=true;}
+  }
+  if(ambiguous)throw new AmbiguousMatchException("Ambiguous CLR member "+type.FullName+"."+message+" for supplied Rexx arguments");
+  return best;
+ }
+ /// <summary>Ranks assignable overloads so exact and nearest-base/interface matches beat object catch-alls.</summary>
+ static int InheritanceDistance(Type actual,Type target){
+  if(actual==target)return 0;
+  if(target.IsInterface)return actual.GetInterfaces().Contains(target)?1:32;
+  var distance=1;for(Type? cursor=actual.BaseType;cursor is not null;cursor=cursor.BaseType,++distance)if(cursor==target)return distance;
+  return 32;
+ }
+ [UnmanagedCallersOnly] static void Free(nint p){if(p!=0)Marshal.FreeCoTaskMem(p);}
+}
+public sealed class AlchemyOmitted { public static readonly AlchemyOmitted Value=new(); private AlchemyOmitted(){} public override string ToString()=>"OMITTED"; }
+/// <summary>Owns one embedded ooRexx interpreter and its native lifetime.</summary>
+public sealed class OoRexxHost:IDisposable { internal nint Handle{get;private set;} public OoRexxHost(){ClrObjectRegistry.Install();Handle=Native.ar_host_create();if(Handle==0)throw new InvalidOperationException("RexxCreateInterpreter failed");} public RexxObject CallProgram(string n,string arg){var o=Native.ar_call_program(Handle,n,arg);if(o==0)throw new InvalidOperationException("ooRexx call failed or raised a condition");ClrObjectRegistry.Install();return new(this,(nuint)o);} public void Dispose(){if(Handle!=0){Native.ar_host_destroy(Handle);Handle=0;}GC.SuppressFinalize(this);} }
+/// <summary>A host-bound global ooRexx object reference used for identity-preserving re-entry.</summary>
+public sealed class RexxObject:IDisposable {readonly OoRexxHost host;nuint handle; internal nuint AuthorityHandle=>handle;internal RexxObject(OoRexxHost h,nuint p){host=h;handle=p;} public RexxObject SendSparse(string m, params object?[] args){unsafe{var tags=new nint[args.Length];var texts=new nint[args.Length];var handles=new ulong[args.Length];try{for(int i=0;i<args.Length;i++){if(ReferenceEquals(args[i],AlchemyOmitted.Value)) tags[i]=Marshal.StringToCoTaskMemUTF8("O"); else if(args[i] is null) tags[i]=Marshal.StringToCoTaskMemUTF8("N"); else if(args[i] is string st){tags[i]=Marshal.StringToCoTaskMemUTF8("S");texts[i]=Marshal.StringToCoTaskMemUTF8(st);} else if(args[i] is int or long){tags[i]=Marshal.StringToCoTaskMemUTF8("I");texts[i]=Marshal.StringToCoTaskMemUTF8(Convert.ToString(args[i],System.Globalization.CultureInfo.InvariantCulture)!);} else if(args[i] is double or float or decimal){tags[i]=Marshal.StringToCoTaskMemUTF8("D");texts[i]=Marshal.StringToCoTaskMemUTF8(Convert.ToString(args[i],System.Globalization.CultureInfo.InvariantCulture)!);} else if(args[i] is RexxObject ro){if(!ReferenceEquals(ro.host,host))throw new InvalidOperationException("A Rexx object belongs to a different ooRexx host");if(ro.handle==0)throw new ObjectDisposedException(nameof(RexxObject));tags[i]=Marshal.StringToCoTaskMemUTF8("R");handles[i]=(ulong)ro.handle;} else throw new NotSupportedException("Unsupported CLR->Rexx argument type.");} fixed(nint* tp=tags, xp=texts) fixed(ulong* hp=handles){var r=Native.ar_send_slots(host.Handle,handle,m,(nuint)args.Length,tp,xp,hp);if(r==0)throw new InvalidOperationException("Rexx sparse message failed");return new(host,(nuint)r);}}finally{foreach(var p in tags)if(p!=0)Marshal.FreeCoTaskMem(p);foreach(var p in texts)if(p!=0)Marshal.FreeCoTaskMem(p);}}} public RexxObject Send(string m){var r=Native.ar_send0(host.Handle,handle,m);if(r==0)throw new InvalidOperationException("Rexx message failed");return new(host,(nuint)r);}public RexxObject Send(string m,string v){var r=Native.ar_send_string(host.Handle,handle,m,v);if(r==0)throw new InvalidOperationException("Rexx message failed");return new(host,(nuint)r);}public override string ToString(){var p=Native.ar_string(host.Handle,handle);if(p==0)return"";try{return Marshal.PtrToStringUTF8(p)??"";}finally{Native.ar_free(p);}}public void Dispose(){if(handle!=0){Native.ar_release(host.Handle,handle);handle=0;}GC.SuppressFinalize(this);}}
