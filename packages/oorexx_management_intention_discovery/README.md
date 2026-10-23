@@ -1,4 +1,4 @@
-# ooRexx Management Intention Discovery v0.1-dev7
+# ooRexx Management Intention Discovery v0.1-dev8
 
 Dev7 keeps the Management resolver domain-blind while rebasing its transient network specialist on the current transport stack.
 
@@ -15,7 +15,7 @@ A configured route, a path observation and a standards/interface witness are dif
 
 ## Dynamic qualification
 
-The dev7 regression begins at machine `ED209C`, reaches a related multicast service, discovers Network Transport Intentions transiently, and exposes NORM, XTP route state, path evidence and an interface witness. The path authority is then changed from `NO_RESPONSE_OR_FILTERED` to `PASS`; the identical exploration sees the new observation and does not retain stale state.
+The dev8 regression begins at machine `ED209C`, reaches a related multicast service, discovers Network Transport Intentions transiently, and exposes NORM, XTP route state, path evidence and an interface witness. The path authority is then changed from `NO_RESPONSE_OR_FILTERED` to `PASS`; the identical exploration sees the new observation and does not retain stale state.
 
 ## Run
 
@@ -24,3 +24,12 @@ REXX_BIN=/path/to/rexx ./tools/run_environment_test.sh
 ```
 
 The environment suite is read-only and requires no live cloud or network access.
+
+## dev8 — Instrumentation Mesh specialist discovery
+
+Related authoritative objects may now advertise `instrumentation.intentions/0.1`
+for the current exploration. The specialist reads Instrumentation Mesh latest
+snapshots/history/series and keeps `semantic_ref` plus the original bound object.
+Management itself learns no metric vocabulary and receives no Mesh command
+surface. A separately-published relationship can expose the detached latest
+snapshot as traversable evidence.

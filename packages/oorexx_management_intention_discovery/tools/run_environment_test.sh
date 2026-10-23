@@ -10,7 +10,7 @@ pass() { printf 'PASS %s\n' "$*"; }
 
 command -v "$REXX_BIN" >/dev/null 2>&1 || fail "ooRexx interpreter not found: $REXX_BIN"
 
-export REXX_PATH="$ROOT/src:$ROOT/vendor/mvs-intentions:$ROOT/vendor/mvs-intentions/intention:$ROOT/vendor/generalized-compute:$ROOT/vendor/network-transport:$ROOT/vendor/socket-provider:$ROOT/vendor/xtp${REXX_PATH:+:$REXX_PATH}"
+export REXX_PATH="$ROOT/src:$ROOT/vendor/mvs-intentions:$ROOT/vendor/mvs-intentions/intention:$ROOT/vendor/generalized-compute:$ROOT/vendor/network-transport:$ROOT/vendor/socket-provider:$ROOT/vendor/xtp:$ROOT/vendor/instrumentation-intentions:$ROOT/vendor/instrumentation-mesh${REXX_PATH:+:$REXX_PATH}"
 
 printf '%s\n' '== interpreter =='
 "$REXX_BIN" -v | head -4
@@ -37,6 +37,7 @@ printf '%s\n' '== syntax/load =='
   "$REXX_BIN" test_related_surface_advertisement.rex
   "$REXX_BIN" test_network_transport_advertisement.rex
   "$REXX_BIN" test_network_path_multicast_advertisement.rex
+  "$REXX_BIN" test_instrumentation_advertisement.rex
 )
 
-pass 'management intention discovery dev7 environment qualification'
+pass 'management intention discovery dev8 environment qualification'

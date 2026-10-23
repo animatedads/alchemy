@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.1-dev7
+## v0.1-dev8
 
 - Rebased transient Network Transport specialist to Network Transport Intentions v0.1-dev2.
 - Uses current Socket Provider v0.1-dev8 objects, including NORM and explicit multicast address/capability state.
@@ -8,8 +8,6 @@
 - Related-surface exploration now qualifies independent network path evidence and Spiral 1 COTS-interface witnesses without adding protocol knowledge to Management.
 - Repeated exploration proves changed path evidence is refreshed and stale evidence is not retained.
 - No cloud CLI, SSH, socket acquisition, network probe, route selection or mutation authority is added to Management.
-
-# Changelog
 
 ## v0.1-dev6
 
@@ -22,3 +20,10 @@
 ## v0.1-dev5
 
 See prior package for related-object transient intention-surface advertisement.
+
+## 0.1-dev8
+
+- Added transient discovery of Instrumentation Intentions v0.1-dev1 from related authoritative objects.
+- Added service -> detached Instrumentation Mesh snapshot relationship qualification.
+- Preserved per-turn freshness: a later Mesh publication changes Management-visible health without stale retained state.
+- Kept Instrumentation Mesh command envelopes outside Management discovery; dev8 integration is read-only.
