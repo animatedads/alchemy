@@ -27,9 +27,10 @@ Qualified with Open Object Rexx 5.3.0 r13196 Internal Test Version.
 
 The dev16 semantic application projection failed on saved reports with totals because
 `semanticReportDescriptors` treated the Array of total binding names as report-column
-Directories. The consumer test reproduced ooRexx error 93.924 at the projection
-boundary. Dev4 carries the minimal repair `definition["TOTALS"]~copy`; Help Desk
+Directories.  The consumer test reproduced ooRexx error 93.924 at the projection
+boundary.  Dev4 carries the minimal repair `definition["TOTALS"]~copy`; Help Desk
 discovery now exercises this path directly.
+
 
 ## dev5 qualification — 2026-10-11
 
