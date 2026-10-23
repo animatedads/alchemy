@@ -1,0 +1,36 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "intention_db_search_tests",
+    "version": "0.1-dev29",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "prepare-source",
+      "argv": ["python3", "prepare_source.py"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "shell-syntax",
+      "argv": ["bash", "-lc", "for f in prepared/tools/*.sh; do bash -n \"$f\"; done"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "source-contract",
+      "argv": ["python3", "prepared/tools/autobuild_static_check.py"],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": "prepared",
+      "path": "packages/intention_db_search_tests_v0.1-dev29"
+    }
+  }
+}
