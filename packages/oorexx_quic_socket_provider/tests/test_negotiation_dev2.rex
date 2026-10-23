@@ -12,5 +12,5 @@ if sel~address \== addr then exit 11
 if \sel~offer~capabilities~secure then exit 12
 if \sel~offer~capabilities~stream then exit 13
 if sel~offer~capabilities~multicast then exit 14
-say "NEGOTIATION_DEV2_OK"
+say "NEGOTIATION_DEV3_OK"
 ::requires "QuicSocketProvider.cls"
