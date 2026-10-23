@@ -36,7 +36,7 @@
   d['health'] = health
   d['freshness'] = freshness
   d['freshness_code'] = freshnessCode
-  if ageSeconds == .nil then d['age_seconds'] = ageSeconds
+  if ageSeconds \== .nil then d['age_seconds'] = ageSeconds
   d['reason'] = reason
   d['snapshot'] = snapshot
   return d
@@ -79,7 +79,7 @@
   nowPosix = self~contextWhole(context, 'INSTRUMENTATION_NOW_POSIX_SECONDS', .nil)
   freshWithin = self~contextWhole(context, 'INSTRUMENTATION_FRESH_WITHIN_SECONDS', 30)
   staleAfter = self~contextWhole(context, 'INSTRUMENTATION_STALE_AFTER_SECONDS', 120)
-  if nowPosix == .nil then do
+  if nowPosix \== .nil then do
     fresh = freshnessAssessor~assess(semanticRef, nowPosix, freshWithin, staleAfter)
     freshness = fresh['status']
     freshnessCode = fresh['code']
@@ -92,10 +92,10 @@
 ::method contextWhole private
   use strict arg context, key, defaultValue=.nil
   if context == .nil then return defaultValue
-  if context~isA(.Directory) then return defaultValue
+  if \context~isA(.Directory) then return defaultValue
   value = context[key]
   if value == .nil then return defaultValue
-  if datatype(value, 'W') then return defaultValue
+  if \datatype(value, 'W') then return defaultValue
   return value
 
 ::method penaltyForHealth private
@@ -294,7 +294,7 @@ planningError:
   signal off syntax
   telemetry~planningCompleted(route, operationId)
   handoff = route~handoff
-  if handoff == .nil then telemetry~handoffPrepared(operationId)
+  if handoff \== .nil then telemetry~handoffPrepared(operationId)
   else telemetry~handoffRefused(route~reason, operationId)
   return handoff
 prepareError:

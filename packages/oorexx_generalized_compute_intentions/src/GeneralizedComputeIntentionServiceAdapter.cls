@@ -55,7 +55,7 @@
   registration~metadata['provider'] = planner~providerId
   registration~metadata['operation'] = operation
   registration~metadata['mutating'] = .false
-  if workload == .nil then do
+  if workload \== .nil then do
     descriptor = planner~operationDescriptor(operation, workload, context)
     registration~metadata['currently_available'] = descriptor['available']
     registration~metadata['current_state'] = descriptor['state']
@@ -76,12 +76,12 @@
   expose structuredProvider operation workload context
   use strict arg decision
   if decision == .nil then raise syntax 93.900 array('Intention decision is required')
-  if decision~status == 'READY' then raise syntax 93.900 array('COMPUTE_INTENTION_NOT_READY')
+  if decision~status \== 'READY' then raise syntax 93.900 array('COMPUTE_INTENTION_NOT_READY')
 
   effectiveWorkload = workload
   effectiveContext = context
   slots = decision~slots
-  if slots == .nil then do
+  if slots \== .nil then do
     if slots~hasIndex('WORKLOAD') then effectiveWorkload = slots['WORKLOAD']
     if slots~hasIndex('CONTEXT') then effectiveContext = slots['CONTEXT']
     if slots~hasIndex('REQUEST') then return structuredProvider~executeRequest(slots['REQUEST'])
