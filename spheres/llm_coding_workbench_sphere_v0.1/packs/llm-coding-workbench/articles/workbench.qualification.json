@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "workbench.qualification",
+  "version": "0.1",
+  "sphere": "llm-coding-workbench",
+  "section": "qualification",
+  "title": "Qualification truth: dev13 is the last full r13196 run; dev14 is a narrow source continuation",
+  "summary": "dev13 has the complete recorded ooRexx 5.3.0 r13196 environment qualification. dev14 changes only the compatibility turn-encoding path so it delegates to the explicit boundary and adds a focused regression. The exact earlier r13196 upload was not downloadable in the 2026-10-23 execution environment, so dev14 must not be represented as having rerun the full suite until that exact runtime/dependency environment is available again.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Never relabel historical dev13 qualification output as dev14 evidence.",
+    "A source-level architectural cleanup is not equivalent to runtime qualification.",
+    "Full requalification uses the exact selected ooRexx runtime plus Coding Intention and Intention Service roots.",
+    "No Coding Intention source change is part of dev14."
+  ],
+  "procedure": [
+    "Recover/extract the exact r13196 runtime used by the accepted baseline.",
+    "Provide the selected Coding Intention and Intention Service dependency roots.",
+    "Run tools/run_environment_test.sh from the Workbench package.",
+    "Only then publish a dev14 runtime PASS record."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_llm_coding_workbench_v0.1-dev14.zip",
+      "sha256": "04429c32acf45c8926dff41c16fb7e73a25d4480ba7fa199ff1b28d960032899",
+      "member": "docs/QUALIFICATION_r13196.txt",
+      "claim": "Historical complete dev13 r13196 environment qualification."
+    },
+    {
+      "artifact": "oorexx_llm_coding_workbench_v0.1-dev14.zip",
+      "sha256": "04429c32acf45c8926dff41c16fb7e73a25d4480ba7fa199ff1b28d960032899",
+      "member": "docs/DEV14_REQUALIFICATION.md",
+      "claim": "dev14 qualification status and required rerun procedure."
+    }
+  ]
+}
