@@ -1,0 +1,45 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "oorexx_prolog_alchemy",
+    "version": "0.1-dev19-source",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "native-cleanup-source-contract",
+      "argv": [
+        "python3",
+        "tests/test_cleanup_exclusive.py"
+      ],
+      "timeout_seconds": 30
+    },
+    {
+      "name": "bridge-contracts",
+      "argv": [
+        "python3",
+        "tests/test_contract.py"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "email-classification-contracts",
+      "argv": [
+        "python3",
+        "tests/test_demo_classification.py"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_prolog_alchemy"
+    }
+  }
+}
