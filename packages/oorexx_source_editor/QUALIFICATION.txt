@@ -1,4 +1,4 @@
-ooRexx Source / Code / Class Editor v0.1-dev3 qualification
+ooRexx Source / Code / Class Editor v0.1-dev5 qualification
 Target runtime: ooRexx 5.3.0 r13196 (user-supplied debug distribution)
 
 Core suite:
@@ -20,22 +20,32 @@ Core suite:
   PASS grep regex ignores comment
   PASS grep regex text comment
   PASS grep regex insensitive
-  PASS ooRexx source editor dev3
+  PASS tree file find
+  PASS tree grep code
+  PASS tree grep ignores comment
+  PASS completion document classes
+  PASS completion deterministic order
+  PASS completion tree file
+  PASS ooRexx source editor dev5
 
-Native grep qualification:
-  - SourceFinder~grep delegates regex matching to .RegularExpression from rxregexp.cls / librxregexp.
-  - Literal SourceFinder~find remains literal and does not reinterpret regex metacharacters.
-  - code mode preserves the existing language-aware comment projection and original source coordinates.
-  - self-grep: code-editor grep src/SourceEditor.cls SourceF[a-z]+ code sensitive returned SourceDocument call sites and SourceFinder.
+Dev5 qualification:
+  - SourceCompletionCandidate carries label, kind, detail, path, line and insertion text.
+  - SourceCompletionProvider completes document symbols and source-tree files as reusable ooRexx objects.
+  - completion order is deterministic and independent of Directory iteration.
+  - CLI/UI/MCP may project the same completion objects; terminal text is not the authority.
+  - Semantic Source Store / Development Desk remains authority for semantic object creation and materialisation.
+  - SourceDocument remains authority only for conventional materialised-file inspection/editing.
 
-Dogfood qualification:
-  - dev3 SourceFinder replacement was published through SourceDocument~replaceSymbol + save.
-  - SourceDocument~grep convenience method was added through SourceDocument class editing.
-  - CLI grep branch and regression tests were inserted through SourceDocument generation-checked saves.
-  - rxregexp dependency and documentation were published through SourceDocument.
+Platform alignment:
+  - recursive traversal uses RexxUtil SysFileTree.
+  - regex uses ooRexx RegularExpression.
+  - no Python implementation files.
+  - no external find/grep subprocess in source-tree search.
+  - save retains exact-generation fencing and backup but makes no crash-durable atomicity claim; Atomic File remains the intended publication authority.
 
-Known publication limit:
-  save uses exact-generation recheck plus a complete sibling backup, but does not claim crash-durable atomic replacement. Wire oorexx_atomic_file when available.
+Dogfood:
+  - completion classes, CLI commands, tests, README, manifest and qualification were edited through SourceDocument generation-checked saves.
+  - final source was self-searched, self-completed and validated under the supplied r13196 runtime.
 
 Known CLI limit:
   the ooRexx launcher flattens the script command tail; the current small CLI parser cannot faithfully recover shell grouping for arbitrary multi-word patterns. The object API has no such restriction.
