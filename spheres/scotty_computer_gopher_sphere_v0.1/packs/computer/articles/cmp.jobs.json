@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "cmp.jobs",
+  "version": "0.1",
+  "sphere": "scotty-computer",
+  "title": "Learned executable job registration",
+  "summary": "Jobs bind immutable names to target, argv, timeout and workdir. Local subprocesses use shell=False. Remote jobs are run via authoritative sshnode.sh; registration and each execution have separate single-use confirmations.",
+  "authority": "development-source-evidence",
+  "invariants": [
+    "Show exact option/positional boundaries before registration.",
+    "A registered command does not automatically authorize an execution.",
+    "Remote executable bytes and transitive script dependencies are not fully pinned in dev8.",
+    "Do not persist secrets in argv.",
+    "Tokens and Claude hooks are not cryptographic proof of human consent."
+  ],
+  "provenance": [
+    {
+      "artifact": "scotty_computer_v0.1-dev8.zip",
+      "sha256": "1e779ef89d938f2102c146842f2e8f8814196acf02b4dc87a3f157c06993cdd0",
+      "member": "scotty_computer_v0.1-dev8/docs/EXECUTABLE_JOB_INTENTIONS.md"
+    }
+  ]
+}

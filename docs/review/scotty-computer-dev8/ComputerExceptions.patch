@@ -1,0 +1,102 @@
+--- a/src/ComputerExceptions.py
++++ b/src/ComputerExceptions.py
+@@ -17,6 +17,8 @@
+ MAX_WALK_ENTRIES = 50000
+ MAX_WALK_DEPTH = 24
+ MAX_RULES = 16
++OUTPUT_READ_CHUNK_BYTES = 1024 * 1024
++MAX_OUTPUT_SCAN_BYTES_PER_RULE_STREAM = 64 * 1024 * 1024
+ 
+ 
+ def parse_registration(text, error):
+@@ -114,6 +116,7 @@
+         self.tails = {}
+         self.complete = True
+         self.samples = 0
++        self.output_bytes_examined = 0
+ 
+     def event(self, ix, kind, observed, rule=None):
+         if ix in self.triggered:
+@@ -145,31 +148,61 @@
+                     self.complete = False
+                     self.event(ix, 'measurement_unavailable', {'reason': str(exc)}, rule)
+             elif kind == 'output_contains':
+-                needle = rule['needle'].encode('utf-8')
+-                for stream in (('stdout', 'stderr') if rule['stream'] == 'both' else (rule['stream'],)):
+-                    path = self.out_path if stream == 'stdout' else self.err_path
+-                    try:
+-                        with open(path, 'rb') as f:
+-                            offset_key = (ix, stream)
+-                            f.seek(self.offsets.get(offset_key, 0))
+-                            # Bounded per-tick read. Large output cannot evade checks by flooding.
+-                            chunk = f.read(1024 * 1024)
+-                            self.offsets[offset_key] = f.tell()
+-                            previous = self.tails.get((ix, stream), b'')
+-                            if needle in previous + chunk:
+-                                self.event(ix, kind, {'stream': stream, 'needle': rule['needle']}, rule)
+-                                break
+-                            self.tails[(ix, stream)] = (previous + chunk)[-(len(needle) - 1):] if len(needle) > 1 else b''
+-                            if os.stat(path).st_size > self.offsets[offset_key]:
+-                                self.complete = False
+-                    except OSError as exc:
+-                        self.complete = False
+-                        self.event(ix, 'measurement_unavailable', {'reason': str(exc)}, rule)
+-                        break
++                self._check_output(ix, rule, final=False)
++
++    def _check_output(self, ix, rule, final):
++        """Read receipt bytes incrementally; drain any tail when the child exits.
++
++        Backlog is not loss: a busy child can outrun a single 1 MiB sample.
++        Incompleteness is recorded only for an unreadable or over-budget stream.
++        """
++        needle = rule['needle'].encode('utf-8')
++        streams = ('stdout', 'stderr') if rule['stream'] == 'both' else (rule['stream'],)
++        for stream in streams:
++            path = self.out_path if stream == 'stdout' else self.err_path
++            key = (ix, stream)
++            try:
++                with open(path, 'rb') as f:
++                    while True:
++                        offset = self.offsets.get(key, 0)
++                        size = os.fstat(f.fileno()).st_size
++                        remaining = MAX_OUTPUT_SCAN_BYTES_PER_RULE_STREAM - offset
++                        if size > offset and remaining <= 0:
++                            self.complete = False
++                            self.event(ix, 'measurement_unavailable',
++                                       {'stream': stream, 'reason': 'output scan byte budget exceeded',
++                                        'bytes_examined': offset, 'size_bytes': size}, rule)
++                            return
++                        f.seek(offset)
++                        chunk = f.read(min(OUTPUT_READ_CHUNK_BYTES, max(0, remaining)))
++                        if not chunk:
++                            break
++                        self.offsets[key] = offset + len(chunk)
++                        self.output_bytes_examined += len(chunk)
++                        previous = self.tails.get(key, b'')
++                        if needle in previous + chunk:
++                            self.event(ix, 'output_contains',
++                                       {'stream': stream, 'needle': rule['needle']}, rule)
++                            return
++                        self.tails[key] = (previous + chunk)[-(len(needle) - 1):] if len(needle) > 1 else b''
++                        if not final:
++                            break
++            except OSError as exc:
++                self.complete = False
++                self.event(ix, 'measurement_unavailable',
++                           {'stream': stream, 'reason': str(exc)}, rule)
++                return
+ 
+     def finish(self):
++        # A completed child cannot produce further output: drain its receipts
++        # instead of mistaking a temporary sampling backlog for missing data.
+         self.tick()
++        for ix, rule in enumerate(self.rules):
++            if ix not in self.triggered and rule['type'] == 'output_contains':
++                self._check_output(ix, rule, final=True)
+         return {'schema': EXCEPTION_SCHEMA, 'registered': self.rules, 'raised': self.events,
+                 'count': len(self.events), 'observation_complete': self.complete,
+                 'samples': self.samples, 'sample_interval_seconds': SAMPLE_SECONDS,
++                'output_bytes_examined': self.output_bytes_examined,
++                'max_output_scan_bytes_per_rule_stream': MAX_OUTPUT_SCAN_BYTES_PER_RULE_STREAM,
+                 'policy': 'report-only; no process termination on exception'}
