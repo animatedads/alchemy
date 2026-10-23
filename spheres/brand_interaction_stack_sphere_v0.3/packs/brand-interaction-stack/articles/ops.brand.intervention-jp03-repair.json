@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "ops.brand.intervention-jp03-repair",
+  "version": "0.1",
+  "sphere": "brand-interaction-stack",
+  "title": "Brand Intervention v0.2.1 Journey Population v0.3 compatibility repair",
+  "summary": "The accepted Brand Intervention v0.2 regression still called population.configureProvenance, which Journey Population v0.3 intentionally no longer owns. The v0.2.1 candidate updates only the package/runtime generation identity, dependency/qualification metadata and the cohort-quality regression setup: upstream source/sampling/dedup provenance goes to BrandJourneyPopulation.configureSourceProvenance, while the explicitly unknown selection rule and local selection policies go to BrandJourneyCohortDefinition.configureSelectionProvenance. API brand.intervention/0.2 and intervention semantics are unchanged. Candidate is submitted to Autobuild and remains unaccepted pending receipt.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Population owns upstream source, sampling and deduplication provenance.",
+    "Cohort definition owns selection, inclusion/exclusion and outcome-ascertainment provenance.",
+    "The regression intentionally keeps selectionRuleId=UNSPECIFIED so the cohort-quality gate still fails for the intended reason.",
+    "COHORT_EVIDENCE_QUALITY_REVIEW remains an evidence-repair path, not tone guidance.",
+    "Patch package version is 0.2.1 while API remains brand.intervention/0.2.",
+    "No acceptance claim is valid until Autobuild emits a receipt/result on main."
+  ],
+  "procedure": [
+    "Autobuild submission: 20261023T180500Z-CHATGPT-brand-intervention-v021-jp03.",
+    "Transport branch: autobuild-submit/20261023T180500Z-CHATGPT-brand-intervention-v021-jp03.",
+    "Inspect receiver result/receipt; only PASS may advance accepted package status."
+  ],
+  "provenance": [
+    {
+      "artifact": "github:animatedads/alchemy",
+      "member": "packages/brand_intervention_v0.2/tests/test_cohort_quality_review.rex",
+      "claim": "Accepted v0.2 regression contains legacy population.configureProvenance call."
+    },
+    {
+      "artifact": "github:animatedads/alchemy",
+      "member": "packages/brand_journey_population_v0.3/src/BrandJourneyPopulation.cls",
+      "claim": "Journey Population v0.3 owns upstream provenance on population.configureSourceProvenance and local selection provenance on cohort.configureSelectionProvenance."
+    },
+    {
+      "artifact": "autobuild submission",
+      "member": "20261023T180500Z-CHATGPT-brand-intervention-v021-jp03",
+      "claim": "Immutable candidate submission containing the compatibility repair; acceptance pending."
+    }
+  ]
+}
