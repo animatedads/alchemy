@@ -1,4 +1,4 @@
-/* ooRexx LLM Coding Workbench v0.1-dev13
+/* ooRexx LLM Coding Workbench v0.1-dev14
  *
  * Orchestrates one semantic coding action per model turn without flattening
  * SCCD/Development Desk source objects or model-supplied method bodies into
@@ -9,7 +9,7 @@
  */
 
 ::class LlmCodingWorkbenchBuild public
-::constant VERSION "0.1-dev13"
+::constant VERSION "0.1-dev14"
 ::constant API "llm.coding.workbench/0.1"
 
 ::class LlmCodingTurn public
@@ -78,9 +78,18 @@
   raw=rawArg
 
 ::class LlmCodingJsonCodec public
+::attribute boundary get
+
+::method init
+  expose boundary
+  use strict arg boundaryArg=.nil
+  if boundaryArg==.nil then boundary=.LlmCodingBoundaryAdapter~new
+  else boundary=boundaryArg
+
 ::method encodeTurn
+  expose boundary
   use strict arg turn
-  return .json~toJson(turn~asDirectory)
+  return boundary~turnJson(turn)
 
 ::method decodeDecision
   use strict arg text
