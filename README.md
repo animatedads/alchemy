@@ -98,3 +98,8 @@ Alchemy contains components at different maturity levels: experiments, developme
 ## Why ooRexx?
 
 ooRexx remains unusually good at readable automation, object-oriented scripting, systems integration and long-lived operational code. Alchemy is an attempt to give it a much larger modern component estate: not a toy showcase, but enough real machinery that substantial applications can stay in Rexx when Rexx is the right tool.
+
+
+## Commercial marketplace portfolio (proposal)
+
+A **design-only** multicloud marketplace product portfolio is maintained at [`docs/commercial/`](docs/commercial/README.md). It includes 18 product groups, 46 provisional public plan configurations, Communications and NotNotes Field Operations business cases, trial/commerce/WLU adapter specifications and strict release gates. This is not evidence that a marketplace offer is approved, transactable or production-qualified.
