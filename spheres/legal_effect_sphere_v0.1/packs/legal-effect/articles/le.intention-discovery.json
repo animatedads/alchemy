@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "le.intention-discovery",
+  "version": "0.1",
+  "sphere": "legal-effect",
+  "title": "Intention Service discovers the next legal question; it does not own legal semantics",
+  "summary": "Legal Interrogation publishes transient specialist surfaces into Intention Service v0.1-dev11. Intention Service owns conversational recognition, CLARIFY/CONFIRM/READY, refresh/replacement and dispatch. Legal Interrogation owns the examination state machine and Legal Effect owns legal decision semantics.",
+  "authority": "project-operating-doctrine",
+  "invariants": [
+    "Discovery surfaces are advisory availability statements, not authority grants.",
+    "Discovery refresh replaces stale domain evidence/surfaces rather than accumulating permanent startup truth.",
+    "Unchanged legal examination state must preserve the same discovery identity/generation.",
+    "A legal mutation must change discovery identity so retained decisions can be refreshed or invalidated.",
+    "A READY decision may activate an advertised legal-interrogation operation only if the bound session revision is still current."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_intention_service_v0.1-dev11.zip",
+      "sha256": "f935dda3740db7a79add3ccd85dfdbabf7bc4c70a5b727d8773e5eb5bd49cc96",
+      "member": "src/IntentionService.cls",
+      "claim": "Intention Service dev11 owns CLARIFY/CONFIRM/READY resolution, discovery-provider refresh/replacement semantics and discovery-generation stamping."
+    },
+    {
+      "artifact": "oorexx_legal_interrogation_v0.1-dev5.zip",
+      "sha256": "1e41b99446cb213897a513758f0f466ecff584d2aaf37fc9c280438747862514",
+      "member": "docs/ARCHITECTURE.md",
+      "claim": "Legal Interrogation dev5 implements clause interrogation, proposition challenge, lifecycle invalidation and a real Intention Service dev11 discovery adapter."
+    },
+    {
+      "artifact": "oorexx_legal_interrogation_v0.1-dev5.zip",
+      "sha256": "1e41b99446cb213897a513758f0f466ecff584d2aaf37fc9c280438747862514",
+      "member": "tests/test_intention_service_dev11_live.rex",
+      "claim": "The dev5 qualification source tests stable discovery generation on unchanged legal state, generation advance on mutation, READY execution and stale-surface rejection."
+    }
+  ]
+}

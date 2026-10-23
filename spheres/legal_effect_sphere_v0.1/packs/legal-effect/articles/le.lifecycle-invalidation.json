@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "le.lifecycle-invalidation",
+  "version": "0.1",
+  "sphere": "legal-effect",
+  "title": "Reopen, supersession and stale-state invalidation",
+  "summary": "Legal meaning is revisioned. Reopening an accepted answer or superseding a proposition invalidates everything that depended on the old interpretation. Compile handoffs are detached revision-bound snapshots and cannot silently track a live mutable session.",
+  "authority": "project-operating-doctrine",
+  "invariants": [
+    "Reopening a question makes dependent propositions and proposition tests stale.",
+    "Superseded propositions remain audit history but are excluded from the active compile snapshot.",
+    "An already-issued handoff is rejected as stale after the authoring revision changes.",
+    "New proposition tests cannot be created against retired/superseded propositions.",
+    "Self-supersession and equivalent lifecycle shortcuts fail closed."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_legal_interrogation_v0.1-dev5.zip",
+      "sha256": "1e41b99446cb213897a513758f0f466ecff584d2aaf37fc9c280438747862514",
+      "member": "docs/ARCHITECTURE.md",
+      "claim": "Legal Interrogation dev5 implements clause interrogation, proposition challenge, lifecycle invalidation and a real Intention Service dev11 discovery adapter."
+    }
+  ]
+}

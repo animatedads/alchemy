@@ -1,0 +1,150 @@
+{
+  "kind": "corpus",
+  "id": "legal-effect.glossary",
+  "sphere": "legal-effect",
+  "title": "Legal Effect and Legal Interrogation authoritative glossary",
+  "records": [
+    {
+      "id": "term.legal-source",
+      "term": "Legal source",
+      "definition": "Original retained document/source material plus identity/provenance; ingestion does not itself certify legal authority.",
+      "related": [
+        "le.source-provenance"
+      ]
+    },
+    {
+      "id": "term.legal-proposition",
+      "term": "Legal proposition",
+      "definition": "Structured candidate meaning derived from source text, with modality, actor/subject, act/object, conditions, exceptions and provenance.",
+      "related": [
+        "le.interrogation-pipeline"
+      ]
+    },
+    {
+      "id": "term.legal-interrogation",
+      "term": "Legal Interrogation",
+      "definition": "Upstream authoring/cross-examination layer that asks clause-level questions, reviews answers and challenges propositions before Legal Effect compilation.",
+      "related": [
+        "le.interrogation-pipeline",
+        "le.authority-boundary"
+      ]
+    },
+    {
+      "id": "term.compile-handoff",
+      "term": "LegalInterrogationCompileHandoff",
+      "definition": "Detached revision-bound non-authoritative authoring snapshot offered to a host Legal Effect adapter after required clause/document closure.",
+      "related": [
+        "le.lifecycle-invalidation",
+        "le.authority-boundary"
+      ]
+    },
+    {
+      "id": "term.legal-effect",
+      "term": "Legal Effect",
+      "definition": "Compiler-certified structured legal-semantic/evaluation domain; not an LLM opinion and not Institutional Policy publication authority.",
+      "related": [
+        "le.overview",
+        "le.authority-boundary"
+      ]
+    },
+    {
+      "id": "term.legal-compile-proposal",
+      "term": "LegalCompileProposal",
+      "definition": "Proposal object entering the Legal Effect compilation path with required source/provision/evidence references; proposal status is not compiler authority.",
+      "related": [
+        "le.authority-boundary"
+      ]
+    },
+    {
+      "id": "term.legal-rule-generation",
+      "term": "LegalRuleGeneration",
+      "definition": "Sealed/certified generation used by the Legal Effect engine after the compiler authority boundary.",
+      "related": [
+        "le.authority-boundary"
+      ]
+    },
+    {
+      "id": "term.review-required",
+      "term": "REVIEW_REQUIRED",
+      "definition": "Explicit unresolved/contested outcome requiring legal review or more evidence; never a licence for a model to guess.",
+      "related": [
+        "le.interrogation-pipeline",
+        "le.tests-and-adversaries"
+      ]
+    },
+    {
+      "id": "term.stale-handoff",
+      "term": "STALE_HANDOFF",
+      "definition": "Failure state when the legal authoring revision changed after a compile handoff was issued.",
+      "related": [
+        "le.lifecycle-invalidation"
+      ]
+    },
+    {
+      "id": "term.stale-discovery",
+      "term": "STALE_DISCOVERY",
+      "definition": "Failure state when a previously advertised Intention surface no longer matches the legal session revision/state.",
+      "related": [
+        "le.intention-discovery"
+      ]
+    },
+    {
+      "id": "term.superseded-proposition",
+      "term": "Superseded proposition",
+      "definition": "Historical proposition retained for audit but retired from the active legal interpretation and compile snapshot.",
+      "related": [
+        "le.lifecycle-invalidation"
+      ]
+    },
+    {
+      "id": "term.discovery-generation",
+      "term": "Intention discovery generation",
+      "definition": "Intention Service freshness generation that changes when specialist discovery signature changes; it is not a legal authority generation.",
+      "related": [
+        "le.intention-discovery"
+      ]
+    },
+    {
+      "id": "term.counterfactual",
+      "term": "Legal counterfactual",
+      "definition": "Explicit hypothetical legal-effect comparison labelled non-authoritative unless separately established through real evidence/compilation.",
+      "related": [
+        "le.counterfactual-boundary"
+      ]
+    },
+    {
+      "id": "term.institutional-policy",
+      "term": "Institutional Policy",
+      "definition": "Shared fixed/versioned publication and deployment governance substrate; domain legal semantics remain with Legal Effect.",
+      "related": [
+        "le.authority-boundary"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "legal_effect_v0.14.zip",
+      "sha256": "1eb6190025d18cb08754a6224967d4bf5193c739ea98b07dd8526068535ce93d",
+      "member": "legal_effect_v0.14/ARCHITECTURE.md",
+      "claim": "Legal Effect v0.14 owns structured legal-effect evaluation and the compiler/certification authority boundary; public legal API remains legal.effect/0.10."
+    },
+    {
+      "artifact": "oorexx_intention_service_v0.1-dev11.zip",
+      "sha256": "f935dda3740db7a79add3ccd85dfdbabf7bc4c70a5b727d8773e5eb5bd49cc96",
+      "member": "src/IntentionService.cls",
+      "claim": "Intention Service dev11 owns CLARIFY/CONFIRM/READY resolution, discovery-provider refresh/replacement semantics and discovery-generation stamping."
+    },
+    {
+      "artifact": "institutional_policy_v0.8.zip",
+      "sha256": "cc299764ae7e4d5c9aab7457b46f49ba524320296ed1e85d37b74025b16700bc",
+      "member": "institutional_policy_v0.8/README.md",
+      "claim": "Institutional Policy owns fixed/versioned publication identity, authority, effective time, lifecycle, topology, rollout and replay rather than domain legal semantics."
+    },
+    {
+      "artifact": "oorexx_legal_interrogation_v0.1-dev5.zip",
+      "sha256": "1e41b99446cb213897a513758f0f466ecff584d2aaf37fc9c280438747862514",
+      "member": "docs/ARCHITECTURE.md",
+      "claim": "Legal Interrogation dev5 implements clause interrogation, proposition challenge, lifecycle invalidation and a real Intention Service dev11 discovery adapter."
+    }
+  ]
+}
