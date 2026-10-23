@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "ldap-identity.qualification",
+  "version": "0.1",
+  "sphere": "ldap-identity",
+  "title": "dev19 qualification and non-claims",
+  "evidence": [
+    "Archive SHA-256: 14d41d9c1cd339ccd99bc1a344b182fdb86ef2b5c30ee6454dd2fbfe1525d8ec.",
+    "Source includes src/IdentityPeerAuthorityJournal.cls and tests/test_authority_recovery_journal.rex.",
+    "Fresh runtime qualification was not run because ooRexx was unavailable in the build container.",
+    "The packaged VALIDATION_DEV19_STANDARDS.txt is invalid evidence because its invocation could not find the subject path.",
+    "A direct rerun of oorexx_standards_enforcer.py against the dev19 ZIP scanned 81 files and reported 1 ERROR / 136 WARNINGS.",
+    "The single hard error is SIGNAL_NO_ANNOUNCE in tests/test_authority_recovery_journal.rex; therefore standards PASS is not claimed.",
+    "VERSION.txt still says 0.1-dev18 even though archive/changelog identify dev19; correct this before an accepted dev19 release."
+  ],
+  "non_claims": [
+    "No fresh ooRexx runtime PASS is claimed for dev19.",
+    "No full RexxOS WAN kill/promote field qualification is claimed by this sphere.",
+    "No transport ACK, observability correlation or recovery journal entry is promoted into consensus evidence.",
+    "No complete OpenLDAP/AD/Entra compatibility claim is implied by the native LDAP personality."
+  ],
+  "next_acceptance_gates": [
+    "Fix the standards hard error in the dev19 recovery regression.",
+    "Bump VERSION.txt consistently to dev19.",
+    "Run the authority-recovery regression under ooRexx.",
+    "Run the full packaged regression suite against the pinned dependency closure.",
+    "Only then advance dev19 from development candidate to runtime-qualified baseline."
+  ]
+}
