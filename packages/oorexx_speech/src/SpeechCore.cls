@@ -37,6 +37,9 @@
   return .SpeechAudioFormat~new(8000, 1, 'S16LE', 'PCM')
 ::method telephonyWideband class
   return .SpeechAudioFormat~new(16000, 1, 'S16LE', 'PCM')
+::method byName class
+  use strict arg profileName
+  return self~named(profileName)
 ::method named class
   use strict arg profileName
   name = translate(profileName)
