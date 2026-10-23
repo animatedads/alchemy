@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "instrumentation-mesh.authority",
+  "version": "0.1",
+  "sphere": "instrumentation-mesh",
+  "title": "Observation never reverses authority",
+  "authority": "project-authority",
+  "summary": "Instrumentation Mesh carries and retains operational facts but does not become the authority that created them. The producer owns service/fabric truth, Queue Fabric/XTP owns transport and peer authentication, and Keynote/Wire3D owns presentation only.",
+  "invariants": [
+    "Stable semantic identity is separate from endpoint, IP address, route, region and 3D position.",
+    "No sample is not zero; stale evidence is not fabricated failure.",
+    "Source health and observation freshness are distinct facts: HEALTHY+STALE is valid.",
+    "Metrics, relationships and events are evidence. They do not grant mutation authority.",
+    "A management command must pass authenticated peer identity, Instrumentation authorization and the target service's own authority checks.",
+    "Keynote rendering or selection never grants management authority.",
+    "Instrumentation Intentions and Management Intention Discovery remain read-side discovery surfaces."
+  ],
+  "verified_baseline": {
+    "instrumentation_mesh": "0.1-dev8",
+    "api": "instrumentation.mesh/0.1",
+    "sha256": "47402459e658da6ddb17c65c98010c0acd0e35d43b3a0b01c8c13c835f65d624"
+  }
+}
