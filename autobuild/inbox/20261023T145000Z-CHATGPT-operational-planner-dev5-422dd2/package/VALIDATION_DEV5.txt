@@ -1,0 +1,21 @@
+Operational Degradation Planner v0.1-dev5 validation
+
+Native build/test:
+- C++17 -Wall -Wextra -Werror PASS
+- planner decisions PASS
+- capacity scopes PASS
+- capacity-domain admission/rates PASS
+- 36,000 concurrent admission/release attempts PASS
+- live domain contraction/restoration PASS
+- persistent class/capacity registries PASS
+
+ooRexx 5.3.0 r13196:
+- capacity governor PASS
+- live contraction/state reconciliation PASS
+- 5,000 two-source fan-in admission/release cycles PASS
+
+Pressure defects corrected:
+1. active tickets now refresh when capacity changes;
+2. live tickets reconcile on NORMAL/DEGRADED/CONSTRAINED/EMERGENCY changes;
+3. native governor is mutex-protected;
+4. ooRexx planner/capacity lookups are cached in-process instead of spawning opctl on every hot-path admission.
