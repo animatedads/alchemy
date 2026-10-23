@@ -1,4 +1,4 @@
-# QUIC socket provider architecture — dev2
+# QUIC socket provider architecture — dev3
 
 QUIC is a socket family below the common SocketProvider boundary.
 
@@ -18,3 +18,12 @@ existing negotiation layer. It does not become a second selection authority.
 Accepted-socket address identity depends on SocketProvider dev14's generic rule:
 when an accepted provider peer exposes `address`, ProviderSocketListener retains
 that exact object rather than overwriting it with the listener address.
+
+
+## GitHub admission note
+
+The sealed dev3 archive retained a stale `dev2` heading here and a stale
+`QuicSocketProviderBuild.VERSION` constant.  The GitHub dev3 admission corrects
+those two labels to dev3 without changing the qualified transport semantics.
+The sealed archive SHA remains provenance for the delivered qualification; the
+repository source is the corrected continuation baseline.
