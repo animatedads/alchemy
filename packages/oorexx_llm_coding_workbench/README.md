@@ -1,4 +1,4 @@
-# ooRexx LLM Coding Workbench v0.1-dev13
+# ooRexx LLM Coding Workbench v0.1-dev14
 
 This is the coding lane:
 
@@ -320,3 +320,16 @@ Legacy directory-based `invoke()` remains as a transport compatibility entry,
 but the Workbench no longer chooses that path when an object-native transport
 is available. This keeps object identity, tool objects and instrumentation in
 Rexx until an external protocol actually requires a flattened representation.
+
+
+## dev14 — one projection authority
+
+The compatibility `LlmCodingJsonCodec~encodeTurn()` path no longer projects a
+turn by calling `turn~asDirectory` itself. It delegates to the configured
+`LlmCodingBoundaryAdapter`, so every outbound turn projection now crosses the
+same explicit Rexx boundary. This closes the last duplicate flattening path in
+the Workbench while retaining the compatibility codec API used by existing
+tests and callers.
+
+A focused regression injects a boundary spy and proves that the codec hands the
+exact live `LlmCodingTurn` object to that boundary before JSON projection.
