@@ -125,13 +125,33 @@
     },
     {
       "aliases": [
+        "RangeRequested",
+        "windowOffset",
+        "windowLimit",
+        "windowTotalCount",
+        "rangeWindow"
+      ],
+      "topic": "virtual collections",
+      "rule": "Swing may expose a renderer-private virtual scrollbar from authoritative bounded-window metadata. Native viewport demand emits RangeRequested(start,count) through the normal event-time UI_ACTION boundary. Swing never traverses backing storage or replaces resident rows locally; the application/server supplies the authoritative replacement window."
+    },
+    {
+      "aliases": [
+        "NotNotes",
+        "document rows",
+        "status chips",
+        "pretty Swing"
+      ],
+      "topic": "notnotes presentation",
+      "rule": "NotNotes is a presentation/conformance fixture, not Swing business vocabulary. Document-style rows may render projected label, stable projected identity and projected lifecycle/status with modern hierarchy/chips. Projected status changes pixels only; application lifecycle/action feasibility remains authoritative outside Swing."
+    },
+    {
+      "aliases": [
         "current baseline",
-        "sealed dev5",
-        "rollup dev3",
-        "dev6"
+        "dev11",
+        "dev10 semantic baseline"
       ],
       "topic": "continuation",
-      "rule": "The 2026-08-28 19:19 roll-up bundles Swing dev3, Server v0.17 and Builder v0.11. Separate sealed Swing dev5 is newer and remains the recovery baseline; any successor must be requalified against Server v0.17/Builder v0.11 before superseding dev5."
+      "rule": "Wire UI Swing v0.2-dev11 is the current source-qualified continuation head. It is a presentation-only successor over the fully qualified dev10 semantic/runtime baseline. New work starts from dev11; historical dev3/dev5/dev6/dev10 remain lineage evidence."
     }
   ],
   "provenance": [
@@ -152,6 +172,18 @@
       "sha256": "dd48908e49e8ee00c94f931c3a1cfdfc8d5324e2e0fbf64e2cdd7d82c510ad3f",
       "member": "wire_ui_builder_v0.11/README.md",
       "claim": "Current renderer-neutral Builder composition doctrine."
+    },
+    {
+      "artifact": "wire_ui_swing_v0.2-dev10.zip",
+      "sha256": "db8e19d5e79c9a95f6491ba8f48544e299fe220cfbbd2a700eeb31d07bb001ee",
+      "member": "wire_ui_swing_v0.2-dev10/integration/test_server_v017_range_roundtrip.rex",
+      "claim": "Bounded RangeRequested -> authoritative Server v0.17 replacement-window qualification."
+    },
+    {
+      "artifact": "wire_ui_swing_v0.2-dev11.zip",
+      "sha256": "294be3939be9ff0fc32c057c1d7e0287ba7d3f074fdda9663c6da48fe9bd8ad7",
+      "member": "wire_ui_swing_v0.2-dev11/VALIDATION_DEV11.txt",
+      "claim": "Current NotNotes presentation and authority-separation qualification."
     }
   ]
 }

@@ -25,4 +25,11 @@ The exact `oorexxapis(20260828-191940).zip` roll-up (SHA-256 `5885f1906dc5ae7307
 - Alchemy Wire UI JS v0.4-dev4 — nested ZIP SHA-256 `f7649a521de7ff9b619cc230e74d77fc2c8ae31884d5ce97c649bd862c41d205`
 - Wire UI Swing v0.2-dev3 — nested ZIP SHA-256 `10823e3937eb02104c42b8990cef6349c4b587b5dbe198766d64804d89cbe9d3`
 
-A separately sealed `wire_ui_swing_v0.2-dev5.zip` (SHA-256 `a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271`) is newer than the roll-up Swing artifact and is the current implementation recovery baseline. A successor must be requalified against Server v0.17 + Builder v0.11 before superseding it.
+`wire_ui_swing_v0.2-dev11.zip` (SHA-256 `294be3939be9ff0fc32c057c1d7e0287ba7d3f074fdda9663c6da48fe9bd8ad7`) is the current source-qualified continuation baseline. Dev10 (`db8e19d5e79c9a95f6491ba8f48544e299fe220cfbbd2a700eeb31d07bb001ee`) remains the full semantic/runtime qualification baseline; dev11 is a presentation-only successor with 59/59 strict renderer tests, Xvfb NotNotes smoke and actual desktop visual qualification.
+
+
+## Current NotNotes Java presentation
+
+The NotNotes fixture is now an explicit visual/conformance target. Java/Swing should approach the web client's presentation quality while remaining a renderer: projected document label, stable identity and projected status may be styled into hierarchy and chips, but documents, relationships, lifecycle, reports, intentions and action feasibility remain outside Swing.
+
+Large document collections use the same bounded virtual-window contract as other Wire collections: renderer viewport movement emits `RangeRequested(start,count)` and only the application/server supplies replacement rows.

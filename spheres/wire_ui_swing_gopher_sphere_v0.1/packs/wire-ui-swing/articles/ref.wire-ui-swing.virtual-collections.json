@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.virtual-collections",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Authoritative virtual collections and RangeRequested",
+  "summary": "Large collections remain application/server-owned. Swing consumes authoritative resident-window metadata, projects a proportional renderer-private viewport, and emits bounded RangeRequested demand without traversing the source or mutating resident rows.",
+  "authority": "renderer-demand-contract",
+  "invariants": [
+    "RangeRequested(start,count) is demand, not permission to read source/backing storage.",
+    "Stable Wire element identity and event-time renderedRevision are captured when demand is emitted.",
+    "Server v0.17 flat windowOffset/windowLimit/windowTotalCount metadata and compact rangeWindow compatibility feed the same renderer-private viewport.",
+    "Applying authoritative window metadata must not echo RangeRequested.",
+    "A final partial window may contain fewer resident rows than windowLimit; Swing clamps renderer extent without rewriting server authority."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev10.zip",
+      "sha256": "db8e19d5e79c9a95f6491ba8f48544e299fe220cfbbd2a700eeb31d07bb001ee",
+      "member": "wire_ui_swing_v0.2-dev10/integration/test_server_v017_range_roundtrip.rex",
+      "claim": "Real ooRexx/BSF Server v0.17 200,000-row demand/reconcile/patch round trip including final partial window."
+    }
+  ]
+}

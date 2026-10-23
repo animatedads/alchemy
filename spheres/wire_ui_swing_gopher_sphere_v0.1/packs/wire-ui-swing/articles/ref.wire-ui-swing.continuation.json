@@ -4,21 +4,22 @@
   "version": "0.1",
   "sphere": "wire-ui-swing",
   "title": "Qualified baselines and continuation policy",
-  "summary": "The 2026-08-28 19:19 ooRexx API roll-up carries Wire UI Swing v0.2-dev3 together with Builder v0.11, Server v0.17 and Alchemy Wire UI JS v0.4-dev4. A separately sealed v0.2-dev5 is newer than the roll-up Swing artifact and remains the latest qualified Swing candidate. Any unsealed dev6 work must be reconstructed/rebased from dev5 and requalified against the current Server v0.17/Builder v0.11 contracts before it can supersede dev5.",
+  "summary": "Wire UI Swing v0.2-dev11 is the current source-qualified implementation baseline. It preserves the fully qualified dev10 Server v0.17 / Builder v0.11 / RangeRequested / workspace-context semantics and adds renderer-only document row hierarchy plus compact projected lifecycle/status chips. Historical dev3/dev5/dev6 remain provenance/recovery evidence, not the continuation head.",
   "authority": "project-continuity",
   "invariants": [
-    "Do not silently downgrade to roll-up Swing dev3 merely because it is bundled with newer Server/Builder components.",
-    "Do not treat unsealed development notes or partially recovered trees as a release baseline.",
-    "Use sealed dev5 as the Swing implementation recovery point until a newer candidate passes complete qualification.",
-    "Requalification target is current WIRE-UI/0.1 with Server v0.17 and Builder v0.11, including workspace command/result context.",
-    "Keep generic Java Swing rules in the java sphere; keep Wire-specific renderer/protocol/qualification knowledge in this sphere."
+    "Continue from packages/wire_ui_swing_v0.2-dev11; do not silently downgrade to roll-up dev3, sealed dev5, reconstructed dev6, or dev10.",
+    "Dev11 changes presentation only: projected status may alter pixels, tooltip and accessibility text, but never action feasibility or business state.",
+    "Retain dev10 semantic qualification for Server v0.17 flat window metadata, bounded RangeRequested, workspaceContext, real ooRexx/BSF and Builder v0.11 integration.",
+    "For any successor, rerun strict Java, renderer regression, executable-JAR and real-window checks; rerun semantic integration whenever protocol/runtime behavior changes.",
+    "Keep generic Java/Swing rules in the java sphere; keep Wire-specific renderer/protocol/qualification knowledge in this sphere."
   ],
   "procedure": [
-    "Resolve exact source artifacts by digest.",
-    "Rebase implementation from sealed dev5.",
-    "Apply current Server/Builder compatibility changes.",
-    "Run strict Java, real-window, executable-JAR, ooRexx/BSF, actual Server and actual Builder acceptance.",
-    "Only then seal a successor and update this sphere continuity record."
+    "Start from packages/wire_ui_swing_v0.2-dev11 on animatedads/alchemy main.",
+    "Preserve stable semantic identities and the existing event-time UI_ACTION boundary.",
+    "Treat material/style-role changes as renderer presentation only.",
+    "Run strict Java and the complete renderer suite; capture a real desktop for presentation changes.",
+    "If semantic/protocol code changes, rerun Server v0.17, Builder v0.11 and ooRexx/BSF integration before sealing.",
+    "Update this sphere and exact continuity records when a successor becomes qualified."
   ],
   "provenance": [
     {
@@ -40,10 +41,16 @@
       "claim": "The current roll-up carries Wire UI Builder v0.11."
     },
     {
-      "artifact": "wire_ui_swing_v0.2-dev5.zip",
-      "sha256": "a75f79844711c583e1ee4f3a8efa24ea533bfbdd81aa9153376faeeb36efc271",
-      "member": "wire_ui_swing_v0.2-dev5/VALIDATION.txt",
-      "claim": "Separately sealed Swing v0.2-dev5 qualification evidence."
+      "artifact": "wire_ui_swing_v0.2-dev10.zip",
+      "sha256": "db8e19d5e79c9a95f6491ba8f48544e299fe220cfbbd2a700eeb31d07bb001ee",
+      "member": "wire_ui_swing_v0.2-dev10/VALIDATION.txt",
+      "claim": "Qualified semantic/runtime baseline: 58/58 plus executable/Xvfb and Server v0.17/Builder/ooRexx-BSF integration."
+    },
+    {
+      "artifact": "wire_ui_swing_v0.2-dev11.zip",
+      "sha256": "294be3939be9ff0fc32c057c1d7e0287ba7d3f074fdda9663c6da48fe9bd8ad7",
+      "member": "wire_ui_swing_v0.2-dev11/VALIDATION_DEV11.txt",
+      "claim": "Current source-qualified presentation successor: 59/59 plus Xvfb NotNotes smoke and actual desktop capture."
     }
   ]
 }
