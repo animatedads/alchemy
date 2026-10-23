@@ -21,6 +21,40 @@ if args~items<2 then do; call usage; exit 2; end
 cmd=args[1]~lower; file=args[2]
 signal on syntax name failed
 
+if cmd='find-file' then do
+  if args~items<3 then do; call usage; exit 2; end
+  language=''
+  if args~items>=4 then language=args[4]
+  finder=.SourceTreeFinder~new(file)
+  found=finder~files(args[3],language)
+  do f over found; say f~asString; end
+  say 'FILES' found~items
+  exit 0
+end
+if cmd='grep-tree' then do
+  if args~items<3 then do; call usage; exit 2; end
+  filespec='*'; mode='code'; caseMode='sensitive'; language=''
+  if args~items>=4 then filespec=args[4]
+  if args~items>=5 then mode=args[5]
+  if args~items>=6 then caseMode=args[6]
+  if args~items>=7 then language=args[7]
+  finder=.SourceTreeFinder~new(file)
+  matches=finder~grep(args[3],filespec,mode,caseMode,language)
+  do m over matches; say m~asString; end
+  say 'MATCHES' matches~items
+  exit 0
+end
+if cmd='complete-tree' then do
+  prefix=''; filespec='*'; language=''
+  if args~items>=3 then prefix=args[3]
+  if args~items>=4 then filespec=args[4]
+  if args~items>=5 then language=args[5]
+  provider=.SourceCompletionProvider~new
+  candidates=provider~completeTree(file,prefix,filespec,language)
+  do c over candidates; say c~asString; end
+  say 'CANDIDATES' candidates~items
+  exit 0
+end
 doc=.SourceDocument~new(file)
 select
   when cmd='symbols' then do
@@ -62,6 +96,15 @@ select
     do m over matches; say m~asString; end
     say 'MATCHES' matches~items
   end
+  when cmd='complete' then do
+    prefix=''; kind=''
+    if args~items>=3 then prefix=args[3]
+    if args~items>=4 then kind=args[4]
+    provider=.SourceCompletionProvider~new
+    candidates=provider~completeDocument(doc,prefix,kind)
+    do c over candidates; say c~asString; end
+    say 'CANDIDATES' candidates~items
+  end
   when cmd='validate' then do
     if doc~validate then say 'VALID' doc~language file
   end
@@ -80,6 +123,10 @@ usage:
   say 'code-editor replace-symbol FILE NAME "TEXT"'
   say 'code-editor find FILE NEEDLE [text|code [sensitive|insensitive]]'
   say 'code-editor grep FILE REGEX [text|code [sensitive|insensitive]]'
+  say 'code-editor find-file ROOT FILESPEC [LANGUAGE]'
+  say 'code-editor grep-tree ROOT REGEX [FILESPEC [text|code [sensitive|insensitive [LANGUAGE]]]]'
+  say 'code-editor complete FILE [PREFIX [KIND]]'
+  say 'code-editor complete-tree ROOT [PREFIX [FILESPEC [LANGUAGE]]]'
   say 'code-editor validate FILE'
 return
 
