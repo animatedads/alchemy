@@ -1,0 +1,19 @@
+{
+  "kind": "article",
+  "id": "ldap-identity.semantic-boundaries",
+  "version": "0.1",
+  "sphere": "ldap-identity",
+  "title": "Identity, LDAP personality and persistence boundaries",
+  "rules": [
+    "The neutral Identity Directory owns semantic identity; LDAP is a protocol/personality edge.",
+    "oorexxEntityId is platform semantic identity; entryUUID is LDAP entry identity. They are intentionally distinct.",
+    "A DN is a directory address and may change without changing semantic identity.",
+    "Vendor LDAP personalities translate external vocabulary at the edge and cannot silently redefine identity, authority, credential or key-lifetime semantics.",
+    "Credential persistence contains secretRef, never raw secret values.",
+    "DirectoryStore persists accepted DirectoryChange facts but cannot reinterpret LDAP schema or authority policy.",
+    "The durable commit boundary is write-before-memory: failed durable append must not advance in-memory revision or entity state.",
+    "One semantic DirectoryChange produces one peer-update request identity independent of target count or carrier path.",
+    "Duplicate changeId with divergent semantic identity fails closed.",
+    "Replication is idempotent durable distribution, not consensus."
+  ]
+}
