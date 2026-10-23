@@ -1,0 +1,51 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "plan42_alchemy_bridge",
+    "version": "0.1-dev4",
+    "kind": "python-oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "PLAN42_HOME": "${PACKAGE_ROOT}"
+    },
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "plan42-alchemy-regressions",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_plan42*.py",
+        "-v"
+      ],
+      "timeout_seconds": 240
+    },
+    {
+      "name": "plan42-python-compile",
+      "argv": [
+        "python3",
+        "-m",
+        "py_compile",
+        "tools/plan42_bridge.py",
+        "tools/plan42c.py",
+        "tools/plan42_rx2cpp_plan.py",
+        "tools/plan42_rx2cpp_inventory.py"
+      ],
+      "timeout_seconds": 30
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/plan42_alchemy_bridge_v0.1-dev4"
+    }
+  }
+}
