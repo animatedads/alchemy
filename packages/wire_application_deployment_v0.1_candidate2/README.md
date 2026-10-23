@@ -9,3 +9,7 @@ The exact **full replacement source files** and five native tests are packaged i
 **Qualified locally:** five native contract test programs and six `rexxc` compilation checks against ooRexx 5.3.0 r13196. **Not qualified:** a public network WebSocket + TLS session, remote RexxOS deployment, crash/restart journal replay, fully authenticated .wapp verifier, inflight session migration.
 
 See `MODULE_WIRING.md` for the exact seams and `spheres/wire_ui_runtime_gopher_sphere_v0.2` for architectural authority.
+
+## Reproduce
+
+Extract exact ZIP baselines from BASELINES.json, apply `patches/HTTPS_SERVER.patch` and `patches/WIRE_UI_SERVER.patch` on fresh extracted source, and run `BASELINE_ROOT=/path/to/baselines REXX=/path/to/rexx REXXC=/path/to/rexxc bash tests/run_native_contract_tests.sh`. The complete version-pinned replacement files are also included in candidate2 ZIP. See TEST_RESULTS.md for evidence and unqualified live gates.
