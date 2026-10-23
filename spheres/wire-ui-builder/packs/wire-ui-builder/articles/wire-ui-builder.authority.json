@@ -1,18 +1,30 @@
 {
   "id": "wire-ui-builder.authority",
-  "title": "Authoring semantics and browser/server authority",
+  "title": "Authoring semantics and renderer authority",
   "section": "architecture",
-  "summary": "Builder produces renderer-neutral semantic definitions/materials/journeys and typed DESIGN operations. Browser presentation remains subordinate to server/Builder semantic authority; visual markup must not invent a new business action.",
-  "authority": "project-artifact",
+  "summary": "Builder produces renderer-neutral semantic definitions/materials/journeys and typed DESIGN operations. Browser DOM, Win32 resources, HWNDs, GTK widgets and other renderer objects remain subordinate projections. Imported resource metadata may preserve native identity and trigger provenance but cannot replace Wire semantic identity or invent application actions.",
+  "invariants": [
+    "Wire semantic identity is application-facing authority.",
+    "Renderer/native resource identity is provenance or projection identity, not Wire authority.",
+    "Visual markup or imported resources must not invent a semantic/business action.",
+    "Renderer-specific implementation may differ while Web, Windows, Swing, GTK, Android and direct Linux preserve the same semantic Wire contract."
+  ],
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "wire-ui-builder",
+  "authority": "project-continuity",
   "provenance": [
     {
       "artifact": "wire_ui_builder_v0.11.zip",
       "sha256": "dd48908e49e8ee00c94f931c3a1cfdfc8d5324e2e0fbf64e2cdd7d82c510ad3f",
       "member": "wire_ui_builder_v0.11/README.md",
-      "claim": "Builder's consumer-neutral authoring/runtime authority boundaries."
+      "claim": "Accepted executable baseline and consumer-neutral Builder authority."
+    },
+    {
+      "artifact": "wire_ui_builder_v0.6-ergonomics8-resource-objects.zip",
+      "sha256": "d7269b3190bacd91b163c7843d4f8ac5f1dd27cf28a14ca20c7c82a00a2880d6",
+      "member": "wire_ui_builder_v0.6/src/WireUIResourceBridge.cls",
+      "claim": "Development/recovery evidence for resource-object to Wire import semantics."
     }
-  ],
-  "kind": "article",
-  "version": "0.1",
-  "sphere": "wire-ui-builder"
+  ]
 }

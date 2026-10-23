@@ -1,0 +1,26 @@
+{
+  "id": "wire-ui-builder.http-front-qualification",
+  "title": "HTTP-front substitution and qualification",
+  "section": "qualification",
+  "summary": "Wire browser hosting is qualified by contract, not by implementation prejudice. A conforming front must serve the same browser bytes with correct MIME/path semantics and supply the same bootstrap contract while leaving the WebSocket gateway and authoritative application path unchanged. The recovery harness captures and compares that contract for Node-front versus ooRexx HTTP/HTTPS A/B testing.",
+  "invariants": [
+    "Change one variable: replace only the HTTP front during A/B qualification.",
+    "Keep the WebSocket gateway, Queue Fabric bridge, ObjectQueueManager, Wire definitions and application state unchanged.",
+    "Compare served HTML/CSS/JS hashes and normalized /wire-ui/bootstrap output.",
+    "Do not use python -m http.server or another fallback as evidence for ooRexx HTTP/HTTPS qualification.",
+    "A dynamic bootstrap descriptor does not make the HTTP front the application server.",
+    "DESIGN-empty/SOURCE-working faults must be diagnosed separately from HTTP-front substitution."
+  ],
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "wire-ui-builder",
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "wire_ui_builder_v0.6-ergonomics9-http-front-qualification.zip",
+      "sha256": "a8ca9460297bab286cadf42193d5058779468c49faf3b88caf2351422632f1cf",
+      "member": "wire_ui_builder_v0.6/HTTP_FRONT_QUALIFICATION.md",
+      "claim": "Development/recovery evidence; does not supersede the accepted v0.11 executable baseline."
+    }
+  ]
+}

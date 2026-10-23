@@ -1,0 +1,26 @@
+{
+  "id": "wire-ui-builder.resource-objects",
+  "title": "Resource objects as a Wire authoring/import source",
+  "section": "integration",
+  "summary": "Executable Windows/ooDialog-style resource objects are valuable Builder inputs because they carry structure, occurrence identity and places for triggered events. The recovery bridge maps them into renderer-neutral Wire elements while preserving native resource identity and trigger metadata as provenance.",
+  "invariants": [
+    "Preserve three identities where present: Wire element identity, native/resource ID and resource occurrence UID.",
+    "Repeated native IDs such as IDC_STATIC must not collapse distinct occurrences.",
+    "Actual bound trigger slots become explicit Wire action bindings; original event/handler names remain inspectable provenance.",
+    "Executable handler source is not transported into Web/other renderers merely because the resource object names a handler.",
+    "Unknown/custom controls fail closed as a generic RESOURCE_CONTROL rather than disappearing or being guessed.",
+    "Win32 resources may feed Wire and Wire may project to resource-compatible forms, but neither resource IDs nor HWNDs become Wire application authority."
+  ],
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "wire-ui-builder",
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "wire_ui_builder_v0.6-ergonomics8-resource-objects.zip",
+      "sha256": "d7269b3190bacd91b163c7843d4f8ac5f1dd27cf28a14ca20c7c82a00a2880d6",
+      "member": "wire_ui_builder_v0.6/src/WireUIResourceBridge.cls",
+      "claim": "Development/recovery evidence for resource-object to Wire import semantics."
+    }
+  ]
+}
