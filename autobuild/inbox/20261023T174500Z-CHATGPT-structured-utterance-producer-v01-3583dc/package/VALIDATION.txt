@@ -1,0 +1,77 @@
+Structured Utterance Producer v0.1 validation
+==============================================
+Date: 2026-09-01
+Status: PASS
+Runtime: Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit
+API: structured.utterance.producer/0.1
+
+Purpose
+-------
+Close the generic producer/orchestrator -> Structured Utterance seam without
+moving provider invocation into the evidence layer and without reconstructing
+lost generation intent from flattened provider text.
+
+Exact executable baseline available in this sandbox
+----------------------------------------------------
+oorexxapis(20260824-2200-brand-intervention-governance-v0.2).zip
+SHA-256: 6195a1c379100bc67c2fba12142ff926e9b6116cd28ef671e7e4531f8797a8a6
+
+Dependencies extracted from that roll-up:
+- Structured Utterance v0.3
+  76f56332e21dc8614c07b64358dcabf0cc6ae06f0eff4aeaa9a8a18a0b727974
+- Interaction Event v0.3
+  0d2f46ddc5617ab0879bf06fd373dc6ea8cebbd5aeb5b36e2ef86d52f471b536
+- Alchemy Objects v0.8
+  7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073
+- ooRexx Crypto v0.1
+  3eab23b5138cba889eb11ea5b93747eb14fca8da0fd4ac936a70174349ae8f3a
+- Runtime Registry v0.14
+  b8748634f271f5389b9e7e4fd7089eda314b0eea90ab6e47151ae1de270c6209
+- Brand Interaction Effect v0.6 (external downstream compatibility probe only)
+  235f2ed40206b8571630e18d17bf781d973a319107122d90ba07c751a81a7a4f
+
+Acceptance
+----------
+Direct requested suite: PASS 10/10 test commands
+- compile smoke
+- flattened reply fails closed
+- sensitive cross-act production
+- customer-reference semantic lineage
+- controlled provenance references
+- invalid structural graph rejection
+- Brand context does not imply sales proposition
+- Structured Utterance -> Interaction Event native-evidence handoff
+- Alchemy boundary/instrumentation
+- Runtime Registry v0.14 lifecycle
+
+rexxc compile sweep: 13/13 PASS
+
+External downstream probe:
+  Structured Utterance Producer
+      -> Structured Utterance v0.3
+      -> Interaction Event v0.3
+      -> Brand Interaction Effect v0.6
+  PASS; Brand consumes native sensitive-information commercial-repurposing
+  evidence and retains downstream HOLD disposition authority.
+
+Architecture gates
+------------------
+PASS structure is authoritative before text rendering.
+PASS flattened provider reply is rejected with FLATTENED_REPLY_INSUFFICIENT.
+PASS markup inside provider text is never interpreted as semantic authority.
+PASS producer/provider/model/invocation references are opaque controlled tokens,
+     not free-prose customer-data channels.
+PASS native Structured Utterance semantic objects are reused; no duplicate
+     purpose/lineage/intent taxonomy is introduced here.
+PASS customer-sensitive influence can survive even when the target sales
+     sentence itself contains no customer-specific wording.
+PASS customer name, paraphrase and derived-sensitive wording can retain common
+     semantic customer lineage while deidentified rendering removes the wording.
+PASS Service-as-Sales Brand context does not manufacture SALESPROP.
+PASS producer owns no model invocation, credentials, business effect, causal,
+     legal, security, sales, or execution authority.
+
+Packaging rule
+--------------
+Manual ZIP packaging. MANIFEST.sha256 is generated over the final tree and is
+verified after a fresh extraction before the candidate is accepted.

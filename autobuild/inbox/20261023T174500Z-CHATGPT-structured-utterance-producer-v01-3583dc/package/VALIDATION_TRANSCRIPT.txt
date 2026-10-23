@@ -1,0 +1,48 @@
+Structured Utterance Producer v0.1 validation transcript
+UTC 2026-09-01T10:53:58Z
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+Copyright (c) 1995, 2004 IBM Corporation. All rights reserved.
+
+== package tests ==
+== compile ==
+PASS compile_smoke
+== flattened-fail-closed ==
+PASS test_flattened_reply_fails_closed
+== sensitive-cross-act ==
+PASS test_sensitive_cross_act_production
+== customer-reference-lineage ==
+PASS test_customer_reference_lineage
+== controlled-provenance ==
+PASS test_controlled_provenance_refs
+== invalid-structure ==
+PASS test_invalid_structure_rejected
+== brand-context-boundary ==
+PASS test_brand_context_not_sales_authority
+== interaction-event-handoff ==
+PASS test_interaction_event_handoff
+== alchemy-boundary ==
+PASS test_alchemy_boundary
+== runtime-registry ==
+PASS test_runtime_registry
+STRUCTURED UTTERANCE PRODUCER V0.1 ALL REQUESTED TESTS: OK
+
+== rexxc compile sweep ==
+PASS rexxc structured_response_plan_demo.rex
+PASS rexxc StructuredUtteranceProducerRuntimeModule.cls
+PASS rexxc StructuredUtteranceProducer.cls
+PASS rexxc compile_smoke.rex
+PASS rexxc test_alchemy_boundary.rex
+PASS rexxc test_brand_context_not_sales_authority.rex
+PASS rexxc test_controlled_provenance_refs.rex
+PASS rexxc test_customer_reference_lineage.rex
+PASS rexxc test_flattened_reply_fails_closed.rex
+PASS rexxc test_interaction_event_handoff.rex
+PASS rexxc test_invalid_structure_rejected.rex
+PASS rexxc test_runtime_registry.rex
+PASS rexxc test_sensitive_cross_act_production.rex
+COMPILE_SWEEP_PASS=13
+
+== external downstream chain probe ==
+PASS producer -> Structured Utterance -> Interaction Event -> Brand Interaction Effect
