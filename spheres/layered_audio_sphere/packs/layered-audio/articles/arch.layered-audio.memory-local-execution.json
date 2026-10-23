@@ -1,0 +1,61 @@
+{
+  "kind": "article",
+  "id": "arch.layered-audio.memory-local-execution",
+  "version": "0.2",
+  "sphere": "layered-audio",
+  "title": "Memory-local execution and adaptive horizon handoff",
+  "summary": "Audio processing remains ordinary ooRexx while Memory Fabric predicts the next logical working-set window and the cluster moves the compact runner to an already-resident fenced block. Queue Fabric carries execution/control state, not resident PCM; placement authority remains external in Job-to-Node.",
+  "authority": "project-integration-evidence",
+  "invariants": [
+    "Audio objects remain cluster-unaware: they express logical processing and continuation state, not node addresses, Queue Fabric operations or Memory Fabric placement policy.",
+    "Memory Fabric owns logical memory/block identity, residency, block generation, provider identity, provider owner epoch, sparse working-set projection and adaptive horizon demand.",
+    "Job-to-Node owns hard eligibility, admission, ranking and placement leases; the memory-horizon adapter may only revalidate an existing executable placement decision.",
+    "Queue Fabric carries the runner/object/control envelope. Resident PCM, decoded frames, STFT buffers and other bulk working data are not placed in the MOVE graph merely because execution changes node.",
+    "Storage Fabric remains the durable material boundary. Memory Fabric residency and Queue Fabric movement do not redefine durable source identity.",
+    "An addressed memory reference resolves to the owning/current resident block; lack of a current resident route is not converted into an implicit block transfer.",
+    "A horizon demand is predictive. It may be raised before the current block is exhausted so the runner can move while the next resident block is ready.",
+    "Block generation and provider owner epoch are revalidated immediately before handoff. Provider reincarnation or stale block generation fails closed.",
+    "Destination MOVE acknowledgement must occur before the Memory Fabric cursor/window is advanced and before the horizon demand is marked SATISFIED.",
+    "MOVE_UNCERTAIN, failed placement verification, non-contiguous next-window mapping or missing residency leave the runner and Memory Fabric demand state unadvanced.",
+    "Explicit materialisation remains a separate operation. Memory-local execution must not be confused with gathering the distributed working set back into one process."
+  ],
+  "procedure": [
+    "Read the Audio logical stream normally through the Memory Fabric-backed sparse projection.",
+    "When the adaptive event horizon is crossed, obtain the triggered demand for the next logical range.",
+    "Resolve that range only against a current fenced Memory Fabric resident block and revalidate block generation plus provider owner epoch.",
+    "Revalidate the existing Audio/Job-to-Node execution plan for the destination that owns the resident block.",
+    "Move the compact runner/object continuation through cluster.object.peer/0.2 over Queue Fabric; do not add resident PCM to the envelope.",
+    "Require positive destination acknowledgement that the runner has been reconstructed beside the fenced block.",
+    "Only after acknowledgement, advance the Memory Fabric cursor/window and mark the horizon demand satisfied.",
+    "Continue ordinary Audio processing against destination-local resident data."
+  ],
+  "current_boundary": {
+    "memory_fabric": "v0.1-dev10; memory.fabric/0.1",
+    "rto2_grid": "v0.1-dev14",
+    "storage_fabric": "v0.1-dev21",
+    "layered_audio": "v0.22-dev6 observed in Library; sphere retains older implementation history as provenance",
+    "audio_v9": "dev20 candidate19 base plus additive cluster-memory candidate20",
+    "cluster_object_transport": "cluster.object.peer/0.2",
+    "queue_fabric": "queue.fabric/0.9 family",
+    "qualification": "cluster.object.peer/0.2 was runtime-proven earlier against ooRexx 5.3.0 r13196 with Memory Fabric dev6/Queue Fabric test carrier; candidate20 is source/contract-qualified and still requires fresh r13196 cross-package runtime qualification against the current dev10 estate"
+  },
+  "provenance": [
+    {
+      "artifact": "oorexx_memory_fabric_v0.1-dev10.zip",
+      "sha256": "91a05494c86ce7627f7a010af182c167701b5bf1f8ce2d93c99cda9d992644d8",
+      "claim": "Current Memory Fabric authority for sparse/reference working sets and adaptive horizon demand."
+    },
+    {
+      "artifact": "cluster_object_memory_fabric_transport_v0.2",
+      "git_submission": "20261023T154800Z-CHATGPT-cluster-object-memory-v02-3ea57f",
+      "ready_commit": "1439ff0dc4bb2b79599a2284105819b9f3ec7f74",
+      "claim": "Queue Fabric execution movement with fenced Memory Fabric references and resident-payload exclusion."
+    },
+    {
+      "artifact": "audio_v9_cluster_memory_candidate20",
+      "git_submission": "20261023T154600Z-CHATGPT-audio-v9-cluster-memory-c20-1b3088",
+      ""ready_commit": "561772d1acd2db6ff49117ed78528d3350cae473",
+      "claim": "Adaptive-horizon Audio runner handoff candidate and package-contract evidence; runtime qualification pending."
+    }
+  ]
+}

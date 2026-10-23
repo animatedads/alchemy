@@ -38,7 +38,7 @@
     },
     {
       "topic": "precision",
-      "rule": "Precision and quantization are explicit execution policy. Protect semantic roles that must not silently lose precision."
+      "rule"": "Precision and quantization are explicit execution policy. Protect semantic roles that must not silently lose precision."
     },
     {
       "topic": "offload",
@@ -55,6 +55,14 @@
     {
       "topic": "allocator-boundary",
       "rule": "Audio derives placement requirements and value-only dispatch envelopes; the Job-to-Node allocator owns hard eligibility, ranking and placement leases. Audio must not rank or lease nodes."
+    },
+    {
+      "topic": "memory-local-execution",
+      "rule": "When the next Audio working set is already resident on another qualified Memory Fabric provider, move the compact runner to the fenced block; do not drag resident PCM into the Queue Fabric MOVE envelope by default."
+    },
+    {
+      "topic": "horizon-commit-order",
+      "rule": "Treat adaptive horizon movement as a commit sequence: validate residency and placement, obtain destination MOVE acknowledgement, then advance the Memory Fabric cursor and satisfy the demand. Uncertain movement leaves memory state unadvanced."
     }
   ]
 }
