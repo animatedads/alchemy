@@ -1,0 +1,95 @@
+{
+  "api": "storage.fabric.fuse.native/0.1",
+  "authority": {
+    "preferredPackagerOwns": [
+      "reuse decision",
+      "target rebuild",
+      "derivative hash",
+      "qualification evidence",
+      "transaction seal",
+      "COMMIT eligibility"
+    ],
+    "runtimeMayRebuild": false,
+    "storageFabricOwns": [
+      "source",
+      "build recipe",
+      "probe contract",
+      "qualification requirements",
+      "native API semantics"
+    ]
+  },
+  "build": {
+    "argv": [
+      "./native/build-fuse3.sh"
+    ],
+    "cwd": ".",
+    "output": "build/storage-fuse3",
+    "requiredForCommit": true
+  },
+  "id": "storage-fuse3",
+  "kind": "LINUX_FUSE3_HIGH_LEVEL_ADAPTER",
+  "output": "build/storage-fuse3",
+  "packagerPolicy": "reuse-if-loadable-else-rebuild",
+  "probe": {
+    "argv": [
+      "./native/probe-fuse3.sh"
+    ],
+    "cwd": ".",
+    "expects": {
+      "api": "storage.fabric.fuse.native/0.1",
+      "io": "direct_io",
+      "protocol": "SF1",
+      "schema": "storage-fuse3.probe/1"
+    },
+    "requiredForCommit": true
+  },
+  "qualification": [
+    {
+      "argv": [
+        "./native/qualify-fuse3.sh"
+      ],
+      "cwd": ".",
+      "id": "native-precommit",
+      "requiredForCommit": true
+    },
+    {
+      "argv": [
+        "./deploy/qualify-fuse-mount.sh",
+        "<MOUNTPOINT>"
+      ],
+      "cwd": ".",
+      "id": "kernel-mount-soak",
+      "requiredForDeployment": true,
+      "requires": [
+        "/dev/fuse",
+        "fusermount3",
+        "ooRexx Unix Socket v0.6",
+        "Foreign Runtime v0.22.6"
+      ]
+    }
+  ],
+  "rpcProtocol": "SF1",
+  "schema": "storage.fabric.foreign-component/0.1",
+  "sources": [
+    {
+      "path": "native/storage_fuse3.c",
+      "sha256": "573ca443154fdf8037d690b81ca818ba41c2cff375bd675575c01cdc4ef70cbb"
+    }
+  ],
+  "targetRequirements": {
+    "compilerLanguage": "C11",
+    "firstMountMode": {
+      "directIo": true,
+      "keepCache": false,
+      "singleThreaded": true,
+      "writebackCache": false
+    },
+    "fuseApiVersion": 35,
+    "minimumLibfuseVersion": "3.5",
+    "osFamily": "linux",
+    "pkgConfig": [
+      "fuse3"
+    ],
+    "runtimeDevice": "/dev/fuse"
+  }
+}

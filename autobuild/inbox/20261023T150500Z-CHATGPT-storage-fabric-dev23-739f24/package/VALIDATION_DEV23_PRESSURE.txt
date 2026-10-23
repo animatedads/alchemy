@@ -1,0 +1,25 @@
+Storage Fabric v0.1-dev23 pressure validation
+
+Runtime: ooRexx 5.3.0 r13196
+Dependencies used:
+- Service Descriptors v0.1-dev2
+- Operational Degradation Planner v0.1-dev5
+
+Scenario:
+- service storage.range.read -> class normal.storage
+- requested object audio1234.mp4 region 0..100,000,000
+- sfu1-mu5 and sfu1-mu7 each offer the full region
+- plan splits 0..50,000,000 and 50,000,000..100,000,000
+- mi1-mu2.ingress nominal/current 100,000,000 B/s
+- normal.storage per-context 30%, max contexts 2, aggregate 60%
+
+PASS:
+- two slices / 60% aggregate plan
+- two 30,000,000 B/s tickets
+- third context refused
+- current capacity 50,000,000 B/s -> live tickets 15,000,000 B/s each
+- CONSTRAINED -> one admitted context at 7,500,000 B/s, one retained/suspended
+- EMERGENCY -> zero admitted contexts and sends refused
+- NORMAL restore -> both contexts reactivate at 30,000,000 B/s
+- 1,000 complete plan/admit/release cycles without ticket leak
+- transport adapter reads the live ticket on every send and fails closed when suspended or when transport cannot accept a capacity rate
