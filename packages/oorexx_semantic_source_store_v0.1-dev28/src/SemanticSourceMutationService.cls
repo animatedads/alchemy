@@ -32,7 +32,7 @@
     raise syntax 88.900 array("SEMANTIC_EDIT_REQUIRED: whole-file/source-unit replacement is not allowed for " || objectId)
 
   proposal = repository~proposeRevision(objectId, baseRevisionId, sourceText, principal, reason)
-  if proposal["conflict"] = 1 then return proposal
+  if proposal["conflict"] \= 1 then return proposal
 
   branchId = self~openConflictBranchFor(objectId, proposal["revision_id"])
   if branchId = "" then do
@@ -79,7 +79,7 @@
   expose sql
   use strict arg statement
   rs = sql~execute(statement)
-  if rs~status = "SUCCESS" then,
+  if rs~status \= "SUCCESS" then,
     raise syntax 88.900 array("Semantic Source mutation SQL failed: " || statement~left(240) || "; status=" || rs~status || "; " || rs~message)
   return rs
 

@@ -1,5 +1,5 @@
 #!/bin/sh
-# Semantic Source Store v0.1-dev26 live qualification (real NoSQLServer, Foreign Runtime crypto, no stubs).
+# Semantic Source Store v0.1-dev28 live qualification (real NoSQLServer, Foreign Runtime crypto, no stubs).
 # Author: Claude (Opus 5.5), 2026-10-23. Architecture: Tom Dyer.
 # Dependencies are taken from the Alchemy repository (ALCHEMY_REPO_ROOT, exported by autobuild).
 # Set SSC_DOGFOOD_ZIP to also import a real package ZIP and rebuild every ooRexx file byte-for-byte.
@@ -24,5 +24,5 @@ SSC_TEST_DB="$WORK/db1" rexx repository_roundtrip_test.rex
 SSC_TEST_DB="$WORK/db2" rexx mcp_operations_test.rex
 if [ -n "${SSC_DOGFOOD_ZIP:-}" ]; then SSC_TEST_DB="$WORK/db3" rexx dogfood_bulk_import_test.rex; fi
 INTENTION_SERVICE_SRC="$P/oorexx_intention_service/src" REXX_PATH= bash "$HERE/../tools/test_dev25_environment.sh"
-echo "SSC STORE v0.1-dev26 LIVE QUALIFICATION: PASS"
-rexx "$HERE/semantic_mutation_test.rex"
+SSC_TEST_DB="$WORK/db4" rexx semantic_mutation_test.rex
+echo "SSC STORE v0.1-dev28 LIVE QUALIFICATION: PASS"
