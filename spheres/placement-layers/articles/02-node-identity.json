@@ -1,13 +1,13 @@
 {
   "id": "pl-node-identity",
-  "title": "Node Identity and Host Profiles",
-  "summary": "Managed Node Host Profiles provide a provider-neutral vocabulary for node identity and capability, separating the allocator's stable nodeId from transient resource identity.",
-  "why": "Allows the system to track a node's capability and provenance independently of its network endpoint or cloud-provider resource ID.",
+  "title": "Node, Resource and Capability Identity",
+  "summary": "Placement identity is layered: allocator nodeId, provider resource identity, network endpoint and capability generation are distinct evidence.",
+  "why": "A route can remain semantically meaningful while a target incarnation or capability generation changes; the latter must invalidate stale placement assumptions.",
   "invariants": [
     "The stable allocator nodeId is separate from provider resource identity and network endpoint.",
-    "Host profiles supply declared finite task abilities derived from Managed Node task kinds.",
-    "Capability facts (installed CPU/RAM/disk) are distinct from expiring observations (free CPU/RAM/disk)."
+    "Installed capability facts remain distinct from expiring capacity observations.",
+    "Managed execution must bind the exact placement target and current capability generation; copied target fields are not proof."
   ],
-  "evidence_note": "Source: oorexx_managed_node_host_profile_v0.1-dev1/README.md:12-20. Line 13: 'stable allocator nodeId separate from provider resource identity and network endpoint'.",
+  "evidence_note": "Grounded in Managed Node Host Profile semantics, Job-to-Node lease verification, and RexxOS Managed Compute MU v0.1-dev2 target-generation checks.",
   "grounding": "oorexx-grounded"
 }

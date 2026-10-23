@@ -1,0 +1,15 @@
+{
+  "id": "pl-managed-execution-boundary",
+  "title": "Managed Execution, Runtime Observation and Replay",
+  "summary": "After placement, a managed execution surface binds the exact target and capability generation. Runtime observations and provider receipts remain evidence; ambiguity is held for explicit reconciliation rather than automatically retried or released.",
+  "why": "A provider call can outlive a transport reply, and a target can change after planning. Safe execution requires replay fencing and fresh identity checks rather than optimistic retry.",
+  "invariants": [
+    "Job-to-Node network6 preserves fail-closed lifecycle recovery and does not grant runtime observation release authority.",
+    "RUNNING, ABSENT and UNKNOWN runtime observations do not release placement by themselves.",
+    "RexxOS Managed Compute MU rejects placement-target mismatch, stale target generation, job mismatch and expired lease.",
+    "A repeated request ID after a claimed provider call remains REPLAY_HELD; changed content is REQUEST_ID_CONFLICT; uncertain provider receipt is EXECUTION_UNCERTAIN.",
+    "Production managed dispatch remains disabled until durable replay/request infrastructure and membership-generation revalidation exist."
+  ],
+  "evidence_note": "Grounded in job_node_allocator_v0.6-network6 and rexxos_managed_compute_mu_v0.1-dev2 Library deliveries inspected 2026-10-23.",
+  "grounding": "oorexx-grounded"
+}

@@ -1,0 +1,16 @@
+{
+  "id": "pl-planned-admittance-route",
+  "title": "Planned Admittance Route Is a Semantic Front End",
+  "summary": "The Intention layer fronts the router by producing an ordered, object-rich description of currently plausible routes. It does not call those routes authoritative merely because they were plan-feasible.",
+  "why": "LLM and heterogeneous compute allocation need one semantic route planner while provider, quota, WLU and placement truth remain live and independently authoritative.",
+  "invariants": [
+    "Planning is non-mutating.",
+    "Meaning remains stable even when current feasibility is INFEASIBLE.",
+    "Workload, requirement, candidate resource, WLU and placement objects are retained as objects rather than flattened strings.",
+    "The preferred route may change when resources, quota, policy, health or capacity change.",
+    "Instrumentation freshness may change preference but never admissibility.",
+    "PREPARE_ADMISSION carries revalidationRequired=true for COMPUTE, ALLOCATION, WLU and ROUTER."
+  ],
+  "evidence_note": "Grounded in Generalized Compute Intentions v0.1-dev5 tests: dynamic rediscovery, structured Intention Service bridge, handoff revalidation and Mesh freshness/events.",
+  "grounding": "oorexx-grounded"
+}

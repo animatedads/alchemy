@@ -1,89 +1,145 @@
-# ooRexx Generalized Compute Intentions v0.1-dev2
+# ooRexx Generalized Compute Intentions v0.1-dev5
 
-A separate convenience package that puts an object-aware Intention Service surface
-in front of generalized compute routing.  It plans a **planned admittance route**
-using generalized compute, allocation, WLU and router advisory authorities without
-becoming any of those authorities itself.
+A separate convenience/intention package in front of Generalized Compute, the
+Job-to-Node/allocation authority, Work Load Units, and the existing router. It
+turns a workload intention into a **planned admittance route** without acquiring
+any of those authorities.
 
-## dev2: real Intention Service shape
+The package follows the same object-preserving semantic pattern used between
+Customer Service/NotNotes and the LLM Coding Workbench/code-generation tools:
+callers hand over native workload/context objects and receive native route,
+resource and evidence objects. Internal objects are not flattened into command
+prose and reconstructed later.
 
-The package now follows the same object-preserving pattern used by the LLM Coding
-Workbench. `GeneralizedComputeStructuredIntentionProvider~stage()` retains the real
-workload/context objects and returns only an opaque token such as:
+## dev5: truthful plan/admission boundary and Mesh dev7
 
-```text
-COMPUTE_INTENTION GCI1
-```
+The Library has advanced in two relevant places:
 
-Its `propose(service, text)` method implements the current Intention Service provider
-contract (`name`, `propose`). The default proposal path constructs the external
-`IntentionProposal`; qualification can inject a proposal factory so this convenience
-package does not vendor or fork Intention Service classes. It resolves the staged request to an ordinary
-`IntentionProposal` and places the original `GeneralizedComputeIntentionRequest`,
-workload and context objects into proposal slots. No workload is serialized into a
-command string and reconstructed later.
+- `oorexx_instrumentation_mesh_v0.1-dev7` adds independent observation freshness,
+  bounded `instrumentation.event/1` operational timelines, relationship
+  observation and repaired bounded history semantics;
+- `job_node_allocator_v0.6-network5` adds observational runtime reconciliation
+  (`RUNNING`, `ABSENT`, `UNKNOWN`) while explicitly retaining placement/release
+  authority in Job-to-Node and the owning execution framework.
 
-The supported semantic operations are:
+This package adopts the same principle: **a plan is evidence, not entitlement**.
+Every `PlannedAdmittanceHandoff` now explicitly reports
+`revalidationRequired = .true` and names the four authorities which must be
+rechecked before mutation: COMPUTE, ALLOCATION, WLU and ROUTER.
 
-- `COMPUTE_PLAN_ADMITTANCE`
-- `COMPUTE_EXPLAIN_ADMITTANCE`
-- `COMPUTE_PREFERRED_ROUTE`
-- `COMPUTE_PREPARE_ADMISSION`
+That is intentionally compatible with allocator network5's runtime rule: an
+observation may explain reality, but observation never releases a lease or
+manufactures completion.
 
-`GeneralizedComputeIntentionEvent` implements the normal `event~invoke(decision)`
-shape used by Intention Service dispatch.
-
-## Planned admission handoff
-
-`PREPARE_ADMISSION` does **not** admit anything. It returns a
-`PlannedAdmittanceHandoff` containing the exact planned route, selected candidate,
-workload and resource objects. That handoff is intended for the existing authoritative
-router/WLU/allocation path, which must revalidate and perform the actual admission.
-
-This preserves the authority split:
+## Planned admission boundary
 
 ```text
-application / workbench / customer-service caller
-                 |
-          Intention Service
-                 |
- Generalized Compute Intentions
-                 |
-        planned admittance route
-                 |
-      authoritative router
-          /       |       \
-     compute   allocator   WLU
+semantic workload intention
+        |
+        v
+Generalized Compute Intentions
+        |
+        +-- Generalized Compute capability assessment
+        +-- Allocation / Job-to-Node assessment
+        +-- WLU admission assessment
+        +-- Router assessment
+        +-- Instrumentation Mesh observation (advisory only)
+        |
+        v
+PlannedAdmittanceRoute
+        |
+        v
+PlannedAdmittanceHandoff
+        |
+        |  revalidationRequired = true
+        |  COMPUTE + ALLOCATION + WLU + ROUTER
+        v
+existing authoritative admission/allocation/router path
 ```
 
-The router remains non-entitling until its existing admission path succeeds. This
-package never reserves WLU, creates an allocation, acquires a lease, dispatches a
-job, invokes an LLM, or claims provider quota.
+`PREPARE_ADMISSION` remains non-mutating. It does not reserve WLU, allocate a
+resource, acquire/renew/release a lease, dispatch work, invoke an LLM, or claim
+that the planned candidate still exists by the time the authoritative route is
+entered.
 
-## Dynamic discovery
+## Instrumentation Mesh dev7
 
-Every plan performs fresh compute candidate discovery and fresh assessments from
-compute, allocation, WLU and router adapters. A route is therefore a planning result,
-not a permanent routing catalogue.
+`GeneralizedComputeInstrumentation.cls` consumes `instrumentation.mesh/0.1` as
+an optional adapter. The planner's own state remains usable without the Mesh.
 
-CPU, GPU, ZeroGPU, local-model and hosted-model resources can all travel through the
-same surface as their existing objects. Provider-specific selection remains below the
-semantic intention boundary.
+Two observation dimensions are kept separate:
+
+```text
+source health            service/resource-owned observation
+observation freshness    collector evidence about recency
+```
+
+A resource can therefore be `HEALTHY` and `STALE`. Staleness may influence
+route preference, but it cannot revoke authoritative admissibility. Missing
+publication time yields `UNKNOWN` freshness and is neutral rather than being
+invented as a failure.
+
+The caller supplies authoritative POSIX `now` through planning context when
+freshness should be assessed:
+
+```text
+INSTRUMENTATION_NOW_POSIX_SECONDS
+INSTRUMENTATION_FRESH_WITHIN_SECONDS   (default 30)
+INSTRUMENTATION_STALE_AFTER_SECONDS    (default 120)
+```
+
+The adapter does not parse a local clock string or invent time authority.
+
+The planner telemetry source now exposes both `snapshot()` and `events()`.
+Bounded replay-safe Mesh events include:
+
+- `COMPUTE_PLAN_STARTED`
+- `COMPUTE_PLAN_COMPLETED`
+- `COMPUTE_PLAN_FAILED`
+- `COMPUTE_HANDOFF_PREPARED`
+- `COMPUTE_HANDOFF_REFUSED`
+
+Events contain bounded operational evidence only. They do not carry prompt
+content, workload payloads, credentials, source text, model inputs/outputs or
+arbitrary compute-resource objects.
+
+## Intention Service and dynamic discovery
+
+The optional `GeneralizedComputeIntentionServiceAdapter` remains aligned to the
+Intention Service dev11 model:
+
+- planner core is independent of Intention Service;
+- Intention Service owns UNKNOWN / CLARIFY / CONFIRM / READY;
+- non-READY dispatch is rejected defensively;
+- dispatch replans against current compute/WLU/allocation/router state;
+- registration/discovery never reserve or entitle resources.
+
+`discoverFor(workload, context)` returns current operation descriptors. PLAN and
+EXPLAIN remain meaningful if no route is presently admissible; PREFERRED_ROUTE
+and PREPARE_ADMISSION report unavailable until a READY plan exists.
+
+The provider advertises semantic relationships:
+
+```text
+WORKLOAD --requires--> COMPUTE_REQUIREMENTS
+COMPUTE_REQUIREMENTS --satisfied_by--> COMPUTE_RESOURCE
+WORKLOAD --admitted_by--> WLU
+WORKLOAD --placed_by--> ALLOCATION
+WORKLOAD --routed_by--> ROUTER
+COMPUTE_RESOURCE --observed_by--> INSTRUMENTATION_MESH
+```
+
+These relationships support Management-style discovery but transfer no domain
+authority.
 
 ## Qualification
 
-Use the supplied ooRexx r13196 package directly:
-
 ```sh
-OOREXX_DEB=/path/to/oorexx-5.3.0-13196.ubuntu1604debug.x86_64.deb \
+OOREXX_DEB=/path/to/oorexx-5.3.0-13196...deb \
+INSTRUMENTATION_MESH_ROOT=/path/to/oorexx_instrumentation_mesh_v0.1-dev7 \
+INTENTION_SERVICE_ROOT=/path/to/oorexx_intention_service_v0.1-dev11 \
   ./tools/run_environment_test.sh
 ```
 
-Qualification compiles the source/tests and proves:
-
-- object identity survives planning, proposal and handoff;
-- WLU/router/allocator advisory evidence stays separately attributable;
-- planning and `PREPARE_ADMISSION` perform no mutation;
-- candidate discovery is fresh on each plan;
-- the structured provider uses the current Intention Service `name/propose` shape;
-- Intention Service dispatch can invoke the planning event without flattening objects.
+The semantic planning core has no hard external package dependency. Optional
+integrations fail closed if their explicit `::requires` paths are not present.

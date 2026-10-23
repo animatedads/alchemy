@@ -1,13 +1,13 @@
 {
   "id": "pl-runtime-reference-switch",
-  "title": "Runtime Reference: Execution Location Switching",
-  "summary": "Runtime Reference acts as the execution-location switch, allowing a semantic operation to be bound to a local or remote implementation without the caller's knowledge.",
-  "why": "Enables deployment flexibility; an operation can be shifted to a remote node for scaling or specialized hardware without changing the calling code.",
+  "title": "Runtime Reference After Placement Authority",
+  "summary": "Runtime Reference selects where an already-admitted semantic operation executes; it does not replace WLU admission, allocator placement or provider containment authority.",
+  "why": "Execution-location flexibility must not collapse the distinction between semantic operation identity and the authority to place or run it.",
   "invariants": [
-    "The caller invokes the same class and method; the deployment binds the semantic operation to a resident or remote implementation.",
-    "The owning package retains its native ooRexx implementation as a fallback.",
-    "Runtime Reference is separate from Runtime Registry: Registry selects the module generation; Reference selects where that operation executes."
+    "The caller keeps one semantic operation identity across local and remote execution.",
+    "Runtime binding occurs only after the relevant admission and placement requirements are satisfied.",
+    "Runtime Reference is separate from Runtime Registry and from Job-to-Node placement authority."
   ],
-  "evidence_note": "Source: runtime_reference_v0.4/README.md:3-8. Line 4: 'runtime.reference/0.4 is the execution-location switch layer for the ooRexx framework.'",
+  "evidence_note": "Grounded in runtime_reference_v0.4 and the placement/admittance chain documented by current managed-compute consumers.",
   "grounding": "oorexx-grounded"
 }

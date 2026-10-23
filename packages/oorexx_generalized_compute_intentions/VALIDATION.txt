@@ -1,0 +1,61 @@
+ooRexx Generalized Compute Intentions v0.1-dev5 validation
+Date: 2026-10-11
+Interpreter: Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit
+
+LIBRARY ALIGNMENT
+- Instrumentation Mesh: oorexx_instrumentation_mesh_v0.1-dev7
+- Intention Service current line: v0.1-dev11
+- Management Intention Discovery current evidence: v0.1-dev8
+- Instrumentation Intentions current evidence: v0.1-dev1
+- Job-to-Node Allocator current network extension: v0.6-network5
+- managed compute / WLU / router remain separate authorities consumed through injected adapters
+
+CORE SYNTAX
+PASS rexxc src/GeneralizedComputeIntentions.cls
+PASS rexxc tests/test_dynamic_rediscovery.rex
+PASS rexxc tests/test_planned_admittance.rex
+PASS rexxc tests/test_structured_intention_bridge.rex
+PASS rexxc tests/test_dynamic_surface_and_ready_guard.rex
+PASS rexxc tests/test_handoff_revalidation_contract.rex
+
+CORE RUNTIME
+PASS intentions dynamically rediscover compute state
+PASS planned admittance route preserves objects and authority boundaries
+PASS structured Intention Service bridge and planned admission handoff
+PASS dynamic surface relationships and READY dispatch guard
+PASS planned handoff explicitly requires authoritative revalidation
+
+INSTRUMENTATION MESH dev7
+PASS rexxc src/GeneralizedComputeInstrumentation.cls
+PASS rexxc tests/test_instrumentation_mesh_adapter.rex
+PASS rexxc tests/test_mesh_dev7_freshness_events.rex
+PASS Instrumentation Mesh observation and telemetry integration
+PASS source health remains independent of observation freshness
+PASS stale telemetry changes preference only, never admissibility
+PASS plan/handoff lifecycle publishes instrumentation.event/1 records
+PASS upstream dev7 tests/test_freshness_and_gauges.rex
+PASS upstream dev7 tests/test_event_timeline.rex
+PASS upstream dev7 tests/test_operation_observer.rex
+NOTE complete Instrumentation Mesh dev7 suite was not rerun because its aggregate runner requires additional estate qualification dependencies (first unresolved dependency: ObjectQueueFabric.cls); the three directly relevant upstream dev7 tests and this package's real dev7 integration tests pass.
+
+INTENTION SERVICE ADAPTER
+PASS source remains aligned to the dev11-shaped Intention Service contract
+NOTE the actual Intention Service dev11 archive is referenced by current Library evidence but was not materialized in this run, so real dev11 runtime qualification is not claimed here.
+
+JOB-TO-NODE NETWORK5 ALIGNMENT
+PASS handoff contract states that planning evidence is not admission entitlement
+PASS planned handoff requires COMPUTE + ALLOCATION + WLU + ROUTER revalidation before mutation
+PASS no runtime observation is treated as lease release or completion authority
+NOTE allocator network5 is consumed as an architectural/authority boundary in this increment; the planner does not directly link its classes.
+
+SHELL
+PASS bash -n tools/run_environment_test.sh
+
+AUTHORITY BOUNDARY
+PASS planning/discovery does not reserve WLU
+PASS planning/discovery does not allocate a resource
+PASS planning/discovery does not acquire/renew/release a lease
+PASS planning/discovery does not dispatch a workload
+PASS Instrumentation Mesh evidence can alter preference only, never admissibility
+PASS stale/missing telemetry does not fabricate service failure
+PASS non-READY Intention decisions are rejected by event adapters

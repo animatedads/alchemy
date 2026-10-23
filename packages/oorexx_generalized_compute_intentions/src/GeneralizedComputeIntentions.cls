@@ -1,8 +1,17 @@
-/* Generalized Compute Intentions v0.1-dev2
+/* Generalized Compute Intentions v0.1-dev5
  * Separate convenience layer. It plans admissible routes and bridges those
  * object-rich plans into Intention Service without owning compute, allocation,
  * WLU, router, model, quota, lease, or execution state.
  */
+
+::class GeneralizedComputeIntentionRelationship public
+::method init
+  expose subject predicate object authority
+  use strict arg subject, predicate, object, authority=''
+::attribute subject get
+::attribute predicate get
+::attribute object get
+::attribute authority get
 
 ::class PlannedAdmittanceRoute public
 ::method init
@@ -50,7 +59,7 @@
 
 ::class PlannedAdmittanceHandoff public
 ::method init
-  expose route candidate workload resource
+  expose route candidate workload resource revalidationRequired revalidationAuthorities
   use arg route, candidate
   if route == .nil then raise syntax 93.900 array('Planned route is required')
   if candidate == .nil then raise syntax 93.900 array('Admittance candidate is required')
@@ -58,11 +67,19 @@
   if \candidate~isAdmissible then raise syntax 93.900 array('Only admissible candidates can be handed off')
   workload = route~workload
   resource = candidate~resource
+  /* A plan is not an entitlement.  The authoritative admission path MUST
+   * revalidate the current compute, allocation, WLU and router state before
+   * it mutates anything.  This is explicit on the handoff so callers cannot
+   * mistake a READY plan for a durable reservation or placement lease. */
+  revalidationRequired = .true
+  revalidationAuthorities = .array~of('COMPUTE', 'ALLOCATION', 'WLU', 'ROUTER')
 
 ::attribute route get
 ::attribute candidate get
 ::attribute workload get
 ::attribute resource get
+::attribute revalidationRequired get
+::attribute revalidationAuthorities get
 
 ::class AdmittanceCandidate public
 ::method init
@@ -73,6 +90,7 @@
   self~allocationAssessment = .nil
   self~wluAssessment = .nil
   self~routerAssessment = .nil
+  self~observationAssessment = .nil
   self~evidence = .array~new
 
 ::attribute resource
@@ -81,6 +99,7 @@
 ::attribute allocationAssessment
 ::attribute wluAssessment
 ::attribute routerAssessment
+::attribute observationAssessment
 ::attribute evidence
 
 ::method addEvidence
@@ -132,7 +151,7 @@
 
 ::class GeneralizedComputeIntentionProvider public
 ::method init
-  use arg computeAdapter, allocationAdapter, wluAdapter, routerAdapter
+  use arg computeAdapter, allocationAdapter, wluAdapter, routerAdapter, observationAdapter=.nil
   if computeAdapter == .nil then raise syntax 93.900 array('Compute adapter is required')
   if allocationAdapter == .nil then raise syntax 93.900 array('Allocation adapter is required')
   if wluAdapter == .nil then raise syntax 93.900 array('WLU adapter is required')
@@ -141,11 +160,13 @@
   self~allocationAdapter = allocationAdapter
   self~wluAdapter = wluAdapter
   self~routerAdapter = routerAdapter
+  self~observationAdapter = observationAdapter
 
 ::attribute computeAdapter
 ::attribute allocationAdapter
 ::attribute wluAdapter
 ::attribute routerAdapter
+::attribute observationAdapter
 
 ::method providerId
   return 'generalized.compute.intentions/0.1'
@@ -155,9 +176,47 @@
   surface = .directory~new
   surface['provider'] = self~providerId
   surface['operations'] = .array~of('PLAN_ADMITTANCE', 'EXPLAIN_ADMITTANCE', 'PREFERRED_ROUTE', 'PREPARE_ADMISSION')
+  surface['relationships'] = self~relationships
   surface['mutating'] = .false
   surface['context'] = context
   return surface
+
+::method operationDescriptor
+  use arg operation, workload, context=.nil
+  op = translate(strip(operation))
+  descriptor = .directory~new
+  descriptor['operation'] = op
+  descriptor['mutating'] = .false
+  descriptor['available'] = .true
+  descriptor['state'] = 'AVAILABLE'
+  descriptor['reason'] = 'PLANNING_OPERATION'
+  if workload == .nil then return descriptor
+  route = self~planAdmittance(workload, context)
+  descriptor['state'] = route~state
+  descriptor['reason'] = route~reason
+  if op = 'PREFERRED_ROUTE' | op = 'PREPARE_ADMISSION' then -
+      descriptor['available'] = route~state = 'READY'
+  return descriptor
+
+::method discoverFor
+  use arg workload, context=.nil
+  surface = self~discover(context)
+  descriptors = .array~new
+  do op over surface['operations']
+    descriptors~append(self~operationDescriptor(op, workload, context))
+  end
+  surface['operation_descriptors'] = descriptors
+  return surface
+
+::method relationships
+  relationships = .array~new
+  relationships~append(.GeneralizedComputeIntentionRelationship~new('WORKLOAD', 'requires', 'COMPUTE_REQUIREMENTS', 'semantic'))
+  relationships~append(.GeneralizedComputeIntentionRelationship~new('COMPUTE_REQUIREMENTS', 'satisfied_by', 'COMPUTE_RESOURCE', 'compute authority'))
+  relationships~append(.GeneralizedComputeIntentionRelationship~new('WORKLOAD', 'admitted_by', 'WLU', 'WLU authority'))
+  relationships~append(.GeneralizedComputeIntentionRelationship~new('WORKLOAD', 'placed_by', 'ALLOCATION', 'allocator authority'))
+  relationships~append(.GeneralizedComputeIntentionRelationship~new('WORKLOAD', 'routed_by', 'ROUTER', 'router authority'))
+  relationships~append(.GeneralizedComputeIntentionRelationship~new('COMPUTE_RESOURCE', 'observed_by', 'INSTRUMENTATION_MESH', 'observation only'))
+  return relationships
 
 /* PLAN only. This method MUST NOT reserve WLU, create an allocation, acquire
  * a lease, dispatch a job, invoke an LLM, or entitle a caller to a route.
@@ -182,10 +241,23 @@
     candidate~wluAssessment = self~wluAdapter~assess(workload, resource, context)
     candidate~routerAssessment = self~routerAdapter~assess(workload, resource, context)
 
+    /* Instrumentation is advisory evidence only. It may alter preference order,
+     * but it cannot make an otherwise inadmissible route admissible and cannot
+     * grant mutation authority. Authoritative eligibility remains compute,
+     * allocation, WLU and router-owned. */
+    if self~observationAdapter \== .nil then do
+      candidate~observationAssessment = self~observationAdapter~observe(workload, resource, context)
+      observation = candidate~observationAssessment
+      if observation \== .nil then do
+        if observation~hasMethod('preferencePenalty') then candidate~preferenceRank += observation~preferencePenalty
+      end
+    end
+
     self~collectEvidence(candidate, candidate~computeAssessment)
     self~collectEvidence(candidate, candidate~allocationAssessment)
     self~collectEvidence(candidate, candidate~wluAssessment)
     self~collectEvidence(candidate, candidate~routerAssessment)
+    self~collectEvidence(candidate, candidate~observationAssessment)
     route~addCandidate(candidate)
   end
 
@@ -214,6 +286,7 @@
     row['allocation'] = c~allocationAssessment
     row['wlu'] = c~wluAssessment
     row['router'] = c~routerAssessment
+    row['observation'] = c~observationAssessment
     row['evidence'] = c~evidence
     out~append(row)
   end
@@ -344,6 +417,9 @@
   expose structuredProvider
   use arg decision
   if decision == .nil then raise syntax 93.900 array('Intention decision is required')
+  if decision~hasMethod('status') then do
+    if decision~status \== 'READY' then raise syntax 93.900 array('COMPUTE_INTENTION_NOT_READY')
+  end
   slots = decision~slots
   if slots == .nil then raise syntax 93.900 array('Intention decision has no slots')
   if slots~hasIndex('REQUEST') = 0 then raise syntax 93.900 array('Intention decision has no REQUEST slot')

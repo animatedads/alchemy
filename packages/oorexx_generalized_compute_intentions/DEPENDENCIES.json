@@ -1,0 +1,59 @@
+{
+  "schema": "generalized.compute.intentions.dependencies/1",
+  "package": "oorexx-generalized-compute-intentions",
+  "version": "0.1-dev5",
+  "core": {
+    "requires": [],
+    "note": "The semantic planning core remains dependency-free and consumes injected adapters."
+  },
+  "optional": [
+    {
+      "name": "oorexx-instrumentation-mesh",
+      "version": "0.1-dev7",
+      "api": "instrumentation.mesh/0.1",
+      "classFiles": [
+        "InstrumentationMesh.cls",
+        "InstrumentationAnalysis.cls",
+        "InstrumentationServiceAdapters.cls"
+      ],
+      "purpose": "estate-wide telemetry, freshness assessment and bounded operational events"
+    },
+    {
+      "name": "oorexx-intention-service",
+      "version": "0.1-dev11",
+      "api": "intention.service/0.1",
+      "classFiles": [
+        "IntentionService.cls",
+        "IntentionProviders.cls"
+      ],
+      "purpose": "language-facing UNKNOWN/CLARIFY/CONFIRM/READY state machine and dispatch gate"
+    },
+    {
+      "name": "job-node-allocator",
+      "version": "0.6-network5",
+      "api": "job.node.allocator.network/0.1",
+      "purpose": "authoritative allocation plus observational runtime reconciliation; not linked by the planning core"
+    }
+  ],
+  "pathRequirements": [
+    {
+      "source": "src/GeneralizedComputeInstrumentation.cls",
+      "requires": [
+        "GeneralizedComputeIntentions.cls",
+        "InstrumentationMesh.cls",
+        "InstrumentationAnalysis.cls",
+        "InstrumentationServiceAdapters.cls"
+      ],
+      "resolution": "package src plus explicit Instrumentation Mesh dev7 src path"
+    },
+    {
+      "source": "src/GeneralizedComputeIntentionServiceAdapter.cls",
+      "requires": [
+        "GeneralizedComputeIntentions.cls",
+        "IntentionService.cls",
+        "IntentionProviders.cls"
+      ],
+      "resolution": "package src plus explicit Intention Service dev11 src path"
+    }
+  ]
+}

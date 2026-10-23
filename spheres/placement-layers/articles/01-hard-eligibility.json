@@ -1,13 +1,13 @@
 {
   "id": "pl-hard-eligibility",
-  "title": "Hard Eligibility vs Optimization",
-  "summary": "The Job Node Allocator enforces hard eligibility constraints before considering optimization metrics like cost or speed.",
-  "why": "Security, legal, and access constraints are binary requirements; no amount of idle CPU or low cost can justify placing a job on an ineligible node.",
+  "title": "Hard Eligibility Before Optimization",
+  "summary": "Job-to-Node evaluates hard eligibility before optimization, while Generalized Compute Intentions may only plan over the resulting authoritative evidence.",
+  "why": "A cheap, fast or idle resource is irrelevant if policy, jurisdiction, runtime, capability or mandatory resource requirements reject it.",
   "invariants": [
     "Hard eligibility is evaluated before optimisation.",
-    "Security, legal, access, runtime/software, architecture, liveness, and mandatory resource constraints are never soft scores.",
-    "Hard constraints cannot be outweighed by idle CPU, free storage, cost, or speed."
+    "A semantic planner may explain a veto but cannot override it.",
+    "Telemetry and economic ranking cannot turn an ineligible candidate into an eligible one."
   ],
-  "evidence_note": "Source: job_node_allocator_v0.6/README.md:8-12. Line 9: 'Hard eligibility is evaluated before optimisation.'",
+  "evidence_note": "Grounded in Job-to-Node v0.6/network6 hard-eligibility semantics and Generalized Compute Intentions v0.1-dev5 authority tests.",
   "grounding": "oorexx-grounded"
 }
