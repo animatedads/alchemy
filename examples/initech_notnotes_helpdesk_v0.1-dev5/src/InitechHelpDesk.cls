@@ -358,3 +358,183 @@
   return .nil
 
 ::method helpDeskProcessHistory private
+  expose app actor
+  use strict arg text, upperText
+  ratingFilter = ""
+  if pos("FAIL", upperText) > 0 then ratingFilter = "FAILURE"
+  else if pos("SUCCESS", upperText) > 0 then ratingFilter = "SUCCESS"
+  personal = pos(" MY ", " " || upperText || " ") > 0
+  dateFilter = ""
+  if pos("YESTERDAY", upperText) > 0 then dateFilter = date("S", date("B") - 1, "B")
+  else if pos("TODAY", upperText) > 0 then dateFilter = date("S")
+
+  targetNumber = ""
+  do document over app~allDocuments
+    if document~formName \= "TPS Report" then iterate
+    number = app~reportValue(document, "TPSNumber")
+    if number == .nil then iterate
+    number = number~string
+    if left(translate(number), 7) \= "TPS-HD-" then iterate
+    if pos(translate(number), upperText) > 0 then do
+      targetNumber = number
+      leave
+    end
+  end
+
+  rows = .Array~new
+  do document over app~allDocuments
+    if document~formName \= "TPS Report" then iterate
+    number = app~reportValue(document, "TPSNumber")
+    if number == .nil then iterate
+    number = number~string
+    if left(translate(number), 7) \= "TPS-HD-" then iterate
+    if targetNumber <> "" & translate(number) \= translate(targetNumber) then iterate
+    if dateFilter <> "" then if pos("TPS-HD-" || dateFilter || "-", translate(number)) \= 1 then iterate
+    if personal then do
+      owner = app~reportValue(document, "User")
+      if owner == .nil then iterate
+      if translate(owner~string) \= translate(actor) then iterate
+    end
+
+    related = self~relatedDocumentsTo(document, "TPS Report Review")
+    if related~items = 0 then iterate
+    do relation over related
+      review = relation["DOCUMENT"]
+      ratingField = self~semanticFieldName(review~formName, "RATING")
+      reviewField = self~semanticFieldName(review~formName, "REVIEW")
+      rating = ""
+      reviewText = ""
+      if ratingField <> "" then do
+        value = review~field(ratingField)
+        if value \== .nil then rating = value~string
+      end
+      if reviewField <> "" then do
+        value = review~field(reviewField)
+        if value \== .nil then reviewText = value~string
+      end
+      if ratingFilter <> "" & translate(rating) \= ratingFilter then iterate
+      row = .Directory~new
+      row["TPS"] = document
+      row["REVIEW"] = review
+      row["TPS_NUMBER"] = number
+      row["RATING"] = rating
+      row["REVIEW_TEXT"] = reviewText
+      rows~append(row)
+    end
+  end
+
+  if rows~items = 0 then do
+    if targetNumber <> "" then return self~reply("INFEASIBLE", "The Help Desk TPS process " || targetNumber || " exists or was referenced, but no matching live linked review is currently available under the requested filters.", "HELPDESK_TPS_PROCESS_HISTORY")
+    return self~reply("INFEASIBLE", "I understood the Help Desk TPS process request, but no live session TPS reports match the requested filters.", "HELPDESK_TPS_PROCESS_HISTORY")
+  end
+
+  out = "HELP DESK TPS PROCESS HISTORY" || "0a"x
+  do row over rows
+    tps = row["TPS"]
+    owner = app~reportValue(tps, "User")
+    out = out || row["TPS_NUMBER"] || " | user=" || owner || " | rating=" || row["RATING"] || " | review=" || row["REVIEW"]~DocKey || "0a"x
+    if targetNumber <> "" then out = out || row["REVIEW_TEXT"] || "0a"x
+  end
+  r = self~reply("SUCCESS", out, "HELPDESK_TPS_PROCESS_HISTORY")
+  r["COUNT"] = rows~items
+  if targetNumber <> "" then r["TPS_NUMBER"] = targetNumber
+  return r
+
+::method relatedDocumentsTo private
+  expose app
+  use strict arg target, wantedFormat=""
+  relatedDocs = .Array~new
+  do formatName over app~userFormatNames
+    if wantedFormat <> "" & translate(formatName) \= translate(wantedFormat) then iterate
+    specs = app~userFormatFields(formatName)
+    do spec over specs
+      if translate(spec["TYPE"]) \= "DOCUMENT_REFERENCE" then iterate
+      targetFormat = ""
+      if spec~hasIndex("REF_TARGET") then targetFormat = spec["REF_TARGET"]
+      if targetFormat <> "" then if translate(targetFormat) \= translate(target~formName) then iterate
+      refField = spec["NAME"]
+      do document over app~allDocuments
+        if document~formName \= formatName then iterate
+        ref = document~field(refField)
+        if \self~referenceContains(ref, target~DocKey) then iterate
+        one = .Directory~new
+        one["DOCUMENT"] = document
+        one["FORMAT"] = formatName
+        one["REF_FIELD"] = refField
+        relatedDocs~append(one)
+      end
+    end
+  end
+  return relatedDocs
+
+::method referenceContains private
+  use strict arg reference, wantedKey
+  if reference == .nil then return .false
+  if reference~isA(.Array) then do
+    do item over reference
+      if translate(item~string) = translate(wantedKey~string) then return .true
+    end
+    return .false
+  end
+  return translate(reference~string) = translate(wantedKey~string)
+
+::method semanticFieldName private
+  expose app
+  use strict arg formatName, semanticWord
+  semanticWord = translate(semanticWord)
+  do spec over app~userFormatFields(formatName)
+    label = ""
+    name = ""
+    if spec~hasIndex("LABEL") then label = spec["LABEL"]
+    if spec~hasIndex("NAME") then name = spec["NAME"]
+    if pos(semanticWord, translate(label || " " || name)) > 0 then return name
+  end
+  return ""
+
+::method linkedTpsEvidence private
+  expose app
+  use strict arg tps
+  lines = .Array~new
+  relations = self~relatedDocumentsTo(tps)
+  do relation over relations
+    document = relation["DOCUMENT"]
+    formatName = relation["FORMAT"]
+    specs = app~userFormatFields(formatName)
+    textFields = .Array~new
+    do spec over specs
+      type = translate(spec["TYPE"])
+      label = translate(spec["LABEL"] || " " || spec["NAME"])
+      if type = "TEXT" then if pos("FINDING", label) > 0 | pos("RECOMMEND", label) > 0 then textFields~append(spec["NAME"])
+    end
+    if textFields~items = 0 then iterate
+    line = document~DocKey || " | " || formatName
+    do fieldName over textFields
+      value = document~field(fieldName)
+      if value \== .nil then if value~string \= "" then line = line || "0a"x || fieldName || ": " || value~string
+    end
+    lines~append(line)
+  end
+  if lines~items = 0 then return self~reply("INFEASIBLE", "I understood the TPS reference, but the live NotNotes application currently has no linked consultant finding evidence for " || app~reportValue(tps, "TPSNumber") || ".", "LINKED_TPS_EVIDENCE")
+  text = "Linked management evidence for " || app~reportValue(tps, "TPSNumber") || " (" || tps~DocKey || ")" || "0a"x
+  do line over lines; text = text || line || "0a"x; end
+  r = self~reply("SUCCESS", text, "LINKED_TPS_EVIDENCE")
+  r["COUNT"] = lines~items
+  r["TPS_KEY"] = tps~DocKey
+  return r
+
+::method resolveDocumentFromText private
+  expose app
+  use strict arg text
+  upper = translate(text)
+  do document over app~allDocuments
+    if pos(translate(document~DocKey~string), upper) > 0 then return document
+    projection = app~semanticDocumentProjection(document)
+    do field over projection["FIELDS"]
+      value = field["VALUE"]
+      if value == .nil then iterate
+      valueText = value~string
+      if valueText = "" then iterate
+      if field["SEMANTIC_TYPE"] = "IDENTIFIER" then if pos(translate(valueText), upper) > 0 then return document
+    end
+  end
+  return .nil
