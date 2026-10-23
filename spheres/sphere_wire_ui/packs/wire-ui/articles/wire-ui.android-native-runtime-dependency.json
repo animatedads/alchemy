@@ -1,0 +1,48 @@
+{
+  "kind": "article",
+  "id": "wire-ui.android-native-runtime-dependency",
+  "version": "0.1",
+  "sphere": "wire-ui",
+  "title": "Android Wire native runtime dependency and qualification boundary",
+  "summary": "The Android renderer is downstream of a separately qualified embedded ooRexx runtime. Resolve semantic package dependencies separately from target-native ELF and APK installability. Do not infer handset qualification from static ELF closure.",
+  "invariants": [
+    "Keep Wire UI semantic state, event identity and application behavior independent of Android JNI and renderer implementation.",
+    "Minimal bootstrap is Android/Bionic, the JNI host, embedded ooRexx and its verified native dependencies; do not make RexxOS Grid transports, storage or Queue Fabric mandatory for Wire.",
+    "Resolve and lock exact semantic package versions and hashes before hosted Wire composition; separately verify ABI, SONAME/DT_NEEDED, ELF architecture and native target loadability.",
+    "Require exact correspondence between Java native method declaration and JNI symbol or explicit RegisterNatives mapping.",
+    "Treat APK package installation, Java library load, JNI invocation, interpreter creation, CallProgram and Wire activation as distinct qualification gates.",
+    "Use dev22-fixed as the last handset-confirmed JNI proof; dev23 and dev24 are not accepted runtime or packaging baselines.",
+    "Do not claim handset qualification from an archive inspection, static readelf audit or build success.",
+    "Runtime Reference execution routing, Runtime Registry module generation and Deployment reconciliation are distinct contracts."
+  ],
+  "evidence": [
+    {
+      "source": "packages/oorexx_android_jni_proof_v0.1-dev22-fixed",
+      "status": "handset JNI proof confirmed in prior acceptance; nativeProbe returned 12345"
+    },
+    {
+      "source": "packages/oorexx_android_native/build-wire-mobile-host-dev17.sh",
+      "status": "source checkpoint, not an installed application"
+    },
+    {
+      "source": "packages/oorexx_android_native/ANDROID_DEPENDENCY_DEV19.md",
+      "status": "design and qualification ledger"
+    },
+    {
+      "source": "packages/oorexx_android_native/audit_apk.py",
+      "status": "static ARM64 ELF dependency audit only"
+    },
+    {
+      "source": "RexxOS RTO2 Grid v0.1-dev9 DEPENDENCIES_GRID.json",
+      "status": "dependency closure precedent; not an Android runtime artifact"
+    }
+  ],
+  "known_open_items": [
+    "Confirm Java/JNI signature correspondence for dev23 failure.",
+    "Investigate dev24 Android package installation rejection.",
+    "Rebuild with qualified Android ooRexx source and verify interpreter compound-variable behavior on handset.",
+    "Normalize native SONAME/DT_NEEDED for APK loader and verify against packaged files.",
+    "Qualify semantic Wire renderer events and lifecycle after interpreter bootstrap."
+  ],
+  "authority": "Documentation and qualification contract only; does not supersede Wire UI server behavioral authority or certify APK deployment."
+}
