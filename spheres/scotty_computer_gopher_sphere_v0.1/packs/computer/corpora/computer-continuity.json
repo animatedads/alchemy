@@ -1,0 +1,49 @@
+{
+  "kind": "corpus",
+  "id": "computer-continuity",
+  "sphere": "scotty-computer",
+  "title": "Computer durable implementation decisions",
+  "records": [
+    {
+      "id": "r.scope",
+      "trigger": "Searching files on any host",
+      "rule": "Use the explicitly named local scope; refuse implicit whole-tree fallback.",
+      "related": [
+        "cmp.scopes"
+      ]
+    },
+    {
+      "id": "r.approval",
+      "trigger": "Job activation/execution has returned confirmation token",
+      "rule": "Do not represent a bearer token as independent operator identity evidence.",
+      "related": [
+        "cmp.jobs"
+      ]
+    },
+    {
+      "id": "r.exception",
+      "trigger": "Child rc=0 but ERROR: or space breach observed",
+      "rule": "Preserve child_rc=0 and emit independent exception observation and status.",
+      "related": [
+        "cmp.exceptions",
+        "cmp.receipts"
+      ]
+    },
+    {
+      "id": "r.git",
+      "trigger": "Repository has a project-specific deploy-key alias",
+      "rule": "Preserve the Git remote and ssh_config identity selection; inspect before effects.",
+      "related": [
+        "cmp.github"
+      ]
+    },
+    {
+      "id": "r.qualification",
+      "trigger": "Promoting Computer release",
+      "rule": "Report native suite inconsistency and require deterministic full qualification.",
+      "related": [
+        "cmp.qualification"
+      ]
+    }
+  ]
+}
