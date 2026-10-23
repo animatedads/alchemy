@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "svplay.qualification",
+  "version": "0.1",
+  "sphere": "service-video-playout",
+  "title": "Dev3 qualification status and evidence boundary",
+  "summary": "The 23 October dev3 archive reports a clean C11 build, 4 native hold tests, four WebM and two still assets staged, 392 file-output frames across four scenes with zero underruns and byte-exact I420/PCM, and strict ooRexx standards PASS with zero findings. This does not prove browser, device or WhatsApp operation.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Do not treat a historical dev2 live run as a dev3 live-host retest.",
+    "Keep each qualifier separate: source checks, simulated file output, ooRexx FFI, live V4L2, live microphone and end-to-end call.",
+    "A 'not tested' result must not be relabelled a PASS.",
+    "No accepted Autobuild receipt exists for the prior source submission as of the status check in this sphere; it is committed to an immutable submission branch, not main."
+  ],
+  "procedure": [
+    "Rebuild in a clean environment and run python3 tests/test_native_hold.py.",
+    "Verify staged real assets using tests/verify_real_staged_native.py and compare file hashes and frame counts.",
+    "Run actual openSUSE Firefox and WhatsApp receiver-side test and record FPS, audio level, skew and device recovery.",
+    "Check Autobuild receipt and published package path before claiming main acceptance."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/acceptance/DEV3_RESULTS.json",
+      "claim": "Test status and explicit unqualified items."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/acceptance/DEV3_REAL_ASSETS.json",
+      "claim": "392 frames, four scenes, byte-exact file-output evidence."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/acceptance/DEV3_STANDARDS.json",
+      "claim": "Strict standards checker PASS and 0 findings."
+    }
+  ]
+}

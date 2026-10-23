@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "svplay.devices",
+  "version": "0.1",
+  "sphere": "service-video-playout",
+  "title": "Browser virtual camera and microphone",
+  "summary": "On the validated openSUSE test host the v4l2loopback camera appeared as /dev/video0; the audio server identified PulseAudio on PipeWire 1.6.9, with null sink service_audio and remapped source service_mic. Firefox captured earlier test media; the dev3 native package has not been live-device retested.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Do not assume /dev/video42; the observed camera in this development session is /dev/video0.",
+    "Start the media producer before browser camera discovery when exclusive_caps is active.",
+    "Never assume a VLC v4l2:///dev/video0 preview includes audio; select service_mic in a microphone-aware application.",
+    "Do not redirect other host audio streams to the service sink accidentally.",
+    "A browser displaying a camera preview is not evidence that a WhatsApp recipient received audio or video."
+  ],
+  "procedure": [
+    "Confirm pactl info reports the PipeWire PulseAudio compatibility server.",
+    "Confirm /dev/video0 is the intended virtual camera and not the laptop's hardware camera.",
+    "Confirm service_audio exists as a sink, service_mic as its remapped monitor source, and verify per-application microphone selection.",
+    "Qualify on Firefox and Chromium separately using real receiver-side capture."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/docs/DEV3_WAIT_RELEASE.md",
+      "claim": "openSUSE V4L2/PipeWire prerequisites and user-selection procedure."
+    }
+  ]
+}

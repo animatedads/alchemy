@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "svplay.source-map",
+  "version": "0.1",
+  "sphere": "service-video-playout",
+  "title": "Exact source and GitHub submission map",
+  "summary": "The full dev3 ZIP retains actual clips, generated review videos, a compiled native library and a bundled NotNotes ZIP. The earlier GitHub API fallback deliberately submitted only project-owned source files for Alchemy Autobuild; media and vendor dependencies are separately supplied.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Repository Git branch is a transport envelope; do not merge submission branches directly into main.",
+    "Keep original dev3 SHA-256 distinct from source-only GitHub tree hashes.",
+    "Do not copy proprietary/private media, compiled outputs, scratch data or dependency archives into a source or sphere branch.",
+    "The sphere is documentation: it does not replace the executable package or assertions."
+  ],
+  "procedure": [
+    "Check original archive hash before reconstruction.",
+    "Consult native/service_playout.c for actual media worker behavior, rexx/ServicePlayout.cls for control semantics, and docs/DEV3_WAIT_RELEASE.md for operation.",
+    "For the source-only GitHub handoff inspect commit cbdbd5c9994ecf889952a83a15ea3a0060ca967a on the immutable autobuild-submit branch.",
+    "When the actual accepted main tree differs, update this sphere's provenance, not its older history."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/MANIFEST.sha256",
+      "claim": "Full development archive member checksums."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/docs/HANDOVER.md",
+      "claim": "Implementation ownership and next priorities."
+    }
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "kind": "corpus",
+  "id": "svplay.lessons",
+  "sphere": "service-video-playout",
+  "title": "Service Video Playout implementation lessons",
+  "records": [
+    {
+      "topic": "browser-device",
+      "rule": "Video and audio are separate browser capture resources; a VLC V4L2 preview does not prove virtual microphone capture."
+    },
+    {
+      "topic": "openSUSE",
+      "rule": "Observed v4l2loopback device is /dev/video0; PipeWire PulseAudio sink service_audio and source service_mic. Never hardcode those as cross-host universal names."
+    },
+    {
+      "topic": "persistent-output",
+      "rule": "Start the resident worker once; HOLD emits idle frames and silence at the normal clock instead of closing devices."
+    },
+    {
+      "topic": "media-clock",
+      "rule": "24 fps I420 output and 48 kHz stereo PCM imply 2,000 PCM stereo samples per output frame; measure live skew, do not infer it from offline byte counts."
+    },
+    {
+      "topic": "FFI",
+      "rule": "Invoke native start explicitly by invokeArray because inherited ooRexx Object~start collides with the foreign name."
+    },
+    {
+      "topic": "asset-preflight",
+      "rule": "Size/symlink checks at enqueue and dequeue reject missing or malformed media, but do not attest content identity or block same-size swaps."
+    },
+    {
+      "topic": "business-truth",
+      "rule": "Intention != authorised projection; business services must supply validated data and session-granted fields before any presentation."
+    },
+    {
+      "topic": "evidence",
+      "rule": "Dev3 PASS on native file-output + standards is not dev3 PASS on Firefox, PipeWire microphone or WhatsApp receiver."
+    },
+    {
+      "topic": "github",
+      "rule": "Alchemy uses immutable autobuild-submit branches and acceptance receipts; a committed transport branch is not a main-branch merge."
+    }
+  ]
+}
