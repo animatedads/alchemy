@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "smtp-secure-stack.instrumentation",
+  "version": "0.1",
+  "sphere": "smtp-secure-stack",
+  "title": "Instrumentation is observation, not authority",
+  "summary": "SMTP semantic audit events remain service-owned evidence. Instrumentation Mesh receives a deliberately lossy operational projection and cannot become a source of mail, RPC, signing, sending or retry authority.",
+  "authority": "privacy-and-observability-contract",
+  "invariants": [
+    "Instrumentation excludes message content, RPC arguments, mail addresses, remote addresses, principals, certificate identities and raw private RPC correlation ids from ordinary dimensions.",
+    "The default RPC instrumentation mapper publishes no correlation id.",
+    "Cross-service correlation is opt-in through a deployment-owned mapper that translates a private RPC correlation id to a separate opaque observability token.",
+    "Instrumentation correlation groups are read-only evidence organization and never grant RPC_INVOKE, MAILSIGN, EMAIL_SEND, delivery or retry authority.",
+    "Audit/event evidence and operational metrics may coexist through composite sinks without conflating their authority."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_smtp_secure_stack_v0.1-dev11.zip",
+      "sha256": "95bf988357505e2ab59ec3264d702e9179c99be530cb55248647cf23ac3229bc",
+      "member": "oorexx_smtp_secure_stack_v0.1-dev11/src/SmtpInstrumentationBinding.cls",
+      "claim": "Implements bounded SMTP/RPC projections and explicit private-to-observability correlation mapping."
+    },
+    {
+      "artifact": "oorexx_smtp_secure_stack_v0.1-dev11.zip",
+      "sha256": "95bf988357505e2ab59ec3264d702e9179c99be530cb55248647cf23ac3229bc",
+      "member": "oorexx_smtp_secure_stack_v0.1-dev11/tests/test_instrumentation_mesh_dev8.rex",
+      "claim": "Executable qualification of default no-correlation privacy and explicit opaque correlation grouping."
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "smtp-secure-stack.durable-dispatch",
+  "version": "0.1",
+  "sphere": "smtp-secure-stack",
+  "title": "Durable delivery, Storage Fabric and outbound dispatch",
+  "summary": "Message bytes are stored once as an immutable Storage Fabric object. Mailbox, quarantine and outbound spool state are projections referencing that object. Queue Fabric carries durable work references rather than a second authoritative message body.",
+  "authority": "implementation-contract",
+  "invariants": [
+    "Mailbox membership, quarantine and outbound spool records reference one authoritative stored message object.",
+    "Storage durability is verified before a location is treated as durable.",
+    "Queue Fabric transport and ACL semantics remain owned by Queue Fabric; SMTP publishes only its request contract.",
+    "Every dispatch attempt re-enters signature, EMAIL_SEND and egress-policy checks.",
+    "Recipient state is tracked independently so partial success does not retransmit recipients already accepted.",
+    "SMTP cannot provide exactly-once delivery across an ambiguous post-DATA connection loss; ambiguous outcomes must be represented explicitly rather than silently retried as certain failure.",
+    "A successful final SMTP DATA reply is remote acceptance evidence; a failed local journal commit after that point is not grounds to pretend the remote acceptance did not happen."
+  ],
+  "procedure": [
+    "Resolve the durable spool reference and reload the immutable Storage Fabric object.",
+    "Reconstruct the attributed session/principal evidence.",
+    "Call SmtpService.validateRelayRelease immediately before network release.",
+    "Establish next-hop SMTP and mandatory STARTTLS under the configured transport policy.",
+    "Persist recipient-level DELIVERED, DEFERRED, FAILED or ambiguous evidence and retry metadata."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_smtp_secure_stack_v0.1-dev11.zip",
+      "sha256": "95bf988357505e2ab59ec3264d702e9179c99be530cb55248647cf23ac3229bc",
+      "member": "oorexx_smtp_secure_stack_v0.1-dev11/src/SmtpDurableDelivery.cls",
+      "claim": "Implements Storage Fabric object, mailbox, quarantine and spool projections."
+    },
+    {
+      "artifact": "oorexx_smtp_secure_stack_v0.1-dev11.zip",
+      "sha256": "95bf988357505e2ab59ec3264d702e9179c99be530cb55248647cf23ac3229bc",
+      "member": "oorexx_smtp_secure_stack_v0.1-dev11/src/SmtpOutboundDispatcher.cls",
+      "claim": "Implements release-time revalidation and recipient-safe outbound dispatch/retry semantics."
+    }
+  ]
+}
