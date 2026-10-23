@@ -1,0 +1,17 @@
+{
+  "schema": "flylo.mvs-backend.acceptance/1",
+  "cases": [
+    {"id":"PATH-SYD-HKG-LON","expect":"SYD->HKG->LON"},
+    {"id":"FARE-LIGHT-NONE","ruleset":"FLYLO_LIGHT","market":"SYD-LON","expect":"ZERO_THROUGH_FARES"},
+    {"id":"FARE-VALUE-THROUGH","ruleset":"FLYLO_VALUE","market":"SYD-LON","expect":{"fareId":"FLYLO_VALUE-SYDLON-001","amountMinor":245000,"currency":"AUD","baggageProfile":"FLYLO_VALUE_BG1"}},
+    {"id":"AUTH-ZORIN-NOT-DRAX","session":"ZORIN/FORWARDER/ZORIN_FWD","requestRuleset":"DRAX_FREIGHT","expect":"DENY_COMPANY"},
+    {"id":"COUPON-SKIP-REJECT","priorCoupon":"OPEN","attemptCoupon":2,"expect":"REJECT_SEQUENCE"},
+    {"id":"COUPON-VALUE-WAIVER","rulesetAtIssue":"FLYLO_VALUE","priorCoupon":"OPEN","waiver":"FULLRACK_FIRST","expect":"ALLOW_BOARD"},
+    {"id":"COUPON-LIGHT-WAIVER-DENY","rulesetAtIssue":"FLYLO_LIGHT","priorCoupon":"OPEN","waiver":"FULLRACK_FIRST","expect":"REJECT_SEQUENCE"},
+    {"id":"BAG-LIGHT-EXCESS","profile":"FLYLO_LIGHT_BG0","checkedWeightG":[18000],"cabinWeightG":6500,"expect":{"result":"ACCEPT","excessPieces":1,"chargeMinor":7000,"currency":"AUD"}},
+    {"id":"BAG-VALUE-OVERWEIGHT","profile":"FLYLO_VALUE_BG1","checkedWeightG":[25000],"expect":{"result":"REJECT_INCLUDED_PIECE_OVERWEIGHT","limitG":23000}},
+    {"id":"CARGO-ZORIN-VOLUMETRIC","dimensionsCm":[100,50,40],"grossWeightG":20000,"divisorCm3PerKg":6000,"expect":{"volumeCm3":200000,"volumetricWeightG":33334,"chargeableWeightG":33334}},
+    {"id":"CARGO-ZORIN-NOT-OPERATOR","session":"ZORIN/FORWARDER/ZORIN_FWD","expect":"DENY_OPERATOR_AUTHORITY"},
+    {"id":"FLCTL-IDEMPOTENT-SUBMIT","expect":"SAME_WORKFLOW_NODE_KEY_REPLAYS_EXISTING_SUBMISSION_ID"}
+  ]
+}
