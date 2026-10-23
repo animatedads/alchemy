@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "ref.initech-helpdesk.tps-accounting",
+  "version": "0.1",
+  "sphere": "initech-notnotes-helpdesk",
+  "title": "Mandatory Help Desk TPS process accounting",
+  "summary": "Every closed Help Desk session records its process outcome as a real TPS Report and a linked TPS Report Review. These records immediately become ordinary live NotNotes data for future support queries.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Session accounting uses the installed TPS Report and TPS Report Review formats, not a private audit store.",
+    "The review stores the stable TPS document reference rather than copied presentation text.",
+    "Any failed/unknown operation makes the session review FAILURE; otherwise it is SUCCESS.",
+    "Later Help Desk sessions discover prior process reports through ordinary live NotNotes relationships."
+  ],
+  "procedure": [
+    "At close, create the TPS Report with the session TPS-HD identifier and actor.",
+    "Create the linked TPS Report Review with SUCCESS or FAILURE plus turn/success/failure evidence.",
+    "Persist through NotNotes authority and let future sessions query the records normally."
+  ],
+  "provenance": [
+    {
+      "artifact": "initech_notnotes_helpdesk_v0.1-dev5.zip",
+      "sha256": "0448068f18fee165381441e2afb33dbee170f44957f6d3c704ef2948ed42f9c6",
+      "member": "initech_notnotes_helpdesk_v0.1-dev5/src/InitechHelpDesk.cls",
+      "claim": "Mandatory session TPS Report and linked review persistence plus recursive support evidence."
+    }
+  ],
+  "related": ["ref.initech-helpdesk.architecture"]
+}
