@@ -1,0 +1,61 @@
+{
+  "kind": "corpus",
+  "id": "rpc-invocation.continuity",
+  "sphere": "rpc-invocation",
+  "title": "RPC Invocation engineering rules and evidence boundaries",
+  "records": [
+    {
+      "topic": "authority.connect",
+      "rule": "Connect Selector owns route selection and route permissions."
+    },
+    {
+      "topic": "authority.serialization",
+      "rule": "Serialisation Selector owns codec/schema binding, including protobuf."
+    },
+    {
+      "topic": "authority.dispatch",
+      "rule": "One protocol-neutral RpcServiceDispatcher owns object/method invocation."
+    },
+    {
+      "topic": "authority.envelopes",
+      "rule": "SOAP, JSON-RPC and gRPC retain distinct envelopes and fault/status translations."
+    },
+    {
+      "topic": "registration",
+      "rule": "Exact allowlisted service+operation maps to registered target/method; no untrusted reflection."
+    },
+    {
+      "topic": "callbacks",
+      "rule": "Server callback registration differs from exported client callback address; completion is terminal and single."
+    },
+    {
+      "topic": "streaming",
+      "rule": "No accidental client/bidi support by collecting request messages into an array."
+    },
+    {
+      "topic": "failure",
+      "rule": "A later stream fault supersedes earlier onNext messages; never claim success from partial delivery."
+    },
+    {
+      "topic": "security",
+      "rule": "Authentication/authorization is separate from registry, codec, and HTTP/2 negotiation."
+    },
+    {
+      "topic": "replay",
+      "rule": "No silent retries/failover for effects or uncertain completion."
+    },
+    {
+      "topic": "qualification",
+      "rule": "Portfolio transfer submitted; receipt not seen at sphere authorship; dev3 gRPC ooRexx callback runtime unqualified."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_rpc_portfolio_v0.1-dev1.zip",
+      "sha256": "c07d87ebfdaf988ad9a4c2a4e52a8927da29b4e40365fbc7bd0fd544fa7a66fc",
+      "member": "docs/RPC_INVOCATION_CONTRACT.md",
+      "member_sha256": "84a1726cfcbd9b10b35a4b97ce44b51f137f7c32715c6d5fe4518410adf95274",
+      "claim": "Portfolio source and integration contract."
+    }
+  ]
+}

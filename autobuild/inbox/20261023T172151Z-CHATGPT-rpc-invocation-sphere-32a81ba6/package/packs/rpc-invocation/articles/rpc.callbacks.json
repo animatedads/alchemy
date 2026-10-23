@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "rpc.callbacks",
+  "version": "0.1",
+  "sphere": "rpc-invocation",
+  "title": "Callback and stream lifecycle",
+  "section": "streaming",
+  "summary": "The RPC core passes an in-process callback sink into explicitly callback-registered object methods. onNext is partial delivery. The binding owns the external stream, terminal completion/error and demand/backpressure translation. Outbound gRPC dev3 uses a polled native event path to avoid unsafe ooRexx interpreter reentry.",
+  "invariants": [
+    "Every stream has at most one terminal outcome: onComplete OR onFault.",
+    "onNext before a later nonzero gRPC status is not an overall success.",
+    "Cancellation stops later delivery but cannot erase prior server effects or in-flight messages.",
+    "Backpressure, half-close and disconnection must be explicit per stream; do not silently buffer unbounded messages.",
+    "Client streaming and bidirectional streaming are NOT implemented just by passing an array to unary.",
+    "Callback failure and callback exception must be classified without leaking native exception detail."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_rpc_service_core_v0.1-dev1.zip",
+      "sha256": "e483e3f8ff427da1f92460e819cc7e6391c12edd1e1198403ae5d6c4a5507feb",
+      "member": "oorexx_rpc_service_core_v0.1-dev1/src/RpcServiceCore.cls",
+      "member_sha256": "f0aac39a34607c601ed6b6be3cadbbafbe1b6b1be6ce6c9800a63fa6dd32608b",
+      "claim": "Source inspected locally in exact package bytes."
+    }
+  ],
+  "related": [
+    "rpc.grpc",
+    "rpc.security",
+    "rpc.continuation"
+  ]
+}

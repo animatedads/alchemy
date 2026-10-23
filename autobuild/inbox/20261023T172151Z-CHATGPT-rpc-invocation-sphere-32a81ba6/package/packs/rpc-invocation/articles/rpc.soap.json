@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "rpc.soap",
+  "version": "0.1",
+  "sphere": "rpc-invocation",
+  "title": "SOAP 1.1 and 1.2 protocol binding",
+  "section": "protocols",
+  "summary": "SOAP dev2 uses the standalone RPC Service Core for operation dispatch and a real native libxml2 envelope parser/writer for SOAP 1.1 and 1.2 faults. A JSON-to-XML codec is not a SOAP implementation. Current scope is conservative document/literal scalar data.",
+  "invariants": [
+    "SOAP namespace/version parsing precedes dispatch.",
+    "DTD/XXE, mustUnderstand without approved handlers, encoded style and unsupported nested graphs are rejected.",
+    "No live authenticated HTTP/TLS, WSDL/XSD full complex-schema, WS-Security, MTOM or external interop qualification is claimed.",
+    "SOAPAction and HTTP metadata must not become unauthorized method selectors."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_soap_rpc_binding_v0.1-dev2.zip",
+      "sha256": "9fe1eaa90ca1a3bae7f89871f0d424ddc265dcf09254361ff5abebd6c271dc0f",
+      "member": "oorexx_soap_rpc_binding_v0.1-dev2/src/SoapRpcBinding.cls",
+      "member_sha256": "d5685cbca39f3379dc26f558cfd4e4b00d33723813f57312a323e43bbea5381b",
+      "claim": "Source inspected locally in exact package bytes."
+    }
+  ],
+  "related": [
+    "rpc.registry",
+    "rpc.security"
+  ]
+}

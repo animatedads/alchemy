@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "rpc.grpc",
+  "version": "0.1",
+  "sphere": "rpc-invocation",
+  "title": "gRPC protobuf and HTTP/2 binding",
+  "section": "protocols",
+  "summary": "gRPC dev3 implements schema-bound protobuf through Serialisation Selector, strict gRPC message framing, outbound HTTP/2 unary calls and an outbound HTTP/2 server-streaming callback client. Native streaming fixture exercised an independent hyper-h2 endpoint; the ooRexx bridge was not fully qualified in dev3.",
+  "invariants": [
+    "gRPC pathname resolves through GrpcMethodRegistry then the shared RpcServiceRegistry; path never names a raw ooRexx method.",
+    "Only selected protobuf schemas/codec provider may serialize a registered operation.",
+    "HTTP/2 trailers and final grpc-status control terminal outcome, not just receipt of a message.",
+    "Client-streaming, bidirectional streaming and inbound HTTP/2 server dispatch remain unimplemented.",
+    "The r13196 native ooRexx bridge callback was not executed/compiled against the matching SDK in dev3; 15 native fixture checks are NOT end-to-end runtime proof."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_grpc_rpc_binding_v0.1-dev3.zip",
+      "sha256": "0c9b06fe4e38b46267396dc80e80e7a3aaba474e9a0fbfc57b40222f08458a22",
+      "member": "oorexx_grpc_rpc_binding_v0.1-dev3/src/GrpcRpcBinding.cls",
+      "member_sha256": "ad59970b6cb8469aebde905b942d0d7ebcc14b68ea2364662af385e333524beb",
+      "claim": "Source inspected locally in exact package bytes."
+    }
+  ],
+  "related": [
+    "rpc.callbacks",
+    "rpc.security",
+    "rpc.continuation"
+  ]
+}
