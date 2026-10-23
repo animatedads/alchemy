@@ -13,69 +13,24 @@
   "tests": [
     {
       "name": "prepare-source",
-      "argv": [
-        "python3",
-        "prepare_source.py"
-      ],
+      "argv": ["python3", "prepare_source.py"],
       "timeout_seconds": 60
     },
     {
       "name": "shell-syntax",
-      "argv": [
-        "bash",
-        "-lc",
-        "for f in prepared/tools/*.sh; do bash -n \\\"$f\\\"; done"
-      ],
+      "argv": ["bash", "-lc", "for f in prepared/tools/*.sh; do bash -n \"$f\"; done"],
       "timeout_seconds": 60
     },
     {
       "name": "source-contract",
-      "argv": [
-        "python3",
-        "prepared/tools/autobuild_static_check.py"
-      ],
+      "argv": ["python3", "prepared/tools/autobuild_static_check.py"],
       "timeout_seconds": 60
     }
   ],
   "publish": {
-    "artifact_only": true,
-    "files": [
-      {"source":"prepared/README.md","path":"packages/intention_db_search_tests_v0.1-dev29/README.md","when":"pass"},
-      {"source":"prepared/config/database_semantic_hints.tsv","path":"packages/intention_db_search_tests_v0.1-dev29/config/database_semantic_hints.tsv","when":"pass"},
-      {"source":"prepared/config/sakila_semantic_hints.tsv","path":"packages/intention_db_search_tests_v0.1-dev29/config/sakila_semantic_hints.tsv","when":"pass"},
-      {"source":"prepared/config/search_synonyms.tsv","path":"packages/intention_db_search_tests_v0.1-dev29/config/search_synonyms.tsv","when":"pass"},
-      {"source":"prepared/config/world_search_synonyms.tsv","path":"packages/intention_db_search_tests_v0.1-dev29/config/world_search_synonyms.tsv","when":"pass"},
-      {"source":"prepared/config/world_semantic_hints.tsv","path":"packages/intention_db_search_tests_v0.1-dev29/config/world_semantic_hints.tsv","when":"pass"},
-      {"source":"prepared/integration.json","path":"packages/intention_db_search_tests_v0.1-dev29/integration.json","when":"pass"},
-      {"source":"prepared/qualification/dev28-r13196-focused.log","path":"packages/intention_db_search_tests_v0.1-dev29/qualification/dev28-r13196-focused.log","when":"pass"},
-      {"source":"prepared/src/DatabaseBackendComposition.cls","path":"packages/intention_db_search_tests_v0.1-dev29/src/DatabaseBackendComposition.cls","when":"pass"},
-      {"source":"prepared/src/DatabaseSearchIntention.cls","path":"packages/intention_db_search_tests_v0.1-dev29/src/DatabaseSearchIntention.cls","when":"pass"},
-      {"source":"prepared/src/DatabaseSearchVocabulary.cls","path":"packages/intention_db_search_tests_v0.1-dev29/src/DatabaseSearchVocabulary.cls","when":"pass"},
-      {"source":"prepared/src/SakilaGraph.cls","path":"packages/intention_db_search_tests_v0.1-dev29/src/SakilaGraph.cls","when":"pass"},
-      {"source":"prepared/src/SakilaSearchIntention.cls","path":"packages/intention_db_search_tests_v0.1-dev29/src/SakilaSearchIntention.cls","when":"pass"},
-      {"source":"prepared/src/WorldSearchIntention.cls","path":"packages/intention_db_search_tests_v0.1-dev29/src/WorldSearchIntention.cls","when":"pass"},
-      {"source":"prepared/tests/create_fixture.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/create_fixture.rex","when":"pass"},
-      {"source":"prepared/tests/create_world_fixture.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/create_world_fixture.rex","when":"pass"},
-      {"source":"prepared/tests/interactive_sakila_search.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/interactive_sakila_search.rex","when":"pass"},
-      {"source":"prepared/tests/interactive_search.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/interactive_search.rex","when":"pass"},
-      {"source":"prepared/tests/interactive_world_search.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/interactive_world_search.rex","when":"pass"},
-      {"source":"prepared/tests/test_backend_composition.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/test_backend_composition.rex","when":"pass"},
-      {"source":"prepared/tests/test_database_evidence.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/test_database_evidence.rex","when":"pass"},
-      {"source":"prepared/tests/test_intention_search.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/test_intention_search.rex","when":"pass"},
-      {"source":"prepared/tests/test_nonsense_guard.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/test_nonsense_guard.rex","when":"pass"},
-      {"source":"prepared/tests/test_runtime_evidence.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/test_runtime_evidence.rex","when":"pass"},
-      {"source":"prepared/tests/test_sakila_execute.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/test_sakila_execute.rex","when":"pass"},
-      {"source":"prepared/tests/test_sakila_search.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/test_sakila_search.rex","when":"pass"},
-      {"source":"prepared/tests/test_world_search.rex","path":"packages/intention_db_search_tests_v0.1-dev29/tests/test_world_search.rex","when":"pass"},
-      {"source":"prepared/tools/autobuild_static_check.py","path":"packages/intention_db_search_tests_v0.1-dev29/tools/autobuild_static_check.py","when":"pass"},
-      {"source":"prepared/tools/build_sakila_fixture.py","path":"packages/intention_db_search_tests_v0.1-dev29/tools/build_sakila_fixture.py","when":"pass"},
-      {"source":"prepared/tools/build_world_fixture.py","path":"packages/intention_db_search_tests_v0.1-dev29/tools/build_world_fixture.py","when":"pass"},
-      {"source":"prepared/tools/rexx_env.sh","path":"packages/intention_db_search_tests_v0.1-dev29/tools/rexx_env.sh","when":"pass"},
-      {"source":"prepared/tools/run_environment_test.sh","path":"packages/intention_db_search_tests_v0.1-dev29/tools/run_environment_test.sh","when":"pass"},
-      {"source":"prepared/tools/run_interactive.sh","path":"packages/intention_db_search_tests_v0.1-dev29/tools/run_interactive.sh","when":"pass"},
-      {"source":"prepared/tools/run_sakila_interactive.sh","path":"packages/intention_db_search_tests_v0.1-dev29/tools/run_sakila_interactive.sh","when":"pass"},
-      {"source":"prepared/tools/run_sakila_qualification.sh","path":"packages/intention_db_search_tests_v0.1-dev29/tools/run_sakila_qualification.sh","when":"pass"},
-      {"source":"prepared/tools/run_world_interactive.sh","path":"packages/intention_db_search_tests_v0.1-dev29/tools/run_world_interactive.sh","when":"pass"}
-    ]
+    "tree": {
+      "source": "prepared",
+      "path": "packages/intention_db_search_tests_v0.1-dev29"
+    }
   }
 }
