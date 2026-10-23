@@ -1,0 +1,7 @@
+{
+  "kind": "article",
+  "id": "arch.contracts",
+  "title": "Build handoff and SSC receipt",
+  "section": "architecture",
+  "body": "Dev8 ArchitecturePromotionReview issues a DESIGN_ONLY_UNRESOLVED handoff unless all relevant business, policy and integration qualifications are present. For ready designs it may emit a non-executable alchemy.architecture.ssc-resolution-request/0.1 with a nil dependencyLock.\n\nDev9 candidate ArchitectureSscReceipt begins at PENDING_SSC_AUTHORITY and consumes only a READY_FOR_SSC_REVIEW handoff. A host-injected trusted verifier named verifyArchitectureSscResolution(projectId,scenarioId,canonicalRequestJson,canonicalCandidateReceiptJson) is a proposed adapter seam, not a claim that SSC currently exports it.\n\nHost verifier must verify the unchanged request, every required component, exact SSC_MANIFEST lineage/sourceLevel and reachable ::requires file/provider closure, content hash and authentic source provenance. A candidate-provided verified flag is never authority. Fail closed without a verifier, target/scope match or proof references.\n\nAdmitted public projection is whitelisted to projectId, scenarioId, proofRef, closureRef, verification flags, and non-executable status. Secrets and extra private verifier members are never projected. Deployment and production activation remain independent gates.\n\nNotNotes architectural record publication is planned, not yet integrated; use versioned immutable design documents and references. Do not mutate NotNotes documents behind authoritative services."
+}
