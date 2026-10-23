@@ -1,0 +1,72 @@
+#!/usr/bin/env bash
+# AWS EC2 read-only Spot tariff observer. Returns observed hourly tariffs,
+# NEVER purchasable capacity. No EC2 mutations, no inherited shape guesses.
+set -euo pipefail
+: "${AWS_WATCH_FILE:=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/fixtures/aws_watch.tsv}"
+command -v aws >/dev/null || { echo 'AWS observer: aws CLI unavailable' >&2; exit 3; }
+command -v jq >/dev/null || exit 3
+command -v sha256sum >/dev/null || exit 3
+[[ -r "$AWS_WATCH_FILE" ]] || { echo 'AWS observer: allowlist missing' >&2; exit 3; }
+header=$'id\tprovider\tregion\tsite\tsku\tpurchase\tmem\tcpu\tgpu\trate\tstartup\tnetwork\tfabric\trisk\tapproved\tcapacity\tfabric_ok\tts\texpiry\tcurrency\tsource\tjurisdiction\truntime'
+now=$(date +%s)
+start=$(date -u -d '@'"$((now-900))" +'%Y-%m-%dT%H:%M:%SZ')
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+printf '%s\n' "$header" > "$tmpdir/offers.tsv"
+printf 'offer_id\tobserved_epoch\tprice_effective_epoch\tprovider_api\tsha256_api_responses\tlimitations\n' > "$tmpdir/evidence.tsv"
+IFS= read -r input_header < "$AWS_WATCH_FILE"
+[[ "$input_header" == $'region\tinstance_type' ]] || { echo 'AWS observer: invalid allowlist schema' >&2; exit 3; }
+n=0
+while IFS=$'\t' read -r region sku extra; do
+  [[ -z "$region" && -z "$sku" ]] && continue
+  [[ -z "${extra:-}" && "$region" =~ ^[a-z]{2}(-[a-z]+){1,3}-[0-9]$ && "$sku" =~ ^[a-z0-9]+[a-z0-9.-]*$ ]] || exit 3
+  ((n+=1)); ((n<=24)) || { echo 'AWS observer: watch cap exceeded' >&2; exit 3; }
+  # EC2 APIs are READ operations, restricted to explicitly curated regions and SKUs.
+  aws --no-cli-pager --region "$region" ec2 describe-instance-types --instance-types "$sku" --output json > "$tmpdir/shape.json"
+  aws --no-cli-pager --region "$region" ec2 describe-spot-price-history \
+    --instance-types "$sku" --product-descriptions 'Linux/UNIX (Amazon VPC)' \
+    --start-time "$start" --output json > "$tmpdir/prices.json"
+  jq -e --arg sku "$sku" '(.InstanceTypes | type == "array" and length == 1) and
+    .InstanceTypes[0].InstanceType == $sku and
+    (.InstanceTypes[0].MemoryInfo.SizeInMiB | type == "number" and . > 0) and
+    (.InstanceTypes[0].VCpuInfo.DefaultVCpus | type == "number" and . > 0)' \
+    "$tmpdir/shape.json" >/dev/null
+  jq -e '(.SpotPriceHistory | type == "array")' "$tmpdir/prices.json" >/dev/null
+  digest=$(cat "$tmpdir/shape.json" "$tmpdir/prices.json" | sha256sum | cut -d' ' -f1)
+  # Most recent effective price per AZ, exact SKU and product description.
+  # Timestamp is the market price-change time; observed_epoch is our read time.
+  jq -rn --slurpfile shape "$tmpdir/shape.json" --slurpfile price "$tmpdir/prices.json" \
+    --arg sku "$sku" --arg region "$region" --argjson now "$now" \
+    --arg digest "$digest" '
+    def event_time: (.Timestamp | sub("\\+00:00$";"Z") | sub("\\.[0-9]+Z$";"Z") | fromdateiso8601);
+    ($shape[0].InstanceTypes[0]) as $s |
+    ($s.MemoryInfo.SizeInMiB / 1024) as $memory |
+    ($s.VCpuInfo.DefaultVCpus) as $cpu |
+    ([ $s.GpuInfo.Gpus[]?.Count ] | add // 0) as $gpu |
+    [ $price[0].SpotPriceHistory[] |
+      select(.InstanceType == $sku and .ProductDescription == "Linux/UNIX (Amazon VPC)") |
+      select((.AvailabilityZone // "") | test("^[a-z]{2}(-[a-z]+){1,3}-[0-9][a-z]$")) |
+      select((.SpotPrice | tonumber) >= 0) |
+      . + {effective: event_time} | select(.effective <= $now)
+    ] | group_by(.AvailabilityZone)[] | max_by(.effective) as $p |
+    ("aws-"+$region+"-"+$p.AvailabilityZone+"-"+$sku+"-SPOT") as $id |
+    [ $id,"AWS",$region,$p.AvailabilityZone,$sku,"SPOT",($memory|tostring),($cpu|tostring),($gpu|tostring),
+      $p.SpotPrice,"0","0","0","0","0","0","0",($now|tostring),($now+900|tostring),
+      "USD","AWS_SPOT_HISTORY_NO_CAPACITY_ATTESTATION","UNKNOWN","UNKNOWN"] | @tsv,
+    ("EVIDENCE\t" + ([ $id,($now|tostring),($p.effective|tostring),"EC2_DESCRIBE_SPOT_PRICE_HISTORY",$digest,
+      "NO_QUOTA_NO_CAPACITY_NO_TOTAL_COST_NO_PURCHASE_AUTHORITY"]|join("\t")))
+  ' | while IFS= read -r result; do
+    if [[ "$result" == EVIDENCE$'\t'* ]]; then printf '%s\n' "${result#EVIDENCE$'\t'}" >> "$tmpdir/evidence.tsv";
+    else printf '%s\n' "$result" >> "$tmpdir/offers.tsv"; fi
+  done
+  # No matches means not observed for this configured SKU; do not claim success.
+  if ! awk -F '\t' -v s="$sku" 'NR>1 && $5==s {found=1} END{exit !found}' "$tmpdir/offers.tsv"; then
+    echo "AWS observer: no eligible effective Linux/UNIX Spot observation for $region $sku" >&2
+    exit 4
+  fi
+done < <(tail -n +2 "$AWS_WATCH_FILE")
+((n>0)) || { echo 'AWS observer: empty allowlist' >&2; exit 3; }
+if [[ -n "${CLOUD_ECONOMICS_AWS_EVIDENCE_FILE:-}" ]]; then
+  cp -- "$tmpdir/evidence.tsv" "$CLOUD_ECONOMICS_AWS_EVIDENCE_FILE"
+fi
+cat "$tmpdir/offers.tsv"

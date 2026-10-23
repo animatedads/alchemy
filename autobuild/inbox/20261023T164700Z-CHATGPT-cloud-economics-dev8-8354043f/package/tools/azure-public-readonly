@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# Read-only Azure public RETAIL tariff observer. No authentication or purchase.
+# Real-time capacity, quotas, discounts, and actual Spot clearing are NOT inferred.
+set -euo pipefail
+: "${AZURE_REGION:=uksouth}"
+: "${AZURE_SKUS_FILE:=$(dirname "${BASH_SOURCE[0]}")/../fixtures/azure_skus.tsv}"
+command -v curl >/dev/null; command -v jq >/dev/null
+[[ "$AZURE_REGION" =~ ^[a-z0-9]+$ ]] || exit 2
+printf 'id\tprovider\tregion\tsite\tsku\tpurchase\tmem\tcpu\tgpu\trate\tstartup\tnetwork\tfabric\trisk\tapproved\tcapacity\tfabric_ok\tts\texpiry\tcurrency\tsource\tjurisdiction\truntime\n'
+now=$(date +%s)
+while IFS=$'\t' read -r arm_sku mem cpu; do
+  [[ "$arm_sku" == sku || -z "$arm_sku" ]] && continue
+  [[ "$arm_sku" =~ ^Standard_[A-Za-z0-9_]+$ ]] || exit 2
+  [[ "$mem" =~ ^[0-9]+$ && "$cpu" =~ ^[0-9]+$ ]] || exit 2
+  filter="serviceName eq 'Virtual Machines' and armRegionName eq '$AZURE_REGION' and armSkuName eq '$arm_sku'"
+  response=$(curl --fail --silent --show-error --location --max-time 45 --get \
+    --data-urlencode "currencyCode='USD'" --data-urlencode "\$filter=$filter" \
+    https://prices.azure.com/api/retail/prices)
+  # Keep collecting only this shape; fail rather than silently undercount pages.
+  for page in $(seq 1 10); do
+    jq -e '(.Items | type == "array") and has("NextPageLink")' >/dev/null <<< "$response"
+    jq -r --arg sku "$arm_sku" --arg mem "$mem" --arg cpu "$cpu" \
+      --arg region "$AZURE_REGION" --arg now "$now" --arg expiry "$((now+3600))" '
+      .Items[] | select((.armSkuName // "")==$sku and .type=="Consumption" and .unitOfMeasure=="1 Hour")
+      | select(((.productName // "")|test("Windows|SQL|SUSE|Red Hat";"i"))|not)
+      | select(((.skuName // "")|test("Low Priority";"i"))|not)
+      | (.skuName // "") as $label
+      | (if ($label|test(" Spot$")) then "SPOT" else "ONDEMAND" end) as $purchase
+      | select(.retailPrice != null and (.retailPrice|tonumber)>=0)
+      | [ ("azure-"+$region+"-"+$sku+"-"+$purchase),"AZURE",$region,"UNKNOWN",$sku,$purchase,$mem,$cpu,"0",
+          (.retailPrice|tostring),"0","0","0","0","0","0","0",$now,$expiry,"USD",
+          "AZURE_PUBLIC_RETAIL_UNVERIFIED","UNKNOWN","UNKNOWN" ] | @tsv
+    ' <<< "$response"
+    next=$(jq -r '.NextPageLink // empty' <<< "$response")
+    [[ -z "$next" ]] && break
+    # NextPageLink is only trusted when it points to documented endpoint.
+    [[ "$next" == https://prices.azure.com/* || "$next" == https://prices.azure.com:443/* ]] || exit 3
+    [[ "$page" -lt 10 ]] || { echo 'Azure price pagination exceeded limit' >&2; exit 3; }
+    response=$(curl --fail --silent --show-error --location --max-time 45 "$next")
+  done
+done < "$AZURE_SKUS_FILE"

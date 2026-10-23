@@ -1,0 +1,66 @@
+#!/usr/bin/env bash
+# Read-only Google Cloud Billing v1 Catalog SKU observer.
+# Component tariffs MUST NOT be misrepresented as bookable VM capacity offers.
+set -euo pipefail
+BASE=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+: "${GCP_SKU_ALLOWLIST:=$BASE/fixtures/gcp_skus.tsv}"
+: "${GCP_CATALOG_SERVICE:=6F81-5844-456A}"
+command -v jq >/dev/null; command -v curl >/dev/null; command -v sha256sum >/dev/null
+[[ "$GCP_CATALOG_SERVICE" =~ ^[A-Za-z0-9-]+$ ]] || exit 3
+[[ -r "$GCP_SKU_ALLOWLIST" ]] || exit 3
+[[ $(head -n 1 "$GCP_SKU_ALLOWLIST") == $'sku_id\tregion\tpurpose' ]] || exit 3
+# Single source of declared regional SKU IDs. Do not infer hardware from SKU names.
+awk -F '\t' 'NR>1 {if (NF!=3 || $1!~/^[A-F0-9-]+$/ || $2!~/^[a-z0-9-]+$/ || $3!~/^(CORE|RAM|OTHER)$/ || seen[$1 FS $2]++) exit 3; n++} END {if(n==0) exit 3}' "$GCP_SKU_ALLOWLIST"
+[[ -n "${CLOUD_ECONOMICS_GCP_API_KEY:-}" ]] || { echo 'GCP Catalog observer: API key is not configured' >&2; exit 3; }
+[[ "$CLOUD_ECONOMICS_GCP_API_KEY" =~ ^[A-Za-z0-9_-]+$ ]] || {
+  echo 'GCP Catalog observer: malformed API key encoding' >&2; exit 3;
+}
+tmpdir=$(mktemp -d)
+trap 'rm -rf "$tmpdir"' EXIT
+now=$(date +%s)
+header=$'provider\tsku_id\tregion\tpurpose\tdescription\tusage_type\tusage_unit\tunit_price_usd\teffective_time\tobserved_epoch\tsource\tevidence_digest'
+printf '%s\n' "$header" > "$tmpdir/result.tsv"
+page_token=''
+: > "$tmpdir/all_skus.ndjson"
+# API key stays off the curl command line. It is passed as a header via stdin.
+# Configuration and enablement are user-owned; the observer never modifies them.
+for page in $(seq 1 16); do
+  args=()
+  [[ -z "$page_token" ]] || args=(--data-urlencode "pageToken=$page_token")
+  printf 'header = "x-goog-api-key: %s"\n' "$CLOUD_ECONOMICS_GCP_API_KEY" |
+    curl --fail --silent --show-error --max-time 45 --config - --get \
+      --data-urlencode 'currencyCode=USD' --data-urlencode 'pageSize=5000' \
+      "${args[@]}" \
+      "https://cloudbilling.googleapis.com/v1/services/$GCP_CATALOG_SERVICE/skus" > "$tmpdir/page.json"
+  jq -e '(.skus | type=="array") and ((.nextPageToken // "")|type=="string")' "$tmpdir/page.json" >/dev/null
+  jq -c '.skus[]' "$tmpdir/page.json" >> "$tmpdir/all_skus.ndjson"
+  page_token=$(jq -r '.nextPageToken // empty' "$tmpdir/page.json")
+  [[ -z "$page_token" ]] && break
+  [[ "$page" -lt 16 ]] || { echo 'GCP Catalog observer: incomplete pagination' >&2; exit 4; }
+done
+# Deterministic fingerprint over complete read-only SKU snapshot.
+digest=$(sha256sum "$tmpdir/all_skus.ndjson" | cut -d' ' -f1)
+# Fail closed if a configured component has no matching region / no single
+# zero-start tier / no USD price. Surface the exact billing usageUnit; do NOT
+# turn GiB-hours into VM-hours or silently add incomplete product components.
+while IFS=$'\t' read -r sku region purpose; do
+  [[ "$sku" == 'sku_id' ]] && continue
+  jq -rs --arg sku "$sku" --arg region "$region" --arg purpose "$purpose" \
+    --argjson now "$now" --arg digest "$digest" '
+    [ .[] | select(.skuId==$sku and (.serviceRegions | index($region)) != null) ] as $matches |
+    (if ($matches|length)!=1 then error("missing or ambiguous SKU " + $sku + " region " + $region) else $matches[0] end) as $s |
+    ([ $s.pricingInfo[] | select(.effectiveTime <= ($now | todateiso8601)) ] | sort_by(.effectiveTime) | last) as $pricing |
+    if $pricing==null then error("pricing not currently effective") else $pricing end |
+    .pricingExpression as $expression |
+    if (($expression.tieredRates|length)!=1 or ($expression.tieredRates[0].startUsageAmount|tonumber)!=0)
+      then error("unsupported tiered billing") else . end |
+    ($expression.tieredRates[0].unitPrice) as $money |
+    if $money.currencyCode!="USD" then error("currency mismatch") else . end |
+    (($money.units // "0" | tonumber) + ($money.nanos // 0 | tonumber) / 1000000000) as $price |
+    if $price<0 then error("negative unit rate") else . end |
+    ["GCP",$sku,$region,$purpose,($s.description|gsub("[\t\n\r]";" ")),
+      ($s.category.usageType // "UNKNOWN"),$expression.usageUnit,($price|tostring),
+      $pricing.effectiveTime,($now|tostring),"GCP_BILLING_PUBLIC_COMPONENT_NOT_VM",$digest] | @tsv
+  ' "$tmpdir/all_skus.ndjson" >> "$tmpdir/result.tsv"
+done < "$GCP_SKU_ALLOWLIST"
+cat "$tmpdir/result.tsv"

@@ -1,0 +1,250 @@
+#!/usr/bin/env bash
+set -euo pipefail
+HERE=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+STATE=${CLOUD_ECONOMICS_STATE:-$HERE/state}
+REXX_BIN=${REXX_BIN:-rexx}
+mkdir -p "$STATE"
+# Migratable Job retained status topic is a separate, non-authoritative read path.
+# The subscriber itself must be configured/authorized by Queue Fabric.
+case "${1:-}" in
+  status-ingest)
+    [[ "$#" == 2 ]] || { echo 'Usage: cloud-cost status-ingest JSON_FILE' >&2; exit 2; }
+    exec python3 "$HERE/tools/migration-status-observer" ingest --state "$STATE" --file "$2" ;;
+  status-watch)
+    [[ "$#" == 1 ]] || { echo 'Usage: cloud-cost status-watch < status.jsonl' >&2; exit 2; }
+    exec python3 "$HERE/tools/migration-status-observer" watch --state "$STATE" ;;
+  status-report)
+    [[ "$#" == 1 ]] || { echo 'Usage: cloud-cost status-report' >&2; exit 2; }
+    exec python3 "$HERE/tools/migration-status-observer" report --state "$STATE" ;;
+  status-audit)
+    [[ "$#" == 1 ]] || { echo 'Usage: cloud-cost status-audit' >&2; exit 2; }
+    exec python3 "$HERE/tools/migration-status-observer" audit --state "$STATE" ;;
+esac
+# Single-writer lock across ingestion, polling, submissions, and ledger writes.
+# No more than one planning tick may inspect/commit the same state at a time.
+# watch delegates to subcommands; it must NOT keep the state locked asleep.
+case "${1:-}" in
+  poll|ingest|ingest-provider|ingest-economics|ingest-mobility|submit|tick|report|audit|preview|migration-preview|migration-tick|opportunities)
+    command -v flock >/dev/null || { echo 'flock required for safe accounting' >&2; exit 3; }
+    exec 9>"$STATE/.economic.lock"
+    flock -x -w 15 9 || { echo 'Cloud Economics state lock timed out' >&2; exit 4; }
+    ;;
+esac
+usage() { echo 'Usage: cloud-cost ingest FILE | ingest-provider PROVIDER FILE | ingest-economics TERMS PROFILES | ingest-mobility RUNNING ROUTES | migration-preview [EPOCH] | migration-tick | opportunities | status-ingest FILE | status-watch | status-report | status-audit | preview | poll | submit FILE | tick | report | audit | trends | discover | providers | components GCP | evidence AWS | watch [seconds]'; }
+verify_economics_snapshot() {
+  local config="$STATE/economics/current" metadata expected actual src name
+  [[ -L "$config" && -f "$config/provenance.tsv" ]] || { echo 'Unverifiable economics configuration' >&2; return 3; }
+  [[ "$(head -n1 "$config/provenance.tsv")" == $'name\tvalue' ]] || { echo 'Invalid economics provenance' >&2; return 3; }
+  for name in tariff profile; do
+    if [[ "$name" == tariff ]]; then src="$config/terms.tsv"; else src="$config/profiles.tsv"; fi
+    [[ -f "$src" ]] || { echo 'Missing economics input snapshot' >&2; return 3; }
+    expected=$(awk -F '\t' -v key="${name}_sha256" '$1==key{print $2}' "$config/provenance.tsv")
+    actual=$(sha256sum "$src" | cut -d' ' -f1)
+    [[ "$expected" =~ ^[0-9a-f]{64}$ && "$expected" == "$actual" ]] || { echo 'Economic input snapshot checksum mismatch: '$name >&2; return 3; }
+  done
+}
+verify_mobility_snapshot() {
+  local config="$STATE/mobility/current" key expected actual src
+  [[ -L "$config" && -f "$config/provenance.tsv" ]] || { echo 'Unverifiable mobility snapshot' >&2; return 3; }
+  for key in running routes; do
+    src="$config/$key.tsv"
+    [[ -f "$src" ]] || { echo "Missing mobility $key snapshot" >&2; return 3; }
+    expected=$(awk -F '\t' -v k="${key}_sha256" '$1==k {print $2}' "$config/provenance.tsv")
+    actual=$(sha256sum "$src" | cut -d' ' -f1)
+    [[ "$expected" =~ ^[0-9a-f]{64}$ && "$expected" == "$actual" ]] || { echo "Mobility snapshot checksum mismatch: $key" >&2; return 3; }
+  done
+}
+case "${1:-}" in
+  poll)
+    "$HERE/tools/poll-providers"
+    ;;
+  components)
+    [[ "${2:-}" == GCP && "$#" == 2 ]] || { usage; exit 2; }
+    grep -Eq $'^GCP\t(CATALOG_ONLY|CATALOG_CACHED)\t' "$STATE/providers.tsv" 2>/dev/null || {
+      echo 'GCP catalogue is not currently observed; stale records withheld' >&2; exit 3;
+    }
+    cat "$STATE/components/GCP.tsv"
+    ;;
+  evidence)
+    [[ "${2:-}" == AWS && "$#" == 2 ]] || { usage; exit 2; }
+    grep -q $'^AWS\tOBSERVED\t' "$STATE/providers.tsv" 2>/dev/null || {
+      echo 'AWS observer is not current; old evidence withheld' >&2; exit 3;
+    }
+    cat "$STATE/sources/AWS.evidence.tsv"
+    ;;
+  trends)
+    REXX_PATH="$HERE/src:${REXX_PATH:-}" "$REXX_BIN" "$HERE/cli/price_trends.rex" "$STATE" "$(date +%s)"
+    ;;
+  ingest-economics)
+    # One immutable cost-schema snapshot, switched by a single atomic symlink
+    # rename while holding the same lock as the scheduler and paper ledger.
+    [[ "$#" == 3 && -r "$2" && -r "$3" ]] || { usage; exit 2; }
+    [[ $(head -n 1 "$2") == $'id\tbill_quantum_s\tbill_min_s\tingress_usd_gib\tegress_usd_gib\tstorage_usd_gibh\tio_usd_gib\tfabric_transfer_usd_gib' ]] || { echo 'Invalid unit-tariff header' >&2; exit 2; }
+    [[ $(head -n 1 "$3") == $'id\tinput_gib\toutput_gib\tscratch_gib\tio_gib\tcheckpoint_gib\tcheckpoint_interval_s\tcheckpoint_cpu_s\trestore_s\tmax_recovery_s\tfabric_gib_hour\tspot_recovery' ]] || { echo 'Invalid workload-economics header' >&2; exit 2; }
+    awk -F '\t' 'NR>1 {if (NF!=8 || $1 !~ /^[a-zA-Z0-9_.-]+$/ || seen[$1]++) exit 2}' "$2" || { echo 'Invalid or duplicate unit tariff' >&2; exit 2; }
+    awk -F '\t' 'NR>1 {if (NF!=12 || $1 !~ /^[a-zA-Z0-9_.-]+$/ || seen[$1]++) exit 2}' "$3" || { echo 'Invalid or duplicate workload economics' >&2; exit 2; }
+    mkdir -p "$STATE/economics"
+    folder=$(mktemp -d "$STATE/economics/config.XXXXXXXX")
+    cp -- "$2" "$folder/terms.tsv"
+    cp -- "$3" "$folder/profiles.tsv"
+    if ! REXX_PATH="$HERE/src:${REXX_PATH:-}" "$REXX_BIN" "$HERE/cli/validate_economics.rex" "$folder" >/dev/null; then
+      rm -rf -- "$folder"
+      echo 'Invalid economic tariff/profile values; active snapshot unchanged' >&2
+      exit 3
+    fi
+    link="$STATE/economics/.current.$$"
+    [[ ! -e "$link" && ! -L "$link" ]] || { echo "Stale economics switch path" >&2; exit 3; }
+    printf 'name\tvalue\n' > "$folder/provenance.tsv"
+    printf 'snapshot\t%s\n' "$(basename "$folder")" >> "$folder/provenance.tsv"
+    printf 'tariff_sha256\t%s\n' "$(sha256sum "$folder/terms.tsv" | cut -d' ' -f1)" >> "$folder/provenance.tsv"
+    printf 'profile_sha256\t%s\n' "$(sha256sum "$folder/profiles.tsv" | cut -d' ' -f1)" >> "$folder/provenance.tsv"
+    ln -s "$(basename "$folder")" "$link"
+    mv -Tf -- "$link" "$STATE/economics/current"
+    echo "ECONOMICS_CONFIGURED $(basename "$folder") PAPER_ONLY"
+    ;;
+  ingest-mobility)
+    # Separate advisory-only snapshot: no purchase/move rights are introduced.
+    [[ "$#" == 3 && -r "$2" && -r "$3" ]] || { usage; exit 2; }
+    [[ $(head -n 1 "$2") == $'id\tsource_id\tremaining_s\tdeadline_epoch\tcheckpoint_age_s\tstate_gib\tsource_prepaid_s\tmobility\tbudget_usd\tmemory_gib\tcpu\tscratch_gib\tmax_downtime_s\tmin_saving_usd\tmin_saving_percent\trecovery_s\tcheckpoint_interval_s\tunavoidable_future_usd\tjurisdiction\tallow_spot\tlast_move_epoch\tmin_residence_s' ]] || { echo 'Invalid running job header' >&2; exit 2; }
+    [[ $(head -n 1 "$3") == $'id\tjob_id\tsource_id\tdest_id\tstatus\tpolicy\tintention_ref\troute_ref\tobserved_at\texpiry\tbandwidth_mbps\tlatency_s\tcheckpoint_s\trestore_s\twarmup_s\tstaging_gib\ttransfer_usd_gib\tsource_stop_usd\tdest_fixed_usd' ]] || { echo 'Invalid mobility route header' >&2; exit 2; }
+    awk -F '\t' 'NR>1 {if (NF!=22 || $1 !~ /^[A-Za-z0-9_.-]+$/ || seen[$1]++) exit 2}' "$2" || { echo 'Invalid running job TSV' >&2; exit 2; }
+    awk -F '\t' 'NR>1 {if (NF!=19 || $1 !~ /^[A-Za-z0-9_.-]+$/ || seen[$1]++) exit 2}' "$3" || { echo 'Invalid route TSV' >&2; exit 2; }
+    mkdir -p "$STATE/mobility"
+    folder=$(mktemp -d "$STATE/mobility/config.XXXXXXXX")
+    cp -- "$2" "$folder/running.tsv"
+    cp -- "$3" "$folder/routes.tsv"
+    if ! REXX_PATH="$HERE/src:${REXX_PATH:-}" "$REXX_BIN" "$HERE/cli/validate_mobility.rex" "$folder" >/dev/null; then
+      rm -rf -- "$folder"
+      echo 'Mobility admission failed; existing snapshot unchanged' >&2
+      exit 3
+    fi
+    printf 'name\tvalue\n' > "$folder/provenance.tsv"
+    printf 'snapshot\t%s\n' "$(basename "$folder")" >> "$folder/provenance.tsv"
+    printf 'running_sha256\t%s\n' "$(sha256sum "$folder/running.tsv" | cut -d' ' -f1)" >> "$folder/provenance.tsv"
+    printf 'routes_sha256\t%s\n' "$(sha256sum "$folder/routes.tsv" | cut -d' ' -f1)" >> "$folder/provenance.tsv"
+    link="$STATE/mobility/.current.$$"
+    ln -s "$(basename "$folder")" "$link"
+    mv -Tf -- "$link" "$STATE/mobility/current"
+    echo "MOBILITY_CONFIGURED $(basename "$folder") ADVISORY_ONLY"
+    ;;
+  migration-preview)
+    [[ "$#" -le 2 && ( "$#" == 1 || "${2:-}" =~ ^[0-9]+$ ) ]] || { usage; exit 2; }
+    verify_mobility_snapshot
+    verify_economics_snapshot
+    [[ -f "$STATE/offers.tsv" ]] || { echo 'Missing complete capacity-offer snapshot' >&2; exit 3; }
+    at=${2:-$(date +%s)}
+    echo "MIGRATION_ADVISORY_EPOCH $at NO_DISPATCH_RIGHTS"
+    echo "MOBILITY_SNAPSHOT $(sha256sum "$STATE/mobility/current/running.tsv" "$STATE/mobility/current/routes.tsv" | awk '{printf "%s%s",(NR==1?"":"/"),$1}')"
+    REXX_PATH="$HERE/src:${REXX_PATH:-}" "$REXX_BIN" "$HERE/cli/migration_preview.rex" "$STATE" "$at"
+    ;;
+  migration-tick)
+    [[ "$#" == 1 ]] || { usage; exit 2; }
+    verify_mobility_snapshot
+    verify_economics_snapshot
+    [[ -f "$STATE/offers.tsv" ]] || { echo 'Missing complete capacity-offer snapshot' >&2; exit 3; }
+    at=$(date +%s)
+    tmp=$(mktemp "$STATE/.migration_latest.XXXXXXXX")
+    trap 'rm -f "$tmp"' EXIT
+    {
+      printf '# advisory_epoch\t%s\tNO_DISPATCH_RIGHTS\n' "$at"
+      printf '# running_sha256\t%s\n' "$(sha256sum "$STATE/mobility/current/running.tsv" | cut -d' ' -f1)"
+      printf '# routes_sha256\t%s\n' "$(sha256sum "$STATE/mobility/current/routes.tsv" | cut -d' ' -f1)"
+      printf '# offers_sha256\t%s\n' "$(sha256sum "$STATE/offers.tsv" | cut -d' ' -f1)"
+      printf '# terms_sha256\t%s\n' "$(sha256sum "$STATE/economics/current/terms.tsv" | cut -d' ' -f1)"
+      REXX_PATH="$HERE/src:${REXX_PATH:-}" "$REXX_BIN" "$HERE/cli/migration_preview.rex" "$STATE" "$at"
+    } > "$tmp"
+    mv -f -- "$tmp" "$STATE/migration_latest.tsv"
+    hash=$(sha256sum "$STATE/migration_latest.tsv" | cut -d' ' -f1)
+    sidecar=$(mktemp "$STATE/.migration_latest_sha.XXXXXXXX")
+    printf '%s\n' "$hash" > "$sidecar"
+    mv -f -- "$sidecar" "$STATE/migration_latest.sha256"
+    echo "MIGRATION_ADVISORY_UPDATED $at NO_DISPATCH_RIGHTS"
+    ;;
+  opportunities)
+    [[ "$#" == 1 ]] || { usage; exit 2; }
+    [[ -f "$STATE/migration_latest.tsv" && -f "$STATE/migration_latest.sha256" ]] || { echo 'No complete migration advisory yet' >&2; exit 3; }
+    expected=$(cat "$STATE/migration_latest.sha256")
+    actual=$(sha256sum "$STATE/migration_latest.tsv" | cut -d' ' -f1)
+    [[ "$expected" =~ ^[0-9a-f]{64}$ && "$expected" == "$actual" ]] || { echo 'Migration advisory checksum mismatch' >&2; exit 3; }
+    cat "$STATE/migration_latest.tsv"
+    ;;
+  preview)
+    [[ -f "$STATE/economics/current/terms.tsv" ]] || { echo 'No complete economic tariff/profile snapshot; run ingest-economics' >&2; exit 3; }
+    verify_economics_snapshot
+    [[ -f "$STATE/offers.tsv" && -f "$STATE/jobs.tsv" ]] || { echo 'Load offers and jobs first' >&2; exit 3; }
+    REXX_PATH="$HERE/src:${REXX_PATH:-}" "$REXX_BIN" "$HERE/cli/whole_job_preview.rex" "$STATE" "$(date +%s)"
+    ;;
+  ingest-provider)
+    test "$#" = 3; test -r "$3"
+    provider="$2"
+    [[ "$provider" =~ ^[A-Z0-9_]+$ ]] || exit 2
+    mkdir -p "$STATE/sources"
+    cp -- "$3" "$STATE/sources/$provider.tsv"
+    ;;
+  ingest)
+    test "$#" = 2; test -r "$2"
+    # Normalize complete snapshot with an atomic rename, no partial reads.
+    tmp=$(mktemp "$STATE/.offers.XXXXXX")
+    trap 'rm -f "$tmp"' EXIT
+    cp -- "$2" "$tmp"
+    head -1 "$tmp" | grep -q $'^id\tprovider\tregion\t'
+    mv -f -- "$tmp" "$STATE/offers.tsv"
+    # Preserve each observed provider feed for future continuous `poll` cycles.
+    # A combined one-off ingestion otherwise disappears at the next refresh.
+    mkdir -p "$STATE/sources"
+    awk -F '\t' -v dir="$STATE/sources" '
+      NR==1 {header=$0; next}
+      $2~/^[A-Z0-9_]+$/ && NF==23 {
+        file=dir "/" $2 ".tsv"
+        if (!seen[$2]++) print header > file
+        print >> file
+        close(file)
+      }' "$STATE/offers.tsv"
+    # Append each complete source snapshot to the forecasting history.
+    awk -F '\t' 'NR==1 {for(i=1;i<=NF;i++) p[$i]=i;next} NF>5 {print $p["id"]"\t"$p["rate"]"\t"$p["ts"]}' "$STATE/offers.tsv" >> "$STATE/history.data"
+    { printf 'id\trate\tts\n'; cat "$STATE/history.data"; } > "$STATE/history.tmp"
+    mv "$STATE/history.tmp" "$STATE/history.tsv"
+    ;;
+  submit)
+    # Validate and reject duplicates before modifying persistent state.
+    test "$#" = 2; test -r "$2"
+    awk -F '\t' 'NR==1 {if (NF!=17 || $1!="id" || $17!="earliest") exit 2; next} (NF!=17 || $1 !~ /^[A-Za-z0-9_.-]+$/ || seen[$1]++) {exit 2}' "$2" || { echo "Malformed or duplicate submission" >&2; exit 2; }
+    test "$#" = 2; test -r "$2"
+    head -1 "$2" | grep -q $'^id\tregion\tmem\t'
+    if [[ ! -f "$STATE/jobs.tsv" ]]; then cp -- "$2" "$STATE/jobs.tsv"
+    else
+      # Do not re-submit a job id, including when already held or booked.
+      while IFS=$'\t' read -r id rest; do
+        [[ "$id" == id || -z "$id" ]] && continue
+        if awk -F '\t' -v id="$id" 'NR>1 && $1==id{found=1} END{exit !found}' "$STATE/jobs.tsv"; then
+          echo "Duplicate job id $id" >&2; exit 1
+        fi
+      done < "$2"
+      tail -n +2 "$2" >> "$STATE/jobs.tsv"
+    fi
+    ;;
+  tick|report|audit|discover|providers)
+    if [[ "$1" == tick && -f "$STATE/economics/current/terms.tsv" ]]; then verify_economics_snapshot; fi
+    [[ -f "$STATE/offers.tsv" ]] || printf 'id\tprovider\tregion\tsite\tsku\tpurchase\tmem\tcpu\tgpu\trate\tstartup\tnetwork\tfabric\trisk\tapproved\tcapacity\tfabric_ok\tts\texpiry\tcurrency\tsource\tjurisdiction\truntime\n' > "$STATE/offers.tsv"
+    [[ -f "$STATE/jobs.tsv" ]] || printf 'id\tregion\tmem\tcpu\tgpu\thours\tspot\tfabric_mode\tnodes\tdeadline\tbudget\tdata\tbaseline\tjurisdiction\truntime\tdelay\tearliest\n' > "$STATE/jobs.tsv"
+    [[ -f "$STATE/history.tsv" ]] || printf 'id\trate\tts\n' > "$STATE/history.tsv"
+    [[ -f "$STATE/decisions.tsv" ]] || printf 'id\tstatus\tselected\tcost\tbaseline\tsavings\tsource\tts\treason\tconfidence\tforecast\tmode\tstart\tend\n' > "$STATE/decisions.tsv"
+    [[ -f "$STATE/accounts.tsv" ]] || printf 'id\taccount\tamount\tts\tselected\n' > "$STATE/accounts.tsv"
+    [[ -f "$STATE/events.tsv" ]] || printf 'id\tstatus\tselected\tcost\tbaseline\tsavings\tsource\tts\treason\tnext_check\n' > "$STATE/events.tsv"
+    REXX_PATH="$HERE/src:${REXX_PATH:-}" "$REXX_BIN" "$HERE/cli/cloud_cost.rex" "$1" "$STATE" "$(date +%s)"
+    ;;
+  watch)
+    interval=${2:-60}
+    [[ "$interval" =~ ^[0-9]+$ && "$interval" -ge 5 ]] || { echo 'Interval must be >=5 seconds' >&2; exit 2; }
+    echo 'Cloud Economics paper-only daemon. Ctrl+C stops it.'
+    while :; do
+      if ! "$0" poll; then echo "provider poll failed; retry next cycle" >&2; fi
+      if ! "$0" tick; then echo "planning cycle failed; retry next cycle" >&2; fi
+      if [[ -L "$STATE/mobility/current" && -L "$STATE/economics/current" ]]; then
+        if ! "$0" migration-tick; then echo "migration advisory failed; retry next cycle" >&2; fi
+      fi
+      sleep "$interval"
+    done
+    ;;
+  *) usage; exit 2;;
+esac
