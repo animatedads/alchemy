@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "ref.initech-helpdesk.architecture",
+  "version": "0.1",
+  "sphere": "initech-notnotes-helpdesk",
+  "title": "Two-tier Help Desk architecture and authority",
+  "summary": "The Help Desk owns conversation/session routing; NotNotes owns TPS business semantics, persistence, relationships and workflow. Provider-owned specialist surfaces are discovered dynamically rather than copied into the chatbot.",
+  "authority": "project-architecture",
+  "invariants": [
+    "The Help Desk is not a shadow NotNotes application.",
+    "NotNotes semantic application/document projections are authoritative for formats, reports, relationships and feasible actions.",
+    "Instrumentation is read-only evidence and cannot mutate NotNotes workflow.",
+    "The LLM is recognition fallback only and cannot dispatch business mutations by itself."
+  ],
+  "procedure": [
+    "Begin each user turn by rediscovering the live NotNotes semantic application projection.",
+    "Give business/report/document semantics first refusal before operational specialists.",
+    "Route understood application requests through NotNotes Intention Service/domain operations.",
+    "Use provider-owned specialist relevance/evidence without copying specialist vocabularies into Help Desk code."
+  ],
+  "provenance": [
+    {
+      "artifact": "initech_notnotes_helpdesk_v0.1-dev5.zip",
+      "sha256": "0448068f18fee165381441e2afb33dbee170f44957f6d3c704ef2948ed42f9c6",
+      "member": "initech_notnotes_helpdesk_v0.1-dev5/README.md",
+      "claim": "Accepted two-tier Help Desk architecture, dynamic NotNotes discovery and read-only Instrumentation specialist integration."
+    }
+  ],
+  "related": ["ref.initech-helpdesk.dynamic-discovery", "ref.initech-helpdesk.tps-accounting"]
+}
