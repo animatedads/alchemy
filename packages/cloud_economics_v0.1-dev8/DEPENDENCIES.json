@@ -1,0 +1,128 @@
+{
+  "package": "cloud_economics",
+  "version": "0.1-dev8",
+  "api": "cloud.economics/0.1",
+  "mode": "PAPER_ONLY",
+  "runtime": {
+    "name": "ooRexx",
+    "version": "5.3.0",
+    "revision": "r13196"
+  },
+  "required_executables": [
+    "awk",
+    "bash",
+    "date",
+    "flock",
+    "readlink",
+    "rexx",
+    "sha256sum"
+  ],
+  "azure_readonly_observer_requires": [
+    "curl",
+    "jq"
+  ],
+  "aws_spot_readonly_observer_requires": [
+    "aws-cli-v2-with-authorized-read-only-EC2-principal",
+    "jq",
+    "sha256sum"
+  ],
+  "gcp_public_catalog_observer_requires": [
+    "curl",
+    "jq",
+    "sha256sum",
+    "caller-supplied-approved-api-key",
+    "verified-sku-region-allowlist"
+  ],
+  "observer_defaults": {
+    "aws_enabled": false,
+    "gcp_enabled": false,
+    "azure_enabled": false,
+    "aws_min_poll_seconds": 600,
+    "azure_min_poll_seconds": 1800,
+    "gcp_min_poll_seconds": 3600
+  },
+  "optional_integrations": [
+    {
+      "name": "oorexx_generalized_compute_intentions",
+      "version": "0.1-dev3",
+      "api": "generalized.compute.intentions/0.1"
+    },
+    {
+      "name": "job_node_allocator",
+      "version": "0.6-network6",
+      "api": "job.node.allocator/0.6"
+    },
+    {
+      "name": "oorexx_memory_fabric",
+      "version": "0.1-dev10",
+      "api": "memory.fabric/0.1"
+    },
+    {
+      "name": "oorexx_instrumentation_mesh",
+      "version": "0.1-dev3",
+      "api": "instrumentation.mesh/0.1"
+    },
+    {
+      "name": "crypto",
+      "version": "0.8.3-compatible",
+      "required_for": "JobNodeAllocator class resolution in native authority tests"
+    }
+  ],
+  "real_cloud_purchasing_implemented": false,
+  "cost_model": "whole_job_v1 (opt-in immutable tariff/profile snapshots)",
+  "price_quote_authority": "read-only; pricing NEVER implies provisionable capacity",
+  "migration_cost_model": "marginal_running_job_v1 (advisory and immutable mobility snapshots)",
+  "real_job_migration_implemented": false,
+  "running_intention_route_reference_verification": false,
+  "migration_native_advisory_api": "cloud.migration.native-advisory/0.1",
+  "native_migration_optional_integrations": [
+    {
+      "name": "job_node_allocator",
+      "version": "0.6-network6",
+      "classes": [
+        "JobNodeAllocator",
+        "JobNodeExecutionLifecycleRegistry",
+        "JobNodeEligibilityPolicy"
+      ]
+    },
+    {
+      "name": "oorexx_memory_fabric",
+      "version": "0.1-dev10",
+      "classes": [
+        "RegisteredJobExecutionContextPlanner",
+        "RegisteredJobExecutionContextPlan",
+        "MemoryFabricCapacityPlan"
+      ]
+    }
+  ],
+  "native_migration_verification": "read-only live-object verification; route/actuation unverified",
+  "upstream_execution_observe_regression": "observed with ooRexx 5.3.0 r13196; dev6 bridge tests use native restore/stateFor",
+  "native_continuation_advisory_api": "cloud.migration.continuation-advisory/0.1",
+  "native_continuation_optional_integration": {
+    "package": "migratable_job",
+    "version": "0.2.2",
+    "api": "migratable.job/0.2",
+    "classes": [
+      "MigratableJobDefinition",
+      "MigratableJobDestinationPolicy",
+      "MigratableJobMigration",
+      "MigratableJobCheckpointManifest",
+      "MigratableJobCheckpointResult",
+      "MigratableJobTransferResult"
+    ],
+    "mode": "READ_ONLY_RECORD_CONSISTENCY_NO_EXECUTION"
+  },
+  "transfer_bytes_record_exact": false,
+  "transfer_records_cryptographically_authenticated": false,
+  "status_observer": {
+    "schema": "migratable.job.status/1",
+    "source": "Migratable Job v0.2.2 retained Queue Fabric topic (external authorized subscriber required)",
+    "implementation": "Python3 standard library SQLite read-only advisory projection",
+    "authority": "NONE",
+    "requires": [
+      "python3 (sqlite3 included)"
+    ],
+    "status_delivery_verified_live": false,
+    "writes_paper_accounts": false
+  }
+}

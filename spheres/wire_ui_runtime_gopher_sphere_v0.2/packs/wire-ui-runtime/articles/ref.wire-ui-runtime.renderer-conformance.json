@@ -1,0 +1,53 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.renderer-conformance",
+  "version": "0.2",
+  "sphere": "wire-ui-runtime",
+  "title": "Cross-renderer conformance transcript and qualification rule",
+  "summary": "Renderer agreement is tested through a canonical semantic input and normalized transcript. Web, Swing, GTK/Direct Linux and Android are not marked conformant merely because their documentation sounds aligned.",
+  "authority": "project-architecture",
+  "required_transcript_semantics": [
+    "exact definition acceptance by definitionId@version/content address",
+    "exact published ResourceRef requirement with no definition-supplied URL/copy",
+    "snapshot/patch revision commitment",
+    "stable collection identity independent of native row position",
+    "bounded RangeRequested(start,count) demand",
+    "UI_ACTION carrying event-time renderedRevision and, when workspace-bound, exact opaque workspaceContext",
+    "semantic activation without native input synthesis",
+    "positive-list observation subscription and authorised observation emission",
+    "deauthorisation or other semantic faults fail closed/request resynchronisation"
+  ],
+  "qualification_rule": "PASS requires a real renderer adapter to consume the canonical fixture, emit only normalized semantic operations, and match the canonical transcript. Reference-adapter self-tests prove the kit, not renderer conformance.",
+  "current_evidence": {
+    "web": "Current integration evidence uses Alchemy Wire UI JS v0.4-dev6; a separately qualified dev7 line exists but is not substituted silently for application-specific integration evidence.",
+    "swing": "wire_ui_swing_v0.2-dev11.zip; presentation-only dev11 over retained dev10 semantic baseline.",
+    "gtk_direct_linux": "wire_direct_linux_v0.1-dev38.zip archive; semantic proxy/range-demand evidence present, with internal VERSION/README metadata drift recorded as missing work.",
+    "android": "Renderer convergence evidence remains the documented Android dev7 semantic checkpoint; resident ooRexx native host tooling has separately advanced to dev16 and is not mislabeled as renderer dev16."
+  },
+  "artifact": "wire_ui_renderer_conformance_v0.2",
+  "related_spheres": [
+    "wire-ui",
+    "wire-ui-builder",
+    "wire-ui-swing"
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev11.zip",
+      "sha256": "294be3939be9ff0fc32c057c1d7e0287ba7d3f074fdda9663c6da48fe9bd8ad7",
+      "claim": "Current Swing head and retained semantic baseline.",
+      "member": "wire_ui_swing_v0.2-dev11/VALIDATION_DEV11.txt"
+    },
+    {
+      "artifact": "wire_direct_linux_v0.1-dev38.zip",
+      "sha256": "e39e0ac7bd1e9b15dd704cbedf9ee40ab1a871481b344a457da35c57d7f81686",
+      "claim": "Current Direct Linux archive and qualification evidence.",
+      "member": "wire_direct_linux_v0.1-dev38/QUALIFICATION_DEV38.txt"
+    },
+    {
+      "artifact": "build-wire-mobile-host-dev16.sh",
+      "sha256": "1804fc6f95312954a1a0fef638569ad0185e33da92547ed80fb0476ca0a5c862",
+      "claim": "Android resident ooRexx host tooling dev16; host lifecycle evidence only, not renderer-version evidence.",
+      "member": "build-wire-mobile-host-dev16.sh"
+    }
+  ]
+}

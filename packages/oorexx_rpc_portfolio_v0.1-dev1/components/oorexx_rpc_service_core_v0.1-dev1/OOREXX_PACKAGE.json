@@ -1,0 +1,74 @@
+{
+  "package_id": "oorexx.rpc_service_core",
+  "api_version": "0.1",
+  "package_version": "0.1-dev1",
+  "entrypoints": [
+    "src/RpcServiceCore.cls"
+  ],
+  "exports": [
+    "RpcServiceFault",
+    "RpcServiceResult",
+    "RpcServiceEntry",
+    "RpcServiceRegistry",
+    "RpcServiceDispatcher"
+  ],
+  "runtime": {
+    "name": "ooRexx",
+    "minimum_version": "5.3.0",
+    "tested_revision": "r13196",
+    "native_abi_required": false
+  },
+  "requires": [
+    {
+      "name": "ooRexx",
+      "version": "5.3.0-r13196",
+      "required": true
+    }
+  ],
+  "optional_dependencies": [
+    {
+      "package_id": "oorexx.soap_rpc_binding",
+      "version": "0.1-dev2",
+      "usage": "document/literal envelopes, tests"
+    },
+    {
+      "package_id": "oorexx.json_rpc_fabric",
+      "version": "0.1-dev3",
+      "usage": "JSON-RPC envelope, tests"
+    },
+    {
+      "package_id": "serialization_selector",
+      "version": "0.1-tested",
+      "usage": "payload encoding, not required"
+    },
+    {
+      "package_id": "oorexx.connect_selector",
+      "version": "0.1-dev2",
+      "usage": "routing, not required"
+    }
+  ],
+  "registration_methods": [
+    "registerMethod",
+    "registerCallbackMethod",
+    "registerObject",
+    "register",
+    "unregister",
+    "freeze",
+    "resolve"
+  ],
+  "dispatcher_methods": [
+    "invoke",
+    "invokeCallback"
+  ],
+  "constraints": [
+    "no_remote_registration",
+    "no_implicit_reflection",
+    "no_transport_selection",
+    "no_serialization",
+    "callbacks_are_local_sinks_not_grpc_network_streams"
+  ],
+  "qualification": {
+    "registry_checks": 27,
+    "soap_json_shared_object_checks": 5
+  }
+}

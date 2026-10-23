@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.web-readiness",
+  "version": "0.2",
+  "sphere": "wire-ui-runtime",
+  "title": "Web access-point readiness and HTTP-front neutrality",
+  "summary": "An HTTP page or WebSocket 101 proves transport/bootstrap only. A Wire Web view is ready only after semantic bootstrap, exact definition/resource readiness and authoritative snapshot/revision synchronization succeed.",
+  "authority": "project-runtime",
+  "readiness_stages": [
+    "HTTP/static shell available",
+    "Wire runtime loaded",
+    "WebSocket transport established",
+    "UI_HELLO/profile negotiation accepted",
+    "authorised definitions/resources ready",
+    "authoritative snapshot committed",
+    "view synchronized and semantic actions enabled"
+  ],
+  "invariants": [
+    "HTTP front may be Node, ooRexx HTTP/HTTPS or another conforming static/bootstrap front without acquiring application authority.",
+    "Do not report a WebSocket 101 as a live synchronized Wire view.",
+    "SOURCE or another semantic surface being alive does not prove DESIGN or every other projected surface is populated.",
+    "HTTP/static delivery must not become a second business API."
+  ],
+  "related_spheres": [
+    "wire-ui-builder"
+  ],
+  "provenance": [
+    {
+      "artifact": "wire-ui-builder-engineering-sphere-v0.2-CHANGELOG.md",
+      "sha256": "824371d40ce693903ed0abf2893373e79432caebfb6d97493bde4d5d66411d0d",
+      "member": "CHANGELOG.md",
+      "claim": "Builder continuity records HTTP-front qualification and truthful browser session readiness."
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "svplay.architecture",
+  "version": "0.1",
+  "sphere": "service-video-playout",
+  "title": "Semantic, presentation and device boundaries",
+  "summary": "Intention Service v0.1-dev11 resolves requested business operations; a viewer-authorized business provider supplies real objects; an ooRexx presentation controller orders AGENT, INVOICE, TPS_REPORT and PRODUCT scenes; Foreign Runtime invokes a native worker emitting I420 and PCM.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Intention resolution is not permission to disclose fields.",
+    "An actual report or invoice must be supplied by an authorised business provider; the LLM does not invent business state.",
+    "Presentation plans/scene metadata and media device frames are separate contracts.",
+    "ConnectSelector is optional and should follow its verified contract: direct call, standalone JSON-RPC and Queue Fabric remain alternatives.",
+    "Queue Fabric is not mandatory for media presentation."
+  ],
+  "procedure": [
+    "Check the live business-provider API before binding scene models.",
+    "For production, require a short-lived session-bound presentation grant before rendering/sending content.",
+    "Keep decoding adapters replaceable without turning them into a competing ooRexx Foreign Runtime."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/docs/HANDOVER.md",
+      "claim": "Separation of Intention, business records, presentation controller and native output."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/docs/INITECH_INTENTIONS_INTEGRATION.md",
+      "claim": "Actual help desk and NotNotes API used in dev2 fixture."
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "version": "0.1",
+  "purpose": "Rules for analysing Cog usage and proposing deterministic improvements without mutating the live library.",
+  "rules": [
+    {"id":"MISS_TO_RECIPE","enabled":true,"min_count":1,"description":"Requests that initially resolve X are recipe-learning opportunities. Prefer a reusable parameterised recipe when the taught solution succeeded."},
+    {"id":"REUSE_SIGNAL","enabled":true,"min_reuse":1,"description":"A learned recipe reused after teaching is evidence that deterministic learning paid off."},
+    {"id":"COMPOSITE_SEQUENCE","enabled":true,"min_count":2,"sequence_lengths":[2,3],"description":"Repeated adjacent successful recipe sequences are candidates for a composite sequence recipe."},
+    {"id":"OVERSPECIALIZED_ARITY","enabled":true,"description":"Recipes with numbered parameters such as source1/source2 or rigid fixed arity should be reviewed for a more general collection form."},
+    {"id":"PATTERN_COLLISION","enabled":true,"description":"Observed requests matching more than one recipe are candidates for pattern or priority refinement."},
+    {"id":"DUPLICATE_ACTION","enabled":true,"description":"Recipes with identical canonical actions may be aliases or merge candidates."},
+    {"id":"FAILURE_RECOVERY","enabled":true,"min_count":1,"description":"Repeated failed executions should propose a recovery or diagnostic recipe keyed by evidence."},
+    {"id":"TIMEOUT_RECOVERY","enabled":true,"min_count":1,"description":"Timed-out executions should propose timeout-aware diagnostic or retry policy recipes rather than blind timeout inflation."},
+    {"id":"UNUSED_RECIPE","enabled":true,"min_observed_plans":10,"description":"Recipes never selected across a sufficiently large merged usage corpus should be reviewed, not automatically deleted."},
+    {"id":"MANUAL_RUN_RECIPE_IMPORT","enabled":true,"description":"Recipes found in merged manual runs but absent from the current library are import candidates; never auto-import without review."}
+  ]
+}

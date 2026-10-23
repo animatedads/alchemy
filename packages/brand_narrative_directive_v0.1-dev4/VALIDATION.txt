@@ -1,0 +1,34 @@
+Brand Narrative Directive v0.1-dev4 validation request
+Date: 2026-10-23
+API: brand.narrative.directive/0.1
+
+Implementation delta from v0.1-dev3:
+- Adds typed Librarian v2 dev7 declared-source-lineage evidence adapter.
+- Preserves SHARED_DECLARED_ORIGIN as declared evidence, never verified provenance.
+- Preserves different roots as INDEPENDENCE_NOT_ESTABLISHED.
+- Explicitly keeps editorial independence, bias and causation NOT_ESTABLISHED / NOT_DETERMINED.
+- Retains dev3 correction/retraction/conflict evidence and RETRACTED_NOT_FALSE semantics.
+- Updates the downstream Communications boundary to current dev14 expectations: per-request candidate/revision reevaluation belongs to Communications; a prior review snapshot is not publication authority.
+- No runtime narrative activation, publication, dispatch or channel mutation is introduced.
+
+Local pre-submission gates:
+- Source review: PASS.
+- Claude ooRexx standards strict gate: PASS on the full local dev4 ZIP (20 source/test files, 0 errors, 0 warnings) and on this Git source-first package preview (21 source/test files, 0 errors, 0 warnings).
+- Manifest and ZIP integrity: PASS before Git submission; regenerated after Git-source documentation finalisation.
+- Exact r13196 runtime: delegated to Alchemy Autobuild because the old conversation .deb backing bytes are unavailable in this workspace.
+
+Autobuild contract:
+- Fails unless `rexx -v` identifies Open Object Rexx 5.3.0 r13196.
+- Compiles every package .cls/.rex source/test with rexxc.
+- Runs the complete package test suite.
+- Exercises Communications dev14 and Librarian dev7 adapter contracts through package-local contract doubles. Exact independently owned archive hashes and the stronger full-local integration evidence remain recorded in SOURCE_PROVENANCE.md.
+- Claude strict standards is a pre-submission release receipt; Autobuild is responsible for the missing exact-r13196 compile/runtime gate.
+
+Pre-Autobuild status:
+STRICT_SOURCE_QUALIFIED_CANDIDATE / R13196_AUTOBUILD_REQUESTED
+
+GitHub provider-fallback / source-layout note (2026-10-23):
+- The Git submission omits the large adjacent test archives so source remains browsable.
+- The monolithic implementation is split only at top-level class boundaries into five readable implementation files plus the public loader; Autobuild r13196 must prove the layout before acceptance.
+- Autobuild r13196 runs exact Brand-domain source plus contract doubles for the external adapter surfaces.
+- Exact Communications dev14 / Librarian dev7 integration remains supported by the local reproducibility package and provenance hashes; it is not falsely claimed as a GitHub-main dependency until those adjacent packages are accepted there.

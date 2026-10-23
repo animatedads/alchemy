@@ -1,0 +1,16 @@
+ooRexx gRPC Binding v0.1-dev3 - qualification (2026-10-15)
+============================================================
+SOURCES checked: inherited dev2 gRPC binding, RPC Service Core dev1,
+  Serialization Selector v0.4-protobuf, Connect Selector dev5 from Library.
+EXECUTED: `make -C native stream-fixture` using g++ -Wall -Wextra -Werror
+  and pkg-config libcurl; 15 live HTTP/2 stream transport checks against
+  independent hyper-h2 server (including TLS/ALPN, cancellation, deadlines,
+  framing, error status validation, and bounded explicit connections) PASS.
+EXECUTED: Python fixture compilation PASS; ZIP integrity and manifests PASS.
+NOT EXECUTED this turn: ooRexx interpreter tests (debug .deb backing not
+  downloadable into this runtime); native ooRexx bridge compilation (matching
+  ooRexx SDK headers absent). No claim of end-to-end ooRexx callback qualification.
+INHERITED dev2: 75 previously reported tests, not re-run this turn.
+OUTSTANDING: ooRexx bridge and observer integration, cancellation under long
+  idle production connections, transport backpressure stress, production TLS,
+  inbound HTTP/2 server, client/bidirectional streaming, cross-platform builds.

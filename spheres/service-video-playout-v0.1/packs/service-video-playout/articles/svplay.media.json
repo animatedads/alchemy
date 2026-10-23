@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "svplay.media",
+  "version": "0.1",
+  "sphere": "service-video-playout",
+  "title": "Native media and timing contract",
+  "summary": "The native worker consumes pre-staged planar YUV420P video at 1280 × 720, 24 frames/s and signed 16-bit little-endian stereo PCM at 48,000 samples/s; 2,000 stereo sample frames accompany each video frame.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Video frame bytes are 1280 × 720 × 3/2 = 1,382,400.",
+    "Audio bytes per frame are 2,000 sample frames × 2 channels × 2 bytes = 8,000.",
+    "Use monotonic clock scheduling for playout; wall-clock and civil-time conversion belong outside the frame loop.",
+    "Staging FFmpeg is an offline input adapter, not the device-owning resident engine.",
+    "Video and audio outputs are separate browser capture devices: V4L2 camera and PipeWire/PulseAudio microphone."
+  ],
+  "procedure": [
+    "Retain fixed output format through scene changes.",
+    "For new audio formats, resample prior to admission or extend the native provider with explicit qualification.",
+    "Instrument timestamp skew and device back-pressure on the real openSUSE host; offline byte equality cannot establish live A/V synchronisation."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/native/service_playout.c",
+      "claim": "Frame and PCM constants, output writing and pacing."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/docs/DEV3_WAIT_RELEASE.md",
+      "claim": "Precise media and live-host dependency contract."
+    }
+  ]
+}

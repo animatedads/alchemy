@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "svplay.risks",
+  "version": "0.1",
+  "sphere": "service-video-playout",
+  "title": "Unclosed engineering and trust gaps",
+  "summary": "Native file output proves byte ordering and queue semantics, but production browser calls need end-to-end timing, live device formats, failure recovery, audio routing, presentation grants, redaction and an auditable session lifecycle.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Do not conflate a static /dev/video0 file handle with confirmed WebRTC media delivery.",
+    "Do not infer exact A/V skew from fixed frame counts; measure both output and receiver timelines.",
+    "Do not use a demo-only grant to publish private invoices, statuses, reports or customer identities.",
+    "Do not treat a file-size preflight as prevention of a same-size race or content substitution.",
+    "No live encrypted RTP/WebRTC driver is implemented here; the browser owns its own capture stack."
+  ],
+  "procedure": [
+    "Add content-addressed or immutable staged-asset input and bounded resource guarantees.",
+    "Implement time-bounded PresentationGrant before real customer traffic.",
+    "Measure monotonic playout drift, device backpressure, microphone levels, browser FPS and remote receiver skew.",
+    "Define fallback visuals/audio for device loss, stalled decode, denial and session termination."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/docs/DEV3_WAIT_RELEASE.md",
+      "claim": "Known limitations and remaining live qualification."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/docs/HANDOVER.md",
+      "claim": "Outstanding architecture and production work."
+    }
+  ]
+}

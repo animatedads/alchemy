@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "ops.customer-service.capture",
+  "version": "0.1",
+  "sphere": "customer-service-agents",
+  "title": "Controlled six-utterance readback capture",
+  "summary": "A model told only 'Say Alpha' can improvise to fill its render duration. Generate fixed groups of six prescribed utterances instead and require silence once the final item is spoken.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Reference calibration: 'Alpha. ten. A. Bravo. Charlie. oh.'",
+    "Instruction: say exactly the listed items, in order, without greetings, explanations or other spoken words; remain silent afterwards.",
+    "Pronunciation 'oh' is intentionally distinct from zero; 10 is pronounced ten; source ICAO spellings Alfa and Juliett remain in the vocabulary.",
+    "12 planned captures per character times six characters equals 72 planned captures, not 72 rendered videos.",
+    "An exact transcript produces pending human review, never automatic approval.",
+    "When generation still improvises, a controlled speech-and-mouth pipeline is preferable to accepting invented words."
+  ],
+  "procedure": [
+    "Use the readback generator for deterministic prompts.",
+    "Bind each prompt to explicit character reference and requested utterances.",
+    "Normalize the independent transcript with narrow pronunciation aliases.",
+    "Reject missing, reordered, additional or ambiguous speech where reliable evidence is absent.",
+    "Publish only after authorised listening and source-PTS-aligned visual confirmation."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_customer_service_readback_v0.1-dev2.zip",
+      "sha256": "4be34bfbda31c0c807c6f440abbd3a67be778e676efa46d90d55c58d8c0254b0",
+      "member": "agent_readback_capture_v0.1-dev2/README.md",
+      "claim": "Readback six-utterance generation plan, script matching and review limits."
+    }
+  ]
+}

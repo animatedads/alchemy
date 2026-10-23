@@ -1,0 +1,128 @@
+{
+  "package_id": "oorexx.grpc_rpc_binding",
+  "api_version": "0.1",
+  "package_version": "0.1-dev3",
+  "entrypoints": [
+    "src/GrpcRpcBinding.cls"
+  ],
+  "optional_entrypoints": [
+    "src/GrpcConnectAdapter.cls",
+    "src/GrpcHttp2UnaryChannel.cls",
+    "src/GrpcHttp2ServerStreamChannel.cls"
+  ],
+  "exports": [
+    "GrpcCallResult",
+    "GrpcFrameCodec",
+    "GrpcFrameReader",
+    "GrpcMethodDefinition",
+    "GrpcMethodRegistry",
+    "GrpcCallbackSink",
+    "GrpcStatusMap",
+    "GrpcRpcBinding",
+    "GrpcClientReply",
+    "GrpcClientRoute",
+    "GrpcUnaryClient",
+    "GrpcLoopbackChannel",
+    "GrpcHttp2CallContext",
+    "GrpcHttp2UnaryChannel",
+    "GrpcHttp2ServerStreamClient"
+  ],
+  "runtime": {
+    "name": "ooRexx",
+    "minimum_version": "5.3.0",
+    "tested_revision": "r13196",
+    "native_abi_required": false
+  },
+  "requires": [
+    {
+      "package_id": "oorexx.rpc_service_core",
+      "version": "0.1-dev1",
+      "required": true
+    },
+    {
+      "package_id": "serialization_selector",
+      "version": "0.4-protobuf",
+      "required": true
+    },
+    {
+      "name": "ooRexx",
+      "version": "5.3.0-r13196",
+      "required": true
+    }
+  ],
+  "optional_dependencies": [
+    {
+      "package_id": "oorexx.connect_selector",
+      "version": "0.1-dev5",
+      "usage": "src/GrpcConnectAdapter.cls only"
+    },
+    {
+      "name": "libcurl",
+      "minimum_version": "7.84",
+      "purpose": "native HTTP/2 unary channel; TLS/ALPN and HTTP/2 support must be compiled into libcurl; required only when using HTTP/2"
+    },
+    {
+      "name": "C++17 toolchain",
+      "purpose": "recompile the native HTTP/2 helper for other interpreter ABI/platform variants"
+    }
+  ],
+  "supported_modes": [
+    "unary_loopback",
+    "server_streaming_callbacks_local",
+    "outbound_http2_unary_tls_alpn",
+    "outbound_h2c_unary_loopback_only",
+    "outbound_http2_server_stream_client_incremental_callbacks"
+  ],
+  "unsupported_modes": [
+    "inbound_http2_server",
+    "client_streaming",
+    "bidirectional_streaming",
+    "grpc_web",
+    "compression",
+    "retries",
+    "reflection",
+    "inbound_http2_server_streaming",
+    "client_streaming_over_http2",
+    "bidirectional_streaming_over_http2",
+    "remote_connect_selector_callback_routing",
+    "inbound_http2_server_streaming",
+    "client_streaming_over_http2",
+    "bidirectional_streaming_over_http2",
+    "remote_connect_selector_callback_routing",
+    "inbound_http2_server_streaming",
+    "client_streaming_over_http2",
+    "bidirectional_streaming_over_http2",
+    "remote_connect_selector_callback_routing"
+  ],
+  "qualification": {
+    "independent_native_http2_stream_checks": 15,
+    "independent_native_stream_result": "PASS",
+    "ooRexx_stream_bridge": "NOT RUN: matching 5.3.0-r13196 debug runtime+headers not available in current container",
+    "retained_dev2_test_results": "historical only; not reexecuted in this turn",
+    "native_build": "C++17 libcurl stream engine -Wall -Wextra -Werror PASS; ooRexx bridge not compiled",
+    "test_fixture": "hyper-h2 independent HTTP/2 server"
+  },
+  "security_constraints": [
+    "explicit_allowlisted_paths",
+    "schema_bound_protobuf",
+    "no_remote_object_registration",
+    "no_service_method_reflection",
+    "no_implicit_retry",
+    "bounded_grpc_messages",
+    "masked_server_exceptions",
+    "TLS verification mandatory",
+    "HTTP/2 negotiated protocol enforced",
+    "h2c allowed only for loopback endpoints",
+    "bounded outbound and inbound frames",
+    "immutable endpoint and CA trust per channel",
+    "no redirects",
+    "no user metadata override of gRPC/HTTP transport headers",
+    "timeout enforced in native I/O",
+    "stream_poll_from_callers_rexx_activity_only",
+    "native_buffer_max_512_KiB",
+    "stream_total_max_64_MiB",
+    "native_stream_sessions_max_128",
+    "no_implicit_retries",
+    "stream_callback_fault_after_partial_data_is_possible"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "svplay.hold",
+  "version": "0.1",
+  "sphere": "service-video-playout",
+  "title": "WAIT, HOLD, RELEASE and resident output lifecycle",
+  "summary": "Dev3 adds svc_set_hold(enabled). WAIT/HOLD repeat a selected idle I420 frame with silent stereo PCM at the established output cadence, without dequeuing scenes or advancing the current scene cursor. RELEASE resumes queued or in-progress media without renegotiating camera/microphone.",
+  "authority": "project-artifact",
+  "invariants": [
+    "HOLD is not disconnect, stop, EOF, or a privacy authorization state.",
+    "Queue preflight rejects missing, non-regular, symlink, undersize/oversize staged media at admission; the worker checks size/type again at dequeue.",
+    "Those checks are not cryptographic attestation, immutable open-file pinning or sufficient protection against a same-size file swap.",
+    "After the scene queue drains, the resident worker continues sending idle/silence until stopped.",
+    "Native stop joins the worker thread even when the worker exited due to error."
+  ],
+  "procedure": [
+    "Call hold before start for an unattended connection waiting state.",
+    "Keep output devices attached while holding; type RELEASE from the terminal to start content.",
+    "At a natural pause enter HOLD and verify finished-item and position counters do not advance.",
+    "Keep STOP as terminal-local shutdown and inspect error/why from stats."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/docs/DEV3_WAIT_RELEASE.md",
+      "claim": "Hold and preflight behavior and limitations."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/native/service_playout.c",
+      "claim": "svc_set_hold, queue admission, worker tick, stats and stop semantics."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/tests/test_native_hold.py",
+      "claim": "Four hardware-free tests covering hold/resume/preflight/dequeue mutation."
+    }
+  ]
+}

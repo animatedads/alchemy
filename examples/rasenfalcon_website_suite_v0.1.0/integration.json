@@ -1,0 +1,29 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "rasenfalcon_website_suite",
+    "version": "0.1.0",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "source-regression-suite",
+      "argv": [
+        "python3",
+        "tests/test_suite.py"
+      ],
+      "timeout_seconds": 180
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "examples/rasenfalcon_website_suite_v0.1.0"
+    }
+  }
+}

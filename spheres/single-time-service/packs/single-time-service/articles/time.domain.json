@@ -1,0 +1,23 @@
+{
+  "id": "time.domain",
+  "title": "Temporal domain and invariants",
+  "section": "architecture",
+  "summary": "A TimeInstant denotes an instant on the declared POSIX seconds timescale; civil readings are local calendar values, not necessarily a unique instant. A TimeZoneRules provider maps an instant to civil labels and resolves UNIQUE, GAP or FOLD candidates. Duration in elapsed seconds is distinct from an institutional calendar period or civil recurrence.",
+  "invariants": [
+    "Never turn a civil reading into UTC without explicit zone and rules.",
+    "Report gap and fold; never silently select an instant.",
+    "'Now' requires a declared clock source and must not be inferred from the transport."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "single-time-service",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "single_time_service_v0.9.zip",
+      "sha256": "914e99e944fcd2e6d4f20c47e0850ca207318d7641c5f432d2d4aa10bd172038",
+      "member": "single_time_service_v0.9/src/SingleTime.cls",
+      "claim": "Verified against locally inspected v0.9 package source."
+    }
+  ]
+}

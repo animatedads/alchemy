@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "rpc.registry",
+  "version": "0.1",
+  "sphere": "rpc-invocation",
+  "title": "Explicit published operation -> object/method",
+  "section": "invocation",
+  "summary": "RpcServiceRegistry~registerMethod(service, operation, target, methodName) publishes one unary operation. registerCallbackMethod publishes callback operation; registerObject supports atomic validation of an explicit name mapping. Frozen registries reject changes. RpcServiceDispatcher resolves exact service+operation and wraps successful result or RpcServiceFault.",
+  "invariants": [
+    "Only trusted registration code can bind service/operation pairs; caller input must never become a raw ooRexx receiver selector.",
+    "Case-sensitive exact strings; duplicate bindings and absent local methods rejected at registration.",
+    "The target object lifetime and registration lifecycle are owned by the server.",
+    "freeze prevents registration/unregistration on that instance; policy revocation thereafter requires controlled registry replacement, not assuming an unregister will succeed.",
+    "Authentication/authorization is a separate gate; registration is an allowlist, not an identity check."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_rpc_service_core_v0.1-dev1.zip",
+      "sha256": "e483e3f8ff427da1f92460e819cc7e6391c12edd1e1198403ae5d6c4a5507feb",
+      "member": "oorexx_rpc_service_core_v0.1-dev1/src/RpcServiceCore.cls",
+      "member_sha256": "f0aac39a34607c601ed6b6be3cadbbafbe1b6b1be6ce6c9800a63fa6dd32608b",
+      "claim": "Source inspected locally in exact package bytes."
+    }
+  ],
+  "api": [
+    "RpcServiceRegistry~registerMethod(service, operation, object, methodName)",
+    "RpcServiceRegistry~registerCallbackMethod(service, operation, object, methodName)",
+    "RpcServiceRegistry~registerObject(service, object, map)",
+    "RpcServiceRegistry~freeze",
+    "RpcServiceDispatcher~invoke(service, operation, args, context)",
+    "RpcServiceDispatcher~invokeCallback(service, operation, args, context, sink)"
+  ],
+  "related": [
+    "rpc.callbacks",
+    "rpc.security"
+  ]
+}

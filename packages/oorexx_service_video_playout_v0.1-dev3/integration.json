@@ -1,0 +1,40 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "oorexx_service_video_playout",
+    "version": "0.1-dev3",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "native-build",
+      "argv": [
+        "make",
+        "-C",
+        "native",
+        "clean",
+        "all"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "native-hold",
+      "argv": [
+        "python3",
+        "tests/test_native_hold.py"
+      ],
+      "timeout_seconds": 120
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_service_video_playout_v0.1-dev3"
+    }
+  }
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "svplay.continue",
+  "version": "0.1",
+  "sphere": "service-video-playout",
+  "title": "Continuation protocol",
+  "summary": "Continue from exact dev3 and its current GitHub receipt status rather than duplicating the media service. Introduce authoritative scene grants and native compressed input only with concrete tests, and preserve browser interoperability with no WhatsApp modifications.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Update or extend this sphere when a code baseline becomes accepted or an architectural invariant changes.",
+    "Retain raw-media clock ownership within the playout engine; keep scene intent and permission outside it.",
+    "Future ConnectSelector adapter uses the delivered actual API and offers direct, standalone JSON-RPC and Queue Fabric without making any compulsory.",
+    "No claimed live acceptance without capture logs and on-host evidence."
+  ],
+  "procedure": [
+    "First verify whether the current source-only dev3 GitHub submission has an Autobuild receipt; reconcile GitHub main before making a new code delivery.",
+    "Test dev3 live on the user's openSUSE /dev/video0 + service_mic setup, including hold, release, recovery and audio capture.",
+    "Implement a bound PresentationGrant contract with revocation, field projection and retention.",
+    "Qualify native FFmpeg libraries/libav if headers/ABI support it, with prefetch, bounded queue and a single resident output clock.",
+    "Write receiving-browser instrumentation and compare A/V skew, frame pacing and silence during hold."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/docs/HANDOVER.md",
+      "claim": "Prioritized missing architecture and native work."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/docs/DEV3_WAIT_RELEASE.md",
+      "claim": "Dev3 continuation and operating constraints."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "brand_narrative_directive",
+    "version": "0.1-dev4",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "manifest",
+      "argv": [
+        "sha256sum",
+        "-c",
+        "MANIFEST.sha256"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "r13196-runtime",
+      "argv": [
+        "bash",
+        "qualification/autobuild_runtime.sh"
+      ],
+      "timeout_seconds": 1200
+    }
+  ],
+  "publish": {
+    "artifact_only": true
+  }
+}

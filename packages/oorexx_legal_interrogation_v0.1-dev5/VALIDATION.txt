@@ -1,0 +1,51 @@
+Legal Interrogation v0.1-dev5 validation
+========================================
+
+Status: DEV5 SOURCE/CONTRACT QUALIFIED; REAL DEV11 RUNTIME TEST DECLARED FOR AUTOBUILD
+Date: 2026-10-23
+
+Inherited runtime baseline
+--------------------------
+dev3 passed the complete suite on ooRexx 5.3.0 r13196 Internal Test Version (64-bit) on 2026-10-07.
+dev4 added the concrete Intention Service v0.1-dev11 discovery adapter, stale-surface guard and current ooRexx standards hardening.
+
+Dev5 correction
+---------------
+Inspection of the actual Alchemy GitHub `packages/oorexx_intention_service` v0.1-dev11 source showed that IntentionService owns
+`discoveryGeneration` and advances it only when the concatenated discovery snapshot source/revision signature changes. dev4 used
+LegalInterrogationIntentionPort's per-call discovery counter as the snapshot revision, which made an unchanged legal state appear
+changed on every refresh. dev5 corrects the snapshot revision to the LegalInterrogationSession authoring revision plus closure state.
+
+Expected invariants
+-------------------
+- repeated refresh of unchanged legal state leaves IntentionService~discoveryGeneration unchanged;
+- a structured authoring mutation advances LegalInterrogationSession~revision;
+- the next Intention Service refresh then advances its discovery generation;
+- service-copied IntentionSurfaceAdvertisement objects carry the service-owned generation;
+- a surface discovered before the authoring mutation remains unusable and fails STALE_DISCOVERY;
+- discovery availability remains ADVISORY and is not legal authority.
+
+Qualification in this build
+---------------------------
+- dev4 contract tests retained;
+- added tests/test_intention_service_dev11_live.rex against the real sibling Intention Service contract;
+- added run_tests.sh and alchemy.autobuild.integration/0.3 manifest;
+- integration manifest requires `${REPO_ROOT}/packages/oorexx_intention_service` and does not vendor it;
+- bash syntax checks pass;
+- JSON syntax check passes;
+- deterministic package manifest and ZIP integrity checks pass;
+- strict ooRexx standards enforcer run against the final ZIP is recorded before submission.
+
+Runtime qualification boundary
+------------------------------
+The current execution container does not have ooRexx r13196 available, so this file does not claim local runtime execution of dev5.
+The Alchemy Autobuild submission declares the actual sibling Intention Service root and runs the entire Rexx suite including the
+new live dev11 integration test. Acceptance into `packages/` is therefore conditional on Autobuild PASS.
+
+Authority boundaries
+--------------------
+- Intention Service owns conversational/discovery generation state and READY/dispatch authority.
+- Legal Interrogation owns clause/proposition cross-examination state and authoring provenance.
+- Legal Effect remains sole verified compilation/sealing/runtime legal-decision authority.
+- Institutional Policy remains publication/authority/lifecycle governance.
+- LegalInterrogationCompileHandoff remains authoritative=false.

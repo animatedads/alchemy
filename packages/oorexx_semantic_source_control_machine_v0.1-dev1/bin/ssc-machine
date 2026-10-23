@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+HERE=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+SSC="$HERE/vendor/oorexx_semantic_source_control_v0.2.3"
+cd "$SSC"
+exec rexx "$HERE/bin/ssc-machine.rex" "$@"

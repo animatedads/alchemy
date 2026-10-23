@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "svplay.scenes",
+  "version": "0.1",
+  "sphere": "service-video-playout",
+  "title": "Fixture TPS/report cutaway and disclosure authority",
+  "summary": "InitechTpsPresentation consumes real NotNotes Help Desk results for the fixture Alice and dynamically discovered TPS report definitions. It performs read-only, explicitly personal-scoped candidate checks, rejects overlong cards instead of truncating, and renders a saved report through an offline FFmpeg textfile adapter.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Fixture actor 'alice' supplied by a caller is not authenticated viewer identity.",
+    "approveMediaDemo is synthetic/fixture-only; it is NOT production PresentationGrant.",
+    "Reject mutating requests before Help Desk dispatch.",
+    "Only a successful live RUN_REPORT with an admitted source form may project a TPS_REPORT scene.",
+    "A nine-line/74-column output limit causes REPORT_REQUIRES_PAGINATION; never crop authoritative rows.",
+    "No publicly callable service should expose the fixture data."
+  ],
+  "procedure": [
+    "Retrieve and authenticate current session, actor and tenant from a trusted identity system before production scene rendering.",
+    "Bind a PresentationGrant to viewer, session, report id, permitted fields, provenance, freshness, expiry, audit and revocation.",
+    "Generate immutable but short-lived render snapshots from authorized field projections.",
+    "Add multi-page scene support before attempting oversize saved reports."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/docs/INITECH_INTENTIONS_INTEGRATION.md",
+      "claim": "Real example semantics, guards and known unsupported production authorization."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/rexx/InitechTpsPresentation.cls",
+      "claim": "Fixture read-only candidate projection."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/tests/test_initech_tps_presentation.rex",
+      "claim": "Fixture test and runtime-added report discovery."
+    }
+  ]
+}

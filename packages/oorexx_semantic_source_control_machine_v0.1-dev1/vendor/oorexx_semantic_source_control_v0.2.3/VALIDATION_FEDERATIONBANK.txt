@@ -1,0 +1,37 @@
+# FederationBank v0.5 compatibility validation — v0.2
+
+Input:
+  user-supplied federationbank_ssc_snapshot_pre_fees_v0.5.zip
+  accepted baseline: FederationBankEngine / MAIN / sourceLevel 5
+  repository originally written by semantic source control v0.1
+
+v0.2 loaded the immutable v0.1 snapshot and re-indexed its preserved historical
+source blobs in memory using the current semantic analyzer.
+
+Derived v0.2 view of the accepted level-5 source:
+  retained v0.1 source blobs: 35
+  package entities reconstructed: 35
+  classes: 51
+  methods: 305
+  message-use evidence: 5,134
+  accepted independently tracked SQL operations restored: 18
+
+The exact sealed FederationBank v0.5 carrier was then analyzed using v0.2:
+  complete release files observed: 45
+  packages: 35
+  classes: 51
+  methods: 305
+  message-use evidence: 5,134
+  independently tracked SQL operations: 18
+
+Semantic comparison of the re-indexed historical level 5 against the exact same
+sealed v0.5 source produced:
+  DELTAS = 0
+
+This proves that the v0.2 analyzer upgrade does not manufacture package/method
+changes when FederationBank moves from its v0.1 repository into the level-6 fee
+impact round. The old accepted source bytes/source level were not rewritten.
+
+Measured on this debug host:
+  legacy level-5 semantic re-index/load: ~10.6 s
+  full sealed v0.5 current scan:          ~10.6 s

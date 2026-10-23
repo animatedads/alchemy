@@ -1,0 +1,29 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "ssh_over_xtp",
+    "version": "0.1-candidate4",
+    "kind": "native"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "native-build-and-regressions",
+      "argv": [
+        "sh",
+        "tests/run_managed_acceptance.sh"
+      ],
+      "timeout_seconds": 240
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/ssh_over_xtp_v0.1-candidate4"
+    }
+  }
+}

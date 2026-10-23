@@ -1,0 +1,23 @@
+{
+  "id": "time.impact",
+  "title": "Temporal impact evidence and pull watch",
+  "section": "architecture",
+  "summary": "TimeImpactAnalyzer compares two authority revisions or two explicitly injected timezone-rule services over a bounded date interval and classifies actual changed occurrences. TimeChangeWatch polls and acknowledges locally; it does not own durable transport or consumer checkpoint storage.",
+  "invariants": [
+    "Separate changed intention, local wall time, UTC projection, gap/fold policy and rule snapshot.",
+    "Unrelated authority revision need not generate a change effect.",
+    "No implicit asynchronous publication; consumer persists its own watch checkpoint."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "single-time-service",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "single_time_service_v0.9.zip",
+      "sha256": "914e99e944fcd2e6d4f20c47e0850ca207318d7641c5f432d2d4aa10bd172038",
+      "member": "single_time_service_v0.9/src/TimeImpactAnalysis.cls",
+      "claim": "Verified against locally inspected v0.9 package source."
+    }
+  ]
+}

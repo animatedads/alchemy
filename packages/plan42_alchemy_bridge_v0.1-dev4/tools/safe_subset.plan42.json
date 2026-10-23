@@ -1,0 +1,260 @@
+{
+  "spec": "1.1",
+  "module": "SafeCSubsetDemo",
+  "description": "Plan42 safe C11 backend smoke sample.",
+  "nodes": [
+    {
+      "op": "const",
+      "name": "ITEMS",
+      "type": "list",
+      "value": {
+        "op": "literal",
+        "value": [
+          "alpha",
+          "beta",
+          "gamma"
+        ],
+        "type": "list"
+      }
+    },
+    {
+      "op": "routine",
+      "name": "main",
+      "params": [
+        "name"
+      ],
+      "param_types": {
+        "name": "str"
+      },
+      "body": [
+        {
+          "op": "output",
+          "expr": {
+            "op": "format",
+            "template": "hello {name}",
+            "args": {
+              "name": {
+                "op": "var",
+                "name": "name",
+                "type": "str"
+              }
+            }
+          }
+        },
+        {
+          "op": "declare",
+          "name": "count",
+          "type": "int",
+          "value": {
+            "op": "literal",
+            "value": 0,
+            "type": "int"
+          }
+        },
+        {
+          "op": "for_range",
+          "var": "i",
+          "from": {
+            "op": "literal",
+            "value": 0,
+            "type": "int"
+          },
+          "to": {
+            "op": "literal",
+            "value": 3,
+            "type": "int"
+          },
+          "step": {
+            "op": "literal",
+            "value": 1,
+            "type": "int"
+          },
+          "body": [
+            {
+              "op": "output",
+              "expr": {
+                "op": "format",
+                "template": "i={i}",
+                "args": {
+                  "i": {
+                    "op": "var",
+                    "name": "i",
+                    "type": "int"
+                  }
+                }
+              }
+            },
+            {
+              "op": "assign",
+              "name": "count",
+              "value": {
+                "op": "add",
+                "left": {
+                  "op": "var",
+                  "name": "count",
+                  "type": "int"
+                },
+                "right": {
+                  "op": "literal",
+                  "value": 1,
+                  "type": "int"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "op": "for_each",
+          "var": "item",
+          "in": {
+            "op": "literal",
+            "value": [
+              "a",
+              "b",
+              "c"
+            ],
+            "type": "list"
+          },
+          "body": [
+            {
+              "op": "if",
+              "cond": {
+                "op": "eq",
+                "left": {
+                  "op": "var",
+                  "name": "item",
+                  "type": "str"
+                },
+                "right": {
+                  "op": "literal",
+                  "value": "b",
+                  "type": "str"
+                }
+              },
+              "body": [
+                {
+                  "op": "continue"
+                }
+              ]
+            },
+            {
+              "op": "output",
+              "expr": {
+                "op": "format",
+                "template": "item={item}",
+                "args": {
+                  "item": {
+                    "op": "var",
+                    "name": "item",
+                    "type": "str"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "op": "if",
+          "cond": {
+            "op": "gte",
+            "left": {
+              "op": "var",
+              "name": "count",
+              "type": "int"
+            },
+            "right": {
+              "op": "literal",
+              "value": 3,
+              "type": "int"
+            }
+          },
+          "body": [
+            {
+              "op": "output",
+              "expr": {
+                "op": "literal",
+                "value": "logic preserved",
+                "type": "str"
+              }
+            }
+          ],
+          "else_body": [
+            {
+              "op": "output",
+              "expr": {
+                "op": "literal",
+                "value": "logic failed",
+                "type": "str"
+              }
+            }
+          ]
+        },
+        {
+          "op": "if",
+          "cond": {
+            "op": "in",
+            "item": {
+              "op": "var",
+              "name": "name",
+              "type": "str"
+            },
+            "collection": {
+              "op": "literal",
+              "value": [
+                "Claude",
+                "Architect"
+              ],
+              "type": "list"
+            }
+          },
+          "body": [
+            {
+              "op": "output",
+              "expr": {
+                "op": "literal",
+                "value": "in ok",
+                "type": "str"
+              }
+            }
+          ]
+        },
+        {
+          "op": "match",
+          "expr": {
+            "op": "var",
+            "name": "name",
+            "type": "str"
+          },
+          "arms": [
+            {
+              "pattern": "Claude",
+              "body": [
+                {
+                  "op": "output",
+                  "expr": {
+                    "op": "literal",
+                    "value": "matched Claude",
+                    "type": "str"
+                  }
+                }
+              ]
+            },
+            {
+              "pattern": null,
+              "body": [
+                {
+                  "op": "output",
+                  "expr": {
+                    "op": "literal",
+                    "value": "matched default",
+                    "type": "str"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

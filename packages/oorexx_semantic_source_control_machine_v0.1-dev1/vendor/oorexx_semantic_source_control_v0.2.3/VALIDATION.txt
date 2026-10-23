@@ -1,0 +1,70 @@
+# ooRexx Semantic Source Control v0.2.3 validation
+
+Runtime:
+  ooRexx 5.3.0 r13196 - Internal Test Version
+
+Semantic source level:
+  component=SemanticSourceControl
+  lineage=MAIN
+  sourceLevel=5
+
+Packaged test suites expected for clean-room certification:
+  PASS test_semantic_source_control
+  PASS test_cli_intake
+  PASS test_v02_regressions
+  PASS test_v021_dogfood
+  PASS test_v021_cli_pending
+  PASS test_v022_terminal_dogfood
+  PASS test_v022_hash_batch sha256Invocations=1
+  PASS test_v023_relocation_one_to_one
+  PASS test_v023_md5_batch md5Invocations=1
+  PASS test_v023_legacy_identity immutableOldLevel=true nextLevel=2 tracked=1
+  PASS test_v02_performance identicalBaselineSeconds=4
+
+v0.2.3 Federation level-7 hardening:
+  - cross-method external-operation relocation is reconciled globally one-to-one;
+  - an accepted identity can map to at most one current call-site;
+  - a continuing operation retains its identity before any relocation inference;
+  - same SQL operation/data source is compatibility evidence, not identity proof;
+  - ambiguous or one-to-many same-table additions remain new tracking proposals.
+
+Federation-shaped relocation regression:
+  v1: 2 accepted operations
+  v2: both extracted to another method -> tracked=2, pending=0
+  v3: those 2 continue plus 5 new same-surface operations -> tracked=2, pending=5
+
+Legacy repository adoption:
+  - baseline/scan use a compact persisted identity view rather than full historical
+    source-blob re-analysis;
+  - derived identity views are cached for the command lifecycle and invalidated by
+    tracking-decision changes;
+  - old accepted evidence remains immutable even when a newer analyzer sees additional
+    whole-release files that the old analyzer never indexed.
+
+Real historical FederationBank level-6 repository probe on the r13196 debug host:
+  exact sealed-v0.6 re-baseline: approximately 13.7 seconds
+  synthetic next-level adoption of the same source: approximately 14.5 seconds
+  historical level-6 snapshot.osc SHA-256 unchanged before/after re-baseline
+
+Hash scaling:
+  SHA-256 regression: 1,200 explicit methods, sha256sum process invocations=1
+  contextual MD5 regression: 200 SQL candidates, md5sum process invocations=1
+
+Earlier v0.2.2 Terminal Machine hardening remains green:
+  - first-class ::attribute revisions and GET/SET/BOTH contracts
+  - explicit getter/setter body implementation deltas
+  - first-class ::constant revisions
+  - receiver-aware attribute/constant consumer evidence
+
+Earlier v0.2/v0.2.1 coverage remains green, including:
+  - one-line ::method parsing and inline body hashing
+  - ::options / ::requires package contracts
+  - block/nested-comment lexical exclusion
+  - instance/class/object method-side identity
+  - receiver-aware constructor and :super evidence
+  - package executable-code dependencies
+  - whole-release immutable blobs and byte-exact export
+  - SQL semantic tracking and host-language suffix cleanup
+  - Rexx CALL versus SQL CALL disambiguation
+  - root component plus nested ZIP intake
+  - whole-number AT_LEAST evaluation

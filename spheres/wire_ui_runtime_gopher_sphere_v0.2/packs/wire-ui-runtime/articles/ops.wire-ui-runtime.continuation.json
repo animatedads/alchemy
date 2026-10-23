@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "ops.wire-ui-runtime.continuation",
+  "version": "0.1",
+  "sphere": "wire-ui-runtime",
+  "title": "Continuation procedure: reconcile first, then extend",
+  "summary": "Before modifying Wire UI runtime components, resolve exact package/version/hash state across the current roll-up and separately supplied candidates, run the relevant existing suites, and merge cross-chat branches instead of choosing by version name.",
+  "authority": "project-operations",
+  "invariants": [
+    "Never code from remembered architecture when the exact package can be recovered.",
+    "Never let a newer roll-up silently erase a separately qualified increment that it has not incorporated.",
+    "Version-name collisions are resolved by source/hash comparison and additive reconciliation, not last-writer-wins.",
+    "Keep browser, gateway, server, Builder, Swing and Resource Authority ownership boundaries intact while merging.",
+    "Do not move business/application semantics into Node/static HTTP/gateway code to make a demo work."
+  ],
+  "procedure": [
+    "Inventory the newest ooRexx API roll-up and separately supplied candidate ZIPs.",
+    "Hash and inspect exact component packages; identify true successors versus parallel branches.",
+    "Run component suites against the exact dependency combination before promotion.",
+    "Exercise one real cross-language Queue Fabric/browser path for protocol changes.",
+    "For resource changes, prove exact ResourceRef survives Builder -> Server -> Queue Fabric -> renderer resolver.",
+    "For network-delivery changes, prove source and optimised modes use the same application/queue semantics.",
+    "Update this sphere's baseline/provenance only after the qualified candidate exists."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_server_v0.17.1.zip",
+      "sha256": "70e4897a40abf10174574e0442cf17635574fef3ec861b6a55804b238cc4abd5",
+      "member": "wire_ui_server_v0.17.1/COLLISION_RECONCILIATION.md",
+      "claim": "Server collision reconciliation history and additive merge doctrine."
+    },
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev7.zip",
+      "sha256": "38bebd4783abc143b7365793d337f4682b0f80cac8478afa115befb0440cd15a",
+      "member": "alchemy_wire_ui_js_v0.4-dev7/README.md",
+      "claim": "JS dev3 collision history and reconciled runtime line.",
+      "line_start": 10,
+      "line_end": 18
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "cloud-economics.provider-observation",
+  "version": "0.1",
+  "sphere": "cloud-economics",
+  "title": "Cloud-market price evidence and freshness",
+  "section": "operations",
+  "summary": "Azure public retail polling, read-only AWS Spot history and GCP component price catalogue are different observation classes. A Spot historical rate does not prove inventory; GCP CPU and RAM SKU components are not a complete VM. Twenty-three names in a provider registry are not twenty-three working observers.",
+  "authority": "project-architecture",
+  "implementation_status": "IMPLEMENTED",
+  "invariants": [
+    "Public tariff, historical transaction, capacity availability and provisionable quote are distinct facts.",
+    "Retain original source timestamp, provider/region/zone, billing unit, currency, payload fingerprint and retrieval outcome.",
+    "Expired, malformed, contradictory or missing observations fail closed.",
+    "Do not complete a missing CPU/RAM/storage/egress price by inserting zero.",
+    "Price observations cannot turn themselves into approved authority flags."
+  ],
+  "provenance": [
+    {
+      "artifact": "cloud_economics_v0.1-dev8.zip",
+      "sha256": "8354043fc133ef9b6fdb593ec8d000e278e0748228224464b9ebb7feb485e735",
+      "member": "docs/PROVIDER_OBSERVATION_DEV3.md",
+      "claim": "Cloud Economics v0.1-dev8 source evidence; status=IMPLEMENTED."
+    }
+  ],
+  "procedure": [
+    "Identify the exact API/source and whether an authenticated read-only principal is configured.",
+    "Normalize units without rounding away minimum charge or tier terms.",
+    "Store provenance and source freshness; preserve failures rather than replaying stale scratch deltas.",
+    "Assemble whole-job terms only after every required component is independently accounted for."
+  ]
+}

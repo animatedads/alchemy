@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.qualification",
+  "version": "0.1",
+  "sphere": "rasenfalcon",
+  "section": "qualification",
+  "title": "Current evidence and remaining commissioning requirements",
+  "summary": "The source package was checked locally, then sent to GitHub Autobuild. The intake branch is verified; the receipt and accepted main-branch component were not visible as of this sphere revision. The live service tests remain outstanding.",
+  "invariants": [
+    "Reported website preview tests 9/9 and delivery security-contract tests 13/13 are not TLS handshake evidence.",
+    "Receiver acceptance must be verified from its receipt; a ready.json marker is only submission.",
+    "CMS/Wire publisher, live HTTPS SNI, mTLS negative tests, LDAP, SMTP/IMAP, terminal and MCP integration all require real service tests.",
+    "No production cutover without distinct operator approval; source submission does not install keys or change hosts.",
+    "Never mark fixture-only results LIVE_PASS; missing credentials and deployment facts are NOT_RUN."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_alchemy_autobuild_v0.4.zip",
+      "sha256": "fb4ce5bdecf0c9c312e21459f5ea74dc7d0eeb73fa37682cada06a5835028189",
+      "member": "README.md",
+      "claim": "Submitted candidate explicitly disclaims deployment and acceptance."
+    }
+  ],
+  "reported_local_tests": {
+    "website": "9/9",
+    "handoff": "13/13"
+  },
+  "github_submission": "VERIFIED",
+  "acceptance": "PENDING_RECEIPT",
+  "native_services": "NOT_RUN"
+}

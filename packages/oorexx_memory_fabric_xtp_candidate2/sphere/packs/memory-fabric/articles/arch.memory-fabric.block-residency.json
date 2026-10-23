@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "arch.memory-fabric.block-residency",
+  "version": "0.1",
+  "sphere": "memory-fabric",
+  "title": "Residency, replica proof and the execution/data boundary",
+  "summary": "A resident offer contains fabric/block/generation, logical peer, provider incarnation/owner epoch, aligned range and evidence identity. An evidence string is a lookup key, not its own proof.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Only the provider currently selected by MemoryFabricRegistry is the current block owner. Another provider can be admitted as a replica only via an independent trusted evidence verifier.",
+    "Do not send application block contents merely because named-service FIRST succeeded. Sender controls and receiver ingress must independently check identity, lease, authentication, and state.",
+    "Retain native shared/DMA block bags for local data access; remote access is a bounded verified transfer protocol requiring separate page integrity/commit receipt semantics.",
+    "Storage Fabric owns persistent backing and checkpoint/durable recovery; Memory Fabric owns volatile residency; Queue Fabric owns durable job control; Job-to-Node decides execution placement."
+  ],
+  "procedure": [],
+  "topics": [
+    "memory-fabric"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_memory_fabric_v0.1-dev10.zip",
+      "sha256": "91a05494c86ce7627f7a010af182c167701b5bf1f8ce2d93c99cda9d992644d8",
+      "member": "src/MemoryFabric.cls",
+      "claim": "Current provider, block generation and owner epoch validation."
+    },
+    {
+      "artifact": "oorexx_memory_fabric_v0.1-dev10.zip",
+      "sha256": "91a05494c86ce7627f7a010af182c167701b5bf1f8ce2d93c99cda9d992644d8",
+      "member": "src/MemoryFabricPaging.cls",
+      "claim": "Memory page boundary and lifecycle contracts."
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "rpc.json",
+  "version": "0.1",
+  "sphere": "rpc-invocation",
+  "title": "JSON-RPC 2.0 protocol binding",
+  "section": "protocols",
+  "summary": "JSON-RPC Fabric dev3 handles JSON-RPC 2.0 requests, notifications, errors, batches and framed optional transports. Its legacy connector registry is separated as opt-in compatibility; Connect Selector is the preferred routing authority.",
+  "invariants": [
+    "jsonrpc/id/method/params/error remain JSON-RPC wire-owned, not shared SOAP/gRPC frames.",
+    "Notification transport send success is neither application completion nor durable acknowledgment.",
+    "No production external authorization, HTTP/WebSocket/QUIC bridge or durable Queue Fabric semantic equivalence is claimed in dev3."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_json_rpc_fabric_v0.1-dev3.zip",
+      "sha256": "f63065cd6cc0ed78ba4fc8fd1a43b50c5a87ae8a0e9fc73893b59aea73473abb",
+      "member": "oorexx_json_rpc_fabric_v0.1-dev3/src/JsonRpcFabric.cls",
+      "member_sha256": "87b5be7522650972fd1b07e46a67a2f2c10eb22736227d1ef3bf7b88c1c61091",
+      "claim": "Source inspected locally in exact package bytes."
+    }
+  ],
+  "related": [
+    "rpc.boundaries",
+    "rpc.registry"
+  ]
+}

@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.capability-lifecycle",
+  "version": "0.1",
+  "sphere": "rasenfalcon",
+  "section": "security",
+  "title": "Least presence and complete module withdrawal",
+  "summary": "The October 2026 PHP vulnerability lesson is that installed or enabled handlers can survive removal of the application that introduced them. Narrow modules plus enforced RexxOS service isolation require lifecycle-closed capabilities.",
+  "invariants": [
+    "Every activation has an owner, purpose, route/listener registration, authority grant and inspectable evidence.",
+    "Installation alone cannot silently activate public-facing handlers.",
+    "Application uninstall withdraws no-longer-owned listeners, routes, dispatch registration, authorization and credentials.",
+    "Withdrawal proves negative reachability, not just file removal.",
+    "Shared capabilities use explicit dependency tracking so neither orphaned privilege nor premature withdrawal is acceptable.",
+    "Isolation is enforced at runtime and is not synonymous with a directory structure."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.zip",
+      "sha256": "60bf049a436c9f653b60cbf315331a85872ab4f6724f7ef685fec322de96bc5c",
+      "member": "rasenfalcon_delivery_v0.4/contracts/PRIVATE_HTTPS_AUTHORITY.md",
+      "claim": "Separation and fail-closed activation doctrine."
+    }
+  ],
+  "doctrine": "least_presence_and_least_authority"
+}

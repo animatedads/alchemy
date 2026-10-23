@@ -1,0 +1,24 @@
+{
+  "id": "time.events",
+  "title": "Institutional time, named events and phrase binding",
+  "section": "architecture",
+  "summary": "TimeInstitutionCalendar governs institutional zone and closures; TimeNamedEvent governs recurring named event and dated exceptions; TimeEventCatalog binds context-qualified phrases and reports ambiguity. The service intentionally does not parse arbitrary natural language or decide that all 'dinner' events mean the same thing.",
+  "invariants": [
+    "Institution and date are explicit required context.",
+    "Closures take precedence over event moves; a move cannot reopen a closed institution.",
+    "Concurrent meanings produce AMBIGUOUS, not an invented default.",
+    "Elapsed event duration is not equivalent to a local end-clock reading across DST."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "single-time-service",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "single_time_service_v0.9.zip",
+      "sha256": "914e99e944fcd2e6d4f20c47e0850ca207318d7641c5f432d2d4aa10bd172038",
+      "member": "single_time_service_v0.9/src/TimeEvents.cls",
+      "claim": "Verified against locally inspected v0.9 package source."
+    }
+  ]
+}

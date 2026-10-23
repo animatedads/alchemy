@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "arch.social.outbox",
+  "version": "0.1",
+  "sphere": "social-media",
+  "title": "Outbox uncertainty and journal limits",
+  "summary": "Interrupted provider calls may have effected a remote side effect. An unknown state requires external reconciliation, not blind replay. Development journal has no fsync or multiwriter guarantee.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "UNKNOWN is not RETRYABLE absent reconciliation proof.",
+    "Append integrity is not crash durability, lock fencing or distributed exactly-once."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialPublicationJournal.cls",
+      "line_start": 6,
+      "line_end": 8,
+      "claim": "Exact dev6 source member and span supporting this contract."
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "docs/DEV4_OUTBOX_CONTRACT.md",
+      "line_start": 1,
+      "line_end": 3,
+      "claim": "Exact dev6 source member and span supporting this contract."
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "tests/outbox_unknown.rex",
+      "line_start": 11,
+      "line_end": 13,
+      "claim": "Exact dev6 source member and span supporting this contract."
+    }
+  ]
+}

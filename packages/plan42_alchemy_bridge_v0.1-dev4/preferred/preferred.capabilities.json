@@ -1,0 +1,728 @@
+{
+  "library": "preferred",
+  "version": "1.0",
+  "capabilities": [
+    {
+      "name": "preferred.ui.progress",
+      "description": "Print a progress line every N items. No-op when counter is not a multiple of interval.",
+      "params": [
+        "counter",
+        "interval",
+        "label"
+      ],
+      "security": "safe",
+      "implementations": {
+        "python3": {
+          "inline": "if {counter} % {interval} == 0: print(str({counter}) + ' ' + str({label}), flush=True)",
+          "requires": [],
+          "type": "inline"
+        },
+        "oorexx": {
+          "inline": "if ({counter} // {interval}) * {interval} = {counter} then say '  ' || {counter} {label}",
+          "requires": [],
+          "type": "inline"
+        },
+        "go": {
+          "inline": "if {counter} % {interval} == 0 { fmt.Printf(\"  %d %s\\n\", {counter}, {label}) }",
+          "requires": [
+            "\"fmt\""
+          ],
+          "type": "inline"
+        },
+        "rust": {
+          "inline": "if {counter} % {interval} == 0 { eprintln!(\"  {} {}\", {counter}, {label}); }",
+          "requires": [],
+          "type": "inline"
+        }
+      }
+    },
+    {
+      "name": "preferred.file.stream_lines",
+      "description": "Return a lazy line iterator over a (potentially very large) text file. Never loads the whole file into memory.",
+      "params": [
+        "path"
+      ],
+      "security": "read_only_fs",
+      "implementations": {
+        "python3": {
+          "inline": "open({path}, encoding='utf-8', errors='replace')",
+          "requires": [],
+          "type": "inline"
+        },
+        "oorexx": {
+          "inline": ".Stream~new({path})~~open('read')",
+          "requires": [],
+          "type": "inline"
+        },
+        "go": {
+          "inline": "bufio.NewScanner(func() *os.File { f, _ := os.Open({path}); return f }())",
+          "requires": [
+            "\"bufio\"",
+            "\"os\""
+          ],
+          "type": "inline"
+        },
+        "rust": {
+          "inline": "BufReader::new(File::open({path}).unwrap()).lines()",
+          "requires": [
+            "use std::fs::File;",
+            "use std::io::{BufReader,BufRead};"
+          ],
+          "type": "inline"
+        }
+      }
+    },
+    {
+      "name": "preferred.file.multiwrite_open",
+      "description": "Open multiple output files simultaneously, keyed by (lang, suffix) pairs. Returns a handle map. Replaces any existing files.",
+      "params": [
+        "output_dir",
+        "keys",
+        "suffixes"
+      ],
+      "security": "write_fs",
+      "implementations": {
+        "python3": {
+          "inline": "{ (k,s): open(str({output_dir}) + '/' + k + '.' + s + '.tmp', 'w', encoding='utf-8') for k in {keys} for s in {suffixes} }",
+          "requires": [
+            "import os"
+          ],
+          "type": "inline"
+        },
+        "oorexx": {
+          "inline": "/* use Directory of Stream objects keyed by lang||'.'||suffix */",
+          "type": "library",
+          "requires": []
+        }
+      }
+    },
+    {
+      "name": "preferred.file.multiwrite_write",
+      "description": "Write a line to one file in a multiwrite handle map, identified by key and suffix.",
+      "params": [
+        "handles",
+        "key",
+        "suffix",
+        "line"
+      ],
+      "security": "write_fs",
+      "implementations": {
+        "python3": {
+          "inline": "{handles}[({key},{suffix})].write({line})",
+          "requires": [],
+          "type": "inline"
+        }
+      }
+    },
+    {
+      "name": "preferred.file.multiwrite_close",
+      "description": "Flush and close all handles in a multiwrite handle map.",
+      "params": [
+        "handles"
+      ],
+      "security": "write_fs",
+      "implementations": {
+        "python3": {
+          "inline": "[h.close() for h in {handles}.values()]",
+          "requires": [],
+          "type": "inline"
+        }
+      }
+    },
+    {
+      "name": "preferred.data.jsonl_parse",
+      "description": "Parse one line of JSONL (JSON Lines). Returns the parsed object or nil/None on malformed input. Never raises.",
+      "params": [
+        "line"
+      ],
+      "security": "safe",
+      "implementations": {
+        "python3": {
+          "inline": "__import__('json').loads({line}) if ({line} or '').strip() else None",
+          "type": "inline",
+          "requires": []
+        },
+        "oorexx": {
+          "inline": ".json~new~fromJson({line})",
+          "requires": [
+            "json.cls"
+          ],
+          "type": "inline"
+        },
+        "go": {
+          "inline": "func() interface{} { var v interface{}; if err := json.Unmarshal([]byte({line}), &v); err != nil { return nil }; return v }()",
+          "requires": [
+            "\"encoding/json\""
+          ],
+          "type": "inline"
+        },
+        "rust": {
+          "inline": "serde_json::from_str::<serde_json::Value>({line}).ok()",
+          "requires": [
+            "serde_json"
+          ],
+          "type": "inline"
+        }
+      }
+    },
+    {
+      "name": "preferred.string.normalise_unicode",
+      "description": "NFD decompose a Unicode string then strip combining marks (diacritics). Converts accented characters to their ASCII base. Safe for all scripts.",
+      "params": [
+        "text"
+      ],
+      "security": "safe",
+      "implementations": {
+        "python3": {
+          "inline": "''.join(c for c in __import__('unicodedata').normalize('NFD', {text}) if __import__('unicodedata').category(c) != 'Mn')",
+          "requires": [],
+          "type": "inline"
+        },
+        "go": {
+          "inline": "norm.NFD.String({text}) /* then strip Mn category with unicode/norm */",
+          "requires": [
+            "\"golang.org/x/text/unicode/norm\""
+          ],
+          "type": "inline"
+        },
+        "rust": {
+          "inline": "unicode_normalization::UnicodeNormalization::nfd({text}).filter(|c| !unicode_normalization::char::is_combining_mark(*c)).collect::<String>()",
+          "requires": [
+            "unicode-normalization"
+          ],
+          "type": "inline"
+        }
+      }
+    },
+    {
+      "name": "preferred.data.soundex",
+      "description": "English Soundex phonetic key (4-char: letter + 3 digits). Strips diacritics first so accented Latin characters encode correctly. Returns Z000 for empty or non-alphabetic input.",
+      "params": [
+        "word"
+      ],
+      "security": "safe",
+      "implementations": {
+        "python3": {
+          "inline": "_soundex({word})",
+          "requires": [],
+          "type": "inline"
+        },
+        "oorexx": {
+          "inline": "SoundexKey({word})",
+          "requires": [
+            "linguist/LibrarianScoring.cls"
+          ],
+          "type": "inline"
+        },
+        "go": {
+          "inline": "soundex({word})",
+          "requires": [],
+          "type": "inline"
+        },
+        "rust": {
+          "inline": "soundex({word})",
+          "requires": [],
+          "type": "inline"
+        }
+      }
+    },
+    {
+      "name": "preferred.data.soundex_from_ipa",
+      "description": "Build a phonetic bucket map for all words in a language, using IPA pronunciation strings for non-Latin scripts so byte-encoding issues are avoided. Returns map of soundex_key to word list.",
+      "params": [
+        "output_dir",
+        "lang"
+      ],
+      "security": "read_only_fs",
+      "implementations": {
+        "python3": {
+          "inline": "_build_soundex_buckets({output_dir}, {lang})",
+          "requires": [],
+          "type": "inline"
+        }
+      }
+    },
+    {
+      "name": "preferred.file.write_tsv",
+      "description": "Write a dict/map of key\u2192value pairs as a tab-separated file, one entry per line, sorted by key. Replaces any existing file.",
+      "params": [
+        "data",
+        "path"
+      ],
+      "security": "write_fs",
+      "implementations": {
+        "python3": {
+          "inline": "{ open({path},'w',encoding='utf-8').write(k + '\\t' + str(v) + '\\n') for k,v in sorted({data}.items()) }",
+          "requires": [],
+          "type": "inline"
+        },
+        "oorexx": {
+          "inline": "/* stream lineout loop over sorted directory */",
+          "requires": [],
+          "type": "inline"
+        },
+        "go": {
+          "inline": "/* write sorted map to file */",
+          "requires": [],
+          "type": "inline"
+        }
+      }
+    },
+    {
+      "name": "preferred.yaml.load",
+      "abstract": "Load a YAML file and return the parsed object tree.",
+      "params": [
+        "path"
+      ],
+      "param_types": {
+        "path": "str"
+      },
+      "return_type": "dict",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": ".Yaml~new~parseFile({path})",
+          "requires": "yaml.cls"
+        },
+        "python3": {
+          "type": "inline",
+          "inline": "__import__('yaml').safe_load(open({path},'r',encoding='utf-8'))"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_yaml_load"
+        },
+        "regina": {
+          "type": "runtime",
+          "runtime": "p42_yaml_load"
+        }
+      }
+    },
+    {
+      "name": "preferred.yaml.loads",
+      "abstract": "Parse a YAML string and return the object tree.",
+      "params": [
+        "text"
+      ],
+      "param_types": {
+        "text": "str"
+      },
+      "return_type": "dict",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": ".Yaml~new~parseString({text})",
+          "requires": "yaml.cls"
+        },
+        "python3": {
+          "type": "inline",
+          "inline": "__import__('yaml').safe_load({text})"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_yaml_loads"
+        },
+        "regina": {
+          "type": "runtime",
+          "runtime": "p42_yaml_loads"
+        }
+      }
+    },
+    {
+      "name": "preferred.yaml.dump",
+      "abstract": "Serialise an object tree to a YAML file.",
+      "params": [
+        "data",
+        "path"
+      ],
+      "param_types": {
+        "data": "dict",
+        "path": "str"
+      },
+      "return_type": "void",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": ".Yaml~toYamlFile({data},{path})",
+          "requires": "yaml.cls"
+        },
+        "python3": {
+          "type": "inline",
+          "inline": "open({path},'w',encoding='utf-8').write(__import__('yaml').dump({data},allow_unicode=True))"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_yaml_dump"
+        },
+        "regina": {
+          "type": "runtime",
+          "runtime": "p42_yaml_dump"
+        }
+      }
+    },
+    {
+      "name": "preferred.yaml.dumps",
+      "abstract": "Serialise an object tree to a YAML string.",
+      "params": [
+        "data"
+      ],
+      "param_types": {
+        "data": "dict"
+      },
+      "return_type": "str",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": ".Yaml~toYaml({data})",
+          "requires": "yaml.cls"
+        },
+        "python3": {
+          "type": "inline",
+          "inline": "__import__('yaml').dump({data},allow_unicode=True)"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_yaml_dumps"
+        },
+        "regina": {
+          "type": "runtime",
+          "runtime": "p42_yaml_dumps"
+        }
+      }
+    },
+    {
+      "name": "preferred.json.load",
+      "abstract": "Parse a JSON file into an object tree.",
+      "params": [
+        "path"
+      ],
+      "param_types": {
+        "path": "str"
+      },
+      "return_type": "dict",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": ".Json~fromJsonFile({path})",
+          "requires": "json.cls"
+        },
+        "python3": {
+          "type": "inline",
+          "inline": "__import__('json').load(open({path},'r',encoding='utf-8'))"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_json_load"
+        },
+        "regina": {
+          "type": "inline",
+          "inline": ".Json~fromJsonFile({path})",
+          "requires": "json.cls"
+        }
+      }
+    },
+    {
+      "name": "preferred.json.loads",
+      "abstract": "Parse a JSON string into an object tree.",
+      "params": [
+        "text"
+      ],
+      "param_types": {
+        "text": "str"
+      },
+      "return_type": "dict",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": ".Json~new~fromJSON({text})",
+          "requires": "json.cls"
+        },
+        "python3": {
+          "type": "inline",
+          "inline": "__import__('json').loads({text})"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_json_loads"
+        },
+        "regina": {
+          "type": "inline",
+          "inline": ".Json~new~fromJSON({text})",
+          "requires": "json.cls"
+        }
+      }
+    },
+    {
+      "name": "preferred.json.dump",
+      "abstract": "Serialise an object tree to a JSON file.",
+      "params": [
+        "data",
+        "path"
+      ],
+      "param_types": {
+        "data": "dict",
+        "path": "str"
+      },
+      "return_type": "void",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": ".Json~toJsonFile({path},{data})",
+          "requires": "json.cls"
+        },
+        "python3": {
+          "type": "inline",
+          "inline": "open({path},'w',encoding='utf-8').write(__import__('json').dumps({data},ensure_ascii=False))"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_json_dump"
+        },
+        "regina": {
+          "type": "inline",
+          "inline": ".Json~toJsonFile({path},{data})",
+          "requires": "json.cls"
+        }
+      }
+    },
+    {
+      "name": "preferred.json.dumps",
+      "abstract": "Serialise an object tree to a JSON string.",
+      "params": [
+        "data"
+      ],
+      "param_types": {
+        "data": "dict"
+      },
+      "return_type": "str",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": ".Json~toJSON({data})",
+          "requires": "json.cls"
+        },
+        "python3": {
+          "type": "inline",
+          "inline": "__import__('json').dumps({data},ensure_ascii=False)"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_json_dumps"
+        },
+        "regina": {
+          "type": "inline",
+          "inline": ".Json~toJSON({data})",
+          "requires": "json.cls"
+        }
+      }
+    },
+    {
+      "name": "preferred.json.dumps_pretty",
+      "abstract": "Serialise an object tree to a human-readable indented JSON string.",
+      "params": [
+        "data"
+      ],
+      "param_types": {
+        "data": "dict"
+      },
+      "return_type": "str",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": ".Json~toJSON({data},.true)",
+          "requires": "json.cls"
+        },
+        "python3": {
+          "type": "inline",
+          "inline": "__import__('json').dumps({data},ensure_ascii=False,indent=2)"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_json_dumps_pretty"
+        },
+        "regina": {
+          "type": "inline",
+          "inline": ".Json~toJSON({data},.true)",
+          "requires": "json.cls"
+        }
+      }
+    },
+    {
+      "name": "preferred.csv.open",
+      "abstract": "Open a CSV file for reading or writing.",
+      "params": [
+        "path",
+        "mode",
+        "has_headers"
+      ],
+      "param_types": {
+        "path": "str",
+        "mode": "str",
+        "has_headers": "bool"
+      },
+      "return_type": "dict",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "runtime",
+          "runtime": "p42_csv_open",
+          "requires": "csvStream.cls"
+        },
+        "python3": {
+          "type": "runtime",
+          "runtime": "p42_csv_open"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_csv_open"
+        },
+        "regina": {
+          "type": "runtime",
+          "runtime": "p42_csv_open",
+          "requires": "csvStream.cls"
+        }
+      }
+    },
+    {
+      "name": "preferred.csv.read_line",
+      "abstract": "Read one row from an open CSV handle. Returns array of fields or nil at EOF.",
+      "params": [
+        "handle"
+      ],
+      "param_types": {
+        "handle": "dict"
+      },
+      "return_type": "list",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": "{handle}~CSVLineIn",
+          "requires": "csvStream.cls"
+        },
+        "python3": {
+          "type": "runtime",
+          "runtime": "p42_csv_read_line"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_csv_read_line"
+        },
+        "regina": {
+          "type": "inline",
+          "inline": "{handle}~CSVLineIn",
+          "requires": "csvStream.cls"
+        }
+      }
+    },
+    {
+      "name": "preferred.csv.write_line",
+      "abstract": "Write one row to an open CSV handle.",
+      "params": [
+        "handle",
+        "row"
+      ],
+      "param_types": {
+        "handle": "dict",
+        "row": "list"
+      },
+      "return_type": "void",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": "{handle}~CSVLineOut({row})",
+          "requires": "csvStream.cls"
+        },
+        "python3": {
+          "type": "runtime",
+          "runtime": "p42_csv_write_line"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_csv_write_line"
+        },
+        "regina": {
+          "type": "inline",
+          "inline": "{handle}~CSVLineOut({row})",
+          "requires": "csvStream.cls"
+        }
+      }
+    },
+    {
+      "name": "preferred.csv.close",
+      "abstract": "Close a CSV file handle.",
+      "params": [
+        "handle"
+      ],
+      "param_types": {
+        "handle": "dict"
+      },
+      "return_type": "void",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "inline",
+          "inline": "{handle}~close",
+          "requires": "csvStream.cls"
+        },
+        "python3": {
+          "type": "runtime",
+          "runtime": "p42_csv_close"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_csv_close"
+        },
+        "regina": {
+          "type": "inline",
+          "inline": "{handle}~close",
+          "requires": "csvStream.cls"
+        }
+      }
+    },
+    {
+      "name": "preferred.csv.read_all",
+      "abstract": "Read all rows from a CSV file into a list of arrays.",
+      "params": [
+        "path",
+        "has_headers"
+      ],
+      "param_types": {
+        "path": "str",
+        "has_headers": "bool"
+      },
+      "return_type": "list",
+      "type": "inline",
+      "implementations": {
+        "oorexx": {
+          "type": "runtime",
+          "runtime": "p42_csv_read_all",
+          "requires": "csvStream.cls"
+        },
+        "python3": {
+          "type": "runtime",
+          "runtime": "p42_csv_read_all"
+        },
+        "rust": {
+          "type": "runtime",
+          "runtime": "p42_csv_read_all"
+        },
+        "regina": {
+          "type": "runtime",
+          "runtime": "p42_csv_read_all",
+          "requires": "csvStream.cls"
+        }
+      }
+    }
+  ]
+}

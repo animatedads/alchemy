@@ -1,0 +1,18 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "audio_v9_cluster_memory",
+    "version": "0.1-candidate20",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {"set": {}, "prepend_path": []},
+  "tests": [
+    {"name":"manifest-sha256","argv":["sha256sum","--check","SHA256SUMS"],"timeout_seconds":30},
+    {"name":"package-contract","argv":["python3","tests/test_package_contract.py"],"timeout_seconds":30},
+    {"name":"environment-runner-syntax","argv":["bash","-n","tests/run_environment_test.sh"],"timeout_seconds":30}
+  ],
+  "publish": {
+    "tree": {"source": ".", "path": "packages/audio_v9_cluster_memory_candidate20"}
+  }
+}

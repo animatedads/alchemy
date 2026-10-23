@@ -1,0 +1,108 @@
+{
+  "protocol": "WIRE-UI/0.1",
+  "viewRef": "MAIL.READER",
+  "workspaceRef": "MAIL.WORKSPACE",
+  "definition": {
+    "definitionId": "MESSAGE_LIST",
+    "version": 3,
+    "contentAddress": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "resourceBinding": {
+    "role": "PRIMARY_CONTENT",
+    "required": true,
+    "resourceRef": {
+      "resourceId": "MAIL.MESSAGE.ROW",
+      "version": 2,
+      "contentAddress": "sha512:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "locale": "en-GB"
+    }
+  },
+  "snapshot": {
+    "revision": 20,
+    "instances": [
+      {
+        "instanceId": "messages",
+        "definitionKey": "MESSAGE_LIST@3",
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "instanceId": "detailsPanel",
+        "definitionKey": "DETAILS_PANEL@1",
+        "visible": false,
+        "enabled": true
+      },
+      {
+        "instanceId": "closeButton",
+        "definitionKey": "CLOSE_ACTION@1",
+        "visible": true,
+        "enabled": true
+      },
+      {
+        "instanceId": "workspaceAction",
+        "definitionKey": "WORKSPACE_ACTION@1",
+        "visible": true,
+        "enabled": true,
+        "workspaceRef": "MAIL.WORKSPACE",
+        "workspaceContext": {
+          "workspaceRef": "MAIL.WORKSPACE",
+          "selectedIds": [
+            "INBOX|4242|8738"
+          ],
+          "resultRevision": 12,
+          "resultQueryRevision": 4,
+          "resultScopeRevision": 7,
+          "resultOrderRevision": 9,
+          "resultCurrent": true,
+          "futureEvidence": {
+            "opaque": "kept"
+          }
+        }
+      }
+    ]
+  },
+  "patches": [
+    {
+      "fromRevision": 20,
+      "toRevision": 21,
+      "op": "SET_SLOT",
+      "instanceId": "detailsPanel",
+      "slot": "visible",
+      "value": true
+    }
+  ],
+  "rangeRequest": {
+    "instanceId": "messages",
+    "start": 8700,
+    "count": 100
+  },
+  "collectionEvent": {
+    "instanceId": "messages",
+    "nativeVisibleOrdinal": 37,
+    "stableIdentity": "INBOX|4242|8738",
+    "semanticAction": "SelectionChanged"
+  },
+  "workspaceAction": {
+    "instanceId": "workspaceAction",
+    "semanticAction": "WorkspaceCommand"
+  },
+  "semanticActivation": {
+    "instanceId": "closeButton",
+    "semanticAction": "Activate"
+  },
+  "observationPlan": {
+    "subscriptionId": "MAIL.SERVICE.CONTEXT",
+    "enabled": [
+      "message.opened"
+    ],
+    "disabled": [
+      "pointer.hover",
+      "scroll.depth"
+    ]
+  },
+  "deauthorisation": {
+    "definitionKey": "MESSAGE_LIST@3",
+    "committedInstanceId": "messages",
+    "expected": "block-actions-and-request-resync"
+  }
+}

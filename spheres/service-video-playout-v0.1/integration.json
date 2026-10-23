@@ -1,0 +1,29 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "oorexx_service_video_playout_sphere",
+    "version": "0.1",
+    "kind": "data"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "sphere-static-validation",
+      "argv": [
+        "python3",
+        "tests/validate_sphere.py"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "spheres/service-video-playout-v0.1"
+    }
+  }
+}

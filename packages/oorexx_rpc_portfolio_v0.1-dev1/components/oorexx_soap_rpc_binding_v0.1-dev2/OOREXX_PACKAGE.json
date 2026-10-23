@@ -1,0 +1,121 @@
+{
+  "package_id": "oorexx.soap_rpc_binding",
+  "api_version": "0.1",
+  "package_version": "0.1-dev2",
+  "entrypoints": [
+    "src/SoapRpcBinding.cls"
+  ],
+  "exports": [
+    "SoapEnvelopeCodec",
+    "SoapRpcServer",
+    "SoapRpcClient",
+    "SoapLoopbackTransport"
+  ],
+  "optional_exports": [
+    "RpcJsonServiceBridge",
+    "SoapConnectAdapter",
+    "registerSoapSerialization"
+  ],
+  "runtime": {
+    "name": "ooRexx",
+    "minimum_version": "5.3.0",
+    "tested_revision": "r13196",
+    "native_abi_required": true,
+    "tested_platform": "linux-x86_64-debug"
+  },
+  "requires": [
+    {
+      "name": "ooRexx",
+      "version": "5.3.0-r13196",
+      "required": true
+    },
+    {
+      "name": "libxml2",
+      "version": "2.9.14",
+      "required": true,
+      "usage": "native XML parsing/writing"
+    },
+    {
+      "name": "libsoapxml.so",
+      "source": "native/soapxml.cpp",
+      "required": true,
+      "rebuild_other_platforms": true
+    },
+    {
+      "package_id": "oorexx.rpc_service_core",
+      "version": "0.1-dev1",
+      "required": true,
+      "entrypoint": "src/RpcServiceCore.cls",
+      "usage": "service object/method dispatch authority"
+    }
+  ],
+  "optional_dependencies": [
+    {
+      "package_id": "serialization_selector",
+      "version": "0.1-tested",
+      "entrypoint": "src/SerializationSelector.cls",
+      "usage": "opt-in SOAP codec registration"
+    },
+    {
+      "package_id": "oorexx.json_rpc_fabric",
+      "version": "0.1-dev3",
+      "entrypoint": "src/JsonRpcFabric.cls",
+      "usage": "shared dispatch adapter"
+    },
+    {
+      "package_id": "oorexx.connect_selector",
+      "version": "0.1-dev2",
+      "entrypoint": "src/ConnectSelector.cls",
+      "usage": "optional strict SOAP route adapter"
+    }
+  ],
+  "transport_spis": {
+    "client": "exchange(xmlText) -> xmlText",
+    "server": "SoapRpcServer.handleText(xmlText,context)",
+    "implemented": [
+      "in-process-loopback"
+    ]
+  },
+  "serialization": {
+    "authority": "serialization_selector",
+    "providers": [
+      "soap-xml-request",
+      "soap-xml-response"
+    ],
+    "registration": "opt-in",
+    "fallback": false,
+    "generic_xml_provider_reused": false
+  },
+  "rpc": {
+    "invocation_authority": "oorexx.rpc_service_core/0.1-dev1",
+    "protocols": [
+      "SOAP 1.1 document/literal subset",
+      "SOAP 1.2 document/literal subset"
+    ],
+    "optional_jsonrpc_bridge": true
+  },
+  "qualification": {
+    "soap_checks": 40,
+    "serialization_selector_checks": 6,
+    "shared_rpc_connect_selector_checks": 6,
+    "status": "pending-dev2-requalification"
+  },
+  "not_implemented": [
+    "SOAP-over-HTTP",
+    "TLS",
+    "WSDL",
+    "WS-Security",
+    "XSD full validation",
+    "complex/array types",
+    "SOAP encoding",
+    "MTOM",
+    "WS-Addressing",
+    "live-broker/network-interop"
+  ],
+  "policy": {
+    "no_retry": true,
+    "no_implicit_fallback": true,
+    "no_notification_guarantee": true,
+    "no_durability_claim": true
+  }
+}

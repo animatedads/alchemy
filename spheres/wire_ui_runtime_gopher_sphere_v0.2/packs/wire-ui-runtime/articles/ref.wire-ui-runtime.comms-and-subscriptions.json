@@ -1,0 +1,48 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.comms-and-subscriptions",
+  "version": "0.1",
+  "sphere": "wire-ui-runtime",
+  "title": "Logical Comms: subscriptions are wiring; direct queues carry communications",
+  "summary": "The logical Comms layer separates authorised subscription/wiring state from actual messages. Subscription selects definitions, observation plans and journey preparation; direct queue delivery carries live semantic communications and events.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Subscription is authorised wiring, not the event transport itself.",
+    "Direct queues carry actual UI actions, snapshots, patches, chat/application messages and interaction observations.",
+    "Application code should not manipulate Queue Fabric CLAIM/ACK/NACK tokens directly.",
+    "Comms ordering uses the gateway's contiguous per-access-point delivery sequence, never the manager-wide QueueWorkPackage sequence.",
+    "Subscription changes are differential; unchanged subscriptions are not torn down and rebuilt."
+  ],
+  "procedure": [
+    "Server computes the desired ACTIVE/PREFETCH/ON_DEMAND subscription state.",
+    "Comms reconciles only the delta between current and desired subscriptions.",
+    "ON_DEMAND capability remains dormant until an explicit authorised request.",
+    "Live payloads continue over fixed direct queues irrespective of how their definitions were selected."
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev7.zip",
+      "sha256": "38bebd4783abc143b7365793d337f4682b0f80cac8478afa115befb0440cd15a",
+      "member": "alchemy_wire_ui_js_v0.4-dev7/README.md",
+      "claim": "Subscription/direct-queue architectural rule and module responsibilities.",
+      "line_start": 26,
+      "line_end": 34
+    },
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev7.zip",
+      "sha256": "38bebd4783abc143b7365793d337f4682b0f80cac8478afa115befb0440cd15a",
+      "member": "alchemy_wire_ui_js_v0.4-dev7/README.md",
+      "claim": "Gateway delivery sequence is per access point and distinct from QueueWorkPackage sequence.",
+      "line_start": 93,
+      "line_end": 122
+    },
+    {
+      "artifact": "wire_ui_server_v0.17.1.zip",
+      "sha256": "70e4897a40abf10174574e0442cf17635574fef3ec861b6a55804b238cc4abd5",
+      "member": "wire_ui_server_v0.17.1/README.md",
+      "claim": "Queue Fabric direct queues carry live communications while topics carry definition-subscription delivery.",
+      "line_start": 199,
+      "line_end": 203
+    }
+  ]
+}

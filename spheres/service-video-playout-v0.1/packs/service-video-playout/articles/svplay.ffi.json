@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "svplay.ffi",
+  "version": "0.1",
+  "sphere": "service-video-playout",
+  "title": "ooRexx Foreign Runtime binding",
+  "summary": "The existing Foreign Runtime v0.22.6 provides native calls. ServicePlayout.cls owns application-facing coordination and invokes the bridge, keeping frames and PCM in native code rather than copying each raw frame through ooRexx.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Do not replace the accepted Foreign Runtime ABI or introduce a second loader/FFI.",
+    "Object~start collides with a native start method; call native~invokeArray('start', .array~new) explicitly.",
+    "Dev3 updates the FFI wrapper but the exact ooRexx interpreter/Foreign Runtime call path was NOT re-executed in the dev3 build environment.",
+    "Source and test assertions must not be promoted to live FFI execution evidence."
+  ],
+  "procedure": [
+    "Verify the actual JSON bridge descriptor and Foreign Runtime v0.22.6 loader with the user's ooRexx r13196 runtime.",
+    "Run tests/foreign_probe.rex and interactive preview only after the native build is qualified.",
+    "Record runtime and descriptor SHA-256 alongside execution logs; preserve per-process device ownership."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/rexx/ServicePlayout.cls",
+      "claim": "ooRexx wrapper and explicit native start invocation."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/rexx/service_playout.bridge.json",
+      "claim": "Foreign Runtime function binding contract."
+    },
+    {
+      "artifact": "oorexx_service_video_playout_v0.1-dev3.zip",
+      "sha256": "45108698e6b7166df4181aa4b4008c55479593f1e3a82266542db1029e9c9298",
+      "member": "oorexx_service_video_playout_v0.1-dev3/acceptance/DEV3_RESULTS.json",
+      "claim": "Explicit statement that FFI was updated but not executed in dev3 environment."
+    }
+  ]
+}

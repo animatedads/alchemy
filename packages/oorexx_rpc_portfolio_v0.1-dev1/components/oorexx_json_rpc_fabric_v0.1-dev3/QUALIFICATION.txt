@@ -1,0 +1,37 @@
+JSON-RPC Fabric 0.1-dev3 qualification — 2026-10-08
+=================================================
+Runtime: supplied ooRexx 5.3.0 r13196 debug Debian package, locally extracted.
+
+Tests executed, with pinned external source roots:
+  PASS protocol-only request; Connect Selector and legacy named registry absent
+  PASS 36 core JSON-RPC protocol/compatibility tests
+  PASS 18 integration tests using actual ConnectSelector.cls v0.1-dev1
+  PASS direct/RPC example (identical business value)
+  PASS 20 mock Socket Provider framing tests
+  PASS stdio request, reply, notification framing
+  PASS 6 live TCP Socket Provider v0.1-dev14 tests
+  PASS separate-process TCP request/notification/reply
+  PASS 9 Instrumentation Mesh v0.1-dev3 tests
+  PASS upstream Connect Selector dev1 selector suite
+  PASS upstream Connect Selector dev1 JMS bridge mock suite
+  PASS upstream Connect Selector dev1 real RPC/direct interoperability suite
+
+Protocol core re-tested with optional roots unset:
+  PASS core-only request, 36 protocol tests, 20 socket mocks, stdio
+  SKIP Connect Selector, live Socket Provider, Mesh (as intended)
+
+Code and behavioral adjustments in this release:
+  - Remove transport-selection authority from JsonRpcFabric.cls.
+  - Move deprecated JsonRpcConnectorRegistry into opt-in compatibility file.
+  - Connect Selector becomes the sole supported routing authority.
+  - Catch syntax/codec/transport failures on notification sends; report
+    negative acceptance, never implicit delivery or completion.
+  - A direct notification returning JsonRpcFault is not successful.
+  - New interoperability example and exact API tests.
+
+Nonclaims:
+  No production external TCP/TLS authorization or endpoint identity.
+  No HTTP / WebSocket / QUIC adapter.
+  No Queue Fabric adapter in this package; Connect Selector owns that path.
+  No live JMS broker qualification or distributed transaction semantics.
+  No retry or failover after an uncertain remote operation.

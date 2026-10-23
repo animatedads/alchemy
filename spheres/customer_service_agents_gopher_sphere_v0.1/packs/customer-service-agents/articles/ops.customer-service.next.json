@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "ops.customer-service.next",
+  "version": "0.1",
+  "sphere": "customer-service-agents",
+  "title": "Continuation plan and acceptance criteria",
+  "summary": "Complete the source-to-asset chain before making claims about multi-node execution or 500 GB bodycam footage. Existing 227 files are the practical first distributed workload.",
+  "authority": "project-architecture",
+  "invariants": [
+    "First verify 83 legacy clips using independent ASR; do not regenerate blindly.",
+    "Next qualify local MediaPipe Tasks on real A02 footage with the Linux Foreign Runtime bridge.",
+    "Then bind pinned Storage Fabric references and Migratable Job checkpoint/placement semantics without a separate scheduler.",
+    "Only after two-node migration tests expand to 8–16 parallel workers and larger historical footage.",
+    "Keep person identification distinct from detection/tracking, and require independent identity policy and qualified evidence if identification is ever authorised."
+  ],
+  "procedure": [
+    "Recover or regenerate useful readback assets; verify word timings and mouth PTS.",
+    "Test checkpoint/replay/migration and source hash enforcement on two real nodes.",
+    "Measure throughput, cost and failure recovery on 227 clips.",
+    "Scale to larger video subject to data-residency, authorization and evidence-retention controls."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_video_mesh_analysis_v0.1-dev2.zip",
+      "sha256": "f9207f4acac192645ac1bec4ebe7e83c07825033aff61e8e566ae902a2230a0e",
+      "member": "video_mesh_tracking_v0.1-dev2/README.md",
+      "claim": "FFmpeg PTS range tracking and checkpoint interface, with MediaPipe not runtime-qualified."
+    },
+    {
+      "artifact": "customer_service_readback_legacy_v0.1-dev1.zip",
+      "sha256": "e83b7810c72d785d66f1c9627faa2286a685930c98f8ecad64670a161fd58b70",
+      "member": "README.md",
+      "claim": "83 source-pinned legacy recovery definitions and review-only candidate policy."
+    }
+  ]
+}

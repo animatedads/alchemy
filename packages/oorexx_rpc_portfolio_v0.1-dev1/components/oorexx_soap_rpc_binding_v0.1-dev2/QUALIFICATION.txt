@@ -1,0 +1,15 @@
+Qualification date: 2026-10-08
+Package: oorexx_soap_rpc_binding_v0.1-dev2
+Runtime: ooRexx 5.3.0 r13196, uploaded Ubuntu 16.04 debug x86_64 build extracted into sandbox
+XML: native libxml2 2.9.14 (Linux x86_64 shared object built from included C++ source)
+Compiler: g++ C++17 -Wall -Wextra -Werror
+
+Completed suites:
+- tests/test_soap.rex: 40 passing SOAP 1.1, SOAP 1.2, envelope, fault, hardening and scalar tests.
+- tests/test_serialization.rex: 6 passing against actual serialization_selector_v0.1-tested.
+- tests/test_shared.rex: 6 passing against actual oorexx_json_rpc_fabric_v0.1-dev3 and oorexx_connect_selector_v0.1-dev2.
+
+Not tested: authenticated live HTTP/TLS, third-party SOAP interoperability, WSDL/XSD full schema handling, WS-Security, MTOM, attachments, complex data types, non-Linux platforms.
+The shared service core is now a required separate package; the SOAP binding requires the bundled libxml2 native extension.
+
+Dev2 source/API dependency: external RPC_CORE_ROOT is mandatory. 40 SOAP + 6 Serialisation Selector + 6 Connect Selector checks passed.

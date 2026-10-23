@@ -1,0 +1,79 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": {
+    "provider": "native",
+    "path": "../native/libservice_playout.so",
+    "threading": "serialized",
+    "affinity": "none"
+  },
+  "functions": {
+    "reset": {
+      "symbol": "svc_reset",
+      "return": "i32",
+      "args": []
+    },
+    "open": {
+      "symbol": "svc_open",
+      "return": "i32",
+      "args": [
+        "utf8",
+        "utf8",
+        "i32"
+      ]
+    },
+    "idle": {
+      "symbol": "svc_set_idle",
+      "return": "i32",
+      "args": [
+        "utf8"
+      ]
+    },
+    "clip": {
+      "symbol": "svc_enqueue_clip",
+      "return": "i32",
+      "args": [
+        "utf8",
+        "utf8",
+        "i32"
+      ]
+    },
+    "card": {
+      "symbol": "svc_enqueue_card",
+      "return": "i32",
+      "args": [
+        "utf8",
+        "utf8",
+        "i32"
+      ]
+    },
+    "runFrames": {
+      "symbol": "svc_run_frames",
+      "return": "i32",
+      "args": [
+        "i32"
+      ]
+    },
+    "hold": {
+      "symbol": "svc_set_hold",
+      "return": "i32",
+      "args": [
+        "i32"
+      ]
+    },
+    "start": {
+      "symbol": "svc_start",
+      "return": "i32",
+      "args": []
+    },
+    "stop": {
+      "symbol": "svc_stop",
+      "return": "i32",
+      "args": []
+    },
+    "stats": {
+      "symbol": "svc_stats",
+      "return": "utf8",
+      "args": []
+    }
+  }
+}

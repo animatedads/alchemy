@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "cloud-economics.realized-savings",
+  "version": "0.1",
+  "sphere": "cloud-economics",
+  "title": "Financial measurement contract (PROPOSED, not dev8 runtime)",
+  "section": "architecture",
+  "summary": "Proposed evidence-gated reconciliation: forecast saving, paper commitment, accrued operational estimate and externally verified realized saving must remain distinct. Only certified consumption/billing evidence and like-for-like counterfactual pricing can establish realized saving.",
+  "authority": "project-architecture",
+  "implementation_status": "PROPOSED",
+  "invariants": [
+    "PROPOSED ONLY: dev8 does not implement invoice ingestion, provider settlement, cash purchase or realized-savings accounting.",
+    "Currency conversion needs timestamped FX provenance; tax, credits, support fees, regional commitments and billing adjustments must be explicit.",
+    "The baseline must be specified before looking at outcome, avoiding cherry-picked savings.",
+    "Counterfactual comparison must use same SLO, completion horizon, availability risk and region/jurisdiction constraints.",
+    "Missing billed quantity or FX rate is UNKNOWN, never $0.",
+    "Reconciliation must tolerate delayed invoices and corrections through append-only evidence, never overwrite earlier truth."
+  ],
+  "provenance": [
+    {
+      "artifact": "cloud_economics_v0.1-dev8.zip",
+      "sha256": "8354043fc133ef9b6fdb593ec8d000e278e0748228224464b9ebb7feb485e735",
+      "member": "DEPENDENCIES.json",
+      "claim": "Cloud Economics v0.1-dev8 source evidence; status=PROPOSED."
+    }
+  ],
+  "procedure": [
+    "Define case_id, job_id, intention/policy digest, unmanaged comparator, service scope, measurement period and evidence cutoff.",
+    "Link decision receipts, native placements, checkpoints, observed usage and provider charge line identifiers without granting new execution authority.",
+    "Calculate anticipated_cost and its uncertainty separately from recognized_charge.",
+    "Reconcile provider invoice units, currency, tax, credits, exact bytes, duration and source adjustment refs.",
+    "Only then compute realized_savings = valid_comparator_cost - verified_managed_total, with residual/unmatched charges visible.",
+    "Represent disputes and correction lineage, including when realized savings cannot yet be stated."
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "kind": "article",
+  "id": "xtp.transport-security",
+  "sphere": "xtp",
+  "version": "0.1-dev1",
+  "title": "Unified gateway, capabilities and ED209 security boundary",
+  "section": "operations",
+  "summary": "A single startable unified XTP gateway should cover UDP, native IP protocol 36 and Ethernet L2 and route authenticated named-service FIRST to locally registered application listeners. Remote session authentication is not qualified in gateway candidate1.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "No permanent production bypass switch for unauthenticated remote gateway sessions",
+    "Do not represent local UID Unix socket registration as remote node authentication",
+    "Only allow operational classes from Service Descriptor registration, never incoming FIRST caller assertion",
+    "Native raw XTP uses CAP_NET_RAW when required; CAP_NET_ADMIN only if changing network configuration",
+    "Keep emergency out-of-band rollback access operational before touching ED209 bootstraps",
+    "Use /home/hc3/alchemy-autobuild/sshnode.sh <node> ... as existing ED209 operational convention rather than assume raw ssh/scp"
+  ],
+  "procedure": [
+    "Bind remote cryptographic principal to protected established XTP KEY/session",
+    "Authorise service endpoint and operation before dispatch",
+    "Exercise full lifetime: handshake, repeated DATA, replay, reorder, live state transitions and session close",
+    "Qualify UDP localhost first, raw36 ED209 pair second, L2 separately where actual topology permits"
+  ],
+  "provenance": [
+    {
+      "artifact": "xtp_gateway_v0.1-dev1_candidate.zip",
+      "sha256": "2fc79dca4f32fdb4dd57aad7fb8249e2e806569b81914447cbc1df064c1a01a8",
+      "member": "xtp_gateway_v0.1-dev1/README.md",
+      "claim": "Gateway candidate remote authentication limitation"
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/tests/test_rexx_named_service_binding.sh",
+      "claim": "Native ooRexx named-service loopback"
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/src/xtp_transport.cpp",
+      "claim": "Carrier implementation"
+    }
+  ],
+  "qualification_boundaries": {
+    "gateway": "development candidate",
+    "field": "raw36/L2 endpoint and long-lived stream not qualified"
+  }
+}

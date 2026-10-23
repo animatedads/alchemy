@@ -1,0 +1,23 @@
+# Template: edit absolute paths and service account before deployment.
+[Unit]
+Description=ooRexx Cloud Economics paper-only price monitoring and scheduling
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=cloud-economics
+Group=cloud-economics
+WorkingDirectory=/opt/cloud_economics_v0.1-dev2
+Environment=CLOUD_ECONOMICS_STATE=/var/lib/cloud-economics
+Environment=REXX_BIN=/usr/local/bin/rexx
+Environment=CLOUD_ECONOMICS_AZURE_ENABLE=1
+ExecStart=/opt/cloud_economics_v0.1-dev2/tools/cloud-cost watch 60
+Restart=always
+RestartSec=10
+StateDirectory=cloud-economics
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+[Install]
+WantedBy=multi-user.target

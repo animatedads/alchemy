@@ -1,0 +1,18 @@
+{
+  "package": "audio_v9_cluster_memory_candidate20",
+  "api": "audio.v9.memory-horizon-execution/1",
+  "dependencies": [
+    {"name":"Audio V9 migratable","version":"dev20-candidate19","api":"audio.v9.execution-integration/1"},
+    {"name":"ooRexx Memory Fabric","version":"0.1-dev10","api":"memory.fabric/0.1"},
+    {"name":"Cluster Object Memory Fabric Transport","version":"0.2","api":"cluster.object.peer/0.2"},
+    {"name":"Object Queue Fabric","version":"0.9-dev8","api":"queue.fabric/0.9"},
+    {"name":"ooRexx","version":"5.3.0-r13196"}
+  ],
+  "authority": {
+    "placement":"Job-to-Node external guard",
+    "memory":"Memory Fabric",
+    "transport":"Queue Fabric / cluster.object.peer/0.2",
+    "durable_material":"Storage Fabric",
+    "audio_semantics":"Audio V9"
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "rpc.security",
+  "version": "0.1",
+  "sphere": "rpc-invocation",
+  "title": "Identity, errors and delivery guarantees",
+  "section": "security",
+  "summary": "Service allowlisting and protocol parsing are insufficient authentication. Before an inbound operation, the server must derive trusted caller identity and authorization context from an authenticated connection/policy, apply admission and resource limits, then call the dispatcher. Protocol faults must be sanitized and retain precise protocol-specific status semantics.",
+  "invariants": [
+    "Untrusted payload may supply requested published operation and data, not target receiver/method or authorization context.",
+    "TLS identity, token verification, permissions and tenant scope are dedicated policy mechanisms, not inferred by codec or registry presence.",
+    "Post-send uncertain outcomes must not trigger automatic retries for effectful operations.",
+    "Queue Fabric durability/ack/recovery is not silently conferred on JSON-RPC, SOAP or gRPC streams.",
+    "Deadlines use bounded time accounting and must not be confused with proof that work stopped on the remote peer."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_rpc_portfolio_v0.1-dev1.zip",
+      "sha256": "c07d87ebfdaf988ad9a4c2a4e52a8927da29b4e40365fbc7bd0fd544fa7a66fc",
+      "member": "docs/RPC_INVOCATION_CONTRACT.md",
+      "member_sha256": "84a1726cfcbd9b10b35a4b97ce44b51f137f7c32715c6d5fe4518410adf95274",
+      "claim": "Source inspected locally in exact package bytes."
+    }
+  ],
+  "related": [
+    "rpc.registry",
+    "rpc.callbacks"
+  ]
+}

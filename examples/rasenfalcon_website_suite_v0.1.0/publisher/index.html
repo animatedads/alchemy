@@ -1,0 +1,48 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><title>Website Publisher · Alchemy Studio</title><link rel="stylesheet" href="publisher.css"></head>
+<body>
+<div class="shell">
+  <aside class="rail" aria-label="Publisher navigation">
+    <div class="identity"><div class="mini-emblem" aria-hidden="true">✳</div><div><strong>ALCHEMY</strong><span>WEBSITE PUBLISHER</span></div></div>
+    <div class="rail-label">WORKSPACE</div>
+    <button class="rail-tab active" id="nav-pages"><span class="rail-glyph">▤</span> Website pages <span class="rail-arrow">↗</span></button>
+    <div class="rail-label rail-label-pages">RASEN FALCON · 09 PAGES</div>
+    <div class="page-list" id="page-list" aria-label="Pages"></div>
+    <div class="rail-bottom"><div class="environment"><span class="online-dot"></span> Local editing<br><small>No external publishing</small></div><button class="rail-link" id="import-btn">↓ Import content</button><input type="file" accept=".json,application/json" id="import-file" hidden></div>
+  </aside>
+  <main class="workspace">
+    <header class="topbar"><div class="crumb">Communications Studio <span>/</span> Website Publisher <span>/</span> <b>Rasen Falcon</b></div><div class="top-right"><span class="private-label">LOCAL EDITORIAL SPACE</span><span class="avatar">RF</span></div></header>
+    <section class="headline"><div><div class="overline">WEBSITE / EDITORIAL WORKSPACE</div><h1>Shape the story.<br><em>See the result.</em></h1><p>Write on the left. See your live site on the right. Release only through an authorised publishing process.</p></div><div class="actions"><button class="btn ghost" id="reset-btn" title="Restore the selected page to the source edition">Restore page</button><button class="btn outline" id="export-json-btn">Export content</button><button class="btn native" id="native-save-btn">Store in NoSQLServer ↗</button><button class="btn dark" id="build-btn">Build preview <span>↗</span></button></div></section>
+    <div class="summary-line"><div class="summary-left"><span class="tag no-deploy">NOT DEPLOYED</span><span id="source-summary">Source: Rasen Falcon v0.1</span><span class="separator">·</span><span id="draft-summary">Local draft</span><span class="separator">·</span><span id="native-summary">Native: not loaded</span></div><div class="summary-right"><span id="validation-summary">9 pages / ready for review</span><button class="link-button" id="review-btn">Prepare review request <span>↗</span></button></div></div>
+    <div class="panes">
+      <section class="editor-panel" aria-label="Content editor">
+        <div class="panel-head"><div><div class="overline">01 / EDITORIAL</div><h2 id="editor-heading">Home page</h2><div class="subline" id="editor-subline">/ · Editable page content</div></div><span class="status-badge" id="page-status">CANDIDATE</span></div>
+        <div class="tabs" role="tablist"><button role="tab" aria-selected="true" data-edit-tab="content">Page content</button><button role="tab" aria-selected="false" data-edit-tab="sections">Sections</button><button role="tab" aria-selected="false" data-edit-tab="metadata">Search &amp; links</button></div>
+        <div class="editor-scroll">
+          <div id="editor-content" class="editor-body tab-body"></div>
+          <div id="editor-sections" class="editor-body tab-body" hidden></div>
+          <div id="editor-metadata" class="editor-body tab-body" hidden></div>
+        </div>
+        <footer class="editor-footer"><div id="autosave-note"><span class="saved-circle">●</span> Changes remain on this device</div><button id="validate-btn" class="minor-button">Validate page <span>→</span></button></footer>
+      </section>
+      <section class="preview-panel" aria-label="Website preview">
+        <div class="panel-head"><div><div class="overline">02 / PRESENTATION</div><h2>Live website</h2><div class="subline" id="preview-path">rasenfalcon.com /</div></div><div class="mode-select" role="group" aria-label="Preview mode"><button data-compare="draft" class="active">Draft</button><button data-compare="baseline">Original</button></div></div>
+        <div class="preview-control"><div class="browser-url"><span class="lock">◌</span><span id="browser-address">https://rasenfalcon.com/</span><span class="preview-dot">● PREVIEW</span></div><div class="devices" role="group" aria-label="Device view"><button data-device="desktop" class="active" title="Desktop">▣</button><button data-device="tablet" title="Tablet">▤</button><button data-device="mobile" title="Mobile">▯</button></div></div>
+        <div class="preview-stage"><div class="preview-viewport desktop" id="preview-viewport"><iframe id="site-frame" title="Rendered Rasen Falcon page" sandbox="" referrerpolicy="no-referrer"></iframe></div></div>
+        <footer class="preview-footer"><div><span class="preview-icon">◉</span> <span id="preview-note">Rendering candidate content. Not a live website.</span></div><button class="minor-button" id="open-preview-btn">Open preview <span>↗</span></button></footer>
+      </section>
+    </div>
+    <div class="bottom-strip"><div><span class="system-mark">ALCHEMY / WEB</span> Independent website publishing module <span class="separator">·</span> Rasen Falcon reference implementation</div><div>Wire / CMS handoff: <b>NOT BOUND</b> <span class="separator">·</span> Publisher authority: <b>NOT GRANTED</b></div></div>
+  </main>
+</div>
+<dialog id="native-dialog"><div class="dialog-top"><div class="overline">NATIVE EDITORIAL STORAGE</div><button id="native-close" aria-label="Close">×</button></div>
+  <h2>Save a native revision</h2>
+  <p>Prepare a JSON export, then commit it using the supplied ooRexx NoSQLServer CLI. Browser content never obtains direct SQLite or publication authority.</p>
+  <div class="native-steps"><strong>1 / Prepare candidate</strong><p>Download the complete nine-page editorial record. Save it in a private working directory.</p><button class="btn dark" id="native-download">Download content for native store ↓</button></div>
+  <div class="native-steps"><strong>2 / Commit through ooRexx</strong><p>Run this command in your qualified native application environment, with the downloaded filename:</p>
+    <code id="native-command"></code><button class="btn outline" id="native-copy-command">Copy example command</button>
+  </div><div class="native-steps"><strong>3 / Verify and reopen</strong><p>Use <code>rexx native/publisher_store.rex load ...</code> to export the saved native revision, then choose <b>Import content</b> in this editor. The native revision will be shown in the status line.</p></div><p class="native-warning">No server was started and no revision has been saved merely by downloading. SQLite read/write v0.89 is a development candidate, not a publishing authority.</p>
+  </dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<dialog id="review-dialog"><div class="dialog-top"><div class="overline">EDITORIAL HANDOFF</div><button id="close-dialog" aria-label="Close">×</button></div><h2>Prepare a review request</h2><p>This creates a downloadable candidate review record. It does not approve, upload or publish anything.</p><div id="review-details"></div><label class="field-label" for="review-note">Note to reviewer</label><textarea id="review-note" rows="4" placeholder="Describe what changed and which claims need checking."></textarea><div class="dialog-actions"><button class="btn ghost" id="cancel-dialog">Cancel</button><button class="btn dark" id="download-review">Download review record ↗</button></div></dialog>
+<script src="reference/rasenfalcon.js"></script><script src="publisher.js"></script>
+</body></html>

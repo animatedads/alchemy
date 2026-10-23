@@ -1,0 +1,23 @@
+{
+  "id": "time.ledger",
+  "title": "Durable authority and historical replay",
+  "section": "architecture",
+  "summary": "TimeAuthorityLedger provides a single-writer append-only command journal for institutional definitions, phrase bindings and date exceptions, with revisions and historical resolveAt replay. The chained checksum detects accidental inconsistencies and supports revision witnesses; it is neither a cryptographic signature nor protected against malicious rewriting.",
+  "invariants": [
+    "Reject invalid mutation before append and stale/wrong-head revisions.",
+    "Historical authority revision and TZif rule edition are independently pinned: one does not substitute for the other.",
+    "Single-writer means no guaranteed cross-process locks, fsync, replication, authenticated timestamps or tamper-proof history."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "single-time-service",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "single_time_service_v0.9.zip",
+      "sha256": "914e99e944fcd2e6d4f20c47e0850ca207318d7641c5f432d2d4aa10bd172038",
+      "member": "single_time_service_v0.9/src/TimeAuthorityLedger.cls",
+      "claim": "Verified against locally inspected v0.9 package source."
+    }
+  ]
+}

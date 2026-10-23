@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "ed.topology",
+  "version": "0.1",
+  "sphere": "ed209-rto2-grid",
+  "title": "Ten MU, twenty MI identity and carrier plan",
+  "summary": "A/B/C/D/E/I/J/K identities retain routes 1–16; append F routes 17–18 and H routes 19–20. Each MI reaches its own MU on Layer 2.",
+  "authority": "project-authority",
+  "invariants": [
+    "Do not reorder accepted identities or regenerate older authorities when adding a MU.",
+    "MI ↔ owning MU uses XTP L2 EtherType 0x817D; non-Google MU↔MU uses raw IPv4 protocol 36; MU routes touching Google use XTP over UDP 62801.",
+    "Target ten-MU directed carrier matrix: 56 native L3, 34 UDP L4, plus 20 local L2 MI memberships.",
+    "Operator SSH is not an MI application-dispatch channel.",
+    "All route lookup keys are symbolic GRID.MN.<MI>, not MAC literals; route resolution selects commissioned MAC and egress."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "ed209_rto2_20mi_candidate2_managed.zip",
+      "sha256": "940ee1835f9dd53ceea42a14e0eb7880e4dc374d6813cfbc686972debe23b4e1",
+      "member": "rexx/mu-rto2-submit.rex",
+      "claim": "Symbolic route lookup and authenticated XTP submitter"
+    },
+    {
+      "artifact": "ed209_rto2_20mi_candidate2_managed.zip",
+      "sha256": "940ee1835f9dd53ceea42a14e0eb7880e4dc374d6813cfbc686972debe23b4e1",
+      "member": "bin/run_20mi.py",
+      "claim": "Explicit ten-host MI allocation"
+    }
+  ]
+}

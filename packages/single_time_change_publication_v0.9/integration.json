@@ -1,0 +1,45 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "single_time_change_publication",
+    "version": "0.9-candidate1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "REXX_PATH": "${PACKAGE_ROOT}/src"
+    }
+  },
+  "tests": [
+    {
+      "name": "static-contract",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "native-projection",
+      "argv": [
+        "rexx",
+        "tests/change_publication.rex"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/single_time_change_publication_v0.9"
+    }
+  }
+}

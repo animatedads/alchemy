@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "ops.customer-service.legacy-recovery",
+  "version": "0.1",
+  "sphere": "customer-service-agents",
+  "title": "A02: salvage before paying to regenerate",
+  "summary": "A02 contains 227 original videos. The filename inventory has 26 LETTER clips, 26 NATO clips, 31 NUM clips and 144 other clips. The existing recovery package plans 83 readback-candidate jobs but performs no live ASR or dispatch.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Filename categories are *hints*, not proof of spoken content.",
+    "Do not expand numerical filenames into assumed pronunciation.",
+    "83 recovery definitions = 26 + 26 + 31; the 227 videos do not imply 227 verified word-level transcripts.",
+    "Work definitions hold SHA-256-pinned video and extracted-audio references.",
+    "Extra improvisational material marks a proposed word interval contaminated until reviewed, rather than making the whole interval accepted.",
+    "Recovered source intervals are never approved automatically, even on exact transcript match."
+  ],
+  "procedure": [
+    "Bind each source to a Storage Fabric pinned object/revision.",
+    "Obtain independent transcript with per-word offsets and source identity.",
+    "Locate candidate intervals and preserve neighbour/contamination evidence.",
+    "Review lip motion, source video PTS and audio by a human.",
+    "Reuse approved extracts, and generate only missing/unusable items."
+  ],
+  "provenance": [
+    {
+      "artifact": "customer_service_readback_legacy_v0.1-dev1.zip",
+      "sha256": "e83b7810c72d785d66f1c9627faa2286a685930c98f8ecad64670a161fd58b70",
+      "member": "README.md",
+      "claim": "83 source-pinned legacy recovery definitions and review-only candidate policy."
+    },
+    {
+      "artifact": "oorexx_customer_service_readback_v0.1-dev2.zip",
+      "sha256": "4be34bfbda31c0c807c6f440abbd3a67be778e676efa46d90d55c58d8c0254b0",
+      "member": "agent_readback_capture_v0.1-dev2/README.md",
+      "claim": "Readback six-utterance generation plan, script matching and review limits."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {"name": "remote_compute_mu", "version": "0.1-dev2", "kind": "oorexx"},
+  "working_directory": ".",
+  "environment": {"set": {"REXX_PATH": "${PACKAGE_ROOT}/src"}, "prepend_path": []},
+  "tests": [
+    {"name":"durable-controller-and-sphere", "argv":["python3","-m","unittest","discover","-s","tests","-v"], "timeout_seconds":120},
+    {"name":"native-oorexx-front-r13196", "argv":["rexx","tests/test_front.rex"], "timeout_seconds":120}
+  ],
+  "publish": {
+    "tree": {"source":".", "path":"packages/remote_compute_mu_v0.1-dev2"},
+    "files": [
+      {"source":"sphere/REMOTE_COMPUTE_MU_SPHERE.md", "path":"spheres/remote_compute_mu_sphere_v0.1-dev1/REMOTE_COMPUTE_MU_SPHERE.md"},
+      {"source":"sphere/packs/remote-compute-mu/00-sphere-remote-compute-mu.json", "path":"spheres/remote_compute_mu_sphere_v0.1-dev1/packs/remote-compute-mu/00-sphere-remote-compute-mu.json"},
+      {"source":"sphere/packs/remote-compute-mu/01-access-policy-remote-compute-mu.json", "path":"spheres/remote_compute_mu_sphere_v0.1-dev1/packs/remote-compute-mu/01-access-policy-remote-compute-mu.json"},
+      {"source":"sphere/packs/remote-compute-mu/20-corpus-remote-compute-mu.json", "path":"spheres/remote_compute_mu_sphere_v0.1-dev1/packs/remote-compute-mu/20-corpus-remote-compute-mu.json"},
+      {"source":"sphere/profiles/remote-compute-mu.json", "path":"spheres/remote_compute_mu_sphere_v0.1-dev1/profiles/remote-compute-mu.json"}
+    ]
+  }
+}

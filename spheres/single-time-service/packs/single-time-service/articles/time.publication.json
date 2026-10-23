@@ -1,0 +1,24 @@
+{
+  "id": "time.publication",
+  "title": "Read-only change projection v0.9",
+  "section": "integration",
+  "summary": "TimeChangePublication.project converts validated single.time.impact/0.1 comparison data into at most 366 single.time.change/0.1 advisory records. Length-prefixed compound idempotency keys are stable tuple encodings, not signatures. Output carries authority revision/witness pairs and explicit rule snapshot identifiers on cross-provider comparisons.",
+  "invariants": [
+    "deliverySemantics=UNPUBLISHED_PROJECTION and effect=ADVISORY_ONLY.",
+    "No queue write, RPC call, acknowledgement, implicit clock read or calendar mutation.",
+    "For cross-provider rule comparisons require immutable from/to snapshot identifiers.",
+    "Nested before/after records are not guaranteed deep immutable; transport must freeze and validate serialized payload."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "single-time-service",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "single_time_service_v0.9.zip",
+      "sha256": "914e99e944fcd2e6d4f20c47e0850ca207318d7641c5f432d2d4aa10bd172038",
+      "member": "single_time_service_v0.9/src/TimeChangePublication.cls",
+      "claim": "Verified against locally inspected v0.9 package source."
+    }
+  ]
+}
