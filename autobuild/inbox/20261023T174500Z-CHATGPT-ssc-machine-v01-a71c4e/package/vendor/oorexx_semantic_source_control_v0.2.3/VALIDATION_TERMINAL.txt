@@ -1,0 +1,75 @@
+# Terminal Machine dogfood replay — Semantic Source Control v0.2.2
+
+Input evidence:
+  terminal_ssc_dogfood_v0.1.zip
+  produced from Terminal Machine v0.19 -> v0.20 dogfood
+  runtime ooRexx 5.3.0 r13196 debug
+
+The supplied dogfood pack reported two v0.2 defects:
+
+1. ::constant and ::attribute were retained as source bytes but invisible to the
+   semantic comparison engine.
+2. contentHash() launched sha256sum separately for entity hashes, causing full-tree
+   method-heavy analysis to scale badly.
+
+Exact reproducer replay
+-----------------------
+
+Input v1:
+  ::constant MODE "A"
+  ::attribute value get
+
+Input v2:
+  ::constant MODE "B"
+  ::attribute value set
+
+v0.2 result in the supplied report:
+  changedComponents=0
+  semanticDeltas=0
+  impactFindings=0
+
+v0.2.2 result:
+  CONSTANT_VALUE_CHANGED Surface.Surface.MODE#CONSTANT
+  ATTRIBUTE_ACCESS_CHANGED Surface.Surface.value#ATTRIBUTE
+
+This is intentionally not represented as synthetic ::method changes. Constants and
+attributes are independent OO source surfaces.
+
+Accessor body semantics
+-----------------------
+
+ooRexx allows explicit ::attribute ... get and ::attribute ... set directives to own
+method bodies. v0.2.2 aggregates paired accessors into one conceptual attribute while
+retaining separate getter/setter implementation hashes. A getter body-only mutation is
+therefore reported as ATTRIBUTE_GETTER_IMPLEMENTATION_CHANGED [VERIFY].
+
+Consumer semantics
+------------------
+
+  object~value              -> getter message `value`
+  object~value = expression -> setter message `value=` when assignment is the leading send
+  .Class~CONSTANT           -> class-literal constant consumer evidence
+
+Dynamic receiver evidence remains conservative rather than being claimed as an exact
+resolved dependency.
+
+Hash scaling
+------------
+
+Tree analysis now performs a side-effect-free warm-up pass, batches unique SHA-256
+payloads, invokes sha256sum once for the generated 1,200-method regression, and then
+runs authoritative semantic analysis from the in-memory digest cache.
+
+Observed on the r13196 debug host:
+  v0.2.2: ~6 seconds, one sha256sum invocation
+  v0.2.1 same synthetic corpus: ~14 seconds
+
+Repository identity remains SHA-256. Isolated contentHash calls retain a safe fallback.
+
+Scope note
+----------
+
+The Terminal dogfood bundle carries the report and exact constant/attribute reproducer,
+not the complete 102-file Terminal v0.19 source release. Therefore full-tree Terminal
+performance is deliberately not claimed by this package; that corpus remains an
+external certification test for the Terminal owner.
