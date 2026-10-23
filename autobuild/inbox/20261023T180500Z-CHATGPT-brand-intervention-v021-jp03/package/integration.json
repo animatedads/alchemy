@@ -1,0 +1,66 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "brand_intervention",
+    "version": "0.2.1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "ALCHEMY_OBJECTS_ROOT": "${REPO_ROOT}/packages/alchemy_objects_v0.8",
+      "OOREXX_CRYPTO_ROOT": "${REPO_ROOT}/packages/oorexx_crypto_v0.8.3",
+      "BRAND_INTERACTION_EFFECT_ROOT": "${REPO_ROOT}/packages/brand_interaction_effect_v0.6",
+      "BRAND_JOURNEY_ROOT": "${REPO_ROOT}/packages/brand_journey_v0.1",
+      "BRAND_JOURNEY_POPULATION_ROOT": "${REPO_ROOT}/packages/brand_journey_population_v0.3",
+      "RUNTIME_REGISTRY_ROOT": "${REPO_ROOT}/packages/runtime_registry_v0.14"
+    },
+    "rexx_path": {
+      "mode": "replace",
+      "entries": [
+        "${PACKAGE_ROOT}/tests",
+        "${PACKAGE_ROOT}/src",
+        "${PACKAGE_ROOT}/integration",
+        "${PACKAGE_ROOT}/runtime",
+        "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+        "${REPO_ROOT}/packages/oorexx_crypto_v0.8.3/src",
+        "${REPO_ROOT}/packages/brand_interaction_effect_v0.6/src",
+        "${REPO_ROOT}/packages/brand_journey_v0.1/src",
+        "${REPO_ROOT}/packages/brand_journey_population_v0.3/src",
+        "${REPO_ROOT}/packages/runtime_registry_v0.14/src"
+      ],
+      "require_entries": true
+    },
+    "require_dirs": [
+      "ALCHEMY_OBJECTS_ROOT",
+      "OOREXX_CRYPTO_ROOT",
+      "BRAND_INTERACTION_EFFECT_ROOT",
+      "BRAND_JOURNEY_ROOT",
+      "BRAND_JOURNEY_POPULATION_ROOT",
+      "RUNTIME_REGISTRY_ROOT"
+    ],
+    "report": [
+      "ALCHEMY_OBJECTS_ROOT",
+      "OOREXX_CRYPTO_ROOT",
+      "BRAND_INTERACTION_EFFECT_ROOT",
+      "BRAND_JOURNEY_ROOT",
+      "BRAND_JOURNEY_POPULATION_ROOT",
+      "RUNTIME_REGISTRY_ROOT"
+    ]
+  },
+  "tests": [
+    {
+      "name": "manifest",
+      "argv": ["sha256sum", "-c", "MANIFEST.sha256"],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "suite",
+      "argv": ["bash", "run_tests.sh"],
+      "timeout_seconds": 900
+    }
+  ],
+  "publish": {
+    "artifact_only": true
+  }
+}
