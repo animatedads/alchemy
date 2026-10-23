@@ -1,0 +1,48 @@
+{
+  "id": "nosqlserver.intention-search-integration",
+  "title": "Intention-driven database search integration",
+  "section": "integration",
+  "summary": "The Intention Service × NoSQLServer qualification line proves that natural-language database meaning should be represented as structured semantic plans, assessed against observed schema/runtime evidence, and executed through an injected database backend rather than phrase-to-SQL shortcuts.",
+  "invariants": [
+    "Intention Service owns conversation state, plan transformation, ambiguity and dispatch readiness; database-domain code supplies first-turn interpretation, domain slots and plan builders.",
+    "Schema is structural authority: tables, columns, primary/foreign keys and valid traversal edges come from the database, not from conversational synonyms.",
+    "Semantic hints supply business meaning that schema cannot prove, such as identity fields, measures, default aggregates and relationship meaning constraints.",
+    "Synonyms/typo material controls conversational wording only and must not become structural authority.",
+    "Meaning understood and plan executable are distinct states. Feasibility depends on current observed evidence and capability facts.",
+    "Execution-path selection is independent of semantic meaning: a retained ANALYZE_DATABASE plan may switch between NATIVE_SQL and DOMAIN_ANALYTICS without changing the user's intention.",
+    "Relationship traversal is schema-derived. When several structurally valid paths exist, semantic relationship hints constrain which valid path expresses the requested meaning.",
+    "Independent regression scenarios require fresh IntentionService sessions; reset() clears the active decision but deliberately retains dispatched history.",
+    "Application/profile code receives a common database executor from one composition root; it does not construct FileDatabaseEngine, MySQL or PostgreSQL implementations directly.",
+    "Blind usability qualification must bootstrap names, fields and values from the interface itself; fixture knowledge is regression evidence, not clean blind evidence."
+  ],
+  "qualified_examples": [
+    "small fixture: 3 tables, 20 fields, 100 rows",
+    "World profile: 3 tables, 5302 rows",
+    "Sakila profile: 16 tables, 22 foreign keys, 47268 rows",
+    "conversation: total spent by Jane Smith -> average instead -> how many orders -> back to total spend -> same for Bob Smith",
+    "execution-path transition: DOMAIN_ANALYTICS -> NATIVE_SQL -> DOMAIN_ANALYTICS inside one retained analytic intention"
+  ],
+  "current_boundary": {
+    "intention_service": "v0.1-dev11",
+    "harness": "intention_db_search_tests v0.1-dev28 runtime-qualified; dev29 source-publication cut",
+    "oorexx_runtime": "5.3.0 r13196 debug",
+    "database_backend_contract": "registered/injected executor; NOSQL_FILE is the qualified default in dev28",
+    "note": "The harness qualification used its actually vendored NoSQLServer line; newer NoSQLServer packages in the wider estate must be integrated only from retrieved package authority, not inferred from qualification logs."
+  },
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "nosqlserver",
+  "authority": "project-integration-evidence",
+  "provenance": [
+    {
+      "artifact": "intention_db_search_tests_v0.1-dev28.zip",
+      "sha256": "a0798b23014d12a2d447cf9f694f554754f454a1103c35ed4bd8634fd0335f2e",
+      "member": "qualification/dev28-r13196-focused.log",
+      "claim": "Backend-composition and focused ooRexx r13196 qualification evidence."
+    },
+    {
+      "artifact": "oorexx_intention_service_v0.1-dev11",
+      "claim": "Plan transformation and dynamic discovery contracts used by the qualification harness."
+    }
+  ]
+}

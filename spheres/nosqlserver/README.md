@@ -8,10 +8,15 @@ Grounded baseline:
 This sphere is documentation/continuity, not a replacement executable package.
 It inherits shared ooRexx source-navigation services from the `oorexx` sphere.
 
+Additional integration evidence now covers the Intention Service × NoSQLServer
+database-search qualification line, including schema-derived relationship traversal,
+dynamic evidence/discovery, conversation-plan transformations, analytic execution-path
+selection, and registered backend composition. See
+`nosqlserver.intention-search-integration`.
+
 Start:
 
     gopher --profile nosqlserver context nosqlserver --full
     gopher --profile nosqlserver search '<term>' --sphere nosqlserver
 
 For source archaeology use the exact project ZIP and the shared archive/source examiner.
-
