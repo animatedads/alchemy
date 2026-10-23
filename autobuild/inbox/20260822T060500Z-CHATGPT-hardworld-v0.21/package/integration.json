@@ -1,0 +1,59 @@
+{
+  "environment": {
+    "prepend_path": [],
+    "set": {
+      "TERM": "xterm"
+    }
+  },
+  "package": {
+    "kind": "oorexx",
+    "name": "virtual_ryta_hardworld",
+    "version": "0.21"
+  },
+  "publish": {
+    "artifact_only": true
+  },
+  "schema": "alchemy.autobuild.integration/0.3",
+  "tests": [
+    {
+      "argv": ["bash", "prepare_release.sh"],
+      "name": "prepare-release",
+      "timeout_seconds": 180
+    },
+    {
+      "argv": ["sha256sum", "-c", "MANIFEST.sha256"],
+      "cwd": "release",
+      "name": "manifest",
+      "timeout_seconds": 120
+    },
+    {
+      "argv": ["bash", "tests/run_all.sh"],
+      "cwd": "release",
+      "name": "hardworld-inherited-suite",
+      "timeout_seconds": 1800
+    },
+    {
+      "argv": ["bash", "tests/run_camera_generation_rich_v021.sh"],
+      "cwd": "release",
+      "environment": {
+        "report": ["CAMERA_CORE_DIR"],
+        "require_dirs": ["CAMERA_CORE_DIR"],
+        "set": {"CAMERA_CORE_DIR": "${PACKAGE_ROOT}/deps/camera_v0.34"}
+      },
+      "name": "camera-generation-rich-v021",
+      "timeout_seconds": 600
+    },
+    {
+      "argv": ["bash", "tests/run_wlu_operational_rich_v021.sh"],
+      "cwd": "release",
+      "environment": {
+        "report": ["WLU_SRC_DIR"],
+        "require_dirs": ["WLU_SRC_DIR"],
+        "set": {"WLU_SRC_DIR": "${PACKAGE_ROOT}/deps/wlu_v0.2/src"}
+      },
+      "name": "wlu-operational-rich-v021",
+      "timeout_seconds": 600
+    }
+  ],
+  "working_directory": "."
+}
