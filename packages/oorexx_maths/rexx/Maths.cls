@@ -1,4 +1,4 @@
-/* oorexx_maths v0.17
+/* oorexx_maths v0.19
  * Provider-neutral mathematical objects with explicit precision, evidence,
  * derivation and independent recomputation support.
  */
@@ -8,7 +8,7 @@ if \.local~hasIndex('OOREXX_MATHS_CONSTANT_CACHE') then .local['OOREXX_MATHS_CON
 
 ::class Maths public
 ::method version class
-  return '0.17'
+  return '0.19'
 
 ::method defaultContext class
   return .MathContext~decimal(50)
@@ -99,6 +99,89 @@ if \.local~hasIndex('OOREXX_MATHS_CONSTANT_CACHE') then .local['OOREXX_MATHS_CON
 
 ::method assumptions class
   return .MathAssumptions~new
+
+/* Theoretical mathematics foundations.  These constructors deliberately live on
+ * Maths while their implementations are separated in MathTheory.cls. */
+::method set class
+  use strict arg elements=.nil
+  if elements == .nil then elements=.array~new
+  return .MathSet~new(elements)
+
+::method map class
+  use strict arg domain, codomain, mappings
+  return .MathMap~new(domain,codomain,mappings)
+
+::method relation class
+  use strict arg leftSet, rightSet, pairs
+  return .MathRelation~new(leftSet,rightSet,pairs)
+
+::method finiteOperation class
+  use strict arg carrier, table
+  return .MathFiniteBinaryOperation~new(carrier,table)
+
+::method finiteGroup class
+  use strict arg carrier, table, identity
+  op=.MathFiniteBinaryOperation~new(carrier,table)
+  return .MathFiniteGroup~new(carrier,op,identity)
+
+::method finiteMonoid class
+  use strict arg carrier, table, identity
+  op=.MathFiniteBinaryOperation~new(carrier,table)
+  return .MathFiniteMonoid~new(carrier,op,identity)
+
+::method finiteRing class
+  use strict arg carrier, additionTable, multiplicationTable, zero, one=.nil
+  add=.MathFiniteBinaryOperation~new(carrier,additionTable)
+  multiply=.MathFiniteBinaryOperation~new(carrier,multiplicationTable)
+  return .MathFiniteRing~new(carrier,add,multiply,zero,one)
+
+::method finiteField class
+  use strict arg carrier, additionTable, multiplicationTable, zero, one
+  ring=self~finiteRing(carrier,additionTable,multiplicationTable,zero,one)
+  return .MathFiniteField~new(ring)
+
+::method groupHomomorphism class
+  use strict arg sourceGroup, targetGroup, map
+  return .MathGroupHomomorphism~new(sourceGroup,targetGroup,map)
+
+::method statement class
+  use strict arg id, text, assumptions=.nil, revision=1
+  return .MathStatement~new(id,text,assumptions,revision)
+
+::method theorem class
+  use strict arg id, text, assumptions=.nil, revision=1
+  return .MathTheorem~new(id,text,assumptions,revision)
+
+::method conjecture class
+  use strict arg id, text, assumptions=.nil, revision=1
+  return .MathConjecture~new(id,text,assumptions,revision)
+
+::method theoryCatalogue class
+  return .MathTheoryCatalogue~new
+
+::method proofArtifact class
+  use strict arg statementId, statementRevision, kind, authority, authorityVersion='', status='VERIFIED', reference=''
+  return .MathProofArtifact~new(statementId,statementRevision,kind,authority,authorityVersion,status,reference)
+
+/* Exact algebraic foundations. */
+::method rationalField class
+  return .MathRationalField~new
+
+::method polynomialRing class
+  use strict arg variable='x'
+  return .MathPolynomialRing~new(.MathRationalField~new,variable)
+
+::method polynomial class
+  use strict arg coefficients, variable='x'
+  return .MathPolynomial~new(coefficients,variable,.MathRationalField~new)
+
+::method rationalVectorSpace class
+  use strict arg dimension
+  return .MathRationalVectorSpace~new(dimension,.MathRationalField~new)
+
+::method linearMap class
+  use strict arg source,target,matrix
+  return .MathLinearMap~new(source,target,matrix)
 
 ::method integer class
   use strict arg value, context=.nil
@@ -1579,7 +1662,7 @@ if \.local~hasIndex('OOREXX_MATHS_CONSTANT_CACHE') then .local['OOREXX_MATHS_CON
 
 ::class MathProvider public
 ::method name abstract
-::method version; return '0.17'
+::method version; return '0.19'
 ::method supports
   use strict arg operation
   return .false
@@ -5167,3 +5250,384 @@ if \.local~hasIndex('OOREXX_MATHS_CONSTANT_CACHE') then .local['OOREXX_MATHS_CON
   ev=.MathEvidence~new(operation,context,inputs)
   ev~addStep(.MathPathStep~new(operation,'PURE','0.12',algorithm,context~numberDomain,context~workingDigits,'Maths 3D semantic object',details,guarantee,'PURE,MATH3D,'algorithm))
   return ev
+
+
+/* Exact algebraic foundations (v0.19). */
+::class MathRationalField public
+::method name; return 'Q'
+::method characteristic; return 0
+::method context; return .MathContext~rational
+::method zero; return .MathRational~of(0,1,.MathContext~rational)
+::method one; return .MathRational~of(1,1,.MathContext~rational)
+::method coerce
+  use strict arg value
+  return .MathRational~coerce(value,.MathContext~rational)
+::method contains
+  use strict arg value
+  return value~isA(.MathRational)
+::method add
+  use strict arg left,right
+  return self~coerce(left)+self~coerce(right)
+::method subtract
+  use strict arg left,right
+  return self~coerce(left)-self~coerce(right)
+::method multiply
+  use strict arg left,right
+  return self~coerce(left)*self~coerce(right)
+::method divide
+  use strict arg left,right
+  return self~coerce(left)/self~coerce(right)
+::method negate
+  use strict arg value
+  return -self~coerce(value)
+::method inverse
+  use strict arg value
+  value=self~coerce(value)
+  if value=0 then raise syntax 42.3
+  return self~one/value
+::method equals
+  use strict arg other
+  if \other~isA(.MathRationalField) then return .false
+  return .true
+::method canonical; return 'field[Q]'
+::method string; return self~canonical
+
+
+::class MathPolynomial public
+::method init
+  expose _coefficients _variable _field
+  use strict arg coefficients, variable='x', field=.nil
+  if field == .nil then field=.MathRationalField~new
+  if \field~isA(.MathRationalField) then raise syntax 88.900 array('MathRationalField',field)
+  if \coefficients~isA(.Array) then raise syntax 88.900 array('Array of polynomial coefficients',coefficients)
+  variable=variable~string~strip
+  if variable='' then raise syntax 88.900 array('non-empty polynomial variable',variable)
+  _field=field; _variable=variable; _coefficients=.array~new
+  do coefficient over coefficients
+    _coefficients~append(field~coerce(coefficient))
+  end
+  if _coefficients~items=0 then _coefficients~append(field~zero)
+  self~trim
+::method trim
+  expose _coefficients
+  count=_coefficients~items
+  do while count>1
+    if _coefficients[count]\=0 then leave
+    _coefficients~remove(count)
+    count-=1
+  end
+  return self
+::method field; expose _field; return _field
+::method variable; expose _variable; return _variable
+::method coefficients
+  expose _coefficients
+  out=.array~new
+  do c over _coefficients; out~append(c); end
+  return out
+::method coefficient
+  expose _coefficients _field
+  use strict arg degree
+  if \datatype(degree,'W') then raise syntax 88.900 array('non-negative whole polynomial degree',degree)
+  if degree<0 then raise syntax 88.900 array('non-negative whole polynomial degree',degree)
+  index=degree+1
+  if index>_coefficients~items then return _field~zero
+  return _coefficients[index]
+::method degree
+  expose _coefficients
+  if _coefficients~items=1 then do
+    if _coefficients[1]=0 then return -1
+  end
+  return _coefficients~items-1
+::method isZero
+  return self~degree=-1
+::method leadingCoefficient
+  expose _coefficients
+  return _coefficients[_coefficients~items]
+::method '+' 
+  use strict arg other
+  return self~add(other)
+::method add
+  expose _coefficients _variable _field
+  use strict arg other
+  if \other~isA(.MathPolynomial) then other=.MathPolynomial~new(.array~of(_field~coerce(other)),_variable,_field)
+  call math_algebra_require_compatible_polynomial self,other
+  count=max(_coefficients~items,other~coefficients~items)
+  out=.array~new
+  do degree=0 to count-1
+    out~append(self~coefficient(degree)+other~coefficient(degree))
+  end
+  return .MathPolynomial~new(out,_variable,_field)
+::method '-'
+  expose _variable _field
+  use strict arg other=.nil
+  if arg(1,'O') then return self~scale(-1)
+  if \other~isA(.MathPolynomial) then other=.MathPolynomial~new(.array~of(_field~coerce(other)),_variable,_field)
+  call math_algebra_require_compatible_polynomial self,other
+  count=max(self~coefficients~items,other~coefficients~items)
+  out=.array~new
+  do degree=0 to count-1
+    out~append(self~coefficient(degree)-other~coefficient(degree))
+  end
+  return .MathPolynomial~new(out,_variable,_field)
+::method '*'
+  expose _variable _field
+  use strict arg other
+  if other~isA(.MathPolynomial) then do
+    call math_algebra_require_compatible_polynomial self,other
+    if self~isZero then return .MathPolynomial~new(.array~of(0),_variable,_field)
+    if other~isZero then return .MathPolynomial~new(.array~of(0),_variable,_field)
+    out=.array~new
+    do i=0 to self~degree+other~degree; out~append(_field~zero); end
+    do i=0 to self~degree
+      do j=0 to other~degree
+        index=i+j+1
+        out[index]=out[index]+self~coefficient(i)*other~coefficient(j)
+      end
+    end
+    return .MathPolynomial~new(out,_variable,_field)
+  end
+  return self~scale(other)
+::method scale
+  expose _coefficients _variable _field
+  use strict arg scalar
+  scalar=_field~coerce(scalar)
+  out=.array~new
+  do c over _coefficients; out~append(c*scalar); end
+  return .MathPolynomial~new(out,_variable,_field)
+::method evaluate
+  expose _coefficients _field
+  use strict arg value
+  x=_field~coerce(value)
+  answer=_field~zero
+  do i=_coefficients~items to 1 by -1
+    answer=answer*x+_coefficients[i]
+  end
+  return answer
+::method derivative
+  expose _coefficients _variable _field
+  if self~degree<=0 then return .MathPolynomial~new(.array~of(0),_variable,_field)
+  out=.array~new
+  do degree=1 to self~degree
+    out~append(self~coefficient(degree)*degree)
+  end
+  return .MathPolynomial~new(out,_variable,_field)
+::method divideWithRemainder
+  expose _variable _field
+  use strict arg divisor
+  call math_algebra_require_compatible_polynomial self,divisor
+  if divisor~isZero then raise syntax 42.3
+  quotient=.MathPolynomial~new(.array~of(0),_variable,_field)
+  remainder=self
+  do while \remainder~isZero
+    if remainder~degree<divisor~degree then leave
+    shift=remainder~degree-divisor~degree
+    factor=remainder~leadingCoefficient/divisor~leadingCoefficient
+    coeffs=.array~new
+    do i=0 to shift-1; coeffs~append(_field~zero); end
+    coeffs~append(factor)
+    term=.MathPolynomial~new(coeffs,_variable,_field)
+    quotient=quotient+term
+    remainder=remainder-(term*divisor)
+  end
+  return .MathPolynomialDivision~new(quotient,remainder)
+::method divides
+  use strict arg other
+  call math_algebra_require_compatible_polynomial self,other
+  if self~isZero then return other~isZero
+  return other~divideWithRemainder(self)~remainder~isZero
+::method monic
+  expose _field
+  if self~isZero then return self
+  return self~scale(_field~inverse(self~leadingCoefficient))
+::method gcd
+  use strict arg other
+  call math_algebra_require_compatible_polynomial self,other
+  left=self; right=other
+  do while \right~isZero
+    division=left~divideWithRemainder(right)
+    left=right
+    right=division~remainder
+  end
+  return left~monic
+::method equals
+  expose _variable _field _coefficients
+  use strict arg other
+  if \other~isA(.MathPolynomial) then return .false
+  if _variable<>other~variable then return .false
+  if \_field~equals(other~field) then return .false
+  if self~degree<>other~degree then return .false
+  do degree=0 to max(0,self~degree)
+    if self~coefficient(degree)\=other~coefficient(degree) then return .false
+  end
+  return .true
+::method canonical
+  expose _variable _coefficients
+  out='poly['_variable']:'
+  first=.true
+  do degree=0 to _coefficients~items-1
+    if \first then out=out','
+    first=.false
+    out=out||degree'='self~coefficient(degree)~string
+  end
+  return out
+::method string; return self~canonical
+
+
+::class MathPolynomialDivision public
+::method init
+  expose _quotient _remainder
+  use strict arg quotient,remainder
+  if \quotient~isA(.MathPolynomial) then raise syntax 88.900 array('MathPolynomial quotient',quotient)
+  if \remainder~isA(.MathPolynomial) then raise syntax 88.900 array('MathPolynomial remainder',remainder)
+  _quotient=quotient; _remainder=remainder
+::method quotient; expose _quotient; return _quotient
+::method remainder; expose _remainder; return _remainder
+::method exact; expose _remainder; return _remainder~isZero
+::method canonical
+  expose _quotient _remainder
+  return 'polynomial-division[q={'_quotient~canonical'},r={'_remainder~canonical'}]'
+::method string; return self~canonical
+
+
+::class MathPolynomialRing public
+::method init
+  expose _field _variable
+  use strict arg field=.nil, variable='x'
+  if field == .nil then field=.MathRationalField~new
+  if \field~isA(.MathRationalField) then raise syntax 88.900 array('MathRationalField',field)
+  variable=variable~string~strip
+  if variable='' then raise syntax 88.900 array('non-empty polynomial variable',variable)
+  _field=field; _variable=variable
+::method field; expose _field; return _field
+::method variableName; expose _variable; return _variable
+::method polynomial
+  expose _field _variable
+  use strict arg coefficients
+  return .MathPolynomial~new(coefficients,_variable,_field)
+::method constant
+  expose _field _variable
+  use strict arg value
+  return .MathPolynomial~new(.array~of(_field~coerce(value)),_variable,_field)
+::method zero; return self~constant(0)
+::method one; return self~constant(1)
+::method variable
+  expose _field _variable
+  return .MathPolynomial~new(.array~of(_field~zero,_field~one),_variable,_field)
+::method monomial
+  expose _field _variable
+  use strict arg coefficient, degree
+  if \datatype(degree,'W') then raise syntax 88.900 array('non-negative whole monomial degree',degree)
+  if degree<0 then raise syntax 88.900 array('non-negative whole monomial degree',degree)
+  out=.array~new
+  do i=0 to degree-1; out~append(_field~zero); end
+  out~append(_field~coerce(coefficient))
+  return .MathPolynomial~new(out,_variable,_field)
+::method canonical
+  expose _field _variable
+  return 'polynomial-ring['_field~name'[' _variable ']]'
+::method string; return self~canonical
+
+
+::class MathRationalVectorSpace public
+::method init
+  expose _dimension _field
+  use strict arg dimension, field=.nil
+  if \datatype(dimension,'W') then raise syntax 88.900 array('non-negative vector-space dimension',dimension)
+  if dimension<0 then raise syntax 88.900 array('non-negative vector-space dimension',dimension)
+  if field == .nil then field=.MathRationalField~new
+  if \field~isA(.MathRationalField) then raise syntax 88.900 array('MathRationalField',field)
+  _dimension=dimension; _field=field
+::method dimension; expose _dimension; return _dimension
+::method field; expose _field; return _field
+::method vector
+  expose _dimension _field
+  use strict arg values
+  if \values~isA(.Array) then raise syntax 88.900 array('Array of vector coordinates',values)
+  if values~items<>_dimension then raise syntax 88.900 array('vector dimension '_dimension,values~items)
+  out=.array~new
+  do value over values; out~append(_field~coerce(value)); end
+  return .MathVector~new(out,.MathContext~rational)
+::method contains
+  expose _dimension
+  use strict arg value
+  if \value~isA(.MathVector) then return .false
+  if value~size<>_dimension then return .false
+  if value~context~numberDomain<>'RATIONAL' then return .false
+  return .true
+::method zero
+  expose _dimension
+  out=.array~new
+  do i=1 to _dimension; out~append(0); end
+  return self~vector(out)
+::method basis
+  expose _dimension
+  use strict arg index
+  if \datatype(index,'W') then raise syntax 88.900 array('basis index 1..'_dimension,index)
+  if index<1 then raise syntax 88.900 array('basis index 1..'_dimension,index)
+  if index>_dimension then raise syntax 88.900 array('basis index 1..'_dimension,index)
+  out=.array~new
+  do i=1 to _dimension
+    if i=index then out~append(1)
+    else out~append(0)
+  end
+  return self~vector(out)
+::method add
+  use strict arg left,right
+  if \self~contains(left) then raise syntax 88.900 array('vector in this vector space',left)
+  if \self~contains(right) then raise syntax 88.900 array('vector in this vector space',right)
+  return left+right
+::method scale
+  expose _field
+  use strict arg scalar, vector
+  if \self~contains(vector) then raise syntax 88.900 array('vector in this vector space',vector)
+  return vector*_field~coerce(scalar)
+::method canonical
+  expose _dimension _field
+  return 'vector-space[' _field~name '^' _dimension ']'
+::method string; return self~canonical
+
+
+::class MathLinearMap public
+::method init
+  expose _source _target _matrix
+  use strict arg source,target,matrix
+  if \source~isA(.MathRationalVectorSpace) then raise syntax 88.900 array('MathRationalVectorSpace source',source)
+  if \target~isA(.MathRationalVectorSpace) then raise syntax 88.900 array('MathRationalVectorSpace target',target)
+  if \matrix~isA(.MathMatrix) then matrix=.MathMatrix~new(matrix,.MathContext~rational)
+  if matrix~context~numberDomain<>'RATIONAL' then matrix=.MathMatrix~new(matrix~toArray,.MathContext~rational)
+  if matrix~rows<>target~dimension then raise syntax 88.900 array('matrix rows matching target dimension',matrix~rows)
+  if matrix~cols<>source~dimension then raise syntax 88.900 array('matrix columns matching source dimension',matrix~cols)
+  _source=source; _target=target; _matrix=matrix
+::method source; expose _source; return _source
+::method target; expose _target; return _target
+::method matrix; expose _matrix; return _matrix
+::method apply
+  expose _source _target _matrix
+  use strict arg vector
+  if \_source~contains(vector) then raise syntax 88.900 array('vector in linear-map source',vector)
+  answer=_matrix*vector
+  if \_target~contains(answer) then raise syntax 88.900 array('linear-map result in target',answer)
+  return answer
+::method compose
+  expose _source _target _matrix
+  use strict arg after
+  if \after~isA(.MathLinearMap) then raise syntax 88.900 array('MathLinearMap',after)
+  if _target~dimension<>after~source~dimension then raise syntax 88.900 array('compatible linear-map dimensions',_target~dimension'/'after~source~dimension)
+  return .MathLinearMap~new(_source,after~target,after~matrix*_matrix)
+::method isEndomorphism
+  expose _source _target
+  return _source~dimension=_target~dimension
+::method canonical
+  expose _source _target _matrix
+  return 'linear-map[' _source~canonical '->' _target~canonical ']:'_matrix~canonical
+::method string; return self~canonical
+
+
+::routine math_algebra_require_compatible_polynomial
+  use strict arg left,right
+  if \right~isA(.MathPolynomial) then raise syntax 88.900 array('MathPolynomial',right)
+  if left~variable<>right~variable then raise syntax 88.900 array('polynomials in same variable',left~variable'/'right~variable)
+  if \left~field~equals(right~field) then raise syntax 88.900 array('polynomials over same field','incompatible')
+  return .true
+
+::requires 'MathTheory.cls'

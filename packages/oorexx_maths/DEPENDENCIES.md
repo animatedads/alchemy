@@ -34,3 +34,8 @@ Maths supports ooRexx Crypto evidence/proof sealing. **Crypto is NOT_RUN for the
 Maths does not vendor Foreign Runtime, Crypto, Runtime Reference, Physics World or Rexx-tronics as development source authority. Consumer packages may motivate reusable mathematical kernels, but their physical/electrical semantics remain outside Maths.
 
 The machine-readable lock is `compatibility-lock.json`.
+
+
+## v0.19 dependency authority
+
+The theoretical and exact-algebra layers add no required external runtime dependency. Their reference semantics execute under ooRexx r13196. Foreign Runtime v0.22.6 remains optional provider infrastructure; the exact archive SHA and provider versions are locked in `compatibility-lock.json`. Physics/Rexx-tronics are consumer design inputs, not Maths dependencies.

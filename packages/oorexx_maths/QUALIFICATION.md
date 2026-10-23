@@ -1,60 +1,40 @@
-# Qualification record — ooRexx Maths v0.17
+# Qualification — ooRexx Maths v0.19
 
-## Fresh v0.17 result
+v0.19 adds exact algebra over Q while retaining the v0.18 finite-theory, theorem/proof, numerical, exact and provider surfaces.
 
-v0.17 was freshly run on the exact user-supplied ooRexx **5.3.0 r13196 Internal Test Version**. PURE/reference plus distribution-RxMath lanes contribute **422 PASS assertions**. Foreign Runtime v0.22.6 with NumPy/SciPy/SymPy/mpmath contributes **177 PASS assertions**. Total freshly executed enabled assertions: **599 PASS**.
+## Required runtime lane
 
-No historical PASS is counted in that number.
+Exact runtime: ooRexx 5.3.0 r13196 Internal Test Version, user-supplied debug DEB SHA-256 \`8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae\`.
 
-| Lane | Assertions | Status |
-|---|---:|---|
-| core | 18 | PASS |
-| claims | 10 | PASS |
-| rational scalar | 15 | PASS |
-| exact numbers | 24 | PASS |
-| decimal expansion | 25 | PASS |
-| rational round-trip | 50 | PASS |
-| quantization | 31 | PASS |
-| mixed precision | 9 | PASS |
-| Math3D | 74 | PASS |
-| Physics-derived numerical foundations | 51 | PASS |
-| named constants | 4 | PASS |
-| constant registry | 18 | PASS |
-| rational matrix/vector | 15 | PASS |
-| proof planner | 18 | PASS |
-| causal continuation PURE | 16 | PASS |
-| second-order input/output PURE | 6 | PASS |
-| discrete state-space PURE | 19 | PASS |
-| native RxMath scalar | 19 | PASS |
-| NumPy | 14 | PASS |
-| proof planner / NumPy | 8 | PASS |
-| extended NumPy native | 21 | PASS |
-| native signal/modal acceleration | 49 | PASS |
-| second-order coupled dynamics | 31 | PASS |
-| causal continuation native | 10 | PASS |
-| second-order input/output native | 6 | PASS |
-| discrete state-space native | 12 | PASS |
-| SymPy/mpmath proof providers | 17 | PASS |
-| proof planner / providers | 9 | PASS |
-| **Fresh enabled total** | **599** | **PASS** |
+Fresh final-source non-Foreign run: **489 assertions PASS**. The new \`test_algebra_foundations.rex\` contributes **44 assertions PASS** covering rational-field semantics, Q[x] construction/arithmetic/evaluation/derivative, exact Euclidean division/divisibility/gcd, Q^n basis/addition/scaling, and exact linear-map application/composition/linearity.
 
-FLINT-ARB is `SKIP`: `python-flint >= 0.9.0` is not available. Crypto sealing is `NOT_RUN`: the exact Crypto v0.8.3 + Runtime Reference v0.4 executable closure was not available in this current input set. Neither is counted as PASS.
+Transcript: \`qualification/logs/v019-core.log\`.
 
-## Exact qualification inputs
+## Foreign Runtime/provider lane
 
-- ooRexx debug DEB SHA-256: `8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae`;
-- Foreign Runtime v0.22.6 ZIP SHA-256: `25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465`;
-- Python 3.13.5, NumPy 2.3.5, SciPy 1.17.0, SymPy 1.14.0, mpmath 1.3.0.
+Foreign Runtime v0.22.6 exact archive SHA-256 \`25a7b258b7920c355b96f19807515d6fb6e419687714396589b054a7029ab465\`.
 
-## Portfolio/static gate
+Fresh enabled provider total: **177 assertions PASS** across NumPy, SciPy, SymPy/mpmath and provider proof-planning lanes. The first final-source invocation completed five lanes (123 assertions) before the environment execution window interrupted the next lane during startup. A second invocation reran that lane and all remaining lanes cleanly (54 assertions). Interrupted work is not counted.
 
-The supplied `oorexx_standards_enforcer.py` SHA-256 is `978d0eb24cde13e014f2aeb61bccec1e6e6049792031c593e11407af17d545d8`.
+Transcripts: \`qualification/logs/v019-foreign-part1.log\` and \`qualification/logs/v019-foreign-part2.log\`.
 
-Pre-seal release-tree scan:
+## Enabled total
 
-- default policy: **PASS** — 55 files, 0 errors, 126 warnings;
-- strict audit: **REVIEW REQUIRED** — 0 errors, 126 warnings.
+**666 freshly executed assertions PASS** = 489 required/core + 177 Foreign Runtime/provider.
 
-The 126 warnings are reviewed in `PORTFOLIO_REVIEW_HARDENING.md`: 123 loop-invariant heuristic warnings plus three synchronous private-helper visibility warnings. They are not suppressed by weakening encapsulation or obscuring legitimate recurrences.
+## Capability-gated lanes
 
-Machine-readable evidence is under `qualification/receipts/`; raw execution/static-gate logs are under `qualification/logs/`.
+- FLINT-ARB: **SKIP**, because \`python-flint >= 0.9.0\` is not installed.
+- Crypto sealing: **NOT_RUN** because the exact Crypto v0.8.3 + Runtime Reference v0.4 executable dependency closure is not present. Historical Crypto evidence is not counted as fresh v0.19 evidence.
+
+## Standards gate
+
+Direct scan with the Library-supplied \`oorexx_standards_enforcer.py\` (SHA-256 \`978d0eb24cde13e014f2aeb61bccec1e6e6049792031c593e11407af17d545d8\`) reports **0 errors**, 134 warnings and default \`VERDICT: PASS\` across 58 ooRexx files.
+
+Strict mode reports the warnings for review: 131 \`LOOP_INVARIANT\` heuristic warnings and 3 synchronous \`PRIVATE_METHOD\` warnings. The v0.18 baseline had 126 reviewed warnings; the eight new v0.19 warnings are loop-heuristic false positives in polynomial/vector algebra routines. No private method is sent across a \`.Message\` activity boundary.
+
+See \`STANDARDS_ENFORCER_REVIEW.md\` and the machine-readable receipts under \`qualification/receipts/\`.
+
+## Evidence discipline
+
+The algebra layer reuses \`MathRational\`, \`MathVector\` and \`MathMatrix\`; it does not create a second numeric authority. Polynomial equality and algorithms are exact over retained rational values. No external research theorem is imported as truth merely because it appears in a paper or formalization catalogue.

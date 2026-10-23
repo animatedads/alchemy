@@ -2,7 +2,7 @@ numeric digits 80
 ctx=.MathContext~decimal(50)
 passes=0
 
-call assertEq .Maths~version,'0.17','Maths version is 0.17'
+call assertEq .Maths~version,'0.19','Maths version is 0.19'
 
 /* Angles and high-precision reduction. */
 a90=.MathAngle~degrees(90,ctx)

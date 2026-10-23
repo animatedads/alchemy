@@ -1,15 +1,7 @@
-# ooRexx Maths Gopher sphere v0.1
+# Maths sphere pack
 
-This pack is durable semantic context for the ooRexx Maths project. It deliberately contains decisions, baselines, proof/precision rules, provider boundaries, qualification state and continuation seams rather than duplicating the complete source package.
+This pack documents the current ooRexx Maths architecture and continuity contract.
 
-Use the `maths` profile, which layers `core + oorexx + maths` so the sphere retains ooRexx archive/source/rule/package capabilities.
+Current executable baseline: **ooRexx Maths v0.19**, SHA-256 \`cf92eac71498450fb688569328833b33b122942de89450a4022d9d824c778f40\`.
 
-Examples:
-
-    ./gopher --profile maths context maths
-    ./gopher --profile maths open maths.current
-    ./gopher --profile maths search "NUMERIC DIGITS 50" --sphere maths
-    ./gopher --profile maths search quadratic --sphere maths
-    ./gopher --profile maths examine source Maths.cls --in /path/oorexx_maths_v0.7.zip --symbol MathQuantizationScheme --sphere maths
-
-The ooRexx source examiner/editor services in the upstream oorexx pack are intentionally scoped to the `oorexx` sphere. This add-on publishes Maths-scoped service aliases to the same built-in implementations so source operations remain available under `--sphere maths` without changing or duplicating the engine implementation.
+The pack preserves the original Maths constitution and provider/proof boundaries, and now additionally records the v0.18 theoretical-mathematics object layer and v0.19 exact-algebra layer. \`maths.continuation\` is the authoritative backlog rather than old version-number assumptions.

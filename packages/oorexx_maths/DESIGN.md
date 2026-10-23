@@ -121,3 +121,8 @@ Exact RATIONAL execution means exact evaluation of the selected **discrete equat
 ## Constant registry boundary (v0.13)
 
 Named mathematical constants are registry objects, not caller-owned recipes. The registry separates canonical identity and metadata from evaluated context-sized values. Exact structural values remain exact; derived constants retain authoritative mathematical derivations; evaluated values are cached only for their canonical name/domain/working precision. A finite precision source must advertise its capability and fail closed above it. Object-specific theorem results and distribution families are not automatically scalar constants merely because a numerical value is associated with them.
+
+
+## v0.18-v0.19 theoretical mathematics boundary
+
+Maths now owns generic mathematical structures and revision-bearing mathematical statements as well as numerical kernels. Finite structures are executable reference semantics, not taxonomy placeholders. Exact algebra reuses the existing MathRational/MathVector/MathMatrix authorities. A research manuscript, external CAS result, or formal-system artifact is evidence attached to an exact statement revision; it is not silently promoted to timeless truth.

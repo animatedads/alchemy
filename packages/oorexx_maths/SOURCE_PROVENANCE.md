@@ -85,3 +85,8 @@ user's current Library `oorexx_physics_world_v0.1-dev46.8-acoustic-block-feedbac
 and `rexxtronics_v0.1-dev25.zip`.  No Physics or Rexx-tronics source is copied
 into Maths.  Their domain semantics remain external; Maths only publishes the
 generic discrete LTI recurrence, continuation state and provider policy.
+
+
+## v0.18-v0.19 theoretical/algebra provenance
+
+The theoretical-object layer was introduced after comparing the numerical/proof-oriented Maths surface with broader mathematical research/formalization needs. External research catalogues motivated missing structure but were not imported as mathematical truth. v0.18 introduced executable finite structures and exact-revision theorem evidence. v0.19 introduced exact Q[x] Euclidean polynomial arithmetic, Q^n vector spaces and linear maps, all implemented over pre-existing Maths exact values/matrices and qualified under r13196.

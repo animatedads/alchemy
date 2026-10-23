@@ -6,6 +6,8 @@ export REXX_PATH="$ROOT/rexx${REXX_PATH:+:$REXX_PATH}"
 export PYTHONPATH="$ROOT/python${PYTHONPATH:+:$PYTHONPATH}"
 cd "$ROOT/tests"
 "$REXX_BIN" test_core.rex
+"$REXX_BIN" test_theory_foundations.rex
+"$REXX_BIN" test_algebra_foundations.rex
 "$REXX_BIN" test_claims.rex
 "$REXX_BIN" test_rational.rex
 "$REXX_BIN" test_exact_numbers.rex

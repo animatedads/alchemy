@@ -285,3 +285,12 @@ result~finalState
 
 The mathematical contract is `M*x''+C*x'+K*x=B*u` and
 `y=Hx*x+Hv*x'`. Channel semantics belong to the caller.
+
+
+## Theoretical mathematics (v0.18+)
+
+Factories on `.Maths` include `set`, `map`, `relation`, `finiteOperation`, `finiteMonoid`, `finiteGroup`, `finiteRing`, `finiteField`, `groupHomomorphism`, `statement`, `theorem`, `conjecture`, `proofArtifact`, and `theoryCatalogue`. Mathematical proof artifacts are bound to an exact statement id and revision; stale-revision attachment fails closed.
+
+## Exact algebra (v0.19)
+
+`.Maths~rationalField` exposes Q over existing exact rational values. `.Maths~polynomialRing(variable)` and `.Maths~polynomial(coefficients, variable)` construct exact univariate polynomials with formal derivative, Horner evaluation, Euclidean division/divisibility, monic normalization and gcd. `.Maths~rationalVectorSpace(n)` and `.Maths~linearMap(source,target,matrix)` provide exact Q^n spaces and linear transformations using existing Maths vector/matrix authority.
