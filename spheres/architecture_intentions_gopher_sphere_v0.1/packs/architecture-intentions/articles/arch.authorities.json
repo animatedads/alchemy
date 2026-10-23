@@ -3,5 +3,27 @@
   "id": "arch.authorities",
   "title": "Authority separation",
   "section": "authority",
-  "body": "Intention Service dynamically discovers/re-evaluates viable intentions, asks clarification, and READY-gates dispatch. The architecture module consumes it; do not create fixed permanent action catalogs.\n\nConnectSelector owns the route-selection binding for DIRECT, RPC and QUEUE and their actual capability/explain evidence. JMS bridging remains distinct, with acknowledgement, transactions, redelivery, ordering, idempotency and DLQ explicit. Never claim Queue enqueue is synchronous completion. Network transport/socket selection, serialization codec and RPC envelope are separate authorities.\n\nIdentity/authentication must be attached to individual principals/trust boundaries, not set once globally. External authority owns authentication assertions and legal conclusions. CRM owns relationship truth; Relationship Case owns case coordination and typed references; NotNotes owns document truth; Institutional Policy owns published policy; Brand Interaction/Governance owns its own evidence and choices, never third-party reputation truth.\n\nSSC owns component/lineage/source levels and reachable ::requires closure, qualified immutable dependency locks. Deployment owns target artifact selection, executable package loadability, REXX_PATH, activation and verification. Architecture Intentions only emits unresolved build requests and receives externally verified SSC evidence.\n\nA human design sign-off is not a cryptographic approval. Promotion revalidates the selected comparison and requires a trusted external approval verifier; generation changes require new review. No route choice, review, or SSC receipt itself authorizes execution."
+  "body": "Intention Service dynamically discovers/re-evaluates viable intentions, asks clarification, and READY-gates dispatch. The architecture module consumes it; do not create fixed permanent action catalogs.\n\nConnectSelector owns the route-selection binding for DIRECT, RPC and QUEUE and their actual capability/explain evidence. JMS bridging remains distinct, with acknowledgement, transactions, redelivery, ordering, idempotency and DLQ explicit. Never claim Queue enqueue is synchronous completion. Network transport/socket selection, serialization codec and RPC envelope are separate authorities.\n\nIdentity/authentication must be attached to individual principals/trust boundaries, not set once globally. External authority owns authentication assertions and legal conclusions. CRM owns relationship truth; Relationship Case owns case coordination and typed references; NotNotes owns document truth; Institutional Policy owns published policy; Brand Interaction/Governance owns its own evidence and choices, never third-party reputation truth.\n\nSSC owns component/lineage/source levels and reachable ::requires closure, qualified immutable dependency locks. Deployment owns target artifact selection, executable package loadability, REXX_PATH, activation and verification. Architecture Intentions only emits unresolved build requests and receives externally verified SSC evidence.\n\nA human design sign-off is not a cryptographic approval. Promotion revalidates the selected comparison and requires a trusted external approval verifier; generation changes require new review. No route choice, review, or SSC receipt itself authorizes execution.",
+  "version": "0.1",
+  "sphere": "architecture-intentions",
+  "summary": "Intention Service dynamically discovers/re-evaluates viable intentions, asks clarification, and READY-gates dispatch. The architecture module consumes it; do not create fixed permanent action catalogs.",
+  "invariants": [
+    "Architecture selection and review never authorize execution",
+    "Unknown qualification fails closed and remains visible",
+    "Each external component retains its own semantic and provenance authority"
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_architecture_intentions_v0.1-dev8.zip",
+      "sha256": "d0bc91d6ae0d85f47796325b63795ca7696be149918c60131afe2396868c7385",
+      "claim": "Exact historical baseline; no new runtime acceptance"
+    }
+  ],
+  "related": [
+    "arch.start",
+    "arch.contracts",
+    "arch.qualification",
+    "arch.continuation"
+  ]
 }
