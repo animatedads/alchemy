@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "librarian-v2.temporal",
+  "title": "Event, publication, observation and knowledge times",
+  "section": "temporal",
+  "version": "0.1",
+  "sphere": "librarian-v2",
+  "authority": "project-continuity",
+  "summary": "Single Time Service v0.3 is the conversion authority. LibrarianTimeAdapter produces normalized instants annotated with timezone and tzdb edition. LibrarianTimedIndex filters by publication and observation cutoffs; event time and the time knowledge became available are distinct. Future interfaces must model intervals, uncertain instants, disputed dates and timezone data versioning without ad-hoc string timestamp comparison.",
+  "invariants": [
+    "Never infer local timezone from current host settings.",
+    "Historical as-of evaluation must exclude claims not published or not observed at its respective cutoff.",
+    "Correction and retraction histories must remain reconstructible; later observations do not retroactively alter historical knowledge.",
+    "Time Services may evolve: bind to verified semantic API; do not build a competing time service in Librarian."
+  ],
+  "provenance": [
+    {
+      "artifact": "librarian_v2_dev8_20261023.zip",
+      "sha256": "17fd68b251e18ebe9f9c6902b6535db444bec1ce6a125ab6f2b8bd579250b742",
+      "member": "librarian_v2_dev3/src/LibrarianTemporal.cls",
+      "line_start": 1,
+      "line_end": 74,
+      "claim": "Time adapter, observation and knowledge cutoff implementation."
+    },
+    {
+      "artifact": "librarian_v2_dev8_20261023.zip",
+      "sha256": "17fd68b251e18ebe9f9c6902b6535db444bec1ce6a125ab6f2b8bd579250b742",
+      "member": "librarian_v2_dev3/single_time_service_v0.3/contracts/time-service.v1.json",
+      "line_start": 1,
+      "line_end": 30,
+      "claim": "Bundled Time Service contract reference."
+    }
+  ]
+}
