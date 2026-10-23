@@ -3,8 +3,13 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REXX_BIN="${REXX_BIN:-rexx}"
 OUTDIR="${1:-$ROOT/.qualification}"
+: "${FONT_MANAGER_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_font_manager}"
 mkdir -p "$OUTDIR"
-export REXX_PATH="$ROOT/src${REXX_PATH:+:$REXX_PATH}"
+[[ -f "$FONT_MANAGER_ROOT/src/FontManager.cls" ]] || {
+  echo "missing dependency: $FONT_MANAGER_ROOT/src/FontManager.cls" >&2
+  exit 2
+}
+export REXX_PATH="$ROOT/src:$FONT_MANAGER_ROOT/src${REXX_PATH:+:$REXX_PATH}"
 
 "$REXX_BIN" "$ROOT/tests/test_deflate.rex"
 "$REXX_BIN" "$ROOT/tests/test_pdf_core.rex" "$OUTDIR/core.pdf"
@@ -41,5 +46,19 @@ fi
 grep -a -q '/Outlines' "$OUTDIR/rich-document.pdf"
 grep -a -q '/Subtype /Link' "$OUTDIR/rich-document.pdf"
 grep -a -q '/Subtype /Image' "$OUTDIR/rich-document.pdf"
+
+if command -v fc-match >/dev/null 2>&1 && command -v pyftsubset >/dev/null 2>&1 && python3 -c "import fontTools" >/dev/null 2>&1; then
+  "$REXX_BIN" "$ROOT/tests/test_managed_unicode_fonts.rex" "$ROOT $OUTDIR/managed-unicode.pdf $FONT_MANAGER_ROOT/tools/fonttools_service.py pyftsubset $OUTDIR"
+  if command -v pdffonts >/dev/null 2>&1; then
+    pdffonts "$OUTDIR/managed-unicode.pdf" > "$OUTDIR/managed-unicode.pdffonts.txt"
+    grep -q 'CID TrueType' "$OUTDIR/managed-unicode.pdffonts.txt"
+  fi
+  if command -v pdftotext >/dev/null 2>&1; then
+    pdftotext -layout "$OUTDIR/managed-unicode.pdf" "$OUTDIR/managed-unicode.txt"
+    grep -q 'naïve assumptions' "$OUTDIR/managed-unicode.txt"
+    grep -q 'Καλημέρα' "$OUTDIR/managed-unicode.txt"
+    grep -q 'Привет' "$OUTDIR/managed-unicode.txt"
+  fi
+fi
 
 echo "PASS environment qualification: $OUTDIR"

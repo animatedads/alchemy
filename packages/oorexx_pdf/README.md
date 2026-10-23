@@ -1,4 +1,4 @@
-# ooRexx PDF v0.1-dev4
+# ooRexx PDF v0.1-dev5
 
 A native ooRexx PDF 1.4 writer and flowed report renderer. Runtime PDF generation does not shell out to a PDF library or compressor.
 
@@ -76,3 +76,28 @@ The advanced qualification deliberately combines 72 numeric detail rows, Array-s
 - Images, links, paragraphs and Array-fed tables can be interleaved in the same flow and continue through normal automatic pagination.
 
 `tests/test_rich_document.rex` combines all of these with a multi-page TPS table. The generated PDF is also structurally checked for `/Outlines`, `/Link`, and `/Image` objects.
+
+## dev5 additions - shared Font Manager integration
+
+`PdfFlowReport` can now consume an injected `FontManager` with `setFontManager(manager[, tempDir])`. PDF does not search for fonts or calculate SFNT metrics itself.
+
+When a manager is supplied:
+
+- `PRINT_BODY` and `HEADING` semantic purposes select the body and bold/heading faces;
+- the report preflights its complete visible text corpus before pagination;
+- Font Manager creates TrueType subsets and a renderer-neutral glyph plan;
+- line wrapping, cell alignment and link geometry use real glyph advances from that plan;
+- subsets are embedded as CID TrueType fonts with `/Identity-H` encoding;
+- PDF creates `/CIDToGIDMap` and `/ToUnicode` streams so rendered text and extracted text agree;
+- UTF-16BE document strings are used for Unicode metadata and outline titles;
+- font programs are stored without the native ooRexx DEFLATE pass, avoiding an unnecessary pure-Rexx compression cost on already compact subset fonts.
+
+The default legacy Helvetica path remains available when no Font Manager is injected.
+
+The bundled `vendor/font_manager` directory is a qualification snapshot of the independent `oorexx_font_manager_v0.1-dev2` package. No font binaries are bundled in either source package.
+
+`tests/test_managed_unicode_fonts.rex` creates a multipage Array-fed TPS report containing Latin diacritics, Greek, Cyrillic, punctuation and currency symbols. Independent qualification requires `pdffonts` to report embedded/subset/Unicode CID TrueType fonts and `pdftotext` to reproduce the multilingual text exactly.
+
+## GitHub source layout
+
+PDF dev5 consumes the independently published `oorexx_font_manager` package. The standalone release archive contains a qualification copy under `vendor/font_manager`; the Alchemy GitHub source tree deliberately omits that embedded copy. `tools/run_environment_test.sh` resolves sibling `packages/oorexx_font_manager` by default; set `FONT_MANAGER_ROOT` to override it.
