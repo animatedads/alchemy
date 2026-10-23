@@ -1,0 +1,69 @@
+{
+  "schema": "plan42.preferred_capabilities.v1",
+  "families": {
+    "preferred.log": {
+      "priority": "wave1",
+      "kind": "runtime/framework",
+      "capabilities": ["debug", "info", "warn", "error", "fatal", "structured"],
+      "backend_intent": {
+        "oorexx": ".AlchemyLogger~getInstance",
+        "python3": "logging.getLogger('plan42')",
+        "rust": "eprintln fallback or log crate",
+        "regina": "say '[LEVEL]' fallback",
+        "c": "p42_log_* runtime helper",
+        "bash": "printf stderr fallback"
+      }
+    },
+    "preferred.cli": {
+      "priority": "wave1",
+      "kind": "emit_time",
+      "capabilities": ["parse", "string", "int", "flag", "positional", "list"],
+      "contract": "Generated entry point handles required/optional args, defaults, type coercion, any order, help and usage errors."
+    },
+    "preferred.json": {
+      "priority": "wave1",
+      "kind": "runtime/library",
+      "capabilities": ["parse", "stringify", "read", "write", "write_atomic"],
+      "contract": "JSON parse/read/write with explicit encoding and atomic writes where requested."
+    },
+    "preferred.api": {
+      "priority": "wave1.5",
+      "kind": "adaptor_contract",
+      "capabilities": ["adapter", "request", "get", "post", "paginate", "auth.bearer", "validate_request", "validate_response", "map_error", "audit_call"],
+      "contract": "API adaptors bundle auth, schema validation, timeout, retry/backoff, pagination, error mapping, redaction and audit."
+    },
+    "preferred.tsv": {
+      "priority": "wave2",
+      "kind": "runtime/library",
+      "capabilities": ["read", "write", "stream", "stream_rows", "merge", "merge_in_place", "index_build", "index_lookup"]
+    },
+    "preferred.math": {
+      "priority": "wave2",
+      "kind": "expression/runtime",
+      "capabilities": ["abs", "min", "max", "floor", "ceil", "round", "pow", "sqrt", "checked_add", "checked_sub", "checked_mul", "checked_div", "checked_mod", "saturating_add", "saturating_sub", "clamp"]
+    },
+    "preferred.string": {
+      "priority": "wave2",
+      "kind": "expression/runtime",
+      "capabilities": ["trim", "lower", "upper", "split", "join", "replace", "regex_match", "regex_replace", "normalise_unicode", "max_len"]
+    },
+    "preferred.time": {
+      "priority": "wave2",
+      "kind": "runtime/library",
+      "capabilities": ["now", "utc_now", "format", "parse", "sleep", "elapsed_ms"]
+    },
+    "preferred.yaml": {
+      "priority": "wave3",
+      "kind": "runtime/library",
+      "capabilities": ["parse", "stringify", "read", "write", "write_atomic"],
+      "notes": "ooRexx requires yaml.cls or an explicitly JSON-compatible subset conversion."
+    },
+    "preferred.crypto": {
+      "priority": "wave3",
+      "kind": "security/runtime/library",
+      "capabilities": ["sha256", "sha512", "hmac_sha256", "random_bytes", "random_hex", "rsa_sign", "rsa_verify", "chacha20_encrypt", "chacha20_decrypt"],
+      "notes": "Keep primitives separate from secret-source and key-policy preferreds."
+    }
+  },
+  "status_values": ["native", "emit_time", "framework_native", "runtime_helper", "fallback", "framework_candidate", "library_required", "degraded", "pending_yaml_cls", "refused", "unknown"]
+}
