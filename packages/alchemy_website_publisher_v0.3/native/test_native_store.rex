@@ -1,4 +1,6 @@
-/* Run with a qualified ooRexx 5.3 + NoSQLServer v0.90, unused SQLite path. */
+/* Run ONLY under qualified ooRexx 5.3 + NoSQLServer v0.90 runtime.
+ * Usage: rexx native/test_native_store.rex UNUSED_NEW_SQLITE_PATH
+ */
 numeric digits 20
 signal on syntax name failed
 parse arg file
@@ -16,7 +18,7 @@ call test s~revision=1, 'current revision #1'
 row=s~get(1)
 call test row['document']==a, 'exact bytes roundtrip #1'
 rs=.CmsWebsiteSnapshotStore~new(file)
-call test rs~revision=1, 'persist across engine reopen'
+call test rs~revision=1, 'persist across native engine reopen'
 r=rs~append('{"schema":"alchemy.website.publisher.export/0.1","text":"second"}',1)
 call test r=2, 'native insert #2'
 row=rs~get(2)

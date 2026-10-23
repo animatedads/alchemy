@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Native development qualification only. Never deploys or publishes content.
+# Runtime integration qualification. Never deploys or publishes website content.
 set -euo pipefail
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
-: "${OOREXX_ROOT:?Set OOREXX_ROOT to extracted ooRexx prefix}"
+: "${OOREXX_ROOT:?Set OOREXX_ROOT to the extracted ooRexx installation prefix}"
 : "${ALCHEMY_ROOT:?Set ALCHEMY_ROOT to Alchemy Objects package root}"
 : "${CRYPTO_ROOT:?Set CRYPTO_ROOT to Crypto package root}"
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT
+# Explicitly private snapshot temp dir for NoSQLServer v0.90 native backups.
 chmod 700 "$TMP"
 export TMPDIR="$TMP"
 NS="$ROOT/dependencies/nosqlserver_v0.90_sqlite_wal_read_write_candidate.zip"
@@ -20,16 +21,14 @@ DB="$TMP/publisher.sqlite"
 "$OOREXX_ROOT/bin/rexx" "$ROOT/native/test_native_store.rex" "$DB"
 python3 - "$DB" <<'PY'
 import sqlite3,sys
-con=sqlite3.connect(sys.argv[1])
-mode=con.execute('PRAGMA journal_mode=WAL').fetchone()[0]
-con.close()
+con=sqlite3.connect(sys.argv[1]);mode=con.execute('PRAGMA journal_mode=WAL').fetchone()[0];con.close()
 assert mode.lower()=='wal',mode
 print('WAL_MODE:',mode)
 PY
 "$OOREXX_ROOT/bin/rexx" "$ROOT/native/test_native_wal.rex" "$DB"
 python3 - "$DB" <<'PY'
 import sqlite3,sys
-con=sqlite3.connect(sys.argv[1])
+con=sqlite3.connect(sys.argv[1]);
 assert con.execute('PRAGMA integrity_check').fetchone()[0]=='ok'
 assert con.execute('SELECT COUNT(*) FROM publisher_snapshots').fetchone()[0]==3
 assert con.execute('SELECT revision,parent_revision FROM publisher_snapshots ORDER BY revision').fetchall()==[(1,0),(2,1),(3,2)]

@@ -53,7 +53,8 @@
   if text == .nil | text == '' then raise syntax 93.900 additional('Empty document')
   if text~length > 3000000 then raise syntax 93.900 additional('Document too large')
   if \datatype(expected,'W') | expected < 0 then raise syntax 93.900 additional('Expected revision must be a nonnegative integer')
-  -- Opaque archival data, not trusted authorisation or verified JSON.
+  -- Content is opaque archival data, not trusted authorisation or validated JSON.
+  -- Browser validates before export; the subsequent importer validates again.
   rows = self~all
   maxRev = 0
   latestSite = 0
@@ -69,14 +70,16 @@
   vals['parent_revision'] = latestSite
   vals['recorded_at'] = date('S') || 'T' || time('N') || ' LOCAL_UNVERIFIED'
   vals['document'] = text
-  -- Native prepared INSERT; unique primary key prevents silent overwrites.
+  -- Native prepared insert: no interpolation of user-controlled JSON in SQL.
+  -- Unique PRIMARY KEY detects concurrent inserts; no retry can silently overwrite.
   rs = engine~insert('publisher_snapshots', vals)
   self~mustSucceed(rs, 'INSERT')
   if rs~affectedRows \= 1 then raise syntax 93.900 additional('Unexpected insert count')
   return newRev
 
 ::method verify
-  -- Read-only structural check, not a signature or approval.
+  -- Read-only structural validation, not a cryptographic attestation or publishing approval.
+  -- The site is deliberately fixed at rasenfalcon.com for this reference module.
   previous = 0
   count = 0
   do row over self~all

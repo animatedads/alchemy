@@ -1,0 +1,25 @@
+{
+  "kind": "article",
+  "id": "publisher.storage",
+  "version": "0.1",
+  "sphere": "website-publisher",
+  "title": "NoSQLServer selected SQLite editorial ledger",
+  "section": "storage",
+  "summary": "CmsWebsiteSnapshotStore.cls selects SQLiteWritableDatabaseEngine from NoSQLServer v0.90. Every revision is a single prepared INSERT with expected prior revision; load/history/verify are local CLI operations.",
+  "invariants": [
+    "Single authorised local writer; v0.90 is a development candidate with no multi-statement transaction API or predicate-wide multi-writer serialisability.",
+    "Source v0.90 SHA-256: 08534dc11858863a6efa82e4689e07ceb420691c4a9ab7fab7da69819c8cf9da.",
+    "Newer v0.91 SHA-256: d4a276007029e66512611ea7e836ca7ab30209b80ac7d46ecf1fba61121f02d0; it adds opt-in single-table UPDATE/DELETE predicate validation, not new multi-statement transactions. Version upgrade requires independent Publisher qualification.",
+    "NoSQLServer source remains separate pinned dependency; do not copy into owned GitHub tree.",
+    "Potential crash/cleanup of WAL snapshot temporary files, resource caps, storage volume permissions and post-commit refresh warning handling remain deployment obligations."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "alchemy_website_publisher_v0.3.zip",
+      "sha256": "db61d4a62112fb8af1206935b121daa975e96366e11801e48be0b2e946ef2a89",
+      "claim": "Exact complete v0.3 publisher distribution used for source inventory and regression suite"
+    }
+  ],
+  "related": []
+}
