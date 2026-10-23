@@ -538,3 +538,173 @@
     end
   end
   return .nil
+
+::method semanticDocumentHelp private
+  expose app
+  use strict arg document, upperText
+  projection = app~semanticDocumentProjection(document)
+  wantedAction = ""
+  if pos("APPROVE", upperText) > 0 then wantedAction = "APPROVE"
+  else if pos("SUBMIT", upperText) > 0 then wantedAction = "SUBMIT"
+  else if pos("REJECT", upperText) > 0 then wantedAction = "REJECT"
+
+  out = projection["KEY"] || " | " || projection["FORM"] || " | status=" || projection["STATUS"] || "0a"x
+  matched = .false
+  do action over projection["ACTIONS"]
+    if wantedAction <> "" & action["ID"] \= wantedAction then iterate
+    matched = .true
+    state = "AVAILABLE"
+    if \action["ENABLED"] then state = "INFEASIBLE"
+    out = out || action["ID"] || ": " || state
+    if \action["ENABLED"] & action["REASON"] <> "" then out = out || " (" || action["REASON"] || ")"
+    out = out || "0a"x
+  end
+  if \matched then return self~reply("INFEASIBLE", "I understood the requested operation, but that operation is not advertised by the current NotNotes semantic document projection.", "SEMANTIC_DOCUMENT_ACTIONS")
+
+  r = self~reply("SUCCESS", out, "SEMANTIC_DOCUMENT_ACTIONS")
+  r["DOCUMENT_KEY"] = projection["KEY"]
+  r["DOCUMENT_STATUS"] = projection["STATUS"]
+  return r
+
+::method availableReports private
+  use strict arg reports
+  out = "CURRENT NOTNOTES REPORTS" || "0a"x
+  do report over reports
+    out = out || report["NAME"] || " | source=" || report["SOURCE_FORM"] || "0a"x
+  end
+  r = self~reply("SUCCESS", out, "LIST_REPORTS")
+  r["COUNT"] = reports~items
+  return r
+
+::method formatInnerResult private
+  expose app
+  use strict arg decision,payload
+  intention = decision~intentionId
+  text = "NotNotes completed " || intention || "."
+  if payload~isA(.Array) then do
+    text = intention || ": " || payload~items || " document(s)." || "0a"x
+    do document over payload
+      if document~hasMethod("DOCKEY") then text = text || document~DocKey || " | " || document~formName || " | " || document~Title || "0a"x
+    end
+  end
+  r = self~reply("SUCCESS", text, intention)
+  r["PAYLOAD"] = payload
+  return r
+
+::method decisionMessage private
+  use strict arg decision
+  if decision~hasMethod("PROMPT") then do
+    p = decision~prompt
+    if p \== .nil then if p~string <> "" then return p~string
+  end
+  return "NotNotes understood the request but requires more information or authority before it can proceed."
+
+::method llmClassify private
+  expose llm
+  use strict arg text,discovery
+  prompt = "You are the recognition fallback for an Initech NotNotes help desk. Do not invent application capabilities." || "0a"x
+  prompt = prompt || "Return one short canonical NotNotes request only, such as 'show TPS Report', 'show TPS Report Review', or a request naming one currently installed report/document type." || "0a"x
+  prompt = prompt || "Live reports:" || "0a"x
+  do report over discovery["REPORTS"]; prompt = prompt || "- " || report["NAME"] || " source=" || report["SOURCE_FORM"] || "0a"x; end
+  prompt = prompt || "Live formats:" || "0a"x
+  do format over discovery["FORMATS"]; prompt = prompt || "- " || format["NAME"] || "0a"x; end
+  prompt = prompt || "User request: " || text
+  return llm~complete(prompt)~strip
+
+::method refreshInstrumentation private
+  expose instrumentationPublisher
+  result = instrumentationPublisher~publish(self~instrumentationTimestamp)
+  if \result~ok then raise syntax 88.900 array("Help Desk instrumentation publication failed: " || result~code)
+  return result
+
+::method instrumentationTimestamp private
+  /* Instrumentation Mesh treats timestamps as caller-owned evidence strings.
+   * Keep this deterministic/portable and avoid inventing timezone semantics. */
+  return date("S") || "T" || time("N")
+
+::method formatInstrumentation private
+  use strict arg assessment
+  evidence = assessment~evidence
+  snapshots = evidence["snapshots"]
+  if snapshots == .nil then snapshots = .Array~new
+  if snapshots~items = 0 then do
+    surface = evidence["surface"]
+    if surface \== .nil then snapshots = surface["snapshots"]
+  end
+  if snapshots == .nil | snapshots~items = 0 then return self~reply("INFEASIBLE", "I understood the instrumentation request, but no current NotNotes instrumentation snapshot is available.", "GET_NOTNOTES_INSTRUMENTATION")
+
+  out = "CURRENT NOTNOTES INSTRUMENTATION" || "0a"x
+  do snapshot over snapshots
+    identity = snapshot["identity"]
+    serviceId = ""
+    if identity \== .nil then serviceId = identity["service_id"]
+    out = out || serviceId || " | health=" || snapshot["health"] || " | observed=" || snapshot["observed_at"] || "0a"x
+    samples = snapshot["samples"]
+    if samples == .nil then iterate
+    do sample over samples
+      out = out || sample["name"] || "=" || sample["value"]
+      if sample["unit"] \== .nil & sample["unit"]~string <> "" then out = out || " " || sample["unit"]
+      out = out || "0a"x
+    end
+  end
+  r = self~reply("SUCCESS", out, "GET_NOTNOTES_INSTRUMENTATION")
+  r["COUNT"] = snapshots~items
+  r["AUTHORITY"] = assessment~authority
+  return r
+
+::method close
+  expose app actor sessionId turnCount successCount failureCount transcript closed
+  if closed then do
+    d=.Directory~new; d["TPS_KEY"]=""; d["REVIEW_KEY"]=""; d["RATING"]="ALREADY_CLOSED"; return d
+  end
+  rating = "SUCCESS"
+  if failureCount > 0 then rating = "FAILURE"
+
+  tpsSpecs = app~userFormatFields("TPS Report")
+  if tpsSpecs~items = 0 then raise syntax 88.900 array("TPS Report format is not installed; cannot write mandatory session TPS report")
+  tpsValues = .Directory~new
+  tpsValues["TPSNumber"] = sessionId
+  tpsValues["User"] = actor
+  tpsValues["Cost"] = 0
+  tps = app~createUserDocument("TPS Report", tpsSpecs, tpsValues)
+  if tps == .nil then raise syntax 88.900 array("failed to create mandatory session TPS report")
+  tps~Title = "Help Desk session " || sessionId
+  tps~Workflow = "HELP DESK TPS PROCESS: " || rating
+  app~node~save(tps)
+
+  reviewSpecs = app~userFormatFields("TPS Report Review")
+  if reviewSpecs~items = 0 then raise syntax 88.900 array("TPS Report Review format is not installed; cannot review session TPS process")
+  reviewText = "Help-desk TPS process " || rating || ". Turns=" || turnCount || ", successful operations=" || successCount || ", failed/unknown operations=" || failureCount || "."
+  if transcript~items > 0 then reviewText = reviewText || " Last exchange: " || transcript[transcript~items]
+  reviewValues = .Directory~new
+  reviewValues["TheTPSReport"] = tps~DocKey
+  reviewValues["TheReview"] = reviewText
+  reviewValues["TheRating"] = rating
+  review = app~createUserDocument("TPS Report Review", reviewSpecs, reviewValues)
+  if review == .nil then raise syntax 88.900 array("failed to create mandatory TPS session review")
+  review~Title = "TPS Help Desk Review " || sessionId
+  review~Workflow = "HELP DESK SESSION REVIEW"
+  app~node~save(review)
+  ignore = app~persistNow
+  closed = .true
+
+  d=.Directory~new
+  d["TPS_KEY"] = tps~DocKey
+  d["REVIEW_KEY"] = review~DocKey
+  d["TPS_NUMBER"] = sessionId
+  d["RATING"] = rating
+  d["REVIEW_TEXT"] = reviewText
+  return d
+
+::method reply private
+  use strict arg status,text,intention
+  d=.Directory~new
+  d["STATUS"] = status
+  d["TEXT"] = text
+  d["INTENTION"] = intention
+  return d
+
+::requires "MiniNotesApp.cls"
+::requires "MiniNotesInstrumentation.cls"
+::requires "InstrumentationIntentions.cls"
+::requires "AlchemyNotNotesIntentions.cls"
