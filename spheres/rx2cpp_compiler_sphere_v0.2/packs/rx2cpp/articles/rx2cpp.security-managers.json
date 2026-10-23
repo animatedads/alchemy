@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "rx2cpp.security-managers",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "rx2cpp",
   "section": "security",
   "title": "Security managers: every interpreter check, in the same order",
@@ -17,7 +17,7 @@
   "invariants": [
     "The instance-wide manager of ooRexx 5.3 is never set (InterpreterInstance::setSecurityManager has no callers); there is nothing to support.",
     "Not handled specially: REQUIRES (the interpreter loads packages itself).",
-    "About 40 internal API sends of the runtime (CLASS, ID, PACKAGE queries) do not use the secured path; none is a protected method.",
+    "Checked identical: a protected method sent by the activation that set the manager is not checked, by a later routine it is (security_same_activation.rex); protected MAKESTRING and = reached by SAY, ||, LENGTH, a comparison and REQUEST are asked about as interpreted (security_internal_sends.rex). About 40 internal API sends of the runtime (CLASS, ID, PACKAGE queries) do not use the secured path; none has been found to differ.",
     "Tom Dyer's projects use security managers extensively: a change that breaks security_manager.rex or env_security.rex is not mergeable."
   ],
   "authority": "project-artifact",
@@ -33,26 +33,38 @@
   ],
   "provenance": [
     {
-      "artifact": "rx2cpp-c5c7b22.zip",
-      "sha256": "b7302645eb4caddfeb0db5be2d846d42579c000c12cb2b2a3f6c8a0d790a330f",
+      "artifact": "rx2cpp-43b440e.zip",
+      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
       "member": "oorexx2cpp/HANDOFF_2026-10-13.md",
       "line_start": 559,
-      "line_end": 584,
-      "claim": "Every check, manager taken at activation start, gaps."
+      "line_end": 586,
+      "claim": "Every check, manager taken at activation start, checked cases, gaps."
     },
     {
-      "artifact": "rx2cpp-c5c7b22.zip",
-      "sha256": "b7302645eb4caddfeb0db5be2d846d42579c000c12cb2b2a3f6c8a0d790a330f",
+      "artifact": "rx2cpp-43b440e.zip",
+      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
+      "member": "oorexx2cpp/native/test_program_constructs3.sh",
+      "line_start": 25,
+      "line_end": 28,
+      "claim": "Test script running the security fixtures."
+    },
+    {
+      "artifact": "rx2cpp-43b440e.zip",
+      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
       "member": "oorexx2cpp/native/fixtures/program_constructs/security_manager.rex",
       "claim": "Fixture identical to the interpreter."
     },
     {
-      "artifact": "rx2cpp-c5c7b22.zip",
-      "sha256": "b7302645eb4caddfeb0db5be2d846d42579c000c12cb2b2a3f6c8a0d790a330f",
-      "member": "oorexx2cpp/native/test_program_constructs3.sh",
-      "line_start": 25,
-      "line_end": 26,
-      "claim": "Test script running the security fixtures."
+      "artifact": "rx2cpp-43b440e.zip",
+      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
+      "member": "oorexx2cpp/native/fixtures/program_constructs/security_same_activation.rex",
+      "claim": "Same-activation protected send not checked; later routine checked."
+    },
+    {
+      "artifact": "rx2cpp-43b440e.zip",
+      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
+      "member": "oorexx2cpp/native/fixtures/program_constructs/security_internal_sends.rex",
+      "claim": "Protected MAKESTRING and = reached by language operations."
     }
   ]
 }
