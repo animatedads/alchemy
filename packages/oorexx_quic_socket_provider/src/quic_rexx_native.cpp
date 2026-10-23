@@ -28,6 +28,14 @@ struct Connection {
     }
 };
 
+struct Stream {
+    SSL *ssl = nullptr;
+    uint64_t connection_handle = 0;
+    ~Stream() {
+        if (ssl) SSL_free(ssl);
+    }
+};
+
 struct Listener {
     SSL_CTX *ctx = nullptr;
     SSL *listener = nullptr;
@@ -42,6 +50,7 @@ struct Listener {
 
 std::mutex g_lock;
 std::unordered_map<uint64_t, std::unique_ptr<Connection>> g_connections;
+std::unordered_map<uint64_t, std::unique_ptr<Stream>> g_streams;
 std::unordered_map<uint64_t, std::unique_ptr<Listener>> g_listeners;
 std::atomic<uint64_t> g_next{1};
 
@@ -146,6 +155,10 @@ Connection *connection_for(uint64_t handle) {
     auto it = g_connections.find(handle);
     return it == g_connections.end() ? nullptr : it->second.get();
 }
+Stream *stream_for(uint64_t handle) {
+    auto it = g_streams.find(handle);
+    return it == g_streams.end() ? nullptr : it->second.get();
+}
 Listener *listener_for(uint64_t handle) {
     auto it = g_listeners.find(handle);
     return it == g_listeners.end() ? nullptr : it->second.get();
@@ -224,6 +237,8 @@ RexxRoutine7(uint64_t, quicNativeClientOpen,
         }
         c->ssl = SSL_new(c->ctx);
         if (!c->ssl) throw std::runtime_error("SSL_new QUIC client failed");
+        if (!SSL_set_incoming_stream_policy(c->ssl, SSL_INCOMING_STREAM_POLICY_ACCEPT, 0))
+            throw std::runtime_error("failed to enable incoming QUIC streams");
         if (argumentExists(7) && !blocking) {
             if (!SSL_set_blocking_mode(c->ssl, 0)) throw std::runtime_error("failed to set nonblocking mode");
         }
@@ -321,6 +336,8 @@ RexxRoutine1(uint64_t, quicNativeAccept, uint64_t, listenerHandle)
         auto c = std::make_unique<Connection>();
         c->ssl = ssl;
         c->client = false;
+        if (!SSL_set_incoming_stream_policy(c->ssl, SSL_INCOMING_STREAM_POLICY_ACCEPT, 0))
+            throw std::runtime_error("failed to enable incoming QUIC streams");
         uint64_t handle = g_next.fetch_add(1);
         std::lock_guard<std::mutex> guard(g_lock);
         g_connections.emplace(handle, std::move(c));
@@ -349,6 +366,8 @@ RexxRoutine1(uint64_t, quicNativeTryAccept, uint64_t, listenerHandle)
         auto c = std::make_unique<Connection>();
         c->ssl = ssl;
         c->client = false;
+        if (!SSL_set_incoming_stream_policy(c->ssl, SSL_INCOMING_STREAM_POLICY_ACCEPT, 0))
+            throw std::runtime_error("failed to enable incoming QUIC streams");
         uint64_t handle = g_next.fetch_add(1);
         std::lock_guard<std::mutex> guard(g_lock);
         g_connections.emplace(handle, std::move(c));
@@ -474,14 +493,183 @@ RexxRoutine2(RexxObjectPtr, quicNativeRecv, uint64_t, handle, int, maximumBytes)
     }
 }
 
+
+RexxRoutine2(uint64_t, quicNativeOpenStream, uint64_t, connectionHandle, int, unidirectional)
+{
+    try {
+        Connection *c;
+        {
+            std::lock_guard<std::mutex> guard(g_lock);
+            c = connection_for(connectionHandle);
+        }
+        if (!c) throw std::runtime_error("unknown QUIC connection handle");
+        uint64_t flags = unidirectional ? SSL_STREAM_FLAG_UNI : 0;
+        SSL *ssl = SSL_new_stream(c->ssl, flags);
+        if (!ssl) throw std::runtime_error("SSL_new_stream failed");
+        auto st = std::make_unique<Stream>();
+        st->ssl = ssl;
+        st->connection_handle = connectionHandle;
+        uint64_t handle = g_next.fetch_add(1);
+        std::lock_guard<std::mutex> guard(g_lock);
+        g_streams.emplace(handle, std::move(st));
+        return handle;
+    } catch (const std::exception &e) {
+        raise_error(context, std::string("QUIC open stream: ") + e.what());
+        return 0;
+    }
+}
+
+RexxRoutine2(uint64_t, quicNativeAcceptStream, uint64_t, connectionHandle, int, nonblocking)
+{
+    try {
+        Connection *c;
+        {
+            std::lock_guard<std::mutex> guard(g_lock);
+            c = connection_for(connectionHandle);
+        }
+        if (!c) throw std::runtime_error("unknown QUIC connection handle");
+        uint64_t flags = nonblocking ? SSL_ACCEPT_STREAM_NO_BLOCK : 0;
+        ERR_clear_error();
+        SSL *ssl = SSL_accept_stream(c->ssl, flags);
+        if (!ssl) {
+            if (nonblocking) {
+                ERR_clear_error();
+                return 0;
+            }
+            throw std::runtime_error("SSL_accept_stream failed");
+        }
+        auto st = std::make_unique<Stream>();
+        st->ssl = ssl;
+        st->connection_handle = connectionHandle;
+        uint64_t handle = g_next.fetch_add(1);
+        std::lock_guard<std::mutex> guard(g_lock);
+        g_streams.emplace(handle, std::move(st));
+        return handle;
+    } catch (const std::exception &e) {
+        raise_error(context, std::string("QUIC accept stream: ") + e.what());
+        return 0;
+    }
+}
+
+RexxRoutine1(uint64_t, quicNativeStreamId, uint64_t, streamHandle)
+{
+    try {
+        Stream *st;
+        {
+            std::lock_guard<std::mutex> guard(g_lock);
+            st = stream_for(streamHandle);
+        }
+        if (!st) throw std::runtime_error("unknown QUIC stream handle");
+        return SSL_get_stream_id(st->ssl);
+    } catch (const std::exception &e) {
+        raise_error(context, std::string("QUIC stream id: ") + e.what());
+        return 0;
+    }
+}
+
+RexxRoutine1(int, quicNativeStreamType, uint64_t, streamHandle)
+{
+    try {
+        Stream *st;
+        {
+            std::lock_guard<std::mutex> guard(g_lock);
+            st = stream_for(streamHandle);
+        }
+        if (!st) throw std::runtime_error("unknown QUIC stream handle");
+        return SSL_get_stream_type(st->ssl);
+    } catch (const std::exception &e) {
+        raise_error(context, std::string("QUIC stream type: ") + e.what());
+        return -1;
+    }
+}
+
+RexxRoutine2(int, quicNativeStreamSend, uint64_t, streamHandle, RexxStringObject, bytes)
+{
+    try {
+        Stream *st;
+        {
+            std::lock_guard<std::mutex> guard(g_lock);
+            st = stream_for(streamHandle);
+        }
+        if (!st) throw std::runtime_error("unknown QUIC stream handle");
+        size_t nwritten = 0;
+        if (!SSL_write_ex(st->ssl, context->StringData(bytes), context->StringLength(bytes), &nwritten))
+            throw std::runtime_error("QUIC child stream write failed");
+        if (nwritten > static_cast<size_t>(INT32_MAX)) throw std::runtime_error("QUIC child stream write too large");
+        return static_cast<int>(nwritten);
+    } catch (const std::exception &e) {
+        raise_error(context, std::string("QUIC stream send: ") + e.what());
+        return -1;
+    }
+}
+
+RexxRoutine2(RexxObjectPtr, quicNativeStreamRecv, uint64_t, streamHandle, int, maximumBytes)
+{
+    try {
+        if (maximumBytes < 1) return context->NewStringFromAsciiz("");
+        Stream *st;
+        {
+            std::lock_guard<std::mutex> guard(g_lock);
+            st = stream_for(streamHandle);
+        }
+        if (!st) throw std::runtime_error("unknown QUIC stream handle");
+        std::vector<char> buffer(static_cast<size_t>(maximumBytes));
+        size_t nread = 0;
+        if (!SSL_read_ex(st->ssl, buffer.data(), buffer.size(), &nread)) {
+            int err = SSL_get_error(st->ssl, 0);
+            if (err == SSL_ERROR_ZERO_RETURN) return context->NewStringFromAsciiz("");
+            throw std::runtime_error("QUIC child stream read failed");
+        }
+        return context->NewString(buffer.data(), nread);
+    } catch (const std::exception &e) {
+        raise_error(context, std::string("QUIC stream recv: ") + e.what());
+        return NULLOBJECT;
+    }
+}
+
+RexxRoutine1(int, quicNativeStreamClose, uint64_t, streamHandle)
+{
+    try {
+        std::unique_ptr<Stream> st;
+        {
+            std::lock_guard<std::mutex> guard(g_lock);
+            auto it = g_streams.find(streamHandle);
+            if (it == g_streams.end()) return 0;
+            st = std::move(it->second);
+            g_streams.erase(it);
+        }
+        if (st->ssl) {
+            int loops = 0;
+            while (loops++ < 4) {
+                int rc = SSL_shutdown(st->ssl);
+                if (rc == 1) break;
+                if (rc < 0) break;
+            }
+        }
+        return 0;
+    } catch (const std::exception &e) {
+        raise_error(context, std::string("QUIC stream close: ") + e.what());
+        return -1;
+    }
+}
+
 RexxRoutine1(int, quicNativeClose, uint64_t, handle)
 {
     try {
         std::unique_ptr<Connection> c;
+        std::vector<std::unique_ptr<Stream>> streams;
         {
             std::lock_guard<std::mutex> guard(g_lock);
             auto it = g_connections.find(handle);
             if (it == g_connections.end()) return 0;
+            for (auto sit = g_streams.begin(); sit != g_streams.end(); ) {
+                if (sit->second->connection_handle == handle) {
+                    streams.push_back(std::move(sit->second));
+                    sit = g_streams.erase(sit);
+                } else {
+                    ++sit;
+                }
+            }
             c = std::move(it->second);
             g_connections.erase(it);
         }
@@ -562,6 +750,13 @@ RexxRoutineEntry quic_native_routines[] = {
     REXX_TYPED_ROUTINE(quicNativeListenerWaitReady, quicNativeListenerWaitReady),
     REXX_TYPED_ROUTINE(quicNativeSend, quicNativeSend),
     REXX_TYPED_ROUTINE(quicNativeRecv, quicNativeRecv),
+    REXX_TYPED_ROUTINE(quicNativeOpenStream, quicNativeOpenStream),
+    REXX_TYPED_ROUTINE(quicNativeAcceptStream, quicNativeAcceptStream),
+    REXX_TYPED_ROUTINE(quicNativeStreamId, quicNativeStreamId),
+    REXX_TYPED_ROUTINE(quicNativeStreamType, quicNativeStreamType),
+    REXX_TYPED_ROUTINE(quicNativeStreamSend, quicNativeStreamSend),
+    REXX_TYPED_ROUTINE(quicNativeStreamRecv, quicNativeStreamRecv),
+    REXX_TYPED_ROUTINE(quicNativeStreamClose, quicNativeStreamClose),
     REXX_TYPED_ROUTINE(quicNativeClose, quicNativeClose),
     REXX_TYPED_ROUTINE(quicNativeListenerClose, quicNativeListenerClose),
     REXX_TYPED_ROUTINE(quicNativePeerHost, quicNativePeerHost),
@@ -573,7 +768,7 @@ RexxPackageEntry oorexx_quic_native_package_entry = {
     STANDARD_PACKAGE_HEADER
     REXX_INTERPRETER_5_0_0,
     "oorexx_quic_native",
-    "0.1-dev2",
+    "0.1-dev3",
     nullptr,
     nullptr,
     quic_native_routines,
