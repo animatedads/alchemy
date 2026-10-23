@@ -1,0 +1,15 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {"name": "audio_spectral_integrity", "version": "0.1", "kind": "python-research-reference"},
+  "working_directory": ".",
+  "environment": {"set": {}, "prepend_path": []},
+  "tests": [{"name": "unit-synthetic", "argv": ["sh", "run_tests.sh"], "timeout_seconds": 120}],
+  "publish": {
+    "tree": {"source": ".", "path": "packages/audio_spectral_integrity_v0.1"},
+    "files": [
+      {"source": "sphere/packs/audio-spectral-integrity/00-sphere.json", "path": "spheres/audio_spectral_integrity_sphere_v0.1/packs/audio-spectral-integrity/00-sphere.json"},
+      {"source": "sphere/packs/audio-spectral-integrity/articles/arch.audio-spectral-integrity.method.json", "path": "spheres/audio_spectral_integrity_sphere_v0.1/packs/audio-spectral-integrity/articles/arch.audio-spectral-integrity.method.json"},
+      {"source": "sphere/profiles/audio-spectral-integrity.json", "path": "spheres/audio_spectral_integrity_sphere_v0.1/profiles/audio-spectral-integrity.json"}
+    ]
+  }
+}
