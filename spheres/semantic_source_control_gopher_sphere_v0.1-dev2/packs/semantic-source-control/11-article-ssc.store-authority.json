@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "ssc.store-authority",
+  "version": "0.1-dev2",
+  "sphere": "semantic-source-control",
+  "title": "The Semantic Source Store write authority is method-granular",
+  "summary": "SemanticSourceRepositoryService (oorexx_semantic_source_store, 2026-10-23) is the authority that turns imports into semantic source objects and revisions. Before it, nothing in the estate wrote ssc_source_object or ssc_source_revision; every reader read empty tables. Each structural object (METHOD, ATTRIBUTE, CONSTANT, ROUTINE, REQUIRES, OPTIONS, CLASS header, EXECUTABLE_SECTION, unknown directive fragment) is its own object with its own revision chain. Each file is a SOURCE_UNIT object whose revision text is the ordered member list. Acceptance is explicit and authorized.",
+  "invariants": [
+    "Granularity is the method: a changed method body is one new revision of one object; classes are never imported as single blobs.",
+    "Identity is language + module + logical path + semantic key; a version-wrapped archive folder (pkg_v0.1-dev24/) is packaging, not identity.",
+    "A SOURCE_UNIT layout revision changes only when members are added, removed or reordered.",
+    "New revisions are PROPOSED; only acceptRevision/acceptImport with an authenticated principal and a passing authorizer make them served. No authorizer means DENIED.",
+    "Every import records an immutable per-import projection (project_id import:<id>); the exact imported bytes stay reproducible after later acceptances.",
+    "Every new revision is read back and SHA-256 compared before the member is marked IMPORTED; a backend that alters bytes is refused (STORAGE_NOT_LOSSLESS), never trusted.",
+    "All ids are content-derived and the member row is written last, so repeated or interrupted imports are safe to re-run (ALREADY_IMPORTED).",
+    "Read files through SemanticSourceLayoutPackageService, not SemanticSourcePackageService: the parent's getPackage crashes on a real database (RESULT variable overwritten by a bare ~append instruction) and assembles files in unordered .Directory order."
+  ],
+  "evidence": {
+    "category": "LOCAL_PASS",
+    "runtime": "ooRexx 5.3.0 r13196",
+    "backend": "NoSQLServer v0.79",
+    "tests": [
+      "test_live/repository_roundtrip_test.rex (30 checks)",
+      "test_live/mcp_operations_test.rex (14 checks)",
+      "test_live/dogfood_bulk_import_test.rex"
+    ]
+  }
+}

@@ -1,0 +1,21 @@
+1. & does not short-circuit:
+   sideEffect ran 1 time(s) (expect 1)
+2. trailing comma = continuation, even in arg lists:
+   joinArgs gave: arg()=1 arg1=[a b] (two args joined)
+3. .Queue~items:
+   items = 2
+4. unassigned use arg test with symbol():
+   x unassigned (LIT)
+   x = given
+5. .Directory iteration order not guaranteed; use .StringTable/.Array if order matters
+   allIndexes: k1 k2 k3 k4 k5 k6
+6. private method across Message boundary (start):
+   async public->private: private reached
+Error 97:  Object method not found.
+Error 97.2:  Object "a PROBE" cannot accept private message "SECRET" from this context.
+   direct async send to private: ERROR 97.2
+7. unguarded attribute set from outside:
+   set externally
+8. reply + unguarded background loop:
+   worker ticks > 0: 1
+done

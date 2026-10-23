@@ -1,0 +1,16 @@
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC tests/test_planner.cpp lib/liboperational_planner.a -o tests/test_planner.bin
+./tests/test_planner.bin
+PASS operational class decisions
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC tests/test_capacity.cpp lib/liboperational_planner.a -o tests/test_capacity.bin
+./tests/test_capacity.bin
+PASS operational capacity scopes
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC tests/test_capacity_governor.cpp lib/liboperational_planner.a -o tests/test_capacity_governor.bin
+./tests/test_capacity_governor.bin
+PASS operational capacity domain admission and rates
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -pthread tests/test_pressure.cpp lib/liboperational_planner.a -o tests/test_pressure.bin
+./tests/test_pressure.bin
+PASS pressure: 36000 concurrent admission/release attempts plus live contraction/restoration
+bash ./tests/test_registry.sh
+PASS persistent operational registry and decisions
+bash ./tests/test_capacity_registry.sh
+PASS persistent operational capacity domains

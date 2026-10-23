@@ -1,0 +1,83 @@
+20260822T121700Z-CHATGPT-alchemy-package-model-v01 :: alchemy.autobuild.integration/0.2 alchemy_package_model 0.1 publish=tree:packages/alchemy_package_model_v0.1
+     test execution-plan ['rexx', 'tests/test_execution_plan.rex'] timeout 30
+     test required-directory ['rexx', 'tests/test_required_directory.rex'] timeout 30
+     test unresolved-dependency ['rexx', 'tests/test_unresolved_dependency.rex'] timeout 30
+     env.set {}
+20260930T195500Z-CHATGPT-alchemy-cog-v04-7df8dc :: alchemy.autobuild.integration/0.2 alchemy_cog 0.4-context-modes publish=tree:packages/alchemy_cog_v0.4-context-modes
+     test python-syntax ['python3', '-m', 'py_compile', 'cog.py', 'cogllm.py', 'cogoptimizer.py'] timeout 30
+     test state-smoke ['python3', 'cog.py', '--state'] timeout 30
+     env.set {}
+20261016T215500Z-CHATGPT-operational-degradation-dev3-5249c3 :: alchemy.autobuild.integration/0.3 oorexx_operational_degradation_planner 0.1-dev3 publish=tree:packages/oorexx_operational_degradation_planner_v0.1-dev3
+     test operational-degradation-planner-dev3 ['make', 'test'] timeout 180
+     env.set {}
+20261016T220000Z-CHATGPT-xtp-dev24-9599ee :: alchemy.autobuild.integration/0.3 oorexx_xtp 0.1-dev24 publish=tree:packages/oorexx_xtp_v0.1-dev24
+     test xtp-dev24-build-planner-dependency ['make', '-C', 'deps/oorexx_operational_degradation_planner_v0.1-dev3', 'all'] timeout 180
+     test xtp-dev24-named-service ['make', 'test-service', 'OPERATIONAL_PLANNER_DIR=deps/oorexx_operational_degradation_planner_v0.1-dev3'] timeout 300
+     env.set {}
+20261016T223000Z-CHATGPT-oorexx-audio-techniques-v01-a71c9d :: alchemy.autobuild.integration/0.2 oorexx_audio_techniques 0.1 publish=tree:packages/oorexx_audio_techniques_v0.1
+     test reference-smoke ['rexx', 'tests/smoke.rex'] timeout 120
+     env.set {'REXX_PATH': '${PACKAGE_ROOT}/src'}
+20261016T223050Z-CHATGPT-oorexx-memory-fabric-xtp-candidate1-79ada7 :: alchemy.autobuild.integration/0.2 oorexx_memory_fabric_xtp 0.1-candidate1 publish=tree:packages/oorexx_memory_fabric_xtp_v0.1_candidate1
+     test source-manifest-sha256 ['sha256sum', '--check', 'SHA256SUMS'] timeout 30
+     test shell-script-syntax ['bash', '-n', 'tests/run.sh', 'tests/xtp_wire_loopback.sh'] timeout 30
+     env.set {}
+20261016T224700Z-CHATGPT-ssh-over-xtp-candidate4-b7674355 :: alchemy.autobuild.integration/0.2 ssh_over_xtp 0.1-candidate4 publish=tree:packages/ssh_over_xtp_v0.1-candidate4
+     test native-build-and-regressions ['sh', 'tests/run_managed_acceptance.sh'] timeout 240
+     env.set {}
+20261017T181200Z-CHATGPT-xtp-dev24-9599ee :: alchemy.autobuild.integration/0.3 oorexx_xtp 0.1-dev24 publish=tree:packages/oorexx_xtp_v0.1-dev24
+     test planner-dependency ['make', '-C', 'deps/oorexx_operational_degradation_planner_v0.1-dev3', 'all'] timeout 180
+     test xtp-named-service-and-binding ['make', 'test-service', 'OPERATIONAL_PLANNER_DIR=deps/oorexx_operational_degradation_planner_v0.1-dev3'] timeout 300
+     env.set {}
+20261023T144100Z-CHATGPT-xtp-provision-candidate1-7f6b3 :: alchemy.autobuild.integration/0.3 xtp_route_publication 0.1-candidate1 publish=tree:packages/xtp_route_publication_v0.1_candidate1
+     test xtp-provision-signed-policy-and-quorum-contract ['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-v'] timeout 120
+     env.set {}
+20261023T144300Z-CHATGPT-audio-spectral-v04-b8e51f :: alchemy.autobuild.integration/0.2 oorexx_audio_spectral 0.4 publish=tree:packages/oorexx_audio_spectral_v0.4
+     test spectral-v03 ['rexx', 'tests/smoke.rex'] timeout 120
+     test decision-directed ['rexx', 'tests/decision_directed.rex'] timeout 120
+     env.set {'REXX_PATH': '${PACKAGE_ROOT}/src'}
+20261023T144500Z-CHATGPT-audio-models-v02-c4a672 :: alchemy.autobuild.integration/0.2 oorexx_audio_models 0.2 publish=tree:packages/oorexx_audio_models_v0.2
+     test model-smoke ['rexx', 'tests/smoke.rex'] timeout 120
+     env.set {'REXX_PATH': '${PACKAGE_ROOT}/src'}
+20261023T145000Z-CHATGPT-operational-planner-dev5-422dd2 :: alchemy.autobuild.integration/0.3 oorexx_operational_degradation_planner 0.1-dev5 publish=tree:packages/oorexx_operational_degradation_planner_v0.1-dev5
+     test native-suite ['make', 'test'] timeout 180
+     env.set {}
+20261023T150000Z-CHATGPT-xtp-dev25-7f6ab3 :: alchemy.autobuild.integration/0.3 oorexx_xtp 0.1-dev25 publish=artifact_only
+     test named-service ['make', 'test-service'] timeout 300
+     test capacity-rate ['make', 'test-capacity-rate'] timeout 120
+     test auto-context-key ['make', 'test-auto-key'] timeout 120
+     env.set {'OPERATIONAL_PLANNER_DIR': '${REPO_ROOT}/packages/oorexx_operational_degradation_planner_v0.1-dev5'}
+20261023T150100Z-CHATGPT-oorexx-audio-models-v02-a9f3c1 :: alchemy.autobuild.integration/0.2 oorexx_audio_models 0.2 publish=tree:packages/oorexx_audio_models_v0.2
+     test model-smoke ['rexx', 'tests/smoke.rex'] timeout 120
+     env.set {}
+20261023T150200Z-CHATGPT-oorexx-audio-techniques-v01-b4d2e7 :: alchemy.autobuild.integration/0.2 oorexx_audio_techniques 0.1 publish=tree:packages/oorexx_audio_techniques_v0.1
+     test techniques-smoke ['rexx', 'tests/smoke.rex'] timeout 120
+     env.set {}
+20261023T150200Z-CHATGPT-wire-ui-builder-e9-a8ca94 :: alchemy.autobuild.integration/0.3 wire_ui_builder 0.6-ergonomics9-http-front-qualification publish=tree:packages/wire_ui_builder_v0.6-ergonomics9-http-front-qualification
+     test prepare ['bash', 'prepare_package.sh'] timeout 60
+     test manifest ['bash', '-lc', 'cd prepared/wire_ui_builder_v0.6 && sha256sum -c MANIFEST.sha256'] timeout 60
+     test builder-web-shell ['bash', '-lc', 'cd prepared/wire_ui_builder_v0.6 && bash tests/test_builder_web_shell.sh'] timeout 60
+     test session-readiness ['bash', '-lc', 'cd prepared/wire_ui_builder_v0.6 && node tests/test_session_readiness.mjs'] timeout 60
+     test composition-controller ['bash', '-lc', 'cd prepared/wire_ui_builder_v0.6 && node tests/test_composition_controller.mjs'] timeout 60
+     test notnotes-web-preview ['bash', '-lc', 'cd prepared/wire_ui_builder_v0.6 && node tests/test_notnotes_web_preview.mjs'] timeout 60
+     test notnotes-live-bootstrap ['bash', '-lc', 'cd prepared/wire_ui_builder_v0.6 && node tests/test_notnotes_live_web_bootstrap.mjs'] timeout 60
+     test http-front-tools-syntax ['bash', '-lc', 'cd prepared/wire_ui_builder_v0.6 && bash -n tools/capture_http_front_contract.sh tools/compare_http_front_contract.sh'] timeout 60
+     env.set {}
+20261023T150448Z-CHATGPT-ed209_rto2_20mi-v0.1-candidate2-25008a :: alchemy.autobuild.integration/0.2 ed209_rto2_20mi 0.1-candidate2 publish=tree:packages/ed209_rto2_20mi_candidate2
+     test guest-image-preflight ['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_guest_preflight.py', '-v'] timeout 60
+     test additive-handler-overlay ['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_overlay.py', '-v'] timeout 60
+     env.set {}
+20261023T150500Z-CHATGPT-storage-fabric-dev23-739f24 :: alchemy.autobuild.integration/0.3 oorexx_storage_fabric 0.1-dev23 publish=artifact_only
+     test parallel-fetch-pressure ['bash', 'tests/run_parallel_fetch_pressure.sh'] timeout 180
+     env.set {'OP_PLANNER_ROOT': '${REPO_ROOT}/packages/oorexx_operational_degradation_planner_v0.1-dev5', 'SERVICE_DESCRIPTOR_ROOT': '${REPO_ROOT}/packages/oorexx_service_descriptors_v0.1-dev2'}
+20261023T150929Z-CHATGPT-rasenfalcon-delivery-v04-538a2e :: alchemy.autobuild.integration/0.3 rasenfalcon_delivery 0.4 publish=tree:packages/rasenfalcon_delivery_v0.4
+     test website-and-security-contracts ['bash', 'run_tests.sh'] timeout 180
+     env.set {}
+20261023T151214Z-CHATGPT-plan42-alchemy-bridge-dev4-1b7d8d :: alchemy.autobuild.integration/0.2 plan42_alchemy_bridge 0.1-dev4 publish=tree:packages/plan42_alchemy_bridge_v0.1-dev4
+     test plan42-alchemy-regressions ['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_plan42*.py', '-v'] timeout 240
+     test plan42-python-compile ['python3', '-m', 'py_compile', 'tools/plan42_bridge.py', 'tools/plan42c.py', 'tools/plan42_rx2cpp_plan.py', 'tools/plan42_rx2cpp_inventory.py'] timeout 30
+     env.set {'PLAN42_HOME': '${PACKAGE_ROOT}'}
+20261023T154200Z-CHATGPT-ed209-rto2-response-3a554a28 :: alchemy.autobuild.integration/0.2 ed209_rto2_controller_response_repair 0.1-candidate1 publish=tree:packages/ed209_rto2_controller_response_repair_v0.1_candidate1
+     test guest-preflight ['python3', '-m', 'unittest', 'discover', '-s', 'tests', '-p', 'test_guest_preflight.py', '-v'] timeout 60
+     env.set {}
+runtime-registry-v0.12-20260822T0543Z :: NO package/integration.json
+runtime-registry-v0.12-20260822T0632Z :: NO package/integration.json

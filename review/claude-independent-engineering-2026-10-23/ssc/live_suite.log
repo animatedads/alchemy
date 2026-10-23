@@ -1,0 +1,60 @@
+crypto: Foreign Runtime provider installed
+PASS  schema bootstrap on real NoSQLServer
+PASS  v1 Family imported
+PASS  module derived from version folder
+PASS  logical path drops version folder
+PASS  Family.cls held as 7 objects: header comment, requires, class, attribute, 3 methods
+PASS  7 new revisions
+PASS  three METHOD objects, one per method (method-granular)
+PASS  accept v1: 7 Family objects + Family layout + Helper class, method and layout
+PASS  v1 Family.cls rebuilt byte-identical from method objects
+PASS  ::requires closure pulls Helper.cls, byte-identical
+PASS  v2: exactly one new revision (the changed method)
+PASS  v2: file layout unchanged, layout revision reused
+PASS  unaccepted method revision is not served
+PASS  greet has two revisions
+PASS  new greet revision is PROPOSED
+PASS  accepting one method revision updates the file
+PASS  old greet revision SUPERSEDED
+PASS  v3: one new member revision (the added method)
+PASS  v3: layout changed
+PASS  v3 rebuilt byte-identical
+PASS  identical content under a different version folder: 0 new revisions
+PASS  same semantic identity across version folders
+PASS  repeated member is ALREADY_IMPORTED
+PASS  beginArchive resumes the same archive
+PASS  v1 import rebuilt exactly from its own projection after v3 accepted
+PASS  acceptance without an authorizer is DENIED
+PASS  acceptance without a principal is DENIED
+PASS  CRLF altered by backend is refused (STORAGE_NOT_LOSSLESS), not stored
+PASS  refused member is not marked IMPORTED
+PASS  fixed reader: exact order from projection ordinals
+INFO  original SemanticSourcePackageService~getPackage crashes on a real database: 7 []=
+SSC REPOSITORY ROUND-TRIP TEST: PASS  (30 checks, 117.4 s)
+PASS  import_archive_begin
+PASS  import_archive_member
+PASS  class header + 2 methods
+PASS  revision author is the session principal, not the claimed 'mallory'
+PASS  import_archive_complete
+PASS  accept without a session principal is DENIED
+PASS  accept by a principal the authorizer rejects is DENIED
+PASS  accept_import by tom
+PASS  acceptance recorded as DECISION
+PASS  free-text reason stored verbatim (INSERT path, not evaluated)
+PASS  get_package
+PASS  get_package returns Probe.cls byte-identical
+PASS  history
+PASS  unknown operation returns ok=0, does not raise
+SSC MCP OPERATIONS TEST: PASS (14 checks)
+OOREXX STRUCTURAL ADAPTER TEST: PASS
+OOREXX STRUCTURAL TREE TEST: PASS files=24
+BULK IMPORTER TEST: PASS
+SEMANTIC SOURCE INTENTION SERVICE TEST: PASS
+LANGUAGE SERVICE TEST: PASS
+STRUCTURAL IMPORT CONTRACT TEST: PASS
+EXAMINER INTENTION CONTRACT TEST: PASS
+EXAMINER RENDERED UI TEST: PASS
+EXAMINER SECURITY CONTRACT TEST: PASS
+BULK PACKAGE MATERIALISATION CONTRACT TEST: PASS
+SSC DEV25 ENVIRONMENT QUALIFICATION: PASS
+SSC STORE v0.1-dev26 LIVE QUALIFICATION: PASS

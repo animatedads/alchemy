@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Semantic Source Code Examiner</title>
+  <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+  <header class="app-header">
+    <div>
+      <strong>Semantic Source Code Examiner</strong>
+      <span class="subtitle">semantic review workspace</span>
+    </div>
+    <div id="connection-status" class="connection" aria-live="polite">Connecting…</div>
+  </header>
+
+  <main id="wire-ui-root" class="examiner-shell" aria-live="polite" aria-busy="true">
+    <div class="code-examiner" data-role="code-examiner" data-ui-contract="SSC_CODE_EXAMINER">
+      <aside class="examiner-nav" data-role="examiner-nav">
+        <div class="panel-heading">
+          <strong>Source</strong>
+          <span class="quiet small">server-authoritative catalogue</span>
+        </div>
+        <section class="panel">
+          <label for="semantic-search">Search</label>
+          <input id="semantic-search" class="search-box" type="search" autocomplete="off"
+                 placeholder="module, class, method, ticket…" data-wire-field="query">
+          <div class="nav-tabs" role="tablist" aria-label="Semantic navigation">
+            <button type="button" data-nav="modules">Modules</button>
+            <button type="button" data-nav="classes">Classes</button>
+            <button type="button" data-nav="methods">Methods</button>
+            <button type="button" data-nav="tickets">Tickets</button>
+            <button type="button" data-nav="work">Work</button>
+            <button type="button" data-nav="branches">Branches</button>
+          </div>
+          <ul id="catalog-results" class="result-list" data-wire-slot="catalog" aria-label="Semantic catalogue"></ul>
+        </section>
+        <section class="panel intention-panel" data-panel="intentions">
+          <label for="examiner-intention"><strong>Ask Examiner</strong></label>
+          <span class="quiet small">dynamic Intention Service discovery</span>
+          <textarea id="examiner-intention" rows="3" data-wire-field="intention_text" placeholder="e.g. show callers, compare revisions, build this deployment"></textarea>
+          <div class="inline-actions">
+            <button class="semantic-action primary" data-semantic-action="INTENTION.SUBMIT">Resolve / run</button>
+          </div>
+          <div class="intention-status" data-wire-slot="intention_status" aria-live="polite"></div>
+          <div class="context-list" data-wire-slot="intention_choices"></div>
+        </section>
+      </aside>
+
+      <section class="examiner-code" data-role="examiner-code">
+        <div class="revision-pin" data-role="revision-pin">
+          <span class="badge" data-wire-slot="object-kind">No selection</span>
+          <span data-wire-slot="semantic-name">Select a semantic source element</span>
+          <span class="badge" data-wire-slot="revision-state">—</span>
+          <span class="quiet" data-wire-slot="revision-id"></span>
+        </div>
+
+        <div class="code-toolbar" aria-label="Code navigation">
+          <button class="semantic-action" data-semantic-action="CODE.GOTO_DEFINITION">Go to definition</button>
+          <button class="semantic-action" data-semantic-action="CODE.FIND_USES">Find uses</button>
+          <button class="semantic-action" data-semantic-action="CODE.CALLERS">Callers</button>
+          <button class="semantic-action" data-semantic-action="CODE.CALLEES">Callees</button>
+          <button class="semantic-action" data-semantic-action="CODE.REFERENCE.EXPLAIN">Explain reference</button>
+        </div>
+
+        <div class="compare-bar">
+          <strong>Revision compare</strong>
+          <select data-wire-field="left_revision_id" aria-label="Left revision"></select>
+          <span>↔</span>
+          <select data-wire-field="right_revision_id" aria-label="Right revision"></select>
+          <button class="semantic-action" data-semantic-action="CODE.COMPARE">Compare</button>
+        </div>
+
+        <section id="class-inspection-view" class="class-inspection-view" data-role="class-inspection-view" data-default-view="true" aria-label="Condensed class inspection">
+          <div class="class-inspection-heading">
+            <strong data-wire-slot="class_name">No class selected</strong>
+            <span class="quiet" data-wire-slot="inspection_since">since —</span>
+          </div>
+          <pre class="class-tree" data-wire-slot="class_tree">Select a class to inspect its inheritance tree.</pre>
+          <div class="method-summary" data-wire-slot="class_method_summary">
+            <div class="method-summary-header" aria-hidden="true">
+              <span>method</span><span>from</span><span>exposes</span><span>returns</span>
+            </div>
+            <div class="quiet">Condensed methods appear here without method bodies.</div>
+          </div>
+        </section>
+
+        <details class="source-drilldown" data-role="source-drilldown">
+          <summary>Exact source / method bodies</summary>
+          <pre id="source-view" class="code-view" data-role="code-view" data-wire-slot="source"><code>No source selected.</code></pre>
+        </details>
+      </section>
+
+      <aside class="examiner-context" data-role="examiner-context">
+        <details open class="panel" data-panel="design">
+          <summary>Design</summary>
+          <div class="design-text" data-wire-slot="design">No semantic element selected.</div>
+        </details>
+
+        <details open class="panel" data-panel="requirements-notes">
+          <summary>Requirements &amp; notes</summary>
+          <div data-wire-slot="requirements" class="context-list"></div>
+          <div data-wire-slot="notes" class="context-list"></div>
+          <div class="inline-actions">
+            <button class="semantic-action" data-semantic-action="METHOD.REQUIREMENT.CREATE">Add requirement</button>
+            <button class="semantic-action" data-semantic-action="METHOD.NOTE.CREATE">Add note</button>
+          </div>
+        </details>
+
+        <details class="panel" data-panel="resources">
+          <summary>Resources</summary>
+          <div data-wire-slot="resources" class="context-list"></div>
+          <button class="semantic-action" data-semantic-action="RESOURCE.UPLOAD">Upload / link resource</button>
+        </details>
+
+        <details class="panel" data-panel="findings">
+          <summary>Findings</summary>
+          <div data-wire-slot="findings" class="context-list"></div>
+          <div class="inline-actions">
+            <button class="semantic-action danger" data-semantic-action="CODE.FINDING.CREATE">Mark error</button>
+            <button class="semantic-action" data-semantic-action="CODE.FINDING.RESOLVE">Resolve finding</button>
+          </div>
+        </details>
+
+        <details class="panel" data-panel="runtime">
+          <summary open>Class inspection (default)</summary>
+          <div data-wire-slot="runtime_surfaces" class="context-list"></div>
+          <div class="inline-actions">
+            <button class="semantic-action" data-semantic-action="CODE.CLASS.SURFACE">Effective methods</button>
+            <button class="semantic-action primary" data-semantic-action="CODE.CLASS.INSPECT">Condensed class</button>
+            <button class="semantic-action" data-semantic-action="CODE.CLASS.OVERRIDES">Overrides / inheritance</button>
+          </div>
+        </details>
+
+        <details class="panel" data-panel="graph">
+          <summary>Semantic graph</summary>
+          <div data-wire-slot="references" class="context-list"></div>
+          <div data-wire-slot="dependencies" class="context-list"></div>
+          <div data-wire-slot="exports" class="context-list"></div>
+        </details>
+
+        <details class="panel" data-panel="tests">
+          <summary>Build &amp; test evidence</summary>
+          <div data-wire-slot="test_evidence" class="context-list"></div>
+          <div class="inline-actions">
+            <button class="semantic-action" data-semantic-action="CODE.PACKAGE.REQUEST">Request build</button>
+            <button class="semantic-action" data-semantic-action="CODE.TEST.REQUEST">Request test</button>
+          </div>
+        </details>
+
+        <details class="panel" data-panel="modules">
+          <summary>Module &amp; deployment</summary>
+          <div data-wire-slot="deployments" class="context-list"></div>
+          <div class="inline-actions">
+            <button class="semantic-action" data-semantic-action="MODULE.REQUIREMENT.CREATE">Module requirement</button>
+            <button class="semantic-action" data-semantic-action="DEPLOYMENT.PACKAGE.REQUEST">Build deployment</button>
+          </div>
+        </details>
+
+        <details class="panel" data-panel="branches">
+          <summary>Branches</summary>
+          <div data-wire-slot="branches" class="context-list"></div>
+          <div class="inline-actions">
+            <button class="semantic-action" data-semantic-action="BRANCH.CLASSIFY">Classify</button>
+            <button class="semantic-action" data-semantic-action="BRANCH.PROTECT">Protect</button>
+            <button class="semantic-action" data-semantic-action="BRANCH.CONFLICT.RESOLVE">Resolve conflict</button>
+            <button class="semantic-action" data-semantic-action="BRANCH.PACKAGE.REQUEST">Build branch</button>
+          </div>
+        </details>
+
+        <details class="panel" data-panel="work">
+          <summary>Work review</summary>
+          <div data-wire-slot="work_entries" class="context-list"></div>
+          <div class="inline-actions">
+            <button class="semantic-action primary" data-semantic-action="WORK.ACCEPT">Accept work</button>
+            <button class="semantic-action danger" data-semantic-action="WORK.REFUSE">Refuse work</button>
+          </div>
+        </details>
+      </aside>
+
+      <footer class="examiner-actions" data-role="examiner-actions">
+        <span class="quiet" id="selection-status">No semantic selection</span>
+        <span class="action-spacer"></span>
+        <button class="semantic-action" data-semantic-action="CODE.REFRESH">Refresh</button>
+        <button class="semantic-action" data-semantic-action="CODE.PACKAGE.REQUEST">Build</button>
+        <button class="semantic-action" data-semantic-action="CODE.TEST.REQUEST">Test</button>
+        <button class="semantic-action primary" data-semantic-action="WORK.ACCEPT">Accept</button>
+        <button class="semantic-action danger" data-semantic-action="WORK.REFUSE">Refuse</button>
+      </footer>
+    </div>
+  </main>
+
+  <noscript>This review console requires JavaScript for the Wire UI runtime.</noscript>
+  <script type="module" src="./bootstrap.mjs"></script>
+</body>
+</html>

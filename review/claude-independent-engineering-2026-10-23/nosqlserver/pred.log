@@ -1,0 +1,17 @@
+NOTEXECUTE SELECT id FROM a WHERE id IN ('a1','a2')
+             IN lists are not implemented
+SUCCESS    SELECT id FROM a WHERE id='a1' OR id='a2'
+             id=a1 ; id=a2 ; 
+SUCCESS    SELECT id FROM a WHERE (id='a1' OR id='a2') AND k='X'
+             id=a1 ; 
+SUCCESS    SELECT r.rid,r.t FROM a o JOIN b r ON r.id=o.id AND r.rid=o.r WHERE o.id='a1' OR o.id='a3'
+             r.rid=b1 r.t=one ; r.rid=b3 r.t=three ; 
+SUCCESS    SELECT r.rid,r.t FROM a o JOIN b r ON r.id=o.id AND r.rid=o.r WHERE (o.id='a1' OR o.id='a3')
+             r.rid=b1 r.t=one ; r.rid=b3 r.t=three ; 
+NOTEXECUTE SELECT r.rid,r.t FROM a o JOIN b r ON r.id=o.id AND r.rid=o.r WHERE o.id IN ('a1','a3')
+             Unsupported predicate operator: IN.
+SUCCESS    SELECT rid FROM b WHERE id='a1' OR id='a2' ORDER BY n DESC
+             rid=b2 ; rid=b1 ; 
+SUCCESS    SELECT rid,n FROM b WHERE (id='a1' OR id='a2' OR id='a3') AND (t='one' OR t='three') ORDER BY rid
+             n=1 rid=b1 ; n=3 rid=b3 ; 
+exit=0

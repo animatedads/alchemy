@@ -1,0 +1,16 @@
+SUCCESS      CREATE TABLE t (k VARCHAR PRIMARY KEY, v VARCHAR, n INTEGER)
+SUCCESS      INSERT INTO t (k,v,n) VALUES ('a','x',1)
+SUCCESS      UPDATE t SET v='plain' WHERE k='a'
+NOTEXECUTED  UPDATE t SET v='with-dash' WHERE k='a'
+              UPDATE assignment expression is not implemented: with-dash
+NOTEXECUTED  UPDATE t SET v = 'with-dash' WHERE k='a'
+              UPDATE assignment expression is not implemented: with-dash
+SUCCESS      UPDATE t SET v='a b|c' WHERE k='a'
+SUCCESS      UPDATE t SET v='it''s' WHERE k='a'
+SUCCESS      UPDATE t SET v='x', n=2 WHERE k='a'
+SUCCESS      UPDATE t SET n=3 WHERE k='a'
+NOTEXECUTED  UPDATE t SET v='ssr-f96058f2f6b6e1420dcff84e447004cf' WHERE k='a'
+              UPDATE assignment expression is not implemented: ssr-f96058f2f6b6e1420dcff84e447004cf
+SUCCESS      UPDATE t SET v='12-34' WHERE k='a'
+final v= -22 n= 3
+exit=0
