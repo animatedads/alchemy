@@ -1,0 +1,29 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "rexxos_managed_compute_mu",
+    "version": "0.1-dev2",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "static-contract",
+      "argv": [
+        "python3",
+        "tests/test_manifest.py"
+      ],
+      "timeout_seconds": 30
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/rexxos_managed_compute_mu_v0.1-dev2"
+    }
+  }
+}
