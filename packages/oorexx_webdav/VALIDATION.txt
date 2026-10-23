@@ -1,15 +1,18 @@
-ooRexx WebDAV Gateway v0.1-dev4 validation
-Date: 2026-10-07
+ooRexx WebDAV Gateway v0.1-dev5 validation
+Date: 2026-10-09
 
 Runtime:
 - Open Object Rexx 5.3.0 r13196 (user-supplied Ubuntu debug package)
 
-Storage dependencies used:
-- StorageFabric.cls from current Library source
-- StorageStreaming.cls / storage.fabric.streaming/0.1 from current Library source
-- StorageSequentialMedia.cls from current Library source
+Library review before continuation:
+- Current WebDAV material found: dev3 documentation plus this conversation's dev4;
+  no authoritative later WebDAV package was found in Library.
+- Current HTTPS host evidence remains ooRexx HTTPS Server v0.4.4.
+- Current Storage streaming contract remains storage.fabric.streaming/0.1.
+- Current Hercules sequential-media adapter is storage.fabric.hercules-sequential-media/0.1 dev17,
+  including AWSTAPE; HET compression is explicitly not claimed.
 
-Local protocol qualification:
+Local qualification:
 PASS WEBDAV CORE
 PASS WEBDAV SEQUENTIAL MEDIA
 PASS WEBDAV HTTPS ADAPTER
@@ -21,30 +24,25 @@ PASS WEBDAV DEV4 IF/SHARED LOCKS
 PASS WEBDAV DEV4 SYNC REPORT
 PASS WEBDAV DEV4 SYNC JOURNAL
 PASS WEBDAV DEV4 BOUNDED BYTE PLANE
-PASS WEBDAV DEV4 LOCAL SUITE: 11/11
+PASS WEBDAV DEV5 STAGED STREAMING PUBLICATION
+PASS WEBDAV DEV5 DURABLE COLLECTION PROPERTIES
+PASS WEBDAV DEV5 AWSTAPE FIDELITY
+PASS WEBDAV DEV5 LOCAL SUITE: 14/14
 
-dev4 evidence includes:
-- RFC 4918 If state-list core: OR lists, AND conditions, Not, lock token,
-  entity tag and tagged request-resource form
-- shared/shared coexistence and exclusive/shared lock conflict
-- WEBDAVLOCKS2 persistence plus dev3 lock journal compatibility
-- sync-collection REPORT initial and incremental paths
-- persisted WebDavSyncJournal restart/reload
-- deletion projection as HTTP 404 in sync multistatus
-- 20 MiB StorageByteSource ranged GET with a 100-byte source request
-- HEAD size projection without whole-source read
-- fail-closed unbounded full GET where HTTPS streaming response is unavailable
-- bounded source->StorageByteSink ingestion with 64 KiB chunks
-- streamed SHA-256 identity after bounded ingestion
-- bounded post-ingest range read
-- no WebDAV source working variable named RESULT/result
+dev5 forcing cases:
+- bounded ingress advertises nextMaximum() and rejects oversized chunks;
+- namespace remains unpublished until exact-length commit;
+- abort removes local stage and never publishes a path;
+- incomplete commit fails and remains unpublished;
+- staged commit verifies physical byte count then streamed SHA-256;
+- collection dead properties survive restart, MOVE and REMOVE;
+- canonical tape -> AWSTAPE -> canonical tape preserves segmented record + filemark;
+- truncated AWSTAPE fails closed;
+- HET import/render remains deliberately unsupported.
 
 Qualification boundaries:
-- HTTPS request/response semantics are tested with a package-local fixture; the
-  external HTTPS server runtime is not claimed requalified here.
-- Queue mutation object semantics retain the qualified dev3 fake-manager test;
-  the live Queue Fabric broker is not claimed requalified here.
-- Network request-body streaming and network streaming responses still depend
-  on HTTPS Server exposing suitable streaming APIs.
-- sync-collection implements the core token/change protocol, not every optional
-  RFC 6578 property-selection feature.
+- No live HTTPS streaming API is claimed. The current Library evidence for HTTPS Server v0.4.4
+  does not expose one in the material retrieved for this work.
+- The dev5 streaming ingress is host-neutral and ready to bind when HTTPS exposes a bounded
+  request body source/callback and response streaming writer.
+- The live Queue Fabric broker is not requalified in this local run.
