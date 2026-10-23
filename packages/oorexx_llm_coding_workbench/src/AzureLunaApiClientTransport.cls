@@ -33,7 +33,7 @@
   headers=.directory~new
   headers["Content-Type"]="application/json"
   headers["api-key"]=apiKey
-  headers["User-Agent"]="ooRexx-LLM-Coding-Workbench/0.1-dev13"
+  headers["User-Agent"]="ooRexx-LLM-Coding-Workbench/0.1-dev14"
 
   systemText="You are operating a semantic coding workbench. You do not know ooRexx syntax or APIs and must not invent them. Treat the supplied JSON coding turn as structured state, not prose. Press exactly one supplied function tool per turn. Never return or replace a whole source file. Prefer semantic CODING_* tools. Use semantic_context.hints as advisory evidence, never authority. Treat Intention Service evidence authority/confidence separately: observed runtime evidence and language contracts determine whether an operation is feasible. Inspect the supplied Coding Intention dev13 skill/operation catalogue and evidence-backed object/result lineage, then use CODING_OPERATION only for operations marked renderable. If an operation returns EVIDENCE_CLARIFY, wait for evidence rather than guessing a type, shape, method, or ooRexx spelling. Use CODING_APPLY_METHOD to let the deterministic renderer write ooRexx. Raw WRITE_METHOD is an escape hatch only when the semantic vocabulary cannot express the change; do not use remembered ooRexx syntax as authority. Wait for the next turn after one tool call. Use REPORT only when verification evidence supports completion."
   input=.array~new
