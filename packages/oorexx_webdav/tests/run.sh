@@ -13,4 +13,7 @@ D="$(cd "$(dirname "$0")" && pwd)"
 "$REXX" "$D/test_dev4_sync_report.rex"
 "$REXX" "$D/test_dev4_sync_journal.rex"
 "$REXX" "$D/test_dev4_streaming.rex"
-echo 'WEBDAV DEV4 LOCAL SUITE: 11/11 PASS'
+"$REXX" "$D/test_dev5_staged_streaming.rex"
+"$REXX" "$D/test_dev5_durable_properties.rex"
+"$REXX" "$D/test_dev5_awstape.rex"
+echo 'WEBDAV DEV5 LOCAL SUITE: 14/14 PASS'
