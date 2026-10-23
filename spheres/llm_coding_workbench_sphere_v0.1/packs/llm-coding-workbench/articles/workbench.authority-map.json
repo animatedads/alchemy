@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "workbench.authority-map",
+  "version": "0.1",
+  "sphere": "llm-coding-workbench",
+  "section": "architecture",
+  "title": "Authority map: Workbench coordinates but does not absorb its dependencies",
+  "summary": "The Workbench is an orchestrator over existing authorities. Source state belongs to Semantic Source Store/Development Desk; interpretation and commit policy belong to Intention Service; language operation spelling/contracts belong to Coding Intention; outbound HTTP/TLS belongs to API Client; compile/runtime truth belongs to the selected ooRexx/toolchain environment.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Do not fork or silently rewrite Coding Intention from the Workbench lane.",
+    "Do not make API transport own coding semantics.",
+    "Do not let model output replace controller-owned source identity or actor fields.",
+    "Do not infer source success from a model report; use authoritative verification evidence.",
+    "Local SSCS access remains available without a website or HTTPS server."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_llm_coding_workbench_v0.1-dev14.zip",
+      "sha256": "04429c32acf45c8926dff41c16fb7e73a25d4480ba7fa199ff1b28d960032899",
+      "member": "README.md",
+      "line_start": 1,
+      "line_end": 40,
+      "claim": "Coding lane, dependency ownership and website-free local SSCS chain."
+    },
+    {
+      "artifact": "oorexx_llm_coding_workbench_v0.1-dev14.zip",
+      "sha256": "04429c32acf45c8926dff41c16fb7e73a25d4480ba7fa199ff1b28d960032899",
+      "member": "src/LlmCodingWorkbench.cls",
+      "line_start": 1,
+      "line_end": 20,
+      "claim": "Source, Intention and API Client authority boundaries are explicit in Workbench source."
+    }
+  ]
+}
