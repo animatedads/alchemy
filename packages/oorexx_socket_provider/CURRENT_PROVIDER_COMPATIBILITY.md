@@ -10,7 +10,7 @@ providers:
 | IPv4 multicast | `oorexx_ip_multicast_v0.1-dev1` | injected RFC 3678 membership backend |
 | NORM | `oorexx_norm_v0.1-dev3` | reliable multicast + descriptor/readiness |
 | IPv6 TCP | `oorexx_socket_provider_rxsock6_v0.1-dev1` + `rxsock6 0.1.1` | sibling `TCP6/INET6` binding; full `Inet6Address` retained |
-| QUIC | `oorexx_quic_socket_provider_v0.1-dev1` | sibling QUIC binding; OpenSSL QUIC owns native protocol |
+| QUIC | `oorexx_quic_socket_provider_v0.1-dev3` | sibling QUIC binding; OpenSSL QUIC owns native protocol; TLS 1.3 loopback and two-stream multiplexing qualified |
 | XTP | `oorexx_xtp_v0.1-dev17` | XTP-owned route/carrier backend; stream + multicast qualified; ALLOC pacing and reject suppression remain libxtp-owned |
 
 The common layer remains carrier-acquisition authority.  It does not absorb
