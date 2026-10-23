@@ -1,9 +1,13 @@
 #!/bin/sh
 set -eu
-: "${GOPHER:?set GOPHER to LLM Gopher v0.21+}"
-"$GOPHER" --profile nosqlserver context nosqlserver --full > /tmp/nosqlserver-ctx.$$
-grep -q '"nosqlserver.start"' /tmp/nosqlserver-ctx.$$
-"$GOPHER" --profile nosqlserver search baseline --sphere nosqlserver > /tmp/nosqlserver-search.$$
-grep -q '"class": "FOUND"' /tmp/nosqlserver-search.$$
-rm -f /tmp/nosqlserver-ctx.$$ /tmp/nosqlserver-search.$$
-echo "PASS nosqlserver SPHERE v0.1"
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+python3 "$ROOT/tests/validate_sphere.py" "$ROOT"
+: "$GOPHER"
+CTX=$(mktemp)
+SEARCH=$(mktemp)
+trap 'rm -f "$CTX" "$SEARCH"' 0 1 2 3 15
+"$GOPHER" --profile nosqlserver context nosqlserver --full > "$CTX"
+grep -q '"nosqlserver.start"' "$CTX"
+"$GOPHER" --profile nosqlserver search sqlite --sphere nosqlserver > "$SEARCH"
+grep -q '"class": "FOUND"' "$SEARCH"
+echo "PASS nosqlserver SPHERE v0.3 structural + search"
