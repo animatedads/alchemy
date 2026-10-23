@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "librarian-v2.provenance",
+  "title": "Provenance graph: declarations versus verification",
+  "section": "provenance",
+  "version": "0.1",
+  "sphere": "librarian-v2",
+  "authority": "project-continuity",
+  "summary": "Dev8 adds LibrarianProvenanceEdge and LibrarianProvenanceGraph. An edge holds child, parent, relation and evidenceId; relations are QUOTED, SYNDICATED, AGGREGATED, DERIVED or CORROBORATION_CLAIM. It supports multiple parents, transitive ancestry, shared-upstream detection and insertion-time cycle rejection. Edges are declarations supported by references, not verified origin identity. Lack of a known common upstream never establishes independent reporting.",
+  "invariants": [
+    "CORROBORATION_CLAIM is not confirmation of corroboration.",
+    "Use explicit evidence references and source identity; do not substitute shared domain, publisher or syndication speculation for evidence.",
+    "Unknown relationship must project as INDEPENDENCE_NOT_ESTABLISHED.",
+    "Current graph is source-level and timeless: no per-occurrence or quoted-span ancestry, no historical edge revocation or immutable snapshot, no independent verification.",
+    "Cross-publisher article counts must not be interpreted as independent origins without a verified source lineage/selection frame."
+  ],
+  "provenance": [
+    {
+      "artifact": "librarian_v2_dev8_20261023.zip",
+      "sha256": "17fd68b251e18ebe9f9c6902b6535db444bec1ce6a125ab6f2b8bd579250b742",
+      "member": "librarian_v2_dev3/src/LibrarianProvenanceGraph.cls",
+      "line_start": 1,
+      "line_end": 78,
+      "claim": "Exact dev8 source implementation of multi-parent graph."
+    },
+    {
+      "artifact": "librarian_v2_dev8_20261023.zip",
+      "sha256": "17fd68b251e18ebe9f9c6902b6535db444bec1ce6a125ab6f2b8bd579250b742",
+      "member": "librarian_v2_dev3/docs/DEV8_PROVENANCE.md",
+      "line_start": 1,
+      "line_end": 16,
+      "claim": "Design limits explicitly acknowledged by developer."
+    }
+  ]
+}
