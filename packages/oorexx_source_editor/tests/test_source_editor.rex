@@ -61,7 +61,22 @@ gr=fd~grep('vis[a-z]+ token','code','sensitive'); call assertEq 1,gr~items,'grep
 gc=fd~grep('secret.*token','code','sensitive'); call assertEq 0,gc~items,'grep regex ignores comment'
 gt=fd~grep('secret[ ]+token','text','sensitive'); call assertEq 1,gt~items,'grep regex text comment'
 gi=fd~grep('VISIBLE TOKEN','code','insensitive'); call assertEq 1,gi~items,'grep regex insensitive'
-say 'PASS ooRexx source editor dev3'
+/* tree finder uses RexxUtil SysFileTree, not a find subprocess. */
+treeDir=tmp||'/tree'; call SysMkDir treeDir
+probe=treeDir||'/treeprobe.rex'
+dummy=.SourceEditorUtil~writeAll(probe,'/* hidden tree token */'||d2c(10)||'say "tree visible"'||d2c(10))
+tf=.SourceTreeFinder~new(tmp)
+files=tf~files('treeprobe.rex','oorexx'); call assertEq 1,files~items,'tree file find'
+tg=tf~grep('tree[ ]+visible','treeprobe.rex','code','sensitive','oorexx'); call assertEq 1,tg~items,'tree grep code'
+th=tf~grep('hidden[ ]+tree','treeprobe.rex','code','sensitive','oorexx'); call assertEq 0,th~items,'tree grep ignores comment'
+/* completion provider is semantic and deterministic; CLI/UI/MCP may project the same candidates. */
+cp=.SourceCompletionProvider~new
+cc=cp~completeDocument(.SourceDocument~new(rootFile()),'Source','class')
+call assertTrue cc~items>=5,'completion document classes'
+call assertEq 'SourceCompletionCandidate',cc[1]~label,'completion deterministic order'
+ct=cp~completeTree(tmp,'tree','treeprobe.rex','oorexx')
+call assertEq 1,ct~items,'completion tree file'
+say 'PASS ooRexx source editor dev5'
 exit 0
 
 failed:
@@ -79,4 +94,6 @@ assertTrue:
   say 'PASS' label
 return
 
+rootFile:
+  return directory()||'/src/SourceEditor.cls'
 ::requires "SourceEditor.cls"
