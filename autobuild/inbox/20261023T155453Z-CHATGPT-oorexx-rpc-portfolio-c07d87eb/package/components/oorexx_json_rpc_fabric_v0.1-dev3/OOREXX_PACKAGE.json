@@ -1,0 +1,114 @@
+{
+  "package_id": "oorexx.json_rpc_fabric",
+  "api_version": "0.1",
+  "package_version": "0.1-dev3",
+  "qualification_status": "connect-selector-dev1-interoperation-core-tcp-and-optional-mesh-runtime-qualified",
+  "entrypoint": "src/JsonRpcFabric.cls",
+  "exports": [
+    "JsonRpcCodec",
+    "JsonRpcMethodRegistry",
+    "JsonRpcFault",
+    "JsonRpcDispatcher",
+    "JsonRpcCallResult",
+    "JsonRpcClient",
+    "JsonRpcLoopbackTransport",
+    "JsonRpcDirectConnector"
+  ],
+  "optional_exports": [
+    {
+      "file": "src/JsonRpcSocketTransport.cls",
+      "classes": [
+        "JsonRpcLengthFrame",
+        "JsonRpcSocketTransport",
+        "JsonRpcSocketServer"
+      ]
+    },
+    {
+      "file": "src/JsonRpcInstrumentation.cls",
+      "classes": [
+        "JsonRpcInstrumentedTransport"
+      ]
+    }
+  ],
+  "runtime": {
+    "name": "ooRexx",
+    "minimum_version": "5.3.0",
+    "tested_revision": "r13196",
+    "native_abi_required": false
+  },
+  "requires": [
+    {
+      "source": "ooRexx runtime",
+      "file": "json.cls",
+      "class": "JSON",
+      "version": "bundled with ooRexx 5.3.0 r13196",
+      "required": true
+    }
+  ],
+  "optional_adapter_dependencies": [
+    {
+      "package_id": "oorexx.socket_provider",
+      "version": "0.1-dev14",
+      "api": "socket.provider/0.1",
+      "entrypoint": "SocketProvider.cls",
+      "status": "TCP client/server adapter tested"
+    },
+    {
+      "package_id": "oorexx.instrumentation_mesh",
+      "version": "0.1-dev3",
+      "api": "instrumentation.mesh/0.1",
+      "entrypoint": "InstrumentationMesh.cls",
+      "status": "optional injected emitter adapter tested"
+    },
+    {
+      "package_id": "oorexx.connect_selector",
+      "version": "0.1-dev1",
+      "api": "oorexx.connect_selector/0.1",
+      "entrypoint": "ConnectSelector.cls",
+      "status": "tested through ConnectCallAdapter; routing owned exclusively by Connect Selector"
+    }
+  ],
+  "transport_spis": {
+    "client": [
+      "exchange(jsonText)",
+      "send(jsonText)"
+    ],
+    "server": [
+      "JsonRpcDispatcher.handleText(jsonText, context)"
+    ],
+    "implemented": [
+      "in-process-loopback",
+      "in-process-direct",
+      "stdin-stdout-ndjson-demo",
+      "socket-provider-tcp-length-frame"
+    ],
+    "unqualified": [
+      "socket-provider-unix-stream",
+      "socket-provider-tls-stream"
+    ],
+    "not_implemented": [
+      "http",
+      "websocket",
+      "quic",
+      "queue-fabric-bridge"
+    ]
+  },
+  "socket_frame": "8 ASCII uppercase hex digits of unsigned byte count, followed by exactly count bytes; vendor-specific framing; default maximum 1048576 bytes",
+  "security": "No built-in endpoint authentication, confidentiality, authorization or deadlines. TCP examples loopback only; not approved for external deployment.",
+  "compatibility_exports": [
+    {
+      "file": "src/JsonRpcLegacyConnectorRegistry.cls",
+      "classes": [
+        "JsonRpcConnectorRegistry"
+      ],
+      "status": "deprecated explicit opt-in; not a public routing contract"
+    }
+  ],
+  "architecture": {
+    "selection_authority": "ConnectSelector",
+    "json_rpc_ownership": "JSON-RPC 2.0 protocol, codec, dispatch, request/reply, notifications and transport SPIs",
+    "direct_path": "Existing optional JsonRpcDirectConnector can be injected into Connect Selector; not a transport selector",
+    "queue_path": "ConnectSelector ConnectQueueAdapter directly; no JSON-RPC Fabric queue dependency",
+    "no_implicit_retry_or_fallback": true
+  }
+}

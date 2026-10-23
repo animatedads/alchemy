@@ -1,0 +1,37 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "oorexx_rpc_portfolio",
+    "version": "0.1-dev1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "source_integrity_and_contracts",
+      "argv": [
+        "python3",
+        "tests/verify.py"
+      ],
+      "timeout_seconds": 90
+    },
+    {
+      "name": "native_http2_streaming",
+      "argv": [
+        "sh",
+        "tests/native_stream.sh"
+      ],
+      "timeout_seconds": 180
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_rpc_portfolio_v0.1-dev1"
+    }
+  }
+}
