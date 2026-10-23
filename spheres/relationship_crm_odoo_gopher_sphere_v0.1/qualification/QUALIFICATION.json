@@ -1,0 +1,17 @@
+{
+  "schema":"alchemy.relationship-crm-odoo-sphere.qualification/0.1",
+  "date":"2026-10-23",
+  "status":"SPHERE_STATIC_QUALIFIED",
+  "checks":[
+    {"surface":"provider-package","artifact":"oorexx_odoo_crm_provider_v0.1-dev11.zip","sha256":"d27ecf896b551e1923e52be20d990423c6f79cc7093e61ab96e6c5a50d714479","result":"manifest and ZIP integrity verified; dev11 runtime qualification pending"},
+    {"surface":"relationship-crm-core","artifact":"relationship_crm_v0.1.zip","sha256":"cdd0bc21e2a3eb26601cb2f7e84f206c1a43c88b3c63202ccafba3d6d8211e69","result":"canonical projection contract"},
+    {"surface":"relationship-crm-service","artifact":"relationship_crm_service_v0.1.zip","sha256":"51f423f80090cb22c955defa981d57ebee7fffd74ab181afe69b89b4eea24ac2","result":"canonical service-envelope/idempotency contract"},
+    {"surface":"sip","artifact":"oorexx_sip_v0.1-dev13_delivery.zip","sha256":"740c820d66230b4f812087d6c64a9b0ba1963407486df6f64eed051d931c2601","result":"inspected; originating INVITE not qualified"}
+  ],
+  "unqualified":[
+    "dev11 Relationship CRM Service integration regression on r13196",
+    "outbound SIP originating INVITE/UAC",
+    "native Odoo Phone/RTC mutation",
+    "negotiated HTTP/2 path for hosted Odoo through API Client 0.4.1"
+  ]
+}

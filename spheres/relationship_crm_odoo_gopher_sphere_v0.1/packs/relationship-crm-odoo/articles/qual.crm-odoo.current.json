@@ -1,0 +1,25 @@
+{
+  "kind":"article",
+  "id":"qual.crm-odoo.current",
+  "version":"0.1",
+  "sphere":"relationship-crm-odoo",
+  "title":"Current qualification and live evidence",
+  "summary":"The provider through dev10 was executed on ooRexx 5.3.0 r13196; live hosted Odoo JSON-2 lookup and liveQuery refresh were proven through API Client 0.4.1 + Foreign Runtime 0.22.6 with HTTP/1.1 forced. Dev11 adds the service-envelope adapter but is only statically/package validated in the current build environment.",
+  "authority":"project-qualification",
+  "invariants":[
+    "Hosted Odoo proved SIP phone -> res.partner #10 -> crm.lead #1 correlation and durable mail.message write/read evidence.",
+    "The API Client negotiated/H2 path produced TRANSPORT_EXCEPTION before Odoo; HTTP1_ONLY succeeded against the same hosted Odoo endpoint.",
+    "dev10 core and optional Relationship CRM integration were run on ooRexx 5.3.0 r13196.",
+    "dev11 service-envelope code must not be described as r13196 runtime-qualified until its optional service integration regression is executed under r13196.",
+    "SIP dev13 remains registration-oriented; outbound originating INVITE is still unqualified/missing."
+  ],
+  "procedure":[
+    "For live Odoo use the Odoo API Client profile that enforces verified TLS and HTTP1_ONLY with API Client 0.4.1.",
+    "Run tests/run_relationship_crm_service_integration.sh under r13196 with real Relationship CRM core/service roots before promoting dev11 to runtime-qualified.",
+    "Keep native Odoo Phone/RTC writes disabled until native creation semantics are observed and qualified."
+  ],
+  "provenance":[
+    {"artifact":"oorexx_odoo_crm_provider_v0.1-dev11.zip","sha256":"d27ecf896b551e1923e52be20d990423c6f79cc7093e61ab96e6c5a50d714479","claim":"current package and explicit dev11 qualification boundary"},
+    {"artifact":"oorexx_sip_v0.1-dev13_delivery.zip","sha256":"740c820d66230b4f812087d6c64a9b0ba1963407486df6f64eed051d931c2601","claim":"SIP delivery inspected; no originating INVITE surface qualified"}
+  ]
+}

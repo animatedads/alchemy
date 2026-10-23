@@ -1,0 +1,26 @@
+{
+  "kind":"article",
+  "id":"arch.crm-odoo.live-object",
+  "version":"0.1",
+  "sphere":"relationship-crm-odoo",
+  "title":"Live Odoo object graph and discovery contract",
+  "summary":"Hosted Odoo records are projected as live ooRexx objects with dynamic methods, typed local discovery policy, relation traversal, live queries, events and provider-wide weak identity.",
+  "authority":"project-architecture",
+  "invariants":[
+    "Remote schema is evidence; executable ooRexx source is never downloaded from Odoo.",
+    "discovery.operation is the local authority for which remote operations may become callable.",
+    "UNKNOWN is a bootstrap mechanism: discovered methods are installed with setMethod and normal dispatch takes over.",
+    "A provider-wide WeakReference identity map canonicalises one live OdooObject per model/id while allowing garbage collection.",
+    "many2one reads materialise OdooObject; one2many/many2many reads materialise live collections; collection writes fail closed unless explicit Odoo command semantics are declared.",
+    "Live queries retain surviving object identity and emit ADDED, REMOVED and UPDATED membership events."
+  ],
+  "procedure":[
+    "Use provider~modelSpace or provider~model(name) for model discovery.",
+    "Use browse/search/searchRead/liveQuery to obtain canonical OdooObjects.",
+    "Use performDiscovery to refresh schema/method surfaces and update/refresh to merge remote changes.",
+    "Translate only locally declared typed operations such as messagePost into JSON-2 keyword arguments."
+  ],
+  "provenance":[
+    {"artifact":"oorexx_odoo_crm_provider_v0.1-dev11.zip","sha256":"d27ecf896b551e1923e52be20d990423c6f79cc7093e61ab96e6c5a50d714479","claim":"dynamic object/model/query/identity implementation"}
+  ]
+}

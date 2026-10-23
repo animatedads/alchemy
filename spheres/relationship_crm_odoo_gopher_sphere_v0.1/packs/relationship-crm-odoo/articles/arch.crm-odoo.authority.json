@@ -1,0 +1,26 @@
+{
+  "kind":"article",
+  "id":"arch.crm-odoo.authority",
+  "version":"0.1",
+  "sphere":"relationship-crm-odoo",
+  "title":"Authority map: SIP, Relationship CRM, Odoo and intentions",
+  "summary":"SIP owns signalling/media evidence; Relationship CRM owns business relationship and interaction semantics; Odoo is a provider/backing system; intention discovery advertises capability but never inherits mutation authority.",
+  "authority":"project-architecture",
+  "invariants":[
+    "SIP Call-ID, From/To, direction, signalling result and media remain SIP authority.",
+    "Relationship CRM owns RelationshipRecord, RelationshipInteractionRef and RelationshipCommunication semantics.",
+    "Odoo res.partner/crm.lead/mail.message objects are provider evidence and backing objects, not replacements for Relationship CRM authority.",
+    "Native Odoo discuss.call.history and RTC objects must not be fabricated for external SIP calls.",
+    "Management/Intention discovery is read-only capability discovery and does not acquire provider credentials or mutation authority."
+  ],
+  "procedure":[
+    "Resolve caller identity through the Odoo provider only after local discovery policy admits the model/operation.",
+    "Project provider evidence into canonical Relationship CRM objects before crossing the CRM service boundary.",
+    "Retain original SIP or Interaction Event identity as correlation/causation evidence."
+  ],
+  "provenance":[
+    {"artifact":"oorexx_odoo_crm_provider_v0.1-dev11.zip","sha256":"d27ecf896b551e1923e52be20d990423c6f79cc7093e61ab96e6c5a50d714479","claim":"current Odoo provider architecture and adapters"},
+    {"artifact":"relationship_crm_v0.1.zip","sha256":"cdd0bc21e2a3eb26601cb2f7e84f206c1a43c88b3c63202ccafba3d6d8211e69","claim":"canonical Relationship CRM domain object model"},
+    {"artifact":"oorexx_sip_v0.1-dev13_delivery.zip","sha256":"740c820d66230b4f812087d6c64a9b0ba1963407486df6f64eed051d931c2601","claim":"current SIP delivery inspected for authority and UAC capability"}
+  ]
+}

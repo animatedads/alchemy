@@ -1,0 +1,25 @@
+{
+  "kind":"article",
+  "id":"arch.crm-odoo.service",
+  "version":"0.1",
+  "sphere":"relationship-crm-odoo",
+  "title":"Relationship CRM Service envelope boundary",
+  "summary":"The provider projects Odoo evidence to canonical CRM objects, then dev11 creates ordered idempotent service envelopes without taking over persistence, policy or Queue Fabric delivery.",
+  "authority":"project-architecture",
+  "invariants":[
+    "OdooRelationshipCRMAdapter is a semantic projection boundary, not a shared mutable database.",
+    "OdooRelationshipCRMServiceAdapter emits CRM.RELATIONSHIP.OPEN before CRM.INTERACTION.RECORD.",
+    "Command identity is stable for command type, canonical object identity, actor and role; Relationship CRM Service owns semantic fingerprint conflict detection.",
+    "The same SIP Call-ID or Interaction Event reference is retained as correlation/causation evidence.",
+    "Relationship CRM Service remains authoritative for idempotency, durable state, policy projection, outbox and Queue Fabric worker behaviour."
+  ],
+  "procedure":[
+    "Project a call context with OdooRelationshipCRMAdapter.",
+    "Create service envelopes with OdooRelationshipCRMServiceAdapter.",
+    "Submit those envelopes through the existing Relationship CRM Service boundary; do not bypass it with direct repository mutation."
+  ],
+  "provenance":[
+    {"artifact":"oorexx_odoo_crm_provider_v0.1-dev11.zip","sha256":"d27ecf896b551e1923e52be20d990423c6f79cc7093e61ab96e6c5a50d714479","claim":"projection and service envelope adapters"},
+    {"artifact":"relationship_crm_service_v0.1.zip","sha256":"51f423f80090cb22c955defa981d57ebee7fffd74ab181afe69b89b4eea24ac2","claim":"service envelope, idempotency and command handling contract"}
+  ]
+}
