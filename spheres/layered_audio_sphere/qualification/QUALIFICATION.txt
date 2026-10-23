@@ -1,4 +1,4 @@
-Layered Audio LLM Gopher sphere v0.3 qualification
+Layered Audio LLM Gopher sphere v0.4 qualification
 Date: 2026-10-23
 Required engine: LLM Gopher v0.19-dev1+
 
@@ -17,6 +17,15 @@ Current object-intention continuity:
 - fresh dev8 ooRexx 5.3.0 r13196 runtime execution is pending in the current execution environment
 - predecessor dev6 runtime evidence must not be promoted to dev8 runtime evidence
 
+Current Speech TTS/STT continuity:
+- ooRexx Speech v0.1-dev10, SHA-256 01bc07e29ed4a7ed581ff0c6ad2546247158f711f9d298db8e52619aa4e8f99c
+- dev10 r13196 evidence includes batch/streaming TTS/STT, telephony PCM profiles, Audio execution bridge, local PCM controller, duplex session and strict standards PASS
+- live Azure batch TTS was externally proven through ooRexx -> Macrospace -> Azure Speech using en-GB-SoniaNeural and valid 24 kHz mono PCM WAV output
+- ooRexx Speech v0.1-dev11, SHA-256 763979f42ab5eb158152b71bf18bf64cc8ecf51bc74c36749a1e67ebfe0c3cfc
+- dev11 adds dynamic SpeechRuntime intention discovery retaining exact live channel objects and current BUSY/AVAILABLE state
+- dev11 strict standards gate PASS with 0 errors and 0 warnings
+- the exact r13196 runtime executable was not materializable in the 2026-10-23 execution container; the new dev11 intention regression is therefore NOT_RUN here and no runtime PASS is claimed
+
 Current memory-local execution continuity:
 - Memory Fabric v0.1-dev10, SHA-256 91a05494c86ce7627f7a010af182c167701b5bf1f8ce2d93c99cda9d992644d8
 - RexxOS RTO2 Grid v0.1-dev14
@@ -29,9 +38,11 @@ Evidence status:
 - Object-intention source and canonical Management installer are committed in source form under packages/layered_audio_intentions_v0.22-dev8.
 - The dev8 installer composes Management's public self-assessing source, relationship source, related-surface discovery and explorer contracts; it does not reimplement Management.
 - Storage remains a separate related authority; Audio publishes only its own binding/relationship evidence.
+- Speech consumes Audio/Storage execution material through a transient localPath + durable identityKey seam and does not take ownership of Audio truth.
+- Speech remains separate from SIP/RTP/device authority and from Layered Audio evidence interpretation.
 - cluster.object.peer/0.2 was previously runtime-proven with ooRexx 5.3.0 r13196 using Memory Fabric dev6 and the Queue Fabric in-process carrier.
 - Static compatibility inspection confirmed the Memory Fabric classes/methods consumed by that transport remain present in dev10.
 - Audio V9 candidate20 package integrity, contract assertions and environment-runner syntax passed before Git submission.
 - A fresh cross-package r13196 runtime qualification of candidate20 against the current dev10/dev14/dev21 estate has NOT yet been completed.
 
-Sphere qualification requires the self-excluding SHA-256 manifest to verify cleanly, canonical sphere validation with zero problems, clean authoring lint, activation as an override, full context recovery, and successful searches for channel/downmix, streaming, quantization, runtime tensor, ASR, allocator-boundary, memory-horizon/resident-execution and object-bound intention/Management federation doctrine.
+Sphere qualification requires the self-excluding SHA-256 manifest to verify cleanly, canonical sphere validation with zero problems, clean authoring lint, activation as an override, full context recovery, and successful searches for channel/downmix, streaming, speech/TTS/STT, quantization, runtime tensor, ASR, allocator-boundary, memory-horizon/resident-execution and object-bound intention/Management federation doctrine.

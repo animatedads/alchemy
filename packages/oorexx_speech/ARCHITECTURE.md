@@ -44,3 +44,18 @@ control ownership.
 
 ## Azure provider
 Azure AI Speech is an implementation provider, not speech-domain authority. It is loaded as a resident Python object through Macrospace. One provider object per speech lane remains the default concurrency rule. Public Azure may use key+region; endpoint-based configuration is also accepted so deployment topology does not leak into callers.
+
+## dev7 streaming STT / telephony boundary
+
+Streaming STT mirrors the dev6 TTS ownership rule: ooRexx owns channel/session
+semantics; Macrospace owns resident Python identity/lifetime; the provider owns
+its SDK session; bulk PCM remains outside the scalar bridge.  Speech audio
+profiles describe PCM only.  SIP owns signalling, RTP owns packet/media framing,
+and SocketProvider owns carrier sockets.
+
+## dev9 local audio controller
+
+Local device integration remains below the speech semantic boundary. dev9 adds a
+small controller and FIFO-backed PCM adapters so external COTS device processes can
+consume/produce live PCM. No ALSA/Pulse/PipeWire API is embedded into speech-domain
+objects; future device providers replace only the source/sink implementation.

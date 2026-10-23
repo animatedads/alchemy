@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4
+- Added `arch.layered-audio.speech-integration` documenting the authority boundary between Layered Audio and provider-neutral ooRexx TTS/STT.
+- Recorded the qualified Speech dev10 batch/streaming, Azure Macrospace, telephony PCM, Audio execution bridge, local audio controller and duplex-session baseline.
+- Recorded dev11 dynamic Speech intention discovery: each discovery re-reads the live `SpeechRuntime`, retains exact channel objects and removes duplex availability while a required lane is busy.
+- Recorded that Audio/Storage execution may expose transient `localPath` while durable `identityKey` remains authoritative lineage; Speech must not flatten that distinction.
+- Reaffirmed that SIP/RTP/device authority remains outside Speech and that ASR hypotheses do not become Layered Audio evidence truth.
+- Kept exact r13196 runtime status honest: dev11 static standards PASS is recorded, while the new intention regression is pending runtime execution in the current container.
+
 ## 0.3
 - Added `arch.layered-audio.intentions` for live, object-bound Audio intention discovery and Management federation.
 - Recorded that AudioRecording, AudioElement, AudioView and compound selections remain native ooRexx objects across intention boundaries; IDs, paths and prose are not substitute domain objects.

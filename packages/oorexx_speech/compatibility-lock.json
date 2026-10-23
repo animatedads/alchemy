@@ -1,30 +1,36 @@
 {
-  "audio_controller": "external/not yet written",
-  "cloud_provider": [
-    "OpenAI Python SDK; model names caller-configured",
-    "Azure AI Speech Python SDK; TTS/STT behind Macrospace"
-  ],
+  "schema": "oorexx.speech.compatibility-lock/1",
+  "package": "oorexx_speech_v0.1-dev11",
+  "speech_version": "0.1-dev11",
+  "semantic_api": "oorexx.speech/0.1",
+  "qualified_runtime": "ooRexx 5.3.0 r13196 Internal Test Version",
+  "python_boundary": "resident object supplied by Python Macrospace; no subprocess/JSON bridge",
+  "macrospace_target": "v0.31.7-rexxfirst2",
+  "macrospace_archive_sha256": "6ab77de306b9a507804fe3eb868997b3c4a53bdc2654808eeef03a1c50d59c3b",
+  "macrospace_concurrency": "one resident projected provider object per speech lane by default",
+  "audio_controller": "included provider-neutral SpeechLocalAudioController plus FIFO COTS adapter; no ALSA/PipeWire authority inside Speech",
+  "sip_controller": "external; current Library SIP/RTP remain separate authorities",
   "local_provider": [
     "piper-tts",
     "faster-whisper"
   ],
-  "macrospace_archive_sha256": "6ab77de306b9a507804fe3eb868997b3c4a53bdc2654808eeef03a1c50d59c3b",
-  "macrospace_concurrency": "one resident projected provider object per speech lane by default",
-  "macrospace_target": "v0.31.7-rexxfirst2",
-  "package": "oorexx_speech_v0.1-dev4",
+  "cloud_provider": [
+    "OpenAI Python SDK; model names caller-configured",
+    "Azure AI Speech Python SDK; batch TTS/STT plus incremental TTS/STT behind Macrospace"
+  ],
   "providers": {
     "azure_ai_speech": {
-      "live_tts_smoke": "packaged-not-executed-no-credential",
       "python_package": "azure-cognitiveservices-speech",
-      "status": "implemented-structurally-qualified",
-      "stt": "continuous-file-recognition",
-      "tts": "riff-24khz-16bit-mono-pcm"
+      "batch_tts": "profile-selectable RIFF PCM: default 24kHz; telephony-8k; speech-16k",
+      "streaming_tts": "profile-selectable raw PCM: default 24kHz; telephony-8k; speech-16k",
+      "stream_chunk_backing": "short-lived PCM artifact referenced by SpeechAudioChunk",
+      "stt": "continuous file recognition plus PushAudioInputStream streaming recognition",
+      "live_batch_tts": "externally-qualified-success",
+      "live_streaming_tts": "packaged-for-live-qualification",
+      "streaming_stt": "raw signed 16-bit mono PCM, 8kHz or 16kHz; partial/final/end events",
+      "telephony_profile": "telephony-8k = 8000 Hz mono S16LE PCM; aligns with decoded RTP G.711 media boundary",
+      "live_streaming_stt": "packaged-for-live-qualification"
     }
   },
-  "python_boundary": "resident object supplied by Python Macrospace; no subprocess/JSON bridge",
-  "qualified_runtime": "ooRexx 5.3.0 r13196 Internal Test Version",
-  "schema": "oorexx.speech.compatibility-lock/1",
-  "semantic_api": "oorexx.speech/0.1",
-  "sip_controller": "external/not yet written",
-  "speech_version": "0.1-dev4"
+  "duplex_session": "speech.duplex/0.1; concurrent TTS playback, PCM capture-to-STT, and STT event drain; SIP/RTP remain external"
 }

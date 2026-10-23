@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "arch.layered-audio.speech-integration",
+  "version": "0.1",
+  "sphere": "layered-audio",
+  "title": "Speech TTS/STT is a sibling semantic service over Audio execution material",
+  "summary": "ooRexx Speech consumes and produces PCM/audio execution material without absorbing Layered Audio, Storage, SIP, RTP or device authority. Speech intentions are discovered from the live SpeechRuntime and retain exact channel objects rather than a cached action catalogue.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Layered Audio owns AudioRecording, AudioElement, AudioView, processing lineage and acoustic evidence; Speech owns TTS/STT channel/session semantics.",
+    "Speech may consume a transient Layered Audio execution binding through localPath while preserving its durable identityKey as lineage metadata; transient paths never become authoritative Audio identity.",
+    "Speech does not own SIP dialogs, RTP packetization/codecs or ALSA/PipeWire device authority. Those systems compose through PCM source/sink seams.",
+    "Python providers remain resident behind Python Macrospace. One resident provider object per speech lane is the default concurrency rule unless a backend is independently qualified for sharing.",
+    "Streaming TTS/STT carries bulk PCM outside the scalar Macrospace marshaller; only bounded descriptors/session events cross the scalar bridge.",
+    "Speech intention discovery is dynamic. Each discovery re-reads the live SpeechRuntime, current lane state and exact channel objects; a stale permanent action catalogue is not authoritative.",
+    "A duplex-session intention exists only when independent TTS and STT lanes are currently available. Busy or removed channels change the next discovery.",
+    "Low-level ASR output remains a speech hypothesis, not proof that ambiguous or low-SNR source audio contains the recognized words. Layered Audio evidence/assessment semantics remain separate."
+  ],
+  "procedure": [
+    "For Audio-backed STT, materialise through the Audio/Storage execution authority, pass the transient localPath/PCM into Speech, retain identityKey in Speech artifact metadata, and release the execution binding through its owner.",
+    "For live telephony, hand decoded S16LE PCM between RTP/device adapters and Speech. RTP keeps G.711 framing/timing; Speech keeps recognition/synthesis semantics.",
+    "Before presenting Speech actions to Intention Service, perform a fresh SpeechIntentionProvider discovery against the current SpeechRuntime rather than reusing a prior snapshot."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_speech_v0.1-dev10.zip",
+      "sha256": "01bc07e29ed4a7ed581ff0c6ad2546247158f711f9d298db8e52619aa4e8f99c",
+      "claim": "Qualified provider-neutral batch/streaming TTS/STT, Azure Macrospace providers, telephony PCM profiles, Audio execution bridge, local PCM controller and full-duplex session orchestration."
+    },
+    {
+      "artifact": "oorexx_speech_v0.1-dev11.zip",
+      "sha256": "763979f42ab5eb158152b71bf18bf64cc8ecf51bc74c36749a1e67ebfe0c3cfc",
+      "member": "src/SpeechIntentions.cls",
+      "claim": "Adds fresh SpeechRuntime intention discovery retaining exact live TTS/STT channel objects; strict static standards gate PASS, exact r13196 runtime execution pending in the current container."
+    },
+    {
+      "artifact": "layered_audio_oorexx_v0.22-dev8.zip",
+      "sha256": "5e639ad4a54a69b08c6ad56f3a3854eb97bd476bc71b665938ad87b04bf4fca6",
+      "member": "src/AudioStorageFabric.cls",
+      "claim": "Current Audio execution binding preserves durable identityKey while exposing transient localPath materialisation."
+    }
+  ]
+}
