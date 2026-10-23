@@ -52,7 +52,7 @@ The inventory includes 59 package archives and one stable tree for two loose RTO
 | [`packages/oorexx_smtp_secure_stack`](../../packages/oorexx_smtp_secure_stack) | `oorexx_smtp_secure_stack_v0.1-dev7.zip` | `e31ecc68cb2a32e32cefcb7ccfa1e53e812543038347110a453bd426f57b7390` | 55 | 0 | 0 |
 | [`packages/oorexx_socket_provider`](../../packages/oorexx_socket_provider) | `oorexx_socket_provider_v0.1-dev14.zip` | `39633d533e96638d6fa9372fcacdbdbcd61fc5ec49a00f3baf39bb8d1133b516` | 62 | 0 | 0 |
 | [`packages/oorexx_socket_provider_rxsock6`](../../packages/oorexx_socket_provider_rxsock6) | `oorexx_socket_provider_rxsock6_v0.1-dev1.zip` | `d227835b1605748a0c89b8634b05cb3c1c55fce8b98a47a97510746c31a714aa` | 9 | 0 | 0 |
-| [`packages/oorexx_source_editor`](../../packages/oorexx_source_editor) | `oorexx_source_editor_v0.1-dev3.zip` | `1147cb6cd0ddf01edbc96328fa1d47379d3b16dd87047f993e8e77d09f95f70d` | 7 | 0 | 0 |
+| [`packages/oorexx_source_editor`](../../packages/oorexx_source_editor) | `oorexx_source_editor_v0.1-dev5.zip` | `7b72bdf6195d6b752c92ffe0831888b834de2323fa0a887bf8dfddc45191a440` | 7 | 0 | 0 |
 | [`packages/oorexx_speech`](../../packages/oorexx_speech) | `oorexx_speech_v0.1-dev4.zip` | `12e19cc4f01579358ed3e924411c278ae26939d0063a9a594be75005b6ebd8cd` | 25 | 0 | 0 |
 | [`packages/oorexx_spreadsheet_intentions`](../../packages/oorexx_spreadsheet_intentions) | `oorexx_spreadsheet_intentions_v0.1-dev6.zip` | `1498b900838f22f9db536c51ea41018436258a6b78cacffba5b6e9f7b589c4ff` | 21 | 1 | 0 |
 | [`packages/oorexx_storage_fabric`](../../packages/oorexx_storage_fabric) | `oorexx_storage_fabric_v0.1-dev21(1).zip` | `e070c38cc622fd2e62bf67e17bd97b74c19fc2c34c77a9452bea2ac081753105` | 118 | 0 | 0 |
