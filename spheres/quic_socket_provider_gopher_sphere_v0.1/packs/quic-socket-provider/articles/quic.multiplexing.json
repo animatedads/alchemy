@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "quic.multiplexing",
+  "version": "0.1",
+  "sphere": "quic-socket-provider",
+  "title": "QUIC child-stream multiplexing",
+  "summary": "Dev3 adds real bidirectional QUIC child streams while preserving the ordinary one-stream SocketStreamAdapter compatibility path.",
+  "invariants": [
+    "QuicSocket owns child-stream lifetime.",
+    "openStream, acceptStream and tryAcceptStream expose genuine OpenSSL QUIC stream objects rather than emulated framing.",
+    "Distinct child streams retain distinct QUIC stream IDs on one connection.",
+    "QuicStream may be wrapped in SocketStreamAdapter so a selected child stream still presents the common byte-stream contract.",
+    "Multiplexing is additive; applications that only require an ordinary stream are not forced into a QUIC-specific API."
+  ],
+  "provenance": [{"artifact":"oorexx_quic_socket_provider_v0.1-dev3.zip","sha256":"34a224252f33079cdbe78d4e5f6f122c0cdd6524364f92e95da36bc233b54749","member":"tests/quic_multiplex_client.rex"}]
+}

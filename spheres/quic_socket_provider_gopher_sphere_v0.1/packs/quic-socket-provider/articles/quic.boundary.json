@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "quic.boundary",
+  "version": "0.1",
+  "sphere": "quic-socket-provider",
+  "title": "Socket isolation boundary",
+  "summary": "QUIC is selected and acquired below the shared socket abstraction. Applications receive socket/address objects and must not grow QuicDebugTransport, QuicRpcTransport or other protocol-specific parallel network stacks.",
+  "invariants": [
+    "SocketSelector / SocketProvider remains carrier-acquisition authority.",
+    "QuicSocketAddress is carried as an object; do not flatten it into host:port text or a generic dictionary.",
+    "Debug Socket Transport, RPC and other consumers use the common stream/socket seam unless they intentionally request a selected QUIC child stream.",
+    "Connection IDs, UDP mechanics, handshake state, retransmission, packet protection and QUIC timers remain provider-owned."
+  ],
+  "provenance": [{"artifact":"oorexx_quic_socket_provider_v0.1-dev3.zip","sha256":"34a224252f33079cdbe78d4e5f6f122c0cdd6524364f92e95da36bc233b54749","member":"README.md"}]
+}
