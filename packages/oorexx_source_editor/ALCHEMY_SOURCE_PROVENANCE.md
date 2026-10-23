@@ -1,8 +1,11 @@
 # Alchemy source provenance: `oorexx_source_editor`
 
-- Source delivery: `oorexx_source_editor_v0.1-dev3.zip`
-- Delivery SHA-256: `1147cb6cd0ddf01edbc96328fa1d47379d3b16dd87047f993e8e77d09f95f70d`
-- Delivery file timestamp: 2026-09-27T12:04:42+01:00
+- Source delivery: `oorexx_source_editor_v0.1-dev5.zip`
+- Delivery SHA-256: `7b72bdf6195d6b752c92ffe0831888b834de2323fa0a887bf8dfddc45191a440`
+- Runtime qualification baseline: ooRexx 5.3.0 r13196
 - Published text/source files: 7
 - Embedded dependency files omitted: 0
-- Generated/machine-specific files omitted: 0
+
+Dev5 supersedes the previously published dev3 source snapshot. It includes the dev4 recursive source-tree finder and dev5 deterministic completion/provider work. The ZIP remains delivery evidence; editable source authority is the repository tree.
+
+Authority boundary: Semantic Source Store / Development Desk owns semantic object creation and materialisation. Source Editor owns conventional/materialised source inspection and bounded generation-checked mutation.
