@@ -23,7 +23,7 @@ Current executable grounding baseline:
 
 ## 2026-10-23 Storage named-service admission doctrine
 
-Added `arch.storage-fabric.service-admission` to the GitHub projection of this sphere, covering socket neutrality, FIRST/KEY context verification, no-downgrade, multicast hints and durability authority. The full Library sphere was already at v0.7; its v0.8 continuation must be separately qualified and published rather than overwriting this older repository projection.
+Added `arch.storage-fabric.service-admission` to the GitHub projection of this sphere, covering socket neutrality, FIRST/KEY context verification, no-downgrade, multicast hints and durability authority. An earlier repository note described a later full sphere as v0.7. In the 2026-10-23 reconciliation, the active resolver could be verified only to a local v0.6 override and Library search did not independently resolve a v0.7 artifact. Treat v0.7 as unverified historical continuity until its exact artifact is recovered; do not manufacture a replacement by overwriting this older repository projection.
 
 ## 2026-10-23 durable replica repair / topology reconciliation continuation
 
