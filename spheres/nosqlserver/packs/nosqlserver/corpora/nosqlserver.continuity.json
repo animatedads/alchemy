@@ -27,7 +27,7 @@
     },
     {
       "topic": "sqlite",
-      "rule": "Native ooRexx page-oriented SQLite reader; no shell/C bridge at v0.74+; read-only boundary remains explicit."
+      "rule": "At complete v0.79 GitHub baseline, native ooRexx page-oriented SQLite/GeoPackage read-only engine; v0.89-v0.91 add a separate opt-in native-bridge SQLite writable candidate."
     },
     {
       "topic": "federation metadata",
@@ -60,6 +60,25 @@
     {
       "topic": "diagnostics",
       "rule": "SQLPARSEERROR versus SQLUNSUPPORTED must remain explicit."
+    },
+    {
+      "topic": "sqlite-writable-candidate",
+      "version": "0.91",
+      "artifact": "nosqlserver_v0.91_sqlite_guarded_read_write_candidate.zip",
+      "sha256": "d4a276007029e66512611ea7e836ca7ab30209b80ac7d46ecf1fba61121f02d0",
+      "rule": "NoSQLServer owns SQL interpretation and engine selection; SQLite handles consistent backup snapshots and prepared atomic DML. Explicit opt-in; rollback-journal and WAL read/write, no implicit legacy upgrade."
+    },
+    {
+      "topic": "sqlite-write-concurrency",
+      "rule": "Under BEGIN IMMEDIATE, compare current schema and every table row to the immutable selection snapshot before single-table UPDATE/DELETE, including zero-match. Abort the whole batch on conflict; not multi-table serializability."
+    },
+    {
+      "topic": "sqlite-writer-limitations",
+      "rule": "Full database backup per SQL statement; O(table) conflict checking; no multi-statement transactional API, portable ABI certification, mesh shared-file lock authority or production soak."
+    },
+    {
+      "topic": "github-publication",
+      "rule": "PR #20 merged exact v0.91 patch intake; packages/nosqlserver_v0.79 remains the latest COMPLETE versioned NoSQLServer directory on main. Importing all v0.80-v0.91 source has not been completed."
     }
   ],
   "provenance": [
@@ -68,6 +87,12 @@
       "sha256": "076e6c6dafe367862ee25d5fcf80bef2eb3a5337060d3d2f55bba2f55327a1ec",
       "member": "nosqlserver_v0.79/src/NoSQLServer.cls",
       "claim": "Current source/package identity for continuity records."
+    },
+    {
+      "artifact": "nosqlserver_v0.91_sqlite_guarded_read_write_candidate.zip",
+      "sha256": "d4a276007029e66512611ea7e836ca7ab30209b80ac7d46ecf1fba61121f02d0",
+      "member": "nosqlserver_v091_sqlite_serializable/PROVENANCE_v0.91.json",
+      "claim": "Candidate lineage and limits; separate from GitHub published full source."
     }
   ]
 }
