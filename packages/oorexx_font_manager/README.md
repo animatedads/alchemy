@@ -1,4 +1,4 @@
-# ooRexx Font Manager v0.1-dev2
+# ooRexx Font Manager v0.1-dev3
 
 Renderer-neutral font discovery, matching, purpose selection and packaging for ooRexx applications.
 
@@ -32,3 +32,19 @@ The glyph plan is deliberately renderer-neutral. PDF may use it to construct CID
 ## GitHub source layout
 
 The release archive contains a vendored Intention Service snapshot for standalone qualification. In the Alchemy GitHub source tree that dependency is intentionally omitted; `tools/run_environment_test.sh` resolves the independently published sibling `packages/oorexx_intention_service` package instead. Set `INTENTION_SERVICE_ROOT` to override that location.
+
+
+## dev3 — coverage-aware fallback and font runs
+
+Font selection can now return a **run plan** rather than forcing one face to cover an entire string. `FontManager~planRunsForPurpose(purpose,text[,maxFamilies[,language]])` starts with the normal semantic-purpose match, records actual glyph coverage through `FontGlyphPlan`, then asks registered coverage providers for faces covering still-missing Unicode scalars.
+
+- `FontRun` binds one contiguous UTF-8 text run to the selected `FontFace` and glyph plan.
+- `FontRunPlan` returns the ordered runs, the minimal face set actually used, and an explicit `missing` array. `fullyCovered` is false rather than silently substituting glyph 0.
+- `matches(query)` exposes deterministic ranked candidates.
+- `fallbackMatches(query)` collapses those candidates by family so a machine with many weights/width variants does not waste fallback work on near-identical faces.
+- `registerCoverageProvider(provider)` is a renderer-neutral acceleration seam. The Fontconfig provider implements `findCovering(query,codepoint[,language])` using host charset/language knowledge.
+- When no coverage-aware provider exists, the manager falls back to generic family-ranked glyph inspection, preserving portability.
+
+The live qualification uses `TPS café — 日本語 — Ω ∑`. On the qualification host it resolves Noto Serif as the primary print face and Noto Sans CJK JP as the fallback, yielding four ordered runs with zero missing glyphs.
+
+This is **coverage and run segmentation, not complex-script shaping**. Arabic/Indic shaping, bidi ordering and OpenType feature application remain a separate shaping-service boundary rather than being guessed inside Font Manager.

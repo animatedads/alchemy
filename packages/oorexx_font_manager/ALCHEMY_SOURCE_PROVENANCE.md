@@ -1,21 +1,22 @@
 # Alchemy source provenance: `oorexx_font_manager`
 
-- Source delivery: `oorexx_font_manager_v0.1-dev2.zip`
-- Delivery SHA-256: `52a880246d9db483cde6fb2ceac06e7058ba444421cc1f2fa56dcd3725998b4b`
-- Delivery file timestamp: 2026-10-22T12:25:00+01:00
-- Published text/source files: 16
-- Embedded dependency files omitted: 14
-- Generated/machine-specific files omitted: 2
+- Source revision: `oorexx_font_manager_v0.1-dev3`
+- Parent delivery: `oorexx_font_manager_v0.1-dev2.zip`
+- Parent SHA-256: `52a880246d9db483cde6fb2ceac06e7058ba444421cc1f2fa56dcd3725998b4b`
+- Qualification baseline: Open Object Rexx 5.3.0 r13196
+- Release archive SHA-256: reported out-of-band because this provenance file is itself a member of the archive.
 
-## Publication normalization
+## dev3 delta
 
-The release archive vendors an Intention Service qualification snapshot. GitHub publishes that dependency independently as `packages/oorexx_intention_service`; the repository test runner therefore resolves the sibling package through `INTENTION_SERVICE_ROOT` rather than `vendor/intention`.
+- coverage-aware fallback and renderer-neutral `FontRun` / `FontRunPlan`;
+- deterministic ranked and family-collapsed fallback candidates;
+- optional coverage-provider seam;
+- Fontconfig Unicode-scalar/language coverage lookup;
+- explicit missing-glyph evidence;
+- live Latin/Japanese/mathematical fallback qualification.
 
-## Omitted embedded dependency files
+No font binaries are distributed.
 
-- `vendor/intention/**` — independently published `oorexx_intention_service` source.
+## Source-publication normalization
 
-## Omitted local or generated files
-
-- `qualification/r13196-environment.log`
-- `qualification/r13196-dev2.log`
+The release archive may carry the Intention Service qualification snapshot. The Alchemy repository publishes that dependency independently under `packages/oorexx_intention_service`; the test runner supports either the vendored standalone layout or the sibling repository package.

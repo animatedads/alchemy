@@ -139,8 +139,8 @@
 
 ::class FontManager public
 ::method init
-  expose faces providers transformers metricProviders glyphProviders purposes
-  faces=.Directory~new; providers=.Array~new; transformers=.Array~new; metricProviders=.Array~new; glyphProviders=.Array~new; purposes=.Directory~new
+  expose faces providers transformers metricProviders glyphProviders coverageProviders purposes
+  faces=.Directory~new; providers=.Array~new; transformers=.Array~new; metricProviders=.Array~new; glyphProviders=.Array~new; coverageProviders=.Array~new; purposes=.Directory~new
   self~registerDefaultPurposes
 ::method registerDefaultPurposes private
   expose purposes
@@ -183,6 +183,10 @@
   expose glyphProviders
   use strict arg provider
   glyphProviders~append(provider); return self
+::method registerCoverageProvider
+  expose coverageProviders
+  use strict arg provider
+  coverageProviders~append(provider); return self
 ::method glyphPlan
   expose glyphProviders
   use strict arg face, text
@@ -229,6 +233,181 @@
 ::method findForPurpose
   use strict arg purposeName
   return self~find(self~queryForPurpose(purposeName))
+::method matches
+  expose faces
+  use strict arg query, limit=0
+  ranked=.Array~new
+  s=faces~supplier
+  do while s~available
+    ranked~append(self~scoreFace(s~item,query))
+    s~next
+  end
+  do i=1 to ranked~items
+    best=i
+    do j=i+1 to ranked~items
+      if ranked[j]~score > ranked[best]~score then best=j
+    end
+    if best<>i then do
+      swap=ranked[i]; ranked[i]=ranked[best]; ranked[best]=swap
+    end
+  end
+  if limit<=0 then return ranked
+  if ranked~items<=limit then return ranked
+  out=.Array~new
+  do i=1 to limit; out~append(ranked[i]); end
+  return out
+::method fallbackMatches
+  use strict arg query, limit=16
+  out=.Array~new; seen=.Directory~new
+  primary=self~find(query)
+  if primary<>.nil then do
+    key=translate(primary~face~family)
+    out~append(primary); seen~put(.true,key)
+  end
+  ranked=self~matches(query)
+  do match over ranked
+    key=translate(match~face~family)
+    if \seen~hasIndex(key) then do
+      out~append(match); seen~put(.true,key)
+      if limit>0 then if out~items>=limit then leave
+    end
+  end
+  return out
+::method planRunsForPurpose
+  expose coverageProviders
+  use strict arg purposeName, text, maxFamilies=16, language=""
+  runPlan=.FontRunPlan~new(purposeName,text)
+  if text=="" then return runPlan
+  query=self~queryForPurpose(purposeName)
+  if language<>"" then query~language=language
+  chars=self~utf8Characters(text)
+  unique=.Directory~new; covered=.Directory~new; selected=.Array~new; selectedIds=.Directory~new
+  do ch over chars
+    if \unique~hasIndex(ch) then unique~put(.true,ch)
+  end
+  remaining=unique~items
+
+  primary=self~find(query)
+  if primary<>.nil then do
+    plan=self~glyphPlan(primary~face,text)
+    added=self~recordCoverage(plan,unique,covered)
+    remaining=remaining-added
+    if added>0 then do
+      selected~append(.Array~of(primary~face,plan))
+      selectedIds~put(.true,primary~face~id)
+      runPlan~addFace(primary~face)
+    end
+  end
+
+  /* Ask registered coverage providers for a face that covers each still-missing
+     scalar. This keeps fallback proportional to missing scripts rather than to
+     the number of installed font families. */
+  if remaining>0 then do
+    s=unique~supplier
+    do while s~available
+      ch=s~index
+      if \covered~hasIndex(ch) then do
+        cp=0
+        if selected~items>0 then do
+          g=selected[1][2]~glyphForBytes(ch)
+          if g<>.nil then cp=g~codepoint
+        end
+        if cp>0 then do provider over coverageProviders
+          face=provider~findCovering(query,cp,language)
+          if face<>.nil then do
+            self~registerFace(face)
+            if \selectedIds~hasIndex(face~id) then do
+              plan=self~glyphPlan(face,text)
+              added=self~recordCoverage(plan,unique,covered)
+              if added>0 then do
+                remaining=remaining-added
+                selected~append(.Array~of(face,plan))
+                selectedIds~put(.true,face~id)
+                runPlan~addFace(face)
+              end
+            end
+          end
+          if covered~hasIndex(ch) then leave
+        end
+      end
+      s~next
+    end
+  end
+
+  /* Generic fallback remains available when no coverage-aware provider exists. */
+  if remaining>0 then do
+    candidates=self~fallbackMatches(query,maxFamilies)
+    do match over candidates
+      if remaining<=0 then leave
+      if \selectedIds~hasIndex(match~face~id) then do
+        plan=self~glyphPlan(match~face,text)
+        added=self~recordCoverage(plan,unique,covered)
+        if added>0 then do
+          remaining=remaining-added
+          selected~append(.Array~of(match~face,plan))
+          selectedIds~put(.true,match~face~id)
+          runPlan~addFace(match~face)
+        end
+      end
+    end
+  end
+
+  currentFace=.nil; currentPlan=.nil; currentText=""
+  do ch over chars
+    selectedFace=.nil; selectedPlan=.nil
+    do entry over selected
+      g=entry[2]~glyphForBytes(ch)
+      if g<>.nil then do
+        if g~glyphId>0 then do
+          selectedFace=entry[1]; selectedPlan=entry[2]; leave
+        end
+      end
+    end
+    if selectedFace==.nil then do
+      if currentFace<>.nil then do
+        runPlan~addRun(.FontRun~new(currentFace,currentText,currentPlan))
+        currentFace=.nil; currentPlan=.nil; currentText=""
+      end
+      runPlan~addMissing(ch)
+    end
+    else do
+      changed=.false
+      if currentFace==.nil then changed=.true
+      else if selectedFace~id<>currentFace~id then changed=.true
+      if changed then do
+        if currentFace<>.nil then runPlan~addRun(.FontRun~new(currentFace,currentText,currentPlan))
+        currentFace=selectedFace; currentPlan=selectedPlan; currentText=ch
+      end
+      else currentText=currentText||ch
+    end
+  end
+  if currentFace<>.nil then runPlan~addRun(.FontRun~new(currentFace,currentText,currentPlan))
+  return runPlan
+::method recordCoverage private
+  use strict arg plan, unique, covered
+  added=0; s=unique~supplier
+  do while s~available
+    ch=s~index
+    if \covered~hasIndex(ch) then do
+      g=plan~glyphForBytes(ch)
+      if g<>.nil then do
+        if g~glyphId>0 then do; covered~put(.true,ch); added=added+1; end
+      end
+    end
+    s~next
+  end
+  return added
+::method utf8Characters private
+  use strict arg text
+  out=.Array~new; p=1
+  do while p<=length(text)
+    first=c2d(substr(text,p,1)); n=1
+    if first>=240 then n=4
+    else if first>=224 then n=3
+    else if first>=192 then n=2
+    out~append(substr(text,p,n)); p=p+n
+  end
+  return out
 ::method find
   expose faces providers
   use strict arg query
@@ -297,6 +476,46 @@
   return "normal"
 
 /* Neutral glyph inventory used by renderers that need explicit glyph identity. */
+::class FontRun public
+::method init
+  expose face text glyphPlan
+  use strict arg face, text, glyphPlan=.nil
+::attribute face get
+::attribute text get
+::attribute glyphPlan get
+
+::class FontRunPlan public
+::method init
+  expose purpose text runs faces missing
+  use strict arg purpose, text
+  runs=.Array~new; faces=.Array~new; missing=.Array~new
+::attribute purpose get
+::attribute text get
+::method runs
+  expose runs
+  return runs~copy
+::method faces
+  expose faces
+  return faces~copy
+::method missing
+  expose missing
+  return missing~copy
+::method addRun
+  expose runs
+  use strict arg run
+  runs~append(run); return self
+::method addFace
+  expose faces
+  use strict arg face
+  faces~append(face); return self
+::method addMissing
+  expose missing
+  use strict arg character
+  missing~append(character); return self
+::method fullyCovered
+  expose missing
+  return missing~items==0
+
 ::class FontGlyph public
 ::method init
   expose utf8Bytes unicodeHex codepoint glyphId advance

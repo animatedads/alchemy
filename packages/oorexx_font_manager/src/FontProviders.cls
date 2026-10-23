@@ -59,6 +59,20 @@
   a=self~readFaces(out); call SysFileDelete out
   if a~items==0 then return .nil
   return a[1]
+::method findCovering
+  expose fcMatch tempDir
+  use strict arg query, codepoint, language=""
+  pattern=":charset="||d2x(codepoint)
+  if language<>"" then pattern=pattern||":lang="||language
+  if query~monospace then pattern=pattern||":spacing=100"
+  out=self~tempFile("cover")
+  fmt="%{file}\t%{family[0]}\t%{style[0]}\t%{fullname[0]}\t%{postscriptname}\t%{weight}\t%{slant}\t%{spacing}\t%{scalable}\t%{fontformat}\n"
+  command=fcMatch||" --format='"||fmt||"' "||self~quote(pattern)||" > "||self~quote(out)||" 2>/dev/null"
+  address system command
+  if rc \== 0 then return .nil
+  a=self~readFaces(out); call SysFileDelete out
+  if a~items==0 then return .nil
+  return a[1]
 ::method readFaces private
   use strict arg file
   a=.Array~new
