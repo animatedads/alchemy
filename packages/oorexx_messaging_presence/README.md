@@ -1,25 +1,10 @@
-# ooRexx Messaging & Presence v0.1-dev1
+# ooRexx Messaging & Presence v0.1-dev4
 
 Spiral 1 standards/COTS coverage slice for **Messaging & Presence**.
 
-The public application model is deliberately not XMPP:
+The application-facing service is deliberately not named after its first wire protocol. XMPP is a standards-backed provider. JIDs, stanzas and XMPP extension names do not escape into the application or Intention model.
 
-```text
-application / agent / Intention
-        |
-        v
-Messaging      Presence
-        \        /
-         provider registry   <--- fresh discovery every turn
-                |
-                +-- XMPP provider
-                +-- future provider
-```
-
-XMPP is the first standards-backed provider.  It is not the service name and
-JIDs/stanzas do not escape into application or Intention objects.
-
-## Public objects
+## Public semantic objects
 
 - `MessagingAddress`
 - `Message`
@@ -29,54 +14,46 @@ JIDs/stanzas do not escape into application or Intention objects.
 - `Messaging`
 - `Presence`
 - `MessagingPresenceProviderRegistry`
-- `MessagingPresenceProvider` / current provider offers
+- `MessagingPresenceProvider` / current `MessagingPresenceOffer` objects
 
-Objects are carried whole.  A provider receives the actual `Message`,
-`MessagingAddress`, `PresenceState` and metadata objects.  Flattening is a
-provider projection concern, never the application model.
+Objects are carried whole. A provider receives the exact `Message`, `MessagingAddress`, `PresenceState`, metadata and context objects. Flattening is a provider projection concern only.
 
-## Dynamic capability truth
+## Executable Intention route
 
-`MessagingPresenceProviderRegistry~discover()` calls every registered provider
-each time.  A provider advertises a fresh `MessagingPresenceOffer` describing
-what it can do **now**.  If a provider disappears or loses a capability, the
-next discovery turn removes that operation without restart.
+`MessagingPresenceIntentions.cls` provides dynamic discovery and dispatch. The Intention layer produces semantic plans and slots. At dispatch it resolves a human/application identity through `MessagingPresenceAddressResolver`, creates full `Message` or `PresenceState` objects, and invokes the `Messaging` or `Presence` access class. It never chooses XMPP, a JID, TCP, TLS or a socket.
 
-This is also how the Intention adapter works.  It publishes one transient
-`IntentionSurfaceAdvertisement` only while the current provider set has useful
-capability.  Natural language proposals come from that live surface, not from
-permanent aliases in the Intention catalogue.
+The surface remains dynamic. If currently discovered providers lose a capability, that meaning disappears on the next discovery refresh rather than remaining as a stale static command.
 
-## XMPP provider
+## Registered extension boundary
 
-`providers/xmpp/XmppMessagingPresenceProvider.cls` projects semantic objects to
-basic XMPP message and presence stanzas.  A standards-qualified `XmppSession`
-implementation owns RFC 6120 stream setup, TLS/SASL, resource binding, XML
-framing and parsing.
+`MessagingPresenceExtensions.cls` is the executable plugin boundary for things that are not core Messaging or Presence. A plugin registers a **semantic service of its own** and may provide its own dynamic Intention discovery provider.
 
-`XmppSocketTransport` gives such a session engine an isolated stream acquired
-only through `SocketProvider~streamSender(logicalName)`.  It never creates a
-raw socket itself.
+This is intentionally not an XMPP-XEP catalogue. Installing a plugin does not add methods or capabilities to `Messaging` or `Presence` merely because XMPP has a corresponding extension.
 
-The included ASCII address codec is a deliberately conservative qualification
-profile.  It fails closed outside its subset rather than pretending to
-implement the complete Unicode/PRECIS rules.  A live provider should register a
-qualified RFC 7622 address codec/session engine.
+Facilities such as group conversation, event publication, file exchange, avatar/profile media, or other optional features therefore remain separate registered services rather than turning the core into a chat platform.
 
-## Deliberate non-features
+## XMPP provider and session engine
 
-This package does **not** implement MUC/chat rooms, PubSub, file transfer,
-avatars, social contact-list UI, or a federation policy framework.  They are not
-part of the Messaging & Presence access contract.  If an application needs an
-XMPP extension, it belongs in a separately registered plugin/provider layer.
+`providers/xmpp/XmppMessagingPresenceProvider.cls` projects semantic objects to basic RFC 6120/6121 message and presence stanzas.
 
-## Qualification
+`providers/xmpp/XmppSessionEngine.cls` supplies provider-private session mechanics: incremental framing of the open-ended XMPP XML stream; stream restart after security/authentication transitions; STARTTLS negotiation state and downgrade refusal; SASL PLAIN after transport protection; resource binding; inbound ordinary message parsing; inbound availability/presence parsing and cache; and provider-private events projected back into semantic objects.
 
-Run `tools/run_environment_test.sh` with current Socket Provider and Intention
-Service source paths.  The script exercises semantic object preservation,
-provider discovery, access classes, XMPP projection, socket isolation and
-live Intention surface removal.
+`XmppSocketTransport` acquires its byte stream only through `SocketProvider~streamSender(logicalName)` and never creates, selects or wraps a native socket itself.
 
-No live-XMPP interoperability claim is made by dev1 because no RFC 6120 session
-engine is bundled.  That is an explicit qualification boundary, not a hidden
-stub.
+### Current live-interoperability boundary
+
+Socket Provider v0.1-dev14 models TLS as a separately acquired secure socket family but does not expose an in-place TLS upgrade of an already-open TCP stream. Standard XMPP STARTTLS requires that same-stream transition. dev4 therefore **fails closed** rather than bypassing SocketProvider or sending SASL credentials over an unprotected connection.
+
+See `SOCKET_PROVIDER_STARTTLS_REQUIREMENT.md`. Live RFC 6120 server interoperability through that older qualification baseline is not claimed.
+
+The included ASCII address codec remains deliberately conservative. It fails closed outside its stated subset rather than pretending to implement the complete Unicode/PRECIS/IDNA requirements.
+
+## Standards provenance
+
+Historical RFC 3920 / RFC 3921 remain provenance. Their implementation successors are RFC 6120 and RFC 6121. RFC 7622, as subsequently updated, supplies the XMPP address-format boundary. SASL PLAIN follows RFC 4616.
+
+## Instrumentation Mesh integration
+
+`src/MessagingPresenceInstrumentation.cls` is the optional adapter for `instrumentation.mesh/0.1`. Messaging & Presence does not create a local metrics/history protocol: authoritative service facts are emitted through the common Instrumentation emitter and common publication/collector path.
+
+Observation does not grant message/presence mutation authority.

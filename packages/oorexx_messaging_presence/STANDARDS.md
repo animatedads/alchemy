@@ -1,33 +1,16 @@
 # Standards profile
 
-The coverage request entered the grid as RFC 3920 / RFC 3921.  Those documents
-are retained as historical provenance, but the implementation profile uses
-their current successors.
+The coverage request entered the grid as RFC 3920 / RFC 3921. Those documents remain historical provenance, while implementation uses their successors.
 
 | Concern | Spiral 1 profile |
 |---|---|
-| XMPP core streams, security, auth, stanza primitives | RFC 6120 (obsoletes RFC 3920) |
-| Basic instant messaging and presence | RFC 6121 (obsoletes RFC 3921) |
-| XMPP address format | RFC 7622, as updated by RFC 9844 |
+| XMPP core streams, STARTTLS, SASL negotiation, resource binding and stanza primitives | RFC 6120 |
+| Basic instant messaging and presence | RFC 6121 |
+| XMPP address format | RFC 7622, as subsequently updated |
+| SASL PLAIN mechanism payload | RFC 4616 |
 
-The semantic public contract is **Messaging & Presence**.  The standards above
-apply only inside the XMPP provider/session implementation.
+The semantic public contract is **Messaging & Presence**. These standards apply only inside the XMPP provider/session implementation.
 
-## Included protocol semantics
+Core includes ordinary one-to-one message projection/parsing, basic availability/presence, subscribe/unsubscribe, provider-private address projection, incremental framing, STARTTLS state and downgrade refusal, protected-only SASL PLAIN, post-authentication stream restart and resource binding.
 
-- ordinary one-to-one message stanza projection
-- basic availability/presence projection
-- presence subscribe/unsubscribe projection
-- provider-private address projection
-
-## Explicitly excluded from core
-
-- Multi-User Chat / chat-room products
-- Publish-Subscribe
-- file transfer
-- avatars
-- social contact-list product features
-- extension-specific federation policy
-
-Those are optional extension/plugin concerns and are not needed to demonstrate
-Spiral 1 Messaging & Presence coverage.
+Explicitly excluded from core: Multi-User Chat/chat-room products, Publish-Subscribe, file transfer, avatars, social contact-list product features, and extension-specific federation policy. Those are optional registered semantic plugin services.

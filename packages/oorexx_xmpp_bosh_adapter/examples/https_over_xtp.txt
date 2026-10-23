@@ -1,0 +1,5 @@
+One valid composition is:
+
+Messaging/Presence -> XMPP -> XEP-0206 adapter -> BOSH -> HTTPS -> stream selector -> XTP
+
+The adapter does not import XTP or SocketProvider. BOSH does not import XMPP. HTTPS obtains its own lower stream through the selector.
