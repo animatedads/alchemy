@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "arch.customer-service.playout",
+  "version": "0.1",
+  "sphere": "customer-service-agents",
+  "title": "Continuous media playout and business scenes",
+  "summary": "Single ongoing WebM working stream at 1280x720, 24 fps with 48 kHz audio is the current test target. The original Google-generated masters remain source media; the resident playout service switches predecoded agent states and authorised information scenes.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Keep the virtual camera and audio endpoints open while scenes change.",
+    "Prefer WebM VP8/VP9 and source FPS for working footage; do not needlessly transcode short source media to H.264/OpenH264.",
+    "Speech, business information and onscreen scene are separate plan components.",
+    "An invoice or TPS report view is rendered from a permitted business object, never invented by an LLM.",
+    "A cartoon cat can reuse a very small motion-state library; photorealistic human-level lip movement is not mandatory for this presenter."
+  ],
+  "procedure": [
+    "Idle/listening → short stock speech → authorised business display → return to agent.",
+    "Keep source audiovisual clocks aligned even when the speaking agent is off-screen.",
+    "For new scenes, retain provenance, review status and usage scope."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_customer_service_readback_v0.1-dev2.zip",
+      "sha256": "4be34bfbda31c0c807c6f440abbd3a67be778e676efa46d90d55c58d8c0254b0",
+      "member": "agent_readback_capture_v0.1-dev2/README.md",
+      "claim": "Readback six-utterance generation plan, script matching and review limits."
+    },
+    {
+      "artifact": "oorexx_video_mesh_analysis_v0.1-dev2.zip",
+      "sha256": "f9207f4acac192645ac1bec4ebe7e83c07825033aff61e8e566ae902a2230a0e",
+      "member": "video_mesh_tracking_v0.1-dev2/README.md",
+      "claim": "FFmpeg PTS range tracking and checkpoint interface, with MediaPipe not runtime-qualified."
+    }
+  ]
+}

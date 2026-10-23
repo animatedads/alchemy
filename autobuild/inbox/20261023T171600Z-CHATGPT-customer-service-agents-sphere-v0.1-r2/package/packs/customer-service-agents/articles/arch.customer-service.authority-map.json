@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "arch.customer-service.authority-map",
+  "version": "0.1",
+  "sphere": "customer-service-agents",
+  "title": "Architecture: semantic and execution boundaries",
+  "summary": "ooRexx owns orchestration, intention and presentation semantics; media libraries and ML providers supply bounded evidence. Business objects remain the authority for customer data. Transport is selected outside each service.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Intention recognition does not authorize showing a customer's invoice, TPS report or account.",
+    "Media analysis never creates or changes business-service truth.",
+    "Connect Selector may choose direct invocation, JSON-RPC or Queue Fabric; Queue Fabric is preferred for retained jobs but is not mandatory.",
+    "Foreign Runtime v0.22.6 is the established native/Python boundary; Python Macrospace is optional and must not be substituted blindly.",
+    "Native mediaprocessing should remain renderer-neutral; do not force ooDialog or other toolkit object hierarchies into the semantic API."
+  ],
+  "procedure": [
+    "Compose business intention, authorization, object retrieval, speech plan and scene plan separately.",
+    "Use Foreign Runtime to request the native/MediaPipe implementation when capability is present.",
+    "Return evidence references and media timings; do not transport raw 500 GB video through RPC messages."
+  ],
+  "provenance": [
+    {
+      "artifact": "customer_service_face_pipeline_v0.1-dev1.zip",
+      "sha256": "8f726b2584fd1b7c63f79e17db934514dc8b0b4bc762f7fff011e9e12c4eda88",
+      "member": "customer_service_face_dev1/README.md",
+      "claim": "Independent timestamped transcription gateway and local face-analysis seam."
+    },
+    {
+      "artifact": "oorexx_video_mesh_analysis_v0.1-dev2.zip",
+      "sha256": "f9207f4acac192645ac1bec4ebe7e83c07825033aff61e8e566ae902a2230a0e",
+      "member": "video_mesh_tracking_v0.1-dev2/README.md",
+      "claim": "FFmpeg PTS range tracking and checkpoint interface, with MediaPipe not runtime-qualified."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "ref.customer-service.media-clock",
+  "version": "0.1",
+  "sphere": "customer-service-agents",
+  "title": "Media timing and audiovisual evidence",
+  "summary": "Source frame presentation timestamps (PTS) are the alignment authority. ASR word timing is an estimate relative to the extracted audio stream; mapping must preserve audio and video stream-start offsets.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Do not assign timestamps from frameIndex/24 when source PTS exists.",
+    "A02 was 24 fps at inspection, but other footage can have nonzero start times and variable frame spacing.",
+    "A word candidate must retain source video and prepared-audio hashes, clip identity, interval and transcription provider/version.",
+    "Missing word timestamps, reversed intervals and mismatched hashes fail closed.",
+    "Full facial mesh, mouth movement and speech transcription are separate evidence sources; face detection does not imply full mesh verification."
+  ],
+  "procedure": [
+    "Decode bounded clips preserving frame PTS.",
+    "Acquire independent word start/end offsets from Google or Azure speech providers.",
+    "Project offsets into source-video time using source audio/video start difference.",
+    "Join word intervals to frame intervals and preserve uncertainty, quality and provenance.",
+    "Require human hearing and visual review before asset promotion."
+  ],
+  "provenance": [
+    {
+      "artifact": "customer_service_face_pipeline_v0.1-dev1.zip",
+      "sha256": "8f726b2584fd1b7c63f79e17db934514dc8b0b4bc762f7fff011e9e12c4eda88",
+      "member": "customer_service_face_dev1/README.md",
+      "claim": "Independent timestamped transcription gateway and local face-analysis seam."
+    },
+    {
+      "artifact": "oorexx_video_mesh_analysis_v0.1-dev2.zip",
+      "sha256": "f9207f4acac192645ac1bec4ebe7e83c07825033aff61e8e566ae902a2230a0e",
+      "member": "video_mesh_tracking_v0.1-dev2/README.md",
+      "claim": "FFmpeg PTS range tracking and checkpoint interface, with MediaPipe not runtime-qualified."
+    }
+  ]
+}

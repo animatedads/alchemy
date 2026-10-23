@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "arch.customer-service.video-mesh",
+  "version": "0.1",
+  "sphere": "customer-service-agents",
+  "title": "Scale: Storage Fabric, Migratable Job, and worker placement",
+  "summary": "Process bounded video chunks on 8–16 eligible CPU workers when available; GPU is an optional placement capability. Storage Fabric carries durable source and checkpoint references, Migratable Job handles continuation, and Job-to-Node Allocation handles eligibility, leases and fencing.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Never turn clip/job IDs into assumed Storage Fabric object IDs before object pinning is confirmed.",
+    "Never put large video payloads in queue messages; carry stable references, hashes, time windows and evidence only.",
+    "Migratable Job is the authority for lease-bound continuation and checkpoint recovery; the video service must not invent separate ownership or migration semantics.",
+    "Job-to-Node Allocation is the authority for hard eligibility, capacity admission and ownership fencing; the worker cannot bypass those decisions.",
+    "Chunk boundaries are half-open PTS intervals; any tracking overlap must be explicitly recorded and de-duplicated during history reconciliation.",
+    "History blocks can associate face/pose observation tracks across time without declaring true human identity.",
+    "Multi-face MediaPipe Face Landmarker and Pose Landmarker are target capabilities; actual MediaPipe inference on A02 is not yet qualified.",
+    "ZeroGPU and Colab are opportunistic execution destinations, not assured permanent unattended mesh workers."
+  ],
+  "procedure": [
+    "Pin source video and model versions in Storage Fabric.",
+    "Create bounded, checkpointable work definitions; use existing node placement authority and migratable job leases.",
+    "Workers run Face Landmarker or Pose Landmarker via Foreign Runtime/compatible Python provider.",
+    "Write atomic, integrity-verifiable outputs; reconcile observations in source-PTS order.",
+    "Checkpoint all future-determining continuation state and avoid duplicate result promotion after migration."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_video_mesh_analysis_v0.1-dev2.zip",
+      "sha256": "f9207f4acac192645ac1bec4ebe7e83c07825033aff61e8e566ae902a2230a0e",
+      "member": "video_mesh_tracking_v0.1-dev2/README.md",
+      "claim": "FFmpeg PTS range tracking and checkpoint interface, with MediaPipe not runtime-qualified."
+    },
+    {
+      "artifact": "customer_service_face_pipeline_v0.1-dev1.zip",
+      "sha256": "8f726b2584fd1b7c63f79e17db934514dc8b0b4bc762f7fff011e9e12c4eda88",
+      "member": "customer_service_face_dev1/README.md",
+      "claim": "Independent timestamped transcription gateway and local face-analysis seam."
+    }
+  ]
+}
