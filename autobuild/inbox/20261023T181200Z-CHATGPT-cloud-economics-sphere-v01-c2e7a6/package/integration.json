@@ -1,0 +1,33 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "cloud_economics_gopher_sphere",
+    "version": "0.1",
+    "kind": "documentation"
+  },
+  "tests": [
+    {
+      "name": "sphere-contract",
+      "argv": [
+        "python3",
+        "tests/test_sphere.py"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "shell-syntax",
+      "argv": [
+        "bash",
+        "-n",
+        "tests/run.sh"
+      ],
+      "timeout_seconds": 20
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "spheres/cloud_economics_gopher_sphere_v0.1"
+    }
+  }
+}

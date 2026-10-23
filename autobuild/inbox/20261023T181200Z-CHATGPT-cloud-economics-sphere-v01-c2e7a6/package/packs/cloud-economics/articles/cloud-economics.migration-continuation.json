@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "cloud-economics.migration-continuation",
+  "version": "0.1",
+  "sphere": "cloud-economics",
+  "title": "Native migration contracts and verified continuation",
+  "section": "integration",
+  "summary": "Dev6/dev7 bridges check real Job-to-Node Allocator lease/lifecycle and Memory Fabric context objects, and Migratable Job 0.2.2 definitions, checkpoint and transfer records. These are read-only integrity/admissibility checks, not a reimplementation of migration.",
+  "authority": "project-architecture",
+  "implementation_status": "IMPLEMENTED",
+  "invariants": [
+    "Source ownership epoch and lease validity must bind to the exact job.",
+    "Fresh lifecycle evidence and matched destination/route/context are mandatory.",
+    "Checkpoint/transfer records may be locally consistent yet not cryptographically authenticated.",
+    "Migratable Job transfer byte count can lose integer exactness at default ooRexx precision; invoice-grade cost requires exact authoritative counters.",
+    "An observed success state must not be treated as a provider charge."
+  ],
+  "provenance": [
+    {
+      "artifact": "cloud_economics_v0.1-dev8.zip",
+      "sha256": "8354043fc133ef9b6fdb593ec8d000e278e0748228224464b9ebb7feb485e735",
+      "member": "docs/NATIVE_CONTINUATION_AUTHORITY_DEV7.md",
+      "claim": "Cloud Economics v0.1-dev8 source evidence; status=IMPLEMENTED."
+    }
+  ],
+  "procedure": [
+    "Inspect native source placement and execution state.",
+    "Verify destination eligibility from issuing allocator and policy.",
+    "Verify workload identity, checkpoint/transfer source fencing and continuation record consistency.",
+    "Leave authority to checkpoint, handoff, transfer and resume entirely with Migratable Job."
+  ]
+}
