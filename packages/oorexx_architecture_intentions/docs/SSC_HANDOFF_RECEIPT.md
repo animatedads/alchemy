@@ -1,0 +1,9 @@
+# SSC receipt admission (dev9)
+
+Architecture Intentions holds the requirements and the reviewed selection. SSC holds semantic source/component identity, lineage, source levels, `::requires` closure and dependency resolution. Deployment owns artifact selection, `REXX_PATH` closure, target/native loadability, activation and post-activation verification. Do not collapse these into a single approval.
+
+`ArchitectureSscReceipt` consumes the existing dev8 `READY_FOR_SSC_REVIEW` handoff and produces only a **read-only qualification projection**. The caller supplies a candidate SSC resolution receipt and a **trusted, host-injected** `verifyArchitectureSscResolution(projectId, scenarioId, canonicalRequestJson, canonicalCandidateReceiptJson)` service. This verifier must check immutable request identity, all component requirements, exact SSC lineage/source levels, actual reachable `::requires` closure, content hashes, and resolution provenance. This is a required **future adapter contract**, not a claim that current SSC publishes that method.
+
+The projection whitelists only project/scenario ID, proof reference, closure reference and verification flags. Private verifier data never crosses the projection. It never turns an SSC receipt into an executable deployment plan; unknown or absent verifier fails closed. `proofRef`/`closureRef` remain externally verifiable references, not magical proof by themselves.
+
+**Limitations:** offline test uses a fake verifier; production signature/identity, current SSC adapter integration, immutable canonical request hashing, per-package target load probes, NotNotes record publication and actual Deployment binding remain unresolved. No live component is built or deployed by this module. A `READY_FOR_SSC_REVIEW` handoff is not evidence that SSC resolved anything.
