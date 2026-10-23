@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "rxsock6.multicast-boundary",
+  "version": "0.1",
+  "sphere": "rxsock6",
+  "title": "IPv6 multicast and MLDv2 authority boundary",
+  "summary": "RxSock6 dev3 does not advertise multicast membership. IPv6 multicast is supplied by IP Multicast v0.1-dev2 through the family-aware RFC 3678 provider path; MLDv2 remains host-stack behaviour below that socket interface.",
+  "authority": "project-authority",
+  "invariants": [
+    "Do not add an RxSock6-specific multicast semantic layer when the common IP Multicast RFC 3678 provider already owns membership.",
+    "IPv6 ASM/SSM/full-state filtering uses IPPROTO_IPV6 and native MCAST_* operations through IP Multicast dev2.",
+    "A host membership observation in /proc/net/igmp6 demonstrates the operating-system IPv6 membership route; it is not an ooRexx MLDv2 implementation.",
+    "PIM-SM remains routing/control-plane infrastructure and must not be surfaced as a fake application socket method."
+  ],
+  "procedure": [
+    "When multicast is requested, keep the Inet6Address object intact and route membership through the common IP Multicast provider contract.",
+    "Describe MLDv2 evidence as host-stack behaviour unless packet-level MLD conformance is independently implemented and qualified."
+  ],
+  "provenance": [
+    {
+      "artifact": "SPIRAL1_TRANSPORT_COTS_EVIDENCE_DELTA_2026-10-13.md",
+      "sha256": "499479316dc2b1242aa8778f42e89f6759b9d71160e86bcb01725106a6bb71f2",
+      "member": "SPIRAL1_TRANSPORT_COTS_EVIDENCE_DELTA_2026-10-13.md",
+      "line_start": 42,
+      "line_end": 72,
+      "claim": "Records RxSock6 dev3 UDP6, IP Multicast dev2 IPv6 RFC 3678 ASM/SSM/filter qualification, live ff02::115 delivery, /proc/net/igmp6 membership observation, and the MLDv2/PIM-SM authority boundary.",
+      "note": "IPv6 datagram and multicast evidence delta."
+    }
+  ]
+}

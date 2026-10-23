@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "rxsock6.current",
+  "version": "0.1",
+  "sphere": "rxsock6",
+  "title": "Current RxSock6 authority and object model",
+  "summary": "The current reconciled estate is Socket Provider v0.1-dev16 with RxSock6 Socket Provider v0.1-dev3 over rxsock6 0.1.2. TCP6 and UDP6 are sibling-provider routes; native .Inet6Address identity is retained rather than flattened.",
+  "authority": "project-authority",
+  "invariants": [
+    "Bundled RxSock remains IPv4-only; IPv6 is supplied side-by-side by RxSock6.",
+    "socket6.cls extends socket.cls rather than replacing or copying the stock class contract.",
+    "RxSock6 remains a sibling provider below the common Socket Provider boundary; do not fold it into SocketProvider.cls.",
+    "The preferred TCP6 and UDP6 routes preserve the native .Inet6Address object, including address-family-specific state."
+  ],
+  "procedure": [
+    "Treat v0.1-dev3 / rxsock6 0.1.2 as the current qualified estate, while treating the checked-in GitHub dev1 source as a historical source snapshot until exact dev3 source is synchronized."
+  ],
+  "provenance": [
+    {
+      "artifact": "SPIRAL1_TRANSPORT_COTS_INTERFACE_GRID_CURRENT_2026-10-13.md",
+      "sha256": "f659adf468eac794446550defc830fcdcbf7a40a75e65e4fe9a4e782fc2c6bbd",
+      "member": "SPIRAL1_TRANSPORT_COTS_INTERFACE_GRID_CURRENT_2026-10-13.md",
+      "line_start": 3,
+      "line_end": 23,
+      "claim": "Records Socket Provider dev16, RxSock6 provider dev3 / rxsock6 0.1.2, live TCP6/UDP6 evidence, native Inet6Address preservation, and the separate IPv6 multicast route.",
+      "note": "Current transport evidence grid."
+    }
+  ]
+}
