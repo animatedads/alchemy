@@ -1,0 +1,108 @@
+{
+  "spec": "1.0",
+  "module": "RTOInspectorLiveImport",
+  "description": "Plan42 contract for structured, fail-closed Inspector evidence observation; not authorization or dispatch.",
+  "nodes": [
+    {
+      "name": "rto.inspector.live.import",
+      "op": "impl",
+      "abstract": "Read timestamped Inspector snapshots, deterministic receipt sidecars, trace-load acknowledgements, handcuff reports, and trigger reports from a live artefact directory.",
+      "params": [
+        "root",
+        "live_dir",
+        "output"
+      ],
+      "implementations": {
+        "python": {
+          "type": "tool",
+          "requires": [
+            "tools/rto_inspector_import.py"
+          ],
+          "inline": "python3 tools/rto_inspector_import.py --root . --live-dir reports/inspector/live --json"
+        }
+      },
+      "business_purpose": " (structured evidence; no keyword inference)"
+    },
+    {
+      "name": "summarize_live_inspector_evidence",
+      "op": "routine",
+      "params": [
+        "root",
+        "live_dir"
+      ],
+      "business_purpose": "convert Clouseau live artefacts into a bounded RTO evidence summary that can be compared with static Plan42 Inspector readiness reports (structured evidence; no keyword inference)",
+      "inspector": {
+        "authority_boundary": "RTOOperationSecurityContext",
+        "evidence_only": true,
+        "engine_owned_by": "InspectorClouseau",
+        "project_adapter": "RTOInspectorRules",
+        "roots": [
+          "command",
+          "operation-registry",
+          "command-registry",
+          "security-context",
+          "model-roots"
+        ]
+      },
+      "inspector_evidence": {
+        "output_schema": "alchemy.rto.inspector-live-import.v2",
+        "required_receipt_stems": [
+          "rto-authority-corridor",
+          "rto-command-request-corridor",
+          "rto-filesystem-observe",
+          "rto-filesystem-observe-corridor"
+        ],
+        "required_authority_classes": [
+          "RTOCOMMAND",
+          "RTOCOMMANDREGISTRY",
+          "RTOOPERATIONREGISTRY",
+          "RTOOPERATIONSECURITYCONTEXT"
+        ],
+        "required_filesystem_classes": [
+          "RTOCHECKBROKENSYMLINKS",
+          "RTOREX86LOWFRUITOPERATIONS"
+        ]
+      },
+      "body": [
+        {
+          "op": "return",
+          "value": {
+            "op": "impl_use",
+            "name": "rto.inspector.live.import",
+            "args": [
+              "root",
+              "live_dir",
+              "output"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "preserve_static_live_boundary",
+      "op": "routine",
+      "params": [
+        "import_report",
+        "comparison_report"
+      ],
+      "business_purpose": "ensure imported live evidence is compared with static readiness without letting Inspector reports replace RTO authority decisions (structured evidence; no keyword inference)",
+      "inspector": {
+        "authority_boundary": "RTOOperationSecurityContext",
+        "evidence_only": true,
+        "roots": [
+          "command",
+          "operation-registry",
+          "command-registry",
+          "security-context",
+          "model-roots"
+        ]
+      },
+      "body": [
+        {
+          "op": "return",
+          "value": "live Inspector artefacts are evidence inputs, not authorization decisions"
+        }
+      ]
+    }
+  ]
+}
