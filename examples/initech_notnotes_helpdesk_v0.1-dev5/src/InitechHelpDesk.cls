@@ -177,3 +177,184 @@
     transcript~append("HELPDESK: " || r["TEXT"])
     return r
   end
+
+  /* Read-only operational specialist.  Relevance and evidence belong to the
+   * Instrumentation Intentions provider, not to a Help Desk metric vocabulary.
+   * Business/report/document intents get first refusal; specialist discovery
+   * then handles operational questions over the same live application. */
+  instrumentationSurface = discovery["SPECIALISTS"][1]
+  instrumentationAssessment = instrumentationProvider~assessRelevance(text, instrumentationSurface, .Directory~new)
+  if instrumentationAssessment~relevant then do
+    r = self~formatInstrumentation(instrumentationAssessment)
+    successCount += 1
+    transcript~append("HELPDESK: " || r["TEXT"])
+    return r
+  end
+
+  /* Tier 2: hand document meaning to the live NotNotes intention runtime. */
+  innerText = text
+  if pos("REVIEW", upper) > 0 & pos("TPS", upper) > 0 then innerText = "show TPS Report Review"
+  else if pos("TPS", upper) > 0 & (pos("SHOW", upper) > 0 | pos("LIST", upper) > 0 | pos("FIND", upper) > 0) then innerText = "show TPS Report"
+  decision = inner~input(innerText)
+  if decision~status = "READY" then do
+    payload = inner~dispatch(decision)
+    r = self~formatInnerResult(decision, payload)
+    successCount += 1
+    transcript~append("HELPDESK: " || r["TEXT"])
+    return r
+  end
+  if decision~status = "CLARIFY" | decision~status = "CONFIRM" | decision~status = "INFEASIBLE" then do
+    failureCount += 1
+    r = self~reply(decision~status, self~decisionMessage(decision), "NOTNOTES_" || decision~status)
+    transcript~append("HELPDESK: " || r["TEXT"])
+    return r
+  end
+
+  if llm \== .nil then do
+    llmText = self~llmClassify(text, discovery)
+    if llmText <> "" then do
+      decision = inner~input(llmText)
+      if decision~status = "READY" then do
+        payload = inner~dispatch(decision)
+        r = self~formatInnerResult(decision, payload)
+        successCount += 1
+        transcript~append("HELPDESK: " || r["TEXT"])
+        return r
+      end
+    end
+  end
+
+  failureCount += 1
+  r = self~reply("UNKNOWN", "I could not bind that request to the current NotNotes TPS application. The live reports and document definitions were re-discovered for this turn.", "UNKNOWN")
+  transcript~append("HELPDESK: " || r["TEXT"])
+  return r
+
+::method matchReport private
+  use strict arg reports, upperText
+  bestName = ""
+  bestScore = 0
+  do report over reports
+    score = 0
+    name = translate(report["NAME"])
+    source = translate(report["SOURCE_FORM"])
+    do i = 1 to name~words
+      token = name~word(i)
+      if token~length > 2 then if pos(token, upperText) > 0 then score += 3
+    end
+    do i = 1 to source~words
+      token = source~word(i)
+      if token~length > 2 then if pos(token, upperText) > 0 then score += 2
+    end
+    if pos("REPORT", upperText) > 0 then score += 1
+    if pos("REVIEW", upperText) > 0 & pos("REVIEW", source) > 0 then score += 7
+    if pos("REVIEW", upperText) = 0 & (pos("REVIEW", source) > 0 | pos("REVIEW", name) > 0) then score -= 8
+    if pos("SUMMARY", upperText) > 0 & pos("SUMMARY", name) > 0 then score += 5
+    if pos("MY", upperText) > 0 & source = "TPS REPORT" then score += 5
+    if score > bestScore then do
+      bestScore = score
+      bestName = report["NAME"]
+    end
+  end
+  if bestScore < 4 then return ""
+  return bestName
+
+::method runSavedReport private
+  expose app actor
+  use strict arg reportName, personal=.false
+  definition = app~reportDefinition(reportName)
+  if definition == .nil then return self~reply("FAILURE", "The report disappeared after discovery; please retry.", "REPORT_CAPABILITY_CHANGED")
+  docs = app~reportDocuments(definition)
+  selected = .Array~new
+  do document over docs
+    include = .true
+    if personal then include = self~ownedByActor(document, definition["SOURCE_FORM"])
+    if include then selected~append(document)
+  end
+  text = reportName~upper || "0a"x || "Rows: " || selected~items || "0a"x
+  columns = definition["COLUMNS"]
+  do document over selected
+    line = ""
+    do column over columns
+      if line <> "" then line = line || " | "
+      line = line || app~reportValue(document, column["BINDING"])
+    end
+    text = text || line || "0a"x
+  end
+  totals = definition["TOTALS"]
+  do binding over totals
+    total = 0
+    valid = .true
+    do document over selected
+      value = app~reportValue(document, binding)
+      if \value~datatype("N") then do; valid = .false; leave; end
+      total += value
+    end
+    if valid then text = text || "TOTAL " || binding || ": " || total || "0a"x
+  end
+  r = self~reply("SUCCESS", text, "RUN_REPORT")
+  r["REPORT_NAME"] = reportName
+  r["COUNT"] = selected~items
+  return r
+
+::method ownedByActor private
+  expose app actor
+  use strict arg document, sourceForm
+  if sourceForm = "TPS Report" then return translate(app~reportValue(document, "User")) = translate(actor)
+  if sourceForm = "TPS Report Review" then do
+    ref = document~field("TheTPSReport")
+    if ref == .nil then return .false
+    target = app~byKey(ref~string)
+    if target == .nil then return .false
+    return translate(app~reportValue(target, "User")) = translate(actor)
+  end
+  return .true
+
+::method ensureBusinessLogFormat private
+  expose app
+  if app~userFormatCanonicalName("Business Log") <> "" then return .true
+  specs = .Array~new
+  specs~append(self~fieldSpec("Summary", "Summary", "TEXT"))
+  specs~append(self~fieldSpec("Details", "Details", "TEXT"))
+  specs~append(self~fieldSpec("User", "User", "USER_REFERENCE"))
+  specs~append(self~fieldSpec("Outcome", "Outcome", "TEXT"))
+  ignore = app~installUserFormat("Business Log", specs)
+  return .true
+
+::method fieldSpec private
+  use strict arg name,label,type
+  d=.Directory~new; d["NAME"]=name; d["LABEL"]=label; d["TYPE"]=type; return d
+
+::method logBusiness private
+  expose app actor
+  use strict arg text
+  specs = app~userFormatFields("Business Log")
+  if specs~items = 0 then return self~reply("FAILURE", "Business Log is not currently installed in NotNotes.", "BUSINESS_LOG_UNAVAILABLE")
+  details = text
+  marker = translate(text)
+  p = pos("LOG BUSINESS", marker)
+  if p > 0 then details = strip(substr(text, p + length("LOG BUSINESS")))
+  if details = "" then details = text
+  values = .Directory~new
+  values["Summary"] = details
+  values["Details"] = text
+  values["User"] = actor
+  values["Outcome"] = "LOGGED"
+  document = app~createUserDocument("Business Log", specs, values)
+  if document == .nil then return self~reply("FAILURE", "NotNotes could not create the Business Log document.", "BUSINESS_LOG_FAILED")
+  r = self~reply("SUCCESS", "Business logged as " || document~DocKey || ": " || details, "LOG_BUSINESS")
+  r["DOCUMENT_KEY"] = document~DocKey
+  return r
+
+::method resolveTpsFromText private
+  expose app
+  use strict arg text
+  upper = translate(text)
+  do document over app~allDocuments
+    if document~formName \= "TPS Report" then iterate
+    if pos(translate(document~DocKey~string), upper) > 0 then return document
+    number = app~reportValue(document, "TPSNumber")
+    if number \== .nil then if number~string \= "" then if pos(translate(number~string), upper) > 0 then return document
+  end
+  return .nil
+
+::method helpDeskProcessHistory private
