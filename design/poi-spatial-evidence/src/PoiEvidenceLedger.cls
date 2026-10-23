@@ -10,7 +10,7 @@
 ::method append
   expose records
   use strict arg record
-  if \\record~isA(.PoiEvidenceRecord) then
+  if \record~isA(.PoiEvidenceRecord) then
     raise syntax 93.914 array ('PoiEvidenceRecord required')
   records~append(record)
   return records~items
@@ -45,13 +45,13 @@
   self~methodRunRef = methodRunRef
 ::method candidateWith
   use strict arg other
-  if \\other~isA(.PoiEvidenceRecord) then return .false
+  if \other~isA(.PoiEvidenceRecord) then return .false
   /* No date/time or geometry guessing. Only explicit matching resolved
      interval and place references can establish a candidate. */
-  if self~placeId \\== other~placeId then return .false
-  if self~timeResolution \\== 'RESOLVED_INTERVAL' then return .false
-  if other~timeResolution \\== 'RESOLVED_INTERVAL' then return .false
-  if self~timeExpression \\== other~timeExpression then return .false
+  if self~placeId \== other~placeId then return .false
+  if self~timeResolution \== 'RESOLVED_INTERVAL' then return .false
+  if other~timeResolution \== 'RESOLVED_INTERVAL' then return .false
+  if self~timeExpression \== other~timeExpression then return .false
   return .true
 
 ::class PoiMethodRun public
@@ -65,7 +65,7 @@
 ::attribute calibrationRef get
 ::method init
   use strict arg runId, mode, toolName, toolVersion, configDigest, inputDigest, outputDigest, calibrationRef
-  if mode \\== 'HUMAN' & mode \\== 'AUTOMATED' then
+  if mode \== 'HUMAN' & mode \== 'AUTOMATED' then
     raise syntax 93.914 array ('Method mode must be HUMAN or AUTOMATED')
   self~runId = runId
   self~mode = mode
@@ -76,4 +76,4 @@
   self~outputDigest = outputDigest
   self~calibrationRef = calibrationRef
 ::method provenanceComplete
-  return self~runId \\== '' & self~toolName \\== '' & self~toolVersion \\== '' & self~inputDigest \\== '' & self~outputDigest \\== ''
+  return self~runId \== '' & self~toolName \== '' & self~toolVersion \== '' & self~inputDigest \== '' & self~outputDigest \== ''
