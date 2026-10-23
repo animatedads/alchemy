@@ -1,24 +1,27 @@
 {
   "kind": "article",
   "id": "flylo.current-baseline",
-  "version": "0.2",
+  "version": "0.3",
   "sphere": "flylo",
   "title": "Current FlyLo continuation baseline",
-  "summary": "FlyLo v0.4.11 is the current continuation baseline. It retains the durable v0.4.10 airline runtime, Accounting Core v0.7 and Wire UI Server v0.17, and fixes the sales passenger-step collection/count ambiguity. The canonical website startup is one package-root command: ./flylo.",
+  "summary": "The durable ooRexx/Wire UI application baseline remains flylo_v0.4.11.zip. A separate MVS 3.8J/TK5 backend-validation line now qualifies the airline semantics on ED209ZZ; it does not silently replace or renumber the application release.",
   "baseline": {
     "release": "flylo_v0.4.11.zip",
     "sha256": "21c2076fe74616ea72de6c13430d7f7b55d249113a2c2549d7b7955f43511160",
     "launcher": "./flylo",
     "default_data_root": "~/.flylo",
     "wire_ui_server": "0.17",
-    "accounting_core": "0.7"
+    "accounting_core": "0.7",
+    "mvs_backend_validation": "examples/flylo_mvs_backend_v0.1"
   },
   "invariants": [
-    "Do not regress to multi-terminal or Python-sidecar startup.",
+    "Do not regress to multi-terminal or Python-sidecar startup for the website.",
     "Booking/inventory/passenger state is durable across launcher restarts.",
     "passengerCount is numeric traveller count; passengers is the passenger-record collection.",
     "Stable passenger identities use PAX-... semantic IDs.",
-    "The browser, Grok and Wire UI do not own booking/inventory/payment/accounting authority."
+    "The browser, Grok and Wire UI do not own booking/inventory/payment/accounting authority.",
+    "The MVS backend must be independently testable without the browser or Terminal Machine history features.",
+    "Do not conflate the ooRexx application release version with the MVS backend qualification stream."
   ],
   "provenance": [
     {
@@ -27,7 +30,12 @@
       "member": "flylo_v0.4.11/README.md",
       "line_start": 1,
       "line_end": 31,
-      "claim": "FlyLo v0.4.11 passenger count/collection repair, durable baseline, launcher and dependency versions."
+      "claim": "FlyLo v0.4.11 durable application baseline."
+    },
+    {
+      "artifact": "CODEX_ED209ZZ_FLYLO_BACKEND_VALIDATION.md",
+      "sha256": "62dc08cd135c2caa2e5cab84f4694eea6fdcb53be2b3982e995307331cc7d089",
+      "claim": "Separate clean-room MVS backend qualification programme."
     }
   ]
 }
