@@ -1,5 +1,12 @@
 # Changelog
 
+## Repository continuation — 2026-10-23
+- Add durable replica-repair/topology-reconciliation doctrine grounded in Storage Fabric dev23 API names.
+- Record post-authority-commit reconciliation, provider-scoped affected-object scanning, persistent Queue Fabric repair work and replay-safe current-policy re-assessment.
+- Record TEMPORARY != DISPOSABLE, OFFLINE != LOST, Instrumentation Mesh observation-only authority, and Git verification-before-admission invariants.
+- Pin the Storage Fabric Instrumentation Mesh dev5 source-qualified adapter archive and its static-only qualification boundary.
+- Preserve v0.3 sphere identity because the project catalog still points to v0.3 while the active resolver selects a local v0.6 override; do not manufacture a replacement for unavailable newer complete sphere source.
+
 ## v0.3 — 2026-09-06
 - Rebase authority to Storage Fabric v0.1-dev7.
 - Add stable node identity versus provider/endpoint doctrine.

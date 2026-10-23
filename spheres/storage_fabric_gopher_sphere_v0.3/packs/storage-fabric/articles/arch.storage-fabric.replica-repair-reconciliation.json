@@ -1,0 +1,61 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.replica-repair-reconciliation",
+  "version": "0.3-continuation-20261023",
+  "sphere": "storage-fabric",
+  "title": "Durable replica repair and topology reconciliation",
+  "summary": "Provider and topology transitions are committed by Storage authority first, then affected StorageRefs are re-assessed against current replica policy. Real deficits become durable Queue Fabric repair work; replayed or stale work re-assesses before copying, so repair is idempotent and safety remains a Storage decision rather than a telemetry or transport inference.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "TEMPORARY is lifecycle/purpose; DISPOSABLE is explicit data-loss authority. Never infer DISPOSABLE from a temporary path, scratch role, cache label or short retention.",
+    "OFFLINE or unreachable is not LOST. Known replica identity and prior verification evidence may remain while the location does not count toward current effective protection.",
+    "Provider/topology state is committed by Storage authority before repair reconciliation observes it.",
+    "Every committed topology transition may trigger re-assessment of only the Storage objects associated with the affected provider.",
+    "Repair work is created only when current StorageReplicaPolicy assessment is unsatisfied.",
+    "StorageReplicaRequirement uses requiredReplicas, distinctVendors, distinctSites and distinctFailureDomains; adapters must not invent alternate field names.",
+    "Queue Fabric owns durable delivery, CLAIM/ACK/NACK and crash recovery; Storage owns replica policy, destination eligibility, copy, independent verification and admission.",
+    "A stale or duplicate repair request must re-resolve the StorageRef and re-assess current policy before movement; an already-protected object completes as a successful no-op.",
+    "Instrumentation Mesh reports repair and provider transitions but never makes an object safe, admits a replica or authorises loss.",
+    "Placement preference is independent of durability policy. A fibre-connected laptop USB, Git/Azure provider or cloud volume may be preferred when eligible; provider fashion is not placement authority.",
+    "Git push/commit success is not replica admission. Remote commit/ref and object/chunk identity must be independently verified before the Git location counts as AVAILABLE/VERIFIED/SAFE.",
+    "FUSE is a projection surface. Authority persistence, replica evidence and repair state remain below FUSE and survive surface restart independently."
+  ],
+  "procedure": [
+    "Commit the provider/location transition in Storage authority.",
+    "Find catalogue objects associated with the affected provider.",
+    "Resolve each object's current persisted StorageReplicaRequirement.",
+    "Assess current AVAILABLE, VERIFIED and SAFE eligible locations and required diversity.",
+    "For unsatisfied objects, submit deterministic persistent STORAGE.REPAIR work to the existing ObjectQueueManager.",
+    "On CLAIM, re-resolve object and policy; no-op if protection has already been restored.",
+    "Choose an eligible destination through placement policy, then copy, independently verify and admit the new location.",
+    "Re-assess current policy; ACK only after protection is satisfied, otherwise NACK/retry according to Queue Fabric policy.",
+    "Publish bounded Instrumentation Mesh repair/progress observations only after the corresponding authoritative transition succeeds."
+  ],
+  "topics": [
+    "replica repair",
+    "topology reconciliation",
+    "offline",
+    "temporary",
+    "disposable",
+    "Queue Fabric",
+    "Instrumentation Mesh",
+    "Git storage",
+    "USB storage",
+    "FUSE"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev23(2).zip",
+      "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
+      "member": "oorexx_storage_fabric_v0.1-dev23/src/StorageFabric.cls",
+      "claim": "StorageReplicaRequirement and StorageReplicaPolicy API grounding for repair reconciliation."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_instrumentation_mesh_v0.1-dev5.zip",
+      "sha256": "aa14b944d39ff570bd6e24f370ff883b82b9f4b90c9eafb8779a39fd89ae149e",
+      "member": "oorexx_storage_fabric_instrumentation_mesh_v0.1-dev5/src/StorageRepairQueue.cls",
+      "claim": "Dev23-compatible durable repair payload and post-commit provider/topology reconciliation implementation; static qualification only in this environment."
+    }
+  ],
+  "qualification_boundary": "The dev5 adapter static contract tests passed in the packaging environment. No ooRexx runtime execution, live Queue Fabric CLAIM/ACK adapter qualification, live Azure Git operation, or live removable-provider transition is claimed by this continuation article."
+}

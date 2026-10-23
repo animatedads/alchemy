@@ -24,3 +24,11 @@ Current executable grounding baseline:
 ## 2026-10-23 Storage named-service admission doctrine
 
 Added `arch.storage-fabric.service-admission` to the GitHub projection of this sphere, covering socket neutrality, FIRST/KEY context verification, no-downgrade, multicast hints and durability authority. The full Library sphere was already at v0.7; its v0.8 continuation must be separately qualified and published rather than overwriting this older repository projection.
+
+## 2026-10-23 durable replica repair / topology reconciliation continuation
+
+Added `arch.storage-fabric.replica-repair-reconciliation` to this older GitHub projection. It records the dev23-compatible repair contract: Storage commits provider/location state first; affected objects are re-assessed against their current persisted replica requirement; real deficits become persistent Queue Fabric work; and workers re-assess before movement so stale/replayed repair safely becomes a no-op when protection has already recovered.
+
+This continuation also records the hard semantic separations established by later Storage work: TEMPORARY is not DISPOSABLE, OFFLINE is not LOST, placement preference is not durability authority, Git push is not replica admission, and Instrumentation Mesh is observation rather than safety authority.
+
+Repository/catalog note: the project catalog still identifies this v0.3 sphere projection, while the active LLM Gopher resolver currently selects a local v0.6 override. This commit therefore updates v0.3 in place as a repository continuity projection; it does not claim to reconstruct, supersede or re-publish the unavailable complete newer sphere source.

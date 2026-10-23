@@ -12,11 +12,18 @@ grep -q 'arch.storage-fabric.locality-placement' "$T/context.json"
 grep -q 'arch.storage-fabric.transfer' "$T/context.json"
 grep -q 'arch.storage-fabric.provider-capability-security' "$T/context.json"
 grep -q 'arch.storage-fabric.node-inventory' "$T/context.json"
+grep -q 'arch.storage-fabric.replica-repair-reconciliation' "$T/context.json"
 
-for q in 'TVFS' 'disposable' 'capacity domain' 'job to data' 'Google Drive' 'verification' 'partial' 'capability' 'inventory' 'ed209' 'fdisk' 'unknown-capacity'; do
+for q in 'TVFS' 'disposable' 'capacity domain' 'job to data' 'Google Drive' 'verification' 'partial' 'capability' 'inventory' 'ed209' 'fdisk' 'unknown-capacity' 'replica repair' 'offline'; do
   "$GOPHER" --profile storage-fabric search "$q" --sphere storage-fabric > "$T/search.json"
   grep -q '"class": "FOUND"' "$T/search.json"
 done
+
+"$GOPHER" --profile storage-fabric open arch.storage-fabric.replica-repair-reconciliation > "$T/repair.json"
+grep -q 'TEMPORARY is lifecycle/purpose' "$T/repair.json"
+grep -q 'OFFLINE or unreachable is not LOST' "$T/repair.json"
+grep -q 'requiredReplicas' "$T/repair.json"
+grep -q 'Queue Fabric owns durable delivery' "$T/repair.json"
 
 "$GOPHER" --profile storage-fabric search locality --sphere storage-fabric --corpus storage-fabric.lessons > "$T/locality.json"
 grep -q 'moving the job to data' "$T/locality.json"
@@ -34,4 +41,4 @@ grep -q 'Job-to-Node' "$T/node.json"
 "$GOPHER" --profile storage-fabric search device-admission --sphere storage-fabric --corpus storage-fabric.lessons > "$T/device.json"
 grep -q 'not allocatable storage until explicitly admitted' "$T/device.json"
 
-echo 'PASS STORAGE FABRIC SPHERE v0.3'
+echo 'PASS STORAGE FABRIC SPHERE v0.3 + 2026-10-23 repair continuation'

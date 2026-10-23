@@ -4,7 +4,7 @@
   "version": "0.3",
   "sphere": "storage-fabric",
   "title": "Continuation checklist for Storage Fabric development",
-  "summary": "Continue from exact qualified dev7, preserving namespace/capacity/lifecycle/locality authority boundaries, provider-authoritative resume, capability secrecy, and node/device admission discipline.",
+  "summary": "Continue from qualified source evidence while preserving namespace/capacity/lifecycle/locality authority boundaries, provider-authoritative resume, capability secrecy, node/device admission discipline, and post-commit durable replica repair reconciliation.",
   "authority": "project-doctrine",
   "invariants": [
     "Do not turn physical pathname into object identity.",
@@ -18,20 +18,26 @@
     "Do not let a stale local checkpoint override authoritative remote resume evidence when reconciliation is available.",
     "Do not treat an endpoint/IP address as stable node identity.",
     "Do not turn a discovered block device into workspace until explicit admission plus a capacity observation exists.",
-    "Do not let Storage fleet evidence choose the final Job-to-Node placement winner."
+    "Do not let Storage fleet evidence choose the final Job-to-Node placement winner.",
+    "Do not infer DISPOSABLE from TEMPORARY; explicit loss authority is required.",
+    "Do not equate OFFLINE with LOST; preserve replica knowledge while excluding unreachable locations from current effective protection.",
+    "Commit topology/provider state before reconciling repair; durable repair work re-assesses current policy before copying.",
+    "Do not let Instrumentation Mesh observations become Storage safety or mutation authority."
   ],
   "procedure": [],
-  "topics": [
-    "continuation",
-    "qualification",
-    "regression"
-  ],
+  "topics": ["continuation", "qualification", "regression", "replica repair", "topology reconciliation"],
   "provenance": [
     {
       "artifact": "oorexx_storage_fabric_v0.1-dev7.zip",
       "sha256": "5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f",
       "member": "oorexx_storage_fabric_v0.1-dev7/VALIDATION.txt",
-      "claim": "v0.1-dev7 qualification evidence, Drive/API Client integration and deliberate boundaries for continuation."
+      "claim": "v0.1-dev7 qualification evidence, Drive/API Client integration and deliberate boundaries for original v0.3 continuation."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev23(2).zip",
+      "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
+      "member": "oorexx_storage_fabric_v0.1-dev23/src/StorageFabric.cls",
+      "claim": "Later source-qualified StorageReplicaRequirement/StorageReplicaPolicy contract used by the repair reconciliation continuation."
     }
   ]
 }
