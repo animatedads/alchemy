@@ -19,3 +19,8 @@ Current executable grounding baseline:
 
     oorexx_storage_fabric_v0.1-dev7.zip
     SHA-256 5a74891b868d91ba14ac4fe1fb9e02c1faaa203948aed0fa652c7cfb1473a09f
+
+
+## 2026-10-23 Storage named-service admission doctrine
+
+Added `arch.storage-fabric.service-admission` to the GitHub projection of this sphere, covering socket neutrality, FIRST/KEY context verification, no-downgrade, multicast hints and durability authority. The full Library sphere was already at v0.7; its v0.8 continuation must be separately qualified and published rather than overwriting this older repository projection.

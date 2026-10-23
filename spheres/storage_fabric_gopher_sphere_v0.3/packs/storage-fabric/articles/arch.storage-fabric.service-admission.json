@@ -1,0 +1,52 @@
+{
+  "kind": "article",
+  "id": "arch.storage-fabric.service-admission",
+  "version": "0.3",
+  "sphere": "storage-fabric",
+  "title": "Socket-neutral Storage Fabric admission over XTP and ordinary sockets",
+  "summary": "A named XTP service is a transport admission selection, not storage authority or proof of authenticated peer identity. Registered service operations cannot downgrade to ungoverned ordinary sockets after denial.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "StorageRef, virtual namespace, content digest and durable placement remain independent of physical routes and Socket Provider.",
+    "Ordinary TCP/IP, Unix sockets and QueueRexx remain first-class for operations that have no named-service binding.",
+    "When advanced registration is configured, Service Descriptor Registry chooses canonical service, logical route peer and operational class normal.storage. Storage must never infer these from IP or an unauthenticated request.",
+    "XTP FIRST chooses the service before establishing a context; later KEY dispatch must preserve the admitted service and independently authenticated transport peer.",
+    "Bound operations require an admitted named context with matching service and independently authenticated peer identity. An absent, denied or mismatched context fails closed.",
+    "A service admission is NOT a Storage Fabric read/write/delete authorisation. Peer access control, object identity and replication policy are checked separately.",
+    "Capacity governor enforcement is mandatory when operational policy limits per-context rate, aggregate rate or parallel receiver contexts.",
+    "Multicast gives untrusted digest-only hints, not HAVE evidence. Read/repair still uses authenticated peer checks and full digest verification.",
+    "A verified second copy in Azure Git and a permanent local copy are independently accounted for; an unavailable, unsafe or unverified location does not satisfy durability.",
+    "Live ED209 L2/proto36/UDP session admission, persistent KEY and WAN transfer remain unqualified until exercised end-to-end."
+  ],
+  "procedure": [
+    "Select ordinary Socket Provider for unbound operations, or resolve a canonical named service and planner rule for bound operations.",
+    "Reject a bound operation when the accepting context lacks name/admission/peer evidence; reject mismatches without socket downgrade.",
+    "Delegate authorised StorageRef operation to existing StoragePeerService and retain COPY→VERIFY→COMMIT semantics.",
+    "Qualify operational caps, authenticated resume, restart persistence, multicast hints and live-grid paths before production."
+  ],
+  "topics": [
+    "XTP",
+    "FIRST",
+    "KEY",
+    "Socket Provider",
+    "multicast",
+    "normal.storage",
+    "service registration",
+    "authentication",
+    "durability"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_integration_candidate5.zip",
+      "sha256": "bb6ff40b8cfc3754869e6cc351795a94a0a254b05d127bfebc74575cdb74f209",
+      "member": "src/StorageNetworkServices.cls",
+      "claim": "Candidate 5 optional network port, inbound guard and native regression tests"
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev23(2).zip",
+      "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
+      "member": "PARALLEL_FETCH.md",
+      "claim": "Dev23 capacity admission and multi-source planning; not proof of live ED209 routing"
+    }
+  ]
+}
