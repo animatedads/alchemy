@@ -1,0 +1,30 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "oorexx_prolog_alchemy_sphere",
+    "version": "0.1-dev1",
+    "kind": "data"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "sphere-json-parse",
+      "argv": [
+        "python3",
+        "-c",
+        "import json,pathlib; [json.loads(p.read_text()) for p in pathlib.Path('packs').rglob('*.json')]; [json.loads(p.read_text()) for p in pathlib.Path('profiles').glob('*.json')]"
+      ],
+      "timeout_seconds": 30
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_prolog_alchemy_sphere"
+    }
+  }
+}
