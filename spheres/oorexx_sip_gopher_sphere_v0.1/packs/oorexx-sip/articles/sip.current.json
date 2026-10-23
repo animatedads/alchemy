@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "sip.current",
+  "version": "0.1",
+  "sphere": "oorexx-sip",
+  "title": "Current SIP/RTP baseline",
+  "authority": "project-authority",
+  "summary": "SIP v0.1-dev16 is the current signalling baseline and RTP v0.1-dev7 is the current shared media baseline. SIP now covers registrar/server behavior plus outbound INVITE/ACK/BYE client control.",
+  "invariants": [
+    "SIP and RTP are separate components.",
+    "RTP remains reusable outside SIP.",
+    "Outbound SIP client dialog control does not own RTP or audio worker lifecycle.",
+    "Twinkle REGISTER/OPTIONS behavior remains a regression boundary.",
+    "Known estate dependency heads must not be confused with source bytes actually used for a build."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_sip_v0.1-dev16.zip",
+      "sha256": "d70e3c53a7b4c5aef70fcd095c94952fdc3430d2d38ac1861cab1073ef18e3e2",
+      "member": "VERSION",
+      "claim": "SIP baseline is 0.1-dev16."
+    },
+    {
+      "artifact": "oorexx_rtp_v0.1-dev7.zip",
+      "sha256": "0eb69d0c09192a731c6c52c3fe8504030bdd846daf52ec9d89715896bdd77bda",
+      "member": "PACKAGE.json",
+      "claim": "RTP baseline is 0.1-dev7."
+    }
+  ]
+}

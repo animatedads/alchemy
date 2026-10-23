@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "sip.observability",
+  "version": "0.1",
+  "sphere": "oorexx-sip",
+  "title": "Forensic logging and operational instrumentation",
+  "authority": "project-authority",
+  "summary": "Alchemy Log is the detailed forensic evidence stream; Instrumentation Mesh dev8 is the bounded operational metrics/event plane; Socket Isolation Telemetry observes carrier I/O. None owns SIP/RTP state.",
+  "invariants": [
+    "Every meaningful signalling, registration, authentication, dialog, RTP or media lifecycle transition must be observable.",
+    "Alchemy Log and Instrumentation Mesh are complementary, not alternatives.",
+    "SIP and RTP retain separate instrumentation authorities even with shared call correlation.",
+    "Instrumentation correlation must not infer causation from time, host, severity, topology or proximity.",
+    "A broken observer must be isolated from protocol/media operation.",
+    "Operational telemetry must not publish credentials, raw SIP messages, audio or RTP payload by default."
+  ],
+  "procedure": [
+    "For failed REGISTER, retain enough forensic evidence to distinguish missing credentials, digest rejection and successful binding.",
+    "Only publish metrics the authoritative layer actually computes."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_sip_v0.1-dev16.zip",
+      "sha256": "d70e3c53a7b4c5aef70fcd095c94952fdc3430d2d38ac1861cab1073ef18e3e2",
+      "member": "docs/INSTRUMENTATION_DEV15.md",
+      "claim": "SIP/RTP use explicit correlation without ownership or inferred causation."
+    }
+  ]
+}

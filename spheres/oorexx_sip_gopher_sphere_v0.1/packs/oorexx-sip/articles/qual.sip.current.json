@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "qual.sip.current",
+  "version": "0.1",
+  "sphere": "oorexx-sip",
+  "title": "Current qualification evidence and limits",
+  "authority": "project-authority",
+  "summary": "The line has executable registrar/authentication, Twinkle REGISTER/OPTIONS fixture, lifecycle-isolation, RTP-over-UDP/SocketProvider, observability and Speech-adapter evidence. Dev16 adds outbound INVITE/ACK/BYE but did not claim a fresh live outbound Twinkle/COTS call in that build session.",
+  "invariants": [
+    "Twinkle REGISTER regression covers Contact expires and rport/received behavior.",
+    "Digest evidence covers challenge, rejection and accepted registration binding.",
+    "RTP UDP qualification is through SocketProvider, not private SIP/RTP sockets.",
+    "Strict ooRexx standards enforcement for SIP dev16 completed with zero errors and zero warnings.",
+    "Static/source-shape evidence must not be promoted into a live COTS interoperability claim."
+  ],
+  "procedure": [
+    "Next live client gate: INVITE a COTS UA, observe provisional response if present, 200+SDP, ACK, bidirectional RTP, BYE and final 200 with Alchemy Log and Instrumentation evidence.",
+    "Requalify against the current SocketProvider authority when its exact source bytes are available."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_sip_v0.1-dev16.zip",
+      "sha256": "d70e3c53a7b4c5aef70fcd095c94952fdc3430d2d38ac1861cab1073ef18e3e2",
+      "member": "QUALIFICATION_DEV16.txt",
+      "claim": "Dev16 records implemented outbound control and the remaining live-COTS gap."
+    }
+  ]
+}

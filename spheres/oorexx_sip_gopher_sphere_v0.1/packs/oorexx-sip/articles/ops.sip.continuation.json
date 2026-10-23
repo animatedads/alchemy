@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "ops.sip.continuation",
+  "version": "0.1",
+  "sphere": "oorexx-sip",
+  "title": "Continuation doctrine",
+  "authority": "project-authority",
+  "summary": "Future work should deepen protocol compliance without collapsing the independent-object architecture. Put each change in the smallest authoritative layer and preserve transport, media, speech and observation boundaries.",
+  "invariants": [
+    "Do not collapse call control, inbound media, outbound media, RTP RX/TX, STT/TTS or observation into one lifecycle object.",
+    "Do not move RTP back inside SIP.",
+    "Do not let SIP or RTP create private carrier sockets outside SocketProvider.",
+    "Do not turn Instrumentation Mesh or Alchemy Log into protocol authority.",
+    "Do not make Speech mandatory for SIP.",
+    "Do not infer causation from correlation.",
+    "Do not claim compliance beyond executed evidence."
+  ],
+  "procedure": [
+    "Choose the next protocol gap: transaction/dialog correctness, retransmission, CANCEL/re-INVITE/UPDATE, RTCP depth, NAT traversal, IPv6 or live COTS interoperability.",
+    "Assign it to the smallest authority layer.",
+    "Add logging/instrumentation for new transitions and an isolation test for unrelated objects.",
+    "Run strict standards and environment qualification, then update this sphere with exact evidence and limitations."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "packages/oorexx_sip",
+      "claim": "Executable source remains separate from this continuity sphere."
+    }
+  ]
+}
