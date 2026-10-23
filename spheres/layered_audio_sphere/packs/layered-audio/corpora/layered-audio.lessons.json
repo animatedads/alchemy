@@ -63,6 +63,18 @@
     {
       "topic": "horizon-commit-order",
       "rule": "Treat adaptive horizon movement as a commit sequence: validate residency and placement, obtain destination MOVE acknowledgement, then advance the Memory Fabric cursor and satisfy the demand. Uncertain movement leaves memory state unadvanced."
+    },
+    {
+      "topic": "object-bound-intentions",
+      "rule": "Discover intentions from the current native Audio object graph. Preserve AudioRecording, AudioElement, AudioView and compound selections as objects; never replace them with a static action catalogue or reconstruct them from IDs."
+    },
+    {
+      "topic": "management-federation",
+      "rule": "Management may traverse Audio-owned relationships to separately supplied related authorities such as Storage. Audio does not absorb Storage semantics, and Management does not invent Audio truth."
+    },
+    {
+      "topic": "intention-freshness",
+      "rule": "A feature, view or element that appears or disappears in the live Audio graph must appear or disappear on the next intention discovery. Stale surfaces must not remain dispatchable."
     }
   ]
 }
