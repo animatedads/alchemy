@@ -1,0 +1,39 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "oorexx_audio_spectral",
+    "version": "0.4",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "REXX_PATH": "${PACKAGE_ROOT}/src"
+    },
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "spectral-v03",
+      "argv": [
+        "rexx",
+        "tests/smoke.rex"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "decision-directed",
+      "argv": [
+        "rexx",
+        "tests/decision_directed.rex"
+      ],
+      "timeout_seconds": 120
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_audio_spectral_v0.4"
+    }
+  }
+}
