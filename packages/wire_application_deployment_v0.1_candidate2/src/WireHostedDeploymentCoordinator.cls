@@ -26,15 +26,17 @@
   if \gateway~publish(appId,generation,binding,expected) then return .WireHostedDeploymentResult~new(.false,'GATEWAY_COMMIT_FAILED')
   r=wire~publishHostedApplication(app,generation,expected)
   if \r~ok then do
-    ignore=self~undoGateway(appId,generation,expected,oldBinding)
+    undone=self~undoGateway(appId,generation,expected,oldBinding)
+    if \undone then return .WireHostedDeploymentResult~new(.false,'ROLLBACK_INCOMPLETE','gateway')
     return .WireHostedDeploymentResult~new(.false,'WIRE_COMMIT_FAILED',r~code)
   end
   if \https~publishHostedRoute('GET',mount,appId,generation,handler,selector,expected) then do
-    ignore=self~undoWire(appId,generation,expected,oldApp)
-    ignore=self~undoGateway(appId,generation,expected,oldBinding)
+    wireRestored=self~undoWire(appId,generation,expected,oldApp)
+    gatewayRestored=self~undoGateway(appId,generation,expected,oldBinding)
+    if \wireRestored | \gatewayRestored then return .WireHostedDeploymentResult~new(.false,'ROLLBACK_INCOMPLETE','after HTTP failure')
     return .WireHostedDeploymentResult~new(.false,'HTTP_COMMIT_FAILED')
   end
-  return .WireHostedDeploymentResult~new(.true,'ACTIVE',generation)
+  return .WireHostedDeploymentResult~new(.true,'PUBLISHED_AWAITING_LIVE_PROBE',generation)
 ::method undoGateway private
   expose gateway
   use strict arg appId,generation,expected,oldBinding
