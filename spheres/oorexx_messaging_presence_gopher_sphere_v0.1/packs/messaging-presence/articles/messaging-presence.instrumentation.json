@@ -1,0 +1,20 @@
+{
+  "kind":"article",
+  "id":"messaging-presence.instrumentation",
+  "version":"0.1",
+  "sphere":"messaging-presence",
+  "title":"Instrumentation observes each layer without creating authority",
+  "summary":"Messaging/Presence, XMPP, BOSH, HTTP and lower transport may publish their own operational facts. Instrumentation Mesh correlation is explicit evidence grouping, never inferred causality or control authority.",
+  "authority":"privacy-and-observability-contract",
+  "invariants":[
+    "Semantic sends/presence operations and lower carrier exchanges are counted by the layer that owns those facts; retries do not fabricate extra semantic sends.",
+    "Instrumentation excludes message/stanza payload, credentials and endpoint/user identity unless an explicit privacy contract says otherwise.",
+    "BOSH does not infer correlation from the same endpoint, session, connection, timestamp, target, payload or XTP path.",
+    "Correlation, causation and context references are carried only when explicitly supplied by an authority entitled to assert them.",
+    "Instrumentation exposes no Messaging, Presence, XMPP, BOSH, HTTP or transport management authority."
+  ],
+  "provenance":[
+    {"artifact":"oorexx_messaging_presence_v0.1-dev4.zip","sha256":"6910c88cc209ff24117461761a0eecf98272f68c98ae17a6686db932afb3742f","member":"src/MessagingPresenceInstrumentation.cls","claim":"Projects semantic service facts onto Instrumentation Mesh without changing service authority."},
+    {"artifact":"oorexx_bosh_transport_v0.1-dev5.zip","sha256":"072555ee2fd1ac8d02ede22d280015d0904b2db805a05d49a51c5e2c0eeebd67","member":"src/BoshInstrumentationAdapter.cls","claim":"Projects BOSH operational facts with explicit-only correlation semantics."}
+  ]
+}

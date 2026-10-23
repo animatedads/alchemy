@@ -1,22 +1,23 @@
 {
   "schema": "oorexx.messaging.presence.package/1",
   "name": "oorexx_messaging_presence",
-  "version": "0.1-dev1",
-  "apis": [
-    "messaging/0.1",
-    "presence/0.1",
-    "messaging.presence.provider/0.1",
-    "messaging.presence.intention.discovery/0.1",
-    "messaging.presence.xmpp.provider/0.1"
-  ],
+  "version": "0.1-dev4",
+  "apis": ["messaging/0.1","presence/0.1","messaging.presence.provider/0.1","messaging.presence.intention.discovery/0.2","messaging.presence.extension.registry/0.1","messaging.presence.xmpp.provider/0.1","messaging.presence.xmpp.session/0.1","messaging.presence.instrumentation/0.1"],
   "service": "Messaging & Presence",
   "provider": "XMPP",
-  "standards": {
-    "historical": ["RFC 3920", "RFC 3921"],
-    "current": ["RFC 6120", "RFC 6121", "RFC 7622", "RFC 9844"]
-  },
+  "standards": {"historical":["RFC 3920","RFC 3921"],"current":["RFC 6120","RFC 6121","RFC 7622","RFC 9844","RFC 4616"]},
   "dynamicIntentionDiscovery": true,
   "socketIsolation": "XmppSocketTransport -> SocketProvider~streamSender(logicalName)",
   "extensionsInCore": [],
-  "extensionPolicy": "separately registered plugin/provider layers only"
+  "extensionPolicy": "separately registered plugin/provider layers only",
+  "intentionDispatch": "semantic ooRexx objects through Messaging/Presence access classes",
+  "extensionRegistry": "registered independent semantic services; no XMPP extension catalogue",
+  "xmppSession": "incremental stream framing; STARTTLS/SASL PLAIN/resource binding; transcript-qualified",
+  "liveInterop": "not claimed on Socket Provider dev14: no in-place STARTTLS upgrade seam",
+  "instrumentation": {"api":"instrumentation.mesh/0.1","qualifiedPackage":"oorexx_instrumentation_mesh_v0.1-dev3","adapter":"src/MessagingPresenceInstrumentation.cls","history":"InstrumentationCollector; no package-local history","authority":"observational; no instrumentation management commands"},
+  "optionalRequires": [{"name":"oorexx-instrumentation-mesh","api":"instrumentation.mesh/0.1","version":"0.1-dev3","classFile":"InstrumentationMesh.cls","purpose":"common telemetry/publication/collector contract"}],
+  "pathRequirements": [
+    {"source":"src/MessagingPresenceInstrumentation.cls","requires":"InstrumentationMesh.cls","scope":"optional runtime adapter","resolution":"INSTRUMENTATION_MESH_SRC / REXX_PATH"},
+    {"source":"src/MessagingPresenceInstrumentation.cls","requires":"XmppMessagingPresenceProvider.cls","scope":"optional XMPP transport observation","resolution":"providers/xmpp"}
+  ]
 }

@@ -1,0 +1,20 @@
+{
+  "kind":"article",
+  "id":"messaging-presence.semantic-boundary",
+  "version":"0.1",
+  "sphere":"messaging-presence",
+  "title":"Messaging and Presence are the service; XMPP is a provider",
+  "summary":"Applications consume semantic Messaging and Presence objects. XMPP representation and wire protocol remain provider-private.",
+  "authority":"semantic-service-contract",
+  "invariants":[
+    "Public objects include Message, MessagingAddress, PresenceState and subscription/provider abstractions; JIDs and XML stanzas do not leak into application semantics.",
+    "Full ooRexx objects remain intact through dispatch; transport convenience must not flatten them into dictionaries or strings.",
+    "Provider discovery is capability-based and dynamic rather than hardwired to XMPP.",
+    "MUC/chat rooms, PubSub, file transfer, avatars and federation-policy frameworks are outside core Messaging/Presence.",
+    "Optional extensions register their own semantic service/provider surface and cannot silently grow the core Messaging contract."
+  ],
+  "provenance":[
+    {"artifact":"oorexx_messaging_presence_v0.1-dev4.zip","sha256":"6910c88cc209ff24117461761a0eecf98272f68c98ae17a6686db932afb3742f","member":"src/MessagingPresence.cls","claim":"Defines semantic Messaging/Presence objects and provider access classes."},
+    {"artifact":"oorexx_messaging_presence_v0.1-dev4.zip","sha256":"6910c88cc209ff24117461761a0eecf98272f68c98ae17a6686db932afb3742f","member":"PLUGIN_BOUNDARY.md","claim":"Records separately registered extension doctrine."}
+  ]
+}

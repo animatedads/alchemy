@@ -1,12 +1,12 @@
 /* MessagingPresence.cls
- * ooRexx Messaging & Presence v0.1-dev1
+ * ooRexx Messaging & Presence v0.1-dev4
  *
  * Semantic application-facing messaging and presence objects.
  * Protocols are providers.  XMPP is one provider, never the public model.
  */
 
 ::class MessagingPresenceBuild public
-::constant VERSION "0.1-dev1"
+::constant VERSION "0.1-dev4"
 ::constant MESSAGING_API "messaging/0.1"
 ::constant PRESENCE_API "presence/0.1"
 ::constant PROVIDER_API "messaging.presence.provider/0.1"
@@ -55,7 +55,7 @@
   out=""
   do c over .MessagingPresenceCapabilities~orderedNames
     if values~hasIndex(c) then do
-      if out<>"" then out=out||"," 
+      if out<>"" then out=out||","
       out=out||c
     end
   end
@@ -187,8 +187,6 @@
   expose status
   return status=.MessagingDeliveryStatus~SENT
 
-/* A provider offer is a fresh observation.  It is not registration authority
- * and it must not be cached as permanent truth by the caller. */
 ::class MessagingPresenceOffer public
 ::method init
   expose provider capabilities priority available scope evidence

@@ -1,0 +1,13 @@
+ooRexx 5.3.0 r13196 prior functional qualification: retained from dev4
+Instrumentation Mesh baseline for dev5 integration: oorexx_instrumentation_mesh_v0.1-dev8
+Current Spiral 1 transport grid baseline observed: Socket Provider v0.1-dev16 / XTP v0.1-dev19
+
+Dev5 delta qualification targets:
+PASS static boundary: no XMPP binding namespace/classes in BoshTransport.cls
+PASS static boundary: BOSH core has no Instrumentation Mesh dependency
+PASS dev8 adapter exposes snapshot() + events()
+PASS explicit correlation/causation/context is supplied, never inferred
+PASS endpoint/payload/credential material excluded from instrumentation adapter
+PASS bash -n tests/run.sh
+
+Runtime execution of the dev5 delta requires an ooRexx executable in the qualification environment. The current build container did not expose the supplied r13196 binary, so dev5 does not claim a fresh runtime PASS beyond the inherited dev4 functional baseline.

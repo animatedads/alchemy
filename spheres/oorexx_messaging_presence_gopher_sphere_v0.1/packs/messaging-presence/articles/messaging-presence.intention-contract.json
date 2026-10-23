@@ -1,0 +1,20 @@
+{
+  "kind":"article",
+  "id":"messaging-presence.intention-contract",
+  "version":"0.1",
+  "sphere":"messaging-presence",
+  "title":"Intention-friendly capability discovery",
+  "summary":"Intentions discover semantic operations from currently available providers and dispatch complete domain objects; they never encode XMPP or carrier details.",
+  "authority":"intention-integration-contract",
+  "invariants":[
+    "SEND_MESSAGE, CHECK_PRESENCE, PUBLISH_PRESENCE and subscription semantics are exposed from currently available capabilities, not a permanent XMPP action catalogue.",
+    "An intention never constructs JIDs, stanzas, sockets, BOSH bodies or transport selectors.",
+    "Address resolution returns MessagingAddress objects before provider selection.",
+    "Removing a provider removes the corresponding transient discoverable capability.",
+    "Optional plugin services expose their own intentions without mutating the core Messaging/Presence intention set."
+  ],
+  "provenance":[
+    {"artifact":"oorexx_messaging_presence_v0.1-dev4.zip","sha256":"6910c88cc209ff24117461761a0eecf98272f68c98ae17a6686db932afb3742f","member":"src/MessagingPresenceIntentions.cls","claim":"Implements transient semantic intention discovery and dispatch."},
+    {"artifact":"oorexx_messaging_presence_v0.1-dev4.zip","sha256":"6910c88cc209ff24117461761a0eecf98272f68c98ae17a6686db932afb3742f","member":"tests/test_intention_dispatch.rex","claim":"Exercises full-object semantic intention dispatch."}
+  ]
+}

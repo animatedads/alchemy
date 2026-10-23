@@ -1,18 +1,11 @@
-# Registered extension boundary
+# Registered extension/plugin boundary
 
-The core library has no XMPP-extension registry because the base service should
-not become an XMPP feature catalogue.
+Messaging & Presence is deliberately small. Optional XMPP ecosystem facilities must not enlarge the core service just because an XEP exists for them.
 
-A component that needs an extension should ship a separate registered plugin
-layer with:
+`src/MessagingPresenceExtensions.cls` provides the registration seam. An extension plugin declares a unique `pluginId`, a semantic service identity (`semanticServiceId`), the actual semantic service object, current availability/evidence, and optionally its own dynamic Intention discovery provider.
 
-1. its own semantic object model;
-2. its own provider contract;
-3. its own capability discovery;
-4. its own transient Intention surface;
-5. an XMPP adapter hidden behind that provider when XMPP is the chosen carrier.
+The extension service owns its own domain objects and operations. The core `Messaging` and `Presence` access classes remain unchanged. The plugin registry selects only among providers of that separate semantic service.
 
-For example, a future group-conversation feature would be a
-`GroupConversationProvider`, not new methods on `Messaging`, and it would be
-absent from Intention discovery unless its plugin/provider were currently
-available and authorised.
+A plugin should therefore be named for what it does, not for the XMPP XEP it happens to use. For example a future group-conversation service is a group conversation service; XMPP MUC would merely be one possible provider behind it.
+
+No MUC, PubSub, file-transfer, avatar or federation-policy operation is defined by this package.

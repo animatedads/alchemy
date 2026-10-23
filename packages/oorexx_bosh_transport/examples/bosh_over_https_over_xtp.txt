@@ -1,0 +1,9 @@
+Conceptual composition only; no layer violation:
+
+BoshStreamProvider
+  -> HttpExchangeProvider (HTTPS)
+      -> secure stream acquisition
+          -> Socket/Stream Selector
+              -> XTP provider
+
+BOSH never imports or selects XTP itself.
