@@ -1,20 +1,21 @@
-# Job-to-Node Allocator engineering sphere sphere v0.1 qualification
+# Job-to-Node sphere qualification checkpoint — 2026-10-23
 
-Baseline: Job-to-Node Allocator v0.6
-Artifact: job_node_allocator_v0.6.zip
+Original v0.6: job_node_allocator_v0.6.zip
 SHA-256: 58f23b90824d73b584ea5bfce4ac5805a537ab0283508ee6c81ccf2458f80ead
+Previous sphere structure qualification: VALID / CLEAN / OPENED / FOUND (historical evidence only).
 
-Source inventory observed:
-- ooRexx classes: 35
-- ooRexx methods: 118
-- principal source: src/JobNodeAllocator.cls
+Candidate: job_node_allocator_v0.6-network6.zip
+SHA-256: d26153c6f5a70fb8979be34b231d4716d1eb60e8dec4292d89bedc1487b09fe2
+Archive existence and source inspection: observed.
+Runtime regression: NOT RUN in this turn; ooRexx executable unavailable.
+Full GitHub source synchronization: NOT COMPLETE.
+Gopher sphere validate/lint: NOT RUN in this turn.
+Deployment approval: NOT GRANTED.
 
-Qualification requirements:
-- sphere validate => VALID
-- sphere lint => CLEAN
-- context => OPENED
-- baseline search => FOUND
-- packaged ZIP integrity => clean
+Blocking discrepancy:
+- src/JobNodeExecutionLifecycle.cls append still increments sequence before opening journal.
+- restoreInto still skips unexpected records and permits a pending EVENT to be replaced.
+These conflict with the network6 changelog/previous qualification narrative.
+Require actual code repair and fault-injection tests before promoting.
 
-This qualification establishes documentation structure/searchability against the named project artifact.
-It does not re-run the complete executable project's own acceptance matrix; those project validation files remain authoritative for runtime qualification.
+Authority rules: no duplicate execution from uncertainty; no automatic placement release from runtime ABSENT or missing replies; Job-to-Node is placement authority, Migratable Job/runtime execution authority.
