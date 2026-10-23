@@ -1,0 +1,18 @@
+{
+  "kind":"corpus",
+  "id":"remote-compute-mu.contracts",
+  "sphere":"remote-compute-mu",
+  "title":"Remote Compute MU authoritative boundaries and integration gates",
+  "records":[
+    {"topic":"scope","aliases":["MU","MI","RexxOS mesh","remote execution"],"rule":"Remote Compute MU manages external execution personalities. Neither Colab sessions nor ZeroGPU Spaces are full-time MI members; only real current MI capabilities are projected to placement as such.","plane":"remote-compute-mu architecture"},
+    {"topic":"placement","aliases":["lease","Job-to-Node","ownership epoch","WLU"],"rule":"The Job-to-Node Allocator v0.6 is the only placement/lease authority. WLU entitlement is separate. Before any external effect, verify exact current WLU rights, lease and ownership fence through their real upstream APIs.","plane":"Job-to-Node v0.6 / WLU"},
+    {"topic":"idempotency","aliases":["ambiguous reply","SUBMITTING","UNCERTAIN","double execution"],"rule":"Write SUBMITTING and a stable dispatchKey durably before any provider side effect. Unknown submit outcome MUST be reconciled with provider evidence; never retry blindly.","plane":"remote-compute-mu dev2 source"},
+    {"topic":"outputs","aliases":["COMMITTING","Storage Fabric","artifact receipt"],"rule":"Write COMMITTING before an effectful output commit. Never repeat an ambiguous Storage Fabric commit. Provider success must not become job success until durable output verification and commit succeed.","plane":"Storage Fabric / remote-compute-mu dev2 source"},
+    {"topic":"cancel","aliases":["CANCEL_REQUESTED","LOST","remote worker"],"rule":"A cancellation request is not a cancellation outcome. Never mark an uncertain remote submission cancelled merely because no remote identifier is known.","plane":"remote-compute-mu dev2 source"},
+    {"topic":"colab","aliases":["Colab Job","google-colab-cli","GPU","TPU","secret"],"rule":"Reuse ooRexx Colab Job v0.3-dev1. Resource requirements are hard, actual worker capacity must be observed, secrets are references, and outputs need verified receipts and durable promotion.","plane":"oorexx_colab_job_v0.3-dev1"},
+    {"topic":"zerogpu","aliases":["HF Spaces","GPU","gradio","Space Job"],"rule":"Use the existing Hugging Face Space Job contract for supported Space operations. ZeroGPU is a shared execution API, not an owned exclusive GPU or checkpointable MI.","plane":"managed-compute v6-dev2"},
+    {"topic":"windows","aliases":["Windows VM","Windows Docker","GUI tests","image digest"],"rule":"Run Windows-kernel containers only on compatible Windows hosts with pinned images; use a governed Windows VM for full OS and GUI testing. Linux Docker is not a Windows kernel.","plane":"remote-compute-mu architecture"},
+    {"topic":"status","aliases":["retained status","Connect Selector","Queue Fabric"],"rule":"Transport and status evidence never mint placement leases or settle work. Reuse the authenticated mesh and Connect Selector choices; do not build a mandatory new Queue Fabric dependency.","plane":"RexxOS/QueueRexx peer mesh"},
+    {"topic":"qualification","aliases":["candidate","live readiness","dev2"],"rule":"Dev2 is a tested Python durable reference controller plus ooRexx semantic frontage. Live provider, real Job-to-Node/WLU/Storage, mesh registration and HA ownership integrations remain unbound. Do not claim an operational commissioned MU.","plane":"remote-compute-mu dev2 qualification"}
+  ]
+}
