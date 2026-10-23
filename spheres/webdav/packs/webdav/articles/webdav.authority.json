@@ -1,0 +1,23 @@
+{
+  "id": "webdav.authority",
+  "title": "Authority boundaries",
+  "section": "architecture",
+  "summary": "WebDAV composes existing transport, storage and queue services without absorbing their authority.",
+  "invariants": [
+    "HTTPS Server owns TCP, TLS and HTTP framing, including any future streaming request/response transport hooks.",
+    "WebDAV owns DAV methods, properties, locks, preconditions, sync semantics and path projection.",
+    "Storage Fabric owns StorageRef identity, namespace policy, byte source/sink contracts, verification and commit.",
+    "Queue Fabric owns durable command delivery when selected; queue completion is not Storage commit authority.",
+    "Hercules Storage adapters own AWSTAPE edge encoding; WebDAV does not invent emulator/device semantics."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "webdav",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_webdav/ARCHITECTURE.md",
+      "claim": "Canonical repository architecture."
+    }
+  ]
+}

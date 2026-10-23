@@ -1,4 +1,4 @@
-/* WebDAV representation bridge for Storage Fabric sequential media dev16. */
+/* WebDAV representation bridge for Storage Fabric sequential media dev17 / WebDAV dev5. */
 ::class WebDavRepresentationResult public
 ::attribute body get
 ::attribute contentType get
@@ -57,9 +57,13 @@
     if image~encoding<>.StorageSequentialMediaEncoding~ASCII then return .nil
     return .WebDavRepresentationResult~new(.StoragePaperListingCodec~toAscii(image),'text/plain; charset=us-ascii')
   end
-  /* TAPE_VOLUME intentionally has no generic byte rendering. A real HET/AWS
-   * codec must register an explicit representation; concatenating blocks would
-   * destroy filemark semantics. */
+  if family=.StorageSequentialMediaFamily~TAPE_VOLUME then do
+    if accept~pos('application/vnd.oorexx.awstape')>0 | accept~pos('application/x-hercules-awstape')>0 then
+      return .WebDavRepresentationResult~new(.StorageHerculesAwsTapeCodec~toBytes(image),'application/vnd.oorexx.awstape')
+    /* HET is deliberately not guessed.  Storage Fabric dev17 explicitly owns
+     * AWSTAPE but not compressed HET. */
+    return .nil
+  end
   return .nil
 ::method import
   use arg mediaIdArg, bodyArg, contentTypeArg
@@ -68,6 +72,10 @@
     return .StorageCardDeckCodec~fromFixedBytes(mediaIdArg,bodyArg,80,.StorageSequentialMediaEncoding~EBCDIC,.false)
   if ct~pos('application/vnd.oorexx.card-deck.ascii')=1 then return self~importAsciiCards(mediaIdArg,bodyArg)
   if ct~pos('application/vnd.oorexx.paper-listing.ascii')=1 then return self~importAsciiPaper(mediaIdArg,bodyArg)
+  if ct~pos('application/vnd.oorexx.awstape')=1 | ct~pos('application/x-hercules-awstape')=1 then
+    return .StorageHerculesAwsTapeCodec~fromBytes(mediaIdArg,bodyArg)
+  /* No generic HET import: compressed HET remains unsupported until a
+   * qualified Storage codec exists. */
   return .nil
 ::method importAsciiCards private
   use arg mediaIdArg, bodyArg
@@ -128,3 +136,5 @@
 
 ::requires 'StorageFabric.cls'
 ::requires 'StorageSequentialMedia.cls'
+
+::requires 'StorageHerculesSequentialMedia.cls'

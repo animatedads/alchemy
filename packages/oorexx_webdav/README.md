@@ -1,84 +1,122 @@
-# ooRexx WebDAV Gateway v0.1-dev4
+# ooRexx WebDAV Gateway v0.1-dev5
 
-dev4 continues the real dev2 -> dev3 implementation line and concentrates on
-stateful DAV behaviour and bounded Storage I/O.
+dev5 follows the real dev2 -> dev3 -> dev4 line.  It is driven by the current
+Library review rather than by an invented HTTPS streaming interface.
 
-## New in dev4
+The Library still exposes **ooRexx HTTPS Server v0.4.4** as the current host.
+Its public architecture owns TCP through RxSock and TLS through OpenSSL memory
+BIOs, but the available source/review evidence does not expose a streaming
+request/response body API.  WebDAV therefore does not counterfeit one.
 
-### RFC 6578-style collection synchronisation
+## New in dev5
 
-`REPORT` now accepts `sync-collection` requests.
+### Abort-safe staged streaming publication
 
-- initial sync enumerates the current collection projection;
-- incremental sync uses opaque `urn:oorexx:webdav:sync:N` tokens;
-- PUT, DELETE, MKCOL, COPY, MOVE and PROPPATCH publish change evidence;
-- deletions are represented as 404 responses in the multistatus;
-- `WebDavSyncJournal` is restart-persistable and has bounded retention;
-- expired/invalid tokens fail closed.
+`webdav.streaming/0.1` adds a host-neutral streaming ingress seam:
 
-The journal is DAV change evidence. Storage generation/object identity remains
-Storage Fabric authority.
+```text
+HTTPS streaming host (future/current host adapter)
+        |
+        | bounded chunk <= nextMaximum()
+        v
+WebDavStreamingUploadSession
+        |
+        v
+StorageByteSink staging object
+        |
+        +-- flush each accepted chunk
+        +-- no namespace publication
+        +-- abort -> cleanup
+        |
+        v
+commit()
+        |
+        +-- exact Content-Length check
+        +-- physical staging-size check
+        +-- streamed SHA-256
+        +-- Storage write-policy/precondition check
+        +-- StorageRef + catalogue admission
+        +-- namespace publication
+        +-- sync change evidence
+```
 
-### Stronger WebDAV `If` state-list evaluation
+The critical invariant is that a partial or disconnected upload **never
+acquires a WebDAV path**.  Publication occurs only after exact byte count and
+SHA-256 verification.
 
-dev3's token-presence lock gate has been replaced with a parser/evaluator for
-the useful RFC 4918 state-list core:
+`WebDavLocalStagedSink` adds explicit abort cleanup for local staging files.
+The streaming session publishes backpressure information through
+`nextMaximum()` and rejects chunks larger than the configured bound.
 
-- OR between parenthesised state lists;
-- AND within a list;
-- lock state tokens;
-- entity tags;
-- `Not` conditions;
-- tagged resource lists for the request resource.
+This is deliberately independent of `HttpRequest~body`.  When HTTPS Server
+gains a request-stream callback/body-source interface, that host can feed this
+session without changing the WebDAV/Storage semantics.
 
-Malformed state expressions fail closed.
+### Durable collection dead properties
 
-### Shared and exclusive write locks
+Object dead properties were already StorageEA-backed.  dev5 adds
+`WebDavDurableCollectionPropertyStore` for collection-only DAV metadata.
 
-The lock authority now supports both:
+The journal:
 
-- exclusive write locks;
-- shared write locks;
-- coexistence of multiple shared locks;
-- exclusive/shared conflict checks;
-- refresh and unlock;
-- Depth 0 / infinity;
-- restart journal format `WEBDAVLOCKS2`;
-- migration/read support for the dev3 `WEBDAVLOCKS1` journal.
+- survives process restart;
+- persists SET and REMOVE;
+- follows collection COPY/MOVE semantics;
+- stores path, namespace, property name and value without tab/newline ambiguity;
+- remains DAV metadata authority rather than pretending collections are
+  Storage objects.
 
-PROPFIND advertises both lock types and projects active lock discovery.
+Production deployments can inject this store into `WebDavStorageAdapter`.
 
-### Bounded Storage byte plane
+### Hercules AWSTAPE representation
 
-WebDAV can now bind a `StorageByteSource` to a `StorageRef`.
+The current Storage Fabric Library has an authoritative
+`StorageHerculesAwsTapeCodec` in `storage.fabric.hercules-sequential-media/0.1`.
 
-- Range GET reads only the requested bounded Storage chunk;
-- a large object need not exist as one in-memory WebDAV body;
-- HEAD reports size without reading the object;
-- full GET of a source larger than the bounded response limit fails closed
-  until the HTTPS server exposes a streaming-response API;
-- `putFromSource()` copies source -> `StorageByteSink` in bounded chunks,
-  flushes each chunk, hashes the completed sink with streamed SHA-256, admits
-  the resulting StorageRef, and re-exposes it through a local byte source.
+WebDAV now exposes that codec explicitly as:
 
-The default bounded transfer/read quantum is 8 MiB. Tests deliberately exercise
-a 20 MiB virtual source while requesting only 100 bytes.
+```text
+application/vnd.oorexx.awstape
+application/x-hercules-awstape   (accepted alias)
+```
 
-### ooRexx `RESULT` cleanup
+Canonical `TAPE_VOLUME` identity remains blocks + filemarks.  AWSTAPE is only
+an edge representation.  The codec preserves:
 
-WebDAV source no longer uses `result` as a working object variable. `RESULT` is
-an ooRexx special variable after `CALL`; using `result~...` is therefore a
-latent failure trap.
+- filemarks;
+- multi-segment logical records;
+- six-byte AWS segment headers;
+- previous-segment length chains.
 
-## Still deliberately open
+Malformed and truncated AWSTAPE is rejected by the Storage codec.
 
-- the HTTPS Server needs a true streaming response API before unbounded full
-  GET can be emitted without collection into one body object;
-- HTTP request-body streaming needs the corresponding server-side source API
-  before network PUT can directly feed `putFromSource()`;
-- sync REPORT currently implements the collection/token/change core rather than
-  every RFC 6578 optional property-selection detail;
-- full multi-resource tagged `If` semantics for COPY/MOVE source+destination
-  combinations remain a further increment;
-- production collection-only dead properties need an external durable provider.
+**HET remains unsupported.**  Storage Fabric dev17 explicitly does not claim a
+qualified HET compression codec, so WebDAV does not guess, flatten, or relabel
+AWSTAPE as HET.
 
+## Existing dev4 capabilities retained
+
+- PROPFIND / PROPPATCH;
+- COPY / MOVE;
+- shared and exclusive DAV locks;
+- restartable lock journal;
+- RFC 4918 state-list core for `If`;
+- Range GET / If-Range;
+- RFC 6578-style sync-collection REPORT;
+- restartable sync journal;
+- bounded StorageByteSource ranged access;
+- Queue Fabric typed mutation objects;
+- cards and paper sequential-media representations.
+
+## Remaining external-host work
+
+The next network-facing step belongs primarily to HTTPS Server:
+
+1. request body source/callback with bounded reads and disconnect notification;
+2. streaming response writer with backpressure;
+3. abort/finalize hooks;
+4. retained transport evidence that does not keep body bytes.
+
+Once that exists, WebDAV can bind it directly to `WebDavStreamingUploadSession`
+for PUT and to `StorageByteSource` for full GET without changing Storage or DAV
+identity semantics.

@@ -1,0 +1,25 @@
+{
+  "id": "webdav.streaming-publication",
+  "title": "Abort-safe streaming publication",
+  "section": "integration",
+  "summary": "webdav.streaming/0.1 provides a host-neutral upload session with bounded chunks, backpressure, staging, abort cleanup and explicit commit. Publication occurs only after exact-length and SHA-256 verification.",
+  "invariants": [
+    "WebDavStreamingUploadSession accepts no chunk larger than nextMaximum().",
+    "Staged bytes are flushed but remain unpublished until commit.",
+    "Abort removes local staging and leaves no namespace entry.",
+    "Commit verifies expected bytes, physical stage size and streamed SHA-256 before StorageRef/catalogue/namespace publication.",
+    "The contract does not pretend HttpRequest~body is a stream."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "webdav",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_webdav_v0.1-dev5.zip",
+      "sha256": "5ec140808cb95d1fbe2c6f99c2abf0f14d7f59f06fd387a490538da8aef83f2d",
+      "member": "src/WebDavStreaming.cls",
+      "claim": "Qualified dev5 streaming ingress contract."
+    }
+  ]
+}

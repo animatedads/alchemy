@@ -1,0 +1,26 @@
+{
+  "id": "webdav.continuation",
+  "title": "Continuation and missing work",
+  "section": "qualification",
+  "summary": "The principal blocker to true end-to-end large-object streaming is the HTTPS host boundary, not WebDAV's Storage-side contract.",
+  "invariants": [
+    "Do not invent an HTTPS streaming API from the existing v0.4.4 body-object interface.",
+    "Next HTTPS work needs bounded request-body source/callback, disconnect notification, response writer backpressure, abort/finalize hooks and body-free retained transport evidence.",
+    "Once HTTPS exposes that seam, bind PUT directly to WebDavStreamingUploadSession and full GET to StorageByteSource.",
+    "Further WebDAV work includes full multi-resource tagged If semantics for COPY/MOVE, optional RFC 6578 selection details, live OS/client interoperability and live Queue Fabric broker qualification."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "webdav",
+  "authority": "project-continuation",
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_webdav/VALIDATION.txt",
+      "claim": "dev5 qualification boundaries."
+    },
+    {
+      "artifact": "ooRexx_Alchemy_API_Fixes_and_Design_Review_2026-09-18.pdf",
+      "claim": "F13 identifies WebDAV streaming/media fidelity as the open transport seam."
+    }
+  ]
+}

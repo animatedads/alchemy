@@ -1,0 +1,24 @@
+{
+  "id": "webdav.media",
+  "title": "Sequential media and AWSTAPE fidelity",
+  "section": "integration",
+  "summary": "WebDAV negotiates representations over canonical Storage sequential-media objects. dev5 delegates AWSTAPE to StorageHerculesAwsTapeCodec and explicitly leaves HET unsupported.",
+  "invariants": [
+    "Canonical tape semantics are logical blocks plus filemarks.",
+    "AWSTAPE six-byte headers and segmentation are edge representation mechanics.",
+    "Large segmented records and filemarks must round-trip.",
+    "Malformed/truncated AWSTAPE fails closed.",
+    "Compressed HET must not be guessed, flattened or mislabeled until a qualified Storage codec exists."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "webdav",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "StorageHerculesSequentialMedia.cls",
+      "member": "StorageHerculesAwsTapeCodec",
+      "claim": "Storage Fabric dev17 AWSTAPE authority."
+    }
+  ]
+}

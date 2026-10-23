@@ -1,7 +1,7 @@
 /* ooRexx WebDAV Gateway v0.1-dev3 -- protocol/storage core. */
 
 ::class WebDavBuild public
-::constant VERSION "0.1-dev4"
+::constant VERSION "0.1-dev5"
 ::constant API "webdav.gateway/0.1"
 
 ::class WebDavStatus public
@@ -488,6 +488,46 @@
   if existed then status=204; else status=201
   self~recordChange(p,status,'PUT_MEDIA')
   return .WebDavMutationResult~new(.true,status,'PUT_MEDIA','',ref)
+::method commitStagedSink
+  expose namespace catalogue byteSources locks
+  use arg pathArg,sinkArg,expectedBytesArg,mediaType='application/octet-stream',ifMatch='',ifNoneMatch='',ifHeader=''
+  p=.StoragePath~normalize(pathArg); expected=expectedBytesArg+0
+  if sinkArg==.nil | expected<0 then return .WebDavMutationResult~new(.false,400,'BAD_STAGE','invalid staged sink',.nil)
+  if \sinkArg~hasMethod('VERIFICATIONPATH') then return .WebDavMutationResult~new(.false,500,'UNVERIFIABLE_SINK','staged sink has no verification path',.nil)
+
+  old=namespace~resolve(p); existed=old~found
+  if ifNoneMatch='*' & existed then return .WebDavMutationResult~new(.false,412,'PRECONDITION_FAILED','resource already exists',.nil)
+  if ifMatch<>'' then do
+    if \existed then return .WebDavMutationResult~new(.false,412,'PRECONDITION_FAILED','If-Match target absent',.nil)
+    if .WebDavUtil~trimQuotes(ifMatch)<>.WebDavUtil~trimQuotes(.WebDavUtil~quoteEtag(old~entry~ref)) then return .WebDavMutationResult~new(.false,412,'PRECONDITION_FAILED','ETag mismatch',.nil)
+  end
+  if \existed & \self~isCollection(.StoragePath~parent(p)) then return .WebDavMutationResult~new(.false,409,'CONFLICT','parent collection does not exist',.nil)
+  if \locks~mutationAllowed(p,ifHeader,'',self~etag(p)) then return .WebDavMutationResult~new(.false,423,'LOCKED','lock token required',.nil)
+
+  stagePath=sinkArg~verificationPath
+  physical=stream(stagePath,'c','query size')
+  if datatype(physical,'N')=0 | physical+0<>expected then
+    return .WebDavMutationResult~new(.false,409,'STAGE_SIZE_MISMATCH','staged byte count does not match expected size',.nil)
+
+  digestHex=.StoragePosixSha256Verifier~new~digestFile(stagePath)
+  if digestHex='' then return .WebDavMutationResult~new(.false,500,'VERIFY_FAILED','staged SHA-256 unavailable',.nil)
+  digest='sha256:'||digestHex
+  id='dav-stage-'||digestHex
+  ref=.StorageRef~new(id,digest)
+  obj=.StorageObject~new(ref,.StoragePath~name(p),expected,mediaType)
+
+  /* Namespace policy is checked before catalogue admission.  Publication is
+   * the commit point: a disconnected or incomplete stage never acquires a DAV
+   * path or Storage object identity. */
+  outcome=self~bindWrite(p,ref,existed,old,'dav-stage-'||digestHex)
+  if \outcome~ok then return outcome
+  catalogue~put(obj)
+  byteSources~register(ref,.StorageLocalFileByteSource~new(stagePath))
+  namespace~environment~advanceGeneration
+  if existed then status=204; else status=201
+  self~recordChange(p,status,'PUT_STREAM_COMMIT')
+  return .WebDavMutationResult~new(.true,status,'PUT_STREAM_COMMIT','',ref)
+
 ::method putFromSource
   expose namespace catalogue content byteSources locks
   use arg pathArg,sourceArg,sinkArg,mediaType='application/octet-stream',ifMatch='',ifNoneMatch='',ifHeader='',chunkArg=8388608
