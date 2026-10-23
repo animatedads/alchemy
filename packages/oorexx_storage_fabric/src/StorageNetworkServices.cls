@@ -6,7 +6,7 @@
  */
 ::class StorageNetworkServicesBuild public
 ::constant API "storage.fabric.network/0.1"
-::constant VERSION "0.1-candidate5"
+::constant VERSION "0.2-service-admission"
 
 /* An estate-authorised route binding, not a network address.  The actual
  * Service Descriptor Registry is the authority for service class and peer. */
@@ -135,9 +135,22 @@
   if \request~isA(.Directory) then return self~reject("REQUEST_INVALID")
   op=request["operation"]
   if op==.nil then return self~reject("OPERATION_REQUIRED")
-  if acceptedSocket<>.nil then if acceptedSocket~hasMethod("SERVICENAME") then do
-    required=operationServices[op~string~upper]
-    if required==.nil | acceptedSocket~serviceName<>required then return self~reject("SERVICE_OPERATION_MISMATCH")
+  required=operationServices[op~string~upper]
+  /* A bound operation MUST arrive through an admitted named-service context.
+   * Unbound operations continue over ordinary authenticated sockets.
+   * No raw-socket fallback after named-service admission failure. */
+  if required<>.nil then do
+    if acceptedSocket==.nil then return self~reject("NAMED_CONTEXT_REQUIRED")
+    if \acceptedSocket~hasMethod("SERVICENAME") then return self~reject("NAMED_CONTEXT_REQUIRED")
+    if \acceptedSocket~hasMethod("AUTHENTICATEDPEERID") then return self~reject("PEER_CONTEXT_REQUIRED")
+    if \acceptedSocket~hasMethod("SERVICEADMITTED") then return self~reject("SERVICE_ADMISSION_REQUIRED")
+    if \acceptedSocket~serviceAdmitted then return self~reject("SERVICE_NOT_ADMITTED")
+    if acceptedSocket~serviceName<>required then return self~reject("SERVICE_OPERATION_MISMATCH")
+    if acceptedSocket~authenticatedPeerId~string~strip="" then return self~reject("AUTHENTICATED_PEER_REQUIRED")
+    if authenticatedNodeId~string<>acceptedSocket~authenticatedPeerId~string then return self~reject("PEER_IDENTITY_MISMATCH")
+  end
+  else if acceptedSocket<>.nil then do
+    if acceptedSocket~hasMethod("SERVICENAME") then return self~reject("SERVICE_OPERATION_MISMATCH")
   end
   if authenticatedNodeId~string~strip="" then return self~reject("AUTHENTICATED_PEER_REQUIRED")
   return peerService~handleFrom(authenticatedNodeId,request)

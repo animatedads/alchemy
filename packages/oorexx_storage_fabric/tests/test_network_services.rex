@@ -46,11 +46,17 @@ peerService=.FakePeerService~new
 guard=.StorageNamedInboundGuard~new(peerService)
 guard~bind('READ','storage.acquire.C')
 req=.directory~new; req['operation']='READ'
-call check guard~handle('ed209a',req,.FakeAccepted~new('storage.search.C'))['code']='SERVICE_OPERATION_MISMATCH','wrong FIRST service rejected'
-call check guard~handle('',req,.FakeAccepted~new('storage.acquire.C'))['code']='AUTHENTICATED_PEER_REQUIRED','FIRST is not principal auth'
-resp=guard~handle('ed209a',req,.FakeAccepted~new('storage.acquire.C'))
-call check resp['status']='OK' & peerService~lastIdentity='ed209a','authenticated identity is retained'
-call check guard~handle('ed209a',req)['status']='OK','generic socket path still works'
+call check guard~handle('ed209a',req)['code']='NAMED_CONTEXT_REQUIRED','registered FIRST operation forbids raw fallback'
+call check guard~handle('ed209a',req,.FakeAccepted~new('storage.search.C','ed209a'))['code']='SERVICE_OPERATION_MISMATCH','wrong FIRST service rejected'
+call check guard~handle('',req,.FakeAccepted~new('storage.acquire.C','ed209a'))['code']='PEER_IDENTITY_MISMATCH','FIRST is not principal auth'
+call check guard~handle('ed209b',req,.FakeAccepted~new('storage.acquire.C','ed209a'))['code']='PEER_IDENTITY_MISMATCH','caller identity must match session peer'
+call check guard~handle('ed209a',req,.FakeAccepted~new('storage.acquire.C','ed209a',.false))['code']='SERVICE_NOT_ADMITTED','unadmitted context denied'
+call check guard~handle('ed209a',req,.FakeNoPeer~new('storage.acquire.C'))['code']='PEER_CONTEXT_REQUIRED','unverified peer context denied'
+resp=guard~handle('ed209a',req,.FakeAccepted~new('storage.acquire.C','ed209a'))
+call check resp['status']='OK' & peerService~lastIdentity='ed209a','admitted named context retains authenticated identity'
+other=.directory~new; other['operation']='LIST'
+call check guard~handle('ed209a',other)['status']='OK','unbound operation preserves ordinary authenticated socket'
+call check guard~handle('ed209a',other,.FakeAccepted~new('storage.acquire.C','ed209a'))['code']='SERVICE_OPERATION_MISMATCH','named context cannot call unrelated operation'
 
 m=.StorageMulticastDiscovery~new
 h=('ab'~copies(32))
@@ -165,6 +171,14 @@ check: procedure
   d=.directory~new; d['status']='OK'
   return d
 ::class FakeAccepted public
+::attribute serviceName get
+::attribute authenticatedPeerId get
+::attribute serviceAdmitted get
+::method init
+  expose serviceName authenticatedPeerId serviceAdmitted
+  use strict arg s,peer,admitted=.true
+  serviceName=s; authenticatedPeerId=peer; serviceAdmitted=admitted
+::class FakeNoPeer public
 ::attribute serviceName get
 ::method init
   expose serviceName
