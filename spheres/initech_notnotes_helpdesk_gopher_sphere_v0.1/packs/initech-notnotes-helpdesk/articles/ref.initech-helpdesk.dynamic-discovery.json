@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "ref.initech-helpdesk.dynamic-discovery",
+  "version": "0.1",
+  "sphere": "initech-notnotes-helpdesk",
+  "title": "Dynamic intention and specialist discovery",
+  "summary": "Discovery is re-run against the current live application and specialist evidence on every turn. Availability is not permanent truth and an unavailable operation is not automatically an unknown intention.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Discovery is per-turn, not startup-only.",
+    "Meaning and feasibility are separate; understood-but-currently-impossible work is INFEASIBLE rather than UNKNOWN.",
+    "Runtime-added NotNotes reports become visible on the next turn without a Help Desk code change.",
+    "Provider-owned specialist surfaces remain opaque to the Help Desk except for generic discovery/relevance/evidence contracts."
+  ],
+  "procedure": [
+    "Call MiniNotesApp.semanticApplicationProjection for current application semantics.",
+    "Refresh/publish current operational evidence before discovering Instrumentation Intentions.",
+    "For future infrastructure support, inject Management Intention Discovery and resolve fresh specialist relevance per request rather than adding MVS/cloud commands to Help Desk code."
+  ],
+  "provenance": [
+    {
+      "artifact": "initech_notnotes_helpdesk_v0.1-dev5.zip",
+      "sha256": "0448068f18fee165381441e2afb33dbee170f44957f6d3c704ef2948ed42f9c6",
+      "member": "initech_notnotes_helpdesk_v0.1-dev5/src/InitechHelpDesk.cls",
+      "claim": "Per-turn NotNotes and Instrumentation specialist discovery in the accepted Help Desk implementation."
+    },
+    {
+      "artifact": "oorexx_management_intention_discovery_v0.1-dev8.zip",
+      "sha256": "c9ff297e613e7b5eead70dcc1d54d7b2ee3258d6e5c9b5e95ef17a5bd730ba62",
+      "member": "oorexx_management_intention_discovery_v0.1-dev8/README.md",
+      "claim": "Future generic seam: domain-blind fresh management specialist and relationship discovery, including MVS/network/instrumentation surfaces."
+    }
+  ],
+  "related": ["ref.initech-helpdesk.architecture", "ref.initech-helpdesk.continuation"]
+}
