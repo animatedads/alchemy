@@ -1,0 +1,37 @@
+ooRexx LDAP Identity Gopher sphere v0.1
+======================================
+
+Purpose
+-------
+Durable semantic context for the LDAP / Identity Directory implementation line,
+with dev19 restart-safe authority recovery as the current development increment.
+
+Source candidate
+----------------
+oorexx_ldap_identity_v0.1-dev19.zip
+SHA-256 14d41d9c1cd339ccd99bc1a344b182fdb86ef2b5c30ee6454dd2fbfe1525d8ec
+
+Documented dev19 contract
+-------------------------
+- IdentityPeerAuthoritySnapshot / IdentityPeerAuthorityJournal recovery boundary.
+- reject authority-epoch regression.
+- reject same-epoch / different-holder recovery.
+- keep XTP transport ACK/replay state separate from LDAP application commit authority.
+- preserve Instrumentation Mesh as observation-only evidence.
+
+Qualification truth
+-------------------
+PASS sphere JSON structural parse.
+PASS continuity assertions for dev19 package hash and authority-boundary text.
+NOT RUN full Gopher runtime qualification in this construction environment.
+NOT RUN dev19 ooRexx runtime qualification: ooRexx executable unavailable.
+FAIL dev19 source standards rerun: 1 ERROR, 136 WARNINGS.
+     Hard error: SIGNAL_NO_ANNOUNCE in tests/test_authority_recovery_journal.rex.
+NOTE packaged VALIDATION_DEV19_STANDARDS.txt is not valid standards evidence because
+     its invocation failed to locate the subject path.
+NOTE VERSION.txt inside the dev19 archive still reports 0.1-dev18.
+
+Acceptance rule
+---------------
+This sphere may document the dev19 development candidate, but it must not describe
+that candidate as fresh runtime-qualified or standards-clean until those gates pass.

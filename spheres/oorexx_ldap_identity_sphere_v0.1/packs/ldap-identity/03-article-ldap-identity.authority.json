@@ -1,0 +1,22 @@
+{
+  "kind": "article",
+  "id": "ldap-identity.authority",
+  "version": "0.1",
+  "sphere": "ldap-identity",
+  "title": "Authority, failover and recovery boundaries",
+  "invariants": [
+    "LDAP Bind establishes authentication attribution; it is not by itself directory authorization.",
+    "Access control and exact method permission remain separate checks from authentication.",
+    "A logical peer is stable across replacement runtimes and transport/carrier changes.",
+    "Authority epoch fences writers after promotion; committed replay from sealed older epochs may remain recoverable while new stale writes fail closed.",
+    "Within one authority epoch the holder identity is immutable; a same-epoch holder substitution is rejected.",
+    "A promotion changes holder only by advancing authority epoch.",
+    "Directory semantic commit authority is independent of transport delivery evidence.",
+    "Instrumentation correlation is observation evidence only and grants neither commit nor promotion authority."
+  ],
+  "recovery_boundary": {
+    "persist": ["logicalPeerId", "authorityEpoch", "authorityHolderId", "directoryRevision", "lastCommittedUpdateId", "evidenceTime"],
+    "reject": ["epoch regression", "same epoch with different authority holder"],
+    "not_authority": ["XTP transport ACK", "XTP replay state", "Instrumentation Mesh correlation", "carrier selection"]
+  }
+}
