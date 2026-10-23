@@ -1,0 +1,58 @@
+{
+  "kind": "corpus",
+  "id": "single-time-service.continuity",
+  "sphere": "single-time-service",
+  "title": "Single Time Service design decisions and claims discipline",
+  "records": [
+    {
+      "topic": "source",
+      "value": "single_time_service_v0.9.zip",
+      "sha256": "914e99e944fcd2e6d4f20c47e0850ca207318d7641c5f432d2d4aa10bd172038",
+      "qualification": "manifest verified; native v0.9 unqualified"
+    },
+    {
+      "topic": "identity",
+      "rule": "UTC/POSIX instant, local civil reading and event meaning are distinct objects."
+    },
+    {
+      "topic": "zone",
+      "rule": "Always retain rule snapshot provenance; DST gaps/folds may lack or multiply instants."
+    },
+    {
+      "topic": "recurrence",
+      "rule": "Persist the local civil intention, not only projected UTC instants."
+    },
+    {
+      "topic": "institution",
+      "rule": "Phrase resolution requires named calendar context and explicit date; ambiguity is first-class."
+    },
+    {
+      "topic": "authority",
+      "rule": "Single-writer revision journal + non-cryptographic integrity does not establish signatures or trust."
+    },
+    {
+      "topic": "change",
+      "rule": "Impact analysis is advisory; detached change projection is not an event delivery."
+    },
+    {
+      "topic": "connector",
+      "rule": "Direct invocation first-class; ConnectSelector owns routing; JSON-RPC notifications do not inherit Queue Fabric durability."
+    },
+    {
+      "topic": "approval",
+      "rule": "Time Service neither authorises nor dispatches jobs as a side effect of resolution."
+    },
+    {
+      "topic": "backfill",
+      "rule": "Complete earlier source v0.1-v0.9 still requires separate GitHub backfill; issue #25."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "single_time_service_v0.9.zip",
+      "sha256": "914e99e944fcd2e6d4f20c47e0850ca207318d7641c5f432d2d4aa10bd172038",
+      "member": "single_time_service_v0.9/README.md",
+      "claim": "Verified against locally inspected v0.9 package source."
+    }
+  ]
+}

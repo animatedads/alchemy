@@ -1,0 +1,24 @@
+{
+  "id": "time.connectors",
+  "title": "Connector-neutral invocation and semantic boundary",
+  "section": "integration",
+  "summary": "Direct ooRexx domain classes require no ConnectSelector, RPC Service Core, JSON-RPC Fabric or Queue Fabric. An optional TimeServiceEndpoint publishes read-only operations and can register with RPC Service Core. ConnectSelector determines DIRECT, RPC and QUEUE paths; those transports retain different failure/durability semantics.",
+  "invariants": [
+    "JSON-RPC notification is not durable Queue Fabric delivery.",
+    "No Time-Service-specific transport selector or compulsory Queue Fabric dependency.",
+    "RPC registration, authentication, access policy and service lifecycle remain with their owning layers.",
+    "No dispatch from temporal projection."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "single-time-service",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "single_time_service_v0.9.zip",
+      "sha256": "914e99e944fcd2e6d4f20c47e0850ca207318d7641c5f432d2d4aa10bd172038",
+      "member": "single_time_service_v0.9/src/TimeServiceEndpoint.cls",
+      "claim": "Verified against locally inspected v0.9 package source."
+    }
+  ]
+}

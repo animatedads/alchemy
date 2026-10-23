@@ -1,0 +1,24 @@
+{
+  "id": "time.recurrence",
+  "title": "Civil recurrence is an intention",
+  "section": "architecture",
+  "summary": "TimeRecurrenceSpec retains local anchor, IANA zone, daily/weekly civil frequency, optional weekday mask and explicit gap/fold policies. TimeRecurrenceEngine expands only over bounded target civil dates against injected rules, returning TimeOccurrence projections rather than executed jobs.",
+  "invariants": [
+    "Daily means calendar days, never a fixed 86400-second UTC addition.",
+    "Weekly means civil ISO weeks, not elapsed seven-day intervals.",
+    "Gap: SKIP/RECORD/REJECT; fold: EARLIER/LATER/BOTH/REJECT.",
+    "Occurrence production is read-only projection; it does not schedule, enqueue or send notifications."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "single-time-service",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "single_time_service_v0.9.zip",
+      "sha256": "914e99e944fcd2e6d4f20c47e0850ca207318d7641c5f432d2d4aa10bd172038",
+      "member": "single_time_service_v0.9/src/TimeRecurrence.cls",
+      "claim": "Verified against locally inspected v0.9 package source."
+    }
+  ]
+}
