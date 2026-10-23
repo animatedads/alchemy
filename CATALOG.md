@@ -83,3 +83,7 @@ The publication was prepared from these supplied archive snapshots:
 | `oorexx_llm_pa_v0.1-dev9-candidate1(1).zip` | `30297f69ec0df690621e72f91da82a22f85cf05624544a432e2f974f6d7cb555` |
 
 The companion BashQueues source is published in its own repository: <https://github.com/animatedads/bashqueues>.
+
+## Incremental publication — 23 October 2026
+
+- **ooRexx native D-Bus qualification:** [standalone audit source and regression tests](packages/oorexx-dbus-qualification/README.md), and [Gopher continuity/qualification sphere v0.1](spheres/oorexx_dbus_connector_gopher_sphere_v0.1/SPHERE_OOREXX_DBUS.md). The historical native `dbusoorexx` core is **not** vendored or claimed compiled; the 2026 upstream candidate has not been compared. ZIP audit preflight and 14 local regression tests are the only new executable qualification evidence. This incremental publication is not included in the historical September 2026 component-count snapshot above.
