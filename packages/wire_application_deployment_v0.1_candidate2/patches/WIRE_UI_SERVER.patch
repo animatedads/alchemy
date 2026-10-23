@@ -1,0 +1,73 @@
+--- wire_ui_server_v0.17.1/src/WireUIServer.cls
++++ wire_ui_server_v0.17.1/src/WireUIServer.cls
+@@ -5,17 +5,69 @@
+ 
+ ::class WireUIServer subclass AlchemyObject public
+ ::method init
+-  expose queueManager topicFabric applications adminPrincipal
++  expose queueManager topicFabric applications adminPrincipal hostedGenerations hostedRetired
+   use arg queueManager, topicFabric = .nil, adminPrincipal = "admin"
+   self~init:super(.WireUIAlchemy~metadata("Queue Fabric adapter for Wire UI live and definition channels"))
+   if topicFabric == .nil then topicFabric = .QueueTopicFabric~new(queueManager)
+   applications = .table~new
++  hostedGenerations = .table~new
++  hostedRetired = .directory~new
+ 
+ ::method registerApplication
+   expose applications
+   use arg app
+   applications[app~applicationId] = app
+   return app
++
++/* Deployment activation explicitly refuses to overwrite manually registered apps.
++ * A generation is an immutable content address, not a user session revision.
++ * Retired objects are held for a caller-managed drain period; the UI protocol
++ * still rejects stale semantic definitions and capabilities fail closed.
++ */
++::method hostedApplication
++  expose applications
++  use strict arg appId
++  return applications[appId]
++
++::method hostedGeneration
++  expose hostedGenerations
++  use strict arg appId
++  if \hostedGenerations~hasIndex(appId) then return ''
++  return hostedGenerations[appId]
++
++::method publishHostedApplication
++  expose applications hostedGenerations hostedRetired
++  use strict arg app,generation,expected=''
++  if app==.nil | generation=='' then return .WireUIResult~failure('DEPLOYMENT_ARGUMENT_INVALID')
++  appId=app~applicationId
++  if appId=='' then return .WireUIResult~failure('DEPLOYMENT_APPLICATION_ID_REQUIRED')
++  current=self~hostedGeneration(appId)
++  if current<>expected | current==generation then return .WireUIResult~failure('DEPLOYMENT_GENERATION_CONFLICT',current)
++  previous=applications[appId]
++  if previous<>.nil then do
++    if current=='' then return .WireUIResult~failure('EXISTING_APPLICATION_NOT_DEPLOYMENT_OWNED',appId)
++    if previous~accessPointId<>app~accessPointId then return .WireUIResult~failure('ACCESS_POINT_MIGRATION_REQUIRES_DRAIN',appId)
++    hostedRetired[appId||'/'||current]=previous
++  end
++  applications[appId]=app
++  hostedGenerations[appId]=generation
++  return .WireUIResult~success(generation,'DEPLOYMENT_ACTIVE')
++
++::method retireHostedApplication
++  expose applications hostedGenerations hostedRetired
++  use strict arg appId,expected
++  current=self~hostedGeneration(appId)
++  if current=='' | current<>expected then return .WireUIResult~failure('DEPLOYMENT_GENERATION_CONFLICT',current)
++  previous=applications[appId]
++  hostedRetired[appId||'/'||current]=previous
++  applications~remove(appId)
++  hostedGenerations~remove(appId)
++  return .WireUIResult~success(expected,'DEPLOYMENT_RETIRED')
++
++::method retiredHostedApplication
++  expose hostedRetired
++  use strict arg appId,generation
++  return hostedRetired[appId||'/'||generation]
+ 
+ ::method directQueueName
+   use arg accessPointId, direction

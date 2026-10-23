@@ -1,0 +1,71 @@
+--- oorexx_https_server_v0.5/rexx/https_server.cls
++++ oorexx_https_server_v0.5/rexx/https_server.cls
+@@ -1699,10 +1699,11 @@
+ ::attribute lifecycleState get
+ 
+ ::method init
+-  expose config tlsContext routes interceptors requestSequence listener activeConnections stopping actualPort tlsProviderPath tlsVersion foreignRuntimeVersion foreignDispatcher foreignThreadingMode tlsPolicy nativeConcurrencyPolicy tlsIoModel tlsGeneration lifecycleState nativeGate connectionQueue connectionWorkers workerActivities webSocketQueue webSocketWorkers webSocketActivities
++  expose config tlsContext routes hostedRoutes interceptors requestSequence listener activeConnections stopping actualPort tlsProviderPath tlsVersion foreignRuntimeVersion foreignDispatcher foreignThreadingMode tlsPolicy nativeConcurrencyPolicy tlsIoModel tlsGeneration lifecycleState nativeGate connectionQueue connectionWorkers workerActivities webSocketQueue webSocketWorkers webSocketActivities
+   use strict arg config
+   config~validate
+   routes=.directory~new
++  hostedRoutes=.HttpsHostedRoutes~new
+   interceptors=.array~new
+   requestSequence=0
+   listener=.nil
+@@ -1743,6 +1744,24 @@
+   routes[key]=.array~of(target,handlerMethod)
+   return self
+ 
++/* Dynamic hosted routes are authored only by a verified deployment coordinator. */
++::method publishHostedRoute
++  expose routes hostedRoutes
++  use strict arg method,path,owner,generation,target,selector,expected=''
++  key=method~upper||' '||path
++  if routes~hasIndex(key) then return .false
++  return hostedRoutes~publish(method,path,owner,generation,target,selector,expected)
++
++::method retireHostedRoute
++  expose hostedRoutes
++  use strict arg method,path,owner,expected
++  return hostedRoutes~retire(method,path,owner,expected)
++
++::method hostedRouteGeneration
++  expose hostedRoutes
++  use strict arg method,path
++  return hostedRoutes~generation(method,path)
++
+ ::method interceptor
+   expose interceptors listener
+   use strict arg target, beforeMethod='beforeRequest', afterMethod='afterResponse'
+@@ -1763,7 +1782,7 @@
+   return context
+ 
+ ::method dispatchRoute private unguarded
+-  expose routes
++  expose routes hostedRoutes
+   use strict arg request
+   key=request~method||' '||request~path
+   if routes~hasIndex(key) then do
+@@ -1771,8 +1790,13 @@
+     args=.array~of(request)
+     return route[1]~sendWith(route[2],args)
+   end
+-
+-  allow=''
++  hosted=hostedRoutes~lookup(request~method,request~path)
++  if hosted<>.nil then do
++    args=.array~of(request)
++    return hosted[3]~sendWith(hosted[4],args)
++  end
++
++  allow=hostedRoutes~methodsForPath(request~path)
+   suffix=' '||request~path
+   do routeKey over routes
+     if routeKey~right(suffix~length)=suffix then do
+@@ -2142,3 +2166,5 @@
+ 
+ ::requires 'socket.cls'
+ ::requires 'foreign.cls'
++
++::requires "HttpsHostedRoutes.cls"
