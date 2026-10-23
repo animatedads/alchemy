@@ -1,4 +1,4 @@
-# Wire UI Swing v0.2-dev10
+# Wire UI Swing v0.2-dev11
 
 Defensive Java Swing renderer and desktop shell for `WIRE-UI/0.1`.
 
@@ -68,8 +68,8 @@ Browser-parity field hints create suitable Swing editors (`date`, `number`, `ema
 ```bash
 ./scripts/run_tests.sh
 ./scripts/build.sh
-java -jar build/wire-ui-swing-v0.2-dev10.jar --version
-java -jar build/wire-ui-swing-v0.2-dev10.jar
+java -jar build/wire-ui-swing-v0.2-dev11.jar --version
+java -jar build/wire-ui-swing-v0.2-dev11.jar
 ```
 
 Real-window tests require a graphics environment; the automated acceptance uses Xvfb.
@@ -94,6 +94,10 @@ Qualification includes a real ooRexx 5.3.0 r13196 + BSF4ooRexx + Wire UI Server 
 ## dev8 — native virtual viewport demand
 
 A collection becomes virtual only when the authoritative projection supplies `rangeWindow` with `start`, `count`, and `total`. Swing then shows a renderer-private proportional scrollbar whose extent can represent a 200,000-row collection while the JList continues to hold only the currently projected bounded window. Dragging the virtual scrollbar or using the mouse wheel emits `RangeRequested(start,count)`; it does not fetch, filter, enumerate, or replace source rows. The application/server remains responsible for satisfying the demand with a later authoritative `items` + `rangeWindow` patch.
+
+## dev11: semantic document rows and lifecycle chips
+
+The Java renderer now gives document-style semantic collections a stronger two-line row treatment: projected display label, stable projected identity, and a compact projected status chip. Approved, pending/review, rejected/failure, and neutral states receive distinct renderer-owned presentation treatment. These colours do not grant, infer, or suppress lifecycle actions; action feasibility remains authoritative application state.
 
 ## dev10: modern desktop material + NotNotes Java presentation fixture
 

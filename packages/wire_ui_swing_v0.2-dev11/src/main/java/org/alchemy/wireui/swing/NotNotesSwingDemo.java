@@ -56,13 +56,13 @@ final class NotNotesSwingDemo {
                         inst("nav","NAV@1","root",Map.of("items",List.of("Home","Documents","TPS Reports","Approvals","Reports","Help Desk"))),
                         inst("docs","DOCS@1","root",Map.of(
                                 "items",List.of(
-                                        doc("TR-0014","TPS-2026-014 · Pending approval","PENDING APPROVAL"),
-                                        doc("ARC-0041","Architecture review · Approved","APPROVED"),
-                                        doc("SEC-2007","Security assessment · Draft","DRAFT"),
-                                        doc("REL-3021","Release authority · Pending approval","PENDING APPROVAL"),
-                                        doc("FIN-1088","Quarterly controls · Approved","APPROVED"),
-                                        doc("OPS-0092","Service continuity review · Draft","DRAFT"),
-                                        doc("TPS-0172","TPS Report · Approved","APPROVED")
+                                        doc("TR-0014","TPS-2026-014","PENDING APPROVAL"),
+                                        doc("ARC-0041","Architecture review","APPROVED"),
+                                        doc("SEC-2007","Security assessment","DRAFT"),
+                                        doc("REL-3021","Release authority","PENDING APPROVAL"),
+                                        doc("FIN-1088","Quarterly controls","APPROVED"),
+                                        doc("OPS-0092","Service continuity review","DRAFT"),
+                                        doc("TPS-0172","TPS Report","APPROVED")
                                 ),
                                 "rangeWindow",Map.of("start",0,"count",7,"total",52))),
                         inst("detail","DETAIL@1","root",Map.of(

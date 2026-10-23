@@ -1,6 +1,13 @@
 # Wire UI Swing changelog
 
-## v0.2-dev10 — 2026-10-03
+## v0.2-dev11 — 2026-10-23
+
+- Add renderer-owned two-line document rows for semantic collection items with projected `label`, stable `id`, and projected `status`.
+- Render projected lifecycle/status values as compact visual chips without introducing application authority into Swing.
+- Preserve existing collection activation, stable identity, bounded-window and `RangeRequested` contracts.
+- Keep the NotNotes Java fixture presentation-only; status classification affects colour/presentation only and never action feasibility.
+
+## v0.2-dev11 — 2026-10-03
 
 - Consume accepted Wire UI Server v0.17 `windowOffset`, `windowLimit`, and `windowTotalCount` slots as authoritative virtual-viewport metadata.
 - Preserve compact `rangeWindow={start,count,total}` compatibility; no new source-authority protocol is introduced.
@@ -55,7 +62,7 @@ The original dev5 package was not present in the supplied roll-up, so this deliv
 
 The supplied API roll-up contained `wire_ui_swing_v0.2-dev3.zip`. It remains the byte-level recovery base used together with the preserved workstream handover to reconstruct the missing later development.
 
-## 0.2-dev10 — 2026-10-22
+## 0.2-dev11 — 2026-10-22
 - Added a modern renderer-owned desktop material treatment while preserving WIRE-UI semantics.
 - Added `--notnotes-demo` and `--notnotes-smoke` Java/Swing NotNotes presentation fixtures.
 - Added denser collection/navigation styling, modern cards, typography, fields and primary actions.

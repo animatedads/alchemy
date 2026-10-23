@@ -1,20 +1,13 @@
-Wire UI Swing v0.2-dev10 validation
-==================================
-Date: 2026-10-03
+Wire UI Swing v0.2-dev11 validation
+===================================
+Date: 2026-10-23
 
-Build discipline:
-- javac --release 21 -Xlint:all -Werror
-- executable JAR Main-Class: org.alchemy.wireui.swing.WireSwingMain
+PASS strict Java 21 compilation with -Xlint:all -Werror
+PASS 59/59 renderer regression tests
+PASS executable JAR --version
+PASS Xvfb NotNotes smoke: READY view=NOTNOTES.HOME revision=1
+PASS actual NotNotes desktop capture with two-line document rows and compact projected lifecycle chips
 
-Current gates:
-- PASS strict Java renderer suite 58/58
-- PASS accepted Server v0.17 flat collection-window metadata -> native Swing virtual viewport
-- PASS 200,000-row virtual extent with bounded resident projection
-- PASS final partial window offset=199950 limit=100 total=200000 -> effective renderer extent 50
-- PASS renderer demand remains semantic RangeRequested; no source traversal or local row replacement
-- PASS real ooRexx 5.3.0 r13196 + BSF4ooRexx + Server v0.17 200,000-row demand/satisfaction round trip
-- PASS Server v0.17 ordered/windowed collection integration
-- PASS Server v0.17 workspaceContext event-time authority integration
-- PASS Builder v0.11 GRID12 integration
-
-See VALIDATION_DEV9.txt and VALIDATION_TRANSCRIPT.txt for sealed-package evidence.
+Authority statement
+-------------------
+Swing remains presentation only. Chip colour/text classification is renderer-owned presentation of already-projected status values; it does not infer or alter lifecycle/action feasibility. Existing Server v0.17, bounded RangeRequested, workspace-context and ooRexx/BSF contracts are unchanged from the qualified dev10 baseline.

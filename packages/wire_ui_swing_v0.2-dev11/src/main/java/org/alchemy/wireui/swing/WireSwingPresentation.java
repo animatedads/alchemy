@@ -92,6 +92,39 @@ final class WireSwingPresentation {
     static void styleFieldLabel(JLabel label) { label.setForeground(MUTED); label.setFont(uiFont(label.getFont(), Font.BOLD, 11f)); }
     static void styleValueLabel(JLabel label) { label.setForeground(INK); label.setFont(uiFont(label.getFont(), Font.PLAIN, 14f)); }
 
+    static String compactStatus(String status) {
+        String value = status == null ? "" : status.trim().toUpperCase(Locale.ROOT);
+        if (value.contains("PENDING")) return "PENDING";
+        if (value.contains("APPROVED")) return "APPROVED";
+        if (value.contains("REJECT")) return "REJECTED";
+        if (value.contains("DRAFT")) return "DRAFT";
+        if (value.contains("SUCCESS")) return "SUCCESS";
+        if (value.contains("FAIL")) return "FAILED";
+        return value.isBlank() ? "OPEN" : value;
+    }
+
+    static void styleStatusChip(JLabel label, String status) {
+        String value = status == null ? "" : status.trim().toUpperCase(Locale.ROOT);
+        Color foreground;
+        Color background;
+        if (value.contains("APPROVED") || value.contains("SUCCESS")) {
+            foreground = new Color(35, 101, 62);
+            background = new Color(232, 247, 237);
+        } else if (value.contains("PENDING") || value.contains("REVIEW")) {
+            foreground = new Color(132, 83, 16);
+            background = new Color(255, 246, 225);
+        } else if (value.contains("REJECT") || value.contains("FAIL")) {
+            foreground = new Color(151, 48, 48);
+            background = new Color(255, 235, 235);
+        } else {
+            foreground = new Color(76, 84, 97);
+            background = new Color(239, 242, 246);
+        }
+        label.setForeground(foreground);
+        label.setBackground(background);
+        label.setBorder(new RoundedBorder(background.darker(), 12, 1, 5));
+    }
+
     private static void styleButton(AbstractButton button, String role) {
         button.setFocusPainted(false);
         button.setOpaque(true);
