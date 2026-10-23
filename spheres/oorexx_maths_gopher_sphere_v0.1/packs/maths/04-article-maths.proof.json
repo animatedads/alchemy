@@ -1,17 +1,19 @@
 {
-  "kind": "article",
+  "schema": "gopher.article/1",
   "id": "maths.proof",
-  "version": "0.1",
-  "sphere": "maths",
-  "title": "Maths proof and evidence model",
-  "rules": [
-    "MathClaim states the proposition being established.",
-    "MathAssumptions records the assumptions under which a claim is evaluated.",
-    "MathProofPolicy supports STANDARD, STRONG, CERTIFIED and DIAGNOSTIC planning.",
-    "MathProofRoute distinguishes OBLIGATION routes from SUPPORT diagnostics.",
-    "MathProofAttempt retains each executed route and its result.",
-    "STRONG may return CORROBORATION_REQUIRED/INDETERMINATE when an independent supporting path disagrees even when a narrower obligation is proved.",
-    "CERTIFIED requires exact, exact-bound, symbolic or rigorous-enclosure evidence appropriate to the stated claim.",
-    "Full MathProof canonical records can be SHA-256 sealed; mutation must invalidate the seal."
-  ]
+  "title": "Proof, claim and theorem authority",
+  "version": "0.2",
+  "status": "current",
+  "body": {
+    "rules": [
+      "Exact equality, numerical agreement, enclosure, independent checking and formal proof are distinct claims.",
+      "A proof artifact is bound to an exact mathematical statement id and revision.",
+      "A later statement revision does not inherit proof from an earlier revision.",
+      "Counterexamples, withdrawals and supersessions remain explicit evidence and history.",
+      "Renderer or formatting output never decides mathematical equivalence or proof strength."
+    ],
+    "statement_kinds": ["DEFINITION", "AXIOM", "LEMMA", "THEOREM", "COROLLARY", "CONJECTURE"],
+    "lifecycle": ["PROPOSED", "PROVED", "INDEPENDENTLY_CHECKED", "FORMALIZED", "DISPROVED", "SUPERSEDED", "WITHDRAWN"],
+    "artifact_kinds": ["DERIVATION", "INDEPENDENT_CHECK", "FORMAL", "COUNTEREXAMPLE"]
+  }
 }

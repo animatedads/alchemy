@@ -1,4 +1,14 @@
-# ooRexx Maths v0.17
+# ooRexx Maths v0.19
+
+
+## v0.19 — exact algebra foundations
+
+v0.19 extends the executable theoretical layer with `MathRationalField`, exact Q[x] polynomials, Euclidean quotient/remainder and gcd, finite-dimensional rational vector spaces, and exact `MathLinearMap` application/composition. It reuses the existing `MathRational`, `MathVector` and `MathMatrix` authorities rather than introducing parallel numeric representations. Fresh qualification is 489 core/reference/RxMath plus 177 enabled provider assertions = **666 PASS**. See `ALGEBRA.md`, `THEORETICAL_MATHEMATICS.md`, and `QUALIFICATION.md`.
+
+## v0.18 — executable theoretical mathematics
+
+v0.18 introduced finite sets, maps and relations; executable finite monoid/group/ring/field checks; group homomorphisms; revision-bearing mathematical statements; exact-revision proof artifacts; theorem lifecycle states; and a history-preserving theory catalogue. Research or formalization catalogues are evidence sources, not automatic truth authorities.
+
 
 
 ## v0.17 — portfolio-review hardening
