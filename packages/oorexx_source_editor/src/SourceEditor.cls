@@ -1,4 +1,4 @@
-/* ooRexx Source / Code / Class Editor v0.1-dev3
+/* ooRexx Source / Code / Class Editor v0.1-dev5
  * Language-neutral editing core with first-tier ooRexx, C, C++, JSON and Python profiles.
  * The implementation language is ooRexx; source semantics stay language-neutral.
  */
@@ -282,6 +282,131 @@ badPattern:
     if lineNumber>=s~startLine & (s~endLine=0 | lineNumber<=s~endLine) then return s~name
   end
   return ''
+::class SourceFileMatch public
+::method init
+  use arg path, language='text'
+  self~path=path
+  self~language=language
+::attribute path
+::attribute language
+::method asString
+  expose path language
+  return path 'language='language
+
+::class SourceTreeFinder public
+::method init
+  use arg root='.'
+  if RxFuncQuery('SysFileTree') then do
+    call RxFuncAdd 'SysLoadFuncs','rexxutil','SysLoadFuncs'
+    call SysLoadFuncs
+  end
+  self~root=root~string
+  self~registry=.SourceLanguageRegistry~new
+::attribute root
+::attribute registry
+
+::method files
+  expose root registry
+  use arg filespec='*', language=''
+  spec=root
+  if spec~right(1)<>'/' then spec=spec||'/'
+  spec=spec||filespec
+  found=.array~new
+  call SysFileTree spec, 'tree.', 'FSO'
+  do i=1 to tree.0
+    lang=registry~languageFor(tree.i)
+    if language='' | lang~caselessEquals(language) then found~append(.SourceFileMatch~new(tree.i,lang))
+  end
+  return found
+
+::method grep
+  expose registry
+  use arg pattern, filespec='*', mode='code', caseMode='sensitive', language=''
+  results=.array~new
+  do f over self~files(filespec,language)
+    lang=f~language
+    if mode='code' & (lang='text' | lang='make' | lang='cmake') then iterate
+    doc=.SourceDocument~new(f~path,lang)
+    matches=doc~grep(pattern,mode,caseMode)
+    do m over matches; results~append(m); end
+  end
+  return results
+
+::class SourceCompletionCandidate public
+::method init
+  use arg label, kind='symbol', detail='', path='', lineNumber=0, insertText=''
+  self~label=label
+  self~kind=kind
+  self~detail=detail
+  self~path=path
+  self~lineNumber=lineNumber
+  if insertText='' then insertText=label
+  self~insertText=insertText
+::attribute label
+::attribute kind
+::attribute detail
+::attribute path
+::attribute lineNumber
+::attribute insertText
+::method asString
+  expose label kind detail path lineNumber
+  s=label 'kind='kind
+  if detail<>'' then s=s 'detail='detail
+  if path<>'' then s=s 'path='path
+  if lineNumber>0 then s=s 'line='lineNumber
+  return s
+
+::class SourceCompletionProvider public
+::method completeDocument
+  use arg document, prefix='', kind=''
+  prefix=prefix~string
+  kind=kind~string~lower
+  out=.array~new
+  do s over document~symbols
+    if prefix<>'' then do
+      if s~name~length<prefix~length then iterate
+      if \s~name~left(prefix~length)~caselessEquals(prefix) then iterate
+    end
+    if kind<>'' & \s~kind~caselessEquals(kind) then iterate
+    detail=''
+    if s~owner<>'' then detail='owner='s~owner
+    out~append(.SourceCompletionCandidate~new(s~name,s~kind,detail,document~path,s~startLine,s~name))
+  end
+  return self~sorted(out)
+
+::method completeTree
+  use arg root='.', prefix='', filespec='*', language=''
+  finder=.SourceTreeFinder~new(root)
+  out=.array~new
+  do f over finder~files(filespec,language)
+    name=.SourceEditorUtil~baseName(f~path)
+    if prefix<>'' then do
+      if name~length<prefix~length then iterate
+      if \name~left(prefix~length)~caselessEquals(prefix) then iterate
+    end
+    out~append(.SourceCompletionCandidate~new(name,'file','language='f~language,f~path,0,f~path))
+  end
+  return self~sorted(out)
+
+::method sorted private
+  use arg input
+  work=.array~new
+  do item over input; work~append(item); end
+  /* deterministic insertion sort: visible completion order must never depend on Directory order. */
+  do i=2 to work~items
+    item=work[i]
+    j=i-1
+    do while j>=1
+      left=work[j]~label~lower
+      right=item~label~lower
+      if left<right | left=right then leave
+      work[j+1]=work[j]
+      j=j-1
+    end
+    work[j+1]=item
+  end
+  return work
+
 ::class SourceScannerFactory public
 ::method scannerFor
   use arg language
