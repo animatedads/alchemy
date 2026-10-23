@@ -1,4 +1,4 @@
-# ooRexx Source / Code / Class Editor v0.1-dev3
+# ooRexx Source / Code / Class Editor v0.1-dev5
 
 A native ooRexx implementation of the NewShell code/class editing model. This is **not** the emergency line editor. It is the normal development/source editing API that AI assistants, NewShell tools, class builders and CLI UI front-ends can consume.
 
@@ -82,6 +82,25 @@ NewShell development should use this API / its CLI for source inspection and mut
 
 Dev3 itself was changed through `SourceDocument`: `SourceFinder`, the CLI grep branch, tests and package documentation were all published through generation-checked editor saves.
 
+## Source-tree finding
+
+`SourceTreeFinder` provides recursive source discovery without shelling to `find`. It delegates traversal to RexxUtil `SysFileTree` and returns `SourceFileMatch` objects carrying path and detected language.
+
+```rexx
+finder = .SourceTreeFinder~new('/project')
+files = finder~files('*.cls','oorexx')
+matches = finder~grep('Process[A-Za-z]+','*.cls','code','sensitive','oorexx')
+```
+
+CLI forms:
+
+```text
+code-editor find-file ROOT FILESPEC [LANGUAGE]
+code-editor grep-tree ROOT REGEX [FILESPEC [text|code [sensitive|insensitive [LANGUAGE]]]]
+```
+
+Tree grep does not implement another regex engine. Each candidate file is opened as a `SourceDocument`, projected through the existing language-aware code/text model, and matched by ooRexx `.RegularExpression`. This keeps filesystem traversal, source semantics and regex authority separate.
+
 ## Dependencies
 
 - ooRexx 5.3.0 r13196 qualification target.
@@ -94,3 +113,18 @@ The runtime/package path must make the declared `::requires` dependencies resolv
 ## Current limitations
 
 C/C++ symbol discovery is a deterministic lexical/brace scanner, not a substitute for a compiler AST. It deliberately reports only ranges it can bound. A future compiler-backed provider can strengthen symbol/reference evidence while preserving the same editor API. JSON structural mutation by JSON Pointer, semantic C++ references, atomic publication, and robust multi-word CLI argument transport remain next gates.
+
+## Dev5 completion and semantic-source boundary
+
+Dev5 adds `SourceCompletionCandidate` and `SourceCompletionProvider`. Completion is an ooRexx object API; terminal output is only one projection. `complete` returns symbols from one `SourceDocument`, while `complete-tree` returns source-file candidates discovered through `SourceTreeFinder` / RexxUtil `SysFileTree`.
+
+This aligns with NewShell's public completion request/reply seam: CLI/UI, MCP and deterministic LLM clients can consume one structured candidate contract rather than scrape displayed text.
+
+### Semantic Source Store / Development Desk
+
+The editor does **not** duplicate Semantic Source Store authority. Development Desk owns semantic object creation (`CREATE_PACKAGE`, `CREATE_CLASS`, `ADD_ATTRIBUTE`, `ADD_METHOD`) and materialisation. `SourceDocument` owns conventional materialised-file inspection/editing. A future adapter may present semantic objects through editor views, but creation/revision authority remains with the semantic store.
+
+```text
+code-editor complete FILE [PREFIX [KIND]]
+code-editor complete-tree ROOT [PREFIX [FILESPEC [LANGUAGE]]]
+```
