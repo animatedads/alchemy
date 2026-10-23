@@ -17,7 +17,7 @@ uses the live NotNotes object graph for application meaning and feasibility.
 ## dev2 — management review application integration
 
 This increment rebases the inner application tier on the supplied
-`notnotes_management_review_dev8_delivery` application/data state. That state contains:
+`notnotes_management_review_dev8_delivery` application/data state.  That state contains:
 
 - the linked 12-report TPS baseline;
 - `MRS-0001` Management Review Selection and its 12 linked selection items;
@@ -45,19 +45,20 @@ what did the consultants find about TPS-2026-102 and what did they recommend?
 
 is resolved through live NotNotes relationship semantics.
 
-The Help Desk does not carry a TPS-number -> finding table. It inspects installed user
+The Help Desk does not carry a TPS-number -> finding table.  It inspects installed user
 formats for a `DOCUMENT_REFERENCE` targeting `TPS Report`, discovers readable finding /
 recommendation fields on that related format, and follows the stored document reference.
 For the supplied management-review data that resolves `TPS-2026-102` to `TR-0002` and
 then to `MCF-0002`.
 
-A specific TPS evidence request wins over a broad report-name match. If the application
+A specific TPS evidence request wins over a broad report-name match.  If the application
 understands the TPS document but no live related finding exists, the result is
 `INFEASIBLE` rather than pretending the intention was unknown.
 
+
 ## dev3 — the Help Desk TPS reports become support evidence
 
-A Help Desk session TPS report is no longer merely write-only audit output. A later
+A Help Desk session TPS report is no longer merely write-only audit output.  A later
 Help Desk session discovers the ordinary live `TPS Report` and its linked
 `TPS Report Review` through the installed NotNotes document-reference metadata.
 
@@ -71,7 +72,7 @@ what happened in TPS-HD-20261007-151234
 
 The first two requests filter live TPS process records by owner and review rating.
 The third follows the live `TPS Report Review -> TPS Report` relationship and returns
-the authoritative review evidence. No separate support audit database or startup-only
+the authoritative review evidence.  No separate support audit database or startup-only
 index is introduced.
 
 The same generic document-reference traversal now underpins consultant evidence lookup,
@@ -90,7 +91,7 @@ than separate hard-coded relationship implementations.
 ## Mandatory TPS process accounting
 
 Every Help Desk session writes a real TPS Report when it closes, followed by a linked
-TPS Report Review that records `SUCCESS` or `FAILURE` for the support process. The review
+TPS Report Review that records `SUCCESS` or `FAILURE` for the support process.  The review
 stores the stable TPS document reference rather than presentation text.
 
 Thus the Help Desk itself participates in the TPS system it supports, and those session
@@ -116,17 +117,17 @@ See `QUALIFICATION.md` and the supplied environment qualification log.
 
 The inner tier is now rebased to Mini NotNotes v0.1-dev16 / NoSQLServer v0.87.
 The Help Desk no longer reconstructs application discovery by walking internal
-report and document-definition collections. Each turn asks
+report and document-definition collections.  Each turn asks
 `MiniNotesApp~semanticApplicationProjection` for the current renderer-neutral
 application model and derives its visible formats/reports from that contract.
 
 This matters because the Help Desk now consumes the same live semantic surface
-as native/Windows renderers and other non-CLI consumers. A format/report added
+as native/Windows renderers and other non-CLI consumers.  A format/report added
 at runtime is therefore discovered through NotNotes' own application contract,
 not through a parallel chatbot catalogue.
 
 The Help Desk also consumes `semanticDocumentProjection` for support questions
-about current feasibility. For example:
+about current feasibility.  For example:
 
 ```text
 what can I do with BL-0001?
@@ -135,7 +136,7 @@ can I approve BL-0001?
 
 A DRAFT document reports `SUBMIT: AVAILABLE` while `APPROVE` remains understood
 but is reported as `INFEASIBLE` with NotNotes' authoritative reason (`Document
-is not pending approval`). Meaning is not collapsed into availability.
+is not pending approval`).  Meaning is not collapsed into availability.
 
 `what reports are available?` is likewise answered from the current semantic
 application projection and immediately sees reports installed after session
@@ -149,11 +150,12 @@ NotNotes dev12.
 
 The Initech consumer probe exposed one dev16 defect in
 `semanticReportDescriptors`: report `TOTALS` are an Array of binding names, but
-the projection attempted to copy them as report-column Directories. Any live
+the projection attempted to copy them as report-column Directories.  Any live
 saved report containing totals therefore raised `93.924` while building the
-semantic application projection. This delivery carries the minimal consumer
+semantic application projection.  This delivery carries the minimal consumer
 repair (`definition["TOTALS"]~copy`) and regression coverage through the normal
-Help Desk discovery path. No report execution semantics were changed.
+Help Desk discovery path.  No report execution semantics were changed.
+
 
 ## dev5 — live operational specialist discovery through Instrumentation Intentions
 
@@ -161,8 +163,8 @@ The outer Help Desk now consumes the common read-only
 `instrumentation.intentions/0.1` specialist over the current Instrumentation
 Mesh rather than learning a private NotNotes metric vocabulary.
 
-Each Help Desk turn still starts with fresh application discovery. The same
-discovery snapshot now includes provider-owned specialist surfaces. For the
+Each Help Desk turn still starts with fresh application discovery.  The same
+discovery snapshot now includes provider-owned specialist surfaces.  For the
 NotNotes application the Help Desk publishes a fresh `MiniNotesInstrumentationSource`
 snapshot into a bounded local Mesh collector and asks
 `InstrumentationIntentionProvider` to assess the user's request against that
@@ -175,8 +177,8 @@ show NotNotes health and metrics
 how is NotNotes doing; show its telemetry
 ```
 
-The returned evidence is explicitly read-only. The Instrumentation specialist
-has no NotNotes workflow mutation or service-control authority. Business,
+The returned evidence is explicitly read-only.  The Instrumentation specialist
+has no NotNotes workflow mutation or service-control authority.  Business,
 report and document intentions retain first refusal so the fact that a TPS
 object is instrumented cannot steal ordinary TPS business requests.
 
@@ -186,7 +188,7 @@ NotNotes, asks for instrumentation again, and observes the increased document
 gauge from a newly published snapshot.
 
 The delivery vendors the current `oorexx_instrumentation_mesh_v0.1-dev7` and
-`oorexx_instrumentation_intentions_v0.1-dev1` specialist contracts. Mini
+`oorexx_instrumentation_intentions_v0.1-dev1` specialist contracts.  Mini
 NotNotes remains authoritative for application/workflow facts; Instrumentation
 Mesh remains authoritative for snapshots/history/series; the Help Desk only
 routes and presents the evidence.
@@ -194,8 +196,8 @@ routes and presents the evidence.
 ### Qualification harness isolation
 
 The retained Mini NotNotes tests now receive explicit isolated
-`MININOTES_TEST_ROOT` / `MININOTES_DB_ROOT` roots. This fixes a qualification
+`MININOTES_TEST_ROOT` / `MININOTES_DB_ROOT` roots.  This fixes a qualification
 harness defect where successive tests could otherwise fall back to the package
-working directory and contaminate one another's durable tables. The aggregate
+working directory and contaminate one another's durable tables.  The aggregate
 suite also exercises SUCCESS and FAILURE Help Desk TPS accounting, management
 review relationships and instrumentation in one end-to-end consumer session.
