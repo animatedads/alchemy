@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "rx2cpp.interpreter-bugs",
+  "version": "0.1",
+  "sphere": "rx2cpp",
+  "section": "references",
+  "title": "ooRexx interpreter bugs found by rx2cpp, and checking trunk first",
+  "summary": "Compiling real code exercises the native API harder than most users, and has found interpreter bugs. Status against trunk r13284 (2026-10-23): ReleaseGlobalReference adding a reference instead of removing one, fixed in r13257 (#2100); the uninit count bug (BUG_REPORTS.md bug 5), fixed in r13259 (#2102) before we found it; the SysStemSort crash, fixed in r13284 (#2120); the per-call /proc/self/maps read, fixed in r13267 (#2106). Still present and to be filed (Tom Dyer files): an argument error from processArguments of a native method called by native code leaves a NativeActivation with argList pointing at an unwound C stack; the next garbage collection can crash. Likely cause of BSF4ooRexx crashes under object-creation pressure. Reproductions and patches: ootest/interpreter_bugs/.",
+  "procedure": [
+    "Reproduce with a minimal program and a control.",
+    "Check ooRexx trunk (GitHub mirror ooRexx/oorexx: commits and the bug tracker) for a fix before writing anything.",
+    "If not fixed, write the ticket with the reproduction and a patch; Tom Dyer files it."
+  ],
+  "invariants": [
+    "Our test interpreter is r13196; trunk moves. A ticket written without checking trunk was stale once (bug 5) and must not happen again.",
+    "rx2cpp must be correct with or without an upstream fix (for example it no longer depends on global references for values)."
+  ],
+  "authority": "project-artifact",
+  "topics": [
+    "interpreter bugs",
+    "trunk",
+    "upstream",
+    "tickets"
+  ],
+  "provenance": [
+    {
+      "artifact": "rx2cpp-c5c7b22.zip",
+      "sha256": "b7302645eb4caddfeb0db5be2d846d42579c000c12cb2b2a3f6c8a0d790a330f",
+      "member": "oorexx2cpp/HANDOFF_2026-10-13.md",
+      "line_start": 592,
+      "line_end": 619,
+      "claim": "Interpreter bug status against trunk."
+    }
+  ]
+}

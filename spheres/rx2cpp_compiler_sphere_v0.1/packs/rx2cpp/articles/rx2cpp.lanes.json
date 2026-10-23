@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "rx2cpp.lanes",
+  "version": "0.1",
+  "sphere": "rx2cpp",
+  "section": "architecture",
+  "title": "Lanes and the native object model",
+  "summary": "The native library lane (native/NativeLibraryEmitter.cls with native/native_package_template.cpp.in, runtime headers in include/) is the main path: classes, methods, routines and the main program become C++ in one generated package whose classes are real ooRexx classes. The hybrid compiler (hybrid/compiler) emits method bodies; rules/ hold one class per statement or expression form. Built-in functions are native where ported (include/rx_bif_integration.hpp) and otherwise run by the interpreter. Native objects: strings, numbers, Array, Directory, StringTable and others are native until they cross to the interpreter (then materialised); compiled subclasses of .Array keep the array part native (InstanceState::builtin, NativeArray::answer). A message a compiled class has no method for goes through inheritedSend: builtin part, then ISA cached per class pair, then the interpreter. ::CONSTANT methods are native and hide inherited methods. Simple variables live in frames by slot; object variables in FieldFrames.",
+  "invariants": [
+    "Native fast path where one exists, the interpreter otherwise; the interpreter is always present (architecture: Tom Dyer).",
+    "Compiled PROTECTED methods are not in the direct dispatch table: they go through the interpreter so the security manager is asked.",
+    "EXIT and SIGNAL in compiled bodies do not use C++ exceptions on the common path: EXIT returns when the body has no internal calls; SIGNAL is a goto to the body's _rxSignal label.",
+    "Line numbers of classes come from .local['RX2CPP.SOURCEMAP'] so SIGL and error lines match the source."
+  ],
+  "authority": "project-artifact",
+  "topics": [
+    "architecture",
+    "native lane",
+    "native objects",
+    "dispatch"
+  ],
+  "provenance": [
+    {
+      "artifact": "rx2cpp-c5c7b22.zip",
+      "sha256": "b7302645eb4caddfeb0db5be2d846d42579c000c12cb2b2a3f6c8a0d790a330f",
+      "member": "oorexx2cpp/HANDOFF_2026-10-13.md",
+      "line_start": 305,
+      "line_end": 330,
+      "claim": "Native fast paths keep interpreter results byte for byte."
+    },
+    {
+      "artifact": "rx2cpp-c5c7b22.zip",
+      "sha256": "b7302645eb4caddfeb0db5be2d846d42579c000c12cb2b2a3f6c8a0d790a330f",
+      "member": "oorexx2cpp/native/NativeLibraryEmitter.cls",
+      "claim": "Native library emitter: dispatch tables, constants, PROTECTED handling."
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "id": "rx2cpp.start",
+  "version": "0.1",
+  "sphere": "rx2cpp",
+  "section": "start",
+  "title": "Start here: what rx2cpp is and the rules every change keeps",
+  "summary": "rx2cpp compiles ooRexx 5.3 programs, routines and classes into C++17 and builds them as native ooRexx libraries (.so) that the interpreter loads like any other package. The interpreter is the oracle: compiled output must be byte-identical to interpreted output, including error messages, tracebacks where supported, and the order of side effects. Source: github.com/animatedads/oorexx, folder oorexx2cpp. Version file 0.30.18; continuity notes are HANDOFF_2026-10-13.md (newest) and HANDOFF_2026-10-12.md. Baseline of this sphere: commit c5c7b22 on branch wip-2026-10-13 (archive: git archive --format=zip c5c7b22 oorexx2cpp).",
+  "invariants": [
+    "Byte-identical to the ooRexx 5.3 interpreter. A difference is a bug in rx2cpp unless it is listed in rx2cpp.known-differences.",
+    "Port the interpreter's own algorithm (NumberString::addSub, RexxInternalObject::requestString, ...) step for step. Never special-case a test, never approximate.",
+    "A native fast path checks its case at run time and otherwise does exactly what the interpreter would; native does not mean no interpreter.",
+    "Every fix comes with a test that compares compiled against interpreted output.",
+    "Work happens on a wip branch; main is updated only after the full regression and the self-build fixed point pass.",
+    "Every update credits: architecture Tom Dyer; coding ChatGPT / Claude (whoever coded it); the writer by model name. A model signs its own work as itself.",
+    "Before writing any interpreter bug ticket, check ooRexx trunk (GitHub mirror ooRexx/oorexx): several were already fixed upstream."
+  ],
+  "procedure": [
+    "Read HANDOFF_2026-10-13.md top to bottom before changing anything.",
+    "Set up ooRexx 5.3 with headers, g++ 13 or clang++, and the Boost headers (rx2cpp.build-and-run).",
+    "Reproduce the problem as a small .rex fixture; run it interpreted to get the oracle output.",
+    "Fix by porting the interpreter's algorithm; add the fixture to a native/test_*.sh script.",
+    "Run the affected test scripts, then the full regression and build_self.sh before merging to main."
+  ],
+  "authority": "project-artifact",
+  "topics": [
+    "baseline",
+    "rules",
+    "oracle"
+  ],
+  "provenance": [
+    {
+      "artifact": "rx2cpp-c5c7b22.zip",
+      "sha256": "b7302645eb4caddfeb0db5be2d846d42579c000c12cb2b2a3f6c8a0d790a330f",
+      "member": "oorexx2cpp/HANDOFF_2026-10-13.md",
+      "line_start": 1,
+      "line_end": 6,
+      "claim": "Oracle is the ooRexx 5.3 interpreter; identical means byte-identical; credits."
+    },
+    {
+      "artifact": "rx2cpp-c5c7b22.zip",
+      "sha256": "b7302645eb4caddfeb0db5be2d846d42579c000c12cb2b2a3f6c8a0d790a330f",
+      "member": "oorexx2cpp/VERSION",
+      "claim": "Version 0.30.18."
+    }
+  ]
+}

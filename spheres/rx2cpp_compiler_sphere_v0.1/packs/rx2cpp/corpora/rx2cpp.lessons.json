@@ -1,0 +1,53 @@
+{
+  "kind": "corpus",
+  "id": "rx2cpp.lessons",
+  "version": "0.1",
+  "sphere": "rx2cpp",
+  "title": "rx2cpp lessons that cost time",
+  "records": [
+    {
+      "topic": "Directory probing",
+      "rule": "Do not detect SETMETHOD entries by sending INDEX or HASINDEX: the entry's method runs. Detect object state by calibrated field offsets read without sending messages."
+    },
+    {
+      "topic": "FORWARD in a routine",
+      "rule": "FORWARD inside a ::ROUTINE helper raises 98.947; a helper that re-sends a message uses sendWith."
+    },
+    {
+      "topic": "security manager timing",
+      "rule": "An activation takes its package's security manager when it starts. Setting a manager mid-routine does not cover that routine's own calls or commands."
+    },
+    {
+      "topic": "invisible machinery",
+      "rule": "Helper routines must not use dot symbols (.context, .local): each is a LOCAL request the user's security manager would see. Use RX2CPP_CALLER_CONTEXT and RX2CPP_TAKE."
+    },
+    {
+      "topic": "string value of objects",
+      "rule": "An object's string value is REQUEST('STRING') first, then STRING with NOSTRING (RexxInternalObject::requestString); calling STRING twice printed an extra NOMETHOD message."
+    },
+    {
+      "topic": "first read of a method entry",
+      "rule": "FindClass on a name whose .environment entry is a SETMETHOD method runs it; look classes up in the package's own class directories first (packageClass)."
+    },
+    {
+      "topic": "stale comparisons",
+      "rule": "Delete previous output before comparing: an old dump file gave a false IDENTICAL."
+    },
+    {
+      "topic": "build memory",
+      "rule": "Large generated libraries (Rexx Parser) need the machine to themselves: cc1plus was OOM-killed beside other builds."
+    },
+    {
+      "topic": "stale tickets",
+      "rule": "Check ooRexx trunk before writing an interpreter ticket: bug 5 had been fixed in r13259."
+    },
+    {
+      "topic": "thread interface size",
+      "rule": "RexxThreadInterface ends with four object fields (RexxNil, RexxTrue, RexxFalse, RexxNullString); the size assert counts them."
+    },
+    {
+      "topic": "line endings",
+      "rule": "A source file ending in a lone CR (the Rexx Parser's Elements.cls) needs a final LF added when copied for a build."
+    }
+  ]
+}
