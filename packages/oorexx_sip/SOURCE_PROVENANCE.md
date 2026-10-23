@@ -1,10 +1,10 @@
-# Source provenance — ooRexx SIP v0.1-dev10
+# Source provenance — ooRexx SIP v0.1-dev13
 
 ## dev10 shared socket inputs
 
 - `oorexx_socket_provider_v0.1-dev8.zip` from Library was the authority baseline
   for `SocketProvider`, `SocketSelector`, `SocketAddress` and provider ownership.
-- `oorexx_xtp_v0.1-dev11.zip` was reviewed for the current XTP shared socket
+- `oorexx_xtp_v0.1-dev13.zip` was reviewed for the current XTP shared socket
   contract and multipath/provider boundary.
 - `oorexx_norm_v0.1-dev1.zip` was reviewed for the first-class NORM family and
   the rule that protocol/session mechanics remain below the provider binding.
@@ -37,3 +37,11 @@ the rule that application code does not own carrier-specific APIs.
 RTP is now an external/shared dependency: `oorexx_rtp_v0.1-dev1`. SIP performs
 SDP negotiation and supplies the chosen address/port/payload parameters to the
 RTP objects. No third-party SIP or RTP stack source is vendored.
+
+## Instrumentation Mesh dev3 integration
+
+Reviewed `oorexx_instrumentation_mesh_v0.1-dev3` from Library on 2026-10-08.
+The package establishes a separate bounded operational plane (health, counters,
+gauges, progress, publication/history/query) while existing logging remains the
+forensic event stream. SIP dev12 consumes that contract through a read-side
+adapter and creates no second telemetry socket or service transport.

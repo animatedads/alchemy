@@ -1,10 +1,33 @@
 {
   "schema": "oorexx.rtp.package/1",
   "name": "oorexx_rtp",
-  "version": "0.1-dev2",
+  "version": "0.1-dev7",
   "api": "rtp/0.1",
   "carrier_api": "socket.provider/0.1",
   "qualified_carrier": "UDP/IPv4 via RxSockUdpBinding",
-  "native_scope": ["RTP packet encode/decode", "PCMU", "PCMA"],
-  "socket_ownership": "SocketProvider"
+  "native_scope": [
+    "RTP packet encode/decode",
+    "PCMU",
+    "PCMA"
+  ],
+  "socket_ownership": "SocketProvider",
+  "socketProvider": "0.1-dev10",
+  "spiral1Access": {
+    "standards": [
+      "RFC3550",
+      "RFC3551"
+    ],
+    "accessClass": "RtpProtocolAccess",
+    "multicastBoundary": "socket.multicast.membership/0.1"
+  },
+  "instrumentation": {
+    "api": "instrumentation.mesh/0.1",
+    "version": "0.1-dev3",
+    "adapter": "RtpInstrumentationSink"
+  },
+  "socketTelemetry": {
+    "api": "socket.telemetry/0.1",
+    "version": "0.1-dev2",
+    "ownership": "carrier observation inherited from injected SocketProvider binding"
+  }
 }

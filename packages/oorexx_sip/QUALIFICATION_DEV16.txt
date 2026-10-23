@@ -1,0 +1,30 @@
+ooRexx SIP v0.1-dev16 qualification note
+
+Implemented in this increment:
+- outbound client INVITE with SDP offer
+- provisional 1xx response skipping until final response
+- 2xx To-tag capture
+- Contact remote-target capture for ACK/BYE
+- SDP connection-address + audio-port selection
+- ACK generation
+- independent SipClientDialog object
+- BYE generation and dialog termination state
+- reuse of independent SipCallControl, AudioIn, AudioOut, RtpEndpoint,
+  RtpReceiver and RtpSender objects
+- client events projected into the existing instrumentation/logging sink
+
+Static/source gates executed in this environment:
+- outbound call shape probe: PASS
+- ZIP integrity: PASS (after package creation)
+- strict ooRexx standards enforcer: recorded separately after package creation
+
+Runtime qualification status:
+NOT RUN in this environment: the exact ooRexx 5.3.0 r13196 runtime bytes were
+not mounted/retrievable here. The native library is unchanged from dev15/dev13;
+dev16 is a Rexx-side signalling increment. Do not treat the source/static gates
+as Twinkle or live peer interoperability evidence.
+
+Next live gate:
+- originate a real call from SipClient to Twinkle/another COTS UA
+- observe 100/180/200, ACK, bidirectional RTP and BYE in Alchemy Log
+- confirm independent instrumentation objects throughout

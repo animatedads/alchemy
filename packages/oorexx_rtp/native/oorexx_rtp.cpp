@@ -59,14 +59,14 @@ static RexxObjectPtr fail(RexxCallContext *context, const std::exception &error)
 
 static void validatePayloadType(int payloadType) {
     if (payloadType != 0 && payloadType != 8) {
-        throw std::runtime_error("RTP dev2 supports payload types 0 PCMU and 8 PCMA");
+        throw std::runtime_error("RTP dev3 supports payload types 0 PCMU and 8 PCMA");
     }
 }
 }
 
 RexxRoutine0(CSTRING, rtp_native_version) {
     (void)context;
-    return "oorexx.rtp.native/0.1-dev2";
+    return "oorexx.rtp.native/0.1-dev5";
 }
 
 RexxRoutine6(RexxObjectPtr, rtp_packet_encode,
@@ -173,7 +173,7 @@ RexxRoutineEntry rtp_routines[] = {
 RexxPackageEntry oorexx_rtp_package_entry = {
     STANDARD_PACKAGE_HEADER REXX_INTERPRETER_5_0_0,
     "oorexx_rtp",
-    "0.1-dev2",
+    "0.1-dev5",
     NULL,
     NULL,
     rtp_routines,

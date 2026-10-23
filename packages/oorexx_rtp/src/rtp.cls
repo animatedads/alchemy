@@ -1,8 +1,23 @@
 /* Shared RTP layer. RTP owns RTP framing/media semantics, never carrier sockets. */
 ::class RtpBuild public
-::constant VERSION "0.1-dev2"
+::constant VERSION "0.1-dev7"
 ::constant API "rtp/0.1"
 ::constant CARRIER_API "socket.provider/0.1"
+
+
+::class RtpProtocolAccess public
+::method standardIds
+  return .array~of("RFC3550","RFC3551")
+::method api
+  return .RtpBuild~API
+::method carrierApi
+  return .RtpBuild~CARRIER_API
+::method accessClass
+  return "RtpEndpoint/RtpReceiver/RtpSender"
+::method sharedLayer
+  return .true
+::method multicastBoundary
+  return "SocketMulticastMembershipRequest -> SocketProvider joinAt/listenerOn"
 
 ::class RtpLogEmitter public
 ::method init

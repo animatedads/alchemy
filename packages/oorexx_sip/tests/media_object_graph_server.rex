@@ -1,4 +1,7 @@
-server = .SipServer~new("127.0.0.1", 5099)
+socketIdentity=.InstrumentationCodec~identity("alchemy","sip-rtp-socket","media-probe","local","","SOCKET")
+socketObserver=.SocketInstrumentationObserver~new(socketIdentity)
+provider=.SipSocketFactory~observedProvider(socketObserver)
+server = .SipServer~new("127.0.0.1", 5099, "oorexx-sip", "SHA-256", .nil, provider)
 say "READY" server~port
 event = server~poll(5)
 if event[1] <> "invite" then do
@@ -55,6 +58,21 @@ say "AFTER_RX_STOP" call~control~state input~state receiver~state output~state s
 output~stop
 say "AFTER_OUT_STOP" call~control~state input~state receiver~state output~state sender~state
 server~close
+snapshot=socketObserver~snapshot
+samples=snapshot["samples"]
+say "SOCKET_BYTES_IN" metricValue(samples,"io.bytes.in.total")
+say "SOCKET_BYTES_OUT" metricValue(samples,"io.bytes.out.total")
+say "SOCKET_READ_CALLS" metricValue(samples,"socket.io.read.calls.total")
+say "SOCKET_WRITE_CALLS" metricValue(samples,"socket.io.write.calls.total")
+say "SOCKET_LISTENERS_ACTIVE" metricValue(samples,"socket.listeners.active")
+exit 0
+
+metricValue: procedure
+  use strict arg samples,name
+  do sample over samples
+    if sample["name"]=name then return sample["value"]
+  end
+  return 0
 
 ::class CountingConsumer
 ::method init
@@ -87,3 +105,4 @@ server~close
   return .RtpAudioFrame~new(pcm, 8000, 1, "S16LE", 0, pcm~length % 2)
 
 ::requires "sip.cls"
+::requires "SocketTelemetryInstrumentation.cls"

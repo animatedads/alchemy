@@ -2,8 +2,10 @@
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 : "${OOREXX_ROOT:=/usr/local}"
-: "${RTP_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_rtp_v0.1-dev2}"
-: "${SOCKET_PROVIDER_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_socket_provider_v0.1-dev9}"
+: "${RTP_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_rtp_v0.1-dev6}"
+: "${SOCKET_PROVIDER_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_socket_provider_v0.1-dev10}"
+: "${INSTRUMENTATION_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_instrumentation_mesh_v0.1-dev7}"
+: "${SOCKET_TELEMETRY_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_socket_isolation_telemetry_v0.1-dev2}"
 : "${PYTHON:=python3}"
 
 if [[ ! -x "$OOREXX_ROOT/bin/rexx" ]]; then
@@ -18,6 +20,14 @@ if [[ ! -f "$SOCKET_PROVIDER_ROOT/src/SocketProvider.cls" ]]; then
   echo "FAIL: Socket Provider root not found: $SOCKET_PROVIDER_ROOT" >&2
   exit 3
 fi
+if [[ ! -f "$INSTRUMENTATION_ROOT/src/InstrumentationMesh.cls" ]]; then
+  echo "FAIL: Instrumentation Mesh root not found: $INSTRUMENTATION_ROOT" >&2
+  exit 3
+fi
+if [[ ! -f "$SOCKET_TELEMETRY_ROOT/src/SocketTelemetry.cls" ]]; then
+  echo "FAIL: Socket Telemetry root not found: $SOCKET_TELEMETRY_ROOT" >&2
+  exit 3
+fi
 
 echo "== build shared RTP =="
 make -C "$RTP_ROOT" clean all OOREXX_ROOT="$OOREXX_ROOT"
@@ -26,7 +36,7 @@ echo "== build SIP =="
 make -C "$ROOT" clean all OOREXX_ROOT="$OOREXX_ROOT"
 
 export LD_LIBRARY_PATH="$ROOT/build:$RTP_ROOT/build:$OOREXX_ROOT/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-export REXX_PATH="$ROOT/src:$ROOT/tests/logging_stub:$RTP_ROOT/src:$SOCKET_PROVIDER_ROOT/src${REXX_PATH:+:$REXX_PATH}"
+export REXX_PATH="$ROOT/src:$ROOT/tests/logging_stub:$RTP_ROOT/src:$SOCKET_PROVIDER_ROOT/src:$SOCKET_TELEMETRY_ROOT/src:$INSTRUMENTATION_ROOT/src${REXX_PATH:+:$REXX_PATH}"
 
 echo "== shared socket ownership boundary =="
 if grep -Eq 'SockSocket|SockBind|SockSendTo|SockRecvFrom' "$ROOT/src/sip.cls"; then
@@ -43,6 +53,16 @@ echo "== shared RTP object/lifecycle probe =="
 (
   cd "$RTP_ROOT"
   "$OOREXX_ROOT/bin/rexx" tests/shared_rtp_probe.rex
+)
+
+echo "== Instrumentation Mesh adapters =="
+(
+  cd "$RTP_ROOT"
+  "$OOREXX_ROOT/bin/rexx" tests/instrumentation_probe.rex
+)
+(
+  cd "$ROOT"
+  "$OOREXX_ROOT/bin/rexx" tests/instrumentation_probe.rex
 )
 
 echo "== captured Twinkle REGISTER =="
@@ -113,6 +133,11 @@ grep -q '^FRAME 320 160 8000 S16LE 0 ' "$server_log"
 grep -q '^CONSUMERS 1 1 3' "$server_log"
 grep -q '^BROKEN_ERROR_PRESENT 1' "$server_log"
 grep -q '^PRODUCER_COUNTS 1 1' "$server_log"
+grep -Eq '^SOCKET_BYTES_IN [1-9][0-9]*' "$server_log"
+grep -Eq '^SOCKET_BYTES_OUT [1-9][0-9]*' "$server_log"
+grep -Eq '^SOCKET_READ_CALLS [1-9][0-9]*' "$server_log"
+grep -Eq '^SOCKET_WRITE_CALLS [1-9][0-9]*' "$server_log"
+grep -q '^SOCKET_LISTENERS_ACTIVE 0' "$server_log"
 
 trap - EXIT
 cleanup

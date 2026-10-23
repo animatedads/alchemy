@@ -1,4 +1,4 @@
-# RTP shared-layer architecture — dev2
+# RTP shared-layer architecture — dev3
 
 ## Authority boundary
 

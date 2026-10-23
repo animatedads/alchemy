@@ -276,7 +276,7 @@ static std::string response(const SipMessage &message, int code, const std::stri
     output << "Call-ID: " << message.header("Call-ID") << "\r\n";
     output << "CSeq: " << message.header("CSeq") << "\r\n";
     for (const auto &header : extra) output << header.name << ": " << header.value << "\r\n";
-    output << "Server: ooRexx-SIP/0.1-dev10\r\n";
+    output << "Server: ooRexx-SIP/0.1-dev13\r\n";
     if (!body.empty()) output << "Content-Type: application/sdp\r\n";
     output << "Content-Length: " << body.size() << "\r\n\r\n" << body;
     return output.str();
@@ -337,7 +337,7 @@ static std::shared_ptr<Server> server(uint64_t id) {
 
 RexxRoutine0(CSTRING, sip_native_version) {
     (void)context;
-    return "oorexx.sip.native/0.1-dev10";
+    return "oorexx.sip.native/0.1-dev13";
 }
 
 RexxRoutine3(uint64_t, sip_engine_open, CSTRING, ip, CSTRING, realm, CSTRING, algorithm) {
@@ -556,7 +556,7 @@ RexxRoutineEntry sip_routines[] = {
 RexxPackageEntry oorexx_sip_package_entry = {
     STANDARD_PACKAGE_HEADER REXX_INTERPRETER_5_0_0,
     "oorexx_sip",
-    "0.1-dev10",
+    "0.1-dev13",
     NULL,
     NULL,
     sip_routines,

@@ -1,3 +1,17 @@
+::class SipProtocolAccess public
+::method standardIds
+  return .array~of("RFC3261","RFC4566","RFC8760")
+::method api
+  return "sip/0.1"
+::method signallingCarrierApi
+  return "socket.provider/0.1"
+::method mediaApi
+  return "rtp/0.1"
+::method accessClass
+  return "SipServer/SipClient/SipCallControl"
+::method sharedRtp
+  return .true
+
 /* Structured SIP observability.  Core SIP objects depend only on the tiny
    recordEvent(Directory) sink contract.  src/sip_logging.cls adapts that
    contract to the shared ooRexx Logging Framework v0.7. */
@@ -41,10 +55,17 @@
 
 ::class SipSocketFactory public
 ::method defaultProvider class
+  use strict arg socketObserver=.nil, telemetryPolicy=.nil
   addresses=.RegisteredSocketAddressProvider~new
   selector=.SocketSelector~new(addresses)
-  selector~registerBinding(.SocketTransportKind~UDP,.RxSockUdpBinding~new)
+  udpBinding=.RxSockUdpBinding~new
+  if socketObserver<>.nil then udpBinding=.TelemetrySocketBinding~new(udpBinding,socketObserver,telemetryPolicy)
+  selector~registerBinding(.SocketTransportKind~UDP,udpBinding)
   return selector
+::method observedProvider class
+  use strict arg socketObserver, telemetryPolicy=.nil
+  if socketObserver=.nil then raise syntax 88.900 array("socket observer required")
+  return self~defaultProvider(socketObserver,telemetryPolicy)
 
 ::class SipUdpTransport public
 ::method init
@@ -270,7 +291,11 @@
   if \calls~hasIndex(callId) then raise syntax 98.900 array("call not found:" callId)
   return calls[callId]~audioIn~receive(timeoutMilliseconds, maxSamples)
 ::method close
-  expose transport engine log
+  expose transport engine log calls
+  do callId over calls
+    callObject=calls[callId]
+    if callObject<>.nil then released=callObject~releaseResources
+  end
   if transport <> .nil then do
     closed = transport~close
     transport = .nil
@@ -281,7 +306,11 @@
   end
   event = log~emit("SIP.SERVER.STOPPED")
 ::method uninit
-  expose transport engine
+  expose transport engine calls
+  do callId over calls
+    callObject=calls[callId]
+    if callObject<>.nil then released=callObject~releaseResources
+  end
   if transport <> .nil then closed = transport~close
   if engine <> .nil then call sip_engine_close engine
 
@@ -325,8 +354,8 @@
 
 ::class SipCall public
 ::method init
-  expose engine callId control audioIn audioOut rtpEndpoint rtpReceiver rtpSender remoteAddress remoteSipPort remoteRtpPort localRtpPort payloadType log
-  use strict arg engine, callId, remoteAddress, remoteSipPort, remoteRtpPort, localRtpPort, payloadType, rtpEndpoint = .nil, rtpReceiver = .nil, rtpSender = .nil, logSink = .nil
+  expose engine callId control audioIn audioOut rtpEndpoint rtpReceiver rtpSender remoteAddress remoteSipPort remoteRtpPort localRtpPort payloadType log dialog
+  use strict arg engine, callId, remoteAddress, remoteSipPort, remoteRtpPort, localRtpPort, payloadType, rtpEndpoint = .nil, rtpReceiver = .nil, rtpSender = .nil, logSink = .nil, dialog=.nil
   log = .SipLogEmitter~new(logSink, "sip.call")
   if rtpEndpoint==.nil then rtpEndpoint=.RtpEndpoint~new(.SipSocketFactory~defaultProvider,"127.0.0.1",localRtpPort,logSink)
   localRtpPort = rtpEndpoint~localPort
@@ -349,6 +378,19 @@
 ::attribute remoteRtpPort get
 ::attribute localRtpPort get
 ::attribute payloadType get
+::attribute dialog get
+
+::method releaseResources
+  expose callId control audioIn audioOut rtpEndpoint rtpReceiver rtpSender log
+  if audioIn~state="RUNNING" then stopped=audioIn~stop
+  if audioOut~state="RUNNING" then stopped=audioOut~stop
+  if rtpReceiver~state<>"CLOSED" then closed=rtpReceiver~close
+  if rtpSender~state<>"CLOSED" then closed=rtpSender~close
+  if rtpEndpoint~state<>"CLOSED" then closed=rtpEndpoint~close
+  if control~state<>"STOPPED" then stopped=control~stop
+  fields=log~fields(.array~of("callId",callId,"rtpEndpointState",rtpEndpoint~state,"rtpReceiverState",rtpReceiver~state,"rtpSenderState",rtpSender~state))
+  event=log~emit("SIP.CALL.RESOURCES.RELEASED",fields)
+  return .true
 
 ::class SipControlEvent public
 ::method init
@@ -727,10 +769,62 @@ producerFailure:
   signal off syntax
   return .nil
 
+
+::class SipClientDialog public
+::method init
+  expose transport callId requestUri localUri remoteUri contactUri remoteAddress remoteSipPort fromTag toTag cseq state log objectId
+  use strict arg transport, callId, requestUri, localUri, remoteUri, contactUri, remoteAddress, remoteSipPort, fromTag, toTag, cseq, logSink=.nil
+  log=.SipLogEmitter~new(logSink,"sip.client.dialog")
+  objectId=log~objectId
+  state="CONFIRMED"
+  fields=log~fields(.array~of("callId",callId,"state",state,"remoteAddress",remoteAddress,"remoteSipPort",remoteSipPort))
+  event=log~emit("SIP.CLIENT.DIALOG.CONFIRMED",fields)
+::attribute callId get
+::attribute objectId get
+::attribute state get
+::attribute requestUri get
+::attribute localUri get
+::attribute remoteUri get
+::attribute contactUri get
+::attribute remoteAddress get
+::attribute remoteSipPort get
+::method bye
+  expose transport callId requestUri localUri remoteUri contactUri remoteAddress remoteSipPort fromTag toTag cseq state log
+  use strict arg timeoutSeconds=3
+  if state<>"CONFIRMED" then return 0
+  cseq+=1
+  branch="z9hG4bK" || sip_random_token()~left(16)
+  crlf="0d0a"x
+  request="BYE" requestUri "SIP/2.0" || crlf
+  request||="Via: SIP/2.0/UDP" transport~bindAddress || ":" || transport~bindPort || ";branch=" || branch || ";rport" || crlf
+  request||="Max-Forwards: 70" || crlf
+  request||="To: <" || remoteUri || ">;tag=" || toTag || crlf
+  request||="From: <" || localUri || ">;tag=" || fromTag || crlf
+  request||="Call-ID:" callId || crlf
+  request||="CSeq:" cseq "BYE" || crlf
+  request||="Contact: <" || contactUri || ">" || crlf
+  request||="User-Agent: ooRexx-SIP/0.1-dev16" || crlf
+  request||="Content-Length: 0" || crlf || crlf
+  sent=transport~sendTo(request,remoteAddress,remoteSipPort)
+  response=transport~receive(timeoutSeconds)
+  status=0
+  if response<>.nil then status=sip_message_status(response[1])
+  fields=log~fields(.array~of("callId",callId,"status",status,"cseq",cseq))
+  event=log~emit("SIP.CLIENT.BYE.RESPONSE",fields)
+  if status>=200 then do
+    if status<300 then do
+      state="TERMINATED"
+      fields=log~fields(.array~of("callId",callId,"state",state,"status",status))
+      terminatedEvent=log~emit("SIP.CLIENT.DIALOG.TERMINATED",fields)
+    end
+  end
+  return status
+
 ::class SipClient public
 ::method init
-  expose transport bindAddress cseq log socketProvider
-  use strict arg bindAddress="127.0.0.1", port=0, logSink=.nil, socketProvider=.nil
+  expose transport bindAddress cseq log socketProvider logSink
+  use strict arg bindAddress="127.0.0.1", port=0, logSinkArg=.nil, socketProvider=.nil
+  logSink=logSinkArg
   log=.SipLogEmitter~new(logSink,"sip.client")
   if socketProvider=.nil then socketProvider=.SipSocketFactory~defaultProvider
   transport=.SipUdpTransport~new(bindAddress,port,logSink,socketProvider)
@@ -740,68 +834,167 @@ producerFailure:
 ::method port
   expose transport
   return transport~bindPort
-::method register
-  expose transport bindAddress cseq log
-  use strict arg registrarUri, addressOfRecord, contactUri, username = "", password = "", expires = 3600, timeoutSeconds = 3
-  target = sip_uri_target(registrarUri)
-  host = target[1]
-  port = target[2]
-  callId = sip_random_token() || "@" || bindAddress
-  branch = "z9hG4bK" || sip_random_token()~left(16)
-  fromTag = sip_random_token()~left(16)
-  request = self~registerRequest(registrarUri, addressOfRecord, contactUri, expires, callId, branch, fromTag, "")
-  sent = transport~sendTo(request, host, port)
-  response = transport~receive(timeoutSeconds)
-  if response == .nil then return 0
-  status = sip_message_status(response[1])
-  fields = log~fields(.array~of("registrarUri", registrarUri, "addressOfRecord", addressOfRecord, "status", status, "cseq", cseq))
-  event = log~emit("SIP.CLIENT.REGISTER.RESPONSE", fields)
-  if status = 401 then do
-    if username <> "" then do
-    challenge = sip_message_header(response[1], "WWW-Authenticate")
-    auth = sip_digest_authorization(challenge, username, password, "REGISTER", registrarUri)
-    cseq += 1
-    branch = "z9hG4bK" || sip_random_token()~left(16)
-    request = self~registerRequest(registrarUri, addressOfRecord, contactUri, expires, callId, branch, fromTag, auth)
-    sent = transport~sendTo(request, host, port)
-    response = transport~receive(timeoutSeconds)
-    if response == .nil then return 0
-    status = sip_message_status(response[1])
-    fields = log~fields(.array~of("registrarUri", registrarUri, "addressOfRecord", addressOfRecord, "status", status, "cseq", cseq, "authenticated", 1))
-    event = log~emit("SIP.CLIENT.REGISTER.RESPONSE", fields)
+::method invite
+  expose transport bindAddress cseq log socketProvider logSink
+  use strict arg requestUri, localUri, contactUri, payloadType=0, timeoutSeconds=5
+  target=sip_uri_target(requestUri)
+  remoteAddress=target[1]
+  remoteSipPort=target[2]
+  callId=sip_random_token() || "@" || bindAddress
+  fromTag=sip_random_token()~left(16)
+  branch="z9hG4bK" || sip_random_token()~left(16)
+  rtpEndpoint=.RtpEndpoint~new(socketProvider,bindAddress,0,logSink)
+  localRtpPort=rtpEndpoint~localPort
+  offer=self~inviteRequest(requestUri,localUri,contactUri,payloadType,localRtpPort,callId,branch,fromTag)
+  sent=transport~sendTo(offer,remoteAddress,remoteSipPort)
+  response=self~receiveFinalResponse(timeoutSeconds,callId)
+  if response==.nil then do
+    closed=rtpEndpoint~close
+    return .nil
+  end
+  status=sip_message_status(response[1])
+  fields=log~fields(.array~of("callId",callId,"requestUri",requestUri,"status",status,"cseq",cseq,"localRtpPort",localRtpPort))
+  event=log~emit("SIP.CLIENT.INVITE.RESPONSE",fields)
+  if status<200 then do
+    closed=rtpEndpoint~close
+    return .nil
+  end
+  if status>=300 then do
+    closed=rtpEndpoint~close
+    return .nil
+  end
+  toHeader=sip_message_header(response[1],"To")
+  toTag=self~headerParameter(toHeader,"tag")
+  if toTag="" then do
+    closed=rtpEndpoint~close
+    return .nil
+  end
+  remoteTargetUri=self~headerUri(sip_message_header(response[1],"Contact"))
+  if remoteTargetUri="" then remoteTargetUri=requestUri
+  remoteTarget=sip_uri_target(remoteTargetUri)
+  dialogAddress=remoteTarget[1]
+  dialogSipPort=remoteTarget[2]
+  remoteRtpPort=self~sdpAudioPort(response[1])
+  remoteRtpAddress=self~sdpConnectionAddress(response[1],remoteAddress)
+  remotePayloadType=self~sdpAudioPayload(response[1],payloadType)
+  if remoteRtpPort<=0 then do
+    closed=rtpEndpoint~close
+    return .nil
+  end
+  if remotePayloadType<>payloadType then do
+    closed=rtpEndpoint~close
+    return .nil
+  end
+  ack=self~ackRequest(remoteTargetUri,localUri,contactUri,callId,fromTag,toTag,cseq)
+  sent=transport~sendTo(ack,dialogAddress,dialogSipPort)
+  rtpReceiver=.RtpReceiver~new(rtpEndpoint,remotePayloadType,callId,logSink)
+  rtpSender=.RtpSender~new(rtpEndpoint,remoteRtpAddress,remoteRtpPort,remotePayloadType,callId,logSink)
+  dialog=.SipClientDialog~new(transport,callId,remoteTargetUri,localUri,requestUri,contactUri,dialogAddress,dialogSipPort,fromTag,toTag,cseq,logSink)
+  call=.SipCall~new(.nil,callId,remoteRtpAddress,dialogSipPort,remoteRtpPort,localRtpPort,remotePayloadType,rtpEndpoint,rtpReceiver,rtpSender,logSink,dialog)
+  fields=log~fields(.array~of("callId",callId,"dialogObjectId",dialog~objectId,"controlObjectId",call~control~objectId,"audioInObjectId",call~audioIn~objectId,"audioOutObjectId",call~audioOut~objectId,"rtpReceiverObjectId",rtpReceiver~objectId,"rtpSenderObjectId",rtpSender~objectId))
+  event=log~emit("SIP.CLIENT.CALL.CREATED",fields)
+  cseq+=1
+  return call
+::method receiveFinalResponse
+  use strict arg timeoutSeconds,callId=""
+  return self~receiveFinalResponseBounded(timeoutSeconds,callId,8)
+::method receiveFinalResponseBounded
+  expose transport log
+  use strict arg timeoutSeconds,callId,remaining
+  if remaining<=0 then return .nil
+  response=transport~receive(timeoutSeconds)
+  if response==.nil then return .nil
+  status=sip_message_status(response[1])
+  if status>=100 then do
+    if status<200 then do
+      fields=log~fields(.array~of("callId",callId,"status",status,"remaining",remaining))
+      event=log~emit("SIP.CLIENT.PROVISIONAL.RESPONSE",fields)
+      return self~receiveFinalResponseBounded(timeoutSeconds,callId,remaining-1)
     end
   end
-  cseq += 1
-  return status
-::method registerRequest
-  expose transport bindAddress cseq
-  use strict arg registrarUri, addressOfRecord, contactUri, expires, callId, branch, fromTag, auth
-  crlf = "0d0a"x
-  request = "REGISTER" registrarUri "SIP/2.0" || crlf
-  request ||= "Via: SIP/2.0/UDP" bindAddress || ":" || transport~bindPort || ";branch=" || branch || ";rport" || crlf
-  request ||= "Max-Forwards: 70" || crlf
-  request ||= "To: <" || addressOfRecord || ">" || crlf
-  request ||= "From: <" || addressOfRecord || ">;tag=" || fromTag || crlf
-  request ||= "Call-ID:" callId || crlf
-  request ||= "CSeq:" cseq "REGISTER" || crlf
-  request ||= "Contact: <" || contactUri || ">" || crlf
-  request ||= "Expires:" expires || crlf
-  request ||= "User-Agent: ooRexx-SIP/0.1-dev10" || crlf
-  if auth <> "" then request ||= "Authorization:" auth || crlf
-  request ||= "Content-Length: 0" || crlf || crlf
-  return request
-::method close
-  expose transport log
-  if transport <> .nil then do
-    closed = transport~close
-    transport = .nil
+  return response
+::method headerUri
+  use strict arg headerValue
+  start=pos("<",headerValue)
+  stop=pos(">",headerValue)
+  if start>0 then do
+    if stop>start then return substr(headerValue,start+1,stop-start-1)
   end
-  event = log~emit("SIP.CLIENT.STOPPED")
-::method uninit
-  expose transport
-  if transport <> .nil then closed = transport~close
-
-::requires "SocketProvider.cls"
-::requires "RxSockUdpBinding.cls"
-::requires "rtp.cls"
-::requires "oorexx_sip" LIBRARY
+  value=strip(headerValue)
+  semi=pos(";",value)
+  if semi>0 then value=left(value,semi-1)
+  return strip(value)
+::method inviteRequest
+  expose transport bindAddress cseq
+  use strict arg requestUri,localUri,contactUri,payloadType,localRtpPort,callId,branch,fromTag
+  crlf="0d0a"x
+  body="v=0" || crlf
+  body||="o=oorexx 1 1 IN IP4" bindAddress || crlf
+  body||="s=ooRexx SIP" || crlf
+  body||="c=IN IP4" bindAddress || crlf
+  body||="t=0 0" || crlf
+  body||="m=audio" localRtpPort "RTP/AVP" payloadType || crlf
+  if payloadType=0 then body||="a=rtpmap:0 PCMU/8000" || crlf
+  else if payloadType=8 then body||="a=rtpmap:8 PCMA/8000" || crlf
+  request="INVITE" requestUri "SIP/2.0" || crlf
+  request||="Via: SIP/2.0/UDP" bindAddress || ":" || transport~bindPort || ";branch=" || branch || ";rport" || crlf
+  request||="Max-Forwards: 70" || crlf
+  request||="To: <" || requestUri || ">" || crlf
+  request||="From: <" || localUri || ">;tag=" || fromTag || crlf
+  request||="Call-ID:" callId || crlf
+  request||="CSeq:" cseq "INVITE" || crlf
+  request||="Contact: <" || contactUri || ">" || crlf
+  request||="User-Agent: ooRexx-SIP/0.1-dev16" || crlf
+  request||="Content-Type: application/sdp" || crlf
+  request||="Content-Length:" length(body) || crlf || crlf || body
+  return request
+::method ackRequest
+  expose transport bindAddress
+  use strict arg requestUri,localUri,contactUri,callId,fromTag,toTag,inviteCseq
+  crlf="0d0a"x
+  branch="z9hG4bK" || sip_random_token()~left(16)
+  request="ACK" requestUri "SIP/2.0" || crlf
+  request||="Via: SIP/2.0/UDP" bindAddress || ":" || transport~bindPort || ";branch=" || branch || ";rport" || crlf
+  request||="Max-Forwards: 70" || crlf
+  request||="To: <" || requestUri || ">;tag=" || toTag || crlf
+  request||="From: <" || localUri || ">;tag=" || fromTag || crlf
+  request||="Call-ID:" callId || crlf
+  request||="CSeq:" inviteCseq "ACK" || crlf
+  request||="Contact: <" || contactUri || ">" || crlf
+  request||="Content-Length: 0" || crlf || crlf
+  return request
+::method headerParameter
+  use strict arg headerValue,name
+  marker=";" || name || "="
+  p=pos(marker,headerValue)
+  if p=0 then return ""
+  v=substr(headerValue,p+length(marker))
+  semi=pos(";",v)
+  if semi>0 then v=left(v,semi-1)
+  return strip(v)
+::method messageBody
+  use strict arg message
+  separator="0d0a0d0a"x
+  p=pos(separator,message)
+  if p=0 then return ""
+  return substr(message,p+4)
+::method sdpAudioPort
+  use strict arg message
+  body=self~messageBody(message)
+  crlf="0d0a"x
+  do while body<>""
+    p=pos(crlf,body)
+    if p=0 then do; line=body; body=""; end
+    else do; line=left(body,p-1); body=substr(body,p+2); end
+    if line~left(8)="m=audio " then return line~word(2)
+  end
+  return 0
+::method sdpConnectionAddress
+  use strict arg message,fallback=""
+  body=self~messageBody(message)
+  crlf="0d0a"x
+  do while body<>""
+    p=pos(crlf,body)
+    if p=0 then do; line=body; body=""; end
+    else do; line=left(body,p-1); body=substr(body,p+2); end
+    if line~left(9)="c=IN IP4 " then return strip(substr(line,10))
