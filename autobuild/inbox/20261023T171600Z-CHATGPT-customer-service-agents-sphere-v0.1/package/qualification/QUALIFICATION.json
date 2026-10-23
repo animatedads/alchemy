@@ -1,0 +1,39 @@
+{
+  "schema": "alchemy.customer-service-agents-sphere.qualification/0.1",
+  "date": "2026-10-23",
+  "status": "SPHERE_STATIC_QUALIFIED_PRE_AUTOBUILD",
+  "checks": [
+    {
+      "surface": "zip-regression",
+      "source": "oorexx_customer_service_readback_v0.1-dev2.zip",
+      "sha256": "4be34bfbda31c0c807c6f440abbd3a67be778e676efa46d90d55c58d8c0254b0",
+      "result": "20/20 Python tests passed",
+      "limitations": "no source video speech recognition"
+    },
+    {
+      "surface": "zip-regression",
+      "source": "customer_service_readback_legacy_v0.1-dev1.zip",
+      "sha256": "e83b7810c72d785d66f1c9627faa2286a685930c98f8ecad64670a161fd58b70",
+      "result": "11/11 Python tests passed",
+      "limitations": "synthetic transcript tests only"
+    },
+    {
+      "surface": "source-audit",
+      "source": "A02.tar.gz",
+      "result": "227 source clips, 83 readback-named clips",
+      "limitations": "filenames not transcripts"
+    },
+    {
+      "surface": "GitHub prior-submission",
+      "source": "autobuild-submit/20261023T155200Z-CHATGPT-customer-readback-legacy-dev1",
+      "result": "submission ready commit exists; no main receipt at last check",
+      "limitations": "not accepted main source"
+    }
+  ],
+  "unqualified": [
+    "live ASR for A02",
+    "real MediaPipe Tasks face mesh inference on A02",
+    "on-mesh 8–16-node video processing",
+    "human-approved audiovisual readback intervals"
+  ]
+}
