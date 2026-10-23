@@ -1,0 +1,135 @@
+NOSQLSERVER V0.20 HAVING/DERIVED AGGREGATE SMOKE: OK
+NOSQLSERVER TORTURE SCORE
+corpus: torture_tiny_seed42.sql
+
+QUERY 01: PASS | The Kitchen Sink
+QUERY 02: PASS | Correlated Subqueries Instead Of A Join
+QUERY 03: PASS | Function-Wrapped WHERE, Wildcards Both Ends
+QUERY 04: PASS | Old-Style Comma Join With Bolted-On DISTINCT
+QUERY 05: PASS | Three-Level Self-Join Org Chart
+QUERY 06: PASS | HAVING Threshold Recomputed Per Group
+QUERY 07: PASS | Anti-Join Via LEFT JOIN / IS NULL
+QUERY 08: PASS | UNION Where UNION ALL (Or Just OR) Would Do
+QUERY 09: PASS | Four-Deep Nested IN Subqueries
+QUERY 10: PASS | CASE-Expression Sort Plus String-Concat Sort Key
+QUERY 11: PASS | The Accidental Cross Join
+QUERY 12: UNSUPPORTED | SELECT-List Full Of Aggregate Subqueries
+        SQLUNSUPPORTED | SQL functions are not implemented
+
+DDL accepted : 5/5
+INSERT stmts : 3/3
+rows loaded  : 14
+queries      : 12
+  PASS           : 11
+  UNSUPPORTED    : 1
+  PARSE_ERROR    : 0
+  WRONG_RESULT   : 0 (oracle-backed where available)
+  EXECUTION_ERROR: 0
+╔══════════════════════════════════════════════════════════════╗
+║  NoSQLServer SQL Feature Torture – progressive climb         ║
+╚══════════════════════════════════════════════════════════════╝
+
+
+── LEVEL 0 – Foundation (DDL / DML / predicates)
+
+  ✓ CREATE TABLE with typed columns, PK, UNIQUE, storage options
+  ✓ single-row typed INSERT (NULL nickname)
+  ✓ multi-row INSERT
+  ✓ duplicate PRIMARY KEY rejected
+  ✓ duplicate UNIQUE rejected
+  ✓ NOT NULL rejected
+  ✓ INTEGER type coercion rejection
+  ✓ WHERE with comparison + boolean AND (2 rows)
+  ✓ IS NULL predicate (1 rows)
+  ✓ NULL survived storage round-trip
+  ✓ IS NOT NULL predicate (2 rows)
+  ✓ typed UPDATE
+  ✓ affectedRows = 1
+  ✓ updated values visible to subsequent predicates (2 rows)
+  ✓ DELETE
+  ✓ affectedRows = 1
+  ✓ row removed after DELETE (2 rows)
+  ✓ composite PRIMARY KEY + table-level UNIQUE
+  ✓ composite-key insert
+  ✓ composite PK enforced
+  ✓ table-level UNIQUE enforced
+  ✓ DROP TABLE
+  ✓ dropped table no longer visible
+
+── LEVEL 1 – Projection / aliases / ORDER BY / DISTINCT
+
+  ✓ CREATE customers
+  ✓ CREATE employees
+  ✓ CREATE products
+  ✓ CREATE orders
+  ✓ CREATE order_items
+  ✓ seed customers
+  ✓ seed employees (hierarchy)
+  ✓ seed products
+  ✓ seed orders
+  ✓ seed order_items
+  ✓ projection + alias + ORDER BY
+  ✓ ORDER BY row count (4 rows)
+  ✓ ORDER BY ascending name
+  ✓ DISTINCT + ORDER BY
+  ✓ DISTINCT categories (3 rows)
+
+── LEVEL 2 – Multi-table comma equijoin
+
+  ✓ 4-table comma equijoin
+  ✓ non-distinct multi-join rows (6 rows)
+         accessPath = MULTI_COMMA_EQUIJOIN
+  ✓ DISTINCT over multi-join
+  ✓ distinct customer/category pairs (5 rows)
+  ✓ ambiguous unqualified column rejected as parse error
+
+── LEVEL 3 – LEFT JOIN / self-join / anti-join
+
+  ✓ three-level self LEFT JOIN (org chart)
+  ✓ org-chart row count (4 rows)
+  ✓ deepest employee
+  ✓ manager of intern
+  ✓ manager's manager
+  ✓ top-level manager is NULL-extended
+  ✓ anti-join via LEFT JOIN + IS NULL
+  ✓ customers with no orders (1 rows)
+  ✓ anti-join identity (qualified projection contract)
+  ✓ LEFT JOIN ON equality + extra predicate
+
+── LEVEL 4 – UNION + recursive IN subqueries
+
+  ✓ multi-branch UNION + final ORDER BY + simple IN
+  ✓ UNION result (all orders in this corpus) (4 rows)
+  ✓ four-deep nested IN subqueries
+  ✓ products reachable via PLATINUM cities (4 rows)
+  ✓ deeper-than-four recursive IN executes
+  ✓ deeper recursive IN returned rows
+
+── LEVEL 5 – Breaking-point probes (unsupported / parse surfaces)
+
+  ★ now supported       – GROUP BY + aggregate
+  ★ now supported       – correlated SELECT-list subquery
+  ✓ clean SQLPARSEERROR  – aggregate correlated subquery
+  ✓ clean SQLUNSUPPORTED – RIGHT JOIN
+  ✓ clean SQLUNSUPPORTED – FULL JOIN
+  ★ now supported       – CASE expression
+  ★ now supported       – scalar function UPPER
+  ★ now supported       – LIKE predicate
+  ★ now supported       – BETWEEN predicate
+  ★ now supported       – explicit multi INNER JOIN chain
+  ✓ reference to missing table
+  ✓ obvious parse error (typo keyword)
+  ✓ incomplete WHERE clause
+
+╔══════════════════════════════════════════════════════════════╗
+║  SUMMARY                                                     ║
+╠══════════════════════════════════════════════════════════════╣
+║  Total checks     :   72
+║  Passed           :   72
+║  Failed           :    0
+║  Unsupported (ok) :    2   (clean SQLUNSUPPORTED)
+║  Parse errors (ok):    4   (clean SQLPARSEERROR)
+║  Execution errors :    0
+╚══════════════════════════════════════════════════════════════╝
+
+RESULT: ALL EXPECTED BEHAVIOURS OBSERVED

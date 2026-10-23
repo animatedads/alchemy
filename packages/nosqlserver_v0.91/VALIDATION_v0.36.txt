@@ -1,0 +1,44 @@
+NoSQLServer v0.36 validation
+============================
+
+Focus
+-----
+Offset/navigation and distribution window functions.
+
+New SQL surface
+---------------
+- LAG(value [, offset [, default]]) OVER (PARTITION BY ... ORDER BY ...)
+- LEAD(value [, offset [, default]]) OVER (PARTITION BY ... ORDER BY ...)
+- NTILE(integer) OVER (PARTITION BY ... ORDER BY ...)
+- LAG/LEAD defaults: NULL, numeric literals, and quoted string literals.
+- Offset zero is supported; negative/non-integral offsets are rejected.
+- NTILE uses SQL bucket sizing: earlier buckets receive the remainder rows,
+  and bucket numbers remain contiguous when bucket count exceeds row count.
+- These ordered functions coexist with partition-wide aggregate windows when
+  the ordered window definitions are compatible.
+
+Hell corpus v2
+--------------
+PASS             8
+UNSUPPORTED     11
+PARSE_ERROR     11
+WRONG_RESULT     0
+EXECUTION_ERROR  0
+
+New oracle-backed PASS:
+- Q02 LAG/LEAD with explicit offsets and defaults
+- Q03 NTILE plus company-wide and department-wide aggregate windows
+
+Regression gates
+----------------
+- v0.36 offset-window smoke: PASS
+- v0.35 partition-window smoke: PASS
+- v0.34 derived-window smoke: PASS
+- v0.30 extended-window smoke: PASS
+- v0.29 recursive CTE smoke: PASS
+- v0.32 database_core adapter smoke: PASS
+- v0.31 Gemini smoke: PASS
+- SQL-92 company smoke: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly
