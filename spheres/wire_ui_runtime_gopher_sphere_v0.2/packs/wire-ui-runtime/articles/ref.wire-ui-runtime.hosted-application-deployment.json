@@ -1,0 +1,52 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.hosted-application-deployment",
+  "version": "0.1",
+  "sphere": "wire-ui-runtime",
+  "title": "Signed Wire applications are deployed through one host-owned admission lifecycle",
+  "summary": "Signed .wapp package or signed directory admission converges on Queue Fabric submission and a trusted ooRexx hosted deployment manager. HTTPS routes, Wire semantic application registration and gateway access-point publication are activated by generation, not manually wired into business code.",
+  "authority": "project-integration-boundary",
+  "invariants": [
+    "Verify Ed25519 signature, manifest digest, target policy, dependencies and approved entry factory before any activation; the Intention conversation resolves target but cannot bypass authorisation.",
+    "Share exactly the existing ObjectQueueManager; the gateway and browser cannot create arbitrary Queue Fabric clients or invent business state.",
+    "Static HTTPS routes remain immutable. Deployment publication is owner/generation CAS; route is published last, after semantic app and gateway are ready.",
+    "Web, Swing, GTK/Direct Linux and Android consume the same semantic definitions, revisions, actions, observation and ResourceRef authority.",
+    "Returning STAGED must never be equated with ACTIVE; completion requires live probe evidence.",
+    "Upgrade only deployment-owned app IDs; access-point migration needs controlled session drain and stale-revision rejection.",
+    "Queue Fabric ACK occurs after durable admission/rejection disposition; release when the journal fails.",
+    "No application-specific HTTP business API or second client-side state machine is introduced."
+  ],
+  "procedure": [
+    "Stage and authenticate the signed .wapp and dependencies using trusted Crypto/Deployment.",
+    "Resolve target, mount, gateway profile and approvals through Intentions and policy.",
+    "Prove app readiness and provision fixed Queue Fabric gateway using existing manager.",
+    "Publish gateway binding, application generation and finally HTTPS route; restore prior generations if publication fails.",
+    "Record live TLS/browser probe separately and drain retired generation safely before removal."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_application_packaging_v0.1_candidate1.zip",
+      "sha256": "bd2569e38e72a5ec16a4481900f3a870485de9baae5959d34bb4aad207ddb6a4",
+      "member": "wire_application_packaging_v0.1_candidate1/docs/CONTRACT.md",
+      "claim": "Signed .wapp offline stage and verifier contract"
+    },
+    {
+      "artifact": "oorexx_https_server_v0.5.zip",
+      "sha256": "e00f2d497404ed8c3ae842128bf152a0a5551fc36b54e3cb7d85e06fd75e6b02",
+      "member": "oorexx_https_server_v0.5/rexx/https_server.cls",
+      "claim": "Static route limitations and dispatch integration"
+    },
+    {
+      "artifact": "wire_ui_server_v0.17.1.zip",
+      "sha256": "5a20d6da1866cecad9c452915616cb6926d3291c74a82c0dc69252963a96fb33",
+      "member": "wire_ui_server_v0.17.1/src/WireUIServer.cls",
+      "claim": "Queue Fabric manager and application registry"
+    },
+    {
+      "artifact": "oorexx_queue_fabric_web_gateway_v0.2.zip",
+      "sha256": "83118442d7c734e4a194598b0709311de7a055ae33fb4e094cccf3686b7ffcf8",
+      "member": "oorexx_queue_fabric_web_gateway_v0.2/src/WireUIWebAccessPointBinding.cls",
+      "claim": "Private gateway vs safe browser view"
+    }
+  ]
+}

@@ -39,3 +39,6 @@ The executable companion `wire_ui_renderer_conformance_v0.2` defines the canonic
 ## Qualification
 
 Use LLM Gopher v0.19-dev1 or later for structural validation/lint/package and run `tests/run.sh` against the packaged sphere. The sphere is continuity authority only; it does not supersede executable renderer/runtime packages.
+## Signed Wire application deployment addendum (2026-10-23)
+
+The article `ref.wire-ui-runtime.hosted-application-deployment` records .wapp/Queue Fabric admission, HTTPS/Wire/Gateway publication, fail-closed trust boundaries and live qualification gaps. The adapter increment is not yet a production deployment qualification.

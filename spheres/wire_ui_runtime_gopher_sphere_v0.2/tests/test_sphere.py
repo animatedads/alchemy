@@ -10,3 +10,7 @@ base=json.loads((r/'packs/wire-ui-runtime/articles/ref.wire-ui-runtime.current-b
 assert base['current_integration_evidence']['swing']['artifact']=='wire_ui_swing_v0.2-dev11.zip'
 assert base['current_integration_evidence']['gtk_direct_linux']['artifact']=='wire_direct_linux_v0.1-dev38.zip'
 print('PASS wire-ui-runtime sphere v0.2 static')
+deploy=json.loads((r/'packs/wire-ui-runtime/articles/ref.wire-ui-runtime.hosted-application-deployment.json').read_text())
+assert deploy['sphere']=='wire-ui-runtime'
+assert any('Queue Fabric' in s for s in deploy['invariants'])
+print('PASS wire-ui-runtime hosted application deployment article')
