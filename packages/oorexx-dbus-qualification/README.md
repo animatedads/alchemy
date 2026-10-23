@@ -25,3 +25,9 @@ Before touching native source: retrieve exact upstream archives, record SHA-256 
 ## Publication lineage
 
 This GitHub source increment follows the earlier local qualification packages v0.1–v0.4. It deliberately publishes a small reproducible auditor rather than asserting that the original native implementation has already been repaired.
+
+## 23 October 2026 increment — v0.5
+
+The ZIP auditor now enforces path safety and metadata size/ratio/member limits **before** CRC decompression; accepted entries are subsequently read in bounded chunks. It reports `integrity: NOT_RUN` for metadata rejections. Local regression tests: **14 PASS**; GitHub CI has not been run. This is archive screening, not proof that native C++ or ooRexx bindings compile or work.
+
+Knowledge sphere: [ooRexx D-Bus Gopher sphere v0.1](../../spheres/oorexx_dbus_connector_gopher_sphere_v0.1/SPHERE_OOREXX_DBUS.md). It records the standalone package invariant and source-authority/qualification gates. No native C++ source is claimed as obtained or modified.
