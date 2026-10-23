@@ -8,4 +8,6 @@ ED209ZZ is the current reference target. The 2026-10-16 inventory proved MVS 3.8
 
 Use one planned 3270 session at a time. After HERC01 login the normal blank screen is the TSO command environment; do not misclassify it as a hang and burn additional LUs.
 
+`reference_oracle.py backend_acceptance.json` is the executable host-side behavioural reference for the currently committed acceptance vectors. It is not the production MVS implementation. The committed oracle was exercised before publication and passed 12/12 cases.
+
 One failed job -> preserve deck/spool/listing/hash -> classify -> change one thing.
