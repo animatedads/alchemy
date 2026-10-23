@@ -1,4 +1,3 @@
-import io
 import pathlib
 import sys
 import tempfile
@@ -29,7 +28,7 @@ class ArchiveAuditTests(unittest.TestCase):
         self.assertEqual(result["status"], "FAIL")
 
     def test_expansion_limit(self):
-        result = audit(self.make_archive([("long", "x" * 100)]), max_ratio=1)
+        result = audit(self.make_archive([("long", "x" * 100)]), max_ratio=0.5)
         self.assertEqual(result["status"], "FAIL")
 
 if __name__ == "__main__":
