@@ -1,0 +1,66 @@
+{
+  "kind": "corpus",
+  "id": "ed209-continuity",
+  "sphere": "ed209-rto2-grid",
+  "title": "ED209 engineering non-substitution rules",
+  "records": [
+    {
+      "id": "no-ssh-dispatch",
+      "trigger": "Submitting jobs",
+      "rule": "SSH can invoke owning MU operator actions, but the actual MI work and result must traverse authenticated XTP / Queue Fabric.",
+      "related": [
+        "ed.work"
+      ]
+    },
+    {
+      "id": "no-ack-as-result",
+      "trigger": "Transport acknowledges data",
+      "rule": "Require authenticated result plus RTO2 committed state and controller durable receipt; a packet ACK is insufficient.",
+      "related": [
+        "ed.work",
+        "ed.fabric"
+      ]
+    },
+    {
+      "id": "no-unissued-service",
+      "trigger": "Activating service-first FIRST addressing",
+      "rule": "Require authoritative service descriptor, route-peer and operational class; receiver-channel labels cannot substitute.",
+      "related": [
+        "ed.service"
+      ]
+    },
+    {
+      "id": "no-key-regeneration",
+      "trigger": "Adding new MU",
+      "rule": "Append identities and preserve existing commissioning keys; H-local test keys do not grant federation membership.",
+      "related": [
+        "ed.topology",
+        "ed.publication"
+      ]
+    },
+    {
+      "id": "staged-is-not-booted",
+      "trigger": "Qualifying guest handler",
+      "rule": "Inspect the live QEMU initramfs, not a staged directory, and retain boot/runtime fixes.",
+      "related": [
+        "ed.failure"
+      ]
+    },
+    {
+      "id": "not-20-from-fixture",
+      "trigger": "Central sorter passes synthetic tests",
+      "rule": "Mark fixture-only PASS for sorter code; never label ten-host run accepted without twenty real distinct receipts.",
+      "related": [
+        "ed.qualification"
+      ]
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "ed209_rto2_20mi_candidate2_managed.zip",
+      "sha256": "940ee1835f9dd53ceea42a14e0eb7880e4dc374d6813cfbc686972debe23b4e1",
+      "member": "README.md",
+      "claim": "Job submission and qualification nonclaims"
+    }
+  ]
+}
