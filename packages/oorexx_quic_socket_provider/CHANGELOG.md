@@ -1,21 +1,38 @@
 # Changelog
 
+## 0.1-dev3
+
+- Add native QUIC child-stream ownership and handle registry.
+- Add `QuicSocket~openStream`, `acceptStream` and `tryAcceptStream`.
+- Add `QuicStream` with native stream ID, send/receive/close, parent-connection,
+  peer-address projection, event pumping and `SocketStreamAdapter` compatibility.
+- Explicitly enable incoming QUIC streams so peer-created streams reach the
+  OpenSSL accept queue.
+- Ensure connection close releases child streams before the parent QUIC
+  connection.
+- Add live two-stream multiplex qualification over one TLS 1.3 QUIC connection.
+- Preserve the dev2 ordinary single-stream compatibility path and SocketProvider
+  v0.1-dev14 object boundary.
+
 ## 0.1-dev2
 
 - Rebase qualification copy on common SocketProvider v0.1-dev14.
-- Add dynamic `QuicSocketOfferProvider` for the common negotiation layer; QUIC is secure stream, sender/listener yes, multicast no.
+- Add dynamic `QuicSocketOfferProvider` for the common negotiation layer; QUIC is
+  secure stream, sender/listener yes, multicast no.
 - Add native descriptor exposure for connections and listeners.
-- Add OpenSSL QUIC event pumping using `SSL_get_event_timeout()` and `SSL_handle_events()`.
-- Add provider-neutral listener `waitReady()` and nonblocking `tryAccept()` using `SSL_ACCEPT_CONNECTION_NO_BLOCK`.
-- Preserve the accepted QUIC peer's own `QuicSocketAddress` through the common ProviderSocketListener wrapper; dev14 fixes this generically.
-- Retain TLS 1.3, ALPN, binary-safe payloads, security-profile references and real loopback qualification.
-
-# Changelog
+- Add OpenSSL QUIC event pumping using `SSL_get_event_timeout()` and
+  `SSL_handle_events()`.
+- Add provider-neutral listener `waitReady()` and nonblocking `tryAccept()`.
+- Preserve the accepted QUIC peer's own `QuicSocketAddress` through the common
+  `ProviderSocketListener` wrapper.
+- Retain TLS 1.3, ALPN, binary-safe payloads, security-profile references and
+  real loopback qualification.
 
 ## 0.1-dev1
 
 - First actual QUIC provider delivery.
-- Added QuicSocketAddress, QuicSocket, QuicSocketListener and SocketProvider binding.
+- Added `QuicSocketAddress`, `QuicSocket`, `QuicSocketListener` and SocketProvider
+  binding.
 - Added OpenSSL QUIC client/server native ooRexx extension.
 - Added security-profile indirection.
 - Added live binary-safe loopback qualification.
