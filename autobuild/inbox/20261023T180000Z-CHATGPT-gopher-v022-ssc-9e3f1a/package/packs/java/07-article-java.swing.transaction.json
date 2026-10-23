@@ -1,0 +1,20 @@
+{
+  "kind": "article",
+  "id": "java.swing.transactional-rendering",
+  "version": "0.1",
+  "sphere": "java",
+  "title": "Swing: preflight then EDT commit",
+  "summary": "The project applies a two-phase render rule: validate revision/operation/instance/definition state first, then commit on the EDT. Do not half-mutate widgets and discover the patch is invalid halfway through.",
+  "authoritative_sources": [
+    {
+      "archive": "oorexxapis(20260902-105429).zip",
+      "nested": "current/wire_ui_swing_v0.2-dev3.zip",
+      "member": "wire_ui_swing_v0.2-dev3/DESIGN.md"
+    }
+  ],
+  "invariants": [
+    "A failed structural patch retains the previously committed tree.",
+    "Structural relayout should preserve existing JComponent instances unless the semantic protocol explicitly replaces them.",
+    "Stamp view/revision when the Swing event is queued; later renderer advancement must not rewrite historical user-action context."
+  ]
+}

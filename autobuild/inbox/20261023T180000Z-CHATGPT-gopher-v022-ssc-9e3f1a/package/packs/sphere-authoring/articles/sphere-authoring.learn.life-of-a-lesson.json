@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "sphere-authoring.learn.life-of-a-lesson",
+  "version": "0.3",
+  "sphere": "sphere-authoring",
+  "title": "Capture a lesson at the mistake, then curate it into the sphere",
+  "summary": "The best lessons are captured near the moment they happen (this system's own dev-ai lesson records do exactly this: an AI session tries a command, records ok/fail/warn, and later sessions are warned or blocked by the matching active lesson until they address it). A sphere turns those captured lessons into durable, evidence-backed articles and rules that a future model is shown before it repeats the mistake. Formalise the loop: observe an incident, record it with its concrete evidence, decide article-rule placement by trigger reliability, and publish so the next author at the same seam is warned.",
+  "evidence_note": "bashqueues' QUEUE_DEV_AI_LESSONS.md formalises the capture: a session runs a bounded queue dev ai try, attaches a --ok/--fail/--warn lesson, and future matching tries are blocked until a lesson-directed precheck confirms or overrides with a reason (within the acceptance boundary that evidence never bypasses authority).",
+  "invariants": [
+    "Record incidents with their exact evidence at the time, not weeks later from memory.",
+    "A captured lesson is evidence/guidance, never acceptance or authority of its own.",
+    "Route a lesson to a rule only where a reliable trigger exists; otherwise to an article/corpus.",
+    "The aim is to surface a grounded warning the moment a future model is about to make the same mistake, earlier than 100k extra tokens of context would.",
+    "Re-run the original task through Gopher after adding a lesson to prove the sphere now covers it."
+  ],
+  "section": "authoring-craft",
+  "topics": [
+    "incident",
+    "lesson",
+    "publication"
+  ],
+  "authority": "project-doctrine"
+}

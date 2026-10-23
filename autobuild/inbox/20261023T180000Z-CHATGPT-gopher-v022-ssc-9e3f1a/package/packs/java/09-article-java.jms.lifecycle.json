@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "java.jms.lifecycle-and-secrets",
+  "version": "0.1",
+  "sphere": "java",
+  "title": "JMS: lifecycle, configuration and secret boundaries",
+  "summary": "The delivered Java ATM resolves JNDI connection factory/destinations from configuration, reads passwords from a named environment variable rather than hard-coding them, starts the connection before receive, and closes consumer/producer/session/connection/context at the boundary.",
+  "authoritative_sources": [
+    {
+      "archive": "oorexxapis(20260902-105429).zip",
+      "nested": "current/testapps/federationbank_java_atm_v0.1.9.zip",
+      "member": "federationbank_java_atm_v0.1.9/src/main/java/com/federationbank/atm/bank/JndiJmsBankNetwork.java"
+    },
+    {
+      "archive": "oorexxapis(20260902-105429).zip",
+      "nested": "current/testapps/federationbank_java_atm_v0.1.9.zip",
+      "member": "federationbank_java_atm_v0.1.9/src/main/java/com/federationbank/atm/brokerage/JndiJmsBrokerageNetwork.java"
+    }
+  ],
+  "invariants": [
+    "Missing required JNDI configuration fails explicitly.",
+    "Credentials are configuration/secret inputs, not source literals.",
+    "Transport resources are closed in the owning boundary even on failure.",
+    "Bank and brokerage JMS configuration remain separately namespaced where the project separates those channels."
+  ]
+}

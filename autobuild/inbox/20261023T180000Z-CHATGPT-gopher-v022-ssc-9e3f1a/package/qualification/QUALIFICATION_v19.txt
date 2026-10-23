@@ -1,0 +1,90 @@
+LLM Gopher v0.19-dev1 qualification
+Date: 2026-09-02
+
+Scope
+-----
+- canonical Sphere Editor
+- built-in sphere-authoring operational sphere
+- canonical object templates
+- bounded exact object replacement with stale-source SHA fencing
+- bounded corpus-record upsert
+- structured provenance attachment
+- changelog entry helper
+- structural validation
+- advisory lint
+- sphere packaging with manifest
+
+Canonical editor-managed layout
+-------------------------------
+packs/<sphere>/00-sphere.json
+packs/<sphere>/01-access-policy.json
+packs/<sphere>/articles/<id>.json
+packs/<sphere>/corpora/<id>.json
+packs/<sphere>/rules/<id>.json
+packs/<sphere>/services/<id>.json
+packs/<sphere>/languages/<id>.json
+profiles/<sphere>.json
+tests/
+qualification/
+CHANGELOG.md
+
+Legacy layouts remain readable. The editor does not destructively migrate old packs merely to normalize appearance.
+
+Provenance contract
+-------------------
+Canonical provenance[] fields:
+  artifact
+  sha256
+  member
+  line_start (optional)
+  line_end (optional)
+  claim (optional)
+  note (optional opaque prose)
+
+The note field is never parsed to recover authoritative citation identity.
+
+PROVENANCE_PANIC / FISH regression
+----------------------------------
+Fixture provenance:
+  artifact: runtime_registry_v0.14.zip
+  member: README.md
+  line_start: 38
+  line_end: 45
+  sha256: structurally valid 64-hex fixture identity
+  note: "la la la la la la la ... oh I mean line 38-45"
+
+Result:
+  sphere edit evidence => UPDATED
+  sphere edit validate => VALID, 0 problems
+  sphere edit lint => no provenance warning caused by the note
+
+This proves that panicked/free-form explanatory prose does not corrupt independently resolvable structured provenance.
+
+Bounded mutation evidence
+-------------------------
+- sphere edit put returns before_sha256 / after_sha256
+- wrong expected_sha256 returns STALE_SOURCE
+- corpus record-put changes one stable key/value record without reconstructing unrelated records
+- changelog-add is deduplicated (second identical entry => EXISTS)
+- package requires structural validation; optional --require-clean-lint gates warnings
+
+Standalone authoring sphere
+---------------------------
+sphere_authoring_sphere_v0.2.zip
+  built and packaged by the v0.19 Sphere Editor itself
+  validation: VALID
+  lint: CLEAN
+  SHA-256: 2eebff7d4485442e8db8f1a2ca29d3315609f3c3f8398a02854014287de59178
+
+Regression evidence
+-------------------
+PASS ALL LLM GOPHER v0.19 SPHERE EDITOR TESTS
+PASS ALL LLM GOPHER v0.18 WORKSPACE-GPT TESTS
+PASS ALL LLM GOPHER v0.17 JAVA/LANGUAGE-MODULE TESTS
+PASS ALL LLM GOPHER v0.16 SOURCE CONTRACT TESTS
+PASS ALL LLM GOPHER v0.15 SPHERE/LOOKUP/RC TESTS
+
+Dogfood
+-------
+The standalone sphere-authoring sphere was validated, linted and packaged by the new editor.
+The main Gopher v0.19 delivery is staged and package-checked by Gopher before the external ZIP seal.

@@ -1,0 +1,41 @@
+{
+  "schema": "llm-gopher/0.16",
+  "tool_status": {
+    "rc": 0,
+    "class": "OK"
+  },
+  "operation_status": {
+    "rc": 0,
+    "class": "RECORDED"
+  },
+  "result": {
+    "task": "seal READY v0.16 staging tree into delivery ZIP",
+    "reason": "package.seal capability remains unpublished",
+    "failure_class": "DOGFOOD.CAPABILITY_GAP",
+    "fallback": "external deterministic ZIP writer",
+    "outcome": "v0.16 delivery sealed after Gopher READY check",
+    "correct": "> CORRECT: add or improve a Gopher article/capability so this task no longer requires the fallback"
+  },
+  "service_proxy": {
+    "kind": "service-proxy",
+    "service": "dogfood.escape.record",
+    "capability": "dogfood.escape.record",
+    "operations": [
+      "exec"
+    ],
+    "rank": 10
+  },
+  "route": {
+    "requested_capability": "dogfood.escape.record",
+    "service": "dogfood.escape.record",
+    "implementation": "builtin.dogfood.escape.record",
+    "fallback_depth": 0,
+    "attempts": [
+      {
+        "service": "dogfood.escape.record",
+        "implementation": "builtin.dogfood.escape.record",
+        "tool_status": "OK"
+      }
+    ]
+  }
+}

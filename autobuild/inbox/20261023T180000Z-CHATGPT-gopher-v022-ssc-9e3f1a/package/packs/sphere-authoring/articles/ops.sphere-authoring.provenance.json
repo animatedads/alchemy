@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "ops.sphere-authoring.provenance",
+  "version": "0.3",
+  "sphere": "sphere-authoring",
+  "title": "Provenance: machine fields first, explanatory note second",
+  "summary": "Authority comes from structured artifact identity, SHA-256, member and optional line range. `note` is opaque explanatory prose and must never be parsed to recover the citation.",
+  "canonical_provenance": {
+    "artifact": "artifact.zip",
+    "sha256": "64 lowercase hex digits",
+    "member": "path/in/artifact",
+    "line_start": "optional positive integer",
+    "line_end": "optional positive integer",
+    "claim": "optional claim supported by this evidence",
+    "note": "optional opaque prose"
+  },
+  "invariants": [
+    "Never reconstruct member/line authority from note prose.",
+    "A funny, confused or malformed note does not invalidate otherwise correct structured provenance.",
+    "Invalid SHA/member/line structure is a validation failure even if the prose sounds convincing."
+  ],
+  "authority": "project-doctrine",
+  "section": "sphere-internals",
+  "topics": [
+    "provenance",
+    "FISH"
+  ]
+}

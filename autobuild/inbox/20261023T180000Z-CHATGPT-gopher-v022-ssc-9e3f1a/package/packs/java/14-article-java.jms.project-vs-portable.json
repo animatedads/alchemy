@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "java.jms.project-contract-vs-portable-api",
+  "version": "0.1",
+  "sphere": "java",
+  "title": "JMS: distinguish this project's adapter choices from portable JMS doctrine",
+  "summary": "The delivered ATM intentionally invokes JMS through reflection/JNDI and creates a non-transacted AUTO_ACKNOWLEDGE session for its synchronous request/reply adapter. Those are qualified choices of this boundary, not universal Java/JMS defaults.",
+  "authoritative_sources": [
+    {
+      "archive": "oorexxapis(20260902-105429).zip",
+      "nested": "current/testapps/federationbank_java_atm_v0.1.9.zip",
+      "member": "federationbank_java_atm_v0.1.9/src/main/java/com/federationbank/atm/bank/JndiJmsBankNetwork.java"
+    },
+    {
+      "archive": "oorexxapis(20260902-105429).zip",
+      "nested": "current/testapps/federationbank_java_atm_v0.1.9.zip",
+      "member": "federationbank_java_atm_v0.1.9/src/main/java/com/federationbank/atm/brokerage/JndiJmsBrokerageNetwork.java"
+    }
+  ],
+  "invariants": [
+    "Do not copy the reflection adapter merely because the requested feature is 'JMS'; first inspect the project's declared JMS API/dependency boundary.",
+    "Do not infer AUTO_ACKNOWLEDGE for a transactional, asynchronous, durable, or redelivery-sensitive consumer from this synchronous request/reply client.",
+    "Session/acknowledgement/transaction mode is part of delivery semantics and must be chosen from the actual messaging contract."
+  ],
+  "correct": [
+    "Use the typed JMS API when the project deliberately declares and owns that dependency.",
+    "Use an adapter/reflection seam only when the project explicitly requires provider/API decoupling of that sort.",
+    "Choose acknowledgement/transacted semantics from delivery guarantees, replay/idempotency and failure behavior."
+  ]
+}

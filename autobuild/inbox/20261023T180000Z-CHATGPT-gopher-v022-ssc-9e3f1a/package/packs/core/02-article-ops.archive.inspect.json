@@ -1,0 +1,79 @@
+{
+  "kind": "article",
+  "id": "ops.archive.inspect",
+  "version": "0.1",
+  "sphere": "core",
+  "title": "Inspect a ZIP artifact",
+  "objects": [
+    "archive",
+    "expected_sha",
+    "filename"
+  ],
+  "state": [
+    "archive_exists",
+    "integrity_checked",
+    "sha_checked",
+    "contents_listed",
+    "requested_file_located"
+  ],
+  "selectors": [
+    {
+      "id": "locate",
+      "type": "exec",
+      "action": "exec",
+      "resource": "tool:executable.locate",
+      "capability": "executable.locate"
+    },
+    {
+      "id": "sha256",
+      "type": "exec",
+      "action": "exec",
+      "resource": "tool:crypto.sha256",
+      "capability": "crypto.sha256"
+    },
+    {
+      "id": "list",
+      "type": "exec",
+      "action": "exec",
+      "resource": "tool:archive.zip.list",
+      "capability": "archive.zip.list"
+    },
+    {
+      "id": "find",
+      "type": "exec",
+      "action": "exec",
+      "resource": "tool:archive.zip.find",
+      "capability": "archive.zip.find"
+    }
+  ],
+  "handler": "ArticlePage",
+  "checklist": [
+    {
+      "id": "sha_checked",
+      "label": "Calculate SHA-256",
+      "selector": "sha256",
+      "success": [
+        "OK",
+        "MATCH",
+        "MISMATCH"
+      ]
+    },
+    {
+      "id": "contents_listed",
+      "label": "List ZIP contents",
+      "selector": "list",
+      "success": [
+        "LISTED"
+      ]
+    },
+    {
+      "id": "requested_file_located",
+      "label": "Locate requested file",
+      "selector": "find",
+      "success": [
+        "FOUND",
+        "NOT_FOUND"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,105 @@
+LLM Gopher v0.17-dev1 qualification
+Date: 2026-09-02
+
+Scope
+-----
+- first-class language-module pack objects
+- module-driven source examination
+- Python AST examination
+- Java source kind/examiner/exact-symbol lookup
+- isolated javac compile validation
+- conservative grouped Java language rules
+- Java sphere grounded in real Swing/JMS consumers
+- no Java structural editor claimed
+
+Language-module contract
+------------------------
+Java module:
+  extensions: .java
+  examiner: source.java.examine
+  symbol language: java
+  rules: source.language.rules.evaluate
+  compile: source.java.compile
+  default sphere: java
+
+Real Java evidence in oorexxapis(20260902-105429).zip
+------------------------------------------------------
+Wire UI Swing v0.2-dev3
+  member: current/wire_ui_swing_v0.2-dev3.zip
+  sha256: 10823e3937eb02104c42b8990cef6349c4b587b5dbe198766d64804d89cbe9d3
+  project test result: PASS 32/32
+
+Wire UI Swing test app v0.2-dev6
+  member: current/testapps/wire_ui_swing_v0.2-dev6.zip
+  sha256: 60e45cd023a783c060e2fdb4b823e20a754934100d7f6d48779534775343cc8d
+
+FederationBank Java ATM v0.1.9
+  member: current/testapps/federationbank_java_atm_v0.1.9.zip
+  sha256: 4ba0ce06bc6977d2218b0faa84cd9919d879b2c82162e3dbcb276b8e8be53be8
+  project test result: RESULT: 22 passed, 0 failed
+
+ooRexx JMS Queue Bridge v0.1-dev7-fb1
+  member: current/oorexx_jms_queue_bridge_v0.1-dev7-fb1.zip
+  sha256: bf0c742f8f8e95e8d5b10dca67b92641780b8938417a2fd508192f27ccc26622
+
+Real nested source probes
+-------------------------
+JndiJmsBankNetwork.java
+  member: federationbank_java_atm_v0.1.9/src/main/java/com/federationbank/atm/bank/JndiJmsBankNetwork.java
+  package: com.federationbank.atm.bank
+  exact class declaration: line 21
+  match_kind: EXACT_DECLARATION
+
+WireSwingEdt.java
+  member: wire_ui_swing_v0.2-dev3/src/main/java/org/alchemy/wireui/swing/WireSwingEdt.java
+  exact class declaration: line 7
+  match_kind: EXACT_DECLARATION
+
+Java compiler probe
+-------------------
+host javac: 21.0.11
+requested source contract: --release 17
+probe result: VALID
+class output: isolated temporary directory; not retained
+
+Grouped Java rule probe
+-----------------------
+One source version returned both known breaches together:
+  JAVA.SOURCE.PUBLIC_TYPE_FILENAME  BLOCKER
+  JAVA.EXCEPT.EMPTY_CATCH           ADVISORY
+
+Nested public classes do not trigger the top-level filename rule.
+Method lookup does not confuse an invocation with a declaration.
+When a type and constructor share a name, exact type declaration has precedence.
+
+Swing lessons encoded
+---------------------
+- widget access belongs on the EDT
+- listeners capture local state and queue UI_ACTION; no JMS/network/application wait on EDT
+- preflight semantic patch state before EDT commit
+- preserve historical view/revision at event-queue time
+- presentation is not business/permission authority
+
+JMS lessons encoded
+-------------------
+- stable request/idempotency identity
+- JMSCorrelationID + JMSReplyTo + bounded receive + returned correlation check
+- explicit resource lifecycle and configured secret boundary
+- transport success is not business authority
+- project reflection/AUTO_ACKNOWLEDGE choices are not universal JMS doctrine
+- cross-language numeric promotion and timestamp precision are explicit interop hazards
+
+Regression evidence
+-------------------
+PASS ALL LLM GOPHER v0.17 JAVA/LANGUAGE-MODULE TESTS
+PASS ALL LLM GOPHER v0.16 SOURCE CONTRACT TESTS
+PASS ALL LLM GOPHER v0.16 SPHERE RETRIEVAL/OVERRIDE TESTS
+PASS ALL LLM GOPHER v0.16 EXTERNAL SPHERE COMPOSITION TESTS
+PASS ALL LLM GOPHER v0.15 SPHERE/LOOKUP/RC TESTS
+PASS ALL LLM GOPHER v0.14 SELF-DOCUMENTATION TESTS
+PASS ALL LLM GOPHER v0.13 SETUP/LAUNCH TESTS
+
+Packaging note
+--------------
+Gopher package.stage/package.check are used for the final delivery.
+package.seal remains a recorded dogfood gap, so ZIP sealing is external only after READY.

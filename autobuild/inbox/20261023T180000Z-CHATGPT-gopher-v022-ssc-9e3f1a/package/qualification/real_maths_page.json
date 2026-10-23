@@ -1,0 +1,1454 @@
+{
+  "schema": "llm-gopher/0.3",
+  "tool_status": {
+    "rc": 0,
+    "class": "OK"
+  },
+  "operation_status": {
+    "rc": 0,
+    "class": "OPENED"
+  },
+  "result": {
+    "page_type": "RexxClassPage",
+    "title": "Examine an ooRexx class",
+    "object": {
+      "path": "/mnt/data/api_probe/Maths.cls"
+    },
+    "sections": {
+      "classes": [
+        {
+          "name": "Maths",
+          "super": null
+        },
+        {
+          "name": "MathContext",
+          "super": null
+        },
+        {
+          "name": "MathPathStep",
+          "super": null
+        },
+        {
+          "name": "MathEvidence",
+          "super": null
+        },
+        {
+          "name": "MathSeal",
+          "super": null
+        },
+        {
+          "name": "MathDerivation",
+          "super": null
+        },
+        {
+          "name": "MathClaim",
+          "super": null
+        },
+        {
+          "name": "MathAssumptions",
+          "super": null
+        },
+        {
+          "name": "MathProofPolicy",
+          "super": null
+        },
+        {
+          "name": "MathProofRoute",
+          "super": null
+        },
+        {
+          "name": "MathProofPlan",
+          "super": null
+        },
+        {
+          "name": "MathProofAttempt",
+          "super": null
+        },
+        {
+          "name": "MathProof",
+          "super": null
+        },
+        {
+          "name": "MathValue",
+          "super": null
+        },
+        {
+          "name": "MathExactNumber",
+          "super": "MathValue"
+        },
+        {
+          "name": "MathRational",
+          "super": "MathExactNumber"
+        },
+        {
+          "name": "MathFraction",
+          "super": "MathRational"
+        },
+        {
+          "name": "MathInteger",
+          "super": "MathRational"
+        },
+        {
+          "name": "MathBall",
+          "super": "MathValue"
+        },
+        {
+          "name": "MathExpression",
+          "super": null
+        },
+        {
+          "name": "MathConstant",
+          "super": "MathExpression"
+        },
+        {
+          "name": "MathVariable",
+          "super": "MathExpression"
+        },
+        {
+          "name": "MathBinaryExpression",
+          "super": "MathExpression"
+        },
+        {
+          "name": "MathInterval",
+          "super": "MathValue"
+        },
+        {
+          "name": "MathComplex",
+          "super": "MathValue"
+        },
+        {
+          "name": "MathVector",
+          "super": "MathValue"
+        },
+        {
+          "name": "MathMatrix",
+          "super": "MathValue"
+        },
+        {
+          "name": "MathProvider",
+          "super": null
+        },
+        {
+          "name": "MathPureProvider",
+          "super": "MathProvider"
+        },
+        {
+          "name": "MathReferenceProvider",
+          "super": "MathProvider"
+        },
+        {
+          "name": "MathDirectProof",
+          "super": null
+        },
+        {
+          "name": "MathProofPlanner",
+          "super": null
+        },
+        {
+          "name": "MathExpressionProofPlanner",
+          "super": null
+        }
+      ],
+      "attributes": [],
+      "methods": [
+        {
+          "name": "version",
+          "declaration": "class"
+        },
+        {
+          "name": "defaultContext",
+          "declaration": "class"
+        },
+        {
+          "name": "registerProvider",
+          "declaration": "class"
+        },
+        {
+          "name": "provider",
+          "declaration": "class"
+        },
+        {
+          "name": "providers",
+          "declaration": "class"
+        },
+        {
+          "name": "providerFor",
+          "declaration": "class"
+        },
+        {
+          "name": "matrix",
+          "declaration": "class"
+        },
+        {
+          "name": "vector",
+          "declaration": "class"
+        },
+        {
+          "name": "complex",
+          "declaration": "class"
+        },
+        {
+          "name": "identity",
+          "declaration": "class"
+        },
+        {
+          "name": "variable",
+          "declaration": "class"
+        },
+        {
+          "name": "constant",
+          "declaration": "class"
+        },
+        {
+          "name": "assumptions",
+          "declaration": "class"
+        },
+        {
+          "name": "integer",
+          "declaration": "class"
+        },
+        {
+          "name": "fraction",
+          "declaration": "class"
+        },
+        {
+          "name": "rational",
+          "declaration": "class"
+        },
+        {
+          "name": "exact",
+          "declaration": "class"
+        },
+        {
+          "name": "rationalFromDecimal",
+          "declaration": "class"
+        },
+        {
+          "name": "rationalMatrix",
+          "declaration": "class"
+        },
+        {
+          "name": "rationalVector",
+          "declaration": "class"
+        },
+        {
+          "name": "planProof",
+          "declaration": "class"
+        },
+        {
+          "name": "prove",
+          "declaration": "class"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "requestedDigits",
+          "declaration": "; expose _requestedDigits; return _requestedDigits"
+        },
+        {
+          "name": "guardDigits",
+          "declaration": "; expose _guardDigits; return _guardDigits"
+        },
+        {
+          "name": "workingDigits",
+          "declaration": "; expose _requestedDigits _guardDigits; return _requestedDigits + _guardDigits"
+        },
+        {
+          "name": "numberDomain",
+          "declaration": "; expose _numberDomain; return _numberDomain"
+        },
+        {
+          "name": "provider",
+          "declaration": "; expose _provider; return _provider"
+        },
+        {
+          "name": "lossPolicy",
+          "declaration": "; expose _lossPolicy; return _lossPolicy"
+        },
+        {
+          "name": "relativeTolerance",
+          "declaration": "; expose _relativeTolerance; return _relativeTolerance"
+        },
+        {
+          "name": "absoluteTolerance",
+          "declaration": "; expose _absoluteTolerance; return _absoluteTolerance"
+        },
+        {
+          "name": "verificationExtraDigits",
+          "declaration": "; expose _verificationExtraDigits; return _verificationExtraDigits"
+        },
+        {
+          "name": "decimal",
+          "declaration": "class"
+        },
+        {
+          "name": "binary64",
+          "declaration": "class"
+        },
+        {
+          "name": "rational",
+          "declaration": "class"
+        },
+        {
+          "name": "withProvider",
+          "declaration": ""
+        },
+        {
+          "name": "verificationContext",
+          "declaration": ""
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": ""
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "operation",
+          "declaration": "; expose _operation; return _operation"
+        },
+        {
+          "name": "provider",
+          "declaration": "; expose _provider; return _provider"
+        },
+        {
+          "name": "providerVersion",
+          "declaration": "; expose _providerVersion; return _providerVersion"
+        },
+        {
+          "name": "algorithm",
+          "declaration": "; expose _algorithm; return _algorithm"
+        },
+        {
+          "name": "numberDomain",
+          "declaration": "; expose _numberDomain; return _numberDomain"
+        },
+        {
+          "name": "workingDigits",
+          "declaration": "; expose _workingDigits; return _workingDigits"
+        },
+        {
+          "name": "representation",
+          "declaration": "; expose _representation; return _representation"
+        },
+        {
+          "name": "details",
+          "declaration": "; expose _details; return _details"
+        },
+        {
+          "name": "guarantee",
+          "declaration": "; expose _guarantee; return _guarantee"
+        },
+        {
+          "name": "independenceTags",
+          "declaration": "; expose _independenceTags; return _independenceTags"
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": "; return self~canonical"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "operation",
+          "declaration": "; expose _operation; return _operation"
+        },
+        {
+          "name": "context",
+          "declaration": "; expose _context; return _context"
+        },
+        {
+          "name": "inputs",
+          "declaration": "; expose _inputs; return _inputs"
+        },
+        {
+          "name": "steps",
+          "declaration": "; expose _steps; return _steps"
+        },
+        {
+          "name": "warnings",
+          "declaration": "; expose _warnings; return _warnings"
+        },
+        {
+          "name": "checks",
+          "declaration": "; expose _checks; return _checks"
+        },
+        {
+          "name": "seal",
+          "declaration": "; expose _seal; return _seal"
+        },
+        {
+          "name": "addStep",
+          "declaration": ""
+        },
+        {
+          "name": "addWarning",
+          "declaration": ""
+        },
+        {
+          "name": "putCheck",
+          "declaration": ""
+        },
+        {
+          "name": "attachSeal",
+          "declaration": ""
+        },
+        {
+          "name": "primaryProvider",
+          "declaration": ""
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "describe",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": "; return self~describe"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "algorithm",
+          "declaration": "; expose _algorithm; return _algorithm"
+        },
+        {
+          "name": "digest",
+          "declaration": "; expose _digest; return _digest"
+        },
+        {
+          "name": "scope",
+          "declaration": "; expose _scope; return _scope"
+        },
+        {
+          "name": "canonical",
+          "declaration": "; expose _algorithm _digest _scope; return 'algorithm='_algorithm';scope='_scope';digest='_digest"
+        },
+        {
+          "name": "string",
+          "declaration": "; return self~canonical"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "operation",
+          "declaration": "; expose _operation; return _operation"
+        },
+        {
+          "name": "operands",
+          "declaration": "; expose _operands; return _operands"
+        },
+        {
+          "name": "parameter",
+          "declaration": "; expose _parameter; return _parameter"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "kind",
+          "declaration": "; expose _kind; return _kind"
+        },
+        {
+          "name": "expected",
+          "declaration": "; expose _expected; return _expected"
+        },
+        {
+          "name": "parameter",
+          "declaration": "; expose _parameter; return _parameter"
+        },
+        {
+          "name": "description",
+          "declaration": "; expose _description; return _description"
+        },
+        {
+          "name": "independentlyReproduced",
+          "declaration": "class"
+        },
+        {
+          "name": "equals",
+          "declaration": "class"
+        },
+        {
+          "name": "satisfiesEquation",
+          "declaration": "class"
+        },
+        {
+          "name": "accurateDigits",
+          "declaration": "class"
+        },
+        {
+          "name": "relativeAccuracyBits",
+          "declaration": "class"
+        },
+        {
+          "name": "isExact",
+          "declaration": "class"
+        },
+        {
+          "name": "enclosesExactEvaluation",
+          "declaration": "class"
+        },
+        {
+          "name": "contains",
+          "declaration": "class"
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": "; return self~canonical"
+        },
+        {
+          "name": "init",
+          "declaration": "; expose _facts; _facts=.directory~new"
+        },
+        {
+          "name": "add",
+          "declaration": ""
+        },
+        {
+          "name": "real",
+          "declaration": "; use strict arg variable; self~add(variable,'REAL'); return self"
+        },
+        {
+          "name": "positive",
+          "declaration": "; use strict arg variable; self~add(variable,'POSITIVE'); return self"
+        },
+        {
+          "name": "nonnegative",
+          "declaration": "; use strict arg variable; self~add(variable,'NONNEGATIVE'); return self"
+        },
+        {
+          "name": "nonzero",
+          "declaration": "; use strict arg variable; self~add(variable,'NONZERO'); return self"
+        },
+        {
+          "name": "integer",
+          "declaration": "; use strict arg variable; self~add(variable,'INTEGER'); return self"
+        },
+        {
+          "name": "has",
+          "declaration": ""
+        },
+        {
+          "name": "facts",
+          "declaration": "; expose _facts; return _facts"
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": "; return self~canonical"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "name",
+          "declaration": "; expose _name; return _name"
+        },
+        {
+          "name": "runAll",
+          "declaration": "; expose _runAll; return _runAll"
+        },
+        {
+          "name": "requireCorroboration",
+          "declaration": "; expose _requireCorroboration; return _requireCorroboration"
+        },
+        {
+          "name": "certifiedOnly",
+          "declaration": "; expose _certifiedOnly; return _certifiedOnly"
+        },
+        {
+          "name": "standard",
+          "declaration": "class; return self~new('STANDARD',.false,.false,.false)"
+        },
+        {
+          "name": "strong",
+          "declaration": "class; return self~new('STRONG',.true,.true,.false)"
+        },
+        {
+          "name": "certified",
+          "declaration": "class; return self~new('CERTIFIED',.true,.false,.true)"
+        },
+        {
+          "name": "diagnostic",
+          "declaration": "class; return self~new('DIAGNOSTIC',.true,.false,.false)"
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": "; return self~canonical"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "id",
+          "declaration": "; expose _id; return _id"
+        },
+        {
+          "name": "role",
+          "declaration": "; expose _role; return _role"
+        },
+        {
+          "name": "provider",
+          "declaration": "; expose _provider; return _provider"
+        },
+        {
+          "name": "guarantee",
+          "declaration": "; expose _guarantee; return _guarantee"
+        },
+        {
+          "name": "independenceTags",
+          "declaration": "; expose _independenceTags; return _independenceTags"
+        },
+        {
+          "name": "reason",
+          "declaration": "; expose _reason; return _reason"
+        },
+        {
+          "name": "claim",
+          "declaration": "; expose _claim; return _claim"
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": "; return self~canonical"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "claim",
+          "declaration": "; expose _claim; return _claim"
+        },
+        {
+          "name": "assumptions",
+          "declaration": "; expose _assumptions; return _assumptions"
+        },
+        {
+          "name": "policy",
+          "declaration": "; expose _policy; return _policy"
+        },
+        {
+          "name": "routes",
+          "declaration": "; expose _routes; return _routes"
+        },
+        {
+          "name": "addRoute",
+          "declaration": ""
+        },
+        {
+          "name": "routeCount",
+          "declaration": "; expose _routes; return _routes~items"
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "describe",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": "; return self~describe"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "route",
+          "declaration": "; expose _route; return _route"
+        },
+        {
+          "name": "proof",
+          "declaration": "; expose _proof; return _proof"
+        },
+        {
+          "name": "outcome",
+          "declaration": "; expose _proof; return _proof~outcome"
+        },
+        {
+          "name": "strength",
+          "declaration": "; expose _proof; return _proof~status"
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": "; return self~canonical"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "status",
+          "declaration": "; expose _status; return _status"
+        },
+        {
+          "name": "strength",
+          "declaration": "; expose _status; return _status"
+        },
+        {
+          "name": "outcome",
+          "declaration": "; expose _outcome; return _outcome"
+        },
+        {
+          "name": "claim",
+          "declaration": "; expose _claim; return _claim"
+        },
+        {
+          "name": "assumptions",
+          "declaration": "; expose _assumptions; return _assumptions"
+        },
+        {
+          "name": "primaryEvidence",
+          "declaration": "; expose _primaryEvidence; return _primaryEvidence"
+        },
+        {
+          "name": "verificationEvidence",
+          "declaration": "; expose _verificationEvidence; return _verificationEvidence"
+        },
+        {
+          "name": "checks",
+          "declaration": "; expose _checks; return _checks"
+        },
+        {
+          "name": "notes",
+          "declaration": "; expose _notes; return _notes"
+        },
+        {
+          "name": "plan",
+          "declaration": "; expose _plan; return _plan"
+        },
+        {
+          "name": "attempts",
+          "declaration": "; expose _attempts; return _attempts"
+        },
+        {
+          "name": "seal",
+          "declaration": "; expose _seal; return _seal"
+        },
+        {
+          "name": "attachSeal",
+          "declaration": ""
+        },
+        {
+          "name": "verified",
+          "declaration": "; expose _outcome; return _outcome='PROVED'"
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "describe",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": "; return self~describe"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "context",
+          "declaration": "; expose _context; return _context"
+        },
+        {
+          "name": "evidence",
+          "declaration": "; expose _evidence; return _evidence"
+        },
+        {
+          "name": "provenance",
+          "declaration": "; expose _evidence; return _evidence"
+        },
+        {
+          "name": "derivation",
+          "declaration": "; expose _derivation; return _derivation"
+        },
+        {
+          "name": "_setEvidence",
+          "declaration": ""
+        },
+        {
+          "name": "_setDerivation",
+          "declaration": ""
+        },
+        {
+          "name": "prove",
+          "declaration": ""
+        },
+        {
+          "name": "doAgainDifferently",
+          "declaration": ""
+        },
+        {
+          "name": "isExact",
+          "declaration": "; return .true"
+        },
+        {
+          "name": "exactDomain",
+          "declaration": "; return 'EXACT'"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "of",
+          "declaration": "class"
+        },
+        {
+          "name": "numerator",
+          "declaration": "; expose _numerator; return _numerator"
+        },
+        {
+          "name": "denominator",
+          "declaration": "; expose _denominator; return _denominator"
+        },
+        {
+          "name": "isInteger",
+          "declaration": "; expose _denominator; return _denominator=1"
+        },
+        {
+          "name": "isRational",
+          "declaration": "; return .true"
+        },
+        {
+          "name": "isFraction",
+          "declaration": "; expose _denominator; return _denominator<>1"
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": ""
+        },
+        {
+          "name": "coerce",
+          "declaration": "class"
+        },
+        {
+          "name": "fromDecimal",
+          "declaration": "class"
+        },
+        {
+          "name": "_result",
+          "declaration": ""
+        },
+        {
+          "name": "abs",
+          "declaration": ""
+        },
+        {
+          "name": "compareTo",
+          "declaration": ""
+        },
+        {
+          "name": "toDecimal",
+          "declaration": ""
+        },
+        {
+          "name": "format",
+          "declaration": ""
+        },
+        {
+          "name": "prove",
+          "declaration": ""
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "isFraction",
+          "declaration": "; return .true"
+        },
+        {
+          "name": "isInteger",
+          "declaration": "; return .false"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "isInteger",
+          "declaration": "; return .true"
+        },
+        {
+          "name": "isFraction",
+          "declaration": "; return .false"
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": ""
+        },
+        {
+          "name": "format",
+          "declaration": ""
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "enclosure",
+          "declaration": "; expose _enclosure; return _enclosure"
+        },
+        {
+          "name": "relativeAccuracyBits",
+          "declaration": "; expose _relativeAccuracyBits; return _relativeAccuracyBits"
+        },
+        {
+          "name": "isExact",
+          "declaration": "; expose _isExact; return _isExact"
+        },
+        {
+          "name": "provider",
+          "declaration": "; expose _provider; return _provider"
+        },
+        {
+          "name": "string",
+          "declaration": "; expose _enclosure; return _enclosure"
+        },
+        {
+          "name": "prove",
+          "declaration": ""
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "context",
+          "declaration": "; expose _context; return _context"
+        },
+        {
+          "name": "coerce",
+          "declaration": "class"
+        },
+        {
+          "name": "simplify",
+          "declaration": "; return self"
+        },
+        {
+          "name": "prove",
+          "declaration": ""
+        },
+        {
+          "name": "interval",
+          "declaration": ""
+        },
+        {
+          "name": "ball",
+          "declaration": ""
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "text",
+          "declaration": "; expose _text; return _text"
+        },
+        {
+          "name": "exact",
+          "declaration": "; expose _exact; return _exact"
+        },
+        {
+          "name": "isExactZero",
+          "declaration": "; expose _text _exact; return _exact & _text=0"
+        },
+        {
+          "name": "isExactOne",
+          "declaration": "; expose _text _exact; return _exact & _text=1"
+        },
+        {
+          "name": "canonical",
+          "declaration": "; expose _text _exact; return 'const('_text';exact='_exact')'"
+        },
+        {
+          "name": "providerText",
+          "declaration": "; expose _text; return _text"
+        },
+        {
+          "name": "evaluate",
+          "declaration": "; expose _text; return _text+0"
+        },
+        {
+          "name": "string",
+          "declaration": "; expose _text; return _text"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "name",
+          "declaration": "; expose _name; return _name"
+        },
+        {
+          "name": "canonical",
+          "declaration": "; expose _name; return 'var('_name')'"
+        },
+        {
+          "name": "providerText",
+          "declaration": "; expose _name; return _name"
+        },
+        {
+          "name": "evaluate",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": "; expose _name; return _name"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "op",
+          "declaration": "; expose _op; return _op"
+        },
+        {
+          "name": "left",
+          "declaration": "; expose _left; return _left"
+        },
+        {
+          "name": "right",
+          "declaration": "; expose _right; return _right"
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "providerText",
+          "declaration": ""
+        },
+        {
+          "name": "evaluate",
+          "declaration": ""
+        },
+        {
+          "name": "simplify",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": "; return self~providerText"
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "lower",
+          "declaration": "; expose _lower; return _lower"
+        },
+        {
+          "name": "upper",
+          "declaration": "; expose _upper; return _upper"
+        },
+        {
+          "name": "width",
+          "declaration": "; expose _width; return _width"
+        },
+        {
+          "name": "enclosure",
+          "declaration": "; expose _enclosure; return _enclosure"
+        },
+        {
+          "name": "string",
+          "declaration": "; expose _enclosure; return _enclosure"
+        },
+        {
+          "name": "prove",
+          "declaration": ""
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "real",
+          "declaration": "; expose _real; return _real"
+        },
+        {
+          "name": "imaginary",
+          "declaration": "; expose _imaginary; return _imaginary"
+        },
+        {
+          "name": "conjugate",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": ""
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "size",
+          "declaration": "; expose _data; return _data~items"
+        },
+        {
+          "name": "items",
+          "declaration": "; expose _data; return _data~items"
+        },
+        {
+          "name": "at",
+          "declaration": "; expose _data; use strict arg i; return _data[i]"
+        },
+        {
+          "name": "toArray",
+          "declaration": ""
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "hadamard",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": ""
+        },
+        {
+          "name": "init",
+          "declaration": ""
+        },
+        {
+          "name": "rows",
+          "declaration": "; expose _rows; return _rows"
+        },
+        {
+          "name": "cols",
+          "declaration": "; expose _cols; return _cols"
+        },
+        {
+          "name": "isSquare",
+          "declaration": "; expose _rows _cols; return _rows=_cols"
+        },
+        {
+          "name": "at",
+          "declaration": "; expose _data; use strict arg row,col; return _data[row][col]"
+        },
+        {
+          "name": "toArray",
+          "declaration": ""
+        },
+        {
+          "name": "backendProvider",
+          "declaration": "; expose _backendProvider; return _backendProvider"
+        },
+        {
+          "name": "backendValue",
+          "declaration": "; expose _backendValue; return _backendValue"
+        },
+        {
+          "name": "_attachBackend",
+          "declaration": ""
+        },
+        {
+          "name": "canonical",
+          "declaration": ""
+        },
+        {
+          "name": "transpose",
+          "declaration": ""
+        },
+        {
+          "name": "solve",
+          "declaration": ""
+        },
+        {
+          "name": "inverse",
+          "declaration": ""
+        },
+        {
+          "name": "identity",
+          "declaration": "class"
+        },
+        {
+          "name": "maxAbsDifference",
+          "declaration": ""
+        },
+        {
+          "name": "string",
+          "declaration": ""
+        },
+        {
+          "name": "uninit",
+          "declaration": ""
+        },
+        {
+          "name": "name",
+          "declaration": "abstract"
+        },
+        {
+          "name": "version",
+          "declaration": "; return '0.5'"
+        },
+        {
+          "name": "supports",
+          "declaration": ""
+        },
+        {
+          "name": "name",
+          "declaration": "; return 'PURE'"
+        },
+        {
+          "name": "supports",
+          "declaration": ""
+        },
+        {
+          "name": "_step",
+          "declaration": ""
+        },
+        {
+          "name": "_matrixEvidence",
+          "declaration": ""
+        },
+        {
+          "name": "vectorAdd",
+          "declaration": ""
+        },
+        {
+          "name": "vectorSub",
+          "declaration": ""
+        },
+        {
+          "name": "vectorMul",
+          "declaration": ""
+        },
+        {
+          "name": "vectorHadamard",
+          "declaration": ""
+        },
+        {
+          "name": "matrixAdd",
+          "declaration": ""
+        },
+        {
+          "name": "matrixSub",
+          "declaration": ""
+        },
+        {
+          "name": "matrixMul",
+          "declaration": ""
+        },
+        {
+          "name": "matrixTranspose",
+          "declaration": ""
+        },
+        {
+          "name": "matrixSolve",
+          "declaration": ""
+        },
+        {
+          "name": "_solveMatrixRhs",
+          "declaration": ""
+        },
+        {
+          "name": "name",
+          "declaration": "; return 'REFERENCE'"
+        },
+        {
+          "name": "supports",
+          "declaration": "; use strict arg operation; return .true"
+        },
+        {
+          "name": "_step",
+          "declaration": ""
+        },
+        {
+          "name": "matrixAdd",
+          "declaration": ""
+        },
+        {
+          "name": "matrixSub",
+          "declaration": ""
+        },
+        {
+          "name": "matrixMul",
+          "declaration": ""
+        },
+        {
+          "name": "matrixTranspose",
+          "declaration": ""
+        },
+        {
+          "name": "matrixSolve",
+          "declaration": ""
+        },
+        {
+          "name": "vectorAdd",
+          "declaration": "; use strict arg l,r,c; return .Maths~provider('PURE')~vectorAdd(l,r,c)"
+        },
+        {
+          "name": "vectorSub",
+          "declaration": "; use strict arg l,r,c; return .Maths~provider('PURE')~vectorSub(l,r,c)"
+        },
+        {
+          "name": "vectorMul",
+          "declaration": "; use strict arg l,r,c; return .Maths~provider('PURE')~vectorMul(l,r,c)"
+        },
+        {
+          "name": "vectorHadamard",
+          "declaration": "; use strict arg l,r,c; return .Maths~provider('PURE')~vectorHadamard(l,r,c)"
+        },
+        {
+          "name": "rational",
+          "declaration": "class"
+        },
+        {
+          "name": "ball",
+          "declaration": "class"
+        },
+        {
+          "name": "interval",
+          "declaration": "class"
+        },
+        {
+          "name": "expressionLocal",
+          "declaration": "class"
+        },
+        {
+          "name": "expressionSympy",
+          "declaration": "class"
+        },
+        {
+          "name": "_defaultClaim",
+          "declaration": "class"
+        },
+        {
+          "name": "_policy",
+          "declaration": "class"
+        },
+        {
+          "name": "plan",
+          "declaration": "class"
+        },
+        {
+          "name": "recompute",
+          "declaration": "class"
+        },
+        {
+          "name": "prove",
+          "declaration": "class"
+        },
+        {
+          "name": "_executeRoute",
+          "declaration": "class"
+        },
+        {
+          "name": "_finalize",
+          "declaration": "class"
+        },
+        {
+          "name": "_baseEvidence",
+          "declaration": "class"
+        },
+        {
+          "name": "_proveIndependent",
+          "declaration": "class"
+        },
+        {
+          "name": "_proveEquation",
+          "declaration": "class"
+        },
+        {
+          "name": "_proveEquationExact",
+          "declaration": "class"
+        },
+        {
+          "name": "prove",
+          "declaration": "class"
+        }
+      ]
+    },
+    "selectors": [
+      {
+        "id": "examine",
+        "type": "exec",
+        "action": "exec",
+        "resource": "tool:source.oorexx.examine",
+        "capability": "source.oorexx.examine"
+      }
+    ]
+  },
+  "evidence": {
+    "examiner_route": {
+      "requested_capability": "source.oorexx.examine",
+      "service": "oorexx.source.examine",
+      "implementation": "builtin.source.oorexx.examine",
+      "fallback_depth": 0,
+      "attempts": [
+        {
+          "service": "oorexx.source.examine",
+          "implementation": "builtin.source.oorexx.examine",
+          "tool_status": "OK"
+        }
+      ]
+    },
+    "source_path": "/mnt/data/api_probe/Maths.cls"
+  }
+}

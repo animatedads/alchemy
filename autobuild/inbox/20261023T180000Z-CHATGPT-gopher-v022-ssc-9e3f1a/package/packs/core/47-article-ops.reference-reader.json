@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "ops.reference-reader",
+  "version": "0.1",
+  "sphere": "core",
+  "title": "Bounded PDF/HTML reference navigation",
+  "summary": "Use this whenever a sphere points at a PDF/HTML manual. The normal cycle is find or locate -> read the returned physical page/HTML section -> move -1/+1/+N/-N for surrounding context -> return to the originating article/task.",
+  "invariants": [
+    "PDF physical page number and printed/manual page label are different identities.",
+    "A printed-page lookup is approximate until the returned physical page is inspected.",
+    "Find returns bounded excerpts and an exact physical-page/section selector; it does not dump the whole document.",
+    "URL fetching is bounded by byte limit and temporary; the response records resolved source, byte size and SHA-256.",
+    "Previous/next/+N/-N navigation operates on physical PDF pages or bounded HTML sections.",
+    "Text extraction is evidence access, not authority over the source document's interpretation."
+  ],
+  "procedure": [
+    "Use `reference find` when you know a phrase.",
+    "Use `reference locate --reference-page N --approx-page M` when a citation refers to printed page N but front matter makes physical PDF page uncertain.",
+    "Use `reference read` on the returned location.",
+    "Use `reference move ... +1/-1/+5/-5` to inspect surrounding pages.",
+    "Return to the originating sphere/article once the bounded primary evidence has been read."
+  ],
+  "examples": [
+    {
+      "task": "Find a known phrase in the live ooRexx reference",
+      "command": "gopher reference find https://www.oorexx.org/docs/pdf/rexxref.pdf FORWARD",
+      "then": "Open the best returned physical_page."
+    },
+    {
+      "task": "A citation says printed page 55 but the PDF has front matter",
+      "command": "gopher reference locate https://www.oorexx.org/docs/pdf/rexxref.pdf --reference-page 55 --approx-page 73 --window 20",
+      "then": "Treat the printed-page mapping as approximate until the returned page is read."
+    },
+    {
+      "task": "Read the section",
+      "command": "gopher reference read https://www.oorexx.org/docs/pdf/rexxref.pdf --page 73 --reference-page 55",
+      "then": "Use navigation.next/previous or move."
+    },
+    {
+      "task": "Continue onto the next physical page",
+      "command": "gopher reference move https://www.oorexx.org/docs/pdf/rexxref.pdf --page 73 1",
+      "then": "Read the continuation and return to the original coding/manual question."
+    }
+  ],
+  "correct": [
+    "> CORRECT: search a phrase when you know wording; use locate when you know a printed/manual page but not the physical PDF offset.",
+    "> CORRECT: preserve both printed-page hint and physical PDF page; do not silently equate them.",
+    "> CORRECT: use bounded page reads and relative navigation instead of extracting/dumping an entire manual."
+  ]
+}

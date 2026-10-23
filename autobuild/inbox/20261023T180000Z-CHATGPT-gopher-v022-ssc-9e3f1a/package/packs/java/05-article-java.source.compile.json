@@ -1,0 +1,20 @@
+{
+  "kind": "article",
+  "id": "java.source.compile",
+  "version": "0.1",
+  "sphere": "java",
+  "title": "Compile against the declared Java contract",
+  "summary": "Use javac as authoritative syntax/type evidence. The FederationBank Java ATM harness compiles main and test source with `javac --release 17 -Xlint:all` and runs with `java -ea`; do not silently compile against whatever source/target level the host defaults to.",
+  "authoritative_sources": [
+    {
+      "archive": "oorexxapis(20260902-105429).zip",
+      "nested": "current/testapps/federationbank_java_atm_v0.1.9.zip",
+      "member": "federationbank_java_atm_v0.1.9/scripts/run_tests.sh"
+    }
+  ],
+  "correct": [
+    "Declare the intended Java release when the project does.",
+    "Use the actual project classpath/sourcepath rather than inventing missing APIs.",
+    "Treat unresolved optional dependencies as dependency evidence, not as proof the Java source is wrong."
+  ]
+}

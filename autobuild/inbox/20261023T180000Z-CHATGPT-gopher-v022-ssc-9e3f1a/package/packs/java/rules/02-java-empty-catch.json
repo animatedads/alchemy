@@ -1,0 +1,17 @@
+{
+  "kind": "language-rule",
+  "id": "JAVA.EXCEPT.EMPTY_CATCH",
+  "version": "0.1",
+  "language": "java",
+  "title": "Empty catch block hides failure evidence",
+  "classification": "best_practice",
+  "detection": "deterministic",
+  "severity": "ADVISORY",
+  "trigger": "A catch clause has an empty body.",
+  "correct": "> CORRECT: handle, translate, log with useful context, or document a deliberate suppression at the narrow boundary.",
+  "fix": {
+    "class": "SUGGESTED"
+  },
+  "authority": "project/institutional practice",
+  "note": "Java permits empty catch blocks; this is advisory, not a syntax claim."
+}

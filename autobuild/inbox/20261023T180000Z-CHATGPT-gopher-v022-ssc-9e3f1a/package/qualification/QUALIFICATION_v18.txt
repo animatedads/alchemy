@@ -1,0 +1,65 @@
+LLM Gopher v0.18-dev1 qualification
+Date: 2026-09-02
+
+Scope
+-----
+- workspace-gpt operational sphere
+- byte/inode workspace inspection
+- materialisation readiness and explicit host materialisation boundary
+- ZIP central-directory preflight before extraction
+- physical filesystem vs declared session-quota comparison
+- traversal/encryption/expansion-ratio checks
+- HANDOVER_ADVISED / PREPARE_HANDOVER result
+- read-only handover frame with exact artifact SHA-256
+- minimum context recoverability check
+
+Current workspace observation
+-----------------------------
+At development time the active execution filesystem reported roughly 30 GiB free and
+~2.1 million free inodes; /mnt/data used roughly 98 MiB. This is evidence for the
+current session only, not a universal ChatGPT workspace contract.
+
+Exact quota regression
+----------------------
+A real ZIP was generated with:
+  compressed ZIP size: 31,593,716 bytes (~30.1 MiB)
+  uncompressed member size: 161,480,704 bytes (154 MiB)
+  expansion ratio: 5.111
+  declared workspace limit: 62,914,560 bytes (60 MiB)
+
+Preflight read the ZIP central directory without extraction and returned:
+  operation_status: HANDOVER_ADVISED
+  finding: INSUFFICIENT_BYTES
+  advice.action: PREPARE_HANDOVER
+  advice.do_not_extract: true
+
+This result was based on the declared session quota even though host df had far more
+physical free space.
+
+Materialisation boundary
+------------------------
+When an expected file is absent, Gopher does not infer a /mnt/data path from its title.
+The result names the required host capability as `files.materialize`. If expected
+materialisation plus reserve does not fit, the result advises handover before asking the
+host to materialise it.
+
+Handover/recovery
+-----------------
+workspace.handover.frame is read-only. It can capture current environment, active spheres,
+artifact bytes/SHA-256, task and next action, and lists missing continuity fields.
+workspace.context.recoverability advises handover when durable setup/sphere/qualification/
+changelog evidence is insufficient; model conversational recollection alone is not treated
+as durable recovery evidence.
+
+Evidence
+--------
+PASS ALL LLM GOPHER v0.18 WORKSPACE-GPT TESTS
+PASS ALL LLM GOPHER v0.17 JAVA/LANGUAGE-MODULE TESTS
+PASS ALL LLM GOPHER v0.16 SOURCE CONTRACT TESTS
+PASS ALL LLM GOPHER v0.16 SPHERE RETRIEVAL/OVERRIDE TESTS
+PASS ALL LLM GOPHER v0.15 SPHERE/LOOKUP/RC TESTS
+PASS ALL LLM GOPHER v0.14 SELF-DOCUMENTATION TESTS
+PASS ALL LLM GOPHER v0.13 SETUP/LAUNCH TESTS
+PASS ALL LLM GOPHER v0.12 DOGFOOD TESTS
+PASS ALL LLM GOPHER v0.11 PACKAGE/STAGING TESTS
+PASS ALL LLM GOPHER v0.10 RESULT/CYCLE TESTS

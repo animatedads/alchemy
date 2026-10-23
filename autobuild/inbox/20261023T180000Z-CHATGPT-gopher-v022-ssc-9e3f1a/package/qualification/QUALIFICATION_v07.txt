@@ -1,0 +1,31 @@
+LLM Gopher v0.7-dev1 qualification
+
+Runtime:
+  Open Object Rexx 5.3.0 r13196 Internal Test Version
+  supplied runtime unpacked at /mnt/data/oorexx_runtime_530
+
+Regression results:
+  PASS semantic merge/finder/proxy/fallback/search/access tests
+  PASS 6 command smoke tests
+  PASS ALL LLM GOPHER v0.2-dev1 TESTS
+  PASS ALL LLM GOPHER v0.3 PAGE TESTS
+  PASS ALL LLM GOPHER v0.4 IN-ZIP TESTS
+  PASS ALL LLM GOPHER v0.5 LLM-USABILITY TESTS
+  PASS ALL LLM GOPHER v0.6 BOUNDED SOURCE-EDIT TESTS
+  PASS ALL LLM GOPHER v0.7 LANGUAGE-RULE CYCLE TESTS
+  PASS OOREXX RUNTIME PROBE
+
+v0.7 behavioural evidence:
+  - Python grouped pass reports duplicate method, wildcard import, and bare except in one response.
+  - ooRexx grouped pass reports duplicate class, duplicate method, and duplicate ::requires in one response.
+  - Every breach contains caused_by, observed evidence/location, typed fixability and correction text, actions, and a rule detail selector.
+  - LanguageRulePage preserves return_to cycle selector.
+  - Missing path is INVALID_ARGUMENT rather than NOT_FOUND.
+  - language-rule documents are semantic merge objects; conflicting identity is rejected fail-closed.
+  - source editors evaluate candidate language rules before commit; blockers reject commit and advisories remain attached to successful edit evidence.
+
+Four-pack semantic merge:
+  documents: 45
+  digest: d6cab4251486480b4d3c2b7cd1d0c25a4dc9f65d862360c4ca62406aefe23474
+
+Note: a combined v0.2-v0.5 command exceeded the external harness timeout during archive-heavy work; v0.4 and v0.5 were rerun independently and both passed. The timeout is not recorded as a product pass or product failure.

@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "sphere-authoring.engine.no-engine-invasion",
+  "version": "0.3",
+  "sphere": "sphere-authoring",
+  "title": "Do not replace the engine; learn what a sphere can and cannot extend",
+  "summary": "A sphere is knowledge and declared services on top of Gopher; do not fork engine/gopher.py merely to make one sphere work. Reuse shared services, explicit inheritance, language modules and the Sphere Editor. Engine changes belong in the common engine only when multiple real sphere users expose a common capability gap.",
+  "why_it_matters": "Trying to extend executable checks is a frequent trap. The release posture is additive only (new pack dirs, a profiler, tests, qualification), never engine surgery.",
+  "evidence_note": "The `source.python.method.edit` capability consumes one-complete-method replacement files and preserves unrelated bytes; a sphere can ship such method fragments as examples, and examples/pack contents outside packs/ can be used as inputs, but the engine evaluators stay in the engine.",
+  "invariants": [
+    "Prefer pack/profile/service/inheritance composition over sphere-local engine forks.",
+    "A language rule document does not automatically become executable merely because it exists; executed checks require a published common capability/implementation.",
+    "A common engine change is justified by a shared mechanism need, not by one sphere wanting a private shortcut.",
+    "Keep sphere delivery additive and independently loadable."
+  ],
+  "section": "sphere-internals",
+  "topics": [
+    "engine-boundary",
+    "services",
+    "inheritance"
+  ],
+  "authority": "project-doctrine"
+}

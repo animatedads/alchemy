@@ -1,0 +1,21 @@
+Additional v0.16 source-contract qualification
+
+PASS ALL LLM GOPHER v0.16 SOURCE CONTRACT TESTS
+PASS ALL LLM GOPHER v0.16 EXTERNAL SPHERE COMPOSITION TESTS
+
+Real current Maths probe against oorexxapis(20260902-105429).zip:
+- nested current/oorexx_maths_v0.7.zip
+- member oorexx_maths_v0.7/rexx/Maths.cls
+- 44 classes / 443 methods
+- MathInteger exact declaration at line 890
+- match_kind EXACT_DECLARATION
+
+Source contract:
+- src/ preferred, then source/, then legacy rexx/
+- exact declarations before any fallback
+- fallback requires explicit --symbol-fallback and is labelled TEXT_FALLBACK
+- duplicate exact declarations return AMBIGUOUS
+
+Harness corrections:
+- v0.13 restricted PATH includes ar
+- v0.14 help regression checks semantic markers instead of stale prose

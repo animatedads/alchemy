@@ -1,0 +1,32 @@
+{
+  "kind": "corpus",
+  "id": "workspace-gpt.lessons",
+  "sphere": "workspace-gpt",
+  "title": "Ephemeral workspace lessons",
+  "records": [
+    {
+      "topic": "disk",
+      "rule": "Check both bytes and inodes. `df -h` alone is insufficient for archives containing many small files."
+    },
+    {
+      "topic": "zip",
+      "rule": "Compressed size is not extraction size. Read the ZIP central directory and total uncompressed member sizes before extraction."
+    },
+    {
+      "topic": "zip bomb",
+      "rule": "A valid ZIP can have a dangerous expansion ratio. Preflight ratio and archive paths before extracting."
+    },
+    {
+      "topic": "materialization",
+      "rule": "An attached or library file may not be mounted in the execution workspace. Use the host materialisation route when needed; never infer a sandbox path from the title."
+    },
+    {
+      "topic": "handover",
+      "rule": "If the requested materialisation/extraction cannot fit with reserve, stop before partial work and prepare handover with exact artifact identity and continuation state."
+    },
+    {
+      "topic": "recovery",
+      "rule": "Context is recoverable only if durable state exists outside transient conversational recollection: setup/provenance, active spheres, qualification/change record, exact artifact digests and next action."
+    }
+  ]
+}

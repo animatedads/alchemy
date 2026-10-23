@@ -1,0 +1,17 @@
+{
+  "kind":"article",
+  "id":"ops.source.edit.safe",
+  "version":"0.1",
+  "sphere":"core",
+  "title":"Safely edit existing source",
+  "handler":"ArticlePage",
+  "rules":[
+    "An edit changes only the declared target region unless wider transformation scope is explicitly requested.",
+    "Never regenerate an existing source file from a partial internal model.",
+    "Validate the complete candidate source before commit.",
+    "Retain before/after digests and a bounded diff as evidence.",
+    "Reject stale-source edits when an expected source digest no longer matches."
+  ],
+  "failure_classes":["SOURCE_EDIT.REGENERATE_INSTEAD_OF_EDIT","SOURCE_EDIT.AMBIGUOUS_TARGET","SOURCE_EDIT.STALE_SOURCE","SOURCE_EDIT.VALIDATION_FAILED"],
+  "selectors":[]
+}

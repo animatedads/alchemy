@@ -1,0 +1,21 @@
+{
+  "kind": "article",
+  "id": "ops.java.overview",
+  "version": "0.1",
+  "sphere": "java",
+  "title": "How to work on Java here",
+  "summary": "Resolve the Java language module, examine the exact source/type first, use project release/classpath explicitly, compile with javac evidence, and consult the Swing/JMS articles before writing integration code.",
+  "evidence_note": "Grounded in the delivered Wire UI Swing and FederationBank Java ATM/JMS artifacts in oorexxapis(20260902-105429).zip; portable Java semantics are kept separate from project-specific authority rules.",
+  "procedure": [
+    "Resolve/examine the exact .java source and symbol.",
+    "Read the relevant Swing/JMS/project article before changing integration code.",
+    "Compile with the project's declared --release and classpath.",
+    "Run project tests with assertions enabled where the project harness does so.",
+    "Return compiler/test evidence and a bounded diff."
+  ],
+  "invariants": [
+    "Do not infer Java API or transport semantics from a class name alone.",
+    "Compilation success is necessary evidence, not proof of project semantic correctness.",
+    "Project authority boundaries remain outside presentation/transport code."
+  ]
+}

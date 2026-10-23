@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "ops.workspace-gpt",
+  "version": "0.1",
+  "sphere": "core",
+  "title": "Workspace-GPT: check the room before moving the furniture",
+  "summary": "Before materialising a large file, extracting a ZIP, running a space-heavy test, or depending on session-local context, inspect byte/inode headroom and preflight the operation. If it cannot fit safely, prepare handover before partial work.",
+  "procedure": [
+    "Run workspace.inspect before large materialisation/extraction/test work.",
+    "If a needed attachment is not present, run workspace.materialization.check with the best known expected size; do not invent a sandbox path.",
+    "Before ZIP extraction, run workspace.archive.preflight. It reads the central directory without extraction.",
+    "Treat HANDOVER_ADVISED as a stop condition for the planned extraction/materialisation in this workspace.",
+    "Before expected session loss or when continuity artifacts are missing, run workspace.context.recoverability and prepare handover."
+  ],
+  "invariants": [
+    "Do not start extraction merely because the compressed ZIP fits.",
+    "Compare total uncompressed bytes and member count against destination bytes and free inodes.",
+    "Reject traversal paths and suspicious expansion ratios before extraction.",
+    "Leave a configurable reserve rather than consuming the workspace to zero.",
+    "A conversation attachment name does not prove that its bytes are mounted in the execution workspace.",
+    "When capacity/recoverability is inadequate, record exact artifact identity, current state, active spheres, next task and test evidence before handing over."
+  ]
+}

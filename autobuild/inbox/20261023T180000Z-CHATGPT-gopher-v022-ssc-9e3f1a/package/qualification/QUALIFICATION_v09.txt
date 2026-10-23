@@ -1,0 +1,41 @@
+LLM Gopher v0.10-dev1 qualification
+
+New surface:
+- Schema-generated Gopher+ electronic forms from the same CAPABILITY_SCHEMAS used for validation and describe.
+- CLI: gopher form CAPABILITY [--sphere SPHERE] and gopher submit CAPABILITY key=value ...
+- Sphere-qualified executable form selectors: /form/<sphere>/<capability>.
+- Gopher+ +ASK attribute retrieval over TCP.
+- RFC-style ASK submission framing is accepted: selector<TAB>+<TAB>1, +-1, ordered answer lines, dot terminator.
+- ASK request body is bounded by line and byte limits.
+- Submitted values are mapped back to schema fields, validated, then executed only through Finder/ServiceProxy.
+- Result JSON records route evidence and return_to selector.
+- Sphere authority is re-evaluated on form fetch and submission; FederationBank llm role is denied executable forms.
+- Direct capability selector OPENED handling corrected and regression covered.
+
+Evidence:
+PASS semantic merge/finder/proxy/fallback/search/access tests
+PASS 6 command smoke tests
+PASS ALL LLM GOPHER v0.2-dev1 TESTS
+PASS ALL LLM GOPHER v0.3 PAGE TESTS
+PASS ALL LLM GOPHER v0.4 IN-ZIP TESTS
+PASS ALL LLM GOPHER v0.5 LLM-USABILITY TESTS
+PASS ALL LLM GOPHER v0.6 BOUNDED SOURCE-EDIT TESTS
+PASS ALL LLM GOPHER v0.7 LANGUAGE-RULE CYCLE TESTS
+PASS ALL LLM GOPHER v0.8 SELECTOR/GOPHER TESTS
+PASS LLM GOPHER v0.8-dev2 PYTHON PORTABILITY TESTS
+PASS ALL LLM GOPHER v0.9 GOPHER+ FORM TESTS
+PASS OOREXX RUNTIME PROBE
+
+Runtime:
+Supplied oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20260902-003425).deb unpacked without host installation.
+/mnt/data/oorexx_runtime_530/usr/local/bin/rexx qualification/runtime_probe.rex
+=> PASS OOREXX RUNTIME PROBE
+
+Wire probe:
+A TCP client fetched /form/oorexx/executable.locate<TAB>! and received a +ASK block containing Ask: name * and a return selector.
+A second TCP request submitted /form/oorexx/executable.locate<TAB>+<TAB>1 with +-1, answer "sh", and dot termination. It returned structured llm-gopher/0.10 JSON with operation FOUND, /usr/bin/sh, service route evidence, fallback_depth=0, and return_to=/capability/oorexx/executable.locate.
+
+Compatibility changes to inherited tests:
+- v0.5/v0.6 package-version assertions updated to v0.10-dev1.
+- v0.8 expected capability selector updated from /capability/source.oorexx.examine to sphere-qualified /capability/oorexx/source.oorexx.examine.
+No other inherited behavioral assertion was weakened.

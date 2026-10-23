@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "ref.sphere-authoring.object-shapes",
+  "version": "0.3",
+  "sphere": "sphere-authoring",
+  "title": "Canonical sphere object vocabulary",
+  "summary": "New editor-managed spheres use predictable directories for articles, corpora, rules, services and language modules. Common vocabulary includes kind/id/version/title/summary plus kind-specific semantics; source evidence uses provenance[].",
+  "canonical_layout": {
+    "sphere": "packs/<sphere>/00-sphere.json",
+    "access_policy": "packs/<sphere>/01-access-policy.json",
+    "article": "packs/<sphere>/articles/<id>.json",
+    "corpus": "packs/<sphere>/corpora/<id>.json",
+    "language_rule": "packs/<sphere>/rules/<id>.json",
+    "service": "packs/<sphere>/services/<id>.json",
+    "language_module": "packs/<sphere>/languages/<id>.json",
+    "profile": "profiles/<sphere>.json"
+  },
+  "invariants": [
+    "Existing legacy sphere layouts remain readable.",
+    "Canonicalization applies to new/editor-managed writes, not destructive migration of old packs."
+  ],
+  "authority": "project-doctrine",
+  "section": "sphere-internals",
+  "topics": [
+    "layout",
+    "objects",
+    "editor"
+  ]
+}

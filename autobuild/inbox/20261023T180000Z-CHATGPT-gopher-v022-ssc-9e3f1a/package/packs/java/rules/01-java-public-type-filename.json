@@ -1,0 +1,16 @@
+{
+  "kind": "language-rule",
+  "id": "JAVA.SOURCE.PUBLIC_TYPE_FILENAME",
+  "version": "0.1",
+  "language": "java",
+  "title": "Public top-level Java type matches the source filename",
+  "classification": "language_semantics",
+  "detection": "deterministic",
+  "severity": "BLOCKER",
+  "trigger": "A public top-level class/interface/enum/record name differs from the .java basename.",
+  "correct": "> CORRECT: place the public top-level type in <TypeName>.java or intentionally rename the type.",
+  "fix": {
+    "class": "MANUAL"
+  },
+  "authority": "javac/source-file contract"
+}

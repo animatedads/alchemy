@@ -1,0 +1,55 @@
+LLM Gopher v0.16-dev1 qualification
+Date: 2026-09-02
+
+Scope:
+- delivered sphere retrieval from ooRexx API roll-up current/sphere/*.zip
+- embedded sphere/profile identity; filenames are not authoritative
+- explicit override > local override > delivered precedence
+- ambiguity rejection for multiple implicit local overrides
+- safe private activation and persistent state/spheres.json provenance
+- activated external profile pack fallback to installed base packs
+
+Supplied roll-up:
+- oorexxapis(20260902-105429).zip
+- SHA-256 8f8c5a5b7f3ce6871d34eba2a01869da701444b3c0ce51c0324634231e4a4e73
+
+Delivered sphere locations observed in that roll-up:
+- current/sphere/kl10_sphere_v0.1-dev1.zip
+  SHA-256 a145bcd6633e80261c5838ce5e4ff7e410b6283ac4c6f7f220decd43e954485a
+  embedded sphere id kl10, version 0.1
+- current/sphere/s370mvs_sphere_v0.1-dev1.zip
+  SHA-256 f2ba811c2549392900b5c6a1f756057a51e0ffa2222eb304f97b24fad02ad55f
+  embedded sphere id s370mvs, version 0.1-dev1
+- current/sphere/oorexx_maths_gopher_sphere_v0.1.zip
+  SHA-256 e8aa9efd0f68bdb7de8aded50531c809b0c0e01cca4406ec15299e880c7068aa
+  embedded sphere id maths, version 0.1
+
+The roll-up current/sphere/Important.txt states:
+  Records here may be superceded by your own work
+  These are used by our gopher tool
+
+Override qualification:
+- a locally modified Maths sphere was stored under arbitrary filename
+  anything-the-researcher-called-it.zip
+- resolver selected it as local_override while retaining delivered candidate provenance
+- activated --profile maths returned its added continuity record
+- a second implicit Maths override caused AMBIGUOUS and failed closed
+- explicit --override selected the requested candidate deterministically
+
+Retrieval qualification:
+- delivered maths load/context PASS
+- delivered kl10 load/context PASS
+- delivered s370mvs load/context PASS
+- s370mvs typed lookup opcode=5D => EXACT_FIELD, mnemonic D PASS
+
+Regression evidence:
+PASS ALL LLM GOPHER v0.16 SPHERE RETRIEVAL/OVERRIDE TESTS
+PASS ALL LLM GOPHER v0.15 SPHERE/LOOKUP/RC TESTS
+PASS ALL LLM GOPHER v0.14 SELF-DOCUMENTATION TESTS
+PASS ALL LLM GOPHER v0.13 SETUP/LAUNCH TESTS
+PASS ALL LLM GOPHER v0.12 DOGFOOD TESTS
+PASS ALL LLM GOPHER v0.11 PACKAGE/STAGING TESTS
+PASS ALL LLM GOPHER v0.10 RESULT/CYCLE TESTS
+
+Invariant:
+Local improvement is explicit precedence, not silent version inference. Gopher records selected source/version/digest and still shows the delivered candidate when one exists.

@@ -1,0 +1,41 @@
+LLM Gopher v0.8-dev2 qualification
+
+Scope:
+- Portability/qualification correction only; no intended semantic change to the v0.8 selector/Gopher engine.
+- Python runtime resolution is now shared policy: LLM_GOPHER_PYTHON override, then python3, then python.
+- tests/run_v07.sh consumes the shared resolver instead of assuming an executable named `python`.
+- root `gopher` launcher uses the same resolution order and emits structured UNAVAILABLE JSON if no interpreter exists.
+
+Independent user qualification evidence supplied for v0.8-dev1:
+- v0.8 selector/Gopher protocol tests PASS.
+- v0.7 language-rule tests PASS with temporary python -> python3 compatibility shim.
+- v0.6 bounded-edit tests PASS.
+- v0.5 usability tests PASS.
+- v0.4 nested ZIP tests PASS.
+- v0.3 page tests PASS.
+- v0.2 core tests PASS.
+- TCP Gopher server and Gopher+ output PASS.
+- Reported remaining defect: tests/run_v07.sh assumed `python`; implementation itself worked correctly with python3.
+
+Dev2 evidence in this environment:
+PASS LLM GOPHER v0.8-dev2 PYTHON PORTABILITY TESTS
+PASS ALL LLM GOPHER v0.8 SELECTOR/GOPHER TESTS
+PASS ALL LLM GOPHER v0.7 LANGUAGE-RULE CYCLE TESTS
+PASS ALL LLM GOPHER v0.6 BOUNDED SOURCE-EDIT TESTS
+PASS ALL LLM GOPHER v0.5 LLM-USABILITY TESTS
+PASS ALL LLM GOPHER v0.4 IN-ZIP TESTS
+PASS ALL LLM GOPHER v0.3 PAGE TESTS
+PASS semantic merge/finder/proxy/fallback/search/access tests
+PASS 6 command smoke tests
+PASS ALL LLM GOPHER v0.2-dev1 TESTS
+PASS OOREXX RUNTIME PROBE
+
+Portability probe:
+- Constructed a PATH containing python3 and dirname but no python.
+- Shared resolver selected python3.
+- Root launcher successfully opened the ooRexx context under that PATH.
+- Explicit LLM_GOPHER_PYTHON override successfully opened the ooRexx context.
+
+Runtime probe:
+/mnt/data/oorexx_runtime_530/usr/local/bin/rexx qualification/runtime_probe.rex
+=> PASS OOREXX RUNTIME PROBE
