@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "id": "ref.font-manager.pdf-consumer",
+  "version": "0.1",
+  "sphere": "font-manager",
+  "title": "PDF is a consumer, not a font authority",
+  "summary": "ooRexx PDF dev5 injects FontManager for semantic face selection, exact glyph metrics and subset creation. PDF retains only PDF-specific responsibilities: CID allocation, Type0/CIDFont construction, CIDToGIDMap, ToUnicode and document encoding.",
+  "invariants": [
+    "PdfFlowReport may consume an injected FontManager but must not search the host font filesystem itself.",
+    "FontManager selects PRINT_BODY/HEADING faces, creates subsets and provides glyph plans.",
+    "PDF owns CID allocation, /Identity-H, /CIDToGIDMap, /ToUnicode and PDF object syntax.",
+    "Unicode metadata and outline titles use Unicode PDF strings independently from font discovery.",
+    "The legacy Helvetica path remains available when no FontManager is injected.",
+    "PDF dev5 currently assumes one managed face per logical role; dev3 FontRunPlan enables a future mixed-script multi-face PDF consumer."
+  ],
+  "related": [
+    "ref.font-manager.authority-boundary",
+    "ref.font-manager.metrics-and-packaging",
+    "ref.font-manager.coverage-and-fallback"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_pdf_v0.1-dev5.zip",
+      "sha256": "4053ddea12178bea122f281f655984be15141d13656a8ad31113ab1ac17e3ae1",
+      "member": "oorexx_pdf_v0.1-dev5/README.md",
+      "line_start": 80,
+      "line_end": 99,
+      "claim": "PDF dev5 shared Font Manager integration and CID TrueType/ToUnicode qualification contract."
+    },
+    {
+      "artifact": "oorexx_pdf_v0.1-dev5.zip",
+      "sha256": "4053ddea12178bea122f281f655984be15141d13656a8ad31113ab1ac17e3ae1",
+      "member": "oorexx_pdf_v0.1-dev5/src/PdfManagedFonts.cls",
+      "line_start": 1,
+      "line_end": 34,
+      "claim": "PDF adapter requests subset and glyph plan from FontManager and delegates measurement to that plan."
+    },
+    {
+      "artifact": "oorexx_pdf_v0.1-dev5.zip",
+      "sha256": "4053ddea12178bea122f281f655984be15141d13656a8ad31113ab1ac17e3ae1",
+      "member": "oorexx_pdf_v0.1-dev5/src/PdfManagedFonts.cls",
+      "line_start": 73,
+      "line_end": 112,
+      "claim": "PDF-specific font embedding, CID map, widths and ToUnicode object construction."
+    }
+  ]
+}

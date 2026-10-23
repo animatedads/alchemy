@@ -1,0 +1,46 @@
+{
+  "kind": "article",
+  "id": "ref.font-manager.coverage-and-fallback",
+  "version": "0.1",
+  "sphere": "font-manager",
+  "title": "Unicode coverage, fallback and font runs",
+  "summary": "dev3 separates preferred semantic font choice from actual glyph coverage. planRunsForPurpose returns ordered FontRun objects, the minimal face set used and explicit missing characters instead of silently substituting glyph zero.",
+  "invariants": [
+    "findForPurpose chooses the preferred semantic face; planRunsForPurpose evaluates the actual text corpus.",
+    "Fallback faces are introduced only for characters not covered by earlier selected faces.",
+    "Coverage-provider suggestions are accepted only after a glyph provider proves a non-zero glyph.",
+    "Missing characters remain explicit in FontRunPlan and fullyCovered is false when any scalar is unresolved.",
+    "Coverage/run segmentation is not shaping: grapheme clustering, bidi ordering and OpenType GSUB/GPOS belong to a future shaping-service boundary."
+  ],
+  "related": [
+    "ref.font-manager.metrics-and-packaging",
+    "ref.font-manager.pdf-consumer",
+    "ops.font-manager.qualification"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_font_manager_v0.1-dev3.zip",
+      "sha256": "a5b9bbe38a3e619f0c9cd8b2a15bcb42e3623ca535117b7f232ab91602748838",
+      "member": "oorexx_font_manager_v0.1-dev3/README.md",
+      "line_start": 37,
+      "line_end": 50,
+      "claim": "dev3 coverage-aware fallback, FontRun/FontRunPlan semantics, live mixed-script result and shaping boundary."
+    },
+    {
+      "artifact": "oorexx_font_manager_v0.1-dev3.zip",
+      "sha256": "a5b9bbe38a3e619f0c9cd8b2a15bcb42e3623ca535117b7f232ab91602748838",
+      "member": "oorexx_font_manager_v0.1-dev3/docs/ARCHITECTURE.md",
+      "line_start": 14,
+      "line_end": 22,
+      "claim": "Semantic selection vs coverage choice and renderer-neutral run-plan boundary."
+    },
+    {
+      "artifact": "oorexx_font_manager_v0.1-dev3.zip",
+      "sha256": "a5b9bbe38a3e619f0c9cd8b2a15bcb42e3623ca535117b7f232ab91602748838",
+      "member": "oorexx_font_manager_v0.1-dev3/src/FontManager.cls",
+      "line_start": 259,
+      "line_end": 385,
+      "claim": "Family-collapsed fallback matching, coverage-provider acceleration and ordered run construction with explicit missing characters."
+    }
+  ]
+}
