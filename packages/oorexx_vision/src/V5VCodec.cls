@@ -44,16 +44,16 @@
   if \policy~exactSurface then raise syntax 40.900 array('dev15 only admits EXACT_SURFACE encoding')
   timestamp=surface~timestamp
   if previous == .nil then
-    record=.V5VFrameRecord~new(sequence,timestamp,'KEYFRAME',surface,surface~width*surface~height)
+    record=.V5VFrameRecord~new(sequence,timestamp,'KEYFRAME',self~snapshotSurface(surface),surface~width*surface~height)
   else if sequence//policy~keyFrameInterval=0 then
-    record=.V5VFrameRecord~new(sequence,timestamp,'KEYFRAME',surface,surface~width*surface~height)
+    record=.V5VFrameRecord~new(sequence,timestamp,'KEYFRAME',self~snapshotSurface(surface),surface~width*surface~height)
   else do
     /* VisionSurfaceDelta is constructed directly; dev14 incorrectly called a
        nonexistent ~between factory. */
     delta=.VisionSurfaceDelta~new(previous,surface)
     record=.V5VFrameRecord~new(sequence,timestamp,'DELTA',delta,delta~changedCount)
   end
-  previous=surface
+  previous=self~snapshotSurface(surface)
   sequence=sequence+1
   return record
 
@@ -61,7 +61,7 @@
   expose previous
   use strict arg record
   select
-    when record~recordType == 'KEYFRAME' then surface=record~payload
+    when record~recordType == 'KEYFRAME' then surface=self~snapshotSurface(record~payload)
     when record~recordType == 'DELTA' then do
       if previous == .nil then raise syntax 40.900 array('V5V delta has no base surface')
       surface=record~payload~applyTo(previous)
@@ -69,8 +69,21 @@
     end
     otherwise raise syntax 40.900 array('unknown V5V record type:' record~recordType)
   end
-  previous=surface
+  previous=self~snapshotSurface(surface)
   return surface
+
+/* Detach packed samples and observation metadata at temporal boundaries. */
+::method snapshotSurface private
+  use strict arg surface
+  copy=.VisionSurface~new(surface~width,surface~height,surface~bitsPerPoint,surface~valueCount,surface~valueModel)
+  do i=0 to surface~width*surface~height-1
+    copy~packed~put(i,surface~packed~at(i))
+  end
+  copy~timestamp=surface~timestamp
+  copy~sourceRef=surface~sourceRef
+  copy~region=surface~region
+  copy~generation=surface~generation
+  return copy
 
 ::method evidenceMap
   use strict arg cameraEvidence=.nil,lineEvidence=.nil
