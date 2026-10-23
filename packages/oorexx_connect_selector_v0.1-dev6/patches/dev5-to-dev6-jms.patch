@@ -1,0 +1,49 @@
+--- a/src/ConnectJmsBridge.cls
++++ b/src/ConnectJmsBridge.cls
+@@ -40,6 +40,23 @@
+   use strict arg targetDestination
+   return outgoing~hasIndex(targetDestination~string~translate)
+ 
++/* An explicit broker disposition. A rejected send can be safely nacked;
++ * an unknown send may already exist at the broker and MUST remain uncertain.
++ * A successful send proves broker acceptance, not consumer execution.
++ */
++::class ConnectJmsSendReceipt public
++::attribute disposition get
++::method init
++  expose disposition
++  use strict arg disposition
++  disposition = disposition~string~translate
++  if disposition \== 'ACCEPTED' then do
++    if disposition \== 'REJECTED' then do
++      if disposition \== 'UNKNOWN' then
++        raise syntax 93.900 additional('JMS send disposition must be ACCEPTED, REJECTED, or UNKNOWN')
++    end
++  end
++
+ ::class ConnectJmsBridge public
+ ::method init
+   expose port queueAdapter routes
+@@ -93,11 +110,19 @@
+   meta['sourceQueue'] = queueName
+   meta['correlationId'] = package~correlationId
+   meta['headers'] = package~headers~copy
++  /* A modern port may return ConnectJmsSendReceipt; legacy true means
++   * accepted, but legacy false means UNKNOWN unless the broker can prove
++   * it rejected the message. NEVER nack an ambiguous send. */
+   sent = port~send(destination,package~payload,meta)
+-  if \sent then do
++  disposition = 'UNKNOWN'
++  if sent~isA(.ConnectJmsSendReceipt) then disposition = sent~disposition
++  else if sent == .true then disposition = 'ACCEPTED'
++  if disposition == 'UNKNOWN' then
++    return .ConnectResult~failure('QUEUE_TO_JMS','SEND_UNCERTAIN','Broker acceptance is unknown',package~packageId)
++  if disposition == 'REJECTED' then do
+     released = manager~nack(queueName,package~packageId,package~claimToken,principal)
+-    if \released~ok then return .ConnectResult~failure('QUEUE_TO_JMS','NACK_FAILED','JMS send failed; queue claim disposition uncertain')
+-    return .ConnectResult~failure('QUEUE_TO_JMS','SEND_FAILED','JMS send failed; queue requeued')
++    if \released~ok then return .ConnectResult~failure('QUEUE_TO_JMS','NACK_FAILED','Broker rejected send; queue claim disposition uncertain')
++    return .ConnectResult~failure('QUEUE_TO_JMS','SEND_REJECTED','Broker rejected send; queue requeued')
+   end
+   /* JMS acceptance alone does not prove downstream consumption. */
+   acknowledged = manager~ack(queueName,package~packageId,package~claimToken,principal)

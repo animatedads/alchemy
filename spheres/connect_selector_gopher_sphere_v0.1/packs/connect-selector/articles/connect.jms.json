@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "connect.jms",
+  "version": "0.1",
+  "sphere": "connect-selector",
+  "title": "Bidirectional JMS bridge",
+  "section": "delivery",
+  "summary": "Outbound typed send receipt dev6",
+  "invariants": [
+    "JMS inbound queue persistence precedes broker ack.",
+    "JMS outbound broker acceptance precedes queue ack.",
+    "Unknown send disposition must not immediately nack a queued item.",
+    "Confirmed rejection may nack; duplicate delivery remains possible."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_connect_selector_v0.1-dev6.zip",
+      "sha256": "6ea919552264a8d50db77b2a513990226a869ebbf3ed930e98c055c8175184ae",
+      "claim": "Exact source package / qualification record"
+    }
+  ],
+  "related": [
+    "connect.start",
+    "connect.rto2",
+    "connect.qualification"
+  ]
+}

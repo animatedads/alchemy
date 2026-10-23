@@ -1,0 +1,30 @@
+# ConnectSelector — engineering sphere 0.1
+
+Owner: ConnectSelector. Interface: `oorexx.connect_selector/0.1`. Source checkpoint: dev6 (2026-10-23).
+Complete dev6 ZIP SHA-256: `6ea919552264a8d50db77b2a513990226a869ebbf3ed930e98c055c8175184ae`.
+
+## Authority and boundaries
+ConnectSelector owns **which qualified invocation path** to use and **whether that route is permitted**. Providers: local DirectCall; RPC (JSON-RPC, SOAP, gRPC bindings); durable QueueFabric; runtime-continuity RTO2. JMS is a directionally controlled QueueFabric bridge rather than an interchangeable protocol.
+
+Serialisation Selector owns representation and schema (including protobuf); RPC Service Core owns explicit registration, frozen published service/method routing and callback admission; protocol bindings own SOAP/JSON-RPC/gRPC envelopes, errors and streaming. SocketSelector owns carrier decision, not invocation semantics or RTO2 runtime authority. Dynamic intention discovery must not become a frozen catalogue in ConnectSelector.
+
+## Invariants
+1. Explicit provider choice never bypasses exact operation/mode/destination policy.
+2. `REQUEST/CONTINUITY` requires an authenticated RTO2 port. Queue acceptance is not service completion; a JSON-RPC notification is not delivery confirmation; ordinary RPC is not durable.
+3. No silent provider substitution, retry or failover after dispatch where outcome may be uncertain.
+4. JMS→QueueFabric: durable insertion BEFORE JMS acknowledgement. QueueFabric→JMS: broker acceptance BEFORE queue acknowledgement. `ConnectJmsSendReceipt` permits `ACCEPTED`, `REJECTED`, `UNKNOWN`; ambiguous broker send (and legacy false) MUST NOT immediately nack. Exact-once is not claimed; deduplication is required.
+5. RTO2 controls epoch, fencing, promotion, checkpoint/replay. Dev13 real Grid estate membership and incarnation checks are qualified; actual runtime invocation remains simulated.
+6. Optional Instrumentation Mesh observer must never alter invocation or reveal operation, destination, payload, credentials or secret exception details.
+
+## Evidence
+Local r13196 ooRexx regression against pinned: JSON-RPC Fabric dev3; RPC Service Core dev1; SOAP RPC Binding dev2 and native libsoapxml; QueueFabric 0.9-dev6; Alchemy Objects 0.8.2; Crypto 0.8.3; RTO2 Grid dev13; Instrumentation Mesh dev7: PASS. Journal persistence/restart actually tested; SOAP/JSON same-object dispatch actually tested. JMS broker and live RTO2 runtime/failover NOT tested. Strict standards: 17 files, 0 errors, 0 warnings.
+
+## Repository synchronization
+`packages/oorexx_connect_selector_v0.1-dev6/patches/` contains the dev5→dev6 JMS change and test delta. That delta is not the full 24-file source release; the complete ZIP remains separately identified by checksum until imported and verified byte-for-byte. Do not claim all dev6 source is on GitHub based on this patch alone.
+
+## Missing work (ordered)
+- Import full 24-file dev6 source tree and re-run exact qualifying tests in repo.
+- Implement real JMS broker adapter with explicit dispositions, redelivery/dead-letter and transactional tests; no exactly-once overclaim.
+- Bind authenticated RTO2 runtime, socket carrier and fencing evidence; run live promotion/failover campaign.
+- Qualify RPC binding selector on authenticated networks, callback/stream cancellation and adverse effects.
+- Keep QueueFabric optional and avoid duplicating RPC Service Core or Serialisation Selector.

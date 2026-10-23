@@ -1,0 +1,40 @@
+{
+  "kind": "corpus",
+  "id": "connect-selector.continuity",
+  "sphere": "connect-selector",
+  "title": "Implementation constraints",
+  "records": [
+    {
+      "topic": "routing",
+      "rule": "One selected admitted provider; no post-dispatch silent fallback."
+    },
+    {
+      "topic": "rpc",
+      "rule": "One RPC Service Core registry; distinct protocol bindings."
+    },
+    {
+      "topic": "serialization",
+      "rule": "Separate Serialisation Selector representation authority."
+    },
+    {
+      "topic": "jms",
+      "rule": "Unknown broker send never authorizes immediate queue nack."
+    },
+    {
+      "topic": "queue",
+      "rule": "Persistent QueueFabric required for durability guarantees."
+    },
+    {
+      "topic": "rto2",
+      "rule": "Runtime owns epochs, fencing and promotion."
+    },
+    {
+      "topic": "observation",
+      "rule": "Telemetry never authorizes or mutates execution."
+    },
+    {
+      "topic": "qualification",
+      "rule": "No live broker or live RTO2 invocation qualification."
+    }
+  ]
+}

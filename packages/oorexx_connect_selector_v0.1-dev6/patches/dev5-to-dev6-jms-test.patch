@@ -1,0 +1,54 @@
+--- a/tests/test_jms_bridge.rex
++++ b/tests/test_jms_bridge.rex
+@@ -27,7 +27,20 @@
+ manager~pending=.FakePackage~new('pkg-2','send-error','ct-2')
+ port~sendSuccess=.false
+ to=bridge~toJms('TOPIC.OUT')
+-call check to~code == 'SEND_FAILED' & manager~nacks == 1,'JMS send error causes queue nack'
++call check to~code == 'SEND_UNCERTAIN' & manager~nacks == 0,'legacy false cannot authorize a queue nack'
++port~sendDisposition = 'REJECTED'
++manager~pending=.FakePackage~new('pkg-2b','known-rejection','ct-2b')
++to=bridge~toJms('TOPIC.OUT')
++call check to~code == 'SEND_REJECTED' & manager~nacks == 1,'explicit broker rejection permits queue nack'
++port~sendDisposition = 'UNKNOWN'
++manager~pending=.FakePackage~new('pkg-2c','ambiguous','ct-2c')
++to=bridge~toJms('TOPIC.OUT')
++call check to~code == 'SEND_UNCERTAIN' & manager~nacks == 1,'explicit ambiguous broker result blocks nack'
++port~sendDisposition = 'ACCEPTED'
++manager~pending=.FakePackage~new('pkg-2d','accepted','ct-2d')
++to=bridge~toJms('TOPIC.OUT')
++call check to~ok & manager~acks == 2,'explicit broker acceptance permits queue ack'
++port~sendDisposition = ''
+ port~sendSuccess=.true
+ manager~ackSuccess=.false
+ manager~pending=.FakePackage~new('pkg-3','uncertain-ack','ct-3')
+@@ -46,15 +59,17 @@
+ ::attribute incoming
+ ::attribute ackSuccess
+ ::attribute sendSuccess
++::attribute sendDisposition
+ ::attribute acked
+ ::attribute recoveries
+ ::attribute sends
+ ::attribute lastMeta
+ ::method init
+-  expose incoming ackSuccess sendSuccess acked recoveries sends lastMeta
++  expose incoming ackSuccess sendSuccess sendDisposition acked recoveries sends lastMeta
+   incoming=.nil
+   ackSuccess=.true
+   sendSuccess=.true
++  sendDisposition=''
+   acked=0
+   recoveries=0
+   sends=0
+@@ -75,10 +90,11 @@
+   recoveries += 1
+   return .true
+ ::method send
+-  expose sendSuccess sends lastMeta
++  expose sendSuccess sendDisposition sends lastMeta
+   use strict arg destination, payload, metadata
+   sends += 1
+   lastMeta=metadata
++  if sendDisposition \== '' then return .ConnectJmsSendReceipt~new(sendDisposition)
+   return sendSuccess
