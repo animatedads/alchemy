@@ -1,0 +1,41 @@
+ooRexx Virtual USB Gopher Sphere v0.1
+Qualification record
+Date: 2026-10-23
+
+Primary implementation artifact:
+  oorexx_virtual_usb_v0.1-dev9.zip
+  SHA-256 efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6
+
+Repository source baseline:
+  packages/oorexx_virtual_usb
+  release label 0.1-dev9
+
+Executable qualification truth captured by the sphere:
+  - ooRexx 5.3.0 r13196 package-side semantic/FIDO suite passes.
+  - Raw Gadget bridge/presentation-error/control-direction tests pass.
+  - target substrate evidence exists for kernel 7.2.8-1-default,
+    raw_gadget, dummy_hcd, /dev/raw-gadget and dummy_udc.0.
+  - the dev8 CAFE:F1D0/no-HID observation is rejected as provider
+    evidence because that run's presenter failed UDC acquisition with EBUSY.
+  - dev9 generation/presenter guards are the current qualification mechanism.
+  - clean presenter-owned HID class 03 + hidraw live acceptance is still pending.
+
+Sphere source qualification performed before commit:
+  - every JSON document in the authored set was parsed before GitHub object creation;
+  - sphere/profile IDs and versions are internally consistent;
+  - start_here references authored articles only;
+  - every required article carries dev9 package provenance;
+  - tests/run.sh asserts Raw Gadget direction/generation doctrine,
+    invalid dev8 evidence, dependency-authority doctrine, whole-device trust
+    separation and powered-SoC continuation;
+  - source is committed separately from the executable package.
+
+Publication boundary:
+  Before this source was created, the project MCP/Gopher catalogue returned
+  SPHERE_NOT_FOUND for sphere id virtual-usb. This commit creates the source
+  sphere; catalogue/roll-up publication and a fresh Gopher activation query
+  remain separate publication/qualification actions.
+
+This sphere does not upgrade the executable package, claim a clean live HID
+pass, claim FIDO certification, claim browser/WebAuthn enrollment, or claim
+production hardware security.

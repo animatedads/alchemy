@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "vusb.raw-gadget",
+  "version": "0.1",
+  "sphere": "virtual-usb",
+  "title": "Linux Raw Gadget presentation and generation-safe qualification",
+  "summary": "Raw Gadget presentation is blocking and stateful. The provider must service EP0 and endpoint traffic with the Raw Gadget direction contract, while qualification must prove that the observed USB generation belongs to the presenter launched by the current run.",
+  "authority": "project-authority",
+  "invariants": [
+    "A host-IN control request is completed with USB_RAW_IOCTL_EP0_WRITE.",
+    "A host-OUT control request is completed with USB_RAW_IOCTL_EP0_READ, including zero-length SET_CONFIGURATION.",
+    "An OUT control request with a data stage uses one EP0_READ for that stage; do not append a bogus second EP0 operation.",
+    "Blocking OUT endpoint reads run on separate ooRexx activities so control/reset/disconnect events remain serviceable.",
+    "The selected UDC must be idle before live qualification starts.",
+    "A matching VID:PID in sysfs is not proof of presenter ownership.",
+    "Live enumeration identity is sysfs path plus devnum; a reused path with a new devnum is a new generation.",
+    "The presenter-ready marker is valid only after its own Raw Gadget INIT/RUN succeeds.",
+    "dummy_hcd is target-host test substrate. After reinstall or kernel update it must be loadable for the running kernel or rebuilt against the running-kernel build/source tree."
+  ],
+  "procedure": [
+    "Run tests/prepare_raw_gadget_host.sh to establish raw_gadget, dummy_hcd, /dev/raw-gadget and dummy_udc.0 for the running kernel.",
+    "Run tests/bringup_live_raw_gadget_fido.sh with an idle UDC.",
+    "Accept live PASS only for a presenter-owned new CAFE:F1D0 generation with HID interface class 03 and matching hidraw.",
+    "If qualification fails, use the direct Raw Gadget trace and kernel USB diagnostics before changing provider semantics."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/ARCHITECTURE.md",
+      "claim": "Architecture records blocking-I/O activity separation, current-kernel host preparation, EP0 direction and generation ownership.",
+      "note": "Raw Gadget authority."
+    },
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/tests/live_raw_gadget_fido.sh",
+      "claim": "Live qualifier implements presenter readiness, generation identity, HID and hidraw acceptance.",
+      "note": "Executable qualification boundary."
+    }
+  ]
+}

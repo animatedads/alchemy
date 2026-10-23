@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "vusb.whole-device-trust",
+  "version": "0.1",
+  "sphere": "virtual-usb",
+  "title": "FIDO correctness and whole USB-device trust are separate claims",
+  "summary": "A physical peripheral can implement a correct FIDO2 authenticator while exposing other USB or radio capabilities. FIDO protocol success therefore does not prove that the surrounding device exposes only the expected authenticator personality. Qualification of a security-key-shaped device must cover the complete observable peripheral personality over time.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "FIDO2 protocol conformance is not a proof that the physical device has no additional interfaces or radios.",
+    "A security-key-shaped enclosure, potting, printed antenna or familiar component appearance is weak assurance of runtime personality.",
+    "For the transparent Virtual USB hardware target, the expected USB descriptor/interface set must be declared and reproducible.",
+    "Unexpected keyboard/mouse, mass-storage, network, display/video, serial or vendor interfaces are qualification failures unless explicitly declared as part of the intended product.",
+    "Qualification must observe re-enumeration and generation changes rather than assuming the first descriptor tree remains permanent.",
+    "RF capability and firmware provenance are separate hardware-assurance surfaces; FIDO attestation must not be misrepresented as certifying them.",
+    "Threat analysis remains defensive; the sphere does not provide an optimized design recipe for covert composite peripherals."
+  ],
+  "procedure": [
+    "Record the complete expected descriptor tree and interface classes for the intended hardware release.",
+    "Capture and compare descriptors from power-on through re-enumeration/reset cycles.",
+    "Fail closed on undeclared interfaces or personality changes.",
+    "Retain source/build/firmware hashes and, for higher assurance, hardware/RF inspection evidence separately from FIDO protocol evidence."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/maps/virtual_fido2_authenticator.json",
+      "claim": "Current intended development personality explicitly declares the FIDO HID interface and endpoints.",
+      "note": "Expected-personality grounding."
+    },
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/README.md",
+      "claim": "README separates FIDO development behavior from production security/certification claims.",
+      "note": "Claim-boundary grounding."
+    }
+  ]
+}

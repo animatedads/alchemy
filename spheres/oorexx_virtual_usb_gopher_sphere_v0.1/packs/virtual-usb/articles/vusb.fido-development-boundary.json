@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "vusb.fido-development-boundary",
+  "version": "0.1",
+  "sphere": "virtual-usb",
+  "title": "FIDO2 development authenticator capability and non-production boundary",
+  "summary": "The package implements a useful FIDO_2_0 development authenticator over USB HID/CTAPHID, including real Ed25519 credential keypairs and signatures, but deterministic credential seed derivation and development presence/attestation mean it is not a production hardware-security or certification claim.",
+  "authority": "project-authority",
+  "invariants": [
+    "Advertised protocol version is FIDO_2_0; do not claim CTAP 2.1/2.2/2.3 features that are absent.",
+    "Implemented CTAP2 commands include authenticatorGetInfo, authenticatorMakeCredential and authenticatorGetAssertion.",
+    "CTAPHID implements INIT, PING, CBOR, framing/assembly, channel allocation and HID-layer errors.",
+    "COSE algorithm -8 is EdDSA/Ed25519 and signatures are produced through ooRexx Crypto.",
+    "Development credential seed derivation is deterministic and unsuitable for production security.",
+    "Development attestation is none; no production attestation private key is embedded.",
+    "FidoAlwaysPresent is a development presence provider, not a physical user-presence proof.",
+    "CTAP1/U2F, PIN/UV, credential management, large blobs/extensions, reset/configuration and getNextAssertion are not currently implemented."
+  ],
+  "procedure": [
+    "Preserve protocol honesty: advertise only implemented capabilities.",
+    "For production hardware, replace entropy/key storage, user presence and attestation behind their existing semantic boundaries rather than rewriting CTAPHID/USB semantics."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/README.md",
+      "claim": "README records implemented CTAPHID/CTAP2 behavior, algorithm, semantic events and deliberate development limitations.",
+      "note": "FIDO capability authority."
+    },
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/ARCHITECTURE.md",
+      "claim": "Architecture records deterministic credential generation as a development-only security boundary.",
+      "note": "Production-separation authority."
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "qual.virtual-usb.current",
+  "version": "0.1",
+  "sphere": "virtual-usb",
+  "title": "Current qualification truth: semantic suite passes, clean live HID generation pending",
+  "summary": "dev9 has package-side semantic/FIDO/Raw-Gadget bridge evidence under ooRexx 5.3.0 r13196 and a working Raw Gadget substrate. The dev8 CAFE:F1D0/no-HID observation is explicitly rejected as provider evidence because that run's presenter failed UDC acquisition with EBUSY and the script inspected a stale generation.",
+  "authority": "project-authority",
+  "invariants": [
+    "The dev9 package-side suite passes dependency, core, Chapter 9, profile, configuration-state, HID profile, CTAPHID, CTAP2 GetInfo, credential, Raw Gadget presentation-error and Raw Gadget control-direction tests.",
+    "The target Raw Gadget substrate was proven on kernel 7.2.8-1-default with raw_gadget, dummy_hcd, /dev/raw-gadget and dummy_udc.0.",
+    "The earlier dev8 USB node CAFE:F1D0 is not accepted as evidence about the dev8 presenter because that presenter later failed Raw Gadget RUN/UDC registration with EBUSY.",
+    "dev9 adds an idle-UDC precondition, presenter ready marker, sysfs-path:devnum generation tokens, stronger cleanup and direct trace persistence.",
+    "A clean dev9 live PASS still requires presenter-owned new CAFE:F1D0, HID class 03 and matching hidraw.",
+    "libfido2 discovery, browser/WebAuthn enrollment and OpenAI/other relying-party acceptance remain later qualification stages."
+  ],
+  "procedure": [
+    "Do not reinterpret the invalid dev8 no-HID result as a provider defect.",
+    "Run the clean dev9 live qualifier on an idle UDC.",
+    "Only after HID/hidraw PASS, add libfido2 and browser/WebAuthn evidence as separate gates."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/VALIDATION.txt",
+      "claim": "Validation records package-side passes, Raw Gadget substrate, invalidated dev8 observation, dev9 generation guard and pending clean live acceptance.",
+      "note": "Current qualification authority."
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "vusb.layering",
+  "version": "0.1",
+  "sphere": "virtual-usb",
+  "title": "Device semantics stay above USB presentation mechanics",
+  "summary": "VirtualUsbDevice and Fido2Authenticator own semantic device/FIDO behavior. LinuxRawGadgetProvider owns Raw Gadget ioctls, endpoint handles and blocking transfer mechanics. FidoTestHost is a synthetic in-process memory-provider host and must not be used as the Linux Raw Gadget host.",
+  "authority": "project-authority",
+  "invariants": [
+    "Fido2Authenticator does not call Raw Gadget, ioctl, hidraw or kernel USB APIs.",
+    "CTAP2 semantics remain above CTAPHID framing, which remains above VirtualUsbEndpoint.",
+    "LinuxRawGadgetProvider is a presentation adapter, not the FIDO application.",
+    "FidoTestHost depends on the memory provider's synthetic writes/hostOut contract and is not a real-host bridge.",
+    "Do not add fake memory-provider messages such as writes to LinuxRawGadgetProvider merely to satisfy FidoTestHost."
+  ],
+  "procedure": [
+    "Test semantic FIDO behavior through the memory provider.",
+    "Test physical Linux-host behavior through the real Raw Gadget presenter with Linux as host.",
+    "Change the smallest owning layer when a failure is localized."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/ARCHITECTURE.md",
+      "claim": "Architecture records the provider-neutral device/FIDO layering and Raw Gadget concurrency boundary.",
+      "note": "Layer ownership authority."
+    },
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/tests/FidoTestHost.cls",
+      "claim": "FidoTestHost is the synthetic test-host harness used with memory-provider behavior.",
+      "note": "Negative-control grounding."
+    }
+  ]
+}

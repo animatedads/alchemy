@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "vusb.dependency-authority",
+  "version": "0.1",
+  "sphere": "virtual-usb",
+  "title": "Dependency identity is resolved before REXX_PATH is constructed",
+  "summary": "Virtual USB dev9 records package-load requirements explicitly. REXX_PATH and native-library paths are derived execution state, not dependency/version authority; arbitrary filesystem first-match discovery must not choose Event Runtime, Crypto or Foreign Runtime.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Qualified runtime baseline is ooRexx 5.3.0 r13196.",
+    "Qualified dependencies are Event Runtime event.runtime/0.1, Crypto v0.8.3, Foreign Runtime v0.22.6 and the ooRexx json package.",
+    "PACKAGE_LOAD_REQUIREMENTS.json is resolver-facing package-load evidence; it does not invent a competing semantic source-version system.",
+    "Do not use find ... | head -1 or ambient REXX_PATH ordering to select among duplicate dependency copies.",
+    "A resolver must select an explicit compatible dependency closure before constructing REXX_PATH, native-library and resource paths.",
+    "When Semantic Source Control/Deployment authority is available, consume it rather than inferring semantic version from filenames."
+  ],
+  "procedure": [
+    "Resolve exact package/component authority first.",
+    "Materialize one dependency closure.",
+    "Construct REXX_PATH and native load paths from that closure.",
+    "Run package-load and target-native probes against the same locked closure.",
+    "Retain the resolved closure as qualification evidence."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/PACKAGE_LOAD_REQUIREMENTS.json",
+      "claim": "Package declares entry packages, package-load requirements, qualified dependency artifacts and exported load paths.",
+      "note": "Resolver-facing package evidence."
+    },
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/README.md",
+      "claim": "README explicitly rejects arbitrary filesystem first-match dependency selection and describes resolver-owned path construction.",
+      "note": "Continuation doctrine."
+    }
+  ]
+}

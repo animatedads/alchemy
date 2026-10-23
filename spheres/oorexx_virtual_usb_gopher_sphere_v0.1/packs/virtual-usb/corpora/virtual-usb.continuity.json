@@ -1,0 +1,117 @@
+{
+  "kind": "corpus",
+  "id": "virtual-usb.continuity",
+  "sphere": "virtual-usb",
+  "title": "ooRexx Virtual USB durable continuity ledger",
+  "records": [
+    {
+      "id": "baseline",
+      "topic": "baseline",
+      "rule": "Current executable baseline is oorexx_virtual_usb_v0.1-dev9.zip SHA-256 efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6."
+    },
+    {
+      "id": "semantic-boundary",
+      "topic": "architecture",
+      "rule": "VirtualUsbDevice/FIDO own semantics; providers own transport/native presentation."
+    },
+    {
+      "id": "memory-host",
+      "topic": "negative control",
+      "rule": "FidoTestHost is a synthetic memory-provider host and must not drive LinuxRawGadgetProvider."
+    },
+    {
+      "id": "hid-core",
+      "topic": "HID",
+      "rule": "Generic HID descriptor/report support belongs to Virtual USB core, not FIDO special casing."
+    },
+    {
+      "id": "fido-profile",
+      "topic": "FIDO",
+      "rule": "Development personality is USB HID class 03 with FIDO usage page F1D0 and CTAPHID usage 01."
+    },
+    {
+      "id": "fido-version",
+      "topic": "FIDO",
+      "rule": "Advertise FIDO_2_0 only; do not imply absent CTAP 2.1+ functionality."
+    },
+    {
+      "id": "crypto",
+      "topic": "security",
+      "rule": "Credential keys/signatures use Ed25519/COSE -8, but deterministic development seed derivation is not production-safe."
+    },
+    {
+      "id": "presence",
+      "topic": "security",
+      "rule": "Always-present is a development presence provider; physical hardware must supply qualified user-presence semantics."
+    },
+    {
+      "id": "raw-direction",
+      "topic": "Raw Gadget",
+      "rule": "EP0 host-IN uses WRITE; host-OUT uses READ, including zero-length SET_CONFIGURATION."
+    },
+    {
+      "id": "blocking",
+      "topic": "Raw Gadget",
+      "rule": "OUT endpoint reads are separate activities so blocking transfer IO cannot starve control/reset handling."
+    },
+    {
+      "id": "host-substrate",
+      "topic": "qualification",
+      "rule": "raw_gadget/dummy_hcd are target host test substrate; dummy_hcd must match the running kernel."
+    },
+    {
+      "id": "stale-generation",
+      "topic": "qualification",
+      "rule": "A matching VID:PID can be stale. Presenter ownership and path+devnum generation identity are mandatory."
+    },
+    {
+      "id": "dev8-invalid",
+      "topic": "history",
+      "rule": "The dev8 CAFE:F1D0/no-HID result is invalid provider evidence because the current presenter failed UDC acquisition with EBUSY."
+    },
+    {
+      "id": "dev9-live",
+      "topic": "qualification",
+      "rule": "Next live PASS requires current presenter ownership, new CAFE:F1D0 generation, HID class 03 and matching hidraw."
+    },
+    {
+      "id": "dependency-authority",
+      "topic": "packaging",
+      "rule": "Resolve dependency identity before constructing REXX_PATH/native paths; never select by arbitrary first filesystem match."
+    },
+    {
+      "id": "whole-device",
+      "topic": "security",
+      "rule": "FIDO correctness and whole physical USB-device trust are separate claims; expected peripheral personality must be qualified explicitly."
+    },
+    {
+      "id": "hardware",
+      "topic": "continuation",
+      "rule": "Hardware continuation is a powered SoC/USB device controller running the semantic device; storage holds code/data but is not the active USB device."
+    },
+    {
+      "id": "production",
+      "topic": "continuation",
+      "rule": "Production hardware requires qualified entropy, protected key storage, physical presence and attestation providers."
+    },
+    {
+      "id": "browser",
+      "topic": "continuation",
+      "rule": "libfido2 and browser/WebAuthn acceptance are later gates after clean HID/hidraw enumeration."
+    },
+    {
+      "id": "endpoint-portability",
+      "topic": "continuation",
+      "rule": "Dynamic Raw Gadget endpoint assignment remains future portability work for UDCs that cannot satisfy fixed profile addresses."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/README.md",
+      "claim": "Continuity ledger summarizes the current package capabilities, history, qualification boundary and deliberate limitations.",
+      "note": "Primary continuity grounding."
+    }
+  ]
+}

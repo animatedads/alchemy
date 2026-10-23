@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "ref.virtual-usb.sources",
+  "version": "0.1",
+  "sphere": "virtual-usb",
+  "title": "Primary source and external Raw Gadget reference",
+  "summary": "The sphere is grounded in the sealed dev9 package/source publication. Raw Gadget UAPI behavior is cross-checked against the Linux Raw Gadget reference implementation; the external reference informs native mechanics but does not replace project package authority.",
+  "authority": "reference",
+  "references": [
+    {
+      "name": "ooRexx Virtual USB dev9",
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6"
+    },
+    {
+      "name": "Raw Gadget reference implementation",
+      "repository": "xairy/raw-gadget",
+      "commit": "8c6de5448ef2b8e4fc37021208c86c3f4dd579dc",
+      "paths": [
+        "raw_gadget/raw_gadget.h",
+        "examples/keyboard.c"
+      ]
+    }
+  ],
+  "invariants": [
+    "Project package/source remains authority for Virtual USB semantics.",
+    "Raw Gadget reference source is used to validate ioctl direction/configuration mechanics.",
+    "Do not infer stronger FIDO, production-security or platform-portability claims from the reference implementation."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/SOURCE_PROVENANCE.md",
+      "claim": "Package provenance records the development baseline and qualified dependencies.",
+      "note": "Primary source identity."
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "kind": "article",
+  "id": "ops.virtual-usb.continuation",
+  "version": "0.1",
+  "sphere": "virtual-usb",
+  "title": "Continuation doctrine and next acceptance gates",
+  "summary": "Continue from dev9 without reopening already-localized layers. First obtain a clean presenter-owned HID/hidraw generation; then qualify libfido2 and browser WebAuthn; only then move the same semantic device onto a powered hardware SoC and replace development security providers.",
+  "authority": "project-authority",
+  "invariants": [
+    "Do not change CTAP2/CTAPHID semantics merely because a Raw Gadget host test fails before HID binding.",
+    "Do not accept a USB node that cannot be tied to the current presenter generation.",
+    "Do not restore FidoTestHost to the Raw Gadget path.",
+    "Do not claim production security while deterministic credential seeds, none attestation or always-present development presence remain.",
+    "Do not hand-assemble dependency paths by first filesystem match.",
+    "Do not claim whole-device trust merely because FIDO transactions pass."
+  ],
+  "procedure": [
+    "1. On an idle dummy_udc.0, run tests/bringup_live_raw_gadget_fido.sh from dev9 with the locked dependency roots.",
+    "2. If it fails, inspect the persisted RAWGADGET trace and current kernel USB diagnostics before modifying code.",
+    "3. When HID class 03 and hidraw bind, record that target evidence and update package validation/sphere qualification.",
+    "4. If available, qualify libfido2 discovery and basic authenticator information as a separate gate.",
+    "5. Qualify browser/WebAuthn registration and assertion as a separate relying-party gate.",
+    "6. Port the presenter to a powered SoC/USB device controller. Storage may hold the runtime/image, but the SoC executes it and owns USB presentation.",
+    "7. Replace deterministic development entropy/store, development presence and none attestation with qualified hardware-backed providers.",
+    "8. Publish an exact expected USB personality and reject undeclared interfaces/personality changes.",
+    "9. Integrate package dependency resolution with SSC/Deployment so the same locked dependency closure is reproducible without manual environment assembly.",
+    "10. Revisit dynamic Raw Gadget endpoint assignment for UDCs whose endpoint addresses/capabilities cannot satisfy the current fixed profile."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/VALIDATION.txt",
+      "claim": "Validation defines the immediate clean live-host acceptance gate.",
+      "note": "Immediate next step."
+    },
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev9.zip",
+      "sha256": "efa8a1e5a31a8ae7e39360b5f9495772ef1132dccb620d1a896320d24edbc8f6",
+      "member": "oorexx_virtual_usb_v0.1-dev9/ARCHITECTURE.md",
+      "claim": "Architecture records current Raw Gadget fixed-endpoint portability work and provider/security boundaries.",
+      "note": "Continuation architecture."
+    }
+  ]
+}
