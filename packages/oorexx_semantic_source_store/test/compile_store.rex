@@ -1,1 +1,0 @@
-::requires "../src/SemanticSourceStore.cls"

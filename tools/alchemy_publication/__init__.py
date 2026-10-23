@@ -1,1 +1,0 @@
-"""Alchemy repository publication implementation."""
