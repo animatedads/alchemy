@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "instrumentation-mesh.contract",
+  "version": "0.1",
+  "sphere": "instrumentation-mesh",
+  "title": "Operational language and replay contract",
+  "authority": "project-authority",
+  "summary": "The dev8 line describes operational state using stable semantic references, dimensional metric samples, freshness, complete relationship scopes, replay-safe events and producer-declared correlation/causation.",
+  "contract": {
+    "identity": "instrumentation:// stable semantic reference derived from estate/service/instance/node identity; optional MI and deployment attributes do not replace identity",
+    "metrics": "COUNTER, GAUGE, RATE, STATE, PROGRESS and DISTRIBUTION; repeated series are separated by canonical dimensions",
+    "freshness": "FRESH/LATE/STALE/UNKNOWN is observer evidence and remains separate from source health",
+    "relationships": "complete authority+scope relationship sets; disappearance means no longer visible in newer evidence, not an inferred delete/failover",
+    "events": "replay-safe bounded operational events, with source events distinguished from observer-derived changes",
+    "correlation": "only explicit producer correlation_id/context_refs/causation_id grouping; time or topology proximity never proves correlation or causation",
+    "publication": "atomic publisher batches fenced by monotonic sequence and publication identity"
+  },
+  "privacy": [
+    "Do not publish message bodies, credentials, mailbox names, LDAP DNs or arbitrary customer identifiers by default.",
+    "Do not expose raw private RPC correlation ids by default; map to an explicit opaque observability token when required.",
+    "Do not turn Alchemy Log forensic/audit evidence into bounded Instrumentation samples."
+  ]
+}
