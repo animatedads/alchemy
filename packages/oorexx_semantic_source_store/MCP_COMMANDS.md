@@ -392,3 +392,30 @@ Default token-efficient class inspection.
 Input: `class_id`, optional `revision_id`, optional `since` ISO timestamp.
 
 Returns `semantic-source.class-inspection/1` with `class_tree`, `since`, `as_of`, and compact `methods[]`. Each method contains `name`, `from`, `exposes[]`, and `returns { kind, class }`. Method bodies are excluded and fetched separately only when required.
+
+
+## `source.propose_edit` (dev28 candidate)
+
+Propose one replacement edition of one existing semantic object.
+
+Request:
+
+```json
+{
+  "object_id": "sso_...",
+  "base_revision_id": "ssr_...",
+  "source_text": "::method total\n  return amount",
+  "reason": "repair total calculation",
+  "base_deployment_id": "optional"
+}
+```
+
+Rules:
+
+- `object_id`, `base_revision_id`, and presence of `source_text` are required.
+- Caller identity is the authenticated MCP/session principal; request-body identity is ignored.
+- The operation is rejected for `SOURCE_UNIT` and `SOURCE_FILE`; use structural semantic objects.
+- Exact-base edit -> new `PROPOSED` revision; accepted state is unchanged until explicit review.
+- Stale-base edit -> both editions are retained and a sparse `CONFLICT` branch is created.
+- Unresolved conflict does not silently alter ordinary package materialisation.
+- Repeating the identical stale candidate is idempotent and reuses its open conflict branch.

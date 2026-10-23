@@ -1,0 +1,25 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_semantic_source_store",
+    "version": "0.1-dev28",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "ssc-live-real-nosqlserver",
+      "argv": [
+        "sh",
+        "test_live/run_live_suite.sh"
+      ],
+      "timeout_seconds": 1800
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_semantic_source_store_v0.1-dev28"
+    }
+  }
+}

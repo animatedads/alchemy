@@ -174,3 +174,16 @@ python3 test/examiner_rendered_ui_test.py
 The structural tree test must reconstruct every package `.cls` byte-for-byte.
 The intention test proves all 28 Examiner actions are dynamically advertised
 and that a changed capability snapshot replaces stale discovery surfaces.
+
+
+## dev28 semantic mutation qualification
+
+`test_live/semantic_mutation_test.rex` runs only against the real database path. It verifies
+method-granular exact-base proposal, unchanged SOURCE_UNIT layout, accepted-only
+materialisation, automatic stale-base CONFLICT branching, conflict idempotency,
+whole-file edit rejection, and fail-closed authorization.
+
+The test is wired into `test_live/run_live_suite.sh`. This commit records the new mutation
+path as CANDIDATE_UNQUALIFIED until that suite is executed under ooRexx 5.3.0 r13196 with
+the real backend. Do not promote the sphere evidence merely because the source compiles
+statically.

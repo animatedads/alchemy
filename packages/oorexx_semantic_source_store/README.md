@@ -1,10 +1,82 @@
-# ooRexx Semantic Source Store v0.1-dev14
+# ooRexx Semantic Source Store v0.1-dev28
 
-NoSQLServer-backed persistence and package-resolution foundation for Semantic Source
-Control.
+Semantic-object persistence, revision, branching and package-resolution foundation for Semantic Source Control.
 
 The semantic source object and its immutable revisions are authoritative. Conventional
 files and ZIP archives are projections. MCP is the intended mutation authority.
+
+## Added in dev28: exact-base semantic edits and automatic conflict branches
+
+dev28 extends the real dev26 repository write authority with an object-granular edit path.
+`SemanticSourceMutationService~proposeEdit` accepts an existing semantic object, its exact
+base revision, and replacement source for that object. It deliberately rejects
+`SOURCE_UNIT` and `SOURCE_FILE` whole-file replacement: methods, attributes, constants,
+routines, class headers and other structural objects are revised independently and normal
+materialisation rebuilds conventional files from accepted semantic revisions.
+
+`SemanticSourceRepositoryService~proposeRevision` records the candidate as `PROPOSED`,
+verifies the stored bytes by SHA-256, and never changes `accepted_revision_id`. When the
+exact base is still current the candidate becomes the current proposed edition. When the
+base is stale, the current pointer is left untouched and `SemanticSourceMutationService`
+uses the existing sparse branch authority to create a `CONFLICT` branch retaining both
+candidate revisions. No text merge and no silent winner is invented.
+
+The MCP dispatcher optionally exposes `source.propose_edit` when a mutation service is
+injected. Principal identity still comes from the authenticated transport/session; a
+principal in the request body is not authority.
+
+The existing ooRexx Source Editor remains conventional projection tooling. Semantic Source
+Store / Development Desk remains the owner of semantic object creation, revision identity,
+branching, acceptance and materialisation.
+
+Evidence status for the dev28 mutation increment is **CANDIDATE_UNQUALIFIED** in this commit:
+`test_live/semantic_mutation_test.rex` is added to the real-database suite, but this chat
+has not executed ooRexx r13196 + the real database backend after the change. The previously
+qualified dev26 repository evidence remains LOCAL_PASS; live MCP-host wiring remains
+unverified.
+
+## Added in dev26: the write authority, proven on a real database
+
+**Architecture:** Tom Dyer. **dev26 coding:** Claude (Opus 5.5), 23 Oct 2026. **Earlier versions:** ChatGPT.
+
+Until dev26 nothing in the estate wrote a semantic source object or revision. The schema, readers, Code Examiner and
+importer existed, but the authority the importer calls had only ever been a fake in its own test, and the store had only
+ever run against `test/NoSQLServer.cls`, a stub that accepts every statement and stores nothing.
+
+New classes (additive; no existing class changed):
+
+| Class | Role |
+|---|---|
+| `SemanticSourceRepositoryService` | Write authority. Method-granular objects and revisions, SOURCE_UNIT layouts, immutable per-import projections, explicit authorized acceptance, verify-after-write, idempotent re-import. Implements exactly the client interface `SemanticSourceBulkImporter` already calls. |
+| `SemanticSourceLayoutPackageService` | Use this instead of `SemanticSourcePackageService`. It assembles files in layout/ordinal order and fixes the parent's `loadRevisionBatch`, which crashes on any non-empty request on a real database. |
+| `SemanticSourceSqlCompatibility` | Executor wrapper for NoSQLServer v0.79: rewrites literal `IN (...)` lists (SELECT only, outside quotes) and exposes bare column names on join rows. |
+| `SemanticSourceMcpOperations` | Transport-neutral MCP dispatcher: `source.import_archive_*`, `source.get_package`, `source.accept_revision`, `source.refuse_revision`, `source.accept_import`, `source.history`, `source.objects_in`. The principal always comes from the authenticated session. |
+
+Composition root:
+
+```rexx
+installed = .CryptoForeignRuntimeInstaller~install          -- SHA-256 ~0.5 ms instead of ~1.5 s per KB
+sql = .SemanticSourceSqlCompatibility~new(.NoSQLServerSQL~new(.FederatedDatabaseEngine~new(root)))
+store = .SemanticSourceStore~new(root, sql, "nosqlserver")~bootstrap
+repository = .SemanticSourceRepositoryService~new(sql, accessPermissionsAuthorizer)
+operations = .SemanticSourceMcpOperations~new(repository, .SemanticSourceLayoutPackageService~new(sql))
+```
+
+Defects found and handled (all reproduced on ooRexx 5.3.0 r13196):
+
+1. **No writer existed.** `ssc_source_object`, `ssc_source_revision` and the import tables were never written.
+2. **`getPackage` crashed on any non-empty request.** `loadRevisionBatch` used a variable named `result`; the bare instruction `unpinned~append(objectId)` sets RESULT to 1 (Error 97, `"1" does not understand "[]="`).
+3. **Files came back out of order.** They were assembled in unordered `.Directory` order across objects.
+4. **Tests ran against a stub.** `::requires` resolves the caller's directory first, so every test in `test/` loaded `test/NoSQLServer.cls`. Live tests now live in `test_live/`.
+5. **NoSQLServer v0.79 corrupts UPDATE literals.** It evaluates quoted UPDATE literals (`'3*4'` is stored as `12`). The repository never passes free text through UPDATE.
+6. **NoSQLServer v0.79 lacks IN lists and returns qualified join keys.** Handled by `SemanticSourceSqlCompatibility`.
+7. **NoSQLServer v0.79 rewrites CRLF to LF.** Such members are refused (`STORAGE_NOT_LOSSLESS`), never stored altered.
+8. **Test fixtures were missing from git.** `test/fixtures/*.zip` were dropped by the 2026-10-07 publication; regenerated (see `test/fixtures/REGENERATED.md`).
+
+Qualification: `sh test_live/run_live_suite.sh` runs the repository round trip (30 checks), the MCP operations (14 checks),
+an optional real-package dogfood (`SSC_DOGFOOD_ZIP`), and the existing dev25 suite, on NoSQLServer v0.79 with Crypto v0.8.3
+over Foreign Runtime v0.22.6. Evidence category: LOCAL_PASS. No MCP host is wired to `SemanticSourceMcpOperations` yet,
+and NoSQLServer v0.9x has not been qualified because its complete source is not yet in Git.
 
 
 
