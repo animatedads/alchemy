@@ -1,0 +1,995 @@
+{
+  "buildRequest": {
+    "activationRequested": false,
+    "buildLock": null,
+    "designTimeTooling": [
+      "alchemy_objects",
+      "intention_service",
+      "ssc",
+      "deployment"
+    ],
+    "executable": false,
+    "externalIntegrationRequirements": [
+      {
+        "adapterRequirement": "JMS client adapter and Java/native interop boundary",
+        "binding": "jms",
+        "edgeId": "erp-event",
+        "qualificationRequired": true,
+        "status": "INTEGRATION_ADAPTER_UNRESOLVED",
+        "transportRequirement": "Compatible JMS provider, protocol, broker and client version must be qualified"
+      }
+    ],
+    "nextAuthority": "SSC component/source-level requirements + Deployment target/artifact qualification",
+    "projectId": "cats-platform",
+    "requirements": [
+      {
+        "artifactDigest": null,
+        "candidateEvidence": "portfolio stack report",
+        "candidateVersion": "",
+        "componentId": "queue_fabric",
+        "contract": "queue fabric jobs/requests",
+        "dependsOn": [],
+        "layer": "distributed",
+        "name": "Queue Fabric",
+        "requiresSSCAndTargetProbe": true,
+        "resolutionStatus": "UNRESOLVED",
+        "selectedBecause": [
+          "Interconnect internal-command uses Queue Fabric"
+        ]
+      }
+    ],
+    "schema": "alchemy.architecture.build-request/0.1",
+    "state": "NEEDS_DISCOVERY",
+    "target": ""
+  },
+  "catalogRevision": "starter-2026-10-08c-scopes-and-links",
+  "cost": {
+    "currency": "",
+    "estimatedMonthly": 0,
+    "missingQuotes": [],
+    "priceAuthority": "User-provided quotes; no provider pricing verification",
+    "quotedResources": [],
+    "schema": "alchemy.architecture.cost/0.1",
+    "status": "ASSUMPTION_ONLY"
+  },
+  "costOptimisation": [],
+  "decisionHistory": [],
+  "decisionRegister": [],
+  "deploymentAuthority": "Planning only; no target mutation",
+  "effectiveAnswers": {},
+  "featureRegister": [],
+  "groundRules": {
+    "applicableRules": [
+      {
+        "authority": "customer architect",
+        "id": "jms-enterprise",
+        "kind": "REQUIRE_BINDING",
+        "policy": "Customer enterprise standard",
+        "rationale": "",
+        "revision": "rev-4",
+        "scopeId": "erp-event",
+        "scopeKind": "LINK",
+        "source": "policy://example/enterprise",
+        "subject": "interconnect",
+        "values": [
+          "jms"
+        ]
+      },
+      {
+        "authority": "compliance owner",
+        "id": "spiral1",
+        "kind": "CONTROL",
+        "policy": "SPIRAL 1",
+        "rationale": "",
+        "revision": "to-be-verified",
+        "scopeId": "cats-customer",
+        "scopeKind": "CUSTOMER",
+        "source": "customer://sp1/request",
+        "subject": "CONTROL_REGISTER_UNKNOWN",
+        "values": []
+      }
+    ],
+    "authority": "Attributed design constraints; all hard rules are cumulative",
+    "complianceStatus": "REVIEW_ONLY_NOT_CERTIFIED",
+    "controlEvaluations": [],
+    "schema": "alchemy.architecture.ground-rules/0.1"
+  },
+  "interconnects": {
+    "authority": "Per-edge, unqualified semantic integration proposals",
+    "edges": [
+      {
+        "authority": "architect",
+        "binding": "queue_fabric",
+        "bindingAuthority": "architect",
+        "bindingEvidence": "",
+        "bindingRationale": "Internal queue standard",
+        "consumer": "worker",
+        "guarantees": {},
+        "id": "internal-command",
+        "pattern": "COMMAND",
+        "producer": "application",
+        "rationale": "Internal work submission",
+        "subsystem": "core"
+      },
+      {
+        "authority": "architect",
+        "binding": "jms",
+        "bindingAuthority": "customer",
+        "bindingEvidence": "",
+        "bindingRationale": "Customer requested JMS",
+        "consumer": "erp",
+        "guarantees": {},
+        "id": "erp-event",
+        "pattern": "EVENT",
+        "producer": "billing",
+        "rationale": "Enterprise integration",
+        "subsystem": "integration"
+      }
+    ],
+    "openQuestions": [
+      {
+        "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+        "id": "link_internal-command_AUTH",
+        "options": [],
+        "purpose": "Define and qualify the AUTH boundary without assuming transport guarantees",
+        "question": "What is the AUTH contract for internal-command (queue_fabric)?",
+        "section": "04-interconnect"
+      },
+      {
+        "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+        "id": "link_internal-command_DELIVERY",
+        "options": [],
+        "purpose": "Define and qualify the DELIVERY boundary without assuming transport guarantees",
+        "question": "What is the DELIVERY contract for internal-command (queue_fabric)?",
+        "section": "04-interconnect"
+      },
+      {
+        "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+        "id": "link_internal-command_RECOVERY",
+        "options": [],
+        "purpose": "Define and qualify the RECOVERY boundary without assuming transport guarantees",
+        "question": "What is the RECOVERY contract for internal-command (queue_fabric)?",
+        "section": "04-interconnect"
+      },
+      {
+        "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+        "id": "link_erp-event_AUTH",
+        "options": [],
+        "purpose": "Define and qualify the AUTH boundary without assuming transport guarantees",
+        "question": "What is the AUTH contract for erp-event (jms)?",
+        "section": "04-interconnect"
+      },
+      {
+        "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+        "id": "link_erp-event_DELIVERY",
+        "options": [],
+        "purpose": "Define and qualify the DELIVERY boundary without assuming transport guarantees",
+        "question": "What is the DELIVERY contract for erp-event (jms)?",
+        "section": "04-interconnect"
+      },
+      {
+        "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+        "id": "link_erp-event_RECOVERY",
+        "options": [],
+        "purpose": "Define and qualify the RECOVERY boundary without assuming transport guarantees",
+        "question": "What is the RECOVERY contract for erp-event (jms)?",
+        "section": "04-interconnect"
+      },
+      {
+        "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+        "id": "link_erp-event_BROKER",
+        "options": [],
+        "purpose": "Define and qualify the BROKER boundary without assuming transport guarantees",
+        "question": "What is the BROKER contract for erp-event (jms)?",
+        "section": "04-interconnect"
+      }
+    ],
+    "schema": "alchemy.architecture.interconnects/0.1"
+  },
+  "issues": [],
+  "networkAuthority": "Transport semantics and target capabilities require XTP/Socket Provider live evidence",
+  "openQuestions": [
+    {
+      "id": "workload",
+      "options": [
+        {
+          "adds": [
+            "api_client"
+          ],
+          "id": "service",
+          "label": "Interactive service"
+        },
+        {
+          "adds": [
+            "queue_fabric"
+          ],
+          "id": "batch",
+          "label": "Batch or queued workload"
+        },
+        {
+          "adds": [
+            "queue_fabric"
+          ],
+          "id": "stream",
+          "label": "Streaming/event processing"
+        },
+        {
+          "adds": [
+            "wire_ui"
+          ],
+          "id": "desktop",
+          "label": "Desktop/client application"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "What is being designed?",
+      "section": "01-intent"
+    },
+    {
+      "id": "deployment_model",
+      "options": [
+        {
+          "adds": [],
+          "id": "local",
+          "label": "Single node / developer host"
+        },
+        {
+          "adds": [
+            "rexxos_grid",
+            "xtp",
+            "socket_provider",
+            "queue_fabric"
+          ],
+          "id": "rexxos_mu_mi",
+          "label": "RexxOS MU/MI managed estate"
+        },
+        {
+          "adds": [
+            "cloud_resource_contract"
+          ],
+          "id": "cloud",
+          "label": "Managed cloud / virtual machines"
+        },
+        {
+          "adds": [
+            "cloud_resource_contract",
+            "queue_fabric"
+          ],
+          "id": "hybrid",
+          "label": "On-premises and cloud"
+        },
+        {
+          "adds": [
+            "queue_fabric"
+          ],
+          "id": "edge",
+          "label": "Distributed edge"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "Where should execution live?",
+      "section": "02-execution"
+    },
+    {
+      "id": "frontend",
+      "options": [
+        {
+          "adds": [
+            "wire_ui",
+            "api_client"
+          ],
+          "id": "web",
+          "label": "Website/browser"
+        },
+        {
+          "adds": [
+            "wire_ui"
+          ],
+          "id": "native",
+          "label": "Native renderer (Windows/GTK/Android)"
+        },
+        {
+          "adds": [
+            "newshell"
+          ],
+          "id": "cli",
+          "label": "Terminal/NewShell"
+        },
+        {
+          "adds": [],
+          "id": "headless",
+          "label": "No end-user interface"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "What presentation/interaction boundary is required?",
+      "section": "03-interface"
+    },
+    {
+      "id": "scale_profile",
+      "options": [
+        {
+          "adds": [],
+          "id": "single",
+          "label": "Single instance"
+        },
+        {
+          "adds": [
+            "queue_fabric"
+          ],
+          "id": "horizontal",
+          "label": "Horizontal replicas"
+        },
+        {
+          "adds": [
+            "job_allocator",
+            "queue_fabric"
+          ],
+          "id": "scheduled",
+          "label": "Scheduled batch/jobs"
+        },
+        {
+          "adds": [
+            "cloud_resource_contract",
+            "queue_fabric"
+          ],
+          "id": "elastic",
+          "label": "Elastic managed capacity"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "How should capacity scale?",
+      "section": "02-execution"
+    },
+    {
+      "id": "multicast",
+      "options": [
+        {
+          "adds": [],
+          "id": "none",
+          "label": "No multicast"
+        },
+        {
+          "adds": [
+            "xtp"
+          ],
+          "id": "xtp",
+          "label": "XTP multicast"
+        },
+        {
+          "adds": [
+            "socket_provider"
+          ],
+          "id": "ip_ssm",
+          "label": "IPv4/IPv6 SSM via provider underlay"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "Is semantic multicast needed?",
+      "section": "04-network"
+    },
+    {
+      "id": "memory",
+      "options": [
+        {
+          "adds": [],
+          "id": "process",
+          "label": "Per-process resident memory"
+        },
+        {
+          "adds": [
+            "memory_fabric"
+          ],
+          "id": "fabric",
+          "label": "Memory Fabric with explicit capacity/leases"
+        },
+        {
+          "adds": [
+            "memory_fabric"
+          ],
+          "id": "native_shared",
+          "label": "Native shared memory, mapped and fenced"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "How is operational memory managed?",
+      "section": "05-compute"
+    },
+    {
+      "id": "storage",
+      "options": [
+        {
+          "adds": [],
+          "id": "filesystem",
+          "label": "Host filesystem only"
+        },
+        {
+          "adds": [
+            "storage_fabric"
+          ],
+          "id": "fabric",
+          "label": "Storage Fabric provider-neutral namespace"
+        },
+        {
+          "adds": [
+            "cloud_resource_contract"
+          ],
+          "id": "object",
+          "label": "Cloud object store / provider adapter"
+        },
+        {
+          "adds": [
+            "storage_fabric",
+            "cloud_resource_contract"
+          ],
+          "id": "hybrid",
+          "label": "Storage Fabric and external object stores"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "Where should persistent objects live?",
+      "section": "06-storage"
+    },
+    {
+      "id": "storage_access",
+      "options": [
+        {
+          "adds": [],
+          "id": "transactional",
+          "label": "Transactional metadata and small records"
+        },
+        {
+          "adds": [
+            "storage_fabric"
+          ],
+          "id": "large_random",
+          "label": "Large random access / workspace pools"
+        },
+        {
+          "adds": [
+            "storage_fabric"
+          ],
+          "id": "cold",
+          "label": "Cold archive and lifecycle placement"
+        },
+        {
+          "adds": [
+            "storage_fabric"
+          ],
+          "id": "media",
+          "label": "Streaming media and large immutable blobs"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "How are stored objects accessed?",
+      "section": "06-storage"
+    },
+    {
+      "id": "durability",
+      "options": [
+        {
+          "adds": [],
+          "id": "ephemeral",
+          "label": "Disposable/reconstructible"
+        },
+        {
+          "adds": [
+            "storage_fabric"
+          ],
+          "id": "backup",
+          "label": "Backup and verified recovery"
+        },
+        {
+          "adds": [
+            "storage_fabric"
+          ],
+          "id": "journaled",
+          "label": "Journal, checkpoint and verified restore"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "What durability/continuation policy is required?",
+      "section": "06-storage"
+    },
+    {
+      "id": "data_model",
+      "options": [
+        {
+          "adds": [],
+          "id": "none",
+          "label": "No database required"
+        },
+        {
+          "adds": [],
+          "id": "relational",
+          "label": "Relational data"
+        },
+        {
+          "adds": [
+            "nosqlserver"
+          ],
+          "id": "document",
+          "label": "Documents / NoSQL"
+        },
+        {
+          "adds": [
+            "notnotes"
+          ],
+          "id": "graph",
+          "label": "Documents/relationships (NotNotes)"
+        },
+        {
+          "adds": [
+            "storage_fabric"
+          ],
+          "id": "object",
+          "label": "Large binary/media objects"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "What information model is authoritative?",
+      "section": "07-data"
+    },
+    {
+      "id": "security",
+      "options": [
+        {
+          "adds": [
+            "secret_broker"
+          ],
+          "id": "internal",
+          "label": "Internal authenticated service"
+        },
+        {
+          "adds": [
+            "secret_broker",
+            "instrumentation_mesh"
+          ],
+          "id": "regulated",
+          "label": "Regulated/data-residency control"
+        },
+        {
+          "adds": [
+            "secret_broker",
+            "api_client",
+            "instrumentation_mesh"
+          ],
+          "id": "public",
+          "label": "Public internet ingress"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "What governance/security envelope applies?",
+      "section": "08-governance"
+    },
+    {
+      "id": "identity_boundary",
+      "options": [
+        {
+          "adds": [
+            "secret_broker"
+          ],
+          "id": "host",
+          "label": "Host/instance identity authority"
+        },
+        {
+          "adds": [
+            "secret_broker"
+          ],
+          "id": "directory",
+          "label": "Directory/LDAP-backed authority"
+        },
+        {
+          "adds": [
+            "secret_broker"
+          ],
+          "id": "federated",
+          "label": "Federated/oidc principal mapping"
+        },
+        {
+          "adds": [
+            "secret_broker"
+          ],
+          "id": "isolated",
+          "label": "Isolated single-domain credentials"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "Where is service/user identity anchored?",
+      "section": "08-governance"
+    },
+    {
+      "id": "observability",
+      "options": [
+        {
+          "adds": [],
+          "id": "basic",
+          "label": "Local logs only"
+        },
+        {
+          "adds": [
+            "instrumentation_mesh"
+          ],
+          "id": "mesh",
+          "label": "Instrumentation Mesh"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "What observation/service instrumentation is required?",
+      "section": "08-governance"
+    },
+    {
+      "id": "deployment_target",
+      "options": [
+        {
+          "adds": [
+            "deployment"
+          ],
+          "id": "linux",
+          "label": "Linux host"
+        },
+        {
+          "adds": [
+            "deployment"
+          ],
+          "id": "windows",
+          "label": "Windows host"
+        },
+        {
+          "adds": [
+            "deployment"
+          ],
+          "id": "android",
+          "label": "Android/Termux"
+        },
+        {
+          "adds": [
+            "rexxos_grid",
+            "deployment"
+          ],
+          "id": "rexxos",
+          "label": "RexxOS MU/MI"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "Which deployment operating environment?",
+      "section": "09-deployment"
+    },
+    {
+      "id": "cost_priority",
+      "options": [
+        {
+          "adds": [],
+          "id": "monthly",
+          "label": "Lowest viable monthly cost"
+        },
+        {
+          "adds": [],
+          "id": "performance",
+          "label": "Predictable performance per cost"
+        },
+        {
+          "adds": [],
+          "id": "sovereignty",
+          "label": "Residency/sovereignty first"
+        },
+        {
+          "adds": [],
+          "id": "availability",
+          "label": "Availability first"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "What are we optimising?",
+      "section": "10-economics"
+    },
+    {
+      "id": "cost_budget",
+      "options": [
+        {
+          "adds": [
+            "instrumentation_mesh"
+          ],
+          "id": "budgeted",
+          "label": "Monthly fixed budget and alerts"
+        },
+        {
+          "adds": [
+            "instrumentation_mesh"
+          ],
+          "id": "approval",
+          "label": "Prior approval for resource commissioning"
+        },
+        {
+          "adds": [],
+          "id": "unbounded",
+          "label": "No hard budget; record cost review cadence"
+        }
+      ],
+      "purpose": "Required architectural choice before resolution",
+      "question": "How is the spending envelope governed?",
+      "section": "10-economics"
+    },
+    {
+      "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+      "id": "domain_scope_BUSINESS_OUTCOME",
+      "options": [],
+      "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+      "question": "What is known about BUSINESS_OUTCOME for this business?",
+      "section": "00-discovery"
+    },
+    {
+      "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+      "id": "domain_scope_EXISTING_ESTATE",
+      "options": [],
+      "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+      "question": "What is known about EXISTING_ESTATE for this business?",
+      "section": "00-discovery"
+    },
+    {
+      "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+      "id": "domain_scope_ACTORS_AND_PRINCIPALS",
+      "options": [],
+      "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+      "question": "What is known about ACTORS_AND_PRINCIPALS for this business?",
+      "section": "00-discovery"
+    },
+    {
+      "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+      "id": "domain_scope_RECORD_OF_TRUTH",
+      "options": [],
+      "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+      "question": "What is known about RECORD_OF_TRUTH for this business?",
+      "section": "00-discovery"
+    },
+    {
+      "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+      "id": "domain_scope_SCALE",
+      "options": [],
+      "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+      "question": "What is known about SCALE for this business?",
+      "section": "00-discovery"
+    },
+    {
+      "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+      "id": "domain_scope_INTEGRATION_BOUNDARIES",
+      "options": [],
+      "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+      "question": "What is known about INTEGRATION_BOUNDARIES for this business?",
+      "section": "00-discovery"
+    },
+    {
+      "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+      "id": "domain_scope_OPERATIONS",
+      "options": [],
+      "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+      "question": "What is known about OPERATIONS for this business?",
+      "section": "00-discovery"
+    },
+    {
+      "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+      "id": "domain_subject_cats",
+      "options": [],
+      "purpose": "Specify who acts, what is identified and what constitutes authorization; do not presume the subject logs in",
+      "question": "Is Cats a record, an authenticated party, a device-identified entity, or represented by somebody else?",
+      "section": "00-discovery"
+    },
+    {
+      "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+      "id": "domain_legacy_mysql",
+      "options": [],
+      "purpose": "Obtain the system inventory and migration/coexistence evidence before replacement",
+      "question": "What verified interfaces, schema and operational constraints exist for Existing MySQL??",
+      "section": "00-discovery"
+    },
+    {
+      "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+      "id": "domain_dataset_flatfiles",
+      "options": [],
+      "purpose": "Obtain a schema sample and provenance; do not assume a database backend",
+      "question": "Which real schema/format, ownership and retention apply to Existing flat files??",
+      "section": "00-discovery"
+    },
+    {
+      "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+      "id": "link_internal-command_AUTH",
+      "options": [],
+      "purpose": "Define and qualify the AUTH boundary without assuming transport guarantees",
+      "question": "What is the AUTH contract for internal-command (queue_fabric)?",
+      "section": "04-interconnect"
+    },
+    {
+      "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+      "id": "link_internal-command_DELIVERY",
+      "options": [],
+      "purpose": "Define and qualify the DELIVERY boundary without assuming transport guarantees",
+      "question": "What is the DELIVERY contract for internal-command (queue_fabric)?",
+      "section": "04-interconnect"
+    },
+    {
+      "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+      "id": "link_internal-command_RECOVERY",
+      "options": [],
+      "purpose": "Define and qualify the RECOVERY boundary without assuming transport guarantees",
+      "question": "What is the RECOVERY contract for internal-command (queue_fabric)?",
+      "section": "04-interconnect"
+    },
+    {
+      "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+      "id": "link_erp-event_AUTH",
+      "options": [],
+      "purpose": "Define and qualify the AUTH boundary without assuming transport guarantees",
+      "question": "What is the AUTH contract for erp-event (jms)?",
+      "section": "04-interconnect"
+    },
+    {
+      "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+      "id": "link_erp-event_DELIVERY",
+      "options": [],
+      "purpose": "Define and qualify the DELIVERY boundary without assuming transport guarantees",
+      "question": "What is the DELIVERY contract for erp-event (jms)?",
+      "section": "04-interconnect"
+    },
+    {
+      "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+      "id": "link_erp-event_RECOVERY",
+      "options": [],
+      "purpose": "Define and qualify the RECOVERY boundary without assuming transport guarantees",
+      "question": "What is the RECOVERY contract for erp-event (jms)?",
+      "section": "04-interconnect"
+    },
+    {
+      "answerMechanism": "LINK_BINDING_OR_GUARANTEE",
+      "id": "link_erp-event_BROKER",
+      "options": [],
+      "purpose": "Define and qualify the BROKER boundary without assuming transport guarantees",
+      "question": "What is the BROKER contract for erp-event (jms)?",
+      "section": "04-interconnect"
+    },
+    {
+      "answerMechanism": "POLICY_DECISION_OR_EVIDENCE",
+      "id": "policy_spiral1",
+      "options": [],
+      "purpose": "SPIRAL 1 version to-be-verified (customer://sp1/request)",
+      "question": "Define the revisioned control inventory and assessment authority for CONTROL_REGISTER_UNKNOWN",
+      "section": "00-ground-rules"
+    },
+    {
+      "answerMechanism": "POLICY_DECISION_OR_EVIDENCE",
+      "id": "policy_spiral1",
+      "options": [],
+      "purpose": "SPIRAL 1 version to-be-verified (customer://sp1/request)",
+      "question": "What evidence and review satisfy control CONTROL_REGISTER_UNKNOWN?",
+      "section": "00-ground-rules"
+    }
+  ],
+  "projectId": "cats-platform",
+  "projectName": "I Love Cats",
+  "schema": "alchemy.architecture.plan/0.1",
+  "scope": {
+    "authority": "Stakeholder-attributed design proposals; no identity or runtime evidence implied",
+    "entities": [
+      {
+        "authority": "product owner",
+        "evidence": "",
+        "id": "cats",
+        "kind": "SUBJECT",
+        "label": "Cats",
+        "lifecycle": "PROPOSED",
+        "status": "DECLARED"
+      },
+      {
+        "authority": "customer",
+        "evidence": "",
+        "id": "mysql",
+        "kind": "SYSTEM",
+        "label": "Existing MySQL?",
+        "lifecycle": "EXISTING",
+        "status": "DECLARED"
+      },
+      {
+        "authority": "customer",
+        "evidence": "",
+        "id": "flatfiles",
+        "kind": "DATASET",
+        "label": "Existing flat files?",
+        "lifecycle": "EXISTING",
+        "status": "DECLARED"
+      }
+    ],
+    "facts": {},
+    "openQuestions": [
+      {
+        "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+        "id": "domain_scope_BUSINESS_OUTCOME",
+        "options": [],
+        "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+        "question": "What is known about BUSINESS_OUTCOME for this business?",
+        "section": "00-discovery"
+      },
+      {
+        "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+        "id": "domain_scope_EXISTING_ESTATE",
+        "options": [],
+        "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+        "question": "What is known about EXISTING_ESTATE for this business?",
+        "section": "00-discovery"
+      },
+      {
+        "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+        "id": "domain_scope_ACTORS_AND_PRINCIPALS",
+        "options": [],
+        "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+        "question": "What is known about ACTORS_AND_PRINCIPALS for this business?",
+        "section": "00-discovery"
+      },
+      {
+        "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+        "id": "domain_scope_RECORD_OF_TRUTH",
+        "options": [],
+        "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+        "question": "What is known about RECORD_OF_TRUTH for this business?",
+        "section": "00-discovery"
+      },
+      {
+        "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+        "id": "domain_scope_SCALE",
+        "options": [],
+        "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+        "question": "What is known about SCALE for this business?",
+        "section": "00-discovery"
+      },
+      {
+        "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+        "id": "domain_scope_INTEGRATION_BOUNDARIES",
+        "options": [],
+        "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+        "question": "What is known about INTEGRATION_BOUNDARIES for this business?",
+        "section": "00-discovery"
+      },
+      {
+        "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+        "id": "domain_scope_OPERATIONS",
+        "options": [],
+        "purpose": "Record actual requirements, existing estate, authority and evidence before picking runtime layers",
+        "question": "What is known about OPERATIONS for this business?",
+        "section": "00-discovery"
+      },
+      {
+        "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+        "id": "domain_subject_cats",
+        "options": [],
+        "purpose": "Specify who acts, what is identified and what constitutes authorization; do not presume the subject logs in",
+        "question": "Is Cats a record, an authenticated party, a device-identified entity, or represented by somebody else?",
+        "section": "00-discovery"
+      },
+      {
+        "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+        "id": "domain_legacy_mysql",
+        "options": [],
+        "purpose": "Obtain the system inventory and migration/coexistence evidence before replacement",
+        "question": "What verified interfaces, schema and operational constraints exist for Existing MySQL??",
+        "section": "00-discovery"
+      },
+      {
+        "answerMechanism": "DOMAIN_RELATION_OR_EVIDENCE",
+        "id": "domain_dataset_flatfiles",
+        "options": [],
+        "purpose": "Obtain a schema sample and provenance; do not assume a database backend",
+        "question": "Which real schema/format, ownership and retention apply to Existing flat files??",
+        "section": "00-discovery"
+      }
+    ],
+    "relationships": [],
+    "schema": "alchemy.architecture.domain/0.1",
+    "statements": [
+      {
+        "authority": "Customer stakeholder",
+        "evidence": "workshop day 1",
+        "status": "UNINTERPRETED",
+        "text": "We need an I Love Cats business platform"
+      }
+    ]
+  },
+  "state": "NEEDS_DISCOVERY"
+}

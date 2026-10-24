@@ -1,0 +1,1581 @@
+{
+  "schema": "alchemy.architecture.catalog/0.1",
+  "revision": "0.1-dev7",
+  "authority": "Design options only; external SSC and Deployment are required to resolve/lock exact artifacts.",
+  "foundation": [
+    "alchemy_objects",
+    "intention_service",
+    "ssc",
+    "deployment"
+  ],
+  "questions": [
+    {
+      "id": "workload",
+      "section": "01-intent",
+      "prompt": "What is being designed?",
+      "options": [
+        {
+          "id": "service",
+          "label": "Interactive service",
+          "adds": [
+            "api_client"
+          ]
+        },
+        {
+          "id": "batch",
+          "label": "Batch or queued workload",
+          "adds": [
+            "queue_fabric"
+          ]
+        },
+        {
+          "id": "stream",
+          "label": "Streaming/event processing",
+          "adds": [
+            "queue_fabric"
+          ]
+        },
+        {
+          "id": "desktop",
+          "label": "Desktop/client application",
+          "adds": [
+            "wire_ui"
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "deployment_model",
+      "section": "02-execution",
+      "prompt": "Where should execution live?",
+      "options": [
+        {
+          "id": "local",
+          "label": "Single node / developer host",
+          "adds": []
+        },
+        {
+          "id": "rexxos_mu_mi",
+          "label": "RexxOS MU/MI managed estate",
+          "adds": [
+            "rexxos_grid",
+            "xtp",
+            "socket_provider",
+            "queue_fabric"
+          ]
+        },
+        {
+          "id": "cloud",
+          "label": "Managed cloud / virtual machines",
+          "adds": [
+            "cloud_resource_contract"
+          ]
+        },
+        {
+          "id": "hybrid",
+          "label": "On-premises and cloud",
+          "adds": [
+            "cloud_resource_contract",
+            "queue_fabric"
+          ]
+        },
+        {
+          "id": "edge",
+          "label": "Distributed edge",
+          "adds": [
+            "queue_fabric"
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "frontend",
+      "section": "03-interface",
+      "prompt": "What presentation/interaction boundary is required?",
+      "options": [
+        {
+          "id": "web",
+          "label": "Website/browser",
+          "adds": [
+            "wire_ui",
+            "api_client"
+          ]
+        },
+        {
+          "id": "native",
+          "label": "Native renderer (Windows/GTK/Android)",
+          "adds": [
+            "wire_ui"
+          ]
+        },
+        {
+          "id": "cli",
+          "label": "Terminal/NewShell",
+          "adds": [
+            "newshell"
+          ]
+        },
+        {
+          "id": "headless",
+          "label": "No end-user interface",
+          "adds": []
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "browser_edge",
+      "section": "03-interface",
+      "prompt": "Which browser ingress/interface will be published?",
+      "required": true,
+      "options": [
+        {
+          "id": "https",
+          "label": "HTTPS ingress to renderer-neutral Wire interface",
+          "adds": [
+            "api_client",
+            "wire_ui"
+          ]
+        },
+        {
+          "id": "websocket",
+          "label": "WebSocket event gateway",
+          "adds": [
+            "queue_fabric",
+            "wire_ui"
+          ]
+        },
+        {
+          "id": "both",
+          "label": "HTTPS and a governed WebSocket event gateway",
+          "adds": [
+            "api_client",
+            "queue_fabric",
+            "wire_ui"
+          ]
+        }
+      ],
+      "when": {
+        "frontend": [
+          "web"
+        ]
+      }
+    },
+    {
+      "id": "scale_profile",
+      "section": "02-execution",
+      "prompt": "How should capacity scale?",
+      "options": [
+        {
+          "id": "single",
+          "label": "Single instance",
+          "adds": []
+        },
+        {
+          "id": "horizontal",
+          "label": "Horizontal replicas",
+          "adds": [
+            "queue_fabric"
+          ]
+        },
+        {
+          "id": "scheduled",
+          "label": "Scheduled batch/jobs",
+          "adds": [
+            "job_allocator",
+            "queue_fabric"
+          ]
+        },
+        {
+          "id": "elastic",
+          "label": "Elastic managed capacity",
+          "adds": [
+            "cloud_resource_contract",
+            "queue_fabric"
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "placement_policy",
+      "section": "02-execution",
+      "prompt": "What determines placement or scale-out?",
+      "required": true,
+      "options": [
+        {
+          "id": "fixed",
+          "label": "Pre-allocated capacity, explicit changes",
+          "adds": []
+        },
+        {
+          "id": "measured",
+          "label": "Observed pressure, admitted by resource authority",
+          "adds": [
+            "instrumentation_mesh"
+          ]
+        },
+        {
+          "id": "cost_guarded",
+          "label": "Cost/placement gates before commissioning",
+          "adds": [
+            "instrumentation_mesh"
+          ]
+        }
+      ],
+      "when": {
+        "deployment_model": [
+          "cloud",
+          "hybrid",
+          "rexxos_mu_mi",
+          "edge"
+        ]
+      }
+    },
+    {
+      "id": "interconnect",
+      "section": "04-network",
+      "prompt": "How will components exchange semantic messages?",
+      "options": [
+        {
+          "id": "xtp",
+          "label": "XTP semantic transport",
+          "adds": [
+            "xtp",
+            "socket_provider"
+          ]
+        },
+        {
+          "id": "api",
+          "label": "HTTPS/API client",
+          "adds": [
+            "api_client",
+            "socket_provider"
+          ]
+        },
+        {
+          "id": "socket",
+          "label": "Provider-selected socket transport",
+          "adds": [
+            "socket_provider"
+          ]
+        },
+        {
+          "id": "none",
+          "label": "In-process only",
+          "adds": []
+        }
+      ],
+      "required": true,
+      "when": {
+        "deployment_model": [
+          "local",
+          "cloud",
+          "hybrid",
+          "edge"
+        ]
+      }
+    },
+    {
+      "id": "general_xtp_carrier",
+      "section": "04-network",
+      "prompt": "Which XTP underlay outside MU/MI is proposed?",
+      "required": true,
+      "options": [
+        {
+          "id": "l2",
+          "label": "Same-L2 native XTP EtherType 0x817D",
+          "adds": [
+            "xtp"
+          ]
+        },
+        {
+          "id": "ip36",
+          "label": "Routed IP protocol 36",
+          "adds": [
+            "xtp"
+          ]
+        },
+        {
+          "id": "udp_outer",
+          "label": "Policy-approved XTP encapsulated over UDP",
+          "adds": [
+            "xtp"
+          ]
+        }
+      ],
+      "when": {
+        "interconnect": [
+          "xtp"
+        ],
+        "deployment_model": [
+          "cloud",
+          "hybrid",
+          "edge",
+          "local"
+        ]
+      }
+    },
+    {
+      "id": "xtp_carrier",
+      "section": "04-network",
+      "prompt": "Which XTP underlay is intended?",
+      "options": [
+        {
+          "id": "l2",
+          "label": "EtherType 0x817D, same-L2 domain",
+          "adds": [
+            "xtp"
+          ]
+        },
+        {
+          "id": "ip36",
+          "label": "Native routed IP protocol 36",
+          "adds": [
+            "xtp"
+          ]
+        },
+        {
+          "id": "udp_outer",
+          "label": "Policy-approved UDP encapsulation of XTP",
+          "adds": [
+            "xtp"
+          ]
+        }
+      ],
+      "required": true,
+      "when": {
+        "deployment_model": [
+          "rexxos_mu_mi"
+        ]
+      }
+    },
+    {
+      "id": "network_scope",
+      "section": "04-network",
+      "prompt": "What is the network reachability scope?",
+      "options": [
+        {
+          "id": "same_l2",
+          "label": "Local Layer 2 broadcast domain",
+          "adds": []
+        },
+        {
+          "id": "routed",
+          "label": "Routed private network",
+          "adds": []
+        },
+        {
+          "id": "external",
+          "label": "Internet/untrusted networks",
+          "adds": []
+        }
+      ],
+      "required": true,
+      "when": {
+        "deployment_model": [
+          "rexxos_mu_mi"
+        ]
+      }
+    },
+    {
+      "id": "xtp_security",
+      "section": "04-network",
+      "prompt": "What does network trust require?",
+      "required": true,
+      "options": [
+        {
+          "id": "private",
+          "label": "Private trusted fabric with explicit member admission",
+          "adds": [
+            "secret_broker"
+          ]
+        },
+        {
+          "id": "authenticated",
+          "label": "Authenticated/sealed payloads and admission",
+          "adds": [
+            "secret_broker"
+          ]
+        },
+        {
+          "id": "regulated",
+          "label": "Policy-bound keys, audit and isolation",
+          "adds": [
+            "secret_broker",
+            "instrumentation_mesh"
+          ]
+        }
+      ],
+      "when": {
+        "deployment_model": [
+          "rexxos_mu_mi"
+        ]
+      }
+    },
+    {
+      "id": "multicast",
+      "section": "04-network",
+      "prompt": "Is semantic multicast needed?",
+      "options": [
+        {
+          "id": "none",
+          "label": "No multicast",
+          "adds": []
+        },
+        {
+          "id": "xtp",
+          "label": "XTP multicast",
+          "adds": [
+            "xtp"
+          ]
+        },
+        {
+          "id": "ip_ssm",
+          "label": "IPv4/IPv6 SSM via provider underlay",
+          "adds": [
+            "socket_provider"
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "memory",
+      "section": "05-compute",
+      "prompt": "How is operational memory managed?",
+      "options": [
+        {
+          "id": "process",
+          "label": "Per-process resident memory",
+          "adds": []
+        },
+        {
+          "id": "fabric",
+          "label": "Memory Fabric with explicit capacity/leases",
+          "adds": [
+            "memory_fabric"
+          ]
+        },
+        {
+          "id": "native_shared",
+          "label": "Native shared memory, mapped and fenced",
+          "adds": [
+            "memory_fabric"
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "memory_bulk",
+      "section": "05-compute",
+      "prompt": "How should large MI/MU memory payloads move?",
+      "options": [
+        {
+          "id": "bag",
+          "label": "Native shared/DMA block bag; XTP control-only",
+          "adds": [
+            "memory_fabric"
+          ]
+        },
+        {
+          "id": "na",
+          "label": "No cross-instance large blocks",
+          "adds": []
+        }
+      ],
+      "required": true,
+      "when": {
+        "deployment_model": [
+          "rexxos_mu_mi"
+        ],
+        "memory": [
+          "fabric",
+          "native_shared"
+        ]
+      }
+    },
+    {
+      "id": "storage",
+      "section": "06-storage",
+      "prompt": "Where should persistent objects live?",
+      "options": [
+        {
+          "id": "filesystem",
+          "label": "Host filesystem only",
+          "adds": []
+        },
+        {
+          "id": "fabric",
+          "label": "Storage Fabric provider-neutral namespace",
+          "adds": [
+            "storage_fabric"
+          ]
+        },
+        {
+          "id": "object",
+          "label": "Cloud object store / provider adapter",
+          "adds": [
+            "cloud_resource_contract"
+          ]
+        },
+        {
+          "id": "hybrid",
+          "label": "Storage Fabric and external object stores",
+          "adds": [
+            "storage_fabric",
+            "cloud_resource_contract"
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "storage_access",
+      "section": "06-storage",
+      "prompt": "How are stored objects accessed?",
+      "required": true,
+      "options": [
+        {
+          "id": "transactional",
+          "label": "Transactional metadata and small records",
+          "adds": []
+        },
+        {
+          "id": "large_random",
+          "label": "Large random access / workspace pools",
+          "adds": [
+            "storage_fabric"
+          ]
+        },
+        {
+          "id": "cold",
+          "label": "Cold archive and lifecycle placement",
+          "adds": [
+            "storage_fabric"
+          ]
+        },
+        {
+          "id": "media",
+          "label": "Streaming media and large immutable blobs",
+          "adds": [
+            "storage_fabric"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "storage_replication",
+      "section": "06-storage",
+      "prompt": "What redundancy/availability strategy?",
+      "required": true,
+      "options": [
+        {
+          "id": "none",
+          "label": "No replicated durable copies",
+          "adds": []
+        },
+        {
+          "id": "local",
+          "label": "Replicas across local failure domains",
+          "adds": [
+            "storage_fabric"
+          ]
+        },
+        {
+          "id": "multi_site",
+          "label": "Multi-site placement with residency constraints",
+          "adds": [
+            "storage_fabric"
+          ]
+        },
+        {
+          "id": "provider",
+          "label": "Provider-managed redundancy with external evidence",
+          "adds": []
+        }
+      ],
+      "when": {
+        "storage": [
+          "fabric",
+          "object",
+          "hybrid"
+        ]
+      }
+    },
+    {
+      "id": "durability",
+      "section": "06-storage",
+      "prompt": "What durability/continuation policy is required?",
+      "options": [
+        {
+          "id": "ephemeral",
+          "label": "Disposable/reconstructible",
+          "adds": []
+        },
+        {
+          "id": "backup",
+          "label": "Backup and verified recovery",
+          "adds": [
+            "storage_fabric"
+          ]
+        },
+        {
+          "id": "journaled",
+          "label": "Journal, checkpoint and verified restore",
+          "adds": [
+            "storage_fabric"
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "restore_objective",
+      "section": "06-storage",
+      "prompt": "How should restoration be qualified?",
+      "required": true,
+      "options": [
+        {
+          "id": "manual",
+          "label": "Documented manual recovery proof",
+          "adds": []
+        },
+        {
+          "id": "tested",
+          "label": "Periodic restore and integrity test",
+          "adds": [
+            "instrumentation_mesh"
+          ]
+        },
+        {
+          "id": "checkpoint",
+          "label": "Journal/checkpoint/fenced continuation verification",
+          "adds": [
+            "storage_fabric",
+            "instrumentation_mesh"
+          ]
+        }
+      ],
+      "when": {
+        "durability": [
+          "backup",
+          "journaled"
+        ]
+      }
+    },
+    {
+      "id": "data_model",
+      "section": "07-data",
+      "prompt": "What information model is authoritative?",
+      "options": [
+        {
+          "id": "none",
+          "label": "No database required",
+          "adds": []
+        },
+        {
+          "id": "relational",
+          "label": "Relational data",
+          "adds": []
+        },
+        {
+          "id": "document",
+          "label": "Documents / NoSQL",
+          "adds": [
+            "nosqlserver"
+          ]
+        },
+        {
+          "id": "graph",
+          "label": "Documents/relationships (NotNotes)",
+          "adds": [
+            "notnotes"
+          ]
+        },
+        {
+          "id": "object",
+          "label": "Large binary/media objects",
+          "adds": [
+            "storage_fabric"
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "rdbms",
+      "section": "07-data",
+      "prompt": "Which SQL personality/back-end is intended?",
+      "options": [
+        {
+          "id": "postgres",
+          "label": "PostgreSQL",
+          "adds": [
+            "native_db"
+          ]
+        },
+        {
+          "id": "mariadb",
+          "label": "MariaDB/MySQL",
+          "adds": [
+            "native_db"
+          ]
+        },
+        {
+          "id": "db2",
+          "label": "DB2",
+          "adds": [
+            "native_db"
+          ]
+        },
+        {
+          "id": "select_later",
+          "label": "Selection requires qualification",
+          "adds": [
+            "native_db"
+          ]
+        }
+      ],
+      "required": true,
+      "when": {
+        "data_model": [
+          "relational"
+        ]
+      }
+    },
+    {
+      "id": "security",
+      "section": "08-governance",
+      "prompt": "What governance/security envelope applies?",
+      "options": [
+        {
+          "id": "internal",
+          "label": "Internal authenticated service",
+          "adds": [
+            "secret_broker"
+          ]
+        },
+        {
+          "id": "regulated",
+          "label": "Regulated/data-residency control",
+          "adds": [
+            "secret_broker",
+            "instrumentation_mesh"
+          ]
+        },
+        {
+          "id": "public",
+          "label": "Public internet ingress",
+          "adds": [
+            "secret_broker",
+            "api_client",
+            "instrumentation_mesh"
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "identity_boundary",
+      "section": "08-governance",
+      "prompt": "Where is service/user identity anchored?",
+      "required": true,
+      "options": [
+        {
+          "id": "host",
+          "label": "Host/instance identity authority",
+          "adds": [
+            "secret_broker"
+          ]
+        },
+        {
+          "id": "directory",
+          "label": "Directory/LDAP-backed authority",
+          "adds": [
+            "secret_broker"
+          ]
+        },
+        {
+          "id": "federated",
+          "label": "Federated/oidc principal mapping",
+          "adds": [
+            "secret_broker"
+          ]
+        },
+        {
+          "id": "isolated",
+          "label": "Isolated single-domain credentials",
+          "adds": [
+            "secret_broker"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "observability",
+      "section": "08-governance",
+      "prompt": "What observation/service instrumentation is required?",
+      "options": [
+        {
+          "id": "basic",
+          "label": "Local logs only",
+          "adds": []
+        },
+        {
+          "id": "mesh",
+          "label": "Instrumentation Mesh",
+          "adds": [
+            "instrumentation_mesh"
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "deployment_target",
+      "section": "09-deployment",
+      "prompt": "Which deployment operating environment?",
+      "options": [
+        {
+          "id": "linux",
+          "label": "Linux host",
+          "adds": [
+            "deployment"
+          ]
+        },
+        {
+          "id": "windows",
+          "label": "Windows host",
+          "adds": [
+            "deployment"
+          ]
+        },
+        {
+          "id": "android",
+          "label": "Android/Termux",
+          "adds": [
+            "deployment"
+          ]
+        },
+        {
+          "id": "rexxos",
+          "label": "RexxOS MU/MI",
+          "adds": [
+            "rexxos_grid",
+            "deployment"
+          ]
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "hosting",
+      "section": "09-deployment",
+      "prompt": "Where are cloud resources commissioned?",
+      "options": [
+        {
+          "id": "oci",
+          "label": "Oracle Cloud OCI",
+          "adds": [
+            "cloud_resource_contract"
+          ]
+        },
+        {
+          "id": "ibm",
+          "label": "IBM Cloud",
+          "adds": [
+            "cloud_resource_contract"
+          ]
+        },
+        {
+          "id": "aws",
+          "label": "AWS",
+          "adds": [
+            "cloud_resource_contract"
+          ]
+        },
+        {
+          "id": "azure",
+          "label": "Azure",
+          "adds": [
+            "cloud_resource_contract"
+          ]
+        },
+        {
+          "id": "gcp",
+          "label": "Google Cloud",
+          "adds": [
+            "cloud_resource_contract"
+          ]
+        },
+        {
+          "id": "multi",
+          "label": "Multi-cloud with placement governance",
+          "adds": [
+            "cloud_resource_contract"
+          ]
+        }
+      ],
+      "required": true,
+      "when": {
+        "deployment_model": [
+          "cloud",
+          "hybrid"
+        ]
+      }
+    },
+    {
+      "id": "cloud_purchase",
+      "section": "10-economics",
+      "prompt": "Which cloud-cost purchasing/operation strategy?",
+      "required": true,
+      "options": [
+        {
+          "id": "on_demand",
+          "label": "On-demand with explicit limits",
+          "adds": []
+        },
+        {
+          "id": "reserved",
+          "label": "Reserved/committed capacity with utilization proof",
+          "adds": []
+        },
+        {
+          "id": "spot",
+          "label": "Interruptible capacity only for safe-to-retry workloads",
+          "adds": [
+            "queue_fabric"
+          ]
+        },
+        {
+          "id": "mixed",
+          "label": "Mixed capacity strategy with admission policies",
+          "adds": [
+            "queue_fabric"
+          ]
+        }
+      ],
+      "when": {
+        "deployment_model": [
+          "cloud",
+          "hybrid"
+        ]
+      }
+    },
+    {
+      "id": "cost_priority",
+      "section": "10-economics",
+      "prompt": "What are we optimising?",
+      "options": [
+        {
+          "id": "monthly",
+          "label": "Lowest viable monthly cost",
+          "adds": []
+        },
+        {
+          "id": "performance",
+          "label": "Predictable performance per cost",
+          "adds": []
+        },
+        {
+          "id": "sovereignty",
+          "label": "Residency/sovereignty first",
+          "adds": []
+        },
+        {
+          "id": "availability",
+          "label": "Availability first",
+          "adds": []
+        }
+      ],
+      "required": true
+    },
+    {
+      "id": "cost_budget",
+      "section": "10-economics",
+      "prompt": "How is the spending envelope governed?",
+      "required": true,
+      "options": [
+        {
+          "id": "budgeted",
+          "label": "Monthly fixed budget and alerts",
+          "adds": [
+            "instrumentation_mesh"
+          ]
+        },
+        {
+          "id": "approval",
+          "label": "Prior approval for resource commissioning",
+          "adds": [
+            "instrumentation_mesh"
+          ]
+        },
+        {
+          "id": "unbounded",
+          "label": "No hard budget; record cost review cadence",
+          "adds": []
+        }
+      ]
+    },
+    {
+      "id": "data_residency",
+      "section": "10-economics",
+      "prompt": "Where is customer/data residency allowed?",
+      "options": [
+        {
+          "id": "unrestricted",
+          "label": "No geographic constraint recorded",
+          "adds": []
+        },
+        {
+          "id": "uk",
+          "label": "UK only",
+          "adds": []
+        },
+        {
+          "id": "eu",
+          "label": "EU/EEA only",
+          "adds": []
+        },
+        {
+          "id": "approved",
+          "label": "Approved explicit jurisdictions only",
+          "adds": []
+        }
+      ],
+      "required": true,
+      "when": {
+        "deployment_model": [
+          "cloud",
+          "hybrid",
+          "edge"
+        ]
+      }
+    }
+  ],
+  "components": {
+    "alchemy_objects": {
+      "id": "alchemy_objects",
+      "name": "Alchemy Objects",
+      "layer": "runtime",
+      "contract": "alchemy.object/0.8",
+      "requires": [],
+      "candidateVersion": "0.8.1",
+      "candidateEvidence": "portfolio history; qualify before lock"
+    },
+    "intention_service": {
+      "id": "intention_service",
+      "name": "ooRexx Intention Service",
+      "layer": "intentions",
+      "contract": "intention.service/0.1",
+      "requires": [],
+      "candidateVersion": "0.1-dev11",
+      "candidateEvidence": "Library: oorexx_intention_service_v0.1-dev11.zip"
+    },
+    "ssc": {
+      "id": "ssc",
+      "name": "Semantic Source Control",
+      "layer": "source",
+      "contract": "ssc semantic source authority",
+      "requires": [],
+      "candidateVersion": "0.2.3",
+      "candidateEvidence": "Library: oorexx_semantic_source_control_v0.2.3.zip"
+    },
+    "deployment": {
+      "id": "deployment",
+      "name": "ooRexx Deployment",
+      "layer": "deployment",
+      "contract": "deployment.manifest/0.1",
+      "requires": [],
+      "candidateVersion": "",
+      "candidateEvidence": "General_ooRexx_Deployment_Component_v0.3.md"
+    },
+    "socket_provider": {
+      "id": "socket_provider",
+      "name": "Socket Provider",
+      "layer": "transport",
+      "contract": "socket.provider/0.1",
+      "requires": [],
+      "candidateVersion": "0.1-dev14",
+      "candidateEvidence": "Library: oorexx_socket_provider_v0.1-dev14.zip"
+    },
+    "xtp": {
+      "id": "xtp",
+      "name": "XTP Transport",
+      "layer": "transport",
+      "contract": "xtp semantic protocol, pure L2/native IP/qualified carrier",
+      "requires": [
+        "socket_provider"
+      ],
+      "candidateVersion": "0.1-dev18",
+      "candidateEvidence": "Library: oorexx_xtp_v0.1-dev18.zip"
+    },
+    "rexxos_grid": {
+      "id": "rexxos_grid",
+      "name": "RexxOS RTO2 Grid",
+      "layer": "compute",
+      "contract": "RexxOS MI/MU identity, registration, observation",
+      "requires": [
+        "xtp"
+      ],
+      "candidateVersion": "0.1-dev11",
+      "candidateEvidence": "Library: rexxos_rto2_grid_v0.1-dev11.zip"
+    },
+    "queue_fabric": {
+      "id": "queue_fabric",
+      "name": "Queue Fabric",
+      "layer": "distributed",
+      "contract": "queue fabric jobs/requests",
+      "requires": [],
+      "candidateVersion": "",
+      "candidateEvidence": "portfolio stack report"
+    },
+    "memory_fabric": {
+      "id": "memory_fabric",
+      "name": "Memory Fabric",
+      "layer": "memory",
+      "contract": "memory.fabric/0.1",
+      "requires": [],
+      "candidateVersion": "0.1-dev7",
+      "candidateEvidence": "RexxOS Grid dev11 package profile"
+    },
+    "storage_fabric": {
+      "id": "storage_fabric",
+      "name": "Storage Fabric",
+      "layer": "storage",
+      "contract": "storage.fabric/0.1",
+      "requires": [],
+      "candidateVersion": "0.1-dev22",
+      "candidateEvidence": "Alchemy source catalog 2026-09-27; qualify newer versions"
+    },
+    "notnotes": {
+      "id": "notnotes",
+      "name": "Alchemy NotNotes",
+      "layer": "knowledge",
+      "contract": "alchemy.notnotes/0.1",
+      "requires": [],
+      "candidateVersion": "0.1-dev15",
+      "candidateEvidence": "Portfolio stack composition 2026-10-07"
+    },
+    "native_db": {
+      "id": "native_db",
+      "name": "Native Database Backends",
+      "layer": "data",
+      "contract": "native database backend contract",
+      "requires": [],
+      "candidateVersion": "",
+      "candidateEvidence": "portfolio design; backend qualified separately"
+    },
+    "nosqlserver": {
+      "id": "nosqlserver",
+      "name": "NoSQLServer",
+      "layer": "data",
+      "contract": "nosqlserver provider/0.1",
+      "requires": [],
+      "candidateVersion": "",
+      "candidateEvidence": "portfolio stack report"
+    },
+    "cloud_resource_contract": {
+      "id": "cloud_resource_contract",
+      "name": "Cloud Resource Contract",
+      "layer": "cloud",
+      "contract": "cloud resource provider discovery/commissioning",
+      "requires": [],
+      "candidateVersion": "",
+      "candidateEvidence": "portfolio cloud design; exact provider needs verification"
+    },
+    "job_allocator": {
+      "id": "job_allocator",
+      "name": "Job to Node Allocation",
+      "layer": "compute",
+      "contract": "job allocation/0.6",
+      "requires": [
+        "queue_fabric"
+      ],
+      "candidateVersion": "0.6",
+      "candidateEvidence": "portfolio stack report"
+    },
+    "instrumentation_mesh": {
+      "id": "instrumentation_mesh",
+      "name": "Instrumentation Mesh",
+      "layer": "ops",
+      "contract": "instrumentation.mesh/0.1",
+      "requires": [],
+      "candidateVersion": "0.1-dev3",
+      "candidateEvidence": "RexxOS Grid dev11 package profile"
+    },
+    "secret_broker": {
+      "id": "secret_broker",
+      "name": "Secret Broker",
+      "layer": "security",
+      "contract": "secret.broker/0.2",
+      "requires": [],
+      "candidateVersion": "0.2",
+      "candidateEvidence": "portfolio stack report"
+    },
+    "api_client": {
+      "id": "api_client",
+      "name": "ooRexx API Client",
+      "layer": "interoperability",
+      "contract": "api.client provider",
+      "requires": [],
+      "candidateVersion": "",
+      "candidateEvidence": "portfolio design"
+    },
+    "wire_ui": {
+      "id": "wire_ui",
+      "name": "Wire UI",
+      "layer": "presentation",
+      "contract": "wire renderer-neutral semantic UI",
+      "requires": [],
+      "candidateVersion": "",
+      "candidateEvidence": "portfolio Wire UI architecture"
+    },
+    "newshell": {
+      "id": "newshell",
+      "name": "NewShell",
+      "layer": "presentation",
+      "contract": "newshell typed semantic shell",
+      "requires": [],
+      "candidateVersion": "0.1-dev6",
+      "candidateEvidence": "portfolio stack report"
+    },
+    "connect_selector": {
+      "name": "ConnectSelector",
+      "layer": "Communication and service invocation",
+      "contract": "oorexx.connect_selector/0.1",
+      "candidateVersion": "0.1-dev1",
+      "candidateEvidence": "oorexx_connect_selector_v0.1-dev1.zip (Library, 2026-10-08), not resolved by SSC",
+      "requires": []
+    },
+    "institutional_policy": {
+      "id": "institutional_policy",
+      "name": "Institutional Policy",
+      "layer": "governance",
+      "contract": "institutional.policy/candidate",
+      "requires": [],
+      "candidateVersion": "0.8",
+      "candidateEvidence": "2026-09-18 portfolio inventory; must qualify exact source/contract via SSC"
+    },
+    "relationship_crm": {
+      "id": "relationship_crm",
+      "name": "Relationship CRM",
+      "layer": "business",
+      "contract": "relationship.crm/candidate",
+      "requires": [],
+      "candidateVersion": "0.1",
+      "candidateEvidence": "2026-09-18 portfolio inventory; must qualify exact source/contract via SSC"
+    },
+    "relationship_case": {
+      "id": "relationship_case",
+      "name": "Relationship Case",
+      "layer": "business",
+      "contract": "relationship.case/candidate",
+      "requires": [],
+      "candidateVersion": "0.2",
+      "candidateEvidence": "2026-09-18 portfolio inventory; must qualify exact source/contract via SSC"
+    },
+    "relationship_case_service": {
+      "id": "relationship_case_service",
+      "name": "Relationship Case Service",
+      "layer": "service",
+      "contract": "relationship.case.service/candidate",
+      "requires": [],
+      "candidateVersion": "0.1",
+      "candidateEvidence": "2026-09-18 portfolio inventory; must qualify exact source/contract via SSC"
+    },
+    "brand_interaction_effect": {
+      "id": "brand_interaction_effect",
+      "name": "Brand Interaction Effect",
+      "layer": "business",
+      "contract": "brand.interaction.effect/candidate",
+      "requires": [],
+      "candidateVersion": "0.6",
+      "candidateEvidence": "2026-09-18 portfolio inventory; must qualify exact source/contract via SSC"
+    },
+    "brand_intervention_governance": {
+      "id": "brand_intervention_governance",
+      "name": "Brand Intervention Governance",
+      "layer": "governance",
+      "contract": "brand.intervention.governance/candidate",
+      "requires": [],
+      "candidateVersion": "0.2",
+      "candidateEvidence": "2026-09-18 portfolio inventory; must qualify exact source/contract via SSC"
+    }
+  },
+  "foundationAuthority": "DESIGN_TIME_ONLY: these are the architect tools, not universally required application runtime components",
+  "businessCapabilities": {
+    "legal": {
+      "label": "Legal obligations and legal-effect decisions",
+      "role": "Institutional governance",
+      "defaultLayer": "GOVERNANCE",
+      "candidates": [
+        "institutional_policy",
+        "EXTERNAL"
+      ],
+      "limitations": "Institutional Policy can hold rules; it cannot issue legal conclusions or prove compliance.",
+      "questions": [
+        {
+          "id": "jurisdiction",
+          "prompt": "Which jurisdictions, laws, legal entities and effective dates apply?"
+        },
+        {
+          "id": "legal_owner",
+          "prompt": "Which qualified party owns legal interpretation, advice and final legal effects?"
+        },
+        {
+          "id": "hold",
+          "prompt": "What legal holds, disputes, discovery, privilege and retention overrides apply?"
+        }
+      ]
+    },
+    "reputation": {
+      "label": "Reputational monitoring and intervention",
+      "role": "Brand/communications",
+      "defaultLayer": "DOMAIN",
+      "candidates": [
+        "brand_interaction_effect",
+        "brand_intervention_governance",
+        "EXTERNAL"
+      ],
+      "limitations": "Brand effect is an analytic projection, not authoritative external reputation truth.",
+      "questions": [
+        {
+          "id": "sources",
+          "prompt": "Which observed channels, claims, incidents and evidence sources are in scope?"
+        },
+        {
+          "id": "approval",
+          "prompt": "Who may approve interventions and externally released statements?"
+        },
+        {
+          "id": "measurement",
+          "prompt": "How are reputation claims distinguished from observed outcome evidence?"
+        }
+      ]
+    },
+    "crm": {
+      "label": "Customer and relationship management",
+      "role": "Business relationships",
+      "defaultLayer": "DOMAIN",
+      "candidates": [
+        "relationship_crm",
+        "EXTERNAL"
+      ],
+      "limitations": "CRM does not own cases, legal effects, banking balances or external principals.",
+      "questions": [
+        {
+          "id": "subjects",
+          "prompt": "Who are customers, contacts, partners, owners and business subjects?"
+        },
+        {
+          "id": "source",
+          "prompt": "Where is the authoritative customer relationship record and what legacy migration is required?"
+        },
+        {
+          "id": "boundaries",
+          "prompt": "How do CRM communications, cases and billing keep separate record ownership?"
+        }
+      ]
+    },
+    "case_management": {
+      "label": "Case and workflow coordination",
+      "role": "Domain work",
+      "defaultLayer": "DOMAIN",
+      "candidates": [
+        "relationship_case",
+        "relationship_case_service",
+        "EXTERNAL"
+      ],
+      "limitations": "Relationship Case coordinates durable work, not legal conclusions or source-domain records.",
+      "questions": [
+        {
+          "id": "types",
+          "prompt": "Which case types, state transitions, SLAs and escalation authorities exist?"
+        },
+        {
+          "id": "evidence",
+          "prompt": "How are documents, retention, audit trails and case evidence referenced?"
+        },
+        {
+          "id": "ownership",
+          "prompt": "Which domain owns decisions and outcomes beyond case coordination?"
+        }
+      ]
+    },
+    "document_management": {
+      "label": "Document creation and management",
+      "role": "Knowledge and records",
+      "defaultLayer": "KNOWLEDGE",
+      "candidates": [
+        "notnotes",
+        "EXTERNAL"
+      ],
+      "limitations": "NotNotes owns document semantics, not arbitrary blob storage or legal effect.",
+      "questions": [
+        {
+          "id": "formats",
+          "prompt": "Are these authored documents, scanned evidence, media, contracts or templates?"
+        },
+        {
+          "id": "governance",
+          "prompt": "Who controls revision, sharing, classification, signature and publication?"
+        },
+        {
+          "id": "lifecycle",
+          "prompt": "Where are bytes stored and how do legal hold, retention and deletion operate?"
+        }
+      ]
+    },
+    "authentication": {
+      "label": "Authentication and identity assertion",
+      "role": "Security/trust",
+      "defaultLayer": "SECURITY",
+      "candidates": [
+        "EXTERNAL"
+      ],
+      "limitations": "Secret Broker does not authenticate users and RFID identification is not authentication.",
+      "questions": [
+        {
+          "id": "principals",
+          "prompt": "Which actors authenticate: humans, services, devices, agents or delegated principals?"
+        },
+        {
+          "id": "mechanisms",
+          "prompt": "Which identity provider, federation, credentials and session assurance policies apply?"
+        },
+        {
+          "id": "boundary",
+          "prompt": "Where must authentication be enforced and revalidated for each trust boundary?"
+        }
+      ]
+    },
+    "authorisation": {
+      "label": "Authorisation and delegated access",
+      "role": "Security/entitlements",
+      "defaultLayer": "SECURITY",
+      "candidates": [
+        "institutional_policy",
+        "EXTERNAL"
+      ],
+      "limitations": "A successful login is not authorisation; local enforcement requires its own evidence.",
+      "questions": [
+        {
+          "id": "rights",
+          "prompt": "Which object-level permissions, tenancy boundaries, delegated rights and deny rules apply?"
+        },
+        {
+          "id": "enforcement",
+          "prompt": "Which service is the authoritative policy decision point and where are checks enforced?"
+        }
+      ]
+    },
+    "privacy": {
+      "label": "Privacy, consent and data-use controls",
+      "role": "Institutional data policy",
+      "defaultLayer": "GOVERNANCE",
+      "candidates": [
+        "institutional_policy",
+        "EXTERNAL"
+      ],
+      "limitations": "A policy reference is not a conformance certificate.",
+      "questions": [
+        {
+          "id": "subjects",
+          "prompt": "Whose personal data, sensitive data and consent purposes are relevant?"
+        },
+        {
+          "id": "location",
+          "prompt": "What residency, transfer, retention and deletion obligations apply?"
+        },
+        {
+          "id": "proof",
+          "prompt": "Which authoritative policy and reviewer can confirm compliance controls?"
+        }
+      ]
+    },
+    "records": {
+      "label": "Records retention, audit and evidentiary hold",
+      "role": "Records governance",
+      "defaultLayer": "GOVERNANCE",
+      "candidates": [
+        "notnotes",
+        "institutional_policy",
+        "EXTERNAL"
+      ],
+      "limitations": "Document semantics do not imply preservation of storage bytes or legal privilege.",
+      "questions": [
+        {
+          "id": "schedule",
+          "prompt": "What retention schedule, disposition authority and archival classes apply?"
+        },
+        {
+          "id": "immutability",
+          "prompt": "What audit/immutability, holds and verifiable retrieval are required?"
+        }
+      ]
+    },
+    "secrets": {
+      "label": "Service secrets and credential lifecycle",
+      "role": "Security platform",
+      "defaultLayer": "PLATFORM",
+      "candidates": [
+        "secret_broker",
+        "EXTERNAL"
+      ],
+      "limitations": "Secret Broker owns secret references, not user identity, MFA or access policy.",
+      "questions": [
+        {
+          "id": "issuance",
+          "prompt": "How are secrets referenced, leased, rotated, revoked and audited?"
+        },
+        {
+          "id": "separation",
+          "prompt": "Who is entitled to secrets, independently of service authentication?"
+        }
+      ]
+    },
+    "payments": {
+      "label": "Billing, payments and financial controls",
+      "role": "Financial business domain",
+      "defaultLayer": "DOMAIN",
+      "candidates": [
+        "EXTERNAL"
+      ],
+      "limitations": "Payment/legal/ledger authority cannot be inferred from a website feature.",
+      "questions": [
+        {
+          "id": "payments",
+          "prompt": "Are we invoicing, taking regulated payments, or only recording subscription status?"
+        },
+        {
+          "id": "accounting",
+          "prompt": "Who owns ledger truth, tax, refunds, reconciliation and settlement?"
+        }
+      ]
+    },
+    "communications": {
+      "label": "Outbound and customer communications",
+      "role": "Communications",
+      "defaultLayer": "SERVICE",
+      "candidates": [
+        "EXTERNAL"
+      ],
+      "limitations": "External channel providers require separate evidence and contract qualification.",
+      "questions": [
+        {
+          "id": "channels",
+          "prompt": "Which email, SMS, push, chat and physical delivery channels are used?"
+        },
+        {
+          "id": "content",
+          "prompt": "Which approval, opt-in, suppression, identity and delivery evidence apply?"
+        }
+      ]
+    }
+  }
+}

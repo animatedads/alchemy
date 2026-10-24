@@ -1,0 +1,77 @@
+{
+  "schema": "alchemy.architecture.package/0.1",
+  "name": "oorexx_architecture_intentions",
+  "version": "0.1-dev10",
+  "runtimeQualification": "ooRexx 5.3.0 r13196",
+  "sscManifest": "SSC_MANIFEST",
+  "exports": [
+    "ArchitectureCatalog",
+    "ArchitectureProject",
+    "ArchitecturePlanner",
+    "ArchitecturePackageWriter",
+    "ArchitectureDomainModel",
+    "ArchitectureGroundRules",
+    "ArchitectureInterconnects",
+    "ArchitectureScenario",
+    "ArchitectureScenarioComparison",
+    "ArchitectureScenarioWriter",
+    "ArchitectureCapabilityPlacement",
+    "ArchitectureCapabilityRelationships",
+    "ArchitecturePromotionReview",
+    "ArchitecturePromotionWriter",
+    "ArchitectureSscReceipt",
+    "ArchitectureNotNotesPublication"
+  ],
+  "optionalExports": [
+    "ArchitectureIntentionChoiceEvent",
+    "ArchitectureIntentionAdapter",
+    "ArchitectureConnectSelectorAdapter"
+  ],
+  "coreRequires": [
+    {
+      "packageLoad": "json.cls",
+      "sourceAuthority": "ooRexx runtime JSON package"
+    }
+  ],
+  "optionalAdapterRequires": [
+    {
+      "component": "ooRexx Intention Service",
+      "candidateVersion": "0.1-dev11",
+      "packageLoad": "IntentionService.cls"
+    },
+    {
+      "component": "ooRexx Intention Service",
+      "candidateVersion": "0.1-dev11",
+      "packageLoad": "IntentionProviders.cls"
+    },
+    {
+      "component": "ConnectSelector",
+      "candidateVersion": "0.1-dev1 through 0.1-dev5 (read-only explain; strict route policy dev2+)",
+      "packageLoad": "ConnectSelector.cls"
+    }
+  ],
+  "capabilityContract": "architecture.plan/0.1",
+  "safety": {
+    "resolvesDependencies": false,
+    "deploysOrExecutes": false,
+    "quotesAreProviderVerified": false,
+    "writesActualProjectState": false,
+    "requiresTargetQualification": true,
+    "approvesProductionDeployment": false,
+    "requiresTrustedApprovalVerifierForSSCReview": true,
+    "writesNotNotesDocuments": false
+  },
+  "capabilityContracts": [
+    "architecture.plan/0.1",
+    "architecture.groundrules/0.1",
+    "architecture.interconnect/0.1",
+    "scope.identity/0.1",
+    "architecture.connect-selector.review/0.1",
+    "architecture.scenarios/0.1",
+    "architecture.capability-placement/0.1",
+    "architecture.capability-relationships/0.1",
+    "architecture.promotion/0.1",
+    "architecture.ssc-qualification/0.1",
+    "architecture.notnotes-publication-request/0.1"
+  ]
+}
