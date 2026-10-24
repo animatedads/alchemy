@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "ops.terminal-machine.continuation",
-  "version": "0.2",
+  "version": "0.3",
   "sphere": "terminal-machine",
   "title": "How to continue Terminal Machine work safely",
   "summary": "Continue the 3270 P0 line from candidate12 by differential qualification against the mature s3270 reference, preserving one persistent session and evidence authority boundaries; keep TN5250 correctness work as a sibling line rather than allowing either protocol to contaminate the generic core.",
@@ -11,20 +11,32 @@
     "Never widen raw credential, NONDISPLAY, raw-wire or terminal-mutation authority to make qualification easier.",
     "One writer/many readers applies equally to TN3270 and TN5250.",
     "Do not label s3270 reference evidence as Terminal Machine evidence, documentation reference as live evidence, MVS Alchemy facts as terminal facts, or Hercules facts as guest semantic truth.",
-    "Do not bypass Socket Provider abstractions through raw handles merely to obtain readiness."
+    "Do not bypass Socket Provider abstractions through raw handles merely to obtain readiness.",
+    "Treat terminal AID transmission and host semantic completion as separate events; continuation waits for presentation generation/state evidence.",
+    "MVS Intention is a consumer of Terminal Machine evidence, not an alternative Terminal Machine implementation."
   ],
   "procedure": [
     "Run the candidate12 manifest gate and focused 3270 suites under an exact ooRexx 5.3.0 r13196 runtime when available.",
     "Run Terminal Machine and s3270 against the same ED209Z LU/session and compare presentation-space semantics.",
     "Promote only stable, corroborated live screens into the known-state catalogue.",
     "Keep ConnectSelector integration outside native terminal protocol semantics; bind it only at an application/service boundary when needed.",
-    "For TN5250, continue the unresolved WRITE ERROR CODE/help and byte-exact Read Immediate work without regressing the 3270 P0 line."
+    "For TN5250, continue the unresolved WRITE ERROR CODE/help and byte-exact Read Immediate work without regressing the 3270 P0 line.",
+    "Re-run the MVS Intention native consumer against current candidate12 before promoting it from historical candidate8 qualification.",
+    "Use one live ED209Z session/LU for the Terminal Machine↔s3270 differential, preserving one-writer ownership; repeat independently for ED209ZZ after ED209Z evidence is captured."
   ],
-  "topics": ["terminal", "tn3270", "3270", "tn5250", "continuation"],
-  "provenance": [{
-    "artifact": "oorexx_terminal_machine_v0.22-candidate12.zip",
-    "sha256": "e57dcf302070380a6e714ab0a5e8d1adb65b8c27974c34115712dc6314b00f8a",
-    "member": "oorexx_terminal_machine_v0.22-candidate12/CHANGELOG.md",
-    "claim": "Supports current continuation order and candidate10-12 lineage."
-  }]
+  "topics": [
+    "terminal",
+    "tn3270",
+    "3270",
+    "tn5250",
+    "continuation"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_terminal_machine_v0.22-candidate12.zip",
+      "sha256": "e57dcf302070380a6e714ab0a5e8d1adb65b8c27974c34115712dc6314b00f8a",
+      "member": "oorexx_terminal_machine_v0.22-candidate12/CHANGELOG.md",
+      "claim": "Supports current continuation order and candidate10-12 lineage."
+    }
+  ]
 }
