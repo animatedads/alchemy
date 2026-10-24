@@ -1,0 +1,116 @@
+{
+  "schema": "single-time-service.v1-draft",
+  "examples": [
+    {
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "method": "time.differenceAt",
+        "params": {
+          "from": "Europe/London",
+          "to": "Australia/Sydney",
+          "instant": "2026-10-08T11:00:00Z"
+        }
+      },
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 1,
+        "result": {
+          "differenceSeconds": 36000,
+          "fromOffsetSeconds": 3600,
+          "toOffsetSeconds": 39600,
+          "differenceMeaning": "Sydney is 10 hours ahead",
+          "tzdbEdition": "REQUIRED_FROM_PROVIDER",
+          "authority": "IANA_TIME_ZONE_DATABASE"
+        }
+      }
+    },
+    {
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "method": "time.interpret",
+        "params": {
+          "utterance": "school dinner",
+          "locale": "en-GB",
+          "context": {
+            "institution": "unspecified",
+            "date": "2026-10-08"
+          }
+        }
+      },
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 2,
+        "result": {
+          "status": "needs_context",
+          "missing": [
+            "institution",
+            "timetable"
+          ],
+          "meaning": "school_meal_event",
+          "assumedClockTime": null
+        }
+      }
+    },
+    {
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "method": "time.resolveIsoLocal",
+        "params": {
+          "zone": "Europe/London",
+          "local": "2026-10-25T01:30:00",
+          "tzdbEdition": "2025b"
+        }
+      },
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 3,
+        "result": {
+          "status": "FOLD",
+          "candidates": [
+            {
+              "posixSeconds": 1792888200,
+              "offsetSeconds": 3600
+            },
+            {
+              "posixSeconds": 1792891800,
+              "offsetSeconds": 0
+            }
+          ],
+          "resolutionPolicy": "REQUIRED",
+          "tzdbEdition": "2025b"
+        }
+      }
+    },
+    {
+      "request": {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "method": "time.explainDifferenceAt",
+        "params": {
+          "from": "Europe/London",
+          "to": "Australia/Sydney",
+          "instant": "2026-10-31T12:00:00Z"
+        }
+      },
+      "response": {
+        "jsonrpc": "2.0",
+        "id": 4,
+        "result": {
+          "fromZone": "Europe/London",
+          "toZone": "Australia/Sydney",
+          "fromLocal": "2026-10-31T12:00:00",
+          "toLocal": "2026-10-31T23:00:00",
+          "fromAbbreviation": "GMT",
+          "toAbbreviation": "AEDT",
+          "differenceSeconds": 39600,
+          "fromEdition": "2025b",
+          "toEdition": "2025b"
+        }
+      }
+    }
+  ],
+  "note": "Draft JSON-RPC 2.0 message contracts only. No network transport/server has been implemented by v0.3."
+}
