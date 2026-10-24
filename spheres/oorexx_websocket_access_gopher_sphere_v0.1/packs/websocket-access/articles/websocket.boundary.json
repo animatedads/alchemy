@@ -1,0 +1,22 @@
+{
+  "kind": "article",
+  "id": "websocket.boundary",
+  "version": "0.1",
+  "sphere": "websocket-access",
+  "title": "Socket isolation and object boundary",
+  "summary": "WebSocket consumes an already-authorised stream. It must not acquire RxSock, TLS or any native carrier directly, and it must preserve WebSocket and SocketAddress objects rather than flattening them into transport strings.",
+  "invariants": [
+    "SocketProvider / SocketSelector remains carrier-acquisition authority.",
+    "WebSocketAccess obtains a stream through SocketProvider~streamSender[At]() and SocketStreamAdapter.",
+    "WebSocketConnection and WebSocketMessage remain full ooRexx objects at the application boundary.",
+    "The underlying SocketAddress object remains authoritative; do not reduce it to host:port metadata.",
+    "Applications must not grow separate WebSocket-specific TCP/TLS ownership, routing, policy or credential paths."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_websocket_access_v0.1-dev1.zip",
+      "sha256": "91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655",
+      "member": "README.md"
+    }
+  ]
+}
