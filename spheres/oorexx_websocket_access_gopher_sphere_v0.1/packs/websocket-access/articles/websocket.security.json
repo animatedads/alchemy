@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "websocket.security",
+  "version": "0.1",
+  "sphere": "websocket-access",
+  "title": "Handshake, entropy and TLS authority",
+  "summary": "WebSocket protocol code does not own cryptographic entropy or TLS credentials. Handshake nonce/accept calculation and frame-mask generation are injected authorities; TLS remains owned by the selected socket provider/security profile.",
+  "invariants": [
+    "WebSocketHandshakeCrypto is the injected authority for client nonce and Sec-WebSocket-Accept calculation.",
+    "WebSocketMaskSource is the injected authority for fresh four-byte client mask keys.",
+    "Production entropy is not bundled or claimed by dev1.",
+    "TLS certificate, trust and private-key material must not move into WebSocket objects.",
+    "wss composition uses the common TLS/socket authority; WebSocket does not acquire OpenSSL or TLS sockets directly.",
+    "The RFC 6455 example key/accept vector is qualification evidence, not a production randomness mechanism."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_websocket_access_v0.1-dev1.zip",
+      "sha256": "91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655",
+      "member": "README.md"
+    }
+  ]
+}
