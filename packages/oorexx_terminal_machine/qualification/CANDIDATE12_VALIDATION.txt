@@ -1,0 +1,45 @@
+Terminal Machine v0.22-candidate12 validation note
+Date: 2026-10-24
+
+SCOPE
+=====
+Candidate12 is an evidence-backed semantic-state increment over candidate11. It adds
+MVS.ISPF.PRIMARY_OPTION_MENU recognition using the exact TK5 Introduction and User
+Manual Figure 17 exemplar (printed page 38 / PDF page 39). The state requires three
+stable visible markers and grants no AID, PF-key, credential, authentication, or MVS
+business authority.
+
+CURRENT-TURN VALIDATION
+=======================
+- Package MANIFEST.sha256 regenerated and verified successfully with sha256sum -c.
+- Candidate12 files were compared against the candidate11 delivery; only the documented
+  ISPF state/evidence, release notes, semantic-source level and manifest changed.
+- A fresh ooRexx executable qualification was NOT run in this tool container because no
+  runnable r13196 interpreter was mounted and the older Library .deb could not be
+  materialized to the container in this turn.
+
+INHERITED EXECUTABLE EVIDENCE
+=============================
+Candidate11 previously passed the focused ooRexx 5.3.0 r13196 3270 suites, including
+3270 datastream/AIDs/extended attributes/operator input/structured fields/partition IO,
+TN3270/TN3270E/WSF wire, snapshots, MVS known-state and TN3270 ownership/control tests.
+Candidate12 does not broaden transport, ownership, mutation or credential authority.
+
+REFERENCE EVIDENCE
+==================
+TK5 Introduction and User Manual, Figure 17, "TK5 ISPF Primary Option Menu".
+Stable markers used by Candidate12:
+- ISPF primary option menu
+- Option ===>
+- Enter END command to terminate ISPF.
+
+The manual reference is documentation evidence, not a live ED209 session receipt.
+Live differential qualification against the same ED209Z screen remains future work.
+
+LATE REVIEW CORRECTION
+======================
+A continuation review found that `recordHostScreenUpdate()` still hard-coded the
+historical `TN5250` meter source even though candidate10 made the control gate
+protocol-labelled. Candidate12 corrects both SCREEN_UPDATE and HOST_ROUND_TRIP to
+use the configured gate meter source. This is a protocol-neutral evidence correction;
+it does not alter admission or mutation authority.
