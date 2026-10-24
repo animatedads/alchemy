@@ -24,6 +24,7 @@ testSelector:
   return
 
 testServiceInjectionSurface:
+  /* Runtime compile/constructor test: external provider set can now be injected. */
   services=.MasVirtualServices~new
   gateway=.MasLiveGateway~new(37075,'/tmp/mas-pre22-constructor','',.nil,.nil,services)
   if gateway~services \== services then raise syntax 88.900 array('SERVICES_NOT_INJECTED')

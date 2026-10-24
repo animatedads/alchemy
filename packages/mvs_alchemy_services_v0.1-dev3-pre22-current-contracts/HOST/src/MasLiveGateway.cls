@@ -179,6 +179,7 @@
   end
   call stream p,'c','close'
 
+
 ::class MasLivePathReply public
 ::method init public
   expose ok code value
@@ -276,56 +277,75 @@
   service=serviceArg; handles=.directory~new; nextHandle=0
 ::method open public
   expose service handles nextHandle
-  use strict arg path, opts, fileData
-  h=service~open(path,opts,fileData); nextHandle+=1; handles[nextHandle]=h
-  return .MasLivePathReply~new(.true,'OK',nextHandle)
+  use strict arg path, opts='ORDONLY', fileData='BINARY'
+  h=service~open(path,opts,fileData); nextHandle+=1; id='P'||nextHandle; handles[id]=h
+  return .MasLivePathReply~new(.true,'OPENED',id)
 ::method read public
   expose handles
-  use strict arg handle
-  if \handles~hasIndex(handle) then return .MasLivePathReply~new(.false,'BAD_HANDLE')
-  return .MasLivePathReply~new(.true,'OK',handles[handle]~readAll)
+  use strict arg id
+  if \handles~hasIndex(id) then raise syntax 88.900 array('PATH_BAD_HANDLE')
+  return .MasLivePathReply~new(.true,'DATA',handles[id]~readAll)
 ::method write public
   expose handles
-  use strict arg handle,data
-  if \handles~hasIndex(handle) then return .MasLivePathReply~new(.false,'BAD_HANDLE')
-  return .MasLivePathReply~new(.true,'OK',handles[handle]~write(data))
+  use strict arg id,data
+  if \handles~hasIndex(id) then raise syntax 88.900 array('PATH_BAD_HANDLE')
+  return .MasLivePathReply~new(.true,'WRITTEN',handles[id]~write(data))
 ::method append public
   expose handles
-  use strict arg handle,data
-  if \handles~hasIndex(handle) then return .MasLivePathReply~new(.false,'BAD_HANDLE')
-  return .MasLivePathReply~new(.true,'OK',handles[handle]~append(data))
+  use strict arg id,data
+  if \handles~hasIndex(id) then raise syntax 88.900 array('PATH_BAD_HANDLE')
+  return .MasLivePathReply~new(.true,'APPENDED',handles[id]~append(data))
 ::method close public
   expose handles
-  use strict arg handle
-  if \handles~hasIndex(handle) then return .MasLivePathReply~new(.false,'BAD_HANDLE')
-  ref=handles[handle]~close; handles~remove(handle)
-  return .MasLivePathReply~new(.true,'OK',ref)
-::method list public
-  expose service
-  use strict arg path
-  return .MasLivePathReply~new(.true,'OK',service~list(path))
+  use strict arg id
+  if \handles~hasIndex(id) then raise syntax 88.900 array('PATH_BAD_HANDLE')
+  ref=handles[id]~close; handles~remove(id)
+  return .MasLivePathReply~new(.true,'CLOSED',ref)
 
 ::class MasLiveGateway public
 ::method init public
-  expose services logger pathStore pathService observer identityResolver
-  use strict arg evidenceFile='', root='', observerArg=.nil, identityResolverArg=.nil, servicesArg=.nil
+  expose port services pathService logger listener stateRoot observer identityResolver
+  use strict arg portArg = 37075, stateRootArg = '/tmp/mas-live-gateway', evidenceFile = '', observerArg = .nil, identityResolverArg = .nil, servicesArg = .nil
+  port=portArg; stateRoot=stateRootArg
   if servicesArg==.nil then services=.MasVirtualServices~new
   else services=servicesArg
-  logger=.MasGatewayLogger~new(evidenceFile)
-  if root='' then root='/tmp/mas-live-path-'||random(100000,999999)
-  pathStore=.MasLivePathStore~new(root)
+  pathStore=.MasLivePathStore~new(stateRoot||'/path')
   pathService=.MasLivePathService~new(pathStore)
+  logger=.MasGatewayLogger~new(evidenceFile)
   observer=observerArg
   identityResolver=identityResolverArg
+  listener=.nil
 ::attribute logger get
-::attribute services get
+::attribute port get
 ::attribute observer get
 ::attribute identityResolver get
-::method serve public
-  expose services logger pathService observer
+::attribute services get
+
+::method serveOnce public
+  expose port listener logger observer
+  listener=.Socket~new('AF_INET','SOCK_STREAM',0)
+  listener~setOption('SO_REUSEADDR',1)
+  addr=.InetAddress~new('127.0.0.1',port)
+  if listener~bind(addr)=-1 then raise syntax 88.900 array('MAS_BIND_FAILED:' listener~errno)
+  if listener~listen(4)=-1 then raise syntax 88.900 array('MAS_LISTEN_FAILED:' listener~errno)
+  logger~emit('LISTEN',0,0,0,0,0,'127.0.0.1:'||port)
+  if observer<>.nil then observer~serviceHealthy
+  client=listener~accept
+  if client==.nil then do
+    if observer<>.nil then observer~transportFailure(listener~errno)
+    raise syntax 88.900 array('MAS_ACCEPT_FAILED:' listener~errno)
+  end
+  if observer<>.nil then observer~sessionOpened
+  self~serveClient(client)
+  client~close
+  if observer<>.nil then observer~sessionClosed
+  listener~close
+  return 0
+
+::method serveClient private
+  expose services pathService logger observer
   use strict arg socket
   session=.nil
-  if observer<>.nil then do; observer~sessionOpened; observer~serviceHealthy; end
   do forever
     header=.MasSocketIO~readExact(socket,.MasWire~HEADER_LENGTH)
     if header==.nil then leave
@@ -445,6 +465,7 @@
         if \result~ok then raise syntax 88.900 array('MAILSIGN:'||result~code)
       end
       else do
+        /* Qualification fixture only. Guest VERIFIED is not production authority. */
         ok=(self~u32(vals,'VERIFIED')<>0); d~signaturePresent=.true; d~signatureVerified=ok; d~identityMatches=ok
       end
     end
@@ -457,6 +478,7 @@
         responsePayload=.MasWire~char('STATUS',result~code)
       end
       else do
+        /* Qualification fixture only. Never use guest booleans as production authority. */
         d~emailSendAuthorized=(self~u32(vals,'AUTHORIZED')<>0)
         d~egressPermitted=(self~u32(vals,'EGRESS')<>0)
         result=services~smtpProvider~submit(d)
@@ -486,7 +508,7 @@
     end
     when op=.MasWire~OP_DISCONNECT then nop
     otherwise do
-      status=8; reason=1537
+      status=8; reason=1537 /* MASRSPRT */
     end
   end
   logger~emit('COMMIT',h['session_id'],h['request_id'],op,status,reason,'response='||responsePayload~length)

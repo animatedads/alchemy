@@ -49,6 +49,7 @@
 ::constant OP_MAILSEND 5157
 ::constant OP_MAILSTAT 5158
 
+/* pre9 allocates 1500-15FF to the previously-specified PATH personality. */
 ::constant OP_PATHOPEN 5376
 ::constant OP_PATHREAD 5377
 ::constant OP_PATHWRITE 5378
@@ -70,18 +71,23 @@
 ::method u16 class
   use strict arg n
   return d2c(n, 2)
+
 ::method u32 class
   use strict arg n
   return d2c(n, 4)
+
 ::method u64 class
   use strict arg n
   return d2c(n, 8)
+
 ::method readU16 class
   use strict arg bytes, offset
   return c2d(substr(bytes, offset, 2))
+
 ::method readU32 class
   use strict arg bytes, offset
   return c2d(substr(bytes, offset, 4))
+
 ::method readU64 class
   use strict arg bytes, offset
   return c2d(substr(bytes, offset, 8))
@@ -128,15 +134,19 @@
 ::method bytes class
   use strict arg tag, value
   return self~encodeValue(self~TYPE_BYTES, tag, value)
+
 ::method char class
   use strict arg tag, value, ccsid = 819
   return self~encodeValue(self~TYPE_CHAR, tag, self~u16(ccsid) || value)
+
 ::method uint32 class
   use strict arg tag, value
   return self~encodeValue(self~TYPE_UINT32, tag, self~u32(value))
+
 ::method uint64 class
   use strict arg tag, value
   return self~encodeValue(self~TYPE_UINT64, tag, self~u64(value))
+
 ::method handle class
   use strict arg tag, value
   return self~encodeValue(self~TYPE_HANDLE, tag, self~u32(value))
@@ -205,6 +215,7 @@
     out ||= chunk
   end
   return out
+
 ::method writeAll class
   use strict arg socket, data
   p = 1

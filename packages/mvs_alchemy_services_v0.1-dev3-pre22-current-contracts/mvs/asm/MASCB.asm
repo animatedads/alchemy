@@ -1,0 +1,10 @@
+* MASCB - BASE-1 candidate public header, ABI level 1
+MASABIV  EQU   1
+MASPHDR  DSECT
+MASPEYE  DS    CL4
+MASPLEN  DS    H
+MASPVER  DS    H
+MASPRC   DS    F
+MASPRSN  DS    F
+MASPFLG  DS    F
+MASPHSZ  EQU   *-MASPHDR

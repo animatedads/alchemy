@@ -15,6 +15,9 @@ MASLIVE  CSECT
          ST    2,8(13)
          LR    13,2
          XC    REQNO,REQNO
+*
+* Initialize X75 transport and connect to the host loopback.
+*
          MVC   CBFUNC,=H'1'
          BAL   14,D75CALL
          LTR   15,15
@@ -23,6 +26,9 @@ MASLIVE  CSECT
          BAL   14,D75CALL
          LTR   15,15
          BNZ   FAIL
+*
+* HELLO / ACCEPT
+*
          L     2,=F'1'
          L     3,=A(HELLOP)
          LA    4,HELLOL
@@ -32,6 +38,9 @@ MASLIVE  CSECT
          CLC   RESPBUF+32(2),=H'2'
          BNE   FAIL
          WTO   'MASLIVE PASS HELLO'
+*
+* Binary PING proves 00/FF survives the guest/host carrier.
+*
          L     2,=F'3'
          L     3,=A(PINGP)
          LA    4,PINGL
@@ -41,6 +50,9 @@ MASLIVE  CSECT
          CLC   RESPBUF+60(5),=X'00FF4D4153'
          BNE   FAIL
          WTO   'MASLIVE PASS PING BINARY'
+*
+* QUEUE: OPEN, PUT, DEPTH, GET.
+*
          L     2,=F'4096'
          L     3,=A(QOPENP)
          LA    4,QOPENL
@@ -74,6 +86,9 @@ MASLIVE  CSECT
          CLC   RESPBUF+60(7),=X'71756575652D41'
          BNE   FAIL
          WTO   'MASLIVE PASS QUEUE'
+*
+* DATABASE: OPEN, PUT opaque bytes, GET exact bytes.
+*
          L     2,=F'4352'
          L     3,=A(DBOPENP)
          LA    4,DBOPENL
@@ -97,6 +112,9 @@ MASLIVE  CSECT
          CLC   RESPBUF+61(3),=X'7600FF'
          BNE   FAIL
          WTO   'MASLIVE PASS DATABASE'
+*
+* IMAP personality: session, mailbox catalogue, message body.
+*
          L     2,=F'5120'
          L     3,=A(EMPTY)
          SR    4,4
@@ -127,6 +145,9 @@ MASLIVE  CSECT
          CLC   RESPBUF+60(7),=X'68656C6C6F0D0A'
          BNE   FAIL
          WTO   'MASLIVE PASS IMAP'
+*
+* SMTP personality: build draft, satisfy qualification gates, submit.
+*
          L     2,=F'5152'
          L     3,=A(EMPTY)
          SR    4,4
@@ -171,6 +192,9 @@ MASLIVE  CSECT
          CLC   RESPBUF+64(14),=X'52454C41595F454C494749424C45'
          BNE   FAIL
          WTO   'MASLIVE PASS SMTP'
+*
+* PATH: create/write/close, reopen/read exact binary bytes.
+*
          L     2,=F'5376'
          L     3,=A(POPNWP)
          LA    4,POPNWL
@@ -207,6 +231,9 @@ MASLIVE  CSECT
          CLC   RESPBUF+60(13),=X'67756573742D706174682D00FF'
          BNE   FAIL
          WTO   'MASLIVE PASS PATH'
+*
+* Graceful protocol and transport close.
+*
          L     2,=F'19'
          L     3,=A(EMPTY)
          SR    4,4
@@ -218,6 +245,7 @@ MASLIVE  CSECT
          WTO   'MASLIVE PASS ALL'
          LA    15,0
          B     EXIT
+*
 FAIL     WTO   'MASLIVE FAIL SEE MAS/HERCULES LOGS'
          MVC   CBFUNC,=H'5'
          BAL   14,D75CALL
@@ -230,6 +258,9 @@ EXIT     ST    15,FINALRC
          L     14,12(13)
          LM    0,12,20(13)
          BR    14
+*
+* D75CALL - call the MASD75 load-module entry with our transport CB.
+*
 D75CALL  ST    14,D75RET
          L     1,=A(D75CB)
          L     15,=V(MASD75)
@@ -238,6 +269,10 @@ D75CALL  ST    14,D75RET
          L     14,D75RET
          L     15,D75RC
          BR    14
+*
+* DOREQ - R2=operation, R3=payload address, R4=payload length.
+* Send one ALCH frame and receive one complete response frame.
+*
 DOREQ    ST    14,DORRET
          STH   2,CURROP
          ST    3,PAYPTR
@@ -298,6 +333,7 @@ DOROUT   ST    15,DORRC
          L     14,DORRET
          L     15,DORRC
          BR    14
+*
 SAVE     DS    18F
 FINALRC  DC    F'8'
 D75RET   DS    F
@@ -315,6 +351,9 @@ HEADTPL  DC    X'414C4348',X'0100',H'48',F'0',F'0',F'1',F'0',F'0',F'0'
          DC    H'0',H'0',F'0',F'0',F'0'
 REQBUF   DS    CL2048
 RESPBUF  DS    CL2048
+*
+* MASD75 control block.  Layout matches MASD75.asm MD75CB.
+*
 D75CB    DS    0F
 CBEYE    DC    CL4'MD75'
 CBLEN    DC    H'48'
@@ -331,6 +370,9 @@ CBRSV    DC    H'0'
 CBBUFA   DC    A(0)
 CBBUFL   DC    F'0'
 CBMAX    DC    F'0'
+*
+* Fixed typed-value payloads. Tags and character data are wire ASCII.
+*
 HELLOP   DC    X'0300050000000004434353494400000025'
 HELLOL   EQU   *-HELLOP
 PINGP    DC    X'01000400000000054543484F00FF4D4153'

@@ -3,6 +3,9 @@ MASD75   TITLE 'MVS ALCHEMY DIRECT HERCULES X75 TRANSPORT'
 * MASD75 - MAS byte transport for MVS 3.8J under Hercules.           *
 * Uses the Hercules TCPIP X'75' instruction directly.                 *
 * No EZASMI or EZASOH03 guest installation is required.               *
+*                                                                     *
+* R1 -> MD75CB. Functions:                                            *
+* 1 INITIALIZE  2 CONNECT  3 SEND  4 RECEIVE  5 CLOSE  6 TERMINATE   *
 ***********************************************************************
 MASD75   CSECT
          ENTRY MASD75
@@ -31,11 +34,13 @@ MASD75   CSECT
          BE    TERM
          LA    9,8
          B     RETURN
+*
 INIT     DS    0H
          XC    MD75ERR,MD75ERR
          XC    MD75RET,MD75RET
          XC    MD75ACT,MD75ACT
          MVC   MD75SOCK,MINUS1
+*        INITAPI is a harmless X'75' function 1 operation.
          TM    MD75FLAG+1,X'01'
          BNO   ININTR
          WTO   'MASD75 X75 INITAPI BEGIN'
@@ -52,6 +57,7 @@ ININTR   LA    7,1
          BNO   INIPAS
          WTO   'MASD75 X75 INITAPI PASS'
 INIPAS   DS    0H
+*        Allocate an IPv4 stream socket: AF_INET=2, SOCK_STREAM=1.
          TM    MD75FLAG+1,X'01'
          BNO   SOCNTR
          WTO   'MASD75 X75 SOCKET BEGIN'
@@ -71,11 +77,13 @@ SOCPAS   ST    4,MD75SOCK
          LTR   4,4
          BNP   FAILED
          B     RETURN
+*
 CONNECT  DS    0H
          TM    MD75FLAG+1,X'01'
          BNO   CONNTR
          WTO   'MASD75 X75 CONNECT BEGIN'
 CONNTR   DS    0H
+*        Function 7 encodes socket number in the high halfword.
          L     7,MD75SOCK
          SLL   7,16
          O     7,FUNC7
@@ -106,6 +114,7 @@ CONNWAIT DS    0H
          BZ    TIMEOUT
          STIMER WAIT,BINTVL=WAIT5
          B     CONNLP
+*
 SEND     DS    0H
          MVC   TXPTR,MD75BUFA
          MVC   TXLEFT,MD75BUFL
@@ -135,6 +144,7 @@ SENDLP   L     1,TXLEFT
          AR    3,4
          ST    3,MD75ACT
          B     SENDLP
+*
 RECEIVE  DS    0H
          MVC   RXPTR,MD75BUFA
          MVC   RXLEFT,MD75BUFL
@@ -173,6 +183,7 @@ RECVGOT  LTR   4,4
          ST    3,MD75ACT
          MVC   RETRY,RETRYMAX
          B     RECVLP
+*
 CLOSE    DS    0H
          L     8,MD75SOCK
          LTR   8,8
@@ -187,8 +198,11 @@ CLOSE    DS    0H
          BNZ   FAILED
          MVC   MD75SOCK,MINUS1
          B     RETURN
+*
 TERM     DS    0H
+*        Direct X'75' has no guest-side TERMAPI storage to release.
          B     RETURN
+*
 TIMEOUT  LA    6,2
          ST    6,MD75ERR
          B     FAILED
@@ -204,6 +218,14 @@ RETURN   LR    15,9
          L     14,12(13)
          LM    0,12,20(13)
          BR    14
+***********************************************************************
+* XCALL - execute one Hercules TCPIP X'75' conversation.              *
+* In: R7=function, R8=aux1, R9=aux2, R1=input length, R5=input addr. *
+*     R11=output address. First X75 uses R5 exactly as EZASOH03 does. *
+* Out: R4=native result. R15=0 on instruction success.                *
+* X'75' uses R14 as its conversation identifier, so caller R14 is    *
+* saved before the first instruction and restored after deallocation. *
+***********************************************************************
 XCALL    ST    14,XRET
          SR    0,0
          SR    3,3
@@ -226,6 +248,7 @@ XBAD     MVC   MD75RET,MINUS1
          LA    15,16
          L     14,XRET
          BR    14
+*
 SAVE     DS    18F
 XRET     DS    F
 TXPTR    DS    F
@@ -244,6 +267,7 @@ MINUS2   DC    F'-2'
 RETRYMAX DC    F'600'
 WAIT5    DC    F'5'
          LTORG
+*
 MD75CB   DSECT
 MD75EYE  DS    CL4
 MD75LEN  DS    H

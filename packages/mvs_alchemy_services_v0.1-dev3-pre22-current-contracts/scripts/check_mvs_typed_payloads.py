@@ -27,9 +27,9 @@ def extract(label):
     for line in lines[start:]:
         if line is not lines[start] and False: pass
         if re.match(r'^[A-Z0-9]+L\s+EQU\s+\*-'+re.escape(label)+r'\b',line): break
-        mx=re.search(r"\bDC\s+X'([0-9A-F]+)'",line)
+        mx=re.search(r'\bDC\s+X\'([0-9A-F]+)\'',line)
         if mx: data += bytes.fromhex(mx.group(1)); continue
-        mf=re.search(r"\bDC\s+F'(-?\d+)'",line)
+        mf=re.search(r'\bDC\s+F\'(-?\d+)\'',line)
         if mf: data += int(mf.group(1)).to_bytes(4,'big',signed=True)
     return data
 

@@ -10,8 +10,10 @@ for n, line in enumerate(text.splitlines(), 1):
     stripped = line.lstrip()
     if stripped.startswith('#'):
         continue
+    # Double-quoted prose containing $HASPnnn expands under `set -u`.
     for m in re.finditer(r'"(?:[^"\\]|\\.)*\$HASP\d+(?:[^"\\]|\\.)*"', line):
         errors.append((n, line))
+    # Log regexes must spell the dollar literally.
     if 'HASP' in line and 'wait_remote_log' in line:
         if not re.search(r"'\\\$HASP\d+", line):
             errors.append((n, line))
