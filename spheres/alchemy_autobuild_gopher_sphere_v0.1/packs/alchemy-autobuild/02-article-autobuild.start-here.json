@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "autobuild.start-here",
+  "version": "0.1",
+  "sphere": "alchemy-autobuild",
+  "title": "Autobuild is how AI-written work becomes evidenced code on main",
+  "summary": "Alchemy Autobuild runs on Tom's build host. A chat hands it a package (a directory with integration.json at its root) as a Git submission branch or as a downloaded ZIP. Autobuild runs the declared tests, publishes the declared tree to animatedads/alchemy main only if they pass, and writes a receipt. A PASS receipt is the only evidence that a package integrated. Pushing files straight to main, or a hand publication, puts work in Git so it is not lost, but it is not qualification. Use autobuild whenever it is running; when it is not, still commit the work to Git and say plainly that it is unqualified.",
+  "invariants": [
+    "Every package has integration.json at its root with package.name, package.version and at least one test.",
+    "A test is an argv array, never a shell string, and has a positive timeout.",
+    "Publication never overwrites: an existing publish path with different content is an ERROR; identical content is accepted.",
+    "One submission id gets one receipt, and a submission with a receipt is never run again.",
+    "Only Tom Dyer enables Git intake and accepts work. A model never edits the build host's config.json.",
+    "Every update states who did the architecture (Tom Dyer), who did the coding, and who wrote the update."
+  ],
+  "procedure": [
+    "Read autobuild.current-state first: it says whether the service is running.",
+    "Build the package to autobuild.integration-contract.",
+    "Submit by autobuild.submit-git if you can push to GitHub, otherwise autobuild.submit-zip.",
+    "Report the submission id. Check autobuild.evidence-and-receipts before claiming anything passed."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "3ccd6921d4bf1917f64f1648e63bb42a0e6ab8134b410e07abbc0b4e6304eb87",
+      "member": "packages/alchemy_autobuild_v0.3/alchemy_autobuild.py",
+      "line_start": 291,
+      "line_end": 306,
+      "claim": "Publication refuses an existing destination with different content."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "bff77cd7b9ed3082501cd9063d76bd407635fb4ba012fafc1887a0cfc50ea77e",
+      "member": "packages/alchemy_autobuild_v0.5/branch_inbox.py",
+      "line_start": 71,
+      "line_end": 71,
+      "claim": "A submission with a receipt is skipped."
+    }
+  ]
+}

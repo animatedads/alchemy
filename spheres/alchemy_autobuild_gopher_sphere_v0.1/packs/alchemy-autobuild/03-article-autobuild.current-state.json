@@ -1,0 +1,51 @@
+{
+  "kind": "article",
+  "id": "autobuild.current-state",
+  "version": "0.1",
+  "sphere": "alchemy-autobuild",
+  "title": "Current state of autobuild (2026-10-24)",
+  "summary": "The installed service (v0.5) has not run since 22 Aug 2026: every start died with ModuleNotFoundError (git_sync), and nothing in Git showed it. v0.5.1 fixes the start and the download intake and is on main at packages/alchemy_autobuild_v0.5.1, tested locally, but it is NOT yet installed on the build host. On 23 Oct 2026 the 54 pending submissions were published to main by hand (NOT AUTOBUILD-QUALIFIED), and chats now also push directly to main. Until v0.5.1 is installed and has written a PASS receipt, nothing new is autobuild-qualified.",
+  "invariants": [
+    "The last receipt written by the old service is 20260822T064900Z-CHATGPT-autobuild-v05: autobuild published its own broken successor with a PASS, then never started again.",
+    "Packages published by hand on 2026-10-23 are listed in autobuild/manual-publication/2026-10-23.json and carry no receipts.",
+    "Installing v0.5.1 is a job for Claude Code on the build host, following docs/autobuild/INSTALL_V051_WITH_CLAUDE_CODE.md, with Git intake paused until Tom enables it."
+  ],
+  "evidence": {
+    "category": "LOCAL_PASS",
+    "scope": "v0.5.1 tests (5 end-to-end + 3 inherited) in a cloud workspace; not FIELD_PASS"
+  },
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "40e7a146133759c6b7e648799aa24b4fdc6786f8f44b053acb02cc70e17094a6",
+      "member": "packages/alchemy_autobuild_v0.5.1/README.md",
+      "line_start": 9,
+      "line_end": 9,
+      "claim": "Root cause of the two-month outage."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "bd01e5601535f8379a86daf7612a221d8dc5d783802a415fda2cf45c0ac25105",
+      "member": "autobuild/receipts/20260822T064900Z-CHATGPT-autobuild-v05.json",
+      "line_start": 14,
+      "line_end": 14,
+      "claim": "v0.5 was published by autobuild with a PASS receipt."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "b42c2574d8768871519f824aa2a9ac7bf08800ce580be9a2d05786102b03bd8e",
+      "member": "autobuild/manual-publication/2026-10-23.json",
+      "line_start": 6,
+      "line_end": 6,
+      "claim": "Hand publication is explicitly not autobuild-qualified."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "bc339805012d23d5c0b06c5a639008c2dddab10ddd1e78729b7c765fe8e62912",
+      "member": "docs/autobuild/INSTALL_V051_WITH_CLAUDE_CODE.md",
+      "line_start": 91,
+      "line_end": 95,
+      "claim": "Install pauses Git intake before starting the service."
+    }
+  ]
+}

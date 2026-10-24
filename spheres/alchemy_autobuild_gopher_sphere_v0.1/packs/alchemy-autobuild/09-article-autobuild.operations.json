@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "autobuild.operations",
+  "version": "0.1",
+  "sphere": "alchemy-autobuild",
+  "title": "Operating the service on the build host",
+  "summary": "The service is the user systemd unit alchemy-autobuild.service. v0.5.1 adds --status (runner state and recent intake), --list-pending (Git submissions that would run, without running them) and the config key git_intake (false pauses the Git inbox). Install and rollback steps for a Claude Code session, including a small model, are in docs/autobuild/INSTALL_V051_WITH_CLAUDE_CODE.md.",
+  "invariants": [
+    "Prove the service on one smoke ZIP with git_intake false before Tom enables the Git inbox.",
+    "Never delete receipts, results or inbox entries to make a submission run again.",
+    "The service runs only while Tom is logged in unless lingering is enabled (loginctl show-user shows Linger=)."
+  ],
+  "procedure": [
+    "systemctl --user status alchemy-autobuild.service --no-pager",
+    "python3 ~/alchemy-autobuild/repo/packages/alchemy_autobuild_v0.5.1/alchemy_autobuild.py --config ~/alchemy-autobuild/config.json --status",
+    "python3 ~/alchemy-autobuild/repo/packages/alchemy_autobuild_v0.5.1/alchemy_autobuild.py --config ~/alchemy-autobuild/config.json --list-pending"
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "2e2de7118684c68d33561e1e4bc3fab000d7e82b9ab7600d9a8e8fe724357ad7",
+      "member": "packages/alchemy_autobuild_v0.5.1/alchemy_autobuild.py",
+      "line_start": 26,
+      "line_end": 30,
+      "claim": "--status, --list-pending and git_intake."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "bc339805012d23d5c0b06c5a639008c2dddab10ddd1e78729b7c765fe8e62912",
+      "member": "docs/autobuild/INSTALL_V051_WITH_CLAUDE_CODE.md",
+      "line_start": 127,
+      "line_end": 131,
+      "claim": "Pending list runs nothing."
+    }
+  ]
+}

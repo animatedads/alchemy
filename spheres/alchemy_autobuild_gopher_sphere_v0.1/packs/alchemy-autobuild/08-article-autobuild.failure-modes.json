@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "id": "autobuild.failure-modes",
+  "version": "0.1",
+  "sphere": "alchemy-autobuild",
+  "title": "How autobuild has failed, so it does not fail the same way again",
+  "summary": "Each item happened. (1) v0.5 passed its own tests, was published by autobuild, then could not start: its tests never started the service entry point. (2) v0.3 to v0.5 integrated only the newest ZIP of a batch, silently dropping the rest. (3) Wrapped ZIPs (one top folder) were rejected. (4) Packages declared a publish source that only their tests create. (5) Execute bits are lost in ZIP extraction. (6) A runner printed PASS, then ran an unconfigured test that exited 2. (7) Work was never submitted at all.",
+  "invariants": [
+    "An autobuild change must include a test that starts the real service entry point (v0.5.1 tests/test_end_to_end.py does).",
+    "A silent service is a failed service: check --status and the receipts, not the absence of errors.",
+    "Work that is not in Git does not exist for the next chat: commit it, even unqualified, and say so."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "2e2de7118684c68d33561e1e4bc3fab000d7e82b9ab7600d9a8e8fe724357ad7",
+      "member": "packages/alchemy_autobuild_v0.5.1/alchemy_autobuild.py",
+      "line_start": 9,
+      "line_end": 15,
+      "claim": "v0.5 start failure."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "2e2de7118684c68d33561e1e4bc3fab000d7e82b9ab7600d9a8e8fe724357ad7",
+      "member": "packages/alchemy_autobuild_v0.5.1/alchemy_autobuild.py",
+      "line_start": 17,
+      "line_end": 19,
+      "claim": "Batch downloads lost all but the newest ZIP."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "f2bd013e1659a52ade641976815c48eb0f00d83144612f59658dddc841f79723",
+      "member": "packages/oorexx_semantic_source_store_v0.1-dev28/test_live/run_live_suite.sh",
+      "line_start": 27,
+      "line_end": 27,
+      "claim": "The mutation test now gets its database before PASS is printed."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "b42c2574d8768871519f824aa2a9ac7bf08800ce580be9a2d05786102b03bd8e",
+      "member": "autobuild/manual-publication/2026-10-23.json",
+      "line_start": 19,
+      "line_end": 19,
+      "claim": "Declared publish sources that only tests generate."
+    }
+  ]
+}

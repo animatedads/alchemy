@@ -1,0 +1,34 @@
+{
+  "kind": "access-policy",
+  "id": "alchemy-autobuild-access",
+  "version": "0.1",
+  "rules": [
+    {
+      "effect": "deny",
+      "roles": [
+        "llm",
+        "developer",
+        "operator"
+      ],
+      "actions": [
+        "exec"
+      ],
+      "resource": "capability:autobuild.git_intake.enable"
+    },
+    {
+      "effect": "allow",
+      "roles": [
+        "llm",
+        "developer",
+        "operator",
+        "reviewer",
+        "admin"
+      ],
+      "actions": [
+        "read",
+        "exec"
+      ],
+      "resource": "*"
+    }
+  ]
+}

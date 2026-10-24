@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "autobuild.evidence-and-receipts",
+  "version": "0.1",
+  "sphere": "alchemy-autobuild",
+  "title": "What counts as evidence: receipts, results, and what does not count",
+  "summary": "For each run autobuild writes autobuild/results/<run>/result.json and, for Git submissions, autobuild/receipts/<id>.json with status PASS or ERROR, the source commit, the tree SHA-256 and the published path. Only a PASS receipt is integration evidence. A test passing in a chat, a hand publication, or a direct push to main is LOCAL_PASS at best and must be labelled that way.",
+  "invariants": [
+    "Use the evidence words FIELD_PASS, LOCAL_PASS, FIXTURE_PASS, SOURCE_PRESENT, UNKNOWN, FAIL, BLOCKED; never upgrade one.",
+    "An ERROR receipt is final for that submission id; fix the package and submit again under a new id.",
+    "Quote the receipt path when claiming a package integrated."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "05a94df6142df726ed28a27a4221984d3b23015c95ba031f0f19877ff25a32f3",
+      "member": "autobuild/receipts/20260822T052800Z-CHATGPT-oorexx-crypto-v0.1.json",
+      "line_start": 14,
+      "line_end": 14,
+      "claim": "Example PASS receipt fields."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "b42c2574d8768871519f824aa2a9ac7bf08800ce580be9a2d05786102b03bd8e",
+      "member": "autobuild/manual-publication/2026-10-23.json",
+      "line_start": 6,
+      "line_end": 6,
+      "claim": "Hand publication is not evidence."
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "kind": "article",
+  "id": "autobuild.submit-git",
+  "version": "0.1",
+  "sphere": "alchemy-autobuild",
+  "title": "Submit through a Git branch with tools/alchemy_submit.py",
+  "summary": "The Git route is the preferred route for any chat that can push to animatedads/alchemy. tools/alchemy_submit.py checks the package, fetches main, builds a temporary worktree (your checkout is not switched), commits the package to autobuild/inbox/<id>/package, commits autobuild/inbox/<id>/ready.json, and pushes both commits to one branch, autobuild-submit/<id>. The service picks the branch up and writes autobuild/receipts/<id>.json.",
+  "invariants": [
+    "ready.json schema is alchemy.autobuild.git-submission/0.1 and names package_path \"package\".",
+    "Symlinks anywhere in the package are refused; nested .git directories are dropped.",
+    "Submission ids are generated (UTC time, producer, label, random suffix); do not reuse one.",
+    "Do not also push the same package path to main by hand: when autobuild runs, a different existing tree is an ERROR."
+  ],
+  "procedure": [
+    "Dry run from your clone: python3 tools/alchemy_submit.py --package <dir> --submitted-by CHATGPT --dry-run --json",
+    "Submit: python3 tools/alchemy_submit.py --package <dir> --submitted-by CHATGPT --json",
+    "Record the returned submission_id and branch in your update.",
+    "Later, look for autobuild/receipts/<submission_id>.json on main."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "5aefb1d4bd5e02594157fb988014f48722cf925827ea712ad5e4af752d6e71d8",
+      "member": "tools/alchemy_submit.py",
+      "line_start": 26,
+      "line_end": 26,
+      "claim": "Ready-marker schema."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "5aefb1d4bd5e02594157fb988014f48722cf925827ea712ad5e4af752d6e71d8",
+      "member": "tools/alchemy_submit.py",
+      "line_start": 89,
+      "line_end": 90,
+      "claim": "Symlinks are refused."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "5aefb1d4bd5e02594157fb988014f48722cf925827ea712ad5e4af752d6e71d8",
+      "member": "tools/alchemy_submit.py",
+      "line_start": 122,
+      "line_end": 122,
+      "claim": "Branch naming."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "5aefb1d4bd5e02594157fb988014f48722cf925827ea712ad5e4af752d6e71d8",
+      "member": "tools/alchemy_submit.py",
+      "line_start": 204,
+      "line_end": 204,
+      "claim": "ready.json package_path."
+    }
+  ]
+}

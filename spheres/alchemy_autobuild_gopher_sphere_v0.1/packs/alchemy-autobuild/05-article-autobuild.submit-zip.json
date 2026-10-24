@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "autobuild.submit-zip",
+  "version": "0.1",
+  "sphere": "alchemy-autobuild",
+  "title": "Submit as a ZIP downloaded to the build host",
+  "summary": "Chats that cannot push give Tom a ZIP, which he downloads into ~/Downloads on the build host. v0.5.1 integrates every ZIP that arrives after the service started, oldest first, each exactly once, after its size has been stable for two polls. integration.json must be at the ZIP root, or every entry must sit under one top folder that holds integration.json (v0.5.1 re-roots it and records the original SHA-256 and wrapper folder). A ZIP without integration.json is never integrated; the decision is logged.",
+  "invariants": [
+    "ZIPs already in ~/Downloads before the service started are ignored.",
+    "Each intake decision is one JSON line in <autobuild root>/intake.log; --status shows the recent ones.",
+    "Give the ZIP a distinct name per version; the filename and SHA-256 are recorded in the result."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "2e2de7118684c68d33561e1e4bc3fab000d7e82b9ab7600d9a8e8fe724357ad7",
+      "member": "packages/alchemy_autobuild_v0.5.1/alchemy_autobuild.py",
+      "line_start": 95,
+      "line_end": 106,
+      "claim": "Root and single-wrapper layouts are accepted; anything else is not."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "2e2de7118684c68d33561e1e4bc3fab000d7e82b9ab7600d9a8e8fe724357ad7",
+      "member": "packages/alchemy_autobuild_v0.5.1/alchemy_autobuild.py",
+      "line_start": 119,
+      "line_end": 119,
+      "claim": "ZIPs older than the service start are ignored."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "2e2de7118684c68d33561e1e4bc3fab000d7e82b9ab7600d9a8e8fe724357ad7",
+      "member": "packages/alchemy_autobuild_v0.5.1/alchemy_autobuild.py",
+      "line_start": 17,
+      "line_end": 24,
+      "claim": "Oldest first, once each, after two stable polls."
+    }
+  ]
+}

@@ -1,0 +1,63 @@
+{
+  "kind": "article",
+  "id": "autobuild.integration-contract",
+  "version": "0.1",
+  "sphere": "alchemy-autobuild",
+  "title": "integration.json: the package's contract with autobuild",
+  "summary": "integration.json (schema alchemy.autobuild.integration/0.3) names the package, the tests that qualify it, and where it is published. Autobuild extracts the package to a temporary directory, runs each test argv there with ALCHEMY_REPO_ROOT, ALCHEMY_PACKAGE_ROOT and ALCHEMY_AUTOBUILD_ROOT exported, and publishes publish.tree.source to publish.tree.path only when every test passes. Dependencies come from the repository through ALCHEMY_REPO_ROOT, never from the network or the author's machine.",
+  "invariants": [
+    "Required: schema, package.name, package.version, tests[] with argv arrays (no 'command' or 'shell' keys).",
+    "publish.tree {source, path} and publish.artifact_only are mutually exclusive; schema 0.2+ needs one of them.",
+    "publish.tree.path is a versioned path such as packages/<name>_v<version>; never the path of an existing different version.",
+    "publish.tree.source must exist in the submitted package. A directory that only the tests generate fails publication.",
+    "Autobuild extracts with Python zipfile, which drops Unix execute bits. Invoke scripts through an interpreter (sh x.sh, bash x.sh, rexx x.rex), and inside scripts call sibling scripts the same way, never as ./x.sh.",
+    "A test must fail if its environment is missing; a script that prints PASS and then exits non-zero, or skips a check because an env var is unset, is a defect."
+  ],
+  "procedure": [
+    "Copy the shape of packages/alchemy_autobuild_v0.5.1/integration.json.",
+    "Run every declared argv yourself from a fresh extraction of your ZIP, with ALCHEMY_REPO_ROOT set to a clean clone of main.",
+    "Check that publish.tree.path is not already on main."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "3ccd6921d4bf1917f64f1648e63bb42a0e6ab8134b410e07abbc0b4e6304eb87",
+      "member": "packages/alchemy_autobuild_v0.3/alchemy_autobuild.py",
+      "line_start": 150,
+      "line_end": 150,
+      "claim": "Shell strings are refused."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "3ccd6921d4bf1917f64f1648e63bb42a0e6ab8134b410e07abbc0b4e6304eb87",
+      "member": "packages/alchemy_autobuild_v0.3/alchemy_autobuild.py",
+      "line_start": 174,
+      "line_end": 174,
+      "claim": "Publish modes are exclusive."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "3ccd6921d4bf1917f64f1648e63bb42a0e6ab8134b410e07abbc0b4e6304eb87",
+      "member": "packages/alchemy_autobuild_v0.3/alchemy_autobuild.py",
+      "line_start": 242,
+      "line_end": 243,
+      "claim": "Test environment variables."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "3ccd6921d4bf1917f64f1648e63bb42a0e6ab8134b410e07abbc0b4e6304eb87",
+      "member": "packages/alchemy_autobuild_v0.3/alchemy_autobuild.py",
+      "line_start": 215,
+      "line_end": 215,
+      "claim": "Extraction uses zipfile.extractall, which does not restore modes."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "f20ff26e88bb8df2d16b50c2c6b667010dd2638d991bcc47c9c25b93e837338b",
+      "member": "review/claude-independent-engineering-2026-10-23/nosqlserver_v091/README.md",
+      "line_start": 12,
+      "line_end": 14,
+      "claim": "A sibling script without its execute bit broke a documented test command."
+    }
+  ]
+}
