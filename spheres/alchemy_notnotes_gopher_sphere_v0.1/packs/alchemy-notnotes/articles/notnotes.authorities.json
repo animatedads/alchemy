@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "notnotes.authorities",
+  "title": "Document identity, revisions and cluster safety",
+  "section": "authority",
+  "body": "AlchemyNotNotesNode has createDocument(formName), save(document), document(id), compose(definitionIdentity) and revision-bearing Document objects. The historical save(document) commits a document and stores it, but no general external compare-and-swap authorization guarantee is asserted here. A production publication adapter must verify an actual versioned and policy-checked revision contract before writing.\n\nThe clustered node fences mutating entrypoints to ACTIVE and detaches read-side REPLAY objects. Local users and security managers are rebound, not replicated in RTO state. Queue Fabric and socket carriage remain below the cluster transport abstraction. No pending document operation may rely solely on browser evidence or free-form LLM claims.",
+  "version": "0.1",
+  "sphere": "alchemy-notnotes",
+  "summary": "AlchemyNotNotesNode has createDocument(formName), save(document), document(id), compose(definitionIdentity) and revision-bearing Document objects. The historical save(document) commits a document and stores it, but no general external compare-and-swap authorization guarantee is asserted here. A production publication adapter must verify an actual versioned and policy-checked revision contract before writing.",
+  "authority": "project-artifact",
+  "invariants": [
+    "NotNotes alone owns its document truth and revision state",
+    "Transport and UI are adapters, not document authorities",
+    "No qualification can be assumed from Git source publication"
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_notnotes_v0.1-dev15.zip",
+      "sha256": "57a7d1b09234621f20c9de5dda312b4e38140b57cb87c45f7318e59730db4488",
+      "claim": "Exact historical source package; not a newer runtime acceptance"
+    }
+  ],
+  "related": []
+}
