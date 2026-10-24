@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "rexxsql.operations",
+  "version": "0.1",
+  "sphere": "rexxsql-backend",
+  "title": "Build, test and audit",
+  "summary": "tools/build_rexxsql.sh copies the pristine source, applies the patches with patch (or git apply), configures for ooRexx and SQLite with no extra options on Ubuntu 24.04, and builds librexxsql.so. run_tests.sh builds, then runs the driver test (52 checks), the backend-contract test (24) and the store's live suites; it passes from a zipfile extraction, as autobuild runs it. RexxSqlPlanAuditSession records every statement whose SQLite plan scans a whole table: use it before adding indexes.",
+  "invariants": [
+    "Scripts are run through sh, so the loss of execute bits in ZIP extraction does not matter.",
+    "The build fails loudly if configure did not select the ooRexx 4.0+ API.",
+    "Audited sessions double the calls per statement: diagnostics only."
+  ],
+  "procedure": [
+    "sh tools/build_rexxsql.sh /tmp/rxsql",
+    "LD_LIBRARY_PATH=/tmp/rxsql sh run_tests.sh"
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "9767c74378d3dec29c3ac8af86f9ca5ac24cbf7661ad330967443fb50538987a",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/tools/build_rexxsql.sh",
+      "line_start": 30,
+      "line_end": 30,
+      "claim": "Build guard."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "006b26f623a6a98e6e70f6928d1161ca681df594e3bd163b57684028c095645b",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/evidence/run_tests_from_zip_extraction.log",
+      "line_start": 155,
+      "line_end": 155,
+      "claim": "Qualification from a zip extraction."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "53766aad53ea4ebc6a1096846aaa32b2e2ada408275969fbc1bcbdfa577dd8a8",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/src/RexxSqlPlanAudit.cls",
+      "line_start": 7,
+      "line_end": 7,
+      "claim": "Audit session."
+    }
+  ]
+}

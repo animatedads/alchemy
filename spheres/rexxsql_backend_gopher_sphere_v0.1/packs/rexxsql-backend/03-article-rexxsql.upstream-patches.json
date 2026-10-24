@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "rexxsql.upstream-patches",
+  "version": "0.1",
+  "sphere": "rexxsql-backend",
+  "title": "The four Rexx/SQL 2.6B3 patches and why each exists",
+  "summary": "0001 configure: ooRexx 5 has no oorexx-config and the check accepted only major 4, so the build fell back to the 1990s Object REXX branch and failed; multiarch library dirs were not searched; a fallback search tested the include dir. 0002: GCC 14 errors (VOID, MTMalloc long vs size_t, exit handler LONG vs int). 0003 SQLite driver: stack overflow on long column names aborted the interpreter; strlen() cut text at NUL; BLOBs came back empty; unbounded sprintf into error buffers. 0004: only a leading SELECT was treated as a query, so WITH, PRAGMA, EXPLAIN, VALUES and RETURNING failed; SQLEXECUTE now runs such statements to completion.",
+  "invariants": [
+    "Mark's samples/tester.cmd output is identical before and after the patches.",
+    "Every defect has a before/after log in evidence/ (defects_*.log, sqlexecute_before_after.log, test_rexxsql_driver_*.log).",
+    "Not changed and still true: SQL text stops at a NUL byte (send such values with executeBound); an empty bound string is stored as NULL (NULLSTRINGIN); no BLOB bind type."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "69e2ab383618fb2a50b5c47105b34f191f452c03a5b902c28baec24e3da97547",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/upstream/UPSTREAM.md",
+      "line_start": 21,
+      "line_end": 24,
+      "claim": "Patch table."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "c8291a937115ebbf75db57a9afff269295ce4137a0842749d2da06072c337333",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/evidence/defects_unpatched.log",
+      "line_start": 3,
+      "line_end": 3,
+      "claim": "Unpatched build aborts on a long column name."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "cdd036794a109e8593f12cdbdcdb5be237146ae5438777b97b38a03804d9d17b",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/evidence/sqlexecute_before_after.log",
+      "line_start": 1,
+      "line_end": 12,
+      "claim": "SQLEXECUTE before and after."
+    }
+  ]
+}

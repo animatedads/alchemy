@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "rexxsql.pitfalls",
+  "version": "0.1",
+  "sphere": "rexxsql-backend",
+  "title": "ooRexx traps met while writing the backend",
+  "summary": "Three traps cost time and will cost the next model time. (1) Compound tails substitute variables: if a program has a variable v, q.v.1 reads the tail named by v's value, not column V; read Rexx/SQL results through the stem object (s = q.; s['V.1']). (2) A bare message instruction such as rows~append(row) or res~rowCount = n sets the special variable RESULT, so never name a local 'result'. (3) Class attributes start out holding their own name, not .nil; initialise them in a class method.",
+  "invariants": [
+    "SQLCOMMAND sets variables in the calling activation: read them in the same method, or pass the stem objects (RXQ., SQLCA.) to a helper.",
+    "Result column names come back upper case; alias any expression column (SELECT count(*) AS n), or the call fails with rc -16.",
+    "Rexx/SQL keeps one current connection per process; sessions call SQLDEFAULT when switching."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "8987fcbb58185e3a717673e1de15b01cac9bb827553b289287c6420720e8169c",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/src/RexxSqlBackend.cls",
+      "line_start": 174,
+      "line_end": 180,
+      "claim": "Results read by stem object in a helper given the stems."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "b57ebe8d2dad1258fe679f46f4b08bbab50f9616f07ec323f17cf1516e76b341",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/tests/test_rexxsql_driver.rex",
+      "line_start": 4,
+      "line_end": 5,
+      "claim": "Test-side warning about tail substitution."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "8987fcbb58185e3a717673e1de15b01cac9bb827553b289287c6420720e8169c",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/src/RexxSqlBackend.cls",
+      "line_start": 66,
+      "line_end": 70,
+      "claim": "Class-level counter initialised explicitly."
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "id": "rexxsql.store-on-sqlite",
+  "version": "0.1",
+  "sphere": "rexxsql-backend",
+  "title": "Running the Semantic Source Store on Rexx/SQL + SQLite",
+  "summary": "The store is backend-neutral: it takes any executor whose execute(sql) returns status, message and rows. SemanticSourceSqliteIndexPlan~open(path) returns such a session with the store's secondary indexes, created as the store creates each table. adapters/ssc/run_ssc_live_on_rexxsql.sh runs the store's own live suites, changing only the executor line, and they pass: round trip 28, MCP 14, mutation 18 checks, and the GA dogfood rebuilds 17 of 17 files byte-identical. GA imports in 3 s (NoSQLServer: 1,547 s for 15 of 17 files).",
+  "invariants": [
+    "No NoSQLServer class is loaded on this path: the runner replaces ::requires NoSQLServer.cls.",
+    "CRLF is stored exactly on SQLite; on NoSQLServer the store refuses such imports (STORAGE_NOT_LOSSLESS).",
+    "The index plan removes every avoidable scan but costs ~14% at 2,295 revisions; its benefit at estate size is expected, not yet measured. SSC_INDEX_PLAN=0 switches it off."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "40764423fd092a948870e25df70167dbd2d2c044b56890ea6bf651cc68013244",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/adapters/ssc/run_ssc_live_on_rexxsql.sh",
+      "line_start": 22,
+      "line_end": 23,
+      "claim": "The single changed line."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "27e7379bf08725614d6d83e809dde3393d05f9ca9515d06b9eb516df30432030",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/adapters/ssc/SemanticSourceSqliteIndexPlan.cls",
+      "line_start": 11,
+      "line_end": 20,
+      "claim": "Index plan."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "e6b1a774545b4ada88baf47267c857fe7f0b65da86f7325d39169413f7330d77",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/evidence/ssc_live_suites_on_rexxsql.log",
+      "line_start": 16,
+      "line_end": 16,
+      "claim": "Store suites pass."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "39ac2449fd87e4e47ab309d5735e6f13dd2eed631a5c09f9da661cdaab98d00a",
+      "member": "review/claude-independent-engineering-2026-10-23/ssc_scale/README.md",
+      "line_start": 43,
+      "line_end": 46,
+      "claim": "NoSQLServer comparison and corrected GA size."
+    }
+  ]
+}

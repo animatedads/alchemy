@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "rexxsql.start-here",
+  "version": "0.1",
+  "sphere": "rexxsql-backend",
+  "title": "Rexx/SQL backend: SQLite with real indexes for ooRexx",
+  "summary": "Mark Hessling's Rexx/SQL (LGPL) gives ooRexx function-call SQL: SQLCONNECT, SQLCOMMAND, SQLPREPARE/SQLEXECUTE, with results as stem.COLUMN.n. Alchemy uses it through packages/oorexx_rexxsql_backend_v0.1 as a NativeDatabaseBackend (family SQLITE, implementation rexxsql). It exists because NoSQLServer v0.79 and v0.91 look up rows by key with a full table scan; SQLite has b-tree primary and secondary indexes. Rexx/SQL 2.6B3 needed four fixes for ooRexx 5, GCC 14 and its SQLite driver; they are kept as patches for Mark, not as a fork.",
+  "invariants": [
+    "Use RexxSqlSqliteSession~open(path) or SemanticSourceSqliteIndexPlan~open(path); never call SQLCOMMAND directly from store code.",
+    "execute(sql) never raises for SQL errors: check result~status (SUCCESS/ERROR) and result~message.",
+    "librexxsql.so must be built from upstream/rxsql26B3 plus upstream/patches (tools/build_rexxsql.sh); an unpatched build truncates text at NUL, loses BLOBs and can abort the interpreter.",
+    "Credit: Rexx/SQL is Mark Hessling's work; the patches are offered back to him under its licence."
+  ],
+  "procedure": [
+    "Build: sh tools/build_rexxsql.sh <dir>",
+    "Put <dir> on LD_LIBRARY_PATH.",
+    "Qualify: sh run_tests.sh (needs gcc, make, patch, SQLite 3 and ooRexx headers)."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "95eb58275bd0e387c2589ae2a3ee9837a43140ddc1eb4b82ea1abf3c4e3ab40f",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/README.md",
+      "line_start": 16,
+      "line_end": 28,
+      "claim": "Measured comparison with NoSQLServer."
+    },
+    {
+      "artifact": "animatedads/alchemy@main",
+      "sha256": "8987fcbb58185e3a717673e1de15b01cac9bb827553b289287c6420720e8169c",
+      "member": "packages/oorexx_rexxsql_backend_v0.1/src/RexxSqlBackend.cls",
+      "line_start": 34,
+      "line_end": 54,
+      "claim": "Backend class and its published capabilities."
+    }
+  ]
+}
