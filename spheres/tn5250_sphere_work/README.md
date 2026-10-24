@@ -1,9 +1,9 @@
-# ooRexx Terminal Machine / TN5250 Gopher sphere
+# ooRexx Terminal Machine Gopher sphere v0.2
 
-This is the project knowledge sphere for the generic ooRexx Terminal Machine and its TN5250 / IBM i personality. It is documentation and reasoning memory, not executable Terminal Machine code and not terminal-mutation authority.
+This is the project continuity sphere for the generic ooRexx Terminal Machine. TN5250/IBM i remains a first-class personality; IBM 3270/TN3270/TN3270E is now the P0 implementation line rather than a future placeholder.
 
-Start with `ref.terminal-machine.release-v021`, `ref.terminal-machine.architecture`, `ref.terminal-machine.one-writer`, `ref.terminal-machine.known-state`, and `ops.terminal-machine.continuation`. Durable exact-topic records are in `terminal-machine.lessons`.
+Start with `ref.terminal-machine.3270-current`, `ref.terminal-machine.architecture`, `ref.terminal-machine.one-writer`, `ref.terminal-machine.known-state`, and `ops.terminal-machine.continuation`.
 
-The implementation baseline documented by this sphere is `oorexx_terminal_machine_v0.21.zip`, SHA-256 `64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5`.
+The current 3270 delivery documented here is `oorexx_terminal_machine_v0.22-candidate12.zip`, SHA-256 `6affe6f192d9f58cdc7bf299607a30e82ad01a72e394f219d3455c5217469fcd`. Candidate12 extends candidate11 with an evidence-backed TK5 ISPF Primary Option Menu state and fixes protocol-labelled host screen/round-trip metering.
 
-With LLM Gopher v0.19-dev1, load both the Gopher core pack and this sphere pack before exact corpus lookup because this sphere deliberately inherits the bounded core lookup service. The sphere access policy permits read/exec only so Gopher can use those bounded retrieval services; it does not grant authority to mutate a live terminal.
+The sphere is documentation and reasoning memory. It grants no terminal-mutation, credential, MVS, Hercules, Queue Fabric, RPC, ConnectSelector, or Socket Provider authority.
