@@ -4,35 +4,141 @@
   "sphere": "terminal-machine",
   "title": "Terminal Machine durable lessons",
   "records": [
-    {"topic":"continuation-baseline","value":"TN5250 retained baseline is oorexx_terminal_machine_v0.21, SHA-256 64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5; current 3270 P0 delivery is v0.22-candidate12, SHA-256 e57dcf302070380a6e714ab0a5e8d1adb65b8c27974c34115712dc6314b00f8a."},
-    {"topic":"one-writer-many-readers","value":"One live terminal mutation owner; any number of immutable observers. Mutation requires current-generation authority. This applies to TN3270 and TN5250."},
-    {"topic":"persistent-session","value":"Attach observers/controllers around one retained live terminal session; do not create a new host login merely because another AI wants to inspect it."},
-    {"topic":"control-transfer","value":"Transfer control by release/revoke -> no controller -> grant new controller at current generation; never overlap leases."},
-    {"topic":"wlu","value":"WLU is external admission/accounting authority. Admission failure must occur before terminal mutation."},
-    {"topic":"credentials","value":"Raw passwords stay in trusted local credential/runtime/wire layers and are not passed via argv/environment by host tools."},
-    {"topic":"nondisplay","value":"Snapshots/replay/WatchAlong/known-state persistence expose <SECRET> or masks, never NONDISPLAY field bytes."},
-    {"topic":"known-state","value":"Semantic host state and local operator condition are orthogonal; protected-area cursor errors do not create fake host states."},
-    {"topic":"pub400-expiry-order","value":"Confirmed PUB400 order: IBM_I_SIGNON -> IBM_I_PASSWORD_EXPIRED_NOTICE -> IBM_I_CHANGE_PASSWORD -> IBM_I_MAIN_MENU."},
-    {"topic":"main-menu-signoff","value":"Signoff only after unique IBM_I_MAIN_MENU match: stage 90, one explicit ENTER, then observe with no further input."},
-    {"topic":"devname","value":"Strict requested DEVNAME collision returns DEVICE_COLLISION; do not silently substitute a new QPADEV device."},
-    {"topic":"server-assigned-device","value":"Prefer SERVER_ASSIGNED for ordinary PUB400 work unless explicit reconnect/device identity behavior is under test."},
-    {"topic":"socat-cleanup","value":"Own exact helper PID, verify command identity, TERM with bounded wait, reverify then KILL if required; propagate close failure."},
-    {"topic":"operator-error","value":"typeAtCursor models terminal-like cursor semantics and may fail/lock in protected space; setField is a separate structured abstraction."},
-    {"topic":"service-drain","value":"Socket drain -> accepted workers finish -> protocol quiesce; retained terminal/broker stays OPEN. Signoff is separate protected authority."},
-    {"topic":"health","value":"Service readiness requires lifecycle, listener, acceptor, endpoint and broker state to agree; disagreement is DEGRADED and fails closed."},
-    {"topic":"emulator-only-rewind","value":"Journal/time-travel/execution-ticket/retry machinery is EMULATOR/TESTBED/REPLAY_SANDBOX only. LIVE_HOST has no rewind authority; the machinery cannot rewind a remote host."},
-    {"topic":"live-repair","value":"Live repair requires explicit TerminalEmulatorPatchable; merely method-shaped objects are not patch authority."},
-    {"topic":"next-protocol-gap","value":"Remaining 5250 work includes exact WRITE ERROR CODE pre/post-help semantics, help/post-help signaling and byte-exact Read Immediate x72 regeneration."},
-    {"topic":"learn-before-automate","value":"Every new live host screen: immutable snapshot -> known-state candidate -> evidence review -> semantic state -> only then automation."},
-    {"topic":"qualification","value":"v0.21 TN5250 acceptance under ooRexx 5.3.0 r13196 passed its recorded fresh-package gates; candidate11 later passed the focused r13196 3270 suites. Candidate12 manifest verified in the 2026-10-24 authoring container but was not freshly interpreter-qualified there."},
-    {"topic":"3270-p0","value":"IBM 3270 is the current P0 Terminal Machine line: native Model-2 presentation space, TN3270 first, basic honest TN3270E, structured fields, extended attributes, operator input, semantic snapshots and one-writer ownership."},
-    {"topic":"3270-known-states","value":"Current evidence-backed states are HERCULES.TK5.WELCOME_PANEL, MVS.TSO.LOGON_PROMPT, MVS.TSO.PASSWORD_PROMPT, exact-row MVS.TSO.READY, and reference-backed MVS.ISPF.PRIMARY_OPTION_MENU."},
-    {"topic":"3270-ready-exact","value":"Authentication-sensitive READY recognition requires a complete trimmed row exactly equal to READY; READY TO PROCESS, echoed commands and unrelated messages do not count."},
-    {"topic":"ispf-reference-evidence","value":"TK5 Figure 17 supplies exact documentation evidence for the ISPF primary menu. Require title + Option prompt + END instruction. Do not relabel the manual as live ED209 evidence and do not infer PF/AID authority."},
-    {"topic":"mvs-authority-split","value":"Terminal Machine owns terminal/session/screen/field truth; MVS Alchemy Services owns guest/MVS semantic truth; Hercules Services owns emulator/control-plane truth. Contradictions must be retained rather than collapsed."},
-    {"topic":"tn3270-socket-boundary","value":"Do not migrate TN3270 to Socket Provider until the concrete TCP binding supplies a qualified non-blocking readiness contract; never unwrap raw provider internals simply to obtain select/readiness."},
-    {"topic":"connect-selector-boundary","value":"ConnectSelector is an application/service interconnect decision layer. It may expose Terminal Machine through Direct/RPC/Queue paths later, but it is not part of native TN3270/TN5250 datastream semantics."},
-    {"topic":"protocol-meter-source","value":"TerminalControlGate evidence must use its configured protocol source. TN3270 SCREEN_UPDATE and HOST_ROUND_TRIP facts must not carry the historical TN5250 label."},
-    {"topic":"3270-differential-next","value":"Next high-value gate is same-session differential qualification against s3270 on ED209Z, comparing field geometry/protection/MDT/cursor/visible content rather than only rendered text."}
+    {
+      "topic": "continuation-baseline",
+      "value": "TN5250 retained baseline is oorexx_terminal_machine_v0.21, SHA-256 64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5; current 3270 P0 delivery is v0.22-candidate12, SHA-256 e57dcf302070380a6e714ab0a5e8d1adb65b8c27974c34115712dc6314b00f8a."
+    },
+    {
+      "topic": "one-writer-many-readers",
+      "value": "One live terminal mutation owner; any number of immutable observers. Mutation requires current-generation authority. This applies to TN3270 and TN5250."
+    },
+    {
+      "topic": "persistent-session",
+      "value": "Attach observers/controllers around one retained live terminal session; do not create a new host login merely because another AI wants to inspect it."
+    },
+    {
+      "topic": "control-transfer",
+      "value": "Transfer control by release/revoke -> no controller -> grant new controller at current generation; never overlap leases."
+    },
+    {
+      "topic": "wlu",
+      "value": "WLU is external admission/accounting authority. Admission failure must occur before terminal mutation."
+    },
+    {
+      "topic": "credentials",
+      "value": "Raw passwords stay in trusted local credential/runtime/wire layers and are not passed via argv/environment by host tools."
+    },
+    {
+      "topic": "nondisplay",
+      "value": "Snapshots/replay/WatchAlong/known-state persistence expose <SECRET> or masks, never NONDISPLAY field bytes."
+    },
+    {
+      "topic": "known-state",
+      "value": "Semantic host state and local operator condition are orthogonal; protected-area cursor errors do not create fake host states."
+    },
+    {
+      "topic": "pub400-expiry-order",
+      "value": "Confirmed PUB400 order: IBM_I_SIGNON -> IBM_I_PASSWORD_EXPIRED_NOTICE -> IBM_I_CHANGE_PASSWORD -> IBM_I_MAIN_MENU."
+    },
+    {
+      "topic": "main-menu-signoff",
+      "value": "Signoff only after unique IBM_I_MAIN_MENU match: stage 90, one explicit ENTER, then observe with no further input."
+    },
+    {
+      "topic": "devname",
+      "value": "Strict requested DEVNAME collision returns DEVICE_COLLISION; do not silently substitute a new QPADEV device."
+    },
+    {
+      "topic": "server-assigned-device",
+      "value": "Prefer SERVER_ASSIGNED for ordinary PUB400 work unless explicit reconnect/device identity behavior is under test."
+    },
+    {
+      "topic": "socat-cleanup",
+      "value": "Own exact helper PID, verify command identity, TERM with bounded wait, reverify then KILL if required; propagate close failure."
+    },
+    {
+      "topic": "operator-error",
+      "value": "typeAtCursor models terminal-like cursor semantics and may fail/lock in protected space; setField is a separate structured abstraction."
+    },
+    {
+      "topic": "service-drain",
+      "value": "Socket drain -> accepted workers finish -> protocol quiesce; retained terminal/broker stays OPEN. Signoff is separate protected authority."
+    },
+    {
+      "topic": "health",
+      "value": "Service readiness requires lifecycle, listener, acceptor, endpoint and broker state to agree; disagreement is DEGRADED and fails closed."
+    },
+    {
+      "topic": "emulator-only-rewind",
+      "value": "Journal/time-travel/execution-ticket/retry machinery is EMULATOR/TESTBED/REPLAY_SANDBOX only. LIVE_HOST has no rewind authority; the machinery cannot rewind a remote host."
+    },
+    {
+      "topic": "live-repair",
+      "value": "Live repair requires explicit TerminalEmulatorPatchable; merely method-shaped objects are not patch authority."
+    },
+    {
+      "topic": "next-protocol-gap",
+      "value": "Remaining 5250 work includes exact WRITE ERROR CODE pre/post-help semantics, help/post-help signaling and byte-exact Read Immediate x72 regeneration."
+    },
+    {
+      "topic": "learn-before-automate",
+      "value": "Every new live host screen: immutable snapshot -> known-state candidate -> evidence review -> semantic state -> only then automation."
+    },
+    {
+      "topic": "qualification",
+      "value": "v0.21 TN5250 acceptance under ooRexx 5.3.0 r13196 passed its recorded fresh-package gates; candidate11 later passed the focused r13196 3270 suites. Candidate12 manifest verified in the 2026-10-24 authoring container but was not freshly interpreter-qualified there."
+    },
+    {
+      "topic": "3270-p0",
+      "value": "IBM 3270 is the current P0 Terminal Machine line: native Model-2 presentation space, TN3270 first, basic honest TN3270E, structured fields, extended attributes, operator input, semantic snapshots and one-writer ownership."
+    },
+    {
+      "topic": "3270-known-states",
+      "value": "Current evidence-backed states are HERCULES.TK5.WELCOME_PANEL, MVS.TSO.LOGON_PROMPT, MVS.TSO.PASSWORD_PROMPT, exact-row MVS.TSO.READY, and reference-backed MVS.ISPF.PRIMARY_OPTION_MENU."
+    },
+    {
+      "topic": "3270-ready-exact",
+      "value": "Authentication-sensitive READY recognition requires a complete trimmed row exactly equal to READY; READY TO PROCESS, echoed commands and unrelated messages do not count."
+    },
+    {
+      "topic": "ispf-reference-evidence",
+      "value": "TK5 Figure 17 supplies exact documentation evidence for the ISPF primary menu. Require title + Option prompt + END instruction. Do not relabel the manual as live ED209 evidence and do not infer PF/AID authority."
+    },
+    {
+      "topic": "mvs-authority-split",
+      "value": "Terminal Machine owns terminal/session/screen/field truth; MVS Alchemy Services owns guest/MVS semantic truth; Hercules Services owns emulator/control-plane truth. Contradictions must be retained rather than collapsed."
+    },
+    {
+      "topic": "tn3270-socket-boundary",
+      "value": "Do not migrate TN3270 to Socket Provider until the concrete TCP binding supplies a qualified non-blocking readiness contract; never unwrap raw provider internals simply to obtain select/readiness."
+    },
+    {
+      "topic": "connect-selector-boundary",
+      "value": "ConnectSelector is an application/service interconnect decision layer. It may expose Terminal Machine through Direct/RPC/Queue paths later, but it is not part of native TN3270/TN5250 datastream semantics."
+    },
+    {
+      "topic": "protocol-meter-source",
+      "value": "TerminalControlGate evidence must use its configured protocol source. TN3270 SCREEN_UPDATE and HOST_ROUND_TRIP facts must not carry the historical TN5250 label."
+    },
+    {
+      "topic": "3270-differential-next",
+      "value": "Next high-value gate is same-session differential qualification against s3270 on ED209Z, comparing field geometry/protection/MDT/cursor/visible content rather than only rendered text."
+    },
+    {
+      "topic": "mvs-intention-consumer",
+      "value": "MVS Intention consumes Terminal Machine terminal/session/screen/field evidence but does not inherit terminal mutation authority or MVS/JES job/dataset authority; s3270 remains an independent reference oracle."
+    },
+    {
+      "topic": "aid-completion",
+      "value": "On 3270, sending an AID and completing a host semantic transition are distinct. Advance on observed presentation generation/known state, not merely on an emulator scripting action returning."
+    },
+    {
+      "topic": "dual-mvs-scope",
+      "value": "ED209Z/ED209C and ED209ZZ/ED209I are separate guest/host scopes. Target, host, LU/device, session and evidence source stay attached to observations; never migrate stale facts between Z and ZZ."
+    },
+    {
+      "topic": "mvs-batch-outcome",
+      "value": "MVS batch work is asynchronous: submit identifies work; JES step RCs, diagnostics, spool/printer output and domain artifacts establish outcome. Submission acceptance alone is not success."
+    }
   ]
 }
