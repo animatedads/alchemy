@@ -1,0 +1,168 @@
+== build librexxsql.so (Rexx/SQL 2.6B3 + upstream/patches)
+built /tmp/tmp.Q8COuMfArH/lib/librexxsql.so
+== driver
+PASS  SQLLoadFuncs
+PASS  version rexxsql 2.6B3 23 May 2011 UNIX SQLite3
+PASS  connect file database
+PASS  create table
+PASS  bound insert 1
+PASS  select 1
+PASS  round trip byte-exact case 1 length 5
+PASS  bound insert 2
+PASS  select 2
+PASS  round trip byte-exact case 2 length 7
+PASS  bound insert 3
+PASS  select 3
+PASS  round trip byte-exact case 3 length 10
+PASS  bound insert 4
+PASS  select 4
+PASS  round trip byte-exact case 4 length 12
+PASS  bound insert 5
+PASS  select 5
+PASS  round trip byte-exact case 5 length 0
+PASS  bound insert 6
+PASS  select 6
+PASS  round trip byte-exact case 6 length 104000
+PASS  bound insert 7
+PASS  select 7
+PASS  round trip byte-exact case 7 length 3
+PASS  bound insert 8
+PASS  select 8
+PASS  round trip byte-exact case 8 length 5
+PASS  bound insert 9
+PASS  select 9
+PASS  round trip byte-exact case 9 length 4
+PASS  literal insert
+PASS  quoted literal stored as written
+PASS  NULL returned as NULLSTRINGOUT (empty)
+PASS  create blob table
+PASS  BLOB bytes returned
+PASS  long unaliased expression returns an error instead of aborting (rc=-16)
+PASS  aliased expression works
+PASS  rollback discards
+      keyed select at 20,009 rows: 83 us per call
+PASS  keyed lookup is indexed (< 5 ms per call)
+PASS  IN list
+PASS  WITH ... SELECT returns rows
+PASS  PRAGMA returns rows (journal_mode=wal)
+PASS  EXPLAIN QUERY PLAN returns rows; keyed lookup is a SEARCH
+PASS  INSERT ... RETURNING returns rows
+PASS  SQLEXECUTE runs INSERT ... RETURNING
+PASS  ... and the row exists exactly once
+PASS  SQLEXECUTE runs a PRAGMA
+PASS  ... and it took effect
+PASS  disconnect
+PASS  reconnect
+PASS  data persisted across connections
+REXXSQL DRIVER TEST: PASS (52 checks)
+== backend contract
+PASS  backend available (Rexx/SQL loads)
+PASS  implementation id SQLITE:rexxsql:2.6B3+alchemy.1
+PASS  publishes indexed lookups
+PASS  publishes BLOB_WRITE as unsupported
+PASS  publishes limitations
+PASS  selector picks rexxsql for KEYED_LOOKUP_INDEXED
+PASS  lease acquired
+PASS  lease pins a Rexx/SQL session
+PASS  lease close disconnects
+PASS  DDL through session
+PASS  insert reports rowCount 1
+PASS  select returns one row
+PASS  row lookup is case-insensitive
+PASS  text exact
+PASS  row~values exposes columns (MCP plainRows)
+PASS  two sessions keep separate connections (SQLDEFAULT switching)
+PASS  empty result
+PASS  SQL error is a result, not a raise: rc=-1 no such column: nope
+PASS  UPDATE literal stored as written
+PASS  bound insert
+PASS  bound NUL byte round trip
+PASS  IN list
+PASS  aliased aggregate
+PASS  sessions close
+REXXSQL BACKEND TEST: PASS (24 checks)
+== SSC provider selection (store chosen by provider id)
+PASS  provider id rexxsql-sqlite
+PASS  handles its own id
+PASS  handles case-insensitively
+PASS  does not claim another provider's id
+PASS  composition() returns the store's composition boundary
+PASS  composition records the provider id as backendId
+PASS  newStore returns a SemanticSourceStore
+PASS  store backendId is the provider id
+PASS  storage_backend meta row exists
+PASS  recorded storage_backend is the provider id, not NoSQLServer
+PASS  keyed lookup uses an index (SEARCH), proving the SQLite backend
+SSC PROVIDER SELECTION TEST: PASS (11 checks)
+== Semantic Source Store live suites on Rexx/SQL
+== repository_roundtrip_test.rex on Rexx/SQL + SQLite
+crypto: Foreign Runtime provider installed
+PASS  schema bootstrap on real NoSQLServer
+PASS  v1 Family imported
+PASS  module derived from version folder
+PASS  logical path drops version folder
+PASS  Family.cls held as 7 objects: header comment, requires, class, attribute, 3 methods
+PASS  7 new revisions
+PASS  three METHOD objects, one per method (method-granular)
+PASS  accept v1: 7 Family objects + Family layout + Helper class, method and layout
+PASS  v1 Family.cls rebuilt byte-identical from method objects
+PASS  ::requires closure pulls Helper.cls, byte-identical
+PASS  v2: exactly one new revision (the changed method)
+PASS  v2: file layout unchanged, layout revision reused
+PASS  unaccepted method revision is not served
+PASS  greet has two revisions
+PASS  new greet revision is PROPOSED
+PASS  accepting one method revision updates the file
+PASS  old greet revision SUPERSEDED
+PASS  v3: one new member revision (the added method)
+PASS  v3: layout changed
+PASS  v3 rebuilt byte-identical
+PASS  identical content under a different version folder: 0 new revisions
+PASS  same semantic identity across version folders
+PASS  repeated member is ALREADY_IMPORTED
+PASS  beginArchive resumes the same archive
+PASS  v1 import rebuilt exactly from its own projection after v3 accepted
+PASS  acceptance without an authorizer is DENIED
+PASS  acceptance without a principal is DENIED
+INFO  CRLF stored losslessly by this backend
+PASS  fixed reader: exact order from projection ordinals
+INFO  original SemanticSourcePackageService~getPackage crashes on a real database: 7 []=
+SSC REPOSITORY ROUND-TRIP TEST: PASS  (28 checks, 0.3 s)
+== mcp_operations_test.rex on Rexx/SQL + SQLite
+PASS  import_archive_begin
+PASS  import_archive_member
+PASS  class header + 2 methods
+PASS  revision author is the session principal, not the claimed 'mallory'
+PASS  import_archive_complete
+PASS  accept without a session principal is DENIED
+PASS  accept by a principal the authorizer rejects is DENIED
+PASS  accept_import by tom
+PASS  acceptance recorded as DECISION
+PASS  free-text reason stored verbatim (INSERT path, not evaluated)
+PASS  get_package
+PASS  get_package returns Probe.cls byte-identical
+PASS  history
+PASS  unknown operation returns ok=0, does not raise
+SSC MCP OPERATIONS TEST: PASS (14 checks)
+== semantic_mutation_test.rex on Rexx/SQL + SQLite
+PASS  method a has its own semantic object
+PASS  base method revision retrieved independently
+PASS  exact-base edit creates PROPOSED semantic revision
+PASS  exact-base edit is not a conflict
+PASS  method body edit does not rewrite SOURCE_UNIT layout
+PASS  unaccepted semantic edit is not materialised
+PASS  accepting one method revision rebuilds file with only that method changed
+PASS  stale-base edit becomes BRANCH_CONFLICT
+PASS  conflict branch id returned
+PASS  one conflict record created
+PASS  current candidate retained as conflict A
+PASS  stale-base candidate retained as conflict B
+PASS  conflict remains unresolved
+PASS  stale candidate does not replace upstream current revision
+PASS  unresolved conflict never silently changes materialised source
+PASS  same candidate is idempotent and reuses open conflict branch
+PASS  SOURCE_UNIT edit fails with SEMANTIC_EDIT_REQUIRED
+PASS  semantic edit authorization fails closed
+SSC SEMANTIC MUTATION TEST: PASS (18 checks)
+SSC LIVE TESTS ON REXX/SQL: PASS
+REXXSQL BACKEND v0.1 QUALIFICATION: PASS

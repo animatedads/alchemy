@@ -37,8 +37,10 @@ read back instead of being refused (a different branch of the same test).
 | `src/RexxSqlBackend.cls` | `RexxSqlSqliteBackend`, `RexxSqlSqliteSession`, `RexxSqlResult`, `RexxSqlRow` |
 | `src/RexxSqlPlanAudit.cls` | Session that records every statement whose query plan scans a whole table |
 | `adapters/ssc/SemanticSourceSqliteIndexPlan.cls` | The store's secondary indexes, applied as the store creates its tables |
+| `adapters/ssc/SemanticSourceRexxSqlProvider.cls` | Provider half of the store's composition seam: provider id `rexxsql-sqlite` → a bootstrapped store |
+| `adapters/ssc/compose_ssc.rex` | Composition-root script: resolves `OOREXX_DATABASE_PROVIDER` and builds the store |
 | `adapters/ssc/run_ssc_live_on_rexxsql.sh` | Runs the store's own live tests on Rexx/SQL, changing only the executor line |
-| `tests/` | Driver test (52 checks) and backend-contract test (24 checks) |
+| `tests/` | Driver (52), backend-contract (24) and provider-selection (11) tests |
 | `evidence/` | Before/after logs for every defect, Mark's suite, memory, query-plan audits |
 
 ## Use
@@ -51,13 +53,23 @@ export LD_LIBRARY_PATH=/some/dir
 ```
 
 ```rexx
-sql = .SemanticSourceSqliteIndexPlan~open("/data/ssc.sqlite")   -- for the Semantic Source Store
-store = .SemanticSourceStore~new("/data", sql, "rexxsql-sqlite")~bootstrap
--- or, generally:
+-- Semantic Source Store, selected by provider id through the store's composition seam.
+-- The store stays backend-neutral; this provider package supplies the executor.
+store = .SemanticSourceRexxSqlProvider~newStore("/data")   -- bootstrapped, backendId "rexxsql-sqlite"
+-- or build the store's composition boundary yourself:
+comp = .SemanticSourceRexxSqlProvider~composition("/data")
+store = comp~newStore ; store~bootstrap
+-- or, generally, just an executor:
 session = .RexxSqlSqliteSession~open("/data/app.sqlite")
 r = session~execute("SELECT object_id FROM t WHERE kind='METHOD'")   -- r~status, r~message, r~rows, r~rowCount
 r = session~executeBound("INSERT INTO t (k,v) VALUES (?,?)", .array~of(.array~of("CHAR","k1"), .array~of("TEXT", text)))
-::requires "SemanticSourceSqliteIndexPlan.cls"
+::requires "SemanticSourceRexxSqlProvider.cls"   -- pulls the index plan, composition and session
+```
+
+From a composition root, select by environment instead of in code:
+
+```
+OOREXX_DATABASE_PROVIDER=rexxsql-sqlite  rexx adapters/ssc/compose_ssc.rex /data
 ```
 
 `execute` never raises for SQL errors: the result has `status` "ERROR" and the message.
