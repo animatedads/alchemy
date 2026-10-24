@@ -27,3 +27,22 @@ Core invariants:
 - Current transport-grid baseline reviewed in Library: `SPIRAL1_TRANSPORT_COTS_INTERFACE_GRID_CURRENT_2026-10-13.md`
 
 Repository implementations live at `packages/oorexx_messaging_presence/`, `packages/oorexx_bosh_transport/`, and `packages/oorexx_xmpp_bosh_adapter/`. The sphere records architecture, authority and qualification continuity; it does not replace those runtime packages.
+
+
+## 2026-10-24 reconciliation
+
+The repository and Library have advanced beyond the original 2026-10-13 transport-grid snapshot.
+
+Current externally evidenced context:
+
+- Socket Provider v0.1-dev16 — SHA-256 `fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2`.
+- Network Transport Intentions v0.1-dev3 — SHA-256 `d90dc49e4799f929761e75b302ab141a3bab481efdf951cdd508491a9b18c64b`.
+- Instrumentation Mesh v0.1-dev8 — SHA-256 `47402459e658da6ddb17c65c98010c0acd0e35d43b3a0b01c8c13c835f65d624`.
+- XTP v0.1-dev25 development head — SHA-256 `7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b`.
+- BOSH released evidence remains dev5; the GitHub source line is now dev6 to repair qualification/current-version metadata without changing the dev5 wire/session semantics.
+
+Two source-publication boundaries are explicit. The first-class GitHub Socket Provider tree still identifies itself as dev14 even though current estate evidence pins dev16. The first-class Instrumentation Mesh dev8 runtime source is also not published under its own package tree. Neither implementation may be reconstructed or relabelled from older source merely to make a test green.
+
+Messaging & Presence therefore continues to fail closed for RFC 6120 STARTTLS until a generic same-stream secure-upgrade route is explicitly qualified at the lower transport/TLS boundary. BOSH remains a generic HTTP-carried logical stream; a real generic HTTP/HTTPS exchange provider (including HTTPS-over-XTP composition) remains separate work because no authoritative first-class HTTP client surface was identified in the current repository review.
+
+The sphere is present in GitHub but the LLM Gopher resolver currently returns `SPHERE_NOT_FOUND`; registration/deployment remains an explicit operational gate.
