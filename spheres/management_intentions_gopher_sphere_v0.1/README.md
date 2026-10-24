@@ -20,3 +20,9 @@ Executable grounding added by this workstream:
     oorexx_instrumentation_intentions_v0.1-dev1
 
 Important non-architectural tools remain exactly that: `cloudctl.sh` and `sshnode.sh` are constrained operator/developer shortcuts and must not become capability truth, routing authority or semantic APIs.
+
+## MVS specialist continuity
+
+The MVS specialist is now grounded by `mvs_intention_runner_v0.1-dev9` (SHA-256 `03a2cc798db5cff171cd7ca37eb5ca686d9f7bfce17cd381c85c77a703fbec52`). dev9 consumes Terminal Machine as terminal/session authority, keeps s3270/c3270 as independent reference evidence, and preserves MVS Alchemy/JES as owner of guest/job/dataset semantics. It was locally qualified under ooRexx 5.3.0 r13196 and against Terminal Machine v0.22-candidate8's focused 3270 suites. Terminal Machine v0.22-candidate12 is now current GitHub context, so candidate12 requalification remains a gate.
+
+ED209Z and ED209ZZ are distinct scopes: ED209Z is hosted by ED209C and ED209ZZ by ED209I. MVS batch outcomes are asynchronous semantic objects: JES acceptance, step return codes and spool/printer artifacts are evidence; submission or a host-side process return alone is not success.
