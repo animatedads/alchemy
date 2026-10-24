@@ -1,0 +1,67 @@
+== fidelity
+OK    case 1 len=6
+OK    case 2 len=12
+DIFF  case 3 len=24 got_len=22 want=3A3A6D6574686F6420780D0A202072657475726E20310D0A got=3A3A6D6574686F6420780A202072657475726E20310A2020
+OK    case 4 len=7
+OK    case 5 len=29
+OK    case 6 len=18
+OK    case 7 len=32
+OK    case 8 len=0
+OK    case 9 len=11
+OK    case 10 len=12000
+fidelity: 9 of 10
+== upd
+SUCCESS      CREATE TABLE t (k VARCHAR PRIMARY KEY, v VARCHAR, n INTEGER)
+SUCCESS      INSERT INTO t (k,v,n) VALUES ('a','x',1)
+SUCCESS      UPDATE t SET v='plain' WHERE k='a'
+NOTEXECUTED  UPDATE t SET v='with-dash' WHERE k='a'
+              UPDATE assignment expression is not implemented: with-dash
+NOTEXECUTED  UPDATE t SET v = 'with-dash' WHERE k='a'
+              UPDATE assignment expression is not implemented: with-dash
+SUCCESS      UPDATE t SET v='a b|c' WHERE k='a'
+SUCCESS      UPDATE t SET v='it''s' WHERE k='a'
+SUCCESS      UPDATE t SET v='x', n=2 WHERE k='a'
+SUCCESS      UPDATE t SET n=3 WHERE k='a'
+NOTEXECUTED  UPDATE t SET v='ssr-f96058f2f6b6e1420dcff84e447004cf' WHERE k='a'
+              UPDATE assignment expression is not implemented: ssr-f96058f2f6b6e1420dcff84e447004cf
+SUCCESS      UPDATE t SET v='12-34' WHERE k='a'
+final v= -22 n= 3
+== pred
+NOTEXECUTE SELECT id FROM a WHERE id IN ('a1','a2')
+             IN lists are not implemented
+SUCCESS    SELECT id FROM a WHERE id='a1' OR id='a2'
+             id=a1 ; id=a2 ; 
+SUCCESS    SELECT id FROM a WHERE (id='a1' OR id='a2') AND k='X'
+             id=a1 ; 
+SUCCESS    SELECT r.rid,r.t FROM a o JOIN b r ON r.id=o.id AND r.rid=o.r WHERE o.id='a1' OR o.id='a3'
+             r.rid=b1 r.t=one ; r.rid=b3 r.t=three ; 
+SUCCESS    SELECT r.rid,r.t FROM a o JOIN b r ON r.id=o.id AND r.rid=o.r WHERE (o.id='a1' OR o.id='a3')
+             r.rid=b1 r.t=one ; r.rid=b3 r.t=three ; 
+NOTEXECUTE SELECT r.rid,r.t FROM a o JOIN b r ON r.id=o.id AND r.rid=o.r WHERE o.id IN ('a1','a3')
+             Unsupported predicate operator: IN.
+SUCCESS    SELECT rid FROM b WHERE id='a1' OR id='a2' ORDER BY n DESC
+             rid=b2 ; rid=b1 ; 
+SUCCESS    SELECT rid,n FROM b WHERE (id='a1' OR id='a2' OR id='a3') AND (t='one' OR t='three') ORDER BY rid
+             n=1 rid=b1 ; n=3 rid=b3 ; 
+== ins
+12-34                  INSERT: SUCCESS  -> 12-34                  UPDATE: SUCCESS     -> -22
+a-b                    INSERT: SUCCESS  -> a-b                    UPDATE: NOTEXECUTED -> a-b
+3*4                    INSERT: SUCCESS  -> 3*4                    UPDATE: SUCCESS     -> 12
+6/2                    INSERT: SUCCESS  -> 6/2                    UPDATE: SUCCESS     -> 3
+1+1                    INSERT: SUCCESS  -> 1+1                    UPDATE: SUCCESS     -> 2
+abc_def                INSERT: SUCCESS  -> abc_def                UPDATE: SUCCESS     -> abc_def
+x||y                   INSERT: SUCCESS  -> x||y                   UPDATE: SUCCESS     -> x||y
+ssr_f96058f2           INSERT: SUCCESS  -> ssr_f96058f2           UPDATE: SUCCESS     -> ssr_f96058f2
+ssrf96058f2            INSERT: SUCCESS  -> ssrf96058f2            UPDATE: SUCCESS     -> ssrf96058f2
+NULL                   INSERT: SUCCESS  -> NULL                   UPDATE: SUCCESS     -> The NIL object
+2026-10-23T17:00:00    INSERT: SUCCESS  -> 2026-10-23T17:00:00    UPDATE: NOTEXECUTED -> 2026-10-23T17:00:00
+-5                     INSERT: SUCCESS  -> -5                     UPDATE: SUCCESS     -> -5
+1e3                    INSERT: SUCCESS  -> 1e3                    UPDATE: SUCCESS     -> 1e3
+0x10                   INSERT: SUCCESS  -> 0x10                   UPDATE: SUCCESS     -> 0x10
+(1)                    INSERT: SUCCESS  -> (1)                    UPDATE: SUCCESS     -> (1)
+== idx
+CREATE INDEX: NOTEXECUTED Unsupported SQL statement
+inserted 250 rows/table in 17.3 s
+  per lookup: primary-key 0.2367 s | unindexed column 0.2294 s | indexed column 0.2399 s  ( TABLE_SCAN )
+inserted 1000 rows/table in 71.8 s
+  per lookup: primary-key 1.2006 s | unindexed column 1.2094 s | indexed column 1.1969 s  ( TABLE_SCAN )
