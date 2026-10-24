@@ -38,7 +38,7 @@ only on the store's public classes, so it collides with neither.
 ## Evidence (LOCAL_PASS)
 
 `tests/test_write_intentions.rex` (13 checks), on a real store built by the Rexx/SQL SQLite
-provider with the real IntentionService: accept is INFEASIBLE with no import, FEASIBLE once one is
+provider with the real IntentionService (pure-ooRexx crypto, no Foreign Runtime): accept is INFEASIBLE with no import, FEASIBLE once one is
 pending (with the live import id as the discovered target), dispatch is denied without a session
 principal and accepts as the authorized principal, the revision really becomes ACCEPTED, and
 accept is INFEASIBLE again afterwards — feasibility is live, not a static catalogue.
@@ -48,5 +48,5 @@ accept is INFEASIBLE again afterwards — feasibility is live, not a static cata
 ```
 sh run_tests.sh
 ```
-Builds librexxsql.so and Foreign Runtime from the repository, then runs the test. Needs gcc, make,
-SQLite 3 and ooRexx headers.
+Builds librexxsql.so from the repository, then runs the test on pure-ooRexx crypto (no native
+Foreign Runtime build is needed). Needs gcc, make, patch, SQLite 3 and ooRexx headers.

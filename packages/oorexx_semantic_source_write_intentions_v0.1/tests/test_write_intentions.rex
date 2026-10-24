@@ -9,7 +9,8 @@
 signal on syntax name onSyntax
 parse arg work
 if work = "" then work = directory()
-installed = .CryptoForeignRuntimeInstaller~install
+/* No Foreign Runtime: the store's SHA-256 has a pure-ooRexx path, and this test does a single
+   tiny import, so it needs no native crypto build. (Foreign Runtime is a speed option elsewhere.) */
 
 /* A store on SQLite through Rexx/SQL (today's provider), plus the write authority over it. */
 store = .SemanticSourceRexxSqlProvider~newStore(work)
@@ -116,4 +117,3 @@ onSyntax:
 ::requires "SemanticSourceLayoutPackageService.cls"
 ::requires "SemanticSourceMcpOperations.cls"
 ::requires "SemanticSourceOorexxStructuralAdapter.cls"
-::requires "CryptoForeignRuntimeProvider.cls"
