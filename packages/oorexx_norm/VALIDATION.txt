@@ -1,20 +1,16 @@
-ooRexx NORM v0.1-dev1 validation record
+ooRexx NORM v0.1-dev3 validation
 
-QUALIFICATION RUNTIME
-- ooRexx 5.3.0 r13196, extracted from the Architect-supplied Ubuntu debug .deb.
+Qualified locally against:
+- ooRexx 5.3.0 r13196 Internal Test Version (supplied .deb)
+- libnorm runtime 1.5.7
+- NORM 1.5.x public C API declarations (repository header identifies 1.5.10)
 
-PASS
-- SocketProvider dev8 compiled under r13196.
-- NormSocketProvider.cls compiled under r13196 once native package was present.
-- NORM SocketAddress contract: group, port, interface, node id, multicast family retained.
-- Native C++ package compiled with -Wall -Wextra -Werror against r13196 oorexxapi.h.
-- Native provider contract passed using a signature-compatible compile/test shim for libnorm API 1.5.10: version, sender creation, descriptor exposure, data enqueue and close.
-- SocketProvider dev8 full existing contract regression passed plus NORM/XTP negotiation test.
+PASS native package compile with -Wall -Wextra -Werror
+PASS Socket Provider dev10 descriptor/readiness contract
+PASS native provider load/version
+PASS IPv4 ASM descriptor -> waitReady -> tryAccept -> exact 520000-byte object
+PASS IPv4 SSM 232/8 source-filtered receive -> exact 520000-byte object
+PASS induced 10% sender loss, paritySymbols=0 -> exact 520000-byte object completes via NORM repair path
+PASS IPv6 multicast on environment interface with ff00::/8 route -> exact 520000-byte object
 
-UPSTREAM API CHECK
-- NRL normApi.h master blob SHA inspected: 0caa5c34e72e5fecd42c373bf49b7433530065be.
-- Functions used are public NORM C API functions from that header.
-
-NOT CLAIMED IN THIS BUILD ENVIRONMENT
-- No real libnorm binary was present in the execution container, so actual UDP/IP multicast transmission was not run here.
-- tests/environment_test.sh is the complete real-environment qualification script. With NORM_ROOT set to a built/installed NRL NORM tree, it builds the real binding; with NORM_LIVE_TEST=1 it launches an actual receiver and sender through SocketSelector on the configured multicast interface.
+No claim is made that every network permits multicast/SSM/IPv6; the supplied environment test qualifies the actual target environment and fails/skips with explicit evidence where the host lacks the required route/interface capability.

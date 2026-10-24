@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "norm.reliability",
+  "version": "0.1",
+  "sphere": "norm-socket-provider",
+  "title": "NACK repair and FEC boundary",
+  "summary": "NORM reliability is a transport guarantee below SocketProvider and must not be confused with semantic commit or application acknowledgement.",
+  "invariants": [
+    "NACK/FEC repair answers transport completeness; semantic acceptance, authority and durable commit remain upper-layer concerns.",
+    "The dev3 forcing case used induced 10 percent sender loss with paritySymbols=0 and reconstructed the exact 520000-byte object, providing evidence of NACK/retransmission repair rather than proactive parity.",
+    "qualificationTxLossPercent is qualification-only metadata mapped to NormSetTxLoss and is not application policy.",
+    "NormDataEnqueue backing storage remains alive until NORM object purge because libnorm retains the application buffer for the transport object's lifetime."
+  ],
+  "provenance": [{"artifact":"oorexx_norm_v0.1-dev3.zip","sha256":"d997007d35c7527eb40d6d62516cee036ed2d1a27fb1edbe32bdf4389abcd231","member":"VALIDATION.txt"}]
+}

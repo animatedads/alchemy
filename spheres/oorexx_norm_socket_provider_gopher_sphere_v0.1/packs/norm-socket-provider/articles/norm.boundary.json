@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "norm.boundary",
+  "version": "0.1",
+  "sphere": "norm-socket-provider",
+  "title": "Socket and wire ownership boundary",
+  "summary": "NORM is a SocketProvider implementation engine, not an application semantic protocol.",
+  "invariants": [
+    "Applications use SocketAddressProvider, SocketSelector and SocketProvider; they do not call NormCreateSession, NormStartReceiver, NormSetSSM or IP multicast membership APIs directly.",
+    "The full NORM SocketAddress survives above the provider boundary with group, port, interface, optional source filter and node identity; it is not flattened to host:port.",
+    "libnorm owns NORM sessions, NACK/FEC, congestion and UDP/IP multicast mechanics; the native ooRexx binding owns native handle and enqueue-buffer lifetime.",
+    "The application-visible call stays stable when another qualified provider such as XTP is selected for the same semantic request."
+  ],
+  "provenance": [{"artifact":"oorexx_norm_v0.1-dev3.zip","sha256":"d997007d35c7527eb40d6d62516cee036ed2d1a27fb1edbe32bdf4389abcd231","member":"ARCHITECTURE.md"}]
+}
