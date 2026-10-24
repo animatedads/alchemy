@@ -24,3 +24,20 @@ Static checks:
 PASS bash -n tools/run_environment_test.sh
 PASS PACKAGE.json parse
 PASS no MUC/PubSub/file-transfer/avatar executable surface
+
+
+2026-10-24 current-source reconciliation
+-----------------------------------------
+Released semantic source line: v0.1-dev4
+Current external Socket Provider authority: v0.1-dev16
+  SHA-256 fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2
+Current external Instrumentation Mesh authority: v0.1-dev8
+  SHA-256 47402459e658da6ddb17c65c98010c0acd0e35d43b3a0b01c8c13c835f65d624
+
+PASS JSON parse for refreshed PACKAGE.json
+PASS bash -n tools/run_environment_test.sh
+PASS current provider-neutral XMPP fixture is wired into tools/run_environment_test.sh
+PASS stale dev14 source-version requirement removed from the active runner
+PASS STARTTLS remains fail-closed pending explicit same-stream lower-provider qualification
+
+Fresh full ooRexx execution against exact Socket Provider dev16 and Instrumentation Mesh dev8 is NOT claimed by this reconciliation commit because the exact first-class source roots are not both published in the current GitHub package tree.
