@@ -3,10 +3,10 @@
   "id": "arch.qualification",
   "title": "Evidence and limits",
   "section": "qualification",
-  "body": "v0.1-dev8 shipped recorded native ooRexx r13196 tests including ConnectSelector dev1/dev2/dev5 and Intention Service dev11, JSON writer, promotion negatives. This historical evidence has not been independently rerun on 2026-10-23.\n\nv0.1-dev9 checked shell test entrypoint syntax, 26 JSON files, manifest (87 member files) and ZIP integrity. New test_ssc_receipt.rex was authored, but could not be executed because the supplied ooRexx .deb has no retrievable backing bytes in the active runtime and no local rexx executable was found.\n\nCurrent GitHub commit publishes the architecture sphere and dev9 source delta; full v0.1-dev8-derived code archive remains a separate conversation artifact, not an asserted GitHub-accepted source snapshot.\n\nNo production SSC adapter, real signed approval, target deployment qualification or NotNotes publication has been tested. Never label an externally assumed proof as live acceptance.",
+  "body": "As of 2026-10-24, full Architecture Intentions dev10 text tree is in GitHub at packages/oorexx_architecture_intentions/ with 14 .cls members. The NotNotes historical v0.1-dev15 core archive was also recovered at packages/alchemy_notnotes/ (three source classes, original tests, demos and external dependency records). The three NotNotes source Git blob SHA-1 values were compared to exact source archive bytes.\n\nDev10 ZIP SHA-256: 493c2e98b2a04543bb3d6b9e50240c3254dab275024ff127a220ab8197afaa24. Static checks passed: 26 JSON documents parse, bash -n for test runner, MANIFEST.sha256, ZIP CRC. The dev10 test_notnotes_publication.rex was authored but NOT executed in a native interpreter; ooRexx 5.3.0 r13196 is unavailable in this execution environment.\n\nDev8 historical logs attest earlier r13196 regression and ConnectSelector/Intention Service tests, but cannot substitute for dev10 runtime qualification. There is no claimed live NotNotes write, document revision CAS, identity/policy qualification, production SSC lock, deployment target verification or Gopher semantic lint run.",
   "version": "0.1",
   "sphere": "architecture-intentions",
-  "summary": "v0.1-dev8 shipped recorded native ooRexx r13196 tests including ConnectSelector dev1/dev2/dev5 and Intention Service dev11, JSON writer, promotion negatives. This historical evidence has not been independently rerun on 2026-10-23.",
+  "summary": "Source backfill complete; static checks only for dev10, native and authority integration remain pending.",
   "invariants": [
     "Architecture selection and review never authorize execution",
     "Unknown qualification fails closed and remains visible",
@@ -15,9 +15,14 @@
   "authority": "project-artifact",
   "provenance": [
     {
-      "artifact": "oorexx_architecture_intentions_v0.1-dev8.zip",
-      "sha256": "d0bc91d6ae0d85f47796325b63795ca7696be149918c60131afe2396868c7385",
-      "claim": "Exact historical baseline; no new runtime acceptance"
+      "artifact": "oorexx_architecture_intentions_v0.1-dev10.zip",
+      "sha256": "493c2e98b2a04543bb3d6b9e50240c3254dab275024ff127a220ab8197afaa24",
+      "claim": "Source delivery with static qualification; native dev10 qualification outstanding"
+    },
+    {
+      "artifact": "alchemy_notnotes_v0.1-dev15.zip",
+      "sha256": "57a7d1b09234621f20c9de5dda312b4e38140b57cb87c45f7318e59730db4488",
+      "claim": "Historical NotNotes executable source recovered on GitHub"
     }
   ],
   "related": [

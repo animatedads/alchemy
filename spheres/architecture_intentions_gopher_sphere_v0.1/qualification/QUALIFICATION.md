@@ -1,8 +1,9 @@
-# Architecture Intentions qualification (2026-10-23)
+# Architecture Intentions source and sphere qualification (2026-10-24)
 
-- Historical dev8 ZIP SHA-256: `d0bc91d6ae0d85f47796325b63795ca7696be149918c60131afe2396868c7385`.
-- Complete dev9 ZIP SHA-256: `fe078c957267dae5e25294a430d2b1d332f27a03971359041c63159f8c09e5a3`.
-- Dev9 SSC receipt source, test, docs and SSC_MANIFEST are committed separately under `packages/oorexx_architecture_intentions/`. Source/test/docs Git hashes match ZIP member bytes.
-- Static JSON and shell checks passed. New native ooRexx tests were not run because the supplied .deb cannot be retrieved here and no interpreter is installed.
-- Current GitHub source is a dev9 delta, not a complete import of the historical dev8 source baseline. That source import is outstanding.
-- No Gopher semantic lint run, production SSC adapter, NotNotes publication, deployment or target acceptance is claimed.
+- Complete dev10 ZIP SHA-256: `493c2e98b2a04543bb3d6b9e50240c3254dab275024ff127a220ab8197afaa24`.
+- Full dev10 source, tests, examples, catalogs and manifest committed to Git: `packages/oorexx_architecture_intentions/`.
+- Historical NotNotes dev15 source, tests, demos and dependency records recovered to Git: `packages/alchemy_notnotes/` (archive SHA-256 `57a7d1b09234621f20c9de5dda312b4e38140b57cb87c45f7318e59730db4488`).
+- Static checks: 26 JSON files, `bash -n`, SHA-256 inventory and ZIP integrity PASS.
+- Interpreter tests on new dev10 class: NOT RUN — ooRexx r13196 unavailable.
+- Gopher semantic lint: NOT RUN.
+- Neither real SSC acceptance nor NotNotes publication nor deployment execution claimed.

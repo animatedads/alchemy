@@ -1,9 +1,7 @@
 # Architecture Intentions — LLM Gopher sphere v0.1
 
-This sphere documents the architecture/planning authority in the Alchemy ooRexx portfolio. It is **documentation and continuity**, not a substitute runtime implementation.
+The full dev10 source and tests are committed at `packages/oorexx_architecture_intentions/`; the historical NotNotes dev15 source and tests are at `packages/alchemy_notnotes/`.
 
-Scope-first discovery proceeds from business intentions and legacy estates through security, legal, reputation, CRM, case/document authority, component communication, network/compute/storage, scenario comparison, independently reviewed selection, SSC dependency qualification and finally Deployment. Architectural choices are conditional; the application does not acquire the whole stack by default.
+Scope-first architecture discovery, bounded policy, capability placement, distinct RPC/Queue/JMS semantics, review, SSC handoff and non-executable NotNotes publication request are documented in `packs/architecture-intentions/`. This is documentation and continuity, not a substitute for native runtime qualification or live source/document/deployment authority.
 
-Read `packs/architecture-intentions/00-sphere.json` and articles `arch.start`, `arch.authorities`, `arch.contracts`, `arch.qualification` and `arch.continuation`. The runtime source delivery is the v0.1-dev9 ZIP; only its newly authored SSC receipt module is mirrored in the GitHub runtime source delta at this stage.
-
-**Important:** Neither a published sphere, an architecture approval nor an SSC proof reference authorizes live deployment. All external authority integration is fail-closed. The source archive's historical dev8 test claims and new dev9 static checks are separately recorded.
+**Current limitations:** dev10 native r13196 tests not rerun, production SSC verifier and NotNotes document writer absent, target deployment unqualified.
