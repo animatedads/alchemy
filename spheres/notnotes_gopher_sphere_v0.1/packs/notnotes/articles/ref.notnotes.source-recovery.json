@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "ref.notnotes.source-recovery",
+  "version": "0.1",
+  "sphere": "notnotes",
+  "title": "Verified NotNotes archive locations and public intention registrations",
+  "summary": "On 2026-10-24 the exact AlchemyNotNotesIntentions.cls and MiniNotesApp.cls sources were recovered from Library archives; the two vendored AlchemyNotNotesIntentions copies match byte-for-byte. Sources remain unpublished to GitHub main.",
+  "authority": "verified-source-audit",
+  "invariants": [
+    "Recovered archive source, published GitHub source, and runtime-qualified source are distinct states.",
+    "IntentionService registerSphere('NOTNOTES') is the application's runtime domain namespace; the NotNotes LLM Gopher sphere is a different artefact.",
+    "Keep dev15 Alchemy NotNotes and dev16 Mini NotNotes independently versioned and resolve their dependencies exactly.",
+    "Mutating a NotNotes document remains a NotNotes-domain action assessed through explicit write policy; recognition is not authority."
+  ],
+  "procedure": [
+    "Read qualification/SOURCE_RECOVERY_2026-10-24.md for exact archive names, members and SHA-256 hashes.",
+    "Import authenticated source packages without mutable TPS data, cache output or accidental flattened vendor ownership.",
+    "Lock package versions/exports and verify transitive ::requires paths before attempting clean-checkout runtime qualification.",
+    "Re-test with real ooRexx runtime and activate the Gopher sphere only after independent validation."
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_notnotes_v0.1-dev15.zip",
+      "sha256": "57a7d1b09234621f20c9de5dda312b4e38140b57cb87c45f7318e59730db4488",
+      "member": "alchemy_notnotes_v0.1-dev15/src/AlchemyNotNotesIntentions.cls",
+      "source_sha256": "11056f3b853e32b9efe5de11adea4902fb85b88775a75224ad864dea6ba97442"
+    },
+    {
+      "artifact": "initech_notnotes_helpdesk_v0.1-dev5.zip",
+      "sha256": "0448068f18fee165381441e2afb33dbee170f44957f6d3c704ef2948ed42f9c6",
+      "member": "initech_notnotes_helpdesk_v0.1-dev5/deps/notnotes_app/src/MiniNotesApp.cls",
+      "source_sha256": "575c5ee7745c5fddb169a3b720488c08ec63a7b47878c1c31d37c12779083d14"
+    }
+  ],
+  "related": [
+    "ref.notnotes.publication",
+    "ref.notnotes.intentions",
+    "ref.notnotes.authority"
+  ]
+}
