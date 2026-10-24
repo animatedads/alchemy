@@ -23,3 +23,7 @@ Important authority boundaries preserved by this source:
 The package writes a real TPS Report plus linked TPS Report Review when a Help
 Desk session closes. Those records become ordinary live NotNotes business data
 for later sessions.
+
+## Published independent source packages (2026-10-24)
+
+The accepted delivery archive still retains its original bundled dependencies, but the previously missing class sources now appear in GitHub `main` at `packages/alchemy_notnotes_v0.1-dev15/src/AlchemyNotNotesIntentions.cls` and `packages/notnotes_mini_approval_app_v0.1-dev16/src/MiniNotesApp.cls`. Mini's pinned vendor source closure is also published under its own package root. The historical omission from this `examples/` folder remains intentional; the original standalone launcher still needs fresh clean-checkout integration qualification.
