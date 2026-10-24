@@ -1,31 +1,30 @@
 {
   "kind": "article",
   "id": "ops.terminal-machine.continuation",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "terminal-machine",
-  "title": "How to continue TN5250 work safely",
-  "summary": "Continue from v0.21 by learning host states before automating them, preserving one persistent session ownership, and tightening known remaining 5250 protocol semantics rather than adding ad-hoc PUB400 keystroke scripts.",
+  "title": "How to continue Terminal Machine work safely",
+  "summary": "Continue the 3270 P0 line from candidate12 by differential qualification against the mature s3270 reference, preserving one persistent session and evidence authority boundaries; keep TN5250 correctness work as a sibling line rather than allowing either protocol to contaminate the generic core.",
   "authority": "terminal-machine-project",
   "invariants": [
-    "New live host screens become immutable snapshot -> known-state candidate -> live-confirmed semantic state -> only then automation.",
-    "Prefer protocol/model correctness work over adding more one-off scripts.",
-    "Never widen raw credential, NONDISPLAY or live-host authority to make testing easier."
+    "Every new live host screen becomes immutable snapshot -> known-state candidate -> evidence review -> semantic state -> only then automation.",
+    "Never widen raw credential, NONDISPLAY, raw-wire or terminal-mutation authority to make qualification easier.",
+    "One writer/many readers applies equally to TN3270 and TN5250.",
+    "Do not label s3270 reference evidence as Terminal Machine evidence, documentation reference as live evidence, MVS Alchemy facts as terminal facts, or Hercules facts as guest semantic truth.",
+    "Do not bypass Socket Provider abstractions through raw handles merely to obtain readiness."
   ],
   "procedure": [
-    "First reproduce the v0.21 fresh-package gate with exact external dependencies.",
-    "Then target unresolved 5250 semantics such as WRITE ERROR CODE pre/post-help behavior, help signaling and exact Read Immediate x72 wire regeneration.",
-    "Keep long-lived broker ownership as the default architecture for multi-agent interaction."
+    "Run the candidate12 manifest gate and focused 3270 suites under an exact ooRexx 5.3.0 r13196 runtime when available.",
+    "Run Terminal Machine and s3270 against the same ED209Z LU/session and compare presentation-space semantics.",
+    "Promote only stable, corroborated live screens into the known-state catalogue.",
+    "Keep ConnectSelector integration outside native terminal protocol semantics; bind it only at an application/service boundary when needed.",
+    "For TN5250, continue the unresolved WRITE ERROR CODE/help and byte-exact Read Immediate work without regressing the 3270 P0 line."
   ],
-  "topics": [
-    "terminal",
-    "tn5250"
-  ],
-  "provenance": [
-    {
-      "artifact": "oorexx_terminal_machine_v0.21.zip",
-      "sha256": "64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5",
-      "member": "oorexx_terminal_machine_v0.21/README.md",
-      "claim": "Supports this Terminal Machine/TN5250 continuity article."
-    }
-  ]
+  "topics": ["terminal", "tn3270", "3270", "tn5250", "continuation"],
+  "provenance": [{
+    "artifact": "oorexx_terminal_machine_v0.22-candidate12.zip",
+    "sha256": "6affe6f192d9f58cdc7bf299607a30e82ad01a72e394f219d3455c5217469fcd",
+    "member": "oorexx_terminal_machine_v0.22-candidate12/CHANGELOG.md",
+    "claim": "Supports current continuation order and candidate10-12 lineage."
+  }]
 }
