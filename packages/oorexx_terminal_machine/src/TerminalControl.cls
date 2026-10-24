@@ -213,8 +213,8 @@
 ::attribute scope get
 
 ::method init
-  expose sessionId scope port authority activeLease activeReservation leaseSequence meterFacts mutationCount lastRelease awaitingHostRoundTrip
-  use arg sessionIdArg, scopeArg, mutationPortArg, admissionAuthorityArg, sealerArg = .nil, alchemyAuthorityArg = .nil
+  expose sessionId scope port authority activeLease activeReservation leaseSequence meterFacts mutationCount lastRelease awaitingHostRoundTrip meterSource
+  use arg sessionIdArg, scopeArg, mutationPortArg, admissionAuthorityArg, sealerArg = .nil, alchemyAuthorityArg = .nil, meterSourceArg = "TN5250"
   sessionId = sessionIdArg~string
   scope = scopeArg~string~strip
   meta = .directory~new
@@ -235,6 +235,8 @@
   mutationCount = 0
   lastRelease = .nil
   awaitingHostRoundTrip = .false
+  meterSource = meterSourceArg~string~strip~upper
+  if meterSource == "" then meterSource = "TERMINAL"
   self~registerStateVariable("sessionId", "CUSTOMER", "terminal session identity")
   self~registerStateVariable("scope", "CUSTOMER", "external admission authority scope")
   self~registerStateVariable("mutationCount", "CUSTOMER", "successful terminal mutations under active lease")
@@ -353,20 +355,20 @@
   return .TerminalResult~success(.true)
 
 ::method recordHostScreenUpdate
-  expose activeLease meterFacts port awaitingHostRoundTrip
+  expose activeLease meterFacts port awaitingHostRoundTrip meterSource
   use arg quantityArg = 1
   guard on
   if activeLease == .nil then return .TerminalResult~success(.false)
   snapshot = port~snapshot
-  meterFacts~append(.TerminalMeterFact~new("SCREEN_UPDATE", quantityArg, "TN5250", .nil, snapshot~generation, activeLease~controllerIdentity))
+  meterFacts~append(.TerminalMeterFact~new("SCREEN_UPDATE", quantityArg, meterSource, .nil, snapshot~generation, activeLease~controllerIdentity))
   if awaitingHostRoundTrip then do
-    meterFacts~append(.TerminalMeterFact~new("HOST_ROUND_TRIP", 1, "TN5250", .nil, snapshot~generation, activeLease~controllerIdentity))
+    meterFacts~append(.TerminalMeterFact~new("HOST_ROUND_TRIP", 1, meterSource, .nil, snapshot~generation, activeLease~controllerIdentity))
     awaitingHostRoundTrip = .false
   end
   return .TerminalResult~success(.true)
 
 ::method setField
-  expose port activeLease meterFacts mutationCount
+  expose port activeLease meterFacts mutationCount meterSource
   use arg leaseArg, generationArg, fieldIdArg, valueArg
   guard on
   checked = self~validateMutation(leaseArg, generationArg, .TerminalControlCapability~FIELD_WRITE)
@@ -374,13 +376,13 @@
   outcome = port~setField(generationArg, fieldIdArg, valueArg, activeLease~controllerIdentity)
   if outcome~ok then do
     mutationCount += 1
-    meterFacts~append(self~newFact("FIELD_WRITE", 1, "TN5250"))
+    meterFacts~append(self~newFact("FIELD_WRITE", 1, meterSource))
     self~alchemyTouch("FIELD_WRITE")
   end
   return outcome
 
 ::method typeAtCursor
-  expose port activeLease meterFacts mutationCount
+  expose port activeLease meterFacts mutationCount meterSource
   use arg leaseArg, generationArg, textArg
   guard on
   checked = self~validateMutation(leaseArg, generationArg, .TerminalControlCapability~FIELD_WRITE)
@@ -453,7 +455,7 @@
   return outcome
 
 ::method press
-  expose port activeLease meterFacts mutationCount awaitingHostRoundTrip
+  expose port activeLease meterFacts mutationCount awaitingHostRoundTrip meterSource
   use arg leaseArg, generationArg, aidNameArg
   guard on
   checked = self~validateMutation(leaseArg, generationArg, .TerminalControlCapability~AID)
@@ -461,7 +463,7 @@
   outcome = port~press(generationArg, aidNameArg, activeLease~controllerIdentity)
   if outcome~ok then do
     mutationCount += 1
-    meterFacts~append(self~newFact("AID", 1, "TN5250"))
+    meterFacts~append(self~newFact("AID", 1, meterSource))
     awaitingHostRoundTrip = .true
     self~alchemyTouch("AID")
   end
