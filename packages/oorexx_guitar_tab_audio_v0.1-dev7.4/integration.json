@@ -1,0 +1,11 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {"name":"oorexx_guitar_tab_audio","version":"0.1-dev7.4-standards-review","kind":"oorexx"},
+  "working_directory": ".",
+  "tests": [
+    {"name":"tab-parser","argv":["rexx","tests/test_tab_parser.rex"],"timeout_seconds":120},
+    {"name":"midi-synthetic","argv":["rexx","tests/test_midi_reader_synthetic.rex"],"timeout_seconds":120}
+  ],
+  "publish": {"tree":{"source":".","path":"packages/oorexx_guitar_tab_audio_v0.1-dev7.4"}},
+  "notes": "Runtime tests require the dependency roots documented in DEPENDENCIES.md; current GitHub-head requalification remains explicit open work."
+}
