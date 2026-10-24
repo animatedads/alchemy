@@ -17,3 +17,11 @@ Written by Claude (Opus 5.5). Architecture: Tom Dyer.
 - Publishes SSC identity, workflow, acceptance, external-operation, live-repair and adapter-contract guidance.
 - Publishes a typed `ssc.interface` corpus with planned SSC adapter capabilities and Gopher status mappings.
 - Deliberately does not publish fake executable SSC capabilities before a dedicated adapter exists.
+
+## 0.1-dev2 — 2026-10-24 database provider isolation clarification
+
+- Records `DatabaseBackendSelector` as the sole runtime provider-package selection boundary for SSC.
+- Requires provider choice to be configuration-only; backend changes must not depend on Codex/model edits to source or `::requires` directives.
+- Records the ooRexx class-name collision constraint: NoSQLServer and Database Core have overlapping public database class names with different semantics, so neutral SSC code must not load both class sets.
+- Records package isolation: only the selected provider package is loaded; PostgreSQL may load Database Core inside its provider package, while NoSQLServer returns its namespaced Database Core compatibility facade.
+- Retains the historical NoSQLServer v0.79 qualification caveats separately from the current composition rule.
