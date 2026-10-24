@@ -14,6 +14,8 @@ test -x "$REXX" || { echo "FAIL ooRexx interpreter not found: $REXX" >&2; exit 2
 test -x "$REXXC" || { echo "FAIL ooRexx compiler not found: $REXXC" >&2; exit 2; }
 test -f "$SOCKET_PROVIDER_ROOT/src/SocketProvider.cls" || { echo "FAIL SocketProvider.cls not found under $SOCKET_PROVIDER_ROOT/src" >&2; exit 2; }
 test -f "$INSTRUMENTATION_MESH_ROOT/src/InstrumentationMesh.cls" || { echo "FAIL InstrumentationMesh.cls not found under $INSTRUMENTATION_MESH_ROOT/src" >&2; exit 2; }
+test -f "$INSTRUMENTATION_MESH_ROOT/src/InstrumentationServiceAdapters.cls" || { echo "FAIL InstrumentationServiceAdapters.cls not found under $INSTRUMENTATION_MESH_ROOT/src" >&2; exit 2; }
+test -f "$INSTRUMENTATION_MESH_ROOT/src/InstrumentationCorrelation.cls" || { echo "FAIL InstrumentationCorrelation.cls not found under $INSTRUMENTATION_MESH_ROOT/src" >&2; exit 2; }
 
 export LD_LIBRARY_PATH="$OOREXX_ROOT/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 export REXX_PATH="$ROOT/src:$SOCKET_PROVIDER_ROOT/src:$INSTRUMENTATION_MESH_ROOT/src${REXX_PATH:+:$REXX_PATH}"
