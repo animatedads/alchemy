@@ -1,5 +1,8 @@
 # ooRexx X.25 Transport and Legacy Gateway — Engineering Specification 0.1
 
+> **SUPERSEDED for implementation decisions (24 October 2026):** this earlier exploration has been replaced by the five architecture-approved specification candidates in [docs/X25_FAMILY_SPEC.md](../X25_FAMILY_SPEC.md), [docs/XTP_GATEWAY_SPEC.md](../XTP_GATEWAY_SPEC.md), [docs/SEMANTIC_MAPPING.md](../SEMANTIC_MAPPING.md), [docs/OPEN_QUESTIONS.md](../OPEN_QUESTIONS.md) and [docs/NOT_CLAIMED.md](../NOT_CLAIMED.md). The primary X.25/LAPB/PLP backend is **user-space ooRexx**. Linux AF_X25 is optional compatibility only. X.25-over-XTP is separately specified; its L2/L3/L4 XTP underlays are not native X.25 IP protocol variants. This historical draft remains for provenance but is not the active engineering work order.
+
+
 Status: **DESIGN ONLY — no X.25 runtime, carrier or hardware qualification is claimed**  
 Date: 2026-10-24  
 Repository: animatedads/alchemy  
