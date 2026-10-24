@@ -124,10 +124,10 @@ root. Typical deployment is configuration-only:
 ```text
 OOREXX_DATABASE_PROVIDER=POSTGRESQL
 SSC_DATABASE_ROOT=/var/lib/alchemy/semantic-source
-PGHOST=127.0.0.1
-PGPORT=5432
-PGDATABASE=semantic_source
-PGUSER=semantic_source
+SSC_DB_HOST=127.0.0.1
+SSC_DB_PORT=5432
+SSC_DB_NAME=semantic_source
+SSC_DB_USER=semantic_source
 rexx compose_semantic_source_store.rex
 ```
 
