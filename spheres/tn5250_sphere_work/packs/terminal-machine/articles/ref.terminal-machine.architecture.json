@@ -1,30 +1,29 @@
 {
   "kind": "article",
   "id": "ref.terminal-machine.architecture",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "terminal-machine",
   "title": "Terminal Machine architecture",
-  "summary": "Terminal Machine is terminal-neutral automation infrastructure. Transport, protocol, presentation model, semantic known-state memory, control authority, service hosting and emulator recovery are separable layers; TN5250 is one personality rather than the generic core.",
+  "summary": "Terminal Machine is terminal-neutral automation infrastructure. Transport, protocol, presentation model, detached semantic snapshots, known-state memory, control authority, service hosting and emulator recovery are separable layers. IBM 3270/TN3270 and TN5250 are sibling personalities rather than definitions of the generic core.",
   "authority": "terminal-machine-project",
   "invariants": [
-    "Generic Terminal Machine code must not acquire TN5250-specific assumptions merely for convenience.",
-    "Transport/protocol/model/automation authority are separate seams.",
+    "Generic Terminal Machine code must not acquire protocol-specific assumptions merely for convenience.",
+    "Transport/protocol/model/semantic-state/control authority are separate seams.",
+    "One live terminal mutation owner may coexist with many detached read-only observers.",
+    "Terminal Machine owns terminal/session/screen/field truth; MVS Alchemy owns guest semantic truth; Hercules Services owns emulator/control-plane truth.",
+    "ConnectSelector and Socket Provider are optional integration boundaries, not hidden dependencies of the native 3270 datastream engine.",
     "Detached snapshots/actions/evidence remain value objects unless lifecycle identity is actually required."
   ],
   "procedure": [
-    "Trace a live 5250 path as TCP/TLS -> Telnet -> TN5250/RFC1205 framing -> 5250 workstation data stream -> field model -> known-state/automation.",
-    "Keep future personalities such as TN3270E, VT/TTY, serial/PTY and replay behind the same generic boundaries."
+    "Trace a 3270 path as TCP -> Telnet/TN3270 or TN3270E -> 3270 data stream -> presentation space -> detached snapshot -> known-state/ownership/control.",
+    "Trace a 5250 path as TCP/TLS -> Telnet -> TN5250/RFC1205 -> 5250 workstation data stream -> field model -> known-state/ownership/control.",
+    "Keep protocol-specific transport adaptation outside the semantic presentation model."
   ],
-  "topics": [
-    "terminal",
-    "tn5250"
-  ],
-  "provenance": [
-    {
-      "artifact": "oorexx_terminal_machine_v0.21.zip",
-      "sha256": "64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5",
-      "member": "oorexx_terminal_machine_v0.21/README.md",
-      "claim": "Supports this Terminal Machine/TN5250 continuity article."
-    }
-  ]
+  "topics": ["terminal", "tn3270", "3270", "tn5250"],
+  "provenance": [{
+    "artifact": "oorexx_terminal_machine_v0.22-candidate12.zip",
+    "sha256": "6affe6f192d9f58cdc7bf299607a30e82ad01a72e394f219d3455c5217469fcd",
+    "member": "oorexx_terminal_machine_v0.22-candidate12/README.md",
+    "claim": "Supports the current Terminal Machine architecture and 3270 P0 continuity."
+  }]
 }
