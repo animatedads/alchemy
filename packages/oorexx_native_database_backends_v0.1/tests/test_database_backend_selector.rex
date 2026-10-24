@@ -3,9 +3,12 @@
  * ProviderA.cls and ProviderB.cls deliberately export the same DatabaseRow public
  * class name with different semantics. Neither class may leak into this caller.
  */
-parse source . . thisFile
-base = filespec("L", thisFile)
-fixture = base || "backend_selector_fixtures/"
+root = value("NATIVE_DB_ROOT", , "ENVIRONMENT")
+if root = "" then do
+  say "FAIL: NATIVE_DB_ROOT is required"
+  exit 2
+end
+fixture = root || "/tests/backend_selector_fixtures/"
 
 opts = .directory~new
 opts["provider"] = "MOCKA"
