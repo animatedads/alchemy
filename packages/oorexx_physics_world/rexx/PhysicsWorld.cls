@@ -444,7 +444,7 @@
   _ambient=ambient; _ambientAcoustic=acousticAmbient; _ambientFluid=fluidAmbient
   _bodies=.array~new; _epsilon='0.00000001'; _simulationTime=0; _freezeParticipants=.array~new
 ::method simulationTime; expose _simulationTime; return _simulationTime
-::method 'simulationTime='; expose _simulationTime; use strict arg value; _simulationTime=value+0
+::method 'simulationTime='; expose _simulationTime; use strict arg value; _simulationTime=value
 ::method advanceSimulationTime
  expose _simulationTime
  use strict arg dt
