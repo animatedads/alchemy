@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.qualification",
+  "version": "0.2",
+  "sphere": "rasenfalcon",
+  "section": "qualification",
+  "title": "Verified source and still-unqualified production boundary",
+  "summary": "RasenFalcon delivery v0.4 and Website Publisher v0.3 source are on GitHub main. v0.4.1 compiler hardening is submitted and locally tested (12/12). A ready marker is not an acceptance receipt; live native services remain unqualified.",
+  "invariants": [
+    "Reported website preview tests 9/9 and delivery security-contract tests 13/13 are not TLS handshake evidence.",
+    "Receiver acceptance must be verified from its receipt; a ready.json marker is only submission.",
+    "CMS/Wire publisher, live HTTPS SNI, mTLS negative tests, LDAP, SMTP/IMAP, terminal and MCP integration all require real service tests.",
+    "No production cutover without distinct operator approval; source submission does not install keys or change hosts.",
+    "Never mark fixture-only results LIVE_PASS; missing credentials and deployment facts are NOT_RUN.",
+    "A forged editorial approval record with local hashes, names and dates must never enable production release.",
+    "Preview cannot be indexed even if content is marked approved; local 12/12 assertions are not live HTTPS/browser integration evidence."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_alchemy_autobuild_v0.4.zip",
+      "sha256": "fb4ce5bdecf0c9c312e21459f5ea74dc7d0eeb73fa37682cada06a5835028189",
+      "member": "README.md",
+      "claim": "Submitted candidate explicitly disclaims deployment and acceptance."
+    }
+  ],
+  "reported_local_tests": {
+    "website": "12/12 (v0.4.1 preview gate)",
+    "handoff": "13/13"
+  },
+  "github_submission": "VERIFIED_V0.4.1",
+  "acceptance": "PENDING_RECEIPT_V0.4.1",
+  "native_services": "NOT_RUN"
+}
