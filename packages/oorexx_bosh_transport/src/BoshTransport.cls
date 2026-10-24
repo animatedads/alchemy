@@ -1,5 +1,5 @@
 /* BoshTransport.cls
- * ooRexx BOSH Transport v0.1-dev5
+ * ooRexx BOSH Transport v0.1-dev6
  *
  * BOSH is a lower-layer logical-stream carrier.  This package has no XMPP
  * dependency.  It consumes an injected HTTP exchange provider and exposes
@@ -7,7 +7,7 @@
  */
 
 ::class BoshBuild public
-::constant VERSION "0.1-dev5"
+::constant VERSION "0.1-dev6"
 ::constant API "bosh.transport/0.1"
 ::constant HTTPBIND_NS "http://jabber.org/protocol/httpbind"
 
