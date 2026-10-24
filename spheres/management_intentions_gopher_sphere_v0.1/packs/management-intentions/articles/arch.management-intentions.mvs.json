@@ -1,0 +1,52 @@
+{
+  "kind": "article",
+  "id": "arch.management-intentions.mvs",
+  "version": "0.1",
+  "sphere": "management-intentions",
+  "title": "MVS intention, terminal and batch authority boundaries",
+  "summary": "MVS management is discovery-first and asynchronous. Intention retains natural-language semantic state, Terminal Machine supplies terminal/session evidence, MVS Alchemy/JES supplies guest/job/dataset semantics, Hercules Services supplies emulator/control-plane evidence, and independent reference tools may corroborate but never inherit authority.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "ED209Z on ED209C and ED209ZZ on ED209I are distinct guests and scopes; every fact must retain target/host/session provenance.",
+    "A connected 3270 session is not proof of authenticated TSO; authentication-sensitive state requires positive semantic screen evidence such as exact-row TSO READY.",
+    "AID transmission and host semantic completion are separate; observe a new terminal presentation generation/state rather than treating an emulator scripting call return as completion.",
+    "Terminal Machine facts may expose terminal state, fields, cursor, keyboard, LU/device and presentation generation but do not become JES/dataset authority.",
+    "s3270/c3270 remains an independent reference oracle and must never be relabelled TERMINAL_MACHINE.",
+    "JES batch execution is asynchronous: submission creates/identifies work; completion and correctness are established from JES step codes, diagnostics, spool and domain output artifacts.",
+    "Safe discovery may perform many read-only observations before proposing an Intention; wrong scope is more expensive than bounded discovery."
+  ],
+  "procedure": [
+    "Resolve the requested guest first and bind the corresponding Linux host/Hercules instance before opening a terminal session.",
+    "Observe current terminal state, then use Terminal Machine native field/AID semantics for controlled interaction; retain s3270 as a differential witness.",
+    "Keep MVS Alchemy/JES discovery separate for jobs, datasets and guest-native semantics.",
+    "For batch requests, retain job ID and follow the job through completion; preserve the first failing spool evidence before repairs.",
+    "Re-run identical natural language after authoritative state changes to prove discovery, not the LLM, carries operational state."
+  ],
+  "topics": [
+    "MVS",
+    "JES",
+    "3270",
+    "Terminal Machine",
+    "dynamic discovery",
+    "batch",
+    "spool",
+    "authority"
+  ],
+  "provenance": [
+    {
+      "artifact": "mvs_intention_runner_v0.1-dev9.zip",
+      "sha256": "03a2cc798db5cff171cd7ca37eb5ca686d9f7bfce17cd381c85c77a703fbec52",
+      "claim": "Native Terminal Machine consumer, target/session evidence projection, exact READY gate, clean LOGOFF path and dual-target qualification harness."
+    },
+    {
+      "artifact": "oorexx_terminal_machine_v0.22-candidate12.zip",
+      "sha256": "e57dcf302070380a6e714ab0a5e8d1adb65b8c27974c34115712dc6314b00f8a",
+      "claim": "Current Terminal Machine 3270 P0 context in GitHub; supersedes dev9's historical candidate8 dependency context for future qualification."
+    }
+  ],
+  "missing_work": [
+    "Requalify the dev9 Terminal Machine consumer against candidate12/current source rather than silently changing the historical candidate8 baseline.",
+    "Complete same-session Terminal Machine versus s3270 differential qualification on ED209Z, then independently on ED209ZZ.",
+    "Bind structured MVS Alchemy/JES discovery for jobs/datasets so terminal observation does not carry guest semantic responsibilities."
+  ]
+}
