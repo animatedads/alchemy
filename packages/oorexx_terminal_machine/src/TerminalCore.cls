@@ -700,6 +700,19 @@
       end
       if \matched then detail = "NOT_FOUND:" || arg1~string
     end
+    when kind == "ANY_ROW_EQUALS_CI" then do
+      wanted = arg1~string~strip~upper
+      detail = ""
+      do rowNumber = 1 to snapshot~rows
+        rowText = snapshot~rowText(rowNumber)
+        if rowText~strip~upper == wanted then do
+          matched = .true
+          detail = "r" || rowNumber || ":" || rowText
+          leave
+        end
+      end
+      if \matched then detail = "NOT_FOUND_EXACT:" || arg1~string
+    end
     when kind == "FIELD_AT_INPUT" then do
       f = snapshot~fieldAt(arg1, arg2)
       if f \== .nil then do
