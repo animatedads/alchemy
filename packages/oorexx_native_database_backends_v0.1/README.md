@@ -50,11 +50,14 @@ or:
 
 ```text
 OOREXX_DATABASE_PROVIDER=POSTGRESQL
-PGHOST=127.0.0.1
-PGPORT=5432
-PGDATABASE=semantic_source
-PGUSER=semantic_source
+SSC_DB_HOST=127.0.0.1
+SSC_DB_PORT=5432
+SSC_DB_NAME=semantic_source
+SSC_DB_USER=semantic_source
+SSC_POSTGRESQL_BRIDGE=/path/to/libpq.bridge.json
 ```
+
+`SSC_DB_PASSWORD` is accepted when password authentication is required. Standard libpq `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, and `PGPASSWORD` remain fallback aliases; `OOREXX_POSTGRES_BRIDGE` is a fallback alias for `SSC_POSTGRESQL_BRIDGE`.
 
 `OOREXX_DATABASE_PROVIDER_PACKAGE` and `OOREXX_DATABASE_PROVIDER_CLASS` may
 override package/class resolution. An unknown or unloadable provider fails closed.
