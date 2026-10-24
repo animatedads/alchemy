@@ -3,14 +3,32 @@
   "id": "ssc.backend-constraints",
   "version": "0.1-dev2",
   "sphere": "semantic-source-control",
-  "title": "Operating SSC on a real database: what the stub hid",
-  "summary": "The store package ran its tests against test/NoSQLServer.cls, a stub that accepts every statement and stores nothing, and ooRexx resolves ::requires from the caller directory before REXX_PATH, so anything run from test/ silently gets the stub. On the real NoSQLServer v0.79 four behaviours matter.",
+  "title": "Operating SSC on real databases: provider isolation and backend constraints",
+  "summary": "Semantic Source Store is backend-neutral. DatabaseBackendSelector is the sole runtime provider-package selection boundary: it resolves deployment configuration, loads only the selected provider package with Package~loadPackage(), and hands the returned common database object/executor to SemanticSourceDatabaseComposition. This is required not only for clean deployment but because NoSQLServer and Database Core publish overlapping public database class names with different semantics.",
   "invariants": [
-    "Never qualify SSC persistence with test/NoSQLServer.cls; run live tests from test_live/ against a real backend.",
-    "NoSQLServer v0.79 UPDATE evaluates quoted literals as expressions: '3*4' is stored as 12 and '12-34' as -22. Put free text only through INSERT; UPDATE only ids (letters, _ and hex), statuses and numbers. SSC ids use '_' not '-'.",
-    "NoSQLServer v0.79 has no IN lists and keys join results by qualified names (r.object_id). Wrap the provider executor in SemanticSourceSqlCompatibility.",
-    "NoSQLServer v0.79 rewrites CRLF to LF on storage. SSC refuses such members rather than storing altered source; re-qualify on NoSQLServer v0.9x.",
-    "Install Crypto's Foreign Runtime provider (.CryptoForeignRuntimeInstaller~install) at the composition root: pure ooRexx SHA-256 is about 1.5 s per KB, Foreign Runtime about 0.5 ms.",
-    "Never name a variable RESULT: a bare message instruction (x~append(y)) sets RESULT to the message's return value."
-  ]
+    "Neutral SSC source must not ::requires NoSQLServer.cls, database_core.cls, PostgreSQLNativeBackend, MySQL implementation classes, or any other concrete database provider.",
+    "Backend selection is configuration-only. OOREXX_DATABASE_PROVIDER selects the logical provider; OOREXX_DATABASE_PROVIDER_PACKAGE and OOREXX_DATABASE_PROVIDER_CLASS may override package resolution. Switching backend must not require Codex, another model, or a human to edit SSC source or rewrite ::requires directives.",
+    "Only the selected provider package is loaded into an ooRexx process. Provider public classes are resolved inside that Package and are not imported into the neutral caller package.",
+    "NoSQLServer and Database Core must not be statically loaded side by side into one caller package because names such as DatabaseRow and DatabaseResult overlap while their observable semantics differ.",
+    "The NoSQLServer provider returns the existing namespaced FileDatabaseEngine~databaseCore compatibility facade; native NoSQLServer API semantics remain unchanged.",
+    "The PostgreSQL provider may load database_core.cls and PostgreSQLNativeBackend inside its selected provider package; that dependency must not leak into SSC's package namespace.",
+    "Unknown, incomplete, or unloadable provider configuration fails closed. There is no silent fallback to a different backend after selection.",
+    "Never qualify SSC persistence with test/NoSQLServer.cls; run live persistence tests against a real selected backend.",
+    "Historical NoSQLServer v0.79 caveats remain relevant to old deployments: UPDATE evaluated some quoted literals as expressions, IN lists were absent, join keys were qualified, and CRLF source was not lossless. Those are backend-version constraints, not reasons to couple SSC to NoSQLServer.",
+    "Install Crypto's Foreign Runtime provider at the composition root where required by the selected runtime; cryptographic acceleration and database provider selection remain separate responsibilities.",
+    "Never name an ooRexx variable RESULT in code that also uses bare message instructions when the RESULT special variable would change semantics."
+  ],
+  "evidence": {
+    "category": "SOURCE_REVIEWED",
+    "date": "2026-10-24",
+    "paths": [
+      "packages/oorexx_native_database_backends_v0.1/src/DatabaseBackendSelector.cls",
+      "packages/oorexx_native_database_backends_v0.1/tests/test_database_backend_selector.rex",
+      "packages/oorexx_native_database_backends_v0.1/providers/PostgreSQLDatabaseProvider.cls",
+      "packages/nosqlserver_v0.91/src/NoSQLDatabaseCoreProvider.cls",
+      "packages/oorexx_semantic_source_store_v0.1-dev28/src/compose_semantic_source_store.rex",
+      "packages/oorexx_semantic_source_store_v0.1-dev28/test/database_selector_integration_contract_test.py"
+    ],
+    "qualification": "The generic selector/package-isolation regression is wired into the native database backend test suite. This sphere update records source-reviewed architecture; it does not claim a fresh live PostgreSQL server qualification."
+  }
 }
