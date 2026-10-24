@@ -110,16 +110,36 @@ The rendered workspace includes semantic navigation, exact revision/source view,
   revision pin is supplied.
 - MCP contract for `source.get_package` in `MCP_COMMANDS.md`.
 
-## Database
+## Database provider composition
 
-`SemanticSourceStore~bootstrap` uses the existing portfolio database stack:
+`SemanticSourceStore` is backend-neutral and does not load or select a database
+implementation. The service composition root resolves `OOREXX_DATABASE_PROVIDER`
+through the shared `DatabaseBackendSelector`, which dynamically loads only the
+selected provider package. The returned common database object/executor is injected
+through `SemanticSourceDatabaseComposition`.
 
-```rexx
-engine = .FederatedDatabaseEngine~new(databaseRoot)
-sql = .NoSQLServerSQL~new(engine)
+The checked-in `src/compose_semantic_source_store.rex` is the generic composition
+root. Typical deployment is configuration-only:
+
+```text
+OOREXX_DATABASE_PROVIDER=POSTGRESQL
+SSC_DATABASE_ROOT=/var/lib/alchemy/semantic-source
+PGHOST=127.0.0.1
+PGPORT=5432
+PGDATABASE=semantic_source
+PGUSER=semantic_source
+rexx compose_semantic_source_store.rex
 ```
 
-It does not introduce SQLite or another persistence engine.
+NoSQLServer is selected the same way with `OOREXX_DATABASE_PROVIDER=NOSQLSERVER`
+and `OOREXX_NOSQL_ROOT`. Backend changes must not require editing SSC source,
+rewriting `::requires`, or asking Codex/another coding agent to patch source files.
+
+Package isolation is part of the contract, not merely deployment convenience:
+NoSQLServer and Database Core publish overlapping public database class names with
+different semantics. Neutral SSC source therefore requires neither class set. The
+selected provider may load its own dependencies inside its provider package without
+exporting those names into SSC's package namespace.
 
 ## Package review flow
 
