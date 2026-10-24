@@ -1,0 +1,42 @@
+NORM v0.1-dev3 / Socket Provider v0.1-dev16 requalification
+================================================================
+Date: 2026-10-10
+Status: LIVE PASS
+
+Exact inputs
+------------
+oorexx_norm_v0.1-dev3.zip
+  SHA-256 d997007d35c7527eb40d6d62516cee036ed2d1a27fb1edbe32bdf4389abcd231
+
+oorexx_socket_provider_v0.1-dev16.zip
+  SHA-256 fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2
+
+ooRexx qualification runtime
+  Open Object Rexx 5.3.0 r13196, 64-bit
+  package SHA-256 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Native/COTS authority
+---------------------
+Installed runtime library: /lib/x86_64-linux-gnu/libnorm.so.1
+NormGetVersion: 1.5.7
+Public C API declarations checked against NRL normApi.h blob:
+  0caa5c34e72e5fecd42c373bf49b7433530065be
+Header reports NORM API 1.5.10.
+
+PASS
+----
+- fresh native binding build with -O2 -std=c++17 -Wall -Wextra -Werror -fPIC
+- provider-neutral descriptor/readiness contract
+- NORM SocketAddress contract
+- listener/membership lifetime separation
+- SocketSelector -> explicit membership -> listener contract
+- IPv4 ASM 239.255.42.61:47061, 520000 bytes exact
+- IPv4 SSM 232.255.42.62:47062, explicit source, 520000 bytes exact
+- NACK repair forcing case 239.255.42.63:47063, 10% induced sender loss, parity 0, 520000 bytes reconstructed exact
+- IPv6 multicast [ff02::114]:47064, 520000 bytes exact
+
+Conclusion
+----------
+PASS complete live libnorm SocketProvider dev16 compatibility qualification.
+
+This is compatibility evidence for the unchanged NORM dev3 archive. It does not relabel or rewrite the historical development baseline.

@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "norm.membership",
+  "version": "0.1",
+  "sphere": "norm-socket-provider",
+  "title": "Explicit multicast membership and readiness",
+  "summary": "Membership is a first-class object whose lifetime is independent of a listener, and NORM exposes native readiness through the common provider contract.",
+  "invariants": [
+    "join() creates a SocketMulticastMembership and listenerOn() attaches without owning that membership; only explicit leave tears down an explicitly owned membership.",
+    "Interface and SSM source remain structured membership state; NormSetSSM applies to the receiver membership, not to a sender configuration.",
+    "NormGetDescriptor is projected through provider-neutral descriptor/waitReady/tryAccept delegation; NORM does not create a competing event framework.",
+    "Event Runtime may schedule the exposed descriptor later while NORM continues to own protocol event draining."
+  ],
+  "provenance": [{"artifact":"oorexx_norm_v0.1-dev3.zip","sha256":"d997007d35c7527eb40d6d62516cee036ed2d1a27fb1edbe32bdf4389abcd231","member":"README.md"}]
+}

@@ -1,0 +1,52 @@
+--- common SocketProvider compile/contracts ---
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+PASS provider-neutral descriptor/readiness contract
+PASS NORM SocketAddress contract
+PASS NORM listener/membership lifetime separation
+PASS SocketSelector -> NORM explicit membership -> listener contract
+--- build real libnorm native binding ---
+g++ -O2 -std=c++17 -Wall -Wextra -Werror -fPIC
+--- NORM provider/native contract ---
+NORM_VERSION|1.5.7
+PASS NORM native provider contract
+--- live ipv4-asm group=239.255.42.61 port=47061 interface=lo source=- loss=0 parity=16 ---
+MEMBERSHIP_VISIBLE|lo|239.255.42.61
+SENT_LENGTH|520000
+SENDER_DESCRIPTOR|5
+SENDER_PASS
+DESCRIPTOR|5
+RECEIVED_LENGTH|520000
+RECEIVED_PREFIX|NORM-REPAIR-QUALIFICATIO
+READY_RECEIVE_PASS
+PASS ipv4-asm
+--- live ipv4-ssm group=232.255.42.62 port=47062 interface=lo source=127.0.0.1 loss=0 parity=16 ---
+MEMBERSHIP_VISIBLE|lo|232.255.42.62
+SENT_LENGTH|520000
+SENDER_DESCRIPTOR|5
+SENDER_PASS
+DESCRIPTOR|5
+RECEIVED_LENGTH|520000
+RECEIVED_PREFIX|NORM-REPAIR-QUALIFICATIO
+READY_RECEIVE_PASS
+PASS ipv4-ssm
+--- live nack-repair group=239.255.42.63 port=47063 interface=lo source=- loss=10 parity=0 ---
+MEMBERSHIP_VISIBLE|lo|239.255.42.63
+SENT_LENGTH|520000
+SENDER_DESCRIPTOR|5
+SENDER_PASS
+DESCRIPTOR|5
+RECEIVED_LENGTH|520000
+RECEIVED_PREFIX|NORM-REPAIR-QUALIFICATIO
+READY_RECEIVE_PASS
+PASS nack-repair
+--- live ipv6 group=ff02::114 port=47064 interface=eth0 source=- loss=0 parity=16 ---
+MEMBERSHIP_VISIBLE|eth0|ff02::114
+SENT_LENGTH|520000
+SENDER_DESCRIPTOR|5
+SENDER_PASS
+DESCRIPTOR|5
+RECEIVED_LENGTH|520000
+RECEIVED_PREFIX|NORM-REPAIR-QUALIFICATIO
+READY_RECEIVE_PASS
+PASS ipv6
+PASS complete live libnorm SocketProvider qualification

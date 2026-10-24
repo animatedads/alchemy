@@ -7,11 +7,11 @@ if payload='' then payload='NORM-OO REXX-LIVE-QUALIFICATION'
 addr=.SocketAddresses~norm(group,port,iface,'',node,'norm.live')
 p=.RegisteredSocketAddressProvider~new~register('norm.live',addr)
 s=.SocketSelector~new(p)
-s~registerBinding(.SocketTransportKind~NORM,.RexxNormSocketBinding~new(.NormSocketBackend~new))
+s~registerBinding(.SocketTransportKind~NORM,.RexxNormSocketBinding~new(.NormSocketBackend~new(.NormNativeApi~new)))
 c=s~sender('norm.live')
 say 'SENT|'||c~send(payload)||'|'||payload
-call syssleep 1
+address system 'sleep 1'
 c~close
 ::requires 'SocketProvider.cls'
 ::requires 'NormSocketProvider.cls'
-::requires 'rxunixsys'
+::requires 'NormNativeBinding.cls'

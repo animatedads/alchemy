@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "norm.qualification",
+  "version": "0.1",
+  "sphere": "norm-socket-provider",
+  "title": "Qualification evidence",
+  "summary": "NORM dev3 has live libnorm evidence for ASM, SSM, NACK repair, IPv6 multicast, descriptor readiness and explicit membership lifecycle, plus a later SocketProvider dev16 requalification.",
+  "invariants": [
+    "Qualification runtime is ooRexx 5.3.0 r13196 and live libnorm 1.5.7; consumed public NRL C API declarations were checked against normApi.h blob 0caa5c34e72e5fecd42c373bf49b7433530065be whose header identifies 1.5.10.",
+    "IPv4 ASM, IPv4 SSM, descriptor readiness and exact 520000-byte receive passed.",
+    "The no-parity 10 percent loss forcing case passed through NORM repair.",
+    "IPv6 multicast passed on an interface with an actual ff00::/8 route; the qualification does not claim every network supports multicast, SSM or IPv6.",
+    "On 2026-10-10 the same NORM dev3 archive passed live against SocketProvider dev16, SHA-256 fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2."
+  ],
+  "provenance": [{"artifact":"oorexx_norm_v0.1-dev3.zip","sha256":"d997007d35c7527eb40d6d62516cee036ed2d1a27fb1edbe32bdf4389abcd231","member":"tests/qualification_dev3.txt"}]
+}

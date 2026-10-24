@@ -1,23 +1,27 @@
 # Architecture
 
 ```text
-application object / bytes
+application / service object
         |
-SocketAddressProvider
+SocketSelector + SocketAddress
         |
-SocketSelector / SocketProvider
+SocketMulticastMembership
         |
-RexxNormSocketBinding
+ProviderSocketListener / ProviderSocketConnection
         |
 NormSocketBackend
         |
-liboorexx_norm_native
+NormNativeApi
         |
-libnorm 1.5.x API
+liboorexx_norm_native.so
         |
-UDP/IP multicast -> wire
+NRL libnorm
+        |
+UDP / IPv4 or IPv6 multicast
+        |
+wire
 ```
 
-NORM is a transport provider, not a semantic protocol. Address selection, policy and the portfolio's application contract remain outside libnorm. NORM-specific group joining, interface selection, SSM, TTL, FEC, repair, sender/receiver state and event processing remain below the provider boundary.
+NORM owns protocol mechanics; SocketProvider owns the application-visible acquisition contract. Membership lifetime is independent from listener lifetime. `NormGetDescriptor()` is projected upward as the provider descriptor; readiness is bounded with `poll(2)` and events are drained nonblocking. Event scheduling remains an external/common-runtime responsibility.
 
-The native NORM descriptor is exposed on concrete NORM sockets/listeners so the common event-runtime integration can consume readiness without polling. It is not required by ordinary send/accept callers.
+The Rexx address object retains group, port, interface, optional SSM source and node identity. It is never flattened to a generic `host:port` string.

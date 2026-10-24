@@ -1,24 +1,16 @@
-# Current Socket Provider family compatibility — 2026-10-07
+# Current Socket Provider family compatibility — 2026-10-24
 
-Dev12 preserves the dev11 collision-reconciled common provider boundary consumed by the current sibling
-providers:
+This file is an estate compatibility snapshot. It does not change the historical version label of the SocketProvider source directory in this repository.
 
-| Provider | Current package | Relationship to dev12 |
+| Provider | Current evidenced package | Relationship to current SocketProvider authority |
 |---|---|---|
-| IPv4 TCP | bundled `RxSockTcpBinding` | ordinary stream binding |
-| IPv4 UDP | bundled `RxSockUdpBinding` | ordinary datagram binding |
-| IPv4 multicast | `oorexx_ip_multicast_v0.1-dev1` | injected RFC 3678 membership backend |
-| NORM | `oorexx_norm_v0.1-dev3` | reliable multicast + descriptor/readiness |
-| IPv6 TCP | `oorexx_socket_provider_rxsock6_v0.1-dev1` + `rxsock6 0.1.1` | sibling `TCP6/INET6` binding; full `Inet6Address` retained |
-| QUIC | `oorexx_quic_socket_provider_v0.1-dev3` | sibling QUIC binding; OpenSSL QUIC owns native protocol; TLS 1.3 loopback and two-stream multiplexing qualified |
-| XTP | `oorexx_xtp_v0.1-dev17` | XTP-owned route/carrier backend; stream + multicast qualified; ALLOC pacing and reject suppression remain libxtp-owned |
+| SocketProvider common authority | `oorexx_socket_provider_v0.1-dev16.zip` SHA-256 `fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2` | current external/common artifact authority |
+| NORM | `oorexx_norm_v0.1-dev3.zip` SHA-256 `d997007d35c7527eb40d6d62516cee036ed2d1a27fb1edbe32bdf4389abcd231` | live requalified against dev16; reliable multicast + explicit membership + descriptor readiness |
+| XTP | `oorexx_xtp_v0.1-dev25.zip` SHA-256 `7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b` | current development head; XTP-owned route/multipath/pacing/multicast mechanics |
+| QUIC | `oorexx_quic_socket_provider_v0.1-dev3` | sibling provider; existing sphere records current qualification |
+| IPv4 multicast | `oorexx_ip_multicast_v0.1-dev1` | injected RFC multicast membership backend |
+| IPv6 TCP | rxsock6 sibling binding | full IPv6 address object retained |
 
-The common layer remains carrier-acquisition authority.  It does not absorb
-NORM, QUIC, XTP, IPv6, or RFC 3678 implementation mechanics.
+Common invariants remain unchanged: SocketSelector is acquisition authority; applications declare requirements rather than protocol mechanics; provider-specific transport behaviour stays below the provider boundary; full selected SocketAddress identity is preserved.
 
-## dev12 XTP provider merge
-
-`oorexx_xtp_v0.1-dev17/rexx/XtpSocketProvider.cls` is now included in the
-Socket Provider distribution as `src/XtpSocketProvider.cls`.  Its native runtime
-continues to be supplied by XTP dev17.  This closes the packaging collision
-without duplicating libxtp or route authority.
+The repository's `packages/oorexx_socket_provider` source currently carries older historical version labels. That source must not be renamed to dev16 without the exact dev16 source publication.

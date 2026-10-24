@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "norm.continuation",
+  "version": "0.1",
+  "sphere": "norm-socket-provider",
+  "title": "Continuation rules",
+  "summary": "Future NORM work must preserve socket isolation and be qualified against the current common provider estate rather than forking a NORM-specific application API.",
+  "invariants": [
+    "Before changing NORM, check the current SocketProvider and Network Transport Intentions baselines and re-run the common selector/member/readiness contracts.",
+    "Do not add NORM-specific branches to LDAP, Queue Fabric, NotNotes or other callers; callers declare communication requirements and SocketSelector chooses among current qualified offers.",
+    "Do not move XTP route/multipath/pacing logic, NORM NACK/FEC logic, QUIC TLS mechanics or RFC multicast syscalls into the common provider.",
+    "Next useful NORM work is Event Runtime registration and simultaneous multi-membership/multi-interface qualification; preserve explicit membership lifetime and full address identity.",
+    "Any future COTS/libnorm version change requires fresh native and wire qualification; do not infer compatibility from header shape alone."
+  ],
+  "provenance": [{"artifact":"oorexx_norm_v0.1-dev3.zip","sha256":"d997007d35c7527eb40d6d62516cee036ed2d1a27fb1edbe32bdf4389abcd231","member":"README.md"}]
+}
