@@ -1,0 +1,28 @@
+segments=.SurveyImageSegmentCollection~new('synthetic','synthetic',1000,800)
+/* Four independent rays through each of three finite vanishing points. */
+segments~appendSegment(-103.0,170.6,58.0,138.4)
+segments~appendSegment(-40.6,334.4,131.6,331.6)
+segments~appendSegment(107.6,584.0,306.4,626.0)
+segments~appendSegment(388.4,217.4,637.6,193.6)
+segments~appendSegment(577.6,656.0,286.4,684.0)
+segments~appendSegment(796.0,219.2,544.0,168.8)
+segments~appendSegment(991.0,500.0,774.0,500.0)
+segments~appendSegment(1170.4,344.0,985.6,316.0)
+segments~appendSegment(188.0,72.0,132.0,408.0)
+segments~appendSegment(383.0,-84.0,362.0,224.0)
+segments~appendSegment(656.0,150.0,684.0,500.0)
+segments~appendSegment(812.0,-6.0,868.0,316.0)
+solution=.SurveyVanishingPointSolver~solve(segments,3,'0.25',3)
+if solution~pointCount<>3 then raise syntax 93.900 array('three synthetic vanishing families',solution~pointCount)
+p1=solution~nearestTo(-1000,350)
+p2=solution~nearestTo(2200,500)
+p3=solution~nearestTo(500,-1800)
+if (p1~x+1000)~abs>2 then raise syntax 93.900 array('VP1 x near -1000',p1~x)
+if (p1~y-350)~abs>2 then raise syntax 93.900 array('VP1 y near 350',p1~y)
+if (p2~x-2200)~abs>2 then raise syntax 93.900 array('VP2 x near 2200',p2~x)
+if (p2~y-500)~abs>2 then raise syntax 93.900 array('VP2 y near 500',p2~y)
+if (p3~x-500)~abs>2 then raise syntax 93.900 array('VP3 x near 500',p3~x)
+if (p3~y+1800)~abs>2 then raise syntax 93.900 array('VP3 y near -1800',p3~y)
+say 'PASS Maths-backed image vanishing geometry'
+return 'IMAGE-VANISHING-GEOMETRY-PASS'
+::requires '../rexx/SurveyImageGeometry.cls'

@@ -16,3 +16,12 @@ Maths v0.14 already records optional resident NumPy acceleration through Foreign
 ## dev17 live Maths objects in Python
 
 Macrospace v0.31.6 can project an arbitrary retained ooRexx object into Python and naturally dispatch methods on it. Photo World uses that capability to pass a real `MathMatrix` rather than inventing a Python tensor authority. The regression calls matrix shape/index operations and chains through the returned `MathContext` to its provider. Crossing the language boundary does not transfer mathematical ownership away from Maths.
+
+
+## dev21 vanishing geometry
+
+Photo World owns the semantics of image lines and Manhattan families. Maths owns
+the numerical operations used to refine vanishing points and compare camera
+directions: square roots, angle/trigonometric conversion, matrix/vector solve and
+`MathVector3` normalization/dot products. OpenCV is not the vanishing-point or
+camera-pose solver.

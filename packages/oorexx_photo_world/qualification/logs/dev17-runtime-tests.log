@@ -1,0 +1,137 @@
+== test_area_map.rex ==
+PASS area map model
+== test_bundle.rex ==
+PASS bundle projection
+== test_camera_rig.rex ==
+PASS rigid camera rig 10 mm vertical baseline
+== test_camera_specs.rex ==
+XCover camera catalogue:
+XCOVER7 2024 Galaxy XCover7
+   MAIN MP=50 FOV=79-81 DIAGONAL estimated=1
+   FRONT MP=5 FOV=77-77 DIAGONAL estimated=1
+XCOVER6PRO 2022 Galaxy XCover6 Pro
+   MAIN MP=50 FOV=79-81 DIAGONAL estimated=1
+   ULTRAWIDE MP=8 FOV=123-123 DIAGONAL estimated=0
+   FRONT MP=13 FOV=80-80 DIAGONAL estimated=1
+XCOVER5 2021 Galaxy XCover 5
+   MAIN MP=16 FOV=78-80 DIAGONAL estimated=1
+   FRONT MP=5 FOV=76-76 DIAGONAL estimated=1
+XCOVERFIELDPRO 2019 Galaxy XCover FieldPro
+   MAIN MP=12 FOV=77-77 DIAGONAL estimated=1
+   FRONT MP=8 FOV=80-80 DIAGONAL estimated=1
+XCOVERPRO 2020 Galaxy XCover Pro
+   MAIN MP=25 FOV=79-81 DIAGONAL estimated=1
+   ULTRAWIDE MP=8 FOV=123-123 DIAGONAL estimated=0
+   FRONT MP=13 FOV=80-80 DIAGONAL estimated=1
+XCOVER4S 2019 Galaxy XCover 4s
+   MAIN MP=16 FOV=78-80 DIAGONAL estimated=1
+   FRONT MP=5 FOV=76-76 DIAGONAL estimated=1
+XCOVER4 2017 Galaxy XCover 4
+   MAIN MP=13 FOV=78-80 DIAGONAL estimated=1
+   FRONT MP=5 FOV=76-76 DIAGONAL estimated=1
+XCOVER3 2015 Galaxy XCover 3
+   MAIN MP=5 FOV=73-75 DIAGONAL estimated=1
+   FRONT MP=2 FOV=70-70 DIAGONAL estimated=1
+XCOVER2 2013 Galaxy XCover 2
+   MAIN MP=5 FOV=68-72 DIAGONAL estimated=1
+   FRONT MP=0.3 FOV=The NIL object-The NIL object DIAGONAL estimated=1
+XCOVER-S5690 2011 Galaxy XCover (S5690)
+   MAIN MP=3.15 FOV=65-70 DIAGONAL estimated=1
+PASS camera catalogue
+== test_constraints.rex ==
+PASS explicit rigid-station constraint
+== test_evidence_promotion.rex ==
+PASS explicit foreign-evidence promotion boundary
+== test_inverse_geometry.rex ==
+PASS projection/inverse-ray consistency
+== test_maths_provider_payload.rex ==
+EXPECTED SYNTAX rc=88 sigl=31 condition=SYNTAX description=
+EXPECTED SYNTAX rc=88 sigl=40 condition=SYNTAX description=
+PASS Maths-owned provider payloads
+== test_move_resize.rex ==
+PASS move/resize/camera-height
+== test_photo_observation.rex ==
+PASS photo observation
+== test_registration.rex ==
+PASS explicit-control similarity registration
+== test_retail_topology.rex ==
+PASS Neilston retail topology
+
+== Maths v0.14 Math3D ==
+PASS Maths version is 0.14
+PASS 90 degrees converts to pi/2
+PASS sin 90 degrees
+PASS cos 90 degrees
+PASS 450 degrees reduces to 90
+PASS negative degree reduction is canonical
+PASS huge degree angle reduces before trig conversion
+PASS huge degree angle sine retains precision
+PASS large radian angle reduces with magnitude-aware precision
+PASS sin 180 degrees
+PASS cos 180 degrees
+PASS angle carries evidence
+PASS Vector3 overloaded +
+PASS Vector3 * Vector3 is dot product
+PASS Vector3 cross product
+PASS Vector3 cross orientation
+PASS Vector3 norm
+PASS Vector3 normalization
+PASS Vector3 scalar multiplication
+PASS axis-angle quaternion w precision
+PASS axis-angle quaternion z precision
+PASS quaternion rotates X to Y
+PASS quaternion inverse does not truncate negated component
+PASS q * inverse(q) is identity
+PASS quaternion conjugate preserves precision
+PASS axis is normalized in fromAxisAngle
+PASS 180-degree quaternion rotation
+PASS 360-degree quaternion rotation
+PASS quaternion carries construction evidence
+PASS Quaternion Matrix3 agrees with quaternion rotation
+PASS Matrix3 Z axis remains fixed
+PASS translation is a constrained affine transform
+PASS rotation is a constrained affine transform
+PASS scale is a constrained affine transform
+PASS T*R*S transform composition order
+PASS translation does not affect direction
+PASS translation affects point
+PASS transform retains explicit convention
+PASS composed transform carries evidence
+PASS OpenGL perspective cotangent/aspect coefficient
+PASS OpenGL perspective vertical coefficient
+PASS OpenGL near plane maps to NDC -1
+PASS OpenGL far plane maps to NDC +1
+PASS OpenGL depth convention explicit
+PASS perspective carries evidence
+PASS Vulkan near plane maps to NDC 0
+PASS Vulkan far plane maps to NDC 1
+PASS Vulkan handedness explicit
+PASS DirectX near plane maps to NDC 0
+PASS DirectX far plane maps to NDC 1
+PASS DirectX handedness explicit
+PASS OpenGL orthographic near/top/right corner
+PASS OpenGL orthographic far/bottom/left corner
+PASS Ray pointAt uses normalized direction
+PASS Plane point lies on plane
+PASS Plane signed distance
+PASS 3-4-5 Vector3 norm stays exact rational
+PASS rational Vector3 cross stays exact
+PASS rational degree reduction stays exact
+PASS irrational rational-domain sqrt fails closed
+PASS rational-domain trigonometry fails closed
+PASS caller NUMERIC DIGITS 9 does not truncate quaternion construction
+PASS caller NUMERIC DIGITS 9 does not truncate quaternion rotation
+PASS caller NUMERIC DIGITS 9 does not truncate quaternion inverse
+PASS caller NUMERIC DIGITS 9 does not truncate angle halving
+PASS transform inverse round trip
+PASS right-handed lookAt maps target down negative Z
+PASS left-handed lookAt maps target down positive Z
+PASS column-major export translation X position
+PASS column-major export translation Y position
+PASS column-major export translation Z position
+PASS Maths vector3 factory
+PASS Maths angle factory
+PASS Maths perspective factory
+PASS oorexx_maths Math3D 74 assertions
+
+RUNTIME-SUITE-PASS

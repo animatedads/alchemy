@@ -8,6 +8,6 @@ if room~length<>5.000 then raise syntax 93.900 array('indoor length solve failed
 if room~area<>18.75 then raise syntax 93.900 array('indoor area failed',room~area)
 if room~openingAnchor<>2.750 then raise syntax 93.900 array('opening anchor failed',room~openingAnchor)
 if room~remainingReferenceSpan<>1.000 then raise syntax 93.900 array('remaining reference span failed',room~remainingReferenceSpan)
-say 'PASS indoor measured-room hypothesis through Maths solve'
+say 'PASS generic rectangular indoor solver through Maths solve (not actual-room authority)'
 return 'INDOOR-ROOM-SOLVER-PASS'
 ::requires '../rexx/SurveyIndoorRoom.cls'

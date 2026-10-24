@@ -23,3 +23,12 @@ Promotion is therefore auditable lineage, not automatic truth. A separate Photo 
 ## dev17 Macrospace snapshot
 
 The exact Macrospace v0.31.6 archive (SHA-256 `38175f11db8e7e7de28a37e4012c92a94109b4fbcfec7fb96ee166b4d4644c6b`) is now bundled only as a sealed-delivery snapshot. Bundling does not transfer source authority to Photo World. The live-object crossing is qualified against the authoritative Alchemy Objects v0.8.2 semantic-target tree and the r13196 runtime.
+
+
+## dev21 image-geometry authority
+
+Primitive image detection may execute in the Python provider, but detected line
+segments cross immediately into live ooRexx objects. Vanishing-point consensus,
+least-squares refinement, Manhattan orthogonality, lens-quality gating and any
+later world promotion are Photo Survey World + Maths responsibilities. A Python
+segment observation has no SurveyWorld mutation authority.

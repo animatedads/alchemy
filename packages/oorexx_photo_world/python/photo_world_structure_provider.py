@@ -11,7 +11,7 @@ import cv2
 
 
 class PhotoWorldStructureProvider:
-    def __init__(self, provider_name="OpenCV LSD structure", version="0.1", min_length="120"):
+    def __init__(self, provider_name="OpenCV LSD structure", version="0.2", min_length="120"):
         self.provider_name = provider_name
         self.version = version
         self.min_length = float(min_length)
@@ -31,6 +31,37 @@ class PhotoWorldStructureProvider:
         if angle <= 15.0 or angle >= 165.0:
             return "H"
         return "D"
+
+
+    def collect(self, source_ref, collector):
+        """Send explicit accepted image segments into the live ooRexx collector.
+
+        This method performs detection only.  It does not cluster vanishing
+        points, infer camera pose, identify walls, or edit survey geometry.
+        """
+        self.calls += 1
+        image = cv2.imread(source_ref, cv2.IMREAD_GRAYSCALE)
+        if image is None:
+            raise ValueError(f"cannot read image: {source_ref}")
+        height, width = image.shape[:2]
+        collector.setimagesize(int(width), int(height))
+        detector = cv2.createLineSegmentDetector(cv2.LSD_REFINE_STD)
+        detected = detector.detect(image)[0]
+        accepted = 0
+        if detected is not None:
+            for item in detected[:, 0, :]:
+                x1, y1, x2, y2 = (float(v) for v in item)
+                length = math.hypot(x2 - x1, y2 - y1)
+                if length < self.min_length:
+                    continue
+                angle = math.degrees(math.atan2(y2 - y1, x2 - x1))
+                family = self._orientation(angle)
+                collector.appendsegment(
+                    f"{x1:.9f}", f"{y1:.9f}",
+                    f"{x2:.9f}", f"{y2:.9f}", family
+                )
+                accepted += 1
+        return f"segments={accepted}:size={width}x{height}"
 
     def analyze(self, source_ref):
         self.calls += 1

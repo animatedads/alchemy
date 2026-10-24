@@ -14,3 +14,12 @@ The portfolio review's sparse-argument concern remains a bridge/foundation quali
 ## dev17 foreign-runtime closure
 
 The previously NOT_RUN Python provider lane is now executed with the exact v0.31.6 bytes. Qualification proves the Photo World provider crossing plus live retained Maths-object operation. This closes the local missing-bytes gap without changing the portfolio-review rule that each exact foreign-runtime version needs its own receipt.
+
+
+## dev21 — evidence does not become geometry by transport
+
+The new line collector follows the portfolio F23 rule directly: provider output
+becomes structured derived evidence, not domain authority. The Python detector
+never receives `SurveyWorld`; the same live-object Macrospace seam used for
+Maths objects is used in reverse so Python calls an ooRexx collector. Camera/lens
+claims are quality-gated and unresolved views remain unresolved.

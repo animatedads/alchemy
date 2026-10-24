@@ -25,3 +25,15 @@ matrix.context().provider()
 The last expression exercises the v0.31.6 live non-string Rexx-return projection and chained natural dispatch. The expected contract string is `2x3:2:PURE`. No depth matrix is copied into a Python-owned tensor merely to cross the boundary.
 
 This is the intended shape for future specialised providers: Python may operate an explicitly supplied Maths object, while reusable numerical meaning and higher mathematics remain Maths-owned.
+
+## dev21 — Python detector calls live ooRexx segment collector
+
+The same v0.31.6 natural Rexx-object dispatch is now used in the useful reverse
+direction. `PhotoWorldStructureProvider~collect(sourceRef, collector)` receives a
+live `SurveyImageSegmentCollection` and calls `setImageSize(...)` and
+`appendSegment(...)` on that original ooRexx object. The arguments remain the
+existing framed scalar crossing; no second marshalling protocol was introduced.
+
+The provider sends line endpoints only. It does not return a Python-owned
+vanishing-point object and it is never given `SurveyWorld`. The collected Rexx
+segments are then processed by `SurveyVanishingPointSolver` and Maths.

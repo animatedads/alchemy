@@ -1,3 +1,5 @@
+> SUPERSEDED FOR THIS ROOM BY DEV20: the dev18 rectangle was an initial hypothesis and is not the actual room topology.
+
 # Photo Survey World v0.1-dev18 qualification
 
 Qualification runtime: **Open Object Rexx 5.3.0 r13196 Internal Test Version**, 64-bit, build 3 Aug 2026. Runtime package SHA-256 remains `8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae`.

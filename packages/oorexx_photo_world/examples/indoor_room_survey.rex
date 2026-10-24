@@ -1,15 +1,14 @@
-/* Current indoor-survey metric anchors.  This example intentionally renders
- * only geometry established by the supplied measurements / explicit prior.
- * Photographic structure remains evidence and is not drawn as truth. */
+/* Actual room topology from explicit survey statements.
+ * No image-derived geometry is promoted here and no unmeasured chimney/alcove
+ * dimension is invented. */
 parse arg outputPath
-if outputPath='' then outputPath='../output/indoor_room_plan.svg'
-constraints=.array~new
-constraints~append(.SurveyLengthConstraint~new('opposite-wall','WIDTH','3.750',1000,'MEASURED','user measurement'))
-constraints~append(.SurveyLengthConstraint~new('long-wall','LENGTH','5.000',4,'ESTIMATED','user estimate'))
-constraints~append(.SurveyLengthConstraint~new('left-to-doorway','OPENING_ANCHOR','2.750',1000,'MEASURED','user measurement'))
-room=.SurveyIndoorRoomSolver~solve(constraints)
-written=.SurveyIndoorSvg~topDown(room,outputPath,'Indoor room - measured first hypothesis')
-say 'width='room~width 'length='room~length 'area='room~area
-say 'opening-anchor='room~openingAnchor 'remaining-reference-span='room~remainingReferenceSpan
-say 'wrote' outputPath
+if outputPath='' then outputPath='../output/indoor_room_topology.svg'
+room=.SurveyIndoorActualRoomSolver~fromCurrentEvidence
+written=.SurveyIndoorTopologySvg~topDown(room,outputPath,'Indoor room - chimney breast and two alcoves')
+say 'topology='room~topologyClass
+say 'left-wall-to-doorway='room~observation('left-wall-to-doorway')~metres
+say 'opposite-wall='room~observation('opposite-wall')~metres
+say 'long-wall-prior='room~observation('long-wall')~metres
+say 'area-state='room~areaState
+say 'wrote' written
 ::requires '../rexx/SurveyIndoorRoom.cls'

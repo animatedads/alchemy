@@ -1,0 +1,25 @@
+{
+  "kind":"article",
+  "id":"arch.photo.indoor-room",
+  "version":"0.1",
+  "sphere":"photo-survey-world",
+  "title":"Indoor room: chimney breast and two alcoves",
+  "summary":"The projector-screen wall is a central projecting chimney breast with recessed alcoves on both sides; earlier rectangular and one-sided-step interpretations are superseded.",
+  "authority":"project-authoritative",
+  "topology":["LEFT_ALCOVE_REAR","LEFT_RETURN","CHIMNEY_BREAST_FACE","RIGHT_RETURN","RIGHT_ALCOVE_REAR"],
+  "measurements":[
+    {"role":"LEFT_WALL_TO_DOORWAY","metres":2.750,"class":"MEASURED"},
+    {"role":"OPPOSITE_WALL","metres":3.750,"class":"MEASURED"},
+    {"role":"LONG_WALL","metres":5.000,"class":"ESTIMATED_PRIOR"}
+  ],
+  "unknowns":["chimney_breast_width","chimney_projection_depth","left_alcove_width","right_alcove_width","doorway_jamb_binding","camera_translations","room_area"],
+  "invariants":[
+    "The 2.750 m and 3.750 m observations are not rectangle axes and do not imply a 1.000 m leftover span.",
+    "The chimney breast projects into the room; both side alcoves recess behind its face.",
+    "Unknown step/break positions and projection depth must be solved or measured, not guessed from appearance."
+  ],
+  "provenance":[
+    {"artifact":"oorexx_photo_world_v0.1-dev21.zip","sha256":"ab63a8fcd453623cc371ccfda71f60588256260251d6f71deb338a6e85b97707","member":"INDOOR_SURVEY.md","claim":"Corrected room topology and metric roles."},
+    {"artifact":"oorexx_photo_world_v0.1-dev21.zip","sha256":"ab63a8fcd453623cc371ccfda71f60588256260251d6f71deb338a6e85b97707","member":"tests/test_indoor_chimney_topology.rex","claim":"Fail-closed topology regression."}
+  ]
+}

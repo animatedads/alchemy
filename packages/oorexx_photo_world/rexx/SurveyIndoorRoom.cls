@@ -118,3 +118,145 @@
   return
 
 ::requires 'MathsBootstrap.cls'
+
+/* dev20: actual-room topology.  This does not reinterpret the user's three
+ * length observations as orthogonal rectangle axes.  The old rectangle solver
+ * remains available for genuinely rectangular rooms, but is not the authority
+ * for this room.
+ */
+::class SurveyIndoorMetricObservation public
+::attribute id get
+::attribute role get
+::attribute metres get
+::attribute evidenceClass get
+::attribute source get
+::attribute notes get
+::method init
+  expose id role metres evidenceClass source notes
+  use strict arg id,role,metres,evidenceClass='MEASURED',source='',notes=''
+  if metres<=0 then raise syntax 88.900 array('positive metric length',metres)
+  role=role~upper
+  evidenceClass=evidenceClass~upper
+
+::class SurveyWallProfileSegment public
+::attribute kind get
+::attribute spanMetres get
+::attribute offsetMetres get
+::attribute dimensionalState get
+::method init
+  expose kind spanMetres offsetMetres dimensionalState
+  use strict arg kind,spanMetres=.nil,offsetMetres=.nil
+  kind=kind~upper
+  select
+    when kind='LEFT_ALCOVE_REAR' then nop
+    when kind='LEFT_RETURN' then nop
+    when kind='CHIMNEY_BREAST_FACE' then nop
+    when kind='RIGHT_RETURN' then nop
+    when kind='RIGHT_ALCOVE_REAR' then nop
+    otherwise raise syntax 88.900 array('known chimney-wall profile segment',kind)
+  end
+  if spanMetres<>.nil then if spanMetres<=0 then raise syntax 88.900 array('positive segment span',spanMetres)
+  if offsetMetres<>.nil then if offsetMetres<0 then raise syntax 88.900 array('non-negative segment offset',offsetMetres)
+  dimensionalState='UNRESOLVED'
+  if spanMetres<>.nil then dimensionalState='PARTIAL'
+  if spanMetres<>.nil then if offsetMetres<>.nil then dimensionalState='RESOLVED'
+
+::class SurveyChimneyBreastWallTopology public
+::attribute wallId get
+::attribute segments get
+::attribute topologyClass get
+::attribute dimensionalState get
+::method init
+  expose wallId segments topologyClass dimensionalState
+  use strict arg wallId='projector-chimney-wall'
+  topologyClass='CHIMNEY_BREAST_WITH_TWO_ALCOVES'
+  segments=.array~new
+  segments~append(.SurveyWallProfileSegment~new('LEFT_ALCOVE_REAR'))
+  segments~append(.SurveyWallProfileSegment~new('LEFT_RETURN'))
+  segments~append(.SurveyWallProfileSegment~new('CHIMNEY_BREAST_FACE'))
+  segments~append(.SurveyWallProfileSegment~new('RIGHT_RETURN'))
+  segments~append(.SurveyWallProfileSegment~new('RIGHT_ALCOVE_REAR'))
+  dimensionalState='TOPOLOGY_ONLY'
+::method breastFace
+  expose segments
+  return segments[3]
+::method hasLeftAlcove; return .true
+::method hasRightAlcove; return .true
+::method isDimensionallyResolved; return .false
+
+::class SurveyIndoorActualRoomHypothesis public
+::attribute metricObservations get
+::attribute chimneyWall get
+::attribute topologyClass get
+::attribute area get
+::attribute areaState get
+::attribute confidenceClass get
+::method init
+  expose metricObservations chimneyWall topologyClass area areaState confidenceClass
+  use strict arg metricObservations,chimneyWall
+  if \chimneyWall~isA(.SurveyChimneyBreastWallTopology) then -
+    raise syntax 88.900 array('SurveyChimneyBreastWallTopology',chimneyWall~class~id)
+  topologyClass='CHIMNEY_BREAST_WITH_TWO_ALCOVES'
+  area=.nil
+  areaState='UNRESOLVED_TOPOLOGY_DIMENSIONS'
+  confidenceClass='TOPOLOGY_CONFIRMED_DIMENSIONS_PARTIAL'
+::method observation
+  expose metricObservations
+  use strict arg id
+  do o over metricObservations
+    if o~id=id then return o
+  end
+  return .nil
+::method canComputeArea; return .false
+
+::class SurveyIndoorActualRoomSolver public
+::method fromCurrentEvidence class
+  observations=.array~new
+  observations~append(.SurveyIndoorMetricObservation~new('left-wall-to-doorway','LEFT_WALL_TO_DOORWAY','2.750','MEASURED','user measurement','endpoint wording retained; not reinterpreted as rectangle width'))
+  observations~append(.SurveyIndoorMetricObservation~new('opposite-wall','OPPOSITE_WALL','3.750','MEASURED','user measurement','wall span; geometry binding remains explicit evidence'))
+  observations~append(.SurveyIndoorMetricObservation~new('long-wall','LONG_WALL','5.000','ESTIMATED','user estimate','approximately five metres'))
+  wall=.SurveyChimneyBreastWallTopology~new('projector-screen-chimney-wall')
+  return .SurveyIndoorActualRoomHypothesis~new(observations,wall)
+
+::class SurveyIndoorTopologySvg public
+::method topDown class
+  use strict arg room,path,title='Photo Survey World - actual room topology'
+  if \room~isA(.SurveyIndoorActualRoomHypothesis) then -
+    raise syntax 88.900 array('SurveyIndoorActualRoomHypothesis',room~class~id)
+  s=.array~new
+  w=900; h=610
+  s~append('<svg xmlns="http://www.w3.org/2000/svg" width="'w'" height="'h'" viewBox="0 0 'w' 'h'">')
+  s~append('<rect width="100%" height="100%" fill="white"/>')
+  s~append('<text x="30" y="34" font-family="sans-serif" font-size="20">'title'</text>')
+  s~append('<text x="30" y="60" font-family="sans-serif" font-size="13">TOPOLOGY CONFIRMED; chimney/alcove dimensions unresolved - schematic, not to scale</text>')
+  /* opposite straight wall */
+  x0=120; x1=780; yTop=130; yRear=455; yBreast=395
+  s~append('<line x1="'x0'" y1="'yTop'" x2="'x1'" y2="'yTop'" stroke="#222" stroke-width="5"/>')
+  s~append('<text x="365" y="112" font-family="sans-serif" font-size="14">long-wall prior ~5.000 m</text>')
+  /* side walls */
+  s~append('<line x1="'x0'" y1="'yTop'" x2="'x0'" y2="'yRear'" stroke="#222" stroke-width="5"/>')
+  s~append('<line x1="'x1'" y1="'yTop'" x2="'x1'" y2="'yRear'" stroke="#222" stroke-width="5"/>')
+  /* rear alcove plane -> left return -> projecting breast face -> right return -> rear alcove plane */
+  leftBreak=315; rightBreak=585
+  s~append('<line x1="'x0'" y1="'yRear'" x2="'leftBreak'" y2="'yRear'" stroke="#222" stroke-width="5"/>')
+  s~append('<line x1="'leftBreak'" y1="'yRear'" x2="'leftBreak'" y2="'yBreast'" stroke="#222" stroke-width="5"/>')
+  s~append('<line x1="'leftBreak'" y1="'yBreast'" x2="'rightBreak'" y2="'yBreast'" stroke="#222" stroke-width="7"/>')
+  s~append('<line x1="'rightBreak'" y1="'yBreast'" x2="'rightBreak'" y2="'yRear'" stroke="#222" stroke-width="5"/>')
+  s~append('<line x1="'rightBreak'" y1="'yRear'" x2="'x1'" y2="'yRear'" stroke="#222" stroke-width="5"/>')
+  s~append('<text x="170" y="485" font-family="sans-serif" font-size="14">left alcove / inset</text>')
+  s~append('<text x="362" y="377" font-family="sans-serif" font-size="14">old chimney breast</text>')
+  s~append('<text x="357" y="414" font-family="sans-serif" font-size="13">projector screen face</text>')
+  s~append('<text x="612" y="485" font-family="sans-serif" font-size="14">right alcove / inset</text>')
+  s~append('<text x="30" y="535" font-family="sans-serif" font-size="13">Measured evidence retained without remapping: left wall to doorway 2.750 m; opposite wall 3.750 m.</text>')
+  s~append('<text x="30" y="560" font-family="sans-serif" font-size="13">Unknown: breast width, breast projection depth, left/right alcove widths, exact doorway/jamb binding. Area deliberately not computed.</text>')
+  s~append('</svg>')
+  self~writeLines(path,s)
+  return path
+::method writeLines class
+  use strict arg path,lines
+  call lineout path
+  do line over lines
+    call lineout path,line
+  end
+  call lineout path
+  return

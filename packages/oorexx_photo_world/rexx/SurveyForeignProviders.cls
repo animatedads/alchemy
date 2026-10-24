@@ -246,3 +246,27 @@
   use strict arg sourceRef,sourceDigest
   foreignOutput=foreignObject~analyze(sourceRef)
   return .SurveyDerivedEvidence~new('STRUCTURE_RAW',modelName,self~providerVersion,sourceDigest,foreignOutput,.nil,'IMAGE_2D_DERIVED')
+
+/* dev21: structured segment crossing.  The Python detector receives an
+ * ooRexx collector and calls it with primitive line observations.  The live
+ * collector remains Rexx-owned; Python never receives a SurveyWorld. */
+::class SurveyPythonSegmentStructureProvider public subclass SurveyStructureProvider
+::attribute foreignObject get
+::attribute modelName get
+::method init
+  expose foreignObject modelName
+  use strict arg foreignObject,modelName='OpenCV LSD structure'
+::method providerName
+  expose modelName
+  return modelName
+::method providerVersion
+  expose foreignObject
+  return foreignObject~providerVersion
+::method analyze
+  expose foreignObject modelName
+  use strict arg sourceRef,sourceDigest
+  collector=.SurveyImageSegmentCollection~new(sourceDigest,sourceRef)
+  foreignOutput=foreignObject~collect(sourceRef,collector)
+  return .SurveyDerivedEvidence~new('STRUCTURE_SEGMENTS_RAW',modelName,self~providerVersion,sourceDigest,collector,foreignOutput,'IMAGE_PIXELS_TOP_LEFT')
+
+::requires 'SurveyImageGeometry.cls'
