@@ -427,3 +427,14 @@
 - Added whole-trajectory batch runner using ownership-fenced MOVE then destination-local CALL; no 20 ms message fan-out.
 - Added `physics.f11.candidate-summary/2` with pitch, cadence, power, reflection-delay, overlap and vehicle-subtracted residual evidence references.
 - Added executable three-destination/four-candidate batch qualification.
+
+## 0.1-dev50 — F11 refinement evidence
+- Added the Room-F 0.25 m refinement plan and compact reverse-evidence matching over the dev49 Cluster batch workflow.
+- Added candidate-summary/3 descriptors for pitch, cadence, power, delay, overlap and rear-path evidence while keeping waveform payloads destination-local.
+- Added executable refinement/evidence qualification; this does not make Physics an F11-specific localisation authority.
+
+## 0.1-dev50.1 — object-semantics standards repair
+- Removed the forbidden `value+0` coercion from `PhysicalWorld~simulationTime=`; assignment preserves the supplied continuation object rather than dispatching an unintended `+` message.
+- Added an adversarial operator-dispatch regression for the setter.
+- Added `STANDARDS_STATUS.md` recording inherited standards debt and the rule that arithmetic operators are never coercion mechanisms.
+- Added the Physics World continuity sphere under `spheres/physics_world_gopher_sphere_v0.1`.
