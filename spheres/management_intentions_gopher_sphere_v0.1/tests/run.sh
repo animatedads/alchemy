@@ -9,6 +9,7 @@ for p in files:
     with p.open('r', encoding='utf-8') as f: json.load(f)
 required={
  'arch.management-intentions.discovery',
+ 'arch.management-intentions.mvs',
  'arch.management-intentions.authority',
  'arch.management-intentions.relationships',
  'arch.management-intentions.instrumentation',
