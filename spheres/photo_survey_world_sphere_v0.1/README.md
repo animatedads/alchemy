@@ -38,7 +38,7 @@ These measurements are not rectangle axes. The package must not invent chimney-b
 
 ## Current dependency note
 
-Dev21 is qualified against its pinned sealed snapshots, including Maths v0.14, Physics World dev46 and Python Macrospace v0.31.6. The 2026-10-09 Library register records Physics World v0.1-dev47.2 and Python Macrospace v0.31.7 as newer Library heads. The GitHub repository has since advanced Physics World to v0.1-dev50.1. These newer heads are compatibility/requalification candidates, not silent replacements for the dev21 dependency lock.
+Dev21 is qualified against its pinned sealed snapshots, including Maths v0.14, Physics World dev46 and Python Macrospace v0.31.6. The 2026-10-09 Library register records Maths v0.17, Physics World v0.1-dev47.2 and Python Macrospace v0.31.7 as newer Library heads. The GitHub repository has since advanced Maths to v0.19 and Physics World to v0.1-dev50.1. These newer heads are compatibility/requalification candidates, not silent replacements for the dev21 dependency lock.
 
 ## Near-term work
 
@@ -47,7 +47,7 @@ Dev21 is qualified against its pinned sealed snapshots, including Maths v0.14, P
 3. Solve the two alcove breakpoints and chimney projection depth against the authoritative topology.
 4. Add Depth Anything V2 only as soft depth evidence through the Macrospace/Maths boundary; never as world authority.
 5. Evaluate GeoCLIP only as geographic-candidate evidence and PyMeshLab only as candidate mesh processing.
-6. Requalify Photo World against Macrospace v0.31.7 and the current Physics World repository head (v0.1-dev50.1; Library register v0.1-dev47.2) before changing the compatibility lock.
+6. Requalify Photo World against the newer Maths line (Library register v0.17; GitHub v0.19), Macrospace v0.31.7, and the current Physics World repository head (v0.1-dev50.1; Library register v0.1-dev47.2) before changing the compatibility lock.
 7. Continue running the ooRexx standards enforcer directly against final release ZIPs.
 
 This sphere is documentation/project-continuity authority only. It grants no authority to alter measurements, promote model output into surveyed truth, or mutate external package authority.

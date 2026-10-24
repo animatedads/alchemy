@@ -6,4 +6,4 @@
 - Records the corrected indoor topology: central projecting chimney breast with alcoves on both sides.
 - Records the Maths / Physics / Macrospace / provider authority boundaries.
 - Records current dev21 multi-view segment/vanishing-family evidence and fail-closed lens behaviour.
-- Records newer dependency heads as requalification work rather than implicit upgrades: Macrospace v0.31.7; Physics World Library register dev47.2 and GitHub dev50.1.
+- Records newer dependency heads as requalification work rather than implicit upgrades: Maths Library register v0.17 and GitHub v0.19; Macrospace v0.31.7; Physics World Library register dev47.2 and GitHub dev50.1.
