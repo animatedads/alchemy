@@ -1,21 +1,50 @@
 {
-  "kind":"article",
-  "id":"messaging-presence.transport-layering",
-  "version":"0.1",
-  "sphere":"messaging-presence",
-  "title":"XMPP, XEP-0206 and BOSH are separate layers",
-  "summary":"XMPP owns protocol/session semantics, XEP-0206 binds XMPP to BOSH, and BOSH is a generic HTTP-carried logical stream below the protocol layer.",
-  "authority":"transport-layering-contract",
-  "invariants":[
+  "kind": "article",
+  "id": "messaging-presence.transport-layering",
+  "version": "0.1",
+  "sphere": "messaging-presence",
+  "title": "XMPP, XEP-0206 and BOSH are separate layers",
+  "summary": "XMPP owns protocol/session semantics, XEP-0206 binds XMPP to BOSH, and BOSH is a generic HTTP-carried logical stream below the protocol layer.",
+  "authority": "transport-layering-contract",
+  "invariants": [
     "XMPP does not own raw sockets; a lower stream/socket provider or selector supplies the required carrier.",
     "BOSH is a separate package and has no dependency on XMPP, Messaging, Presence, TLS, SocketProvider or XTP.",
     "XEP-0206 is a separate adapter package because it is the only layer that must understand both XMPP stream semantics and BOSH body controls.",
     "BOSH asks an injected HTTP exchange authority to perform HTTP exchanges; HTTP/HTTPS is responsible for obtaining its own lower secure carrier.",
     "HTTPS over XTP is a valid composition when the lower selector satisfies the HTTP layer's secure-stream requirement; BOSH itself remains unaware of XTP.",
-    "Transport selection is capability/requirement driven. Higher semantic layers do not request BOSH by name."
+    "Transport selection is capability/requirement driven. Higher semantic layers do not request BOSH by name.",
+    "Current provider version evidence does not grant permission to infer unobserved capabilities such as a generic same-stream STARTTLS upgrade."
   ],
-  "provenance":[
-    {"artifact":"oorexx_bosh_transport_v0.1-dev5.zip","sha256":"072555ee2fd1ac8d02ede22d280015d0904b2db805a05d49a51c5e2c0eeebd67","member":"src/BoshTransport.cls","claim":"Implements generic BOSH logical-stream/session mechanics over injected HTTP exchange authority."},
-    {"artifact":"oorexx_xmpp_bosh_adapter_v0.1-dev2.zip","sha256":"5101f283dab036c18574ae90d03480ecc634c90d4e478f1458fac0481943525b","member":"src/XmppBoshTransport.cls","claim":"Implements the narrow XEP-0206 XMPP-over-BOSH binding."}
-  ]
+  "provenance": [
+    {
+      "artifact": "oorexx_bosh_transport_v0.1-dev5.zip",
+      "sha256": "072555ee2fd1ac8d02ede22d280015d0904b2db805a05d49a51c5e2c0eeebd67",
+      "member": "src/BoshTransport.cls",
+      "claim": "Implements generic BOSH logical-stream/session mechanics over injected HTTP exchange authority."
+    },
+    {
+      "artifact": "oorexx_xmpp_bosh_adapter_v0.1-dev2.zip",
+      "sha256": "5101f283dab036c18574ae90d03480ecc634c90d4e478f1458fac0481943525b",
+      "member": "src/XmppBoshTransport.cls",
+      "claim": "Implements the narrow XEP-0206 XMPP-over-BOSH binding."
+    }
+  ],
+  "current_context": {
+    "checked": "2026-10-24",
+    "socket_provider": {
+      "version": "0.1-dev16",
+      "sha256": "fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2",
+      "source_publication": "GitHub first-class tree still identifies dev14"
+    },
+    "network_transport_intentions": {
+      "version": "0.1-dev3",
+      "sha256": "d90dc49e4799f929761e75b302ab141a3bab481efdf951cdd508491a9b18c64b"
+    },
+    "xtp": {
+      "version": "0.1-dev25",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "relationship": "lower development context only; BOSH has no XTP dependency"
+    },
+    "http_exchange_provider": "open: no authoritative first-class generic HTTP client surface identified in repository review"
+  }
 }
