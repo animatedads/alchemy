@@ -20,6 +20,18 @@ call assert \row~isA(.DatabaseBackendSelectionError), "provider A loaded"
 call assert row~source = "A", "provider A result"
 call assert selector~selectedProvider = "MOCKA", "provider name retained"
 
+builtInPg = .directory~new
+builtInPg["provider"] = "POSTGRESQL"
+pgSpec = .DatabaseBackendSelector~new~resolve(builtInPg)
+call assert pgSpec["package"] = "PostgreSQLDatabaseProvider.cls", "built-in PostgreSQL package"
+call assert pgSpec["class"] = "PostgreSQLDatabaseProvider", "built-in PostgreSQL class"
+
+builtInNoSql = .directory~new
+builtInNoSql["provider"] = "NOSQLSERVER"
+noSqlSpec = .DatabaseBackendSelector~new~resolve(builtInNoSql)
+call assert noSqlSpec["package"] = "NoSQLDatabaseCoreProvider.cls", "built-in NoSQLServer package"
+call assert noSqlSpec["class"] = "NoSQLDatabaseCoreProvider", "built-in NoSQLServer class"
+
 optsB = .directory~new
 optsB["provider"] = "MOCKB"
 optsB["package"] = fixture || "ProviderB.cls"
