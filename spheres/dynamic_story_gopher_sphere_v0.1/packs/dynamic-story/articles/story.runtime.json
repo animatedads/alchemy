@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "story.runtime",
+  "version": "0.1",
+  "sphere": "dynamic-story",
+  "title": "Selection, re-evaluation and fail-closed semantics",
+  "section": "runtime",
+  "summary": "A request receives authoritative candidate identifiers; deterministic priority and scoped narrative selection precede an independent fresh authority check. The result carries explanation, proof-ref and exact revisions.",
+  "invariants": [
+    "Each decideLive request asks current intention source for candidates again.",
+    "Equal-priority candidate collisions block; unknown intentions cannot become eligible.",
+    "No headline, body, CTA or claim set is returned in a blocked decision.",
+    "Local mock authority in tests is never production authorisation."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_dynamic_story_v0.1-dev1.zip",
+      "claim": "User-supplied dev1 base, upgraded to source candidate dev2; no dev2 runtime acceptance claimed"
+    }
+  ],
+  "related": []
+}
