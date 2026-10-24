@@ -1,26 +1,64 @@
 {
-  "kind":"qualification",
-  "id":"qual.messaging-presence.current",
-  "version":"0.1",
-  "sphere":"messaging-presence",
-  "title":"Current Messaging & Presence / XMPP / BOSH qualification state",
-  "status":"qualified-with-recorded-boundaries",
-  "evidence":[
+  "kind": "qualification",
+  "id": "qual.messaging-presence.current",
+  "version": "0.1",
+  "sphere": "messaging-presence",
+  "title": "Current Messaging & Presence / XMPP / BOSH qualification state",
+  "status": "qualified-with-recorded-boundaries",
+  "evidence": [
     "Messaging & Presence dev4 qualification records semantic objects, provider discovery, intention dispatch, XMPP framing/session behavior, SocketProvider isolation and Instrumentation Mesh integration.",
-    "BOSH dev5 retains dev4 logical-stream behavior and adds Instrumentation Mesh dev8 explicit-correlation semantics; its VALIDATION file distinguishes static packaging from fresh runtime execution where the runtime was unavailable.",
+    "BOSH released evidence remains dev5 (SHA-256 072555ee2fd1ac8d02ede22d280015d0904b2db805a05d49a51c5e2c0eeebd67); GitHub source now advances as dev6 solely to repair the stale environment runner and current-version/source-provenance metadata.",
+    "BOSH dev6 environment qualification now requires exact caller-supplied Socket Provider and Instrumentation Mesh source roots, compiles the core and optional adapters, and delegates to the current tests/run.sh suite.",
     "XMPP/BOSH adapter dev2 records fail-closed protection, XEP-0206 restart projection and separation from Instrumentation authority.",
-    "Current Library transport grid dated 2026-10-13 places shared HTTP carrier behavior below higher protocol semantics and records newer SocketProvider/XTP baselines."
+    "Current external Socket Provider authority is dev16 SHA-256 fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2; the first-class GitHub Socket Provider source tree still identifies itself as dev14 and is not treated as dev16 source.",
+    "Current external Instrumentation Mesh authority is dev8 SHA-256 47402459e658da6ddb17c65c98010c0acd0e35d43b3a0b01c8c13c835f65d624; exact first-class dev8 runtime source publication remains open.",
+    "Network Transport Intentions dev3 SHA-256 d90dc49e4799f929761e75b302ab141a3bab481efdf951cdd508491a9b18c64b and XTP dev25 SHA-256 7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b are current context; neither transfers transport authority into BOSH or Messaging."
   ],
-  "open_work":[
-    "Repair the stale BOSH dev5 tests/environment_test.sh runner: it still names removed test_bosh_telemetry.rex and reports dev2. Preserve the released dev5 artifact digest; make the repair in the next BOSH revision.",
-    "Re-run the BOSH dev5 instrumentation delta under the current qualified ooRexx runtime when available and record fresh executable evidence.",
-    "Rebase Messaging & Presence XMPP transport qualification from the older SocketProvider dev14 test fixture to the current selector/provider baseline without importing lower transport ownership.",
-    "Add a concrete lower HTTP/HTTPS exchange provider qualification for the BOSH path, including an HTTPS-over-XTP composition test, without adding XTP knowledge to BOSH.",
-    "Register/deploy this sphere through LLM Gopher after repository admission."
+  "open_work": [
+    "Publish the exact Socket Provider v0.1-dev16 source tree under the first-class GitHub package path and byte/revision-verify it against the Library archive before using the repo tree for dev16 qualification.",
+    "Publish the exact Instrumentation Mesh v0.1-dev8 runtime source tree as a first-class package; do not reconstruct it from older vendored copies.",
+    "Run BOSH dev6 environment qualification against exact Socket Provider dev16, Instrumentation Mesh dev8 and ooRexx r13196 source/runtime roots once those roots are available together.",
+    "Run the current provider-neutral Messaging & Presence XMPP transport fixture against the exact dev16 source tree after source publication; retain fail-closed STARTTLS until a generic same-stream upgrade route is explicitly qualified.",
+    "Add a concrete generic HTTP/HTTPS exchange provider qualification for BOSH, including real HTTPS-over-XTP composition, without adding HTTP/TLS/XTP implementation knowledge to BOSH core.",
+    "Register/deploy this GitHub sphere through LLM Gopher; sphere_check currently returns SPHERE_NOT_FOUND."
   ],
-  "artifacts":[
-    {"name":"oorexx_messaging_presence_v0.1-dev4.zip","sha256":"6910c88cc209ff24117461761a0eecf98272f68c98ae17a6686db932afb3742f"},
-    {"name":"oorexx_bosh_transport_v0.1-dev5.zip","sha256":"072555ee2fd1ac8d02ede22d280015d0904b2db805a05d49a51c5e2c0eeebd67"},
-    {"name":"oorexx_xmpp_bosh_adapter_v0.1-dev2.zip","sha256":"5101f283dab036c18574ae90d03480ecc634c90d4e478f1458fac0481943525b"}
-  ]
+  "artifacts": [
+    {
+      "name": "oorexx_messaging_presence_v0.1-dev4.zip",
+      "sha256": "6910c88cc209ff24117461761a0eecf98272f68c98ae17a6686db932afb3742f"
+    },
+    {
+      "name": "oorexx_bosh_transport_v0.1-dev5.zip",
+      "sha256": "072555ee2fd1ac8d02ede22d280015d0904b2db805a05d49a51c5e2c0eeebd67"
+    },
+    {
+      "name": "oorexx_xmpp_bosh_adapter_v0.1-dev2.zip",
+      "sha256": "5101f283dab036c18574ae90d03480ecc634c90d4e478f1458fac0481943525b"
+    }
+  ],
+  "source_candidates": [
+    {
+      "name": "oorexx_bosh_transport GitHub dev6 source reconciliation",
+      "status": "source-candidate-not-released-archive",
+      "basis": "released dev5 semantics plus runner/current-authority metadata repair"
+    }
+  ],
+  "current_external_authorities": {
+    "socket_provider": {
+      "version": "0.1-dev16",
+      "sha256": "fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2"
+    },
+    "instrumentation_mesh": {
+      "version": "0.1-dev8",
+      "sha256": "47402459e658da6ddb17c65c98010c0acd0e35d43b3a0b01c8c13c835f65d624"
+    },
+    "network_transport_intentions": {
+      "version": "0.1-dev3",
+      "sha256": "d90dc49e4799f929761e75b302ab141a3bab481efdf951cdd508491a9b18c64b"
+    },
+    "xtp": {
+      "version": "0.1-dev25",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b"
+    }
+  }
 }
