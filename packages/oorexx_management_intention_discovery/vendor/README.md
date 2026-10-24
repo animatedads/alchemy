@@ -28,3 +28,17 @@ The files below were omitted from this component; the listed SHA-256 values pres
 ## Existing Alchemy source
 
 Current shared sources: [`packages/oorexx_generalized_compute_intentions`](../../oorexx_generalized_compute_intentions) and [`packages/oorexx_intention_service`](../../oorexx_intention_service).
+
+## Current MVS specialist source
+
+The historical vendored `MvsIntention.cls` hash above belongs to the dev7
+Management qualification package and is retained as provenance. Current
+first-class MVS specialist source is now published at
+[`packages/mvs_intention_runner_v0.1-dev9`](../../mvs_intention_runner_v0.1-dev9).
+
+Accepted dev9 artifact SHA-256:
+`03a2cc798db5cff171cd7ca37eb5ca686d9f7bfce17cd381c85c77a703fbec52`.
+
+Do not silently substitute dev9 for the historical dev7 qualification
+dependency when reproducing that old result; use dev9/current Terminal Machine
+only for a new qualification.
