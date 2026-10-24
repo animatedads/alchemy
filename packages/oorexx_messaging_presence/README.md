@@ -42,9 +42,9 @@ Facilities such as group conversation, event publication, file exchange, avatar/
 
 ### Current live-interoperability boundary
 
-Socket Provider v0.1-dev14 models TLS as a separately acquired secure socket family but does not expose an in-place TLS upgrade of an already-open TCP stream. Standard XMPP STARTTLS requires that same-stream transition. dev4 therefore **fails closed** rather than bypassing SocketProvider or sending SASL credentials over an unprotected connection.
+The current estate authority is Socket Provider v0.1-dev16 (SHA-256 `fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2`). Current qualification evidence does not establish a generic in-place TLS upgrade seam on an already-open provider stream. Standard XMPP STARTTLS requires that same-stream transition, so dev4 continues to **fail closed** rather than bypassing SocketProvider or sending SASL credentials over an unprotected connection.
 
-See `SOCKET_PROVIDER_STARTTLS_REQUIREMENT.md`. Live RFC 6120 server interoperability through that older qualification baseline is not claimed.
+The first-class GitHub Socket Provider source tree still identifies as dev14 and must not be relabelled as dev16 without exact source provenance. See `SOCKET_PROVIDER_STARTTLS_REQUIREMENT.md` and `CURRENT_INTEGRATION_BASELINE.md`. Live RFC 6120 server interoperability through the current shared-provider boundary is not claimed until a same-stream upgrade path is explicitly qualified.
 
 The included ASCII address codec remains deliberately conservative. It fails closed outside its stated subset rather than pretending to implement the complete Unicode/PRECIS/IDNA requirements.
 
@@ -54,6 +54,6 @@ Historical RFC 3920 / RFC 3921 remain provenance. Their implementation successor
 
 ## Instrumentation Mesh integration
 
-`src/MessagingPresenceInstrumentation.cls` is the optional adapter for `instrumentation.mesh/0.1`. Messaging & Presence does not create a local metrics/history protocol: authoritative service facts are emitted through the common Instrumentation emitter and common publication/collector path.
+`src/MessagingPresenceInstrumentation.cls` is the optional adapter for `instrumentation.mesh/0.1`; the current external qualification baseline is Instrumentation Mesh v0.1-dev8. Messaging & Presence does not create a local metrics/history protocol: authoritative service facts are emitted through the common Instrumentation emitter and common publication/collector path.
 
 Observation does not grant message/presence mutation authority.
