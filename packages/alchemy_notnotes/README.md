@@ -1,11 +1,15 @@
-# Alchemy NotNotes — source publication in progress
+# Alchemy NotNotes v0.1-dev15 — exact historical source backfill
 
-**Source archive:** `alchemy_notnotes_v0.1-dev15.zip` from the user Library.
-**Exact archive SHA-256:** `57a7d1b09234621f20c9de5dda312b4e38140b57cb87c45f7318e59730db4488`.
-**Status:** archival, NOT a declaration of current head or a complete standalone build.
+This directory contains the source, tests, demos and qualification records from the
+Library archive `alchemy_notnotes_v0.1-dev15.zip` (SHA-256
+`57a7d1b09234621f20c9de5dda312b4e38140b57cb87c45f7318e59730db4488`).
+`ARCHIVED_DEV15_README.md` preserves the original package README. The source is
+not promoted to the current runtime merely by appearing in Git. External pinned
+dependencies remain external; use DEPENDENCY_LOCK.json and target qualification.
 
-The `src/AlchemyNotNotesClustered.cls` file is an exact archive-derived source member (SHA-256 `7f408bc532f88d6f7c15043bccb639aefadd6044f1cbceac7ed5d31bd6e0aaab`).
+The current Project Alchemy NotNotes document corpus v0.6.2 is a separate mutable
+working-document line, **not** a replacement code package or a deployable database.
+No live documents are mutated by this Git backfill.
 
-**Still missing from this GitHub directory:** `src/AlchemyNotNotes.cls` and `src/AlchemyNotNotesIntentions.cls`, tests, demos and declared dependencies. Do not treat this directory as buildable until the missing files are backfilled and hashes validated.
-
-The newer `project_alchemy_notnotes_corpus_v0.6.2_working.zip` is a database/document corpus, not a substitute for the source. The Architecture Intentions dev10 proposal is designed to consume NotNotes authority, never to replace or bypass it.
+Archive member digests are retained in SOURCE_PROVENANCE.json. The source must
+be checked against that authority before claims of native runtime acceptance.

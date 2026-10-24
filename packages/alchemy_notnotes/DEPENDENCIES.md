@@ -8,5 +8,5 @@
 - `RTOSecurityManager.cls` from the existing Alchemy Objects/security qualification
   dependency used by the dev14 baseline.
 
-Intention Service remains an external dependency. NotNotes does not vendor its source
+Intention Service remains an external dependency.  NotNotes does not vendor its source
 into the product package.
