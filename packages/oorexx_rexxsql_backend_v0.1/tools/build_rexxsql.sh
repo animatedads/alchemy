@@ -26,7 +26,8 @@ set -- --with-rexx=oorexx --with-db=sqlite3
 [ -n "${REXX_INCDIR:-}" ] && set -- "$@" --with-rexxincdir="$REXX_INCDIR"
 [ -n "${REXX_LIBDIR:-}" ] && set -- "$@" --with-rexxlibdir="$REXX_LIBDIR"
 [ -n "${SQLITE_LIBDIR:-}" ] && set -- "$@" --with-dblibdir="$SQLITE_LIBDIR"
-sh ../src/configure "$@" > "$OUT/build.log" 2>&1 || { tail -20 "$OUT/build.log"; exit 1; }
+# Force -c -o support. Rexx/SQL's configure probe compiles 'foo(){}', which GCC 14+ rejects (implicit int is an error), so it wrongly reports "no". The fallback it then selects writes $'@' into the Makefile, which bash-as-sh expands to a bare '@'. Every current compiler supports -c -o.
+sh ../src/configure ac_cv_prog_cc_gcc_c_o=yes "$@" > "$OUT/build.log" 2>&1 || { tail -20 "$OUT/build.log"; exit 1; }
 grep -q '#define OOREXX_40 1' config.h || { echo "configure did not select the ooRexx 4.0+ API" >&2; exit 1; }
 make >> "$OUT/build.log" 2>&1 || { grep -E 'error' "$OUT/build.log" | head -20; exit 1; }
 cp librexxsql.so "$OUT/"
