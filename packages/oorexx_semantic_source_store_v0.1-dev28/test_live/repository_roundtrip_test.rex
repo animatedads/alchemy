@@ -172,7 +172,9 @@ req: procedure
 pinsFor: procedure
   use arg sql, importId
   pins = .directory~new
-  do row over sql~execute("SELECT r.object_id,r.revision_id FROM ssc_projection_member p JOIN ssc_source_revision r ON r.revision_id=p.revision_id WHERE p.project_id='import:" || importId || "'")~rows
+  -- Pin the member revisions (import:<id>) and the SOURCE_UNIT layout revision (import-layout:<id>):
+  -- an import that was never accepted has no accepted layout to fall back on.
+  do row over sql~execute("SELECT r.object_id,r.revision_id FROM ssc_projection_member p JOIN ssc_source_revision r ON r.revision_id=p.revision_id WHERE p.project_id IN ('import:" || importId || "','import-layout:" || importId || "')")~rows
     pins[col(row, "object_id")] = col(row, "revision_id")
   end
   return pins
