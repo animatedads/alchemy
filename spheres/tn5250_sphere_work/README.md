@@ -7,3 +7,5 @@ Start with `ref.terminal-machine.3270-current`, `ref.terminal-machine.architectu
 The current 3270 delivery documented here is `oorexx_terminal_machine_v0.22-candidate12.zip`, SHA-256 `e57dcf302070380a6e714ab0a5e8d1adb65b8c27974c34115712dc6314b00f8a`. Candidate12 extends candidate11 with an evidence-backed TK5 ISPF Primary Option Menu state and fixes protocol-labelled host screen/round-trip metering.
 
 The sphere is documentation and reasoning memory. It grants no terminal-mutation, credential, MVS, Hercules, Queue Fabric, RPC, ConnectSelector, or Socket Provider authority.
+
+The MVS Intention consumer is now explicitly documented as a downstream user of Terminal Machine terminal/session evidence. Its dev9 package was built against candidate8; candidate12 remains the current Terminal Machine authority. The next live gate is same-session Terminal Machine↔s3270 differential qualification on ED209Z, followed independently by ED209ZZ.
