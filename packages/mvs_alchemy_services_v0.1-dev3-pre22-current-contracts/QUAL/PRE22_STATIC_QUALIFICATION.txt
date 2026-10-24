@@ -1,0 +1,23 @@
+MVS Alchemy Services PRE22 static qualification — reconciled 2026-10-24
+
+PASS RPC_CORE_ALIGNMENT PRE22
+PASS CONNECT_SELECTOR_SECURITY PRE22
+PASS INSTRUMENTATION_MESH_WIRING PRE22
+PASS HASP_SHELL_SAFETY
+PASS MVS_WIRE_BYTES
+PASS MVS_TYPED_PAYLOADS payloads=22
+PASS bash -n qualification harness
+PASS MASD75 source cards <=71 columns
+PASS MASLIVE source cards <=71 columns
+PASS generated MASLIVE JCL <=80 columns
+PASS exact current dependency archive SHA-256 checks
+
+Runtime integration tests were NOT rerun during the 2026-10-24 reconciliation because the target r13196 runtime was not available in the working container. Earlier PRE21 runtime evidence must not be promoted to PRE22.
+
+Reviewed current dependencies:
+ConnectSelector: oorexx_connect_selector_v0.1-dev6.zip
+RPC: oorexx_rpc_portfolio_v0.1-dev1.zip / RpcServiceCore dev1
+Instrumentation Mesh: oorexx_instrumentation_mesh_v0.1-dev8.zip
+
+ED209Z live JES/X75/service qualification: NOT_RUN for PRE22.
+PRE12 remains the last live guest execution evidence and failed at the X'75' instruction path.
