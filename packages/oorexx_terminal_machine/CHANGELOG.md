@@ -1,3 +1,31 @@
+## candidate12
+
+- correct host screen/round-trip meter facts to use the gate's configured protocol source, so TN3270 ownership does not emit historical TN5250 labels;
+- add reference-backed `MVS.ISPF.PRIMARY_OPTION_MENU` recognition from the exact TK5 Figure 17 screen;
+- require corroborating title, option prompt and END instruction rather than a single loose substring;
+- retain a sanitized ISPF primary-menu reference fixture with variable status fields omitted;
+- record current ConnectSelector v0.1-dev6 as an optional adapter boundary, not a native TN3270 dependency.
+
+## v0.22-candidate11
+
+- Promote live ED209Z/ED209ZZ reference evidence into conservative native 3270 semantic states: Hercules/TK5 welcome panel, TSO logon prompt, TSO current-password prompt and TSO READY.
+- Add generic `ANY_ROW_EQUALS_CI` known-state criterion so authentication-sensitive states can require an exact trimmed screen row rather than a substring.
+- Require exact-row `READY` evidence; negative regressions prove `READY TO PROCESS`, unrelated messages and echoed command text do not authenticate a session.
+- Generalise the observed `ENTER CURRENT PASSWORD FOR HERC03-` evidence only to the stable visible prompt prefix; no userid or credential becomes terminal authority.
+- Add `qualification/MVS3270_LIVE_EVIDENCE.md` documenting the evidence/authority boundary.
+- Add the candidate10 TN3270 ownership/control regressions to the normal `run_tests.sh` list.
+- Re-check the ConnectSelector/RPC alignment: no transport framework is made a dependency of the native 3270 engine.
+
+## v0.22-candidate10
+
+- Connect native TN3270/TN3270E live sessions to the existing `TerminalSessionOwner` exact-object ownership contract.
+- Add a snapshot-only TN3270 observer facade and a private TN3270 mutation port behind `TerminalControlGate`.
+- Preserve the legacy direct TN3270 cursor/input/AID API only for unclaimed sessions; once an owner claims the session, direct mutation fails closed.
+- Reuse the existing one-writer/many-readers control model for 3270 field write, cursor movement, field navigation, AID and reset operations.
+- Keep TN3270E SYSREQ unavailable unless the negotiated wire profile genuinely supports it.
+- Generalize `TerminalControlGate` meter-source labelling so 3270 work is recorded as `TN3270` instead of historical `TN5250`.
+- Retain the qualified `TcpTerminalTransport` until Socket Provider exposes a concrete bounded readable-wait contract for ordinary TCP connections; do not unwrap raw provider internals.
+
 # v0.22-candidate9
 
 - 3270 P0: implement implicit-partition Read Partition operations for Read Buffer, Read Modified and Read Modified All.
