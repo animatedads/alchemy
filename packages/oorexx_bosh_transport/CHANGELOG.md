@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1-dev6
+
+- Repaired the stale environment runner: removed the deleted `test_bosh_telemetry.rex` reference and stale dev2 completion label.
+- Environment qualification now compiles the BOSH core, SocketProvider adapter and Instrumentation adapter, then delegates to the current `tests/run.sh` suite.
+- Requires exact caller-supplied Socket Provider and Instrumentation Mesh source roots; it no longer accepts an ambiguous class-directory path.
+- Refreshed integration evidence to Socket Provider dev16, Network Transport Intentions dev3, Instrumentation Mesh dev8 and XTP dev25 development context.
+- Preserved released dev5 artifact provenance; dev6 is a source reconciliation revision rather than a relabel of the dev5 ZIP.
+- Recorded that first-class GitHub source for Socket Provider dev16 and Instrumentation Mesh dev8 remains an upstream publication gate.
+- Kept concrete HTTP/HTTPS carrier implementation open rather than adding XTP or HTTP implementation knowledge to BOSH core.
+
+
 ## 0.1-dev5
 
 - Requalified the optional observation layer for Instrumentation Mesh v0.1-dev8.
