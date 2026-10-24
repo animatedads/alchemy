@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "ref.terminal-machine.3270-current",
+  "version": "0.2",
+  "sphere": "terminal-machine",
+  "title": "IBM 3270 P0 current state",
+  "summary": "The current P0 line is a native 24x80 Model-2 IBM 3270 engine with traditional TN3270 first, basic TN3270E negotiation, executable host reads/structured fields, extended attributes, operator input, detached snapshots, evidence-backed MVS/TK5 known states, and the generic one-writer/many-reader ownership gate.",
+  "authority": "terminal-machine-project",
+  "invariants": [
+    "Traditional TN3270 remains first-class; TN3270E is used only for functions genuinely negotiated and implemented.",
+    "READ BUFFER, READ MODIFIED and READ MODIFIED ALL preserve native 3270 field/MDT semantics rather than flattening the presentation space.",
+    "SFE, SA and MF attributes remain in the model and READ BUFFER reconstruction; NONDISPLAY values are masked in detached snapshots.",
+    "Write Structured Field and Query Reply advertise only capabilities actually implemented.",
+    "Once TN3270LiveSession is claimed by TerminalSessionOwner, direct mutation fails closed and one-writer control passes through TerminalControlGate.",
+    "TSO READY requires a complete trimmed row exactly equal to READY; loose READY substrings are not authentication evidence.",
+    "The TK5 ISPF Primary Option Menu requires corroborating title, Option prompt and END instruction markers; recognition grants no PF/AID authority.",
+    "Terminal meter facts use the configured protocol source; TN3270 evidence must never be emitted as TN5250."
+  ],
+  "known_states": [
+    "HERCULES.TK5.WELCOME_PANEL",
+    "MVS.TSO.LOGON_PROMPT",
+    "MVS.TSO.PASSWORD_PROMPT",
+    "MVS.TSO.READY",
+    "MVS.ISPF.PRIMARY_OPTION_MENU"
+  ],
+  "missing_work": [
+    "Differentially qualify Terminal Machine and s3270 against the same live ED209Z screens, comparing fields, protection, MDT, cursor and visible content rather than rendered text alone.",
+    "Capture a live Terminal Machine ISPF snapshot and compare it with the retained TK5 Figure 17 reference without promoting documentation evidence to live authority.",
+    "Adopt Socket Provider only when its concrete TCP connection exposes a qualified non-blocking readiness contract; do not unwrap raw provider internals to force the migration.",
+    "Add optional TN3270E BIND/RESPONSES/SYSREQ semantics only when negotiated and fully implemented; never claim optional functions speculatively."
+  ],
+  "provenance": [{
+    "artifact": "oorexx_terminal_machine_v0.22-candidate12.zip",
+    "sha256": "6affe6f192d9f58cdc7bf299607a30e82ad01a72e394f219d3455c5217469fcd",
+    "member": "oorexx_terminal_machine_v0.22-candidate12/qualification/CANDIDATE12_VALIDATION.txt",
+    "claim": "Records candidate12 scope, inherited r13196 evidence and the reference/live authority distinction."
+  }]
+}
