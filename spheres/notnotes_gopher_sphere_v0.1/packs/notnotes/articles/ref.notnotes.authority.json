@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "ref.notnotes.authority",
+  "version": "0.1",
+  "sphere": "notnotes",
+  "title": "Document, report and workflow authority",
+  "summary": "NotNotes owns document definitions, document/revision state, references, reports and workflow feasibility. Renderers and Help Desk are consumers of semantic projections, not replacement business engines.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Documents and relationships remain authoritative NotNotes objects with version/revision identity.",
+    "Semantic application and document projections supply renderer-neutral meaning.",
+    "The Initech Help Desk and Wire UI renderers do not invent or change NotNotes workflow state.",
+    "A saved report added at runtime must be discoverable by consumers without a new hard-coded command.",
+    "Historic consumer tests do not establish that omitted package sources are qualified in the current repository."
+  ],
+  "procedure": [
+    "Fetch the versioned live NotNotes semantic application projection from the actual installed class.",
+    "Fetch document projections to determine actions and feasibility using the business model.",
+    "Keep source version and provider provenance in outputs and qualification records.",
+    "Requalify on the real ooRexx interpreter after restoring immutable platform source."
+  ],
+  "provenance": [
+    {
+      "repository_path": "examples/initech_notnotes_helpdesk_v0.1-dev5/README.md",
+      "claim": "Published consumer documentation describes MiniNotesApp.semanticApplicationProjection and semanticDocumentProjection."
+    },
+    {
+      "repository_path": "examples/initech_notnotes_helpdesk_v0.1-dev5/SOURCE_PROVENANCE.md",
+      "claim": "Published source import explicitly omits the accepted delivery ZIP's vendored dependency closure."
+    }
+  ],
+  "related": [
+    "ref.notnotes.intentions",
+    "ref.notnotes.publication"
+  ]
+}
