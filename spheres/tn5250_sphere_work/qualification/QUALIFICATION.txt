@@ -1,59 +1,46 @@
-Terminal Machine / TN5250 Gopher sphere v0.1 qualification
-Date: 2026-09-02
+Terminal Machine Gopher sphere v0.2 qualification
+Date: 2026-10-24
 
-AUTHORITATIVE IMPLEMENTATION BASELINE
-=====================================
-oorexx_terminal_machine_v0.21.zip
-SHA-256 64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5
+AUTHORITATIVE CONTINUITY BASELINES
+==================================
+TN5250 retained baseline: oorexx_terminal_machine_v0.21.zip
+  SHA-256 64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5
+3270 P0 current delivery: oorexx_terminal_machine_v0.22-candidate12.zip
+  SHA-256 6affe6f192d9f58cdc7bf299607a30e82ad01a72e394f219d3455c5217469fcd
 
-The sphere documents the generic Terminal Machine and its TN5250/IBM i personality while
-keeping executable code outside the sphere. It records the v0.21 persistent ownership/broker
-line and the emulator-only recovery boundary. It does not claim that Gopher is execution
-authority for terminal mutation.
+SCOPE
+=====
+The sphere documents the terminal-neutral core plus both IBM personalities. It records
+candidate10 ownership/control integration, candidate11 live-reference MVS/TK5 states,
+and candidate12 TK5 ISPF reference evidence. It is documentation/retrieval authority
+only and does not grant live terminal mutation.
 
-AUTHORING / RUNTIME COMPATIBILITY
-=================================
-Qualified with LLM Gopher v0.19-dev1 editor/runtime surface:
-  sphere edit validate
-  sphere edit lint
-  context
-  open
-  exact corpus lookup
-  sphere edit package
+EVIDENCE BOUNDARIES
+===================
+- Terminal Machine: terminal/session/screen/field truth.
+- MVS Alchemy Services: guest/MVS semantic truth.
+- Hercules Services: emulator/control-plane truth.
+- s3270/x3270: independent reference implementation evidence, never relabelled as Terminal Machine.
+- TK5 manual Figure 17: documentation/reference evidence for the ISPF primary menu, never relabelled as a live ED209 observation.
 
-STRUCTURE
-=========
-Expected canonical objects: 19
-  sphere: 1
-  access policy: 1
-  articles: 16
-  corpora: 1 (21 durable reasoning records)
+CURRENT 3270 GATES
+==================
+Known states: HERCULES.TK5.WELCOME_PANEL, MVS.TSO.LOGON_PROMPT,
+MVS.TSO.PASSWORD_PROMPT, MVS.TSO.READY and MVS.ISPF.PRIMARY_OPTION_MENU.
+READY is exact-row evidence. ISPF requires three corroborating stable markers.
+NONDISPLAY data remains masked. One-writer/many-readers and exact ownership are retained.
+TN3270 protocol meter facts must be labelled TN3270, including host screen/round-trip evidence.
 
-RETRIEVAL GATES
-===============
-- terminal-machine context opens and exposes the release, architecture, one-writer,
-  known-state and continuation material.
-- exact topic=one-writer-many-readers lookup returns EXACT_FIELD.
-- secret-boundary article opens and preserves NONDISPLAY/raw-credential secrecy.
-- exact topic=emulator-only-rewind lookup preserves the LIVE_HOST no-rewind boundary.
+VALIDATION STATUS
+=================
+Candidate11 previously passed the focused ooRexx 5.3.0 r13196 3270 suites. Candidate12
+adds semantic-reference evidence and the metering-label correction. In the 2026-10-24
+authoring environment, the package manifest verified but a runnable r13196 interpreter
+was not mounted, so no fresh interpreter claim is made for candidate12.
 
-IMPLEMENTATION EVIDENCE RETAINED IN SPHERE
-==========================================
-Articles carry structured provenance to exact members of the v0.21 archive and its exact
-SHA-256. Key retained invariants include:
-- transport/protocol/model/semantic-state separation;
-- one writer, many readers and generation-fenced mutation;
-- one persistent real IBM i session rather than probe/session proliferation;
-- external WLU admission before mutation;
-- raw credential/NONDISPLAY secrecy;
-- exact known-state gating before PUB400 automation/signoff;
-- strict DEVNAME collision semantics;
-- exact-owned TLS helper cleanup;
-- semantic host state distinct from local operator condition;
-- emulator checkpoint/rollback/retry authority never confers live-host rewind authority.
-
-LIVE-HOST SCOPE
-===============
-No PUB400 login, password submission, or live-host mutation was performed for sphere
-qualification. Qualification is documentation/retrieval only and reuses the implementation's
-recorded v0.21 evidence rather than generating new live-host claims.
+NEXT
+====
+Differential live qualification against the same ED209Z screens with Terminal Machine
+and s3270, comparing fields/protection/MDT/cursor/visible text. Adopt Socket Provider
+only when concrete TCP readiness is qualified. Keep ConnectSelector at the application
+communication boundary rather than inside the 3270 engine.
