@@ -1,0 +1,395 @@
+From 27339d238891100dee264b56c127df86e08773f2 Mon Sep 17 00:00:00 2001
+From: "Claude (Opus 5.5)" <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 16:55:29 +0100
+Subject: [PATCH 3/4] SQLite3 driver: no stack overflow on long column names;
+ NUL-safe text; BLOB values; bounded error messages
+
+- FetchRow/SetRowCountVar built stem.column.n with sprintf into a fixed
+  MAX_IDENTIFIER-sized stack buffer. SQLite column names are unbounded (an
+  unaliased expression is named by its text): a long one aborted the whole
+  interpreter (glibc: buffer overflow detected). Long names now use a heap
+  buffer; an invalid Rexx name returns a normal error.
+- Text values were measured with strlen(), truncating at the first NUL byte.
+  Use sqlite3_column_bytes().
+- BLOB values were always returned as the empty string. Return the bytes.
+- Error messages: sprintf(tmp, ... %s identifier up to 255 bytes) into
+  tmp[128] -> snprintf(tmp, sizeof(tmp), ...).
+---
+ general/rxsqlinc2.h |  20 ++++-----
+ sqlite3/sqlite3.c   | 102 ++++++++++++++++++++++++++++++--------------
+ 2 files changed, 79 insertions(+), 43 deletions(-)
+
+diff --git a/general/rxsqlinc2.h b/general/rxsqlinc2.h
+index 6b6b03a..cc27979 100644
+--- a/general/rxsqlinc2.h
++++ b/general/rxsqlinc2.h
+@@ -125,7 +125,7 @@ rxfunc( SQLVARIABLE )
+     */
+    if ( ( opt = ll_find( RxPackageGlobalData, RexxSQLData->opt_tbl, opt_name ) ) == (SQLVAL*)NULL )
+    {
+-      (void)sprintf(tmp,"unknown variable \"%s\".", opt_name);
++      (void)snprintf( tmp, sizeof(tmp),"unknown variable \"%s\".", opt_name);
+       return ReturnError( RxPackageGlobalData, retstr, 11, tmp );
+    }
+    /*
+@@ -157,7 +157,7 @@ rxfunc( SQLVARIABLE )
+       {
+          if ( RXSTRLEN(argv[1]) > MAX_PATH )
+          {
+-            sprintf(tmp,"identifier is too long; max length is %d",MAX_IDENTIFIER);
++            snprintf( tmp, sizeof(tmp),"identifier is too long; max length is %d",MAX_IDENTIFIER);
+             return ReturnError( RxPackageGlobalData, retstr, 6, tmp );
+          }
+          rc = RxSetTraceFile( RxPackageGlobalData, RXSTRPTR(argv[1]) );
+@@ -179,7 +179,7 @@ rxfunc( SQLVARIABLE )
+     */
+    if (!opt->user_update)
+    {
+-      (void)sprintf(tmp, "variable \"%s\" is not settable.", opt_name);
++      (void)snprintf( tmp, sizeof(tmp), "variable \"%s\" is not settable.", opt_name);
+       return ReturnError( RxPackageGlobalData, retstr, 12, tmp );
+    }
+ 
+@@ -201,7 +201,7 @@ rxfunc( SQLVARIABLE )
+       case TYPE_STRING:
+          if (RXSTRLEN(argv[1]) > MAX_IDENTIFIER)
+          {
+-            sprintf(tmp,"identifier is too long; max length is %d",MAX_IDENTIFIER);
++            snprintf( tmp, sizeof(tmp),"identifier is too long; max length is %d",MAX_IDENTIFIER);
+             return ReturnError( RxPackageGlobalData, retstr, 6, tmp );
+          }
+          rxs = (RXSTRING*)opt->value;
+@@ -284,7 +284,7 @@ rxfunc( SQLGETINFO )
+        */
+       if ( ( db = FindObject( RxPackageGlobalData, dbname, RexxSQLData->DbEnv->db_tbl, TBL_CONNECTIONS ) ) == (DBCON*)NULL )
+       {
+-         (void)sprintf(tmp,"connection \"%s\" is not open.", dbname);
++         (void)snprintf( tmp, sizeof(tmp),"connection \"%s\" is not open.", dbname);
+          return ReturnError( RxPackageGlobalData, retstr, 21, tmp );
+       }
+    }
+@@ -301,7 +301,7 @@ rxfunc( SQLGETINFO )
+     */
+    if ( ( opt = ll_find( RxPackageGlobalData, db->db_opt, opt_name ) ) == (SQLVAL*)NULL )
+    {
+-      (void)sprintf( tmp, "unknown variable \"%s\".", opt_name );
++      (void)snprintf( tmp, sizeof(tmp), "unknown variable \"%s\".", opt_name );
+       return ReturnError( RxPackageGlobalData, retstr, 11, tmp );
+    }
+    /*
+@@ -376,7 +376,7 @@ rxfunc( SQLGETINFO )
+       case TYPE_INT:
+       case TYPE_BOOL:
+          (void)sprintf(varname, "%s%u", stem_name, 1);
+-         sprintf(tmp,"%lu",*(ULONG*)(opt->value));
++         snprintf( tmp, sizeof(tmp),"%lu",*(ULONG*)(opt->value));
+          num_vars = 1;
+          rc = SetRexxVariable( RxPackageGlobalData, varname, strlen(varname), tmp, strlen(tmp));
+          break;
+@@ -422,7 +422,7 @@ rxfunc( SQLGETINFO )
+    if (!rc)
+    {
+       (void)sprintf(varname, "%s0", stem_name);
+-      sprintf(tmp,"%u",num_vars);
++      snprintf( tmp, sizeof(tmp),"%u",num_vars);
+       rc = SetRexxVariable( RxPackageGlobalData, varname, strlen(varname), tmp, strlen(tmp));
+    }
+ 
+@@ -991,9 +991,9 @@ static void ClearDBError( RxPackageGlobalDataDef *RxPackageGlobalData )
+    SetComputeCount( RxPackageGlobalData, 0L );
+ #endif
+ #if defined(USES_MULTIPLE_ERRORS)
+-   sprintf( tmp,"%s.0", SQLCA_SQLERRM );
++   snprintf( tmp, sizeof(tmp),"%s.0", SQLCA_SQLERRM );
+    (void)SetRexxVariable( RxPackageGlobalData, tmp, strlen(tmp), "0", 1 );
+-   sprintf( tmp, "%s.0", SQLCA_SQLSTATE );
++   snprintf( tmp, sizeof(tmp), "%s.0", SQLCA_SQLSTATE );
+    (void)SetRexxVariable( RxPackageGlobalData, tmp, strlen(tmp), "0", 1 );
+ #endif
+    SetSQLCA( RxPackageGlobalData, 0L, "", "", "" );
+diff --git a/sqlite3/sqlite3.c b/sqlite3/sqlite3.c
+index 708e2da..bc64743 100644
+--- a/sqlite3/sqlite3.c
++++ b/sqlite3/sqlite3.c
+@@ -565,7 +565,7 @@ rxfunc( SQLCONNECT )
+    /* Make sure there is no existing connection with the same name */
+    if ( FindObject( RxPackageGlobalData, cnctname, RexxSQLData->DbEnv->db_tbl, TBL_CONNECTIONS ) )
+    {
+-      (void)sprintf( tmp, "connection already open with name \"%s\".", cnctname );
++      (void)snprintf( tmp, sizeof(tmp), "connection already open with name \"%s\".", cnctname );
+       return ReturnError( RxPackageGlobalData, retstr, 20, tmp );
+    }
+ 
+@@ -631,7 +631,7 @@ rxfunc( SQLDISCONNECT )
+       /* Make sure the named connection exists. */
+       if ( ( db = FindObject( RxPackageGlobalData, dbname, RexxSQLData->DbEnv->db_tbl, TBL_CONNECTIONS ) ) == (DBCON*)NULL )
+       {
+-         (void)sprintf( tmp,"connection \"%s\" is not open.",dbname );
++         (void)snprintf( tmp, sizeof(tmp),"connection \"%s\" is not open.",dbname );
+          return ReturnError( RxPackageGlobalData, retstr, 21, tmp );
+       }
+    }
+@@ -703,7 +703,7 @@ rxfunc( SQLDEFAULT )
+       /* Make sure the Connection Name is a valid one! */
+       if ((db = FindObject(RxPackageGlobalData,dbname, RexxSQLData->DbEnv->db_tbl, TBL_CONNECTIONS)) == (DBCON*)NULL)
+       {
+-         (void)sprintf(tmp,"connection \"%s\" is not open.", dbname);
++         (void)snprintf( tmp, sizeof(tmp),"connection \"%s\" is not open.", dbname);
+          return ReturnError(RxPackageGlobalData,retstr, 21, tmp);
+       }
+ 
+@@ -833,7 +833,7 @@ static int ConvertBindByStandard( RxPackageGlobalDataDef *RxPackageGlobalData, S
+          bind_type = ValidateDataType( RxPackageGlobalData, (char*)(ptr+5), RXSTRLEN(*Darg)-5, stmt->db );
+          if (bind_type == (RXSQL_INVALID_DATATYPE))
+          {
+-            sprintf(tmp,"invalid datatype <%s> specified.",(ptr+5));
++            snprintf( tmp, sizeof(tmp),"invalid datatype <%s> specified.",(ptr+5));
+             return(SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 64, tmp ));
+          }
+          file_bind = 1;
+@@ -843,7 +843,7 @@ static int ConvertBindByStandard( RxPackageGlobalDataDef *RxPackageGlobalData, S
+          bind_type = ValidateDataType( RxPackageGlobalData, RXSTRPTR(*Darg), RXSTRLEN(*Darg), stmt->db );
+          if (bind_type == (RXSQL_INVALID_DATATYPE))
+          {
+-            sprintf(tmp,"invalid datatype <%s> specified.",RXSTRPTR(*Darg));
++            snprintf( tmp, sizeof(tmp),"invalid datatype <%s> specified.",RXSTRPTR(*Darg));
+             return(SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 64, tmp ));
+          }
+       }
+@@ -851,7 +851,7 @@ static int ConvertBindByStandard( RxPackageGlobalDataDef *RxPackageGlobalData, S
+       {
+          if ((fp = fopen(RXSTRPTR(*Varg),"rb")) == NULL)
+          {
+-            sprintf(tmp,"<open> on file <%s> failed: %s.",RXSTRPTR(*Varg),strerror(errno));
++            snprintf( tmp, sizeof(tmp),"<open> on file <%s> failed: %s.",RXSTRPTR(*Varg),strerror(errno));
+             return(SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 86, tmp ));
+          }
+          stat(RXSTRPTR(*Varg),&stat_buf);
+@@ -881,17 +881,17 @@ static int ConvertBindByStandard( RxPackageGlobalDataDef *RxPackageGlobalData, S
+          pmd->valuelen = bindlen;
+          if (fseek(fp,0L,SEEK_SET) != 0)
+          {
+-            sprintf(tmp,"<read> on file <%s> failed: %s.",RXSTRPTR(*Varg),strerror(errno));
++            snprintf( tmp, sizeof(tmp),"<read> on file <%s> failed: %s.",RXSTRPTR(*Varg),strerror(errno));
+             return(SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 86, tmp ));
+          }
+          if ((int)fread(pmd->buf,sizeof(char),bindlen,fp) != bindlen)
+          {
+-            sprintf(tmp,"<seek> on file <%s> failed: %s.",RXSTRPTR(*Varg),strerror(errno));
++            snprintf( tmp, sizeof(tmp),"<seek> on file <%s> failed: %s.",RXSTRPTR(*Varg),strerror(errno));
+             return(SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 86, tmp ));
+          }
+          if (fclose(fp))
+          {
+-            sprintf(tmp,"<close> on file <%s> failed: %s.",RXSTRPTR(*Varg),strerror(errno));
++            snprintf( tmp, sizeof(tmp),"<close> on file <%s> failed: %s.",RXSTRPTR(*Varg),strerror(errno));
+             return(SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 86, tmp ));
+          }
+          if ( ( memcmp( (char*)pmd->buf, RexxSQLData->NullStringIn, bindlen ) ) == 0 )
+@@ -940,7 +940,7 @@ static int ConvertBindByStandard( RxPackageGlobalDataDef *RxPackageGlobalData, S
+     */
+    if (swa->bind_cnt && colno < swa->bind_cnt)
+    {
+-      (void)sprintf(tmp, "%d bind values passed. %d expected", colno, swa->bind_cnt);
++      (void)snprintf( tmp, sizeof(tmp), "%d bind values passed. %d expected", colno, swa->bind_cnt);
+       return(SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 61, tmp ));
+    }
+ 
+@@ -985,12 +985,12 @@ static int ConvertBindByName( RxPackageGlobalDataDef *RxPackageGlobalData, STMT
+        */
+       if ( RXSTRLEN(*Narg) < 2 || ( *(RXSTRPTR(*Narg)) != ':' && *(RXSTRPTR(*Narg)) != '$' ) )
+       {
+-         (void)sprintf( tmp, "invalid substitution variable name \"%s\" at bind pair %d.", RXSTRPTR(*Narg), cnt );
++         (void)snprintf( tmp, sizeof(tmp), "invalid substitution variable name \"%s\" at bind pair %d.", RXSTRPTR(*Narg), cnt );
+          return( SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 63, tmp ) );
+       }
+       if ( ( colno = sqlite3_bind_parameter_index( CTX(swa), RXSTRPTR(*Narg) ) ) == 0 )
+       {
+-         (void)sprintf( tmp, "invalid substitution variable name \"%s\" at bind pair %d.", RXSTRPTR(*Narg), cnt );
++         (void)snprintf( tmp, sizeof(tmp), "invalid substitution variable name \"%s\" at bind pair %d.", RXSTRPTR(*Narg), cnt );
+          return( SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 63, tmp ) );
+       }
+       /*
+@@ -1051,7 +1051,7 @@ static int ConvertBindByName( RxPackageGlobalDataDef *RxPackageGlobalData, STMT
+     */
+    if (swa->bind_cnt && cnt < swa->bind_cnt)
+    {
+-      (void)sprintf(tmp, "%d bind values passed. %d expected", cnt, swa->bind_cnt);
++      (void)snprintf( tmp, sizeof(tmp), "%d bind values passed. %d expected", cnt, swa->bind_cnt);
+       return(SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 61, tmp ));
+    }
+ 
+@@ -1296,8 +1296,9 @@ static int FetchRow( RxPackageGlobalDataDef *RxPackageGlobalData, STMT *stmt, ch
+ {
+    SQLWA   *swa=SWA(stmt);
+    int     rc, i, result;
+-   size_t  varlen=0;
++   size_t  varlen=0, need;
+    char    varname[MAX_IDENTIFIER+1+10];
++   char    *vn;   /* varname, or a heap buffer when a column name is too long for it */
+    char    tmp[128];
+    char    *name,*value;
+    DBCON   *db;
+@@ -1307,7 +1308,7 @@ static int FetchRow( RxPackageGlobalDataDef *RxPackageGlobalData, STMT *stmt, ch
+ 
+    if (!CTX(swa))
+    {
+-      (void)sprintf(tmp,"statement \"%s\" has not been OPENed or EXECUTEd", stmt->name);
++      (void)snprintf( tmp, sizeof(tmp),"statement \"%s\" has not been OPENed or EXECUTEd", stmt->name);
+       return(SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 26, tmp ));
+    }
+ 
+@@ -1336,32 +1337,51 @@ static int FetchRow( RxPackageGlobalDataDef *RxPackageGlobalData, STMT *stmt, ch
+    {
+       name = (char *)sqlite3_column_name( CTX(swa), i );
+ 
+-      /* Add each column value to the stem's values */
++      /*
++       * Add each column value to the stem's values.
++       * SQLite column names are unbounded (an unaliased expression is named by
++       * its text), so the fixed buffer is only used when the name fits.
++       */
++      need = strlen( stem ) + strlen( name ) + 24;
++      vn = varname;
++      if ( need > sizeof(varname) )
++      {
++         vn = (char *)malloc( need );
++         if ( vn == NULL )
++            return(SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 16, "unable to allocate REXX variable name" ));
++      }
++      else
++         need = sizeof(varname);
+       if ( rowcount )
+-         varlen = sprintf( varname, "%s.%s.%lu", stem, name, rowcount );
++         varlen = snprintf( vn, need, "%s.%s.%lu", stem, name, (unsigned long)rowcount );
+       else
+-         varlen = sprintf( varname, "%s.%s",  stem, name );
++         varlen = snprintf( vn, need, "%s.%s",  stem, name );
+ 
+       /* determine column type */
+       switch( sqlite3_column_type( CTX(swa), i ) )
+       {
+          case SQLITE_NULL:
+-            rc = SetRexxVariable( RxPackageGlobalData, varname, varlen, RexxSQLData->RXSNullStringOut.strptr, RexxSQLData->RXSNullStringOut.strlength );
++            rc = SetRexxVariable( RxPackageGlobalData, vn, varlen, RexxSQLData->RXSNullStringOut.strptr, RexxSQLData->RXSNullStringOut.strlength );
+             break;
+          case SQLITE_BLOB:
+-            rc = SetRexxVariable( RxPackageGlobalData, varname, varlen, "", 0 );
++            /* return the bytes; previously every BLOB value was returned as "" */
++            value = (char *)sqlite3_column_blob( CTX(swa), i );
++            rc = SetRexxVariable( RxPackageGlobalData, vn, varlen, value ? value : "", value ? (size_t)sqlite3_column_bytes( CTX(swa), i ) : 0 );
+             break;
+          default:
+             value = (char *)sqlite3_column_text( CTX(swa), i );
+             if ( value )  /* returned value is not NULL */
+             {
+-               rc = SetRexxVariable( RxPackageGlobalData, varname, varlen, value, strlen( value ) );
++               /* length from SQLite, not strlen(): text may contain NUL bytes */
++               rc = SetRexxVariable( RxPackageGlobalData, vn, varlen, value, (size_t)sqlite3_column_bytes( CTX(swa), i ) );
+             }
+             else
+             {
+-               rc = SetRexxVariable( RxPackageGlobalData, varname, varlen, RexxSQLData->RXSNullStringOut.strptr, RexxSQLData->RXSNullStringOut.strlength );
++               rc = SetRexxVariable( RxPackageGlobalData, vn, varlen, RexxSQLData->RXSNullStringOut.strptr, RexxSQLData->RXSNullStringOut.strlength );
+             }
+       }
++      if ( vn != varname )
++         free( vn );
+    }
+    /*
+     * Set our starting position to the next row
+@@ -1377,16 +1397,32 @@ static int FetchRow( RxPackageGlobalDataDef *RxPackageGlobalData, STMT *stmt, ch
+  *----------------------------------------------------------------------------*/
+ static int SetRowCountVar( RxPackageGlobalDataDef *RxPackageGlobalData, SQLWA *swa, char *stem_name, long rowcount )
+ {
+-   int     i=0;
+-   char    varname[MAX_IDENTIFIER*2+4], buf[11];
++   int     i=0, rc;
++   size_t  need;
++   char    varname[MAX_IDENTIFIER*2+4], buf[24];
++   char    *vn, *name;
+ 
+    InternalTrace( RxPackageGlobalData, "SetRowCountVar", "%x,%s,%d", swa, stem_name, rowcount );
+ 
++   snprintf( buf, sizeof(buf), "%ld", rowcount );
+    for (i = 0; i < swa->ncol; i++)
+    {
+-      sprintf( varname, "%s.%s.0", stem_name, sqlite3_column_name( CTX(swa), i ) );
+-      sprintf( buf, "%lu", rowcount );
+-      if ( SetRexxVariable( RxPackageGlobalData, varname, strlen( varname ), buf, strlen( buf) ) )
++      name = (char *)sqlite3_column_name( CTX(swa), i );
++      need = strlen( stem_name ) + strlen( name ) + 4;
++      vn = varname;
++      if ( need > sizeof(varname) )
++      {
++         vn = (char *)malloc( need );
++         if ( vn == NULL )
++            return(-16);
++      }
++      else
++         need = sizeof(varname);
++      snprintf( vn, need, "%s.%s.0", stem_name, name );
++      rc = SetRexxVariable( RxPackageGlobalData, vn, strlen( vn ), buf, strlen( buf) );
++      if ( vn != varname )
++         free( vn );
++      if ( rc )
+          return(-16);
+    }
+    return 0;
+@@ -2077,7 +2113,7 @@ rxfunc( SQLPREPARE )
+    }
+    else
+    {
+-      tmplen = sprintf( tmp, "PRAGMA table_info(%s);", RXSTRPTR(argv[1]) );
++      tmplen = snprintf( tmp, sizeof(tmp), "PRAGMA table_info(%s);", RXSTRPTR(argv[1]) );
+       if ( SaveSqlStatement( RxPackageGlobalData, &(swa->saved_stmt), tmp, (int)tmplen ) )
+          return ReturnError( RxPackageGlobalData, retstr, 10, "out of memory" );
+    }
+@@ -2140,7 +2176,7 @@ static STMT *GetStatement( RxPackageGlobalDataDef *RxPackageGlobalData, RXSTRING
+    if ( ( stmt = FindObject( RxPackageGlobalData, buf, RexxSQLData->DbEnv->stmt_tbl, TBL_STATEMENTS ) ) == (STMT*)NULL )
+    {
+       /* Statement not an existing one! */
+-      (void)sprintf( tmp, "statement \"%s\" does not exist", buf );
++      (void)snprintf( tmp, sizeof(tmp), "statement \"%s\" does not exist", buf );
+       SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 24, tmp );
+       return (STMT*)NULL;
+    }
+@@ -2249,7 +2285,7 @@ RFH_RETURN SQLEXEC( RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv,
+    {
+       sqlite3_finalize( CTX(swa) );
+       CTX(swa) = NULL;
+-      (void)sprintf( tmp, "statement \"%s\" is not a query.", stmt_name );
++      (void)snprintf( tmp, sizeof(tmp), "statement \"%s\" is not a query.", stmt_name );
+       return ReturnError( RxPackageGlobalData, retstr, 13, tmp );
+    }
+ 
+@@ -2270,7 +2306,7 @@ RFH_RETURN SQLEXEC( RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv,
+     */
+    if ( sqlite3_bind_parameter_count( CTX(swa) ) != swa->bind_cnt )
+    {
+-      sprintf( tmp, "%d bind variables passed. %d expected.", swa->bind_cnt, sqlite3_bind_parameter_count( CTX(swa) ) );
++      snprintf( tmp, sizeof(tmp), "%d bind variables passed. %d expected.", swa->bind_cnt, sqlite3_bind_parameter_count( CTX(swa) ) );
+       sqlite3_finalize( CTX(swa) );
+       CTX(swa) = NULL;
+       RxReturnNumber( RxPackageGlobalData, retstr, SetIntError( RxPackageGlobalData, __FILE__, __LINE__, 61, tmp ) );
+@@ -2411,7 +2447,7 @@ rxfunc( SQLFETCH )
+ 
+    if (!CTX(swa))
+    {
+-      (void)sprintf( tmp, "statement \"%s\" has not been OPENed or EXECUTEd", stmt->name );
++      (void)snprintf( tmp, sizeof(tmp), "statement \"%s\" has not been OPENed or EXECUTEd", stmt->name );
+       return ReturnError( RxPackageGlobalData, retstr, 26, tmp );
+    }
+ 
+@@ -2562,7 +2598,7 @@ rxfunc( SQLDESCRIBE )
+ 
+                if ( value )  /* returned value is not NULL */
+                {
+-                  rc = SetRexxVariable( RxPackageGlobalData, varname, varlen, value, strlen( value ) );
++                  rc = SetRexxVariable( RxPackageGlobalData, varname, varlen, value, (size_t)sqlite3_column_bytes( CTX(swa), i ) );
+                }
+                else
+                {
+-- 
+2.43.0
+

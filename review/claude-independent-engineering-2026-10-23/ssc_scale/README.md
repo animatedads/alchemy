@@ -33,9 +33,18 @@ Import time for N objects is roughly 2.23 N + 0.0047 N^2 seconds:
 | N objects | Estimated time |
 |---|---|
 | 388 (observed) | 26 min |
-| ~1,100 (all of GA, estimated from bytes) | ~2.3 h; consistent with the 2026-10-23 run stopped at 2 h |
+| 625 (all of GA; measured 2026-10-24 on Rexx/SQL) | ~54 min for the import alone; the 2026-10-23 run that stopped at 2 h also accepts and rebuilds |
 | 10,000 | ~5.7 days |
 
 The store is functionally correct (round trip, method granularity and mutation tests pass) but cannot
 import a real package set on NoSQLServer v0.79 or v0.91. Removing the N^2 term needs an indexed keyed
 lookup in NoSQLServer; no change inside the store fixes it. Evidence category: LOCAL_PASS (measurement).
+
+## Correction and follow-up (2026-10-24)
+
+The table first estimated GA at ~1,100 objects from file sizes. Importing it completely (on Rexx/SQL)
+counted 625, so the NoSQLServer import-only estimate is ~54 minutes, not ~2.3 hours.
+
+The same import on SQLite through Mark Hessling's Rexx/SQL takes 3 s, flat ~4 ms per object, and
+the full dogfood (import, accept, rebuild 17 files byte-identical) completes; see
+`packages/oorexx_rexxsql_backend_v0.1/`.

@@ -1,0 +1,32 @@
+/*
+ * Rexx/SQL
+ * Copyright (C) 1998-2003  Mark Hessling <M.Hessling@qut.edu.au>
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Library General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Library General Public License for more details.
+ *
+ * You should have received a copy of the GNU Library General Public
+ * License along with this library; if not, write to the Free
+ * Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
+#include "dbheader.h"
+#define RXPACKAGE_MAGIC_NUMBER    30840
+#define RXPACKAGE_DEBUG_VAR       "REXXSQL_DEBUG"
+#define RXPACKAGE_CONSTANT_PREFIX "!REXXSQL.!"
+
+#define RXPACKAGENAME             "rexxsql"
+#define GETPACKAGEINITIALISER()   getRexxSQLInitialiser()
+#define GETPACKAGETERMINATOR()    getRexxSQLTerminator()
+#define GETPACKAGEFUNCTIONS()     getRexxSQLFunctions()
+#define GETPACKAGECONSTANTS()     getRexxSQLConstants()
+#define GETPACKAGESUBCOMHANDLER() getRexxSQLSubcomHandler()
+#define GETPACKAGEINITHANDLER()   getRexxSQLInitHandler()
+#define PACKAGEUSAGE()            RexxSQLUsage()

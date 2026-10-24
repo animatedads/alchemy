@@ -1,0 +1,32 @@
+Current:
+-------
+- support SQLRelay http://sqlrelay.sf.net (only available for Unix)
+- add placemarkers for MySQL
+- add Oracle8 OCI support
+
+For Rexx/SQL 3.0
+----------------
+- new connect function: sqlconnectex() same as sqlconnect() but has first option as database
+  connection type, plus extra database-specific options
+- split into rexxsql.dll and rexx???.dll
+  where rexxsql.dll determines which database drivers are available by attempting
+  to load each database specific dll
+  - globally have array of external function pointers to the appropriate
+    database specific dll function pointers
+- sequence of events
+  - sqlloadfuncs() registers all sql???() functions which are all wrappers for
+    the database-specific functions. it also determines which rexx/sql drivers are
+    available by dlopen() on each known dll and stores address of DLL in TLD
+  - sqlconnect() with no extra arg will check if more than 1 rexx/sql dll exists; if
+    so exits with error (can't determine which database type connection is for)
+    if extra arg, check that dll is available, if not error. if exists, then load all
+    exports from dll into TLD array, and call ???loadfuncs() to register all functions (and call any
+    database initialisation), then call ???connect()
+  - sqlcommand() for example, looks up ???command() from TLD which contains pointers to
+    the current database-specific dll external functions, then calls ???command()
+  - sqldropfuncs() calls each non-null (in TLD array) ???dropfuncs() function.
+- existing rexx???.dll to behave independent of rexxsql.dll and operate the same way as it
+  currently does
+- building:
+  configure will need to find each database that is installed
+  need a Makefile in each database dir, so we have ora/Makefile.in (and ora/vcwin32.mak)

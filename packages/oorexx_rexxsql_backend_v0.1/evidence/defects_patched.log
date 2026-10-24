@@ -1,0 +1,12 @@
+### build: patched (Rexx/SQL 2.6B3), ooRexx 5.3.0 r13196, SQLite 3.45.1
+--- overflow.rex (long unaliased expression)
+rc= -16 
+survived
+exit=0
+--- blob.rex
+blob 1: 00FF41420043 (expect 00FF41420043) 1
+blob 2 length: 0 (expect 0)
+--- PRAGMA / EXPLAIN / WITH
+EXPLAIN rc= 0 
+PRAGMA rc= 0 rows= 1
+WITH rc= 0 

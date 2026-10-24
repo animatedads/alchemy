@@ -1,0 +1,57 @@
+                            Rexx/SQL
+                             Oracle
+                         eCS & OS/2 3.0+
+
+
+This archive contains the executables for Rexx/SQL for Oracle under
+OS/2 3.0+; both .exe and .dll's.
+
+Rexx/SQL is distributed under the terms of the GNU Library General Public
+License. See the enclosed file COPYING-LIB for details.
+
+Rexx/SQL supports either the "classic" OS/2 Rexx or Object Rexx.
+
+A test script; tester.cmd is also provided.  It should thoroughly test
+all aspects of Rexx/SQL.  It can be run either with the enclosed
+REXXSQL.EXE or directly via tester.cmd. If run directly the REXXSQL.DLL
+is used.
+
+For Rexx/SQL to function correctly, it requires an Oracle DLL;
+ORA7O32.DLL. There are various versions of this DLL, depending on
+the release of Oracle7 for OS/2 you have.
+
+You may not have a DLL with this exact name. This is because I needed
+to use a generic name for the DLL within Rexx/SQL, as every release
+of Oracle uses a different name for the DLL that contains the functions
+that Rexx/SQL calls.
+
+If you do not have the DLL with this exact name, there will be one with
+a similar name in the $ORACLE_HOME\DLL directory. Copy this file to ORA7O32.DLL
+(in the same directory) and Rexx/SQL should then work.
+
+Some examples (that I know about)
+
+Oracle 6.0       ORA732.DLL
+Oracle 7.0       ORA7O32.DLL
+Oracle 7.1       ORA_D71O.DLL
+
+If you can't determine which is the correct DLL to copy, look inside
+the DLLs in the $ORACLE_HOME\DLL directory for a DLL that has the
+strings "OCAN" and "ORLON".
+
+Source code for Rexx/SQL for OS/2 and other operating systems and
+source and executables for other database packages are available from
+    http://www.lightlink.com/hessling/
+
+Online HTML, documentation is available from
+    http://www.lightlink.com/hessling/rexxsql.html
+or in other formats from
+    http://www.lightlink.com/hessling/
+
+If you find problems with or suggestions for this product, please contact me.
+------------------------------------------------------------------------
+ * Mark Hessling,  mark@rexx.org  http://www.rexx.org/
+ * Author of THE, a Free XEDIT/KEDIT editor and, Rexx/SQL
+ * Maintainer of Regina Rexx interpreter
+ * Use Rexx ? join the Rexx Language Association: http://www.rexxla.org
+------------------------------------------------------------------------

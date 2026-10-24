@@ -1,0 +1,360 @@
+#
+# Include any DB-specific makefile here
+#
+@INCLUDE_DB_MAKEFILE@
+
+# Makefile for Rexx/SQL under Un*x
+#
+# The variable 'srcdir' refers to the source-distribution, and can be set with
+# the configure script by "--srcdir=DIR".
+#
+
+SHELL		= /bin/sh
+THIS		= Makefile
+
+@SET_MAKE@
+
+VER=@VER@
+VER_DOT=@VER_DOT@
+VER_DATE=@VER_DATE@
+PACKAGE=RexxSQL
+PACKAGE_DIR=RexxSQL-$(VER_DOT)
+PACKAGE_NAME=rexxsql
+RPMTOPDIR=@RPMTOPDIR@
+
+srcdir		= @srcdir@
+prefix		= @prefix@
+exec_prefix	= @exec_prefix@
+includedir		= $(exec_prefix)/include
+docdir		= $(srcdir)/doc
+libdir		= @libdir@
+libdir32		= @libdir32@
+libdir64		= @libdir64@
+
+binarybitprefix = @binarybitprefix@
+
+INSTALL		= $(srcdir)/install-sh
+
+CC  =              @CC@
+CFLAGS =           @CFLAGS@
+LDFLAGS =          @LDFLAGS@
+RANLIB =           @RANLIB@
+
+CEXTRA =           @CEXTRA@ @DLFCNINCDIR@
+DEBUG =            @DEBUG@
+DEBUGGING =        @DEBUGGING@
+EEXTRA =           @EEXTRA@
+OSAVE  =           @OSAVE@
+OBJ  =             @OBJ@
+EXE  =             @EXE@
+SHLPRE =           @SHLPRE@
+SHLPST =           @SHLPST@
+LIBPRE =           @LIBPRE@
+LIBEXE =           @LIBEXE@
+LIBPST =           @LIBPST@
+LIBFLAGS =         @LIBFLAGS@
+GETOPT  =          @GETOPT@
+DYN_COMP  =        @DYN_COMP@ @THREADING_COMPILE@
+SYS_DEFS  =        @SYS_DEFS@
+LIBS  =            @LIBS@ @LEXLIB@
+SHLIBS  =          @SHLIBS@ @DLFCNLIBDIR@
+LD_RXLIB1  =       @LD_RXLIB1@
+LD_RXLIB2  =       @REXX_LIBS@ @MH_EXTRA_LIBS@
+DYNAMIC_LDFLAGS  = @DYNAMIC_LDFLAGS@ $(EEXTRA) @THREADING_LINK@
+SHL_TARGETS  =     @SHL_TARGETS@
+O2SAVE  =          @O2SAVE@
+O2SHO  =           @O2SHO@
+CC2O   =           @CC2O@
+SAVE2O  =          @SAVE2O@
+EFENCE =           @EFENCE@
+PURIFY =           @PURIFY@
+MT_FILE =          @MT_FILE@
+DBLIB1 =           @DBLIB1@
+LDB =              @LDB@
+BDB =              @BDB@
+DBH =              @DBH@
+DBC =              @DBC@
+SDB =              @SDB@
+dbsrc =            @dbsrc@
+
+INCDIR		= $(srcdir)
+INCDBDIR		= $(srcdir)/@DBH@
+INCSRCDIR		= $(srcdir)/@DBC@
+INCCOMDIR		= $(srcdir)/common
+INCGENDIR		= $(srcdir)/general
+CPPFLAGS	= -I. -I$(INCDIR) -I$(INCDBDIR) -I$(INCCOMDIR) -I$(INCGENDIR) $(SDB) @DEFS@ @SYS_DEFS@ @DEBUGGING@ -DREXXSQL_VERSION=\"$(VER_DOT)\" -DREXXSQL_DATE=\"$(VER_DATE)\"
+
+CCFLAGS = -c $(CFLAGS) $(DEBUG) $(CPPFLAGS) @REXX_INCLUDES@ @DB_INCLUDES@ -I$(INCSRCDIR)
+CCAFLAGS= $(CCFLAGS) -D__rxpack_tsd_initialized=$(PACKAGE)__rxpack_tsd_initialized -D__rxpack_tsd=$(PACKAGE)__rxpack_tsd -DRxPackInitializeProcess=$(PACKAGE)_RxPackInitializeProcess -DRxPackGetThreadID=$(PACKAGE)_RxPackGetThreadID -DIfcRxPackCleanup=$(PACKAGE)_IfcRxPackCleanup
+
+LINK		= $(PURIFY) $(CC)
+LDFLAGS		= $(DEBUGGING) $(EEXTRA) @LDFLAGS@ @EFENCE@
+
+################################################################################
+H1=$(INCGENDIR)/rexxsql.h config.h
+H2=$(INCDBDIR)/dbdefine.h $(INCDBDIR)/dbheader.h $(INCDBDIR)/dbtypes.h
+H3=$(INCGENDIR)/rxsqlinc1.h $(INCGENDIR)/rxsqlinc2.h
+H4=$(INCCOMDIR)/rxmt.h
+H5=$(INCCOMDIR)/rxpack.h $(INCCOMDIR)/rxdef.h $(INCGENDIR)/apphead.h
+################################################################################
+
+SSQLOBJS = loader.o $(dbsrc).o rxpack.o rxmt_notmt.o
+SDBOBJS = loader_$(LDB).o $(dbsrc)_$(LDB).o rxpack.o rxmt_notmt_$(LDB).o
+DSQLOBJS = $(dbsrc)_dyn.o rxpack_dyn.o $(MT_FILE)_dyn.o
+DDBOBJS = $(dbsrc)_$(LDB)_dyn.o rxpack_dyn.o $(MT_FILE)_$(LDB)_dyn.o
+LIBSQLOBJS = $(dbsrc).a.o rxpack.a.o rxmt_notmt.a.o
+LIBDBOBJS = $(dbsrc)_$(LDB).a.o rxpack_$(LDB).a.o rxmt_notmt_$(LDB).a.o
+
+DBCFLAGS = -DINIT_RXPACKAGE=init_Rexx$(DB) -DTERM_RXPACKAGE=term_Rexx$(DB)
+SQLCFLAGS = -DINIT_RXPACKAGE=init_RexxSQL -DTERM_RXPACKAGE=term_RexxSQL
+
+all: rexxsql$(binarybitprefix)$(EXE) rexx$(LDB)$(binarybitprefix)$(EXE) $(LIBPRE)rexxsql$(LIBPST) $(LIBPRE)rexx$(LDB)$(LIBPST) $(SHL_TARGETS)
+
+install: $(PACKAGE_NAME) ./rexx$(LDB) $(SHL_TARGETS)
+	$(INSTALL) -m 755 -d $(exec_prefix)/bin
+	$(INSTALL) -m 755 -d $(exec_prefix)/lib
+	$(INSTALL) -c -m 755 ./rexxsql$(binarybitprefix)$(EXE) $(exec_prefix)/bin/rexxsql$(binarybitprefix)$(EXE)
+	$(INSTALL) -c -m 755 ./rexx$(LDB)$(binarybitprefix)$(EXE) $(exec_prefix)/bin/rexx$(LDB)$(binarybitprefix)$(EXE)
+	$(INSTALL) -c -m 755 ./rexxsql-config $(exec_prefix)/bin/rexxsql-config
+	-$(INSTALL) -c -m 755 $(SHLPRE)rexxsql$(SHLPST)    $(exec_prefix)/lib/$(SHLPRE)rexxsql$(SHLPST)
+	-$(INSTALL) -c -m 755 $(SHLPRE)rexx$(LDB)$(SHLPST) $(exec_prefix)/lib/$(SHLPRE)rexx$(LDB)$(SHLPST)
+	-$(INSTALL) -c -m 755 $(LIBPRE)rexxsql$(LIBPST)    $(exec_prefix)/lib/$(LIBPRE)rexxsql$(LIBPST)
+	-$(INSTALL) -c -m 755 $(LIBPRE)rexx$(LDB)$(LIBPST) $(exec_prefix)/lib/$(LIBPRE)rexx$(LDB)$(LIBPST)
+
+clean:
+	-rm -f *.o $(PACKAGE_NAME) $(SHL_TARGETS)
+
+distclean: clean
+	-rm -f Makefile config.h
+
+mostlyclean: clean
+
+realclean: distclean
+
+#------------------------------------------------------------------------
+
+rexxsql$(binarybitprefix)$(EXE): $(SSQLOBJS) $(GETOPT)
+	$(LINK) $(LDFLAGS) -o $@ $(SSQLOBJS) $(LIBS) $(DBLIB1) @REXX_LIBS@ @DB_LIBS@ @MH_EXTRA_LIBS@
+
+rexx$(LDB)$(binarybitprefix)$(EXE): $(SDBOBJS)
+	$(LINK) $(LDFLAGS) -o $@ $(SDBOBJS) $(LIBS) $(DBLIB1) @REXX_LIBS@ @DB_LIBS@ @MH_EXTRA_LIBS@
+
+$(SHLPRE)rexxsql$(SHLPST): $(DSQLOBJS) $(RXPACKEXP1)
+	$(LD_RXLIB1) $(RXPACKEXPORTS1) -o $@ $(DSQLOBJS) $(LD_RXLIB2) $(LIBS) $(DBLIB1) @REXX_LIBS@ @DB_LIBS@ @MH_EXTRA_LIBS@
+
+$(SHLPRE)rexx$(LDB)$(SHLPST): $(DDBOBJS) $(RXPACKEXP2)
+	$(LD_RXLIB1) $(RXPACKEXPORTS2) -o $@ $(DDBOBJS) $(LD_RXLIB2) $(LIBS) $(DBLIB1) @REXX_LIBS@ @DB_LIBS@ @MH_EXTRA_LIBS@
+
+$(LIBPRE)rexxsql$(LIBPST): $(LIBSQLOBJS)
+	rm -f $@
+	$(LIBEXE) $(LIBFLAGS) $@ $(LIBSQLOBJS)
+	-$(RANLIB) $@
+
+$(LIBPRE)rexx$(LDB)$(LIBPST): $(LIBDBOBJS)
+	rm -f $@
+	$(LIBEXE) $(LIBFLAGS) $@ $(LIBDBOBJS)
+	-$(RANLIB) $@
+
+rxmt_notmt.o: $(INCCOMDIR)/rxmt_notmt.c $(H4) Makefile
+	$(CC) $(CCFLAGS) $(CC2O) $(SQLCFLAGS) $(INCCOMDIR)/rxmt_notmt.c
+
+rxmt_notmt_$(LDB).o: $(INCCOMDIR)/rxmt_notmt.c $(H4) Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) $(CC2O) $(DBCFLAGS) $(INCCOMDIR)/rxmt_notmt.c
+	$(O2SHO)
+	$(SAVE2O)
+
+rxmt_notmt_$(LDB)_dyn.o: $(INCCOMDIR)/rxmt_notmt.c $(H4) $(INCCOMDIR)/rxmt_notmt.h Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) $(DYN_COMP) $(CC2O) $(DBCFLAGS) $(INCCOMDIR)/rxmt_notmt.c
+	$(O2SHO)
+	$(SAVE2O)
+
+rxmt_notmt_dyn.o: $(INCCOMDIR)/rxmt_notmt.c $(H4) $(INCCOMDIR)/rxmt_notmt.h Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) $(DYN_COMP) $(CC2O) $(SQLCFLAGS) $(INCCOMDIR)/rxmt_notmt.c
+	$(O2SHO)
+	$(SAVE2O)
+
+rxmt_posix_$(LDB)_dyn.o: $(INCCOMDIR)/rxmt_posix.c $(H4) $(INCCOMDIR)/rxmt_posix.h Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) $(DYN_COMP) $(CC2O) $(DBCFLAGS) $(INCCOMDIR)/rxmt_posix.c
+	$(O2SHO)
+	$(SAVE2O)
+
+rxmt_posix_dyn.o: $(INCCOMDIR)/rxmt_posix.c $(H4) $(INCCOMDIR)/rxmt_posix.h Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) $(DYN_COMP) $(CC2O) $(SQLCFLAGS) $(INCCOMDIR)/rxmt_posix.c
+	$(O2SHO)
+	$(SAVE2O)
+
+rxpack.o: $(INCCOMDIR)/rxpack.c $(H5) Makefile
+	$(CC) $(CCFLAGS) $(DBPREFIX) $(CC2O) $(SQLCFLAGS) $(INCCOMDIR)/rxpack.c
+
+rxpack_dyn.o: $(INCCOMDIR)/rxpack.c $(H5) Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) $(DYN_COMP) $(CC2O) $(SQLCFLAGS) $(INCCOMDIR)/rxpack.c
+	$(O2SHO)
+	$(SAVE2O)
+
+loader.o: $(INCCOMDIR)/loader.c $(H1) $(H2) Makefile
+	$(CC) $(CCFLAGS) $(CC2O) $(SQLCFLAGS) $(INCCOMDIR)/loader.c
+
+loader_$(LDB).o: $(INCCOMDIR)/loader.c $(H1) $(H2) Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) -D$(BDB)_PREFIX $(CC2O) $(DBCFLAGS) $(INCCOMDIR)/loader.c
+	$(O2SHO)
+	$(SAVE2O)
+
+rexxsql_dyn.o: $(INCGENDIR)/rexxsql.c $(H1) $(H2) Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) $(DYN_COMP) $(CC2O) $(SQLCFLAGS) $(INCGENDIR)/rexxsql.c
+	$(O2SHO)
+	$(SAVE2O)
+
+rexxsql_$(LDB)_dyn.o: $(INCGENDIR)/rexxsql.c $(H1) $(H2) Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) $(DYN_COMP) -D$(BDB)_PREFIX $(CC2O) $(DBCFLAGS) $(INCGENDIR)/rexxsql.c
+	$(O2SHO)
+	$(SAVE2O)
+
+$(dbsrc).o: $(INCSRCDIR)/$(dbsrc).c $(H1) $(H2) $(H3) Makefile
+	$(CC) $(CCFLAGS) $(CC2O) $(SQLCFLAGS) $(INCSRCDIR)/$(dbsrc).c
+
+$(dbsrc)_$(LDB).o: $(INCSRCDIR)/$(dbsrc).c $(H1) $(H2) $(H3) Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) -D$(BDB)_PREFIX $(CC2O) $(DBCFLAGS) $(INCSRCDIR)/$(dbsrc).c
+	$(O2SHO)
+	$(SAVE2O)
+
+$(dbsrc)_dyn.o: $(INCSRCDIR)/$(dbsrc).c $(H1) $(H2) $(H3) Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) $(DYN_COMP) $(CC2O) $(SQLCFLAGS) $(INCSRCDIR)/$(dbsrc).c
+	$(O2SHO)
+	$(SAVE2O)
+
+$(dbsrc)_$(LDB)_dyn.o: $(INCSRCDIR)/$(dbsrc).c $(H1) $(H2) $(H3) Makefile
+	$(O2SAVE)
+	$(CC) $(CCFLAGS) $(DYN_COMP) -D$(BDB)_PREFIX $(CC2O) $(DBCFLAGS) $(INCSRCDIR)/$(dbsrc).c
+	$(O2SHO)
+	$(SAVE2O)
+
+#
+# static library objects
+#
+rxpack.a.o : $(INCCOMDIR)/rxpack.c $(H1) $(H2)
+	$(O2SAVE)
+	$(CC) $(CCAFLAGS) $(CC2O) $(SQLCFLAGS) $(INCCOMDIR)/rxpack.c
+	$(O2SHO)
+	$(SAVE2O)
+
+rxpack_$(LDB).a.o : $(INCCOMDIR)/rxpack.c $(H1) $(H2)
+	$(O2SAVE)
+	$(CC) $(CCAFLAGS) $(CC2O) $(DBCFLAGS) $(INCCOMDIR)/rxpack.c
+	$(O2SHO)
+	$(SAVE2O)
+
+$(dbsrc).a.o : $(INCSRCDIR)/$(dbsrc).c $(H1) $(H2)
+	$(O2SAVE)
+	$(CC) $(CCAFLAGS) $(CC2O) $(SQLCFLAGS) $(INCSRCDIR)/$(dbsrc).c
+	$(O2SHO)
+	$(SAVE2O)
+
+$(dbsrc)_$(LDB).a.o : $(INCSRCDIR)/$(dbsrc).c $(H1) $(H2)
+	$(O2SAVE)
+	$(CC) $(CCAFLAGS) $(CC2O) $(DBCFLAGS) $(INCSRCDIR)/$(dbsrc).c
+	$(O2SHO)
+	$(SAVE2O)
+
+rxmt_notmt.a.o: $(INCCOMDIR)/rxmt_notmt.c $(H4) $(INCCOMDIR)/rxmt_notmt.h Makefile
+	$(O2SAVE)
+	$(CC) $(CCAFLAGS) $(CC2O) $(SQLCFLAGS) $(INCCOMDIR)/rxmt_notmt.c
+	$(O2SHO)
+	$(SAVE2O)
+
+rxmt_notmt_$(LDB).a.o: $(INCCOMDIR)/rxmt_notmt.c $(H4) $(INCCOMDIR)/rxmt_notmt.h Makefile
+	$(O2SAVE)
+	$(CC) $(CCAFLAGS) $(CC2O) $(DBCFLAGS) $(INCCOMDIR)/rxmt_notmt.c
+	$(O2SHO)
+	$(SAVE2O)
+
+#
+# export files for AIX
+#
+$(RXPACKEXP1): $(srcdir)/makedef.rexx Makefile
+	rexx $(srcdir)/makedef.rexx SQL EXP AIX $(RXPACKEXP1)
+
+$(RXPACKEXP2): $(srcdir)/makedef.rexx Makefile
+	rexx $(srcdir)/makedef.rexx $(BDB) EXP AIX $(RXPACKEXP2)
+
+#=====================================================================
+
+zip:
+	-zip -y rxsql$(VER)_src README INSTALL TODO COPYING-LIB HISTORY rexxsql.ver
+	-zip -y rxsql$(VER)_src common/*.h common/*.c common/*.m4 common/*.nsh common/*.bmp common/*.png common/*.ico common/*.rexx common/*.inc
+	-zip -y rxsql$(VER)_src general/*.h general/*.c
+	-zip -y rxsql$(VER)_src ora/*.h ora/ora.c ora/README
+	-zip -y rxsql$(VER)_src ora7/*.h ora7/*.c ora7/README
+	-zip -y rxsql$(VER)_src syb/*.h syb/*.c syb/README
+	-zip -y rxsql$(VER)_src cli-odbc/*.h cli-odbc/*.c cli-odbc/README
+	-zip -y rxsql$(VER)_src my/*.h my/*.c my/README
+	-zip -y rxsql$(VER)_src min/*.h min/*.c min/README
+	-zip -y rxsql$(VER)_src min2/*.h min2/*.c min2/README
+	-zip -y rxsql$(VER)_src odbc/*.h odbc/README
+	-zip -y rxsql$(VER)_src saw/*.h saw/README
+	-zip -y rxsql$(VER)_src vel/*.h vel/README
+	-zip -y rxsql$(VER)_src esoob/*.h esoob/README
+	-zip -y rxsql$(VER)_src db2/*.h db2/README
+	-zip -y rxsql$(VER)_src sol/*.h sol/README
+	-zip -y rxsql$(VER)_src udbc/*.h udbc/README
+	-zip -y rxsql$(VER)_src sqlite3/*.h sqlite3/*.c sqlite3/README
+	-zip -y rxsql$(VER)_src samples/*.cmd samples/*.rex samples/README
+	-zip -y rxsql$(VER)_src doc/*.html doc/*.jpg
+	-zip -y rxsql$(VER)_src makedef.rexx
+	-zip -y rxsql$(VER)_src Makefile.in configure config.h.in
+	-zip -y rxsql$(VER)_src common/config.guess common/config.sub install-sh
+	-zip -y rxsql$(VER)_src aclocal.m4 configure.in rexxsql-config.in
+	-zip -y rxsql$(VER)_src *.ico *.res *.rc *.mak
+	-zip -y rxsql$(VER)_src *.cmd *.bat
+	-zip -y rxsql$(VER)_src dist/README* dist/*.rex dist/file*.tmpl
+
+tar:
+	(cd $(srcdir)/..;rm -f $(PACKAGE_DIR))
+	(cd $(srcdir)/..;ln -sf $(PACKAGE) $(PACKAGE_DIR))
+	(cd ..; tar cvf - \
+	$(PACKAGE_DIR)/README $(PACKAGE_DIR)/INSTALL $(PACKAGE_DIR)/TODO $(PACKAGE_DIR)/COPYING-LIB $(PACKAGE_DIR)/HISTORY $(PACKAGE_DIR)/rexxsql.ver \
+	$(PACKAGE_DIR)/common/*.c $(PACKAGE_DIR)/common/*.h $(PACKAGE_DIR)/common/*.m4 $(PACKAGE_DIR)/common/*.nsh \
+	$(PACKAGE_DIR)/common/*.bmp $(PACKAGE_DIR)/common/*.png $(PACKAGE_DIR)/common/*.ico $(PACKAGE_DIR)/common/*.rexx $(PACKAGE_DIR)/common/*.inc \
+	$(PACKAGE_DIR)/general/*.c $(PACKAGE_DIR)/general/*.h \
+	$(PACKAGE_DIR)/ora/ora.c $(PACKAGE_DIR)/ora/*.h $(PACKAGE_DIR)/ora/README \
+	$(PACKAGE_DIR)/ora7/*.c $(PACKAGE_DIR)/ora7/*.h $(PACKAGE_DIR)/ora7/README \
+	$(PACKAGE_DIR)/syb/*.c $(PACKAGE_DIR)/syb/*.h $(PACKAGE_DIR)/syb/README \
+	$(PACKAGE_DIR)/cli-odbc/*.c $(PACKAGE_DIR)/cli-odbc/*.h $(PACKAGE_DIR)/cli-odbc/README \
+	$(PACKAGE_DIR)/my/*.h $(PACKAGE_DIR)/my/*.c m$(PACKAGE_DIR)/my/README \
+	$(PACKAGE_DIR)/min/*.h $(PACKAGE_DIR)/min/*.c $(PACKAGE_DIR)/min/README \
+	$(PACKAGE_DIR)/min2/*.h $(PACKAGE_DIR)/min2/*.c $(PACKAGE_DIR)/min2/README \
+	$(PACKAGE_DIR)/odbc/*.h $(PACKAGE_DIR)/odbc/README \
+	$(PACKAGE_DIR)/saw/*.h $(PACKAGE_DIR)/saw/README \
+	$(PACKAGE_DIR)/vel/*.h $(PACKAGE_DIR)/vel/README \
+	$(PACKAGE_DIR)/esoob/*.h $(PACKAGE_DIR)/esoob/README \
+	$(PACKAGE_DIR)/db2/*.h $(PACKAGE_DIR)/db2/README \
+	$(PACKAGE_DIR)/sol/*.h $(PACKAGE_DIR)/sol/README \
+	$(PACKAGE_DIR)/udbc/*.h $(PACKAGE_DIR)/udbc/README \
+	$(PACKAGE_DIR)/sqlite3/*.c $(PACKAGE_DIR)/sqlite3/*.h $(PACKAGE_DIR)/sqlite3/README \
+	$(PACKAGE_DIR)/samples/*.cmd $(PACKAGE_DIR)/samples/*.rex $(PACKAGE_DIR)/samples/README \
+	$(PACKAGE_DIR)/doc/*.html $(PACKAGE_DIR)/doc/*.jpg \
+	$(PACKAGE_DIR)/Makefile.in $(PACKAGE_DIR)/configure $(PACKAGE_DIR)/config.h.in \
+	$(PACKAGE_DIR)/makedef.rexx \
+	$(PACKAGE_DIR)/common/config.guess $(PACKAGE_DIR)/common/config.sub $(PACKAGE_DIR)/install-sh \
+	$(PACKAGE_DIR)/aclocal.m4 $(PACKAGE_DIR)/configure.in $(PACKAGE_DIR)/rexxsql-config.in \
+	$(PACKAGE_DIR)/*.ico $(PACKAGE_DIR)/*.res $(PACKAGE_DIR)/*.rc $(PACKAGE_DIR)/*.mak \
+	$(PACKAGE_DIR)/*.cmd $(PACKAGE_DIR)/*.bat \
+	$(PACKAGE_DIR)/dist/README* $(PACKAGE_DIR)/dist/*.rex $(PACKAGE_DIR)/dist/file*.tmpl \
+	$(PACKAGE_DIR)/RexxSQL.spec \
+	| gzip > $(PACKAGE_DIR).tar.gz)
+	(cd $(srcdir)/..;rm -f $(PACKAGE_DIR))
+
+rpm: tar
+	cp $(srcdir)/../$(PACKAGE_DIR).tar.gz $(RPMTOPDIR)/SOURCES
+	export REXXSQL_LDB=$(LDB)
+	rpmbuild -ba $(srcdir)/$(PACKAGE).spec

@@ -1,0 +1,114 @@
+2.6  - Remove pgsqlodbc build target.
+     - Fix to enable building with ooRexx 4.x.
+     - Added iODBC build target.
+     - Better support for postgreSQL
+     - For ODBC/CLI ports, AUTOCOMMIT now turned off in the database if supported
+     - Fixed bug with some data "bleeding" through from a previous insert.
+     - Previous Oracle interface now called "ora7". New Oracle interface based on
+       Oracle 8 OCI interface now default.
+     - Added ORAStartup and OraShutdown functions for Oracle port.
+     - Added AUTH TYPE argument (NORMAL, SYSDBA, SYSOPER)to SQLConnect for Oracle.
+2.5  - Added SQLDataSource(), SQLTables() and SQLColumns(). Documentation and
+       original ODBC implementation courtesy of Lorne Sunley.
+       Not all of these functions completed on all platforms.
+       tester.cmd changed to test these functions.
+     - Rexx/SQL is now thread-safe. Thread-safety of a Rexx/SQL application
+       is dependent now on whether the database client is thread-safe.
+       Where it is known that the database client is thread-safe, the new
+       Rexx/SQL variable; SUPPORTSTHREADS is set to 1.
+     - Fixed bug with SQLCA.ROWCOUNT when calling SQLFETCH; it now sets the
+       value as documented.
+     - Updated documentation to state that SQLCA. stem is read-only; don't
+       change values or DROP the variables. You have been warned!
+     - Added support for SQLite3. Support for placemarkers in SQLite3
+       is now supported. NB Support for version of SQLite before 3.x is not provided.
+       If you used a beta of Rexx/SQL 2.5 that included "lite3" in the distribution
+       filename or in the external function names, remove the "3". ie if you used
+       LITE3GETINSERTID() it is now called LITEGETINSERTID().
+     - Fixed bug with following sequence of calls:
+       SQLPREPARE
+         SQLOPEN
+           SQLFETCH (in loop)
+         SQLCLOSE
+         SQLOPEN
+           SQLFETCH (in loop)
+         SQLCLOSE
+       SQLDISPOSE
+       Previously, the second SQLOPEN/SQLFETCH/SQLCLOSE sequence would not work on
+       all database platforms.
+       Added test in tester.cmd "fetch" to test this case.
+     - Added MYGETINSERTID() for MySQL to return the value generated for an AUTO_INCREMENT
+       column as a result of the last INSERT or UPDATE statement.
+     - Added LITEGETINSERTID() for SQLite3 to return the last identifier from an
+       INSERT of NULL into a column defined as INTEGER PRIMARY KEY.
+     - Added support for Open Object Rexx.
+     - Fixed bug with Oracle and SQLGETDATA. Now no longer crashes.
+     - Added extra bind variable capability to Oracle bind by name. Allows
+       LONG data to be bound from a Rexx variable or a file; similar to bind
+       capability with standard placemarkers.
+     - Support for Sybase SQL Anywhere (now called Adaptive Server Anywhere) on Un*x
+       is not working due to major changes by Sybase.
+
+2.4  - Fixed bug with Oracle DATE datatype support for non-US installations
+     - Fixed bug with DB2 and ODBC datatype checking
+     - Added support for Object Rexx under AIX
+     - Added support for uni-REXX
+     - Added support for Raima Velocis database servers
+     - Added support for unixODBC project (http://genix.net/unixODBC)
+     - Win32 ports now use Rexx/Trans DLL so only one Rexx/SQL required
+       for Regina, Object Rexx, Personal Rexx and WinRexx.
+     - Support for Solid Server 2.3 included; now no longer need to
+       determine operating system specific libraries.
+     - REXX/6000 support more robust
+     - Added multiple database error message capture for those databases
+       that can return multiple lines of errors.  This is handled by
+       addition of an "array"; sqlca.sqlerrm.0 to sqlca.sqlerrm.n
+       where n is sqlca.sqlerrm.0. There is also a sqlca.sqlstate "array"
+     - Database APIs that are based on ODBC or CLI, that can return
+       a "success with info" status, are also supported.  The return code
+       from Rexx/SQL functions are now:
+       0  - success
+       <0 - error
+       >0 - success with info (the "info" is in sqlca.sqlerrm array)
+       SQLFETCH is an exception to the above rule as a positive return
+       value indicates how many rows were fetched.
+     - Added PostgreSQL 6.4 support using iODBC.
+     - Support for mSQL (2.0+) under OS/2 using Netlabs port added.
+     - MySQL port under OS/2 added.
+     - Changes parameter passing convention for rexxsql executable. It now
+       behaves the same way as the Rexx interpreter for multiple parameters.
+     - Added extra method for setting internal DEBUG variable, by setting
+       environment variable REXXSQL_DEBUG.
+     - Added extra internal debugging flag. Invoke by calling
+       SQLVARIABLE 'DEBUG', 4. Can also be set by passing -D flag to command
+       line, or setting environment variable REXXSQL_DEBUG to 4.
+     - Added support of MySQL versions 3.22.24 and greater. The API behaviour
+       was changed in 3.22.24, thus making Rexx/SQL fail :-(
+     - Changed method of specifying Rexx Interpreter and Database vendor.
+       See INSTALL for more detailed expalanation.
+     - Added support for transactions under MySQL. If not using transactional
+       files for storing tables, and you attempt to COMMIT or ROLLBACK a
+       transaction, a return value of 1 (one), indicating warning will be
+       returned.
+
+2.3  - Added Openlink ODBC port (iODBC based)
+     - Changed Oracle port under NT to use OCIW32.DLL and remove requirement
+       for kludge of copying Oracle OCI DLL to orantv7.dll.
+
+2.2  - Added Openlink UDBC port
+
+2.1  - Added Solid Server ports
+     - Added mSQL 2.0 support
+
+2.0  - tbd
+
+1.3  - Fixed some problems with the OS/2 Oracle DLL.
+     - Added an OS/2 mSQL port with both executable and DLL support.
+     - Changed the argument list for the SqlConnect function.
+     - Enhanced the html documentation. This is now the only format in
+       which documentation will be supplied. (a postscript version from
+       a web browser will still be included)
+
+1.2  - Fixed a couple of minor bugs and added the mSQL port for Unix.
+
+1.1  - First public release.

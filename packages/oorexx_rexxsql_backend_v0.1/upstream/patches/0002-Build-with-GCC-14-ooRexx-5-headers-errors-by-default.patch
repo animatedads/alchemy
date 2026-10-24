@@ -1,0 +1,129 @@
+From 3e3bf8d764f432d0349300a9b5af516f9a5fc742 Mon Sep 17 00:00:00 2001
+From: "Claude (Opus 5.5)" <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 16:53:46 +0100
+Subject: [PATCH 2/4] Build with GCC 14 / ooRexx 5 headers (errors by default
+ in GCC 14)
+
+- IfcRxPackCleanup( VOID ): VOID is not defined by ooRexx 4+/5 headers, so it
+  was parsed as an implicit-int parameter named VOID. Use void.
+- MTMalloc: header declared long size, posix/os2 implementations size_t.
+  Use size_t everywhere.
+- RexxSQLInitHandler: use the REH_RETURN / REH_ARG*_TYPE macros from rxdef.h so
+  the exit handler matches RexxExitHandler (int for ooRexx 4+).
+---
+ common/rxmt.h       | 2 +-
+ common/rxmt_notmt.c | 4 ++--
+ common/rxmt_os2.c   | 2 +-
+ common/rxmt_win32.c | 4 ++--
+ common/rxmt_win64.c | 4 ++--
+ general/rxsqlinc2.h | 2 +-
+ 6 files changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/common/rxmt.h b/common/rxmt.h
+index 757476f..b0e62e2 100644
+--- a/common/rxmt.h
++++ b/common/rxmt.h
+@@ -30,7 +30,7 @@ typedef struct _tsd_t {
+    int deallocate;                    /* indicates if rxpack should deallocate this structure */
+    int terminated;                    /* indicates if rxpack has called RxTermPackage() for this structure */
+ 
+-   void *                  (*MTMalloc)(const struct _tsd_t *TSD, long size);
++   void *                  (*MTMalloc)(const struct _tsd_t *TSD, size_t size);
+    void                    (*MTFree)(const struct _tsd_t *TSD,void *chunk);
+    void                    (*MTExit)(int code);
+ } RxPackageGlobalDataDef ;
+diff --git a/common/rxmt_notmt.c b/common/rxmt_notmt.c
+index ba2918c..8e60fbb 100644
+--- a/common/rxmt_notmt.c
++++ b/common/rxmt_notmt.c
+@@ -33,7 +33,7 @@ RxPackageGlobalDataDef __rxpack_tsd = {0,}; /* Be sure the var is initialized he
+ extern int INIT_RXPACKAGE(RxPackageGlobalDataDef *);
+ 
+ /* Lowest level memory allocation function for normal circumstances. */
+-static void *MTMalloc( const RxPackageGlobalDataDef *TSD, long size )
++static void *MTMalloc( const RxPackageGlobalDataDef *TSD, size_t size )
+ {
+    mt_tsd_t *mt;
+    MT_mem *new = malloc(size + sizeof(MT_mem));
+@@ -99,7 +99,7 @@ static void MTExit(int code)
+    code = code;
+ }
+ 
+-int IfcRxPackCleanup( VOID )
++int IfcRxPackCleanup( void )
+ {
+    RxPackageGlobalDataDef *TSD = &__rxpack_tsd;
+    mt_tsd_t *mt;
+diff --git a/common/rxmt_os2.c b/common/rxmt_os2.c
+index baafadb..7d25442 100644
+--- a/common/rxmt_os2.c
++++ b/common/rxmt_os2.c
+@@ -101,7 +101,7 @@ static void RxPackDeinitialize(void *buf)
+    free(TSD);
+ }
+ 
+-int IfcRxPackCleanup( VOID )
++int IfcRxPackCleanup( void )
+ {
+    RxPackageGlobalDataDef **ptsd = FindThreadDataIdx();
+ 
+diff --git a/common/rxmt_win32.c b/common/rxmt_win32.c
+index ed639d2..0032301 100644
+--- a/common/rxmt_win32.c
++++ b/common/rxmt_win32.c
+@@ -56,7 +56,7 @@ static void DestroyHeap( RxPackageGlobalDataDef *TSD )
+    free( TSD );
+ }
+ 
+-int IfcRxPackCleanup( VOID )
++int IfcRxPackCleanup( void )
+ {
+    RxPackageGlobalDataDef *TSD = __rxpack_get_tsd();
+ 
+@@ -144,7 +144,7 @@ static unsigned sizeof_ptr(void)
+ }
+ 
+ /* Lowest level memory allocation function for normal circumstances. */
+-static void *MTMalloc( const RxPackageGlobalDataDef *TSD, long size )
++static void *MTMalloc( const RxPackageGlobalDataDef *TSD, size_t size )
+ {
+    mt_tsd_t *mt = TSD->mt_tsd;
+    void *ptr;
+diff --git a/common/rxmt_win64.c b/common/rxmt_win64.c
+index ed639d2..0032301 100644
+--- a/common/rxmt_win64.c
++++ b/common/rxmt_win64.c
+@@ -56,7 +56,7 @@ static void DestroyHeap( RxPackageGlobalDataDef *TSD )
+    free( TSD );
+ }
+ 
+-int IfcRxPackCleanup( VOID )
++int IfcRxPackCleanup( void )
+ {
+    RxPackageGlobalDataDef *TSD = __rxpack_get_tsd();
+ 
+@@ -144,7 +144,7 @@ static unsigned sizeof_ptr(void)
+ }
+ 
+ /* Lowest level memory allocation function for normal circumstances. */
+-static void *MTMalloc( const RxPackageGlobalDataDef *TSD, long size )
++static void *MTMalloc( const RxPackageGlobalDataDef *TSD, size_t size )
+ {
+    mt_tsd_t *mt = TSD->mt_tsd;
+    void *ptr;
+diff --git a/general/rxsqlinc2.h b/general/rxsqlinc2.h
+index c738701..6b6b03a 100644
+--- a/general/rxsqlinc2.h
++++ b/general/rxsqlinc2.h
+@@ -782,7 +782,7 @@ int RexxSQLTerminator( RxPackageGlobalDataDef *RxPackageGlobalData )
+ /*
+  * Every package MUST have one of these, otherwise ooRexx will crash
+  */
+-LONG APIENTRY RexxSQLInitHandler( LONG ExitNum, LONG Subfun, PEXIT PBlock )
++REH_RETURN RexxSQLInitHandler( REH_ARG0_TYPE ExitNum, REH_ARG1_TYPE Subfun, REH_ARG2_TYPE PBlock )
+ {
+ /*   SetPackageConstants( rexxdwData.RxPackageGlobalData, RexxSQLConstants, "REXXSQL", 0 ); */
+    return 0L;
+-- 
+2.43.0
+

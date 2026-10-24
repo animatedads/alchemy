@@ -1,0 +1,21 @@
+IMPORT archives=1 membersSeen=32 imported=25 skipped=7 failed=0 seconds=7.2
+ACCEPT revisions=644 seconds=2.5
+OBJECTS ATTRIBUTE=50 ATTRIBUTE_GETTER=80 CLASS=76 EXECUTABLE_SECTION=17 METHOD=369 REQUIRES=33 SOURCE_FILE=1 SOURCE_UNIT=18
+REBUILD checked=17 byte_identical=17 seconds=8.9
+SSC DOGFOOD: PASS 17 of 17 ooRexx files rebuilt byte-identical from accepted method-level revisions
+SCAN       1 SCAN ssc_import_batch USING COVERING INDEX sqlite_autoindex_ssc_import_batch_1
+SCAN         e.g. SELECT import_id FROM ssc_import_batch
+SCAN       1 SCAN ssc_projection_member
+SCAN         e.g. SELECT revision_id FROM ssc_projection_member WHERE project_id='import:imp_0a22298e465fa1e62bbb96ca' OR project_id='import-layout:imp_0a22298e465fa1e62bbb96ca'
+SCAN      66 SCAN ssc_relation
+SCAN         e.g. SELECT relation_id,from_object_id,detail FROM ssc_relation WHERE relation_kind='IMPORTS' AND to_object_id=''
+SCAN       1 SCAN ssc_repository_meta USING INDEX sqlite_autoindex_ssc_repository_meta_1
+SCAN         e.g. SELECT meta_key, meta_value FROM ssc_repository_meta ORDER BY meta_key
+SCAN    7634 SCAN ssc_resource_relation
+SCAN         e.g. SELECT resource_id, required_revision_id, relation_kind, detail FROM ssc_resource_relation WHERE from_object_id='sso_496f4f86ef2f807c0e09add75d10dd74' AND (from_revision_id='' OR from_revision_id='ssr
+SCAN       7 SCAN ssc_resource_revision
+SCAN         e.g. SELECT resource_revision_id,revision_no,content_sha256 FROM ssc_resource_revision WHERE resource_id='res_604ba3d5f24e591392a079460bb5c3fa' ORDER BY revision_no DESC
+SCAN       1 SCAN ssc_source_object
+SCAN         e.g. SELECT object_kind FROM ssc_source_object
+SCAN      50 SCAN ssc_source_unit
+SCAN         e.g. SELECT source_unit_id,projection_path FROM ssc_source_unit WHERE module_id='oorexx_ga_intentions'

@@ -1,0 +1,15 @@
+PASS  SQLLoadFuncs
+PASS  version rexxsql 2.6B3 23 May 2011 UNIX SQLite3
+PASS  connect file database
+PASS  create table
+PASS  bound insert 1
+PASS  select 1
+PASS  round trip byte-exact case 1 length 5
+PASS  bound insert 2
+PASS  select 2
+PASS  round trip byte-exact case 2 length 7
+PASS  bound insert 3
+PASS  select 3
+FAIL  round trip byte-exact case 3 length 10
+      sqlerrm: 
+      interrm: 

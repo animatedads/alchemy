@@ -1,0 +1,274 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(Rexx/SQL, "", mark@rexx.org, RexxSQL)
+AC_PREFIX_DEFAULT(/usr/local)
+
+MH_PACKAGE="Rexx/SQL"
+
+. $srcdir/rexxsql.ver
+VER=\"$VER\"
+VER_DOT=\"$VER_DOT\"
+VER_DATE=\"$VER_DATE\"
+AC_SUBST(VER)
+AC_SUBST(VER_DOT)
+AC_SUBST(VER_DATE)
+cp $srcdir/common/config.guess $srcdir
+cp $srcdir/common/config.sub $srcdir
+
+dnl ---------------------- check for '--with-dist' switch -----------------
+AC_ARG_WITH(dist,
+   [  --with-dist             specify this just to build a distribution],
+   [with_dist=$withval],
+   [with_dist=no],
+)
+if test "$with_dist" != no; then
+   mymakefile="Makefile"
+else
+
+
+dnl ---------------------- check for C compiler -----------------
+dnl Checks for one of the C compilers below - change if yours not there.
+CC_LIST="xlC xlc gcc cc c89 acc"
+MH_PROG_CC
+
+AC_CONFIG_HEADER(config.h)
+AC_ISC_POSIX
+AC_CANONICAL_SYSTEM
+AC_PROG_RANLIB
+
+dnl
+dnl include our 32/64bit tests
+dnl
+sinclude(common/inclibarch.m4)
+
+dnl
+dnl include our Rexx switch checking
+dnl
+sinclude(common/increxx.m4)
+
+dnl ---------------------- check for DATABASE argument -----------------
+dnl allow --with-db=database
+AC_ARG_WITH(db,
+   [  --with-db=database      specify database (oracle|oracle8|db2|mysql|msql|unixodbc|iodbc|openlink|udbc|easysoft-oob|solid|velocis|intersolv|sqlanywhere|sybase|sqlite|sqlite3)],
+   [dbtouse=$withval],
+   [dbtouse=no],
+)
+dnl allow --with-dbincdir to specify where database header file(s) are
+AC_ARG_WITH(dbincdir,
+   [  --with-dbincdir=DIR     specify where Database header file(s) are],
+   [with_dbincdir=$withval],
+   [with_dbincdir=no],
+)
+dnl allow --with-dblibdir to specify where database library file(s) are
+AC_ARG_WITH(dblibdir,
+   [  --with-dblibdir=DIR     specify where Database library file(s) are],
+   [with_dblibdir=$withval],
+   [with_dblibdir=no],
+)
+
+dnl ---------------------- check packages -----------------------
+on_qnx4=no
+dnl Checks for system first
+
+need_extra_oracle_libs=no
+SHL="so"
+case "$target" in
+   *hp-hpux9*)
+      SYS_DEFS="-D_HPUX_SOURCE"
+      mysql_libs1="-lm"
+      mysql_libs2=""
+      SHL="sl"
+#     DYNCCFLAGS="+Z"
+#     DYNLDFLAGS1="-b"
+#     DYNLDFLAGS2=""
+#     DYNLDFLAGS3=""
+#     DYNLD="ld"
+      ;;
+   *hp-hpux1*)
+      SYS_DEFS="-D_HPUX_SOURCE"
+      mysql_libs1="-lm"
+      mysql_libs2=""
+      if test "$ac_cv_prog_CC" != "gcc"; then
+         if test "$enable_hpux_portable" = yes; then
+            SYS_DEFS="${SYS_DEFS} +DAportable"
+         fi
+      fi
+      SHL="sl"
+      ;;
+   *ibm-aix3*)
+      SYS_DEFS="-DAIX -D_ALL_SOURCE"
+      mysql_libs1="-lm"
+      mysql_libs2=""
+      SHL="a"
+      ;;
+   *ibm-aix4*)
+      SYS_DEFS="-DAIX -D_ALL_SOURCE"
+      mysql_libs1="-lm"
+      mysql_libs2=""
+      SHL="a"
+      ;;
+   *dec-osf*)
+      mysql_libs1="-lm"
+      mysql_libs2=""
+#     DYNCCFLAGS="-KPIC"
+#     DYNLDFLAGS1="-rpath . -shared"
+#     DYNLDFLAGS2=""
+#     DYNLDFLAGS3="-lc"
+      DYNLD="ld"
+      ;;
+   *sequent-dynix*)
+      mysql_libs1="-lm"
+      mysql_libs2=""
+      ;;
+   *solaris*)
+      mysql_libs1="-lm -lnsl"
+      mysql_libs2="-lsocket -lnsl"
+#     DYNCCFLAGS="-fPIC"
+#     DYNLDFLAGS1=""
+#     DYNLDFLAGS2=""
+#     DYNLDFLAGS3=""
+#     DYNLD="ld"
+      ;;
+   sparc*sunos*)
+      mysql_libs1="-lm"
+      mysql_libs2=""
+#     DYNCCFLAGS="-fPIC"
+#     DYNLDFLAGS1=""
+#     DYNLDFLAGS2=""
+#     DYNLDFLAGS3=""
+#     DYNLD="ld"
+      ;;
+   *linux*)
+      mysql_libs1="-lm -ldl -lz"
+      mysql_libs2=""
+      need_extra_oracle_libs=no
+      ;;
+   *apple-darwin*)
+# sinclude(common/inclibarch.m4) MUST have been included before here
+      SYS_DEFS="$valid_arch_flags"
+      EEXTRA="$valid_arch_flags"
+      ;;
+   *pc-sco3.2*)
+      SYS_DEFS="-b elf"
+      ;;
+   *nto-qnx*)
+      ;;
+   *qnx*)
+      on_qnx4=yes
+      SYS_DEFS="-Q"
+      ;;
+esac
+
+dnl Check the database parameters, and setup Makefile values
+dnl
+MH_SETUP_MAKEFILE()
+
+dnl Check for libraries - don't include libfl or libl
+MH_LIBS_TO_CHECK="m socket nsl nsl_s" dnl rpc thread pthread pthreads"
+MH_CHECK_LIB(${MH_LIBS_TO_CHECK})
+
+AC_SUBST(SYS_DEFS)
+AC_SUBST(MH_EXTRA_LIBS)
+AC_SUBST(SHL)
+
+AC_PROG_GCC_TRADITIONAL
+
+dnl --------------------- Check for other programs. ---------------
+AC_PROG_LN_S
+AC_PROG_MAKE_SET
+
+dnl -------------------- Checks for header files. -----------------
+AC_HEADER_STDC
+AC_CHECK_HEADERS( \
+   ctype.h \
+   sys/types.h \
+   sys/stat.h \
+   unistd.h \
+   getopt.h \
+   stdlib.h \
+   stdarg.h \
+   string.h \
+   errno.h \
+   assert.h \
+   stat.h \
+   time.h \
+   dl.h \
+   )
+
+MH_HAVE_PROTO
+
+dnl Checks for typedefs, structures, and compiler characteristics.
+AC_C_CONST
+AC_TYPE_SIZE_T
+if test "$ac_cv_type_size_t" = 'yes'; then
+   AC_DEFINE(HAVE_SIZE_T)
+fi
+AC_HEADER_TIME
+AC_STRUCT_TM
+AC_CHECK_SIZEOF(long)
+MH_CHECK_CC_O
+
+dnl Checks for library functions.
+AC_FUNC_MEMCMP
+MH_CHECK_FUNCS()
+if test "$ac_cv_func_getopt_func" = no; then
+   GETOPT="getopt.o"
+   AC_SUBST(GETOPT)
+fi
+dnl --------------- Check if various data types have been typedefed in database header file ------
+MH_CHECK_TYPES($DBINC,$DB_INCLUDES)
+
+dnl --------------- allow --disable-posix-threads to disable multi-threading
+AC_ARG_ENABLE(posix-threads,
+   [  --disable-posix-threads disable POSIX-style multi-threading],
+   [enable_posix_threads=no],
+   [enable_posix_threads=yes],
+)
+
+dnl
+dnl include our debugging switch checking
+dnl
+sinclude(common/incdebug.m4)
+
+MH_CHECK_RPM(/usr/src/rpm /usr/src/redhat)
+
+
+dnl
+dnl Following call on AIX also sets
+dnl  RXPACKEXP1=rexxsql.exp
+dnl  RXPACKEXP2=rexx$LDB.exp
+dnl and
+dnl  RXPACKEXPORTS1=-bE:rexxsql.exp
+dnl  RXPACKEXPORTS2=-bE:rexx$LDB.exp
+dnl
+MH_SHARED_LIBRARY(rexxsql rexx$LDB)
+
+dnl ----------------------- Check for Posix Threads ------------------
+MH_CHECK_POSIX_THREADS
+if test "$mh_has_pthreads" = yes; then
+   RXPACKMULTITHREAD="yes"
+else
+   RXPACKMULTITHREAD="no"
+fi
+AC_SUBST(RXPACKMULTITHREAD)
+
+dnl --------------- Force definition of pre-compiler macro UNIX ----------
+AC_DEFINE(UNIX)
+
+dnl --------------- Get us an install package ----------------------------
+AC_PROG_INSTALL
+fi
+
+AC_OUTPUT(Makefile rexxsql-config)
+chmod 755 rexxsql-config
+
+dnl
+dnl include our status information
+dnl
+if test "$with_dist" = no; then
+   MH_SHOW_STATUS( MH_SHOW_DB )
+else
+   echo ""
+   echo "Source distributions (zip and tar) can now be made for $MH_PACKAGE"
+   echo ""
+   rm -f config.h
+fi
