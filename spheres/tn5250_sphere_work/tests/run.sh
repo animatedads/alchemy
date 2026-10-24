@@ -32,4 +32,16 @@ secret="$($PYTHON "$G" --pack "$CORE" --pack "$PACK" open ref.terminal-machine.s
 grep -q '"class": "OPENED"' <<<"$secret"
 grep -q 'NONDISPLAY' <<<"$secret"
 
+mvs="$($PYTHON "$G" --pack "$CORE" --pack "$PACK" lookup 'topic=mvs-intention-consumer' --sphere terminal-machine --corpus terminal-machine.lessons)"
+grep -q '"class": "FOUND"' <<<"$mvs"
+grep -q 'does not inherit terminal mutation authority' <<<"$mvs"
+
+batch="$($PYTHON "$G" --pack "$CORE" --pack "$PACK" lookup 'topic=mvs-batch-outcome' --sphere terminal-machine --corpus terminal-machine.lessons)"
+grep -q '"class": "FOUND"' <<<"$batch"
+grep -q 'JES step RCs' <<<"$batch"
+
+current="$($PYTHON "$G" --pack "$CORE" --pack "$PACK" open ref.terminal-machine.3270-current)"
+grep -q '"class": "OPENED"' <<<"$current"
+grep -q 'AID send completion is not host semantic completion' <<<"$current"
+
 echo "PASS terminal-machine Gopher sphere v0.2"
