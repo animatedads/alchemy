@@ -1,14 +1,15 @@
 {
   "kind": "article",
   "id": "rx2cpp.qualification",
-  "version": "0.2",
+  "version": "0.3",
   "sphere": "rx2cpp",
   "section": "qualification",
   "title": "Qualify a change: fixtures, full regression, ooTest groups, self-build fixed point",
-  "summary": "Four gates, cheapest first. (1) Fixture scripts: native/test_*.sh and tests/test_*.sh each build fixtures and diff compiled against interpreted output; the program-construct fixtures are in native/fixtures/program_constructs and run by native/test_program_constructs*.sh. (2) The full regression: every test script, about 100, results one line per script (rc=0 is a pass). (3) ooTest acceptance: ootest/run_native_groups.sh runs ooTest groups interpreted and with the group compiled; totals and every failure must be identical. (4) native/build_self.sh: the native and the interpreted compiler each compile the compiler; all four outputs must be byte-identical (fixed point). At abdae83 (compiler code unchanged up to 43b440e) the fixed point held: native 217 s, interpreted 300 s.",
+  "summary": "Four gates, cheapest first. (1) Fixture scripts: native/test_*.sh and tests/test_*.sh each build fixtures and diff compiled against interpreted output; the program-construct fixtures are in native/fixtures/program_constructs and run by native/test_program_constructs*.sh. (2) The full regression: every test script, about 100, results one line per script (rc=0 is a pass). (3) ooTest acceptance: ootest/run_native_groups.sh runs ooTest groups interpreted and with the group compiled; totals and every failure must be identical. (4) native/build_self.sh: the native and the interpreted compiler each compile the compiler; all four outputs must be byte-identical (fixed point). At c274209 (merged to main as fa1179f) all 137 test scripts passed (SKIP: bsf, python, kernel objects, whose external installs are absent) and the fixed point held: native 226 s, interpreted 317 s.",
   "procedure": [
     "Run the test scripts touched by the change first (for example native/test_interpret.sh, native/test_address_command.sh, native/test_call_on.sh).",
     "Run the full regression; it takes more than two hours, so make it resumable (skip scripts that already have a result line) and run it from a snapshot copy of the tree so later edits do not change the run.",
+    "Before pushing main, fetch it explicitly (git fetch origin main:refs/remotes/origin/main): other projects in the repository (ooDialog Linux, oorexx-mvs) push to main too; merge the tested branch with a merge commit so the tested commits keep their hashes.",
     "Run native/build_self.sh outdir; the script fails unless the fixed point holds.",
     "For language areas, run ootest/run_native_groups.sh with the relevant groups (default list ootest/native_groups.txt).",
     "Only then merge the wip branch to main."
@@ -27,24 +28,24 @@
   ],
   "provenance": [
     {
-      "artifact": "rx2cpp-43b440e.zip",
-      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
+      "artifact": "rx2cpp-fa1179f.zip",
+      "sha256": "7c6605689c7181dc9e6d4ed17859e6703adb958acb64fbedc8a9b7ce72b62089",
       "member": "oorexx2cpp/HANDOFF_2026-10-13.md",
       "line_start": 8,
       "line_end": 25,
       "claim": "Self-build fixed point and timings."
     },
     {
-      "artifact": "rx2cpp-43b440e.zip",
-      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
+      "artifact": "rx2cpp-fa1179f.zip",
+      "sha256": "7c6605689c7181dc9e6d4ed17859e6703adb958acb64fbedc8a9b7ce72b62089",
       "member": "oorexx2cpp/HANDOFF_2026-10-13.md",
       "line_start": 48,
       "line_end": 60,
       "claim": "ooTest groups compiled natively: run_native_groups.sh."
     },
     {
-      "artifact": "rx2cpp-43b440e.zip",
-      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
+      "artifact": "rx2cpp-fa1179f.zip",
+      "sha256": "7c6605689c7181dc9e6d4ed17859e6703adb958acb64fbedc8a9b7ce72b62089",
       "member": "oorexx2cpp/native/build_self.sh",
       "claim": "The fixed-point script."
     }

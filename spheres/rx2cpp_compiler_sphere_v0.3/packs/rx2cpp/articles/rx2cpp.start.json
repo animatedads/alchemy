@@ -1,11 +1,11 @@
 {
   "kind": "article",
   "id": "rx2cpp.start",
-  "version": "0.2",
+  "version": "0.3",
   "sphere": "rx2cpp",
   "section": "start",
   "title": "Start here: what rx2cpp is and the rules every change keeps",
-  "summary": "rx2cpp compiles ooRexx 5.3 programs, routines and classes into C++17 and builds them as native ooRexx libraries (.so) that the interpreter loads like any other package. The interpreter is the oracle: compiled output must be byte-identical to interpreted output, including error messages, tracebacks where supported, and the order of side effects. Source: github.com/animatedads/oorexx, folder oorexx2cpp. Version file 0.30.18; continuity notes are HANDOFF_2026-10-13.md (newest) and HANDOFF_2026-10-12.md. Baseline of this sphere: commit 43b440e on branch wip-2026-10-13 (archive: git archive --format=zip 43b440e oorexx2cpp).",
+  "summary": "rx2cpp compiles ooRexx 5.3 programs, routines and classes into C++17 and builds them as native ooRexx libraries (.so) that the interpreter loads like any other package. The interpreter is the oracle: compiled output must be byte-identical to interpreted output, including error messages, tracebacks where supported, and the order of side effects. Source: github.com/animatedads/oorexx, folder oorexx2cpp. Version file 0.30.18; continuity notes are HANDOFF_2026-10-13.md (newest) and HANDOFF_2026-10-12.md. Baseline of this sphere: main at fa1179f, the merge of wip-2026-10-13 after a full regression and the self-build passed (archive: git archive --format=zip fa1179f oorexx2cpp).",
   "invariants": [
     "Byte-identical to the ooRexx 5.3 interpreter. A difference is a bug in rx2cpp unless it is listed in rx2cpp.known-differences.",
     "Port the interpreter's own algorithm (NumberString::addSub, RexxInternalObject::requestString, ...) step for step. Never special-case a test, never approximate.",
@@ -30,16 +30,16 @@
   ],
   "provenance": [
     {
-      "artifact": "rx2cpp-43b440e.zip",
-      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
+      "artifact": "rx2cpp-fa1179f.zip",
+      "sha256": "7c6605689c7181dc9e6d4ed17859e6703adb958acb64fbedc8a9b7ce72b62089",
       "member": "oorexx2cpp/HANDOFF_2026-10-13.md",
       "line_start": 1,
       "line_end": 6,
       "claim": "Oracle is the ooRexx 5.3 interpreter; identical means byte-identical; credits."
     },
     {
-      "artifact": "rx2cpp-43b440e.zip",
-      "sha256": "10af342e1e05f0dde36379919ea2e88b73367a2ca15163a8c3f60f4dec7d3035",
+      "artifact": "rx2cpp-fa1179f.zip",
+      "sha256": "7c6605689c7181dc9e6d4ed17859e6703adb958acb64fbedc8a9b7ce72b62089",
       "member": "oorexx2cpp/VERSION",
       "claim": "Version 0.30.18."
     }

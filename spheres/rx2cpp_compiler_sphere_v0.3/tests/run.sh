@@ -1,6 +1,6 @@
 #!/bin/sh
 set -eu
-: "${GOPHER:?set GOPHER to LLM Gopher v0.21+}"
+: "${GOPHER:?set GOPHER to LLM Gopher v0.31+}"
 T=${TMPDIR:-/tmp}/rx2cpp-sphere.$$
 "$GOPHER" --profile rx2cpp context rx2cpp --full > $T.ctx
 for id in rx2cpp.start rx2cpp.build-and-run rx2cpp.qualification rx2cpp.lanes rx2cpp.epoch \
@@ -13,4 +13,4 @@ for term in baseline 'security manager' epoch 'fixed point' trunk pbench2 plan42
     grep -q '"class": "FOUND"' $T.s || { echo "FAIL search $term"; exit 1; }
 done
 rm -f $T.ctx $T.s
-echo "PASS RX2CPP SPHERE v0.2"
+echo "PASS RX2CPP SPHERE v0.3"

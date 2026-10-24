@@ -1,7 +1,7 @@
 {
   "kind": "corpus",
   "id": "rx2cpp.lessons",
-  "version": "0.2",
+  "version": "0.3",
   "sphere": "rx2cpp",
   "title": "rx2cpp lessons that cost time",
   "records": [
@@ -48,6 +48,10 @@
     {
       "topic": "line endings",
       "rule": "A source file ending in a lone CR (the Rexx Parser's Elements.cls) needs a final LF added when copied for a build."
+    },
+    {
+      "topic": "allocation changes collection timing",
+      "rule": "Allocating interpreter objects where the interpreter allocates none (copies of a package's class tables at each first class lookup) changes when an object becomes collectable (test_object_lifetime.sh: after 1 GC instead of 2). Take such copies once at load; look up without allocating."
     }
   ]
 }
