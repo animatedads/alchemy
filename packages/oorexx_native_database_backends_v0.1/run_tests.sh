@@ -6,6 +6,7 @@ ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 export NATIVE_DB_ROOT="$ROOT"
 export REXX_PATH="$ROOT/src:$ROOT/postgres:$DB_CORE_ROOT:$FOREIGN_RUNTIME_ROOT/rexx${REXX_PATH:+:$REXX_PATH}"
 export LD_LIBRARY_PATH="$FOREIGN_RUNTIME_ROOT/build${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+rexx "$ROOT/tests/test_database_backend_selector.rex"
 rexx "$ROOT/tests/test_capability_model.rex"
 rexx "$ROOT/tests/test_postgres_native_offline.rex"
 rexx "$ROOT/tests/test_postgres_dbcore_adapter.rex"
