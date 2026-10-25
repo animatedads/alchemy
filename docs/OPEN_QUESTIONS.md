@@ -1,5 +1,7 @@
 # Outstanding Architecture Decisions — X.25 / XTP Gateway v0.1
 
+> **2026-10-25 implementation checkpoint:** XTP dev29 closes segmented unicast, selective retransmission, SYNC/ECHO and base DIAG. Authentication and persistent interactive context remain separate XTP owner tasks. The independent [ooRexx X.25 dev1 lab source](../packages/oorexx_x25_v0.1-dev1/README.md) exists and has deterministic interpreter tests; LAPB and real interop do not. Architecture: Tom Dyer; code and update: ChatGPT GPT-6. The six architecture choices below remain open; no settled RexxOS question is reopened.
+
 **Architecture:** Tom Dyer. **Coding:** ChatGPT (future). **Document/update written by:** ChatGPT (GPT-6), 24 October 2026.  
 **Status:** design-only decision register. This is deliberately **not** a list of open decisions about settled RexxOS architecture. See [X25_FAMILY_SPEC](X25_FAMILY_SPEC.md), [XTP_GATEWAY_SPEC](XTP_GATEWAY_SPEC.md), [SEMANTIC_MAPPING](SEMANTIC_MAPPING.md).
 
@@ -19,8 +21,8 @@ These are genuine interoperability, ownership or governance choices; default sug
 ## Already resolved, not being re-opened
 
 - **User-space ooRexx is primary for LAPB and PLP.** [X.25 family spec](X25_FAMILY_SPEC.md) treats Linux \`AF_X25\` as optional compatibility only, acknowledging operational concerns. No kernel dependency in critical path.
-- **XTP route ordering and carrier naming:** L2 MU↔MI, L3 native-IP underlay and L4 UDP underlay remain XTP's route authority, **not** X.25-native ISO layer definitions. [XTP named services](../packages/oorexx_xtp_v0.1-dev26/docs/NAMED_SERVICES.md) owns service→logical peer→route.
-- **XTP selectable striping** remains the established design requirement; implementing it is another owner's qualified upstream work, not a new gateway design choice. See [dev26 gap ledger](../packages/oorexx_xtp_v0.1-dev26/docs/XTP_SPEC_GAPS_DEV26.md).
+- **XTP route ordering and carrier naming:** L2 MU↔MI, L3 native-IP underlay and L4 UDP underlay remain XTP's route authority, **not** X.25-native ISO layer definitions. [XTP named services](../packages/oorexx_xtp_v0.1-dev29/docs/NAMED_SERVICES.md) owns service→logical peer→route.
+- **XTP selectable striping** remains the established design requirement; implementing it is another owner's qualified upstream work, not a new gateway design choice. See [dev29 gap ledger](../packages/oorexx_xtp_v0.1-dev29/docs/XTP_SPEC_GAPS_DEV29.md).
 - **LDAP route distribution with manual override files**, **minimum two replicas**, and **partial materialisation** are settled estate directions, not questions for this project.
 - **ConnectSelector** owns invocation policy, no silent substitution on uncertain outcomes, and Queue/JMS disposition semantics. [Sphere](../spheres/connect_selector_gopher_sphere_v0.1/CONNECT_SELECTOR_SPHERE.md).
 - **SocketSelector** owns socket acquisition; only its owner may add half-close contract, and XTP owner must close authentication/persistent KEY/DIAG gaps before untrusted foreign ingress can run.
@@ -30,8 +32,8 @@ These are genuine interoperability, ownership or governance choices; default sug
 
 ## Delegation and near-term next actions (not decisions)
 
-1. ChatGPT: author standalone ooRexx PLP + LAPB interface, typed VC state machine and deterministic link tests; use no Python implementation as a shortcut.
-2. XTP owner: specify persistent FIRST→KEY context, unicast segmentation, authenticated FIRST/CNTL and explicit DIAG including negative capability evidence. [Dev26 gaps](../packages/oorexx_xtp_v0.1-dev26/docs/XTP_SPEC_GAPS_DEV26.md).
+1. ChatGPT: continue the now-committed [standalone ooRexx PLP/XOT lab decoder and typed VC skeleton](../packages/oorexx_x25_v0.1-dev1/README.md) with user-space LAPB, full facility validation, T1/N2/window and independent link tests; use no Python runtime shortcut. The existing dev1 is not complete X.25.
+2. XTP owner: specify persistent **interactive** FIRST→KEY context, authenticated FIRST/CNTL and gateway-specific DIAG VALUE allocations; dev29 already implements unicast segmentation, selective retransmission, SYNC/ECHO and basic DIAG. [Dev29 gaps](../packages/oorexx_xtp_v0.1-dev29/docs/XTP_SPEC_GAPS_DEV29.md).
 3. SocketProvider owner: specify \`halfCloseSend\` capability and \`shutdownSend()\` with backward compatibility and tests. [Core source](../packages/oorexx_socket_provider/src/SocketProvider.cls).
 4. Gateway owner: author Session, policy-generation pinning, enforcement, receipt schema and independent observation adapters; require all relevant gates before live dispatch.
 5. Qualifier: provide exact-source/ABI/interpreter/hardware trace receipts. A missing peer or missing permission means NOT_RUN, not PASS.
