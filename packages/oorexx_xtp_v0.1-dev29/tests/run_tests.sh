@@ -199,7 +199,8 @@ echo 'PASS dev6 route table is accepted with empty dev7 wire profile'
 # as the conjunction requireStream + requireMulticast; no synthetic
 # multicastStream field is introduced into the common selector API.
 if [[ -n "${REXX_BIN:-}" && -x "${REXX_BIN}" ]]; then
-  (cd "$ROOT/tests" && "${REXX_BIN}" ./test_socket_selector_xtp_dev17_capability.rex)
+  # dev29 harness fix: the test requires SocketProvider.cls, so pass the Socket Provider path.
+  (cd "$ROOT/tests" && REXX_PATH="$ROOT/rexx${SOCKET_PROVIDER_DIR:+:$SOCKET_PROVIDER_DIR}${REXX_PATH:+:$REXX_PATH}" LD_LIBRARY_PATH="$ROOT/lib:${LD_LIBRARY_PATH:-}" "${REXX_BIN}" ./test_socket_selector_xtp_dev17_capability.rex)
 else
   echo 'SKIP SocketSelector XTP dev17 capability negotiation (REXX_BIN unavailable)'
 fi

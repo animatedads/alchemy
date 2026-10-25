@@ -54,3 +54,19 @@ Changes against dev28 (lines added / removed)
    - Real Ethernet links and the ED209 field path.
 
 Claude (Opus 5.5)
+
+Addendum, 25 October 2026 (Claude, Opus 5.5): ooRexx 5.3.0 r13196 run
+------------------------------------------------------------------------
+With the Library ooRexx .deb (8add57fd...) installed on the build host:
+  tests/test_operational_socket_rexx.rex   PASS (dev26 zero-THROTTLE refusal, first execution)
+                                           against dev25's XtpSocketProvider.cls: FAIL
+                                           ("THROTTLE 0% returned 7 instead of -7", i.e. it sent)
+  Full regression with REXX_BIN and SOCKET_PROVIDER_DIR=<socket provider>/src:
+  99 PASS, 0 FAIL, 1 SKIP (proxy binary absent).  Includes the native ooRexx
+  multicast, multipath, priority, capacity-rate, named-service and SocketSelector suites,
+  and test_storage_capacity_xtp.sh against Storage Fabric dev23-precision1.
+Harness fixes in this addendum (test scripts only, no library code):
+  - tests/test_operational_socket_rexx.sh adds SOCKET_PROVIDER_DIR to REXX_PATH
+    (XtpSocketProvider.cls requires SocketProvider.cls) and skips when it is unset.
+  - tests/run_tests.sh passes REXX_PATH and LD_LIBRARY_PATH to the dev17 capability test,
+    which previously failed with Error 43 whenever ooRexx was present.
