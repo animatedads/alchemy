@@ -1,5 +1,7 @@
 # XTP Gateway Service Specification — v0.1
 
+> **2026-10-25 dev29 reconciliation:** Read `packages/oorexx_xtp_v0.1-dev29/{README.md,docs/XTP_SPEC_GAPS_DEV29.md}`. dev29 closes prior segmentation, selective-repeat, SYNC/ECHO and DIAG gaps but does not provide authenticated FIRST/CNTL or a long-lived interactive stream. Existing base DIAG VALUE=1/2/3 must not be redefined; propose gateway-specific values only under XTP-owner control. A separate ooRexx X.25 lab parser/XOT framer/VC skeleton now exists in [`packages/oorexx_x25_v0.1-dev1`](../packages/oorexx_x25_v0.1-dev1/README.md); it is not a working GatewaySession. Architecture: Tom Dyer. Coding and correction: ChatGPT GPT-6.
+
 **Architecture:** Tom Dyer. **Coding:** ChatGPT (implementation not begun by this work). **Document/update written by:** ChatGPT (GPT-6), 24 October 2026.  
 **Status:** specification only. Filtering, logging, control and inspection are design-time requirements, not post-hoc modules. **Related:** [X25_FAMILY_SPEC](X25_FAMILY_SPEC.md), [SEMANTIC_MAPPING](SEMANTIC_MAPPING.md), [OPEN_QUESTIONS](OPEN_QUESTIONS.md), [NOT_CLAIMED](NOT_CLAIMED.md).
 
@@ -9,7 +11,7 @@ The gateway is one independently deployable service hosting protocol-aware Sessi
 
 **Verified from GitHub source, 2026-10-24:**
 - [SocketProvider](../packages/oorexx_socket_provider/README.md) + [core classes](../packages/oorexx_socket_provider/src/SocketProvider.cls) own socket acquisition, address object identity and dynamic offers. [Compatibility ledger](../packages/oorexx_socket_provider/CURRENT_PROVIDER_COMPATIBILITY.md) says externally qualified dev16; GitHub source retains dev14 labels.
-- [XTP named services](../packages/oorexx_xtp_v0.1-dev26/docs/NAMED_SERVICES.md) carry canonical service name via private FIRST descriptor 0xA11C and resolve carrier via ROUTE table, never service-record IP. [XTP dev26 gap ledger](../packages/oorexx_xtp_v0.1-dev26/docs/XTP_SPEC_GAPS_DEV26.md): missing persistent unicast context/segmentation, FIRST/CNTL authentication and DIAG; these are hard release gates.
+- [XTP named services](../packages/oorexx_xtp_v0.1-dev29/docs/NAMED_SERVICES.md) carry canonical service name via private FIRST descriptor 0xA11C and resolve carrier via ROUTE table, never service-record IP. [XTP dev29 README](../packages/oorexx_xtp_v0.1-dev29/README.md) and [gap ledger](../packages/oorexx_xtp_v0.1-dev29/docs/XTP_SPEC_GAPS_DEV29.md): segmented unicast messages, selective retransmission, SYNC/ECHO and DIAG exist; FIRST/CNTL authentication and persistent interactive FIRST-to-KEY context do not. Only the latter remain hard gateway ingress release gates.
 - [SSH over XTP candidate4](../packages/ssh_over_xtp_v0.1-candidate4/README.md) is a development-only, one-purpose OpenSSH ProxyCommand ↔ XTP named service bridge; candidate4 explicitly uses transaction-per-frame workaround, not a persistent stream and has no candidate4 WAN qualification.
 - [Operational Degradation Planner dev5](../packages/oorexx_operational_degradation_planner_v0.1-dev5/README.md) owns service class, capacity domains and reconciliation.
 - [Firewall Controller](../packages/oorexx_firewall_controller/docs/ARCHITECTURE.md) owns source-specific block decisions; requester cannot select CIDR, duration or nftables commands.
@@ -23,7 +25,7 @@ Anything referring to a new gateway class, cryptographic receipt format, XTP DIA
 
 **A — XTP named service -> any SocketSelector carrier.** Admit authenticated XTP FIRST name, class and policy; resolve *outbound logical service name* through dynamic SocketNegotiator; acquire selected socket by provider (TLS/TCP/UNIX/UDP/QUIC/NORM/X.25 only when its semantics fit). Do not hardcode destination family, address or port into service descriptors; retain selected address object/decision evidence. A datagram or circuit provider requires a typed adapter, not pretending to implement a byte stream.
 
-**B — foreign socket -> temporary XTP peer -> named XTP service.** Admit foreign source identity and service binding; allocate a scoped, unprivileged ephemeral XTP peer identity (not a full MU/MI), short TTL, independent credential/lease, single-session permitted routes, anti-spoof and reaping. Bind lifetime to the original socket/session and fence/revoke on close, abort or lease expiration. **DISABLED until native XTP FIRST/CNTL authentication and persistent streaming+segmentation are qualified.** No fallback to naked unauthenticated XTP; no guest route-registration authority.
+**B — foreign socket -> temporary XTP peer -> named XTP service.** Admit foreign source identity and service binding; allocate a scoped, unprivileged ephemeral XTP peer identity (not a full MU/MI), short TTL, independent credential/lease, single-session permitted routes, anti-spoof and reaping. Bind lifetime to the original socket/session and fence/revoke on close, abort or lease expiration. **DISABLED until native XTP FIRST/CNTL authentication and persistent interactive FIRST-to-KEY context are qualified.** No fallback to naked unauthenticated XTP; no guest route-registration authority.
 
 **C — X.25 CALL in/out ↔ XTP named service.** Inspect X.121 destination, CUG, CUD binary identifier, requested facilities, DTE/DCE endpoint and peer principal before accepting. Route to registered XTP named service or reverse to an authorised X.121 target; maintain per-VC state, LCN translation, Q/D/M, cause/diagnostic and interrupt/control sideband. Requires the independently qualified ooRexx X.25 stack from [X25 family spec](X25_FAMILY_SPEC.md) and the XTP session/authentication gates. Route changes cannot assert live VC migration. No unapproved reverse charges/fast select.
 
@@ -64,7 +66,7 @@ Define \`GatewayDecisionReceipt\`: session id; transition; decision ALLOW/DENY/Q
 
 | Ingress | Desired refusal |
 | --- | --- |
-| XTP | **Proposed** authenticated XTP DIAG with reason code, offending service/key reference (privacy bounded) and retryability; update XTP owner first. Today lack of DIAG causes timeout: do not claim solved. |
+| XTP | dev29 **implements** packet-type 8 DIAG: CODE=1 CONTEXT_REFUSED and VALUE=1 SERVICE_NOT_ADMITTED, 2 OVERSIZE, 3 MALFORMED, with source/return-bit binding but **without cryptographic FIRST/CNTL authentication**. Propose new versioned VALUE allocations for gateway policy, identity, facility, quota, loop and inspection refusal only through XTP owner; existing peer support and privacy must be negotiated. Do not mislabel source binding as secure authentication. |
 | X.25 | Correct CLEAR REQUEST with cause/diagnostic for reject of an in-flight call, otherwise RESET or local circuit-state failure as appropriate; do not invent public X.25 cause codes for local gateway errors. |
 | TCP/TLS/UNIX/other sockets | protocol-specific refusal if available, then clean close or abort; local receipt always gives explicit reason even if remote stack cannot. |
 | QUIC/HTTP/RPC | native error/close code or typed application result only where protocol mapping is qualified. |
@@ -104,7 +106,7 @@ The verified [Instrumentation authority article](../spheres/oorexx_instrumentati
 
 ## 8. Half-close and upstream change request
 
-**Request to SocketProvider owner, not local patch:** \`SocketCapabilities~halfCloseSend\` (optional false by default) and \`ProviderSocketConnection~shutdownSend()\` with idempotent outcomes and explicit compatibility/NOT_SUPPORTED. Preserve \`waitDrained()\`, queued bytes and full \`close()\`. Typed state \`sendOpen/recvOpen\` and per-family error reason should be exposed. XTP also needs persistent stream context and (if semantics permit) end-of-send signalling. X.25 CLEAR does not generally map to a mere TCP FIN: use per-direction state and explicit family-specific translation. Until those upstream capabilities are qualified, refuse half-close-requiring protocols rather than quietly closing both sides.
+**Request to SocketProvider owner, not local patch:** \`SocketCapabilities~halfCloseSend\` (optional false by default) and \`ProviderSocketConnection~shutdownSend()\` with idempotent outcomes and explicit compatibility/NOT_SUPPORTED. Preserve \`waitDrained()\`, queued bytes and full \`close()\`. Typed state \`sendOpen/recvOpen\` and per-family error reason should be exposed. XTP dev29 has segmented message streams but still needs persistent interactive stream context and (if semantics permit) end-of-send signalling. X.25 CLEAR does not generally map to a mere TCP FIN: use per-direction state and explicit family-specific translation. Until those upstream capabilities are qualified, refuse half-close-requiring protocols rather than quietly closing both sides.
 
 ## 9. Failure and edge-condition table
 
@@ -112,7 +114,7 @@ The verified [Instrumentation authority article](../spheres/oorexx_instrumentati
 | --- | --- |
 | Half-open, SYN flood, slow-drip | admission/deadline on headers, bytes/min rates, per-principal quotas, bounded state, deterministic refusal/cancel |
 | Peer never reads | high-watermark pauses upstream reader and stops X.25 receive credit / RNR where appropriate; deadline then clear/abort; never unbounded buffers |
-| X.25 default 128 octets vs XTP FIRST MTU | negotiate per-VC packet size; segmented XTP transmission must be qualified before enable; never truncate or mislabel original data |
+| X.25 default 128 octets vs XTP underlay MTU | XTP dev29 already segments unicast messages (FIRST+DATA); negotiate per-VC packet size, retain X.25 PDU boundaries, cap end-to-end reassembly and qualify persistent gateway session mapping; never truncate or mislabel original data |
 | Interrupt / urgent unmatched | typed sideband if qualified, otherwise explicit refuse/drop-with-fatal-policy (never silently inline with data) |
 | X.25 reset vs TCP close | family-aware reset event; for stream-only target abort with typed \`RESET_UNREPRESENTABLE\`; no invented replay |
 | Gateway crashes/failover mid-session | prior owner fenced; new gateway has distinct incarnation; mark in-flight outcome UNKNOWN; reopen only via newly admitted call/session and dedup when application permits |
@@ -139,7 +141,7 @@ The [Operational Degradation Planner dev5](../packages/oorexx_operational_degrad
 ## 12. Acceptance gates / dependency handover
 
 - G0 specification approved: ownership, negative capabilities, protocol/refusal mapping and policy controls.
-- G1 SocketProvider owner supplies half-close capability semantics; XTP owner specifies DIAG/authenticated FIRST+CNTL, persistent KEY context and segmentation. Owner change only; this document cannot assert completion.
+- G1 SocketProvider owner supplies half-close capability semantics; XTP owner supplies authenticated FIRST+CNTL, persistent interactive KEY context and gateway-specific DIAG VALUE extensions. Segmented unicast messages and base DIAG exist in dev29; this document cannot assert security or gateway qualification.
 - G2 user-space ooRexx X.25 PLP/LAPB with simulated and real XOT test peers qualified; exact revision and ABI receipts.
 - G3 bidirectional gateway loopback tests with deterministic sessions, policy-generation pinning, filters, journal power-loss recovery, audit failure, inspector redaction, telemetry ordering and two-side backpressure.
 - G4 independent live native legacy/XOT and authenticated XTP peer interop with route changes, MI/MU placement and unauthorised access tests.
