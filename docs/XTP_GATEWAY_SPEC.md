@@ -73,6 +73,23 @@ Define \`GatewayDecisionReceipt\`: session id; transition; decision ALLOW/DENY/Q
 
 No unconditional “refusal never looks like timeout” promise is achievable on an unauthenticated peer that deliberately suppresses packets: guarantee **an explicit local decision receipt** and a remote refusal wherever that transport supports reliable response. Distinguish peer-did-not-respond from gateway-denied.
 
+### Proposed gateway DIAG VALUE extension for XTP owner review
+
+Keep **packet type 8 / CODE=1 CONTEXT_REFUSED**. Existing dev29 VALUEs **1** SERVICE_NOT_ADMITTED, **2** OVERSIZE and **3** MALFORMED remain unchanged. The following values are **proposed, NOT reserved or implemented** (allocator/registry authority stays with the XTP owner):
+
+| Proposed VALUE | Gateway semantic reason | Wire privacy/action |
+| --- | --- | --- |
+| 16 | GATEWAY_POLICY_DENIED | Generic remote denial; exact rule and policy generation stay in local receipt |
+| 17 | GATEWAY_AUTH_REQUIRED | Reject foreign/anonymous FIRST; do not reveal credential details |
+| 18 | GATEWAY_FACILITY_UNSUPPORTED | Unsupported X.25 CUG/charging/packet/window or mapping profile; no CUD echo |
+| 19 | GATEWAY_QUOTA_EXCEEDED | Bound concurrent calls, bytes or time; retry hint only if permitted by policy |
+| 20 | GATEWAY_LOOP_DETECTED | Hop-budget/visited gateway refusal, without disclosing topology |
+| 21 | GATEWAY_INSPECTION_DENIED | Inspector fatal denial or opaque data lacking an allowed profile; no payload echoed |
+| 22 | GATEWAY_NOT_READY | Missing provider qualification, persistent session or admission dependencies; never silently downgrade |
+| 23 | GATEWAY_EMERGENCY_VETO | Active deny overlay supersedes pinned generation; remote reason remains generic |
+
+The gateway may use an existing VALUE 1/2/3 only where the exact reason matches. Values 16–23 must **not** appear on wire until the XTP owner approves a versioned extension, interoperable receiver behaviour, byte-order, downgrade refusal and replay-resistant authentication. Local receipts always remain more specific than remote diagnostics.
+
 ## 6. Logging, tamper evidence and capture privacy
 
 **Three non-interchangeable streams with separate access and retention:**
