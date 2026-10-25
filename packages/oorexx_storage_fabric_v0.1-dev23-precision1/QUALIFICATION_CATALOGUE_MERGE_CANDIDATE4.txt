@@ -1,0 +1,27 @@
+Storage Fabric dev21 CLI / Virtual Catalogue / Intention Bridge / Mesh Fanout candidate4
+Date 2026-10-15. No ed209 remote changes performed by this delivery.
+Source authority: virtual catalogue candidate3 (hardened auth and cwd fixes).
+Additions: dynamic intention bridge from independent intentions candidate3;
+read-only bounded multi-peer aggregation and new native regression.
+The peer source, CLI launcher, mesh catalogue regression and deployment smoke
+script remain from hardened candidate3. Original dev21 source untouched.
+
+Local runtime: actual user-provided ooRexx 5.3.0 r13196 .deb extracted to
+isolated prefix, without installing system packages.
+
+PASS: complete original tests/run.sh dev21 suite, including local Git/fuse stub.
+PASS: 14/14 Python CLI tests (7 CLI; 7 native ooRexx from unrelated cwd).
+PASS: native tests/test_storage_mesh_catalogue.rex.
+PASS: native tests/test_storage_catalogue_intention_bridge.rex using real
+      Management Intention Discovery v0.1-dev8 source.
+PASS: native tests/test_storage_mesh_catalogue_search.rex including denial,
+      unreachable, origin, revision mutation and bounded pagination failure.
+PASS: native tests/test_peer_protocol.rex and test_peer_queuerexx_adapter.rex.
+PASS: real Initech A01 1,703,747-byte WebM StorageRef pin and lookup in an
+      isolated disposable authority (SHA-256
+      2cf4b36041f79f58a45a601869358dd2fd39c4643e898540ff2a66b74e1cd30f).
+
+Not run: remote ed209 deployments; QueueRexx/XTP end-to-end Storage peer
+RPC; actual 8-MU discovery; Azure Git live retention; real video face analysis.
+This dev21 candidate is not declared API-compatible with separately evolving
+Storage Fabric dev24 and must not overwrite dev24 on an installed host.

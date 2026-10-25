@@ -1,0 +1,44 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_storage_fabric",
+    "version": "0.1-dev23-precision1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "OP_PLANNER_ROOT": "${REPO_ROOT}/packages/oorexx_operational_degradation_planner_v0.1-dev5",
+      "SERVICE_DESCRIPTOR_ROOT": "${REPO_ROOT}/packages/ssh_over_xtp_v0.1-candidate4/vendor/oorexx_service_descriptors_v0.1-dev2"
+    }
+  },
+  "tests": [
+    {
+      "name": "large-file-precision",
+      "argv": [
+        "bash",
+        "tests/run_precision.sh"
+      ],
+      "environment": {
+        "set": {
+          "REXX_BIN": "/usr/local/bin/rexx"
+        }
+      },
+      "timeout_seconds": 300
+    },
+    {
+      "name": "parallel-fetch-pressure",
+      "argv": [
+        "bash",
+        "tests/run_parallel_fetch_pressure.sh"
+      ],
+      "timeout_seconds": 180
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_storage_fabric_v0.1-dev23-precision1"
+    }
+  }
+}

@@ -1,0 +1,39 @@
+Storage Fabric v0.1-dev20 qualification
+Date: 2026-10-07
+Runtime: ooRexx 5.3.0 r13196 (user-supplied debug .deb)
+Git: git version 2.47.3
+Socket Provider: oorexx_socket_provider_v0.1-dev8
+
+New dev20 scope:
+- storage.fabric.git/0.1 first-class Git-backed durable provider
+- bounded content-addressed Git chunks plus StorageRef manifest
+- elastic-capacity provider declaration (no fabricated finite byte count)
+- Git credential isolation from Storage state
+- post-push remote ref confirmation and exact commit verification
+- fresh-clone materialisation from commit-specific StorageLocation
+- vendor/site/failure-domain metadata on Git replicas
+- catalogue persistence of vendor/site/failure-domain evidence
+- complete Azure DevOps live qualification script
+
+Executed deterministic/local qualification:
+PASS Storage Git provider chunked durable store/materialise
+PASS Storage Git provider local bare-repository integration
+PASS Storage two-centre/two-vendor failure-domain replication policy
+PASS Storage -> estate SocketProvider integration
+PASS ALL STORAGE FABRIC v0.1-dev20 CORE TESTS
+PASS STORAGE FABRIC v0.1-dev20 ENVIRONMENT QUALIFICATION
+
+The inherited Storage suite, native FUSE3 stub checks, mesh authority,
+dynamic intentions, peer materialisation, Google Drive provider, sequential
+media, bindings, streaming/checkpoint and failure-domain tests all passed.
+
+Azure DevOps live qualification status in this execution environment:
+NOT RUN TO PROVIDER. The included tests/azure_git_environment_test.sh was
+invoked against the supplied Azure DevOps test repository, but this execution
+container could not resolve dev.azure.com. Failure occurred at git ls-remote
+before authentication or Storage operations:
+  fatal: unable to access ... Could not resolve host: dev.azure.com
+
+No Azure DevOps password/PAT is embedded in this package or qualification file.
+Run tests/azure_git_environment_test.sh in an environment with DNS/network
+access to dev.azure.com and supply STORAGE_GIT_PASSWORD through the environment.
