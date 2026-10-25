@@ -1,0 +1,56 @@
+ooRexx XTP v0.1-dev29: validation record
+==========================================
+
+Architecture: Tom Dyer
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for dev26 to dev29
+Validation written and run by: Claude (Opus 5.5), 25 October 2026
+
+Baseline: oorexx_xtp_v0.1-dev28 as committed to animatedads/alchemy main in 982d4db3
+Planner:  oorexx_operational_degradation_planner_v0.1-dev5, built locally
+Host:     Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror
+Evidence class: LOCAL_PASS. FIELD_PASS is NOT claimed.
+
+Changes against dev28 (lines added / removed)
+  src/xtp_transport.cpp            +155 -37  37891a46df8809126a688af73a0c2f3085a19c593a1a132daec7e57078bc12e5
+  tests/run_tests.sh               +3   -0   (runs the new ooRexx test when REXX_BIN is set)
+  tests/test_interop_selective.sh  +7   -5   (labels read the versions with sed; no Python)
+  Makefile                         +4   -1   (target test-sync-diag)
+  New: tests/test_sync_diag.cpp (165 lines), tests/test_operational_socket_rexx.rex (77),
+       tests/test_operational_socket_rexx.sh (8)
+  Metadata: CAPABILITIES.json (dev29_sync_echo_diag), DEPENDENCIES.json, integration.json
+  (adds sync-echo-diag; interop peer is now dev28), README.md, docs/XTP_SPEC_GAPS_DEV29.md
+
+1. SYNC/ECHO and DIAG suite (make test-sync-diag): 5/5 PASS
+   The same test source, built without -DXTP_DEV29, was also run against dev28:
+                                                         dev28                          dev29
+   Y1 stale close from earlier context, same KEY       FAIL: sender OK, B never        PASS: B delivered
+                                                         delivered (silent loss)
+   Y2 100 KB, 20%/14% loss, timeout_ms=2000            FAIL: 2010 ms                   PASS: 7 ms (126 fwd / 101 rev
+                                                                                          packets, every 5th / 7th dropped)
+   Y3 SYNC answered with ECHO=SYNC and RSEQ             n/a                             PASS
+   D1 refused service                                   FAIL: 6142 ms single,           PASS: 1 ms, SERVICE_NOT_ADMITTED
+                                                         6498 ms stream, no reason
+   D2 forged DIAG from non-destination port ignored     n/a                             PASS
+
+2. Interop (make test-interop, PEER_ROOT = committed dev28, separate processes,
+   lossy relay dropping every 5th forward and 7th reverse packet, 150 KB)
+   I1 dev29 sender -> dev28 receiver   delivered, 37 resends
+   I2 dev28 sender -> dev29 receiver   delivered, 37 resends
+   I3 dev29 sender -> dev29 receiver   delivered, 35 resends
+
+3. Full regression on dev29
+   test-service, test-capacity-rate, test-auto-key   PASS
+   test-negative 7/7, test-segmentation 9/9, test-sync-diag 5/5, test-interop 3/3
+   tests/run_tests.sh and 14 further shell suites    all rc=0
+   Totals: 91 PASS, 0 FAIL, 6 SKIP
+   SKIPs: proxy binary absent; 5 suites need an ooRexx interpreter, including the
+   new test_operational_socket_rexx.sh.
+
+4. Not run here
+   - tests/test_operational_socket_rexx.rex: no ooRexx interpreter on this build
+     host. Desk-checked: expose first in every method, no + 0 coercion, no
+     variable named result. It is to be run on the workstation (ooRexx 5.3.0
+     r13196) through the agent mailbox.
+   - Real Ethernet links and the ED209 field path.
+
+Claude (Opus 5.5)

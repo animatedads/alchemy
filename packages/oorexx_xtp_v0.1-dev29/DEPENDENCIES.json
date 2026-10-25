@@ -1,0 +1,26 @@
+{
+  "schema": "oorexx.xtp.dependencies/1",
+  "component": "oorexx_xtp",
+  "version": "0.1-dev29",
+  "dependencies": [
+    {
+      "name": "oorexx_socket_provider",
+      "version": "0.1-dev16",
+      "sha256": "fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2",
+      "purpose": "current protocol-independent SocketSelector baseline from Library reconciliation; XTP remains isolated behind this boundary"
+    },
+    {
+      "name": "oorexx",
+      "version": "5.3.0-r13196 debug 20261007-174859",
+      "sha256": "8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae",
+      "scope": "qualification",
+      "purpose": "native ooRexx SocketSelector/XTP qualification runtime supplied from Library"
+    }
+  ],
+  "operational_degradation_planner": {
+    "version": "0.1-dev5",
+    "sha256_prefix": "422dd2 (autobuild inbox suffix; full digest unverified)",
+    "required_for": "registered-class degradation planning, per-context cap and XTP enforcement adapter; the Makefile default OPERATIONAL_PLANNER_DIR"
+  },
+  "vendored": "none: vendor/socket_provider holds only a README pointing at the dev16 authority"
+}
