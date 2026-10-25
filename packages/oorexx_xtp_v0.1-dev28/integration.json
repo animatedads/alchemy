@@ -1,0 +1,75 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_xtp",
+    "version": "0.1-dev28",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "OPERATIONAL_PLANNER_DIR": "${REPO_ROOT}/packages/oorexx_operational_degradation_planner_v0.1-dev5"
+    }
+  },
+  "tests": [
+    {
+      "name": "named-service",
+      "argv": [
+        "make",
+        "test-service"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "capacity-rate",
+      "argv": [
+        "make",
+        "test-capacity-rate"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "auto-context-key",
+      "argv": [
+        "make",
+        "test-auto-key"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "negative-adversarial",
+      "argv": [
+        "make",
+        "test-negative"
+      ],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "unicast-segmentation",
+      "argv": [
+        "make",
+        "test-segmentation"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "interop-dev27-lossy",
+      "argv": [
+        "make",
+        "test-interop"
+      ],
+      "timeout_seconds": 600,
+      "environment": {
+        "set": {
+          "PEER_ROOT": "${REPO_ROOT}/packages/oorexx_xtp_v0.1-dev27"
+        }
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_xtp_v0.1-dev28"
+    }
+  }
+}
