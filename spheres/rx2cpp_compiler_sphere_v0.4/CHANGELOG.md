@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.4 (2026-10-25)
+- Rebased on rx2cpp main e3d8d00 (archive sha256 1f97f043...47e16e), merged after the full regression (137
+  scripts at cd77a49) and the fixed point (native 250 s, interpreted 344 s) passed; 32 provenance entries.
+- environment-symbols: kept per name (.environment's own LOCAL method entry had disabled the cache), QuietEpoch.
+- performance: Rexx Parser 2.46x (55.0 s against 135.3 s), trip cost and counting.
+- lessons: the never-kept cache; strings compared with .nil.
+- qualification and continuity: workstation tests through the project mailbox (component rx2cpp).
+
 ## 0.3 (2026-10-24)
 - Rebased on rx2cpp main fa1179f (archive sha256 7c660568...b62089), merged after the full regression (137
   scripts, SKIP bsf / python / kernel objects) and the self-build fixed point (native 226 s, interpreted 317 s) passed.

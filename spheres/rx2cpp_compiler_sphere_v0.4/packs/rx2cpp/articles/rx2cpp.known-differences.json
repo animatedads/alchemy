@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "rx2cpp.known-differences",
+  "version": "0.4",
+  "sphere": "rx2cpp",
+  "section": "qualification",
+  "title": "Known differences from the interpreter",
+  "summary": "The authoritative list is the section 'Known differences that remain' of HANDOFF_2026-10-13.md. At e3d8d00 it includes: PARSE SOURCE in a compiled routine called by the interpreter is a run-time error (call type unknown); a run-time error inside compiled code shows '*-* Compiled routine' instead of the source line; an untrapped HALT or NOMETHOD raised by a compiled method into an interpreted caller is ignored; CALL ON handlers for conditions inside an INTERPRET string run after the whole string; in a combined library all files share one package; SUPER as a value is unset; REPLY runs the code before the reply on the method's own thread; GUARD WHEN may evaluate its expression more often than interpreted.",
+  "invariants": [
+    "A difference not on the list is a bug: fix it or add it to the list with the reason.",
+    "Remove an entry only with a fixture that proves the behaviour now matches."
+  ],
+  "authority": "project-artifact",
+  "topics": [
+    "known differences",
+    "limitations"
+  ],
+  "provenance": [
+    {
+      "artifact": "rx2cpp-e3d8d00.zip",
+      "sha256": "1f97f04319128f03bfba1139ba0e8e67c505823223352e605a55c8063947e16e",
+      "member": "oorexx2cpp/HANDOFF_2026-10-13.md",
+      "line_start": 663,
+      "line_end": 687,
+      "claim": "Known differences that remain."
+    }
+  ]
+}

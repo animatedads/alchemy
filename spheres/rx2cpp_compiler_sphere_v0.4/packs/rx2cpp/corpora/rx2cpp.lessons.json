@@ -1,7 +1,7 @@
 {
   "kind": "corpus",
   "id": "rx2cpp.lessons",
-  "version": "0.3",
+  "version": "0.4",
   "sphere": "rx2cpp",
   "title": "rx2cpp lessons that cost time",
   "records": [
@@ -52,6 +52,14 @@
     {
       "topic": "allocation changes collection timing",
       "rule": "Allocating interpreter objects where the interpreter allocates none (copies of a package's class tables at each first class lookup) changes when an object becomes collectable (test_object_lifetime.sh: after 1 GC instead of 2). Take such copies once at load; look up without allocating."
+    },
+    {
+      "topic": "never-kept cache",
+      "rule": ".environment always has one SETMETHOD entry (LOCAL, ActivityManager::getLocalRexx), so 'no method table' meant nothing was ever kept (3.46 million lookups a parser pass). Decide per name: a Directory runs a method entry only for a name it has no entry for. Count cache hits before trusting a cache."
+    },
+    {
+      "topic": "string compared with .nil",
+      "rule": "The String comparison methods answer a .nil operand directly (CompareOperator, notEqual, primitiveIsEqual); asking .nil for a string sent MAKESTRING (NOMETHOD) and could raise a NOSTRING the interpreter never raises."
     }
   ]
 }

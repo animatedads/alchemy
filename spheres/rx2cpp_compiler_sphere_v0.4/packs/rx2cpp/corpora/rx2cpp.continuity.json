@@ -1,14 +1,14 @@
 {
   "kind": "corpus",
   "id": "rx2cpp.continuity",
-  "version": "0.3",
+  "version": "0.4",
   "sphere": "rx2cpp",
   "title": "rx2cpp continuity records (searchable facts)",
   "records": [
     {
       "topic": "baseline",
-      "value": "rx2cpp main fa1179f (merge of wip-2026-10-13 at c274209 + handoff b04c934), VERSION 0.30.18",
-      "sha256": "7c6605689c7181dc9e6d4ed17859e6703adb958acb64fbedc8a9b7ce72b62089"
+      "value": "rx2cpp main e3d8d00 (merge of wip-2026-10-13 at d1b3891; tested at cd77a49), VERSION 0.30.18",
+      "sha256": "1f97f04319128f03bfba1139ba0e8e67c505823223352e605a55c8063947e16e"
     },
     {
       "topic": "oracle",
@@ -20,7 +20,7 @@
     },
     {
       "topic": "fixed point",
-      "rule": "native/build_self.sh: native and interpreted compiler output byte-identical; at c274209 native 226 s, interpreted 317 s."
+      "rule": "native/build_self.sh: native and interpreted compiler output byte-identical; at cd77a49 native 250 s, interpreted 344 s."
     },
     {
       "topic": "regression",
@@ -52,11 +52,15 @@
     },
     {
       "topic": "pbench2",
-      "rule": "Rexx Parser benchmark: 3 passes 127.6 s interpreted vs 55.4 s compiled (d9a3834); dumps identical. Crossings between compiled code and interpreter dominate cost."
+      "rule": "Rexx Parser benchmark (61285d6): 3 passes 135.3 s interpreted vs 55.0 s compiled (2.46x); dumps identical; 90,193 trips to the interpreter a pass (about 1% of the time), environment symbols 3.29 of 3.46 million kept."
     },
     {
       "topic": "plan42",
-      "rule": "Downstream consumer: Alchemy's Plan42 bridge (autobuild submission 20261023T151214Z-CHATGPT-plan42-alchemy-bridge-dev4) pins rx2cpp main 9047f0e (2026-10-15, VERSION 0.30.18) and needs oorexx2cpp/build.sh, native/build.sh, rx2cpp.rex, rx2cpp_native_library.rex, core/RxWhenDealingWith.cls, core/RxRexxRuleSelection.cls, inspector/inspect.rex. Keep those interfaces when changing rx2cpp; tell the Plan42 owner when main moves (it moved to fa1179f on 2026-10-24)."
+      "rule": "Downstream consumer: Alchemy's Plan42 bridge (autobuild submission 20261023T151214Z-CHATGPT-plan42-alchemy-bridge-dev4) pins rx2cpp main 9047f0e (2026-10-15, VERSION 0.30.18) and needs oorexx2cpp/build.sh, native/build.sh, rx2cpp.rex, rx2cpp_native_library.rex, core/RxWhenDealingWith.cls, core/RxRexxRuleSelection.cls, inspector/inspect.rex. Keep those interfaces when changing rx2cpp; tell the Plan42 owner when main moves (fa1179f on 2026-10-24, e3d8d00 on 2026-10-25)."
+    },
+    {
+      "topic": "mailbox",
+      "rule": "Project mailbox (rasen falcon MCP): the rx2cpp session works in component rx2cpp only. CLAUDE-PC / CODEX-PC are mailed only for testing work with exact commands; Tom approves anything outside their brief."
     }
   ]
 }
