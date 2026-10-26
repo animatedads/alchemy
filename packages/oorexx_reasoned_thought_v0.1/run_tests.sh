@@ -10,6 +10,7 @@
 #   8. a job's facts matrix under a measurement (rx2cpp cache: slowdown -> which fact was wrong)
 #   9. the sycophancy audit (Gemini): scope separation vs unwarranted flip; no new model needed
 #  10. audit another model's answer (Gemini bitcoin) against the shared scenario premises
+#  11. audit a third model (ChatGPT bitcoin) - convergence + each model.s one readable-secret slip
 # Pure ooRexx 5.3, no native dependencies.
 # Author: Claude (Opus 4.8), 2026-10-26. Architecture: Tom Dyer.
 set -eu
@@ -43,5 +44,8 @@ REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_gemini_sycophancy.rex"
 echo ""
 echo "== 10. audit another model's answer (Gemini bitcoin) vs shared premises"
 REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_gemini_bitcoin.rex"
+echo ""
+echo "== 11. audit a third model (ChatGPT bitcoin): convergence + recovery slip"
+REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_chatgpt_bitcoin.rex"
 echo ""
 echo "REASONED THOUGHT v0.1 QUALIFICATION: PASS"
