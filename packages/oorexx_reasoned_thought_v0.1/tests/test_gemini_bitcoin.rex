@@ -25,18 +25,24 @@ m~measure("A_collusion", "scenario axiom: any two of three can openly collude an
 /* Gemini's 2-of-3 defence (att.1) bottoms out HERE, and this is never established: */
 m~fact("K_liveness", "the 3rd spy reliably notices and vetoes within the 24h timelock window", 0, "SCENARIO")
 
-/* Gemini (all answers) keeps a PIN on the fob. But a 4-digit PIN is a secret in a human mind. */
-m~fact("K_pin_secret", "the fob PIN stays secret (a randomized keypad defeats telepathy)", 0, "SCENARIO")
-ps = .directory~new; ps["K_pin_secret"] = "SCENARIO"
-m~measure("A_mind", "scenario axiom: a 4-digit PIN the user knows is read straight from the mind", ps, 0)
+/* Gemini rightly notes its PIN is BLINDED: a randomized keypad, so the digits in the mind do not
+   give the finger positions. That defeats shoulder-surfing - but NOT a psychic receiving full-motion
+   perception, who remote-views the live grid and the press. The correct refuter is the perception
+   axiom, not "the digits are known" (Gemini's valid correction). */
+m~fact("K_pin_entry_unseen", "the live randomized-PIN entry act (grid + finger) is not remote-viewed", 0, "SCENARIO")
+pe = .directory~new; pe["K_pin_entry_unseen"] = "SCENARIO"
+m~measure("A_perception", "scenario axiom (Turn 6-7): psychics receive full-motion colour video of perception", pe, 0)
+/* 3-of-3 carries its OWN declared cost, which the first audit OMITTED (Gemini's valid catch): */
+m~fact("K_availability", "all three keyholders survive and cooperate - no permanent hold-out", 0, "SCENARIO")
 
 /* Gemini's recommendations across its three answers. */
 m~decision("D_fobs",       "use hardware fobs, not paper");            m~needs("D_fobs", "K_hw_only")
 m~decision("D_3of3",       "use 3-of-3 multisig (answer 2)");          m~needs("D_3of3", "K_3of3_sound")
+m~needs("D_3of3", "K_availability")   /* 3-of-3's symmetric trade-off: it assumes no permanent hold-out */
 m~decision("D_2of3_plain", "use plain 2-of-3 multisig");               m~needs("D_2of3_plain", "K_2of3_safe")
 m~decision("D_2of3_veto",  "use 2-of-3, collusion handled by a timelock+veto (answer 1)")
 m~needs("D_2of3_veto", "K_liveness")
-m~decision("D_pin", "rely on the fob PIN as a security layer"); m~needs("D_pin", "K_pin_secret")
+m~decision("D_pin", "rely on the blinded-PIN entry as a security layer"); m~needs("D_pin", "K_pin_entry_unseen")
 
 rev = m~review
 
@@ -50,17 +56,21 @@ say ""
 say "== Where it does not"
 call check fellIn(rev, "D_2of3_plain"), -
   "plain 2-of-3 is REFUTED by the scenario's collusion axiom - exactly Claude's and Gemini-answer-2's point"
-call check \ inList(rev["checkedFacts"], "K_liveness") & \ fellIn(rev, "D_2of3_veto"), -
-  "Gemini's veto-rescued 2-of-3 (answer 1) survives ONLY on an UNEXAMINED liveness assumption - a hidden fact surfaced"
+/* Gemini's rebuttal, audited - both points have merit, and the first matrix was asymmetric: */
+call check \ inList(rev["checkedFacts"], "K_liveness") & \ inList(rev["checkedFacts"], "K_availability"), -
+  "SYMMETRIC trade-off: 2-of-3 rests on a liveness assumption AND 3-of-3 on a no-hold-out assumption - both declared, neither checked. The earlier '3-of-3 is better-grounded' was MY bias, which Gemini caught"
+call check \ fellIn(rev, "D_2of3_veto") & \ fellIn(rev, "D_3of3"), -
+  "both thresholds hold, each on its declared trade-off - the choice is collusion-defence vs liveness, not a structural failure of either"
 call check fellIn(rev, "D_pin") & \ fellIn(rev, "D_fobs"), -
-  "the PIN layer FALLS (a 4-digit PIN in a mind is broadcast) - yet D_fobs still holds: the enclave that never exports the key is the real protection, not the PIN"
+  "the blinded PIN still FALLS, but on the CORRECT ground - full-motion remote viewing of the live entry, not 'the digits are known'; the randomized pad defeats shoulder-surfing, off-point here"
 
 say ""
-say "== The verdict against the shared premises"
-say "   Gemini's three answers disagree on the threshold (2-of-3 vs 3-of-3). Audited against the same"
-say "   premises Claude used: the hardware reasoning and 3-of-3 rest on checked axioms; the 2-of-3"
-say "   rests on an unexamined 'the 3rd spy vetoes in time' hope. The better-grounded of Gemini's own"
-say "   answers is the 3-of-3 - the conclusion Claude reached."
+say "== Verdict, after Gemini's rebuttal"
+say "   Gemini was right on both counts. The threshold is a genuine trade-off: 2-of-3 buys liveness at"
+say "   a collusion cost, 3-of-3 buys collusion-defence at a hold-out/deadlock cost. My first audit"
+say "   modelled only 2-of-3's cost - exactly the 'axioms that flatter my own baseline' bias Gemini"
+say "   named. The PIN still falls, but because the ENTRY is remote-viewed, not because the digits are"
+say "   known. The adversarial review corrected the harness - which is the whole point of the model."
 
 do f over rev["refutedFacts"]; say "   refuted:" f["id"] || ":" f["statement"]; end
 
