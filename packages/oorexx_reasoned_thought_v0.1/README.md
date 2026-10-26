@@ -36,6 +36,15 @@ by evidence tier, and any bearing utterance forces re-settlement.
 - **ConceptHierarchy** — the tree-of-knowledge layer for discussion over *universals* ("all A are
   B"): transitivity, coextension from a subsumption cycle, property flow across an equivalence
   class. Entailment lives here; belief in an asserted universal is decided by the layer above.
+- **Proof of Analysis** (`ProofOfAnalysis.cls`) — an LLM ships a *structured, self-describing
+  proof* instead of prose, so a second instance re-runs it rather than re-reads it. Three
+  contestable layers: `ProofStatement` (the shared claims), `CategorisationPolicy` (how each is
+  typed — debatable, but a pure function once the policy is fixed), and the proof structure
+  (role/target/warrant). `Proof~run` emits a `ProofCertificate` that replays to a deterministic
+  fingerprint; `ProofReview~compare` diffs two certificates and classifies the divergence
+  `WARRANT > CATEGORISATION > CONCLUSION_ONLY > AGREE`. `ProofExchangeMcpOperations~dispatch`
+  (`proof.run`, `proof.review`) is the MCP surface; the certificate's `render` string is the wire
+  form.
 
 ## Decision procedure (ordinal; ChatGPT's design, reference here)
 
@@ -49,7 +58,7 @@ evidence manufactures a higher tier. The authoritative combiner (paraconsistent 
 certificates, independent-origin dedup, cycle detection) is ChatGPT's to deliver; the
 `OrdinalEvidenceCombiner` here is a reference implementation of the agreed rule.
 
-## Worked examples / qualifications (`sh run_tests.sh`, 16 checks)
+## Worked examples / qualifications (`sh run_tests.sh`, 26 checks)
 
 **1. The RexxLA attribution** (`tests/test_attribution_reeval.rex`, vectors A–E):
 stylometric resemblance settles nothing; the bracket (testimony) *supports* "Claude was involved"
@@ -63,6 +72,12 @@ passage-bound generation transcript settles it.
 opposite of a defeat-graph cycle, which fails closed); `boys are foolish` ⇒ men are foolish
 (transitivity, premise-bounded); `GIRLS RULE!` entails nothing and is assertible only at the tier
 of the voice that shouted it — volume is not evidence.
+
+**3. Proof-of-analysis exchange** (`tests/test_proof_exchange.rex`): two instances run the *same*
+proof over the *same* statements under *different* categorisation policies; the review localises
+the disagreement to the one statement they typed differently (`s1`: TESTIMONY vs STYLOMETRIC) and
+the one conclusion that flipped (`P1a`: SUPPORTED vs HINT), replays to a stable fingerprint, and
+classifies a warrant objection as a dispute about the proof's nature — all through the MCP surface.
 
 ## Run
 
