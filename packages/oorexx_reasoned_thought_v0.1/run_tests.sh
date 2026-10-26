@@ -8,6 +8,7 @@
 #   6. self-contained proof bundle (serialize -> parse -> rebuild -> verify, in a second process)
 #   7. a real conversation's logic (psychic-spies/bitcoin chat): falsified assumptions -> revisions
 #   8. a job's facts matrix under a measurement (rx2cpp cache: slowdown -> which fact was wrong)
+#   9. the sycophancy audit (Gemini): scope separation vs unwarranted flip; no new model needed
 # Pure ooRexx 5.3, no native dependencies.
 # Author: Claude (Opus 4.8), 2026-10-26. Architecture: Tom Dyer.
 set -eu
@@ -35,5 +36,8 @@ REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_psychic_spies_logic.rex"
 echo ""
 echo "== 8. a job's facts matrix under a measurement (rx2cpp cache)"
 REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_rx2cpp_cache.rex"
+echo ""
+echo "== 9. the sycophancy audit (Gemini ooREXX/philosophy transcript)"
+REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_gemini_sycophancy.rex"
 echo ""
 echo "REASONED THOUGHT v0.1 QUALIFICATION: PASS"
