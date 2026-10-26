@@ -1,7 +1,7 @@
 {
   "kind": "corpus",
   "id": "rx2cpp.lessons",
-  "version": "0.4",
+  "version": "0.5",
   "sphere": "rx2cpp",
   "title": "rx2cpp lessons that cost time",
   "records": [
@@ -60,6 +60,10 @@
     {
       "topic": "string compared with .nil",
       "rule": "The String comparison methods answer a .nil operand directly (CompareOperator, notEqual, primitiveIsEqual); asking .nil for a string sent MAKESTRING (NOMETHOD) and could raise a NOSTRING the interpreter never raises."
+    },
+    {
+      "topic": "benchmark the merged commit",
+      "rule": "A gate qualifies the commit it ran on. e3d8d00 was merged on a benchmark of 61285d6; fa1179f's speed regression (55 s to 103 s on pbench2) had passed the full regression and the fixed point. After every merge, run pbench2 on the exact merged commit (e3d8d00: 54.1 s against 144.8 s interpreted, 2.68x)."
     }
   ]
 }

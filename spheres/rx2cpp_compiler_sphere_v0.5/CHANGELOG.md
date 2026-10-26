@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.5 (2026-10-26)
+- qualification: fifth gate, pbench2 on the exact merged commit; gates qualify the commit they ran on.
+  Reason: e3d8d00 was merged on a benchmark of 61285d6, and fa1179f's 55 s -> 103 s regression had passed the
+  regression and the fixed point (found by checking this session's reasoning with Reasoned Thought FactsMatrix).
+- performance: main e3d8d00 measured, 54.1 s against 144.8 s interpreted (2.68x), 79,398 trips a pass;
+  trips are about 1% on pbench2, so "crossings dominate" is now "can dominate: count and sample first".
+- lessons: benchmark the merged commit.
+- start: main is updated only after the merged commit is benchmarked too.
+- Provenance unchanged (32 entries against rx2cpp-e3d8d00.zip); the benchmark rows are in rx2cpp commit 7f40a61.
+
 ## 0.4 (2026-10-25)
 - Rebased on rx2cpp main e3d8d00 (archive sha256 1f97f043...47e16e), merged after the full regression (137
   scripts at cd77a49) and the fixed point (native 250 s, interpreted 344 s) passed; 32 provenance entries.

@@ -1,11 +1,11 @@
 {
   "kind": "article",
   "id": "rx2cpp.qualification",
-  "version": "0.4",
+  "version": "0.5",
   "sphere": "rx2cpp",
   "section": "qualification",
-  "title": "Qualify a change: fixtures, full regression, ooTest groups, self-build fixed point",
-  "summary": "Four gates, cheapest first. (1) Fixture scripts: native/test_*.sh and tests/test_*.sh each build fixtures and diff compiled against interpreted output; the program-construct fixtures are in native/fixtures/program_constructs and run by native/test_program_constructs*.sh. (2) The full regression: every test script, about 100, results one line per script (rc=0 is a pass). (3) ooTest acceptance: ootest/run_native_groups.sh runs ooTest groups interpreted and with the group compiled; totals and every failure must be identical. (4) native/build_self.sh: the native and the interpreted compiler each compile the compiler; all four outputs must be byte-identical (fixed point). At cd77a49 (merged to main as e3d8d00) all 137 test scripts passed (SKIP: bsf, python, kernel objects, whose external installs are absent) and the fixed point held: native 250 s, interpreted 344 s.",
+  "title": "Qualify a change: fixtures, full regression, ooTest groups, self-build fixed point, benchmark",
+  "summary": "Five gates, cheapest first. (1) Fixture scripts: native/test_*.sh and tests/test_*.sh each build fixtures and diff compiled against interpreted output; the program-construct fixtures are in native/fixtures/program_constructs and run by native/test_program_constructs*.sh. (2) The full regression: every test script, about 100, results one line per script (rc=0 is a pass). (3) ooTest acceptance: ootest/run_native_groups.sh runs ooTest groups interpreted and with the group compiled; totals and every failure must be identical. (4) native/build_self.sh: the native and the interpreted compiler each compile the compiler; all four outputs must be byte-identical (fixed point). (5) After the merge, pbench2 on the exact merged commit (ootest/parser_bench): a speed regression passes gates 1-4, as fa1179f did (55 s to 103 s). At cd77a49 (merged to main as e3d8d00) all 137 test scripts passed (SKIP: bsf, python, kernel objects, whose external installs are absent) and the fixed point held: native 250 s, interpreted 344 s. Main e3d8d00 benchmarked 2026-10-26: 54.1 s compiled against 144.8 s interpreted (2.68x), dumps identical.",
   "procedure": [
     "Run the test scripts touched by the change first (for example native/test_interpret.sh, native/test_address_command.sh, native/test_call_on.sh).",
     "Run the full regression; it takes more than two hours, so make it resumable (skip scripts that already have a result line) and run it from a snapshot copy of the tree so later edits do not change the run.",
@@ -13,19 +13,22 @@
     "Run native/build_self.sh outdir; the script fails unless the fixed point holds.",
     "For language areas, run ootest/run_native_groups.sh with the relevant groups (default list ootest/native_groups.txt).",
     "Only then merge the wip branch to main.",
+    "After the merge, run pbench2 on the exact merged commit on an idle machine (dumps identical; 3 passes each lane; trips and environment counts with RX2CPP_BIF_STATS=1) and record the row in HANDOFF and ootest/parser_bench/README.md. A benchmark of an earlier commit does not qualify the merge.",
     "Tests that need installs the build machine lacks (BSF4ooRexx, oorexxpython) can be run on Tom Dyer's workstation by CLAUDE-PC through the project mailbox (component rx2cpp): testing work only, exact commands and expected output, Tom approves anything that writes outside its brief."
   ],
   "invariants": [
     "A test passes only when compiled output equals interpreted output byte for byte.",
     "A SKIP (missing BSF4OOREXX_HOME, ORXPY_BUILD, RX2CPP_EXTLIB_ROOT) is not a PASS.",
-    "Delete old output files before a comparison: a stale dump once gave a false 'DUMPS IDENTICAL'."
+    "Delete old output files before a comparison: a stale dump once gave a false 'DUMPS IDENTICAL'.",
+    "Gates qualify the commit they ran on; a merge commit needs its own benchmark."
   ],
   "authority": "project-artifact",
   "topics": [
     "regression",
     "fixed point",
     "ooTest",
-    "fixtures"
+    "fixtures",
+    "benchmark"
   ],
   "provenance": [
     {
