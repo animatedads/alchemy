@@ -23,6 +23,10 @@ m~needs("D_hotpath", "D_impl")
 m~decision("D_tune",    "spend effort tuning the cache size",     20)
 m~needs("D_tune", "D_impl")
 
+/* Two facts from the real session, exercising scope + confirm (Tom's live feedback). */
+m~fact("F_bsf",    "compiled code works with BSF4ooRexx",                    30, "COMPILED")
+m~fact("F_secmgr", "security_manager.rex is byte-identical to the interpreter", 25)
+
 say "== Turn 8-20: the job as planned - every decision rests soundly on the assumptions"
 j = m~journal
 heldAll = j~status("D_impl")["ok"] & j~status("D_hotpath")["ok"] & j~status("D_tune")["ok"]
@@ -31,6 +35,13 @@ call check heldAll, "implement/hot-path/tune all hold while the speed assumption
 say ""
 say "== Turn 40: the benchmark lands"
 m~measure("M_bench", "cache never hit; crossover cost paid; 1.6x slowdown", .array~of("F_speed"), 40)
+
+/* An OFF-POINT measurement: the INTERPRETED BSF demo failed - that says nothing about COMPILED code. */
+bsfScope = .directory~new; bsfScope["F_bsf"] = "INTERPRETED"
+m~measure("M_bsf", "the interpreted BSF demo itself failed (off-point for compiled code)", bsfScope, 35)
+/* A CONFIRM: security_manager was actually checked byte-identical - raise it above an assumption. */
+m~confirm("M_secmgr", "diff: security_manager.rex compiled output byte-identical to interpreter", .array~of("F_secmgr"), 36)
+
 rev = m~review
 
 say "   erroneous fact(s):"
@@ -48,6 +59,16 @@ call check setEqual(fellIds, expectedFell), -
   "every decision built on it - directly (D_impl) and transitively (D_hotpath, D_tune) - is flagged to reconsider"
 call check j~status("F_crossover")["ok"], -
   "the 'minor crossover cost' fact is NOT impugned: a minor cost paid with no hits still yields a slowdown"
+
+/* Tom's FactsMatrix bug reports, fixed: */
+bsfRefuted = .false
+do f over rev["refutedFacts"]; if f["id"] = "F_bsf" then bsfRefuted = .true; end
+call check \bsfRefuted, -
+  "scope: an OFF-POINT measurement (interpreted demo) does NOT refute the compiled-code fact - it stays undetermined"
+secChecked = .false
+do f over rev["checkedFacts"]; if f["id"] = "F_secmgr" then secChecked = .true; end
+call check secChecked, -
+  "confirm: a verified measurement raises security_manager from assumed to CHECKED (documentary tier)"
 
 say ""
 say "   That is the payoff: a 1.6x slowdown discovered at turn 40 points straight back to the turn-5"

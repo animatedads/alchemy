@@ -26,10 +26,13 @@
   return j
 
 ::method fact
-  /* an assumed fact: assertible until a stronger defeater contradicts it */
+  /* an assumed fact in a given SCOPE: assertible until an ON-POINT, stronger defeater contradicts it.
+     A measurement in a different scope is off-point and leaves the fact undetermined. */
   expose net j facts turns
-  use strict arg id, statement, turn = 0
-  j~claim(id, statement)
+  use strict arg id, statement, turn = 0, scope = "GENERAL"
+  if scope = "GENERAL" then acc = .nil
+  else acc = .array~of(scope)
+  j~claim(id, statement, "", "TESTIMONY", acc)
   u = .Utterance~new("assume:" || id, "assumed")
   u~assert("SUPPORT", "TESTIMONY", id, , , "assumed (turn " || turn || ")")
   net~admit(u)
@@ -50,12 +53,33 @@
   return self
 
 ::method measure
-  /* a measurement contradicts one or more facts, at DOCUMENTARY tier - above an assumption */
+  /* a measurement contradicts facts at DOCUMENTARY tier - but only ON-POINT. `refuted` is either an
+     array (scope GENERAL) or a directory factId->scope. An off-point measurement (a scope the fact
+     does not live in) is INELIGIBLE and leaves the fact undetermined rather than refuting it. */
   expose net turns
   use strict arg id, statement, refuted, turn = 0
   u = .Utterance~new("measure:" || id, statement)
-  do fid over refuted
-    u~assert("REBUT", "DOCUMENTARY", fid, , , statement)
+  if refuted~isA(.Directory) then do fid over refuted~allIndexes
+    u~assert("REBUT", "DOCUMENTARY", fid, , refuted[fid], statement)
+  end
+  else do fid over refuted
+    u~assert("REBUT", "DOCUMENTARY", fid, , "GENERAL", statement)
+  end
+  net~admit(u)
+  turns[id] = turn
+  return self
+
+::method confirm
+  /* the opposite of measure: a measurement that CONFIRMS facts raises them to the DOCUMENTARY tier
+     (checked, not merely assumed), separating verified facts from hopes. On-point scope applies. */
+  expose net turns
+  use strict arg id, statement, confirmed, turn = 0
+  u = .Utterance~new("confirm:" || id, statement)
+  if confirmed~isA(.Directory) then do fid over confirmed~allIndexes
+    u~assert("SUPPORT", "DOCUMENTARY", fid, , confirmed[fid], statement)
+  end
+  else do fid over confirmed
+    u~assert("SUPPORT", "DOCUMENTARY", fid, , "GENERAL", statement)
   end
   net~admit(u)
   turns[id] = turn
@@ -63,12 +87,17 @@
 
 /* Which fact was erroneous, and the dependency tree of decisions to reconsider. */
 ::method review
-  expose j facts decisions turns
-  refuted = .array~new
+  expose net j facts decisions turns
+  refuted = .array~new; checked = .array~new
   do fid over facts~allIndexes
-    if \ j~status(fid)["ok"] then do
+    b = net~assess(fid)
+    if b["stance"] = "CONTRA" then do
       d = .directory~new; d["id"] = fid; d["statement"] = facts[fid]; d["turn"] = turns[fid]
       refuted~append(d)
+    end
+    else if b["stance"] = "PRO", b["supportTier"] >= 3 then do    /* DOCUMENTARY+ = checked, not assumed */
+      d = .directory~new; d["id"] = fid; d["statement"] = facts[fid]; d["turn"] = turns[fid]
+      checked~append(d)
     end
   end
   fallen = .array~new
@@ -80,7 +109,8 @@
       fallen~append(d)
     end
   end
-  r = .directory~new; r["refutedFacts"] = refuted; r["fallenDecisions"] = fallen
+  r = .directory~new
+  r["refutedFacts"] = refuted; r["checkedFacts"] = checked; r["fallenDecisions"] = fallen
   return r
 
 ::requires "BeliefJournal.cls"
