@@ -68,7 +68,9 @@
     b = net~assess(id, combiner)
     r["kind"] = "CLAIM"; r["status"] = b["status"]
     r["assertible"] = b["assertible"]; r["settled"] = b["settled"]
-    r["ok"] = b["assertible"]                 /* a claim is "usable" when assertible */
+    /* a claim is "usable" as a premise only when it is assertible IN FAVOUR (PRO); a CONTRA claim is
+       assertibly false, and must NOT prop up a decision that rested on it being true */
+    r["ok"] = (b["stance"] = "PRO" & b["assertible"])
     r["failedDeps"] = .array~new
     return r
   end
