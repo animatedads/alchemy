@@ -9,10 +9,13 @@
  *   - the employer's OWN admitted conduct (refusing statutory paternity leave)
  *     is an on-point CHECKED fact that topples the "clean dismissal" plan and
  *     cannot be laundered by fixing the file after the event;
- *   - the most PARSIMONIOUS explanation (a newborn, hence exhaustion) is the
- *     surviving explanatory decision - yet stays LEADING-BUT-UNCONFIRMED: it is
- *     never a checked fact until he is actually asked. Occam selects the
- *     hypothesis to test; it does not confirm it.
+ *   - several explanations survive unrefuted (exhaustion from the newborn, but
+ *     ALSO 'he lied' and 'he is engineering an exit'); the engine does NOT
+ *     select among them. "A hypothesis survived" is not "the engine chose it" -
+ *     this engine has no parsimony/abduction operator. Each survivor is an
+ *     unconfirmed assumption, settled only by evidence not yet gathered (ask him).
+ *     (Distinction caught by ChatGPT GPT-6 reviewing the first cut of this test -
+ *     the exact "survives != selected" error the engine is meant to refuse.)
  *
  * Synthetic. No real person. Legal characterisations are illustrative, not advice.
  * Architecture: Tom Dyer. Engine & test: Claude (Opus 4.8). Pure ooRexx 5.3.
@@ -111,17 +114,22 @@ call check \ inList(rev["checkedFacts"],"F_INTENT_DECEIVE") & \ inList(rev["chec
 call check \ inList(rev["checkedFacts"],"F_ATTITUDE_MISCONDUCT"), -
   "the 'unprofessional attitude' allegation is unexamined, never a checked fact"
 
-/* 7. parsimony: the newborn-exhaustion explanation is the surviving explanatory
-      decision - yet LEADING-BUT-UNCONFIRMED: never a checked fact until he is asked */
-call check \ fellIn(rev,"D_SUPPORT_NOT_DISCIPLINE") & \ fellIn(rev,"D_FAIR_REVIEW"), -
-  "the fatigue/capability reading and a fair review survive; the exit routes do not"
-call check \ inList(rev["checkedFacts"],"F_EXHAUSTION") & \ inList(rev["refutedFacts"],"F_EXHAUSTION"), -
-  "Occam selects the exhaustion hypothesis to TEST; it stays unconfirmed until he is actually asked"
+/* 7. explanation, honestly: the exit routes fall and a fair review survives, but
+      SEVERAL explanations survive unrefuted and the engine does NOT choose among
+      them. "Survives" is not "selected" - there is no parsimony operator here. */
+call check \ fellIn(rev,"D_FAIR_REVIEW") & \ fellIn(rev,"D_SUPPORT_NOT_DISCIPLINE"), -
+  "a fair review and the fatigue/capability reading both survive; the exit routes do not"
+call check \ fellIn(rev,"D_HE_LIED") & \ fellIn(rev,"D_ENGINEERED_EXIT"), -
+  "rival explanations (he-lied, engineered-exit) survive EQUALLY - the engine does NOT select exhaustion over them"
+call check \ inList(rev["checkedFacts"],"F_EXHAUSTION") & \ inList(rev["checkedFacts"],"F_INTENT_DECEIVE") -
+         & \ inList(rev["checkedFacts"],"F_INTENT_ENGINEER"), -
+  "every surviving explanation is an UNCONFIRMED assumption; choosing one needs evidence not yet gathered, not a narrative"
 
 say ""
 say "UNDERPERFORMING SALESMAN: PASS (" || checks || " checks)"
-say "Leaps fall; off-point smears refused; the operator's own admission enforced;"
-say "the parsimonious explanation leads but is not assumed. The discipline is not partisan."
+say "Leaps fall; off-point smears refused; the operator's own admission enforced."
+say "Several explanations survive UNSELECTED - 'survives' is not 'chosen'; no parsimony"
+say "operator here. Each is unconfirmed until asked. The discipline is not partisan."
 exit 0
 
 confirmFact: procedure
