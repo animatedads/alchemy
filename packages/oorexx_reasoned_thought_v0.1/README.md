@@ -40,11 +40,14 @@ by evidence tier, and any bearing utterance forces re-settlement.
   proof* instead of prose, so a second instance re-runs it rather than re-reads it. Three
   contestable layers: `ProofStatement` (the shared claims), `CategorisationPolicy` (how each is
   typed — debatable, but a pure function once the policy is fixed), and the proof structure
-  (role/target/warrant). `Proof~run` emits a `ProofCertificate` that replays to a deterministic
-  fingerprint; `ProofReview~compare` diffs two certificates and classifies the divergence
-  `WARRANT > CATEGORISATION > CONCLUSION_ONLY > AGREE`. `ProofExchangeMcpOperations~dispatch`
-  (`proof.run`, `proof.review`) is the MCP surface; the certificate's `render` string is the wire
-  form.
+  (role/target/undercut). `ProofReview~compare` diffs two certificates and classifies the
+  divergence `WARRANT > STRUCTURE > CATEGORISATION > CONCLUSION_ONLY > AGREE` — an objection only
+  reaches WARRANT once *accepted*, a pending one is recorded but not decisive. `ProofBundle`
+  serialises a whole proof (policy + theory + statements + claimed decisions) to canonical,
+  hash-sealed text; a second process parses, rebuilds and re-runs it to verify the decisions
+  follow from the stated inputs (integrity + soundness), detecting tamper. `ProofExchangeMcpOperations`
+  is the **in-process ooRexx dispatch surface** (`proof.run`, `proof.review`) — not yet a wired
+  Rasen Falcon MCP operation.
 - **Belief Journal** (`BeliefJournal.cls`) — retroactive revision: decisions `restsOn` claims;
   `review(newCombiner)` replays every claim under a new thinking model, finds those that regressed,
   and traces forward to the decisions that fall ("let me think about what I missed"). A
@@ -63,7 +66,7 @@ evidence manufactures a higher tier. The authoritative combiner (paraconsistent 
 certificates, independent-origin dedup, cycle detection) is ChatGPT's to deliver; the
 `OrdinalEvidenceCombiner` here is a reference implementation of the agreed rule.
 
-## Worked examples / qualifications (`sh run_tests.sh`, 39 checks)
+## Worked examples / qualifications (`sh run_tests.sh`, 45 checks)
 
 **1. The RexxLA attribution** (`tests/test_attribution_reeval.rex`, vectors A–E):
 stylometric resemblance settles nothing; the bracket (testimony) *supports* "Claude was involved"
@@ -93,7 +96,14 @@ with the broken link in each — "what did I miss."
 development. This session's real design decisions are encoded as justified nodes; replayed under
 the model we ended with, the journal flags exactly the decisions we actually revised after
 ChatGPT's correction, identifies the single falsified claim, and closes the loop
-(model → fail → revise → uphold). Reflective adequacy, not a correctness proof.
+(model → fail → revise → uphold). Reflective adequacy, not a correctness proof — and the expected
+revision set is still hardcoded, so a later qualification should supply it from signed decision
+receipts (ChatGPT, REQ-00000201).
+
+**6. Self-contained proof bundle** (`tests/test_proof_bundle.rex`): a proof is serialised to
+canonical hash-sealed text carrying all of policy + theory + statements + claimed decisions; a
+second process rebuilds and re-runs it from the text alone, reproduces the fingerprint, verifies
+the decisions follow from the inputs, and rejects a tampered bundle (ChatGPT, REQ-00000199).
 
 ## Run
 

@@ -58,13 +58,31 @@ call check certA~fingerprint = certA2~fingerprint, "identical proof + policy rep
 call check certA~fingerprint \= certB~fingerprint, "a different categorisation yields a different fingerprint"
 
 say ""
-say "== Arguing about the nature of the proof itself (a warrant objection outranks categorisation)"
-objs = .array~new
-o = .directory~new; o["on"] = "s0->P1a"; o["reason"] = "voice resemblance does not bear on involvement at all"; o["by"] = "CHATGPT"
-objs~append(o)
-rv2 = .ProofReview~compare(certA, certA, objs)
-say "   classification:" rv2["classification"] "(objection by" rv2["objections"][1]["by"] || ":" rv2["objections"][1]["reason"] || ")"
-call check rv2["classification"] = "WARRANT", "a dispute about the proof's nature is classified WARRANT, above categorisation"
+say "== An objection is a claim, not a verdict: pending vs accepted (ChatGPT, REQ-00000201)"
+pend = .array~new
+op = .directory~new; op["on"] = "s0->P1a"; op["reason"] = "voice resemblance does not bear on involvement"; op["by"] = "CHATGPT"
+pend~append(op)
+rvp = .ProofReview~compare(certA, certA, pend)
+say "   pending objection -> classification:" rvp["classification"] "pending=" || rvp["pendingObjections"]~items
+call check rvp["classification"] = "AGREE" & rvp["pendingObjections"]~items = 1, -
+  "a PENDING objection is recorded but does not by itself overturn the proof"
+acc = .array~new
+oa = .directory~new; oa["on"] = "s0->P1a"; oa["reason"] = "warrant rejected"; oa["by"] = "CHATGPT"; oa["accepted"] = .true
+acc~append(oa)
+rva = .ProofReview~compare(certA, certA, acc)
+call check rva["classification"] = "WARRANT" & rva["acceptedObjections"]~items = 1, -
+  "an ACCEPTED rebuttal is classified WARRANT - a dispute about the proof's nature"
+
+say ""
+say "== Structural difference (same categorisation, different wiring) is now caught (REQ-00000201)"
+s1u = .ProofStatement~new("s1", "[Sorry -- Claude overstates the obvious ;)]", "editorial-aside", "UNDERCUT", "P1a", "s0")
+proofCc = .Proof~new("attrib", polA)
+proofCc~addProposition(theory[1]); proofCc~addStatement(s0); proofCc~addStatement(s1u)
+certCc = proofCc~run("CLAUDE")
+rvs = .ProofReview~compare(certA, certCc)
+say "   classification:" rvs["classification"] "structuralDiffs=" || rvs["structuralDiffs"]~items
+call check rvs["classification"] = "STRUCTURE" & rvs["structuralDiffs"]~items = 1 & rvs["structuralDiffs"][1]["id"] = "s1", -
+  "s1 wired SUPPORT vs UNDERCUT is a STRUCTURE diff, pinpointed - not missed as before"
 
 say ""
 say "== The same, through the MCP service surface"

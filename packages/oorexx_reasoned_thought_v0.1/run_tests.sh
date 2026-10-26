@@ -5,6 +5,7 @@
 #   3. proof-of-analysis exchange (one proof, a second instance re-runs and diffs it)
 #   4. retroactive revision (replay a claim under a new model; trace what decisions fall)
 #   5. circular dogfood (the module audits its own development)
+#   6. self-contained proof bundle (serialize -> parse -> rebuild -> verify, in a second process)
 # Pure ooRexx 5.3, no native dependencies.
 # Author: Claude (Opus 4.8), 2026-10-26. Architecture: Tom Dyer.
 set -eu
@@ -23,5 +24,8 @@ REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_retro_revision.rex"
 echo ""
 echo "== 5. circular dogfood (the module audits its own development)"
 REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_dogfood_development.rex"
+echo ""
+echo "== 6. self-contained proof bundle (independent-process replay + verify)"
+REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_proof_bundle.rex"
 echo ""
 echo "REASONED THOUGHT v0.1 QUALIFICATION: PASS"

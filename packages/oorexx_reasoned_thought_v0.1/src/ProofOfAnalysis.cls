@@ -30,6 +30,20 @@
   defaultClass = "STYLOMETRIC"; defaultBinds = "GENERAL"
 ::attribute name get
 ::attribute version get
+::method allRules
+  expose rules
+  return rules
+::method defaultClass
+  expose defaultClass
+  return defaultClass
+::method defaultBinds
+  expose defaultBinds
+  return defaultBinds
+::method setDefault
+  expose defaultClass defaultBinds
+  use strict arg className, binds
+  defaultClass = className; defaultBinds = binds
+  return self
 ::method rule
   expose rules
   use strict arg natureTag, className, binds = "GENERAL"
@@ -113,7 +127,7 @@
   do s over statements
     cat = policy~categorise(s~nature)
     binds = s~binds; if binds == .nil then binds = cat["binds"]
-    cert~addCategorisation(s~id, s~nature, cat["class"], binds, s~role, s~target)
+    cert~addCategorisation(s~id, s~nature, cat["class"], binds, s~role, s~target, s~undercutsId)
   end
   do spec over theory
     cert~addDecision(spec["id"], net~assess(spec["id"]))
@@ -135,9 +149,10 @@
 ::attribute decisions get
 ::method addCategorisation
   expose cats
-  use strict arg id, nature, className, binds, role, target
+  use strict arg id, nature, className, binds, role, target, undercuts = ""
   d = .directory~new
-  d["nature"] = nature; d["class"] = className; d["binds"] = binds; d["role"] = role; d["target"] = target
+  d["nature"] = nature; d["class"] = className; d["binds"] = binds
+  d["role"] = role; d["target"] = target; d["undercuts"] = undercuts
   cats[id] = d
 ::method addDecision
   expose decisions
@@ -157,11 +172,14 @@
 ::method render
   expose proofId policyName policyVersion principal cats decisions
   out = .array~new
-  out~append("PROOF" proofId "policy=" || policyName || "/" || policyVersion "by=" || principal)
+  /* principal is metadata, deliberately NOT in the fingerprinted body: a proof's identity is its
+     inputs and decisions, so an independent replay by another principal yields the same fingerprint */
+  out~append("PROOF" proofId "policy=" || policyName || "/" || policyVersion)
   out~append("CATEGORISATION:")
   do id over sortedKeys(cats)
     c = cats[id]
-    out~append("  " || id "nature=" || c["nature"] "=>" c["class"] "binds=" || c["binds"] "role=" || c["role"] "target=" || c["target"])
+    uc = c["undercuts"]; if uc == .nil then uc = ""
+    out~append("  " || id "nature=" || c["nature"] "=>" c["class"] "binds=" || c["binds"] "role=" || c["role"] "target=" || c["target"] "undercuts=" || uc)
   end
   out~append("DECISIONS:")
   do id over sortedKeys(decisions)
@@ -177,42 +195,74 @@
    {on, reason, by} disputing a warrant/the proof's nature. */
 ::method compare class
   use strict arg a, b, objections = .nil
-  catDiffs = .array~new; concDiffs = .array~new
-  /* categorisation divergence: same statement typed differently */
+  catDiffs = .array~new; structDiffs = .array~new; concDiffs = .array~new
+  missing = .array~new    /* statements in A, absent from B */
+  extra = .array~new      /* statements in B, absent from A */
   do id over sortedKeys(a~cats)
-    if \ b~cats~hasIndex(id) then iterate
+    if \ b~cats~hasIndex(id) then do; missing~append(id); iterate; end
     ca = a~cats[id]; cb = b~cats[id]
     if ca["class"] \= cb["class"] | ca["binds"] \= cb["binds"] then do
-      d = .directory~new
-      d["id"] = id; d["a"] = ca["class"] "/" ca["binds"]; d["b"] = cb["class"] "/" cb["binds"]
+      d = .directory~new; d["id"] = id
+      d["a"] = ca["class"] "/" ca["binds"]; d["b"] = cb["class"] "/" cb["binds"]
       catDiffs~append(d)
     end
+    /* structure: role, target, and the undercut link - NOT just categorisation (REQ-00000201) */
+    if ca["role"] \= cb["role"] | ca["target"] \= cb["target"] | self~uc(ca) \= self~uc(cb) then do
+      d = .directory~new; d["id"] = id
+      d["a"] = ca["role"] "->" ca["target"] self~ucTag(ca)
+      d["b"] = cb["role"] "->" cb["target"] self~ucTag(cb)
+      structDiffs~append(d)
+    end
   end
-  /* conclusion divergence: same proposition decided differently */
+  do id over sortedKeys(b~cats)
+    if \ a~cats~hasIndex(id) then extra~append(id)
+  end
   do id over sortedKeys(a~decisions)
     if \ b~decisions~hasIndex(id) then iterate
     da = a~decisions[id]; db = b~decisions[id]
     if da["status"] \= db["status"] | da["assertible"] \= db["assertible"] | da["settled"] \= db["settled"] then do
-      d = .directory~new
-      d["id"] = id; d["a"] = da["status"] "(assertible=" || da["assertible"] || ",settled=" || da["settled"] || ")"
+      d = .directory~new; d["id"] = id
+      d["a"] = da["status"] "(assertible=" || da["assertible"] || ",settled=" || da["settled"] || ")"
       d["b"] = db["status"] "(assertible=" || db["assertible"] || ",settled=" || db["settled"] || ")"
       concDiffs~append(d)
     end
   end
-  obj = objections; if obj == .nil then obj = .array~new
+  /* An objection is a CLAIM, not a verdict: only an ACCEPTED rebuttal overturns the proof; a
+     pending objection is recorded and reported, nothing more (REQ-00000201). */
+  accepted = .array~new; pending = .array~new
+  if objections \== .nil then do o over objections
+    st = "PENDING"
+    if o~hasIndex("status") then st = o["status"]
+    if o~hasIndex("accepted"), o["accepted"] == .true then st = "ACCEPTED"
+    if st = "ACCEPTED" then accepted~append(o); else pending~append(o)
+  end
+  structural = (structDiffs~items > 0 | missing~items > 0 | extra~items > 0)
   select
-    when obj~items > 0 then classification = "WARRANT"           /* a dispute about the proof's nature */
-    when catDiffs~items > 0 then classification = "CATEGORISATION" /* they typed a statement differently */
-    when concDiffs~items > 0 then classification = "CONCLUSION_ONLY" /* same inputs, different decision rule */
+    when accepted~items > 0 then classification = "WARRANT"
+    when structural then classification = "STRUCTURE"
+    when catDiffs~items > 0 then classification = "CATEGORISATION"
+    when concDiffs~items > 0 then classification = "CONCLUSION_ONLY"
     otherwise classification = "AGREE"
   end
   r = .directory~new
   r["classification"] = classification
   r["categorisationDiffs"] = catDiffs
+  r["structuralDiffs"] = structDiffs
+  r["missing"] = missing; r["extra"] = extra
   r["conclusionDiffs"] = concDiffs
-  r["objections"] = obj
+  r["acceptedObjections"] = accepted; r["pendingObjections"] = pending
   r["sameFingerprint"] = (a~fingerprint = b~fingerprint)
   return r
+
+::method uc class private
+  use strict arg c
+  u = c["undercuts"]; if u == .nil then return ""
+  return u
+
+::method ucTag class private
+  use strict arg c
+  u = self~uc(c); if u = "" then return ""
+  return "(undercuts " || u || ")"
 
 /* ----------------------------------------------------------------- the MCP service surface */
 
@@ -240,6 +290,131 @@
       return reply
     end
   end
+
+/* ----------------------------------------------------- self-contained wire bundle (REQ-00000199) */
+
+::class ProofBundle public
+/* Canonical, versioned TEXT form of a whole proof: policy + theory + statements AND the claimed
+   decisions, sealed with a hash over the body. serialize -> parse -> rebuild -> run lets a second
+   PROCESS verify that the decisions follow from the stated inputs, working only from the text and
+   without trusting the first agent. This is the self-contained proof, not just a summary. */
+::method serialize class
+  use strict arg proof
+  pol = proof~policy
+  L = .array~new
+  L~append("PROOFBUNDLE/1")
+  L~append("PROOF" proof~id)
+  L~append("POLICY" pol~name pol~version)
+  L~append("POLICYDEFAULT" pol~defaultClass pol~defaultBinds)
+  rt = pol~allRules
+  do nat over sortedKeys(rt)
+    r = rt[nat]; L~append("RULE" nat r["class"] r["binds"])
+  end
+  specs = .directory~new
+  do spec over proof~theory; specs[spec["id"]] = spec; end
+  do pid over sortedKeys(specs)
+    spec = specs[pid]
+    sf = optOf(spec, "settleFloor", ""); if sf = "" then sf = "*"
+    af = optOf(spec, "assertFloor", "TESTIMONY"); if af = "" then af = "*"
+    acc = "*"
+    if spec~hasIndex("accepted"), spec["accepted"] \== .nil then acc = joinCsv(spec["accepted"])
+    L~append("PROP" pid "|" sf "|" af "|" acc "|" spec["statement"])
+  end
+  smap = .directory~new
+  do s over proof~statements; smap[s~id] = s; end
+  do sid over sortedKeys(smap)
+    s = smap[sid]
+    uc = s~undercutsId; if uc = "" then uc = "*"
+    bd = s~binds; if bd == .nil then bd = "*"
+    L~append("STMT" sid "|" s~role "|" s~target "|" uc "|" s~nature "|" bd "|" s~text)
+  end
+  cert = proof~run("")
+  do pid over sortedKeys(cert~decisions)
+    d = cert~decisions[pid]
+    L~append("DECISION" pid "|" d["stance"] "|" d["status"] "|" d["assertible"] "|" d["settled"] "|" d["S"] "|" d["R"])
+  end
+  body = joinLines(L)
+  return body || "0a"x || "BUNDLEHASH" proofFingerprint(body)
+
+::method parse class
+  use strict arg text
+  p = .directory~new
+  p["policyName"] = ""; p["policyVersion"] = "1"; p["defClass"] = "STYLOMETRIC"; p["defBinds"] = "GENERAL"
+  p["proofId"] = ""; p["rules"] = .array~new; p["props"] = .array~new; p["statements"] = .array~new
+  p["decisions"] = .directory~new; p["bundleHash"] = ""
+  bodyL = .array~new
+  do line over text~makeArray("0a"x)
+    w = word(line, 1)
+    select
+      when w = "BUNDLEHASH" then do; parse var line . hh; p["bundleHash"] = hh; end
+      when w = "PROOFBUNDLE/1" then bodyL~append(line)
+      when w = "PROOF" then do; parse var line . pid; p["proofId"] = pid; bodyL~append(line); end
+      when w = "POLICY" then do; parse var line . nm vr; p["policyName"] = nm; p["policyVersion"] = vr; bodyL~append(line); end
+      when w = "POLICYDEFAULT" then do; parse var line . dc db; p["defClass"] = dc; p["defBinds"] = db; bodyL~append(line); end
+      when w = "RULE" then do
+        parse var line . nat cls bnds
+        d = .directory~new; d["nat"] = nat; d["class"] = cls; d["binds"] = bnds
+        p["rules"]~append(d); bodyL~append(line)
+      end
+      when w = "PROP" then do
+        parse var line "PROP " rest
+        parse var rest pid " | " sf " | " af " | " acc " | " statement
+        d = .directory~new; d["id"] = pid; d["statement"] = statement
+        if sf \= "*" then d["settleFloor"] = sf
+        if af \= "*" then d["assertFloor"] = af; else d["assertFloor"] = "TESTIMONY"
+        if acc \= "*" then d["accepted"] = splitCsv(acc)
+        p["props"]~append(d); bodyL~append(line)
+      end
+      when w = "STMT" then do
+        parse var line "STMT " rest
+        parse var rest sid " | " role " | " target " | " uc " | " nat " | " bd " | " txt
+        if uc = "*" then uc = ""
+        if bd = "*" then bindsV = .nil; else bindsV = bd
+        p["statements"]~append(.ProofStatement~new(sid, txt, nat, role, target, uc, bindsV))
+        bodyL~append(line)
+      end
+      when w = "DECISION" then do
+        parse var line "DECISION " rest
+        parse var rest pid " | " stance " | " status " | " assertible " | " settled " | " ss " | " rr
+        d = .directory~new; d["stance"] = stance; d["status"] = status
+        d["assertible"] = (assertible = 1); d["settled"] = (settled = 1); d["S"] = ss; d["R"] = rr
+        p["decisions"][pid] = d; bodyL~append(line)
+      end
+      otherwise nop
+    end
+  end
+  p["body"] = joinLines(bodyL)
+  return p
+
+::method rebuild class
+  use strict arg p
+  pol = .CategorisationPolicy~new(p["policyName"], p["policyVersion"])
+  pol~setDefault(p["defClass"], p["defBinds"])
+  do r over p["rules"]; pol~rule(r["nat"], r["class"], r["binds"]); end
+  proof = .Proof~new(p["proofId"], pol)
+  do spec over p["props"]; proof~addProposition(spec); end
+  do s over p["statements"]; proof~addStatement(s); end
+  return proof
+
+::method verify class
+  use strict arg text
+  p = self~parse(text)
+  integrity = (proofFingerprint(p["body"]) = p["bundleHash"])
+  proof = self~rebuild(p)
+  cert = proof~run("")
+  mism = .array~new
+  do pid over p["decisions"]~allIndexes
+    claimed = p["decisions"][pid]; got = cert~decisions[pid]
+    if got == .nil then do; mism~append(pid "absent on recompute"); iterate; end
+    if got["status"] \= claimed["status"] | got["stance"] \= claimed["stance"] -
+       | got["assertible"] \== claimed["assertible"] | got["settled"] \== claimed["settled"] then -
+      mism~append(pid "claimed " || claimed["status"] " got " || got["status"])
+  end
+  soundness = (mism~items = 0)
+  r = .directory~new
+  r["ok"] = (integrity & soundness); r["integrity"] = integrity; r["soundness"] = soundness
+  r["mismatches"] = mism; r["fingerprint"] = cert~fingerprint
+  return r
 
 /* ----------------------------------------------------------------------------- routines */
 
@@ -273,5 +448,24 @@
     h = (h * 131 + c2d(substr(str, i, 1))) // 2147483647
   end
   return d2x(h, 8)
+
+::routine joinCsv
+  use strict arg arr
+  out = ""
+  do i = 1 to arr~items
+    if i = 1 then out = arr[i]
+    else out = out || "," || arr[i]
+  end
+  return out
+
+::routine splitCsv
+  use strict arg str
+  a = .array~new
+  rest = str
+  do while rest \= ""
+    parse var rest item "," rest
+    if item \= "" then a~append(item)
+  end
+  return a
 
 ::requires "ReasonedThought.cls"
