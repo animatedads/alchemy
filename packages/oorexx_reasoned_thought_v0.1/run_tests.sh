@@ -11,6 +11,7 @@
 #   9. the sycophancy audit (Gemini): scope separation vs unwarranted flip; no new model needed
 #  10. audit another model's answer (Gemini bitcoin) against the shared scenario premises
 #  11. audit a third model (ChatGPT bitcoin) - convergence + each model.s one readable-secret slip
+#  12. cross-model audit (Byzantine Oracle): each design.s safety invariant vs the scenario.s f=4
 # Pure ooRexx 5.3, no native dependencies.
 # Author: Claude (Opus 4.8), 2026-10-26. Architecture: Tom Dyer.
 set -eu
@@ -47,5 +48,8 @@ REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_gemini_bitcoin.rex"
 echo ""
 echo "== 11. audit a third model (ChatGPT bitcoin): convergence + recovery slip"
 REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_chatgpt_bitcoin.rex"
+echo ""
+echo "== 12. cross-model audit (Byzantine Oracle): safety invariant vs f=4"
+REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_byzantine_compare.rex"
 echo ""
 echo "REASONED THOUGHT v0.1 QUALIFICATION: PASS"
