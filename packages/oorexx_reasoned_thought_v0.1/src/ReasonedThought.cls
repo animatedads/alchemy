@@ -292,10 +292,12 @@
 
 ::method assess
   expose props combiner
-  use strict arg id
+  use strict arg id, combinerOverride = .nil
   p = props[id]
   if p == .nil then raise syntax 93.900 array("no such proposition " id)
-  d = combiner~evaluate(p)
+  c = combiner
+  if combinerOverride \== .nil then c = combinerOverride   /* replay under a different thinking model */
+  d = c~evaluate(p)
   d["id"] = id; d["statement"] = p~statement
   return d
 

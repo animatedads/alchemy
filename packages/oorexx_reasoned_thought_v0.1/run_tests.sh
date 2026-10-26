@@ -3,6 +3,8 @@
 #   1. the RexxLA attribution re-evaluation (acceptance vectors A-E)
 #   2. a hierarchy of universals for discussion (Tom's men/boys/girls example)
 #   3. proof-of-analysis exchange (one proof, a second instance re-runs and diffs it)
+#   4. retroactive revision (replay a claim under a new model; trace what decisions fall)
+#   5. circular dogfood (the module audits its own development)
 # Pure ooRexx 5.3, no native dependencies.
 # Author: Claude (Opus 4.8), 2026-10-26. Architecture: Tom Dyer.
 set -eu
@@ -15,5 +17,11 @@ REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_hierarchy_discussion.rex"
 echo ""
 echo "== 3. proof-of-analysis exchange"
 REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_proof_exchange.rex"
+echo ""
+echo "== 4. retroactive revision / dependency trace"
+REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_retro_revision.rex"
+echo ""
+echo "== 5. circular dogfood (the module audits its own development)"
+REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_dogfood_development.rex"
 echo ""
 echo "REASONED THOUGHT v0.1 QUALIFICATION: PASS"

@@ -45,6 +45,11 @@ by evidence tier, and any bearing utterance forces re-settlement.
   `WARRANT > CATEGORISATION > CONCLUSION_ONLY > AGREE`. `ProofExchangeMcpOperations~dispatch`
   (`proof.run`, `proof.review`) is the MCP surface; the certificate's `render` string is the wire
   form.
+- **Belief Journal** (`BeliefJournal.cls`) — retroactive revision: decisions `restsOn` claims;
+  `review(newCombiner)` replays every claim under a new thinking model, finds those that regressed,
+  and traces forward to the decisions that fall ("let me think about what I missed"). A
+  justification-based truth-maintenance pass. `NaiveEvidenceCombiner` is a stand-in for a weaker
+  prior model (ignores binding scope) so the past can be replayed.
 
 ## Decision procedure (ordinal; ChatGPT's design, reference here)
 
@@ -58,7 +63,7 @@ evidence manufactures a higher tier. The authoritative combiner (paraconsistent 
 certificates, independent-origin dedup, cycle detection) is ChatGPT's to deliver; the
 `OrdinalEvidenceCombiner` here is a reference implementation of the agreed rule.
 
-## Worked examples / qualifications (`sh run_tests.sh`, 26 checks)
+## Worked examples / qualifications (`sh run_tests.sh`, 39 checks)
 
 **1. The RexxLA attribution** (`tests/test_attribution_reeval.rex`, vectors A–E):
 stylometric resemblance settles nothing; the bracket (testimony) *supports* "Claude was involved"
@@ -78,6 +83,17 @@ proof over the *same* statements under *different* categorisation policies; the 
 the disagreement to the one statement they typed differently (`s1`: TESTIMONY vs STYLOMETRIC) and
 the one conclusion that flipped (`P1a`: SUPPORTED vs HINT), replays to a stable fingerprint, and
 classifies a warrant objection as a dispute about the proof's nature — all through the MCP surface.
+
+**4. Retroactive revision** (`tests/test_retro_revision.rex`): an authorship claim that *settled*
+under the old naive model (Message-ID taken as proof) *falls* under the corrected ordinal+binding
+model; the journal names the two decisions built on it (direct and transitive) as now UNSUPPORTED,
+with the broken link in each — "what did I miss."
+
+**5. Circular dogfood** (`tests/test_dogfood_development.rex`): the module audits its *own*
+development. This session's real design decisions are encoded as justified nodes; replayed under
+the model we ended with, the journal flags exactly the decisions we actually revised after
+ChatGPT's correction, identifies the single falsified claim, and closes the loop
+(model → fail → revise → uphold). Reflective adequacy, not a correctness proof.
 
 ## Run
 
