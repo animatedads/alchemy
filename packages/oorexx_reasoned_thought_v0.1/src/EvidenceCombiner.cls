@@ -39,7 +39,8 @@
   originBest = .directory~new
   do gid over allIds
     g = byId[gid]
-    key = g~sourceUtterance || "|" || g~kind || "|" || g~targetId || "|" || g~undercutsGroundId || "|" || g~binds
+    key = self~part(g~sourceUtterance) || self~part(g~kind) || -
+          self~part(g~targetId) || self~part(g~undercutsGroundId) || self~part(g~binds)
     if \originBest~hasIndex(key) then originBest[key] = gid
     else do
       prior = originBest[key]
@@ -50,7 +51,8 @@
   duplicates = .set~new
   do gid over allIds
     g = byId[gid]
-    key = g~sourceUtterance || "|" || g~kind || "|" || g~targetId || "|" || g~undercutsGroundId || "|" || g~binds
+    key = self~part(g~sourceUtterance) || self~part(g~kind) || -
+          self~part(g~targetId) || self~part(g~undercutsGroundId) || self~part(g~binds)
     if originBest[key] \= gid then do
       decisions[gid] = "DUPLICATE"
       duplicates~put(gid)
@@ -135,12 +137,14 @@
   rebut = 0
   ambiguous = .false
   transcript = .array~new
-  transcript~append("ordinal-evidence-combiner/0.1")
+  transcript~append("ordinal-evidence-combiner/0.2")
   transcript~append("claim=" || p~id)
   do gid over allIds
     g = byId[gid]
     st = decisions[gid]
-    transcript~append(gid || ":" || g~kind || ":" || g~tier || ":" || g~binds || ":" || st)
+    transcript~append(self~part(gid) || self~part(g~kind) || self~part(g~tier) || -
+      self~part(g~sourceUtterance) || self~part(g~targetId) || -
+      self~part(g~undercutsGroundId) || self~part(g~binds) || self~part(st))
     select
       when st = "LIVE" then do
         live~append(gid)
@@ -201,7 +205,7 @@
   d["disputedGrounds"] = disputedIds; d["duplicates"] = duplicates
   d["admissibility"] = "ADMITTED_EVIDENCE_ONLY"
   d["derivation"] = why; d["why"] = why
-  d["derivationVersion"] = "ordinal-evidence-combiner/0.1"
+  d["derivationVersion"] = "ordinal-evidence-combiner/0.2"
   d["validationBoundary"] = "source authenticity, evidence class and warrants are upstream obligations"
   return d
 
@@ -215,9 +219,9 @@
   d["ineligible"] = .set~new; d["disputed"] = .true
   d["disputedGrounds"] = .set~new; d["duplicates"] = .set~new
   d["admissibility"] = "FAIL_CLOSED"
-  why = "ordinal-evidence-combiner/0.1" || "0a"x || "claim=" || p~id || "0a"x || self~join(notes)
+  why = "ordinal-evidence-combiner/0.2" || "0a"x || "claim=" || p~id || "0a"x || self~join(notes)
   d["derivation"] = why; d["why"] = why
-  d["derivationVersion"] = "ordinal-evidence-combiner/0.1"
+  d["derivationVersion"] = "ordinal-evidence-combiner/0.2"
   d["validationBoundary"] = "failed structural admission"
   return d
 
@@ -229,3 +233,9 @@
     out = out || arr[i]
   end
   return out
+
+::method part private
+  /* Length-prefixed fields are unambiguous even if an ID contains ':' or '|'. */
+  use strict arg item
+  val = item~string
+  return length(val) || ":" || val
