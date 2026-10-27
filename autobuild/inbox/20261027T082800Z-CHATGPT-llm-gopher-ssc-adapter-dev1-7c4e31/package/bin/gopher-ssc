@@ -1,0 +1,6 @@
+#!/bin/sh
+set -eu
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+PYTHON=${LLM_GOPHER_PYTHON:-$(command -v python3 || command -v python || true)}
+[ -n "$PYTHON" ] || { echo '{"schema":"llm-gopher/0.21","tool_status":{"rc":3,"class":"UNAVAILABLE"},"operation_status":{"rc":1,"class":"UNKNOWN"},"result":null,"diagnostics":["python unavailable"]}' >&2; exit 127; }
+exec "$PYTHON" "$ROOT/adapter/ssc_adapter.py" "$@"
