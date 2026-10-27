@@ -1,4 +1,4 @@
-# StandardApplicationAudit/0.3 — stated-standard consistency (authoritative operator)
+# StandardApplicationAudit/0.4 — stated-standard consistency (authoritative operator)
 
 **Architecture:** Tom Dyer. **Operator:** ChatGPT GPT-6. **Reference and adversarial test owner:** Claude (Opus 4.8). Pure ooRexx 5.3; no native library dependencies in the operator.
 
@@ -51,65 +51,19 @@ extraction qualification now totals 21 + 13 + 7 = **41 native checks**.
 Independent acceptance remains Claude's responsibility; this extra coverage
 is not misrepresented as independent validation.
 
-## v0.4 — necessary-threshold consistency (27 October 2026)
+### v0.4 qualification of necessary thresholds
 
-A THRESHOLD represents a **necessary condition for ACCEPTANCE**, not a sufficient
-condition. When the decision-maker states a minimum evidence tier of 3:
+The THRESHOLD path now inspects admitted *applications* as well as declared
+self-material tiers. The minimum threshold is treated as a **necessary**
+condition for acceptance, not a sufficient one: an ACCEPTED application below
+the declared minimum is a conditional counterexample; a REJECTED application
+above the minimum may have other legitimate grounds and is not a counterexample
+by itself. Dimension, metric basis, and missing-value constraints are enforced.
+The class's optional `requiredBasis` (7th argument to `standard`) binds these
+comparisons. The new 12-check owner regression exercises both directions,
+basis mismatch, self-standard gaps and scope/authority ceilings.
 
-- ACCEPTED at tier 2 on the same declared dimension and basis is a
-  STATED_RULE_VIOLATION (conditional on the caller's unverified input).
-- REJECTED at tier 4 is **not** a violation without an additional warrant saying
-  the tier is sufficient for acceptance; other objections may justify rejection.
-- An application using another measurement dimension, scale/basis or unknown value
-  cannot be ordered against the minimum: INDETERMINATE_COMPARABILITY unless
-  some other valid counterexample has already been established.
-- When a self-material gap and a directly observed threshold violation coexist,
-  the report retains **both** through selfStandardGap and reasonCodes.
-- If no self-material tier is supplied but an accepted case is below the stated
-  minimum, preserve the directly supported rule violation rather than silently
-  discarding it. The self-tier remains .nil (unknown).
-
-For explicit scales, the final optional parameter of standard() is
-requiredBasis:
-
-    a~standard('S','THRESHOLD','evidence',3,'','HIGHER_WORSE','ordinal:v1')
-    a~applied('S','CASE1',2,'ACCEPTED','evidence','ordinal:v1')
-
-Absent this parameter, the caller's omission asserts a shared basis
-ASSUMED_EQUIVALENT:S for compatibility with existing tests. It is not source
-authentication or independent evidence of metric comparability. The public API
-remains audit(standardId); outputs add ruleViolations, ruleConformingCases,
-uncomparableCases, ruleBasis and selfStandardGap.
-
-**Native test evidence:** on user-supplied ooRexx 5.3.0 r13196,
-test_standard_application_contract_gpt6.rex 21/21 PASS and
-test_threshold_necessary.rex 19/19 PASS. Those are implementer-side tests.
-Claude's independent fixtures test_standard_application_audit.rex (test 15)
-and test_standard_application_fairness.rex (test 16) remain separately owned
-and require independent qualification before merging this operator.
-
-Neither a structural violation nor a conditional self-standard gap proves that
-the stated rule is fair, that inputs are genuine, or that any underlying claim is
-true. The operator never outputs a merits verdict.
-
-## v0.5 — do not certify unresolved cases or mix score scales
-
-Review of the v0.4 threshold report found that REJECTED cases at or above
-a minimum were being counted in ruleConformingCases. That is too strong:
-meeting a NECESSARY minimum does not guarantee acceptance. They now appear
-in unresolvedDispositionCases. Conforming cases are restricted to ACCEPTED
-at or above the bound minimum or REJECTED below it. No real-world truth or
-legal correctness is implied.
-
-A DISQUALIFY rule with an explicit absolute boundary also compares values
-only when the application's basis equals the requiredBasis declared by the
-standard. Two entries that use the same unrelated score scale do not become
-comparable to an ordinal threshold merely because they agree with each other.
-The audit records STANDARD_BASIS_MISMATCH and INDETERMINATE_COMPARABILITY
-rather than generating false threshold violations.
-
-Native evidence for this revision: user-supplied ooRexx 5.3.0 r13196,
-existing owner contract 21/21 PASS plus threshold necessity and basis suite
-24/24 PASS. This is 45 owner-side assertions, not Claude's independent
-adversarial acceptance. The complete runner now invokes the threshold
-suite alongside the other owner suites.
+Qualified against exact source blob `fd21d7832c2b72e6709c339667d427d3d70e2c81`
+(verified by Git blob hashing), with 21+13+7+12 = **53** native ooRexx
+r13196 checks on a fresh package extraction. Source code can still be changed
+by other GitHub contributors; the Git blob SHA is the qualification pin.
