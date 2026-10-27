@@ -4,7 +4,7 @@
   "version": "0.1",
   "sphere": "relationship-crm-odoo",
   "title": "Continuation plan and missing work",
-  "summary": "The immediate gaps are dev11 r13196 service qualification, promotion of the unpacked GitHub provider tree from dev7.1 to dev11, durable Queue Fabric submission through Relationship CRM Service, SIP UAC/originating INVITE, richer Interaction Event projection and guarded Odoo collection mutation commands.",
+  "summary": "The immediate gaps are dev11 r13196 service qualification, promotion of the unpacked GitHub provider tree from dev7.1 to dev11, durable Queue Fabric submission through Relationship CRM Service, SIP UAC/originating INVITE, richer Interaction Event projection and guarded Odoo collection mutation commands. Rasen Falcon coordination now has a dedicated odoo-crm-provider lane owned by CHATGPT.",
   "authority": "project-architecture",
   "invariants": [
     "Do not make Queue Fabric a mandatory dependency of the Odoo provider; service submission belongs at the Relationship CRM Service boundary.",
@@ -12,17 +12,27 @@
     "Do not flatten OdooObject provider evidence when Relationship CRM or Interaction Event can retain a typed reference.",
     "Do not enable one2many/many2many mutation without explicit locally declared Odoo command semantics.",
     "Do not let intention discovery become mutation authority.",
-    "The exact dev11 release archive may be published before the unpacked GitHub source tree is promoted; never describe the stale unpacked tree as dev11 until byte-verified."
+    "The exact dev11 release archive may be published before the unpacked GitHub source tree is promoted; never describe the stale unpacked tree as dev11 until byte-verified.",
+    "Rasen Falcon component odoo-crm-provider is the coordination lane for this work; do not reuse unrelated example lanes such as wire_ui_windows."
   ],
   "procedure": [
-    "Run the new dev11 service integration regression under r13196 and record the result.",
+    "Track Rasen Falcon test request REQ-00000689 and record its exact r13196 evidence when returned; do not treat request creation as qualification.",
+    "Keep GitHub and the relationship-crm-odoo sphere synchronized with the odoo-crm-provider lane before handing work to another principal.",
     "Promote packages/oorexx_odoo_crm_provider from the exact dev11 release archive into the unpacked GitHub source tree and verify MANIFEST.sha256 before calling the source tree current.",
     "Add a service submission adapter only against the existing Relationship CRM Service Queue/Queue Fabric contract.",
     "Implement and qualify SIP originating INVITE as a separate SIP workstream, then bind CRM destination preparation to it.",
     "Extend Interaction Event projection only where the canonical event model supplies evidence not already represented by SIP/CRM objects."
   ],
   "provenance": [
-    {"artifact":"oorexx_odoo_crm_provider_v0.1-dev11.zip","sha256":"d27ecf896b551e1923e52be20d990423c6f79cc7093e61ab96e6c5a50d714479","claim":"current missing-work boundary"},
-    {"artifact":"relationship_crm_service_v0.1.zip","sha256":"51f423f80090cb22c955defa981d57ebee7fffd74ab181afe69b89b4eea24ac2","claim":"existing service/Queue boundary to reuse"}
+    {
+      "artifact": "oorexx_odoo_crm_provider_v0.1-dev11.zip",
+      "sha256": "d27ecf896b551e1923e52be20d990423c6f79cc7093e61ab96e6c5a50d714479",
+      "claim": "current missing-work boundary"
+    },
+    {
+      "artifact": "relationship_crm_service_v0.1.zip",
+      "sha256": "51f423f80090cb22c955defa981d57ebee7fffd74ab181afe69b89b4eea24ac2",
+      "claim": "existing service/Queue boundary to reuse"
+    }
   ]
 }

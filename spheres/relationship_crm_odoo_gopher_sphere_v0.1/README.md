@@ -11,3 +11,7 @@ Qualification:
 ```sh
 python3 -m unittest discover -s tests -v
 ```
+
+## Coordination
+
+Rasen Falcon lane: `odoo-crm-provider` (artifacts `oorexx_odoo_crm_provider` and `relationship_crm_odoo_gopher_sphere`). Current delegated qualification request: `REQ-00000689`; testing only, no coding delegation.
