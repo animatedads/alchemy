@@ -4,12 +4,14 @@
   "version": "0.1",
   "sphere": "websocket-access",
   "title": "Current WebSocket baseline",
-  "summary": "The grounded source baseline is ooRexx WebSocket Access v0.1-dev1. The current external socket authority is Socket Provider dev16; the dev1 independent COTS wire pass is inherited into that estate but has not been freshly rerun against dev16.",
+  "summary": "The current Git source candidate is ooRexx WebSocket Access v0.1-dev2; v0.1-dev1 remains the immutable qualified release. Socket Provider dev16 is the current external socket authority. dev2 closes fragmentation and close-handshake source defects but has not yet received a fresh dev16 live qualification.",
   "invariants": [
-    "Source delivery is oorexx_websocket_access_v0.1-dev1.zip with SHA-256 91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655.",
+    "Qualified delivery remains oorexx_websocket_access_v0.1-dev1.zip with SHA-256 91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655.",
+    "Git source candidate v0.1-dev2 implements fragmented data-message reassembly, interleaved control handling, bounded message assembly, reserved/RSV rejection and repaired close-frame transmission.",
     "Current external Socket Provider authority is v0.1-dev16 with SHA-256 fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2.",
-    "Do not rewrite dev1 history to say it was built or live-qualified against dev16.",
-    "WebSocketAccess remains an access/protocol layer above SocketStreamAdapter, not a socket provider family."
+    "Do not rewrite dev1 history to say it was built or freshly live-qualified against dev16.",
+    "WebSocketAccess remains an access/protocol layer above SocketStreamAdapter, not a socket provider family.",
+    "Rasen Falcon coordination lane is websocket-access; REQ-00000381 requests independent dev2 review/qualification."
   ],
   "provenance": [
     {
@@ -18,9 +20,13 @@
       "member": "README.md"
     },
     {
+      "artifact": "packages/oorexx_websocket_access",
+      "claim": "Git source candidate v0.1-dev2; SOURCE_CANDIDATE pending fresh qualification."
+    },
+    {
       "artifact": "SPIRAL1_TRANSPORT_COTS_INTERFACE_GRID_CURRENT_2026-10-13.md",
       "sha256": "f659adf468eac794446550defc830fcdcbf7a40a75e65e4fe9a4e782fc2c6bbd",
-      "claim": "Records WebSocket ACCESS + CONTRACT PASS and inherited dev1 LIVE COTS WIRE PASS in the Socket Provider dev16 estate, with no fresh dev16 rerun."
+      "claim": "Records inherited dev1 LIVE COTS WIRE PASS in the Socket Provider dev16 estate, with no fresh dev16 rerun."
     }
   ]
 }
