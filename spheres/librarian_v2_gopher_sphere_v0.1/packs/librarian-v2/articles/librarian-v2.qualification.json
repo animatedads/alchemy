@@ -3,15 +3,18 @@
   "id": "librarian-v2.qualification",
   "title": "Qualification truth and blockers",
   "section": "qualification",
-  "version": "0.1",
+  "version": "0.1.1",
   "sphere": "librarian-v2",
   "authority": "project-continuity",
-  "summary": "Dev8 is source-reviewed and SHA-confirmed against the archived package but remains unqualified under ooRexx in the current environment. Earlier increments had separately reported interpreter assertions, but those are not evidence that dev8 passes. The Gopher sphere's JSON structure can be statically checked separately and must not be represented as full Gopher runtime activation. Blockers include graph mutation/time scopes, comparator versioning, provenance identity, malformed inputs and causal/bias authority separation.",
+  "summary": "Native interpreter qualification now executed (not merely source inspection): ooRexx 5.3.0 r13196 debug PASS on 102 positive assertions in nine suites and 13 expected-negative rejections (115 checks), with dev8 and dev9 class compiler checks. This qualifies observed test behaviour of the delivered dev9 archive, not independent media provenance or production deployment. LLM Gopher sphere activation/validate/lint still not executed in this environment.",
   "invariants": [
-    "Runtime test count for dev8: not established.",
     "Before promotion: ooRexx 5.3.0 r13196 rexxc + runtime suites, deterministic permutation fixtures, cycle and malformed relationship tests, historical as-of revisions, Unicode/source spans, limits and regression scenarios.",
     "Before claiming a Gopher-activated sphere: run Sphere Editor validate/lint and Gopher profile context/open tests against a compatible installed version.",
-    "Package hash and GitHub commit are provenance, not proof of semantic correctness."
+    "Package hash and GitHub commit are provenance, not proof of semantic correctness.",
+    "Real ooRexx checks: 115 PASS on dev9 archive with pinned Time Service v0.3; archive integrity PASS.",
+    "Single Time Service v0.9 and Gopher profile runtime remain unqualified for this Librarian increment.",
+    "GitHub dev9 is an incremental delta; full development source dependencies are in the ZIP, not the PR branch checkout.",
+    "No production qualification or verified source independence is claimed."
   ],
   "provenance": [
     {
@@ -29,6 +32,14 @@
       "line_start": 21,
       "line_end": 48,
       "claim": "Cycle handling and traversal implementation."
+    },
+    {
+      "artifact": "librarian_v2_dev9_20261027.zip",
+      "sha256": "6ebb503d6db6d3ffe9dc93385c02b637af8fa21dfb6fe43da2466f0aba207496",
+      "member": "librarian_v2_dev9/qualification/DEV9_NATIVE_QUALIFICATION.txt",
+      "line_start": 1,
+      "line_end": 13,
+      "claim": "Native interpreter acceptance results."
     }
   ]
 }
