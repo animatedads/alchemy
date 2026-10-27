@@ -1,0 +1,137 @@
+--- layered_audio_oorexx_v0.22-dev8/src/AudioIntentions.cls
++++ layered_audio_oorexx_v0.22-dev9/src/AudioIntentions.cls
+@@ -1,5 +1,5 @@
+ /* AudioIntentions.cls
+- * Layered Audio dynamic intention discovery v0.22-dev8.
++ * Layered Audio dynamic intention discovery v0.22-dev9.
+@@
+ ::class AudioIntentionBuild public
+-::constant VERSION "0.22-dev8"
+-::constant API "audio.intentions/0.8"
++::constant VERSION "0.22-dev9"
++::constant API "audio.intentions/0.9"
+@@
+ ::constant UNAVAILABLE "UNAVAILABLE"
+ 
++/* Optional live authority/feasibility gates are deliberately external to Audio
++ * truth.  A gate may be a Directory or an object implementing
++ * allowIntention(candidate,target,context).  Directory precedence is:
++ * exact intention id, feature kind, then "*".  Missing entries allow.
++ *
++ * Gate values may be booleans / 0/1, or AudioIntentionGateDecision objects.
++ * Denial never deletes the candidate: the semantic surface remains observable
++ * but becomes UNAVAILABLE with explicit gate evidence. */
++::class AudioIntentionGateDecision public
++::attribute allowed get
++::attribute reason get
++::attribute evidence get
++::method init
++  expose allowed reason evidence
++  use strict arg allowedArg, reasonArg="", evidenceArg=.nil
++  allowed=allowedArg
++  reason=reasonArg~string
++  evidence=evidenceArg
++
+@@
+   if self~isRecording(target) then do
+     self~discoverRecording(snapshot,target,context)
+-    return snapshot
++    return self~applyContextGates(snapshot,context)
+   end
+   if self~isElement(target) then do
+     self~discoverElement(snapshot,target,context)
+-    return snapshot
++    return self~applyContextGates(snapshot,context)
+   end
+   if self~isView(target) then do
+     self~discoverView(snapshot,target,context)
+-    return snapshot
++    return self~applyContextGates(snapshot,context)
+   end
+   if self~isCompositeSelection(target) then do
+     self~discoverSelection(snapshot,target,context)
+-    return snapshot
++    return self~applyContextGates(snapshot,context)
+   end
+ 
+   self~discoverObject(snapshot,target,context)
+-  return snapshot
++  return self~applyContextGates(snapshot,context)
+@@
+   binding=.nil
+   if element<>.nil then if context<>.nil then binding=context~storageBinding(self~objectId(element))
++
++  selected=.array~new
++  if element<>.nil then selected~append(element)
++  if view<>.nil then selected~append(view)
++  do boundary over boundaries; selected~append(boundary); end
++  if binding<>.nil then selected~append(binding)
++  gateCandidate=.AudioIntentionCandidate~new("audio.composite.select","compose current Audio objects","COMPOSITE_SELECT",recording,selected,.array~new)
++  if featureKind<>"" then gateCandidate=.AudioIntentionCandidate~new("audio.composite.select","compose current Audio objects",featureKind,recording,selected,.array~new)
++  gateResult=self~gateCandidate(gateCandidate,recording,context)
++  if \gateResult~allowed then return .AudioIntentionCompositeProposal~new(discovery,"UNAVAILABLE",gateResult~reason)
++
+   selection=.AudioIntentionCompositeSelection~new(discovery~generation,recording,element,view,featureKind,boundaries,binding)
+   return .AudioIntentionCompositeProposal~new(discovery,"READY","current Audio objects compose without ambiguity","",selection)
+@@
++::method applyContextGates
++  use strict arg snapshot, context=.nil
++  if context==.nil then return snapshot
++  authority=context~authority
++  feasibility=context~feasibility
++  if authority==.nil then if feasibility==.nil then return snapshot
++
++  gated=.AudioIntentionDiscovery~new(snapshot~generation,snapshot~target)
++  do item over snapshot~evidence; gated~addEvidence(item); end
++  do candidate over snapshot~intentions
++    gateDecision=self~gateCandidate(candidate,snapshot~target,context)
++    if gateDecision~allowed then gated~add(candidate)
++    else do
++      evidence=.array~new
++      do item over candidate~evidence; evidence~append(item); end
++      if gateDecision~evidence<>.nil then evidence~append(.AudioIntentionEvidence~new("GATE",gateDecision~evidence,gateDecision~reason))
++      else evidence~append(.AudioIntentionEvidence~new("GATE",.nil,gateDecision~reason))
++      gated~add(.AudioIntentionCandidate~new(candidate~intentionId,candidate~meaning,candidate~featureKind,candidate~target,candidate~candidates,evidence,candidate~requiredSlots,.AudioIntentionState~UNAVAILABLE,gateDecision~reason))
++    end
++  end
++  return gated
++
++::method gateCandidate
++  use strict arg candidate, target, context=.nil
++  if context==.nil then return .AudioIntentionGateDecision~new(.true)
++  gateDecision=self~assessGate("AUTHORITY",context~authority,candidate,target,context)
++  if \gateDecision~allowed then return gateDecision
++  return self~assessGate("FEASIBILITY",context~feasibility,candidate,target,context)
++
++::method assessGate
++  use strict arg gateKind, gate, candidate, target, context
++  if gate==.nil then return .AudioIntentionGateDecision~new(.true)
++
++  decision=.nil
++  if gate~isa(.Directory) then do
++    if gate~hasIndex(candidate~intentionId) then decision=gate[candidate~intentionId]
++    else if gate~hasIndex(candidate~featureKind) then decision=gate[candidate~featureKind]
++    else if gate~hasIndex(candidate~featureKind~upper) then decision=gate[candidate~featureKind~upper]
++    else if gate~hasIndex("*") then decision=gate["*"]
++    else return .AudioIntentionGateDecision~new(.true)
++  end
++  else do
++    if \gate~hasMethod("ALLOWINTENTION") then return .AudioIntentionGateDecision~new(.false,gateKind||"_GATE_INVALID",gate)
++    decision=gate~allowIntention(candidate,target,context)
++  end
++
++  if decision<>.nil then if decision~hasMethod("ALLOWED") then do
++    if decision~allowed then return .AudioIntentionGateDecision~new(.true)
++    reason=decision~reason
++    if reason=="" then reason=gateKind||"_DENIED"
++    return .AudioIntentionGateDecision~new(.false,reason,decision~evidence)
++  end
++
++  allowed=.false
++  if decision==.true then allowed=.true
++  else if decision==1 then allowed=.true
++  else if decision~string~upper="ALLOW" then allowed=.true
++  else if decision~string~upper="ALLOWED" then allowed=.true
++  if allowed then return .AudioIntentionGateDecision~new(.true)
++  return .AudioIntentionGateDecision~new(.false,gateKind||"_DENIED",gate)
++
