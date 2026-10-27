@@ -30,7 +30,7 @@ This list is deliberately limited to work that cannot be honestly closed from th
    - Required action: execute its deterministic test under ooRexx r13196 and current exact roots, then qualify live HTTPS.
    - HTTPS-over-XTP remains lower-layer work because API Client v0.4.1 currently documents RxSock socket ownership. Add/qualify a shared SocketProvider/selector backend there; do not put XTP knowledge into BOSH or this adapter.
 
-6. **Sphere registration**
-   - GitHub sphere content exists.
-   - Current LLM Gopher `sphere_check` returns `SPHERE_NOT_FOUND`.
-   - Required action: register/deploy the sphere through the authoritative Gopher workflow.
+6. **Rasen Falcon sphere-checker configuration**
+   - GitHub sphere content exists and the authenticated Rasen Falcon lane `messaging-presence` links the sphere artifact.
+   - Current authenticated Rasen Falcon `sphere_check` returns `SPHERE_CHECKER_UNAVAILABLE`: no checker is configured in that deployment.
+   - Required action: configure/enable the sphere checker, then validate the linked sphere. Do not treat the earlier read-only catalogue `SPHERE_NOT_FOUND` result as authoritative.
