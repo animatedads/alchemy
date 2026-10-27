@@ -494,7 +494,7 @@ RexxRoutine2(RexxObjectPtr, quicNativeRecv, uint64_t, handle, int, maximumBytes)
 }
 
 
-RexxRoutine2(uint64_t, quicNativeOpenStream, uint64_t, connectionHandle, int, unidirectional)
+RexxRoutine3(uint64_t, quicNativeOpenStream, uint64_t, connectionHandle, int, unidirectional, int, nonblocking)
 {
     try {
         Connection *c;
@@ -504,8 +504,17 @@ RexxRoutine2(uint64_t, quicNativeOpenStream, uint64_t, connectionHandle, int, un
         }
         if (!c) throw std::runtime_error("unknown QUIC connection handle");
         uint64_t flags = unidirectional ? SSL_STREAM_FLAG_UNI : 0;
+        if (nonblocking) flags |= SSL_STREAM_FLAG_NO_BLOCK;
+        ERR_clear_error();
         SSL *ssl = SSL_new_stream(c->ssl, flags);
-        if (!ssl) throw std::runtime_error("SSL_new_stream failed");
+        if (!ssl) {
+            unsigned long e = ERR_peek_last_error();
+            if (nonblocking && e != 0 && ERR_GET_REASON(e) == SSL_R_STREAM_COUNT_LIMITED) {
+                ERR_clear_error();
+                return 0;
+            }
+            throw std::runtime_error("SSL_new_stream failed");
+        }
         auto st = std::make_unique<Stream>();
         st->ssl = ssl;
         st->connection_handle = connectionHandle;
@@ -515,6 +524,27 @@ RexxRoutine2(uint64_t, quicNativeOpenStream, uint64_t, connectionHandle, int, un
         return handle;
     } catch (const std::exception &e) {
         raise_error(context, std::string("QUIC open stream: ") + e.what());
+        return 0;
+    }
+}
+
+RexxRoutine2(uint64_t, quicNativeStreamAvailability, uint64_t, connectionHandle, int, unidirectional)
+{
+    try {
+        Connection *c;
+        {
+            std::lock_guard<std::mutex> guard(g_lock);
+            c = connection_for(connectionHandle);
+        }
+        if (!c) throw std::runtime_error("unknown QUIC connection handle");
+        uint64_t available = 0;
+        int ok = unidirectional
+            ? SSL_get_quic_stream_uni_local_avail(c->ssl, &available)
+            : SSL_get_quic_stream_bidi_local_avail(c->ssl, &available);
+        if (!ok) throw std::runtime_error("failed to query QUIC stream availability");
+        return available;
+    } catch (const std::exception &e) {
+        raise_error(context, std::string("QUIC stream availability: ") + e.what());
         return 0;
     }
 }
@@ -751,6 +781,7 @@ RexxRoutineEntry quic_native_routines[] = {
     REXX_TYPED_ROUTINE(quicNativeSend, quicNativeSend),
     REXX_TYPED_ROUTINE(quicNativeRecv, quicNativeRecv),
     REXX_TYPED_ROUTINE(quicNativeOpenStream, quicNativeOpenStream),
+    REXX_TYPED_ROUTINE(quicNativeStreamAvailability, quicNativeStreamAvailability),
     REXX_TYPED_ROUTINE(quicNativeAcceptStream, quicNativeAcceptStream),
     REXX_TYPED_ROUTINE(quicNativeStreamId, quicNativeStreamId),
     REXX_TYPED_ROUTINE(quicNativeStreamType, quicNativeStreamType),
@@ -768,7 +799,7 @@ RexxPackageEntry oorexx_quic_native_package_entry = {
     STANDARD_PACKAGE_HEADER
     REXX_INTERPRETER_5_0_0,
     "oorexx_quic_native",
-    "0.1-dev3",
+    "0.1-dev4",
     nullptr,
     nullptr,
     quic_native_routines,
