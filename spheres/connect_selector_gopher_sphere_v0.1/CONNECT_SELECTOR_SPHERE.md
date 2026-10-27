@@ -28,3 +28,13 @@ Local r13196 ooRexx regression against pinned: JSON-RPC Fabric dev3; RPC Service
 - Bind authenticated RTO2 runtime, socket carrier and fencing evidence; run live promotion/failover campaign.
 - Qualify RPC binding selector on authenticated networks, callback/stream cancellation and adverse effects.
 - Keep QueueFabric optional and avoid duplicating RPC Service Core or Serialisation Selector.
+
+## ooRexx ADDRESS environments (RFE #882; 2026-10-27)
+
+This is an **optional entry adapter** to the same ConnectSelector policy and invocation contract, **not a new provider** and not a replacement for the existing direct/RPC/QueueFabric/RTO2 stack. ooRexx `.CommandHandler~register` permits pure Rexx package-prolog registration and `::REQUIRES` usage by independently written clients. Registrations are per interpreter instance; shared objects between processes require an explicit service transport.
+
+Provenance and eligibility: upstream announces Rexx handlers in r13288 (portable builds r13289+), `StackCommandEnvironment` in r13297 and native API interfaceVersion 102. The source baseline here remains dev6 qualified on older r13196; do not claim the new API exists in the dev6 qualification runtime.
+
+Committed work: `examples/address_environment/AlchemyAddressProbe.cls` is a fail-closed handler, and `examples/address_environment/probe.rex` checks RC 0/13/64 through an independently required package. `qualification/ADDRESS_ENVIRONMENT_RFE882_20261027.md` documents execution instructions, version gates, authority design and the still-open qualification matrix. This **has not been executed** against the new interpreter.
+
+Required next: workstation evidence on a compatible r13289+ runtime; verify package prolog and native stacking/forwarding, exact dependency resolution, caller stream/variable/condition authority, concurrency, refusal and transport error mapping. Production `ADDRESS ALCHEMY_CONNECT` registration is only proposed. Do not reinterpret Queue Fabric ACCEPTED as an operation success or erase an uncertain side effect.
