@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.wire",
+  "version": "0.1",
+  "sphere": "rasenfalcon",
+  "section": "architecture",
+  "title": "Wire Office mail and NotNotes semantic ownership",
+  "summary": "Wire renders webmail and NotNotes at Office, with ooRexx application truth and storage authority. MailReader uses bounded source windows and stable mailbox/UIDVALIDITY/UID identities, not 200,000 browser widgets.",
+  "invariants": [
+    "Both apps are behind the Office mTLS gate before static assets or application routes.",
+    "Authoritative note revisions, ACL, links, conflict rules and intentions remain server-side.",
+    "The browser is a renderer, not a DOM-shaped application object authority.",
+    "A mailbox must be bounded/paged and scoped by account, mailbox, UIDVALIDITY and UID."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_alchemy_autobuild_v0.4.zip",
+      "sha256": "fb4ce5bdecf0c9c312e21459f5ea74dc7d0eeb73fa37682cada06a5835028189",
+      "member": "handoff/codex/CX-05.md",
+      "claim": "Wire Office and NotNotes implementation assignment."
+    }
+  ],
+  "routes": [
+    "/mail",
+    "/notes"
+  ],
+  "related_spheres": [
+    "wire-ui-builder",
+    "wire-ui"
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.qualification",
+  "version": "0.3",
+  "sphere": "rasenfalcon",
+  "section": "qualification",
+  "title": "Verified source and still-unqualified production boundary",
+  "summary": "Rasen Falcon v0.4.2 candidate editor handoff source submitted 27 October 2026. Local site tests 18/18; publisher v0.3 reference export staged and all nine pages rendered. No Autobuild acceptance receipt or live CMS/Wire/HTTPS tests were observed for this candidate.",
+  "invariants": [
+    "Reported website preview tests 9/9 and delivery security-contract tests 13/13 are not TLS handshake evidence.",
+    "Receiver acceptance must be verified from its receipt; a ready.json marker is only submission.",
+    "CMS/Wire publisher, live HTTPS SNI, mTLS negative tests, LDAP, SMTP/IMAP, terminal and MCP integration all require real service tests.",
+    "No production cutover without distinct operator approval; source submission does not install keys or change hosts.",
+    "Never mark fixture-only results LIVE_PASS; missing credentials and deployment facts are NOT_RUN.",
+    "A forged editorial approval record with local hashes, names and dates must never enable production release.",
+    "Preview cannot be indexed even if content is marked approved; local 12/12 assertions are not live HTTPS/browser integration evidence.",
+    "A NoSQLServer native-record/0.2 revision is imported as unverified metadata only; this is not an independently checked database or CMS receipt.",
+    "Separate CLAUDE-PC read-only qualification requested via Rasen Falcon component lane rasenfalcon-website, request REQ-00000481; no external test PASS may be inferred before reply."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_alchemy_autobuild_v0.4.zip",
+      "sha256": "fb4ce5bdecf0c9c312e21459f5ea74dc7d0eeb73fa37682cada06a5835028189",
+      "member": "README.md",
+      "claim": "Submitted candidate explicitly disclaims deployment and acceptance."
+    }
+  ],
+  "reported_local_tests": {
+    "website": "18/18 (v0.4.2 offline staging and preview)",
+    "handoff": "13/13"
+  },
+  "github_submission": "VERIFIED_V0.4.2_SOURCE_BRANCH",
+  "acceptance": "PENDING_RECEIPT_V0.4.2",
+  "native_services": "NOT_RUN"
+}
