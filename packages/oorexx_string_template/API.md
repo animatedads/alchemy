@@ -1,63 +1,32 @@
-# API — ooRexx String Template v0.1-dev2
+# API — ooRexx String Template v0.1-dev3
 
 ## StringTemplate
 
-`StringTemplate~new(source [, formatterRegistry])`
+`StringTemplate~new(source [, formatterRegistry])` parses source once and captures a sealed snapshot of the supplied formatter registry.
 
-Parses the source once.
+Public methods include `source`, `segments`, `variables`, `formatterNames`, `requirements`, `formatters`, `missingFormatterNames`, `validateBindings`, `withFormatters(registry)`, `render(context [, policy])`, and `renderTo(sink, context [, policy])`.
 
-- `source` — original source text.
-- `segments` — copy of compiled segment array.
-- `variables` — unique referenced paths, first-use order.
-- `formatterNames` — unique formatter names, first-use order; plain `${value}` requires `identity`.
-- `requirements` — a detached `TemplateRequirements` snapshot.
-- `formatters` — formatter registry.
-- `render(context [, policy])` — renders to and returns a String.
-- `renderTo(sink, context [, policy])` — writes each rendered segment to `sink~charOut(text)` and returns the number of characters submitted. The caller owns sink lifecycle.
+`formatters` returns the captured sealed registry. Mutating the registry originally passed by the caller does not change an existing template.
+
+`missingFormatterNames` returns referenced formatter names absent from the captured registry. This is non-executing and allows a caller to inspect a template before domain formatters are supplied.
+
+`validateBindings` fails closed if any referenced formatter is absent. `render` and `renderTo` invoke this validation before resolving context or writing output, so an unbound formatter cannot cause a partial streamed render.
+
+`withFormatters(registry)` returns a new `StringTemplate` over the same source with a new captured formatter snapshot. Existing templates are never rebound in place.
 
 Both render methods accept a `TemplateContext` or `Directory` and use strict/plain policy by default.
 
-## TemplateRequirements
-
-A detached inventory produced from the compiled template.
-
-- `variables` — copy of unique variable/path requirements.
-- `formatters` — copy of unique formatter-name requirements.
-
-Reading requirements does not resolve context values, invoke object getters or call formatters.
-
-## TemplateContext
-
-- `put(name, value)`
-- `putObject(name, object, propertyMap)`
-- `resolve(path)`
-
-`put` and `putObject` both reject blank context names. Nested traversal is allowed only through `.Directory` and `.TemplateObjectView`.
-
-## TemplateObjectView
-
-`TemplateObjectView~new(object)` creates an explicit projection over an ooRexx object.
-
-- `allow(propertyName, messageName)` adds a zero-argument getter to the allowlist.
-- `property(propertyName)` resolves only allowlisted names.
-
 ## TemplateFormatterRegistry
 
-- `default` creates a registry with built-ins.
-- `register(name, formatter)`
-- `has(name)`
-- `formatter(name)`
+- `default` — mutable registry containing the built-ins.
+- `register(name, formatter)` — register or replace while mutable; fails when sealed.
+- `has(name)` / `formatter(name)` — lookup.
+- `snapshot` — detached sealed registry containing the current name-to-formatter bindings.
+- `seal` — prevent later registration and return self.
+- `isSealed` — report seal state.
 
-A formatter subclasses `TemplateFormatter` and implements `format(value, argument)`.
+A snapshot freezes registry membership, not arbitrary internal state of formatter objects.
 
-## TemplateRenderPolicy
+## Other public surfaces
 
-Construct with `TemplateRenderPolicy~new(missingMode, escapeMode)`.
-
-Missing modes: `ERROR`, `KEEP`.
-
-Escape modes: `PLAIN`, `HTML`, `JSON`.
-
-Convenience constructors: `strictPlain`, `permissivePlain`, `strictHtml`, `strictJson`.
-
-The JSON policy escapes substituted **JSON string content**. It does not construct or validate a complete JSON document.
+`TemplateRequirements`, `TemplateContext`, `TemplateObjectView`, `TemplateFormatter`, `TemplateRenderPolicy`, `TemplateParser`, and segment classes retain their dev2 contracts. Requirement inspection remains non-executing. Object traversal remains restricted to `Directory` and explicit `TemplateObjectView` projections.
