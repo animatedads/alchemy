@@ -990,3 +990,9 @@ REXX_PATH=src:$REXX_PATH rexx tools/hercules_tn3270_semantic_probe.rex HOST 3270
 ```
 
 The probe is read-only: it negotiates, waits for the first host-generated presentation-space generation, snapshots it, applies the semantic catalogue, prints the visible screen and closes. It sends no AID and no operator data.
+## v0.22-candidate14: complete s3270 response evidence
+
+Candidate14 strengthens the independent s3270 differential boundary. A live comparison no longer has to combine `ReadBuffer(Ascii)` data with separately sampled dimensions/cursor facts. `S3270ReferenceParser~parseActionResponse` consumes the full peer-script response: `data:` lines, the documented 12-field status line and the final `ok`/`error` marker. Rows, columns, zero-origin cursor and keyboard U/L/E state therefore travel with the reference buffer evidence.
+
+The differential now compares keyboard `LOCKED`/`UNLOCKED` when status is available in addition to screen dimensions, cursor, visible rows and field address/length/protection/numeric/MDT/NONDISPLAY semantics. Plain data-only parsing remains available for retained fixtures, where keyboard state is explicitly `UNKNOWN`. Multi-byte/DBCS ReadBuffer positions remain fail-closed until their exact two-cell semantics are implemented.
+
