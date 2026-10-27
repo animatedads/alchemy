@@ -7,6 +7,10 @@
 - Recorded that Audio/Storage execution may expose transient `localPath` while durable `identityKey` remains authoritative lineage; Speech must not flatten that distinction.
 - Reaffirmed that SIP/RTP/device authority remains outside Speech and that ASR hypotheses do not become Layered Audio evidence truth.
 - Kept exact r13196 runtime status honest: dev11 static standards PASS is recorded, while the new intention regression is pending runtime execution in the current container.
+- Advanced `arch.layered-audio.intentions` to the v0.22-dev9 authority/feasibility boundary.
+- Recorded that denied semantic capabilities remain observable as `UNAVAILABLE` with native Audio objects and gate evidence intact.
+- Recorded fail-closed handling for malformed live gates and mandatory gate revalidation before composite READY.
+- Recorded the Rasen Falcon `layered-audio-intentions` lane and independent CODEX-PC runtime-test request as coordination evidence, not runtime proof.
 
 ## 0.3
 - Added `arch.layered-audio.intentions` for live, object-bound Audio intention discovery and Management federation.
