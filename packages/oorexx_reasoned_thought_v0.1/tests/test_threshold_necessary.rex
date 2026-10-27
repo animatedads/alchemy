@@ -16,7 +16,8 @@ call chk r['classification']='STATED_RULE_VIOLATION', 'Accepted below stated min
 call chk r['ruleViolations']~items=1, 'Necessary-threshold guard raises exactly one violation'
 call chk r['ruleViolations'][1]['chain']='ACCEPT_LOW', 'Violating chain is identified'
 call chk r['ruleViolations'][1]['reason']='ACCEPTED_BELOW_NECESSARY_THRESHOLD', 'Reason is a necessary-condition breach'
-call chk r['ruleConformingCases']=1, 'Rejected-above-threshold is not automatically inconsistent'
+call chk r['ruleConformingCases']=0, 'Rejected above threshold cannot be certified conforming'
+call chk r['unresolvedDispositionCases']=1, 'Rejected above minimum remains not resolved by necessary condition'
 call chk r['validatedTruth']=.false, 'No external truth certification'
 call chk r['universalConsistencyProven']=.false, 'No universal consistency claim'
 
@@ -28,6 +29,7 @@ b~applied('B','ONE',3,'REJECTED')
 b~applied('B','TWO',4,'REJECTED')
 call chk b~audit('B')['classification']='CONSISTENT_APPLICATION', 'Meeting a minimum does not force acceptance'
 call chk b~audit('B')['ruleViolations']~items=0, 'No false-positive on rejected high-tier cases'
+call chk b~audit('B')['unresolvedDispositionCases']=2, 'No sufficiency inferred for either high-tier rejection'
 
 /* Same apparent numbers measured under another scale: never compare to threshold. */
 c=.StandardApplicationAudit~new
@@ -69,6 +71,15 @@ g~standard('G','THRESHOLD','evidence',3)
 g~applied('G','G1',2,'ACCEPTED')
 call chk g~audit('G')['classification']='STATED_RULE_VIOLATION', 'Known threshold breach not obscured by missing self tier'
 call chk g~audit('G')['selfStandardGap']==.nil, 'Missing self tier stays unknown'
+
+/* DISQUALIFY with an absolute boundary must use that boundary's scale. */
+h=.StandardApplicationAudit~new
+h~standard('H','DISQUALIFY','risk_score',4,'','HIGHER_WORSE','ordinal:severity:v1')
+h~applied('H','ONE',5,'ACCEPTED','risk_score','percentage:v1')
+h~applied('H','TWO',2,'REJECTED','risk_score','percentage:v1')
+call chk h~audit('H')['classification']='INDETERMINATE_COMPARABILITY', 'Both cases off-boundary basis cannot prove disparity'
+call chk h~audit('H')['ruleViolations']~items=0, 'Wrong scale cannot trigger explicit threshold violations'
+call chk h~audit('H')['incomparablePairs'][1]['reason']='STANDARD_BASIS_MISMATCH', 'Basis mismatch diagnosed against the stated boundary'
 
 say 'THRESHOLD NECESSITY CONTRACT:' checks 'PASS, 0 FAIL'
 exit 0
