@@ -16,6 +16,7 @@
 #  14. everyday-domain application (the underperforming salesman): leaps fall, admission enforced, not partisan
 #  15. disparate-treatment / even-handedness probe (Sonnet #5): same stated standard applied evenly?
 #  16. fairness falsifier: the disparate-treatment auditor is itself label- and order-invariant (Sonnet #6)
+#  17. premise typing (Sonnet #3): descriptive/normative/definitional; is-ought gap; thick concepts decomposed
 # Pure ooRexx 5.3, no native dependencies.
 # Author: Claude (Opus 4.8), 2026-10-26. Architecture: Tom Dyer.
 set -eu
@@ -67,5 +68,8 @@ REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_standard_application_audit.rex"
 echo ""
 echo "== 16. fairness falsifier: auditor is label- and order-invariant (Sonnet #6)"
 REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_standard_application_fairness.rex"
+echo ""
+echo "== 17. premise typing: descriptive/normative/definitional; is-ought gap (Sonnet #3)"
+REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_premise_typing.rex"
 echo ""
 echo "REASONED THOUGHT v0.1 QUALIFICATION: PASS"
