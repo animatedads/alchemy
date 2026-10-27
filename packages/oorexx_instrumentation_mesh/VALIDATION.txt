@@ -1,0 +1,59 @@
+ooRexx Instrumentation Mesh v0.1-dev8 qualification
+Date: 2026-10-11
+Interpreter: Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit
+
+Core regression suite:
+  PASS instrumentation.mesh/0.1 core semantics
+  PASS continuous publication, replay fencing, history and consumer projection contract
+  PASS dimensional counters, wildcard series and usage analysis
+  PASS dimensional gauges and authority-neutral publication freshness
+  PASS generic deployment/service operation instrumentation
+  PASS single/plural/service-owned snapshot source protocol
+  PASS SMTP dev9 semantic event projection into Instrumentation Mesh
+  PASS Queue/Memory/Storage instrumentation adapters
+  PASS QueueRexx instrumentation service-route binding contract
+  PASS complete relationship scopes retained and queried without topology authority transfer
+  PASS replay-safe source events, derived observation changes and bounded contiguous history
+  PASS explicit cross-authority correlation/causation/context grouping
+  PASS identical timestamps without correlation_id remain unrelated
+  PASS dev7 event/1 records without dev8 optional fields remain accepted
+  PASS current Storage instrumentation dev3 feeds event timeline without changing Storage authority
+  PASS Queue, identity-holder and Management relationship adapters
+  PASS RTO2 current membership projects as authority-labelled complete relationship scope
+
+Correlation contract:
+  schema: instrumentation.correlation/1
+  API: instrumentation.correlation/0.1
+  basis: EXPLICIT_CORRELATION_ID
+  ordering: COLLECTOR_ACCEPTANCE_ORDER
+  optional event fields: causation_id, context_refs
+  authority: READ_ONLY_CORRELATION_VIEW
+  no grouping by wall-clock proximity, node, MI, geography, service kind,
+  severity or relationship proximity
+  no inferred causation: unresolved source causation references remain unresolved
+
+Compatibility evidence:
+  MVS Alchemy Logging v0.7 acceptance guidance requires structured run/test/
+  transaction correlation identifiers and explicitly says not to depend on
+  wall-clock time alone to join events across machines. dev8 follows that
+  boundary without taking Logging authority or becoming a Logging dependency.
+
+Current dependency lines exercised:
+  RexxOS RTO2 Grid 0.1-dev14
+  Queue Fabric 0.9 development line embedded by RTO2 dev14
+  Memory Fabric 0.1-dev10
+  Storage Fabric 0.1-dev21
+  Storage Fabric Instrumentation Mesh 0.1-dev3
+  LDAP Identity 0.1-dev16
+  SMTP Secure Stack 0.1-dev9
+  Management Intention Discovery 0.1-dev8
+
+Standards:
+  python oorexx_standards_enforcer.py --strict <final archive>
+  Expected/final result: ERRORS 0, WARNINGS 0, PASS
+
+Important semantic boundary:
+  Correlation groups organize already accepted evidence. They do not create,
+  approve, close or mutate incidents, changes, deployments, acceptance runs or
+  remediation actions. Source events retain source authority; collector-derived
+  observations retain INSTRUMENTATION_OBSERVER authority.

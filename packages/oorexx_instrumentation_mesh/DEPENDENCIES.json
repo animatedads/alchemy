@@ -1,0 +1,228 @@
+{
+  "schema": "instrumentation.mesh.dependencies/1",
+  "package": "oorexx-instrumentation-mesh",
+  "version": "0.1-dev8",
+  "api": "instrumentation.mesh/0.1",
+  "runtime": {
+    "core_requires": [],
+    "adapter_requires": [
+      {
+        "source": "src/InstrumentationAnalysis.cls",
+        "requires": "InstrumentationMesh.cls",
+        "resolution": "package src path"
+      },
+      {
+        "source": "src/InstrumentationFabricAdapters.cls",
+        "requires": "InstrumentationMesh.cls",
+        "resolution": "package src path"
+      },
+      {
+        "source": "src/InstrumentationQueueRexx.cls",
+        "requires": "InstrumentationMesh.cls",
+        "resolution": "package src path"
+      },
+      {
+        "source": "src/InstrumentationServiceAdapters.cls",
+        "requires": "InstrumentationMesh.cls",
+        "resolution": "package src path"
+      },
+      {
+        "source": "src/InstrumentationRelationshipAdapters.cls",
+        "requires": "InstrumentationMesh.cls",
+        "resolution": "package src path"
+      },
+      {
+        "source": "src/InstrumentationCorrelation.cls",
+        "requires": "InstrumentationMesh.cls",
+        "resolution": "package src path"
+      }
+    ]
+  },
+  "qualified_against": [
+    {
+      "name": "RexxOS RTO2 Grid",
+      "version": "0.1-dev14",
+      "purpose": "dynamic controller/MU instrumentation source and Queue Fabric carrier baseline"
+    },
+    {
+      "name": "Object Queue Fabric",
+      "api": "queue.fabric/0.9",
+      "development_version": "0.9-dev8",
+      "class_file": "ObjectQueueFabric.cls",
+      "purpose": "Queue instrumentation adapter qualification"
+    },
+    {
+      "name": "Queue Channel Fabric",
+      "api": "queue.channel.fabric/0.9-dev3",
+      "class_file": "ObjectQueueChannels.cls",
+      "purpose": "channel instrumentation adapter qualification"
+    },
+    {
+      "name": "Queue transport",
+      "api": "queue.transport/2",
+      "purpose": "preferred authenticated mesh carrier"
+    },
+    {
+      "name": "QueueRexx peer mesh",
+      "api": "queuerexx.peer.mesh/0.1",
+      "minimum_package_line": "0.1-dev12",
+      "purpose": "service-neutral bindServiceRoute runtime object"
+    },
+    {
+      "name": "Memory Fabric",
+      "version": "0.1-dev10",
+      "api": "memory.fabric/0.1",
+      "class_file": "MemoryFabric.cls",
+      "purpose": "Memory instrumentation adapter qualification"
+    },
+    {
+      "name": "Storage Fabric",
+      "package_version": "0.1-dev21",
+      "api": "storage.fabric/0.1",
+      "class_file": "StorageFabric.cls",
+      "purpose": "Storage capacity/workspace instrumentation adapter qualification"
+    },
+    {
+      "name": "Storage Fabric Instrumentation Mesh",
+      "version": "0.1-dev3",
+      "api": "storage.fabric.instrumentation/0.1",
+      "purpose": "native Storage event/progress instrumentation compatibility and dev8 event/correlation qualification"
+    },
+    {
+      "name": "SMTP Secure Stack",
+      "version": "0.1-dev9",
+      "api": "smtp.event/0.1",
+      "class_file": "SmtpCore.cls",
+      "purpose": "SMTP semantic event adapter qualification"
+    },
+    {
+      "name": "LDAP Identity",
+      "version": "0.1-dev16",
+      "api": "identity.instrumentation/0.1",
+      "purpose": "native LDAP instrumentation compatibility"
+    },
+    {
+      "name": "HTTPS Server",
+      "version": "0.4.7",
+      "source_shape": "instrumentationSnapshot(observedAt)",
+      "purpose": "service-owned snapshot compatibility"
+    },
+    {
+      "name": "Instrumentation Intentions",
+      "version": "0.1-dev1",
+      "api": "instrumentation.intentions/0.1",
+      "purpose": "read-only intention/discovery projection compatibility"
+    },
+    {
+      "name": "MVS Alchemy Services",
+      "version": "0.1-dev3-pre18-instrumentation-mesh",
+      "source": "MasInstrumentationSource",
+      "purpose": "native mainframe service instrumentation compatibility"
+    },
+    {
+      "name": "NoSQLServer",
+      "version": "0.88",
+      "purpose": "query/materialisation producer compatibility",
+      "api": "instrumentation.mesh/0.1",
+      "source": "NoSQLServerInstrumentationSource"
+    },
+    {
+      "name": "IMAP",
+      "version": "0.1-dev13",
+      "api": "imap.instrumentation/0.1",
+      "source": "ImapInstrumentationSource",
+      "purpose": "session/command/IDLE/byte producer compatibility"
+    },
+    {
+      "name": "NotNotes Mini Application",
+      "version": "0.1-dev17",
+      "source": "MiniNotesInstrumentationSource",
+      "purpose": "application/workflow producer compatibility with independent NoSQL source"
+    },
+    {
+      "name": "Single Time Service",
+      "version": "0.4",
+      "seam": "TimeInstant~ticks",
+      "purpose": "optional caller-owned POSIX-second freshness time authority; no runtime dependency"
+    },
+    {
+      "name": "Network Transport Intentions",
+      "version": "0.1-dev3",
+      "source": "ManagementRelationship",
+      "purpose": "read-only domain relationship projection compatibility; no routing authority"
+    }
+  ],
+  "qualification_path_requirements": [
+    "ObjectQueueFabric.cls",
+    "ObjectQueueChannels.cls",
+    "MemoryFabric.cls",
+    "StorageFabric.cls",
+    "RexxOSGridInstrumentation.cls",
+    "SmtpCore.cls",
+    "RexxOSGridEstateController.cls",
+    "IdentityPeerFabric.cls",
+    "ManagementRelationships.cls",
+    "StorageInstrumentationMesh.cls"
+  ],
+  "source_protocol": [
+    "snapshot(observedAt)",
+    "snapshots(observedAt)",
+    "instrumentationSnapshot(observedAt)",
+    "relationshipSet(observedAt)",
+    "relationshipSets(observedAt)",
+    "events(observedAt)"
+  ],
+  "policy": "Qualification fails closed when a direct class-file requirement cannot be resolved through REXX_PATH. Services retain semantic authority; Instrumentation Mesh observes and carries facts without becoming a service-specific management authority.",
+  "qualified_consumers": [
+    {
+      "name": "Wire3D / Keynote Global NOC",
+      "package_line": "0.1-dev29.23",
+      "contract": "InstrumentationCollector latest/history/series/publicationEvidence + relationship sets/history + operational event history + explicit correlation view + semantic_ref",
+      "authority": "read-only consumer projection; source events/correlation context retain explicit provenance; deployment/static topology and incident/change lifecycles remain separately authoritative"
+    }
+  ],
+  "relationship_contract": {
+    "schemas": [
+      "instrumentation.relationship/1",
+      "instrumentation.relationship-set/1"
+    ],
+    "current_semantics": "complete sets replace current view only for exact authority + scope_id",
+    "history": "bounded full-set history retained by collector",
+    "authority": "relationship meaning and mutation remain with named domain authority; Instrumentation does not infer topology or withdrawals"
+  },
+  "event_contract": {
+    "schema": "instrumentation.event/1",
+    "publication": "optional replayable bounded source-event array",
+    "dedupe": "authority + event_id",
+    "queries": [
+      "EVENTS",
+      "EVENTS_HISTORY"
+    ],
+    "derived_authority": "INSTRUMENTATION_OBSERVER",
+    "derived_semantics": "change in accepted observation evidence only; never source-domain mutation authority",
+    "optional_additions": [
+      "causation_id",
+      "context_refs"
+    ],
+    "compatibility": "dev7 instrumentation.event/1 records lacking causation_id/context_refs remain valid dev8 input"
+  },
+  "correlation_contract": {
+    "schema": "instrumentation.correlation/1",
+    "api": "instrumentation.correlation/0.1",
+    "basis": "EXPLICIT_CORRELATION_ID",
+    "ordering": "COLLECTOR_ACCEPTANCE_ORDER",
+    "joins": "non-empty producer-supplied correlation_id only",
+    "never_infers_from": [
+      "observed_at",
+      "host/node",
+      "MI",
+      "service kind",
+      "severity",
+      "geography",
+      "relationship proximity"
+    ],
+    "causation": "producer-supplied causation_id retained; unresolved references remain unresolved",
+    "context": "producer-supplied context_refs retained as semantic evidence",
+    "authority": "READ_ONLY_CORRELATION_VIEW; incident/change/deployment/remediation authority remains external"
+  }
+}
