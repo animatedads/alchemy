@@ -1,0 +1,68 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.continue",
+  "version": "0.2",
+  "sphere": "oorexx-deployment",
+  "title": "Continuation procedure for Deployment work",
+  "summary": "Continue from the current dev4 candidate plus the last full dev3 r13196 baseline. For production dependency work, inspect current SSC qualified deployment/package contracts first, preserve exact sealed dependency ids, materialise a deterministic target namespace, and only then perform package-load/host/application verification. Keep DEVELOPMENT/LEGACY_INTAKE semantics explicitly separate.",
+  "authority": "project-doctrine",
+  "section": "qualification",
+  "invariants": [
+    "Do not let the first consumer turn into permanent Audio-specific behavior in Deployment.",
+    "For production release dependencies, prefer current SSC QUALIFIED sealed deployments and exact dependency deployment ids.",
+    "Never replace source.get_deployment_package/getDeploymentPackage sealed semantics with floating development resolution.",
+    "Materialise exact package bytes into a deterministic namespace and use the same generated REXX_PATH for qualification and launch.",
+    "A hosted-module change must be exercised with a real host/package composition, not only a fake route class.",
+    "A native repair change must exercise both reuse and rebuild/fail-closed paths.",
+    "A concurrency change must prove same-target single-flight and independent-target parallelism.",
+    "Promote a new executable baseline only with explicit runtime qualification evidence; update package hash, sphere and continuity together."
+  ],
+  "topics": [
+    "continuation",
+    "workflow",
+    "qualification",
+    "sphere-maintenance"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/docs/SSC_SEALED_DEPLOYMENTS.md",
+      "claim": "Current continuation authority for sealed SSC production dependency path."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev3.zip",
+      "sha256": "796b4375b7abac6e13e5f23f632c8aa75f86fe777f3d7c130ea8e440ff5dbd79",
+      "member": "oorexx_deployment_v0.1-dev3/qualification/TEST_TRANSCRIPT.txt",
+      "line_start": 1,
+      "line_end": 9,
+      "claim": "Current qualification includes real SSC dependency resolution."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev3.zip",
+      "sha256": "796b4375b7abac6e13e5f23f632c8aa75f86fe777f3d7c130ea8e440ff5dbd79",
+      "member": "oorexx_deployment_v0.1-dev3/docs/DEPENDENCIES.md",
+      "line_start": 70,
+      "line_end": 104,
+      "claim": "Current executable dependency implementation and hosted ordering."
+    },
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 199,
+      "line_end": 345,
+      "claim": "First fleet run supplies concurrency/readiness lessons still driving later revisions."
+    }
+  ],
+  "procedure": [
+    "Resolve/load the oorexx-deployment sphere; read start, qualification, known-gaps, ssc-sealed-deployments and dependency-namespace.",
+    "Verify both the current candidate hash and the last full runtime-qualified baseline hash.",
+    "Inspect current SSC repository/service contracts before modifying dependency semantics.",
+    "Classify dependency mode as SEALED, DEVELOPMENT or LEGACY_INTAKE.",
+    "For SEALED, obtain exact qualified deployment/dependency ids and sealed package output without floating.",
+    "Materialise the closure into a deterministic target namespace and record exact REXX_PATH.",
+    "Run ooRexx/shell tests and real consumer qualification appropriate to the changed boundary.",
+    "Package executable and sphere separately; update Rasen Falcon lane/message and Git provenance."
+  ]
+}

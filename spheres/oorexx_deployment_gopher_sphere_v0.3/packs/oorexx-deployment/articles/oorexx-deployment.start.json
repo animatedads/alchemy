@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.start",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Start here: General ooRexx Deployment",
+  "summary": "General Deployment is application-neutral reconciliation: desired state plus observed target state becomes an inspectable plan, dependencies are resolved before mutation, mutation occurs only during apply, and success requires fresh verification. Production ooRexx releases prefer exact qualified SSC deployment closures materialised into a deterministic target namespace; Audio is the first consumer and MCP/Wire share the same authority.",
+  "authority": "project-doctrine",
+  "section": "start",
+  "invariants": [
+    "Deployment changes the target or fails; it never weakens the application declaration to fit the target.",
+    "Application-specific deployment knowledge belongs in manifests/adapters, not the core Deployment classes.",
+    "Production ooRexx releases consume exact qualified SSC deployment/dependency authority where available; loose source-level resolution is a development/archive fallback.",
+    "Deployment constructs a release-local deterministic package namespace and exact REXX_PATH after semantic resolution; ambient REXX_PATH is not inherited as authority.",
+    "Copying files or receiving rc=0 is not sufficient proof of deployment success.",
+    "Keep this knowledge sphere separate from the executable Deployment package."
+  ],
+  "topics": [
+    "start",
+    "deployment",
+    "reconciliation",
+    "authority"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.4.md",
+      "sha256": "4407182b556e01cafb2b15a3568084b4530f95881c3dc963d4de5bffbcf4b26e",
+      "member": "General_ooRexx_Deployment_Component_v0.4.md",
+      "line_start": 1456,
+      "line_end": 1673,
+      "claim": "Defines sealed SSC release authority, deterministic dependency namespace, exact REXX_PATH and dev4 qualification status."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/README.md",
+      "line_start": 1,
+      "line_end": 58,
+      "claim": "Current dev4 candidate documents deterministic namespace materialisation and current SSC sealed-deployment authority."
+    }
+  ]
+}

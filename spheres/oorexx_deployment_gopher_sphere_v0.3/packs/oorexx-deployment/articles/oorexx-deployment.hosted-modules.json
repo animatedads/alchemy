@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.hosted-modules",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Hosted modules: staged is not live",
+  "summary": "MCP, Wire browser/access-point modules and future HTTPS-hosted components share one hosted-module lifecycle. The core is protocol-neutral; each module supplies a deployment declaration, package/load probe, activation declaration and live probe.",
+  "authority": "project-doctrine",
+  "section": "architecture",
+  "invariants": [
+    "Hosted success requires staged -> package-loadable -> composed -> activated -> live-probed.",
+    "Copy, rexxc success or fake-host unit tests do not prove live deployment.",
+    "Activation and live probing are mandatory before status can become live.",
+    "Protocol-specific route arguments, interceptors, assets and health semantics remain adapter declarations.",
+    "The same hosted lifecycle must work for MCP, Wire and later modules without core special cases."
+  ],
+  "topics": [
+    "hosted-module",
+    "MCP",
+    "Wire",
+    "activation",
+    "live-probe"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/docs/HOSTED_MODULES.md",
+      "claim": "Defines common hosted-module lifecycle and protocol-neutral adapter boundary.",
+      "line_start": 1,
+      "line_end": 11
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/bin/deploy_hosted_module.sh",
+      "claim": "Executable helper refuses LIVE without load, activation and live probe.",
+      "line_start": 15,
+      "line_end": 45
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/README.md",
+      "claim": "States common hosted-module authority for MCP/Wire.",
+      "line_start": 3,
+      "line_end": 9
+    }
+  ]
+}

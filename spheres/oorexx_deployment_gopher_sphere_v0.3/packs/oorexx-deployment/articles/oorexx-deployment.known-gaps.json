@@ -1,0 +1,72 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.known-gaps",
+  "version": "0.2",
+  "sphere": "oorexx-deployment",
+  "title": "Known operational gaps after the first fleet deployment",
+  "summary": "dev4 closes deterministic consumer REXX_PATH materialisation for the POSIX provider and aligns production dependency authority with current SSC sealed deployments. Remaining gaps include full dev4 r13196 qualification, wiring the sealed SSC package bytes directly through a production artifact provider, updating existing consumers still pinned to Deployment dev2, same-target readiness/rebuild single-flight, and managed-SSH provider portability.",
+  "authority": "project-doctrine",
+  "section": "operations",
+  "invariants": [
+    "Do not claim dev4 fully runtime-qualified until the full ooRexx r13196 suite runs.",
+    "Wire a production provider from SSC sealed-package output to Deployment namespace input without re-resolving or rescanning the closure.",
+    "Update downstream consumer manifests/adapters deliberately; do not silently redirect deployments still pinned to dev2.",
+    "Do not claim direct SSH portability across managed configurations until provider/transport qualification covers them.",
+    "Add per-target/generation single-flight protection before calling readiness/rebuild concurrency safe.",
+    "Represent PREPARING/BUILDING/READY/FAILED durably enough that another caller does not infer readiness from staging.",
+    "Timeout or process termination cannot promote a target to READY.",
+    "Corpus verification failure remains an application-declared readiness failure even if deployment bytes are staged correctly."
+  ],
+  "topics": [
+    "known-gap",
+    "r13196",
+    "SSC-provider",
+    "consumer-migration",
+    "SSH",
+    "single-flight",
+    "readiness"
+  ],
+  "provenance": [
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 44,
+      "line_end": 60,
+      "claim": "Direct generic SSH path failed due managed SSH configuration and deployment switched transport while retaining staging semantics."
+    },
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 199,
+      "line_end": 240,
+      "claim": "Duplicate readiness calls caused duplicate native rebuild processes on A/B."
+    },
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 274,
+      "line_end": 345,
+      "claim": "Fleet states include BUILDING, READY, timeout/termination and corpus verification failure."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev3.zip",
+      "sha256": "796b4375b7abac6e13e5f23f632c8aa75f86fe777f3d7c130ea8e440ff5dbd79",
+      "member": "oorexx_deployment_v0.1-dev3/docs/DEPENDENCIES.md",
+      "line_start": 25,
+      "line_end": 30,
+      "claim": "Documents that AT_LEAST is a minimum rather than universal compatibility proof."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/qualification/DEV4_DEPENDENCY_NAMESPACE.txt",
+      "line_start": 18,
+      "line_end": 22,
+      "claim": "Records dev4 runtime qualification limitation."
+    }
+  ],
+  "status": "Open items following dev4 dependency-namespace candidate; dev3 remains last full r13196 baseline."
+}

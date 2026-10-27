@@ -1,0 +1,65 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.qualification",
+  "version": "0.2",
+  "sphere": "oorexx-deployment",
+  "title": "Qualification state: dev4 dependency-namespace candidate; dev3 last full r13196 baseline",
+  "summary": "dev4 adds a qualified POSIX deterministic dependency namespace and current-SSC sealed-deployment adapter. The namespace positive path and fail-closed substituted-root/unsatisfied-lock tests pass. The environment used for this increment no longer exposes ooRexx r13196, so dev4 is a candidate rather than a fully runtime-qualified replacement; dev3 remains the last full ooRexx r13196 executable baseline.",
+  "authority": "project-doctrine",
+  "section": "qualification",
+  "invariants": [
+    "Do not promote dev4 to fully runtime-qualified until its ooRexx test suite, including the sealed SSC adapter test, executes under r13196.",
+    "The dev4 POSIX namespace test is accepted evidence for deterministic materialisation and its negative gates.",
+    "dev3 SHA-256 remains the last fully runtime-qualified executable baseline until superseded by new runtime evidence.",
+    "Sphere documentation may describe current SSC repository contracts, but must distinguish repository contract evidence from local dev4 runtime execution.",
+    "Exact candidate and last-qualified archive hashes are continuity authority."
+  ],
+  "topics": [
+    "qualification",
+    "candidate",
+    "r13196",
+    "SSC",
+    "sealed-deployment",
+    "REXX_PATH",
+    "namespace"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/qualification/DEV4_DEPENDENCY_NAMESPACE.txt",
+      "line_start": 1,
+      "line_end": 22,
+      "claim": "Current dev4 shell/materialisation qualification and explicit runtime limitation."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev3.zip",
+      "sha256": "796b4375b7abac6e13e5f23f632c8aa75f86fe777f3d7c130ea8e440ff5dbd79",
+      "member": "oorexx_deployment_v0.1-dev3/qualification/TEST_TRANSCRIPT.txt",
+      "line_start": 1,
+      "line_end": 9,
+      "claim": "Last full ooRexx r13196 behavioral baseline."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.4.md",
+      "sha256": "4407182b556e01cafb2b15a3568084b4530f95881c3dc963d4de5bffbcf4b26e",
+      "member": "General_ooRexx_Deployment_Component_v0.4.md",
+      "line_start": 1662,
+      "line_end": 1673,
+      "claim": "Defines dev4 candidate qualification distinction."
+    }
+  ],
+  "baseline": {
+    "last_full_runtime_qualified": {
+      "artifact": "oorexx_deployment_v0.1-dev3.zip",
+      "sha256": "796b4375b7abac6e13e5f23f632c8aa75f86fe777f3d7c130ea8e440ff5dbd79",
+      "runtime": "ooRexx 5.3.0 r13196"
+    },
+    "current_candidate": {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "runtime_status": "r13196 rerun pending",
+      "qualified_increment": "POSIX deterministic dependency namespace"
+    }
+  }
+}
