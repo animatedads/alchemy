@@ -1,5 +1,5 @@
 /*
- * StandardApplicationAudit/0.2: domain-neutral stated-standard consistency operator.
+ * StandardApplicationAudit/0.3: domain-neutral stated-standard consistency operator.
  * Architecture: Tom Dyer. Authoritative policy operator: ChatGPT GPT-6.
  * Reference interface and independent adversarial acceptance fixture: Claude Opus 4.8.
  *
@@ -32,7 +32,7 @@
     raise syntax 93.900 array('INVALID_STANDARD_KIND:' || kind)
   if direction \= 'HIGHER_WORSE' & direction \= 'LOWER_WORSE' then -
     raise syntax 93.900 array('INVALID_DIRECTION:' || direction)
-  if kind = 'THRESHOLD' then do
+  if kind = 'THRESHOLD' | required \= '' then do
     if \datatype(required,'N') then raise syntax 93.900 array('NONNUMERIC_REQUIRED_TIER:' || required)
     if required < 0 then raise syntax 93.900 array('NEGATIVE_REQUIRED_TIER')
   end
@@ -103,6 +103,8 @@
   r['evidenceAuthority'] = 'CALLER_DECLARED_NOT_AUTHENTICATED'
   r['universalConsistencyProven'] = .false
   r['pairs'] = .array~new
+  r['ruleViolations'] = .array~new
+  r['ruleConformingCases'] = 0
   r['incomparablePairs'] = .array~new
   r['reasonCodes'] = .array~new
   r['comparablePairs'] = 0
@@ -135,8 +137,35 @@
     return r
   end
 
+  /* An explicit DISQUALIFY boundary is a unary rule on EACH case. Pairwise
+   * even-handedness alone cannot detect two equally wrong ACCEPTED decisions.
+   * Legacy callers omit required and only receive the original pairwise audit.
+   * Even with a numeric boundary, these are conditional declared observations;
+   * unmodelled exceptions or legitimate extra dimensions require review. */
   list = apps[standardId]
+  if s['required'] \= '' then do a over list
+    if a['dimension'] \= s['dimension'] | \a['valueKnown'] then iterate
+    if s['direction'] = 'HIGHER_WORSE' then shouldReject = (a['value'] >= s['required'])
+    else shouldReject = (a['value'] <= s['required'])
+    if shouldReject then expected = 'REJECTED'
+    else expected = 'ACCEPTED'
+    if a['disposition'] \= expected then do
+      d = .directory~new
+      d['chain'] = a['chain']; d['value'] = a['value']
+      d['actual'] = a['disposition']; d['expected'] = expected
+      d['boundary'] = s['required']; d['dimension'] = s['dimension']
+      d['basis'] = a['basis']
+      r['ruleViolations']~append(d)
+    end
+    else r['ruleConformingCases'] += 1
+  end
   if list~items < 2 then do
+    if r['ruleViolations']~items > 0 then do
+      r['classification'] = 'STATED_RULE_VIOLATION'
+      r['detail'] = 'declared application conflicts with explicit stated boundary; underlying standard and exceptions unverified'
+      r['reasonCodes']~append('EXPLICIT_BOUNDARY_COUNTEREXAMPLE')
+      return r
+    end
     r['classification'] = 'INSUFFICIENT_APPLICATIONS'
     r['detail'] = 'fewer than two applications recorded; cannot compare treatment'
     r['reasonCodes']~append('NO_COMPARATIVE_PAIR')
@@ -192,6 +221,13 @@
     r['classification'] = 'DISPARATE_TREATMENT'
     r['detail'] = 'at least one comparable declared pair reverses the stated ordering; this is not a merits verdict'
     r['reasonCodes']~append('COMPARABLE_COUNTEREXAMPLE')
+    if r['ruleViolations']~items > 0 then r['reasonCodes']~append('EXPLICIT_BOUNDARY_COUNTEREXAMPLE')
+    if notComparable then r['reasonCodes']~append('OTHER_PAIRS_INCOMPARABLE')
+  end
+  else if r['ruleViolations']~items > 0 then do
+    r['classification'] = 'STATED_RULE_VIOLATION'
+    r['detail'] = 'one or more declarations contradict the explicit stated cutoff; no merits finding'
+    r['reasonCodes']~append('EXPLICIT_BOUNDARY_COUNTEREXAMPLE')
     if notComparable then r['reasonCodes']~append('OTHER_PAIRS_INCOMPARABLE')
   end
   else if notComparable then do
