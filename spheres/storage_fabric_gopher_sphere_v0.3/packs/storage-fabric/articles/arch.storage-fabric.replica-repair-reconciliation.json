@@ -1,10 +1,10 @@
 {
   "kind": "article",
   "id": "arch.storage-fabric.replica-repair-reconciliation",
-  "version": "0.3-continuation-20261023",
+  "version": "0.3-continuation-20261027",
   "sphere": "storage-fabric",
   "title": "Durable replica repair and topology reconciliation",
-  "summary": "Provider and topology transitions are committed by Storage authority first, then affected StorageRefs are re-assessed against current replica policy. Real deficits become durable Queue Fabric repair work; replayed or stale work re-assesses before copying, so repair is idempotent and safety remains a Storage decision rather than a telemetry or transport inference.",
+  "summary": "Provider and topology transitions are committed by Storage authority first, then affected StorageRefs are re-assessed against current replica policy. Missing policy fails closed rather than defaulting to one replica. Real deficits become durable Queue Fabric repair work; replayed work re-assesses before copying, and release-line compatibility is gated by protected semantics rather than version labels.",
   "authority": "project-doctrine",
   "invariants": [
     "TEMPORARY is lifecycle/purpose; DISPOSABLE is explicit data-loss authority. Never infer DISPOSABLE from a temporary path, scratch role, cache label or short retention.",
@@ -18,11 +18,17 @@
     "Instrumentation Mesh reports repair and provider transitions but never makes an object safe, admits a replica or authorises loss.",
     "Placement preference is independent of durability policy. A fibre-connected laptop USB, Git/Azure provider or cloud volume may be preferred when eligible; provider fashion is not placement authority.",
     "Git push/commit success is not replica admission. Remote commit/ref and object/chunk identity must be independently verified before the Git location counts as AVAILABLE/VERIFIED/SAFE.",
-    "FUSE is a projection surface. Authority persistence, replica evidence and repair state remain below FUSE and survive surface restart independently."
+    "FUSE is a projection surface. Authority persistence, replica evidence and repair state remain below FUSE and survive surface restart independently.",
+    "Missing replica policy is not equivalent to StorageReplicaRequirement(1). Reconciliation must report policy missing unless an authority owner explicitly supplies a fallback requirement.",
+    "Instrumentation Mesh dev8 correlation, causation and context are producer-supplied evidence only; Storage must not infer them from time, host, StorageRef similarity, provider identity or payload.",
+    "A Storage release label does not prove protected fixes survived. Large-object precision, canonical integer encoding and the current replica-policy API must be checked before an adapter target is promoted.",
+    "The dev23-precision1 tree is compatibility evidence, not a canonical release: its precision/API gates pass while stale internal version metadata and house-rule violations remain.",
+    "The Library dev24 standards report is FAIL and does not prove the divergent dev23/networking/dev22(1) lines were coherently merged."
   ],
   "procedure": [
     "Commit the provider/location transition in Storage authority.",
     "Find catalogue objects associated with the affected provider.",
+    "If no persisted replica requirement is resolvable, stop reconciliation for that object as POLICY_MISSING unless an explicitly governed estate fallback was injected.",
     "Resolve each object's current persisted StorageReplicaRequirement.",
     "Assess current AVAILABLE, VERIFIED and SAFE eligible locations and required diversity.",
     "For unsatisfied objects, submit deterministic persistent STORAGE.REPAIR work to the existing ObjectQueueManager.",
@@ -55,7 +61,25 @@
       "sha256": "aa14b944d39ff570bd6e24f370ff883b82b9f4b90c9eafb8779a39fd89ae149e",
       "member": "oorexx_storage_fabric_instrumentation_mesh_v0.1-dev5/src/StorageRepairQueue.cls",
       "claim": "Dev23-compatible durable repair payload and post-commit provider/topology reconciliation implementation; static qualification only in this environment."
+    },
+    {
+      "artifact": "oorexx_instrumentation_mesh_v0.1-dev8.zip",
+      "sha256": "47402459e658da6ddb17c65c98010c0acd0e35d43b3a0b01c8c13c835f65d624",
+      "member": "source candidate / Library digest evidence",
+      "claim": "Current reviewed Instrumentation Mesh source candidate; existing metric/snapshot API compatible and explicit correlation semantics available."
+    },
+    {
+      "artifact": "packages/oorexx_storage_fabric_v0.1-dev23-precision1",
+      "sha256": "git-tree-evidence",
+      "member": "src/StorageFabric.cls",
+      "claim": "Git overlay demonstrates digits-30 precision, canonical unsigned codec and current replica API; stale header/build version and +0 coercion remain, so no canonical-release claim."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev24.zip",
+      "sha256": "unverified",
+      "member": "Library standards report",
+      "claim": "71-file standards report verdict FAIL with 268 errors and 130 warnings; does not establish coherent merge or release qualification."
     }
   ],
-  "qualification_boundary": "The dev5 adapter static contract tests passed in the packaging environment. No ooRexx runtime execution, live Queue Fabric CLAIM/ACK adapter qualification, live Azure Git operation, or live removable-provider transition is claimed by this continuation article."
+  "qualification_boundary": "The dev6 adapter static contract/policy/dependency tests pass locally; the Storage compatibility property check passes against the Git dev23-precision1 source. No ooRexx runtime execution, live Queue Fabric CLAIM/ACK adapter qualification, live removable-provider transition, or dev24 release qualification is claimed."
 }

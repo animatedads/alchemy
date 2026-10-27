@@ -1,5 +1,13 @@
 # Changelog
 
+## Repository continuation — 2026-10-27
+- Add fail-closed missing replica-policy doctrine: no implicit one-replica fallback.
+- Record Instrumentation Mesh dev8 source candidate and producer-supplied-only correlation boundary.
+- Record Storage dev24 standards FAIL as a release blocker rather than treating the label as canonical.
+- Record dev23-precision1 as a precision/API compatibility overlay with stale internal version metadata and remaining house-rule violations.
+- Add Storage Fabric Instrumentation Mesh dev6 compatibility/release gates.
+
+
 ## Repository continuation — 2026-10-23
 - Add durable replica-repair/topology-reconciliation doctrine grounded in Storage Fabric dev23 API names.
 - Record post-authority-commit reconciliation, provider-scoped affected-object scanning, persistent Queue Fabric repair work and replay-safe current-policy re-assessment.

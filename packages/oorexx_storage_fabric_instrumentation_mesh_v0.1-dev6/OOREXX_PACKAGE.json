@@ -1,0 +1,32 @@
+{
+  "api": "storage.fabric.instrumentation/0.1",
+  "capabilities": ["storage.fabric.repair.queue/0.1"],
+  "dependencies": [
+    {
+      "api": "instrumentation.mesh/0.1",
+      "name": "oorexx-instrumentation-mesh",
+      "sha256": "47402459e658da6ddb17c65c98010c0acd0e35d43b3a0b01c8c13c835f65d624",
+      "version": "0.1-dev8"
+    },
+    {
+      "api": "storage.fabric/0.1",
+      "name": "oorexx-storage-fabric",
+      "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
+      "version": "0.1-dev23"
+    }
+  ],
+  "name": "oorexx-storage-fabric-instrumentation-mesh",
+  "schema": "oorexx.package/0.1",
+  "sources": ["src/StorageInstrumentationMesh.cls","src/StorageRepairQueue.cls"],
+  "tests": [
+    "tests/static_contract_test.py",
+    "tests/static_repair_queue_test.py",
+    "tests/static_topology_reconcile_test.py",
+    "tests/static_policy_floor_test.py",
+    "tests/static_mesh_dev8_test.py",
+    "tests/check_storage_target.py",
+    "tests/test_storage_instrumentation.rex",
+    "tests/test_repair_payload.rex"
+  ],
+  "version": "0.1-dev6"
+}

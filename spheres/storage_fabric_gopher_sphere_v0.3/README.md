@@ -32,3 +32,26 @@ Added `arch.storage-fabric.replica-repair-reconciliation` to this older GitHub p
 This continuation also records the hard semantic separations established by later Storage work: TEMPORARY is not DISPOSABLE, OFFLINE is not LOST, placement preference is not durability authority, Git push is not replica admission, and Instrumentation Mesh is observation rather than safety authority.
 
 Repository/catalog note: the project catalog still identifies this v0.3 sphere projection, while the active LLM Gopher resolver currently selects a local v0.6 override. This commit therefore updates v0.3 in place as a repository continuity projection; it does not claim to reconstruct, supersede or re-publish the unavailable complete newer sphere source.
+
+
+## 2026-10-27 protection-policy and release-line reconciliation
+
+The repair adapter now has a dev6 continuation. Missing replica policy is not
+interpreted as `StorageReplicaRequirement(1)`: it is a fail-closed
+`policy_missing` state unless a policy owner explicitly injects an estate
+fallback. This prevents an absent policy record from silently weakening
+recoverability.
+
+The estate Instrumentation Mesh source candidate is dev8, SHA-256
+`47402459e658da6ddb17c65c98010c0acd0e35d43b3a0b01c8c13c835f65d624`.
+Its explicit correlation/causation/context capability does not change Storage
+authority: correlation is producer evidence and must never be inferred from
+timestamps, hosts, StorageRef similarity or payload content.
+
+Storage release labels are not sufficient promotion evidence. The Library
+dev24 standards report is FAIL and does not prove that dev23, the networking
+candidate line and dev22(1) large-file/canonical-integer fixes were coherently
+merged. The Git `dev23-precision1` overlay demonstrates `::options digits 30`,
+canonical unsigned helpers and the current replica API, but its stale internal
+version metadata and remaining house-rule violations keep it an overlay
+candidate rather than a canonical release.
