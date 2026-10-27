@@ -1,5 +1,7 @@
 # XTP Gateway Service Specification — v0.1
 
+> **2026-10-27 reconciliation:** Accepted XTP dev30 DIAG registry and non-amplification rules; dev2 X.25 [codec and circuit tests](../packages/oorexx_x25_v0.1-dev2/README.md) correct F1–F6 but implement no gateway wire dispatch. Architecture: Tom Dyer. Coding/update: ChatGPT GPT-6.
+
 > **2026-10-25 dev29 reconciliation:** Read `packages/oorexx_xtp_v0.1-dev29/{README.md,docs/XTP_SPEC_GAPS_DEV29.md}`. dev29 closes prior segmentation, selective-repeat, SYNC/ECHO and DIAG gaps but does not provide authenticated FIRST/CNTL or a long-lived interactive stream. Existing base DIAG VALUE=1/2/3 must not be redefined; propose gateway-specific values only under XTP-owner control. A separate ooRexx X.25 lab parser/XOT framer/VC skeleton now exists in [`packages/oorexx_x25_v0.1-dev1`](../packages/oorexx_x25_v0.1-dev1/README.md); it is not a working GatewaySession. Architecture: Tom Dyer. Coding and correction: ChatGPT GPT-6.
 
 **Architecture:** Tom Dyer. **Coding:** ChatGPT (implementation not begun by this work). **Document/update written by:** ChatGPT (GPT-6), 24 October 2026.  
@@ -19,7 +21,7 @@ The gateway is one independently deployable service hosting protocol-aware Sessi
 - [Inspector Clouseau](../packages/oorexx_inspector_clouseau/README.md) can observe ooRexx objects/snapshots and optionally cooperate with probes; inspection is not runtime-control authority.
 - [ConnectSelector sphere](../spheres/connect_selector_gopher_sphere_v0.1/CONNECT_SELECTOR_SPHERE.md) forbids silent substitution/retry after unknown execution outcomes; Queue/JMS ACCEPTED/REJECTED/UNKNOWN remain distinct.
 
-Anything referring to a new gateway class, cryptographic receipt format, XTP DIAG implementation, half-close capability or verified live carrier is **proposed**, not read/qualified.
+A new gateway DIAG sender, cryptographic receipt format, half-close capability and verified live carrier are still proposed, not implemented or qualified; the XTP owner's dev30 DIAG registry and libxtp transport DIAG are separate, verified source.
 
 ## 2. Three directional use cases
 
@@ -73,22 +75,24 @@ Define \`GatewayDecisionReceipt\`: session id; transition; decision ALLOW/DENY/Q
 
 No unconditional “refusal never looks like timeout” promise is achievable on an unauthenticated peer that deliberately suppresses packets: guarantee **an explicit local decision receipt** and a remote refusal wherever that transport supports reliable response. Distinguish peer-did-not-respond from gateway-denied.
 
-### Proposed gateway DIAG VALUE extension for XTP owner review
+### Gateway DIAG — reserved XTP dev30 values and wire rules
 
-Keep **packet type 8 / CODE=1 CONTEXT_REFUSED**. Existing dev29 VALUEs **1** SERVICE_NOT_ADMITTED, **2** OVERSIZE and **3** MALFORMED remain unchanged. The following values are **proposed, NOT reserved or implemented** (allocator/registry authority stays with the XTP owner):
+The XTP owner has reserved **CODE 1 CONTEXT_REFUSED, VALUEs 16–23** in [`packages/oorexx_xtp_v0.1-dev30/docs/DIAG_REGISTRY.md`](../packages/oorexx_xtp_v0.1-dev30/docs/DIAG_REGISTRY.md); it is the allocation authority. Previous VALUEs **1 SERVICE_NOT_ADMITTED**, **2 OVERSIZE**, **3 MALFORMED** remain unchanged.
 
-| Proposed VALUE | Gateway semantic reason | Wire privacy/action |
+| VALUE | Accepted registry name | Gateway reason |
 | --- | --- | --- |
-| 16 | GATEWAY_POLICY_DENIED | Generic remote denial; exact rule and policy generation stay in local receipt |
-| 17 | GATEWAY_AUTH_REQUIRED | Reject foreign/anonymous FIRST; do not reveal credential details |
-| 18 | GATEWAY_FACILITY_UNSUPPORTED | Unsupported X.25 CUG/charging/packet/window or mapping profile; no CUD echo |
-| 19 | GATEWAY_QUOTA_EXCEEDED | Bound concurrent calls, bytes or time; retry hint only if permitted by policy |
-| 20 | GATEWAY_LOOP_DETECTED | Hop-budget/visited gateway refusal, without disclosing topology |
-| 21 | GATEWAY_INSPECTION_DENIED | Inspector fatal denial or opaque data lacking an allowed profile; no payload echoed |
-| 22 | GATEWAY_NOT_READY | Missing provider qualification, persistent session or admission dependencies; never silently downgrade |
-| 23 | GATEWAY_EMERGENCY_VETO | Active deny overlay supersedes pinned generation; remote reason remains generic |
+| 16 | POLICY_DENIED | Generic admission policy refusal |
+| 17 | AUTH_REQUIRED | Refused unauthenticated/unauthorised ingress |
+| 18 | FACILITY_UNSUPPORTED | Unsupported X.25 facility/profile |
+| 19 | QUOTA_EXCEEDED | Bounded bytes, rate or session count |
+| 20 | LOOP_DETECTED | Hop-limit or gateway-loop violation |
+| 21 | INSPECTION_DENIED | Inspector denial or unpermitted opaque passage |
+| 22 | NOT_READY | Required service/session/provider unavailable |
+| 23 | EMERGENCY_VETO | Authorised emergency policy overlay denial |
 
-The gateway may use an existing VALUE 1/2/3 only where the exact reason matches. Values 16–23 must **not** appear on wire until the XTP owner approves a versioned extension, interoperable receiver behaviour, byte-order, downgrade refusal and replay-resistant authentication. Local receipts always remain more specific than remote diagnostics.
+The **wire ASCII reason is exactly the VALUE name or empty**, not arbitrary service names, diagnostic detail or policy identifiers. A DIAG is never larger than its provoking packet: if the **48-byte minimum** reply cannot fit, send nothing. **Rate-limit per source and in aggregate.** A forged or over-limit source may not get a remote reply; retain an explicit local typed decision receipt. Validate destination/source, return-bit and KEY binding exactly as the qualified transport contract requires.
+
+**Authorization boundary:** the gateway may send VALUEs 16–23 once its own sender tests pass even without authenticated FIRST/CNTL; this refusal capability does not authorize foreign ingress. Gateway mode B stays disabled until FIRST/CNTL authentication and persistent interactive context are qualified. The X.25 dev2 lab source implements no XTP DIAG sender.
 
 ## 6. Logging, tamper evidence and capture privacy
 
@@ -158,7 +162,7 @@ The [Operational Degradation Planner dev5](../packages/oorexx_operational_degrad
 ## 12. Acceptance gates / dependency handover
 
 - G0 specification approved: ownership, negative capabilities, protocol/refusal mapping and policy controls.
-- G1 SocketProvider owner supplies half-close capability semantics; XTP owner supplies authenticated FIRST+CNTL, persistent interactive KEY context and gateway-specific DIAG VALUE extensions. Segmented unicast messages and base DIAG exist in dev29; this document cannot assert security or gateway qualification.
+- G1 SocketProvider owner supplies half-close capability semantics; XTP owner supplies authenticated FIRST+CNTL, persistent interactive KEY context and gateway-specific DIAG sender qualification (VALUE 16–23 already reserved in dev30). Segmented unicast messages and base DIAG exist in dev29; this document cannot assert security or gateway qualification.
 - G2 user-space ooRexx X.25 PLP/LAPB with simulated and real XOT test peers qualified; exact revision and ABI receipts.
 - G3 bidirectional gateway loopback tests with deterministic sessions, policy-generation pinning, filters, journal power-loss recovery, audit failure, inspector redaction, telemetry ordering and two-side backpressure.
 - G4 independent live native legacy/XOT and authenticated XTP peer interop with route changes, MI/MU placement and unauthorised access tests.
