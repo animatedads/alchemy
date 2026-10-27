@@ -1,5 +1,7 @@
 # Non-Claims and Qualification Ledger — X.25 Family / XTP Gateway v0.1
 
+> **2026-10-27 dev2 correction:** Standalone `packages/oorexx_x25_v0.1-dev2` contains the F1–F6 fixes and typed non-transmitting protocol diagnostics with four r13196 interpreter test suites passing. This is **NOT** complete X.25 PLP/LAPB, external XOT interoperability or a live gateway. XTP dev30 reserves CODE1/VALUE 16–23 in its DIAG registry; the gateway sender is still unimplemented. Architecture: Tom Dyer. Coding/update: ChatGPT GPT-6.
+
 > **2026-10-25 audited delta:** new ooRexx X.25 dev1 laboratory source exists and ran three interpreter test suites, but does not implement LAPB, full X.25 PLP, live XOT, SocketSelector registration or any GatewaySession. XTP dev29 already has segmented unicast messages, selective retransmission, SYNC/ECHO and source-bound DIAG; it still lacks FIRST/CNTL authentication and long-lived interactive context. Architecture: Tom Dyer; coding and correction: ChatGPT GPT-6. Do not misread `SOURCE IMPLEMENTS` as field or production qualification.
 
 **Architecture:** Tom Dyer. **Coding:** ChatGPT (not performed by this specification delivery). **Document/update written by:** ChatGPT (GPT-6), 24 October 2026.  
@@ -10,7 +12,7 @@
 | Claimed capability | Actual state as of documentation | Evidence needed before promotion |
 | --- | --- | --- |
 | ooRexx LAPB stack (T1/N2, FCS, window, DTE/DCE) | **PROPOSED, NOT CODED** | source, real interpreter qualification, protocol traces and physical/link test |
-| ooRexx X.25 PLP SVC/PVC, facility, PAD and modem interface | **PARTIAL SOURCE: dev1 modulo-8 parser and nontransmitting SVC skeleton pass synthetic r13196 tests; full PLP, facilities, PVC, PAD and drivers NOT CODED** | per-LCN full VC and flow-window state, X.25 edition vectors, legacy equipment interoperability |
+| ooRexx X.25 PLP SVC/PVC, facility, PAD and modem interface | **PARTIAL SOURCE: dev2 modulo-8 parser, DATA constructor, typed DTE/DCE RESET diagnostics and limited SVC skeleton pass four synthetic r13196 suites; full PLP, facilities, PVC, PAD and drivers NOT CODED** | per-LCN full VC and flow-window state, X.25 edition vectors, legacy equipment interoperability |
 | X.25 \`SocketAddresses~x25(...)\` and new provider binding | **PROPOSED, NOT CODED** | accepted SocketProvider owner integration with exact current dev16 source and tests |
 | ISO 8881 LLC2 over IEEE 802 LAN | **PROPOSED, NOT CODED** | specified LLC2 adapter, certification/known-good traces; Linux lapbether does not prove ISO 8881 |
 | Native sync serial, V.35, X.21 or HDLC hardware path | **UNVERIFIED HARDWARE** | exact device/driver/clocking/loopback, DTE/DCE interoperability, sustained line soak |
@@ -19,7 +21,7 @@
 | XTP FIRST-to-KEY persistent stream | **KNOWN GAP in reviewed dev29** | accepted native XTP API + real multi-packet context tests |
 | XTP unicast segmentation / arbitrary-size traffic | **XTP dev29 SOURCE IMPLEMENTS segmented unicast messages, selective retransmission and SYNC/ECHO; no gateway X.25 PDU mapping qualified** | owner-accepted source+tests as documented in dev29; new gateway persistent circuit/payload/session testing |
 | XTP authenticated FIRST/CNTL | **KNOWN GAP in reviewed dev29** | cryptographically authenticated control traffic with anti-replay/time-window tests and deployment keys |
-| XTP DIAG explicit refusal | **PARTIAL dev29 IMPLEMENTED (packet type 8, CODE 1; VALUE 1,2,3), SOURCE-BOUND BUT UNAUTHENTICATED; gateway VALUE mapping not accepted** | first/CNTL authentication, new gateway reason codes agreed with XTP owner; independent secure refusals |
+| XTP DIAG explicit refusal | **XTP dev30 CODE 1 VALUE 16–23 RESERVED in DIAG_REGISTRY; existing libxtp DIAG transport source is separate from the NOT IMPLEMENTED gateway DIAG sender** | first/CNTL authentication, new gateway reason codes agreed with XTP owner; independent secure refusals |
 | SocketProvider half-close / \`shutdownSend()\` | **NOT IN REVIEWED COMMON CONTRACT** | SocketProvider owner approval and regression across eligible families |
 | Gateway policy/Session object, immutable generation pinning | **SPEC ONLY** | state-machine tests under concurrency, power failure, reload, emergency veto, capacity pressure |
 | Tamper-evident gateway journal, opt-in captures | **SPEC ONLY** | injected Crypto/key authority, anchoring, access/retention/legal policy, journal corrupt/recovery tests |
@@ -41,7 +43,7 @@ These were read in GitHub as of 2026-10-24, and **only their own stated scope** 
 - [Operational Degradation Planner dev5](../packages/oorexx_operational_degradation_planner_v0.1-dev5/README.md), [Firewall Controller](../packages/oorexx_firewall_controller/docs/ARCHITECTURE.md), [Instrumentation Mesh sphere](../spheres/oorexx_instrumentation_mesh_gopher_sphere_v0.1/README.md), [Observation v0.5](../packages/oorexx_observation_v0.5/README.md), [Instrumentation Intentions](../packages/oorexx_instrumentation_intentions/README.md), [Storage instrumentation pattern](../packages/oorexx_storage_fabric_instrumentation_mesh_v0.1-dev5/README.md), [Inspector Clouseau](../packages/oorexx_inspector_clouseau/README.md), [ConnectSelector sphere](../spheres/connect_selector_gopher_sphere_v0.1/CONNECT_SELECTOR_SPHERE.md).
 - Standards/public references: [RFC 1613](https://www.rfc-editor.org/rfc/rfc1613), [RFC 1356](https://www.rfc-editor.org/rfc/rfc1356), [ISO 8881](https://www.iso.org/standard/16394.html), [IANA protocol number registry](https://www.iana.org/assignments/protocol-numbers).
 
-No claim of current uploaded kernel driver safety, live deployed serial equipment, current XTP source/ABI above checked repo documents or passing implementation tests is made. The five canonical documents remain specification artefacts. [New ooRexx X.25 dev1 lab source](../packages/oorexx_x25_v0.1-dev1/README.md) implements only a packet decoder, XOT frame parser and an explicitly non-transmitting SVC transition subset, with bounded deterministic r13196 tests documented in [QUALIFICATION](../packages/oorexx_x25_v0.1-dev1/docs/QUALIFICATION.md).
+No claim of current uploaded kernel driver safety, live deployed serial equipment, current XTP source/ABI above checked repo documents or passing implementation tests is made. The five canonical documents remain specification artefacts. [Current ooRexx X.25 dev2 lab source](../packages/oorexx_x25_v0.1-dev2/README.md) implements a packet decoder, DATA constructor, XOT frame parser, typed but non-transmitting reset reasons and explicitly limited SVC transition subset, with bounded deterministic r13196 tests documented in [QUALIFICATION](../packages/oorexx_x25_v0.1-dev2/docs/QUALIFICATION.md).
 
 ## Dependency, implementation and safety boundaries
 
