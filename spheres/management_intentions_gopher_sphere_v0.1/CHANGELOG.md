@@ -10,3 +10,9 @@
 - Recorded cloudctl.sh/sshnode.sh as shortcuts only, never semantic architecture.
 - Recorded current Library drift separately from executable qualification baselines.
 - Recorded remaining work for machine/service/cloud/GPU/LLM/RexxOS adapters, current Instrumentation Mesh rebasing and mutation-policy integration.
+
+## 2026-10-27
+
+- Advanced executable grounding to Instrumentation Intentions dev2 and Management Intention Discovery dev9.
+- Closed the Mesh dev8 read-side rebase item.
+- Qualified explicit-only correlation and freshness/health separation under r13196.
