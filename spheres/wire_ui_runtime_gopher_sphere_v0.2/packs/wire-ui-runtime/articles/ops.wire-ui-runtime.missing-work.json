@@ -45,7 +45,7 @@
     {
       "id": "WAPP-LIVE-INGRESS",
       "state": "OPEN",
-      "work": "Attach trusted signed .wapp verifier and durable idempotent Queue Fabric command journal before production."
+      "work": "Local Queue Fabric admission journal/idempotency/replay qualified in Candidate3. Still OPEN: signed .wapp verifier, Storage Fabric fetch, host writer lease, power-loss recovery and public TLS/WSS integration."
     },
     {
       "id": "WAPP-RELEASE-PROBE",
@@ -56,6 +56,21 @@
       "id": "WAPP-SESSION-DRAIN",
       "state": "OPEN",
       "work": "Qualify retained application generation drain and stale semantic revisions under concurrent upgrades."
+    },
+    {
+      "id": "WAPP-ADMISSION-REPLAY",
+      "state": "OPEN",
+      "work": "Locally qualified on 2026-10-27 (Candidate3 8/8 ooRexx tests, 7/7 rexxc): durable requestId admission and replay. Next integrate single-active-writer host fencing and job resumption; local journal test is not production proof."
+    },
+    {
+      "id": "WAPP-POWERLOSS-FENCE",
+      "state": "OPEN",
+      "work": "Prove QueueDurableStore fsync/power-loss safety and cross-host single-writer fencing under failover before marking deployment journal production durable."
+    },
+    {
+      "id": "WAPP-CONTRACT-BRIDGE",
+      "state": "OPEN",
+      "work": "Implement explicit Intentions producer translation from the early wire.application.deploy/0.1 candidate to the strict wire.deployment.command/0.1 five-field ingress; no silent aliasing; enforce signer and target policy."
     }
   ]
 }

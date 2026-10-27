@@ -1,0 +1,44 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.deployment-admission-journal",
+  "version": "0.1",
+  "sphere": "wire-ui-runtime",
+  "title": "Wire application Queue Fabric admission, durable journal and restart replay",
+  "summary": "Candidate3 local qualification shows permanent Queue Fabric delivery recovery and independent admission-journal replay, including idempotency for requestId across delivery ids, conflict rejection and terminal evidence recording. It does NOT yet qualify live app activation.",
+  "authority": "project-integration-boundary",
+  "contract": "wire.deployment.command/0.1",
+  "requirements": [
+    "Exactly five command fields: contract, requestId, artifactDigest, artifactRef, target. Reject unknown fields; do not silently accept older wire.application.deploy/0.1 candidate manifest commands.",
+    "Canonical lowercase sha256:64-hex digest, storage-fabric:// protected artifact reference, bounded token requestId and target. Verifier must separately authenticate producer and target policy.",
+    "Use the existing authorised ObjectQueueManager with a PERMANENT persistent delivery queue, not a second manager.",
+    "Persist WAPP_ADMIT in a separate QueueDurableStore STRICT ledger before ACK; on failure RELEASE for retry; same requestId + same immutable digest/ref/target becomes DUPLICATE_REQUEST; conflicting reuse becomes REJECTED_REQUEST_ID_CONFLICT.",
+    "Pending accepted requests survive process restart until a trusted worker attaches evidence to WAPP_COMPLETE; journal status is not live HTTPS probe itself.",
+    "One writer per journal root is required pending a distributed fencing lease. Close-on-append and STRICT replay do not establish physical fsync/power-loss durability.",
+    "Do not classify installation as PROBED_ACTIVE unless an independently authenticated HTTPS/WebSocket/browser semantic live probe succeeds."
+  ],
+  "qualification": {
+    "date": "2026-10-27",
+    "interpreter": "ooRexx 5.3.0 r13196 Internal Test 64-bit",
+    "artifact": "wire_application_deployment_v0.1_candidate3.zip",
+    "sha256": "8aa156951a6f2326ef7c8df944a04a3afcb9929ce1f89d5ce347ba4fed87dbe9",
+    "nativePrograms": {
+      "passed": 8,
+      "total": 8
+    },
+    "rexxc": {
+      "passed": 7,
+      "total": 7
+    },
+    "evidence": "Full package TEST_TRANSCRIPT.txt; GitHub packages/wire_application_deployment_v0.1_candidate3/tests",
+    "scope": "Local native acceptance; not production web/session qualification"
+  },
+  "outstanding": [
+    "Authenticated Ed25519 .wapp verifier and Storage Fabric immutable download",
+    "Intentions target and approval mapping",
+    "Single active writer distributed lease and split-brain fencing",
+    "Storage fsync/power-loss crash qualification",
+    "Real public HTTPS/TLS + WSS semantic action/observation round-trip",
+    "Generation drain and rollback with active sessions",
+    "RexxOS signed capsule adapter"
+  ]
+}

@@ -14,3 +14,10 @@ deploy=json.loads((r/'packs/wire-ui-runtime/articles/ref.wire-ui-runtime.hosted-
 assert deploy['sphere']=='wire-ui-runtime'
 assert any('Queue Fabric' in s for s in deploy['invariants'])
 print('PASS wire-ui-runtime hosted application deployment article')
+
+# Additive native admission/replay continuity gate
+deploy_replay=json.loads((r/'packs/wire-ui-runtime/articles/ref.wire-ui-runtime.deployment-admission-journal.json').read_text())
+assert deploy_replay['qualification']['nativePrograms']['passed']==8
+assert deploy_replay['qualification']['rexxc']['passed']==7
+assert deploy_replay['contract']=='wire.deployment.command/0.1'
+print('PASS wire-ui-runtime deployment admission journal continuity')

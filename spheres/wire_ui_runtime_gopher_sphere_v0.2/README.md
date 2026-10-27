@@ -42,3 +42,7 @@ Use LLM Gopher v0.19-dev1 or later for structural validation/lint/package and ru
 ## Signed Wire application deployment addendum (2026-10-23)
 
 The article `ref.wire-ui-runtime.hosted-application-deployment` records .wapp/Queue Fabric admission, HTTPS/Wire/Gateway publication, fail-closed trust boundaries and live qualification gaps. The adapter increment is not yet a production deployment qualification.
+
+## Candidate 3 / Queue Fabric admission (2026-10-27)
+
+See `ref.wire-ui-runtime.deployment-admission-journal` for tested native requestId idempotency, persistent Queue Fabric recovery, strict command shape and remaining host-level durability/authority gates. Rasen Falcon lane: `wire_application_deployment` (CHATGPT). Production live HTTPS/WSS deployment is **not** qualified.
