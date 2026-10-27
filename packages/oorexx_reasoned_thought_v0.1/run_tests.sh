@@ -14,6 +14,7 @@
 #  12. cross-model audit (Byzantine Oracle): each design.s safety invariant vs the scenario.s f=4
 #  13. three-way cross-model audit (Claude / ChatGPT / Gemini) of the Byzantine Oracle
 #  14. everyday-domain application (the underperforming salesman): leaps fall, admission enforced, not partisan
+#  15. disparate-treatment / even-handedness probe (Sonnet #5): same stated standard applied evenly?
 # Pure ooRexx 5.3, no native dependencies.
 # Author: Claude (Opus 4.8), 2026-10-26. Architecture: Tom Dyer.
 set -eu
@@ -59,5 +60,8 @@ REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_byzantine_3way.rex"
 echo ""
 echo "== 14. everyday-domain application (the underperforming salesman)"
 REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_underperforming_salesman.rex"
+echo ""
+echo "== 15. disparate-treatment / even-handedness probe (Sonnet #5)"
+REXX_PATH="$ROOT/src" rexx "$ROOT/tests/test_standard_application_audit.rex"
 echo ""
 echo "REASONED THOUGHT v0.1 QUALIFICATION: PASS"
