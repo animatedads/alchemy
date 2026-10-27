@@ -19,4 +19,4 @@ rm -f /tmp/instrumentation-intentions-forbidden.$$
 pass 'read-only instrumentation intention boundary'
 printf '%s\n' '== tests =='
 (cd "$ROOT/tests" && "$REXX_BIN" test_instrumentation_intentions.rex && "$REXX_BIN" test_instrumentation_history.rex && "$REXX_BIN" test_socket_telemetry_mesh_adapter.rex)
-pass 'instrumentation intentions dev1 environment qualification'
+pass 'instrumentation intentions dev2 environment qualification'
