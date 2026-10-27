@@ -1,3 +1,13 @@
+## v0.22-candidate13
+
+- Add `S3270Reference.cls`, a read-only parser for retained `s3270 ReadBuffer(Ascii)` evidence and zero-origin cursor coordinates.
+- Add semantic differential comparison between Terminal Machine detached 3270 snapshots and the independent s3270 reference: dimensions, cursor, visible rows, field addresses/lengths, protection, numeric, MDT and NONDISPLAY state.
+- Mask NONDISPLAY data in exported reference snapshots; raw secret bytes are not retained as comparison values.
+- Fail closed on unsupported multi-byte/DBCS ReadBuffer cell tokens instead of flattening them into false single-cell equality.
+- Add `test_s3270_reference.rex` with positive semantic equivalence and deliberate cursor-mismatch detection.
+- Add `tools/s3270_differential_compare.rex` as an observation-only normalizer for retained s3270 captures. It does not connect to or mutate a host.
+- Advance the next live gate to same-environment Terminal Machine vs s3270 differential qualification on ED209Z.
+
 ## candidate12
 
 - correct host screen/round-trip meter facts to use the gate's configured protocol source, so TN3270 ownership does not emit historical TN5250 labels;
