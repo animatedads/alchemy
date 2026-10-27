@@ -1,0 +1,16 @@
+{
+  "id": "pl-llm-model-routing",
+  "title": "LLM Allocation Uses the Same Placement Seam",
+  "summary": "Generalized Compute Intentions dev6 binds the existing AI Model Router as an optional router assessment for LLM/model candidates. One whole-candidate-set router decision is made per planning turn and the real candidate/plan/outcome objects are retained.",
+  "why": "Workbench and other callers should request suitable model compute without embedding provider-specific if/else routing. AI Model Router already owns non-entitling cross-provider model-route choice from authenticated WLU evidence and institutional policy.",
+  "invariants": [
+    "AI Model Router route selection is evaluated once per GCI planning turn, not cached across turns.",
+    "AIModelRouteCandidate identity survives into GCI; provider/model identity is not flattened into command text.",
+    "AI_MODEL_ROUTE_PERMITTED_NOT_ADMITTED means selected and policy-permitted only.",
+    "AIModelRoutePlan.admitted remains false and executableAuthority remains false.",
+    "GCI still evaluates its compute, allocation and WLU assessments and the final handoff requires authoritative revalidation.",
+    "Runtime Registry acquisition, credentials, transport and provider/model invocation remain outside both GCI and AI Model Router."
+  ],
+  "evidence_note": "Grounded in oorexx_generalized_compute_intentions v0.1-dev6 optional AI Model Router adapter and oorexx_ai_model_router_v0.1 source contract.",
+  "grounding": "oorexx-grounded"
+}

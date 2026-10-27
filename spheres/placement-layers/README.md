@@ -1,4 +1,4 @@
-# Runtime Placement and Admittance Layers Knowledge Sphere v0.2
+# Runtime Placement and Admittance Layers Knowledge Sphere v0.3
 
 This sphere documents the complete seam from semantic compute intent to authoritative placement and managed execution. It extends the original placement-layers sphere without changing the ownership of any underlying subsystem.
 
@@ -10,6 +10,10 @@ semantic workload / intention
         v
 Generalized Compute Intentions
   planned admittance route
+        |
+        +--> AI Model Router (for LLM/model candidates)
+             WLU route evidence + institutional policy
+             selection only; not admission/execution
   (evidence, never entitlement)
         |
         v
@@ -43,9 +47,25 @@ Instrumentation Mesh sits alongside this path as observation only. Health, fresh
 - **Replay ambiguity fails closed.** A claimed provider call with uncertain outcome remains held for reconciliation; it is not automatically replayed.
 - **LLMs are compute resources, not a special routing exception.** Local/hosted models, accelerators, CPU, GPU and ZeroGPU can share the same planned-admittance semantics while retaining provider-specific capability requirements.
 
+## LLM/model route seam
+
+For model candidates, Generalized Compute Intentions dev6 has a concrete optional
+adapter to AI Model Router v0.1. AI Model Router evaluates the complete declared
+model-route catalogue once per GCI planning turn, using its authenticated WLU
+route evidence and institutional policy. Only its selected route receives
+`AI_MODEL_ROUTE_PERMITTED_NOT_ADMITTED`; non-selected candidates remain visible
+as rejected evidence.
+
+This deliberately does **not** merge the layers. AI Model Router's
+`AIModelRoutePlan~admitted` and `~executableAuthority` remain false. GCI still
+requires its ordinary WLU and allocation assessments and the final handoff still
+requires fresh authoritative revalidation. Provider credentials, Runtime Registry
+acquisition and model invocation remain below this semantic boundary.
+
 ## Current evidence line
 
-- Generalized Compute Intentions `v0.1-dev5` — object-preserving planning, Intention Service bridge, Mesh dev7 freshness/events, explicit revalidation contract.
+- Generalized Compute Intentions `v0.1-dev6` — object-preserving planning, Intention Service bridge, Mesh dev7 freshness/events, explicit revalidation contract.
+- AI Model Router `v0.1` — non-entitling cross-provider model-route selection over authenticated WLU evidence and institutional policy.
 - Work Load Units `v0.12` — work/capacity admission and reservation authority.
 - Job-to-Node Allocator `v0.6-network6` — authoritative placement plus fail-closed network/lifecycle recovery; network6 runtime qualification remains separately pending in its own package evidence.
 - RexxOS Managed Compute MU `v0.1-dev2` — downstream managed target binding and replay safety; production dispatch remains gated on durable replay/request infrastructure and membership-generation revalidation.

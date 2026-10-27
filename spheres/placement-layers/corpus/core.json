@@ -3,42 +3,69 @@
     "id": "pl-hard-eligibility",
     "term": "Hard Eligibility",
     "definition": "Security, legal, policy, runtime, capability and mandatory resource constraints that must pass before optimization or dispatch is considered.",
-    "related": ["pl-hard-eligibility", "pl-planned-admittance"]
+    "related": [
+      "pl-hard-eligibility",
+      "pl-planned-admittance"
+    ]
   },
   {
     "id": "pl-planned-admittance",
     "term": "Planned Admittance Route",
     "definition": "A non-mutating, object-preserving semantic plan over current compute, router, WLU and allocator evidence. It is evidence for an execution route and is not admission or placement entitlement.",
-    "related": ["pl-admittance-flow", "pl-authoritative-revalidation"]
+    "related": [
+      "pl-admittance-flow",
+      "pl-authoritative-revalidation"
+    ]
   },
   {
     "id": "pl-authoritative-revalidation",
     "term": "Authoritative Revalidation",
     "definition": "The mandatory fresh check of compute capability, router policy, WLU admission and Job-to-Node placement evidence immediately before mutation or dispatch.",
-    "related": ["pl-admittance-flow", "pl-managed-execution-boundary"]
+    "related": [
+      "pl-admittance-flow",
+      "pl-managed-execution-boundary"
+    ]
   },
   {
     "id": "pl-node-id",
     "term": "nodeId",
     "definition": "A stable allocator-specific identifier for an execution node, distinct from provider resource identity or network endpoint.",
-    "related": ["pl-node-identity"]
+    "related": [
+      "pl-node-identity"
+    ]
   },
   {
     "id": "pl-capability-generation",
     "term": "Capability Generation",
     "definition": "Versioned capability evidence bound into placement and managed-target checks; stale or changed capability generations invalidate prior assumptions.",
-    "related": ["pl-node-identity", "pl-managed-execution-boundary"]
+    "related": [
+      "pl-node-identity",
+      "pl-managed-execution-boundary"
+    ]
   },
   {
     "id": "pl-observation-not-authority",
     "term": "Observation Is Not Authority",
     "definition": "Health, freshness and runtime-state observations may influence preference and explanation but cannot grant admission, mint or release leases, or prove execution completion.",
-    "related": ["pl-observation-boundary"]
+    "related": [
+      "pl-observation-boundary"
+    ]
   },
   {
     "id": "pl-execution-switch",
     "term": "Execution-Location Switch",
     "definition": "The Runtime Reference mechanism that binds an admitted and placed semantic operation to a local or remote implementation.",
-    "related": ["pl-runtime-reference-switch"]
+    "related": [
+      "pl-runtime-reference-switch"
+    ]
+  },
+  {
+    "id": "pl-llm-route-selection",
+    "term": "LLM / AI Model Route Selection",
+    "definition": "For LLM/model candidates, AI Model Router may select a policy-permitted route using authenticated WLU route evidence, but that plan is neither WLU admission nor executable/provider authority. GCI composes it as router evidence and still requires ordinary admission, allocation and handoff revalidation.",
+    "related": [
+      "pl-planned-admittance",
+      "pl-authoritative-revalidation"
+    ]
   }
 ]
