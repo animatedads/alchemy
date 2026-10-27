@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "ssc.adapter-contract",
+  "version": "0.2-dev1",
+  "sphere": "semantic-source-control",
+  "title": "Gopher SSC adapter: executable read path, authority-separated mutations",
+  "summary": "The read-only SSC machine protocol and Finder-authorised Gopher companion adapter now provide fixed-schema status, identify, compare, impact, source and proposals operations. Arbitrary shell/osc execution is still forbidden. Acceptance and proposal decisions remain intentionally unimplemented in this adapter.",
+  "invariants": [
+    "Every executable read first resolves an authorised Gopher ServiceProxy for the requested sphere and role.",
+    "The adapter accepts only the exact external.semantic-source-control.machine.<operation> implementation id returned by Finder.",
+    "No arbitrary shell command or osc flag surface is exposed; the adapter emits a fixed argv vector into semantic.source.control.machine/0.1.",
+    "Read-only negative outcomes such as NOT_FOUND/UNCHANGED/REVIEW_REQUIRED keep tool_status OK and never trigger a bypass/fallback around Finder.",
+    "Only infrastructure/service failures map to UNAVAILABLE/TEMPORARY_FAILURE/DEPENDENCY_FAILURE.",
+    "Mutations remain outside the executable adapter and require explicit reviewer/admin authority plus stale fences when implemented.",
+    "Result pages are projections; durable history remains in SSC."
+  ],
+  "executable_read_capabilities": [
+    "source.semantic.identify",
+    "source.semantic.status",
+    "source.semantic.compare",
+    "source.semantic.impact",
+    "source.semantic.source",
+    "source.semantic.proposals"
+  ],
+  "planned_mutation_capabilities": [
+    "source.semantic.proposal.decide (reviewer/admin only)",
+    "source.semantic.accept (reviewer/admin only)"
+  ]
+}

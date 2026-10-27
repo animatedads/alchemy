@@ -1,0 +1,24 @@
+Semantic Source Control Gopher Sphere v0.2-dev1 qualification
+Date: 2026-10-27
+
+Source/provenance review:
+- SSC authority baseline: oorexx_semantic_source_control_v0.2.3 / semantic.source.control/0.2.3.
+- Machine projection candidate: oorexx_semantic_source_control_machine_v0.1-dev1 / semantic.source.control.machine/0.1.
+- Gopher adapter candidate: llm_gopher_ssc_adapter_v0.1-dev1 / llm.gopher.ssc.adapter/0.1.
+- Gopher operational substrate: llm_gopher_v0.21-dev1.
+
+Static qualification in this build:
+- all JSON pack/profile/integration files parse;
+- six service descriptors are present and each binds exactly one source.semantic.* read capability to external.semantic-source-control.machine.<operation>;
+- access policy still denies source.semantic.accept and source.semantic.proposal.decide to llm/developer/operator roles;
+- continuity corpus marks the six read capabilities EXECUTABLE_READ_ONLY and leaves the two mutation capabilities PLANNED;
+- package manifest validates.
+
+Execution boundary:
+- the companion adapter performs Finder/ServiceProxy authorisation before machine invocation;
+- ordinary Gopher operations are not replaced by a second engine;
+- arbitrary shell/osc execution is not part of the adapter contract;
+- no read operation can accept a source level or decide a tracking proposal.
+
+Environment note:
+- the current local container does not have the r13196 ooRexx interpreter installed, so end-to-end machine execution is deferred to Autobuild/dependency qualification. This sphere does not claim that missing local runtime proof as a PASS.

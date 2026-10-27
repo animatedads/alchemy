@@ -1,0 +1,169 @@
+{
+  "kind": "corpus",
+  "id": "ssc.interface",
+  "sphere": "semantic-source-control",
+  "title": "Semantic Source Control Gopher interface, executable read adapter, and continuity ledger",
+  "records": [
+    {
+      "topic": "current-baseline",
+      "component": "SemanticSourceControl",
+      "product_version": "0.2.3",
+      "lineage": "MAIN",
+      "source_level": "5",
+      "status": "accepted candidate baseline",
+      "note": "SSC v0.2.3 remains the semantic authority baseline; semantic.source.control.machine/0.1 and llm.gopher.ssc.adapter/0.1 add read-only machine/Gopher projections without changing accepted SSC history."
+    },
+    {
+      "topic": "machine-protocol",
+      "api": "semantic.source.control.machine/0.1",
+      "package": "oorexx_semantic_source_control_machine_v0.1-dev1",
+      "authority": "projection only",
+      "mutations": false
+    },
+    {
+      "topic": "gopher-adapter",
+      "api": "llm.gopher.ssc.adapter/0.1",
+      "package": "llm_gopher_ssc_adapter_v0.1-dev1",
+      "authority": "Finder-authorised projection only",
+      "mutations": false
+    },
+    {
+      "topic": "gopher-capability",
+      "capability": "source.semantic.identify",
+      "state": "EXECUTABLE_READ_ONLY",
+      "class": "read",
+      "reason": "map carrier/symbol to SSC component/lineage/source-level/entity/revision",
+      "machine_api": "semantic.source.control.machine/0.1",
+      "adapter_api": "llm.gopher.ssc.adapter/0.1",
+      "finder_required": true
+    },
+    {
+      "topic": "gopher-capability",
+      "capability": "source.semantic.status",
+      "state": "EXECUTABLE_READ_ONLY",
+      "class": "read",
+      "reason": "accepted parent plus working-candidate semantic status",
+      "machine_api": "semantic.source.control.machine/0.1",
+      "adapter_api": "llm.gopher.ssc.adapter/0.1",
+      "finder_required": true
+    },
+    {
+      "topic": "gopher-capability",
+      "capability": "source.semantic.compare",
+      "state": "EXECUTABLE_READ_ONLY",
+      "class": "read",
+      "reason": "semantic deltas without acceptance",
+      "machine_api": "semantic.source.control.machine/0.1",
+      "adapter_api": "llm.gopher.ssc.adapter/0.1",
+      "finder_required": true
+    },
+    {
+      "topic": "gopher-capability",
+      "capability": "source.semantic.impact",
+      "state": "EXECUTABLE_READ_ONLY",
+      "class": "read",
+      "reason": "consumer/requirement/external-operation impact",
+      "machine_api": "semantic.source.control.machine/0.1",
+      "adapter_api": "llm.gopher.ssc.adapter/0.1",
+      "finder_required": true
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.history",
+      "state": "PLANNED",
+      "class": "read",
+      "reason": "accepted source-level/revision history"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.accept",
+      "state": "PLANNED",
+      "class": "mutation",
+      "roles": [
+        "reviewer",
+        "admin"
+      ],
+      "reason": "explicit source-level acceptance only"
+    },
+    {
+      "topic": "gopher-capability",
+      "capability": "source.semantic.proposals",
+      "state": "EXECUTABLE_READ_ONLY",
+      "class": "read",
+      "reason": "read tracking proposals and recorded decisions without mutation",
+      "machine_api": "semantic.source.control.machine/0.1",
+      "adapter_api": "llm.gopher.ssc.adapter/0.1",
+      "finder_required": true
+    },
+    {
+      "topic": "gopher-capability",
+      "capability": "source.semantic.source",
+      "state": "EXECUTABLE_READ_ONLY",
+      "class": "read",
+      "reason": "exact historical method source by stable identity",
+      "machine_api": "semantic.source.control.machine/0.1",
+      "adapter_api": "llm.gopher.ssc.adapter/0.1",
+      "finder_required": true
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.proposal.decide",
+      "state": "PLANNED",
+      "class": "mutation",
+      "roles": [
+        "reviewer",
+        "admin"
+      ],
+      "reason": "external-operation tracking decision"
+    },
+    {
+      "topic": "status-map",
+      "ssc": "no semantic change",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "UNCHANGED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "entity absent",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "NOT_FOUND",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "pending tracking proposal",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "REVIEW_REQUIRED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "requirement unsatisfied",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "REQUIREMENT_UNSATISFIED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "lineage changed",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "SOURCE_LINEAGE_CHANGED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "osc executable/provider unavailable",
+      "gopher_tool_status": "UNAVAILABLE",
+      "gopher_operation_status": "UNKNOWN",
+      "fallback": true
+    },
+    {
+      "topic": "status-map",
+      "ssc": "repository dependency unreadable/corrupt",
+      "gopher_tool_status": "DEPENDENCY_FAILURE",
+      "gopher_operation_status": "UNKNOWN",
+      "fallback": true
+    }
+  ]
+}
