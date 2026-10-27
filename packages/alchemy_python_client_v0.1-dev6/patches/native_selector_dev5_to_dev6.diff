@@ -1,0 +1,61 @@
+--- src/alchemy_python/native_selector.py@dev5
++++ src/alchemy_python/native_selector.py@dev6
+@@ -70,12 +70,14 @@
+                  encode_payload: Callable[[Any], Any] = _identity,
+                  decode_value: Callable[[Any], Any] = _identity,
+                  read_field: Callable[[Any, str], Any] = _native_get,
+-                 encode_options: Callable[[Mapping[str, Any]], Any] = _identity) -> None:
++                 encode_options: Callable[[Mapping[str, Any]], Any] = _identity,
++                 decode_bool: Callable[[Any], bool] = _identity,
++                 default_destination: str = '') -> None:
+         if not callable(getattr(selector, 'execute', None)):
+             raise TypeError('native ConnectSelector projection must expose execute(intent,payload)')
+         for name, obj in (('intent_factory', intent_factory), ('encode_payload', encode_payload),
+                           ('decode_value', decode_value), ('read_field', read_field),
+-                          ('encode_options', encode_options)):
++                          ('encode_options', encode_options), ('decode_bool', decode_bool)):
+             if not callable(obj):
+                 raise TypeError(f'{name} must be callable')
+@@ -85,6 +87,10 @@
+         self._read = read_field
+         self._options = encode_options
+         self._preferred = self._choice(preferred)
++        if not isinstance(default_destination, str):
++            raise ContractError('default_destination must be a string')
++        self._default_destination = default_destination
++        self._bool = decode_bool
+@@ -94,14 +100,17 @@
+     @staticmethod
+     def _outcome(raw: Any, field: Callable[[Any, str], Any],
+-                 decode_value: Callable[[Any], Any]) -> ConnectOutcome:
++                 decode_value: Callable[[Any], Any],
++                 decode_bool: Callable[[Any], bool] = _identity) -> ConnectOutcome:
+         try:
+             values = {key: field(raw, key) for key in
+                       ('ok', 'provider', 'accepted', 'completed', 'durable', 'value', 'code', 'detail')}
+         except (AttributeError, KeyError, TypeError) as exc:
+             raise ProtocolError('native ConnectResult is missing a published field') from exc
+-        if any(type(values[k]) is not bool for k in ('ok', 'accepted', 'completed', 'durable')):
+-            raise ProtocolError('native ConnectResult boolean flags are invalid')
++        for key in ('ok', 'accepted', 'completed', 'durable'):
++            values[key] = decode_bool(values[key])
++            if type(values[key]) is not bool:
++                raise ProtocolError('native ConnectResult boolean flags are invalid')
+@@ -126,7 +135,7 @@
+                                   destination, self._options(dict(options or {})))
+         # Once execute begins a failure can be ambiguous. Never retry.
+         result = self._selector.execute(intention, self._encode(payload))
+-        outcome = self._outcome(result, self._read, self._decode)
++        outcome = self._outcome(result, self._read, self._decode, self._bool)
+@@ -136,7 +145,8 @@
+         # A published jobs.submit REQUEST returns an authoritative *service*
+         # receipt. It is not interchangeable with ConnectSelector ENQUEUE.
+-        result = self._execute(invocation.operation, 'REQUEST', 'IMMEDIATE', invocation.params)
++        result = self._execute(invocation.operation, 'REQUEST', 'IMMEDIATE', invocation.params,
++                               destination=self._default_destination)
+@@ -144,7 +154,8 @@
+         if invocation.kind != 'notification' or invocation.semantics != 'immediate':
+             raise ContractError('native NOTIFY requires an immediate notification')
+-        result = self._execute(invocation.operation, 'NOTIFY', 'IMMEDIATE', invocation.params)
++        result = self._execute(invocation.operation, 'NOTIFY', 'IMMEDIATE', invocation.params,
++                               destination=self._default_destination)
