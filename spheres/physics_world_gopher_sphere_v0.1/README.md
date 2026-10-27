@@ -30,3 +30,12 @@ coercion in ooRexx; it is operator-message dispatch.
 Portfolio findings PHYS-001/PHYS-002 are repaired in canonical source. The 2026-09-27
 standards report is not a clean bill of health: inherited PLUS_ZERO, short-circuit,
 SIGNAL and loop findings remain open until individually repaired and requalified.
+
+## 2026-10-27 reconciliation and pending qualification
+Authenticated Rasen Falcon lane: `oorexx-physics-world` (not the `wire_ui_windows` example). GitHub canonical package `packages/oorexx_physics_world/VERSION.txt` reads `0.1-dev50.1`; earlier dev46.9 archives are historical and must not overwrite this head.
+
+The 2026-09-27 review identified PHYS-001/PHYS-002; canonical sphere records their repair. Standards-enforcer findings remain an OPEN qualification gate; a `+ 0` expression invokes ooRexx `+` message dispatch and may mutate a user object, so no mechanical replacement with `* 1` or other operator coercion is admissible. Each site needs semantic validation and adversarial object regression. `&` does not short-circuit; audit each potentially unsafe operand before converting to nested conditionals.
+
+Freeze/replay compatibility must include behavioural authority (dynamic `setMethod`, class `define` where permitted) and pending delayed messages, in addition to state variables. A journal-pointed checkpoint cannot promise deterministic continuation if those future-determining elements are omitted. No new incompatible checkpoint format is authorized by this note.
+
+**Open implementation:** run the enforcer directly against the canonical dev50.1 source/package; classify findings, repair in bounded batches, execute r13196 tests, and record exact PASS/FAIL/SKIP receipts. This sphere update is a coordination/documentation commit, **not** a claim that source repairs or full-suite qualification were performed in this turn.
