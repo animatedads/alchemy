@@ -8,7 +8,7 @@
  */
 
 ::class InstrumentationIntentionsBuild public
-::constant VERSION '0.1-dev1'
+::constant VERSION '0.1-dev2'
 ::constant PROVIDER_API 'instrumentation.intentions/0.1'
 
 /* Associates stable Instrumentation semantic references with the original
@@ -62,6 +62,30 @@
 ::method series
   use arg semanticRef, metricName, dimensions=.nil, limit=0
   return self~collector~series(semanticRef, metricName, dimensions, limit)
+::method events
+  use arg selector=.nil, limit=0
+  return self~collector~eventsHistory(selector, limit)
+::method relationships
+  use arg selector=.nil
+  return self~collector~latestRelationships(selector)
+::method relationshipSets
+  use arg selector=.nil
+  return self~collector~latestRelationshipSets(selector)
+::method relationshipHistory
+  use arg selector=.nil, limit=0
+  return self~collector~relationshipSetHistory(selector, limit)
+::method correlations
+  use arg selector=.nil, limit=0
+  return .InstrumentationCorrelationView~new(self~collector)~groups(selector, limit)
+::method correlationById
+  use arg correlationId, limit=0
+  return .InstrumentationCorrelationView~new(self~collector)~byId(correlationId, limit)
+::method correlationsForRefs
+  use arg refs, limit=0
+  return .InstrumentationCorrelationView~new(self~collector)~forRefs(refs, limit)
+::method freshness
+  use arg semanticRef, nowPosixSeconds, freshWithinSeconds=30, staleAfterSeconds=120
+  return .InstrumentationFreshnessAssessor~new(self~collector)~assess(semanticRef, nowPosixSeconds, freshWithinSeconds, staleAfterSeconds)
 
 ::class InstrumentationIntentionProvider public
 ::method init
@@ -83,20 +107,40 @@
   use arg context=.nil
   self~generation += 1
   selector = .nil
+  eventSelector = .nil
+  nowPosix = .nil
+  freshWithin = 30
+  staleAfter = 120
   if context <> .nil then do
     if context~isA(.Directory) then do
       if context~hasIndex('instrumentationSelector') then selector = context['instrumentationSelector']
+      if context~hasIndex('instrumentationEventSelector') then eventSelector = context['instrumentationEventSelector']
+      if context~hasIndex('nowPosixSeconds') then nowPosix = context['nowPosixSeconds']
+      if context~hasIndex('freshWithinSeconds') then freshWithin = context['freshWithinSeconds']
+      if context~hasIndex('staleAfterSeconds') then staleAfter = context['staleAfterSeconds']
     end
   end
   snapshots = self~readAuthority~latest(selector)
+  events = self~readAuthority~events(eventSelector, 0)
+  relationships = self~readAuthority~relationships(selector)
+  correlations = self~readAuthority~correlations(eventSelector, 0)
+  freshness = .Directory~new
+  if nowPosix <> .nil then do snapshot over snapshots
+    ref = snapshot['semantic_ref']
+    freshness[ref] = self~readAuthority~freshness(ref, nowPosix, freshWithin, staleAfter)
+  end
   surface = .Directory~new
   surface['provider'] = self~providerId
   surface['authority'] = 'INSTRUMENTATION'
-  surface['subjectKinds'] = .Array~of('INSTRUMENTED_SERVICE', 'INSTRUMENTATION_SNAPSHOT', 'METRIC_SERIES', 'OPERATION_PROGRESS')
-  surface['operations'] = .Array~of('LIST_INSTRUMENTED_SERVICES', 'GET_LATEST_HEALTH', 'GET_LATEST_METRICS', 'GET_METRIC_HISTORY', 'GET_METRIC_SERIES', 'GET_OPERATION_PROGRESS', 'EXPLAIN_INSTRUMENTATION')
+  surface['subjectKinds'] = .Array~of('INSTRUMENTED_SERVICE', 'INSTRUMENTATION_SNAPSHOT', 'METRIC_SERIES', 'OPERATION_PROGRESS', 'OPERATIONAL_EVENT', 'OBSERVED_RELATIONSHIP', 'CORRELATION_GROUP', 'PUBLICATION_FRESHNESS')
+  surface['operations'] = .Array~of('LIST_INSTRUMENTED_SERVICES', 'GET_LATEST_HEALTH', 'GET_LATEST_METRICS', 'GET_METRIC_HISTORY', 'GET_METRIC_SERIES', 'GET_OPERATION_PROGRESS', 'LIST_OPERATIONAL_EVENTS', 'EXPLAIN_OPERATIONAL_EVENT', 'LIST_OBSERVED_RELATIONSHIPS', 'GET_CORRELATION', 'LIST_CORRELATIONS', 'GET_PUBLICATION_FRESHNESS', 'EXPLAIN_INSTRUMENTATION')
   surface['mutating'] = .false
   surface['generation'] = self~generation
   surface['snapshots'] = snapshots
+  surface['events'] = events
+  surface['relationships'] = relationships
+  surface['correlations'] = correlations
+  surface['freshness'] = freshness
   surface['readAuthority'] = self~readAuthority
   surface['context'] = context
   return surface
@@ -106,8 +150,10 @@
   text = self~normalize(request)
   matchedSnapshots = .Array~new
   matchedObjects = .Array~new
+  matchedEvents = .Array~new
+  matchedRelationships = .Array~new
+  matchedCorrelations = .Array~new
   score = self~domainScore(text)
-
   do snapshot over surface['snapshots']
     if self~snapshotMatches(text, snapshot) then do
       matchedSnapshots~append(snapshot)
@@ -117,11 +163,33 @@
       score = max(score, 94)
     end
   end
-
+  do event over surface['events']
+    if self~eventMatches(text, event) then do
+      matchedEvents~append(event)
+      object = self~bindings~objectFor(event['subject_ref'])
+      if object <> .nil then self~appendUnique(matchedObjects, object)
+      score = max(score, 94)
+    end
+  end
+  do relation over surface['relationships']
+    if self~relationshipMatches(text, relation) then do
+      matchedRelationships~append(relation)
+      score = max(score, 90)
+    end
+  end
+  do group over surface['correlations']
+    if self~correlationMatches(text, group) then do
+      matchedCorrelations~append(group)
+      score = max(score, 95)
+    end
+  end
   evidence = .Directory~new
   evidence['surface'] = surface
   evidence['objects'] = matchedObjects
   evidence['snapshots'] = matchedSnapshots
+  evidence['events'] = matchedEvents
+  evidence['relationships'] = matchedRelationships
+  evidence['correlations'] = matchedCorrelations
   if score = 0 then return .InstrumentationRelevanceAssessment~new(.false, 0, 'INSTRUMENTATION', 'INSTRUMENTATION_INTENTION_UNKNOWN', evidence)
   return .InstrumentationRelevanceAssessment~new(.true, score, 'INSTRUMENTATION', 'INSTRUMENTATION_INTENTION_MATCH', evidence)
 
@@ -146,6 +214,49 @@
   end
   return .false
 
+::method eventMatches private
+  use arg text, event
+  do key over .Array~of('event_id','kind','subject_ref','authority','correlation_id','causation_id','operation_id')
+    value = event[key]
+    if value <> .nil then do
+      v = self~normalize(value)
+      if v <> '' & pos(v, text) > 0 then return .true
+    end
+  end
+  subject = event['subject_ref']
+  if subject <> .nil then do alias over self~bindings~aliasesFor(subject)
+    a = self~normalize(alias)
+    if a <> '' & pos(a, text) > 0 then return .true
+  end
+  return .false
+
+::method relationshipMatches private
+  use arg text, relation
+  do key over .Array~of('relationship_id','kind','from_ref','to_ref','authority')
+    value = relation[key]
+    if value <> .nil then do
+      v = self~normalize(value)
+      if v <> '' & pos(v, text) > 0 then return .true
+    end
+  end
+  return .false
+
+::method correlationMatches private
+  use arg text, group
+  value = group['correlation_id']
+  if value <> .nil then do
+    v = self~normalize(value)
+    if v <> '' & pos(v, text) > 0 then return .true
+  end
+  do key over .Array~of('subject_refs','related_refs','context_refs','authorities','kinds')
+    values = group[key]
+    if values <> .nil then do item over values
+      v = self~normalize(item)
+      if v <> '' & pos(v, text) > 0 then return .true
+    end
+  end
+  return .false
+
 ::method domainScore private
   use arg text
   score = 0
@@ -153,6 +264,11 @@
   if self~hasWord(text, 'INSTRUMENTATION') then score = max(score, 94)
   if self~hasWord(text, 'METRIC') | self~hasWord(text, 'METRICS') then score = max(score, 90)
   if self~hasWord(text, 'HEALTH') then score = max(score, 82)
+  if self~hasWord(text, 'EVENT') | self~hasWord(text, 'EVENTS') then score = max(score, 90)
+  if self~hasWord(text, 'CORRELATION') | self~hasWord(text, 'CORRELATED') then score = max(score, 94)
+  if self~hasWord(text, 'CAUSATION') | self~hasWord(text, 'CAUSE') then score = max(score, 88)
+  if self~hasWord(text, 'RELATIONSHIP') | self~hasWord(text, 'RELATIONSHIPS') then score = max(score, 88)
+  if self~hasWord(text, 'FRESH') | self~hasWord(text, 'FRESHNESS') | self~hasWord(text, 'STALE') then score = max(score, 90)
   if self~hasWord(text, 'COUNTER') | self~hasWord(text, 'COUNTERS') then score = max(score, 88)
   if self~hasWord(text, 'GAUGE') | self~hasWord(text, 'GAUGES') then score = max(score, 88)
   if self~hasWord(text, 'PROGRESS') then score = max(score, 88)
@@ -286,3 +402,5 @@
   return out
 
 ::requires 'InstrumentationMesh.cls'
+::requires 'InstrumentationAnalysis.cls'
+::requires 'InstrumentationCorrelation.cls'
