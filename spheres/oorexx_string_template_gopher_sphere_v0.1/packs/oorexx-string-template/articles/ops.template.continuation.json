@@ -7,9 +7,10 @@
   "authority": "project-authoritative",
   "summary": "Continue by deepening reusable interpolation surfaces without turning templates into an execution language or duplicating domain authorities.",
   "priorities": [
-    "Run the dev2 fixtures under the exact r13196 qualification runtime and record evidence before promotion.",
+    "Run the dev3 fixtures under the exact r13196 qualification runtime and record evidence before promotion.",
     "Adopt StringTemplate from consuming components where it removes ad-hoc interpolation without weakening their escaping or authority contracts.",
     "Keep domain formatting in domain-owned TemplateFormatter implementations rather than teaching StringTemplate about Units, time, money or application models.",
+    "Preserve deterministic binding: use explicit new-template rebinding rather than mutation that changes an existing template's meaning.",
     "If future literal syntax is proposed for ooRexx itself, preserve these library semantics first and treat language syntax as sugar over an already-defined contract."
   ],
   "avoid": [
@@ -17,11 +18,23 @@
     "implicit reflection over arbitrary objects",
     "template loops/conditionals/macros that create a second language",
     "silent escaping changes",
+    "silent formatter rebinding of existing templates",
     "claiming structural checks as runtime qualification"
   ],
-  "related": ["arch.template.language", "arch.template.requirements", "qual.template.current"],
+  "related": [
+    "arch.template.language",
+    "arch.template.binding",
+    "arch.template.requirements",
+    "qual.template.current"
+  ],
   "provenance": [
-    {"source": "repository", "path": "packages/oorexx_string_template/ARCHITECTURE.md"},
-    {"source": "repository", "path": "packages/oorexx_string_template/CHANGELOG.md"}
+    {
+      "source": "repository",
+      "path": "packages/oorexx_string_template/ARCHITECTURE.md"
+    },
+    {
+      "source": "repository",
+      "path": "packages/oorexx_string_template/CHANGELOG.md"
+    }
   ]
 }
