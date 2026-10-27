@@ -1,3 +1,13 @@
+## v0.22-candidate14
+
+- Parse the complete s3270 peer-script action response envelope instead of requiring callers to supply ReadBuffer data, dimensions and cursor coordinates separately.
+- Validate the documented 12-field s3270 status line and final `ok`/`error` completion marker; action errors fail closed.
+- Derive rows, columns, zero-origin cursor and keyboard U/L/E state from the same reference response used for ReadBuffer comparison.
+- Extend the semantic differential to compare keyboard LOCKED/UNLOCKED state when reference status is available.
+- Make the reference normalizer accept a complete retained s3270 action response as one file, reducing cross-sample mismatches during live qualification.
+- Add explicit regressions for the s3270 response envelope, action error handling, keyboard divergence, cursor/dimension extraction and c0 basic-field attribute masks.
+- Retain the candidate13 fail-closed DBCS/multi-byte policy and NONDISPLAY masking.
+
 ## v0.22-candidate13
 
 - Add `S3270Reference.cls`, a read-only parser for retained `s3270 ReadBuffer(Ascii)` evidence and zero-origin cursor coordinates.
