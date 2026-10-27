@@ -50,3 +50,44 @@ insertion order. It passes 7/7 on the revised operator. The complete fresh
 extraction qualification now totals 21 + 13 + 7 = **41 native checks**.
 Independent acceptance remains Claude's responsibility; this extra coverage
 is not misrepresented as independent validation.
+
+## v0.4 — necessary-threshold consistency (27 October 2026)
+
+A THRESHOLD represents a **necessary condition for ACCEPTANCE**, not a sufficient
+condition. When the decision-maker states a minimum evidence tier of 3:
+
+- ACCEPTED at tier 2 on the same declared dimension and basis is a
+  STATED_RULE_VIOLATION (conditional on the caller's unverified input).
+- REJECTED at tier 4 is **not** a violation without an additional warrant saying
+  the tier is sufficient for acceptance; other objections may justify rejection.
+- An application using another measurement dimension, scale/basis or unknown value
+  cannot be ordered against the minimum: INDETERMINATE_COMPARABILITY unless
+  some other valid counterexample has already been established.
+- When a self-material gap and a directly observed threshold violation coexist,
+  the report retains **both** through selfStandardGap and reasonCodes.
+- If no self-material tier is supplied but an accepted case is below the stated
+  minimum, preserve the directly supported rule violation rather than silently
+  discarding it. The self-tier remains .nil (unknown).
+
+For explicit scales, the final optional parameter of standard() is
+requiredBasis:
+
+    a~standard('S','THRESHOLD','evidence',3,'','HIGHER_WORSE','ordinal:v1')
+    a~applied('S','CASE1',2,'ACCEPTED','evidence','ordinal:v1')
+
+Absent this parameter, the caller's omission asserts a shared basis
+ASSUMED_EQUIVALENT:S for compatibility with existing tests. It is not source
+authentication or independent evidence of metric comparability. The public API
+remains audit(standardId); outputs add ruleViolations, ruleConformingCases,
+uncomparableCases, ruleBasis and selfStandardGap.
+
+**Native test evidence:** on user-supplied ooRexx 5.3.0 r13196,
+test_standard_application_contract_gpt6.rex 21/21 PASS and
+test_threshold_necessary.rex 19/19 PASS. Those are implementer-side tests.
+Claude's independent fixtures test_standard_application_audit.rex (test 15)
+and test_standard_application_fairness.rex (test 16) remain separately owned
+and require independent qualification before merging this operator.
+
+Neither a structural violation nor a conditional self-standard gap proves that
+the stated rule is fair, that inputs are genuine, or that any underlying claim is
+true. The operator never outputs a merits verdict.
