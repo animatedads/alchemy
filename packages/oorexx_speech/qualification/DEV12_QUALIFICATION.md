@@ -21,3 +21,5 @@ qualification through Rasen Falcon with exact SIP/RTP/SocketProvider roots.
 
 Static package checks and the ooRexx standards enforcer are recorded on the
 sealed dev12 archive separately.
+
+The launcher defaults `RTP_LIB` to `$RTP_ROOT/build`, matching the current RTP Makefile output `build/liboorexx_rtp.so`.
