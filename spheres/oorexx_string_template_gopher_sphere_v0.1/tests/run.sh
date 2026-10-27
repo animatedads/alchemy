@@ -21,12 +21,14 @@ for a in arts.values():
     assert a.get('provenance')
     for rel in a.get('related',[]): assert rel in arts, (a['id'],rel)
 start=arts['ops.template.start']
-assert start['current_baseline']['version']=='0.1-dev2'
-assert start['current_baseline']['carrier_sha256']=='ec8cf86c920cf34a989bd03336a7e08ec0cd0e034675010438c3dab0063d34fc'
+assert start['current_baseline']['version']=='0.1-dev3'
+assert start['current_baseline']['carrier_sha256']=='65848f8bcd63376ff947da9729d880be6ca77e49dd5eab149458456227eace1a'
 qual=arts['qual.template.current']['evidence']
 assert qual['dev1_runtime'].startswith('PASS')
-assert qual['dev2_standards']=='PASS 0 errors 0 warnings'
-assert qual['dev2_runtime']=='NOT_RERUN'
+assert qual['dev3_standards']=='PASS 0 errors 0 warnings'
+assert qual['dev3_runtime'].startswith('PENDING')
+binding=arts['arch.template.binding']
+assert 'withFormatters creates a new StringTemplate over the same source rather than rebinding an existing object.' in binding['semantics']
 manifest=root/'qualification'/'MANIFEST.sha256'
 for line in manifest.read_text().splitlines():
     if not line.strip(): continue
