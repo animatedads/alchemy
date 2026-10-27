@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "arch.management-intentions.mvs",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "management-intentions",
   "title": "MVS intention, terminal and batch authority boundaries",
   "summary": "MVS management is discovery-first and asynchronous. Intention retains natural-language semantic state, Terminal Machine supplies terminal/session evidence, MVS Alchemy/JES supplies guest/job/dataset semantics, Hercules Services supplies emulator/control-plane evidence, and independent reference tools may corroborate but never inherit authority.",
@@ -13,7 +13,8 @@
     "Terminal Machine facts may expose terminal state, fields, cursor, keyboard, LU/device and presentation generation but do not become JES/dataset authority.",
     "s3270/c3270 remains an independent reference oracle and must never be relabelled TERMINAL_MACHINE.",
     "JES batch execution is asynchronous: submission creates/identifies work; completion and correctness are established from JES step codes, diagnostics, spool and domain output artifacts.",
-    "Safe discovery may perform many read-only observations before proposing an Intention; wrong scope is more expensive than bounded discovery."
+    "Safe discovery may perform many read-only observations before proposing an Intention; wrong scope is more expensive than bounded discovery.",
+    "When MVS Alchemy PRE23 completion-gate evidence is present, a facility PASS marker is not success until JES_ENDED=TRUE (HASP395) and SPOOL_RETAINED=TRUE; incomplete evidence must remain INCOMPLETE."
   ],
   "procedure": [
     "Resolve the requested guest first and bind the corresponding Linux host/Hercules instance before opening a terminal session.",
@@ -34,6 +35,11 @@
   ],
   "provenance": [
     {
+      "artifact": "mvs_intention_runner_v0.1-dev10.zip",
+      "sha256": "c7c424e6e12a8b5db2ef1ac7c7813309e70b6f53827944089e57a71f958bfd5b",
+      "claim": "Qualification-pending candidate adding PRE23 JES-ended/final-spool outcome gating and targeting current Terminal Machine candidate13."
+    },
+    {
       "artifact": "mvs_intention_runner_v0.1-dev9.zip",
       "sha256": "03a2cc798db5cff171cd7ca37eb5ca686d9f7bfce17cd381c85c77a703fbec52",
       "claim": "Native Terminal Machine consumer, target/session evidence projection, exact READY gate, clean LOGOFF path and dual-target qualification harness."
@@ -45,7 +51,7 @@
     }
   ],
   "missing_work": [
-    "Requalify the dev9 Terminal Machine consumer against candidate12/current source rather than silently changing the historical candidate8 baseline.",
+    "Qualify dev10 under exact ooRexx r13196 against Terminal Machine candidate13, then run the bounded ED209Z/ED209ZZ live terminal gates; do not promote the candidate before evidence returns.",
     "Complete same-session Terminal Machine versus s3270 differential qualification on ED209Z, then independently on ED209ZZ.",
     "Bind structured MVS Alchemy/JES discovery for jobs/datasets so terminal observation does not carry guest semantic responsibilities."
   ]
