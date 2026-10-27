@@ -997,7 +997,8 @@
   if got[2] \= "" then return .CloudResult~error(got[2])
   root = got[1]
   r = .CloudResult~ok("AWS EC2 machine inventory")
-  reservations = .CloudUtil~mapGet(root, "Reservations", .nil)  if .CloudUtil~isArray(reservations) then do res over reservations
+  reservations = .CloudUtil~mapGet(root, "Reservations", .nil)
+  if .CloudUtil~isArray(reservations) then do res over reservations
     instances = .CloudUtil~mapGet(res, "Instances", .nil)
     if .CloudUtil~isArray(instances) then do vm over instances
       id = .CloudUtil~mapGet(vm, "InstanceId", "")
