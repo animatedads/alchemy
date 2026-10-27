@@ -97,3 +97,12 @@ PRE23 supersedes PRE22 for qualification runs without changing the MVS carrier, 
 Current artifact: `mvs_alchemy_services_v0.1-dev3-pre23-jes-completion-gated.zip`, SHA-256 `4b7f92672b9675d2b508cef6dbda7b01fc44a381057044304cbdf269ba783b7f`.
 
 A live PASS now requires, in order: facility completion, `$HASP395 MASLIVE ENDED`, retained final MASLIVE printer/spool evidence, then the existing Logging v0.7 and Instrumentation Mesh evidence checks. `PASS ALL` without HASP395 is INCONCLUSIVE. HASP395 without retained MASLIVE spool is also INCONCLUSIVE. PRE23 remains NOT_RUN live on ED209Z until the unchanged sealed archive is exercised through the established JES path.
+
+
+## PRE24 managed-node execution audit (2026-10-27)
+
+PRE24 supersedes PRE23 for live qualification while retaining PRE23's mandatory `$HASP395 MASLIVE ENDED` and final-spool gates. The new delta is execution-audit only: every remote EXEC issued by the package harness now goes through the configured `sshnode.sh` with an explicit `--job-id`. File staging remains on the separately documented `sshnode.sh --transfer` path; PRE24 deliberately does not invent an unsupported combined flag form. Raw `ssh` and `scp` are rejected by a package-owned static checker.
+
+Current artifact: `mvs_alchemy_services_v0.1-dev3-pre24-sshnode-jobids.zip`, SHA-256 `b71a91596a79a9ce3ea2e6df1ec4eafb3a4394e9ff45e32c6255fe9ef781625e`.
+
+PRE24 changes no guest carrier, wire, RPC, provider or authority semantics. It remains NOT_RUN live on ED209Z until the unchanged sealed archive is exercised through the established JES path.
