@@ -1,0 +1,43 @@
+ooRexx WebSocket Access v0.1-dev2 source candidate validation status
+Date: 2026-10-27
+
+Status:
+  SOURCE CANDIDATE
+  NOT YET PROMOTED AS A QUALIFIED RELEASE
+
+Implemented in source:
+  - fragmented TEXT/BINARY message reassembly
+  - interleaved PING/PONG/CLOSE processing while fragmentation is active
+  - protocol-close 1002 for unexpected continuation / overlapping data message
+  - bounded assembled message size with close 1009
+  - reserved opcode and RSV rejection
+  - invalid fragmented/oversized control-frame rejection
+  - repaired local/peer close-frame transmission while state is CLOSING
+
+Historical qualified evidence retained:
+  oorexx_websocket_access_v0.1-dev1.zip
+  SHA-256 91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655
+
+Current external socket authority:
+  oorexx_socket_provider_v0.1-dev16.zip
+  SHA-256 fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2
+
+Required before dev2 promotion:
+  1. execute tests/test_websocket_contract.rex under ooRexx 5.3.0 r13196;
+  2. execute independent COTS live qualification through Socket Provider dev16;
+  3. include fragmented text/binary and interleaved control-frame cases;
+  4. verify local and peer close frames on wire before stream closure;
+  5. verify SocketAddress object identity remains intact.
+
+Local execution note:
+  The current ChatGPT runtime did not have an executable ooRexx interpreter
+  available from the supplied historical .deb backing file, so no new PASS is
+  asserted here. Independent qualification was requested through the
+  Rasen Falcon websocket-access lane (REQ-00000381).
+
+Explicit non-claims:
+  - fresh dev16 live qualification: NOT YET
+  - RFC 8441 WebSocket over HTTP/2: NO
+  - RFC 9220 WebSocket over HTTP/3: NO
+  - permessage-deflate/extensions: NO
+  - production entropy provider: NO
