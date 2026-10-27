@@ -1,0 +1,37 @@
+Terminal Machine v0.22-candidate13 validation note
+Date: 2026-10-27
+
+SCOPE
+=====
+Candidate13 adds an independent s3270 reference parser and semantic differential comparator.
+It does not alter TN3270/TN3270E wire negotiation, host mutation, credentials or ownership.
+
+REFERENCE CONTRACT
+==================
+The parser is based on the x3270/s3270 scripting contract for ReadBuffer(Ascii):
+- SF(c0=..) consumes a display-buffer position and carries basic field attributes;
+- SA(..) is an extended attribute and does not consume a display position;
+- ordinary positions are represented as display-code hexadecimal bytes;
+- NULL positions are normalized to visible blanks;
+- cursor coordinates supplied to the adapter use s3270 zero-origin coordinates.
+
+SECURITY / HONESTY
+==================
+NONDISPLAY bytes are never exported in the detached reference snapshot.
+Multi-byte/DBCS cell tokens are rejected as S3270_UNSUPPORTED_CELL_TOKEN until their exact
+two-cell semantics are implemented.
+
+CURRENT-TURN VALIDATION
+=======================
+- Package manifest regenerated and verified with sha256sum -c.
+- Static source review completed for the new parser, comparator, fixture test and tool.
+- No runnable ooRexx r13196 interpreter or s3270 executable is mounted in this authoring
+  container, so this turn does not claim fresh interpreter or live ED209Z execution.
+- Candidate12's previously recorded r13196 focused 3270 qualification remains inherited
+  evidence for unchanged protocol/model/ownership surfaces.
+
+NEXT LIVE GATE
+==============
+Run the same stable ED209Z states through Terminal Machine and s3270, retain both captures,
+and compare field address/length/protection/numeric/MDT/NONDISPLAY, cursor and visible rows.
+Do not use screenshot equality as the qualification criterion.
