@@ -28,7 +28,34 @@ long=.WebSocketMessage~new(.WebSocketOpcode~BINARY,copies("A",126))
 enc=.WebSocketCodec~encodeClient(long,"11223344"x)
 call assert c2x(substr(enc,1,4))="82FE007E", "extended 16-bit payload length"
 
-say "PASS websocket RFC6455 access/handshake/frame contract"
+fragStream=.FakeStream~new(.array~new)
+fragHandshake=.WebSocketHandshakeResult~new(101,.directory~new)
+frag=.WebSocketConnection~new(fragStream,address,masker,fragHandshake)
+fragStream~appendRead("0103"x||"Hel")
+fragStream~appendRead("8901"x||"!")
+fragStream~appendRead("8002"x||"lo")
+assembled=frag~receive
+call assert assembled<>.nil, "fragmented message returned"
+call assert assembled~isText, "fragmented opcode restored"
+call assert assembled~payload="Hello", "fragmented payload reassembled"
+call assert assembled~final, "reassembled message final"
+call assert pos("8A81"x,fragStream~written)>0, "interleaved ping answered with pong"
+
+closeStream=.FakeStream~new(.array~new)
+closeConn=.WebSocketConnection~new(closeStream,address,masker,fragHandshake)
+call assert closeConn~close(1000,"bye"), "local close succeeds"
+call assert closeConn~state=.WebSocketState~CLOSED, "local close reaches CLOSED"
+call assert left(closeStream~written,2)="8885"x, "local close frame transmitted while CLOSING"
+call assert \closeStream~isOpen, "local close closes stream"
+
+badStream=.FakeStream~new(.array~of("8001"x||"x"))
+badConn=.WebSocketConnection~new(badStream,address,masker,fragHandshake)
+bad=badConn~receive
+call assert bad=.nil, "unexpected continuation fails closed"
+call assert badConn~state=.WebSocketState~CLOSED, "protocol failure closes connection"
+call assert \badStream~isOpen, "protocol failure closes stream"
+
+say "PASS websocket RFC6455 access/fragment/close contract"
 exit 0
 
 assert: procedure
@@ -92,6 +119,9 @@ addpath: procedure
 ::method socketAddress
   expose address
   return address
+::method isOpen
+  expose open
+  return open
 
 ::class NilSocketProvider
 ::method streamSender
