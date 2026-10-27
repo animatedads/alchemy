@@ -28,3 +28,7 @@ Source: `animatedads/oorexx/oorexx2cpp/ootest/interpreter_bugs/TICKET_bug2.md` a
 ## Blockers
 
 No ooRexx/BSF/JDORFX installed in the validation container; phase runtime results are **NOT_RUN**. The current Ismaili source archive checksum and command-level visual/animation evidence are also missing; upstream native-argument patch merge is not confirmed. Do not describe this as production-qualified or as an approved Wire UI renderer. See `qualification/STATUS.md`.
+
+## Deterministic dependency search paths
+
+Inherited `CLASSPATH` and `REXX_PATH` are intentionally excluded by the runner, so a globally installed duplicate BSF JAR or class cannot silently override the selected release. If the selected bridge/JDORFX distribution has transitive dependencies, supply them deliberately using `BSF_EXTRA_CLASSPATH` and `BSF_EXTRA_REXX_PATH`, with their exact versions/paths recorded in the qualification receipt.
