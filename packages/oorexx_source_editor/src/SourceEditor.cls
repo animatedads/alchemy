@@ -1,4 +1,4 @@
-/* ooRexx Source / Code / Class Editor v0.1-dev5
+/* ooRexx Source / Code / Class Editor v0.1-dev6
  * Language-neutral editing core with first-tier ooRexx, C, C++, JSON and Python profiles.
  * The implementation language is ooRexx; source semantics stay language-neutral.
  */
@@ -168,22 +168,35 @@
   return .true
 
 ::method save
-  expose path originalText
+  expose path originalText lastPublicationResult lastBackupResult
   use arg keepBackup=.true
   current=.SourceEditorUtil~readAll(path)
   if current<>originalText then raise syntax 88.900 array('source generation changed since load; refusing overwrite:' path)
   candidate=self~text
-  tmp=path||'.newshell-new'
-  bak=path||'.newshell-bak'
-  dummy=.SourceEditorUtil~writeAll(tmp,candidate)
-  if keepBackup then dummy=.SourceEditorUtil~writeAll(bak,current)
-  /* RexxUtil SysFileMove does not replace an existing target.  Until oorexx_atomic_file
-     is wired in, publish by direct replacement only after exact-generation check and
-     retain a complete sibling backup.  This is recovery-oriented, not crash-durable. */
-  dummy=.SourceEditorUtil~writeAll(path,candidate)
-  call SysFileDelete tmp
+  options=.AtomicFileOptions~new
+  options~durability='FULL'
+  options~noFollow=.true
+  options~preserveMode=.true
+  options~backupPolicy='NONE'
+  atomic=.AtomicFile~new
+
+  lastBackupResult=.nil
+  if keepBackup then do
+    bak=path||'.newshell-bak'
+    lastBackupResult=atomic~replace(bak,current,options)
+    if \lastBackupResult~ok then
+      raise syntax 88.900 array('source backup publication failed:' lastBackupResult~errorStage lastBackupResult~errorMessage)
+  end
+
+  lastPublicationResult=atomic~replace(path,candidate,options)
+  if lastPublicationResult~published then originalText=candidate
+  if \lastPublicationResult~ok then
+    raise syntax 88.900 array('source publication failed:' lastPublicationResult~errorStage lastPublicationResult~errorMessage)
   originalText=candidate
   return path
+
+::attribute lastPublicationResult get
+::attribute lastBackupResult get
 
 ::method find
   use arg needle, mode='text', caseMode='sensitive'
@@ -749,5 +762,5 @@ badJson:
   end
   raise syntax 88.900 array('required package not found:' package)
 
-::requires "rxregexp.cls"
+::requires "AtomicFile.cls"\n::requires "rxregexp.cls"
 ::requires "json.cls"
