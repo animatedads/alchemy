@@ -29,24 +29,34 @@
 ::method onAccepted
   expose source
   use strict arg target,messageName,delivery='SYNC'
-  return source~on('SOCKET.ACCEPTED',target,messageName,delivery)
+  sourceRef=source
+  guard off
+  return sourceRef~on('SOCKET.ACCEPTED',target,messageName,delivery)
 
 ::method when
   expose source
   use strict arg filter
-  return source~when(filter)
+  sourceRef=source
+  guard off
+  return sourceRef~when(filter)
 
 ::method drainReady
   expose listener source descriptor
   use strict arg maxEvents=64
   maxEvents=maxEvents+0
   if maxEvents<1 then return 0
+  listenerRef=listener
+  sourceRef=source
+  descriptorValue=descriptor
+  /* Provider calls and Event Runtime callbacks must not execute while this
+     adapter's guard is held. */
+  guard off
   count=0
   do while count<maxEvents
-    accepted=listener~tryAccept
+    accepted=listenerRef~tryAccept
     if accepted==.nil then leave
     metadata=.directory~new
-    metadata['descriptor']=descriptor
+    metadata['descriptor']=descriptorValue
     if accepted~hasMethod('ADDRESS') then do
       address=accepted~address
       if address<>.nil then do
@@ -54,7 +64,7 @@
         if address~hasMethod('CANONICAL') then metadata['canonicalAddress']=address~canonical
       end
     end
-    source~emit('SOCKET.ACCEPTED',accepted,metadata)
+    sourceRef~emit('SOCKET.ACCEPTED',accepted,metadata)
     count+=1
   end
   return count
@@ -62,7 +72,9 @@
 ::method waitAndDrain
   expose listener
   use strict arg timeoutMilliseconds=0,maxEvents=64
-  if \listener~waitReady(timeoutMilliseconds) then return 0
+  listenerRef=listener
+  guard off
+  if \listenerRef~waitReady(timeoutMilliseconds) then return 0
   return self~drainReady(maxEvents)
 
 /* Registry for multiple already-created adapters.
