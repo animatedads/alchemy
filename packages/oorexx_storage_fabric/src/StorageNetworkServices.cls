@@ -104,7 +104,12 @@
 ::method listener
   expose ordinary named
   use strict arg logicalPeer=.nil
-  if logicalPeer==.nil | named==.nil then return ordinary~listener
+  /* No advanced peer requested: ordinary TCP/Unix/QueueRexx remains supported.
+   * An explicit named peer request must NOT silently become an ordinary
+   * listener when its manager is missing, even during startup/recovery. */
+  if logicalPeer==.nil then return ordinary~listener
+  if logicalPeer~string~strip="" then return .nil
+  if named==.nil then return .nil
   /* XTP manager computes the admitted service set from registry and planner;
    * the caller cannot assign its operational class. */
   return named~listener(logicalPeer)
@@ -209,12 +214,15 @@
   digest=self~digest(sha256Digest)
   if digest="" then return .false
   c=challenge~string
-  if length(c)<1 | length(c)>128 | pos("0a"x,c)>0 | pos("0d"x,c)>0 then return .false
+  /* Text frames carry exactly one printable, bounded challenge token. */
+  if length(c)<1 | length(c)>128 then return .false
+  if verify(c,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.:=")<>0 then return .false
   frame="STORAGE-DISCOVERY/1 SEARCH "||digest||" "||c
   sentBytes=sender~send(frame)
   if sentBytes==.nil then return .false
   if \datatype(sentBytes,"N") then return .false
-  return sentBytes>0
+  /* A short write is not a successfully emitted discovery frame. */
+  return sentBytes=length(frame)
 ::method advertise
   expose sender
   use strict arg sha256Digest,challenge
@@ -222,12 +230,15 @@
   digest=self~digest(sha256Digest)
   if digest="" then return .false
   c=challenge~string
-  if length(c)<1 | length(c)>128 | pos("0a"x,c)>0 | pos("0d"x,c)>0 then return .false
+  /* Text frames carry exactly one printable, bounded challenge token. */
+  if length(c)<1 | length(c)>128 then return .false
+  if verify(c,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.:=")<>0 then return .false
   frame="STORAGE-DISCOVERY/1 OFFER "||digest||" "||c
   sentBytes=sender~send(frame)
   if sentBytes==.nil then return .false
   if \datatype(sentBytes,"N") then return .false
-  return sentBytes>0
+  /* A short write is not a successfully emitted discovery frame. */
+  return sentBytes=length(frame)
 ::method parseHint
   use strict arg receivedBytes
   p=.directory~new; p["status"]="INVALID"
@@ -238,7 +249,7 @@
   else return p
   if self~digest(digest)="" then return p
   if length(challenge)<1 | length(challenge)>128 then return p
-  if challenge~words<>1 then return p
+  if verify(challenge,"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.:=")<>0 then return p
   p["status"]="UNTRUSTED_HINT"
   p["kind"]=kind; p["digest"]=digest; p["challenge"]=challenge
   return p

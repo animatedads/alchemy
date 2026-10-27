@@ -16,13 +16,16 @@
     "Capacity governor enforcement is mandatory when operational policy limits per-context rate, aggregate rate or parallel receiver contexts.",
     "Multicast gives untrusted digest-only hints, not HAVE evidence. Read/repair still uses authenticated peer checks and full digest verification.",
     "A verified second copy in Azure Git and a permanent local copy are independently accounted for; an unavailable, unsafe or unverified location does not satisfy durability.",
-    "Live ED209 L2/proto36/UDP session admission, persistent KEY and WAN transfer remain unqualified until exercised end-to-end."
+    "Live ED209 L2/proto36/UDP session admission, persistent KEY and WAN transfer remain unqualified until exercised end-to-end.",
+    "An explicit named listener target fails closed if the named manager is missing or the target is blank; only unbound listener requests may use the ordinary Socket Provider.",
+    "Multicast SEARCH/OFFER challenges are a single bounded printable ASCII token; a partial network send is failure, and an OFFER remains an untrusted hint."
   ],
   "procedure": [
     "Select ordinary Socket Provider for unbound operations, or resolve a canonical named service and planner rule for bound operations.",
     "Reject a bound operation when the accepting context lacks name/admission/peer evidence; reject mismatches without socket downgrade.",
     "Delegate authorised StorageRef operation to existing StoragePeerService and retain COPY→VERIFY→COMMIT semantics.",
-    "Qualify operational caps, authenticated resume, restart persistence, multicast hints and live-grid paths before production."
+    "Qualify operational caps, authenticated resume, restart persistence, multicast hints and live-grid paths before production.",
+    "Regression-test explicit named-listener refusal, ordinary listener continuity, malformed discovery challenges and short writes under ooRexx r13196."
   ],
   "topics": [
     "XTP",
@@ -47,6 +50,12 @@
       "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
       "member": "PARALLEL_FETCH.md",
       "claim": "Dev23 capacity admission and multi-source planning; not proof of live ED209 routing"
+    },
+    {
+      "artifact": "storage_network_services_dev1_20261027.zip",
+      "sha256": "ec9a1e912010bf35643a15eb5b3ee80523ab04f693d346929336f21aa746cb96",
+      "member": "StorageNetworkServices.patch",
+      "claim": "Native r13196 listener and multicast fixture passed; live network integration remains unqualified."
     }
   ]
 }
