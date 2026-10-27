@@ -12,14 +12,16 @@
     "XMPP/BOSH adapter dev2 records fail-closed protection, XEP-0206 restart projection and separation from Instrumentation authority.",
     "Current external Socket Provider authority is dev16 SHA-256 fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2; the first-class GitHub Socket Provider source tree still identifies itself as dev14 and is not treated as dev16 source.",
     "Current external Instrumentation Mesh authority is dev8 SHA-256 47402459e658da6ddb17c65c98010c0acd0e35d43b3a0b01c8c13c835f65d624; exact first-class dev8 runtime source publication remains open.",
-    "Network Transport Intentions dev3 SHA-256 d90dc49e4799f929761e75b302ab141a3bab481efdf951cdd508491a9b18c64b and XTP dev25 SHA-256 7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b are current context; neither transfers transport authority into BOSH or Messaging."
+    "Network Transport Intentions dev3 SHA-256 d90dc49e4799f929761e75b302ab141a3bab481efdf951cdd508491a9b18c64b and XTP dev25 SHA-256 7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b are current context; neither transfers transport authority into BOSH or Messaging.",
+    "BOSH/API Client adapter v0.1-dev1 source candidate maps the generic BoshHttpExchangeProvider seam to current BOSH dev6 and API Client v0.4.1 without importing XMPP, SocketProvider or XTP; cleartext HTTP is denied by default."
   ],
   "open_work": [
     "Publish the exact Socket Provider v0.1-dev16 source tree under the first-class GitHub package path and byte/revision-verify it against the Library archive before using the repo tree for dev16 qualification.",
     "Publish the exact Instrumentation Mesh v0.1-dev8 runtime source tree as a first-class package; do not reconstruct it from older vendored copies.",
     "Run BOSH dev6 environment qualification against exact Socket Provider dev16, Instrumentation Mesh dev8 and ooRexx r13196 source/runtime roots once those roots are available together.",
     "Run the current provider-neutral Messaging & Presence XMPP transport fixture against the exact dev16 source tree after source publication; retain fail-closed STARTTLS until a generic same-stream upgrade route is explicitly qualified.",
-    "Add a concrete generic HTTP/HTTPS exchange provider qualification for BOSH, including real HTTPS-over-XTP composition, without adding HTTP/TLS/XTP implementation knowledge to BOSH core.",
+    "Execute the rebased BOSH/API Client adapter deterministic qualification under ooRexx r13196 with current BOSH dev6 and API Client v0.4.1 roots, then qualify a live HTTPS BOSH exchange through API Client.",
+    "Provide/qualify a lower API Client transport backend that uses the shared SocketProvider/selector before making any HTTPS-over-XTP claim; API Client v0.4.1 currently documents RxSock socket ownership.",
     "Register/deploy this GitHub sphere through LLM Gopher; sphere_check currently returns SPHERE_NOT_FOUND."
   ],
   "artifacts": [
@@ -41,6 +43,11 @@
       "name": "oorexx_bosh_transport GitHub dev6 source reconciliation",
       "status": "source-candidate-not-released-archive",
       "basis": "released dev5 semantics plus runner/current-authority metadata repair"
+    },
+    {
+      "name": "oorexx_bosh_api_client_adapter v0.1-dev1",
+      "status": "source-candidate-rebased-on-current-main",
+      "basis": "generic BoshHttpExchangeProvider -> ApiRequest/ApiResponse adapter; current BOSH dev6 + API Client v0.4.1"
     }
   ],
   "current_external_authorities": {
@@ -59,6 +66,12 @@
     "xtp": {
       "version": "0.1-dev25",
       "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b"
+    },
+    "api_client": {
+      "version": "0.4.1",
+      "api": "api.client/0.4",
+      "role": "authoritative outbound HTTP/HTTPS client",
+      "socket_ownership": "RxSock in current v0.4.1 README"
     }
   }
 }
