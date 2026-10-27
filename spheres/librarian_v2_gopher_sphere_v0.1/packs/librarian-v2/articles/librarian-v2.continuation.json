@@ -3,16 +3,17 @@
   "id": "librarian-v2.continuation",
   "title": "Next increment — exact occurrence-level, bitemporal provenance",
   "section": "qualification",
-  "version": "0.1",
+  "version": "0.1.1",
   "sphere": "librarian-v2",
   "authority": "project-continuity",
-  "summary": "Introduce a new immutable-ish, evidence-only edge identity anchored to source unit revision and exact claim/quotation span, not only source ID; support multiple parents and per-edge valid/observed time plus supersession/retraction without deleting history. Use Single Time Service authority for temporal comparison. Provide a deterministic snapshot graph before using dependency groups in comparative positioning. Keep the existing dev8 graph as an experimental adapter, not as an authoritative truth engine.",
+  "summary": "Dev9 now has source-edition/occurrence-level, bitemporal append-only provenance and conservative conflict handling. Next work must verify exact source span hashes and byte/codepoint offsets, authenticate media capture, introduce durable transactional storage and deterministic out-of-order ingestion, scope uncertain branches locally, index as-of evaluation, review Time Service v0.9 compatibility, and catch up original dev1–dev7 source on GitHub before requesting production promotion.",
   "invariants": [
     "Define source edition and occurrence identifiers before designing graph edge dispatch.",
     "Prove that historical as-of graph queries are insertion-order invariant for equivalent eligible evidence.",
     "Retractions of provenance links must not imply falsity of the source claim.",
     "Extend admission tests with contradictory evidence, multiple parents, deduplicated syndication, cross-span quotations, publication vs observation cutoffs and source replacement.",
-    "Retain old artifacts and qualification receipts; do not silently promote experimental head to production."
+    "Retain old artifacts and qualification receipts; do not silently promote experimental head to production.",
+    "Use new Rasen Falcon mailbox lane librarian_v2 under authenticated CHATGPT. Check unread requests with project.requests.list(componentId=librarian_v2,unreadOnly=true)."
   ],
   "provenance": [
     {
@@ -30,6 +31,14 @@
       "line_start": 1,
       "line_end": 9,
       "claim": "Prior source-level limitations."
+    },
+    {
+      "artifact": "librarian_v2_dev9_20261027.zip",
+      "sha256": "6ebb503d6db6d3ffe9dc93385c02b637af8fa21dfb6fe43da2466f0aba207496",
+      "member": "librarian_v2_dev9/DEV9_NOTES.md",
+      "line_start": 1,
+      "line_end": 32,
+      "claim": "Known work still missing after dev9 qualification."
     }
   ]
 }
