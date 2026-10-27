@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "arch.memory-fabric.identity-authority",
+  "version": "0.1",
+  "sphere": "memory-fabric",
+  "title": "Memory Fabric provider and block identity",
+  "summary": "Memory Fabric keeps stable fabric/MU/MI identity separate from provider incarnation and transport endpoint. Job-to-Node retains placement authority.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "A provider epoch and providerGeneration fence old offers; a service registration and raw XTP ACK are not proofs of current memory ownership.",
+    "MemoryFabricRegistry~resolveBlock(blockId,generation) identifies one presently authoritative block owner; a different provider claiming a resident replica requires independent authenticated replica authority.",
+    "Resident block offset/length and page-aligned window checks precede transfer admission, and are repeated before send.",
+    "No transparent remote memory pointers: move work toward resident memory when placement admits it; use shared/DMA block bag locally."
+  ],
+  "procedure": [],
+  "topics": [
+    "memory-fabric"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_memory_fabric_v0.1-dev10.zip",
+      "sha256": "91a05494c86ce7627f7a010af182c167701b5bf1f8ce2d93c99cda9d992644d8",
+      "member": "src/MemoryFabric.cls",
+      "claim": "Defines provider identities, epochs, block reference and resolveBlock current-authority semantics."
+    },
+    {
+      "artifact": "oorexx_memory_fabric_v0.1-dev10.zip",
+      "sha256": "91a05494c86ce7627f7a010af182c167701b5bf1f8ce2d93c99cda9d992644d8",
+      "member": "src/MemoryFabricMemoryBlock.cls",
+      "claim": "Defines native block-bag seam and block lifetime semantics."
+    }
+  ]
+}
