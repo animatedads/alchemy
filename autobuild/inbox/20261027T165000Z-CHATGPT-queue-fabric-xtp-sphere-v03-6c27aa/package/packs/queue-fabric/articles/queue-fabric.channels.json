@@ -1,0 +1,23 @@
+{
+  "id": "queue-fabric.channels",
+  "title": "Channels, store-and-forward and transport seam",
+  "section": "integration",
+  "summary": "Remote queue definitions map application alias to remote manager/queue/transmission queue/sender channel. Channel retry uses RELEASE, preserving application backout semantics. Socket transport is a separate seam; queue.transport/2 details belong in the dedicated Queue Transport sphere.",
+  "invariants": [
+    "Do not make channel retry look like application NACK/backout.",
+    "Receiver acceptance is idempotent by transferId.",
+    "Transport confidentiality/authentication does not move queue/application authority into the socket layer."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "queue-fabric",
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/README.md",
+      "claim": "Grounded in current project package."
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "id": "queue-fabric.xtp-dev30-gate",
+  "kind": "article",
+  "sphere": "queue-fabric",
+  "version": "0.3",
+  "authority": "project-artifact",
+  "title": "XTP dev30 diagnostics and durable Queue Fabric receipt gate",
+  "section": "integration",
+  "summary": "XTP dev30 fixes stale control/stream reliability and limits DIAG amplification/information leakage. None of these transport signals is an authenticated remote Queue Fabric UOW. Queue Fabric XTP receipt-gate candidate1 is locally mock-qualified, not a fully authenticated channel.",
+  "invariants": [
+    "Preserve Queue Fabric queue.fabric/0.9 and encrypted authenticated queue.transport/2, with ordinary TCP/TLS and other sockets working unchanged.",
+    "QueueChannelFabric~pump ACKs its transmission queue on transport~deliver success. XTP CNTL, multicast quorum, DIAG or timeout must never be returned as durable Queue Fabric success.",
+    "XTP dev29 introduced SYNC/ECHO for context-scoped unicast streams and DIAG code 1 for refusal; dev30 bounds DIAG size to the provoking packet, limits replies per host and globally, and emits reason VALUE name only.",
+    "Source-binding, KEY return-bit and SYNC/ECHO do not constitute queue.transport/2 peer authentication. Transport or DIAG failure may still leave application commit outcome ambiguous; use RELEASE/reconcile.",
+    "The standalone QueueXtpReceiptGate requires an injected verifier to authenticate a remote committed receipt and checks transferId, queueName, sourceManager and durable markers before returning success.",
+    "Local r13196 mock tests passed 13 assertions for the downloadable candidate ZIP (sha256 9a33b2df21d436639de3ba5f2ef17c97bd04ddbdf51c8eb7dd735a40281da032); independent GitHub candidate Autobuild still needs acceptance.",
+    "Actual queue.transport/2 over XTP dev30, bidirectional reply correlation, durable queue restart, multicast per-manager receipts, Planner ticket/WLU gating and ED209 field routes are not qualified.",
+    "XTP DIAG numeric allocation is owned by XTP dev30 docs/DIAG_REGISTRY.md; this sphere does not change it."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "packages/oorexx_xtp_v0.1-dev30/README.md",
+      "claim": "dev30 transport changes; not a Queue Fabric acceptance witness."
+    },
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "packages/oorexx_queue_fabric_v0.9-dev6/src/ObjectQueueChannels.cls",
+      "claim": "Pump ACK follows transport deliver success at source line 600 to 609."
+    },
+    {
+      "artifact": "queue_fabric_xtp_receipt_gate_v0.1_candidate1.zip",
+      "sha256": "9a33b2df21d436639de3ba5f2ef17c97bd04ddbdf51c8eb7dd735a40281da032",
+      "member": "src/QueueXtpReceiptGate.cls",
+      "claim": "Standalone local r13196 candidate with mock verifier, not a cryptographic network acceptance."
+    }
+  ]
+}

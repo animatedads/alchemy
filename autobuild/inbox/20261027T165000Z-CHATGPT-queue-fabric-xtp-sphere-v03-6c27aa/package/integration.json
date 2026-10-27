@@ -1,0 +1,38 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "queue_fabric_gopher_sphere",
+    "version": "0.3",
+    "kind": "documentation"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "manifest",
+      "argv": [
+        "sha256sum",
+        "-c",
+        "qualification/MANIFEST.sha256"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "xtp-static",
+      "argv": [
+        "bash",
+        "tests/check_xtp_contract.sh"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "spheres/queue-fabric-v0.3"
+    }
+  }
+}
