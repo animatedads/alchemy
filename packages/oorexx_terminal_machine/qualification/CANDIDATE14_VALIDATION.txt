@@ -1,0 +1,51 @@
+Terminal Machine v0.22-candidate14 validation note
+Date: 2026-10-27
+
+SCOPE
+=====
+Candidate14 strengthens the independent s3270 semantic-differential adapter. It consumes
+the complete peer-script action response rather than requiring separately sampled cursor
+and screen-size arguments. The response completion status supplies keyboard state, current
+rows/columns and zero-origin cursor coordinates.
+
+REFERENCE CONTRACT
+==================
+The x3270/s3270 scripting contract states that each command completes with a 12-field
+status line followed by ok or error. The status fields include keyboard state, current
+screen rows/columns and zero-origin cursor coordinates. ReadBuffer(Ascii) data lines retain
+SF/SA attribute tokens and display-code bytes. Candidate14 validates and binds those facts
+together before creating reference evidence.
+
+HONESTY / SECURITY
+==================
+- error completion is rejected as S3270_ACTION_ERROR.
+- malformed status or cursor/dimension values fail closed.
+- U maps to UNLOCKED; L and operator-error E map to LOCKED for comparison with the
+  Terminal Machine snapshot contract. The original status keyboard code remains available.
+- NONDISPLAY data remains masked before reference snapshots escape.
+- multi-byte/DBCS ReadBuffer tokens remain unsupported and fail closed rather than being
+  flattened into false one-cell equality.
+- data-only retained fixtures remain supported but carry keyboardState=UNKNOWN, so no
+  keyboard-equivalence claim is made from evidence that does not contain status.
+
+CURRENT-TURN VALIDATION
+=======================
+- Candidate14 package MANIFEST.sha256 regenerated and verified with sha256sum -c.
+- New response-envelope, completion, keyboard and c0 attribute regression sources were
+  statically reviewed.
+- No runnable ooRexx r13196 or s3270 binary is mounted in this authoring container, so
+  fresh execution remains an independent qualification gate.
+
+DOWNSTREAM / LIBRARY CHECK
+==========================
+MVS Intention Runner v0.1-dev10 explicitly targets Terminal Machine candidate13 and adds a
+candidate13 compatibility harness, but its authoring qualification also leaves r13196 and
+live ED209Z/ED209ZZ execution unclaimed. Candidate14 changes only the independent s3270
+reference adapter and does not alter TN3270LiveSession.
+
+NEXT LIVE GATE
+==============
+Run candidate14 under exact ooRexx 5.3.0 r13196, then retain complete s3270 ReadBuffer
+action responses for stable ED209Z states. Compare dimensions, cursor, keyboard, visible
+rows and field address/length/protection/numeric/MDT/NONDISPLAY semantics. Repeat
+independently on ED209ZZ.
