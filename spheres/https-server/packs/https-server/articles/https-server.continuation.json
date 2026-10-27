@@ -1,0 +1,31 @@
+{
+  "id": "https-server.continuation",
+  "title": "Streaming continuation candidate",
+  "section": "qualification",
+  "summary": "HTTPS v0.4.8 is a candidate built from exact Library v0.4.7 to provide bounded request-body and response-source streaming for WebDAV and other consumers; canonical promotion waits for exact-r13196 and live TLS qualification.",
+  "invariants": [
+    "RxSock remains sole accepted-socket descriptor and network-I/O owner.",
+    "OpenSSL remains behind memory BIOs; the streaming seam does not pass sockets to OpenSSL.",
+    "Legacy buffered requests remain bounded by maxBodyBytes.",
+    "Claimed request bodies are delivered in bounded chunks after request-head/firewall preflight and are not accumulated into HttpRequest.body.",
+    "Streaming responses write headers first and feed bounded source chunks through existing TlsSession.writeAll backpressure.",
+    "A stream consumer owns the claimed request body and final response; it does not re-enter ordinary route/interceptor dispatch.",
+    "Do not promote v0.4.8 as accepted until exact ooRexx 5.3.0 r13196 + Foreign Runtime v0.17.1 and live TLS forcing cases pass."
+  ],
+  "kind": "article",
+  "version": "0.1",
+  "sphere": "https-server",
+  "authority": "project-continuation",
+  "provenance": [
+    {
+      "artifact": "oorexx_https_server_v0.4.7.zip",
+      "sha256": "ae1a4caa1f48d6348cdfa283323a25e300bda5c30b7ea5f8ef825c635502ac3c",
+      "claim": "Exact Library source baseline."
+    },
+    {
+      "artifact": "oorexx_https_server_v0.4.8.zip",
+      "sha256": "d38ddd049e5d8f5683e4ebf09e09a870c9c562bd3663db32950df711f7040fbe",
+      "claim": "CHATGPT continuation candidate; static PASS, runtime qualification pending."
+    }
+  ]
+}
