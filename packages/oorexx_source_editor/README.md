@@ -1,4 +1,4 @@
-# ooRexx Source / Code / Class Editor v0.1-dev5
+# ooRexx Source / Code / Class Editor v0.1-dev6
 
 A native ooRexx implementation of the NewShell code/class editing model. This is **not** the emergency line editor. It is the normal development/source editing API that AI assistants, NewShell tools, class builders and CLI UI front-ends can consume.
 
@@ -26,7 +26,7 @@ doc~replaceLine(42, '    return EXIT_FAILURE;')
 doc~save
 ```
 
-`SourceDocument~save` rereads the source and refuses to overwrite it when the on-disk generation differs from what was loaded. It retains a complete `.newshell-bak` sibling before publication. It does **not** claim crash-durable atomic publication; that belongs to `oorexx_atomic_file` when that library is wired in.
+`SourceDocument~save` rereads the source and refuses to overwrite it when the on-disk generation differs from what was loaded. Dev6 publishes both the optional `.newshell-bak` sibling and the live candidate through `oorexx.atomic-file/0.1` with `FULL` durability requested. `lastBackupResult` and `lastPublicationResult` expose the Atomic File evidence. Atomic File dev1 cannot provide race-free expected-generation CAS or an integrated backup transaction, so the SourceDocument generation fence remains an application-level precondition and the backup+target pair is not claimed as one atomic transaction.
 
 ## Finding and grep
 
@@ -128,3 +128,16 @@ The editor does **not** duplicate Semantic Source Store authority. Development D
 code-editor complete FILE [PREFIX [KIND]]
 code-editor complete-tree ROOT [PREFIX [FILESPEC [LANGUAGE]]]
 ```
+
+
+## Dev6 Atomic File publication
+
+Dev6 removes Source Editor's direct live-file replacement path. Save now:
+
+1. rereads the current source and rejects stale loaded generations;
+2. publishes the recovery sibling through `.AtomicFile~replace` when backups are enabled;
+3. publishes the candidate through `.AtomicFile~replace`;
+4. requests `FULL` durability, target no-follow, existing mode preservation and `backupPolicy=NONE`;
+5. exposes the returned `AtomicFileResult` objects.
+
+If Atomic File reports `published=.true` but `ok=.false` (for example a post-rename parent-directory sync failure), SourceDocument updates its remembered generation to the published candidate before surfacing the durability failure. It therefore never pretends the old source is still current after a partially satisfied durability promise.
