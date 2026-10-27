@@ -1,35 +1,7 @@
-# ooRexx Management Intention Discovery v0.1-dev8
+# ooRexx Management Intention Discovery v0.1-dev9
 
-Dev7 keeps the Management resolver domain-blind while rebasing its transient network specialist on the current transport stack.
+Dev9 keeps Management domain-blind and non-mutating while rebasing its transient instrumentation specialist onto Instrumentation Intentions v0.1-dev2 / Instrumentation Mesh v0.1-dev8.
 
-The Network Transport surface now carries, when advertised by related objects:
+Related authoritative objects may expose, for the current exploration only, bounded operational events, explicit source correlation IDs, producer-declared causation/context, observed relationships and publication freshness. Management does not infer causality, incident state or service failure from timestamps, co-location, severity or staleness. Instrumentation commands remain outside the surface.
 
-- Socket Provider v0.1-dev8 address/family/capability objects, including NORM and XTP multicast;
-- XTP v0.1-dev11 route objects supplied by the XTP authority;
-- independent path observations such as `PASS` or `NO_RESPONSE_OR_FILTERED`;
-- Spiral 1 COTS-interface witnesses mapping standard/interface to ooRexx access object, provider/binding, native implementation and qualification state.
-
-Management does not interpret those protocols or statuses. It performs bounded relationship traversal, discovers transient intention sources from related objects, asks those specialists whether the original request is relevant, and preserves their evidence.
-
-A configured route, a path observation and a standards/interface witness are different facts. None is promoted into another by the Management layer.
-
-## Dynamic qualification
-
-The dev8 regression begins at machine `ED209C`, reaches a related multicast service, discovers Network Transport Intentions transiently, and exposes NORM, XTP route state, path evidence and an interface witness. The path authority is then changed from `NO_RESPONSE_OR_FILTERED` to `PASS`; the identical exploration sees the new observation and does not retain stale state.
-
-## Run
-
-```sh
-REXX_BIN=/path/to/rexx ./tools/run_environment_test.sh
-```
-
-The environment suite is read-only and requires no live cloud or network access.
-
-## dev8 — Instrumentation Mesh specialist discovery
-
-Related authoritative objects may now advertise `instrumentation.intentions/0.1`
-for the current exploration. The specialist reads Instrumentation Mesh latest
-snapshots/history/series and keeps `semantic_ref` plus the original bound object.
-Management itself learns no metric vocabulary and receives no Mesh command
-surface. A separately-published relationship can expose the detached latest
-snapshot as traversable evidence.
+The existing machine/service/MVS/network/relationship qualification from dev8 remains intact.
