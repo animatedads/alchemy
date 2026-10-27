@@ -23,7 +23,10 @@
     "Instrumentation Mesh dev8 correlation, causation and context are producer-supplied evidence only; Storage must not infer them from time, host, StorageRef similarity, provider identity or payload.",
     "A Storage release label does not prove protected fixes survived. Large-object precision, canonical integer encoding and the current replica-policy API must be checked before an adapter target is promoted.",
     "The dev23-precision1 tree is compatibility evidence, not a canonical release: its precision/API gates pass while stale internal version metadata and house-rule violations remain.",
-    "The Library dev24 standards report is FAIL and does not prove the divergent dev23/networking/dev22(1) lines were coherently merged."
+    "The Library dev24 standards report is FAIL and does not prove the divergent dev23/networking/dev22(1) lines were coherently merged.",
+    "Queue Fabric claim tokens are authority-bearing queue state. Storage repair must read packageId and claimToken from the claimed Queue Package and must never derive them from repair id, correlation id or telemetry.",
+    "A successful semantic repair is ACKed only after Storage reports success; semantic failure is NACKed into Queue Fabric retry/backout/dead-letter handling.",
+    "ACK failure after an already-successful Storage repair is surfaced as ACK_FAILED_AFTER_REPAIR. The adapter does not guess whether another ACK or NACK is safe; replay safety comes from re-assessing current Storage policy."
   ],
   "procedure": [
     "Commit the provider/location transition in Storage authority.",
@@ -35,7 +38,8 @@
     "On CLAIM, re-resolve object and policy; no-op if protection has already been restored.",
     "Choose an eligible destination through placement policy, then copy, independently verify and admit the new location.",
     "Re-assess current policy; ACK only after protection is satisfied, otherwise NACK/retry according to Queue Fabric policy.",
-    "Publish bounded Instrumentation Mesh repair/progress observations only after the corresponding authoritative transition succeeds."
+    "Publish bounded Instrumentation Mesh repair/progress observations only after the corresponding authoritative transition succeeds.",
+    "Claim one durable repair package through the current Queue Fabric manager, execute its payload, then ACK the exact package/token on Storage success or NACK it on semantic failure."
   ],
   "topics": [
     "replica repair",
@@ -79,7 +83,19 @@
       "sha256": "unverified",
       "member": "Library standards report",
       "claim": "71-file standards report verdict FAIL with 268 errors and 130 warnings; does not establish coherent merge or release qualification."
+    },
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev6",
+      "sha256": "git-source-evidence",
+      "member": "src/ObjectQueueFabric.cls",
+      "claim": "Current inspected ObjectQueueManager contract: claim(queueName, principal), ack/nack(queueName, packageId, claimToken, principal), with claim token stored on Queue Package."
+    },
+    {
+      "artifact": "packages/oorexx_storage_fabric_instrumentation_mesh_v0.1-dev7",
+      "sha256": "git-source-evidence",
+      "member": "src/StorageRepairQueue.cls",
+      "claim": "Exact Queue Fabric worker adapter; local static contract suite passed before publication."
     }
   ],
-  "qualification_boundary": "The dev6 adapter static contract/policy/dependency tests pass locally; the Storage compatibility property check passes against the Git dev23-precision1 source. No ooRexx runtime execution, live Queue Fabric CLAIM/ACK adapter qualification, live removable-provider transition, or dev24 release qualification is claimed."
+  "qualification_boundary": "Dev7 local static tests pass for instrumentation, durable queue payload, topology reconciliation, fail-closed policy, Mesh dev8 pin and exact Queue Fabric worker call shape. No local ooRexx runtime was available; runtime/real durable-store evidence remains delegated to the test-only Rasen Falcon request."
 }

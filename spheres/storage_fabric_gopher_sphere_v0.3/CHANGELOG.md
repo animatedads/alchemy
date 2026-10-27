@@ -1,5 +1,12 @@
 # Changelog
 
+## Repository continuation — 2026-10-27 worker binding
+- Add Storage repair dev7 exact Queue Fabric dev6 CLAIM/ACK/NACK adapter.
+- Preserve Queue Package claimToken/packageId as the only acknowledgement authority.
+- ACK only after semantic repair succeeds; NACK semantic repair failure.
+- Surface ACK failure after repair instead of manufacturing a retry path; replay remains safe through current-policy reassessment.
+
+
 ## Repository continuation — 2026-10-27
 - Add fail-closed missing replica-policy doctrine: no implicit one-replica fallback.
 - Record Instrumentation Mesh dev8 source candidate and producer-supplied-only correlation boundary.

@@ -55,3 +55,18 @@ merged. The Git `dev23-precision1` overlay demonstrates `::options digits 30`,
 canonical unsigned helpers and the current replica API, but its stale internal
 version metadata and remaining house-rule violations keep it an overlay
 candidate rather than a canonical release.
+
+
+## 2026-10-27 exact Queue Fabric repair worker
+
+The current Queue Fabric dev6 contract was inspected directly. Storage repair now
+has an exact adapter for `claim(queue, principal)` followed by
+`ack(queue, packageId, claimToken, principal)` or `nack(...)`. The Queue
+Package itself supplies the package ID and claim token. Correlation IDs and
+repair IDs are never substituted for Queue Fabric claim authority.
+
+Successful semantic repair is ACKed once. Failed repair is NACKed for Queue
+Fabric's existing retry/backout/dead-letter semantics. If ACK fails after Storage
+has already satisfied the repair, the adapter reports `ACK_FAILED_AFTER_REPAIR`
+and does not guess at a second control action; safe replay relies on the repair
+boundary's current-policy reassessment.
