@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.mail-identity",
+  "version": "0.1",
+  "sphere": "rasenfalcon",
+  "section": "architecture",
+  "title": "Native SMTP, IMAP, LDAP, signing and MCP scopes",
+  "summary": "Gateway uses owned ooRexx SMTP Secure Stack and IMAP with LDAP, Crypto, Access Permissions and Secret Broker. MCP exposes authorized adapters rather than duplicating mailbox or document authority.",
+  "invariants": [
+    "A successful SMTP authentication is not permission to send; message signature must bind to the authenticated principal and EMAIL_SEND policy.",
+    "Never auto-sign merely to satisfy relay admission; preserve signed and unsigned inbound mailbox distinctions.",
+    "Storage Fabric durability is distinct from mail signing authorization; Queue Fabric is not compulsory for stateless service calls.",
+    "ChatGPT and Claude use distinct proposed principals, mailboxes, keys, tools and permission scopes.",
+    "Untrusted email content must not authorize tools or send messages itself.",
+    "The incomplete native IMAP command and socket/TLS coverage remains a coding and live-qualification gap; no Dovecot/Postfix/slapd substitution."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_alchemy_autobuild_v0.4.zip",
+      "sha256": "fb4ce5bdecf0c9c312e21459f5ea74dc7d0eeb73fa37682cada06a5835028189",
+      "member": "handoff/codex/CX-04.md",
+      "claim": "Native mail implementation and acceptance tasks."
+    }
+  ],
+  "related_sphere": "smtp-secure-stack",
+  "live_state": "NOT_RUN"
+}

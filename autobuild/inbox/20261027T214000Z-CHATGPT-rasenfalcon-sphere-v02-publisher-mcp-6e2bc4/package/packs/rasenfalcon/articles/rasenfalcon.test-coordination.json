@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "rasenfalcon",
+  "authority": "project-continuity",
+  "id": "rasenfalcon.test-coordination",
+  "section": "qualification",
+  "title": "Rasen Falcon MCP test coordination and evidence gap",
+  "summary": "Rasen Falcon MCP lane rasenfalcon-website carries a read-only qualification thread. Original test request REQ-00000481 elicited a NOT_RUN reply REQ-00000825 because setup/approval was insufficient; a corrected test-only request REQ-00000943 now contains exact commands but still requires named operator approval.",
+  "invariants": [
+    "MCP project messages coordinate work and testing; they do not constitute deployment or merge authorization.",
+    "CLAUDE-PC or CODEX-PC must perform tests/read-only checks only when expressly authorized in the lane; do not delegate coding or production changes through testing messages.",
+    "Do not report a test failure merely because the test was NOT_RUN due to missing setup, permissions or approval.",
+    "Qualification must report actual git commit, executable commands, environment, return codes, stdout/stderr and exact PASS/FAIL/NOT_RUN distinctions.",
+    "Rasen Falcon request REQ-00000943 is a pending conditional test brief, not completed or authorized execution.",
+    "The source-only RasenFalcon v0.4.2 stage tests do not qualify native ooRexx, private TLS, authenticated CMS, Wire resource publication or operator cutover."
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_website_publisher_v0.4.zip",
+      "sha256": "db878df230884e71900dfcdb483d09eab15414d34de8898638de7120cdc9663d",
+      "member": "alchemy_website_publisher_v0.4/README.md",
+      "claim": "Library v0.4 editorial publisher implementation and declared native qualification limits."
+    },
+    {
+      "artifact": "website_publisher_gopher_sphere_v0.2.zip",
+      "sha256": "0ead0662ff955e757d71d2c5bfbd724136d17c2f78e8c5ed156cf7e08e5cda11",
+      "member": "packs/website-publisher/articles/publisher.rasenfalcon-handoff.json",
+      "claim": "Independent Publisher continuity documenting offline RasenFalcon v0.2 staging."
+    }
+  ],
+  "mcp_server": "rasenfalcon.duckdns.org",
+  "component": "rasenfalcon-website",
+  "original_test_request": "REQ-00000481",
+  "nonexecution_reply": "REQ-00000825",
+  "corrected_test_request": "REQ-00000943",
+  "approval": "REQUIRED_FROM_OWNER",
+  "execution": "NOT_RUN",
+  "test_repo": "animatedads/alchemy",
+  "test_git_branch": "https://github.com/animatedads/alchemy/tree/autobuild-submit/20261027T163400Z-CHATGPT-rasen-v042-publisher-stage-b12ce4"
+}
