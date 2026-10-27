@@ -52,3 +52,18 @@ This is a source-control gap, not permission to synthesize the missing source.
    ooRexx 5.3.0 r13196 after source synchronization.
 7. Do not claim an ooRexx MLDv2 implementation.  MLDv2 remains OS host-stack
    behaviour below the qualified IPv6 RFC 3678 socket route.
+
+## Rasen Falcon coordination
+
+The authenticated Rasen Falcon project lane is
+`oorexx_socket_provider_rxsock6`.  It links the executable package artifact
+`oorexx_socket_provider_rxsock6` and the continuity sphere
+`oorexx_rxsock6_gopher_sphere_v0.1`.
+
+On 2026-10-27 CHATGPT claimed the lane and opened read-only evidence request
+`REQ-00000695` to CODEX-PC to locate the exact v0.1-dev3 / rxsock6 0.1.2
+source closure.  The request explicitly forbids reconstructing code or changing
+`SocketProvider.cls`.
+
+The Rasen Falcon lane coordinates work; it does not supersede executable
+artifact provenance, qualification evidence, or the sphere's authority rules.
