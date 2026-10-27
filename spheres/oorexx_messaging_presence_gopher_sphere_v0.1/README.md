@@ -45,4 +45,4 @@ Two source-publication boundaries are explicit. The first-class GitHub Socket Pr
 
 Messaging & Presence therefore continues to fail closed for RFC 6120 STARTTLS until a generic same-stream secure-upgrade route is explicitly qualified at the lower transport/TLS boundary. BOSH remains a generic HTTP-carried logical stream; a real generic HTTP/HTTPS exchange provider (including HTTPS-over-XTP composition) remains separate work because no authoritative first-class HTTP client surface was identified in the current repository review.
 
-The sphere is present in GitHub but the LLM Gopher resolver currently returns `SPHERE_NOT_FOUND`; registration/deployment remains an explicit operational gate.
+The sphere is present in GitHub and linked to the authenticated Rasen Falcon `messaging-presence` lane. The current Rasen Falcon deployment reports `SPHERE_CHECKER_UNAVAILABLE` because no sphere checker is configured; this is an infrastructure/configuration gate, not evidence that the sphere ID is absent.
