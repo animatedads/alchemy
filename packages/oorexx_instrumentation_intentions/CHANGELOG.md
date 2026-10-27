@@ -1,10 +1,8 @@
 # Changelog
 
-## 0.1-dev1
+## 0.1-dev2
 
-- Added read-only Instrumentation Mesh specialist intention provider.
-- Preserved stable `semantic_ref` and original authoritative object bindings.
-- Exposed latest health/metrics, history, series and progress intentions only.
-- Added detached-evidence and fresh-publication regressions.
-- Added privacy-preserving Socket Isolation Telemetry -> InstrumentationEmitter adapter.
-- Added architecture guard preventing command/provider shortcut leakage.
+- Rebased read-side specialist from Instrumentation Mesh dev3 to dev8.
+- Added events, explicit correlation/causation/context, observed relationships and publication freshness.
+- Preserved dev1 socket-telemetry privacy projection and semantic_ref/native-object bindings.
+- Kept Mesh command and mutation authority outside the specialist.
