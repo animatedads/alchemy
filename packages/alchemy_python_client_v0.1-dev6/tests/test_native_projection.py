@@ -1,8 +1,13 @@
-"""Contract double tests; not a native ooRexx interpreter qualification."""
+"""Executable double tests for retained RexxObject.send() integration.
+
+NOT a native interpreter qualification. The real object retains its own identity
+and opaque lifetime; this suite deliberately avoids inventing those semantics.
+"""
 import unittest
 from alchemy_python import (RexxSelectorProjection, rexx_result_field,
-    rexx_logical, NativeConnectSelectorPort, ConnectSelectionError, ProtocolError,
-    AlchemySession, SelectorClient, Operation, ServiceContract)
+                            rexx_logical, NativeConnectSelectorPort,
+                            ConnectSelectionError, ProtocolError,
+                            AlchemySession, SelectorClient, Operation, ServiceContract)
 
 
 class Retained:
