@@ -1,0 +1,24 @@
+MVS Alchemy Services PRE22 static/runtime qualification
+
+PASS RPC_CORE_ALIGNMENT PRE22
+PASS CONNECT_SELECTOR_SECURITY PRE22
+PASS INSTRUMENTATION_MESH_WIRING PRE22
+PASS HASP_SHELL_SAFETY
+PASS MVS_WIRE_BYTES
+PASS MVS_TYPED_PAYLOADS payloads=22
+PASS bash -n qualification harness
+PASS runtime: MAS_CONNECT_SELECTOR_PRE22
+PASS runtime: MAS_RPC_SERVICE_CORE_PRE22
+PASS runtime: MAS PRE22 INSTRUMENTATION MESH
+PASS runtime: MAS PRE22 INSTRUMENTATION PUBLICATION
+PASS MASD75 source cards <=71 columns
+PASS MASLIVE source cards <=71 columns
+PASS generated MASLIVE JCL <=80 columns
+
+Runtime: Open Object Rexx 5.3.0 r13196 64-bit debug build, Aug 3 2026.
+ConnectSelector: oorexx_connect_selector_v0.1-dev2.zip
+RPC Service Core: oorexx_rpc_service_core_v0.1-dev1.zip
+Instrumentation Mesh: oorexx_instrumentation_mesh_v0.1-dev3.zip
+
+ED209Z live JES/X75/service qualification: NOT_RUN for PRE22.
+PRE12 remains the last live guest execution evidence and failed at the X'75' instruction path.
