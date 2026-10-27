@@ -83,6 +83,7 @@ for t in \
   test_3270_partition_io.rex \
   test_3270_snapshot.rex \
   test_mvs_3270_known_state.rex \
+  test_s3270_reference.rex \
   test_tn3270_owner_surface.rex \
   test_tn3270_terminal_owner.rex \
   test_tn3270_wire.rex \
