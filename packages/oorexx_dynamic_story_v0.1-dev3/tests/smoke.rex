@@ -56,7 +56,8 @@ exit 0
   gate~mismatch('NONE')
   selected = engine~decide(.Array~of('sales'), ctx)
   call assertEq selected['status'], 'APPROVED', 'valid-request'
-  projection = .StoryAgentProjection~new~project(selected)
+  projector = .StoryAgentProjection~new
+  projection = projector~project(selected)
   call assertEq projection['status'], 'CANDIDATE', 'agent-candidate'
   call assertEq projection['authority_proof_ref'], .nil, 'agent-proof-omitted'
   call assertEq projection['dispatch_authority'], 'NONE', 'agent-no-dispatch'
