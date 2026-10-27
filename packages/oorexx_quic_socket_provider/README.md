@@ -1,4 +1,4 @@
-# ooRexx QUIC Socket Provider v0.1-dev3
+# ooRexx QUIC Socket Provider v0.1-dev4
 
 A real QUIC socket-family provider behind the common ooRexx `SocketProvider`
 boundary. The native transport is OpenSSL QUIC.
@@ -7,6 +7,17 @@ QUIC remains a sibling socket provider. Applications which only need an ordinary
 stream continue to use `SocketStreamAdapter`; applications which intentionally
 need QUIC multiplexing may ask the selected `QuicSocket` for child `QuicStream`
 objects. No QUIC transport selection is moved into application code.
+
+## dev4
+
+Dev4 makes QUIC stream-count flow control explicit without moving QUIC policy into callers.
+
+- `tryOpenStream()` performs nonblocking OpenSSL stream creation and returns `.nil` when the peer's negotiated stream-count limit currently prevents creation.
+- `availableBidirectionalStreams` and `availableUnidirectionalStreams` expose OpenSSL's negotiated local stream allowance.
+- `canOpenStream()` is advisory only; actual stream creation remains authoritative because allowance can change between observation and use.
+- Existing `openStream()` remains blocking/legacy-compatible.
+
+These are transport-state observations. They do not become `SocketNegotiationRequest` fields and do not authorize application behaviour.
 
 ## dev3
 
