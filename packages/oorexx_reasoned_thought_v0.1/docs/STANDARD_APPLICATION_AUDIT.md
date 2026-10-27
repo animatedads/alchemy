@@ -91,3 +91,25 @@ and require independent qualification before merging this operator.
 Neither a structural violation nor a conditional self-standard gap proves that
 the stated rule is fair, that inputs are genuine, or that any underlying claim is
 true. The operator never outputs a merits verdict.
+
+## v0.5 — do not certify unresolved cases or mix score scales
+
+Review of the v0.4 threshold report found that REJECTED cases at or above
+a minimum were being counted in ruleConformingCases. That is too strong:
+meeting a NECESSARY minimum does not guarantee acceptance. They now appear
+in unresolvedDispositionCases. Conforming cases are restricted to ACCEPTED
+at or above the bound minimum or REJECTED below it. No real-world truth or
+legal correctness is implied.
+
+A DISQUALIFY rule with an explicit absolute boundary also compares values
+only when the application's basis equals the requiredBasis declared by the
+standard. Two entries that use the same unrelated score scale do not become
+comparable to an ordinal threshold merely because they agree with each other.
+The audit records STANDARD_BASIS_MISMATCH and INDETERMINATE_COMPARABILITY
+rather than generating false threshold violations.
+
+Native evidence for this revision: user-supplied ooRexx 5.3.0 r13196,
+existing owner contract 21/21 PASS plus threshold necessity and basis suite
+24/24 PASS. This is 45 owner-side assertions, not Claude's independent
+adversarial acceptance. The complete runner now invokes the threshold
+suite alongside the other owner suites.
