@@ -1,6 +1,6 @@
 # Missing work — Messaging & Presence / XMPP / BOSH
 
-Checked 2026-10-24.
+Checked 2026-10-27.
 
 This list is deliberately limited to work that cannot be honestly closed from the current repository and Library evidence.
 
@@ -24,10 +24,11 @@ This list is deliberately limited to work that cannot be honestly closed from th
    - Current evidence does not prove a generic shared-provider same-stream TLS-upgrade seam.
    - Required action: qualify an explicit lower transport/TLS operation before enabling XMPP SASL over STARTTLS.
 
-5. **Concrete HTTP/HTTPS exchange authority for BOSH**
-   - Existing HTTPS-over-XTP evidence is a composition witness using an injected fake HTTP provider.
-   - No authoritative first-class generic HTTP client surface was identified in the current repository review.
-   - Required action: bind BOSH to an existing exact HTTP client contract when one is identified, or create that platform contract in its owning workstream. BOSH itself must remain HTTP-implementation- and XTP-unaware.
+5. **BOSH/API Client adapter qualification and lower selector backend**
+   - API Client v0.4.1 is the authoritative outbound HTTP/HTTPS client and the new separate `oorexx_bosh_api_client_adapter` source candidate binds `BoshHttpExchangeProvider` to `ApiRequest` / `ApiResponse`.
+   - The candidate is rebased onto current main, preserves rich ooRexx header/route objects, denies cleartext HTTP by default, and has no XMPP/SocketProvider/XTP dependency.
+   - Required action: execute its deterministic test under ooRexx r13196 and current exact roots, then qualify live HTTPS.
+   - HTTPS-over-XTP remains lower-layer work because API Client v0.4.1 currently documents RxSock socket ownership. Add/qualify a shared SocketProvider/selector backend there; do not put XTP knowledge into BOSH or this adapter.
 
 6. **Sphere registration**
    - GitHub sphere content exists.
