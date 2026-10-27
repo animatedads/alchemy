@@ -1,23 +1,26 @@
-# Current integration baseline checked 2026-10-24
+# Current integration baseline checked 2026-10-27
 
-The immutable source baseline remains **ooRexx WebSocket Access v0.1-dev1**.
+## Source and qualification split
 
-- Source delivery: `oorexx_websocket_access_v0.1-dev1.zip`
-- SHA-256: `91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655`
-- Protocol surface: RFC 6455 client access over an already-isolated stream
-- Original qualification: ooRexx 5.3.0 r13196 contract pass plus independent Python `websockets` COTS loopback wire pass
+Current Git source candidate: **ooRexx WebSocket Access v0.1-dev2**.
 
-Current externally evidenced socket authority:
+Immutable qualified release remains:
+
+- `oorexx_websocket_access_v0.1-dev1.zip`
+- SHA-256 `91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655`
+- ooRexx 5.3.0 r13196 contract pass
+- independent Python `websockets` COTS loopback wire pass
+
+dev2 repairs fragmented-message sequencing and the dev1 close-frame state bug, but is not promoted until the expanded tests execute against the current socket authority.
+
+## Current external socket authority
 
 - Socket Provider **v0.1-dev16**
-- SHA-256: `fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2`
+- SHA-256 `fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2`
 
-The 2026-10-13 Spiral 1 transport reconciliation records the WebSocket route as
-ACCESS + CONTRACT PASS with the dev1 live COTS wire pass inherited into the
-dev16 estate. It explicitly records that WebSocket was **not freshly rerun
-against dev16**. Do not upgrade that evidence into a new live-dev16 claim.
+The 2026-10-13 Spiral 1 reconciliation records WebSocket as ACCESS + CONTRACT PASS with the dev1 COTS wire pass inherited into the dev16 estate. It explicitly records that WebSocket was **not freshly rerun against dev16**.
 
-Architecture remains unchanged:
+Architecture remains:
 
 ```text
 WebSocketAccess
@@ -27,17 +30,15 @@ WebSocketAccess
   -> selected TCP/TLS provider
 ```
 
-WebSocket is therefore an access/protocol layer, not a new socket family. It
-does not own native socket acquisition, route selection, TLS key material,
-entropy, or generic socket lifecycle.
+## dev2 qualification gates
 
-Current non-claims remain:
+1. run the expanded RFC 6455 contract suite under ooRexx 5.3.0 r13196;
+2. run against Socket Provider dev16, not the historical dev10 fixture;
+3. exercise an independent COTS peer with fragmented TEXT/BINARY and interleaved PING;
+4. prove local and peer close frames are sent before stream close;
+5. retain exact SocketAddress object identity;
+6. preserve fail-closed behaviour for continuation/reserved opcode/RSV/control violations.
 
-- RFC 8441 WebSocket over HTTP/2 is not implemented.
-- RFC 9220 WebSocket over HTTP/3 is not implemented.
-- permessage-deflate/extensions are not implemented.
-- fragmented-message reassembly is not complete.
-- a production nonce/mask entropy provider is not bundled.
+## Remaining non-claims
 
-Any future increment must be requalified against the current Socket Provider
-authority while preserving the original dev1 provenance.
+RFC 8441, RFC 9220, permessage-deflate/extensions and a production nonce/mask entropy provider remain outside the implemented/qualified surface.
