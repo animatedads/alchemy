@@ -997,6 +997,7 @@ fatal:
   self~addArg(args, "--region", opts~option("region", ""))
   self~addArg(args, "--profile", opts~option("aws_profile", ""))
   args~append("--no-cli-pager")
+
 ::method machineList
   use arg exec, opts
   args = .Array~of("aws", "ec2", "describe-instances", "--output", "json")
