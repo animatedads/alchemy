@@ -4,12 +4,14 @@
   "version": "0.1",
   "sphere": "jdorfx-bsf-qualification",
   "title": "Native API defect baseline",
-  "summary": "As of 2026-10-23 trunk r13284 fixed global-reference (#2100), UNINIT (#2102), stack discovery (#2106), SysStemSort (#2120), but a native method invalid-arguments stale activation remained. Unpatched forced-GC repro crashed 3/3; local patch survived 3/3 and reported CheckCondition=1. Potential relevance to BSF is mechanistic, not confirmed crash attribution.",
+  "summary": "As of 2026-10-23 trunk r13284 fixed global-reference (#2100), UNINIT (#2102), stack discovery (#2106), SysStemSort (#2120), but a native method invalid-arguments stale activation remained. Unpatched forced-GC repro crashed 3/3; local patch survived 3/3 and reported CheckCondition=1. Potential relevance to BSF is mechanistic, not confirmed crash attribution. SourceForge bug #2116 was filed by Tom Dyer on 2026-10-15 and remained open when checked 2026-10-27. Independently open #2104 and #2123 add nested context trap and non-SYNTAX propagation risks.",
   "invariants": [
     "Do not claim upstream merge without verifying newer commits.",
     "Never let a failed native signature leave an activation frame to be scanned by GC.",
     "CheckCondition must be immediately observable and SYNTAX 88.922 propagated correctly.",
-    "Separate four upstream repairs from the outstanding native argument defect."
+    "Separate four upstream repairs from the outstanding native argument defect.",
+    "Do not file a duplicate of SourceForge #2116; it already includes the possible BSF4ooRexx850 core-dump relationship.",
+    "Treat #2104 and #2123 as distinct negative callback qualification gates, currently NOT_RUN."
   ],
   "related": [
     "ops.jd-bsf.qualification"
@@ -24,6 +26,18 @@
       "repository": "animatedads/oorexx",
       "revision": "fa1179f13d417329599198805665600d42ce9336",
       "path": "oorexx2cpp/ootest/interpreter_bugs/TICKET_bug2.md"
+    },
+    {
+      "url": "https://sourceforge.net/p/oorexx/bugs/2116/",
+      "claim": "Tom Dyer filed 2026-10-15; issue open when checked 2026-10-27"
+    },
+    {
+      "url": "https://sourceforge.net/p/oorexx/bugs/2104/",
+      "claim": "Nested native context condition-trap failure; issue open"
+    },
+    {
+      "url": "https://sourceforge.net/p/oorexx/bugs/2123/",
+      "claim": "Non-SYNTAX API condition loss reported against r13286; issue open"
     }
   ]
 }
