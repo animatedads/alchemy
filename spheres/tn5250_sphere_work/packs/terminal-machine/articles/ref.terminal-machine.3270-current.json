@@ -1,10 +1,10 @@
 {
   "kind": "article",
   "id": "ref.terminal-machine.3270-current",
-  "version": "0.4",
+  "version": "0.5",
   "sphere": "terminal-machine",
   "title": "IBM 3270 P0 current state",
-  "summary": "The current P0 line is a native 24x80 Model-2 IBM 3270 engine with traditional TN3270 first, basic TN3270E negotiation, executable host reads/structured fields, extended attributes, operator input, detached snapshots, evidence-backed MVS/TK5 known states, one-writer ownership, and an independent s3270 semantic differential boundary.",
+  "summary": "The current P0 line is a native IBM 3270 engine with TN3270 first, honest basic TN3270E, executable host reads/structured fields, extended attributes, operator input, detached snapshots, evidence-backed MVS/TK5 known states, one-writer ownership, and complete-response s3270 semantic differential evidence including keyboard state.",
   "authority": "terminal-machine-project",
   "invariants": [
     "Traditional TN3270 remains first-class; TN3270E is used only for functions genuinely negotiated and implemented.",
@@ -18,7 +18,9 @@
     "s3270 is an independent reference oracle, never Terminal Machine authority; differential comparison is presentation-space semantics rather than screenshot equality.",
     "The s3270 adapter masks NONDISPLAY data and fails closed on unsupported DBCS/multi-byte cell tokens rather than manufacturing equality.",
     "Downstream MVS Intention may consume Terminal Machine observations but does not acquire terminal mutation authority or MVS/JES semantic authority.",
-    "AID send completion is not host semantic completion; callers must advance on observed presentation generation/known state, not a scripting API return convention."
+    "AID send completion is not host semantic completion; callers must advance on observed presentation generation/known state, not a scripting API return convention.",
+    "A complete s3270 peer-script action response is the preferred differential evidence unit: data lines, 12-field status, and final ok/error stay bound together.",
+    "Reference keyboard U maps to UNLOCKED; L and operator-error E map to LOCKED for TerminalSnapshot comparison, while the raw s3270 code remains retained in reference status."
   ],
   "known_states": [
     "HERCULES.TK5.WELCOME_PANEL",
@@ -28,13 +30,24 @@
     "MVS.ISPF.PRIMARY_OPTION_MENU"
   ],
   "missing_work": [
-    "Run candidate13 under exact ooRexx 5.3.0 r13196 and execute the new s3270 reference regression.",
-    "Differentially qualify Terminal Machine candidate13 and s3270 against the same stable ED209Z states, then repeat independently on ED209ZZ, comparing field addresses/lengths, protection, numeric, MDT, NONDISPLAY, cursor and visible rows.",
+    "Run candidate14 under exact ooRexx 5.3.0 r13196 and execute the complete s3270 reference regression.",
+    "Differentially qualify candidate14 and s3270 against stable ED209Z states using complete action responses, then repeat independently on ED209ZZ; compare dimensions, cursor, keyboard, fields and visible rows.",
     "Capture a live Terminal Machine ISPF snapshot and compare it with the retained TK5 Figure 17 reference without promoting documentation evidence to live authority.",
     "Adopt Socket Provider only when its concrete TCP connection exposes a qualified non-blocking readiness contract; do not unwrap raw provider internals to force the migration.",
     "Add optional TN3270E BIND/RESPONSES/SYSREQ semantics only when negotiated and fully implemented; never claim optional functions speculatively."
   ],
   "provenance": [
+    {
+      "artifact": "mvs_intention_runner_v0.1-dev10.zip",
+      "sha256": "c7c424e6e12a8b5db2ef1ac7c7813309e70b6f53827944089e57a71f958bfd5b",
+      "claim": "Downstream consumer targets candidate13 and includes candidate13 compatibility harness; its authoring qualification explicitly leaves r13196/live execution unclaimed."
+    },
+    {
+      "artifact": "oorexx_terminal_machine_v0.22-candidate14.zip",
+      "sha256": "2ef05bff6cb9df66041c060d7aceb31e60783948c5a51e9f211b2da7d91111f6",
+      "member": "oorexx_terminal_machine_v0.22-candidate14/qualification/CANDIDATE14_VALIDATION.txt",
+      "claim": "Records complete s3270 action-response binding, keyboard comparison, inherited qualification and live-gate limits."
+    },
     {
       "artifact": "oorexx_terminal_machine_v0.22-candidate13.zip",
       "sha256": "6992ae5206d697aeba887eaeb36f108df6f9fd0c0e01f47c96ae827c3f7d329d",
