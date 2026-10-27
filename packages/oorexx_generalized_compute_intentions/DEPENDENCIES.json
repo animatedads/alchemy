@@ -1,7 +1,7 @@
 {
   "schema": "generalized.compute.intentions.dependencies/1",
   "package": "oorexx-generalized-compute-intentions",
-  "version": "0.1-dev5",
+  "version": "0.1-dev6",
   "core": {
     "requires": [],
     "note": "The semantic planning core remains dependency-free and consumes injected adapters."
@@ -30,9 +30,18 @@
     },
     {
       "name": "job-node-allocator",
-      "version": "0.6-network5",
+      "version": "0.6-network6",
       "api": "job.node.allocator.network/0.1",
       "purpose": "authoritative allocation plus observational runtime reconciliation; not linked by the planning core"
+    },
+    {
+      "name": "oorexx-ai-model-router",
+      "version": "0.1",
+      "api": "ai.model.router/0.1",
+      "classFiles": [
+        "AIModelRouter.cls"
+      ],
+      "purpose": "non-entitling WLU/policy-backed LLM route selection projected into the GCI router assessment"
     }
   ],
   "pathRequirements": [
@@ -54,6 +63,14 @@
         "IntentionProviders.cls"
       ],
       "resolution": "package src plus explicit Intention Service dev11 src path"
+    },
+    {
+      "source": "src/GeneralizedComputeAIModelRouterAdapter.cls",
+      "requires": [
+        "GeneralizedComputeIntentions.cls",
+        "AIModelRouter.cls"
+      ],
+      "resolution": "package src plus explicit AI Model Router v0.1 src path; AI Model Router's own Alchemy Objects, WLU v0.12 and Institutional Policy v0.6 dependencies must also resolve"
     }
   ]
 }

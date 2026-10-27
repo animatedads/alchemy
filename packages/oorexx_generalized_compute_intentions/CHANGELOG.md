@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1-dev6
+
+- added an optional concrete bridge to `ai.model.router/0.1` for LLM/model-route planning;
+- added per-planning-call router state so whole-candidate-set authorities can evaluate once without global caching or per-candidate rerouting;
+- retained the real `AIModelRouteCandidate` and router outcome objects as GCI evidence rather than flattening provider/model identity into text;
+- a selected AI Model Router plan is labelled `AI_MODEL_ROUTE_PERMITTED_NOT_ADMITTED`: it is neither WLU admission nor executable/provider authority;
+- missing router planning context fails closed and does not call the router;
+- refreshed the Job-to-Node architectural baseline to v0.6-network6 without moving allocator authority into GCI.
+
 ## 0.1-dev5
 
 - rebased the optional observability adapter from Instrumentation Mesh dev3 to dev7 while retaining `instrumentation.mesh/0.1`;

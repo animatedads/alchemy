@@ -1,4 +1,4 @@
-/* Generalized Compute Intentions v0.1-dev5
+/* Generalized Compute Intentions v0.1-dev6
  * Separate convenience layer. It plans admissible routes and bridges those
  * object-rich plans into Intention Service without owning compute, allocation,
  * WLU, router, model, quota, lease, or execution state.
@@ -231,6 +231,15 @@
   if self~computeAdapter~hasMethod('discoveryEvidence') then -
       route~discoveryEvidence = self~computeAdapter~discoveryEvidence(workload, context)
 
+  /* Some router authorities make one decision over the complete candidate set
+   * (AI Model Router is the first concrete example).  Give such adapters a
+   * per-plan state object instead of forcing them to rerun or cache a global
+   * decision for every candidate.  The state is evidence only and is scoped to
+   * this planning call. */
+  routerPlanState = .nil
+  if self~routerAdapter~hasMethod('beginPlan') then -
+      routerPlanState = self~routerAdapter~beginPlan(workload, discovered, context)
+
   rank = 0
   do resource over discovered
     rank += 1
@@ -239,7 +248,9 @@
     candidate~computeAssessment = self~computeAdapter~assess(workload, resource, context)
     candidate~allocationAssessment = self~allocationAdapter~assess(workload, resource, context)
     candidate~wluAssessment = self~wluAdapter~assess(workload, resource, context)
-    candidate~routerAssessment = self~routerAdapter~assess(workload, resource, context)
+    if self~routerAdapter~hasMethod('assessForPlan') then -
+        candidate~routerAssessment = self~routerAdapter~assessForPlan(workload, resource, context, routerPlanState)
+    else candidate~routerAssessment = self~routerAdapter~assess(workload, resource, context)
 
     /* Instrumentation is advisory evidence only. It may alter preference order,
      * but it cannot make an otherwise inadmissible route admissible and cannot

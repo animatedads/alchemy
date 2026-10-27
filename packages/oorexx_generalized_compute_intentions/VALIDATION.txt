@@ -1,5 +1,5 @@
-ooRexx Generalized Compute Intentions v0.1-dev5 validation
-Date: 2026-10-11
+ooRexx Generalized Compute Intentions v0.1-dev6 validation
+Date: 2026-10-27
 Interpreter: Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit
 
 LIBRARY ALIGNMENT
@@ -7,7 +7,8 @@ LIBRARY ALIGNMENT
 - Intention Service current line: v0.1-dev11
 - Management Intention Discovery current evidence: v0.1-dev8
 - Instrumentation Intentions current evidence: v0.1-dev1
-- Job-to-Node Allocator current network extension: v0.6-network5
+- Job-to-Node Allocator current network extension: v0.6-network6
+- AI Model Router: v0.1 optional concrete router integration
 - managed compute / WLU / router remain separate authorities consumed through injected adapters
 
 CORE SYNTAX
@@ -59,3 +60,10 @@ PASS planning/discovery does not dispatch a workload
 PASS Instrumentation Mesh evidence can alter preference only, never admissibility
 PASS stale/missing telemetry does not fabricate service failure
 PASS non-READY Intention decisions are rejected by event adapters
+
+DEV6 AI MODEL ROUTER INCREMENT
+SOURCE/CONTRACT REVIEW PASS: planner invokes optional beginPlan once per planning turn and passes the returned local state to assessForPlan.
+SOURCE/CONTRACT REVIEW PASS: AI Model Router adapter retains AIModelRouteCandidate and router outcome objects.
+SOURCE/CONTRACT REVIEW PASS: selected route reason is AI_MODEL_ROUTE_PERMITTED_NOT_ADMITTED; adapter does not claim WLU admission or executable authority.
+SOURCE/CONTRACT REVIEW PASS: missing AI_MODEL_ROUTER_CONTEXT fails closed before invoking the router.
+RUNTIME QUALIFICATION PENDING in this chat environment because ooRexx 5.3.0 r13196 is not installed here. The committed environment runner contains the real optional integration test and must be run with explicit AI Model Router/WLU/Alchemy Objects/Institutional Policy roots before promotion.

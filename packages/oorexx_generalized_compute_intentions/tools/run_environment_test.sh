@@ -65,4 +65,20 @@ else
   echo 'SKIP Instrumentation Mesh integration (set INSTRUMENTATION_MESH_ROOT)'
 fi
 
-echo 'PASS ooRexx Generalized Compute Intentions v0.1-dev5 environment qualification'
+if [[ -n "${AI_MODEL_ROUTER_ROOT:-}" ]]; then
+  : "${WLU_ROOT:?Set WLU_ROOT with AI_MODEL_ROUTER_ROOT}"
+  : "${ALCHEMY_OBJECTS_ROOT:?Set ALCHEMY_OBJECTS_ROOT with AI_MODEL_ROUTER_ROOT}"
+  : "${INSTITUTIONAL_POLICY_ROOT:?Set INSTITUTIONAL_POLICY_ROOT with AI_MODEL_ROUTER_ROOT}"
+  AI_ROUTER_SRC="$AI_MODEL_ROUTER_ROOT/src"
+  [[ -f "$AI_ROUTER_SRC/AIModelRouter.cls" ]] || { echo 'FAIL AIModelRouter.cls not found'; exit 1; }
+  export REXX_PATH="$ROOT/src:$AI_ROUTER_SRC:$WLU_ROOT/src:$ALCHEMY_OBJECTS_ROOT/src:$INSTITUTIONAL_POLICY_ROOT/src${REXX_PATH:+:$REXX_PATH}"
+  echo '--- AI MODEL ROUTER SYNTAX ---'
+  "$REXXC" "$ROOT/src/GeneralizedComputeAIModelRouterAdapter.cls" >/dev/null
+  "$REXXC" "$ROOT/tests/test_ai_model_router_adapter.rex" >/dev/null
+  echo '--- AI MODEL ROUTER RUNTIME ---'
+  "$REXX" "$ROOT/tests/test_ai_model_router_adapter.rex"
+else
+  echo 'SKIP AI Model Router integration (set AI_MODEL_ROUTER_ROOT plus dependency roots)'
+fi
+
+echo 'PASS ooRexx Generalized Compute Intentions v0.1-dev6 environment qualification'

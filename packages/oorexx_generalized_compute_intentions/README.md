@@ -1,4 +1,4 @@
-# ooRexx Generalized Compute Intentions v0.1-dev5
+# ooRexx Generalized Compute Intentions v0.1-dev6
 
 A separate convenience/intention package in front of Generalized Compute, the
 Job-to-Node/allocation authority, Work Load Units, and the existing router. It
@@ -10,6 +10,44 @@ Customer Service/NotNotes and the LLM Coding Workbench/code-generation tools:
 callers hand over native workload/context objects and receive native route,
 resource and evidence objects. Internal objects are not flattened into command
 prose and reconstructed later.
+
+## dev6: real AI Model Router composition
+
+LLM allocation now has a concrete optional adapter over the existing
+`ai.model.router/0.1` package rather than a provider-specific branch inside the
+Workbench or GCI.
+
+`GeneralizedComputeAIModelRouterAdapter.cls` lets an AI Model Router make one
+policy/WLU-backed route decision over the complete model candidate set for a
+single planning turn. The resulting `AIModelRouteCandidate`,
+`AIModelRoutePlan` and `AIModelRouteOutcome` remain ordinary Rexx objects and
+are retained as evidence.
+
+The authority boundary is explicit:
+
+```text
+AI Model Router
+  selects/permitted model route using authenticated WLU route evidence
+  + institutional policy
+        |
+        | AI_MODEL_ROUTE_PERMITTED_NOT_ADMITTED
+        v
+Generalized Compute Intentions
+  composes compute + allocation + WLU + router assessments
+        |
+        v
+PlannedAdmittanceHandoff
+  still requires fresh COMPUTE + ALLOCATION + WLU + ROUTER revalidation
+```
+
+AI Model Router still performs no Runtime Registry acquisition, WLU admission,
+provider invocation, credential lookup or transport. GCI still performs none of
+those either.
+
+The planner core now supports optional `beginPlan()` / `assessForPlan()`
+router methods. Their returned state is local to one `planAdmittance()` call;
+there is no cross-turn router cache, so changed policy/WLU evidence is
+rediscovered.
 
 ## dev5: truthful plan/admission boundary and Mesh dev7
 
@@ -138,6 +176,10 @@ authority.
 OOREXX_DEB=/path/to/oorexx-5.3.0-13196...deb \
 INSTRUMENTATION_MESH_ROOT=/path/to/oorexx_instrumentation_mesh_v0.1-dev7 \
 INTENTION_SERVICE_ROOT=/path/to/oorexx_intention_service_v0.1-dev11 \
+AI_MODEL_ROUTER_ROOT=/path/to/oorexx_ai_model_router_v0.1 \
+WLU_ROOT=/path/to/oorexx_work_load_units_v0.12 \
+ALCHEMY_OBJECTS_ROOT=/path/to/alchemy_objects_v0.8 \
+INSTITUTIONAL_POLICY_ROOT=/path/to/institutional_policy_v0.6 \
   ./tools/run_environment_test.sh
 ```
 
