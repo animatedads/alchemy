@@ -1,0 +1,536 @@
+{
+  "schema": "oorexx.package/0.1",
+  "name": "oorexx-instrumentation-mesh",
+  "lineage": "MAIN",
+  "moduleLevel": 8,
+  "displayVersion": "0.1-dev8",
+  "api": "instrumentation.mesh/0.1",
+  "files": [
+    {
+      "path": "ARCHITECTURE.md",
+      "sha256": "adbe4dbbf546f975b867e143a05be111813cfb1ddb8f5642e0f7ea452303f2e3",
+      "role": "documentation"
+    },
+    {
+      "path": "BASELINES.txt",
+      "sha256": "b4272755ff7696a85d56e7522912d2851ad021f3714947193e28d0f7f4345c4a",
+      "role": "data"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "e7abc7e0fa69b386828b54f9b4a25f0d6e24a7ead1b92af9216729081d83825a",
+      "role": "documentation"
+    },
+    {
+      "path": "DEPENDENCIES.json",
+      "sha256": "7f742bee94ca6cec931e68673a5474bde7e395a8fba069762875f5cd835b5576",
+      "role": "data"
+    },
+    {
+      "path": "INTEGRATION.md",
+      "sha256": "6481d5b95edb2f10b39e5cdbece90c880d913d8872adfdf6ec3066594c913248",
+      "role": "documentation"
+    },
+    {
+      "path": "README.md",
+      "sha256": "aedafd3047b57d9e153af8d112402bb3cf4a12ff16b7ef3fc04350fb7397d141",
+      "role": "documentation"
+    },
+    {
+      "path": "SHA256SUMS.txt",
+      "sha256": "2d2147f65be8c87da66d49e1a1100f235c102483f74519273927158ff2480dbc",
+      "role": "data"
+    },
+    {
+      "path": "VALIDATION.txt",
+      "sha256": "bf2f124dab3dd9e1c7ad278a006059bced1ae164ad4872e6062998274f733495",
+      "role": "data"
+    },
+    {
+      "path": "VERSION.txt",
+      "sha256": "05930158993c74dfa08571aea26edf541fb586f6869f21f8b508d8cbbdee377c",
+      "role": "data"
+    },
+    {
+      "path": "examples/smtp_adapter.rex",
+      "sha256": "50e23f39811b692cce28088904da384f123ba7d9798aa7e909a5030d3b3adaaa",
+      "role": "source"
+    },
+    {
+      "path": "src/InstrumentationAnalysis.cls",
+      "sha256": "69db791016f0479641cea3aafd771cc29a41b8ddea5e5ea2b15015a60d02ff9a",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/InstrumentationCorrelation.cls",
+      "sha256": "1b0be4a8dfc65caf7728cae70677a03aa5c70631b2d628eea67d152934739f0f",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/InstrumentationFabricAdapters.cls",
+      "sha256": "3dbab11d554e4408cd1e9834d09b7a24d721705ea5db1a029f960b8ac18cdad9",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/InstrumentationMesh.cls",
+      "sha256": "18b798b082754cb722e1e0ba3e9a99e49e153e68a563e966315d0c181cc99370",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/InstrumentationQueueRexx.cls",
+      "sha256": "de6ba1e2b6e21cc270e217287ca6a7fecaa7636faa9fa370869f8fdc5b426115",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/InstrumentationRelationshipAdapters.cls",
+      "sha256": "6d2d8a0a6f543a337c0a3a170c4b2f287283ae32baf294af6fb0c9c92db6c6d9",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "src/InstrumentationServiceAdapters.cls",
+      "sha256": "52cd040fdde89c29816f917ec7ae7849fb7c4d8f7a03773a0e9dfd7cb47e7259",
+      "role": "oorexx-class"
+    },
+    {
+      "path": "tests/run.sh",
+      "sha256": "b77dc9cfe96fe17422f0a4868f9acd1de470d289adecf30ae0e79928da7be6e5",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_correlation_view.rex",
+      "sha256": "1826067e2b942ce069734f6f401f8485dbfb89b3e659f204a433a78b018fd240",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_dimensions_and_analysis.rex",
+      "sha256": "835a4d985d06ee74ab520eb09aa0b37b5dc4a45db6660245a8ac27f34a6f9c9a",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_event_timeline.rex",
+      "sha256": "ed63b415f578ce88c7d7b4966895c58ef4e0bb4993c88b6dcdd01c6bd1b878ef",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_fabric_adapters.rex",
+      "sha256": "8389a5862efa0b37e830e15c89f4d6ca837a4f8eb613b39bb4f50ee314dbbc8b",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_freshness_and_gauges.rex",
+      "sha256": "4137c514190c599d125ae856c980c2cc88cceeafb47b930fe950835be4a2d959",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_instrumentation_mesh.rex",
+      "sha256": "bbb47f1b1a4d77b7a0b12a2e6a432d0001bb3cb063ce71d4a814db31136d485c",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_operation_observer.rex",
+      "sha256": "77a515e86750fdbec841ceba8e50cda3caf57a8e0e591947fd37965a392dcb2d",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_publication_collector.rex",
+      "sha256": "8f778ad484508becc30d148da449365ec84d9073fdeac3d523467ab0927c84ec",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_queue_rexx_binding.rex",
+      "sha256": "23663b6d607d581e65bfbe31339ffc5f6f55b89c10bc2993cd1d181a014b9334",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_registry_source_shapes.rex",
+      "sha256": "7e4dcf9188d5d44de481fb39de2f8ddcf35a78681f40572d53ce1340bbfaf404",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_relationship_adapters.rex",
+      "sha256": "d8d500cd15bf81d98bf7160ec993243a9a22acd087ac70a615a036d15fdcaf5b",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_relationship_collector.rex",
+      "sha256": "7ae734d8607e51344e2f187cdeba0ea4abcb1ffb4d875dc3b068d7481d4456db",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_rto_relationship_adapter.rex",
+      "sha256": "f52560e21131085a6eae1de92ac29a19bccc8d6be2327546e93a2f32fe455dc7",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_smtp_service_adapter.rex",
+      "sha256": "bde22586603664336b690c8f0b0518fcdabb0d74cfeb47f51a8e583fd1319760",
+      "role": "qualification"
+    },
+    {
+      "path": "tests/test_storage_dev3_event_path.rex",
+      "sha256": "d9a81e556022154e68615b731408582509720712dc8585cad95b58ad866e257e",
+      "role": "qualification"
+    }
+  ],
+  "rexxPath": [
+    "src"
+  ],
+  "requires": [],
+  "optionalRequires": [
+    {
+      "name": "queue-fabric",
+      "api": "queue.fabric/0.9",
+      "developmentVersion": "0.9-dev8",
+      "classFile": "ObjectQueueFabric.cls",
+      "purpose": "Queue Fabric observation adapter qualification"
+    },
+    {
+      "name": "queue-channel-fabric",
+      "api": "queue.channel.fabric/0.9-dev3",
+      "classFile": "ObjectQueueChannels.cls",
+      "purpose": "Queue channel observation adapter qualification"
+    },
+    {
+      "name": "queuerexx-peer-mesh",
+      "api": "queuerexx.peer.mesh/0.1",
+      "minimumPackageLine": "0.1-dev12",
+      "purpose": "authenticated bindServiceRoute transport"
+    },
+    {
+      "name": "memory-fabric",
+      "api": "memory.fabric/0.1",
+      "version": "0.1-dev10",
+      "classFile": "MemoryFabric.cls",
+      "purpose": "Memory Fabric observation adapter qualification"
+    },
+    {
+      "name": "storage-fabric",
+      "api": "storage.fabric/0.1",
+      "packageVersion": "0.1-dev21",
+      "classFile": "StorageFabric.cls",
+      "purpose": "Storage Fabric observation adapter qualification"
+    },
+    {
+      "name": "rexxos-rto2-grid",
+      "version": "0.1-dev14",
+      "classFile": "RexxOSGridInstrumentation.cls",
+      "purpose": "plural dynamic MU source qualification"
+    },
+    {
+      "name": "smtp-secure-stack",
+      "version": "0.1-dev9",
+      "api": "smtp.event/0.1",
+      "classFile": "SmtpCore.cls",
+      "purpose": "SMTP semantic event adapter qualification"
+    },
+    {
+      "name": "ldap-identity",
+      "version": "0.1-dev16",
+      "api": "identity.instrumentation/0.1",
+      "purpose": "native producer compatibility"
+    },
+    {
+      "name": "https-server",
+      "version": "0.4.7",
+      "purpose": "instrumentationSnapshot source-shape compatibility"
+    },
+    {
+      "name": "storage-fabric-instrumentation",
+      "version": "0.1-dev3",
+      "api": "storage.fabric.instrumentation/0.1",
+      "purpose": "native producer compatibility and operational event-path qualification"
+    },
+    {
+      "name": "instrumentation-intentions",
+      "version": "0.1-dev1",
+      "api": "instrumentation.intentions/0.1",
+      "purpose": "read-only discovery projection"
+    },
+    {
+      "name": "mvs-alchemy-services",
+      "version": "0.1-dev3-pre18-instrumentation-mesh",
+      "purpose": "native producer compatibility"
+    },
+    {
+      "name": "imap",
+      "version": "0.1-dev13",
+      "api": "imap.instrumentation/0.1",
+      "classFile": "ImapInstrumentationAdapter.cls",
+      "purpose": "native IMAP producer compatibility"
+    },
+    {
+      "name": "nosqlserver",
+      "version": "0.88",
+      "purpose": "query/materialisation producer compatibility"
+    },
+    {
+      "name": "notnotes-mini-application",
+      "version": "0.1-dev17",
+      "purpose": "application/persistence/batch producer compatibility"
+    },
+    {
+      "name": "single-time-service",
+      "version": "0.4",
+      "purpose": "optional caller-owned POSIX freshness time authority; no runtime dependency"
+    },
+    {
+      "name": "network-transport-intentions",
+      "version": "0.1-dev3",
+      "classFile": "ManagementRelationships.cls",
+      "purpose": "read-only domain relationship source model compatibility"
+    },
+    {
+      "name": "rexxos-rto2-grid-estate",
+      "classFile": "RexxOSGridEstateController.cls",
+      "purpose": "RexxOS membership relationship adapter qualification"
+    },
+    {
+      "name": "ldap-identity-peer-epoch",
+      "classFile": "IdentityPeerFabric.cls",
+      "purpose": "identity authority-holder relationship adapter qualification"
+    }
+  ],
+  "pathRequirements": [
+    {
+      "source": "src/InstrumentationAnalysis.cls",
+      "requires": "InstrumentationMesh.cls",
+      "scope": "runtime",
+      "resolution": "src"
+    },
+    {
+      "source": "src/InstrumentationFabricAdapters.cls",
+      "requires": "InstrumentationMesh.cls",
+      "scope": "runtime",
+      "resolution": "src"
+    },
+    {
+      "source": "src/InstrumentationQueueRexx.cls",
+      "requires": "InstrumentationMesh.cls",
+      "scope": "runtime",
+      "resolution": "src"
+    },
+    {
+      "source": "src/InstrumentationServiceAdapters.cls",
+      "requires": "InstrumentationMesh.cls",
+      "scope": "runtime",
+      "resolution": "src"
+    },
+    {
+      "source": "tests/test_fabric_adapters.rex",
+      "requires": "InstrumentationFabricAdapters.cls",
+      "scope": "qualification",
+      "resolution": "src"
+    },
+    {
+      "source": "tests/test_fabric_adapters.rex",
+      "requires": "ObjectQueueFabric.cls",
+      "scope": "qualification",
+      "resolution": "REXX_PATH"
+    },
+    {
+      "source": "tests/test_fabric_adapters.rex",
+      "requires": "ObjectQueueChannels.cls",
+      "scope": "qualification",
+      "resolution": "REXX_PATH"
+    },
+    {
+      "source": "tests/test_fabric_adapters.rex",
+      "requires": "MemoryFabric.cls",
+      "scope": "qualification",
+      "resolution": "REXX_PATH"
+    },
+    {
+      "source": "tests/test_fabric_adapters.rex",
+      "requires": "StorageFabric.cls",
+      "scope": "qualification",
+      "resolution": "REXX_PATH"
+    },
+    {
+      "source": "tests/test_instrumentation_mesh.rex",
+      "requires": "src/InstrumentationMesh.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_registry_source_shapes.rex",
+      "requires": "src/InstrumentationMesh.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_registry_source_shapes.rex",
+      "requires": "RexxOSGridInstrumentation.cls",
+      "scope": "qualification",
+      "resolution": "REXX_PATH"
+    },
+    {
+      "source": "tests/test_publication_collector.rex",
+      "requires": "src/InstrumentationMesh.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_operation_observer.rex",
+      "requires": "src/InstrumentationMesh.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_operation_observer.rex",
+      "requires": "src/InstrumentationServiceAdapters.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_dimensions_and_analysis.rex",
+      "requires": "src/InstrumentationMesh.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_dimensions_and_analysis.rex",
+      "requires": "src/InstrumentationAnalysis.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_queue_rexx_binding.rex",
+      "requires": "InstrumentationQueueRexx.cls",
+      "scope": "qualification",
+      "resolution": "src"
+    },
+    {
+      "source": "tests/test_smtp_service_adapter.rex",
+      "requires": "src/InstrumentationMesh.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_smtp_service_adapter.rex",
+      "requires": "src/InstrumentationServiceAdapters.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_smtp_service_adapter.rex",
+      "requires": "SmtpCore.cls",
+      "scope": "qualification",
+      "resolution": "REXX_PATH"
+    },
+    {
+      "source": "examples/smtp_adapter.rex",
+      "requires": "src/InstrumentationMesh.cls",
+      "scope": "example",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_freshness_and_gauges.rex",
+      "requires": "src/InstrumentationMesh.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_freshness_and_gauges.rex",
+      "requires": "src/InstrumentationAnalysis.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "src/InstrumentationRelationshipAdapters.cls",
+      "requires": "InstrumentationMesh.cls",
+      "scope": "runtime",
+      "resolution": "src"
+    },
+    {
+      "source": "tests/test_relationship_adapters.rex",
+      "requires": "InstrumentationRelationshipAdapters.cls",
+      "scope": "qualification",
+      "resolution": "src"
+    },
+    {
+      "source": "tests/test_relationship_adapters.rex",
+      "requires": "ObjectQueueFabric.cls",
+      "scope": "qualification",
+      "resolution": "REXX_PATH"
+    },
+    {
+      "source": "tests/test_relationship_adapters.rex",
+      "requires": "ObjectQueueChannels.cls",
+      "scope": "qualification",
+      "resolution": "REXX_PATH"
+    },
+    {
+      "source": "tests/test_relationship_adapters.rex",
+      "requires": "IdentityPeerFabric.cls",
+      "scope": "qualification",
+      "resolution": "REXX_PATH"
+    },
+    {
+      "source": "tests/test_relationship_adapters.rex",
+      "requires": "ManagementRelationships.cls",
+      "scope": "qualification",
+      "resolution": "REXX_PATH"
+    },
+    {
+      "source": "tests/test_relationship_collector.rex",
+      "requires": "src/InstrumentationMesh.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_rto_relationship_adapter.rex",
+      "requires": "src/InstrumentationRelationshipAdapters.cls",
+      "scope": "qualification",
+      "resolution": "package root"
+    },
+    {
+      "source": "tests/test_rto_relationship_adapter.rex",
+      "requires": "RexxOSGridEstateController.cls",
+      "scope": "qualification",
+      "resolution": "REXX_PATH"
+    },
+    {
+      "source": "src/InstrumentationCorrelation.cls",
+      "requires": "InstrumentationMesh.cls",
+      "scope": "runtime",
+      "resolution": "src"
+    },
+    {
+      "source": "tests/test_correlation_view.rex",
+      "requires": "InstrumentationMesh.cls",
+      "scope": "qualification",
+      "resolution": "src"
+    },
+    {
+      "source": "tests/test_correlation_view.rex",
+      "requires": "InstrumentationServiceAdapters.cls",
+      "scope": "qualification",
+      "resolution": "src"
+    },
+    {
+      "source": "tests/test_correlation_view.rex",
+      "requires": "InstrumentationCorrelation.cls",
+      "scope": "qualification",
+      "resolution": "src"
+    }
+  ],
+  "qualification": [
+    {
+      "id": "all",
+      "argv": [
+        "./tests/run.sh"
+      ],
+      "cwd": ".",
+      "timeoutMs": 120000,
+      "required": true
+    }
+  ],
+  "eventSchemas": [
+    "instrumentation.event/1"
+  ],
+  "eventSemantics": "source authority retained; collector-derived observation changes explicitly use INSTRUMENTATION_OBSERVER and derived=true; causation_id/context_refs are optional source-declared evidence",
+  "correlationSchemas": [
+    "instrumentation.correlation/1"
+  ],
+  "correlationSemantics": "read-only grouping by explicit non-empty source-supplied correlation_id in collector acceptance order; no temporal/topological inference or incident/change authority"
+}

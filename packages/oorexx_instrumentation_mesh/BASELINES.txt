@@ -1,0 +1,106 @@
+ooRexx runtime: 5.3.0 r13196 Internal Test Version
+
+RexxOS RTO2 Grid
+  version: 0.1-dev14
+  sha256: 693a5e4d696790d10e1c366c77849514918ca558510cbf696189442f464b0e0a
+  native instrumentation: Grid controller + dynamic Management Unit snapshots
+
+Queue Fabric
+  api: queue.fabric/0.9
+  development package embedded by RTO2 Grid dev14: 0.9-dev8
+  Queue Channel Fabric: queue.channel.fabric/0.9-dev3
+  Queue transport: queue.transport/2 over XTP
+
+Memory Fabric
+  version: 0.1-dev10
+  api: memory.fabric/0.1
+  sha256: 91a05494c86ce7627f7a010af182c167701b5bf1f8ce2d93c99cda9d992644d8
+  native telemetry: memory.fabric.telemetry/0.1
+  native Instrumentation Mesh adapter: MemoryFabricDeepInstrumentationSource
+
+Storage Fabric
+  version: 0.1-dev21
+  api: storage.fabric/0.1
+  sha256: e070c38cc622fd2e62bf67e17bd97b74c19fc2c34c77a9452bea2ac081753105
+
+Storage Fabric Instrumentation Mesh
+  version: 0.1-dev3
+  api: storage.fabric.instrumentation/0.1
+  sha256: 6a8ce0592a0e73b95d9608a958c9d99b44df0a095cdd044ca593cf90fa4962b3
+
+SMTP Secure Stack
+  version: 0.1-dev9
+  api: smtp.server/0.1 / smtp.event/0.1
+  sha256: 2d37d0a94d88fa992375a070900bcecb00969c2da66e83ac56fff6b3c13a1726
+
+LDAP Identity
+  version: 0.1-dev16
+  native adapter: identity.instrumentation/0.1
+  sha256: 92b8ed4f97295d02027c8d7d09b688807bfee9248df2cc45cae11d0797405b7f
+
+HTTPS Server
+  version: 0.4.7
+  native adapter: HttpsInstrumentationAdapter / instrumentationSnapshot()
+  sha256: ae1a4caa1f48d6348cdfa283323a25e300bda5c30b7ea5f8ef825c635502ac3c
+
+Instrumentation Intentions
+  version: 0.1-dev1
+  api: instrumentation.intentions/0.1
+  sha256: 10316088d1ed3c25511657c8f22bb96407eee0f2b6b9b2aae83667e4aafe70c2
+
+Management Intention Discovery
+  version: 0.1-dev8
+  consumes instrumentation.intentions/0.1 read-only
+
+MVS Alchemy Services
+  line: 0.1-dev3-pre18 instrumentation-mesh
+  native adapter: MasInstrumentationSource
+  sha256: 318ba4789797e6c042593f1f0843965bc35bb203714050f70420347752519a83
+
+NoSQLServer
+  line: v0.88 query instrumentation
+  sha256: 1f4a26d2bda42a7d7c6772fadc01965a22a994049c299da13441cb911683e7a9
+
+Instrumentation Mesh
+  version: 0.1-dev8
+  api: instrumentation.mesh/0.1
+
+The QueueRexx binding remains duck-typed against the existing service-neutral
+bindServiceRoute() surface. Instrumentation creates no parallel socket,
+authentication or trust system.
+
+Additional dev5 compatibility baselines
+
+IMAP
+  version: 0.1-dev13
+  native adapter: imap.instrumentation/0.1 / ImapInstrumentationSource
+  sha256: a1666062755700196b09a8ad7bd4f16adc7e1f6810c75322ee70cfa3a3e31737
+
+NoSQLServer
+  version: 0.88 query instrumentation
+  native adapter: NoSQLServerInstrumentationSource
+  sha256: 1f4a26d2bda42a7d7c6772fadc01965a22a994049c299da13441cb911683e7a9
+
+NotNotes Mini Application
+  version: 0.1-dev17
+  native adapter: MiniNotesInstrumentationSource
+  sha256: 0b074b97081ea8c7759eab069f759e4c1a98bd471f537c5d1d3590b183a23312
+
+Single Time Service
+  version: 0.4
+  absolute instant seam: TimeInstant~ticks (POSIX integer seconds)
+  usage: optional caller-owned freshness time authority; not a runtime dependency
+  sha256: 677b26d525adace7c7a5aff9fda0db5fa1383bf7671abecf6f802c0f96e8e063
+
+
+Network Transport Intentions
+  version: 0.1-dev3
+  relationship source model: ManagementRelationship / explicit authority
+  sha256: d90dc49e4799f929761e75b302ab141a3bab481efdf951cdd508491a9b18c64b
+  usage: read-only relationship projection compatibility; no routing authority
+
+Correlation design evidence
+  ooRexx Logging Framework line: v0.7
+  MVS Alchemy acceptance guidance: use explicit run_id/test_id/transaction_id
+  and structured correlation payloads; do not join distributed evidence by
+  wall-clock time alone. This is design compatibility, not a runtime dependency.
