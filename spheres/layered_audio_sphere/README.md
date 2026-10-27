@@ -6,6 +6,8 @@ Start with:
 
     gopher --profile layered-audio context layered-audio --full
     gopher --profile layered-audio search intentions --sphere layered-audio
+    gopher --profile layered-audio search authority --sphere layered-audio
+    gopher --profile layered-audio search feasibility --sphere layered-audio
     gopher --profile layered-audio search speech --sphere layered-audio
     gopher --profile layered-audio search Management --sphere layered-audio
     gopher --profile layered-audio search object-preserving --sphere layered-audio
@@ -15,11 +17,13 @@ Start with:
 
 The implementation and this sphere are separate artifacts. The sphere preserves architecture, durable lessons, method doctrine, runtime/streaming boundaries, precision/offload semantics, memory-local execution, object-bound intention semantics, Speech TTS/STT composition boundaries, provenance and qualification continuity; it does not replace source code or executable tests.
 
-## Object-bound intentions and Management federation
+## Object-bound intentions, live gates and Management federation
 
 Layered Audio intentions are projections of the live Audio object graph, not a permanent command catalogue. `AudioRecording`, `AudioElement`, `AudioView`, boundaries and compound selections remain the original ooRexx objects across discovery and proposal boundaries. Intention Service interprets, clarifies and READY-gates those proposals. Management Intention Discovery may federate Audio with related authorities through Audio-owned relationships, but it does not become authoritative for Audio or Storage.
 
-The v0.22-dev8 intentions overlay adds the canonical Management installer. It registers the Audio self-assessing source and Audio relationship source through Management's public contracts, then builds related-surface discovery and the Management explorer. Storage may be supplied as a separate related intention source; Audio does not copy Storage vocabulary or materialisation authority.
+The v0.22-dev8 intentions overlay added the canonical Management installer. v0.22-dev9 activates the authority and feasibility seams already carried by `AudioIntentionContext`. Those live gates can deny a current capability without deleting it from the semantic surface: the candidate remains object-preserving but becomes `UNAVAILABLE` with explicit gate evidence. Composite selection rechecks the gates before READY, and malformed gate objects fail closed.
+
+The complete dev9 candidate is stored in the ChatGPT Library as `layered_audio_oorexx_v0.22-dev9.zip`, SHA-256 `97c74f998d2daafac3a0c68dcd8d50f883b1ce1379c4a7d09ed46262176ed6b8`. A Rasen Falcon lane `layered-audio-intentions` now owns this workstream; independent runtime testing has been requested from CODEX-PC and is not treated as PASS until returned.
 
 See `arch.layered-audio.intentions`.
 
