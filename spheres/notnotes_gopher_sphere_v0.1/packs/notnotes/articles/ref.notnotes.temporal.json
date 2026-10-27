@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "id": "ref.notnotes.temporal",
+  "version": "0.1",
+  "sphere": "notnotes",
+  "title": "Temporal field authority and transport-neutral resolution",
+  "summary": "DATE and DATETIME fields use Single Time Service for temporal meaning, ConnectSelector for invocation routing, and NotNotes for authoritative field/evidence persistence.",
+  "authority": "project-architecture",
+  "invariants": [
+    "NotNotes must not infer timezone or instant meaning from a displayed date/time string.",
+    "DATE is a civil date; a floating DATETIME remains floating unless a timezone policy is declared.",
+    "Zoned DATETIME resolution belongs to Single Time Service and must fail closed on gaps or unresolved folds.",
+    "ConnectSelector owns provider/transport selection; NotNotes does not hard-code DIRECT, RPC or Queue Fabric.",
+    "Accepted zoned temporal meaning retains zone, instant, tzdb edition and resolution provenance separately from the human field value.",
+    "Previously accepted evidence may be read after restart without calling Time Service; a new temporal mutation still requires the service boundary."
+  ],
+  "procedure": [
+    "Resolve or validate DATE/DATETIME through the injected MiniNotesTimeGateway.",
+    "For zoned DATETIME, issue the Time Service request through ConnectSelector destination TIME.",
+    "Persist the canonical human value on the document and temporal authority facts in the temporal_evidence application table.",
+    "Expose temporal policy and accepted evidence through semantic document projection.",
+    "Reject a new temporal mutation when the Time Service boundary is unavailable."
+  ],
+  "provenance": [
+    {
+      "repository_path": "packages/notnotes_mini_approval_app_v0.1-dev16/src/MiniNotesTime.cls",
+      "claim": "Published gateway routes zoned local resolution through ConnectSelector and returns temporal authority facts."
+    },
+    {
+      "repository_path": "packages/notnotes_mini_approval_app_v0.1-dev17/src/MiniNotesApp.cls",
+      "claim": "Dev17 retains accepted temporal evidence separately from the field value."
+    },
+    {
+      "repository_path": "packages/notnotes_mini_approval_app_v0.1-dev17/src/MiniNotesPersistence.cls",
+      "claim": "Dev17 persists temporal evidence keyed by document and field."
+    },
+    {
+      "repository_path": "spheres/single-time-service",
+      "claim": "Single Time Service sphere owns temporal semantics and authority."
+    }
+  ],
+  "related": [
+    "ref.notnotes.authority",
+    "ref.notnotes.intentions",
+    "ref.notnotes.publication"
+  ]
+}

@@ -1,6 +1,14 @@
 # Alchemy NotNotes — Gopher sphere v0.1
 
-**Status: authentic source published; core tests passed; Gopher sphere not yet registered/qualified.**
+**Status: authentic source published; NotNotes dev17 temporal-authority evidence documented; Gopher sphere registration/validation remains pending.**
+
+## Temporal authority update — 27 October 2026
+
+Mini NotNotes dev16 established DATE/DATETIME validation through Single Time Service and routes zoned resolution through ConnectSelector. Dev17 retains the accepted temporal authority evidence separately from the human field value: temporal kind, canonical value, zone, resolved POSIX instant, tzdb edition and fold/unique resolution where supplied.
+
+NotNotes owns the field and stored evidence, Single Time Service owns civil/timezone interpretation, and ConnectSelector owns provider/transport selection. A renderer, Help Desk or persistence backend must not infer timezone meaning from a displayed local string. Existing evidence may be read after restart without contacting Time Service; any new temporal mutation still requires the Time Service boundary and fails closed when unavailable.
+
+The dev17 static standards gate passed 25 files with 0 errors and 0 warnings. Native dev17 execution is explicitly pending because the r13196 Library package could not be materialised in the current ChatGPT runtime; this sphere does not upgrade that to a runtime-qualified claim.
 
 ## Purpose and scope
 

@@ -1,6 +1,15 @@
 # NotNotes core Gopher sphere — qualification status
 
-Date: 2026-10-24
+Date: 2026-10-27
+
+## Current NotNotes temporal status
+
+- `packages/notnotes_mini_approval_app_v0.1-dev16` already contains the Time Service gateway and ConnectSelector-routed zoned DATETIME validation.
+- Dev17 adds retained temporal authority evidence as a derived package and keeps dev16 immutable.
+- Rasen Falcon coordination request `REQ-00000947` was posted to the `connect-selector` lane; no ConnectSelector changes were requested.
+- Local app-owned strict standards gate for the dev17 implementation: 25 files, 0 errors, 0 warnings.
+- Native dev17 execution is **PENDING** in this session because the indexed ooRexx 5.3.0 r13196 Library package did not expose materialisable bytes. Existing historical dev16/r13196 evidence must not be relabelled as a dev17 native PASS.
+
 
 - Repository tree inspected: `animatedads/alchemy`, `main`, before sphere addition.
 - Missing classes: `AlchemyNotNotesIntentions.cls`, `MiniNotesApp.cls`.
