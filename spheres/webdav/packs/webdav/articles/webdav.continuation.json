@@ -2,12 +2,15 @@
   "id": "webdav.continuation",
   "title": "Continuation and missing work",
   "section": "qualification",
-  "summary": "The principal blocker to true end-to-end large-object streaming is the HTTPS host boundary, not WebDAV's Storage-side contract.",
+  "summary": "The HTTPS host-boundary design gap is implemented in the v0.4.8/dev6 candidate pair; the remaining gate is exact-r13196 and live TLS qualification before canonical promotion.",
   "invariants": [
-    "Do not invent an HTTPS streaming API from the existing v0.4.4 body-object interface.",
-    "Next HTTPS work needs bounded request-body source/callback, disconnect notification, response writer backpressure, abort/finalize hooks and body-free retained transport evidence.",
-    "Once HTTPS exposes that seam, bind PUT directly to WebDavStreamingUploadSession and full GET to StorageByteSource.",
-    "Further WebDAV work includes full multi-resource tagged If semantics for COPY/MOVE, optional RFC 6578 selection details, live OS/client interoperability and live Queue Fabric broker qualification."
+    "Accepted WebDAV baseline remains dev5 until the dev6 runtime gate passes.",
+    "Ordinary PUT may be claimed before buffering and delivered to WebDavStreamingUploadSession in bounded chunks.",
+    "A disconnect or abort before commit must leave no DAV namespace/catalogue publication.",
+    "Full ordinary GET may stream a StorageByteSource through HTTPS without whole-object materialisation.",
+    "Reusable StorageByteSource registrations must be factory-backed so concurrent GETs do not share mutable read position.",
+    "Sequential-media PUT remains representation-aware and is not silently routed through the ordinary byte-object stream.",
+    "Further work includes full multi-resource tagged If semantics, optional RFC 6578 selection detail, live OS/client interoperability and live Queue Fabric broker qualification."
   ],
   "kind": "article",
   "version": "0.1",
@@ -15,12 +18,14 @@
   "authority": "project-continuation",
   "provenance": [
     {
-      "artifact": "packages/oorexx_webdav/VALIDATION.txt",
-      "claim": "dev5 qualification boundaries."
+      "artifact": "oorexx_webdav_v0.1-dev5.zip",
+      "sha256": "5ec140808cb95d1fbe2c6f99c2abf0f14d7f59f06fd387a490538da8aef83f2d",
+      "claim": "Accepted runtime-qualified baseline."
     },
     {
-      "artifact": "ooRexx_Alchemy_API_Fixes_and_Design_Review_2026-09-18.pdf",
-      "claim": "F13 identifies WebDAV streaming/media fidelity as the open transport seam."
+      "artifact": "oorexx_webdav_v0.1-dev6.zip",
+      "sha256": "8129e50b20efdaf03980eed8e9f10f09edfec45aae82a27be6a1732c1c98299e",
+      "claim": "Streaming integration candidate; static PASS, runtime qualification pending."
     }
   ]
 }
