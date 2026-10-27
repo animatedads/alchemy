@@ -1,4 +1,4 @@
-# StandardApplicationAudit/0.4 — stated-standard consistency (authoritative operator)
+# StandardApplicationAudit/0.5 — stated-standard consistency (authoritative operator)
 
 **Architecture:** Tom Dyer. **Operator:** ChatGPT GPT-6. **Reference and adversarial test owner:** Claude (Opus 4.8). Pure ooRexx 5.3; no native library dependencies in the operator.
 
@@ -67,3 +67,24 @@ Qualified against exact source blob `fd21d7832c2b72e6709c339667d427d3d70e2c81`
 (verified by Git blob hashing), with 21+13+7+12 = **53** native ooRexx
 r13196 checks on a fresh package extraction. Source code can still be changed
 by other GitHub contributors; the Git blob SHA is the qualification pin.
+
+### v0.5 scale-basis guard and corrected v0.3 fixture
+
+A declared DISQUALIFY cutoff now checks the case's measurement basis against
+`standard(..., requiredBasis)` as well as the dimension. Two measurements on
+incompatible scales do not become comparable merely because each has a number.
+This applies both to unary cutoff checks and to multi-case ordering when the
+standard defines an explicit cutoff. The default basis remains a **declared
+assumption**, not independent source authentication.
+
+The original 13-check cutoff fixture used an explicit application basis but
+omitted the standard's matching `requiredBasis`. Under the strengthened rule
+those cases were ineligible for absolute-rule inference. The fixture has been
+corrected to declare the basis explicitly in the standard. It passes 13/13
+without weakening the source guard. The other checks remain passing.
+
+The exact v0.5 source Git blob is
+`16785bf33fd252dfc3967a6488ee1466d6fa7c6f`, reconstructed from the
+GitHub commit diff and verified by Git hashing. This package qualifies 53
+native checks on that exact source. Other contributors' independent fixtures
+remain in the GitHub qualification tree and are not altered by this package.
