@@ -1,46 +1,21 @@
-Terminal Machine Gopher sphere v0.2 qualification
-Date: 2026-10-24
+Terminal Machine Gopher sphere v0.3 qualification
+Date: 2026-10-27
 
-AUTHORITATIVE CONTINUITY BASELINES
-==================================
-TN5250 retained baseline: oorexx_terminal_machine_v0.21.zip
-  SHA-256 64fe1cb3b80c2948779a71088dacc2be5edef7b581c99618035fd9b79d8830c5
-3270 P0 current delivery: oorexx_terminal_machine_v0.22-candidate12.zip
-  SHA-256 e57dcf302070380a6e714ab0a5e8d1adb65b8c27974c34115712dc6314b00f8a
+CURRENT 3270 DELIVERY
+=====================
+oorexx_terminal_machine_v0.22-candidate13.zip
+SHA-256 6992ae5206d697aeba887eaeb36f108df6f9fd0c0e01f47c96ae827c3f7d329d
 
-SCOPE
-=====
-The sphere documents the terminal-neutral core plus both IBM personalities. It records
-candidate10 ownership/control integration, candidate11 live-reference MVS/TK5 states,
-and candidate12 TK5 ISPF reference evidence. It is documentation/retrieval authority
-only and does not grant live terminal mutation.
+Candidate13 adds independent s3270 ReadBuffer reference parsing and semantic differential comparison. It does not widen terminal mutation, credential, MVS or emulator authority.
 
 EVIDENCE BOUNDARIES
 ===================
-- Terminal Machine: terminal/session/screen/field truth.
-- MVS Alchemy Services: guest/MVS semantic truth.
-- Hercules Services: emulator/control-plane truth.
-- s3270/x3270: independent reference implementation evidence, never relabelled as Terminal Machine.
-- TK5 manual Figure 17: documentation/reference evidence for the ISPF primary menu, never relabelled as a live ED209 observation.
+Terminal Machine owns terminal/session/screen/field truth. MVS Alchemy Services owns guest/MVS semantic truth. Hercules Services owns emulator/control-plane truth. s3270 is independent reference evidence. TK5 documentation evidence is not live ED209 evidence.
 
-CURRENT 3270 GATES
+CURRENT VALIDATION
 ==================
-Known states: HERCULES.TK5.WELCOME_PANEL, MVS.TSO.LOGON_PROMPT,
-MVS.TSO.PASSWORD_PROMPT, MVS.TSO.READY and MVS.ISPF.PRIMARY_OPTION_MENU.
-READY is exact-row evidence. ISPF requires three corroborating stable markers.
-NONDISPLAY data remains masked. One-writer/many-readers and exact ownership are retained.
-TN3270 protocol meter facts must be labelled TN3270, including host screen/round-trip evidence.
+Candidate12 carries the inherited focused ooRexx 5.3.0 r13196 protocol/model/ownership qualification. Candidate13's manifest verifies and its new sources were statically reviewed in the authoring environment, but no runnable r13196 interpreter or s3270 binary was mounted there. Fresh execution qualification is therefore explicitly outstanding.
 
-VALIDATION STATUS
-=================
-Candidate11 previously passed the focused ooRexx 5.3.0 r13196 3270 suites. Candidate12
-adds semantic-reference evidence and the metering-label correction. In the 2026-10-24
-authoring environment, the package manifest verified but a runnable r13196 interpreter
-was not mounted, so no fresh interpreter claim is made for candidate12.
-
-NEXT
-====
-Differential live qualification against the same ED209Z screens with Terminal Machine
-and s3270, comparing fields/protection/MDT/cursor/visible text. Adopt Socket Provider
-only when concrete TCP readiness is qualified. Keep ConnectSelector at the application
-communication boundary rather than inside the 3270 engine.
+NEXT LIVE GATE
+==============
+Run candidate13 under exact r13196, then compare stable ED209Z and ED209ZZ states against independent s3270 captures using field/cursor/presentation-space semantics, not screenshot equality.
