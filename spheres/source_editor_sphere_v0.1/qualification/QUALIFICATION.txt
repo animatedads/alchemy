@@ -13,3 +13,12 @@ Resolver status checked 2026-10-23:
 - project catalog reports source authority from sphere-source-archives.zip plus imports/current-source-snapshot-20260927.tar.gz, so live resolution has not yet ingested this GitHub sphere.
 - an attempted project coordination request could not be filed from this session because that service requires an authenticated HTTPS principal.
 - therefore Gopher resolver/context qualification remains OPEN and must not be claimed until the sphere archive/catalog is refreshed.
+
+
+Dev6 candidate status (2026-10-27):
+- Git source now wires SourceDocument~save to oorexx.atomic-file/0.1 dev1.
+- backup sibling and live candidate are each published through AtomicFile with FULL durability requested.
+- SourceDocument still performs its existing application-level generation reread/fence because Atomic File dev1 cannot provide race-free expected-generation CAS.
+- backup + live publication are not claimed as one transaction.
+- independent qualification requested through authenticated Rasen Falcon lane oorexx-source-editor, request REQ-00000589 to CODEX-PC.
+- status remains CANDIDATE / QUALIFICATION PENDING; dev5 remains the accepted delivered baseline until evidence returns.
