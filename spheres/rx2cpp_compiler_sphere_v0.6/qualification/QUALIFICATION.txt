@@ -1,0 +1,27 @@
+rx2cpp compiler sphere v0.6 qualification
+Date: 2026-10-27
+Requires: LLM Gopher v0.41-dev1+
+Qualified by: Claude (Opus 5.5). Architecture of rx2cpp: Tom Dyer.
+
+Baseline: rx2cpp commit 462b445 (github.com/animatedads/oorexx, oorexx2cpp, main): d43c058, the merge of
+wip-2026-10-13 at 59d2019, then the handoff records for that code (15275c0, documentation only).
+Artifact: rx2cpp-462b445.zip  (git archive --format=zip 462b445 oorexx2cpp)
+SHA-256: 019f665ba3bd74c0814b79e31dd4d701deaea0afe9da6eadbec0e7ebdc7b2934
+Gates of the code: full regression at 59d2019, 138 scripts rc=0 (SKIP bsf, python, kernel objects); self-build
+fixed point PASS (native 179 s, interpreted 275 s); merge gate pbench2 on d43c058: 38.0 s compiled against
+117.5 s interpreted, dumps identical.
+
+Objects: sphere, access-policy, 11 articles, 2 corpora (rx2cpp.lessons 20 records, rx2cpp.continuity).
+Provenance: 39 structured entries against the artifact; every member present; every line range inside its member.
+
+Results (LLM Gopher v0.21-dev1 package, fresh LLM_GOPHER_ENV):
+- sphere edit validate => VALID
+- sphere edit lint     => CLEAN
+- sphere edit package  => PACKAGED
+- sphere load rx2cpp --override rx2cpp_sphere_v0.6.zip => ACTIVATED
+- tests/run.sh         => PASS RX2CPP SPHERE v0.6
+  (context lists all 11 articles; corpus search FOUND for baseline, merged commit, unwind table, flat profiles,
+   security manager, epoch, fixed point, trunk, pbench2, plan42)
+
+This qualifies the sphere's structure and searchability against the named artifact. It does not re-run
+rx2cpp's own regression; the repository's test scripts and native/build_self.sh remain authoritative.

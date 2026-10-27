@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "rx2cpp.lanes",
-  "version": "0.5",
+  "version": "0.6",
   "sphere": "rx2cpp",
   "section": "architecture",
   "title": "Lanes and the native object model",
@@ -21,30 +21,54 @@
   ],
   "provenance": [
     {
-      "artifact": "rx2cpp-e3d8d00.zip",
-      "sha256": "1f97f04319128f03bfba1139ba0e8e67c505823223352e605a55c8063947e16e",
+      "artifact": "rx2cpp-462b445.zip",
+      "sha256": "019f665ba3bd74c0814b79e31dd4d701deaea0afe9da6eadbec0e7ebdc7b2934",
       "member": "oorexx2cpp/HANDOFF_2026-10-13.md",
       "line_start": 305,
       "line_end": 330,
       "claim": "Native fast paths keep interpreter results byte for byte."
     },
     {
-      "artifact": "rx2cpp-e3d8d00.zip",
-      "sha256": "1f97f04319128f03bfba1139ba0e8e67c505823223352e605a55c8063947e16e",
+      "artifact": "rx2cpp-462b445.zip",
+      "sha256": "019f665ba3bd74c0814b79e31dd4d701deaea0afe9da6eadbec0e7ebdc7b2934",
       "member": "oorexx2cpp/native/NativeLibraryEmitter.cls",
       "claim": "Native library emitter: dispatch tables, constants, PROTECTED handling."
     },
     {
-      "artifact": "rx2cpp-e3d8d00.zip",
-      "sha256": "1f97f04319128f03bfba1139ba0e8e67c505823223352e605a55c8063947e16e",
+      "artifact": "rx2cpp-462b445.zip",
+      "sha256": "019f665ba3bd74c0814b79e31dd4d701deaea0afe9da6eadbec0e7ebdc7b2934",
       "member": "oorexx2cpp/native/fixtures/program_constructs/string_match.rex",
       "claim": "Native STARTSWITH / ENDSWITH / MAKEARRAY, identical to the interpreter."
     },
     {
-      "artifact": "rx2cpp-e3d8d00.zip",
-      "sha256": "1f97f04319128f03bfba1139ba0e8e67c505823223352e605a55c8063947e16e",
+      "artifact": "rx2cpp-462b445.zip",
+      "sha256": "019f665ba3bd74c0814b79e31dd4d701deaea0afe9da6eadbec0e7ebdc7b2934",
       "member": "oorexx2cpp/native/fixtures/program_constructs/nil_compare.rex",
       "claim": "Comparisons with .nil answered natively, identical to the interpreter."
+    },
+    {
+      "artifact": "rx2cpp-462b445.zip",
+      "sha256": "019f665ba3bd74c0814b79e31dd4d701deaea0afe9da6eadbec0e7ebdc7b2934",
+      "member": "oorexx2cpp/native/fixtures/cycles_array/xheap.rex",
+      "claim": "A cycle through a natively made Array subclass is collected."
+    },
+    {
+      "artifact": "rx2cpp-462b445.zip",
+      "sha256": "019f665ba3bd74c0814b79e31dd4d701deaea0afe9da6eadbec0e7ebdc7b2934",
+      "member": "oorexx2cpp/native/fixtures/program_constructs/stem_object_values.rex",
+      "claim": "s.[tail] = object and ITEMS answered by the native stem."
+    },
+    {
+      "artifact": "rx2cpp-462b445.zip",
+      "sha256": "019f665ba3bd74c0814b79e31dd4d701deaea0afe9da6eadbec0e7ebdc7b2934",
+      "member": "oorexx2cpp/native/fixtures/program_constructs/collection_union.rex",
+      "claim": "StringTable / Directory UNION natively, interpreter order."
+    },
+    {
+      "artifact": "rx2cpp-462b445.zip",
+      "sha256": "019f665ba3bd74c0814b79e31dd4d701deaea0afe9da6eadbec0e7ebdc7b2934",
+      "member": "oorexx2cpp/native/fixtures/program_constructs/internal_exit.rex",
+      "claim": "EXIT in internal routines reached by CALL without a C++ exception."
     }
   ]
 }

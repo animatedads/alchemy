@@ -1,7 +1,7 @@
 {
   "kind": "corpus",
   "id": "rx2cpp.lessons",
-  "version": "0.5",
+  "version": "0.6",
   "sphere": "rx2cpp",
   "title": "rx2cpp lessons that cost time",
   "records": [
@@ -64,6 +64,26 @@
     {
       "topic": "benchmark the merged commit",
       "rule": "A gate qualifies the commit it ran on. e3d8d00 was merged on a benchmark of 61285d6; fa1179f's speed regression (55 s to 103 s on pbench2) had passed the full regression and the fixed point. After every merge, run pbench2 on the exact merged commit (e3d8d00: 54.1 s against 144.8 s interpreted, 2.68x)."
+    },
+    {
+      "topic": "exceptions in hot paths",
+      "rule": "A C++ exception scans the unwind table of every frame it crosses; a generated method body is one huge function, so each throw cost about 300,000 instructions. EXIT in internal routines threw MethodExit 9,110 times a pass of the Rexx Parser (10% of the run): a CALL now returns it through _rxExitPending."
+    },
+    {
+      "topic": "cycles through the interpreter",
+      "rule": "A native object made into an interpreter object (an interpreter Stem, StringTable, Set holds it) is held from outside; if native garbage holds that collection, neither collector can free it. Keep collections native (stem []= of an object, ITEMS, UNION) and find the roots with RX2CPP_GC_STATS=3."
+    },
+    {
+      "topic": "statistics when off",
+      "rule": "A statistic counter must cost nothing when off: test the flag before making its name (bifStatsOn). A literal name turned into std::string first cost 3.4 million allocations a pass."
+    },
+    {
+      "topic": "flat profiles",
+      "rule": "When gdb sampling shows no hotspot, callgrind's exact instruction counts and caller tree do: the remaining costs were thread-local lookups, mutexes, string copies and exception unwinding, each a few percent."
+    },
+    {
+      "topic": "memory of parallel builds",
+      "rule": "Two pbench2 builds at once run out of memory (cc1plus killed): build one at a time; a regression beside one build is fine."
     }
   ]
 }

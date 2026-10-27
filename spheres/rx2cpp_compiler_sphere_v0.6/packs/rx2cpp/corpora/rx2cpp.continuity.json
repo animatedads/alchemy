@@ -1,14 +1,14 @@
 {
   "kind": "corpus",
   "id": "rx2cpp.continuity",
-  "version": "0.5",
+  "version": "0.6",
   "sphere": "rx2cpp",
   "title": "rx2cpp continuity records (searchable facts)",
   "records": [
     {
       "topic": "baseline",
-      "value": "rx2cpp main e3d8d00 (merge of wip-2026-10-13 at d1b3891; tested at cd77a49), VERSION 0.30.18",
-      "sha256": "1f97f04319128f03bfba1139ba0e8e67c505823223352e605a55c8063947e16e"
+      "value": "rx2cpp main 462b445 (d43c058: merge of wip-2026-10-13 at 59d2019, tested there; then documentation of 15275c0), VERSION 0.30.18",
+      "sha256": "019f665ba3bd74c0814b79e31dd4d701deaea0afe9da6eadbec0e7ebdc7b2934"
     },
     {
       "topic": "oracle",
@@ -20,11 +20,11 @@
     },
     {
       "topic": "fixed point",
-      "rule": "native/build_self.sh: native and interpreted compiler output byte-identical; at cd77a49 native 250 s, interpreted 344 s."
+      "rule": "native/build_self.sh: native and interpreted compiler output byte-identical; at 59d2019 native 179 s, interpreted 275 s."
     },
     {
       "topic": "regression",
-      "rule": "About 100 test scripts (native/test_*.sh, tests/test_*.sh); run resumably from a snapshot; merge to main only after it and the fixed point pass."
+      "rule": "138 test scripts (native/test_*.sh, tests/test_*.sh); run resumably from a snapshot (a background job stops after two hours); merge to main only after it, the fixed point and then the merged commit's pbench2 benchmark pass."
     },
     {
       "topic": "epoch",
@@ -32,7 +32,7 @@
     },
     {
       "topic": "environment cache",
-      "rule": "rx::envValue keeps .NAME values per epoch only while package LOCAL, .local and .environment have no SETMETHOD table and no UNKNOWN method (fields found by calibration)."
+      "rule": "rx::envValue keeps a .NAME value per name and epoch unless a directory computes that name (an UNKNOWN method, or a SETMETHOD entry of that very name, checked with StringTableAt on the method table); a kept lookup runs under QuietEpoch, so it does not move the epoch."
     },
     {
       "topic": "security manager protocol",
@@ -52,7 +52,7 @@
     },
     {
       "topic": "pbench2",
-      "rule": "Rexx Parser benchmark (61285d6): 3 passes 135.3 s interpreted vs 55.0 s compiled (2.46x); dumps identical; 90,193 trips to the interpreter a pass (about 1% of the time), environment symbols 3.29 of 3.46 million kept."
+      "rule": "Rexx Parser benchmark, merge gate of d43c058: 3 passes 117.5 s interpreted vs 38.0 s compiled (3.09x), 71,087 trips a pass, dumps identical, peak 315 MB."
     },
     {
       "topic": "plan42",

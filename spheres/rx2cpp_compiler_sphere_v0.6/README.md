@@ -1,4 +1,4 @@
-# rx2cpp compiler sphere v0.5
+# rx2cpp compiler sphere v0.6
 
 Knowledge and continuity sphere for **rx2cpp**, the ooRexx 5.3 to C++17 compiler
 (github.com/animatedads/oorexx, folder `oorexx2cpp`).

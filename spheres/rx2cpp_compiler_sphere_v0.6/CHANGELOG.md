@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.6 (2026-10-27)
+- Rebased on rx2cpp main 462b445 (archive sha256 019f665b...7b2934): d43c058, the merge of wip-2026-10-13 at
+  59d2019 (138 scripts, fixed point native 179 s / interpreted 275 s, merge gate 38.0 s against 117.5 s), then the
+  handoff records for that code; 39 provenance entries.
+- performance: the cycle-collector leak (617,823 states, about 2.1 GB, to bounded, 315 MB) and the callgrind-led
+  call-path work (80.1 G to 65.6 G instructions a pass); rexxcps still slower compiled (Value copies); callgrind
+  for flat profiles.
+- lessons: exceptions in hot paths; cycles through the interpreter; statistics free when off; flat profiles;
+  memory of parallel builds.
+- continuity: baseline, fixed point, regression (138 scripts, two-hour jobs), environment cache per name.
+- qualification: results at 59d2019 / d43c058; resumable regression across two-hour jobs.
+
 ## 0.5 (2026-10-26)
 - qualification: fifth gate, pbench2 on the exact merged commit; gates qualify the commit they ran on.
   Reason: e3d8d00 was merged on a benchmark of 61285d6, and fa1179f's 55 s -> 103 s regression had passed the
