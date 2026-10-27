@@ -1,11 +1,5 @@
 # Alchemy source provenance: `oorexx_string_template`
 
-Dev2 is maintained directly in `animatedads/alchemy/packages/oorexx_string_template` rather than reconstructed from the earlier delivery ZIP.
+Dev3 is maintained directly in `animatedads/alchemy/packages/oorexx_string_template` and continues the repository dev2 baseline. Generated carriers are distributions of repository source, not independent source authorities.
 
-Predecessor delivery:
-
-- Source delivery: `oorexx_string_template_v0.1-dev1.zip`
-- Delivery SHA-256: `605c0d1f8fe05e912cfa11b30a2c2eb047923cdf3d8c9e5f048036c64be24c49`
-- Delivery timestamp: 2026-10-07T16:55:42+01:00
-
-Dev2 source authority is the GitHub commit recorded in the repository history. A generated dev2 ZIP is a carrier of that source, not a second authority.
+Predecessor carrier recorded by dev2: `oorexx_string_template_v0.1-dev2.zip`, SHA-256 `ec8cf86c920cf34a989bd03336a7e08ec0cd0e034675010438c3dab0063d34fc`.
