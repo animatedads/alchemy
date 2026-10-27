@@ -2,12 +2,13 @@
   "kind": "article",
   "id": "src-editor.current",
   "title": "Current Source Editor baseline",
-  "summary": "The accepted source baseline is oorexx_source_editor_v0.1-dev5, SHA-256 7b72bdf6195d6b752c92ffe0831888b834de2323fa0a887bf8dfddc45191a440, qualified under ooRexx 5.3.0 r13196. Dev4 added SourceFileMatch and SourceTreeFinder using RexxUtil SysFileTree; tree grep reuses SourceDocument and SourceFinder. Dev5 added SourceCompletionCandidate and SourceCompletionProvider with deterministic ordering and direct object APIs for document and tree completion. The CLI is a projection over those objects, not semantic authority.",
+  "summary": "The accepted delivery baseline remains oorexx_source_editor_v0.1-dev5, SHA-256 7b72bdf6195d6b752c92ffe0831888b834de2323fa0a887bf8dfddc45191a440, qualified under ooRexx 5.3.0 r13196. Git now contains a dev6 candidate that replaces direct live-file writes with oorexx.atomic-file/0.1 dev1 publication: generation check first, optional backup publication through AtomicFile, then live candidate publication through AtomicFile with FULL durability requested. Independent r13196 qualification is pending under Rasen Falcon request REQ-00000589; do not promote dev6 until that evidence returns.",
   "invariants": [
     "Implementation remains native ooRexx; do not move semantic ownership into Python.",
     "Literal find stays literal; regex grep uses ooRexx RegularExpression semantics.",
     "Recursive file traversal uses ooRexx/RexxUtil facilities rather than an external find subprocess.",
     "Source results retain original path/line/column and enclosing-symbol provenance where available.",
-    "User-visible completion order is deterministic and must not depend on Directory iteration order."
+    "User-visible completion order is deterministic and must not depend on Directory iteration order.",
+    "Dev6 Atomic File candidate must not be called qualified until the independent r13196/native-provider run passes."
   ]
 }
