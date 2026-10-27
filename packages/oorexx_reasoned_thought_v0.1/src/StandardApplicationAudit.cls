@@ -1,5 +1,5 @@
 /*
- * StandardApplicationAudit/0.4: domain-neutral stated-standard consistency operator.
+ * StandardApplicationAudit/0.5: domain-neutral stated-standard consistency operator.
  * Architecture: Tom Dyer. Authoritative policy operator: ChatGPT GPT-6.
  * Reference interface and independent adversarial acceptance fixture: Claude Opus 4.8.
  *
@@ -120,6 +120,7 @@
      * violation unless a separate sufficient-condition warrant is admitted.
      * Evidence tiers must share the standard's declared metric and basis. */
     unknownCases = 0
+    r['unresolvedDispositionCases'] = 0
     r['ruleBasis'] = s['requiredBasis']
     do a over apps[standardId]
       if a['dimension'] \= s['dimension'] | a['basis'] \= s['requiredBasis'] | \a['valueKnown'] then do
@@ -133,6 +134,8 @@
         d['reason'] = 'ACCEPTED_BELOW_NECESSARY_THRESHOLD'
         r['ruleViolations']~append(d)
       end
+      else if a['disposition'] = 'REJECTED' & a['value'] >= s['required'] then -
+        r['unresolvedDispositionCases'] += 1
       else r['ruleConformingCases'] += 1
     end
     r['uncomparableCases'] = unknownCases
@@ -180,7 +183,7 @@
    * unmodelled exceptions or legitimate extra dimensions require review. */
   list = apps[standardId]
   if s['required'] \= '' then do a over list
-    if a['dimension'] \= s['dimension'] | \a['valueKnown'] then iterate
+    if a['dimension'] \= s['dimension'] | a['basis'] \= s['requiredBasis'] | \a['valueKnown'] then iterate
     if s['direction'] = 'HIGHER_WORSE' then shouldReject = (a['value'] >= s['required'])
     else shouldReject = (a['value'] <= s['required'])
     if shouldReject then expected = 'REJECTED'
@@ -219,6 +222,8 @@
       if ai['dimension'] \= s['dimension'] | aj['dimension'] \= s['dimension'] then -
         problem = 'DIMENSION_MISMATCH'
       else if ai['dimension'] \= aj['dimension'] then problem = 'DIMENSION_MISMATCH'
+      else if s['required'] \= '' & (ai['basis'] \= s['requiredBasis'] | aj['basis'] \= s['requiredBasis']) then -
+        problem = 'STANDARD_BASIS_MISMATCH'
       else if ai['basis'] \= aj['basis'] then problem = 'MEASUREMENT_BASIS_MISMATCH'
       else if \ai['valueKnown'] | \aj['valueKnown'] then problem = 'UNKNOWN_OR_NONNUMERIC_VALUE'
 
