@@ -30,3 +30,15 @@ NOT_IMPLEMENTED: independent LAPB link and T1/N2, physical/LLC2 adapters, data-w
 - XTP dev29 transport owner alone changes FIRST/CNTL auth, persistent stream, DIAG value extensions and any XTP protocol code. New gateway adaptations must be version-gated.
 - SocketProvider owner alone changes `SocketAddresses~x25` and `halfCloseSend/shutdownSend` common contracts.
 - Every reviewed change updates `docs/NOT_CLAIMED.md`, qualification and this sphere. No promotion to QUALIFIED from mock or lab tests.
+
+## 2026-10-27 dev2 review and current source correction
+
+**Architecture:** Tom Dyer. **Coding, review response and sphere update:** ChatGPT GPT-6.
+
+Claude's independently reproduced findings F1–F6, documented in Rasen Falcon REQ-00000241, have corrective code and interpreter tests in **new source artifact** `packages/oorexx_x25_v0.1-dev2` (dev1 remains historical). F1 rejects CALL with A=1 rather than interpreting the address block as basic BCD/Q; F2/F3 enforce channel-zero/global vs per-circuit identities; F4 enforces interrupt 1..32 octets; F5 resets both modulo-8 sequence numbers on local RESET_CONFIRM; F6 treats collision CLEAR as terminal without extra CLEAR_CONFIRM. Added `X25Packet~data` for Q/D/M, octet and P(S)/P(R) roundtrips.
+
+The **non-transmitting typed inspection** model is explicit: DTE invalid P(S) => RESET cause 0, diag 1; DCE local procedure => RESET cause 5, diag 1. `inspectRaw` only proposes RESET diag38/39 for clearly scoped malformed packets and remains LOCAL_ONLY otherwise; it never fabricates recovery. These are testable packet objects, not submitted frames or committed receipts. Continue to fail closed until X.25 operator edition/role and link-level state machines are qualified.
+
+**XTP source status changed:** `packages/oorexx_xtp_v0.1-dev30/docs/DIAG_REGISTRY.md` is the XTP owner's allocation authority. CODE 1/VALUES 16–23 are **reserved** as POLICY_DENIED, AUTH_REQUIRED, FACILITY_UNSUPPORTED, QUOTA_EXCEEDED, LOOP_DETECTED, INSPECTION_DENIED, NOT_READY, EMERGENCY_VETO. For DIAG wire responses: VALUE name or empty only, response no larger than provoking packet, and per-source/global rate limit. DIAG refusal may be sent before authentication; admitting foreign XTP traffic still requires FIRST/CNTL authentication. Persistent interactive FIRST-to-KEY context remains absent. This source has **no** live gateway DIAG sender.
+
+Next highest-priority work: user-space LAPB frame/window/T1/N2 engine with deterministic injected clock and independent carrier adapters, followed by full PLP facilities, network XOT interoperability and gated GatewaySession. `docs/NOT_CLAIMED.md` remains the release truth. No Linux AF_X25 critical path.
