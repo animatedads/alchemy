@@ -1,5 +1,5 @@
 /* QuicSocketProvider.cls
- * ooRexx QUIC Socket Provider v0.1-dev3
+ * ooRexx QUIC Socket Provider v0.1-dev4
  *
  * Real QUIC socket family behind the common SocketProvider boundary.
  * Native transport is OpenSSL QUIC; address objects contain references to
@@ -7,7 +7,7 @@
  */
 
 ::class QuicSocketProviderBuild public
-::constant VERSION "0.1-dev3"
+::constant VERSION "0.1-dev4"
 ::constant API "quic.socket.provider/0.1"
 ::constant TRANSPORT "QUIC"
 ::constant SCHEME "quic"
@@ -131,7 +131,7 @@
   delegate=.RegisteredSocketOfferProvider~new
 ::method register
   expose delegate
-  use strict arg logicalName, offerId, address, priority=100, localityClass="REMOTE", available=.true, evidence="QUIC/TLS 1.3 stream available", providerId="quic-dev3"
+  use strict arg logicalName, offerId, address, priority=100, localityClass="REMOTE", available=.true, evidence="QUIC/TLS 1.3 stream available", providerId="quic-dev4"
   if address~transport<>.QuicSocketProviderBuild~TRANSPORT then raise syntax 88.900 array("QuicSocketOfferProvider requires QUIC address")
   caps=.SocketCapabilities~new(.QuicSocketProviderBuild~SCHEME,.QuicSocketProviderBuild~ADDRESS_FAMILY,.true,.true,.true,.true,.false)
   offer=.SocketNegotiationOffer~new(offerId,address,priority,localityClass,available,evidence,providerId,caps)
@@ -213,9 +213,30 @@
   if closed then return .nil
   flag=0
   if unidirectional then flag=1
-  sh=quicNativeOpenStream(handle,flag)
+  sh=quicNativeOpenStream(handle,flag,0)
   if sh=0 then return .nil
   return .QuicStream~new(sh,self)
+::method tryOpenStream
+  expose handle closed
+  use strict arg unidirectional=.false
+  if closed then return .nil
+  flag=0
+  if unidirectional then flag=1
+  sh=quicNativeOpenStream(handle,flag,1)
+  if sh=0 then return .nil
+  return .QuicStream~new(sh,self)
+::method availableBidirectionalStreams
+  expose handle closed
+  if closed then return 0
+  return quicNativeStreamAvailability(handle,0)
+::method availableUnidirectionalStreams
+  expose handle closed
+  if closed then return 0
+  return quicNativeStreamAvailability(handle,1)
+::method canOpenStream
+  use strict arg unidirectional=.false
+  if unidirectional then return self~availableUnidirectionalStreams>0
+  return self~availableBidirectionalStreams>0
 ::method acceptStream
   expose handle closed
   if closed then return .nil
@@ -364,6 +385,7 @@
 ::routine quicNativeSend external "library oorexx_quic_native quicNativeSend"
 ::routine quicNativeRecv external "library oorexx_quic_native quicNativeRecv"
 ::routine quicNativeOpenStream external "library oorexx_quic_native quicNativeOpenStream"
+::routine quicNativeStreamAvailability external "library oorexx_quic_native quicNativeStreamAvailability"
 ::routine quicNativeAcceptStream external "library oorexx_quic_native quicNativeAcceptStream"
 ::routine quicNativeStreamId external "library oorexx_quic_native quicNativeStreamId"
 ::routine quicNativeStreamType external "library oorexx_quic_native quicNativeStreamType"
