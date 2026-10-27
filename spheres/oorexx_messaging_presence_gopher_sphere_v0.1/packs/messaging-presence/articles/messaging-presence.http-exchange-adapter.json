@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "messaging-presence.http-exchange-adapter",
+  "version": "0.1",
+  "sphere": "messaging-presence",
+  "section": "transport",
+  "title": "Generic BOSH HTTP exchange via ooRexx API Client",
+  "summary": "A separate BOSH/API Client adapter maps the generic BoshHttpExchangeProvider seam onto api.client/0.4 without adding HTTP, TLS, SocketProvider or XTP implementation knowledge to BOSH.",
+  "authority": "transport-composition-contract",
+  "invariants": [
+    "BOSH continues to own only XEP-0124 logical-stream/session semantics.",
+    "API Client owns HTTP framing, redirect policy, TLS identity verification, route/session selection and admission.",
+    "The adapter performs shape conversion only and grants neither layer additional semantic authority.",
+    "Cleartext HTTP is denied by adapter default and requires explicit deployment policy to enable.",
+    "API Client v0.4.1 currently documents native socket ownership as RxSock, so this adapter is not evidence for HTTPS-over-XTP.",
+    "HTTPS-over-XTP requires a lower API Client or shared-selector transport backend; BOSH and the adapter must not select XTP directly."
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_bosh_api_client_adapter",
+      "member": "src/BoshApiClientAdapter.cls",
+      "claim": "Implements BoshHttpExchangeProvider by constructing ApiRequest and mapping ApiResponse back to BoshHttpResponse."
+    },
+    {
+      "artifact": "packages/oorexx_api_client_v0.4.1",
+      "member": "README.md",
+      "claim": "API Client v0.4.1 owns HTTP/HTTPS and documents native socket ownership as RxSock."
+    }
+  ],
+  "qualification": {
+    "status": "source-candidate",
+    "runtimeExecuted": false,
+    "open": [
+      "Run deterministic adapter test under ooRexx 5.3.0 with exact BOSH and API Client roots.",
+      "Qualify live HTTPS BOSH exchange through API Client.",
+      "Add a provider/selector-capable API Client transport backend before making any HTTPS-over-XTP claim."
+    ]
+  }
+}
