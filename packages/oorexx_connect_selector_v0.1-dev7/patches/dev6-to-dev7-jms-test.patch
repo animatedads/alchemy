@@ -1,0 +1,151 @@
+--- a/tests/test_jms_bridge.rex
++++ b/tests/test_jms_bridge.rex
+@@ -46,6 +46,49 @@
+ manager~pending=.FakePackage~new('pkg-3','uncertain-ack','ct-3')
+ to=bridge~toJms('TOPIC.OUT')
+ call check to~code == 'QUEUE_ACK_UNCERTAIN' & to~accepted,'successful send with failed queue ack is ambiguous'
++/* A broker can accept a send then throw: the resulting claim is uncertain.
++ * This must NOT nack or provoke a second send. */
++manager~ackSuccess=.true
++port~throwSend=.true
++manager~pending=.FakePackage~new('pkg-4','broker-throw','ct-4')
++oldNacks=manager~nacks
++oldAcks=manager~acks
++to=bridge~toJms('TOPIC.OUT')
++call check to~code == 'SEND_UNCERTAIN' & manager~nacks == oldNacks & manager~acks == oldAcks,'broker send exception remains uncertain without nack/ack'
++port~throwSend=.false
++/* Queue acknowledgement can throw AFTER the broker accepted a message. */
++manager~throwAck=.true
++manager~pending=.FakePackage~new('pkg-5','queue-ack-throw','ct-5')
++oldNacks=manager~nacks
++to=bridge~toJms('TOPIC.OUT')
++call check to~code == 'QUEUE_ACK_UNCERTAIN' & to~accepted & manager~nacks == oldNacks,'queue ack exception preserves broker acceptance and does not nack'
++manager~throwAck=.false
++/* Inbound JMS acknowledgement exceptions must not mask the durable commit. */
++port~throwAck=.true
++port~incoming=.ConnectJmsDelivery~new('jms-20','inbound-ack-throw')
++oldPuts=manager~puts
++from=bridge~fromJms('TOPIC.IN')
++call check from~code == 'ACK_UNCERTAIN' & from~durable & manager~puts == oldPuts + 1,'JMS ack exception preserves prior durable QueueFabric commit'
++port~throwAck=.false
++/* A receive exception is not evidence of an acquired or acknowledged message. */
++port~throwReceive=.true
++oldPuts=manager~puts
++from=bridge~fromJms('TOPIC.IN')
++call check from~code == 'RECEIVE_UNCERTAIN' & manager~puts == oldPuts,'receive exception fails closed before queue insertion'
++port~throwReceive=.false
++/* A queue port may throw after committing: no JMS ack or forced recovery. */
++manager~throwPut=.true
++oldAcks=port~acked
++oldRecoveries=port~recoveries
++from=bridge~fromJms('TOPIC.IN')
++call check from~code == 'QUEUE_COMMIT_UNCERTAIN' & port~acked == oldAcks & port~recoveries == oldRecoveries,'queue commit exception must not ack or force JMS recovery'
++manager~throwPut=.false
++manager~putSuccess=.false
++port~throwRecover=.true
++from=bridge~fromJms('TOPIC.IN')
++call check from~code == 'RECOVERY_UNCERTAIN' & port~acked == oldAcks,'recover exception is uncertain, not an ack'
++port~throwRecover=.false
++manager~putSuccess=.true
+ say 'PASS JMS bridge: both directions, ack ordering, backout, uncertainty'
+ exit 0
+ check: procedure
+@@ -60,40 +103,52 @@
+ ::attribute ackSuccess
+ ::attribute sendSuccess
+ ::attribute sendDisposition
++::attribute throwSend
++::attribute throwAck
++::attribute throwReceive
++::attribute throwRecover
+ ::attribute acked
+ ::attribute recoveries
+ ::attribute sends
+ ::attribute lastMeta
+ ::method init
+-  expose incoming ackSuccess sendSuccess sendDisposition acked recoveries sends lastMeta
++  expose incoming ackSuccess sendSuccess sendDisposition throwSend throwAck throwReceive throwRecover acked recoveries sends lastMeta
+   incoming=.nil
+   ackSuccess=.true
+   sendSuccess=.true
+   sendDisposition=''
++  throwSend=.false
++  throwAck=.false
++  throwReceive=.false
++  throwRecover=.false
+   acked=0
+   recoveries=0
+   sends=0
+   lastMeta=.nil
+ ::method receive
+-  expose incoming
++  expose incoming throwReceive
+   use strict arg destination
++  if throwReceive then raise syntax 93.900 additional('simulated broker receive exception')
+   return incoming
+ ::method ack
+-  expose acked ackSuccess
++  expose acked ackSuccess throwAck
+   use strict arg handle
++  if throwAck then raise syntax 93.900 additional('simulated broker ack exception')
+   if \ackSuccess then return .false
+   acked += 1
+   return .true
+ ::method recover
+-  expose recoveries
++  expose recoveries throwRecover
+   use strict arg handle
++  if throwRecover then raise syntax 93.900 additional('simulated broker recover exception')
+   recoveries += 1
+   return .true
+ ::method send
+-  expose sendSuccess sendDisposition sends lastMeta
++  expose sendSuccess sendDisposition throwSend sends lastMeta
+   use strict arg destination, payload, metadata
+   sends += 1
+   lastMeta=metadata
++  if throwSend then raise syntax 93.900 additional('simulated broker send exception')
+   if sendDisposition \== '' then return .ConnectJmsSendReceipt~new(sendDisposition)
+   return sendSuccess
+ ::class FakeManager
+@@ -105,8 +160,10 @@
+ ::attribute acks
+ ::attribute nacks
+ ::attribute ackSuccess
++::attribute throwAck
++::attribute throwPut
+ ::method init
+-  expose durableStore puts putSuccess lastOptions pending acks nacks ackSuccess
++  expose durableStore puts putSuccess lastOptions pending acks nacks ackSuccess throwAck throwPut
+   durableStore=.Object~new
+   puts=0
+   putSuccess=.true
+@@ -115,12 +172,15 @@
+   acks=0
+   nacks=0
+   ackSuccess=.true
++  throwAck=.false
++  throwPut=.false
+ ::method queue
+   use strict arg name
+   return .FakePermanent~new
+ ::method put
+-  expose puts putSuccess lastOptions
++  expose puts putSuccess lastOptions throwPut
+   use strict arg name,payload,options,principal
++  if throwPut then raise syntax 93.900 additional('simulated queue insert exception')
+   puts += 1
+   lastOptions=options
+   if \putSuccess then return .FakeOperation~new(.false,'REJECTED',.nil,'injected rejection')
+@@ -131,9 +191,10 @@
+   if pending == .nil then return .FakeOperation~new(.false,'QUEUE_EMPTY',.nil,'')
+   return .FakeOperation~new(.true,'OK',pending,'')
+ ::method ack
+-  expose acks ackSuccess pending
++  expose acks ackSuccess throwAck pending
+   use strict arg name,packageId,claimToken,principal
+   acks += 1
++  if throwAck then raise syntax 93.900 additional('simulated queue ack exception')
+   if \ackSuccess then return .FakeOperation~new(.false,'ACK_FAIL',.nil,'')
+   pending=.nil
+   return .FakeOperation~new(.true,'OK',.nil,'')

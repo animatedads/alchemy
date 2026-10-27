@@ -1,0 +1,119 @@
+--- a/src/ConnectJmsBridge.cls
++++ b/src/ConnectJmsBridge.cls
+@@ -73,7 +73,11 @@
+     if \routes~permitsInbound(sourceDestination) then return .ConnectResult~failure('JMS_TO_QUEUE','POLICY_DENIED','Inbound JMS destination not authorised')
+   end
+   /* A concrete JMS port must not auto-ack in receive(). */
++  signal on syntax name receiveFault
++  signal on error name receiveFault
+   delivery = port~receive(sourceDestination)
++  signal off syntax
++  signal off error
+   if delivery == .nil then return .ConnectResult~failure('JMS_TO_QUEUE','NO_MESSAGE')
+   meta = .Directory~new
+   meta['correlationId'] = delivery~correlationId
+@@ -83,16 +87,60 @@
+   if delivery~messageId \== '' then copiedHeaders['connect.jms.message_id'] = delivery~messageId
+   meta['headers'] = copiedHeaders
+   intention = .ConnectIntent~new('jms.forward','enqueue','durable','QUEUE',queueAdapter~queueName,meta)
++  /* On an exception we cannot infer whether QueueFabric committed. Never
++   * ack the JMS delivery or force redelivery while persistence is uncertain. */
++  signal on syntax name queueCommitFault
++  signal on error name queueCommitFault
+   queueReceipt = queueAdapter~execute(intention,delivery~payload)
++  signal off syntax
++  signal off error
+   if \queueReceipt~ok then do
++    signal on syntax name recoverFault
++    signal on error name recoverFault
+     recovered = port~recover(delivery~handle)
++    signal off syntax
++    signal off error
+     if \recovered then return .ConnectResult~failure('JMS_TO_QUEUE','RECOVERY_UNCERTAIN','Queue rejected the message; JMS redelivery disposition is unknown',queueReceipt)
+     return .ConnectResult~failure('JMS_TO_QUEUE','QUEUE_REJECTED','JMS delivery retained for redelivery',queueReceipt)
+   end
+-  /* Queue persistence must have succeeded BEFORE JMS ack. */
++  /* Queue persistence must have succeeded BEFORE JMS ack. An exception from
++   * the broker ack path is UNCERTAIN, never a reason to undo queue commit. */
++  signal on syntax name jmsAckFault
++  signal on error name jmsAckFault
+   acknowledged = port~ack(delivery~handle)
++  signal off syntax
++  signal off error
+   if \acknowledged then return .ConnectResult~new(.false,'JMS_TO_QUEUE',.true,.false,.true,queueReceipt~value,'ACK_UNCERTAIN','Queue committed; JMS ack uncertain; duplicate possible')
+   return .ConnectResult~success('JMS_TO_QUEUE',queueReceipt~value,.true,.false,.true)
++receiveFault:
++  /* Redacted diagnostics: condition('D') is presence only, never content. */
++  say 'ConnectSelector JMS receiveFault' rc sigl condition('C') 'detail-redacted=' (condition('D') \== '')
++  ignored = condition('D')
++  signal off syntax
++  signal off error
++  return .ConnectResult~failure('JMS_TO_QUEUE','RECEIVE_UNCERTAIN','JMS receive threw; no QueueFabric operation attempted')
++queueCommitFault:
++  /* Redacted diagnostics: condition('D') is presence only, never content. */
++  say 'ConnectSelector JMS queueCommitFault' rc sigl condition('C') 'detail-redacted=' (condition('D') \== '')
++  ignored = condition('D')
++  signal off syntax
++  signal off error
++  return .ConnectResult~failure('JMS_TO_QUEUE','QUEUE_COMMIT_UNCERTAIN','QueueFabric invocation threw; commit is uncertain; JMS remains unacknowledged')
++recoverFault:
++  /* Redacted diagnostics: condition('D') is presence only, never content. */
++  say 'ConnectSelector JMS recoverFault' rc sigl condition('C') 'detail-redacted=' (condition('D') \== '')
++  ignored = condition('D')
++  signal off syntax
++  signal off error
++  return .ConnectResult~failure('JMS_TO_QUEUE','RECOVERY_UNCERTAIN','Queue rejected; JMS recover threw; redelivery is uncertain')
++jmsAckFault:
++  /* Redacted diagnostics: condition('D') is presence only, never content. */
++  say 'ConnectSelector JMS jmsAckFault' rc sigl condition('C') 'detail-redacted=' (condition('D') \== '')
++  /* Do not reveal broker exceptions; the queue commit is authoritative. */
++  ignored = condition('D')
++  signal off syntax
++  signal off error
++  return .ConnectResult~new(.false,'JMS_TO_QUEUE',.true,.false,.true,queueReceipt~value,'ACK_UNCERTAIN','Queue committed; JMS ack threw; duplicate possible')
+ ::method toJms
+   expose port queueAdapter routes
+   use strict arg destination
+@@ -113,7 +161,13 @@
+   /* A modern port may return ConnectJmsSendReceipt; legacy true means
+    * accepted, but legacy false means UNKNOWN unless the broker can prove
+    * it rejected the message. NEVER nack an ambiguous send. */
++  /* The remote broker might accept the send before raising an exception.
++   * Fail closed and retain the claimed queue item until its lease expires. */
++  signal on syntax name sendFault
++  signal on error name sendFault
+   sent = port~send(destination,package~payload,meta)
++  signal off syntax
++  signal off error
+   disposition = 'UNKNOWN'
+   if sent~isA(.ConnectJmsSendReceipt) then disposition = sent~disposition
+   else if sent == .true then disposition = 'ACCEPTED'
+@@ -125,7 +179,28 @@
+     return .ConnectResult~failure('QUEUE_TO_JMS','SEND_REJECTED','Broker rejected send; queue requeued')
+   end
+   /* JMS acceptance alone does not prove downstream consumption. */
++  /* If ack throws after broker acceptance, retain the uncertainty:
++   * no blind resend or nack may follow. */
++  signal on syntax name queueAckFault
++  signal on error name queueAckFault
+   acknowledged = manager~ack(queueName,package~packageId,package~claimToken,principal)
++  signal off syntax
++  signal off error
+   if \acknowledged~ok then return .ConnectResult~new(.false,'QUEUE_TO_JMS',.true,.false,.false,package~packageId,'QUEUE_ACK_UNCERTAIN','JMS accepted message; queue claim may be redelivered')
+   return .ConnectResult~success('QUEUE_TO_JMS',package~packageId,.true,.false,.false)
++sendFault:
++  /* Redacted diagnostics: condition('D') is presence only, never content. */
++  say 'ConnectSelector JMS sendFault' rc sigl condition('C') 'detail-redacted=' (condition('D') \== '')
++  /* Exception diagnostics may contain passwords or payloads; never log them. */
++  ignored = condition('D')
++  signal off syntax
++  signal off error
++  return .ConnectResult~failure('QUEUE_TO_JMS','SEND_UNCERTAIN','Broker send threw; acceptance unknown',package~packageId)
++queueAckFault:
++  /* Redacted diagnostics: condition('D') is presence only, never content. */
++  say 'ConnectSelector JMS queueAckFault' rc sigl condition('C') 'detail-redacted=' (condition('D') \== '')
++  ignored = condition('D')
++  signal off syntax
++  signal off error
++  return .ConnectResult~new(.false,'QUEUE_TO_JMS',.true,.false,.false,package~packageId,'QUEUE_ACK_UNCERTAIN','Broker accepted; QueueFabric ack threw; redelivery possible')
+ ::requires 'ConnectSelector.cls'
