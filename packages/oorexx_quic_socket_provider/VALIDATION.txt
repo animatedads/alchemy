@@ -1,27 +1,9 @@
-make: Entering directory '/mnt/data/oorexx_quic_socket_provider_v0.1-dev3'
-rm -f lib/liboorexx_quic_native.so
-g++ -I/mnt/data/oorexx_runtime/root/usr/local/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -shared -o lib/liboorexx_quic_native.so src/quic_rexx_native.cpp -lssl -lcrypto
-make: Leaving directory '/mnt/data/oorexx_quic_socket_provider_v0.1-dev3'
-[1/7] build native OpenSSL QUIC binding
-make: Entering directory '/mnt/data/oorexx_quic_socket_provider_v0.1-dev3'
-rm -f lib/liboorexx_quic_native.so
-g++ -I/mnt/data/oorexx_runtime/root/usr/local/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -shared -o lib/liboorexx_quic_native.so src/quic_rexx_native.cpp -lssl -lcrypto
-make: Leaving directory '/mnt/data/oorexx_quic_socket_provider_v0.1-dev3'
-[2/7] native library dependency check
-[3/7] generate local qualification identity
-[4/7] ooRexx contract test
-CONTRACT_OK
-[5/7] SocketProvider dev14 negotiation contract + QUIC dev3 offer
-NEGOTIATION_DEV3_OK
-[6/7] live QUIC/TLS 1.3 loopback + readiness/tryAccept
-CLIENT_OK 42
-SERVER_OK 42
-PASS: real QUIC socket provider round-trip
-[7/7] live QUIC two-stream multiplex round-trip
-CLIENT_MUX_OK 0 4
-SERVER_CONNECTION_READY
-SERVER_MUX_OK 0 4
-PASS: real QUIC multiplexed child streams
-[extra] shell syntax
-[extra] package source guards
-STATIC_GUARDS_OK
+ooRexx QUIC Socket Provider v0.1-dev4 validation
+
+Environment in this packaging pass:
+- OpenSSL 3.5.5 headers/libraries available.
+- ooRexx runtime/header package not mounted in this execution container.
+
+PASS: OpenSSL API compile probe for SSL_STREAM_FLAG_NO_BLOCK and SSL_get_quic_stream_*_local_avail.
+PASS: package static guards, JSON parse, shell syntax and ZIP integrity.
+NOT RUN HERE: ooRexx/native extension rebuild and live QUIC loopback/multiplex qualification. The qualification script is included and must be run against ooRexx 5.3.0 r13196 before promotion beyond development status.
