@@ -1,28 +1,22 @@
-ooRexx String Template v0.1-dev2 qualification
-Date: 2026-10-23
+ooRexx String Template v0.1-dev3 qualification
+Date: 2026-10-27
 
-Inherited executable predecessor evidence
-----------------------------------------
-dev1 was executed under Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit:
-PASS rexxc src/StringTemplate.cls
-PASS 5/5 dev1 runtime fixtures
-PASS ooRexx standards enforcer --strict --json (0 errors, 0 warnings)
+Inherited evidence
+------------------
+dev1: ooRexx 5.3.0 r13196 compile and 5/5 runtime fixtures PASS.
+dev2: project ooRexx standards enforcer strict PASS; fresh r13196 runtime was not recorded in its release evidence.
 
-Dev2 current-session evidence
+Dev3 current-session evidence
 -----------------------------
-The previously supplied r13196 Debian attachment is visible in conversation history, but its binary backing file is not materializable in this current tool session. Therefore dev2 does NOT claim a fresh r13196 runtime or rexxc PASS here.
+PASS project ooRexx standards enforcer --strict --json for the dev3 executable source/test set: 0 errors, 0 warnings.
+PASS deterministic source hashing and package manifest verification.
+PASS ZIP structural integrity.
 
-The dev2 package is checked with:
-PASS bash syntax validation for run_tests.sh
-PASS deterministic manifest generation and verification
-PASS ZIP integrity testing
-PASS project ooRexx standards enforcer --strict --json: 0 errors, 0 warnings
+NOT CLAIMED: fresh ooRexx r13196 compile/runtime PASS. The historical r13196 Debian attachment is visible in conversation metadata but its backing bytes are not materializable in this tool session. A Rasen Falcon qualification request was sent to CODEX-PC as REQ-00000371; dev3 evidence will remain pending until the actual runtime result is returned.
 
-New runtime fixtures shipped for the next r13196 execution gate:
-- complete JSON control-byte escaping;
-- blank `putObject` context-name rejection;
-- unique variable and formatter requirement inventories;
-- detached TemplateRequirements snapshots;
-- renderTo output equivalence and submitted-character count.
-
-Do not promote these new dev2 runtime fixtures to PASS until they are actually executed by r13196.
+New dev3 runtime fixture awaiting r13196 execution:
+- formatter registry snapshot isolation;
+- sealed captured-registry mutation rejection;
+- unbound formatter requirement inspection;
+- render-time fail-closed validation before output;
+- explicit `withFormatters` rebinding.
