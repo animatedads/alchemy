@@ -1,51 +1,35 @@
-# Architecture — ooRexx String Template v0.1-dev2
+# Architecture — ooRexx String Template v0.1-dev3
 
-The package deliberately treats template source as data, not executable Rexx.
+The package treats template source as parsed data, not executable Rexx.
 
 ```text
-StringTemplate
-   |
-   +-- TemplateParser
-   |     `-- compiled TemplateSegment objects
-   |
-   +-- TemplateRequirements
-   |     +-- variable/path inventory
-   |     `-- formatter inventory
-   |
-   +-- TemplateContext
-   |     +-- Directory values
-   |     `-- TemplateObjectView allowlisted projections
-   |
-   +-- TemplateFormatterRegistry
-   |     `-- TemplateFormatter objects
-   |
-   +-- TemplateRenderPolicy
-   |     +-- missing-value policy
-   |     `-- escaping policy
-   |
-   `-- render / renderTo
-         +-- String result
-         `-- caller-owned charOut sink
+caller formatter registry --snapshot--> sealed template registry
+                                      |
+source -> TemplateParser -> segments -+-> StringTemplate
+                                      |       |
+                                      |       +-- requirements / missing bindings
+                                      |       `-- withFormatters -> new StringTemplate
+context ------------------------------+-> render / renderTo
+                                      |
+render policy ------------------------+
 ```
 
-## Authority boundaries
+The caller owns data authority. Domain libraries own domain formatters. Render policy owns output escaping. StringTemplate owns parsing, substitution and the stability of formatter-name bindings once captured.
 
-The template owns parsing, substitution and template-requirement semantics. The caller owns data authority. Domain libraries own domain formatters. Render policy owns output escaping. The caller owns the lifecycle and semantics of a streaming output sink.
+## Deterministic formatter binding
 
-No template expression is sent to `INTERPRET`. No object message is derived directly from untrusted template text. `TemplateObjectView` is the only arbitrary-object bridge, and the application explicitly maps public template property names to zero-argument messages.
+Dev2 retained the caller's live registry. A later `register` call could therefore change the meaning of an existing template. Dev3 removes that temporal coupling: construction snapshots the registry and seals the snapshot.
 
-## Compile-time introspection is observation, not execution
+The snapshot is a binding snapshot, not a deep clone of formatter objects. A formatter object may deliberately carry state; that state remains owned by the formatter implementation.
 
-`variables`, `formatterNames` and `requirements` are computed from parsed segments. They do not inspect the caller's object graph, resolve values or run formatter code. This lets a report, message, prompt or document pipeline determine what a template requires before supplying data.
+## Inspection before binding
 
-## Streaming output
+Requirement inspection must remain useful before domain authorities are present. A template may therefore reference an unavailable formatter and still be parsed and inspected. `missingFormatterNames` reports the unsatisfied names without invoking formatter code. `validateBindings`, `render` and `renderTo` fail closed before rendering if any formatter remains absent.
 
-`renderTo` does not create a second rendering model. Every segment is resolved and escaped through the same objects used by `render`; only the destination differs. The sink is intentionally duck-typed around `charOut` so ordinary ooRexx streams and application-owned sinks can be used without a hard package dependency. StringTemplate never closes or flushes a sink it does not own.
+Explicit rebinding creates a new object through `withFormatters(registry)`. Existing compiled templates never change meaning because a shared registry was later mutated.
 
-## Why no loops or conditionals
+## Non-execution boundary
 
-Adding template conditionals, loops, macros or arbitrary expressions would create another programming language. Composition belongs in ordinary ooRexx objects and collections. This package stays a string interpolation facility.
+No template expression is sent to `INTERPRET`. No object message is derived directly from template text. `TemplateObjectView` remains the explicit allowlisted bridge to ordinary ooRexx objects. Requirement inspection does not resolve values or invoke formatters.
 
-## Object preservation
-
-Values remain ooRexx objects until their selected formatter converts them to textual output. Contexts do not flatten object graphs into JSON or Python-like structures.
+The language remains interpolation-only: no loops, conditions, macros or arbitrary expressions.
