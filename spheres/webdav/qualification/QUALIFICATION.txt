@@ -1,17 +1,29 @@
 ooRexx WebDAV engineering sphere v0.1
-Date: 2026-10-23
+Date: 2026-10-27
 
-Grounded package:
+Accepted package:
 - packages/oorexx_webdav
-- version 0.1-dev5
-- delivery SHA-256 5ec140808cb95d1fbe2c6f99c2abf0f14d7f59f06fd387a490538da8aef83f2d
+- accepted version 0.1-dev5
+- accepted delivery SHA-256 5ec140808cb95d1fbe2c6f99c2abf0f14d7f59f06fd387a490538da8aef83f2d
 - ooRexx 5.3.0 r13196
-- WebDAV local regression 14/14 PASS
+- WebDAV dev5 local regression 14/14 PASS
 
-Continuity assertions:
+Continuation candidate:
+- WebDAV 0.1-dev6 SHA-256 8129e50b20efdaf03980eed8e9f10f09edfec45aae82a27be6a1732c1c98299e
+- HTTPS 0.4.8 SHA-256 d38ddd049e5d8f5683e4ebf09e09a870c9c562bd3663db32950df711f7040fbe
+- PASS dev6 static HTTPS streaming integration contract
+- NOT_RUN exact-r13196 dev6 runtime suite in the current container
+- NOT_RUN live TLS large PUT/GET qualification
+
+Continuation assertions:
 PASS authority boundaries retained
-PASS partial/disconnected streaming upload cannot publish before commit
-PASS AWSTAPE delegated to Storage Fabric codec
+PASS partial/disconnected upload publication invariant represented in source
+PASS full GET streaming source path represented in source
+PASS per-request local-file source factory represented in source
+PASS sequential media remains outside generic byte-stream PUT
 PASS HET remains unsupported rather than guessed
-PASS HTTPS streaming request/response API remains explicitly open work
-PASS old dev1/dev2 histories remain historical; packages/oorexx_webdav is canonical source
+
+Promotion gate:
+- exact ooRexx 5.3.0 r13196 + Foreign Runtime v0.17.1
+- full inherited HTTPS/WebDAV suites
+- live TLS large PUT/GET, disconnect-abort, bounded-memory and concurrent GET forcing cases
