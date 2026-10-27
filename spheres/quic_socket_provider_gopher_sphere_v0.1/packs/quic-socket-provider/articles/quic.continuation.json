@@ -4,13 +4,19 @@
   "version": "0.1",
   "sphere": "quic-socket-provider",
   "title": "Continuation and missing work",
-  "summary": "Continue QUIC by strengthening provider semantics, interoperability and current-baseline qualification without bypassing the common socket authority.",
+  "summary": "Continue QUIC from dev4 by live-qualifying stream-count backpressure, then strengthening stream I/O backpressure, interoperability and migration while preserving the common socket authority.",
   "invariants": [
-    "Requalify source changes against the current common SocketProvider baseline before changing the declared compatibility line.",
-    "Add explicit QUIC stream directionality and stream-limit/backpressure evidence before claiming complete multiplex semantics.",
+    "First rerun the complete ooRexx 5.3.0 r13196/native qualification for dev4; do not promote static evidence into live status.",
+    "Add structured nonblocking stream read/write outcomes so SSL_ERROR_WANT_READ and SSL_ERROR_WANT_WRITE remain retryable QUIC flow-control states rather than generic failure.",
     "Add external COTS QUIC interoperability evidence; loopback alone is not cross-implementation proof.",
     "Add connection migration/path-change support only behind the provider boundary and preserve address/object authority.",
     "Do not move HTTP/3 semantics into the socket provider; HTTP/3 is a separate protocol consumer of QUIC."
   ],
-  "provenance": [{"artifact":"oorexx_quic_socket_provider_v0.1-dev3.zip","sha256":"34a224252f33079cdbe78d4e5f6f122c0cdd6524364f92e95da36bc233b54749","member":"CHANGELOG.md"}]
+  "provenance": [
+    {
+      "artifact": "oorexx_quic_socket_provider_v0.1-dev4.zip",
+      "sha256": "51464ddea2dec56557a8ea7f806fe8f54933da99527b249a67da2e74f3fde63b",
+      "member": "CHANGELOG.md"
+    }
+  ]
 }

@@ -10,8 +10,10 @@ provider=.SocketProvider~new(addresses)
 provider~registerBinding("QUIC",binding)
 sock=provider~sender("QUIC_MUX")
 if sock=.nil then exit 10
-s1=sock~openStream
-s2=sock~openStream
+before=sock~availableBidirectionalStreams
+if before<2 then exit 9
+s1=sock~tryOpenStream
+s2=sock~tryOpenStream
 if s1=.nil | s2=.nil then exit 11
 if s1~streamId=s2~streamId then exit 12
 p1="MUX_STREAM_ONE"||d2c(0)||"A"
@@ -26,5 +28,5 @@ if r1 \== p1 then exit 30
 if r2 \== p2 then exit 31
 id1=s1~streamId; id2=s2~streamId
 s1~close; s2~close; sock~close
-say "CLIENT_MUX_OK" id1 id2
+say "CLIENT_MUX_OK" id1 id2 "BIDI_AVAIL_BEFORE" before "AFTER" sock~availableBidirectionalStreams
 ::requires "QuicSocketProvider.cls"

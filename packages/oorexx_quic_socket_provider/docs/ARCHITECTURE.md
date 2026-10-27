@@ -1,4 +1,4 @@
-# QUIC socket provider architecture — dev3
+# QUIC socket provider architecture — dev4
 
 QUIC is a socket family below the common SocketProvider boundary.
 
@@ -27,3 +27,8 @@ The sealed dev3 archive retained a stale `dev2` heading here and a stale
 those two labels to dev3 without changing the qualified transport semantics.
 The sealed archive SHA remains provenance for the delivered qualification; the
 repository source is the corrected continuation baseline.
+
+
+## Stream-count backpressure
+
+QUIC stream creation is flow-controlled independently of UDP writability. Dev4 exposes this below the QUIC provider seam: `tryOpenStream()` uses OpenSSL's no-block stream creation and maps only `SSL_R_STREAM_COUNT_LIMITED` to a retryable `.nil`. Other failures remain provider errors. The provider also exposes OpenSSL's negotiated local stream allowance for bidirectional and unidirectional streams. These observations are advisory and must not be promoted into generic SocketSelector policy.

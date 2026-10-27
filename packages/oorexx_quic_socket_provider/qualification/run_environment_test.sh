@@ -26,8 +26,8 @@ export REXX_PATH="$ROOT/src:$ROOT/vendor/socket_provider${REXX_PATH:+:$REXX_PATH
 
 printf '%s\n' "[4/7] ooRexx contract test"
 "$REXX" "$ROOT/tests/test_contract.rex"
-printf '%s\n' "[5/7] SocketProvider dev14 negotiation contract + QUIC dev3 offer"
-"$REXX" "$ROOT/tests/test_negotiation_dev2.rex"
+printf '%s\n' "[5/7] SocketProvider dev14 negotiation contract + QUIC dev4 offer"
+"$REXX" "$ROOT/tests/test_negotiation.rex"
 
 printf '%s\n' "[6/7] live QUIC/TLS 1.3 loopback + readiness/tryAccept"
 "$REXX" "$ROOT/tests/quic_echo_server.rex" "$PORT" "$WORK/server.crt" "$WORK/server.key" >"$WORK/server.log" 2>&1 &

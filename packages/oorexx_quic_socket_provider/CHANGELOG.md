@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1-dev4
+
+- Add nonblocking `tryOpenStream()` using OpenSSL `SSL_STREAM_FLAG_NO_BLOCK`.
+- Treat `SSL_R_STREAM_COUNT_LIMITED` as retryable stream-count backpressure rather than a fatal provider error on the nonblocking path.
+- Expose negotiated local bidirectional/unidirectional stream availability.
+- Add `canOpenStream()` as a non-authoritative convenience observation; actual stream creation remains authoritative.
+- Extend multiplex qualification to exercise nonblocking stream creation and report allowance before/after creation.
+
+
 ## 0.1-dev3
 
 - Add native QUIC child-stream ownership and handle registry.

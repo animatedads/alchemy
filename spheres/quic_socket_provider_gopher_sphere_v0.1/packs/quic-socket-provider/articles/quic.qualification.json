@@ -4,13 +4,26 @@
   "version": "0.1",
   "sphere": "quic-socket-provider",
   "title": "Qualification evidence",
-  "summary": "Dev3 was built against ooRexx 5.3.0 r13196 and OpenSSL QUIC, then exercised with binary-safe loopback, readiness/tryAccept and two-stream multiplexing.",
+  "summary": "Dev3 remains live-qualified for TLS 1.3 loopback and two-stream multiplexing. Dev4 is currently source/static-qualified: its new OpenSSL stream-count APIs compile against OpenSSL 3.5.5, but the ooRexx r13196/native live suite has not yet been rerun.",
   "invariants": [
-    "Observed contract result: CONTRACT_OK.",
-    "Observed negotiation result: NEGOTIATION_DEV3_OK.",
-    "Observed ordinary live route: CLIENT_OK 42 / SERVER_OK 42.",
-    "Observed multiplex route: CLIENT_MUX_OK 0 4 / SERVER_MUX_OK 0 4.",
-    "Qualification certificates and private keys are transient test material and must not be committed into source packages."
+    "Dev3 observed contract result: CONTRACT_OK.",
+    "Dev3 observed negotiation result: NEGOTIATION_DEV3_OK.",
+    "Dev3 observed ordinary live route: CLIENT_OK 42 / SERVER_OK 42.",
+    "Dev3 observed multiplex route: CLIENT_MUX_OK 0 4 / SERVER_MUX_OK 0 4.",
+    "Dev4 OpenSSL API probe passed for SSL_STREAM_FLAG_NO_BLOCK and SSL_get_quic_stream_*_local_avail.",
+    "Dev4 package static guards, JSON parse, shell syntax and ZIP integrity passed.",
+    "Dev4 ooRexx/native live qualification is NOT RUN and must not be inferred from dev3 evidence."
   ],
-  "provenance": [{"artifact":"oorexx_quic_socket_provider_v0.1-dev3.zip","sha256":"34a224252f33079cdbe78d4e5f6f122c0cdd6524364f92e95da36bc233b54749","member":"VALIDATION.txt"}]
+  "provenance": [
+    {
+      "artifact": "oorexx_quic_socket_provider_v0.1-dev3.zip",
+      "sha256": "34a224252f33079cdbe78d4e5f6f122c0cdd6524364f92e95da36bc233b54749",
+      "member": "VALIDATION.txt"
+    },
+    {
+      "artifact": "oorexx_quic_socket_provider_v0.1-dev4.zip",
+      "sha256": "51464ddea2dec56557a8ea7f806fe8f54933da99527b249a67da2e74f3fde63b",
+      "member": "VALIDATION.txt"
+    }
+  ]
 }
