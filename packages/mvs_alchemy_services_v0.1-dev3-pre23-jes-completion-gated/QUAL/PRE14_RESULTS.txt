@@ -1,0 +1,16 @@
+
+LIVE PRE12 EVIDENCE (ED209Z):
+PASS MASD75 assemble RC=0
+PASS MASLIVE accepted/started by JES
+WARN MASLIVE assemble RC=4: signed halfword port 37075 truncated
+PASS link RC=0
+FAIL RUN S0C4 U0000; saved PSW at X'75'
+NOT_RUN guest-to-host X'75' crossing
+NOT_RUN Queue/DB/IMAP/SMTP/PATH live
+
+PRE14 REPAIRS:
+- exact EZASOH03 CALLPC X'75' pair 75005000 then 75006000
+- port 37075 encoded as unsigned raw X'90D3'
+- inherits PRE13 HASP set -u-safe harness fix
+
+PRE14 LIVE STATUS: NOT_RUN

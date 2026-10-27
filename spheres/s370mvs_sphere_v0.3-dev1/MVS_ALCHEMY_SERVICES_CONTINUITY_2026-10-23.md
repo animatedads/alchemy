@@ -88,3 +88,12 @@ authority; signing material never crosses into the guest.
 3. Preserve first-failure JES spool, Hercules window, Logging v0.7 and Mesh evidence.
 4. Prove X'75' crossing and a harmless request before expanding live mutation/provider coverage.
 5. Keep ED209Z and ED209ZZ qualification evidence separate.
+
+
+## PRE23 JES completion/spool gate (2026-10-27)
+
+PRE23 supersedes PRE22 for qualification runs without changing the MVS carrier, wire, RPC, provider or authority semantics. The PRE22 harness could observe `MASLIVE PASS ALL` and proceed to final PASS without independently requiring JES2 `$HASP395 MASLIVE ENDED`. PRE23 closes that evidence gap.
+
+Current artifact: `mvs_alchemy_services_v0.1-dev3-pre23-jes-completion-gated.zip`, SHA-256 `4b7f92672b9675d2b508cef6dbda7b01fc44a381057044304cbdf269ba783b7f`.
+
+A live PASS now requires, in order: facility completion, `$HASP395 MASLIVE ENDED`, retained final MASLIVE printer/spool evidence, then the existing Logging v0.7 and Instrumentation Mesh evidence checks. `PASS ALL` without HASP395 is INCONCLUSIVE. HASP395 without retained MASLIVE spool is also INCONCLUSIVE. PRE23 remains NOT_RUN live on ED209Z until the unchanged sealed archive is exercised through the established JES path.

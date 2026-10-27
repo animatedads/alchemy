@@ -1,0 +1,22 @@
+Runtime: Open Object Rexx 5.3.0 r13196, 64-bit, build 2026-08-03
+
+PASS rexxc HOST/src/MasStorageFabricDsfs.cls
+PASS DSFS_STORAGE_FABRIC_ROUNDTRIP
+  REF1=mvs-sf:00000001:/u/USER/sample.txt
+  REF2=mvs-sf:00000002:/u/USER/sample.txt
+  previous StorageRef retained in catalogue
+  CATALOGUE_OBJECTS=3
+  TAPE_FILES=2
+  AWS_BYTES=253
+PASS existing MAS QUEUE/DB/IMAP/SMTP regression
+PASS independent AWS parser
+  AWS_BLOCKS=10
+  AWS_TAPEMARKS=3
+  AWS_RECORDS=7
+  AWS_MANIFEST_FIRST=MASDIR 1 /u/USER
+
+NOT_RUN live ED209Z JCL PATH personality
+NOT_RUN live ED209ZZ JCL PATH personality
+NOT_RUN durable Storage Fabric provider
+NOT_RUN Hercules DEVINIT mount of generated AWS image
+NOT_RUN MVS read-back from mounted AWS tape
