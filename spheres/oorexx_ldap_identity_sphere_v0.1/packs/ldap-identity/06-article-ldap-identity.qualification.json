@@ -3,27 +3,25 @@
   "id": "ldap-identity.qualification",
   "version": "0.1",
   "sphere": "ldap-identity",
-  "title": "dev19 qualification and non-claims",
+  "title": "dev20 qualification and non-claims",
   "evidence": [
-    "Archive SHA-256: 14d41d9c1cd339ccd99bc1a344b182fdb86ef2b5c30ee6454dd2fbfe1525d8ec.",
-    "Source includes src/IdentityPeerAuthorityJournal.cls and tests/test_authority_recovery_journal.rex.",
-    "Fresh runtime qualification was not run because ooRexx was unavailable in the build container.",
-    "The packaged VALIDATION_DEV19_STANDARDS.txt is invalid evidence because its invocation could not find the subject path.",
-    "A direct rerun of oorexx_standards_enforcer.py against the dev19 ZIP scanned 81 files and reported 1 ERROR / 136 WARNINGS.",
-    "The single hard error is SIGNAL_NO_ANNOUNCE in tests/test_authority_recovery_journal.rex; therefore standards PASS is not claimed.",
-    "VERSION.txt still says 0.1-dev18 even though archive/changelog identify dev19; correct this before an accepted dev19 release."
+    "Archive SHA-256: f709328b4127608d7723031b279e830df298bac99ee01b91242e04cb9f233bbc.",
+    "dev20 retains src/IdentityPeerAuthorityJournal.cls and tests/test_authority_recovery_journal.rex from the dev19 authority-recovery increment.",
+    "The dev19 SIGNAL_NO_ANNOUNCE standards defect is repaired: the expected SYNTAX handler now announces RC, SIGL, condition code and condition description.",
+    "VERSION.txt in the complete dev20 archive reports 0.1-dev20.",
+    "Direct oorexx_standards_enforcer.py scan of the exact dev20 ZIP: 81 files, 0 errors, 136 warnings, PASS.",
+    "Fresh runtime qualification was not run because ooRexx is unavailable in the current build container."
   ],
   "non_claims": [
-    "No fresh ooRexx runtime PASS is claimed for dev19.",
+    "No fresh ooRexx runtime PASS is claimed for dev20.",
     "No full RexxOS WAN kill/promote field qualification is claimed by this sphere.",
     "No transport ACK, observability correlation or recovery journal entry is promoted into consensus evidence.",
-    "No complete OpenLDAP/AD/Entra compatibility claim is implied by the native LDAP personality."
+    "The older exploded GitHub package tree is not claimed byte-equivalent to the complete dev20 archive."
   ],
   "next_acceptance_gates": [
-    "Fix the standards hard error in the dev19 recovery regression.",
-    "Bump VERSION.txt consistently to dev19.",
-    "Run the authority-recovery regression under ooRexx.",
+    "Run the authority-recovery regression under ooRexx 5.3.0 r13196.",
     "Run the full packaged regression suite against the pinned dependency closure.",
-    "Only then advance dev19 from development candidate to runtime-qualified baseline."
+    "Synchronise the complete dev20 archive into the exploded GitHub package tree without losing provenance.",
+    "Then perform RexxOS failover field qualification while preserving application-authority versus carrier-delivery separation."
   ]
 }
