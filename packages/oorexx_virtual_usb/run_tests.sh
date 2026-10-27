@@ -52,3 +52,4 @@ cd "$ROOT"
 "$REXX_EXE" examples/virtual_fido2_authenticator.rex
 
 "$ROOT/tests/test_live_generation_guard.sh"
+"$ROOT/tests/test_live_binding_wait.sh"

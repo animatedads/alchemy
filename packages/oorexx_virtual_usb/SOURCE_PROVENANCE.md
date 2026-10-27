@@ -1,4 +1,4 @@
-# ooRexx Virtual USB v0.1-dev9 source provenance
+# ooRexx Virtual USB v0.1-dev10 source provenance
 
 ## Base
 
@@ -79,3 +79,18 @@ Relevant reference material:
 dev9 intentionally does not change provider configuration ordering merely from
 the stale dev8 run. A clean presenter-owned generation is required before any
 further provider change is justified.
+
+
+## dev10 qualification timing correction
+
+dev10 is derived directly from the sealed dev9 package. It changes only the
+live qualification timing/evidence path and release metadata. The dev9
+qualifier proved presenter ownership and USB generation before accepting a
+CAFE:F1D0 device, but then sampled HID interface and hidraw publication only
+once. Linux may publish those objects later in the same successful enumeration.
+
+`tests/test_live_binding_wait.sh` reproduces that ordering with a fake sysfs
+tree. The dev9 qualifier fails when the interface is delayed after device
+publication; the dev10 qualifier waits for the HID interface and then hidraw and
+passes. The existing dev9 stale-generation regression also continues to pass.
+No CTAP2, CTAPHID, descriptor, EP0 or credential semantic change is made.

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* ooRexx Virtual USB v0.1-dev9 - declarative device/profile loader.          */
+/* ooRexx Virtual USB v0.1-dev10 - declarative device/profile loader.          */
 /*----------------------------------------------------------------------------*/
 
 ::class UsbDeviceProfile public

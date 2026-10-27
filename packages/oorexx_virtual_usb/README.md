@@ -1,4 +1,4 @@
-# ooRexx Virtual USB v0.1-dev9
+# ooRexx Virtual USB v0.1-dev10
 
 Device-side USB emulation for ooRexx, now with generic HID descriptor support and a development FIDO2 / CTAP2 authenticator.
 
@@ -21,6 +21,22 @@ device~present
 On a Raw Gadget-capable host, the same semantic device can be presented through `LinuxRawGadgetProvider`. dev4 adds the blocking-I/O event/endpoint activity model needed for a real Raw Gadget host path and a dedicated live presenter. The supplied qualification container has no `/dev/raw-gadget`, so live host enumeration remains a target-environment qualification step rather than a claim of this package build.
 
 
+
+## dev10 live binding wait
+
+dev10 fixes a qualification timing race without changing the USB/FIDO provider semantics.
+Linux can publish the new `CAFE:F1D0` device sysfs directory before the HID
+interface directory and `hidraw` node have been created. dev9 proved presenter
+ownership and USB generation correctly, but sampled HID and hidraw only once
+immediately after device discovery. A normally progressing enumeration could
+therefore be reported as `no HID class interface`.
+
+The live qualifier now treats device publication, HID interface binding and
+hidraw binding as three separately awaited phases. During each wait it also
+requires the presenter process to remain alive. `tests/test_live_binding_wait.sh`
+uses a fake sysfs tree to publish those three phases with deliberate delays and
+proves that the qualifier waits rather than producing an early false failure.
+The existing stale-generation guard remains unchanged and still passes.
 
 ## dev9 generation-safe live qualification
 

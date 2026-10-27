@@ -4,7 +4,7 @@
   "version": "0.1",
   "sphere": "virtual-usb",
   "title": "Continuation doctrine and next acceptance gates",
-  "summary": "Continue from dev9 without reopening already-localized layers. First obtain a clean presenter-owned HID/hidraw generation; then qualify libfido2 and browser WebAuthn; only then move the same semantic device onto a powered hardware SoC and replace development security providers.",
+  "summary": "Continue from the dev10 repository/package candidate while retaining dev9 as Current Library. First obtain a clean presenter-owned HID/hidraw generation with the corrected asynchronous binding waits; then qualify libfido2 and browser WebAuthn; only then move the same semantic device onto a powered hardware SoC and replace development security providers.",
   "authority": "project-authority",
   "invariants": [
     "Do not change CTAP2/CTAPHID semantics merely because a Raw Gadget host test fails before HID binding.",
@@ -15,7 +15,7 @@
     "Do not claim whole-device trust merely because FIDO transactions pass."
   ],
   "procedure": [
-    "1. On an idle dummy_udc.0, run tests/bringup_live_raw_gadget_fido.sh from dev9 with the locked dependency roots.",
+    "1. On an idle dummy_udc.0, run tests/bringup_live_raw_gadget_fido.sh from dev10 with the locked dependency roots.",
     "2. If it fails, inspect the persisted RAWGADGET trace and current kernel USB diagnostics before modifying code.",
     "3. When HID class 03 and hidraw bind, record that target evidence and update package validation/sphere qualification.",
     "4. If available, qualify libfido2 discovery and basic authenticator information as a separate gate.",
@@ -40,6 +40,13 @@
       "member": "oorexx_virtual_usb_v0.1-dev9/ARCHITECTURE.md",
       "claim": "Architecture records current Raw Gadget fixed-endpoint portability work and provider/security boundaries.",
       "note": "Continuation architecture."
+    },
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev10.zip",
+      "sha256": "e9dc6a1c90e97df563de81a4d64ad53339101cf7b63622aeda853835a303b701",
+      "member": "oorexx_virtual_usb_v0.1-dev10/VALIDATION.txt",
+      "claim": "dev10 is the immediate clean-live qualification candidate and adds asynchronous HID/hidraw wait evidence.",
+      "note": "Immediate development candidate."
     }
   ]
 }

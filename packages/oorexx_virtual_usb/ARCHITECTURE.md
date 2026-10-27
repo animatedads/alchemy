@@ -1,4 +1,4 @@
-# Virtual USB dev9 architecture
+# Virtual USB dev10 architecture
 
 ## Device-side boundary
 
@@ -120,6 +120,24 @@ stable path such as `5-1` across separate USB device numbers.
 The selected UDC must also be idle before launch.  An already-active UDC is a
 qualification failure, not an invitation to inspect whatever device happens to
 be present on the dummy host bus.
+
+## dev10 live binding publication boundary
+
+Linux publishes a USB device and its bound interfaces asynchronously. Seeing a
+new presenter-owned `CAFE:F1D0` device proves device enumeration has reached the
+device level; it does not prove that the HID interface or hidraw class node has
+already been published. The qualifier therefore waits through three distinct
+phases while continuously requiring the presenter process to remain alive:
+
+```text
+new presenter-owned CAFE:F1D0 generation
+    -> HID interface class 03 appears
+    -> matching /dev/hidrawN appears
+```
+
+A timeout at one phase is evidence about that phase only. It is not converted
+into a provider semantic diagnosis until the persisted Raw Gadget trace and
+kernel diagnostics support that conclusion.
 
 ## dev8 Raw Gadget control-transfer invariant
 

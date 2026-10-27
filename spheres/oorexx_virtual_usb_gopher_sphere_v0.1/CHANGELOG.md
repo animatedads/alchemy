@@ -1,3 +1,11 @@
+# v0.1 current-state update (2026-10-27)
+
+- Record dev10 repository/package candidate SHA-256 `e9dc6a1c90e97df563de81a4d64ad53339101cf7b63622aeda853835a303b701`.
+- Preserve dev9 as Current Library until clean target-host qualification promotes a successor.
+- Record the discovered dev9 qualifier race: USB device sysfs publication can precede HID interface and hidraw publication.
+- Record dev10's bounded waits and delayed-binding regression; no FIDO/CTAPHID/Raw-Gadget semantic change.
+- Change the immediate host acceptance instruction from dev9 to dev10.
+
 # v0.1
 
 - Create the first Virtual USB continuity sphere around the current dev9 executable baseline.

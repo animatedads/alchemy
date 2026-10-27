@@ -1,12 +1,12 @@
 /*----------------------------------------------------------------------------*/
-/* ooRexx Virtual USB v0.1-dev9 - FIDO2 / CTAP2 development authenticator.   */
+/* ooRexx Virtual USB v0.1-dev10 - FIDO2 / CTAP2 development authenticator.   */
 /*                                                                            */
 /* Development-only: deterministic credential derivation; not production      */
 /* security.  The wire protocol and signatures are real; entropy is not.      */
 /*----------------------------------------------------------------------------*/
 
 ::class Fido2Build public
-::constant RELEASE '0.1-dev9'
+::constant RELEASE '0.1-dev10'
 ::constant API_VERSION 'virtual.usb.fido2/0.1'
 
 ::class Fido2Events public

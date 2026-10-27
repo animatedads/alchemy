@@ -1,3 +1,12 @@
+# v0.1-dev10
+
+- Fix a live-qualification race after new-device discovery: wait for HID interface publication instead of sampling `<device>:*` once immediately after `CAFE:F1D0` appears.
+- Wait independently for the matching `hidraw` node because HID driver binding can lag interface creation.
+- Require the presenter process to remain alive during both waits and emit the persisted Raw Gadget trace if either phase times out.
+- Add `tests/test_live_binding_wait.sh`, which publishes the device, HID interface and hidraw node in deliberately separated phases; the unmodified dev9 qualifier fails this regression and dev10 passes it.
+- Keep the dev9 presenter-ownership and `<sysfs-path>:<devnum>` generation guard intact.
+- No CTAP2, CTAPHID, descriptor, Raw Gadget EP0 or credential semantics change in dev10; public API versions remain unchanged.
+
 # v0.1-dev9
 
 - Correct the live qualification boundary after the dev8 run exposed a stale-generation false positive: the script reported `5-1 CAFE:F1D0`, but the current presenter process later logged `usb_gadget_register_driver returned -16` because the selected UDC was already busy.

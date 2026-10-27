@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* ooRexx Virtual USB v0.1-dev9 - device-side runtime and event model.        */
+/* ooRexx Virtual USB v0.1-dev10 - device-side runtime and event model.        */
 /*----------------------------------------------------------------------------*/
 
 ::class VirtualUsbEvents public

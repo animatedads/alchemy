@@ -211,15 +211,27 @@ done
 note "USB enumeration OK: $(basename "$USB_PATH") CAFE:F1D0 devnum=$(cat "$USB_PATH/devnum" 2>/dev/null || printf '?')"
 
 HID_IF=''
-for i in "$USB_PATH":*; do
-  [ -f "$i/bInterfaceClass" ] || continue
-  cls=$(tr '[:upper:]' '[:lower:]' <"$i/bInterfaceClass")
-  if [ "$cls" = "03" ]; then HID_IF=$i; break; fi
+# Device publication and interface binding are separate sysfs phases.  A new
+# CAFE:F1D0 device can be visible before Linux has created <device>:<ifnum>.
+# Wait for the HID interface while continuing to prove the presenter is alive.
+for ((i=0; i<VUSB_LIVE_TIMEOUT*10; i++)); do
+  if ! kill -0 "$PRESENTER_PID" 2>/dev/null; then
+    cat "$LOG" >&2 || true
+    [ ! -s "$TRACE" ] || cat "$TRACE" >&2
+    fail "presenter exited before HID interface binding completed"
+  fi
+  for intf in "$USB_PATH":*; do
+    [ -f "$intf/bInterfaceClass" ] || continue
+    cls=$(tr '[:upper:]' '[:lower:]' <"$intf/bInterfaceClass")
+    if [ "$cls" = "03" ]; then HID_IF=$intf; break; fi
+  done
+  [ -n "$HID_IF" ] && break
+  sleep 0.1
 done
 if [ -z "$HID_IF" ]; then
-  note "presenter trace at HID-interface failure"
+  note "presenter trace at HID-interface timeout"
   [ ! -s "$TRACE" ] || sed -n '1,260p' "$TRACE" >&2
-  note "presenter stdout/stderr at HID-interface failure"
+  note "presenter stdout/stderr at HID-interface timeout"
   sed -n '1,220p' "$LOG" >&2 || true
   note "enumerated sysfs device state"
   for f in idVendor idProduct bDeviceClass bNumConfigurations configuration bConfigurationValue; do
@@ -227,23 +239,38 @@ if [ -z "$HID_IF" ]; then
   done
   note "kernel interfaces under $(basename "$USB_PATH")"
   find "$(dirname "$USB_PATH")" -maxdepth 1 -name "$(basename "$USB_PATH"):*" -printf '  %f\n' 2>/dev/null >&2 || true
-  fail "device enumerated but no HID class interface was found"
+  fail "device enumerated but no HID class interface bound within ${VUSB_LIVE_TIMEOUT}s"
 fi
 note "HID interface OK: $(basename "$HID_IF")"
 
 HIDRAW=''
 base=$(basename "$USB_PATH")
-for h in "$VUSB_SYSFS_ROOT"/class/hidraw/hidraw*; do
-  [ -e "$h" ] || continue
-  target=$(readlink -f "$h/device" 2>/dev/null || true)
-  case "$target" in
-    *"/$base/"*|*"/$base:"*) HIDRAW="$VUSB_DEV_ROOT/$(basename "$h")"; break ;;
-  esac
+# hidraw publication follows interface creation and may lag it as the HID
+# driver probes.  Poll it independently rather than sampling once.
+for ((i=0; i<VUSB_LIVE_TIMEOUT*10; i++)); do
+  if ! kill -0 "$PRESENTER_PID" 2>/dev/null; then
+    cat "$LOG" >&2 || true
+    [ ! -s "$TRACE" ] || cat "$TRACE" >&2
+    fail "presenter exited before hidraw binding completed"
+  fi
+  for h in "$VUSB_SYSFS_ROOT"/class/hidraw/hidraw*; do
+    [ -e "$h" ] || continue
+    target=$(readlink -f "$h/device" 2>/dev/null || true)
+    case "$target" in
+      *"/$base/"*|*"/$base:"*)
+        candidate="$VUSB_DEV_ROOT/$(basename "$h")"
+        if [ -e "$candidate" ]; then HIDRAW=$candidate; break; fi
+        ;;
+    esac
+  done
+  [ -n "$HIDRAW" ] && break
+  sleep 0.1
 done
-if [ -n "$HIDRAW" ] && [ -e "$HIDRAW" ]; then
+if [ -n "$HIDRAW" ]; then
   note "hidraw binding OK: $HIDRAW"
 else
-  fail "HID interface enumerated but no matching hidraw node was found"
+  [ ! -s "$TRACE" ] || sed -n '1,260p' "$TRACE" >&2
+  fail "HID interface enumerated but no matching hidraw node bound within ${VUSB_LIVE_TIMEOUT}s"
 fi
 
 if command -v lsusb >/dev/null 2>&1; then
