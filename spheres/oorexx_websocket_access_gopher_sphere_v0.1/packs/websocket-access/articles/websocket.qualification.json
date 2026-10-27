@@ -4,13 +4,15 @@
   "version": "0.1",
   "sphere": "websocket-access",
   "title": "Qualification evidence",
-  "summary": "WebSocket dev1 passed its RFC 6455 contract suite under ooRexx 5.3.0 r13196 and completed a live loopback exchange against the independent Python websockets implementation through the SocketProvider isolation seam.",
+  "summary": "WebSocket dev1 remains the qualified release: RFC 6455 contract suite under ooRexx 5.3.0 r13196 plus live loopback against independent Python websockets through SocketProvider isolation. dev2 is a source candidate awaiting fresh r13196 + Socket Provider dev16 execution.",
   "invariants": [
-    "Contract evidence includes the RFC 6455 example handshake accept calculation and masking vector.",
-    "Live COTS evidence used an independent Python websockets server, not a WebSocket implementation from the same package.",
-    "The live path exercised WebSocketAccess -> SocketProvider -> RxSock TCP -> independent RFC 6455 peer -> WebSocketMessage.",
+    "dev1 contract evidence includes the RFC 6455 example handshake accept calculation and masking vector.",
+    "dev1 live COTS evidence used an independent Python websockets server.",
+    "The dev1 live path exercised WebSocketAccess -> SocketProvider -> RxSock TCP -> independent RFC 6455 peer -> WebSocketMessage.",
     "SocketAddress identity survives the isolation seam as an object.",
-    "The 2026-10-13 transport grid carries this as inherited COTS evidence in the dev16 estate; it explicitly does not claim a fresh dev16 live rerun."
+    "dev2 adds tests for fragmented message reassembly, interleaved ping/pong, close-frame transmission and unexpected continuation fail-closed behaviour.",
+    "No dev2 PASS is claimed until those tests execute under ooRexx 5.3.0 r13196 against Socket Provider dev16.",
+    "Independent dev2 qualification/review is requested on Rasen Falcon lane websocket-access as REQ-00000381."
   ],
   "provenance": [
     {
@@ -19,9 +21,13 @@
       "member": "VALIDATION.txt"
     },
     {
+      "artifact": "packages/oorexx_websocket_access/VALIDATION_DEV2.txt",
+      "claim": "Records dev2 SOURCE_CANDIDATE status and explicit qualification gates."
+    },
+    {
       "artifact": "SPIRAL1_TRANSPORT_COTS_INTERFACE_GRID_CURRENT_2026-10-13.md",
       "sha256": "f659adf468eac794446550defc830fcdcbf7a40a75e65e4fe9a4e782fc2c6bbd",
-      "claim": "Current transport reconciliation and evidence status."
+      "claim": "Current inherited evidence status."
     }
   ]
 }
