@@ -4,7 +4,7 @@ This file is deliberately conservative. A missing item is not implied complete m
 
 ## Completed source-publication gate — 2026-10-27
 
-The previous source-publication gap is closed on the publication branch:
+The previous source-publication gap is closed on `main` by commit `311d31608c7ab48fc55a4df9d0b97d54ec00b7a7`:
 
 - exact delivery: `oorexx_instrumentation_mesh_v0.1-dev8.zip`;
 - archive SHA-256: `47402459e658da6ddb17c65c98010c0acd0e35d43b3a0b01c8c13c835f65d624`;
@@ -24,7 +24,7 @@ This completes source availability/provenance only. It does **not** manufacture 
 
 ## Runtime qualification still required
 
-5. Run a fresh source-level Instrumentation dev8 qualification under the current exact ooRexx 5.3.0 r13196 environment after publication. The imported package carries qualified 2026-10-11 evidence; this sphere does not relabel source publication as fresh execution.
+5. Run a fresh source-level Instrumentation dev8 qualification under the current exact ooRexx 5.3.0 r13196 environment after publication. GitHub issue #60 owns this fresh execution gate. The imported package carries qualified 2026-10-11 evidence; this sphere does not relabel source publication as fresh execution.
 6. Run a live multi-node QueueRexx/XTP MANAGEMENT-route qualification for Instrumentation publication/query/command against the current QueueRexx head. Earlier packages qualified the service-route contract and underlying Queue Fabric behavior, but this sphere does not claim a new live two-node run.
 7. Requalify current producers against the published source. The 2026-10-27 Library has advanced at least:
    - Instrumentation Intentions v0.1-dev2 — read-only events/correlation plus relationships/freshness qualification PASS;
