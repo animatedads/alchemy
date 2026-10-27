@@ -38,6 +38,7 @@ printf '%s\n' '== syntax/load =='
   "$REXX_BIN" test_network_transport_advertisement.rex
   "$REXX_BIN" test_network_path_multicast_advertisement.rex
   "$REXX_BIN" test_instrumentation_advertisement.rex
+  "$REXX_BIN" test_instrumentation_events_advertisement.rex
 )
 
-pass 'management intention discovery dev8 environment qualification'
+pass 'management intention discovery dev9 environment qualification'

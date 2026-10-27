@@ -1,0 +1,29 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "queue_fabric_xtp_receipt_gate",
+    "version": "0.1-candidate1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "receipt-gate",
+      "argv": [
+        "bash",
+        "run_tests.sh"
+      ],
+      "timeout_seconds": 120
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/queue_fabric_xtp_receipt_gate_v0.1_candidate1"
+    }
+  }
+}
