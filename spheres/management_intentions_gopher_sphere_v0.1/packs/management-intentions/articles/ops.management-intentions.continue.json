@@ -1,14 +1,15 @@
 {
   "kind": "article",
   "id": "ops.management-intentions.continue",
-  "version": "0.2",
+  "version": "0.3",
   "sphere": "management-intentions",
   "title": "Continuation and missing work",
-  "summary": "Continue by binding more real domain authorities to the existing discovery/relationship/instrumentation seams, not by expanding Management into a domain implementation.",
+  "summary": "Continue by binding more real domain authorities to the existing discovery/relationship/instrumentation seams, not by expanding Management into a domain implementation. For cloud work, keep Alchemy Cloud Control authoritative and evolve the ooRexx console as the consistent caller-facing facade.",
   "authority": "project-continuity",
   "invariants": [
     "Instrumentation Intentions dev2 / Management dev9 are the current executable read-side baseline for Mesh dev8 events, correlations, relationships and freshness.",
     "Do not widen Management with provider-specific vocabularies when a specialist object/service can publish its own intention surface.",
+    "ALCHEMY_CLOUD_CONTROL / alchemy.cloud-control/0.1 remains authority for cloud RESOURCE/NODE operations; oorexx_cloud_console_v0.1-dev2 is an interaction facade, not a competing cloud authority.",
     "Bring real machine/service/cloud/GPU/LLM/RexxOS intention providers onto the same dynamic advertisement seam.",
     "Use current Network Transport Intentions dev3 and current transport providers rather than the older dev8 qualification vendor slices when building a new network increment.",
     "Preserve cross-plane contradictory evidence rather than collapsing it into one UP/DOWN boolean.",
@@ -16,7 +17,8 @@
     "Keep package qualification baselines immutable; record newer Library supersessions separately.",
     "For MVS, preserve ED209Z and ED209ZZ as distinct guest identities with explicit host/session provenance; never allow observations to migrate between them.",
     "Terminal Machine owns terminal/session/screen/field truth; MVS Alchemy/JES owns guest/job/dataset truth; Hercules Services owns emulator/control-plane truth; s3270/c3270 is reference evidence only.",
-    "MVS batch success is determined from JES step/spool evidence and domain output, not from submission acceptance or a host-side process return."
+    "MVS batch success is determined from JES step/spool evidence and domain output, not from submission acceptance or a host-side process return.",
+    "Provider resource handles are not managed-node allocator IDs, and workspace paths are not mutation authority."
   ],
   "procedure": [
     "Reconcile Library and repository heads before each new increment.",
@@ -25,6 +27,10 @@
     "Advertise the specialist transiently from related authoritative objects.",
     "Qualify fresh discovery by changing authoritative state and repeating identical natural language.",
     "Record provenance and update this sphere when the architectural contract changes.",
+    "Rebase the ooRexx Cloud Console backend onto alchemy.cloud-control/0.1 without changing its common human/code/Codex vocabulary or leaking provider syntax into Management.",
+    "Recover the later Library multi-peer firewall behaviour as generic authority-backed firewall source-set add/replace/remove reconciliation; keep XTP peer/topology semantics in XTP.",
+    "Re-run the console fake-provider suite under exact ooRexx 5.3.0 r13196, then add bounded live read-only qualification before any live mutation acceptance.",
+    "Put any Wire UI cloud presentation over the same CloudApp/Cloud Control seam rather than creating another provider implementation.",
     "Rebase the MVS Intention Terminal Machine consumer from its historical candidate8 qualification pin to current Terminal Machine candidate12 without weakening the authority split.",
     "Run same-session ED209Z Terminal Machine versus s3270 differential qualification, then repeat independently on ED209ZZ; compare field geometry/protection/MDT/cursor/visible content and retain contradictions.",
     "For JES/batch workflows, capture job identity, step RCs, diagnostics and the authoritative spool/output artifact before declaring success or modifying source."
@@ -33,6 +39,8 @@
     "continue",
     "backlog",
     "cloud",
+    "cloud control",
+    "firewall",
     "GPU",
     "LLM",
     "RexxOS",
@@ -48,6 +56,11 @@
       "artifact": "oorexx_instrumentation_intentions_v0.1-dev2.zip",
       "sha256": "98bdafb023374425577f702bb45918f19512c98a076df5c9203665e82c20df81",
       "claim": "Current executable read-only instrumentation intention increment."
+    },
+    {
+      "artifact": "oorexx_cloud_console_v0.1-dev2.zip",
+      "sha256": "9c93d6c4e0c9ac7a6964cdb69770236c8ced1c22cd14f90408cb71c31e96086f",
+      "claim": "Published qualified caller-facing console baseline; future authority-backend integration must preserve this qualification as historical evidence rather than silently rewriting it."
     }
   ]
 }
