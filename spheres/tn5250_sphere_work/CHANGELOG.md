@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4
+- Record Terminal Machine v0.22-candidate14 as the current IBM 3270 P0 delivery.
+- Bind complete s3270 peer-script evidence: ReadBuffer data, 12-field status and final ok/error.
+- Derive reference rows, columns, zero-origin cursor and keyboard state from the same response instead of separately sampled facts.
+- Extend semantic differential comparison to keyboard LOCKED/UNLOCKED when status evidence is present.
+- Preserve NONDISPLAY masking and fail-closed DBCS/multi-byte handling.
+- Record MVS Intention Runner dev10 as a downstream candidate13 consumer whose r13196/live gates remain unclaimed.
+- Keep Rasen Falcon lane `terminal-machine` as the coordination lane.
+
 ## 0.3
 - Record Terminal Machine v0.22-candidate13 as the current IBM 3270 P0 delivery.
 - Add the independent s3270 ReadBuffer reference-adapter boundary and semantic differential comparator.
