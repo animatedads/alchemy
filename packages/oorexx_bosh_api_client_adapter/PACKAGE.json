@@ -16,5 +16,22 @@
     "dependency": false,
     "claim": "none",
     "note": "HTTPS-over-XTP requires an API Client/lower transport backend that can acquire XTP through the shared selector; this adapter does not select XTP."
+  },
+  "current_sources": {
+    "bosh": {
+      "version": "0.1-dev6",
+      "api": "bosh.transport/0.1",
+      "path": "packages/oorexx_bosh_transport"
+    },
+    "api_client": {
+      "version": "0.4.1",
+      "api": "api.client/0.4",
+      "path": "packages/oorexx_api_client_v0.4.1"
+    }
+  },
+  "object_preservation": {
+    "request_headers": "same ooRexx object supplied to ApiRequest",
+    "route_requirement": "same ApiRouteRequirement object retained",
+    "response_headers": "ApiResponse headers retained in BoshHttpResponse metadata"
   }
 }
