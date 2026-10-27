@@ -5,23 +5,22 @@
   "sphere": "ldap-identity",
   "title": "Current LDAP Identity continuation baseline",
   "baseline": {
-    "package": "oorexx_ldap_identity_v0.1-dev19.zip",
-    "sha256": "14d41d9c1cd339ccd99bc1a344b182fdb86ef2b5c30ee6454dd2fbfe1525d8ec",
-    "implementation_line": "0.1-dev19",
-    "embedded_version_file": "0.1-dev18",
-    "version_note": "Archive filename and changelog identify dev19, but VERSION.txt was not bumped and must not be treated as contradictory runtime authority. Correct before release acceptance."
+    "package": "oorexx_ldap_identity_v0.1-dev20.zip",
+    "sha256": "f709328b4127608d7723031b279e830df298bac99ee01b91242e04cb9f233bbc",
+    "implementation_line": "0.1-dev20",
+    "version_note": "dev20 closes the dev19 VERSION.txt and standards-handler defects. The exact complete archive is authoritative; the exploded GitHub package tree is still older and is not claimed byte-equivalent."
   },
   "current_work": [
     "IdentityPeerAuthoritySnapshot captures logical peer, authority epoch, holder, directory revision, last committed peer-update identity and evidence time.",
     "IdentityPeerAuthorityJournal is the restart/recovery authority boundary for those application-level facts.",
     "Recovery rejects authority-epoch regression.",
     "Recovery rejects a different authority holder claiming the same epoch.",
-    "XTP delivery, transport ACK and replay state cannot satisfy LDAP application commit authority."
+    "XTP delivery, transport ACK and replay state cannot satisfy LDAP application commit authority.",
+    "dev20 repairs the recovery test condition-reporting path without changing those authority semantics."
   ],
   "qualification": {
     "runtime": "NOT-RUN: ooRexx executable unavailable in the build container",
-    "standards": "FAIL: direct standards-enforcer run found 1 ERROR and 136 WARNINGS",
-    "standards_error": "tests/test_authority_recovery_journal.rex SIGNAL_NO_ANNOUNCE",
-    "claim": "development candidate; not fresh runtime-qualified release"
+    "standards": "PASS: direct standards-enforcer run scanned 81 files with 0 errors and 136 warnings",
+    "claim": "standards-clean development candidate; fresh runtime qualification still required"
   }
 }
