@@ -4,8 +4,9 @@
   "sphere": "ldap-identity",
   "title": "LDAP Identity durable continuation ledger",
   "records": [
-    {"topic":"baseline","package":"oorexx_ldap_identity_v0.1-dev19.zip","sha256":"14d41d9c1cd339ccd99bc1a344b182fdb86ef2b5c30ee6454dd2fbfe1525d8ec","status":"development candidate"},
+    {"topic":"baseline","package":"oorexx_ldap_identity_v0.1-dev20.zip","sha256":"f709328b4127608d7723031b279e830df298bac99ee01b91242e04cb9f233bbc","status":"standards-clean development candidate"},
     {"topic":"dev19","rule":"Restart recovery persists LDAP application authority facts through IdentityPeerAuthorityJournal and IdentityPeerAuthoritySnapshot."},
+    {"topic":"dev20","rule":"Qualification closure repairs version drift and condition-reporting in the recovery regression without changing authority semantics."},
     {"topic":"epoch fencing","rule":"Recovered authority epoch may advance but may not regress."},
     {"topic":"holder fencing","rule":"Within the same authority epoch, a different holder is rejected. Holder transfer requires a newer epoch."},
     {"topic":"commit authority","rule":"XTP transport ACK or replay evidence cannot satisfy LDAP application-commit authority."},
@@ -18,9 +19,9 @@
     {"topic":"persistence","rule":"Directory commit is write-before-memory; durable append failure must not advance in-memory truth."},
     {"topic":"secrets","rule":"Persistent credential records carry secretRef and never raw secret values."},
     {"topic":"schema","rule":"Native LDAP schema enforcement is an LDAP-personality concern and does not move semantic authority out of Identity Directory."},
-    {"topic":"version discrepancy","rule":"dev19 archive/changelog naming conflicts with VERSION.txt=0.1-dev18; fix before accepted release."},
-    {"topic":"qualification","rule":"Fresh dev19 runtime qualification is NOT-RUN in the current build container."},
-    {"topic":"qualification","rule":"Direct standards rerun reports FAIL: 1 ERROR and 136 WARNINGS; hard error is SIGNAL_NO_ANNOUNCE in the new recovery test."},
-    {"topic":"next","rule":"Fix qualification defects, rerun ooRexx semantic/full suites, then perform RexxOS failover field qualification without conflating carrier delivery with directory authority."}
+    {"topic":"qualification","rule":"Direct standards rerun on dev20: 81 files, 0 errors, 136 warnings, PASS."},
+    {"topic":"qualification","rule":"Fresh dev20 ooRexx runtime qualification is NOT-RUN in the current build container."},
+    {"topic":"github","rule":"The exact dev20 candidate is published with hash/provenance while the older exploded package tree remains explicitly unsynchronised."},
+    {"topic":"next","rule":"Run r13196/full-estate qualification, synchronise exploded source, then perform RexxOS failover field qualification without conflating carrier delivery with directory authority."}
   ]
 }
