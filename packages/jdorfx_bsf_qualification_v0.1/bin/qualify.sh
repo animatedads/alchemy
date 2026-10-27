@@ -64,12 +64,12 @@ else
   java_binary=$(readlink -f "$(command -v java)")
   JAVA_HOME=$(dirname "$(dirname "$java_binary")")
 fi
-export CLASSPATH="$BSF_JAR${CLASSPATH:+:$CLASSPATH}"
+export CLASSPATH="$BSF_JAR${BSF_EXTRA_CLASSPATH:+:$BSF_EXTRA_CLASSPATH}"
 mkdir -p "$work/native"
 cp -- "$BSF_NATIVE_LIBRARY" "$work/native/libBSF4ooRexx850.so"
 ln -s libBSF4ooRexx850.so "$work/native/libBSF4ooRexx.so"
 export LD_LIBRARY_PATH="$work/native:$JAVA_HOME/lib/server:$JAVA_HOME/lib:$LD_LIBRARY_PATH"
-export REXX_PATH="$work:$BSF_HOME${REXX_PATH:+:$REXX_PATH}"
+export REXX_PATH="$work:$BSF_HOME${BSF_EXTRA_REXX_PATH:+:$BSF_EXTRA_REXX_PATH}"
 if [[ $phase == bsf ]]; then
   [[ ${RX2CPP_ROOT:-} == /* ]] || fail 'RX2CPP_ROOT must name an absolute ooRexx2cpp checkout'
   fixtures="$RX2CPP_ROOT/native/fixtures"
