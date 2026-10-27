@@ -1,0 +1,115 @@
+{
+  "component": "libxtp",
+  "version": "0.1-dev30",
+  "capabilities": {
+    "unicast": true,
+    "listener": true,
+    "multipath": true,
+    "path_requalification": true,
+    "wire_filters": true,
+    "multicast": true,
+    "multicast_stream": true,
+    "rate_control": true,
+    "priority_sort": true,
+    "priority_deadline": true,
+    "route_xroute_exchange": true,
+    "named_service": true,
+    "unicast_segmentation": true,
+    "selective_retransmission": true,
+    "sync_echo": true,
+    "diag": true
+  },
+  "named_service": {
+    "first_address_segment": true,
+    "pre_ack_admission": true,
+    "application_identity_is_symbolic": true,
+    "ip_addresses_route_only": true
+  },
+  "multicast": {
+    "advertised": true,
+    "xtp_revision": "3.4 profile",
+    "multi_flag": "common-header OPTIONS byte 3 bit 3",
+    "carriers": [
+      "l2",
+      "raw36",
+      "udp"
+    ],
+    "reliable_mode": "go-back-n",
+    "noerr": true,
+    "acknowledgement_quorum": true,
+    "receiver_replay_suppression": true,
+    "slowest_receiver_alloc_pacing": true,
+    "multicast_reject_suppression": true,
+    "stream_profile": "FIRST plus DATA packets with byte sequence space",
+    "go_back_n": "receiver CNTL RSEQ selects rollback byte; sender resumes from containing segment",
+    "allocation_pacing": "sender advances only within minimum receiver ALLOC after population discovery",
+    "reject_suppression": "receiver multicasts reject notice and suppresses its own reject when an observed RSEQ is <= its required RSEQ",
+    "segment_bytes_default": 1200,
+    "binary_cli_file_io": true,
+    "receiver_rate_burst_pacing": true,
+    "rate_control": "sender honors minimum receiver RATE/BURST from CNTL; RATE=0xffffffff disables pacing"
+  },
+  "route_exchange": {
+    "common_route_field": "32-bit common-header ROUTE at bytes 20..23",
+    "control_xroute_field": "32-bit CNTL XROUTE at control offset 32",
+    "return_form": "incoming ROUTE with high direction bit set",
+    "scope": "endpoint ROUTE/XROUTE exchange; full multi-hop router forwarding remains separate"
+  },
+  "operationalPriorityClasses": true,
+  "operationalPlannerAuthority": "external",
+  "operationalCapacityScopes": {
+    "per_context_cap_percent": true,
+    "max_parallel_contexts": "external admission/orchestration",
+    "aggregate_cap_percent": "external admission/orchestration"
+  },
+  "dev26_hardening": {
+    "control_source_binding": "unicast sender accepts a close-ACK only from the route destination: IPv4 address+port (udp), IPv4 address (raw36), destination MAC addressed to own MAC (l2). Source binding only; not authentication.",
+    "l2_destination_mac_enforced": "unicast listener ignores frames not addressed to its own MAC",
+    "zero_throttle_fails_closed": "operational_path_permitted is false and operational_delay_for_bytes is maximal when the effective rate is 0%, matching the planner CapacityGovernor; ooRexx XtpOperationalSocket returns -7",
+    "malformed_first_dropped": "a FIRST with a malformed priority option, named-service segment or wire envelope is dropped unacknowledged (stderr XTP_DROP_MALFORMED); receive() keeps serving",
+    "decode_before_acknowledge": "the wire envelope is decoded before the close-ACK, so an undecodable FIRST is never reported delivered",
+    "replay_scope": "(peer host, KEY, FIRST payload digest): source MAC on l2, source IPv4 address on raw36/udp (port excluded so a restarted sender retrying the same KEY and payload is still suppressed); a colliding KEY with different bytes is delivered",
+    "replay_window_entries_default": 65536,
+    "not_addressed": [
+      "authenticated FIRST/ACK (gateway contract steps 2 and 6)",
+      "multicast listener replay scope",
+      "send_message consulting the operational plan directly"
+    ],
+    "control_return_bit_required": "a close-ACK is accepted only if its KEY carries the XTP return bit"
+  },
+  "dev27_unicast_segmentation": {
+    "single_packet_unchanged": "a message plus its named-service segment that fits SendOptions::segment_bytes is one FIRST with EOM, byte-identical to dev26",
+    "stream": "larger messages are FIRST (no EOM) + DATA packets with byte SEQ, MULTI clear, SREQ on every packet; receiver must be dev27+",
+    "segment_bytes_default": "l2: interface MTU - 40; raw36 and udp: one maximal IP datagram (65472 / 65464 data bytes) so every message that worked before keeps the single-FIRST path",
+    "flow_control": "reuses the multicast go-back-N engine with one receiver: receiver ALLOC bounded by half the real socket receive buffer; RATE/BURST and operational capacityRate honoured",
+    "retries": "bound consecutive rounds without progress (streams only; multicast unchanged)",
+    "receiver": "reassembly per (peer host, KEY); service admission at FIRST; decode before the final close-ACK; up to 256 open streams; completed streams re-ACK a lost final close",
+    "limitation": "no selective retransmission (ECNTL/SPANS): under 20% forward / 14% reverse loss a 200-segment stream retransmitted 8867 packets"
+  },
+  "dev28_selective_retransmission": {
+    "wire": "XTP 3.4 CNTL NSPAN at control-segment offset +36 (always 0 before dev28) followed by NSPAN pairs [start,end) after the 40-byte control segment; DCHECK covers them; at most 64 spans",
+    "compatibility": "an NSPAN=0 CNTL is byte-identical to dev27; dev26/dev27 parsers ignore spans; malformed NSPAN (overlong or inverted span) is refused",
+    "receiver": "keeps out-of-order segments inside its advertised window and reports them as SPANs; a FIRST identical to one already seen is a retransmission: it no longer resets the stream, and after completion it only re-sends the close",
+    "sender": "unicast streams use selective repeat: holes below the highest SPAN are resent after 2xSRTT; a receiver that never reports SPANs (dev27) gets go-back-N after three duplicate CNTLs; a full timeout resends everything unacknowledged inside ALLOC",
+    "measured": "200 segments through 20% forward / 14% reverse loss: 49 retransmissions (dev27: 8867)",
+    "multicast": "unchanged (still go-back-N)"
+  },
+  "dev29_sync_echo_diag": {
+    "status_request": "sender CNTL (KEY without the return bit), SYNC at control +20, SREQ in the trailer; dev28 and earlier receivers ignore it",
+    "echo": "receiver CNTLs carry ECHO at control +16 = the last SYNC received for that stream (0 until one arrives; byte-identical to dev28 when 0)",
+    "context_binding": "once the peer has echoed, the stream sender believes only CNTLs whose ECHO is a SYNC of this context (random 31-bit base per context); a stale or duplicated CNTL from another context with the same KEY is ignored",
+    "exact_repair": "the reply to SYNC k reflects every packet sent before k; any segment sent before k and still uncovered is resent at once",
+    "wtimer": "2 x SYNC/ECHO round trip, floor 10 ms, doubling per consecutive timeout, cap 8 x timeout_ms; a peer that never echoes keeps fixed timeout_ms",
+    "diag": "packet type 8 (XTP 4.0 code), data CODE(4) VALUE(4) ASCII reason; code 1 CONTEXT_REFUSED with value 1 SERVICE_NOT_ADMITTED, 2 OVERSIZE, 3 MALFORMED; sent by the listener on refusal; every unicast sender fails fast on a DIAG that passes the same source and return-bit binding as an ACK",
+    "measured": "stale close injection: dev28 reports success without delivery, dev29 delivers; 100 KB at 20%/14% loss with timeout_ms=2000: dev28 2010 ms, dev29 7 ms; refused service: dev28 6.1 s, dev29 1 ms",
+    "scope": "SYNC/ECHO covers unicast streams; single-FIRST unicast and multicast are unchanged apart from DIAG"
+  },
+  "dev30_diag_hardening": {
+    "reason_on_wire": "only the VALUE name; the requested service name and parser messages stay in the local log (dev29 echoed both)",
+    "size_bound": "a DIAG is never larger than the packet that caused it: the named reason is dropped if it does not fit, and no DIAG is sent if a bare one does not fit",
+    "rate_limit": "token buckets per peer host (ListenOptions diag_rate_per_sec 10, diag_burst 20) and in total (diag_global_rate_per_sec 100, burst twice that); over the limit the peer gets silence; 0 turns DIAG off; at most 4096 peers are tracked, idle ones are forgotten, and beyond that DIAG is withheld",
+    "reserved_values": "VALUE 16 POLICY_DENIED, 17 AUTH_REQUIRED, 18 FACILITY_UNSUPPORTED, 19 QUOTA_EXCEEDED, 20 LOOP_DETECTED, 21 INSPECTION_DENIED, 22 NOT_READY, 23 EMERGENCY_VETO are reserved for an XTP gateway (docs/DIAG_REGISTRY.md); libxtp names them in a sender error but never sends them",
+    "wire_compatibility": "packet format unchanged from dev29; dev29 senders already fail fast on any CODE 1 DIAG and report an unknown VALUE as UNKNOWN",
+    "measured": "dev29: 300 refused FIRSTs from one peer drew 300 DIAGs, and a 48-byte FIRST drew an 80-byte DIAG carrying the parser message; dev30: 20 DIAGs (the burst), and a 48-byte bare DIAG"
+  }
+}

@@ -1,0 +1,32 @@
+PASS direct little-endian transaction
+PASS direct big-endian transaction
+SKIP proxy stress (proxy binary not found)
+PASS replay acknowledged without duplicate application delivery
+PASS all local XTP-over-UDP qualification tests
+PASS XTP Layer-2 EtherType is consistently 0x817D
+PASS zero-block wire filter collapses 4KiB zero run and round-trips
+PASS crunch wire filter round-trips repeated data
+PASS self-describing wire envelope crosses real XTP/UDP path and restores application bytes
+PASS best-connect route policy defaults toward metal then L3 then L4
+PASS route graph retains wire-filter profile and exposes ordered path set
+PASS route state failover/rejoin changes best-connect without application policy changes
+PASS SocketProvider library best-connect performs filtered L4 XTP transaction
+PASS dev6 route table is accepted with empty dev7 wire profile
+PASS libxtp persistent Listener receives filtered binary payloads and suppresses duplicate KEY delivery
+PASS multipath A/B striping and reassembly
+PASS failed A path replays assigned chunks over surviving B
+PASS chained wire filters accept binary multipath framing
+PASS failed path persists DOWN beyond one transfer
+PASS DOWN path is excluded from subsequent best_paths selection
+PASS requalified path rejoins only after generation increment
+PASS live L4 qualification is ACKed, hidden from application, and generation-fences rejoin
+PASS failed live qualification leaves path DOWN
+PASS multicast route is explicit and excluded from unicast best-connect
+PASS reliable XTP MULTI transaction, wire filters and acknowledgement quorum
+PASS multicast replay reaches a receiver that appears after initial transmission
+PASS XTP MULTI NOERR one-way mode
+PASS reliable multicast fails closed when receiver quorum is not reached
+PASS XTP MULTI FIRST+DATA stream reassembles a binary payload
+PASS segmented multicast stream replays after receiver absence and delivers once
+PASS libxtp multicast and multicast-stream capability is implemented and advertised
+SKIP native Rexx multicast (rexx unavailable)
