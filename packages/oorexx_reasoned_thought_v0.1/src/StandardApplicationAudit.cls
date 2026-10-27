@@ -1,5 +1,5 @@
 /*
- * StandardApplicationAudit/0.3: domain-neutral stated-standard consistency operator.
+ * StandardApplicationAudit/0.4: domain-neutral stated-standard consistency operator.
  * Architecture: Tom Dyer. Authoritative policy operator: ChatGPT GPT-6.
  * Reference interface and independent adversarial acceptance fixture: Claude Opus 4.8.
  *
@@ -25,7 +25,7 @@
 
 ::method standard
   expose standards apps
-  use strict arg id, kind, dimension, required = '', description = '', direction = 'HIGHER_WORSE'
+  use strict arg id, kind, dimension, required = '', description = '', direction = 'HIGHER_WORSE', requiredBasis = ''
   if id = '' | dimension = '' then raise syntax 93.900 array('EMPTY_STANDARD_ID_OR_DIMENSION')
   if standards~hasIndex(id) then raise syntax 93.900 array('DUPLICATE_STANDARD:' || id)
   if kind \= 'DISQUALIFY' & kind \= 'THRESHOLD' then -
@@ -42,6 +42,8 @@
   s['required'] = required
   s['description'] = description
   s['direction'] = direction
+  if requiredBasis = '' then requiredBasis = 'ASSUMED_EQUIVALENT:' || id
+  s['requiredBasis'] = requiredBasis
   standards[id] = s
   apps[id] = .array~new
   return self
@@ -113,26 +115,60 @@
   r['conditional'] = .true
 
   if s['kind'] = 'THRESHOLD' then do
-    if \ownMaterial~hasIndex(standardId) then do
-      r['classification'] = 'INSUFFICIENT_SELF_MATERIAL'
-      r['detail'] = 'the stated threshold exists but no comparable self-material tier was supplied'
-      r['reasonCodes']~append('NO_SELF_MATERIAL')
-      return r
+    /* Threshold is a NECESSARY condition for ACCEPTANCE, not sufficient.
+     * Rejection above the minimum may have other grounds and is not a rule
+     * violation unless a separate sufficient-condition warrant is admitted.
+     * Evidence tiers must share the standard's declared metric and basis. */
+    unknownCases = 0
+    r['ruleBasis'] = s['requiredBasis']
+    do a over apps[standardId]
+      if a['dimension'] \= s['dimension'] | a['basis'] \= s['requiredBasis'] | \a['valueKnown'] then do
+        unknownCases += 1
+        iterate
+      end
+      if a['disposition'] = 'ACCEPTED' & a['value'] < s['required'] then do
+        d = .directory~new
+        d['chain'] = a['chain']; d['value'] = a['value']
+        d['required'] = s['required']; d['actual'] = a['disposition']
+        d['reason'] = 'ACCEPTED_BELOW_NECESSARY_THRESHOLD'
+        r['ruleViolations']~append(d)
+      end
+      else r['ruleConformingCases'] += 1
     end
-    d = ownMaterial[standardId]
-    if d['tier'] < s['required'] then do
-      /* Legacy label retained for Claude's published fixture; semantically this
-       * is a conditional SELF-STANDARD GAP, not literal unattainability. */
+    r['uncomparableCases'] = unknownCases
+    if ownMaterial~hasIndex(standardId) then do
+      d = ownMaterial[standardId]
+      r['selfStandardGap'] = (d['tier'] < s['required'])
+    end
+    else r['selfStandardGap'] = .nil
+
+    if r['ruleViolations']~items > 0 then do
+      r['classification'] = 'STATED_RULE_VIOLATION'
+      r['detail'] = 'accepted declared case below stated necessary minimum; input and other grounds unverified'
+      r['reasonCodes']~append('ACCEPTED_BELOW_NECESSARY_THRESHOLD')
+      if r['selfStandardGap'] == .true then r['reasonCodes']~append('SELF_STANDARD_GAP_IF_COMPARABLE')
+      if unknownCases > 0 then r['reasonCodes']~append('OTHER_CASES_NOT_COMPARABLE')
+    end
+    else if r['selfStandardGap'] == .true then do
       r['classification'] = 'UNMEETABLE_BAR'
-      r['detail'] = 'conditional self-standard gap: required tier ' || s['required'] || -
-        ' exceeds declared own-material tier ' || d['tier'] || -
-        '; no finding that this standard is impossible for others'
+      r['detail'] = 'conditional self-standard gap only, not proof that standard is impossible'
       r['reasonCodes']~append('SELF_STANDARD_GAP_IF_COMPARABLE')
+      if unknownCases > 0 then r['reasonCodes']~append('OTHER_CASES_NOT_COMPARABLE')
+    end
+    else if unknownCases > 0 then do
+      r['classification'] = 'INDETERMINATE_COMPARABILITY'
+      r['detail'] = 'at least one application uses an unbound basis, dimension or measurement'
+      r['reasonCodes']~append('THRESHOLD_CASES_NOT_COMPARABLE')
+    end
+    else if r['selfStandardGap'] == .nil then do
+      r['classification'] = 'INSUFFICIENT_SELF_MATERIAL'
+      r['detail'] = 'no comparable decision-maker own-material tier recorded'
+      r['reasonCodes']~append('NO_SELF_MATERIAL')
     end
     else do
       r['classification'] = 'CONSISTENT_APPLICATION'
-      r['detail'] = 'declared own-material tier meets the stated threshold; no universal consistency proved'
-      r['reasonCodes']~append('SELF_STANDARD_GAP_NOT_FOUND')
+      r['detail'] = 'no counterexample in recorded minimum-tier applications; not proof of universal or substantive consistency'
+      r['reasonCodes']~append('NO_COUNTEREXAMPLE_IN_DECLARED_SET')
     end
     return r
   end
