@@ -15,6 +15,9 @@ s=d~findSymbol('Widget','class'); call assertEq 3,s~startLine,'class start'
 f=d~findSymbol('add','function'); call assertEq 8,f~startLine,'function start'
 d~replaceLine(5,'    long value;')
 d~save
+call assertTrue d~lastBackupResult~ok,'atomic backup publish'
+call assertTrue d~lastPublicationResult~ok,'atomic live publish'
+call assertTrue d~lastPublicationResult~durabilityRequested='FULL','atomic full durability requested'
 call assertTrue .SourceEditorUtil~readAll(cpp)~pos('long value;')>0,'C++ save'
 
 /* stale generation refusal */
@@ -76,7 +79,7 @@ call assertTrue cc~items>=5,'completion document classes'
 call assertEq 'SourceCompletionCandidate',cc[1]~label,'completion deterministic order'
 ct=cp~completeTree(tmp,'tree','treeprobe.rex','oorexx')
 call assertEq 1,ct~items,'completion tree file'
-say 'PASS ooRexx source editor dev5'
+say 'PASS ooRexx source editor dev6'
 exit 0
 
 failed:
