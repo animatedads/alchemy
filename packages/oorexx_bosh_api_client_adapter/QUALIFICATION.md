@@ -34,6 +34,9 @@ Static/source checks performed after the rebase:
 - PASS adapter `::requires` contains only `BoshTransport.cls` and `ApiClient.cls`.
 - PASS no XMPP, SocketProvider or XTP `::requires` dependency.
 - PASS branch is ahead of current `main` and no longer behind it at the reconciliation checkpoint.
-- PASS rich request headers / route requirement and response headers remain ooRexx objects; no serialization/flattening bridge was introduced.
+- PASS source contract preserves rich request headers / route requirement and response headers as ooRexx objects; no serialization/flattening bridge was introduced.
+- Added executable identity assertions for the request headers object, `ApiRouteRequirement` object and response headers object.
+- Added bounded `API_CLIENT_NO_RESPONSE` regression coverage.
+- Qualification runner now fails closed on missing `rexx`, `rexxc`, BOSH source or API Client source, prints the runtime identity, compiles `BoshApiClientAdapter.cls`, then executes the deterministic suite.
 
 Runtime status remains **pending** until the deterministic test is executed under ooRexx 5.3.0 r13196 (or a deliberately accepted compatible 5.3 runtime). No live HTTPS or HTTPS-over-XTP claim is added by these static checks.
