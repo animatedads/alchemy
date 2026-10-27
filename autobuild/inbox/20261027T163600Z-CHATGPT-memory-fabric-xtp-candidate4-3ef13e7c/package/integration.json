@@ -1,0 +1,109 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_memory_fabric_xtp",
+    "version": "0.1-candidate4",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "static-contract-sphere-provenance",
+      "argv": [
+        "python3",
+        "tests/test_contract_static.py"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "sphere-source-structure",
+      "argv": [
+        "bash",
+        "sphere/tests/run.sh"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_memory_fabric_xtp_candidate4"
+    },
+    "files": [
+      {
+        "source": "sphere/CHANGELOG.md",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/CHANGELOG.md",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/README.md",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/README.md",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/packs/memory-fabric/00-sphere.json",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/packs/memory-fabric/00-sphere.json",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/packs/memory-fabric/01-access-policy.json",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/packs/memory-fabric/01-access-policy.json",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/packs/memory-fabric/articles/arch.memory-fabric.block-residency.json",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/packs/memory-fabric/articles/arch.memory-fabric.block-residency.json",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/packs/memory-fabric/articles/arch.memory-fabric.capacity-admission.json",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/packs/memory-fabric/articles/arch.memory-fabric.capacity-admission.json",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/packs/memory-fabric/articles/arch.memory-fabric.identity-authority.json",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/packs/memory-fabric/articles/arch.memory-fabric.identity-authority.json",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/packs/memory-fabric/articles/arch.memory-fabric.xtp-service-multicast.json",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/packs/memory-fabric/articles/arch.memory-fabric.xtp-service-multicast.json",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/packs/memory-fabric/articles/ops.memory-fabric.continue.json",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/packs/memory-fabric/articles/ops.memory-fabric.continue.json",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/packs/memory-fabric/corpora/memory-fabric.glossary.json",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/packs/memory-fabric/corpora/memory-fabric.glossary.json",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/profiles/memory-fabric.json",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/profiles/memory-fabric.json",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/qualification/QUALIFICATION.txt",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/qualification/QUALIFICATION.txt",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/tests/run.sh",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/tests/run.sh",
+        "when": "pass"
+      },
+      {
+        "source": "sphere/packs/memory-fabric/articles/arch.memory-fabric.read-ingress.json",
+        "path": "spheres/memory_fabric_gopher_sphere_v0.3/packs/memory-fabric/articles/arch.memory-fabric.read-ingress.json",
+        "when": "pass"
+      }
+    ]
+  }
+}

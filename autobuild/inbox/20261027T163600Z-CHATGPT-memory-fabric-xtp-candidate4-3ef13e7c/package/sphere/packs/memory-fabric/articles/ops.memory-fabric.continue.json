@@ -1,0 +1,44 @@
+{
+  "kind": "article",
+  "id": "ops.memory-fabric.continue",
+  "version": "0.3",
+  "sphere": "memory-fabric",
+  "title": "Memory Fabric/XTP continuation and outstanding qualification",
+  "summary": "Candidate2 is an additive memory-fabric.xtp-transfer/0.1 engineering increment; it has not established live distributed block-page transfer or authenticated multicast memory services.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Rebase the candidate against accepted Memory Fabric and XTP revisions; do not silently replace Memory Fabric dev10 or claim that candidate submission means acceptance.",
+    "Qualify named-service FIRST ingress with cryptographic identity/ACL, block-specific authority proof and replay-resistant lease/epoch checks before live remote mutation.",
+    "Implement explicit service multicast mapping for memory.block.locate and memory.block.invalidate: scoped membership, bounded response population, duplicate suppression, repair/rejoin, independently authorized operations.",
+    "Integrate portable job/admission placement and optional native block transfer with verifiable bytes, checksums, expiry and fencing; do not create a new transport selector.",
+    "Qualify true receiver-side shared capacity accounting and two concurrent named-service contexts under emergency, rate-zero and path-failover cases.",
+    "Test machine-to-machine ED209 L2/raw36/UDP routes with exact route, policy and failure-domain evidence before calling transport deployment qualified.",
+    "Keep Memory Fabric, Gopher sphere, and XTP packages independently importable and version-pin dependencies.",
+    "Read-side ingress must bind an independently authenticated caller to an authoritative service and current owner/ACL; MemoryXtpReadIngress permits are read-only and do not replace page-data, durable replay, or real capacity enforcement.",
+    "Fail closed if the transport proof resolves to different authenticated principals while admission is in progress."
+  ],
+  "procedure": [],
+  "topics": [
+    "memory-fabric"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "VALIDATION_DEV25.txt",
+      "claim": "Documents named-service live capacity and context-key regression scope."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev23(2).zip",
+      "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
+      "member": "PARALLEL_FETCH.md",
+      "claim": "Reference range-splitting model and boundary warning."
+    },
+    {
+      "artifact": "oorexx_memory_fabric_v0.1-dev10.zip",
+      "sha256": "91a05494c86ce7627f7a010af182c167701b5bf1f8ce2d93c99cda9d992644d8",
+      "member": "README.md",
+      "claim": "Memory Fabric dev10 semantics baseline."
+    }
+  ]
+}
