@@ -1,37 +1,31 @@
-ooRexx LDAP Identity Gopher sphere v0.1
-======================================
+ooRexx LDAP Identity Gopher sphere v0.1 — dev20 update
+=====================================================
 
-Purpose
--------
-Durable semantic context for the LDAP / Identity Directory implementation line,
-with dev19 restart-safe authority recovery as the current development increment.
+Current candidate
+-----------------
+oorexx_ldap_identity_v0.1-dev20.zip
+SHA-256 f709328b4127608d7723031b279e830df298bac99ee01b91242e04cb9f233bbc
 
-Source candidate
-----------------
-oorexx_ldap_identity_v0.1-dev19.zip
-SHA-256 14d41d9c1cd339ccd99bc1a344b182fdb86ef2b5c30ee6454dd2fbfe1525d8ec
-
-Documented dev19 contract
--------------------------
-- IdentityPeerAuthoritySnapshot / IdentityPeerAuthorityJournal recovery boundary.
-- reject authority-epoch regression.
-- reject same-epoch / different-holder recovery.
-- keep XTP transport ACK/replay state separate from LDAP application commit authority.
-- preserve Instrumentation Mesh as observation-only evidence.
-
-Qualification truth
+Documented contract
 -------------------
-PASS sphere JSON structural parse.
-PASS continuity assertions for dev19 package hash and authority-boundary text.
-NOT RUN full Gopher runtime qualification in this construction environment.
-NOT RUN dev19 ooRexx runtime qualification: ooRexx executable unavailable.
-FAIL dev19 source standards rerun: 1 ERROR, 136 WARNINGS.
-     Hard error: SIGNAL_NO_ANNOUNCE in tests/test_authority_recovery_journal.rex.
-NOTE packaged VALIDATION_DEV19_STANDARDS.txt is not valid standards evidence because
-     its invocation failed to locate the subject path.
-NOTE VERSION.txt inside the dev19 archive still reports 0.1-dev18.
+- restart-safe IdentityPeerAuthoritySnapshot / IdentityPeerAuthorityJournal boundary;
+- reject authority-epoch regression;
+- reject same-epoch / different-holder recovery;
+- keep XTP/carrier ACK and replay evidence separate from LDAP application commit authority;
+- keep Instrumentation Mesh correlation as observation evidence only.
 
-Acceptance rule
----------------
-This sphere may document the dev19 development candidate, but it must not describe
-that candidate as fresh runtime-qualified or standards-clean until those gates pass.
+Dev20 qualification closure
+---------------------------
+PASS ZIP integrity.
+PASS package MANIFEST.sha256 verification.
+PASS direct oorexx_standards_enforcer.py scan: 81 files, 0 errors, 136 warnings.
+PASS correction of the dev19 SIGNAL_NO_ANNOUNCE hard error.
+PASS complete archive VERSION.txt = 0.1-dev20.
+NOT RUN fresh ooRexx runtime regression: no ooRexx executable in this container.
+NOT CLAIMED full RexxOS WAN kill/promote field qualification.
+
+GitHub publication truth
+------------------------
+The exact complete dev20 archive hash is recorded and the dev20 source/test delta is committed.
+The pre-existing exploded packages/oorexx_ldap_identity tree is older and is not claimed byte-equivalent to dev20.
+Full exploded-tree synchronisation remains an explicit continuation gate.
