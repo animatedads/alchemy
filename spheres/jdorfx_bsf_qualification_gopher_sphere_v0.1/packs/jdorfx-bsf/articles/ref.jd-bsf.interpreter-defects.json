@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "ref.jd-bsf.interpreter-defects",
+  "version": "0.1",
+  "sphere": "jdorfx-bsf-qualification",
+  "title": "Native API defect baseline",
+  "summary": "As of 2026-10-23 trunk r13284 fixed global-reference (#2100), UNINIT (#2102), stack discovery (#2106), SysStemSort (#2120), but a native method invalid-arguments stale activation remained. Unpatched forced-GC repro crashed 3/3; local patch survived 3/3 and reported CheckCondition=1. Potential relevance to BSF is mechanistic, not confirmed crash attribution.",
+  "invariants": [
+    "Do not claim upstream merge without verifying newer commits.",
+    "Never let a failed native signature leave an activation frame to be scanned by GC.",
+    "CheckCondition must be immediately observable and SYNTAX 88.922 propagated correctly.",
+    "Separate four upstream repairs from the outstanding native argument defect."
+  ],
+  "related": [
+    "ops.jd-bsf.qualification"
+  ],
+  "provenance": [
+    {
+      "repository": "animatedads/oorexx",
+      "revision": "fa1179f13d417329599198805665600d42ce9336",
+      "path": "oorexx2cpp/ootest/interpreter_bugs/BUG_REPORTS.md"
+    },
+    {
+      "repository": "animatedads/oorexx",
+      "revision": "fa1179f13d417329599198805665600d42ce9336",
+      "path": "oorexx2cpp/ootest/interpreter_bugs/TICKET_bug2.md"
+    }
+  ]
+}
