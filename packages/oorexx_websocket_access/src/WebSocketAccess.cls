@@ -1,12 +1,12 @@
 /* WebSocketAccess.cls
- * ooRexx WebSocket Access v0.1-dev1
+ * ooRexx WebSocket Access v0.1-dev2
  *
  * RFC 6455 access layer above SocketProvider's SocketStreamAdapter.
  * SocketProvider remains the sole socket acquisition/isolation authority.
  */
 
 ::class WebSocketAccessBuild public
-::constant VERSION "0.1-dev1"
+::constant VERSION "0.1-dev2"
 ::constant ACCESS_API "websocket.access/0.1"
 ::constant MESSAGE_API "websocket.message/0.1"
 ::constant HANDSHAKE_CRYPTO_API "websocket.handshake.crypto/0.1"
@@ -99,6 +99,7 @@
   if length(maskBytes)<>4 then raise syntax 88.900 array("WebSocket client mask must be 4 bytes")
   payload=message~payload
   opcode=message~opcode
+  if \.WebSocketCodec~validOpcode(opcode) then raise syntax 88.900 array("reserved WebSocket opcode")
   if message~isControl then do
     if \message~final then raise syntax 88.900 array("WebSocket control frames must not be fragmented")
     if length(payload)>125 then raise syntax 88.900 array("WebSocket control payload exceeds 125 bytes")
@@ -124,7 +125,10 @@
   if length(bytes)<2 then return .nil
   b1=c2d(substr(bytes,1,1)); b2=c2d(substr(bytes,2,1))
   final=(b1%128)=1
+  rsv=(b1//128)%16
+  if rsv<>0 then raise syntax 88.900 array("WebSocket RSV bits set without negotiated extension")
   opcode=b1//16
+  if \.WebSocketCodec~validOpcode(opcode) then raise syntax 88.900 array("reserved WebSocket opcode")
   masked=(b2%128)=1
   n=b2//128
   pos=3
@@ -135,6 +139,10 @@
   else if n=127 then do
     if length(bytes)<10 then return .nil
     n=.WebSocketCodec~bytesUInt(substr(bytes,3,8)); pos=11
+  end
+  if opcode>=8 then do
+    if \final then raise syntax 88.900 array("WebSocket control frames must not be fragmented")
+    if n>125 then raise syntax 88.900 array("WebSocket control payload exceeds 125 bytes")
   end
   mask=""
   if masked then do
@@ -151,6 +159,18 @@
   out["message"]=msg
   out["consumed"]=consumed
   return out
+
+::method validOpcode class
+  use strict arg opcode
+  select
+    when opcode=.WebSocketOpcode~CONTINUATION then return .true
+    when opcode=.WebSocketOpcode~TEXT then return .true
+    when opcode=.WebSocketOpcode~BINARY then return .true
+    when opcode=.WebSocketOpcode~CLOSE then return .true
+    when opcode=.WebSocketOpcode~PING then return .true
+    when opcode=.WebSocketOpcode~PONG then return .true
+    otherwise return .false
+  end
 
 ::method applyMask class
   use strict arg payload, maskBytes
@@ -184,8 +204,8 @@
 
 ::class WebSocketConnection public
 ::method init
-  expose stream socketAddress state subprotocol receiveBuffer maskSource handshake
-  use strict arg stream, socketAddress, maskSource, handshake
+  expose stream socketAddress state subprotocol receiveBuffer maskSource handshake fragmentOpcode fragmentPayload maximumMessageBytes
+  use strict arg stream, socketAddress, maskSource, handshake, maximumMessageBytes=16777216
   stream=stream
   socketAddress=socketAddress
   maskSource=maskSource
@@ -193,6 +213,10 @@
   state=.WebSocketState~OPEN
   subprotocol=handshake~subprotocol
   receiveBuffer=""
+  fragmentOpcode=.nil
+  fragmentPayload=""
+  maximumMessageBytes=maximumMessageBytes+0
+  if maximumMessageBytes<1 then raise syntax 88.900 array("maximum WebSocket message bytes must be positive")
 ::attribute socketAddress get
 ::attribute subprotocol get
 ::attribute handshake get
@@ -203,13 +227,24 @@
   expose stream
   return stream
 ::method sendMessage
-  expose stream maskSource state
+  expose state
   use strict arg message
   if state<>.WebSocketState~OPEN then return .false
+  return self~sendFrame(message)
+
+::method sendFrame private
+  expose stream maskSource state
+  use strict arg message
+  if state=.WebSocketState~CLOSED then return .false
   mask=maskSource~nextMask
   if length(mask)<>4 then raise syntax 88.900 array("mask source must return exactly 4 bytes")
   frame=.WebSocketCodec~encodeClient(message,mask)
   return stream~write(frame)
+
+::method sendControl private
+  use strict arg opcode, payload=""
+  if opcode<8 then raise syntax 88.900 array("WebSocket control opcode required")
+  return self~sendFrame(.WebSocketMessage~new(opcode,payload,.true))
 ::method sendText
   use strict arg text
   return self~sendMessage(.WebSocketMessage~new(.WebSocketOpcode~TEXT,text,.true))
@@ -217,7 +252,7 @@
   use strict arg bytes
   return self~sendMessage(.WebSocketMessage~new(.WebSocketOpcode~BINARY,bytes,.true))
 ::method receive
-  expose stream receiveBuffer state
+  expose stream receiveBuffer state fragmentOpcode fragmentPayload maximumMessageBytes
   use strict arg maximumRead=65536
   if state=.WebSocketState~CLOSED then return .nil
   do forever
@@ -226,35 +261,79 @@
       consumed=parsed["consumed"]
       receiveBuffer=substr(receiveBuffer,consumed+1)
       msg=parsed["message"]
+
       if msg~opcode=.WebSocketOpcode~PING then do
-        self~sendMessage(.WebSocketMessage~new(.WebSocketOpcode~PONG,msg~payload,.true))
+        ignore=self~sendControl(.WebSocketOpcode~PONG,msg~payload)
         iterate
       end
+      if msg~opcode=.WebSocketOpcode~PONG then return msg
       if msg~opcode=.WebSocketOpcode~CLOSE then do
         if state=.WebSocketState~OPEN then do
           state=.WebSocketState~CLOSING
-          self~sendMessage(.WebSocketMessage~new(.WebSocketOpcode~CLOSE,msg~payload,.true))
+          ignore=self~sendControl(.WebSocketOpcode~CLOSE,msg~payload)
         end
         ignore=stream~close
         state=.WebSocketState~CLOSED
+        fragmentOpcode=.nil
+        fragmentPayload=""
+        return msg
       end
-      return msg
+
+      if msg~opcode=.WebSocketOpcode~CONTINUATION then do
+        if fragmentOpcode=.nil then return self~protocolFailure(1002,"unexpected continuation frame")
+        fragmentPayload=fragmentPayload||msg~payload
+        if length(fragmentPayload)>maximumMessageBytes then return self~protocolFailure(1009,"WebSocket message exceeds configured limit")
+        if msg~final then do
+          completed=.WebSocketMessage~new(fragmentOpcode,fragmentPayload,.true)
+          fragmentOpcode=.nil
+          fragmentPayload=""
+          return completed
+        end
+        iterate
+      end
+
+      if msg~opcode=.WebSocketOpcode~TEXT | msg~opcode=.WebSocketOpcode~BINARY then do
+        if fragmentOpcode<>.nil then return self~protocolFailure(1002,"new data frame while fragmented message active")
+        if length(msg~payload)>maximumMessageBytes then return self~protocolFailure(1009,"WebSocket message exceeds configured limit")
+        if msg~final then return msg
+        fragmentOpcode=msg~opcode
+        fragmentPayload=msg~payload
+        iterate
+      end
+
+      return self~protocolFailure(1002,"unsupported WebSocket frame sequence")
     end
     chunk=stream~read(maximumRead)
     if chunk=.nil | chunk="" then return .nil
     receiveBuffer=receiveBuffer||chunk
   end
+
+::method protocolFailure private
+  expose stream state fragmentOpcode fragmentPayload
+  use strict arg code, reason
+  if state<>.WebSocketState~CLOSED then do
+    state=.WebSocketState~CLOSING
+    ignore=self~sendControl(.WebSocketOpcode~CLOSE,.WebSocketCodec~uintBytes(code,2)||reason)
+    ignore=stream~close
+    state=.WebSocketState~CLOSED
+  end
+  fragmentOpcode=.nil
+  fragmentPayload=""
+  return .nil
+
 ::method close
-  expose stream state
+  expose stream state fragmentOpcode fragmentPayload
   use strict arg code=1000, reason=""
   if state=.WebSocketState~CLOSED then return .true
   if state=.WebSocketState~OPEN then do
-    payload=.WebSocketCodec~uintBytes(code,2)||reason
     state=.WebSocketState~CLOSING
-    ignore=self~sendMessage(.WebSocketMessage~new(.WebSocketOpcode~CLOSE,payload,.true))
+    payload=.WebSocketCodec~uintBytes(code,2)||reason
+    ignore=self~sendControl(.WebSocketOpcode~CLOSE,payload)
   end
   ignore=stream~close
   state=.WebSocketState~CLOSED
+  fragmentOpcode=.nil
+  fragmentPayload=""
   return .true
 
 ::class WebSocketAccess public
