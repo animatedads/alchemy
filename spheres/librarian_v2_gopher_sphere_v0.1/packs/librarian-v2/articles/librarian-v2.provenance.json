@@ -3,10 +3,10 @@
   "id": "librarian-v2.provenance",
   "title": "Provenance graph: declarations versus verification",
   "section": "provenance",
-  "version": "0.1",
+  "version": "0.1.1",
   "sphere": "librarian-v2",
   "authority": "project-continuity",
-  "summary": "Dev8 adds LibrarianProvenanceEdge and LibrarianProvenanceGraph. An edge holds child, parent, relation and evidenceId; relations are QUOTED, SYNDICATED, AGGREGATED, DERIVED or CORROBORATION_CLAIM. It supports multiple parents, transitive ancestry, shared-upstream detection and insertion-time cycle rejection. Edges are declarations supported by references, not verified origin identity. Lack of a known common upstream never establishes independent reporting.",
+  "summary": "Dev8 preserves multi-parent source-level declarations; dev9 adds source edition, occurrence and span references, evidence IDs, append-only correction/retraction lineage, two independent time cutoffs, canonical snapshots, conflicting tip detection and cycle fail-closed. CORROBORATION_CLAIM is retained as a claim but does not participate in dependency ancestry. Unverified independence remains NOT_ESTABLISHED. Exact span reference strings are not yet linked to cryptographic source-media bytes.",
   "invariants": [
     "CORROBORATION_CLAIM is not confirmation of corroboration.",
     "Use explicit evidence references and source identity; do not substitute shared domain, publisher or syndication speculation for evidence.",
@@ -30,6 +30,14 @@
       "line_start": 1,
       "line_end": 16,
       "claim": "Design limits explicitly acknowledged by developer."
+    },
+    {
+      "artifact": "librarian_v2_dev9_20261027.zip",
+      "sha256": "6ebb503d6db6d3ffe9dc93385c02b637af8fa21dfb6fe43da2466f0aba207496",
+      "member": "librarian_v2_dev9/src/LibrarianProvenanceHistory.cls",
+      "line_start": 1,
+      "line_end": 200,
+      "claim": "Native ooRexx source for occurrence-level provenance and historical snapshots."
     }
   ]
 }
