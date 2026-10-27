@@ -1,0 +1,35 @@
+{
+  "spec": "1.1",
+  "module": "PreferredCapabilitiesSmoke",
+  "description": "Smoke test for preferred.log, preferred.cli, preferred.json and preferred.api registry/audit wiring.",
+  "preferreds": {
+    "preferred.cli.parse": {
+      "version": "1.0",
+      "required": true,
+      "arguments": {
+        "name": {"type": "str", "flag": "--name", "default": "Plan42", "help": "Name to greet"},
+        "count": {"type": "int", "flag": "--count", "default": 1, "help": "Greeting count"},
+        "langs": {"type": "list[str]", "flag": "--langs", "default": "py,rexx", "help": "Comma separated language list"}
+      }
+    },
+    "preferred.log.info": {"version": "1.0", "required": true},
+    "preferred.json.stringify": {"version": "1.0", "required": true},
+    "preferred.api.adapter": {"version": "1.0", "required": false}
+  },
+  "nodes": [
+    {"op": "routine", "name": "main", "params": ["name", "count", "langs"],
+     "param_types": {"name": "str", "count": "int", "langs": "list[str]"},
+     "body": [
+       {"op": "impl_use", "name": "preferred.log.info", "args": [
+         {"op": "format", "template": "starting preferred smoke for {name}", "args": {"name": {"op": "var", "name": "name", "type": "str"}}}
+       ]},
+       {"op": "declare", "name": "payload", "type": "dict", "value": {"op": "dict", "entries": {
+         "name": {"op": "var", "name": "name", "type": "str"},
+         "count": {"op": "var", "name": "count", "type": "int"},
+         "langs": {"op": "var", "name": "langs", "type": "list[str]"}
+       }}},
+       {"op": "declare", "name": "encoded", "type": "str", "value": {"op": "impl_use", "name": "preferred.json.stringify", "args": [{"op": "var", "name": "payload", "type": "dict"}]}},
+       {"op": "output", "expr": {"op": "var", "name": "encoded", "type": "str"}}
+     ]}
+  ]
+}

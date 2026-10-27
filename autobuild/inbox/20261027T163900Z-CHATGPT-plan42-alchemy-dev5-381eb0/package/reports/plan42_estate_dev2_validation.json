@@ -1,0 +1,48 @@
+{
+  "schema": "alchemy.plan42.estate-dev2.validation/1",
+  "date": "2026-10-15",
+  "baseline": "alchemy_framework_65_plan42_integrated_dev1.zip",
+  "baseline_sha256": "c199088f44962e667ba292bb7eb02561efd413125c8f06df1b1b029b62f53caf",
+  "notnotes_corpus": "project_alchemy_notnotes_corpus_v0.6_working.zip",
+  "notnotes_graph_counts": {
+    "stacks": 34,
+    "components": 176,
+    "packages": 215,
+    "papers": 176,
+    "evidence": 233,
+    "interactions": 66
+  },
+  "files_added": [
+    "alchemy/docs/PLAN42_ESTATE_RECONCILIATION_2026-10-15.md",
+    "alchemy/estate/plan42.estate.candidate.json",
+    "alchemy/tests/test_plan42_estate_handoff.py",
+    "alchemy/tools/plan42_estate_handoff.py"
+  ],
+  "files_modified": [
+    "alchemy/plan42/plan42.integration.json",
+    "alchemy/tools/plan42_bridge.py"
+  ],
+  "files_removed": [],
+  "checks": {
+    "estate_focused_unittests": "PASS 10/10",
+    "library_head_digest_pins": "PASS 10/10",
+    "plan42_discover_candidate_status": "PASS unpublished",
+    "fop_guarded_diff_dryrun_and_apply": "PASS 2/2 files",
+    "previous_plan42_suite": "INTERRUPTED_BY_TIMEOUT: 8 initial tests passed before Python preferred runtime test hung/timed out; no full acceptance claim",
+    "python_pycompile": "PASS new adapter and patched bridge"
+  },
+  "qualification": {
+    "new_adapter": "locally tested read-only candidate",
+    "full_legacy_regression": "not established due to timeout",
+    "ooRexx_native": "not_run",
+    "runtime_registry_publication": "not_run",
+    "source_store_live": "not_run",
+    "RPC_live": "not_run",
+    "codelet_live_upgrade": "not_run"
+  },
+  "known_source_gaps": [
+    "current Runtime Registry provider source not inspected",
+    "actual plugin/router CODELET:DEFINE registration method not inspected",
+    "Coding Intention -> Plan42 IR fidelity needs a real mapping contract"
+  ]
+}
