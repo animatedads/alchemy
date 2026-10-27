@@ -16,6 +16,17 @@ testExisting: procedure expose checks
  call check r['classification']='DISPARATE_TREATMENT','equal severity opposite disposition'
  call check r['pairs']~items=1,'names pair'
  call check r['validatedTruth']=.false,'scope ceiling'
+ c=.StandardApplicationAudit~new
+ c~standard('C','DISQUALIFY','problem')
+ c~applied('C','X',2,'REJECTED');c~applied('C','Y',3,'ACCEPTED')
+ call check c~audit('C')['classification']='DISPARATE_TREATMENT','accepted worse than rejected is disparity'
+ d=.StandardApplicationAudit~new
+ d~standard('D','DISQUALIFY','problem')
+ d~applied('D','X',2,'REJECTED');d~applied('D','Y',2,'REJECTED')
+ call check d~audit('D')['classification']='CONSISTENT_APPLICATION','equal severity equal disposition'
+ e=.StandardApplicationAudit~new
+ e~standard('E','THRESHOLD','evidence',3);e~selfMaterial('E',3)
+ call check e~audit('E')['classification']='CONSISTENT_APPLICATION','threshold met by self material'
  b = .StandardApplicationAudit~new
  b~standard('B','DISQUALIFY','problem')
  b~applied('B','A',3,'REJECTED');b~applied('B','B',1,'ACCEPTED')
