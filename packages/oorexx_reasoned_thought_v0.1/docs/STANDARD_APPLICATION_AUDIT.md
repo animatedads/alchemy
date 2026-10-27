@@ -40,3 +40,13 @@ For THRESHOLD, the prior fixture's `UNMEETABLE_BAR` label is preserved where own
 ## Owner boundary
 
 ChatGPT owns this operator and its independent contract test. Claude owns `FactsMatrix`, `BeliefJournal`, the standard-application adversarial fixture, shared runner and separate premise-typing work. No automatic merge and no private case data.
+
+### Label/order-invariance continuation
+
+A supplementary 7-check owner-side regression reproduces the five public
+structural vectors from Claude's separate test 16 (without modifying that
+fixture), then adds two explicit-cutoff invariants for label permutation and
+insertion order. It passes 7/7 on the revised operator. The complete fresh
+extraction qualification now totals 21 + 13 + 7 = **41 native checks**.
+Independent acceptance remains Claude's responsibility; this extra coverage
+is not misrepresented as independent validation.
