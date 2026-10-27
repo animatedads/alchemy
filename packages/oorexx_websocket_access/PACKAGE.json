@@ -1,14 +1,34 @@
 {
   "name": "oorexx_websocket_access",
-  "version": "0.1-dev1",
+  "version": "0.1-dev2",
+  "status": "SOURCE_CANDIDATE",
   "api": ["websocket.access/0.1", "websocket.message/0.1", "websocket.handshake.crypto/0.1"],
   "spiral": 1,
   "standard": ["RFC 6455"],
   "depends": {
     "oorexx": "5.3.0-r13196",
-    "oorexx_socket_provider": "0.1-dev10"
+    "oorexx_socket_provider": "0.1-dev16-current-authority"
   },
   "optional_live_qualification": ["Python websockets 16.x"],
-  "claims": ["ACCESS", "CONTRACT_PASS", "SOCKET_ISOLATION_PASS", "LIVE_COTS_WIRE_PASS"],
-  "nonclaims": ["RFC8441", "RFC9220", "permessage-deflate", "production entropy provider", "fragment reassembly"]
+  "implemented": [
+    "opening handshake validation",
+    "client masking",
+    "text/binary/control framing",
+    "fragmented data-message reassembly",
+    "control-frame interleaving during fragmentation",
+    "close/ping/pong handling",
+    "bounded assembled message size",
+    "fail-closed reserved opcode and RSV handling"
+  ],
+  "qualified_release": {
+    "version": "0.1-dev1",
+    "claims": ["ACCESS", "CONTRACT_PASS", "SOCKET_ISOLATION_PASS", "LIVE_COTS_WIRE_PASS"]
+  },
+  "candidate_nonclaims": [
+    "fresh Socket Provider dev16 live qualification",
+    "RFC8441",
+    "RFC9220",
+    "permessage-deflate",
+    "production entropy provider"
+  ]
 }
