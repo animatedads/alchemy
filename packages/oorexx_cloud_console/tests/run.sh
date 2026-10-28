@@ -12,7 +12,7 @@ printf '%s\n' "$api_out" | python3 -c 'import json,sys; v=json.load(sys.stdin); 
 cd "$ROOT"
 
 # Standalone execution must not depend on caller cwd.
-(cd /tmp && "$REXX" "$ROOT/cloudctl.rex" --version | grep -q '0.1-dev2')
+(cd /tmp && "$REXX" "$ROOT/cloudctl.rex" --version | grep -q '0.1-dev3')
 
 # Every JSON surface used by automation must parse as JSON.
 for cmd in \
@@ -58,6 +58,32 @@ do
   out=$("$REXX" "$ROOT/cloudctl.rex" machine reboot --provider "$p" $extra --apply --json)
   printf '%s\n' "$out" | grep -q '"status":"APPLIED"'
 done
+
+
+# Cloud Control is the selectable mutation authority.  Provider-native reads
+# remain independent observation evidence.
+CC="$ROOT/tests/fake-cloud-control.sh"
+LOG="$ROOT/tests/cloud-control.log"
+rm -f "$LOG"
+out=$(CLOUDCTL_FAKE_LOG="$LOG" "$REXX" "$ROOT/cloudctl.rex" machine reboot --provider aws --machine i-123 --region eu-west-2 --backend cloud-control --cloud_control "$CC" --json)
+printf '%s\n' "$out" | grep -q '"status":"PLANNED"'
+printf '%s\n' "$out" | grep -q '"backend":"cloud-control"'
+printf '%s\n' "$out" | grep -q '"control_api":"alchemy.cloud-control/0.1"'
+out=$(CLOUDCTL_FAKE_LOG="$LOG" "$REXX" "$ROOT/cloudctl.rex" machine reboot --provider aws --machine i-123 --region eu-west-2 --backend cloud-control --cloud_control "$CC" --apply --json)
+printf '%s\n' "$out" | grep -q '"status":"APPLIED"'
+grep -q '^aws machine reboot --machine i-123 --region eu-west-2$' "$LOG"
+
+# Auto selects Cloud Control when the authority transport is configured.
+out=$(CLOUDCTL_FAKE_LOG="$LOG" ALCHEMY_CLOUD_CONTROL="$CC" "$REXX" "$ROOT/cloudctl.rex" firewall allow --provider azure --scope rg:nsg --rule ssh --protocol tcp --port 22 --source 203.0.113.0/24 --json)
+printf '%s\n' "$out" | grep -q '"backend":"cloud-control"'
+printf '%s\n' "$out" | grep -q 'azure.*firewall.*allow'
+
+# Read-side inventory remains independently observed from provider CLI while
+# reporting which backend would own a later mutation.
+out=$(ALCHEMY_CLOUD_CONTROL="$CC" "$REXX" "$ROOT/cloudctl.rex" machine list --provider aws --region eu-west-2 --json)
+printf '%s\n' "$out" | grep -q '"read_backend":"provider-cli"'
+printf '%s\n' "$out" | grep -q '"mutation_backend":"cloud-control"'
+rm -f "$LOG"
 
 # Destroy needs exact confirmation only at apply time.
 out=$("$REXX" "$ROOT/cloudctl.rex" machine destroy --provider aws --machine i-123 --region eu-west-2 --json)
@@ -119,4 +145,4 @@ v=json.loads(os.environ['JSON'])
 assert v['workspace']==os.path.realpath(os.environ['EXPECT'])
 PY
 
-echo 'PASS ALL OOREXX CLOUD CONSOLE v0.1-dev2 TESTS'
+echo 'PASS ALL OOREXX CLOUD CONSOLE v0.1-dev3 TESTS'
