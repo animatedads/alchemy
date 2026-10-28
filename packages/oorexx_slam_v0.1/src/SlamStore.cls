@@ -92,6 +92,9 @@
   self~q('CREATE TABLE IF NOT EXISTS turn (task_id INTEGER NOT NULL, n INTEGER NOT NULL, step_seq INTEGER, action TEXT NOT NULL, node_id INTEGER, frontier INTEGER, detail TEXT, PRIMARY KEY (task_id, n))')
   self~q('CREATE TABLE IF NOT EXISTS lesson (id INTEGER PRIMARY KEY, from_id INTEGER NOT NULL, to_id INTEGER NOT NULL, passed INTEGER NOT NULL, predicted TEXT, reason TEXT, data TEXT)')
   self~q('CREATE TABLE IF NOT EXISTS contract (node_id INTEGER PRIMARY KEY, needs TEXT NOT NULL, gives TEXT NOT NULL, effects TEXT, standalone INTEGER NOT NULL, canon TEXT)')
+  /* translation edges: a node in one language -> the node it becomes in another (from compiler pairs);
+     freq is the prior, trials / passes the tested tier, kept apart from the edges Task searches */
+  self~q('CREATE TABLE IF NOT EXISTS translate (from_id INTEGER NOT NULL, to_id INTEGER NOT NULL, freq INTEGER NOT NULL, trials INTEGER NOT NULL, passes INTEGER NOT NULL, PRIMARY KEY (from_id, to_id))')
   self~q('CREATE INDEX IF NOT EXISTS slam_instance_shape ON instance (shape_id)')
   self~q('CREATE INDEX IF NOT EXISTS slam_instance_unit ON instance (unit_id)')
   self~q('CREATE INDEX IF NOT EXISTS slam_edge_to ON edge (to_id)')
@@ -172,6 +175,21 @@
     end
   end
   self~edgeAdd(prev, self~markerId(ctx, 'END'))
+
+/* ---- translation edges (between languages) ---- */
+::method translateAdd
+  use strict arg fromId, toId, n = 1
+  self~q('INSERT INTO translate (from_id, to_id, freq, trials, passes) VALUES (?, ?, ?, 0, 0) ON CONFLICT (from_id, to_id) DO UPDATE SET freq = freq + excluded.freq', self~binds(fromId, toId, n))
+/* What a node becomes in the other language: rows TO, FREQ, TRIALS, PASSES, most frequent first. */
+::method translations
+  use strict arg fromId
+  return self~q('SELECT to_id AS "TO", freq AS "FREQ", trials AS "TRIALS", passes AS "PASSES" FROM translate WHERE from_id = ? ORDER BY freq DESC, to_id', self~binds(fromId))~rows
+/* A test of a translation edge: the prediction from -> to was right or wrong. */
+::method translateRecord
+  use strict arg fromId, toId, passed
+  p = 0
+  if passed then p = 1
+  self~q('INSERT INTO translate (from_id, to_id, freq, trials, passes) VALUES (?, ?, 0, 1, ?) ON CONFLICT (from_id, to_id) DO UPDATE SET trials = trials + 1, passes = passes + excluded.passes', self~binds(fromId, toId, p))
 
 /* ---- weights ---- */
 ::method record

@@ -74,7 +74,9 @@ fi
 echo "== fourth language: NetRexx (needs NETREXX_HOME: the NetRexx 5 distribution; OOREXX_SRC; SYSUTILS_NRX: sysutils.nrx)"
 if [ -n "${NETREXX_HOME:-}" ] && [ -n "${OOREXX_SRC:-}" ] && [ -n "${SYSUTILS_NRX:-}" ]; then
   sh tests/netrexx/qtime_pair.sh "$NETREXX_HOME" "$OOREXX_SRC" "$WORK/qtime"
-  rexx tests/test_netrexx.rex "$WORK|$NETREXX_HOME/examples/ibm-historic/qtime.nrx|$OOREXX_SRC/samples/qtime.rex|$SYSUTILS_NRX|$WORK/qtime/qt_nrx.txt|$WORK/qtime/qt_rexx.txt"
+  sh tests/netrexx/translate_all.sh "$NETREXX_HOME" "$SYSUTILS_NRX" "$WORK/n2j"
+  rexx tests/netrexx/translate_pairs.rex "$WORK/n2j|$WORK/translate.db|$WORK/translate_summary.txt"
+  rexx tests/test_netrexx.rex "$WORK|$NETREXX_HOME/examples/ibm-historic/qtime.nrx|$OOREXX_SRC/samples/qtime.rex|$SYSUTILS_NRX|$WORK/qtime/qt_nrx.txt|$WORK/qtime/qt_rexx.txt|$WORK/translate_summary.txt"
 else
   echo "SKIP NetRexx: set NETREXX_HOME, OOREXX_SRC and SYSUTILS_NRX to run it"
 fi
