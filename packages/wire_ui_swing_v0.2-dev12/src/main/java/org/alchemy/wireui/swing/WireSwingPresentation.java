@@ -79,7 +79,7 @@ final class WireSwingPresentation {
         list.setSelectionBackground(ACCENT_SOFT);
         list.setSelectionForeground(INK);
         list.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        list.setFixedCellHeight(role.contains("document") ? 58 : 42);
+        list.setFixedCellHeight(role.contains("document") ? 72 : 42);
         list.setFont(uiFont(list.getFont(), Font.PLAIN, 14f));
     }
 

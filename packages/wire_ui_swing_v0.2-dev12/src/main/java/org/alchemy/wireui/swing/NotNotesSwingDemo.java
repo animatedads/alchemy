@@ -56,13 +56,13 @@ final class NotNotesSwingDemo {
                         inst("nav","NAV@1","root",Map.of("items",List.of("Home","Documents","TPS Reports","Approvals","Reports","Help Desk"))),
                         inst("docs","DOCS@1","root",Map.of(
                                 "items",List.of(
-                                        doc("TR-0014","TPS-2026-014","PENDING APPROVAL"),
-                                        doc("ARC-0041","Architecture review","APPROVED"),
-                                        doc("SEC-2007","Security assessment","DRAFT"),
-                                        doc("REL-3021","Release authority","PENDING APPROVAL"),
-                                        doc("FIN-1088","Quarterly controls","APPROVED"),
-                                        doc("OPS-0092","Service continuity review","DRAFT"),
-                                        doc("TPS-0172","TPS Report","APPROVED")
+                                        doc("TR-0014","TPS-2026-014","PENDING APPROVAL","TPS Report","Fred"),
+                                        doc("ARC-0041","Architecture review","APPROVED","Design Review","Daria"),
+                                        doc("SEC-2007","Security assessment","DRAFT","Security Review","Alex"),
+                                        doc("REL-3021","Release authority","PENDING APPROVAL","Release","Sam"),
+                                        doc("FIN-1088","Quarterly controls","APPROVED","Controls","Mira"),
+                                        doc("OPS-0092","Service continuity review","DRAFT","Operations","Lee"),
+                                        doc("TPS-0172","TPS Report","APPROVED","TPS Report","Nina")
                                 ),
                                 "rangeWindow",Map.of("start",0,"count",7,"total",52))),
                         inst("detail","DETAIL@1","root",Map.of(
@@ -82,8 +82,8 @@ final class NotNotesSwingDemo {
                 "ops",List.of(Map.of("op","SET_SLOT","instanceId","status","slot","text","value",text))));
     }
 
-    private static Map<String,Object> doc(String id,String label,String status) {
-        return Map.of("id",id,"label",label,"status",status);
+    private static Map<String,Object> doc(String id,String label,String status,String type,String owner) {
+        return Map.of("id",id,"label",label,"status",status,"type",type,"owner",owner);
     }
     private static Map<String,Object> bindings(String... p) {
         Map<String,Object> m=new LinkedHashMap<>(); for(int i=0;i<p.length;i+=2)m.put(p[i],p[i+1]); return m;

@@ -99,17 +99,24 @@ final class WireSwingComponentFactory {
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         list.setVisibleRowCount(8);
         WireSwingPresentation.styleList(list, definition.styleRole().toLowerCase(java.util.Locale.ROOT));
-        list.setCellRenderer(new DefaultListCellRenderer() {
-            @Override public Component getListCellRendererComponent(
-                    JList<?> owner, Object value, int index, boolean selected, boolean focus) {
-                JLabel label = (JLabel) super.getListCellRendererComponent(owner, value, index, selected, focus);
-                label.setText(collectionDisplayText(value));
-                label.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
-                label.setFont(label.getFont().deriveFont(definition.styleRole().toLowerCase(java.util.Locale.ROOT).contains("navigation") ? Font.BOLD : Font.PLAIN, 14f));
-                if (!selected) label.setBackground(definition.styleRole().toLowerCase(java.util.Locale.ROOT).contains("navigation") ? WireSwingPresentation.CANVAS : WireSwingPresentation.SURFACE);
-                return label;
-            }
-        });
+        String listRole = definition.styleRole().toLowerCase(java.util.Locale.ROOT);
+        if (listRole.contains("document")) {
+            list.setCellRenderer(new DocumentCollectionRenderer());
+        } else if (listRole.contains("navigation")) {
+            list.setCellRenderer(new NavigationCollectionRenderer());
+        } else {
+            list.setCellRenderer(new DefaultListCellRenderer() {
+                @Override public Component getListCellRendererComponent(
+                        JList<?> owner, Object value, int index, boolean selected, boolean focus) {
+                    JLabel label = (JLabel) super.getListCellRendererComponent(owner, value, index, selected, focus);
+                    label.setText(collectionDisplayText(value));
+                    label.setBorder(BorderFactory.createEmptyBorder(8, 12, 8, 12));
+                    label.setFont(label.getFont().deriveFont(Font.PLAIN, 14f));
+                    if (!selected) label.setBackground(WireSwingPresentation.SURFACE);
+                    return label;
+                }
+            });
+        }
         JPanel structuralMount = new JPanel(new GridBagLayout());
         structuralMount.setOpaque(false);
         JScrollPane pane = new JScrollPane(list);
@@ -427,6 +434,94 @@ final class WireSwingComponentFactory {
             }
         }
         return "";
+    }
+
+
+    private static final class DocumentCollectionRenderer extends JPanel implements ListCellRenderer<Object> {
+        private static final long serialVersionUID = 1L;
+        private final JLabel title = new JLabel();
+        private final JLabel meta = new JLabel();
+        private final JLabel identity = new JLabel();
+        private final JLabel status = new JLabel();
+
+        DocumentCollectionRenderer() {
+            super(new BorderLayout(10, 0));
+            setOpaque(true);
+            JPanel text = new JPanel();
+            text.setOpaque(false);
+            text.setLayout(new BoxLayout(text, BoxLayout.Y_AXIS));
+            title.setFont(title.getFont().deriveFont(Font.BOLD, 14f));
+            title.setForeground(WireSwingPresentation.INK);
+            meta.setFont(meta.getFont().deriveFont(Font.PLAIN, 11f));
+            meta.setForeground(WireSwingPresentation.MUTED);
+            identity.setFont(identity.getFont().deriveFont(Font.PLAIN, 10f));
+            identity.setForeground(WireSwingPresentation.MUTED);
+            text.add(title);
+            text.add(Box.createVerticalStrut(2));
+            text.add(meta);
+            text.add(Box.createVerticalStrut(2));
+            text.add(identity);
+            status.setOpaque(true);
+            status.setHorizontalAlignment(SwingConstants.CENTER);
+            status.setFont(status.getFont().deriveFont(Font.BOLD, 10f));
+            add(text, BorderLayout.CENTER);
+            add(status, BorderLayout.LINE_END);
+            setBorder(BorderFactory.createEmptyBorder(7, 10, 7, 10));
+        }
+
+        @Override public Component getListCellRendererComponent(
+                JList<?> owner, Object value, int index, boolean selected, boolean focus) {
+            String label = collectionDisplayText(value);
+            String rowStatus = "";
+            String rowIdentity = "";
+            String rowMeta = "";
+            if (value instanceof Map<?,?> map) {
+                Object statusValue = map.get("status");
+                Object idValue = map.get("id");
+                if (statusValue != null) rowStatus = String.valueOf(statusValue);
+                if (idValue != null) rowIdentity = String.valueOf(idValue);
+                rowMeta = collectionSecondaryText(map);
+            }
+            title.setText(label);
+            meta.setText(rowMeta);
+            meta.setVisible(!rowMeta.isBlank());
+            identity.setText(rowIdentity);
+            status.setText(WireSwingPresentation.compactStatus(rowStatus));
+            status.setToolTipText(rowStatus.isBlank() ? null : rowStatus);
+            if (status.getAccessibleContext() != null) status.getAccessibleContext().setAccessibleName("Status: " + rowStatus);
+            WireSwingPresentation.styleStatusChip(status, rowStatus);
+            setBackground(selected ? WireSwingPresentation.ACCENT_SOFT : WireSwingPresentation.SURFACE);
+            setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(0, selected ? 3 : 0, 1, 0, selected ? WireSwingPresentation.ACCENT : WireSwingPresentation.LINE),
+                    BorderFactory.createEmptyBorder(7, selected ? 7 : 10, 7, 10)));
+            return this;
+        }
+    }
+
+    private static final class NavigationCollectionRenderer extends DefaultListCellRenderer {
+        private static final long serialVersionUID = 1L;
+        @Override public Component getListCellRendererComponent(
+                JList<?> owner, Object value, int index, boolean selected, boolean focus) {
+            JLabel label = (JLabel) super.getListCellRendererComponent(owner, value, index, selected, focus);
+            label.setText(collectionDisplayText(value));
+            label.setFont(label.getFont().deriveFont(selected ? Font.BOLD : Font.PLAIN, 14f));
+            label.setForeground(selected ? WireSwingPresentation.ACCENT : WireSwingPresentation.INK);
+            label.setBackground(selected ? WireSwingPresentation.ACCENT_SOFT : WireSwingPresentation.CANVAS);
+            label.setBorder(BorderFactory.createCompoundBorder(
+                    BorderFactory.createMatteBorder(0, selected ? 3 : 0, 0, 0, selected ? WireSwingPresentation.ACCENT : WireSwingPresentation.CANVAS),
+                    BorderFactory.createEmptyBorder(8, selected ? 9 : 12, 8, 12)));
+            return label;
+        }
+    }
+
+    private static String collectionSecondaryText(Map<?,?> row) {
+        java.util.List<String> parts = new ArrayList<>();
+        for (String key : List.of("meta", "subtitle", "type", "owner")) {
+            Object value = row.get(key);
+            if (value != null && !String.valueOf(value).isBlank()) parts.add(String.valueOf(value));
+            if (parts.size() == 2) break;
+        }
+        return String.join(" · ", parts);
     }
 
     private static String collectionDisplayText(Object item) {

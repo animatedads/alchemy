@@ -6,7 +6,7 @@ import java.awt.GraphicsEnvironment;
 
 /** Executable entry point for the standalone Wire UI Swing renderer JAR. */
 public final class WireSwingMain {
-    private static final String VERSION = "0.2-dev11";
+    private static final String VERSION = "0.2-dev12";
 
     private WireSwingMain() {}
 
@@ -27,7 +27,7 @@ public final class WireSwingMain {
                     return;
                 }
                 case "--smoke-window" -> { launchDemo(true, false); return; }
-                case "--notnotes-demo" -> { launchDemo(false, false); return; }
+                case "--notnotes-demo" -> { launchDemo(false, true); return; }
                 case "--notnotes-smoke" -> { launchDemo(true, true); return; }
                 default -> {
                     System.err.println("Unknown option: " + args[0]);
@@ -72,7 +72,7 @@ public final class WireSwingMain {
     }
 
     private static void usage() {
-        System.out.println("Usage: java -jar wire-ui-swing-v0.2-dev11.jar [--version|--help|--smoke-window|--notnotes-demo|--notnotes-smoke]");
+        System.out.println("Usage: java -jar wire-ui-swing-v0.2-dev12.jar [--version|--help|--smoke-window|--notnotes-demo|--notnotes-smoke]");
         System.out.println("With no arguments, opens the standalone Swing renderer demonstration.");
     }
 }
