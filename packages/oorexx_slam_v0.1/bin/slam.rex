@@ -12,13 +12,17 @@
  *   rexx slam.rex ask DB SENTENCE | V1 V2..  run a request in SLAM's words over the values
  *   rexx slam.rex read DB DOC              read a document with SLAM's own vocabulary (its WORD nodes);
  *                                            'word: definition' lines add words; ``` blocks are code, not words
+ *   rexx slam.rex facts DB DOC             read DOC as above; if each word is known, also store each text line
+ *                                            as a FACT about the SUBJECT named by the code block before it,
+ *                                            and each 'code -> result' line of an examples block as an EXAMPLE
+ *   rexx slam.rex about DB SUBJECT         the facts and examples stored about SUBJECT (any case)
  * NODE is a display id (#00EF), a numeric id, or a canonical text.
  */
 signal on syntax name onSyntax
 parse arg cmd db rest
 cmd = cmd~lower
 if cmd == '' | db == '' then do
-  say 'usage: rexx slam.rex ingest|corpus|stats|node|follows|into|record DB ...'
+  say 'usage: rexx slam.rex ingest|corpus|read|facts|about|ground|ask|stats|node|follows|into|record DB ...'
   exit 2
 end
 store = .SlamStore~new(db)
@@ -26,6 +30,8 @@ select
   when cmd == 'ingest' then call ingest store, rest
   when cmd == 'corpus' then call corpus store, rest~strip
   when cmd == 'read' then call readDoc store, rest~strip
+  when cmd == 'facts' then call readFacts store, rest~strip
+  when cmd == 'about' then call about store, rest~strip
   when cmd == 'ground' then do
     r = .SlamGround~qualify(store)
     say 'anchor checks:' r[1] 'of' r[2] 'true'
@@ -166,7 +172,7 @@ readDoc: procedure
   end
   if vocab~items == 0 then do
     say 'i have no words: load a corpus first'
-    return
+    return .false
   end
   baseCount = vocab~items
   inCode = .false; lineNo = 0; codeLines = 0; textWords = 0
@@ -209,7 +215,7 @@ readDoc: procedure
     do u over unknown
       say '  ' u
     end
-    return
+    return .false
   end
   store~begin
   do d over defs
@@ -228,6 +234,102 @@ readDoc: procedure
   end
   store~commit
   say 'i know each word here. i can read all of it.'
+  return .true
+
+/* Facts. A document that SLAM can read (readDoc gives .true) is read again. A code block names the
+   SUBJECT: the first word of its first line, cut at '(' or '[', plus the next word when that word is a
+   whole number ('Error 40'). A code block whose first line is '/* examples */' keeps the subject; each of
+   its lines with '->' is stored as an EXAMPLE of the subject. Every other line outside code (not a heading,
+   not blank) is a FACT about the subject: a unit of kind FACT whose sequence is its words (numerals are
+   VALUE nodes, not words), so facts also give word -> word edges. A fact before the first code block has
+   the subject '-'. Each unit's sig is FACT:file:line or EXAMPLE:file:line, so a second run stores nothing new. */
+readFacts: procedure
+  use arg store, file
+  if \readDoc(store, file) then return
+  subject = '-'; inCode = .false; firstCode = .false; inExamples = .false; lineNo = 0
+  facts = 0; examples = 0
+  store~begin
+  do while lines(file) > 0
+    line = linein(file)~strip('T', '0d'x)
+    lineNo += 1
+    s = line~strip
+    if s~left(3) == '```' then do
+      inCode = \inCode
+      firstCode = inCode
+      if \inCode then inExamples = .false
+      iterate
+    end
+    if inCode then do
+      if firstCode then do
+        firstCode = .false
+        if s~left(14)~lower == '/* examples */' then do
+          inExamples = .true
+          iterate
+        end
+        subject = subjectOf(s)
+        iterate
+      end
+      if inExamples then if s~pos('->') > 0 then do
+        if store~unitInsert(file, 'EXAMPLE', subject, s, lineNo, 'EXAMPLE:' || file || ':' || lineNo) \== 0 then examples += 1
+      end
+      iterate
+    end
+    if s == '' then iterate
+    if s~left(1) == '#' then iterate
+    segs = .array~new
+    do x over cleanWords(s)
+      if datatype(x, 'N') then do
+        sg = .SlamSegment~new('VALUE', lineNo)
+        sg~fine = 'VALUE: ' || x
+        sg~family = 'VALUE'
+      end
+      else do
+        sg = .SlamSegment~new('WORD', lineNo)
+        sg~fine = 'WORD: ' || x
+        sg~family = 'WORD'
+      end
+      segs~append(sg)
+    end
+    if segs~items == 0 then iterate
+    uid = store~unitInsert(file, 'FACT', subject, '', lineNo, 'FACT:' || file || ':' || lineNo)
+    if uid \== 0 then do
+      store~ingestSeq(uid, 0, 'FACT', segs)
+      facts += 1
+    end
+  end
+  call stream file, 'C', 'CLOSE'
+  store~commit
+  say 'facts stored' facts ' examples stored' examples
+  return
+
+subjectOf: procedure
+  use arg codeLine
+  w = codeLine~word(1)
+  cut = verify(w, '([', 'M')
+  if cut > 0 then w = w~left(cut - 1)
+  if w == '' then w = codeLine~word(1)
+  nxt = codeLine~word(2)
+  if datatype(nxt, 'W') then w = w nxt
+  return w
+
+about: procedure
+  use arg store, subject
+  r = store~q("SELECT id AS id, kind AS kind, selector AS sel, path AS path, line AS line FROM unit WHERE kind IN ('FACT', 'EXAMPLE') AND lower(owner) = lower(?) ORDER BY path, line", store~binds(subject))
+  n = 0
+  do row over r~rows
+    n += 1
+    if row['KIND'] == 'EXAMPLE' then do
+      say '  example:' row['SEL']
+      iterate
+    end
+    ws = store~q('SELECT s.canon AS canon FROM instance i JOIN shape s ON s.id = i.shape_id WHERE i.unit_id = ? AND i.parent_id = 0 ORDER BY i.seq', store~binds(row['ID']))
+    text = ''
+    do w over ws~rows
+      text = text w['CANON']~substr(w['CANON']~pos(': ') + 2)
+    end
+    say '  ' || text~strip
+  end
+  if n == 0 then say 'i know no facts about' subject
   return
 
 cleanWords: procedure
