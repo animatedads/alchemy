@@ -1,0 +1,33 @@
+Wire UI Swing v0.2-dev11 validation
+===================================
+Date: 2026-10-23
+
+Scope
+-----
+Renderer-owned presentation refinement over the accepted dev10 semantic/runtime baseline.
+No business, lifecycle, permission, source, or NotNotes authority moved into Swing.
+
+Strict Java
+-----------
+PASS javac --release 21 -Xlint:all -Werror
+PASS 59/59 renderer tests
+
+New dev11 evidence
+------------------
+PASS document-style semantic collection rows render projected display label
+PASS stable projected document identity is separately visible
+PASS projected lifecycle/status renders as compact renderer-owned chip
+PASS full projected status remains available via tooltip/accessibility
+PASS status presentation creates no application action
+PASS existing collection action narrowing remains unchanged
+
+Executable / visual
+-------------------
+PASS java -jar build/wire-ui-swing-v0.2-dev11.jar --version
+PASS Xvfb --notnotes-smoke: READY view=NOTNOTES.HOME revision=1
+PASS actual Xvfb desktop capture: notnotes_swing_dev11_preview.png
+
+Retained semantic baseline
+--------------------------
+The complete dev10 Server v0.17 / RangeRequested / BSF / Builder qualification remains the semantic baseline.
+Dev11 changes only renderer presentation and adds targeted regression coverage for that presentation.

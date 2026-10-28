@@ -48,8 +48,10 @@ Searchable corpus aliases include `workspaceContext`, `resultRevision`, `GRID12`
 The separate `java` sphere owns general Java/Swing language doctrine such as EDT discipline and transactional Swing rendering. This sphere intentionally specializes those principles for Wire UI protocol, Builder, Server, ooRexx/BSF and qualification continuity.
 
 
-## Current implementation head — dev11
+## Current implementation head — dev12
 
-`packages/wire_ui_swing_v0.2-dev11` is the current source-qualified implementation baseline. Dev11 is a renderer-presentation successor over dev10's complete semantic/runtime qualification. It adds two-line document rows and compact projected lifecycle/status chips for the NotNotes Java fixture while preserving stable semantic identity, narrow action detail, event-time revision, bounded `RangeRequested`, opaque `workspaceContext`, and Server v0.17 authority.
+`packages/wire_ui_swing_v0.2-dev12` is the current source-qualified implementation baseline. Dev12 is a renderer-presentation successor over dev10's complete semantic/runtime qualification and dev11's semantic document/status-chip cut. It adds projected secondary document metadata, clearer renderer-local navigation selection and repairs the interactive NotNotes launcher.
 
-For presentation work, the web client is the visual-quality benchmark. Swing owns pixels and local presentation mechanics only; projected status may affect colour/text/tooltip/accessibility but never lifecycle feasibility.
+The authority boundary remains unchanged: extra display metadata never widens action detail, navigation highlighting does not itself navigate, projected status never decides lifecycle feasibility, and bounded `RangeRequested` plus opaque `workspaceContext` remain server/application-owned contracts.
+
+For presentation work, the web client remains the visual-quality benchmark. Swing owns pixels and local presentation mechanics only.

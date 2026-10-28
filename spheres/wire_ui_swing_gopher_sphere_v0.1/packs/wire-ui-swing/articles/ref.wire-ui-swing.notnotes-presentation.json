@@ -4,12 +4,13 @@
   "version": "0.1",
   "sphere": "wire-ui-swing",
   "title": "NotNotes Java presentation fixture and web-quality visual doctrine",
-  "summary": "The NotNotes Java surface is a renderer/conformance fixture used to drive Swing toward the same visual quality as the web client while preserving the common semantic authority boundary. Swing may own layout, typography, surfaces, row hierarchy, chips, focus and local presentation state; NotNotes owns documents, relationships, lifecycle, reports, intentions and action feasibility.",
+  "summary": "The NotNotes Java surface is a renderer/conformance fixture used to drive Swing toward web-client visual quality while preserving the common semantic authority boundary. Dev12 adds a secondary projected metadata line (such as type/owner), clearer navigation selection and the repaired interactive NotNotes launcher. Swing may own layout, typography, row hierarchy, chips and local selection presentation; NotNotes owns documents, relationships, lifecycle, reports, intentions and action feasibility.",
   "authority": "renderer-presentation-contract",
   "invariants": [
     "NotNotes domain vocabulary must not become a required generic Wire Swing protocol dependency.",
     "Stable document identity is projected semantic identity, never JList index or native component identity.",
-    "Status chips are presentation of already-projected status; they do not decide Submit/Approve/Reject feasibility.",
+    "Projected label/status/type/owner/meta/subtitle may affect pixels only; extra display metadata must not be returned as semantic authority.",
+    "Navigation highlighting is local renderer state and does not itself navigate or grant action authority.",
     "The web client is a visual-quality benchmark, not a source of browser-owned business truth.",
     "Actual desktop capture is required for meaningful presentation changes; semantic traces remain the cross-renderer authority test."
   ],
@@ -25,6 +26,12 @@
       "sha256": "294be3939be9ff0fc32c057c1d7e0287ba7d3f074fdda9663c6da48fe9bd8ad7",
       "member": "wire_ui_swing_v0.2-dev11/VALIDATION_DEV11.txt",
       "claim": "59/59 strict renderer tests plus Xvfb NotNotes smoke and actual desktop capture."
+    },
+    {
+      "artifact": "wire_ui_swing_v0.2-dev12.zip",
+      "sha256": "142dbb54adb9d0c2b88a3af043166894354cdb58d600cbd6f5f506b08f03d499",
+      "member": "wire_ui_swing_v0.2-dev12/VALIDATION_DEV12.txt",
+      "claim": "61/61 renderer tests, secondary metadata authority-narrowing, navigation presentation, launcher routing and real Xvfb capture."
     }
   ]
 }
