@@ -1,0 +1,39 @@
+reference/08_rexxutil_a.md:202 OTHER PLATFORM | /* platform: windows */ / -- Give option to quit / if RxMessageBox("Shall we continue?", "", "YesNo"
+reference/08_rexxutil_a.md:303 NO REFERENCE | call SysCls                                                                                         
+reference/08_rexxutil_a.md:332 OTHER PLATFORM | /* platform: windows */ / say SysCurPos() -- (e. g.) 10 0                                           
+reference/08_rexxutil_a.md:371 OTHER PLATFORM | /* platform: windows */ / say SysDriveInfo() -- e. g. C: 23989809152 254721126400 Windows           
+reference/08_rexxutil_a.md:426 OTHER PLATFORM | /* platform: windows */ / say SysDriveMap("C:", "USED") -- C: M: N: O: P: R: Z:                     
+reference/08_rexxutil_a.md:463 NO REFERENCE | Call SysDumpVariables "MyVars.Lst" /* append vars to file */ / Call SysDumpVariables              /*
+reference/08_rexxutil_a.md:485 OTHER PLATFORM | /* platform: windows */ / call SysFileCopy "c:\temp\myfile.txt", "d:\myfolder\myCopy.txt"           
+reference/08_rexxutil_a.md:495 NO REFERENCE | /* platform: unix */ / call SysFileCopy "/tmp/myfile.txt", "~/myCopy.txt"                           
+reference/08_rexxutil_a.md:524 NO REFERENCE | parse arg InputFile OutputFile / call SysFileDelete OutputFile  -- unconditionally erase output file
+reference/08_rexxutil_a.md:544 NO REFERENCE | if SysFileExists(InputFile) then say "File Exists!" / else say "File does not exist."               
+reference/08_rexxutil_a.md:566 OTHER PLATFORM | /* platform: windows */ / call SysFileMove "c:\temp\myfile.txt", "d:\myfolder\myCopy.txt"           
+reference/08_rexxutil_a.md:576 NO REFERENCE | /* platform: unix */ / call SysFileMove "/tmp/myfile.txt", "~/myCopy.txt"                           
+reference/08_rexxutil_a.md:613 OTHER PLATFORM | /* platform: windows */ / /* Find DEVICE statements in CONFIG.SYS */ / call SysFileSearch "DEVICE", 
+reference/08_rexxutil_a.md:641 OTHER PLATFORM | /* platform: windows */ / /* Find DEVICE statements in CONFIG.SYS (along with */ / /* line numbers) 
+reference/08_rexxutil_a.md:680 OTHER PLATFORM | /* platform: windows */ / say SysFileSystemType("C:\")    -- NTFS                                   
+reference/08_rexxutil_a.md:772 OTHER PLATFORM | /* platform: windows */ / /* Find all subdirectories on C: */ / call SysFileTree "c:\*.*", "file", "
+reference/08_rexxutil_a.md:783 OTHER PLATFORM | /* platform: windows */ / /* Find all executable (.exe) files under Program Files*/ / ret = SysFileT
+reference/08_rexxutil_a.md:794 OTHER PLATFORM | /* platform: windows */ / /* Find all Read-Only files */ / call SysFileTree "c:\*.*", "file", "S", "
+reference/08_rexxutil_a.md:805 OTHER PLATFORM | /* platform: windows */ / /* Clear Archive and Read-Only attributes of files that have them set */ /
+reference/08_rexxutil_a.md:817 OTHER PLATFORM | /* platform: windows */ / call SysFileTree "c:\win*", file., "b" / do i = 1 to file.0 /   say file.i
+reference/08_rexxutil_a.md:843 NO REFERENCE | /* platform: unix */ / /* Example SysFork() and SysWait() */ /  /   pid = SysFork() /  /   if pid ==
+reference/08_rexxutil_a.md:917 SAME | s = .Stream~new("xyzzy") / if \s~open("read")~startsWith("READY") then /   -- Cannot read file 'xyzz
+reference/08_rexxutil_a.md:1028 OTHER PLATFORM | /* platform: windows */ / -- two steps to convert a string from one code page to another / string = 
+reference/08_rexxutil_a.md:1058 OTHER PLATFORM | /* platform: windows */ / -- Windows: Cannot create a file when that file already exists. / say SysG
+reference/08_rexxutil_a.md:1073 SAME | /* platform: unix */ / -- Unix-like system: File exists / say SysGetErrorText(SysMkDir("/usr"))     
+reference/08_rexxutil_a.md:1125 DIFFERENT | say SysGetFileDateTime(".")           -- (e. g.) 2020-04-01 17:45:20 / say SysGetFileDateTime("main.
+reference/08_rexxutil_a.md:1167 OTHER PLATFORM | /* platform: windows */ / say SysGetLongPathName("C:\progra~1")            -- C:\Program Files      
+reference/08_rexxutil_a.md:1181 OTHER PLATFORM | /* platform: windows */ / say SysGetLongPathName("\windows\explorer.exe")  -- \Windows\explorer.exe 
+reference/08_rexxutil_a.md:1220 SAME | /* platform: unix */ / say SysGetMessage(485, "rexx.cat", "foo") -- Class "foo" not found.          
+reference/08_rexxutil_a.md:1258 SAME | /* platform: unix */ / say SysGetMessageX(1, 485, "rexx.cat", "foo") -- Class "foo" not found.      
+reference/08_rexxutil_a.md:1281 OTHER PLATFORM | /* platform: windows */ / say SysGetShortPathName("C:\Program Files")       -- C:\PROGRA~1          
+reference/08_rexxutil_a.md:1295 OTHER PLATFORM | /* platform: windows */ / say SysGetShortPathName("\windows\explorer.exe")  -- \windows\explorer.exe
+reference/08_rexxutil_a.md:1351 OTHER PLATFORM | /* platform: windows */ / /***  Save the user entered name under the key "NAME" of ***** / ****  the
+reference/08_rexxutil_a.md:1367 OTHER PLATFORM | /* platform: windows */ / /****  Type all WIN.INI file information to the screen  *****/ / call SysI
+reference/08_rexxutil_a.md:1401 NO REFERENCE | if SysIsFile(InputFile) then say "File Exists!" / else say "File does not exist."                   
+reference/08_rexxutil_a.md:1421 OTHER PLATFORM | /* platform: windows */ / if SysIsFileCompressed(InputFile) then say "File is compressed!" / else sa
+reference/08_rexxutil_a.md:1443 NO REFERENCE | if SysIsFileDirectory(InputFile) then say "Subdirectory Exists!" / else say "Subdirectory does not e
+reference/08_rexxutil_a.md:1463 OTHER PLATFORM | /* platform: windows */ / if SysIsFileEncrypted(InputFile) then say "File is encrypted!" / else say 
+reference/08_rexxutil_a.md:1485 NO REFERENCE | if SysIsFileLink(InputFile) then say "Link Exists!" / else say "Link does not exist."               
