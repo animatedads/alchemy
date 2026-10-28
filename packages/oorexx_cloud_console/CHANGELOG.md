@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.1-dev3 candidate — 2026-10-28
+
+- Added `alchemy.cloud-control/0.1 RESOURCE` as a first-class mutation backend.
+- Added `--backend auto|cloud-control|provider-cli` and `--cloud_control PATH`; `ALCHEMY_CLOUD_CONTROL` is the automation/Codex environment binding.
+- `auto` selects Cloud Control when configured; direct provider mutation remains an explicit development/test fallback.
+- Kept read-side provider inventory independent and labels results with read and mutation backend provenance.
+- Preserved PLAN/APPLY and exact destroy confirmation before Cloud Control delegation.
+- Added backend regression cases; r13196 qualification is pending and dev2 remains the last qualified release.
+
 ## v0.1-dev2 — 2026-09-06
 
 - Rebased design against `oorexxapis(20260906-192151).zip` and `sphere(20260906-192150).zip`.
