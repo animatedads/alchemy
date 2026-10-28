@@ -2,7 +2,7 @@
 
 **Scope:** Mini NotNotes core app; no duplicate SQL provider, new cryptographic authority or deployed service.
 
-**Git source candidate:** [PR #66](https://github.com/animatedads/alchemy/pull/66), branch `fix/notnotes-default-rexxsql-sqlite-20261028`. The patch changes `packages/notnotes_mini_approval_app_v0.1-dev17` source **on a development branch**. It is **NOT** an accepted dev17 release, production migration, or demonstrated end-to-end SQLite qualification.
+**Git source candidate:** [PR #66](https://github.com/animatedads/alchemy/pull/66), branch `fix/notnotes-default-rexxsql-sqlite-20261028`. The patch creates a new `packages/notnotes_mini_approval_app_v0.1-dev18` candidate while preserving historical dev17 byte-for-byte. It is **NOT** an accepted dev18 release, production migration, or demonstrated end-to-end SQLite qualification.
 
 ## Implemented
 
@@ -28,6 +28,6 @@
 2. Execute `tests/test_rexxsql_migration.sh` with the actual management-review fixture; independently verify all rows, temporal evidence, persisted reports and PDF/output semantics.
 3. Full inherited `run_tests.sh` in explicit file mode and full r13196 SQLite mode, including complete process exit codes. Benchmark the same 954-document estate and >=10k documents; measure startup, 50/100-row queries and save throughput.
 4. Verify actual signing contract first: current `vendor/notnotes/AlchemyNotNotes.cls` `::method approval` lines 169–173 translates `SIGN` to a Boolean `signed` approval attribute; `ApprovalSet~evaluate` stores this Boolean. That is **not a cryptographic signature**. Do not claim existing NotNotes approval rows are signed by OpenSSL. For any separately required cryptographic receipt/commit path, integrate and qualify shared Crypto v0.8.3 -> Runtime Reference v0.4 -> Foreign Runtime v0.22.2 `foreign.openssl.crypto`; preserve actual identity, tamper and revocation policy. This SQL patch neither adds nor bypasses cryptographic signing.
-5. Reconcile source locks/dependencies, immutable next version of the package and sphere, and independent acceptance prior to merge/release/installation. Do not claim that changing current Git dev17 retrospectively modifies accepted Archive dev17.
+5. Dev18 now has separate candidate source/import manifest, existing-provider dependency locks and qualification header; reconcile actual accepted provider hashes, validate complete native evidence and publish an immutable accepted source release before merge/installation. Do not claim that changing current Git dev17 retrospectively modifies accepted Archive dev17.
 
 **No live service, existing store, or production installation was changed.**
