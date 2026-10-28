@@ -61,3 +61,17 @@ Migratable Job v0.2.5 removes the remaining initial-remote-start gap: after auth
 `profiles/FD_20231010_0000_0500.tsv` describes the four-file 00:00–05:00 camera-wall-time campaign. The user-declared scene-occlusion interval belongs only to TP00002: wall 03:12–03:28, media `[605000,1565000)` ms. TP00000/1/3 have no such exclusion.
 
 Intervals where F11 is excluded, relocating, photometrically unstable, or cannot be reacquired confidently are **unavailable visual authority**, never negative door evidence.
+
+
+## SLAM FDSqrt correction — 2026-10-28
+
+SLAM identified that the package-local `FDSqrt` Newton iteration previously stopped after a fixed 14 steps. That was adequate only over a limited numeric range and could materially overestimate large values. The corrected routine now iterates until the Newton estimate no longer decreases.
+
+This matters to FD Door Micro Motion because `FDSqrt` is used by:
+
+- `FDNoiseModel~globalSigma` and `FDNoiseModel~doorSigma`, which set adaptive motion thresholds after calibration;
+- frame-motion magnitude calculation `sqrt(gdx^2 + gdy^2)`.
+
+The correction is mathematical/runtime infrastructure only. It does not change the visual-only evidence boundary, event semantics, geometry rules, or any audio authority.
+
+`tests/test_fdsqrt_large_range.rex` now exercises large exact roots, a large 3-4-5 gradient magnitude, and both `FDNoiseModel` sigma callers so the fixed-step defect cannot silently return.
