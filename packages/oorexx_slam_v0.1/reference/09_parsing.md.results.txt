@@ -1,0 +1,26 @@
+reference/09_parsing.md:37 DIFFERENT | parse value "time and tide" with var1 var2 var3                                                     
+reference/09_parsing.md:49 DIFFERENT | string="time and tide"; parse value string with var1 var2 var3                                      
+reference/09_parsing.md:61 DIFFERENT | parse value "   Pluto   " with var1                                                                 
+reference/09_parsing.md:78 DIFFERENT | stars="Sirius Polaris Rigil"; parse var stars star1 star2 star3                                     
+reference/09_parsing.md:90 DIFFERENT | satellite="moon"; parse var satellite Earth Mercury                                                 
+reference/09_parsing.md:102 DIFFERENT | satellites="moon Io Europa Callisto..."; parse var satellites Earth Jupiter                         
+reference/09_parsing.md:114 DIFFERENT | solar5="Mercury Venus  Earth   Mars     Jupiter  "; parse var solar5 var1 var2 var3 var4            
+reference/09_parsing.md:131 NO REFERENCE | string = "1 one two 3 4" / a = .Array~new / d = .Directory~new / parse var string n a[n] a[n + 1] d~
+reference/09_parsing.md:154 NO REFERENCE | stars="Arcturus Betelgeuse Sirius Rigil" / parse var stars . . brightest .            /* brightest="
+reference/09_parsing.md:175 DIFFERENT | name="Smith, John"; parse var name ln fn                                                            
+reference/09_parsing.md:187 DIFFERENT | name="Smith, John"; parse var name ln ", " fn                                                       
+reference/09_parsing.md:208 NO REFERENCE | /* Backing up to an earlier position (with absolute positional)  */ / string="astronomers" / parse v
+reference/09_parsing.md:240 NO REFERENCE | /* Backing up to an earlier position (with relative positional)  */ / string="astronomers" / parse v
+reference/09_parsing.md:265 DIFFERENT | /* Parsing with length patterns in template         */ / line = "04Mark0005Twain" / parse var line l
+reference/09_parsing.md:287 DIFFERENT | /* parsing with relative patterns only */ / parse value '12345.6789' with '.' -1 digit +1    -- digi
+reference/09_parsing.md:308 DIFFERENT | name="    John      Q.   Public"; parse var name fn init "." ln                                     
+reference/09_parsing.md:320 DIFFERENT | string="R E X X"; parse var string var1 var2 4 var3 6 var4                                          
+reference/09_parsing.md:341 DIFFERENT | date="11/15/98"; parse var date month 3 delim +1 day +2 (delim) year                                
+reference/09_parsing.md:353 DIFFERENT | dataline = "12 26 .....Samuel ClemensMark Twain"; parse var dataline pos1 pos2 6 =(pos1) realname =(
+reference/09_parsing.md:373 DIFFERENT | arg var1 var2  /* program called as: palette red blue */                                            
+reference/09_parsing.md:412 DIFFERENT | PUSH "80 7"                /* Puts data on queue                 */ / parse pull fourscore seven    
+reference/09_parsing.md:425 DIFFERENT | SAY fourscore+seven                                                                                 
+reference/09_parsing.md:442 DIFFERENT | parse source sysname . / say sysname  /* Possibly Displays */                                       
+reference/09_parsing.md:460 NO REFERENCE | parse version . level . / say level                /* Displays: "6.02" */                           
+reference/09_parsing.md:483 NO REFERENCE | num="3" / musketeers="Porthos Athos Aramis D'Artagnan" / CALL Sub num,musketeers  /* Passes num and 
+reference/09_parsing.md:506 SAME | string="REstructured eXtended eXecutor" / parse var string var1 3 junk "X" var2 +1 junk "X" var3 +1 

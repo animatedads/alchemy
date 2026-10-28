@@ -1,0 +1,122 @@
+reference/06_classes.md:80 NO REFERENCE | myarray=.array~of("N","S","E","W") / /* Copies array myarray to array directions */ / directions=mya
+reference/06_classes.md:142 NO REFERENCE | -- if running under ooRexx 5.1.0 / -- list all class methods of .String only / say .String~instanceM
+reference/06_classes.md:184 SAME | say "abc"~isInstanceOf(.string)             -                                                       
+reference/06_classes.md:197 SAME | say "abc"~isInstanceOf(.object)             -                                                       
+reference/06_classes.md:210 SAME | say "abc"~isInstanceOf(.mutablebuffer)      -                                                       
+reference/06_classes.md:227 SAME | say .Object~isNil                                                                                   
+reference/06_classes.md:240 SAME | say .nil~isNil                                                                                      
+reference/06_classes.md:267 NO REFERENCE | points=.array~of("N","S","E","W") / say points~objectName         /* (no change yet) Says: "an Array
+reference/06_classes.md:305 NO REFERENCE | request("string")                                                                                   
+reference/06_classes.md:341 NO REFERENCE | world = .WorldObject~new / -- these calls are equivalent and produce "Hello World, I'm Fred!" / say 
+reference/06_classes.md:371 NO REFERENCE | world = .WorldObject~new / -- these calls are equivalent and produce "Hello World, I'm Fred!" / say 
+reference/06_classes.md:418 NO REFERENCE | world = .WorldObject~new / -- these calls are equivalent and produce "Hello World, I'm Fred!" / msg1
+reference/06_classes.md:450 NO REFERENCE | world = .WorldObject~new / -- these calls are equivalent and produce "Hello World, I'm Fred!" / msg1
+reference/06_classes.md:562 NO REFERENCE | say .array~defaultName     /* Displays "The Array class"   */ / say .account~defaultName   /* Displa
+reference/06_classes.md:590 NO REFERENCE | bank_account=.object~subclass("Account") / bank_account~define("TYPE",'return "a bank account"')    
+reference/06_classes.md:609 NO REFERENCE | before = .c~new / say before~a                           -- a-original /  / .c~defineMethods(.method
+reference/06_classes.md:642 NO REFERENCE | myclass=.object~subclass("Myclass")        /* After creating a class  */ / myclass~define("TYPE",'re
+reference/06_classes.md:662 NO REFERENCE | /* Set up rclass with class method or methods you want in your */ / /* remote class */ / rclassmeths
+reference/06_classes.md:683 NO REFERENCE | myobject=.object~subclass("my object")  /* Creates a subclass    */ / say myobject~id               
+reference/06_classes.md:709 NO REFERENCE | room~inherit(.location)                                                                             
+reference/06_classes.md:723 NO REFERENCE | say .abs ~ isAbstract / -- 1 / ::class abs abstract                                                 
+reference/06_classes.md:740 NO REFERENCE | do class over .RexxInfo~package~classes~allItems~appendAll( - /   .context~package~classes~allItems 
+reference/06_classes.md:766 SAME | say .String~isSubclassOf(.object)             -                                                     
+reference/06_classes.md:779 SAME | say .String~isSubclassOf(.mutablebuffer)      -                                                     
+reference/06_classes.md:805 NO REFERENCE | /* Create and retrieve the method definition of a class */ / myclass=.object~subclass("My class")   
+reference/06_classes.md:833 NO REFERENCE | objsupp = .object~methods / do while objsupp~available /   say objsupp~index           -- displays a
+reference/06_classes.md:891 NO REFERENCE | buyable=.object~mixinClass("Buyable")  /* New subclass is buyable    */ /                           
+reference/06_classes.md:907 NO REFERENCE | /* new method example */ / a = .account~new             /* --> Object variable balance=0           *
+reference/06_classes.md:935 NO REFERENCE | say .Class~package~name                -- REXX / say .other~package~name                -- C:\Exampl
+reference/06_classes.md:968 NO REFERENCE | room=.object~subclass("Room")   /* Superclass is .object     */ /                                 /*
+reference/06_classes.md:990 NO REFERENCE | say .object~superclass    -- displays "The NIL object" / say .class~superclass     -- displays "The 
+reference/06_classes.md:1010 NO REFERENCE | z=.class~superClasses / /* To obtain the information this returns, you could use:     */ / do i over
+reference/06_classes.md:1029 NO REFERENCE | location=.object~mixinClass("Location") / room=.object~subclass("Room")~~inherit(location) /* Create
+reference/06_classes.md:1227 NO REFERENCE | iso639 = .Directory~of(("de", "Deutsch"), ("en", "English"), ("fr", "fran&ccedil;ais")) / say iso639
+reference/06_classes.md:1449 NO REFERENCE | x = myarray[1,2,3] / index = .array~of(1,2,3) / x = myarray[index]                                  
+reference/06_classes.md:1470 NO REFERENCE |    a = .array~new()        -- create a new, empty array /    a = .array~new(3,3)     -- create a new
+reference/06_classes.md:1488 NO REFERENCE | a = .array~of("Fred", "Mike", "David") /  / do name over a /    say name  -- displays "Fred", "Mike"
+reference/06_classes.md:1520 NO REFERENCE | a = .array~of("Fred", "Mike", "David") /  / do name over a~allIndexes /    say name  -- displays "1"
+reference/06_classes.md:1547 NO REFERENCE | a = .array~of("Fred", "Mike", "David") /  / do name over a~allItems /    say name  -- displays "Fred
+reference/06_classes.md:1576 NO REFERENCE |    a = .array~of("Mike", "Rick") /    a~append("Fred")  -- a = .array~of("Mike", "Rick", "Fred")    
+reference/06_classes.md:1591 SAME |    a = .array~of("Mike", "Rick") /    say a~at(2)                                                   
+reference/06_classes.md:1614 NO REFERENCE |    a = .array~of("Fred", "Mike", "Rick", "David") /    a~delete(2)  -- removes "Mike", resulting in 
+reference/06_classes.md:1631 DIFFERENT | a = .array~of(,"Mike", "Rick") / say a~dimension / say a~dimension(1) /  / a = .array~new~~put("Mike
+reference/06_classes.md:1669 NO REFERENCE | a = .array~of("Mike", "Rick", "Fred", "Rick") / a~empty    -- a~items now returns "0"               
+reference/06_classes.md:1683 NO REFERENCE | a = .array~new(3,3) / a~fill(0)    -- initialize the matrix to all zeroes.                          
+reference/06_classes.md:1698 SAME | a = .array~of("Mike", "Rick", "Fred", "Rick") / say a~first / a = .array~of(,"Mike", "Rick") / say a
+reference/06_classes.md:1721 NO REFERENCE | musketeers=.array~of("Porthos","Athos","Aramis")  /* Creates array MUSKETEERS      */ / item=muskete
+reference/06_classes.md:1736 SAME | a = .array~of("Mike", "Rick", "Fred", "Rick") / say a~hasIndex(2) / say a~hasIndex(5)               
+reference/06_classes.md:1758 SAME | a = .array~of("Mike", "Rick", "Fred", "Rick") / say a~hasItem("Rick") / say a~hasItem("Mark")       
+reference/06_classes.md:1783 SAME | a = .array~of("Mike", "Rick", "Fred", "Rick") / say a~index("Rick")                                 
+reference/06_classes.md:1806 NO REFERENCE | musketeers=.Array~of("Porthos","Athos","Aramis") /* Creates Array MUSKETEERS        */ /            
+reference/06_classes.md:1838 SAME | a = .array~new / say a~isEmpty / a[1] = "1" / say a~isEmpty                                         
+reference/06_classes.md:1860 SAME | a = .array~of("Fred", , "Mike", , "David") / say a~items                                            
+reference/06_classes.md:1880 SAME | a = .array~of("Fred", , "Mike", , "David") / say a~last                                             
+reference/06_classes.md:1899 NO REFERENCE | musketeers=.array~of("Porthos","Athos","Aramis")  /* Creates array MUSKETEERS      */ / item=muskete
+reference/06_classes.md:1917 NO REFERENCE | a = .array~of("Fred", , "Mike", , "David") / b = a~makeArray  -- b = .array~of("Fred", "Mike", "Davi
+reference/06_classes.md:1945 SAME | a = .array~of("Fred", , "Mike", , "David") / say a~next(3)                                          
+reference/06_classes.md:1966 SAME | a = .array~of("Fred", , "Mike", , "David") / say a~previous(3)                                      
+reference/06_classes.md:1987 SAME | a = .array~new / a~put("Fred", 1) -- a = .array~of("Fred") / a~put("Mike", 2) -- a = .array~of("Fred
+reference/06_classes.md:2019 NO REFERENCE | a = .array~of("Fred", "Mike", "Mike", "David") / a~remove(2)  -- removes "Mike"                     
+reference/06_classes.md:2034 NO REFERENCE | a = .array~of("Fred", "Mike", "Mike", "David") / a~removeItem("Mike")  -- removes the item at index 
+reference/06_classes.md:2055 NO REFERENCE | a = .array~of(1,2,3,4)  -- Loads the array /  / b = a~section(2)   -- b = .array~of(2,3,4) / c = a~s
+reference/06_classes.md:2113 NO REFERENCE | a = .array~of("Fred", "Mike", "David") / sup = a~supplier / a~append("Joe") / do while sup~available
+reference/06_classes.md:2142 NO REFERENCE | a = .array~of(1,2,3,4)  -- Loads the array /  / say a~toString  -- Produces: 1 /                 -- 
+reference/06_classes.md:2252 NO REFERENCE | musketeers=.list~of("Porthos","Athos","Aramis") /* Creates list MUSKETEERS      */ / item=musketeers
+reference/06_classes.md:2291 NO REFERENCE | musketeers=.list~of("Porthos","Athos","Aramis") /* Creates list MUSKETEERS        */ /              
+reference/06_classes.md:2470 NO REFERENCE |    a = .queue~of("Fred", "Mike", "Rick", "David") /    a~delete(2)  -- removes "Mike", resulting in 
+reference/06_classes.md:2526 NO REFERENCE | musketeers=.queue~of("Porthos","Athos","Aramis") /* Creates queue MUSKETEERS       */ /             
+reference/06_classes.md:2677 NO REFERENCE | mydir = .directory~new / mydir~name = "Mike"   -- same as mydir~put("Mike", "NAME") / say mydir~name
+reference/06_classes.md:2726 NO REFERENCE | say .environment~at("OBJECT")   /* Produces: "The Object class" */                                  
+reference/06_classes.md:2878 NO REFERENCE | sTable = .StringTable~new / sTable~name = "Mike"   -- same as sTable~put("Mike", "NAME") / say sTabl
+reference/06_classes.md:2924 NO REFERENCE | say .environment~at("OBJECT")   /* Produces: "The Object class" */                                  
+reference/06_classes.md:3169 NO REFERENCE | a.1 = 2 /  / say a.[1,2]  -- implicitly creates stem object with name "A." / -- displays "A.1.2" /  
+reference/06_classes.md:4074 NO REFERENCE | stream~command("open") / stream~command("open write") / stream~command("open read") / stream~command
+reference/06_classes.md:4101 NO REFERENCE | stream~command("seek =2 read") / stream~command("seek +15 read") / stream~command("seek -7 write lin
+reference/06_classes.md:4118 DIFFERENT | say stream~command("query datetime")                                                                
+reference/06_classes.md:4131 DIFFERENT | say stream~command("query exists")                                                                  
+reference/06_classes.md:4144 DIFFERENT | say stream~command("query handle")                                                                  
+reference/06_classes.md:4157 DIFFERENT | say stream~command("query position write")                                                          
+reference/06_classes.md:4170 DIFFERENT | say stream~command("query size")                                                                    
+reference/06_classes.md:4183 DIFFERENT | say stream~command("query timestamp")                                                               
+reference/06_classes.md:4330 NO REFERENCE | stream~open / stream~open("write") / stream~open("read")                                            
+reference/06_classes.md:4364 DIFFERENT | say stream~query("datetime")                                                                        
+reference/06_classes.md:4380 DIFFERENT | say stream~query("exists")                                                                          
+reference/06_classes.md:4396 DIFFERENT | say stream~query("handle")                                                                          
+reference/06_classes.md:4417 DIFFERENT | say stream~query("position write")                                                                  
+reference/06_classes.md:4437 DIFFERENT | say stream~query("size")                                                                            
+reference/06_classes.md:4458 DIFFERENT | say stream~query("timestamp")                                                                       
+reference/06_classes.md:4509 NO REFERENCE | stream~seek("=2 read") / stream~seek("+15 read") / stream~seek("-7 write line") / fromend  = 125 / s
+reference/06_classes.md:4568 NO REFERENCE | ::class CustomStream subclass Stream /  / /* ... */ /  / ::method uninit / /* the subclass instance 
+reference/06_classes.md:4643 SAME | dog = .WatchDog~new(1)                 -- watchdog with 1 sec time-out / say dog~watchTask(.task~new
+reference/06_classes.md:4727 SAME | msg = .Message~new(.Array~new(1000)~fill(0)~allIndexes, "sort") / msg~notify(.Message~new(.stdout, "
+reference/06_classes.md:4766 SAME | msg = .Message~new(.Array~new(1000)~fill(0)~allIndexes, "sort") / msg~notify(.Sorter~new) / msg~star
+reference/06_classes.md:4860 DIFFERENT | ez=.testclass~new                  /* Creates a new instance of Testclass     */ /  / /* Creates and
+reference/06_classes.md:4944 DIFFERENT | arg = .Array~new(1) / msg = .Message~new(.a~new, "ring", "A", arg) / oneSecond = .Alarm~new(1, msg, 
+reference/06_classes.md:5021 NO REFERENCE | method = .Method~loadExternalMethod("homeAddress=", "LIBRARY mylib setHomeAddress")                 
+reference/06_classes.md:5045 NO REFERENCE | say .InputStream~method("lines")~isAbstract    -- 1 / say .Stream~method("lines")~isAbstract        
+reference/06_classes.md:5061 NO REFERENCE | say .File~method("lastModified")~isAttribute     -- 1 / say .File~method("lastModified=")~isAttribut
+reference/06_classes.md:5077 NO REFERENCE | say .physics~method("c")~isConstant              -- 1 /  / ::class physics / ::constant c 299792458 
+reference/06_classes.md:5123 NO REFERENCE | scopes = .Stem~new / scopes[] = 0 / loop with item method over .List~methods /   scopes[method~scope
+reference/06_classes.md:5228 NO REFERENCE | pi = .Routine~loadExternalRoutine("pi", "library rxmath rxcalcpi") / say pi~call(16) -- 3.1415926535
+reference/06_classes.md:5357 NO REFERENCE | .context~package~addPackage(.Package~new('winsystm.cls'), 'windows') / say windows:virtualkeycodes~n
+reference/06_classes.md:5422 NO REFERENCE | say .RexxInfo~package~findClass("Dummy")  -- The NIL object / say .context~package~findClass("Dummy"
+reference/06_classes.md:5441 NO REFERENCE | say .context~package~findNamespace("rexx")      -- The REXX Package / say .context~package~findNames
+reference/06_classes.md:5460 NO REFERENCE | say .context~package~findProgram("mime.cls")  -- e. g. C:\Program Files\ooRexx\mime.cls             
+reference/06_classes.md:5475 NO REFERENCE | say .context~package~findPublicClass("String")   -- The String class / say .context~package~findPubl
+reference/06_classes.md:5495 NO REFERENCE | say .context~package~findPublicRoutine("Dummy")~source    -- "nop" /  / ::routine Dummy public / nop
+reference/06_classes.md:5575 NO REFERENCE | say .context~package~name              -- e. g. C:\ExamplePackageName.rex / say .Class~package~name 
+reference/06_classes.md:5596 NO REFERENCE | say .context~package~namespaces~allIndexes      -- WINDOWS /  / ::requires "winsystm.cls" namespace 
+reference/06_classes.md:5617 NO REFERENCE | say .context~package~options   -- ::OPTIONS DIGITS 9 FORM SCIENTIFIC FUZZ 0 NUMERIC NOINHERIT ERROR 
+reference/06_classes.md:5701 NO REFERENCE | say .context~package~prolog~source  -- "say .context~package~prolog~source" /  / ::options noprolog 
+reference/06_classes.md:5717 NO REFERENCE | say .package~new("csvstream.cls")~publicClasses~allIndexes -- CSVSTREAM / say .context~package~publi
+reference/06_classes.md:5736 NO REFERENCE | say .package~new("csvstream.cls")~publicRoutines~items  -- 0 / say .context~package~publicRoutines~a
+reference/06_classes.md:5755 NO REFERENCE | say .context~package~resource("GREYCAT")~makeString  -- La nuit, tous les chats sont gris /  / ::res
+reference/06_classes.md:5774 NO REFERENCE | say .context~package~resources~allIndexes  -- "BROWN FOX" /                                         
+reference/06_classes.md:5840 SAME | myArray = .array~of("Zoe", "Fred", "Xavier", "Andy") / myArray~sort /  / do name over myArray /    s
+reference/06_classes.md:5875 NO REFERENCE | ::class Employee inherit Comparable /  / ::attribute id / ::attribute name /  / ::method init /   ex
+reference/06_classes.md:5899 NO REFERENCE |     a = .array~new /     a[1] = .Employee~new(654321, "Fred") /     a[2] = .Employee~new(123456, "Ge
+reference/06_classes.md:5930 NO REFERENCE | ::CLASS 'DescendingComparator' MIXINCLASS Comparator / ::METHOD compare / use strict arg left, right
+reference/06_classes.md:5941 SAME | myArray = .array~of("Zoe", "Fred", "Xavier", "Andy") / myArray~sortWith(.DescendingComparator~new) /
+reference/06_classes.md:5965 NO REFERENCE | ::CLASS EmployeeNameSorter MIXINCLASS Comparator / ::METHOD compare /   use strict arg left, right /
+reference/06_classes.md:6028 DIFFERENT | a = .array~of("Fred", "George", "FRED", "Mike", "fred") / a~sortwith(.caselesscomparator~new) / do n
