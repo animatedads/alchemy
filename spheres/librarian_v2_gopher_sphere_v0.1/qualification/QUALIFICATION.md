@@ -1,26 +1,30 @@
-# Librarian v2 sphere qualification checkpoint — dev9
+# Librarian v2 sphere qualification checkpoint — dev10
 
-Date: 2026-10-27
-Native ooRexx: 5.3.0 r13196 (debug)
-Archive: librarian_v2_dev9_20261027.zip
-SHA-256: 6ebb503d6db6d3ffe9dc93385c02b637af8fa21dfb6fe43da2466f0aba207496
+Date: 2026-10-28
+Archive: `librarian_v2_dev10_20261028.zip`
+SHA-256: `aa48ba861e5a25341349302de0e7dad64979631d33dea7c7955f6a292a187223`
 
-Native interpreter and source compilation actually executed on 2026-10-27:
-- Evidence kernel: 11 positive
-- Event timeline: 11 positive
-- Time Service v0.3: 7 positive
-- Comparative positioning: 12 positive
-- Revision ledger: 10 positive
-- Retraction history: 11 positive
-- Declared origin: 8 positive
-- Dev8 multi-parent graph: 10 positive
-- Dev9 occurrence-level bitemporal history: 22 positive
-- Adversarial interpreter rejection: 13 expected-negative
-**Total 115 PASS**, no suite failures. Dev8/dev9 classes also passed rexxc; ZIP integrity PASS.
+## Native ooRexx 5.3.0 r13196 debug execution
+- Evidence: 11 PASS
+- Timeline: 11 PASS
+- Single Time Service v0.3: 7 PASS
+- Comparative positioning: 12 PASS
+- Revisions: 10 PASS
+- Retractions: 11 PASS
+- Origin declarations: 8 PASS
+- Dev8 multi-parent graph: 10 PASS
+- Dev9 occurrence history: 22 PASS
+- Dev10 canonical closure: 14 PASS
+- Adversarial expected-negative cases: 13 PASS
 
-Truthful limits:
-- Qualification was against the exact cumulative ZIP layout, not the incomplete GitHub-only checkout.
-- Time Service v0.9 is documented upstream, but v0.3 is the **only** version qualified for this Librarian dev9 runtime.
-- Sphere JSON manifests/articles are structurally checked, but Gopher Sphere Editor validate/lint, profile activation and provenance line content validation are not yet independently executed here.
-- No production promotion; no certified source independence, semantic scoring, brand causality or CMS authority.
-- Rasen Falcon lane created as librarian_v2 under CHATGPT. No unread lane requests at checkpoint.
+**129 checks PASS**, plus compiler `rexxc` PASS, ZIP integrity PASS.
+Verified that GitHub dev10 source and test blob SHAs equal the locally
+executed source and test files.
+
+## Distinctions
+- This was qualification of **the cumulative ZIP**, not just the GitHub delta.
+- Serialised `canonical` evidence is deterministic, not cryptographic proof.
+- Historical Time Service v0.3 is pinned, not a claim to v0.9 compatibility.
+- Gopher sphere catalogue activation, editor lint/validate and live profile
+  smoke tests remain **unverified** until Alchemy reports `SPHERE_RESOLVED`.
+- No production promotion or media-bias/independence/causal authority.
