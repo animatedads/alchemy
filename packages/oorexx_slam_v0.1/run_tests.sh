@@ -59,3 +59,22 @@ java -cp "$WORK/atm/c:$WORK/atm/p" OfflineRuleProbe > "$WORK/probe_java.txt"
 FB="$E/federationbank_engine_v0.9.1/src:$P/security_effect_v0.14/src:$P/security_effect_v0.14/runtime:$P/legal_effect_v0.14/src:$P/institutional_policy_v0.8/src:$P/oorexx_queue_fabric_v0.9-dev5/src:$P/alchemy_objects_v0.8/src:$P/oorexx_crypto_v0.1/src:$P/oorexx_db_skeleton_v0_46:$P/civicport_v0.14/src:$P/oorexx_jms_queue_bridge_v0.1-dev7-fb1/src"
 (cd "$WORK" && REXX_PATH="$FB" rexx "$ROOT/tests/rules/offline_rule_probe.rex" > "$WORK/probe_rexx.txt")
 rexx tests/test_rules.rex "$WORK|$E/federationbank_engine_v0.9.1/src/FederationBankAtmGateway.cls|$ATM/src|$WORK/probe_rexx.txt|$WORK/probe_java.txt"
+echo "== third language: C++ (needs OOREXX_SRC: an ooRexx source tree; RX2CPP_ROOT: animatedads/oorexx's oorexx2cpp; Boost headers)"
+if [ -n "${OOREXX_SRC:-}" ] && [ -n "${RX2CPP_ROOT:-}" ] && [ -d "${OOREXX_SRC}/interpreter" ]; then
+  g++ -std=c++17 -fsyntax-only "$ROOT/tests/fixtures/shapes.cpp"
+  BIF="$RX2CPP_ROOT/external/bif"
+  REXX_PATH="$ROOT/tests/bif:$REXX_PATH" rexx tests/bif/bif_compare.rex "$OOREXX_SRC/interpreter|$BIF/native/rxbif.cpp|$BIF/tests/differential.cpp|$WORK/bif_cases.txt" > "$WORK/bif_compare.log"
+  ${CXX:-g++} -std=c++17 -O1 -I"$RX2CPP_ROOT/include" -I"$BIF/native" "$BIF/native/rxbif.cpp" "$ROOT/tests/bif/NativeSide.cpp" -o "$WORK/native_side"
+  "$WORK/native_side" "$WORK/bif_cases.txt" > "$WORK/bif_native.txt"
+  rexx tests/bif/interp_side.rex "$WORK/bif_cases.txt" > "$WORK/bif_interp.txt"
+  REXX_PATH="$ROOT/tests/bif:$REXX_PATH" rexx tests/test_cpp.rex "$WORK|$ROOT/tests/fixtures/shapes.cpp|$OOREXX_SRC/interpreter|$BIF|$ROOT/tests/fixtures/Shapes.java|$WORK/bif_cases.txt|$WORK/bif_interp.txt|$WORK/bif_native.txt"
+else
+  echo "SKIP C++: set OOREXX_SRC and RX2CPP_ROOT to run it"
+fi
+echo "== fourth language: NetRexx (needs NETREXX_HOME: the NetRexx 5 distribution; OOREXX_SRC; SYSUTILS_NRX: sysutils.nrx)"
+if [ -n "${NETREXX_HOME:-}" ] && [ -n "${OOREXX_SRC:-}" ] && [ -n "${SYSUTILS_NRX:-}" ]; then
+  sh tests/netrexx/qtime_pair.sh "$NETREXX_HOME" "$OOREXX_SRC" "$WORK/qtime"
+  rexx tests/test_netrexx.rex "$WORK|$NETREXX_HOME/examples/ibm-historic/qtime.nrx|$OOREXX_SRC/samples/qtime.rex|$SYSUTILS_NRX|$WORK/qtime/qt_nrx.txt|$WORK/qtime/qt_rexx.txt"
+else
+  echo "SKIP NetRexx: set NETREXX_HOME, OOREXX_SRC and SYSUTILS_NRX to run it"
+fi

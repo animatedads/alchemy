@@ -218,4 +218,5 @@ onSyntax:
   exit 1
 
 ::requires 'SlamRules.cls'
+::requires 'SlamLanguages.cls'
 ::requires 'SlamStore.cls'

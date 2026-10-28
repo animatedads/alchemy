@@ -248,11 +248,14 @@
 ::method split
   expose toks match units
   use strict arg text
-  toks = .SlamJavaLexer~new(text)~scan
+  toks = self~lexer(text)~scan
   match = .SlamJavaMatch~build(toks)
   units = .array~new
   self~members('', 1, toks~items + 1, .false, .directory~new)
   return units
+::method lexer
+  use strict arg text
+  return .SlamJavaLexer~new(text)
 ::method isTypeWord
   use strict arg t, nx
   if t~kind == 'KEYWORD' then if wordpos(t~text, 'class interface enum') > 0 then return .true
@@ -437,30 +440,50 @@
       return
     end
   end
-/* Names in a parameter list that opens at header[open]: the identifier before each ',' or ')' at
- * depth 0 (generic angles count as depth). */
+/* Names in a parameter list that opens at header[open]: each parameter (cut at depth-0 commas) is
+ * named by its last identifier, before any default value ( = ...) or array brackets, when a type comes
+ * before it. Generic angles count as depth. */
 ::method paramNames
   use strict arg header, open
   names = .array~new
   depth = 0
   angle = 0
+  seg = .array~new
   do k = open + 1 to header~items
     t = header[k]
     if t~kind == 'OP' then do
       if t~text == '<' then angle += 1
       if t~text == '>' then angle -= 1
-      if pos(t~text, '([{') > 0 then depth += 1
-      if pos(t~text, ')]}') > 0 then do
-        if depth == 0 then do
-          if k > open + 1 then if header[k - 1]~kind == 'IDENT' then names~append(header[k - 1]~text)
-          return names
-        end
-        depth -= 1
+      if t~text == ')' then if depth == 0 then do
+        self~paramName(seg, names)
+        return names
       end
-      if t~text == ',' then if depth == 0 then if angle == 0 then if header[k - 1]~kind == 'IDENT' then names~append(header[k - 1]~text)
+      if t~text == ',' then if depth == 0 then if angle == 0 then do
+        self~paramName(seg, names)
+        seg = .array~new
+        iterate
+      end
+      if pos(t~text, '([{') > 0 then depth += 1
+      if pos(t~text, ')]}') > 0 then depth -= 1
     end
+    seg~append(t)
   end
   return names
+::method paramName
+  use strict arg seg, names
+  last = 0
+  depth = 0
+  do k = 1 to seg~items
+    t = seg[k]
+    if t~kind == 'OP' then do
+      if t~text == '=' then if depth == 0 then leave
+      if pos(t~text, '([{') > 0 then depth += 1
+      if pos(t~text, ')]}') > 0 then depth -= 1
+      iterate
+    end
+    if depth == 0 then if t~kind == 'IDENT' then last = k
+  end
+  if last > 1 then names~append(seg[last]~text)
 ::method methodUnit
   expose toks
   use strict arg owner, header, j, close
@@ -672,7 +695,7 @@
         if pos < endPos then s~body = self~asSeqOf(self~parseStmt(endPos))
         return s
       end
-      when wordpos(w, 'class interface enum') > 0 then do
+      when wordpos(w, 'class interface enum struct union') > 0 then do
         /* a local type: its header is one clause; its body is not read as statements */
         first = pos
         do while pos < endPos
@@ -816,7 +839,7 @@
       when r == 'OP' then out~append(t~text)
       when r == 'ANNOT' then nop
       when r == 'LITERAL' then do
-        if t~text == 'null' then out~append('.nil')
+        if wordpos(t~text, 'null nullptr NULL') > 0 then out~append('.nil')
         else out~append('.' || t~text)
       end
       when r == 'SELF' then out~append(t~text)
@@ -883,7 +906,9 @@
 ::class SlamJavaSegmenter public subclass SlamSegmenter
 ::method init
   self~init:super
-  self~shaper = .SlamJavaShaper~new
+  self~shaper = self~newShaper
+::method newShaper
+  return .SlamJavaShaper~new
 ::method segmentUnit
   use strict arg unit
   sh = self~shaper
@@ -922,21 +947,3 @@
     return seg
   end
   return .nil
-
-/* ------------------------------------------------------------------------------------------------ */
-/* Which reader a file needs, by its extension. */
-::class SlamLanguages public
-::method of class
-  use strict arg file
-  ext = file~substr(file~lastPos('.') + 1)~lower
-  if wordpos(ext, 'cls rex rexx orx') > 0 then return 'REXX'
-  if ext == 'java' then return 'JAVA'
-  return ''
-::method splitter class
-  use strict arg lang
-  if lang == 'JAVA' then return .SlamJavaSplitter~new
-  return .SlamUnitSplitter~new
-::method segmenter class
-  use strict arg lang
-  if lang == 'JAVA' then return .SlamJavaSegmenter~new
-  return .SlamSegmenter~new

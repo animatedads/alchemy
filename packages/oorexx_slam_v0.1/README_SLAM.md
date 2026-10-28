@@ -48,6 +48,8 @@ programs: more than one program
 tests: more than one test
 four: two and two
 eight: four and four
+cpp: the name of an other way to write code
+netrexx: the name of an other way to write rexx code
 
 ## what i am
 
@@ -128,6 +130,14 @@ two programs have to use the same rules: one is in rexx, and one is in java. i g
 before you run the two programs, i say the result of each program with four tests. then you run the programs. what i say is true eight times of eight. i store each result.
 
 a java program that is a test of the java program has a rule for the time that the rexx program has no rule for. you run the rexx program, and the result is what the rexx rule says, not what the rule in the java test program says.
+
+## code in cpp and in netrexx
+
+now i read code in cpp and in netrexx also, and i make the same nodes and edges from it.
+
+the program that can run rexx code is in cpp. i read all of it. an other program in cpp has to do some of the same things for rexx. i read the rules of each program for each thing, and i say the result of each program before you run it. then you run the two programs. what i say is true each time, and the two programs give the same result each time. the first time, what i say is not true for three tests: the rule is in a part of the code that i do not read the first time. now i read that part also.
+
+netrexx is rexx in an other way. the same program is in netrexx and in rexx, with an other name for each variable. some nodes of the two are the same nodes. you run the two programs, and the two give the same words each time.
 
 ## what i can not do now
 

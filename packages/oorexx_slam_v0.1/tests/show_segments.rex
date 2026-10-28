@@ -29,4 +29,4 @@ onSyntax:
   say 'SYNTAX rc=' || rc 'sigl=' || sigl condition('C') condition('D') condition('O')~traceback~makeString
   exit 1
 ::requires 'SlamSegmenter.cls'
-::requires 'SlamJava.cls'
+::requires 'SlamLanguages.cls'

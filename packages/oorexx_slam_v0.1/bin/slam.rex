@@ -1,7 +1,7 @@
 /* slam.rex - SLAM v0.1 command line.
  * Architecture: Tom Dyer.  Code: Claude (Opus 5.5), 2026-10-28.
  *
- *   rexx slam.rex ingest DB DIR [DIR...]     segment every .cls/.rex/.rexx/.orx and .java file into the store
+ *   rexx slam.rex ingest DB DIR [DIR...]     segment every ooRexx, NetRexx (.nrx), Java and C++ file into the store
  *                                            (each file by its own language's reader, into the same nodes)
  *   rexx slam.rex corpus DB CSV              load a circular corpus (word,category,definition)
  *   rexx slam.rex stats DB                   counts and the most common nodes
@@ -81,7 +81,7 @@ exit 0
 ingest: procedure
   use arg store, dirs
   readers = .directory~new                                  /* one splitter and segmenter per language */
-  do lang over .array~of('REXX', 'JAVA')
+  do lang over .array~of('REXX', 'NETREXX', 'JAVA', 'CPP')
     readers[lang] = .array~of(.SlamLanguages~splitter(lang), .SlamLanguages~segmenter(lang))
   end
   files = 0; skipped = 0; units = 0; dupes = 0; segsTotal = 0
@@ -459,6 +459,6 @@ onSyntax:
   exit 1
 
 ::requires 'SlamSegmenter.cls'
-::requires 'SlamJava.cls'
+::requires 'SlamLanguages.cls'
 ::requires 'SlamStore.cls'
 ::requires 'SlamGround.cls'

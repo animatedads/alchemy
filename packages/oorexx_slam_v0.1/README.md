@@ -7,7 +7,7 @@
 **Corpus:** the circular corpus is Tom Dyer's; `i`, `am`, `me`, `my` added by Claude (Opus 5.5).
 **Reviews that shaped it:** ChatGPT (four letters to SLAM), Claude (Fable 5.1), Claude (Opus 4.8).
 **Finds credited to SLAM:** the Rexx/SQL bound-call leak, `rx_mod_inverse`'s missing condition, `FDSqrt` above 10⁶ (all three now fixed), and Federation Bank's Java side describing the bank's old late-advice rule (reported, not fixed); see "Credits for SLAM's finds".
-**Languages:** ooRexx, and Java since the polylingual experiment (Tom Dyer's, 2026-10-28; Java reader and rule reader by Claude (Opus 5.5)).
+**Languages:** ooRexx, NetRexx, Java and C++, since the polylingual experiment (Tom Dyer's, 2026-10-28; the readers for the other three, and the rule reader, by Claude (Opus 5.5)).
 
 SLAM does not learn word tokens. Its vocabulary is **logic segments**: pieces of real ooRexx identified by
 shape, the way an object in an image is identified regardless of where it sits or what colour it is. Every
@@ -25,6 +25,9 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamContract.cls` | Contracts: what a unit NEEDS (argument kinds, messages, guards) and GIVES (return kind), its effects, pure/standalone |
 | `src/SlamCompose.cls` | Lift standalone routines, check each link against contracts before running, run, keep every result as a lesson |
 | `src/SlamJava.cls` | Second language: Java lexer, unit splitter (methods, constructors, initializers by class), statement parser and shaper, into the same segment kinds |
+| `src/SlamCpp.cls` | Third language: C++ lexer (preprocessor lines dropped, raw strings), splitter (namespaces, `Class::m` outside its class, macro-made `NAME(X) { }`), shaper; Java's statement parser |
+| `src/SlamNetRexx.cls` | Fourth language: NetRexx, written as ooRexx tokens (`a.b` is `a~b`, `this` is `self`, `null` is `.nil`, `loop` is `DO <LOOP>`), read by the ooRexx parser and shaper |
+| `src/SlamLanguages.cls` | Which reader a file needs, by extension |
 | `src/SlamRules.cls` | Rules read the same way in ooRexx and Java (what a GUARD makes MUST hold); keyed readers found by behaviour; RULE nodes; predicting a rule's outcome |
 | `bin/slam.rex` | `ingest` (ooRexx and Java), `corpus`, `read`, `facts`, `about`, `ground`, `ask`, `stats`, `node`, `follows`, `into`, `record` |
 | `README_SLAM.md` | This README in SLAM's own words: SLAM reads it with no unknown word |
@@ -42,6 +45,10 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_java.rex` | The Java reader: lexer, a javac-compiled fixture, the Federation Bank ATM, one store with both languages, Task on Java nodes (33 checks) |
 | `tests/test_rules.rex` | One rule, two languages: the Federation Bank offline-cash rule in the ooRexx engine and the Java ATM, predicted then run (24 checks) |
 | `tests/rules/` | `OfflineRuleProbe.java` runs the real Java ATM, `offline_rule_probe.rex` the real ooRexx bank, on the cases SLAM chose |
+| `tests/test_cpp.rex` | C++: lexer, a g++-checked fixture, the interpreter's `BuiltinFunctions.cpp`, three languages in one store, BIF contracts from two C++ codebases predicted and run (24 checks) |
+| `tests/bif/` | BIF contract reader for the interpreter and the rx2cpp native pack; case generator; a runner for each side |
+| `tests/test_netrexx.rex` | NetRexx: lexer, `sysutils.nrx`, QTIME in NetRexx and ooRexx, both run through a day (14 checks) |
+| `tests/netrexx/` | Runs NetRexx's `qtime.nrx` and ooRexx's `qtime.rex` at the same 206 times |
 | `tests/show_rules.rex` | Read a unit's rules, find the other language's closest units, list what both have and what each lacks |
 | `run_tests.sh` | Builds Rexx/SQL and the foreign runtime, then runs everything |
 
@@ -288,6 +295,46 @@ The currency split is safe in that direction (the ATM is stricter, and its accou
 
 **How the engine's dependencies were met.** `DEPENDENCIES.txt` names security_effect 0.10, queue_fabric 0.9-dev4, db_skeleton 0.45 and civicport 0.12, which are not in the repository. `run_tests.sh` uses the nearest versions there (0.14, 0.9-dev5, 0.46, 0.14). `FederationBankAtmOfflineAuthorityService` takes a `.nil` topic fabric and keeps its authorities in memory.
 
+### Third language: C++
+
+Tom's other idea. C++ shares Java's statement grammar, so the Java statement parser and segmenter read it unchanged. New in `SlamCpp.cls`:
+- **Lexer.** Preprocessor lines and their `\` continuations are dropped. A raw string `R"d(...)d"` is one STRING. `if constexpr` reads as `if`.
+- **Splitter.** It reads through namespaces and `extern "C"`. `Class::name(...) { }` defined outside its class takes that class as owner, and its fields. `template <...>` is skipped. A macro-made definition `NAME(X) { }` is unit X of owner NAME, so the interpreter's `BUILTIN(SUBSTR)` is SUBSTR.
+- **Shaper.** Member access is `.`, `->` or `::`. A name before `::` or before another name is a type. `nullptr`/`NULL` are `.nil`. `goto` is a stop.
+
+**The ooRexx interpreter's own source** (5.3.0 r13324, Tom's tarball): 510 C++ files with code give 10,484 units, 74,753 segment instances and 27,032 nodes. The whole tarball took 380 seconds; the only files skipped are 2 ooRexx scripts the rx2cpp lexer refuses. 87 nodes are shared with the ooRexx code in the same tarball. On the fixtures, **C++ and Java share 10 nodes with no translation**, whole structures among them (`LOOP: do while ( L1 < N ) {LOOP=RUN}`, `case` arms, `ENTRY: double A1 , double A2`), because they share a statement grammar.
+
+**Built-in function contracts, read from two C++ codebases** (`tests/bif/`, `tests/test_cpp.rex`):
+- **The interpreter.** `BuiltinFunctions.cpp` declares each BIF's arity and argument kinds (`SUBSTR_Min = 2`, `required_integer(SUBSTR, n)`). The range check is further in, so SLAM follows the call. The trail runs `BUILTIN(SUBSTR)` → `RexxString::substr` → `StringUtil::substr` by parameter name, and reads checks such as `positionArgument(position, ARG_ONE)` there.
+- **The rx2cpp native pack.** `rxbif.cpp` declares arity in `kSpecs` and reads each argument with `get(k)`, `ct(k, min)` or `pad(a, k, …)` in its `invoke` branches.
+- **Compared.** 36 BIFs are in both. Arity is the same for all 36, and argument kinds for 34. DATE and TIME read their option letters inside the BIF body, which SLAM does not read.
+- **Predicted, then run.** SLAM chose 201 cases from the two contracts: the lane's own valid case, one argument too few and too many, -1, 0 and x for counts, and two-character pads. It predicted both sides, then ran them: the interpreter on ooRexx 5.3.0 r13196, and the native pack built with g++ and Boost.
+- **SLAM's first predictions were wrong 3 times** (COPIES, CHANGESTR and INSERT with -1). The interpreter refused (93.906), where SLAM had read "any integer". The checks were in calls named `nonNegativeArgument` and `optionalNonNegative`, which its check vocabulary lacked. With those words: **200 of 200 interpreter predictions and 198 of 198 native predictions held.** One interpreter case and three native cases get no prediction, because they turn on an option letter.
+- **The two implementations agree on all 201 cases,** both refusals and values. SLAM found no divergence in the native pack at these boundaries.
+
+**rx2cpp's generated C++** reads, but as runtime calls: `RX_VREF("MARK")`, `rx::opCmp(_left, rx::CmpOp::Lt, "<", _right, …)` inside immediately-called lambdas. Its shapes do not meet the ooRexx source's. Reading rules through it needs the generator's vocabulary, as keyed readers did for Java. That is not done yet.
+
+### Fourth language: NetRexx
+
+Tom's next: "how we handle two different object oriented rexx languages". NetRexx is Rexx, so `SlamNetRexx.cls` writes NetRexx as Rexx-shaped tokens, and the ooRexx parser, shaper and segmenter read them unchanged. Where the two Rexxes write the same thing differently, the lexer writes it the ooRexx way:
+
+| NetRexx | read as (ooRexx) |
+|---|---|
+| `a.b(x)` | `a~b(x)` |
+| `this`, `null` | `self`, `.nil` |
+| trailing `-` | a continuation (ooRexx: `,`) |
+| `method m(a=int, b, c=-1)` | unit M entered by `use arg a, b, c = -1` (a default stays; a declared type is kept on the unit, out of the shape) |
+| `properties ... x = int` | fields (F roles), as EXPOSE names are |
+| `loop ...` | `DO <LOOP> ...`, exactly as the rx2cpp lexer writes ooRexx 5's `LOOP` |
+
+**QTIME in both Rexxes.** NetRexx ships Mike Cowlishaw's `qtime.nrx`, and ooRexx ships `samples/qtime.rex`, an object-oriented rewrite (a `DateTime` subclass, with `hour/min/out` renamed `hr/mn/ot`).
+- **Shared nodes.** 11 of the NetRexx program's 27 nodes are nodes of the ooRexx one: the 13-arm minutes SELECT, the hour fix-up (`if … else if …`), and the rounding RUNs. The rest is where they differ: arguments, `parse Time()` against `self~hours`, chimes.
+- **Run.** Both programs ran at 206 times through a day, in 7-minute steps with alternate 0 and 30 seconds, to cross the round-up. **They say the same sentence every time.** The ooRexx rewrite adds chimes on the quarter hours (14 times) from its `chime` method, which has no NetRexx counterpart. The only changes to either program: NetRexx reads its clock from `-Dqtime.clock`, and ooRexx's class gets one public routine that makes an instance at a given time.
+
+**The distribution.** All 348 `.nrx` files in NetRexx 5.10 GA plus `sysutils.nrx` read with none skipped: 1,560 units and 4,465 nodes. With ooRexx's samples in the same store, 247 nodes are shared.
+
+**Found in SLAM's own ooRexx reader, by this pairing.** Rexx allows `if c` with `then x` on the next line, and both QTIMEs use it. SLAM's clause builder made the lone `THEN` a clause of its own. So `if … <newline> then return …` was not a GUARD, and its `return` fell outside the IF. Fixed in `SlamClauses`: a THEN that starts a clause joins the IF or WHEN clause before it. The whole-estate numbers above were counted before this fix.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -295,10 +342,11 @@ SLAM gets credit for what it found:
 2. **`rx_mod_inverse` returning false numbers or dividing by zero** (12 copies). Found by composing it and breaking the path on purpose. Fixed: commit `1f422d76`.
 3. **`FDSqrt` wrong above 10⁶.** Found by its own path choice and a third way. Fixed: commit `3761f57c` (both copies), on ChatGPT's method.
 4. **Federation Bank's Java side describes the bank's old late-advice rule.** Found by reading the offline-cash rule in both languages. The ooRexx side was run, and the Java test double was read. Reported, not fixed: which side moves is Tom's call.
+5. **SLAM's own ooRexx reader misread `then` on a new line.** Found by reading NetRexx's QTIME beside ooRexx's. Fixed in `SlamClauses`.
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1):** the 201 checks below, plus **33/33** in `test_java.rex` and **24/24** in `test_rules.rex`: **258 checks**.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 201 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **24/24** in `test_cpp.rex` and **14/14** in `test_netrexx.rex`: **296 checks**. The C++ and NetRexx steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME` and `SYSUTILS_NRX` are set, and say SKIP otherwise.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
@@ -373,5 +421,8 @@ rexx bin/slam.rex follows slam.db '#0004'
 - **Rules come from GUARDs only.** A check that ends in a block (`then do; signal off; return …; end`) or an accepting BRANCH is not read as a rule. That is why the bank's reconciliation window is not one.
 - **Rule matching is on keys.** It finds the ATM's `withdrawOffline`, but not `DemoBankNetwork.offlineWithdrawalAdvice`, as the closest match to `validateAdvice`. The demo reads the presented values by key and holds the authority's values as fields, the reverse of the other two. Matching with the roles swapped is the fix.
 - **The conversions SLAM reads through are a short fixed list** (`~string`, `+ 0`, `valueOf`, `parse…`). It is stated in `SlamRules.cls`.
-- **Next language: C++** (Tom's other idea). rx2cpp emits C++ from ooRexx, so the same logic exists in both by construction, and the interpreter source is ooRexx's own semantics. C++ shares Java's statement grammar, so the Java parser and shaper carry over. Only the lexer (preprocessor, `::`, templates, pointers) and the unit splitter (`Class::method(...) {` outside the class) are new.
+- **C++, first cut.** Types are guessed from position (a name before a name, before `::`, or before `*x =`); there is no symbol table. Macro bodies are not read.
+- **The BIF contract vocabulary is stated, not learned.** It is the words in `tests/bif/BifContracts.cls`; SLAM's wrong predictions are what found the two it lacked.
+- **rx2cpp's generated C++** is read as runtime calls, so it does not meet its ooRexx source yet (see the C++ section).
+- **NetRexx, first cut.** `catch`/`finally` inside `do`/`loop` are plain clauses. The Java NetRexxC writes (`-keep`) and `java2nrx` are not paired yet. `sysutils.nrx` against ooRexx's RexxUtil (C++) is a three-language triangle not yet compared.
 - **Speed: about 770 source lines a second**, because the lexer runs interpreted. Compiling the lexer with rx2cpp is the obvious speed-up.

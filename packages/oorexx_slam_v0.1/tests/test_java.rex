@@ -163,6 +163,6 @@ onSyntax:
   exit 1
 
 ::requires 'SlamSegmenter.cls'
-::requires 'SlamJava.cls'
+::requires 'SlamLanguages.cls'
 ::requires 'SlamStore.cls'
 ::requires 'SlamTask.cls'

@@ -141,6 +141,16 @@
       iterate
     end
     if t~kind == 'IDENT' then if depth <= 0 then if wordpos(t~text, 'THEN ELSE OTHERWISE') > 0 then do
+      /* 'if c' then a new line 'then x' is 'if c then x': a THEN that starts a clause joins the IF or WHEN
+         clause before it (found reading ooRexx's qtime.rex beside NetRexx's) */
+      if t~text == 'THEN' then if cur~items == 1 then if clauses~items > 0 then do
+        prev = clauses[clauses~items]
+        if prev[1]~kind == 'IDENT' then if wordpos(prev[1]~text, 'IF WHEN') > 0 then if prev[prev~items]~text \== 'THEN' then do
+          prev~append(t)
+          cur = .array~new
+          iterate
+        end
+      end
       clauses~append(cur)
       cur = .array~new
     end
