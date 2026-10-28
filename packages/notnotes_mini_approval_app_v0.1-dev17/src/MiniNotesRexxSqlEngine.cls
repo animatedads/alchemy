@@ -102,6 +102,17 @@
   return self~run("SELECT * FROM " || self~identifier(name) || -
                   " ORDER BY rowid LIMIT " || count || " OFFSET " || offset)
 
+::method selectPageAfter
+  use strict arg name, afterRowid = 0, count = 100
+  /* Keyset pagination avoids a complete table read or deep OFFSET scan. */
+  if \datatype(afterRowid, "W") | \datatype(count, "W") then -
+    raise syntax 93.900 array("SQLite page cursor/count must be integers")
+  if afterRowid < 0 | count < 1 | count > 100 then -
+    raise syntax 93.900 array("Invalid SQLite page cursor/count")
+  return self~run("SELECT rowid AS NN_CURSOR, * FROM " || self~identifier(name) || -
+                  " WHERE rowid > " || afterRowid || -
+                  " ORDER BY rowid LIMIT " || count)
+
 ::method selectWhereEquals
   use strict arg name, column, wanted
   binds = .Array~new
