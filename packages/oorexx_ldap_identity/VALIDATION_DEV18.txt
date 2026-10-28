@@ -1,0 +1,25 @@
+LDAP Identity v0.1-dev18 focused qualification
+Date: 2026-10-15
+
+Library inputs checked:
+- Instrumentation Mesh v0.1-dev8 (explicit correlation / causation / context event semantics)
+- Architecture Intentions v0.1-dev8 (reviewed as an architecture companion; no LDAP authority imported)
+- retained current companions from dev17: XTP v0.1-dev18, Socket Provider v0.1-dev14, RexxOS/RTO2 Grid v0.1-dev14, NoSQLServer v0.88, Crypto v0.8.3
+
+Changes qualified statically in this container:
+- LdapIdentityInstrumentationSource now exposes bounded source events in addition to metrics.
+- IdentityPeerUpdateRequest.requestId is the explicit correlation_id for request / application ACK / pending / retry / commit events.
+- ACK / pending / retry / commit events retain explicit causation_id to the request-accepted event.
+- request/change/logical-peer/authority-holder context references are producer supplied; no timestamp/host/severity inference is used.
+- authority promotion uses a separate explicit failover correlation key.
+- Instrumentation remains observation-only and does not confer LDAP commit, replication, directory or promotion authority.
+- run_tests.sh and tools/test_environment.sh require Instrumentation Mesh dev8 correlation/service-adapter files.
+- both semantic unit suites include tests/test_instrumentation_correlation.rex.
+
+Static checks:
+- bash -n run_tests.sh: PASS
+- bash -n tools/test_environment.sh: PASS
+- oorexx_standards_enforcer.py --json: PASS, 0 errors, 135 advisory warnings.
+
+Runtime qualification boundary:
+The previously supplied ooRexx 5.3.0 r13196 .deb remains visible in conversation metadata but its backing bytes could not be rematerialized into this execution container on 2026-10-15. Therefore dev18 does not claim a fresh ooRexx runtime execution of the new correlation test. dev17's retained runtime qualification remains evidence for unchanged LDAP/replication semantics; the dev18 delta is isolated to optional observation/event projection and its harness declarations.

@@ -25,3 +25,7 @@ say 'LDAP IDENTITY UNIT SUITE: OK'
 ::requires "tests/test_nosql_store.rex"
 ::requires "tests/test_peer_outbox_nosql.rex"
 ::requires "tests/test_peer_failover_recovery.rex"
+::requires "tests/test_peer_authority_fencing.rex"
+::requires "tests/test_peer_xtp_multicast.rex"
+::requires "tests/test_instrumentation_mesh.rex"
+::requires "tests/test_instrumentation_correlation.rex"
