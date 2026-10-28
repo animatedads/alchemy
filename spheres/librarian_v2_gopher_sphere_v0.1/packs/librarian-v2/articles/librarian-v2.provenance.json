@@ -3,10 +3,10 @@
   "id": "librarian-v2.provenance",
   "title": "Provenance graph: declarations versus verification",
   "section": "provenance",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "sphere": "librarian-v2",
   "authority": "project-continuity",
-  "summary": "Dev8 preserves multi-parent source-level declarations; dev9 adds source edition, occurrence and span references, evidence IDs, append-only correction/retraction lineage, two independent time cutoffs, canonical snapshots, conflicting tip detection and cycle fail-closed. CORROBORATION_CLAIM is retained as a claim but does not participate in dependency ancestry. Unverified independence remains NOT_ESTABLISHED. Exact span reference strings are not yet linked to cryptographic source-media bytes.",
+  "summary": "Dev10 strengthens exact historical evidence identity over dev9: source edition, occurrence, spans, declared relations, corrected/retracted/forked records, publication/observation times, both cutoffs and query scope are all represented in sorted length-prefixed canonical serialization. Still a claim ledger, not a cryptographic media-capture or source-independence certification.",
   "invariants": [
     "CORROBORATION_CLAIM is not confirmation of corroboration.",
     "Use explicit evidence references and source identity; do not substitute shared domain, publisher or syndication speculation for evidence.",
@@ -38,6 +38,14 @@
       "line_start": 1,
       "line_end": 200,
       "claim": "Native ooRexx source for occurrence-level provenance and historical snapshots."
+    },
+    {
+      "artifact": "librarian_v2_dev10_20261028.zip",
+      "sha256": "aa48ba861e5a25341349302de0e7dad64979631d33dea7c7955f6a292a187223",
+      "member": "librarian_v2_dev10/src/LibrarianProvenanceHistory.cls",
+      "line_start": 73,
+      "line_end": 166,
+      "claim": "Canonical closure including all eligible revisions, source spans and knowledge-cutoff identity."
     }
   ]
 }
