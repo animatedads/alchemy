@@ -1,0 +1,132 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_xtp",
+    "version": "0.1-dev32",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "OPERATIONAL_PLANNER_DIR": "${REPO_ROOT}/packages/oorexx_operational_degradation_planner_v0.1-dev5"
+    }
+  },
+  "tests": [
+    {
+      "name": "named-service",
+      "argv": [
+        "make",
+        "test-service"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "capacity-rate",
+      "argv": [
+        "make",
+        "test-capacity-rate"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "auto-context-key",
+      "argv": [
+        "make",
+        "test-auto-key"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "negative-adversarial",
+      "argv": [
+        "make",
+        "test-negative"
+      ],
+      "timeout_seconds": 600
+    },
+    {
+      "name": "unicast-segmentation",
+      "argv": [
+        "make",
+        "test-segmentation"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "interop-dev31-lossy",
+      "argv": [
+        "make",
+        "test-interop"
+      ],
+      "timeout_seconds": 600,
+      "environment": {
+        "set": {
+          "PEER_ROOT": "${REPO_ROOT}/packages/oorexx_xtp_v0.1-dev31"
+        }
+      }
+    },
+    {
+      "name": "sync-echo-diag",
+      "argv": [
+        "make",
+        "test-sync-diag"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "diag-hardening",
+      "argv": [
+        "make",
+        "test-diag-hardening"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "interactive-sessions",
+      "argv": [
+        "make",
+        "test-session"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "interactive-sessions-oorexx",
+      "argv": [
+        "bash",
+        "tests/test_xtp_session_rexx.sh"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "service-protection",
+      "argv": [
+        "make",
+        "test-security"
+      ],
+      "timeout_seconds": 300
+    },
+    {
+      "name": "service-keys-ldap-oorexx",
+      "argv": [
+        "bash",
+        "tests/test_xtp_service_keys_rexx.sh"
+      ],
+      "timeout_seconds": 300,
+      "environment": {
+        "set": {
+          "LDAP_IDENTITY_ROOT": "${REPO_ROOT}/packages/oorexx_ldap_identity",
+          "SOCKET_PROVIDER_DIR": "${REPO_ROOT}/packages/oorexx_socket_provider/src",
+          "CRYPTO_ROOT": "${REPO_ROOT}/packages/oorexx_crypto_v0.8.3/src",
+          "SECRET_BROKER_ROOT": "${REPO_ROOT}/packages/oorexx_secret_broker_v0.2/src",
+          "ALCHEMY_OBJECTS_ROOT": "${REPO_ROOT}/packages/alchemy_objects_v0.8/src"
+        }
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_xtp_v0.1-dev32"
+    }
+  }
+}
