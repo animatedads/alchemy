@@ -74,7 +74,7 @@ do tableName over tables
   count = 0
   do sourceRow over result~rows
     copy = .Table~new
-    do column over sourceRow~allIndexes
+    do column over sourceRow~values~allIndexes
       value = sourceRow[column]
       if value == .nil then -
         raise syntax 93.900 array("Unsupported legacy NULL:" tableName column)
@@ -97,7 +97,7 @@ do tableName over tables
       if index > count then -
         raise syntax 93.900 array("Extra SQLite row:" tableName)
       sourceRow = result~rows[index]
-      do column over sourceRow~allIndexes
+      do column over sourceRow~values~allIndexes
         before = sourceRow[column]
         after = outputRow[column]
         if after == .nil then -
