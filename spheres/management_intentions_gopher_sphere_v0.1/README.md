@@ -28,9 +28,9 @@ Current repository integration makes the cloud boundary explicit. `alchemy.cloud
 
 `oorexx_cloud_console_v0.1-dev2` is the consistent human/code/Codex interaction surface above that authority. Its qualified September package supplies one vocabulary for Azure, Vultr, GCP, AWS and OCI, plan-before-apply mutation fencing, normalized machine/firewall results, direct ooRexx invocation and a lossless `--workspace` transport for Codex. Its exact ZIP SHA-256 is `9c93d6c4e0c9ac7a6964cdb69770236c8ced1c22cd14f90408cb71c31e96086f`. That package was qualified with fake providers under ooRexx 5.3.0 r13196; it did not perform live-cloud mutation qualification.
 
-The package's direct provider-CLI backend remains useful as a fixture/operator adapter, but it is not the desired semantic integration seam for Management. The next executable console increment should place an `alchemy.cloud-control/0.1` backend under the same `CloudApp` vocabulary rather than creating a second cloud authority.
+The dev3 candidate now implements that seam: when `ALCHEMY_CLOUD_CONTROL` is configured, machine/firewall mutations are delegated through `alchemy.cloud-control/0.1 RESOURCE`; direct provider mutation remains an explicit development/test backend. Provider-native reads remain independently attributable observations. The dev3 console has not yet been rerun under r13196, so dev2 remains the accepted console baseline.
 
-A later Library `cloudctl(2).sh` snapshot also contains multi-peer firewall source replacement used by XTP commissioning. The reusable missing capability is generic firewall source-set reconciliation. Recover that in Cloud Control and let XTP consume it; do not hard-code ED209/XTP topology into Management or the console vocabulary.
+Alchemy Cloud Control v0.1-dev3 candidate now normalizes machine list/create/start/stop/reboot/destroy and firewall list/allow/revoke across Azure, GCP, AWS, OCI and Vultr, and its offline fake-provider suite passes. It preserves the exact dev2 transport and GCP identity wrapper as provenance and repairs the historical OCI SOFTRESET invocation. Generic multi-source firewall reconciliation from the later `cloudctl(2).sh` remains the next missing capability; XTP continues to own peer/topology meaning.
 
 ## MVS specialist continuity
 
