@@ -47,7 +47,7 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/rules/` | `OfflineRuleProbe.java` runs the real Java ATM, `offline_rule_probe.rex` the real ooRexx bank, on the cases SLAM chose |
 | `tests/test_cpp.rex` | C++: lexer, a g++-checked fixture, the interpreter's `BuiltinFunctions.cpp`, three languages in one store, BIF contracts from two C++ codebases predicted and run (24 checks) |
 | `tests/bif/` | BIF contract reader for the interpreter and the rx2cpp native pack; case generator; a runner for each side |
-| `tests/test_netrexx.rex` | NetRexx: lexer, `sysutils.nrx`, QTIME in NetRexx and ooRexx run through a day, NetRexx -> Java translation edges predicted on held-out files (19 checks) |
+| `tests/test_netrexx.rex` | NetRexx: lexer, `sysutils.nrx`, QTIME in NetRexx and ooRexx run through a day, NetRexx -> Java translation edges predicted on held-out files (20 checks) |
 | `tests/netrexx/` | Runs NetRexx's `qtime.nrx` and ooRexx's `qtime.rex` at the same 206 times; translates every NetRexx example with NetRexxC and learns NetRexx -> Java translation edges (`translate_all.sh`, `translate_pairs.rex`) |
 | `tests/show_rules.rex` | Read a unit's rules, find the other language's closest units, list what both have and what each lacks |
 | `run_tests.sh` | Builds Rexx/SQL and the foreign runtime, then runs everything |
@@ -339,14 +339,24 @@ Tom's next: "how we handle two different object oriented rexx languages". NetRex
 
 | Held out | SLAM | Baseline |
 |---|---|---|
-| Java kind of each segment | **1,195 of 1,273** | 1,151 (same kind as NetRexx) |
-| Java kinds of each whole line | **837 of 1,197** | 767 (same kinds as NetRexx) |
-| Exact Java shape, where the NetRexx shape was seen | 356 of 642 | none |
-| Exact Java shape, unseen, from the FAMILY table | 94 of 631 | none |
+| Java kind of each segment | **1,289 of 1,374** | 1,245 (same kind as NetRexx) |
+| Java kinds of each whole line | **925 of 1,298** | 857 (same kinds as NetRexx) |
+| Exact Java shape, where the NetRexx shape was seen | 416 of 705 | none |
+| Exact Java shape, unseen, from the FAMILY table | 97 of 669 | none |
 
-- **Where it is weak, and why.** A NetRexx argument becomes `netrexx.lang.Rexx`, `int` or `String` depending on its declaration, and that is not in the NetRexx shape. So `use arg A1` → `ENTRY: L1 . lang . rexx A1` held only 21 times in 93. The Java shaper also reads a package name (`netrexx` in `netrexx.lang.Rexx`) as a variable, a first-cut fault.
-- **Unpaired segments.** 2,310 NetRexx segments have no Java segment starting on their line. Declarations are hoisted to the top of the Java method. Runs of clauses can be cut a line apart. `catch` is not read on the NetRexx side.
-- **One rule where SLAM's readers disagree.** The Java reader unwraps `{ one statement }` after `if`, so `if (c) { return x; }` is a GUARD. The Rexx readers keep `then do; return x; end` as a BRANCH holding an EXIT, though the two are the same.
+**Two reader faults it exposed, both fixed, measured on the same split.**
+- **Package names.** The Java shaper read `netrexx` in `netrexx.lang.Rexx` as a variable. Now, in a dotted chain whose leading names start lower-case and are not arguments or fields, the leading names are a package and the first capitalised name is a class: `new netrexx.lang.Rexx(1)` is `new .rexx ( N )`.
+- **The one-statement block rule.** The Java reader reads `if (c) { return x; }` as a GUARD. The Rexx readers kept `if c then do; return x; end` as a BRANCH holding an EXIT. Now the Rexx readers read it as a GUARD too, in ooRexx and NetRexx alike. The 201 ooRexx checks still pass.
+
+| | Before the fixes | After |
+|---|---|---|
+| NetRexx segments with no Java partner on their line | 2,310 | **1,841** |
+| Exact Java shape, where seen | 356 of 642 (55.5%) | **416 of 705 (59.0%)** |
+| Whole-line Java kinds | 837 of 1,197 (69.9%) | **925 of 1,298 (71.3%)** |
+| `say S` → `RUN: .rexxio . say ( S )` (tested) | 17 of 28 | **34 of 40** |
+
+- **Where it is still weak.** A NetRexx argument becomes `netrexx.lang.Rexx`, `int` or `String` depending on its declaration, and that is not in the NetRexx shape. So `use arg A1` → `ENTRY: .rexx A1` holds 21 times in 93; this is the next thing to learn from.
+- **Still unpaired.** Declarations are hoisted to the top of the Java method, runs of clauses can be cut a line apart, and `catch` is not read on the NetRexx side.
 
 **The distribution.** All 348 `.nrx` files in NetRexx 5.10 GA plus `sysutils.nrx` read with none skipped: 1,560 units and 4,465 nodes. With ooRexx's samples in the same store, 247 nodes are shared.
 
@@ -363,7 +373,7 @@ SLAM gets credit for what it found:
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 201 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **24/24** in `test_cpp.rex` and **19/19** in `test_netrexx.rex`: **301 checks**. The C++ and NetRexx steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME` and `SYSUTILS_NRX` are set, and say SKIP otherwise.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 201 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **24/24** in `test_cpp.rex` and **20/20** in `test_netrexx.rex`: **302 checks**. The C++ and NetRexx steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME` and `SYSUTILS_NRX` are set, and say SKIP otherwise.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
@@ -441,5 +451,5 @@ rexx bin/slam.rex follows slam.db '#0004'
 - **C++, first cut.** Types are guessed from position (a name before a name, before `::`, or before `*x =`); there is no symbol table. Macro bodies are not read.
 - **The BIF contract vocabulary is stated, not learned.** It is the words in `tests/bif/BifContracts.cls`; SLAM's wrong predictions are what found the two it lacked.
 - **rx2cpp's generated C++** is read as runtime calls, so it does not meet its ooRexx source yet (see the C++ section).
-- **NetRexx, first cut.** `catch`/`finally` inside `do`/`loop` are plain clauses. `java2nrx` (Java to NetRexx, the other direction) is not paired yet. The Rexx readers do not unwrap `then do; one statement; end` as the Java reader unwraps `{ one statement }`. `sysutils.nrx` against ooRexx's RexxUtil (C++) is a three-language triangle not yet compared.
+- **NetRexx, first cut.** `catch`/`finally` inside `do`/`loop` are plain clauses. `java2nrx` (Java to NetRexx, the other direction) is not paired yet. `sysutils.nrx` against ooRexx's RexxUtil (C++) is a three-language triangle not yet compared.
 - **Speed: about 770 source lines a second**, because the lexer runs interpreted. Compiling the lexer with rx2cpp is the obvious speed-up.

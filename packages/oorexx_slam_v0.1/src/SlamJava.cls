@@ -824,16 +824,74 @@
   if ctx['FIELDS']~hasIndex(name) then return 'VAR'
   if name~left(1) >>= 'A' then if name~left(1) <<= 'Z' then return 'CLASS'
   return 'VAR'
+/* Package-qualified names: in a chain a.b.C... whose leading names start lower-case and are not
+ * arguments or fields, the leading names are a package (PKG, and the '.' after each, PKGDOT) and the
+ * first capitalised name is a class (QCLASS): netrexx.lang.Rexx is the class .rexx, not a variable. */
+::method qualified
+  use strict arg c, ctx
+  marks = .array~new(c~items)
+  i = 1
+  do while i <= c~items
+    t = c[i]
+    start = .true
+    if i > 1 then if c[i - 1]~kind == 'OP' then if c[i - 1]~text == '.' then start = .false
+    if t~kind \== 'IDENT' | \start then do
+      i += 1
+      iterate
+    end
+    chain = .array~of(i)
+    j = i
+    do while j + 2 <= c~items
+      if c[j + 1]~kind \== 'OP' then leave
+      if c[j + 1]~text \== '.' then leave
+      if c[j + 2]~kind \== 'IDENT' then leave
+      j += 2
+      chain~append(j)
+    end
+    cls = 0
+    do m = 2 to chain~items
+      first = c[chain[m]]~text~left(1)
+      if first >>= 'A' then if first <<= 'Z' then do
+        cls = m
+        leave
+      end
+    end
+    ok = (cls > 0)
+    if ok then do m = 1 to cls - 1
+      nm = c[chain[m]]~text
+      first = nm~left(1)
+      if first >>= 'A' then if first <<= 'Z' then ok = .false
+      if ctx['ARGS']~hasIndex(nm) | ctx['FIELDS']~hasIndex(nm) then ok = .false
+    end
+    if ok then do
+      do m = 1 to cls - 1
+        marks[chain[m]] = 'PKG'
+        marks[chain[m] + 1] = 'PKGDOT'
+      end
+      marks[chain[cls]] = 'QCLASS'
+    end
+    i = j + 1
+  end
+  return marks
+::method roleAt
+  use strict arg c, i, ctx, marks
+  if marks[i] \== .nil then do
+    if marks[i] == 'QCLASS' then return 'CLASS'
+    return marks[i]
+  end
+  return self~tokenRole(c, i, ctx)
 ::method render
   use strict arg c, roles, mode
   ctx = .directory~new
   ctx['ARGS'] = roles~args
   ctx['FIELDS'] = roles~fields
+  marks = self~qualified(c, ctx)
   out = .array~new
   do i = 1 to c~items
     t = c[i]
-    r = self~tokenRole(c, i, ctx)
+    r = self~roleAt(c, i, ctx, marks)
     select
+      when r == 'PKG' | r == 'PKGDOT' then nop
       when r == 'STRING' then out~append('S')
       when r == 'NUMBER' then out~append('N')
       when r == 'OP' then out~append(t~text)
@@ -870,8 +928,9 @@
     ctx['FIELDS'] = .directory~new
   end
   vars = .directory~new
+  marks = self~qualified(c, ctx)
   do i = 1 to c~items
-    r = self~tokenRole(c, i, ctx)
+    r = self~roleAt(c, i, ctx, marks)
     if r == 'SELF' then vars['SELF'] = .true
     if r == 'VAR' then vars[c[i]~text] = .true
   end

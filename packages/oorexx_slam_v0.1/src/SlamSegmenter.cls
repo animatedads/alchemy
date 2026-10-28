@@ -692,8 +692,11 @@
   use strict arg s, ctx
   thenS = s~thenStmt
   elseS = s~elseStmt
-  if elseS == .nil then if thenS \== .nil then if thenS~kind == 'SIMPLE' then if shaper~clauseClass(thenS~clause) == 'TERM' then
-    return self~leaf('GUARD', .array~of(s~clause, thenS~clause), ctx)
+  /* then do; <one statement>; end is that statement, as { <one statement> } is in Java: a GUARD either way */
+  one = thenS
+  if one \== .nil then if one~kind == 'DO' then if one~clause~items == 1 then if one~body~items == 1 then one = one~body[1]
+  if elseS == .nil then if one \== .nil then if one~kind == 'SIMPLE' then if shaper~clauseClass(one~clause) == 'TERM' then
+    return self~leaf('GUARD', .array~of(s~clause, one~clause), ctx)
   seg = .SlamSegment~new('BRANCH', s~clause[1]~line)
   seg~addSequence('THEN', self~segmentSeq(self~asSeq(thenS), ctx, .false))
   if elseS \== .nil then seg~addSequence('ELSE', self~segmentSeq(self~asSeq(elseS), ctx, .false))

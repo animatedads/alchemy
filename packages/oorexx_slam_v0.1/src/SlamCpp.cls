@@ -397,6 +397,10 @@
 /* ------------------------------------------------------------------------------------------------ */
 ::class SlamCppShaper public subclass SlamJavaShaper
 ::constant TERMS 'return throw break continue goto co_return'
+/* C++ qualifies with '::', read by tokenRole: no '.' package chains */
+::method qualified
+  use strict arg c, ctx
+  return .array~new(c~items)
 ::method tokenRole
   use strict arg c, i, ctx
   t = c[i]

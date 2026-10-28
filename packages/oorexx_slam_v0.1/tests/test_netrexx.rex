@@ -81,9 +81,10 @@ call stream transSummary, 'C', 'CLOSE'
 say '      files' t['FILES'] '(' || t['TRAIN_FILES'] 'learned from,' t['TEST_FILES'] 'held out)  edges' t['EDGES'] ' tested edges' t['TESTED_EDGES']
 call check t['FILES'] = 288 & t['FAILED'] = 0, '288 NetRexx files translated by NetRexxC and paired line by line with their Java (none unreadable)'
 call check t['LOOP_LINE'] == 'BLOCK RUN RUN LABEL LOOP' & t['SELECT_LINE'] == 'BLOCK', 'learned, not told: a loop line becomes BLOCK RUN RUN LABEL LOOP in Java (the for is wrapped with its loop variable), a select becomes a BLOCK'
-call check t['KIND_RIGHT'] = 1195 & t['TEST_PAIRS'] = 1273 & t['KIND_RIGHT'] > t['TEST_PAIRS'] - t['KIND_CHANGED'], 'held-out segments: the Java kind predicted right 1195 of 1273 times, above the 1151 of "same kind as NetRexx"'
-call check t['LINE_RIGHT'] = 837 & t['LINE_SEEN'] = 1197 & t['LINE_RIGHT'] > t['LINE_SAME'], 'held-out lines: the whole line''s Java kinds predicted right 837 of 1197 times, above the' t['LINE_SAME'] 'of "same kinds as NetRexx"'
-call check t['FINE_RIGHT'] = 356 & t['SEEN'] = 642 & t['TESTED_EDGES'] = 189, 'exact Java shape, where the NetRexx shape was seen: 356 of 642; each prediction kept as a test on its edge (189 edges now TESTED)'
+call check t['KIND_RIGHT'] = 1289 & t['TEST_PAIRS'] = 1374 & t['KIND_RIGHT'] > t['TEST_PAIRS'] - t['KIND_CHANGED'], 'held-out segments: the Java kind predicted right 1289 of 1374 times, above the 1245 of "same kind as NetRexx"'
+call check t['LINE_RIGHT'] = 925 & t['LINE_SEEN'] = 1298 & t['LINE_RIGHT'] > t['LINE_SAME'], 'held-out lines: the whole line''s Java kinds predicted right 925 of 1298 times, above the' t['LINE_SAME'] 'of "same kinds as NetRexx"'
+call check t['FINE_RIGHT'] = 416 & t['SEEN'] = 705 & t['TESTED_EDGES'] = 196, 'exact Java shape, where the NetRexx shape was seen: 416 of 705; each prediction kept as a test on its edge (196 edges now TESTED)'
+call check t['UNPAIRED'] = 1841, '1841 NetRexx segments have no Java partner on their line (2310 before the two reader fixes)'
 
 say 'NETREXX TEST: PASS (' || checks || ' checks)'
 exit 0
