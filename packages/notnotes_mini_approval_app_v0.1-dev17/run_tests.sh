@@ -49,6 +49,9 @@ MININOTES_DB_ROOT="$TEST_ROOT/reporting" ./tests/test_report_designer_persistenc
 
 run_rexx batch tests/test_batch_persistence.rex
 
+# Guard the authentic NoSQL DatabaseRow values-column contract used in migration.
+"$REXX_BIN" tests/test_migration_row_contract.rex
+
 # Exercise actual MiniNotesApp~sortByKey on 10,002 objects, avoiding SQL.
 "$REXX_BIN" tests/test_sort_regression.rex
 
