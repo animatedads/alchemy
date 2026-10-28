@@ -61,3 +61,11 @@ A POI-centred, case-scoped spatial and temporal investigation application using 
 ## Change log
 
 - **2026-10-23 v0.1:** First POI sphere documentation; describes source candidate and outstanding qualification rather than presenting design as completed.
+
+## Dev2 presentation increment (2026-10-28)
+
+- `src/PoiEvidencePresentation.cls` projects ledger records to renderer-neutral rows; keeps identity/spatial/temporal/method certainty as `NOT_ASSESSED` rather than inventing a score.
+- `edgeCandidate` returns `TEMPORAL_SPATIAL_CANDIDATE` only when the ledger's deliberately restrictive candidate predicate succeeds; otherwise `NO_RELATIONSHIP`. Neither is a finding of contact.
+- `mediaPanel` returns `HIDDEN_PRESENTATION_ONLY`, with no mutation of the ledger or evidence references.
+- **Qualification gap:** this is source-only, not executed under ooRexx; the temporal comparison is not yet integrated with Single Time Service; no 3D Wire3D renderer has been bound.
+- Mailbox `poi-spatial-evidence`: the Wire3D dev29.25 comparison request returned no executed evidence. Requested that any subsequent qualification supply commands, exact archive digest and findings; no compatibility pass claimed.
