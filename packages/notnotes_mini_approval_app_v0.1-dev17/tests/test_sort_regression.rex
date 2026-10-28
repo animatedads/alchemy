@@ -11,10 +11,9 @@ end
 /* Include repeated keys: every distinct object must survive the bucket sort. */
 docs~append(.SortFixtureDocument~new("NN-0000100", 10001))
 docs~append(.SortFixtureDocument~new("NN-0000100", 10002))
-timer = .StopWatch~new
-timer~start
+elapsedBefore = time("R")
 sorted = sorter~sortByKey(docs)
-timer~stop
+elapsed = time("E")
 if sorted~items \= 10002 then raise syntax 93.900 array("Document count changed in native sort")
 previous = ""
 duplicateCount = 0
@@ -28,7 +27,7 @@ do document over sorted
 end
 if duplicateCount \= 3 then -
   raise syntax 93.900 array("Duplicate key objects dropped:" duplicateCount)
-say "NOTNOTES_NATIVE_SORT_PASS docs=" sorted~items "elapsed=" timer~elapsed
+say "NOTNOTES_NATIVE_SORT_PASS docs=" sorted~items "elapsed=" elapsed
 exit 0
 
 ::class SortHarness subclass MiniNotesApp
