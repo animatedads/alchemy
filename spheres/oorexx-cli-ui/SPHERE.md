@@ -73,3 +73,6 @@ Mini NotNotes drives DOCUMENTS/SELECT/READ/APPROVE/REJECT/QUERY/VIEW and interac
 ## GitHub provenance
 
 Branch: `cli-ui-dev11-sync-20261023`. This sphere documents work and gates; a sphere-only commit does not make the code synchronized.
+## dev12 completion ownership integration (2026-10-28)
+
+Mailbox REQ-00000593 identifies Source Editor `SourceCompletionCandidate` and `SourceCompletionProvider` as the authoritative ooRexx source-completion API. CLI UI must not implement competing source completion logic. The `CliUiCompletionPresentation` adapter holds exact supplied candidate objects, preserving identity and order; it only tracks presentation selection and resets selection on candidate replacement. NewShell retains command/completion transport authority. The new identity regression fixture is committed under `packages/oorexx-cli-ui/tests/test_completion_presentation.rex`. Candidate accessor binding to the accepted Source Editor revision is pending. dev12 is source-only; no r13196 qualification claimed.
