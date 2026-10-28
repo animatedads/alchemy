@@ -1,0 +1,30 @@
+--- a/src/MiniNotesApp.cls
++++ b/src/MiniNotesApp.cls
+@@ -480,16 +480,7 @@
+   do document over documents
+     out~append(document)
+   end
+-  if out~items < 2 then return out
+-  do i = 1 to out~items - 1
+-    do j = i + 1 to out~items
+-      if out[j]~DocKey < out[i]~DocKey then do
+-        swap = out[i]
+-        out[i] = out[j]
+-        out[j] = swap
+-      end
+-    end
+-  end
++  if out~items > 1 then out~sortWith(.MiniNotesDocKeyComparator~new)
+   return out
+ 
+ ::method select
+@@ -2358,3 +2349,11 @@
+ ::requires 'vendor/cliui/rexx/CliUiTable.cls'
+ ::requires 'vendor/cliui/rexx/CliUiDocument.cls'
+ ::requires 'vendor/cliui/rexx/CliUiSemantic.cls'
++
++/* Use the built-in comparator sort, not a quadratic document scan. */
++::class MiniNotesDocKeyComparator public subclass Comparator
++::method compare
++  use strict arg leftDocument, rightDocument
++  return leftDocument~DocKey~compareTo(rightDocument~DocKey)

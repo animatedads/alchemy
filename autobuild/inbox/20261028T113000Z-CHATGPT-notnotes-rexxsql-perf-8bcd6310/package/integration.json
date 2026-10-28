@@ -1,0 +1,25 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "notnotes_startup_sqlite_integration",
+    "version": "0.1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "native-sort-contract",
+      "argv": [
+        "bash",
+        "tests/run_sort_test.sh"
+      ],
+      "timeout_seconds": 120
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/notnotes_startup_sqlite_integration_v0.1"
+    }
+  }
+}
