@@ -3,17 +3,18 @@
   "id": "librarian-v2.continuation",
   "title": "Next increment — exact occurrence-level, bitemporal provenance",
   "section": "qualification",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "sphere": "librarian-v2",
   "authority": "project-continuity",
-  "summary": "Dev9 now has source-edition/occurrence-level, bitemporal append-only provenance and conservative conflict handling. Next work must verify exact source span hashes and byte/codepoint offsets, authenticate media capture, introduce durable transactional storage and deterministic out-of-order ingestion, scope uncertain branches locally, index as-of evaluation, review Time Service v0.9 compatibility, and catch up original dev1–dev7 source on GitHub before requesting production promotion.",
+  "summary": "Dev10 repairs canonical identity materialisation. Next: publish and activate the Gopher sphere through the Alchemy deployment route; catch up earlier v2 sources in GitHub; verify original media-span content hashes/offsets; add durable transaction/ingest staging and bounded indexes; qualify Single Time Service v0.9; localise conflict/cycle impacts before media comparison and CMS/Brand use.",
   "invariants": [
     "Define source edition and occurrence identifiers before designing graph edge dispatch.",
     "Prove that historical as-of graph queries are insertion-order invariant for equivalent eligible evidence.",
     "Retractions of provenance links must not imply falsity of the source claim.",
     "Extend admission tests with contradictory evidence, multiple parents, deduplicated syndication, cross-span quotations, publication vs observation cutoffs and source replacement.",
     "Retain old artifacts and qualification receipts; do not silently promote experimental head to production.",
-    "Use new Rasen Falcon mailbox lane librarian_v2 under authenticated CHATGPT. Check unread requests with project.requests.list(componentId=librarian_v2,unreadOnly=true)."
+    "Use new Rasen Falcon mailbox lane librarian_v2 under authenticated CHATGPT. Check unread requests with project.requests.list(componentId=librarian_v2,unreadOnly=true).",
+    "GitHub PR #53 is a draft; obtain a Gopher sphere-check SPHERE_RESOLVED receipt before claiming runtime activation."
   ],
   "provenance": [
     {
@@ -39,6 +40,14 @@
       "line_start": 1,
       "line_end": 32,
       "claim": "Known work still missing after dev9 qualification."
+    },
+    {
+      "artifact": "librarian_v2_dev10_20261028.zip",
+      "sha256": "aa48ba861e5a25341349302de0e7dad64979631d33dea7c7955f6a292a187223",
+      "member": "librarian_v2_dev10/DEV10_NOTES.md",
+      "line_start": 30,
+      "line_end": 38,
+      "claim": "Remaining dev10 development dependencies."
     }
   ]
 }
