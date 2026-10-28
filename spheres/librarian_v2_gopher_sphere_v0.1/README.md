@@ -1,24 +1,54 @@
-# Librarian v2 engineering Gopher sphere v0.1.1
+# Librarian v2 — engineering Gopher sphere v0.1.2
 
-Canonical sphere ID: `librarian-v2`. Current tested experimental head: **dev9, 2026-10-27**.
+Current experimental source baseline: **dev10** (2026-10-28).
 
-The sphere covers source/evidence identity, event/proposition distinctions, publication versus observation time, correction/retraction histories, multi-parent occurrence-level provenance, comparisons, and evidence-only CMS / Brand integration boundaries.
+This knowledge sphere documents the clean-room ooRexx Librarian rewrite. It is
+not the original WordNet/HardWorld Librarian; its evidence authority excludes
+truth certification, media-independence claims, causal Brand Effect and CMS
+publication decisions.
 
-Artifact: `librarian_v2_dev9_20261027.zip` SHA-256 `6ebb503d6db6d3ffe9dc93385c02b637af8fa21dfb6fe43da2466f0aba207496`.
+## Current source and qualification
 
-**Runtime qualification:** ooRexx 5.3.0 r13196 native interpreter, 102 positive assertions plus 13 rejected invalid cases (115 passing checks), using the full zipped dependency tree and pinned Time Service v0.3. Upstream Time Service v0.9 exists but is **not** qualified here. Full sphere Gopher runtime validate/lint/activate remains outstanding.
+- Cumulative ZIP: `librarian_v2_dev10_20261028.zip`
+- SHA-256: `aa48ba861e5a25341349302de0e7dad64979631d33dea7c7955f6a292a187223`
+- Native ooRexx 5.3.0 r13196: **129 PASS checks** (116 assertions, 13 rejected invalid cases).
+- Updated canonical schema: `LIBRARIAN-PROVENANCE-SNAPSHOT/2` includes full
+  event/proposition query scope, knowledge cutoffs and complete historical
+  source evidence rows.
+- Single Time Service v0.3 is pinned. v0.9 is upstream but unqualified here.
 
-Only dev8+dev9 source deltas have been published to the review branch. Earlier dev1–dev7 source and Time Service v0.3 dependency remain in the cumulative archive; a GitHub-only checkout is not sufficient for the full interpreter suite.
+Source deltas are in `packages/librarian_v2_dev8/`,
+`packages/librarian_v2_dev9/`, and `packages/librarian_v2_dev10/`.
+Earlier source and the Time Service fixture closure are bundled with the
+cumulative ZIP but not entirely mirrored into GitHub.
 
-Knowledge activation, with the proper compatible Gopher installation:
+## Gopher installation and smoke test
+
+The repository folder is a **source**, not a live Gopher registration.
+A Gopher deployment actor must package and install these files as the
+`librarian-v2` sphere, preserving the canonical layout:
+
+- `packs/librarian-v2/00-sphere.json`
+- `packs/librarian-v2/01-access-policy.json`
+- `packs/librarian-v2/articles/*.json`
+- `profiles/librarian-v2.json`
+
+Once deployed to the Alchemy sphere catalogue and LLM Gopher runtime:
 
 ```sh
 ./gopher --profile librarian-v2 context librarian-v2
 ./gopher --profile librarian-v2 open librarian-v2.start
-./gopher --profile librarian-v2 open librarian-v2.dev9
+./gopher --profile librarian-v2 open librarian-v2.dev10
 ./gopher --profile librarian-v2 open librarian-v2.qualification
 ```
 
-Scope is **evidence and project continuity only**, not fact authority, independent-source certification, bias/causal verdicts, CMS approval or publication.
+The expected Alchemy `sphere_check(sphereId="librarian-v2")` response is
+`SPHERE_RESOLVED` with version **0.1.2** and a selected manifest. Anything
+else is unqualified and must not be described as deployed.
 
-Mailbox component: `librarian_v2` on Rasen Falcon, authenticated as `CHATGPT`. Future work and missives must use this component ID.
+## Coordination
+
+The authenticated Rasen Falcon lane is `librarian_v2`, created by CHATGPT.
+All messages use that component ID; look for unread replies on the same lane.
+Github PR #53 is the currently open draft; do not confuse the prior merged
+PR #24 with the dev9/dev10 review.
