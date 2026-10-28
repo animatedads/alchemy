@@ -1,0 +1,41 @@
+ooRexx Media Methodologies v0.1-dev6 qualification
+Date: 2026-10-10
+Runtime: Open Object Rexx 5.3.0 r13196 - Internal Test Version
+
+PASS 21/21 package runtime tests
+PASS all 5 ooRexx examples
+PASS plural audio provider qualification contracts
+PASS Python provider compilation
+PASS 175 methodology specs against schema
+PASS 175 work-shape identities against catalogue
+PASS 12 reference-audio provider result documents against schema
+PASS Audio V9 Candidate18r1 targeted regressions:
+  - measured multipath + nonamp/amped reconstruction
+  - time-varying trajectory tracking
+  - spectral trajectory tracking
+  - motion coherence
+  - block continuation
+  - trajectory-conditioned virtual microphone
+  - ooRexx execution integration
+  - ooRexx continuation object contract
+
+Controlled known-truth audio fixture:
+  input SNR: ~6.37 dB
+  spectral subtraction: ~11.43 dB
+  Wiener: ~10.07 dB
+  NMF heuristic: ~6.30 dB (no improvement over input)
+  harmonic component: ~9.24 dB
+  experimental spectral repair: masked RMSE worsened (~0.122 -> ~0.135)
+
+Real TP00001 source-audio interval, file PTS 8435..8445:
+  four STFT-family/partial-component candidates produced
+  spectral repair: NOT_APPLICABLE / DAMAGE_MASK_REQUIRED
+  Audio V9 Candidate18r1 virtual-mic included as a fifth, separate implementation lineage
+  pairwise comparisons elect no winner
+
+Authority boundary:
+  source audio remains observation authority
+  reconstructed/filtered waveforms are derived candidates
+  spectral-repair interpolated regions remain synthetic support
+  method-name diversity does not imply evidence independence
+PASS strict ooRexx standards enforcer: 48 files, 0 errors, 0 warnings

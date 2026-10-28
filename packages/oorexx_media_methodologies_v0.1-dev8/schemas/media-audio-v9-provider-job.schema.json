@@ -1,0 +1,27 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"media-methodologies.audio-v9-provider-job/0.1",
+  "type":"object",
+  "required":["methodology_id","source_evidence_ref","output_dir"],
+  "properties":{
+    "methodology_id":{"enum":["AUDIO.MULTIPATH.PATH_ESTIMATE","AUDIO.MULTIPATH.SPECTRAL_TRACK","AUDIO.MULTIPATH.MOTION_COHERENCE","AUDIO.RECON.MULTIPATH_VIRTUAL_MIC"]},
+    "source_evidence_ref":{"type":"string"},
+    "output_dir":{"type":"string"},
+    "source_f32":{"type":"string"},
+    "sample_rate":{"type":"integer","minimum":1000,"maximum":192000},
+    "feed":{"enum":["FC","FD"]},
+    "onset_sample":{"type":"integer","minimum":0},
+    "start_sample":{"type":"integer","minimum":0},
+    "end_sample":{"type":"integer","minimum":1},
+    "frame_ms":{"type":"number","minimum":12,"maximum":200},
+    "step_ms":{"type":"number","minimum":1,"maximum":200},
+    "observations_tsv":{"type":"string"},
+    "prior_state_tsv":{"type":"string"}
+  },
+  "allOf":[
+    {"if":{"properties":{"methodology_id":{"const":"AUDIO.MULTIPATH.PATH_ESTIMATE"}}},"then":{"required":["source_f32","sample_rate","feed","onset_sample"]}},
+    {"if":{"properties":{"methodology_id":{"const":"AUDIO.RECON.MULTIPATH_VIRTUAL_MIC"}}},"then":{"required":["source_f32","sample_rate","feed","onset_sample"]}},
+    {"if":{"properties":{"methodology_id":{"const":"AUDIO.MULTIPATH.SPECTRAL_TRACK"}}},"then":{"required":["source_f32","sample_rate","feed","start_sample","end_sample"]}},
+    {"if":{"properties":{"methodology_id":{"const":"AUDIO.MULTIPATH.MOTION_COHERENCE"}}},"then":{"required":["observations_tsv"]}}
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "schema": "media-methodologies.provider-manifest/0.1",
+  "provider_id": "media.spectral-integrity-reference/0.1",
+  "upstream_api": "audio.spectral-integrity/0.2",
+  "authority": "DERIVED_ONLY",
+  "methodologies": [
+    "AUDIO.SPECTRAL_INTEGRITY.COMPLEMENTARY_BUCKET_VIEWS",
+    "AUDIO.SPECTRAL_INTEGRITY.PHASE_SWEEP",
+    "AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW",
+    "AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION",
+    "QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL"
+  ],
+  "requirements": ["python3", "numpy", "soundfile", "audio_spectral_integrity_v0.2"],
+  "forbidden_claims": [
+    "odd/even bucket views are independent physical sources",
+    "preference transforms recover original semantic truth",
+    "externally seeded harmonics identify a speaker",
+    "field material is a known positive control"
+  ]
+}

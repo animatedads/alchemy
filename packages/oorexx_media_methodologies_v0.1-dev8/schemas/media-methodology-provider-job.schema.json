@@ -1,0 +1,16 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"media-methodology.provider-job/0.1",
+  "type":"object",
+  "required":["schema","methodology_id","source","time","output_dir"],
+  "properties":{
+    "schema":{"const":"media-methodology.provider-job/0.1"},
+    "methodology_id":{"type":"string"},
+    "candidate_id":{"type":"string"},
+    "verify_source_hash":{"type":"boolean"},
+    "source":{"type":"object","required":["kind","path","evidence_ref"],"properties":{"kind":{"const":"VIDEO_FILE"},"path":{"type":"string"},"evidence_ref":{"type":"string"}}},
+    "time":{"type":"object","required":["start_seconds","end_seconds","sample_fps"]},
+    "crop":{"type":"object","required":["x","y","width","height"]},
+    "output_dir":{"type":"string"}
+  }
+}

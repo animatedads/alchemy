@@ -1,0 +1,22 @@
+{
+  "schema":"media-methodology.provider-manifest/0.1",
+  "provider_id":"reference.audio-reconstruction/0.1",
+  "status":"REFERENCE_MULTI_METHOD",
+  "authority_effect":"RECONSTRUCT_CANDIDATE",
+  "observation_promotion":false,
+  "runtime":["python3","numpy","scipy","scikit-learn","soundfile"],
+  "methodologies":[
+    {"id":"AUDIO.DENOISE.SPECTRAL_SUBTRACTION","implementation_id":"reference.scipy.spectral-subtraction/0.1"},
+    {"id":"AUDIO.DENOISE.WIENER","implementation_id":"reference.scipy.wiener-stft/0.1"},
+    {"id":"AUDIO.DENOISE.NMF","implementation_id":"reference.sklearn.nmf-denoise/0.1"},
+    {"id":"AUDIO.HARMONIC_PERCUSSIVE","implementation_id":"reference.scipy.hpss-median/0.1"},
+    {"id":"AUDIO.SPECTRAL.REPAIR","implementation_id":"reference.scipy.spectral-repair/0.1"}
+  ],
+  "independence_policy":"Method name is not evidence independence. Shared implementation foundations are declared on every result.",
+  "known_limitations":[
+    "Spectral subtraction and Wiener filtering share STFT and low-energy noise-profile preprocessing.",
+    "NMF component identity is ambiguous and uses an explicit stationary-component heuristic.",
+    "Harmonic/percussive output is a partial component and is not a complete speech reconstruction.",
+    "Spectral repair is experimental and requires an explicit damage mask; interpolated regions remain synthetic support."
+  ]
+}

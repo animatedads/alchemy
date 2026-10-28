@@ -1,0 +1,20 @@
+{
+  "schema": "media-methodologies.provider-manifest/0.1",
+  "provider_id": "reference.audio-v9/0.1",
+  "external_dependency": {
+    "name": "Audio V9 Voice Recovery",
+    "version": "dev20 candidate18r1",
+    "vendored": false
+  },
+  "implementations": [
+    {"methodology_id":"AUDIO.MULTIPATH.PATH_ESTIMATE","implementation_id":"audio-v9.candidate18r1.multipath-features/0.1","execution":"native"},
+    {"methodology_id":"AUDIO.MULTIPATH.SPECTRAL_TRACK","implementation_id":"audio-v9.candidate18r1.multipath-spectral-track/0.1","execution":"native"},
+    {"methodology_id":"AUDIO.MULTIPATH.MOTION_COHERENCE","implementation_id":"audio-v9.candidate18r1.motion-coherence-state/0.1","execution":"native-continuation"},
+    {"methodology_id":"AUDIO.MULTIPATH.PHYSICS_COMPATIBILITY","implementation_id":"audio-v9.candidate18r1.physics-path-policy/0.1","execution":"oorexx-policy"},
+    {"methodology_id":"AUDIO.RECON.MULTIPATH_VIRTUAL_MIC","implementation_id":"audio-v9.candidate18r1.echo-reconstruct-nonamp/0.1","execution":"native"}
+  ],
+  "authority": {
+    "provider_owns": "implementation execution only",
+    "provider_does_not_own": ["source authority","source identity","source range","placement","memory movement","methodology preference"]
+  }
+}

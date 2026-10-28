@@ -1,0 +1,51 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "media-methodology.provider-result/0.1",
+  "type": "object",
+  "required": [
+    "schema",
+    "provider_id",
+    "methodology_id",
+    "status"
+  ],
+  "properties": {
+    "schema": {
+      "const": "media-methodology.provider-result/0.1"
+    },
+    "provider_id": {
+      "type": "string"
+    },
+    "implementation_id": {
+      "type": "string"
+    },
+    "methodology_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "CANDIDATE",
+        "MEASUREMENT",
+        "NOT_APPLICABLE",
+        "FAILED"
+      ]
+    },
+    "output_ref": {
+      "type": "string"
+    },
+    "support_map_ref": {
+      "type": "string"
+    },
+    "uncertainty_ref": {
+      "type": "string"
+    },
+    "authority": {
+      "type": "object"
+    },
+    "source_evidence_ref": {
+      "type": "string"
+    },
+    "metrics": {
+      "type": "object"
+    }
+  }
+}

@@ -1,0 +1,61 @@
+[example] audio_plural_reconstruction_experiment.rex
+experiment=AUDIO-PLURAL-DEMO
+lineages=5
+tasks=10
+LINEAGE-SPECTRAL-SUB 1 40000 1 48192
+LINEAGE-SPECTRAL-SUB 40001 80000 31809 80000
+LINEAGE-WIENER 1 40000 1 48192
+LINEAGE-WIENER 40001 80000 31809 80000
+LINEAGE-NMF 1 40000 1 48192
+LINEAGE-NMF 40001 80000 31809 80000
+LINEAGE-HPSS 1 40000 1 48192
+LINEAGE-HPSS 40001 80000 31809 80000
+LINEAGE-MULTIPATH 1 40000 1 48192
+LINEAGE-MULTIPATH 40001 80000 31809 80000
+[example] blur_edge_plan.rex
+partial reconstruction of a moving subject blurred in every frame
+1. VIDEO.RECON.LEADING_EDGE_BACKPROJECTION [EXPERIMENTAL] Leading-edge motion-blur backprojection
+2. VIDEO.RECON.BLUR_ENVELOPE_BIDIRECTIONAL [EXPERIMENTAL] Bidirectional blur-envelope reconstruction
+3. VIDEO.RECON.LATENT_MULTI_FRAME [EXPERIMENTAL] Multi-frame latent sharp reconstruction
+4. VIDEO.RECON.FLOW_WARP_ACCUMULATE [ESTABLISHED] Optical-flow warp-and-accumulate
+5. QUAL.FORWARD_MODEL.REPROJECTION [ESTABLISHED] Forward-model reconstruction check
+6. QUAL.TIME_REVERSE [ESTABLISHED] Time-reversal asymmetry control
+7. QUAL.CROSS_METHOD.DISAGREEMENT [ESTABLISHED] Cross-method disagreement preservation
+[example] blur_reconstruction_experiment.rex
+experiment: blur-person-001
+methodological lineages: 5
+work tasks: 15
+   VIDEO.RECON.LEADING_EDGE_BACKPROJECTION tasks=3
+   VIDEO.RECON.BLUR_ENVELOPE_BIDIRECTIONAL tasks=3
+   VIDEO.RECON.LATENT_MULTI_FRAME tasks=3
+   VIDEO.RECON.FLOW_WARP_ACCUMULATE tasks=3
+   VIDEO.RECON.MOVING_STRIP_MOSAIC tasks=3
+No candidate is promoted to captured evidence; comparison comes after execution.
+[example] catalog_query.rex
+Total methodologies: 175
+Video: 84
+Audio: 66
+Experimental: 26
+Reconstructive: 61
+
+Experimental video reconstruction candidates:
+  VIDEO.RECON.INPAINT_TEMPORAL - Temporal video inpainting
+  VIDEO.RECON.LEADING_EDGE_BACKPROJECTION - Leading-edge motion-blur backprojection
+  VIDEO.RECON.MOTION_BLUR_TOMOGRAPHY - Motion-blur trajectory tomography
+  VIDEO.RECON.BLUR_ENVELOPE_BIDIRECTIONAL - Bidirectional blur-envelope reconstruction
+  VIDEO.DEBLUR.BLIND - Blind deconvolution
+  VIDEO.RECON.ROLLING_SLICE - Rolling-shutter slice reconstruction
+  VIDEO.RECON.FRAME_INTERPOLATION - Temporal frame interpolation
+  VIDEO.SUPERRES.SINGLE_MODEL - Single-frame learned super-resolution
+  VIDEO.RECON.MOVING_STRIP_MOSAIC - Moving-object strip mosaic
+  VIDEO.RECON.LATENT_MULTI_FRAME - Multi-frame latent sharp reconstruction
+[example] fabric_blur_reconstruction_plan.rex
+METHOD VIDEO.RECON.LEADING_EDGE_BACKPROJECTION
+STATE  TRACK_STATE
+MERGE  TRACK_COORDINATE_SUPPORT_MERGE
+UNITS  3
+VIDEO.RECON.LEADING_EDGE_BACKPROJECTION#1 core=1..100 read=1..108
+VIDEO.RECON.LEADING_EDGE_BACKPROJECTION#2 core=101..200 read=93..208
+VIDEO.RECON.LEADING_EDGE_BACKPROJECTION#3 core=201..300 read=193..300
+Output authority belongs to core ranges; halo frames are supporting reads.
+Every reconstruction output remains a candidate and retains source support.

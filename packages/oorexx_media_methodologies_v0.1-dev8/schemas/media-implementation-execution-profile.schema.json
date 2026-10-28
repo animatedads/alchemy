@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Media implementation execution profile",
+  "type": "object",
+  "required": [
+    "implementation_id",
+    "methodology_id",
+    "runtime",
+    "required_abilities",
+    "required_tags",
+    "minimum_memory_mib",
+    "minimum_disk_mib",
+    "minimum_cpu_units",
+    "recovery_class"
+  ],
+  "properties": {
+    "implementation_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "methodology_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "runtime": {
+      "type": "string"
+    },
+    "required_abilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "required_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "architecture": {
+      "type": "string"
+    },
+    "minimum_memory_mib": {
+      "type": "number",
+      "minimum": 0
+    },
+    "minimum_disk_mib": {
+      "type": "number",
+      "minimum": 0
+    },
+    "minimum_cpu_units": {
+      "type": "number",
+      "minimum": 0
+    },
+    "minimum_free_memory_mib": {
+      "type": "number",
+      "minimum": 0
+    },
+    "minimum_free_disk_mib": {
+      "type": "number",
+      "minimum": 0
+    },
+    "minimum_available_cpu_units": {
+      "type": "number",
+      "minimum": 0
+    },
+    "minimum_wlu_rate": {
+      "type": "number",
+      "minimum": 0
+    },
+    "expected_micro_wlu": {
+      "type": "number",
+      "minimum": 0
+    },
+    "deterministic": {
+      "type": "boolean"
+    },
+    "recovery_class": {
+      "type": "string"
+    }
+  },
+  "additionalProperties": false
+}

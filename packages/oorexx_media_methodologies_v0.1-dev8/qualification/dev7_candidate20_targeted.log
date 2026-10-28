@@ -1,0 +1,12 @@
+    49 *-* ::requires '../src/AudioV9ExecutionIntegration.cls'
+Error 43 running /mnt/data/media_methods_continue/a20/audio_v9_migratable_dev20_candidate20/tests/test_audio_v9_sequence_execution.rex line 49:  Routine not found.
+Error 43.901:  Could not find file "../src/AudioV9ExecutionIntegration.cls" for ::REQUIRES.
+PASS Candidate20 distributed sequence routing preserves Candidate19 reconstruction
+FIXED_EXECUTION {'moves': 0, 'memory_hits': 3, 'memory_misses': 6, 'bytes_moved': 67504, 'bytes_avoided': 34896, 'continuation_bytes_moved': 0, 'failovers': 0} maxerr 0.0
+MOVE_TO_STORAGE {'moves': 5, 'memory_hits': 4, 'memory_misses': 5, 'bytes_moved': 58956, 'bytes_avoided': 43444, 'continuation_bytes_moved': 20480, 'failovers': 0} maxerr 0.0
+MOVE_TO_MEMORY {'moves': 5, 'memory_hits': 9, 'memory_misses': 0, 'bytes_moved': 0, 'bytes_avoided': 102400, 'continuation_bytes_moved': 20480, 'failovers': 0} maxerr 0.0
+LOOKAHEAD_LOCALITY {'moves': 3, 'memory_hits': 7, 'memory_misses': 2, 'bytes_moved': 22912, 'bytes_avoided': 79488, 'continuation_bytes_moved': 12288, 'failovers': 0} maxerr 0.0
+FAILOVER_LOOKAHEAD {'moves': 4, 'memory_hits': 6, 'memory_misses': 3, 'bytes_moved': 34936, 'bytes_avoided': 67464, 'continuation_bytes_moved': 16384, 'failovers': 1} maxerr 0.0
+non-contiguous block: prev=1776 start=1778
+PASS block-continuable fractional-delay reconstruction equals whole-window result
+PASS Audio V9 candidate20 sequence execution/locality contract

@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Media methodology work-shape catalogue",
+  "type": "object",
+  "required": [
+    "schema",
+    "api",
+    "count",
+    "shapes"
+  ],
+  "properties": {
+    "schema": {
+      "const": "media.methodology.work-shapes/0.1"
+    },
+    "api": {
+      "const": "media.methodologies.execution/0.1"
+    },
+    "count": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "shapes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "methodology_id",
+          "shard_axis",
+          "state_model",
+          "access_pattern",
+          "halo_before",
+          "halo_after",
+          "merge_mode",
+          "continuity",
+          "materialization"
+        ],
+        "properties": {
+          "methodology_id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "shard_axis": {
+            "type": "string"
+          },
+          "state_model": {
+            "type": "string"
+          },
+          "access_pattern": {
+            "type": "string"
+          },
+          "halo_before": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "halo_after": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "merge_mode": {
+            "type": "string"
+          },
+          "continuity": {
+            "type": "string"
+          },
+          "materialization": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": true
+}

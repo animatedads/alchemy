@@ -1,0 +1,22 @@
+{
+  "schema": "media-methodology.provider-manifest/0.1",
+  "provider_id": "reference.opencv.video-reconstruction/0.1",
+  "status": "EXPERIMENTAL_REFERENCE",
+  "authority_effect": "RECONSTRUCT_CANDIDATE",
+  "observation_promotion": false,
+  "runtime": ["python3", "opencv-python", "numpy"],
+  "methodologies": [
+    {"id":"VIDEO.RECON.LEADING_EDGE_BACKPROJECTION","implementation_id":"reference.opencv.leading-edge/0.1"},
+    {"id":"VIDEO.RECON.BLUR_ENVELOPE_BIDIRECTIONAL","implementation_id":"reference.opencv.blur-envelope/0.1"},
+    {"id":"VIDEO.RECON.FLOW_WARP_ACCUMULATE","implementation_id":"reference.opencv.flow-warp-accumulate/0.1"},
+    {"id":"VIDEO.RECON.MOVING_STRIP_MOSAIC","implementation_id":"reference.opencv.moving-strip-mosaic/0.1"},
+    {"id":"VIDEO.RECON.LATENT_MULTI_FRAME","implementation_id":"reference.opencv.latent-multiframe/0.1"}
+  ],
+  "known_limitations": [
+    "Reference implementation assumes a predominantly translating moving foreground within the supplied crop.",
+    "Foreground support is estimated from temporal median background difference and can be contaminated by illumination/compression changes.",
+    "Leading-edge support is a registration constraint, not a claim that the edge is literally an instantaneous exposure sample.",
+    "Dense optical-flow warping interpolates observed samples and remains derived evidence.",
+    "The latent multi-frame variant is a conservative flow-aligned robust estimate plus supported-pixel edge restoration, not generative inpainting."
+  ]
+}

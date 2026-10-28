@@ -1,0 +1,88 @@
+ooRexx Media Methodologies v0.1-dev8 qualification
+Date: 2026-10-28
+Runtime: Open Object Rexx 5.3.0 r13196 - Internal Test Version (2026-08-03), 64-bit
+
+DEV8 SCOPE
+PASS catalogue expanded to 180 methodologies and 180 exact work-shape identities
+  VIDEO=84 AUDIO=70 CROSS_MODAL=10 VALIDATION=16
+  EXPERIMENTAL=30 RECONSTRUCTIVE=62
+PASS five Audio Spectral Integrity v0.2 methodologies added as independent bounded lineages:
+  AUDIO.SPECTRAL_INTEGRITY.COMPLEMENTARY_BUCKET_VIEWS
+  AUDIO.SPECTRAL_INTEGRITY.PHASE_SWEEP
+  AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW
+  AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION
+  QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL
+PASS spectral provider imports the upstream v0.2 DSP dynamically; DSP is not duplicated here
+PASS EvidenceRevisionAudit bridge manages candidate lifecycle only and acquires no truth authority
+PASS Generalized Compute bridge produces planning/handoff evidence only; authoritative revalidation remains mandatory
+
+FINAL PACKAGE RUNTIME
+PASS 27/27 ooRexx package tests under r13196
+PASS 5/5 package examples under r13196
+PASS Python provider compilation
+PASS methodology/work-shape JSON schema validation and exact ID coverage
+PASS spectral provider-result schema validation
+PASS strict ooRexx standards gate: 0 errors, 0 warnings
+
+UPSTREAM / TARGETED DEPENDENCY QUALIFICATION
+PASS Audio Spectral Integrity v0.2: 8 upstream unit tests + sphere JSON syntax
+PASS Evidence Revision ooRexx v0.1-dev2: 12 combiner checks + 11 revision checks
+PASS Generalized Compute Intentions v0.1-dev5 targeted planning, revalidation, rediscovery and READY-guard tests
+PASS Audio V9 Candidate20 sequence-locality bridge regression
+PASS Memory Fabric dev10 sparse/reference backing + adaptive-horizon integration regression
+PASS RexxOS RTO2 Grid dev15 MI evidence integration regression
+PASS Job-to-Node Allocator v0.6-network4 placement projection/integration regression
+
+REAL TP00001 SPECTRAL-INTEGRITY QUALIFICATION
+Source: existing source-derived audio evidence interval for TP00001 file-relative 8435-8445 s.
+No transcript, speaker identity or source count is inferred.
+
+Complementary 100 Hz bucket views, offset 0 Hz:
+  sample_rate=8000 Hz
+  sample_count=79970
+  max passband recombination error=1.3877787807814457e-17
+  authority: source unchanged; no observation promotion; no source-separation claim
+
+Bucket-origin phase sweep at 0/25/50/75 Hz:
+  odd power fractions=0.3000189973, 0.3138921685, 0.5562024267, 0.5771043041
+  odd-fraction range=0.2770853068
+  maximum recombination error=1.3877787807814457e-17
+Interpretation: the listening partition is materially phase-sensitive, so a persuasive bucket origin cannot be cherry-picked as if it were an intrinsic source decomposition.
+
+Bounded preference view:
+  odd preference=24 dB relative attenuation
+  result=CANDIDATE / DERIVED_LISTENING_VIEW
+  peak-safe scale=1.0
+  adds_information=false
+
+Harmonic observation without independent f0:
+  NOT_APPLICABLE / EXTERNAL_F0_REQUIRED
+
+CONTROLLED QUALIFICATION
+Known f0=200 Hz harmonic fixture:
+  1940 externally-seeded harmonic observations
+  this qualifies the measurement path only; it does not infer pitch/source identity in field audio
+
+Known two-input interleave positive control:
+  slot=100 Hz, ceiling=8000 Hz
+  even/A max abs recovery error=2.498001805406602e-16
+  odd/B max abs recovery error=2.220446049250313e-16
+  only this controlled fixture has known source ownership
+
+EVIDENCE REVISION BOUNDARY
+EvidenceRevisionAudit classifications are consumed detached from media candidates.
+ADMITTED_DELTA_BACKED means policy-relative revision, not factual truth.
+MUTATED_GROUND_ID and UNVERIFIED_REMOVAL quarantine the candidate/comparison lifecycle.
+POLICY_CHANGE_REQUIRES_REVIEW requires review.
+No revision operation mutates captured source observation or promotes reconstructed media into observation.
+
+COMPUTE / FABRIC BOUNDARY
+The media bridge retains the exact MediaExperimentTask, execution profile and source references.
+Generalized Compute output remains planning evidence with mutationAuthority=NONE and revalidationRequired=true.
+Memory Fabric remains transient residency/fencing authority.
+RexxOS remains MI/MU runtime identity authority.
+Job-to-Node remains placement authority.
+Current Memory Fabric XTP candidate4 was reviewed as the evolving remote-residency boundary but is not silently substituted for the dev10 compatibility regression used by this package.
+
+FINAL FRESH-EXTRACT GATE
+The final ZIP is required to pass SHA-256 manifest verification and the 27 runtime tests again from a fresh extraction before release.
