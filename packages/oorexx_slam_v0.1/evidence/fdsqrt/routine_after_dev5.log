@@ -1,0 +1,38 @@
+== AFTER dev5
+PASS  small x=0.0004       same output as before (0.02) and true
+PASS  small x=0.25         same output as before (0.5) and true
+PASS  small x=0.5          same output as before (0.70710678) and true
+PASS  small x=1            same output as before (1) and true
+PASS  small x=2            same output as before (1.41421356) and true
+PASS  small x=3            same output as before (1.73205081) and true
+PASS  small x=9            same output as before (3) and true
+PASS  small x=10           same output as before (3.16227766) and true
+PASS  small x=99.5         same output as before (9.97496865) and true
+PASS  small x=144          same output as before (12) and true
+PASS  small x=1000         same output as before (31.6227766) and true
+PASS  small x=12345.678    same output as before (111.111107) and true
+PASS  small x=65025        same output as before (255) and true
+PASS  small x=250000       same output as before (500) and true
+PASS  small x=999999       same output as before (999.9995) and true
+PASS  small x=1000000      same output as before (1000) and true
+PASS  large x=1000001       -> 1000.0005        agrees with the second way and the anchor (before: 1000.0005       )
+PASS  large x=10000000      -> 3162.27766       agrees with the second way and the anchor (before: 3162.47757      )
+PASS  large x=12345678.9    -> 3513.64183       agrees with the second way and the anchor (before: 3514.2679       )
+PASS  large x=99999999      -> 9999.99995       agrees with the second way and the anchor (before: 10784.5947      )
+PASS  large x=100000000     -> 10000            agrees with the second way and the anchor (before: 10784.5948      )
+PASS  large x=330000000     -> 18165.9021       agrees with the second way and the anchor (before: 25327.9896      )
+PASS  large x=1000000000    -> 31622.7766       agrees with the second way and the anchor (before: 66401.189       )
+PASS  large x=2000000000    -> 44721.3596       agrees with the second way and the anchor (before: 127483.396      )
+PASS  large x=10000000000   -> 100000           agrees with the second way and the anchor (before: 615803.15       )
+PASS  large x=777000000000  -> 881476.035       agrees with the second way and the anchor (before: 47429777.9      )
+PASS  large x=1000000000000 -> 1000000          agrees with the second way and the anchor (before: 61040618        )
+PASS  large x=1E15          -> 31622776.6       agrees with the second way and the anchor (before: 6.1035162E+10   )
+PASS  large x=4E18          -> 2E+9             agrees with the second way and the anchor (before: 2.44140625E+14  )
+PASS  ends, and is true, for x=0.0004 (11 steps)
+PASS  ends, and is true, for x=1000000 (15 steps)
+PASS  ends, and is true, for x=1E12 (25 steps)
+PASS  ends, and is true, for x=4E18 (36 steps)
+PASS  ends, and is true, for x=1E40 (71 steps)
+      timing: AFTER 3000 calls 0.0425 s
+      timing before: 3000 calls 0.0803 s
+FDSQRT AFTER TEST: PASS (34 checks)

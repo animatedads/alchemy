@@ -1,0 +1,22 @@
+== BEFORE dev5
+-- standard deviation: FDNoiseModel (quiet frame steps)
+PASS  small noise global sigma -> 0.316291435 (anchor 0.316291435230231929)
+PASS  small noise door sigma -> 0.100052069 (anchor 0.100052068944125288)
+      large noise global sigma -> 9066.77825 (anchor 8663.130721627141648) 0
+      large noise door sigma -> 3457.70619 (anchor 3457.177215590777319) 0
+-- standard deviation: FDNightDoorGeometryModel~photometricStats (pixel values)
+      (this version has no photometricStats; its pixel standard deviation is doorAppearanceContrast, private)
+-- gradient size: gmag=FDSqrt((gdx*gdx)+(gdy*gdy)), then noise~add(gmag,dmag)
+PASS  small gradient size 3,4 -> 5 (anchor 5                   )
+PASS  small gradient size 0.5,1.2 -> 1.3 (anchor 1.3                 )
+PASS  small gradient size -1.122,0.4 -> 1.19116918 (anchor 1.191169173543372049)
+PASS  small gradient size 0,0.75 -> 0.75 (anchor 0.75                )
+PASS  small gradient size 12,-35 -> 37 (anchor 37                  )
+PASS  small noise sigma of gradient sizes -> 15.7187683 (anchor 15.71876830416429288)
+      large gradient size 6000,8000 -> 10784.5948 (anchor 10000               ) 0
+      large gradient size -2400,7000 -> 7578.80275 (anchor 7400                ) 0
+      large gradient size 300000,400000 -> 15264250.2 (anchor 500000              ) 0
+      large gradient size 12345,6789 -> 17139.6566 (anchor 14088.63180014297910) 0
+      large noise sigma of gradient sizes -> 3.54975305E+9 (anchor 7626208.973008804195) 0
+PASS  7 large results are false before the change
+FDSQRT DOOR BEFORE TEST: PASS (9 checks)

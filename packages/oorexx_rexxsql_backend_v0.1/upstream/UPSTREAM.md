@@ -1,6 +1,6 @@
 # Rexx/SQL 2.6B3: patches for ooRexx 5, GCC 14 and the SQLite3 driver
 
-For Mark Hessling, from the Alchemy project (Tom Dyer). Patches written and tested by Claude (Opus 5.5), 2026-10-24.
+For Mark Hessling, from the Alchemy project (Tom Dyer). Patches written and tested by Claude (Opus 5.5), 2026-10-24 (0001-0004) and 2026-10-28 (0005).
 
 ## Source
 
@@ -22,8 +22,9 @@ Test platform: Ubuntu 24.04 x86-64, GCC 13.3 (also built with GCC 14's default-e
 | 0002 | `common/rxmt*.c`, `common/rxmt.h`, `general/rxsqlinc2.h` | Errors under GCC 14: `IfcRxPackCleanup( VOID )` (VOID undefined, so an implicit-int parameter); `MTMalloc` declared with `long size`, implemented with `size_t`; `RexxSQLInitHandler` hard-coded `LONG` where `RexxExitHandler` is `int`. | `void`; `size_t` throughout; `REH_RETURN`/`REH_ARG*_TYPE` from `rxdef.h`. |
 | 0003 | `sqlite3/sqlite3.c`, `general/rxsqlinc2.h` | (a) `FetchRow`/`SetRowCountVar` built `stem.column.n` with `sprintf` into a `MAX_IDENTIFIER`-sized stack buffer; SQLite column names are unbounded (an unaliased expression is named by its text), so `select 'a' || 'a' || ...` aborted the interpreter (`*** buffer overflow detected ***`). (b) Text measured with `strlen()`: values truncated at the first NUL byte. (c) BLOB columns always returned `""`. (d) `sprintf(tmp, ...)` of 255-byte identifiers into `tmp[128]`. | Heap buffer when the name does not fit (an invalid Rexx name now returns rc -16); `sqlite3_column_bytes()`; `sqlite3_column_blob()`; `snprintf(tmp, sizeof(tmp), ...)`. |
 | 0004 | `sqlite3/sqlite3.c` | `SelectStatement()` recognises only a leading `SELECT`. Through `SQLCOMMAND`, `WITH ... SELECT`, `PRAGMA`, `EXPLAIN`, `VALUES` and `... RETURNING` failed with "another row available" or returned no rows. Through `SQLEXECUTE`, a `PRAGMA` or `INSERT ... RETURNING` reported "another row available" after the statement had already run. | After `sqlite3_prepare`, `sqlite3_column_count() > 0` marks the statement as a query for fetching. The original classification is kept (`leading_select`) for everything else: `SQLEXECUTE` steps a non-SELECT statement to completion and discards its rows; a SELECT through `SQLEXECUTE` and the AUTOCOMMIT rule are unchanged. |
+| 0005 | `sqlite3/sqlite3.c` | Every bound `SQLCOMMAND` or `SQLEXECUTE` leaked memory. `ConvertBindValues()` allocates `stmt->Argv` (2 x `MAX_BINDVARS` `RXSTRING`s, 8 KB on 64-bit) plus a copy of each value, and it was freed only on error paths. 10,000 bound inserts grew the process by 94 MB; a whole-repository ingest was killed by the kernel at 6.1 GB. | Once conversion succeeds, the values are already in the statement's own descriptors (`swa->pm[i]->buf`, which `sqlite3_bind_text` uses), so the argument copy is freed with `FreeArgv()`. On failure the callers already free it. |
 
-With all four, `./configure --with-rexx=oorexx --with-db=sqlite3 && make` works with no extra options
+With all five, `./configure --with-rexx=oorexx --with-db=sqlite3 && make` works with no extra options
 on Ubuntu 24.04, and `samples/tester.cmd` produces the same output as the unpatched build.
 
 ## Evidence
@@ -33,7 +34,12 @@ on Ubuntu 24.04, and `samples/tester.cmd` produces the same output as the unpatc
   the BLOB and long-column-name defects were reproduced separately on the unpatched build
   (`../evidence/`).
 - 120,000 keyed SELECTs through `SQLCOMMAND`: resident memory flat at 28 MB; about 80 us per call
-  at 20,000 rows.
+  at 20,000 rows. That run used no bind values, so it did not reach the leak 0005 fixes.
+- `../evidence/bind_leak.rex` (0005): 10,000 bound inserts +94 MB before, +12 MB after; 10,000
+  `SQLEXECUTE` runs of one prepared statement +82 MB before, +0.1 MB after; unbound inserts unchanged
+  (`../evidence/bind_leak_unpatched.log`, `bind_leak_patched.log`). Driver 52/52 and backend 24/24
+  pass with all five. Found by SLAM (`oorexx_slam_v0.1`), whose whole-repository ingest was killed at
+  6.1 GB.
 
 ## Not changed (noted for you)
 

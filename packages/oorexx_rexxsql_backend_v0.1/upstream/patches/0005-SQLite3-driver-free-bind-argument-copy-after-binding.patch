@@ -1,0 +1,30 @@
+Subject: [PATCH 5/5] SQLite3 driver: free the bind argument copy after binding
+
+Every bound SQLCOMMAND or SQLEXECUTE allocated stmt->Argv (2*MAX_BINDVARS RXSTRINGs,
+8 KB on 64-bit) plus a copy of each value, and freed it only on error paths. The values
+are already copied into swa->pm[i]->buf, which sqlite3_bind_text uses, so the copy is
+freed once conversion succeeds. Measured with ooRexx 5.3.0 head: 10,000 bound inserts
+grew the process by 82 MB before, 0.1 MB after (SQLExecute on one prepared statement:
++81 MB before, +0.1 MB after). Driver 52/52 and backend 24/24 still pass.
+Found by SLAM's whole-estate ingest (killed at 6.1 GB).
+
+Author: Claude (Opus 5.5), 2026-10-28. Architecture: Tom Dyer. Rexx/SQL: Mark Hessling.
+---
+--- a/sqlite3/sqlite3.c
++++ b/sqlite3/sqlite3.c
+@@ -1226,6 +1226,15 @@
+          swa->bind_cnt = 0;
+          break;
+    }
++   /*
++    * Alchemy patch 0005: every value has now been copied into the statement's own
++    * descriptors (swa->pm[i]->buf), which sqlite3_bind_text uses. The argument copy is
++    * no longer needed. Without this, every bound SQLCOMMAND/SQLEXECUTE leaked
++    * 2*MAX_BINDVARS RXSTRINGs (8 KB on 64-bit) plus a copy of each value.
++    * On failure the callers already free it.
++    */
++   if ( rc == 0 )
++      stmt->Argv = FreeArgv( RxPackageGlobalData, &stmt->Argc, stmt->Argv );
+ 
+    return (int)FunctionEpilogue( RxPackageGlobalData, "ConvertBindValues", (long)rc );
+ }

@@ -2,11 +2,12 @@ call testParser
 call testActionEnvelope
 call testDifferential
 call testAttributeMasks
+call testRowWidthGuards
 say "PASS S3270 REFERENCE DIFFERENTIAL"
 exit 0
 
 testParser:
-  dump="data: SF(c0=20) 54 53 4F 20 20 20 20 20"||"0a"x||,
+  dump="data: SF(c0=20) 54 53 4F 20 20 20 20"||"0a"x||,
        "data: SF(c0=01) 41 42 00 20 SF(c0=2c) 53 45"
   p=.S3270ReferenceParser~parse(dump,2,8,1,3)
   call assert p~ok,"parse"
@@ -25,7 +26,7 @@ testParser:
   return
 
 testActionEnvelope:
-  data="data: SF(c0=20) 54 53 4F 20 20 20 20 20"||"0a"x||,
+  data="data: SF(c0=20) 54 53 4F 20 20 20 20"||"0a"x||,
        "data: SF(c0=01) 41 42 20 20 SF(c0=2C) 53 45"||"0a"x
   response=data||"U F U C(ed209z) I 2 2 8 1 3 0 0.004"||"0a"x||"ok"||"0a"x
   p=.S3270ReferenceParser~parseActionResponse(response)
@@ -54,7 +55,7 @@ testDifferential:
   a=stream~applyHostRecord(rec); call assert a~ok,"host record"
   model~cursor=11
   projected=.TN3270Snapshot~fromModel(model,cp); call assert projected~ok,"terminal snapshot"
-  data="data: SF(c0=20) 54 53 4F 20 20 20 20 20"||"0a"x||,
+  data="data: SF(c0=20) 54 53 4F 20 20 20 20"||"0a"x||,
        "data: SF(c0=01) 41 42 20 20 SF(c0=2C) 53 45"||"0a"x
   response=data||"U F U C(ed209z) I 2 2 8 1 3 0 0.004"||"0a"x||"ok"||"0a"x
   ref=.S3270ReferenceParser~parseActionResponse(response); call assert ref~ok,"reference snapshot"
@@ -79,6 +80,17 @@ testAttributeMasks:
     call assertEq f~modified,wantModified[i]==1,"modified "||attrs[i]
     call assertEq f~nonDisplay,wantSecret[i]==1,"nondisplay "||attrs[i]
   end
+  return
+
+testRowWidthGuards:
+  over="data: SF(c0=20) 54 53 4F 20 20 20 20 20"||"0a"x||,
+       "data: SF(c0=01) 41 42 20 20 SF(c0=2C) 53 45"
+  r=.S3270ReferenceParser~parse(over,2,8,0,0)
+  call assert \r~ok & r~code=="S3270_ROW_WIDTH", "overfilled row rejected"
+  under="data: SF(c0=20) 54 53 4F 20 20 20"||"0a"x||,
+        "data: SF(c0=01) 41 42 20 20 SF(c0=2C) 53 45"
+  r=.S3270ReferenceParser~parse(under,2,8,0,0)
+  call assert \r~ok & r~code=="S3270_ROW_WIDTH", "underfilled row rejected"
   return
 
 join: procedure

@@ -831,10 +831,18 @@
 
 
 ::routine FDSqrt public
+  /* Newton square root.  It runs on until the answer does not change; there is no fixed count of steps.
+     From this start the guess is never below the root, so each step can only make it smaller: the loop
+     ends at the first step that does not (equal, or one unit up from rounding).  The old fixed 14 steps
+     were enough only up to about 1e6 (at 1e8 the result was 7.8% high).  Found by SLAM, 2026-10-28. */
   use strict arg x
   if x<=0 then return 0
   guess=x; if guess<1 then guess=1
-  do 14; guess=(guess+(x/guess))/2; end
+  do forever
+    next=(guess+(x/guess))/2
+    if next>=guess then leave
+    guess=next
+  end
   return guess
 
 ::routine FDSign public

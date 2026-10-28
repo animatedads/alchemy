@@ -39,3 +39,12 @@ The 2026-09-27 review identified PHYS-001/PHYS-002; canonical sphere records the
 Freeze/replay compatibility must include behavioural authority (dynamic `setMethod`, class `define` where permitted) and pending delayed messages, in addition to state variables. A journal-pointed checkpoint cannot promise deterministic continuation if those future-determining elements are omitted. No new incompatible checkpoint format is authorized by this note.
 
 **Open implementation:** run the enforcer directly against the canonical dev50.1 source/package; classify findings, repair in bounded batches, execute r13196 tests, and record exact PASS/FAIL/SKIP receipts. This sphere update is a coordination/documentation commit, **not** a claim that source repairs or full-suite qualification were performed in this turn.
+
+
+## 2026-10-28 — dev50.2 journal preflight implementation
+Canonical source now includes the bounded journal restore repair at `packages/oorexx_physics_world/rexx/PhysicsJournalState.cls`.
+The shared State-of-the-Nation `journalCanMoveTo` preflight reconstructs the requested point with Journal Pointed State v0.1 and asks any participant supporting `validateContinuationState` to validate its physical continuation before the journal pointer moves. Physics' core participant now binds the continuation to its originating world and exact ordered body inventory, and validates these constraints on direct restore too. The checkpoint core schema is `physics.world.core/0.2`; this changes the live-core payload shape and must not be silently interpreted as 0.1.
+
+Regression source: `packages/oorexx_physics_world/tests/test_physics_journal_preflight.rex` exercises a foreign-world state inserted into a journal, and a changed body inventory, and asserts that rejected moves do not change pointer, pose or time.
+
+**Qualification distinction:** source, regression fixture and sphere are committed; a 2026-10-28 interpreter execution receipt is not available in the present execution environment. JPS `stateAt` is a reconstructing read, not a pointer move. Non-core participants without `validateContinuationState` still rely on existing restore/rollback behaviour; universal behavioural-authority or pending-event capture is **not claimed**. The package-wide standards-enforcer gate and the full suite remain open.

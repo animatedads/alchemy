@@ -1,7 +1,7 @@
 # ooRexx Rexx/SQL backend v0.1 (SQLite)
 
 **Architecture:** Tom Dyer (NativeDatabaseBackend contract; backend-neutral Semantic Source Store).
-**Rexx/SQL:** Mark Hessling (LGPL), version 2.6B3, plus four patches.
+**Rexx/SQL:** Mark Hessling (LGPL), version 2.6B3, plus five patches.
 **Patches, backend and tests:** Claude (Opus 5.5), 2026-10-24.
 
 Mark Hessling's Rexx/SQL gives ooRexx a function-call SQL interface to SQLite (and MySQL, ODBC,
@@ -32,7 +32,7 @@ read back instead of being refused (a different branch of the same test).
 | Path | What |
 |---|---|
 | `upstream/rxsql26B3/` | Rexx/SQL 2.6B3 source exactly as distributed (SHA-256 of the zip in `upstream/UPSTREAM.md`) |
-| `upstream/patches/` | Four patches, ready to send to Mark (`UPSTREAM.md` explains each) |
+| `upstream/patches/` | Five patches, ready to send to Mark (`UPSTREAM.md` explains each) |
 | `tools/build_rexxsql.sh` | Applies the patches to a copy and builds `librexxsql.so` |
 | `src/RexxSqlBackend.cls` | `RexxSqlSqliteBackend`, `RexxSqlSqliteSession`, `RexxSqlResult`, `RexxSqlRow` |
 | `src/RexxSqlPlanAudit.cls` | Session that records every statement whose query plan scans a whole table |

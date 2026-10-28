@@ -1,0 +1,191 @@
+reference/07_functions_b.md:21 SAME | say LEFT("abc d",8)                                                                                 
+reference/07_functions_b.md:34 SAME | say LEFT("abc d",8,".")                                                                             
+reference/07_functions_b.md:47 SAME | say LEFT("abc  def",7)                                                                              
+reference/07_functions_b.md:64 SAME | say LENGTH("abcdefgh")                                                                              
+reference/07_functions_b.md:77 SAME | say LENGTH("abc defg")                                                                              
+reference/07_functions_b.md:90 SAME | say LENGTH("")                                                                                      
+reference/07_functions_b.md:126 DIFFERENT | myfile = "ANYFILE.TXT" / say LINEIN(myfile)                                                         
+reference/07_functions_b.md:140 DIFFERENT | say LINEIN(myfile,1,1)                                                                              
+reference/07_functions_b.md:153 SAME | say LINEIN(myfile,1,0)                                                                              
+reference/07_functions_b.md:166 SAME | say LINEIN(myfile, ,0)                                                                              
+reference/07_functions_b.md:179 DIFFERENT | say LINEIN("QUEUE:")                                                                                
+reference/07_functions_b.md:218 NO REFERENCE | LINEOUT(,"Display this")          /* Writes string to the default   */ /                            
+reference/07_functions_b.md:265 SAME | say LINES(myfile)  /* at end of the file   */                                                       
+reference/07_functions_b.md:278 SAME | say LINES()  /* data remains in the  */                                                             
+reference/07_functions_b.md:291 NO REFERENCE |                          /* default input stream */ /                          /* STDIN:            
+reference/07_functions_b.md:312 SAME | say lower("Albert Einstein")                                                                        
+reference/07_functions_b.md:325 SAME | say lower("ABCDEF", 4)                                                                              
+reference/07_functions_b.md:338 SAME | say lower("ABCDEF", 3, 2)                                                                           
+reference/07_functions_b.md:358 SAME | say MAX(12,6,7,9)                                                                                   
+reference/07_functions_b.md:371 SAME | say MAX(17.3,19,17.03)                                                                              
+reference/07_functions_b.md:384 SAME | say MAX(-7,-3,-4.3)                                                                                 
+reference/07_functions_b.md:397 SAME | say MAX(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21)                                      
+reference/07_functions_b.md:417 SAME | say MIN(12,6,7,9)                                                                                   
+reference/07_functions_b.md:430 SAME | say MIN(17.3,19,17.03)                                                                              
+reference/07_functions_b.md:443 SAME | say MIN(-7,-3,-4.3)                                                                                 
+reference/07_functions_b.md:456 SAME | say MIN(21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1)                                      
+reference/07_functions_b.md:485 SAME | say OVERLAY(" ","abcdef",3)                                                                         
+reference/07_functions_b.md:498 SAME | say OVERLAY(".","abcdef",3,2)                                                                       
+reference/07_functions_b.md:511 SAME | say OVERLAY("qq","abcd")                                                                            
+reference/07_functions_b.md:524 SAME | say OVERLAY("qq","abcd",4)                                                                          
+reference/07_functions_b.md:537 SAME | say OVERLAY("123","abc",5,6,"+")                                                                    
+reference/07_functions_b.md:566 SAME | say POS("day","Saturday")                                                                           
+reference/07_functions_b.md:579 SAME | say POS("x","abc def ghi")                                                                          
+reference/07_functions_b.md:592 SAME | say POS(" ","abc def ghi")                                                                          
+reference/07_functions_b.md:605 SAME | say POS(" ","abc def ghi",5)                                                                        
+reference/07_functions_b.md:618 SAME | say POS(" ","abc def ghi",5,3)                                                                      
+reference/07_functions_b.md:643 DIFFERENT | say QUEUED()  /* Perhaps */                                                                         
+reference/07_functions_b.md:679 DIFFERENT | say RANDOM()  /* 0 to 999     */                                                                    
+reference/07_functions_b.md:692 DIFFERENT | say RANDOM(5, 8)  /* 5 to 8       */                                                                
+reference/07_functions_b.md:705 DIFFERENT | say RANDOM(2)  /* 0 to 2       */                                                                   
+reference/07_functions_b.md:718 SAME | say RANDOM(, , 3257)  /* reproducible */                                                            
+reference/07_functions_b.md:731 DIFFERENT | say RANDOM(-5, 5)                                                                                   
+reference/07_functions_b.md:744 NO REFERENCE | sequence = RANDOM(1,6,12345)  /* any number would */ /                               /* do for a see
+reference/07_functions_b.md:764 SAME | say REVERSE("ABc.")                                                                                 
+reference/07_functions_b.md:777 SAME | say REVERSE("XYZ ")                                                                                 
+reference/07_functions_b.md:801 SAME | say RIGHT("abc  d",8)                                                                               
+reference/07_functions_b.md:814 SAME | say RIGHT("abc def",5)                                                                              
+reference/07_functions_b.md:827 SAME | say RIGHT("12",5,"0")                                                                               
+reference/07_functions_b.md:854 NO REFERENCE | -- 0 if rxcalcsqrt can be located, else 1 / rxfuncadd("rxcalcsqrt", "rxmath", "rxcalcsqrt")         
+reference/07_functions_b.md:869 DIFFERENT | say rxfuncdrop("SysLoadFuncs")  /* if successfully removed   */                                     
+reference/07_functions_b.md:889 SAME | say rxfuncquery("SysLoadFuncs")  /* if registered             */                                    
+reference/07_functions_b.md:967 SAME | /* default queue                                    */ / say rxqueue("Get")                         
+reference/07_functions_b.md:981 DIFFERENT | /* assuming FRED does not already exist             */ / say rxqueue("Create", "Fred")              
+reference/07_functions_b.md:995 SAME | /* assuming SESSION had been active                 */ / say rxqueue("Set", "Fred")                 
+reference/07_functions_b.md:1009 SAME | /* assuming FRED exists                             */ / say rxqueue("delete", "Fred")              
+reference/07_functions_b.md:1040 NO REFERENCE | /* Current path is "user/bin" */ / n = SETLOCAL()           /* saves all environment settings */ / /
+reference/07_functions_b.md:1063 SAME | say SIGN("12.3")                                                                                    
+reference/07_functions_b.md:1076 SAME | say SIGN(" -0.307")                                                                                 
+reference/07_functions_b.md:1089 SAME | say SIGN(0.0)                                                                                       
+reference/07_functions_b.md:1113 DIFFERENT | say SOURCELINE()                                                                                    
+reference/07_functions_b.md:1126 DIFFERENT | say SOURCELINE(1)                                                                                   
+reference/07_functions_b.md:1151 SAME | say SPACE("abc  def  ")                                                                             
+reference/07_functions_b.md:1164 SAME | say SPACE("  abc def",3)                                                                            
+reference/07_functions_b.md:1177 SAME | say SPACE("abc  def  ",1)                                                                           
+reference/07_functions_b.md:1190 SAME | say SPACE("abc  def  ",0)                                                                           
+reference/07_functions_b.md:1203 SAME | say SPACE("abc  def  ",2,"+")                                                                       
+reference/07_functions_b.md:1405 DIFFERENT | stream(strout,"c","open") / stream(strout,"c","open write") / stream(strinp,"c","open read") / strea
+reference/07_functions_b.md:1427 DIFFERENT | say stream("..\file.txt","c","query exists")                                                        
+reference/07_functions_b.md:1440 DIFFERENT | say stream("..\file.txt","c","query handle")                                                        
+reference/07_functions_b.md:1453 DIFFERENT | say stream("myfile","c","query position write")                                                     
+reference/07_functions_b.md:1466 DIFFERENT | say stream("..\file.txt","c","query size")                                                          
+reference/07_functions_b.md:1479 DIFFERENT | stream("..\file.txt","c","query timestamp")                                                         
+reference/07_functions_b.md:1512 SAME | say STRIP("  ab c  ")                                                                               
+reference/07_functions_b.md:1525 SAME | say STRIP("  ab c  ","L")                                                                           
+reference/07_functions_b.md:1538 SAME | say STRIP("  ab c  ","t")                                                                           
+reference/07_functions_b.md:1551 SAME | say STRIP("12.7000", ,0)                                                                            
+reference/07_functions_b.md:1564 SAME | say STRIP("0012.700", ,0)                                                                           
+reference/07_functions_b.md:1577 SAME | say STRIP("12.0000", "T", '.0')                                                                     
+reference/07_functions_b.md:1602 SAME | say SUBSTR("abc",2)                                                                                 
+reference/07_functions_b.md:1615 SAME | say SUBSTR("abc",2,4)                                                                               
+reference/07_functions_b.md:1628 SAME | say SUBSTR("abc",2,6,".")                                                                           
+reference/07_functions_b.md:1652 SAME | say SUBWORD("Now is the  time",2,2)                                                                 
+reference/07_functions_b.md:1665 SAME | say SUBWORD("Now is the  time",3)                                                                   
+reference/07_functions_b.md:1678 SAME | say SUBWORD("Now is the  time",5)                                                                   
+reference/07_functions_b.md:1706 DIFFERENT | /* following: Drop A.3;  J=3 */ / say SYMBOL("J")                                                   
+reference/07_functions_b.md:1720 SAME | say SYMBOL(J)  /* has tested "3"        */                                                          
+reference/07_functions_b.md:1733 SAME | say SYMBOL("a.j")  /* has tested A.3        */                                                      
+reference/07_functions_b.md:1746 SAME | say SYMBOL(2)  /* a constant symbol     */                                                          
+reference/07_functions_b.md:1759 SAME | say SYMBOL(".TRUE")  /* an environment symbol */                                                    
+reference/07_functions_b.md:1772 SAME | say SYMBOL("*")  /* not a valid symbol    */                                                        
+reference/07_functions_b.md:1905 DIFFERENT | say TIME()                                                                                          
+reference/07_functions_b.md:1918 DIFFERENT | say TIME("C")                                                                                       
+reference/07_functions_b.md:1931 DIFFERENT | say TIME("H")                                                                                       
+reference/07_functions_b.md:1944 DIFFERENT | say TIME("L")  /* Perhaps */                                                                        
+reference/07_functions_b.md:1957 DIFFERENT | say TIME("M")  /* 54 + 60*16 */                                                                     
+reference/07_functions_b.md:1970 DIFFERENT | say TIME("N")                                                                                       
+reference/07_functions_b.md:1983 DIFFERENT | say TIME("S")  /* 22 + 60*(54+60*16) */                                                             
+reference/07_functions_b.md:1996 SAME | say time("E")  /* The first call */                                                                 
+reference/07_functions_b.md:2009 DIFFERENT |                   /* pause of one second here */ / say time("E")  /* or thereabouts */              
+reference/07_functions_b.md:2023 DIFFERENT |                   /* pause of one second here */ / say time("R")  /* or thereabouts */              
+reference/07_functions_b.md:2037 DIFFERENT |                   /* pause of one second here */ / say time("R")  /* or thereabouts */              
+reference/07_functions_b.md:2051 SAME | say time("C","11:27:21")                                                                            
+reference/07_functions_b.md:2064 SAME | say time("N","11:27am","C")                                                                         
+reference/07_functions_b.md:2077 SAME | say time("N", "63326132161828000", "F")                                                             
+reference/07_functions_b.md:2090 NO REFERENCE | If TIME("M","5:00pm","C")-TIME("M")<=0 / then say "Time to go home" / else say "Keep working" / nume
+reference/07_functions_b.md:2116 DIFFERENT | Say TRACE()  /* maybe */                                                                            
+reference/07_functions_b.md:2129 DIFFERENT | Say TRACE("O")  /* also sets tracing off */                                                         
+reference/07_functions_b.md:2142 DIFFERENT | Say TRACE("?I")  /* now in interactive debugging */                                                 
+reference/07_functions_b.md:2181 SAME | say TRANSLATE("abcdef")                                                                             
+reference/07_functions_b.md:2194 SAME | say TRANSLATE("abcdef", , , , 2, 3)                                                                 
+reference/07_functions_b.md:2207 SAME | say TRANSLATE("abcdef", "12", "ec")                                                                 
+reference/07_functions_b.md:2220 SAME | say TRANSLATE("abcdef", "12", "abcd", ".")                                                          
+reference/07_functions_b.md:2233 SAME | say TRANSLATE("APQRV", , "PR")                                                                      
+reference/07_functions_b.md:2246 SAME | say TRANSLATE("APQRV", XRANGE("00"X, "Q"))                                                          
+reference/07_functions_b.md:2259 SAME | say TRANSLATE("4123", "abcd", "1234", , 2, 2)                                                       
+reference/07_functions_b.md:2272 SAME | say TRANSLATE("4123", "abcd", "1234")                                                               
+reference/07_functions_b.md:2298 SAME | say TRUNC(12.3)                                                                                     
+reference/07_functions_b.md:2311 SAME | say TRUNC(127.09782,3)                                                                              
+reference/07_functions_b.md:2324 SAME | say TRUNC(127.1,3)                                                                                  
+reference/07_functions_b.md:2337 SAME | say TRUNC(127,2)                                                                                    
+reference/07_functions_b.md:2360 SAME | say upper("Albert Einstein")                                                                        
+reference/07_functions_b.md:2373 SAME | say upper("abcdef", 4)                                                                              
+reference/07_functions_b.md:2386 SAME | say upper("abcdef", 3, 2)                                                                           
+reference/07_functions_b.md:2454 DIFFERENT | /* After: Drop A3; A33=7; K=3; fred="K"; list.5="Hi" */ / say VALUE("a"k)  /* looks up A3           
+reference/07_functions_b.md:2468 DIFFERENT | say VALUE("a"k||k)                                                                                  
+reference/07_functions_b.md:2481 DIFFERENT | say VALUE("fred")  /* looks up FRED              */                                                 
+reference/07_functions_b.md:2494 DIFFERENT | say VALUE(fred)  /* looks up K                 */                                                   
+reference/07_functions_b.md:2507 DIFFERENT | say VALUE(fred,5)  /* looks up K and             */                                                 
+reference/07_functions_b.md:2520 DIFFERENT |                         /* then sets K=5              */ / say VALUE(fred)  /* looks up K           
+reference/07_functions_b.md:2534 DIFFERENT | say VALUE("LIST."k)  /* looks up LIST.5            */                                               
+reference/07_functions_b.md:2547 NO REFERENCE | /* Given that an external variable FRED has a value of 4         */ / share = "ENVIRONMENT" / say VA
+reference/07_functions_b.md:2589 DIFFERENT | /* Following: DROP A.3; J=3  */ / say VAR("J")                                                      
+reference/07_functions_b.md:2603 SAME | say VAR(J)  /* has tested "3"    */                                                                 
+reference/07_functions_b.md:2616 SAME | say VAR("a.j")  /* has tested "A.3"  */                                                             
+reference/07_functions_b.md:2629 SAME | say VAR(2)  /* a constant symbol */                                                                 
+reference/07_functions_b.md:2642 SAME | say VAR("*")  /* an invalid symbol */                                                               
+reference/07_functions_b.md:2683 SAME | say VERIFY("123","1234567890")                                                                      
+reference/07_functions_b.md:2696 SAME | say VERIFY("1Z3","1234567890")                                                                      
+reference/07_functions_b.md:2709 SAME | say VERIFY("AB4T","1234567890")                                                                     
+reference/07_functions_b.md:2722 SAME | say VERIFY("AB4T","1234567890","M")                                                                 
+reference/07_functions_b.md:2735 SAME | say VERIFY("AB4T","1234567890","N")                                                                 
+reference/07_functions_b.md:2748 SAME | say VERIFY("1P3Q4","1234567890", ,3)                                                                
+reference/07_functions_b.md:2761 SAME | say VERIFY("123","",N,2)                                                                            
+reference/07_functions_b.md:2774 SAME | say VERIFY("ABCDE","", ,3)                                                                          
+reference/07_functions_b.md:2787 SAME | say VERIFY("AB3CD5","1234567890","M",4)                                                             
+reference/07_functions_b.md:2800 SAME | say VERIFY("ABCDEF","ABC","N",2,3)                                                                  
+reference/07_functions_b.md:2813 SAME | say VERIFY("ABCDEF","ADEF","M",2,3)                                                                 
+reference/07_functions_b.md:2834 SAME | say WORD("Now is the time",3)                                                                       
+reference/07_functions_b.md:2847 SAME | say WORD("Now is the time",5)                                                                       
+reference/07_functions_b.md:2868 SAME | say WORDINDEX("Now is the time",3)                                                                  
+reference/07_functions_b.md:2881 SAME | say WORDINDEX("Now is the time",6)                                                                  
+reference/07_functions_b.md:2902 SAME | say WORDLENGTH("Now is the time",2)                                                                 
+reference/07_functions_b.md:2915 SAME | say WORDLENGTH("Now comes the time",2)                                                              
+reference/07_functions_b.md:2928 SAME | say WORDLENGTH("Now is the time",6)                                                                 
+reference/07_functions_b.md:2955 SAME | say WORDPOS("the","now is the time")                                                                
+reference/07_functions_b.md:2968 SAME | say WORDPOS("The","now is the time")                                                                
+reference/07_functions_b.md:2981 SAME | say WORDPOS("is the","now is the time")                                                             
+reference/07_functions_b.md:2994 SAME | say WORDPOS("is   the","now is the time")                                                           
+reference/07_functions_b.md:3007 SAME | say WORDPOS("is   time ","now is   the time")                                                       
+reference/07_functions_b.md:3020 SAME | say WORDPOS("be","To be or not to be")                                                              
+reference/07_functions_b.md:3033 SAME | say WORDPOS("be","To be or not to be",3)                                                            
+reference/07_functions_b.md:3050 SAME | say WORDS("Now is the time")                                                                        
+reference/07_functions_b.md:3063 SAME | say WORDS(" ")                                                                                      
+reference/07_functions_b.md:3091 SAME | say X2B("C3")                                                                                       
+reference/07_functions_b.md:3104 SAME | say X2B("7")                                                                                        
+reference/07_functions_b.md:3117 SAME | say X2B("1 C1")                                                                                     
+reference/07_functions_b.md:3130 SAME | say X2B(C2X("C3"x))                                                                                 
+reference/07_functions_b.md:3143 SAME | say X2B(D2X("129"))                                                                                 
+reference/07_functions_b.md:3156 SAME | say X2B(D2X("12"))                                                                                  
+reference/07_functions_b.md:3179 SAME | say X2C("4865 6c6c 6f")  /*  ASCII             */                                                   
+reference/07_functions_b.md:3192 SAME | say X2C("3732 73")  /*  ASCII             */                                                        
+reference/07_functions_b.md:3222 SAME | say X2D("0E")                                                                                       
+reference/07_functions_b.md:3235 SAME | say X2D("81")                                                                                       
+reference/07_functions_b.md:3248 SAME | say X2D("F81")                                                                                      
+reference/07_functions_b.md:3261 SAME | say X2D("FF81")                                                                                     
+reference/07_functions_b.md:3274 SAME | say X2D("46 30"X)  /*  ASCII   */                                                                   
+reference/07_functions_b.md:3287 SAME | say X2D("66 30"X)  /*  ASCII   */                                                                   
+reference/07_functions_b.md:3300 SAME | say X2D("81",2)                                                                                     
+reference/07_functions_b.md:3313 SAME | say X2D("81",4)                                                                                     
+reference/07_functions_b.md:3326 SAME | say X2D("F081",4)                                                                                   
+reference/07_functions_b.md:3339 SAME | say X2D("F081",3)                                                                                   
+reference/07_functions_b.md:3352 SAME | say X2D("F081",2)                                                                                   
+reference/07_functions_b.md:3365 SAME | say X2D("F081",1)                                                                                   
+reference/07_functions_b.md:3378 SAME | say X2D("0031",0)                                                                                   
+reference/07_functions_b.md:3425 SAME | say XRANGE("a", "f")                                                                                
+reference/07_functions_b.md:3438 SAME | say c2x(XRANGE('03'x, '07'x))                                                                       
+reference/07_functions_b.md:3451 SAME | say c2x(XRANGE(, '04'x))                                                                            
+reference/07_functions_b.md:3464 SAME | say c2x(XRANGE('FE'x, '02'x))                                                                       
+reference/07_functions_b.md:3477 SAME | say XRANGE("t", "t", "h", "i", "r", "t")                                                            
+reference/07_functions_b.md:3490 SAME | say XRANGE('xdigit')                                                                                
+reference/07_functions_b.md:3503 SAME | say XRANGE("a", "f", "A", "F", "digit")                                                             

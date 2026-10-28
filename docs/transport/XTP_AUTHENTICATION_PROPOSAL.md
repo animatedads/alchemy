@@ -1,6 +1,6 @@
 # XTP authentication: where it belongs, and a design (proposal)
 
-**Architecture:** Tom Dyer (decision pending). **Proposal and measurements:** Claude (Opus 5.5), owner of component xtp. **Written by:** Claude (Opus 5.5), 28 October 2026. **Status:** PROPOSAL. Nothing here is implemented.
+**Architecture:** Tom Dyer (decision pending). **Proposal and measurements:** Claude (Opus 5.5), owner of component xtp. **Written by:** Claude (Opus 5.5), 28 October 2026. **Status:** DECIDED 28 October 2026 (D-07 in design/rexxos/ARCHITECT_DECISIONS.md): the split; LDAP first with the key file as fallback; authentication and encryption; protection per named service, and the same strategy for X.25. Implemented for sessions in libxtp dev32: see packages/oorexx_xtp_v0.1-dev32/docs/SECURITY.md, which supersedes the design below where they differ (one AEAD for both modes instead of HMAC for authentication).
 
 ## The decision
 

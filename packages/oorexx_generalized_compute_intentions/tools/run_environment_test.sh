@@ -58,9 +58,12 @@ if [[ -n "${INSTRUMENTATION_MESH_ROOT:-}" ]]; then
   echo 'PASS rexxc tests/test_instrumentation_mesh_adapter.rex'
   "$REXXC" "$ROOT/tests/test_mesh_dev7_freshness_events.rex" >/dev/null
   echo 'PASS rexxc tests/test_mesh_dev7_freshness_events.rex'
+  "$REXXC" "$ROOT/tests/test_mesh_dev8_correlation.rex" >/dev/null
+  echo 'PASS rexxc tests/test_mesh_dev8_correlation.rex'
   echo '--- INSTRUMENTATION RUNTIME ---'
   "$REXX" test_instrumentation_mesh_adapter.rex
   "$REXX" test_mesh_dev7_freshness_events.rex
+  "$REXX" test_mesh_dev8_correlation.rex
 else
   echo 'SKIP Instrumentation Mesh integration (set INSTRUMENTATION_MESH_ROOT)'
 fi
@@ -81,4 +84,4 @@ else
   echo 'SKIP AI Model Router integration (set AI_MODEL_ROUTER_ROOT plus dependency roots)'
 fi
 
-echo 'PASS ooRexx Generalized Compute Intentions v0.1-dev6 environment qualification'
+echo 'PASS ooRexx Generalized Compute Intentions v0.1-dev7 environment qualification'

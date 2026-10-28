@@ -3,6 +3,7 @@ set -eu
 ROOT="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 : "${REXX:=rexx}"
 for t in \
+  test_fdsqrt_large_range.rex \
   test_night_locator.rex \
   test_video_hardening.rex \
   test_temporal_deflection.rex \

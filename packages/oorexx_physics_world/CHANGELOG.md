@@ -438,3 +438,12 @@
 - Added an adversarial operator-dispatch regression for the setter.
 - Added `STANDARDS_STATUS.md` recording inherited standards debt and the rule that arithmetic operators are never coercion mechanisms.
 - Added the Physics World continuity sphere under `spheres/physics_world_gopher_sphere_v0.1`.
+
+
+## 0.1-dev50.2 — Journal destination preflight (2026-10-28)
+- `PhysicsJournalParticipant~journalCanMoveTo` now reconstructs a destination without moving its journal pointer, rejects absent STATE payload, and invokes the participant's continuation validator when supported.
+- `journalMoveTo` explicitly preflights before the physical participant or Journal Pointed State is changed.
+- `PhysicsWorldCoreContinuationState` retains owner-world identity and a copied ordered body inventory; core state moves from schema `physics.world.core/0.1` to `/0.2`.
+- `PhysicsWorldCoreParticipant~validateContinuationState` rejects foreign-world and changed body inventory before mutating pose/time.
+- Added isolated adversarial regression `test_physics_journal_preflight.rex`; runtime execution and full package standards gate are pending a usable r13196 interpreter/package workspace.
+- No changes to the external Journal Pointed State v0.1 authority or competing journal/checkpoint implementations.

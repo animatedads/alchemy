@@ -1,4 +1,4 @@
-# ooRexx Generalized Compute Intentions v0.1-dev6
+# ooRexx Generalized Compute Intentions v0.1-dev7
 
 A separate convenience/intention package in front of Generalized Compute, the
 Job-to-Node/allocation authority, Work Load Units, and the existing router. It
@@ -10,6 +10,28 @@ Customer Service/NotNotes and the LLM Coding Workbench/code-generation tools:
 callers hand over native workload/context objects and receive native route,
 resource and evidence objects. Internal objects are not flattened into command
 prose and reconstructed later.
+
+## dev7: Instrumentation Mesh dev8 correlation
+
+The optional observation adapter is now rebased to qualified Instrumentation
+Mesh `v0.1-dev8` while retaining `instrumentation.mesh/0.1`.
+
+GCI propagates explicit caller-supplied operational correlation fields into its
+bounded plan/handoff event timeline:
+
+```text
+INSTRUMENTATION_EVENT_OBSERVED_AT
+INSTRUMENTATION_CORRELATION_ID
+INSTRUMENTATION_CAUSATION_ID
+INSTRUMENTATION_CONTEXT_REFS
+```
+
+Those values are evidence organisation only. GCI does not infer correlation or
+causation from timestamps, node/resource identity, common service kind,
+severity, candidate order or proximity. Missing fields remain empty.
+
+No workload body, prompt, credentials, source text, model input/output or
+arbitrary resource object is placed in the event correlation fields.
 
 ## dev6: real AI Model Router composition
 
@@ -100,7 +122,7 @@ resource, acquire/renew/release a lease, dispatch work, invoke an LLM, or claim
 that the planned candidate still exists by the time the authoritative route is
 entered.
 
-## Instrumentation Mesh dev7
+## Instrumentation Mesh dev8
 
 `GeneralizedComputeInstrumentation.cls` consumes `instrumentation.mesh/0.1` as
 an optional adapter. The planner's own state remains usable without the Mesh.
@@ -174,7 +196,7 @@ authority.
 
 ```sh
 OOREXX_DEB=/path/to/oorexx-5.3.0-13196...deb \
-INSTRUMENTATION_MESH_ROOT=/path/to/oorexx_instrumentation_mesh_v0.1-dev7 \
+INSTRUMENTATION_MESH_ROOT=/path/to/oorexx_instrumentation_mesh_v0.1-dev8 \
 INTENTION_SERVICE_ROOT=/path/to/oorexx_intention_service_v0.1-dev11 \
 AI_MODEL_ROUTER_ROOT=/path/to/oorexx_ai_model_router_v0.1 \
 WLU_ROOT=/path/to/oorexx_work_load_units_v0.12 \

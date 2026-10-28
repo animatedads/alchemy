@@ -1,6 +1,6 @@
 # RxSock6 Rasen Falcon coordination
 
-Date: 2026-10-27
+Date: 2026-10-28
 
 ## Lane
 
@@ -16,20 +16,32 @@ The lane was created only after `project_lanes_search` found the real
 `packages/oorexx_socket_provider_rxsock6` artifact and reported no existing
 lane.
 
-## Open coordination
+## Source-recovery evidence chain
 
-`REQ-00000695` was sent to `CODEX-PC` as an evidence-only task:
-
-> Locate the exact RxSock6 Socket Provider v0.1-dev3 and matching rxsock6 0.1.2
-> source/delivery closure, with artifact/path/hash/commit provenance.
-
-The request explicitly says not to reconstruct source and not to amend
+`REQ-00000695` asked `CODEX-PC` to locate the exact RxSock6 Socket Provider
+v0.1-dev3 and matching rxsock6 0.1.2 source/delivery closure. The task was
+read-only and explicitly prohibited reconstruction or changes to
 `SocketProvider.cls`.
+
+`REQ-00000931` replied **not found**. CODEX-PC confirmed that the synchronized
+repository contains only the historical package tree and that its own
+README/current-estate documents already warn against relabelling the tree as
+dev3.
+
+CHATGPT independently repeated the Library search on 2026-10-28. The exact
+package register still identifies `oorexx_socket_provider_rxsock6_v0.1-dev1.zip`;
+dev3 / rxsock6 0.1.2 appears only in later transport qualification and
+reconciliation evidence.
+
+`REQ-00001097` records acceptance of the evidence and closes the search result
+as: **exact dev3 source closure not present in the currently synchronized
+estate**.
 
 ## Current technical boundary
 
-The current qualified estate remains Socket Provider v0.1-dev16, RxSock6
-Socket Provider v0.1-dev3 and rxsock6 0.1.2.  TCP6 and UDP6 belong to RxSock6.
+The qualified estate remains Socket Provider v0.1-dev16, RxSock6 Socket Provider
+v0.1-dev3 and rxsock6 0.1.2. TCP6 and UDP6 belong to RxSock6.
+
 IPv6 RFC 3678 multicast membership belongs to IP Multicast v0.1-dev2. MLDv2 is
 host-stack behaviour below that socket API.
 

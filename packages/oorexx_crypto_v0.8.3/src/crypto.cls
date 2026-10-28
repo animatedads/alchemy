@@ -1838,9 +1838,19 @@
 ::routine rx_mod_inverse
   numeric digits 2000
   use arg a, m
+  /* Condition: modulus > 1 and gcd(value, modulus) = 1, checked before the code can return 1 or divide
+     by zero. Without it, value 0 returned 1 (false), a modulus of 1 or below returned a false number, and
+     other non-invertible input divided by zero. The gcd is the one this loop already computes: when the
+     divisor reaches 0 with the value still above 1, that value is the gcd. Valid input: same output, same
+     cost. Found by SLAM; condition stated by ChatGPT. */
+  if \datatype(m, 'W') then raise syntax 88.900 array('rx_mod_inverse: condition false: modulus > 1 (modulus is not a whole number:' m || ')')
+  if m <= 1 then raise syntax 88.900 array('rx_mod_inverse: condition false: modulus > 1 (modulus =' m || ')')
+  if \datatype(a, 'W') then raise syntax 88.900 array('rx_mod_inverse: condition false: value is a whole number (value =' a || ')')
+  if a // m = 0 then raise syntax 88.900 array('rx_mod_inverse: condition false: gcd(value, modulus) = 1 (gcd =' m || ')')
   if a < 0 then a = m + (a // m)
   x0 = 0; x1 = 1; m0 = m
   do while a > 1
+    if m = 0 then raise syntax 88.900 array('rx_mod_inverse: condition false: gcd(value, modulus) = 1 (gcd =' a || ')')
     q = a % m; t = m; m = a // m; a = t
     t = x0; x0 = x1 - q * x0; x1 = t
   end

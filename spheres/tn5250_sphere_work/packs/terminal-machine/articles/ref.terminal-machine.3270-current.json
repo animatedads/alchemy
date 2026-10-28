@@ -1,10 +1,10 @@
 {
   "kind": "article",
   "id": "ref.terminal-machine.3270-current",
-  "version": "0.5",
+  "version": "0.6",
   "sphere": "terminal-machine",
   "title": "IBM 3270 P0 current state",
-  "summary": "The current P0 line is a native IBM 3270 engine with TN3270 first, honest basic TN3270E, executable host reads/structured fields, extended attributes, operator input, detached snapshots, evidence-backed MVS/TK5 known states, one-writer ownership, and complete-response s3270 semantic differential evidence including keyboard state.",
+  "summary": "The current P0 line is candidate15: native IBM 3270/TN3270 first, honest basic TN3270E, one-writer ownership, evidence-backed MVS/TK5 states, and an s3270 differential adapter whose complete-response evidence now also enforces exact per-row buffer geometry.",
   "authority": "terminal-machine-project",
   "invariants": [
     "Traditional TN3270 remains first-class; TN3270E is used only for functions genuinely negotiated and implemented.",
@@ -20,7 +20,8 @@
     "Downstream MVS Intention may consume Terminal Machine observations but does not acquire terminal mutation authority or MVS/JES semantic authority.",
     "AID send completion is not host semantic completion; callers must advance on observed presentation generation/known state, not a scripting API return convention.",
     "A complete s3270 peer-script action response is the preferred differential evidence unit: data lines, 12-field status, and final ok/error stay bound together.",
-    "Reference keyboard U maps to UNLOCKED; L and operator-error E map to LOCKED for TerminalSnapshot comparison, while the raw s3270 code remains retained in reference status."
+    "Reference keyboard U maps to UNLOCKED; L and operator-error E map to LOCKED for TerminalSnapshot comparison, while the raw s3270 code remains retained in reference status.",
+    "Each ReadBuffer(Ascii) data line must consume exactly the declared column count: SF/data/GE each consume one display position and SA consumes none; malformed row geometry fails closed."
   ],
   "known_states": [
     "HERCULES.TK5.WELCOME_PANEL",
@@ -30,13 +31,19 @@
     "MVS.ISPF.PRIMARY_OPTION_MENU"
   ],
   "missing_work": [
-    "Run candidate14 under exact ooRexx 5.3.0 r13196 and execute the complete s3270 reference regression.",
-    "Differentially qualify candidate14 and s3270 against stable ED209Z states using complete action responses, then repeat independently on ED209ZZ; compare dimensions, cursor, keyboard, fields and visible rows.",
+    "Run candidate15 under exact ooRexx 5.3.0 r13196 and confirm the corrected s3270 reference regression plus row-width guards.",
+    "Then differentially qualify candidate15 and s3270 against stable ED209Z states and repeat independently on ED209ZZ.",
     "Capture a live Terminal Machine ISPF snapshot and compare it with the retained TK5 Figure 17 reference without promoting documentation evidence to live authority.",
     "Adopt Socket Provider only when its concrete TCP connection exposes a qualified non-blocking readiness contract; do not unwrap raw provider internals to force the migration.",
     "Add optional TN3270E BIND/RESPONSES/SYSREQ semantics only when negotiated and fully implemented; never claim optional functions speculatively."
   ],
   "provenance": [
+    {
+      "artifact": "oorexx_terminal_machine_v0.22-candidate15.zip",
+      "sha256": "9153b098543b3d00d334aed5d479b7541e8243138a20d3270700851cd0a1eec7",
+      "member": "oorexx_terminal_machine_v0.22-candidate15/qualification/CANDIDATE15_VALIDATION.txt",
+      "claim": "Records the independent r13196 fixture failure, root cause and exact-row correction."
+    },
     {
       "artifact": "mvs_intention_runner_v0.1-dev10.zip",
       "sha256": "c7c424e6e12a8b5db2ef1ac7c7813309e70b6f53827944089e57a71f958bfd5b",

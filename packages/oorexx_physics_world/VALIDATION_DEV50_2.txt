@@ -1,0 +1,34 @@
+Physics World dev50.2 journal preflight — qualification record
+Date: 2026-10-28
+Scope: packages/oorexx_physics_world/rexx/PhysicsJournalState.cls
+
+Implementation:
+- Journal destination reconstruction using peer JournalPointedState v0.1 stateAt(point);
+  the preflight does not move the pointer.
+- When available, participant validateContinuationState is called before
+  journalMoveTo; the Physics world-core participant now supplies it.
+- World-core continuation state includes origin-world identity and ordered
+  body inventory (schema physics.world.core/0.2).
+- Adversarial test test_physics_journal_preflight.rex includes foreign-origin
+  journal state injection and changed-live-inventory rejection.
+
+Review provenance:
+- Authenticated Rasen Falcon lane oorexx-physics-world.
+- Canonical GitHub Physics World v0.1-dev50.1 reconciled before modification.
+- Journal Pointed State remains the only journal/State-of-the-Nation authority.
+
+Qualification status:
+- Source and deterministic regression fixture committed.
+- NOT RUN: ooRexx r13196 was not mounted in this execution container.
+- NOT RUN: package-wide test suite / full coding standards enforcer.
+- NOT CLAIMED: atomic rollback on arbitrary participant restoration failures,
+  universal participant prevalidation, dynamic method surgery snapshots,
+  scheduled delayed messages, or cross-process durable world restoration.
+- Schema 0.2 is a distinct live-core snapshot layout; no implicit 0.1 replay.
+
+Next gate:
+- Execute isolated test plus existing Physics Journal/Freeze regression tests
+  on ooRexx r13196 with peer JournalPointedState v0.1.
+- Test shared-controller preflight with both Physics and Rexx-tronics participants.
+- Run oorexx_standards_enforcer.py over the complete canonical package and
+  repair hard findings semantically, not by changing coercion operators.

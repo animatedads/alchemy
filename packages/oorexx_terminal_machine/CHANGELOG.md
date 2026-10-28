@@ -1,3 +1,12 @@
+## v0.22-candidate15
+
+- Fix the s3270 differential fixture exposed by an independent ooRexx 5.3.0 r13196 run: the first 8-column row had encoded an SF plus eight data cells (nine positions), shifting every following field address.
+- Make ReadBuffer(Ascii) row width executable protocol evidence: every data line must consume exactly the declared screen column count, with SF and data/GE each consuming one display position and SA consuming none.
+- Add fail-closed S3270_ROW_WIDTH and S3270_ROW_COUNT errors for malformed/incomplete retained captures instead of silently wrapping or padding rows.
+- Add positive 2x8 equivalence with corrected field addresses plus explicit overfilled/underfilled row regressions.
+- Preserve candidate14 complete-response status/keyboard binding, NONDISPLAY masking and fail-closed DBCS policy.
+- Record the independent candidate13 r13196 failure as release evidence rather than discarding it.
+
 ## v0.22-candidate14
 
 - Parse the complete s3270 peer-script action response envelope instead of requiring callers to supply ReadBuffer data, dimensions and cursor coordinates separately.

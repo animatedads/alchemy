@@ -61,6 +61,16 @@ To meet D-06, materialisation needs two things:
 - Range-addressed storage with sparse local extents.
 - Per-chunk integrity, so a range is verified on its own. The Git provider's chunk manifests are the nearest existing pattern.
 
+## D-07 XTP security: mechanism in libxtp, keys and policy outside
+
+Decided by Tom Dyer, 28 October 2026, in answer to `docs/transport/XTP_AUTHENTICATION_PROPOSAL.md`.
+
+- **The split.** libxtp carries the per-packet protection mechanism. Keys, identities and policy come from outside it: the Identity Directory over LDAP, the gateway, and Secret Broker.
+- **Key sources: LDAP first, then a key file.** The key file is the fallback when LDAP is unavailable. This is the same pattern as routes under D-04.
+- **Both authentication and encryption** are offered as options.
+- **Protection is per service.** XTP links are per named service, so each named service has its own protection profile (none, authentication, or encryption) and its own keys.
+- **The same strategy applies to X.25.** An X.25 service, identified by its called address and CUD protocol identifier, maps to a named service with a profile. A leg that cannot meet the profile is refused, not silently downgraded.
+
 ## Directives as recorded by ChatGPT (24 Oct answer K7, for Tom to confirm)
 
 | Date | Directive |
