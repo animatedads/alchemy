@@ -1,0 +1,46 @@
+{
+  "kind": "article",
+  "id": "messaging-presence.api-client-socket-carrier",
+  "version": "0.1",
+  "sphere": "messaging-presence",
+  "section": "transport",
+  "title": "API Client HTTPS over the shared SocketProvider carrier boundary",
+  "summary": "API Client keeps HTTP/TLS authority while an optional carrier connector acquires the exact current SocketProvider stream selected by lower routing/Intention authority.",
+  "authority": "transport-composition-contract",
+  "invariants": [
+    "ApiHttpsTransport owns HTTP/1.1, HTTP/2, redirects, TLS identity, SNI and ALPN.",
+    "SocketProvider owns native carrier acquisition and retains the exact selected SocketAddress object.",
+    "ApiSocketProviderConnector does not choose TCP, XTP, Unix or any other socket family.",
+    "The route resolver must supply the exact current SocketAddress selected by lower routing/Intention authority.",
+    "RxSock remains the default API Client carrier when no ApiSocketConnector is injected.",
+    "Provider-backed TLS fails closed unless the native endpoint exposes bounded SELECT, PUMP or POLL progress/readiness.",
+    "The adapter creates an architectural HTTPS-over-XTP route but does not constitute live HTTPS-over-XTP qualification."
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_api_client_v0.4.1",
+      "member": "src/ApiHttpTransport.cls",
+      "claim": "Adds optional ApiSocketConnector acquisition while retaining ApiRxSockConnector as the default."
+    },
+    {
+      "artifact": "packages/oorexx_api_client_socket_provider_adapter",
+      "member": "src/ApiClientSocketProviderAdapter.cls",
+      "claim": "Maps a resolved SocketAddress to SocketProvider~streamSenderAt and exposes the minimal carrier contract consumed by API Client TLS."
+    },
+    {
+      "artifact": "packages/oorexx_socket_provider",
+      "member": "src/SocketProvider.cls",
+      "claim": "Provides streamSenderAt plus stream read/write/close and provider-native PUMP/POLL delegation."
+    }
+  ],
+  "qualification": {
+    "status": "source-candidate",
+    "runtimeExecuted": false,
+    "open": [
+      "Compile the modified ApiHttpTransport and adapter under ooRexx 5.3.0 r13196.",
+      "Run the deterministic carrier identity/readiness/fail-closed suite.",
+      "Qualify an exact current XTP sender with bounded PUMP/POLL through SocketProvider.",
+      "Run live HTTPS over that XTP carrier before making any HTTPS-over-XTP claim."
+    ]
+  }
+}
