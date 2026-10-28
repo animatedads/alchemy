@@ -1,3 +1,15 @@
+# dev18 SQLite default — acceptance status
+
+**NOT QUALIFIED FOR RELEASE**. This package is a derived candidate and must not be conflated with the historical dev17 qualification below. Current draft: https://github.com/animatedads/alchemy/pull/66
+
+- Native ooRexx 5.3.0 r13196 syntax for adapter and migration: PASS in source development workspace.
+- Native mocked SQLite provider adapter contract: PASS. Actual SQLite I/O: NOT EXECUTED because librexxsql.so unavailable.
+- Isolated 10,002-key native sort algorithm: PASS; real MiniNotesApp integrated sort script pending.
+- Real SQLite transaction/round-trip, copied-corpus migration/reopen, complete inherited run_tests.sh, 954-/10k-document benchmarks and cryptographic policy: NOT QUALIFIED.
+- Historical dev17 source retained verbatim. See ../notnotes_mini_approval_app_v0.1-dev17/ and the Gopher sphere candidate evidence.
+
+---
+
 # Mini NotNotes v0.1-dev17 qualification
 
 Dev17 adds persistent temporal authority evidence to the dev16 Time Service/ConnectSelector field path. A deterministic gateway regression checks persistence/projection independently of transport; the pre-existing dev16 test remains responsible for real Time Service civil/DST semantics.
