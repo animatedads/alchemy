@@ -1,0 +1,95 @@
+# dev8 door suite, after the change: test rc seconds
+test_night_locator.rex rc=0 secs=3.24
+test_video_hardening.rex rc=0 secs=4.54
+test_temporal_deflection.rex rc=0 secs=0.03
+test_source_stability_guard.rex rc=0 secs=0.14
+test_source_mutation_abort.rex rc=216 secs=0.05
+test_worker_posix_guard.rex rc=216 secs=0.10
+test_occlusion_fail_closed.rex rc=0 secs=1.73
+test_tp00000_exclusion_contract.rex rc=0 secs=0.04
+test_wall_clock_window.rex rc=0 secs=0.03
+test_window_worker_synthetic.rex rc=216 secs=0.06
+test_control_state_csvstream.rex rc=0 secs=0.04
+test_worker_synthetic.rex rc=216 secs=0.05
+test_migration_bundle_tamper.rex rc=0 secs=0.15
+test_migration_resume_equivalence.rex rc=216 secs=0.06
+test_direct_payload_block.rex rc=0 secs=0.09
+## test_control_state_csvstream.rex.out
+PASS CSVStream control/checkpoint round-trip including empty, quote, TAB and spaces
+## test_direct_payload_block.rex.out
+PASS direct payload entry is blocked; NEW must use standard starter
+## test_migration_bundle_tamper.rex.out
+PASS migration bundle tamper rejected at digest-bound materialization code=SYNTAX
+## test_migration_resume_equivalence.rex.out
+       *-* Compiled routine "REXX_FOREIGN_LOAD_DEFINITION".
+   624 *-* _handle=rexx_foreign_load_definition(definition)
+       *-* Compiled method "NEW" with scope "Object".
+   812 *-* return .ForeignLibrary~new(definition)
+  1879 *-* formatLibrary=.foreign~load(formatBridgePath);
+  1964 *-* if \dec~open 
+  2285 *-*       ref=.FDReferenceFrameReader~readAtMs(sourcePath,config~referenceMediaMs,formatBridge,codecBridge,utilBridge)
+  2632 *-* if \self~prepare 
+    14 *-* status=w1~run
+Error 40 running <scratch>/native/foreign/rexx/foreign.cls line 624:  Incorrect call to routine.
+Error 40.900:  no library candidate could be loaded: dlopen failed for libavformat.so.61: libavformat.so.61: cannot open shared object file: No such file or directory | dlopen failed for libavformat.so: libavformat.so: cannot open shared object file: No such file or directory.
+## test_night_locator.rex.out
+PASS night locator reference_frame_x=438.000 shifted_frame_x=519.000 shift_px=81.000 fp_score=31.826
+## test_occlusion_fail_closed.rex.out
+PASS occluded door rejected by geometry displacement frame_x=856
+## test_source_mutation_abort.rex.out
+       *-* Compiled routine "REXX_FOREIGN_LOAD_DEFINITION".
+   624 *-* _handle=rexx_foreign_load_definition(definition)
+       *-* Compiled method "NEW" with scope "Object".
+   812 *-* return .ForeignLibrary~new(definition)
+  1879 *-* formatLibrary=.foreign~load(formatBridgePath);
+  1964 *-* if \dec~open 
+  2285 *-*       ref=.FDReferenceFrameReader~readAtMs(sourcePath,config~referenceMediaMs,formatBridge,codecBridge,utilBridge)
+  2632 *-* if \self~prepare 
+    13 *-* status=w~run
+Error 40 running <scratch>/native/foreign/rexx/foreign.cls line 624:  Incorrect call to routine.
+Error 40.900:  no library candidate could be loaded: dlopen failed for libavformat.so.61: libavformat.so.61: cannot open shared object file: No such file or directory | dlopen failed for libavformat.so: libavformat.so: cannot open shared object file: No such file or directory.
+## test_source_stability_guard.rex.out
+PASS source stability coherent checks=3 identity=65024:1205757:REGULAR
+## test_temporal_deflection.rex.out
+PASS temporal deflection baseline=10.0546 final_deflection=-0.0146 relative_delta=0.600
+## test_tp00000_exclusion_contract.rex.out
+PASS exclusion scope TP00000=none TP00002=00:10:05..00:26:05 relative to 03:01:55 wall origin
+## test_video_hardening.rex.out
+PASS video hardening camera_dx=1.122 matches=8 photo_step=28.000
+## test_wall_clock_window.rex.out
+PASS wall clock campaign mapping tp0_start_ms=5995000 tp2_exclusion=605000..1565000 tp3_end_ms=5056000
+## test_window_worker_synthetic.rex.out
+       *-* Compiled routine "REXX_FOREIGN_LOAD_DEFINITION".
+   624 *-* _handle=rexx_foreign_load_definition(definition)
+       *-* Compiled method "NEW" with scope "Object".
+   812 *-* return .ForeignLibrary~new(definition)
+  1879 *-* formatLibrary=.foreign~load(formatBridgePath);
+  2291 *-* if \decoder~open 
+  2632 *-* if \self~prepare 
+    12 *-* status=w~run
+Error 40 running <scratch>/native/foreign/rexx/foreign.cls line 624:  Incorrect call to routine.
+Error 40.900:  no library candidate could be loaded: dlopen failed for libavformat.so.61: libavformat.so.61: cannot open shared object file: No such file or directory | dlopen failed for libavformat.so: libavformat.so: cannot open shared object file: No such file or directory.
+## test_worker_posix_guard.rex.out
+       *-* Compiled routine "REXX_FOREIGN_LOAD_DEFINITION".
+   624 *-* _handle=rexx_foreign_load_definition(definition)
+       *-* Compiled method "NEW" with scope "Object".
+   812 *-* return .ForeignLibrary~new(definition)
+  1879 *-* formatLibrary=.foreign~load(formatBridgePath);
+  1964 *-* if \dec~open 
+  2285 *-*       ref=.FDReferenceFrameReader~readAtMs(sourcePath,config~referenceMediaMs,formatBridge,codecBridge,utilBridge)
+  2632 *-* if \self~prepare 
+    14 *-* status=w~run
+Error 40 running <scratch>/native/foreign/rexx/foreign.cls line 624:  Incorrect call to routine.
+Error 40.900:  no library candidate could be loaded: dlopen failed for libavformat.so.61: libavformat.so.61: cannot open shared object file: No such file or directory | dlopen failed for libavformat.so: libavformat.so: cannot open shared object file: No such file or directory.
+## test_worker_synthetic.rex.out
+       *-* Compiled routine "REXX_FOREIGN_LOAD_DEFINITION".
+   624 *-* _handle=rexx_foreign_load_definition(definition)
+       *-* Compiled method "NEW" with scope "Object".
+   812 *-* return .ForeignLibrary~new(definition)
+  1879 *-* formatLibrary=.foreign~load(formatBridgePath);
+  1964 *-* if \dec~open 
+  2285 *-*       ref=.FDReferenceFrameReader~readAtMs(sourcePath,config~referenceMediaMs,formatBridge,codecBridge,utilBridge)
+  2632 *-* if \self~prepare 
+    12 *-* status=w~run
+Error 40 running <scratch>/native/foreign/rexx/foreign.cls line 624:  Incorrect call to routine.
+Error 40.900:  no library candidate could be loaded: dlopen failed for libavformat.so.61: libavformat.so.61: cannot open shared object file: No such file or directory | dlopen failed for libavformat.so: libavformat.so: cannot open shared object file: No such file or directory.

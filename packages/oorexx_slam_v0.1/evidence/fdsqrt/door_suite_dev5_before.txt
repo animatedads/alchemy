@@ -1,0 +1,60 @@
+# dev5 door suite, before the change: test rc seconds
+test_night_locator.rex rc=0 secs=3.71
+test_occlusion_fail_closed.rex rc=0 secs=1.38
+test_tp00000_exclusion_contract.rex rc=0 secs=0.03
+test_wall_clock_window.rex rc=0 secs=0.03
+test_window_worker_synthetic.rex rc=216 secs=0.04
+test_control_state_csvstream.rex rc=0 secs=0.04
+test_worker_synthetic.rex rc=216 secs=0.04
+test_migration_bundle_tamper.rex rc=0 secs=0.13
+test_migration_resume_equivalence.rex rc=216 secs=0.04
+test_direct_payload_block.rex rc=0 secs=0.08
+## test_control_state_csvstream.rex.out
+PASS CSVStream control/checkpoint round-trip including empty, quote, TAB and spaces
+## test_direct_payload_block.rex.out
+PASS direct payload entry is blocked; NEW must use standard starter
+## test_migration_bundle_tamper.rex.out
+PASS migration bundle tamper rejected at digest-bound materialization code=SYNTAX
+## test_migration_resume_equivalence.rex.out
+       *-* Compiled routine "REXX_FOREIGN_LOAD_DEFINITION".
+   624 *-* _handle=rexx_foreign_load_definition(definition)
+       *-* Compiled method "NEW" with scope "Object".
+   812 *-* return .ForeignLibrary~new(definition)
+  1394 *-* formatLibrary=.foreign~load(formatBridgePath);
+  1479 *-* if \dec~open 
+  1690 *-*       ref=.FDReferenceFrameReader~readAtMs(sourcePath,config~referenceMediaMs,formatBridge,codecBridge,utilBridge)
+  1938 *-* if \self~prepare 
+    14 *-* status=w1~run
+Error 40 running <scratch>/native/foreign/rexx/foreign.cls line 624:  Incorrect call to routine.
+Error 40.900:  no library candidate could be loaded: dlopen failed for libavformat.so.61: libavformat.so.61: cannot open shared object file: No such file or directory | dlopen failed for libavformat.so: libavformat.so: cannot open shared object file: No such file or directory.
+## test_night_locator.rex.out
+PASS night locator reference_frame_x=438.000 shifted_frame_x=519.000 shift_px=81.000 fp_score=31.190
+## test_occlusion_fail_closed.rex.out
+PASS occluded door not admitted
+## test_tp00000_exclusion_contract.rex.out
+PASS exclusion scope TP00000=none TP00002=00:10:05..00:26:05 relative to 03:01:55 wall origin
+## test_wall_clock_window.rex.out
+PASS wall clock campaign mapping tp0_start_ms=5995000 tp2_exclusion=605000..1565000 tp3_end_ms=5056000
+## test_window_worker_synthetic.rex.out
+       *-* Compiled routine "REXX_FOREIGN_LOAD_DEFINITION".
+   624 *-* _handle=rexx_foreign_load_definition(definition)
+       *-* Compiled method "NEW" with scope "Object".
+   812 *-* return .ForeignLibrary~new(definition)
+  1394 *-* formatLibrary=.foreign~load(formatBridgePath);
+  1696 *-* if \decoder~open 
+  1938 *-* if \self~prepare 
+    12 *-* status=w~run
+Error 40 running <scratch>/native/foreign/rexx/foreign.cls line 624:  Incorrect call to routine.
+Error 40.900:  no library candidate could be loaded: dlopen failed for libavformat.so.61: libavformat.so.61: cannot open shared object file: No such file or directory | dlopen failed for libavformat.so: libavformat.so: cannot open shared object file: No such file or directory.
+## test_worker_synthetic.rex.out
+       *-* Compiled routine "REXX_FOREIGN_LOAD_DEFINITION".
+   624 *-* _handle=rexx_foreign_load_definition(definition)
+       *-* Compiled method "NEW" with scope "Object".
+   812 *-* return .ForeignLibrary~new(definition)
+  1394 *-* formatLibrary=.foreign~load(formatBridgePath);
+  1479 *-* if \dec~open 
+  1690 *-*       ref=.FDReferenceFrameReader~readAtMs(sourcePath,config~referenceMediaMs,formatBridge,codecBridge,utilBridge)
+  1938 *-* if \self~prepare 
+    12 *-* status=w~run
+Error 40 running <scratch>/native/foreign/rexx/foreign.cls line 624:  Incorrect call to routine.
+Error 40.900:  no library candidate could be loaded: dlopen failed for libavformat.so.61: libavformat.so.61: cannot open shared object file: No such file or directory | dlopen failed for libavformat.so: libavformat.so: cannot open shared object file: No such file or directory.

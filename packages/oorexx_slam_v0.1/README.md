@@ -5,8 +5,8 @@
 **Lexer:** the rx2cpp compiler's `RxLexer`/`RxToken`, vendored unmodified (rx2cpp lane: ChatGPT and Claude), see `vendor/rx2cpp/PROVENANCE.md`.
 **Database:** SQLite through Rexx/SQL 2.6B3 (Mark Hessling) via `oorexx_rexxsql_backend_v0.1`.
 **Corpus:** the circular corpus is Tom Dyer's; `i`, `am`, `me`, `my` added by Claude (Opus 5.5).
-**Reviews that shaped it:** ChatGPT (three letters to SLAM), Claude (Fable 5.1), Claude (Opus 4.8).
-**Finds credited to SLAM:** the Rexx/SQL bound-call leak, `rx_mod_inverse`'s missing condition, `FDSqrt` above 10⁶ (see "Credits for SLAM's finds").
+**Reviews that shaped it:** ChatGPT (four letters to SLAM), Claude (Fable 5.1), Claude (Opus 4.8).
+**Finds credited to SLAM:** the Rexx/SQL bound-call leak, `rx_mod_inverse`'s missing condition, `FDSqrt` above 10⁶ (all three now fixed; see "Credits for SLAM's finds").
 
 SLAM does not learn word tokens. Its vocabulary is **logic segments**: pieces of real ooRexx identified by
 shape, the way an object in an image is identified regardless of where it sits or what colour it is. Every
@@ -30,7 +30,12 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_compose.rex` | ChatGPT's task on real estate routines, 6 checks |
 | `tests/test_needs.rex` | Ability before score on real contracts (rule proposed by Claude (Opus 4.8)), 13 checks |
 | `tests/test_modinv.rex` | `rx_mod_inverse` before/after/check harness (16 checks in CHECK mode) |
-| `tests/test_choose.rex` | SLAM chooses its own path from 71 standalone routines (8 checks); `run_tests.sh` builds Rexx/SQL and runs everything |
+| `tests/test_choose.rex` | SLAM chooses its own path from 71 standalone routines (8 checks) |
+| `tests/test_fdsqrt.rex` | `FDSqrt` before/after/check: small and large data through three ways (34 checks in CHECK mode) |
+| `tests/test_fdsqrt_door.rex` | The door code that calls `FDSqrt`: noise sigmas, pixel sigma, gradient size (17 checks on dev8, 15 on dev5) |
+| `tests/fdsqrt_sweep.rex` | Old against new `FDSqrt` on random door-range values |
+| `evidence/fdsqrt/` | The before and after data for the `FDSqrt` change, kept as ChatGPT asked |
+| `run_tests.sh` | Builds Rexx/SQL and the foreign runtime, then runs everything |
 
 ### Segments (nodes)
 
@@ -167,9 +172,9 @@ Opus 4.8's proposal also wrote this rule in SLAM's words. SLAM's reader refused 
 3. It probe-runs every edge on 7 values ("first test if each call can run").
 4. It finds second ways: routines in other files with the same contract and the same probe output. It found `FDSqrt` (fd_door) ≡ `rx_vision_sqrt` (vision).
 5. It takes the highest-scoring path that has a second way: `rx_le_hex_decode` (crypto) → `FDSqrt` (fd_door), score 0.42.
-6. On 5 new values, 3 agree with the second way and 2 do not. SLAM's `root` anchor (TESTED by grounding, and matching both routines on every probe value) decides both disagreements: **`FDSqrt` is wrong**.
+6. On 5 new values, 3 agreed with the second way and 2 did not. SLAM's `root` anchor (TESTED by grounding, and matching both routines on every probe value) decided both disagreements: **`FDSqrt` was wrong**. Since the fix (commit `3761f57c`) the same test shows all 5 agreeing.
 
-**Finding in `fd_door_micro_motion` (not fixed).** `FDSqrt` runs a fixed 14 Newton steps starting from x. Its relative error:
+**Finding in `fd_door_micro_motion` (fixed in `3761f57c`, next section).** `FDSqrt` ran a fixed 14 Newton steps starting from x. Its relative error was:
 
 | x | Relative error |
 |---|---|
@@ -181,6 +186,41 @@ Opus 4.8's proposal also wrote this rule in SLAM's words. SLAM's reader refused 
 
 It computes standard deviations (`sqrt(m2/(n-1))`) and gradient magnitudes there.
 
+### FDSqrt fixed (ChatGPT's fourth task)
+
+ChatGPT wrote `FDSqrt` and set the method: "use small number data and large number data… keep each result, true or false. change FDSqrt so it can run on until the answer does not change. do not use a fixed count of steps." Every step below was done on scratch copies first (dev8, then dev5), and only then in the repository.
+
+**The change** (both copies, `fd_door_micro_motion_v0.2-dev8` and `-dev5`):
+
+```rexx
+do forever
+  next=(guess+(x/guess))/2
+  if next>=guess then leave
+  guess=next
+end
+```
+
+The start (`x`, or 1 when `x` < 1) is never below the root, and from there every Newton step can only go down. So the loop ends at the first step that does not go down: the answer is unchanged, or one unit higher from rounding at 9 digits. It always ends, with no fixed count. 10⁶ takes 15 steps, which is why 14 was just short. 10¹² takes 25 steps and 10⁴⁰ takes 71.
+
+**Data, before and after** (`evidence/fdsqrt/`, every result kept as a lesson, true or false):
+
+| Check | Before | After |
+|---|---|---|
+| 16 small values (0.0004 … 10⁶) through FDSqrt, `rx_vision_sqrt` and SLAM's `root` anchor | 16 true | 16 true, same output character for character |
+| 13 large values (10⁶+1 … 4×10¹⁸) | 1 true, 12 false (10⁸ → 10784.59; 10¹² → 61040618) | 13 true |
+| `FDNoiseModel` global and door sigma, large steps | 9066.78 and 3457.71 (anchors 8663.13 and 3457.18) | equal to the anchors |
+| `photometricStats` sigma (pixel values, so at most 255²) | true | same output |
+| Gradient size `FDSqrt(gdx²+gdy²)`, e.g. (6000, 8000) | 10784.59 | 10000 |
+| Noise sigma fed by those gradient sizes (the chain at line 2528) | 3.55×10⁹ (anchor 7.6×10⁶) | equal to its anchor |
+| 200,000 random door-range values, old against new | | all identical |
+| All 85 `FDSqrt` calls the door tests make (inputs 240 … 1573) | logged | same input, same output |
+| Door suite, every test that runs here | dev8 9/15, dev5 7/10 pass | the same tests pass, with the same output |
+| 3000 door-sized calls | 0.066 s | 0.052 s |
+
+The door tests that do not run here decode video through the FFmpeg 7 bridge (`libavformat.so.61`); this machine has FFmpeg 6. They fail at the same `dlopen`, before and after. They need a run on a machine with FFmpeg 7.
+
+What the data says about the door itself: its own inputs (pixel variances, frame steps, gradient sizes in pixels) stay far below 10⁶, so its past results were not changed by this bug. The bug was in the routine's promise, and SLAM broke it with data the door never sent.
+
 An honest limit on the path SLAM chose: it feeds a decimal number to a hex decoder. The contract allows that, because a number is a valid string, but it means little. Kinds can say a path *runs*, not that it makes sense.
 
 ### Credits for SLAM's finds
@@ -188,20 +228,20 @@ An honest limit on the path SLAM chose: it feeds a decimal number to a hex decod
 SLAM gets credit for what it found:
 1. **The Rexx/SQL bound-call leak.** Its whole-estate ingest was killed at 6.1 GB. Fixed: backend patch 0005, commit `cf25e1c3`.
 2. **`rx_mod_inverse` returning false numbers or dividing by zero** (12 copies). Found by composing it and breaking the path on purpose. Fixed: commit `1f422d76`.
-3. **`FDSqrt` wrong above 10⁶.** Found by its own path choice and a third way. Reported, not fixed.
+3. **`FDSqrt` wrong above 10⁶.** Found by its own path choice and a third way. Fixed: commit `3761f57c` (both copies), on ChatGPT's method.
 
 ## Qualification (LOCAL_PASS)
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
-`sh run_tests.sh`: **58/58** in `test_slam.rex`, **6/6** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, covering:
+`sh run_tests.sh`: **58/58** in `test_slam.rex`, **6/6** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, and **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK): 201 checks. It covers:
 - the segmenter on unmodified `MLEvolution.cls` (54 units; shared guard nodes; collapsed setters; then/else bodies sharing a node with different bindings);
 - ingest of the GA package with duplicate units skipped on re-ingest;
 - aabb → Eeff = 0.4 and b00b → Eeff = 0.8 from recorded outcomes;
 - a Task finding start > b00b > Eeff (0.72), then flipping to aabb after new evidence (0.63);
 - a TESTED-only search BLOCKED where only a prior route exists;
 - the corpus loaded as word nodes with definition edges;
-- SLAM reading `README_SLAM.md` (90 lines, 498 words, 24 new words, none unknown) and its own reply to Claude Fable, while refusing Fable's opening sentence (14 unknown words);
+- SLAM reading `README_SLAM.md` (134 lines, 1,249 words, 30 new words, none unknown) and its own reply to Claude Fable, while refusing Fable's opening sentence (14 unknown words);
 - PRODUCT taking a direct 0.6 edge over a 0.8 × 0.8 × 0.8 route, and BOTTLENECK taking the long route (weakest edge 0.8);
 - SELECT identity on a fixture (3-arm and 7-arm string SELECTs are one node; a range SELECT is another);
 - evidence weighting: 1 of 1 ranks below 1,000 of 1,000;
