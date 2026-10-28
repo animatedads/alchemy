@@ -1,7 +1,7 @@
 /* ooRexx API Client v0.4 - native HTTP/1.1 + HTTP/2 HTTPS transport.
  *
  * Deliberately provider-neutral and deliberately not a curl subprocess wrapper.
- * TCP I/O is owned by RxSock. TLS is OpenSSL through Foreign Runtime memory BIOs.
+ * RxSock remains the default byte carrier. TLS is OpenSSL through Foreign Runtime memory BIOs.
  * HTTP/1.1 remains bounded with Connection: close; HTTP/2 is ALPN-negotiated and
  * framed/HPACK-managed by libnghttp2 through Foreign Runtime.
  */
@@ -657,12 +657,46 @@ h2Unavailable:
   end
   return d
 
+/* Socket acquisition seam. HTTP/TLS semantics stay in ApiHttpsTransport;
+ * the connector owns only acquisition of a byte carrier suitable for the
+ * memory-BIO TLS session. The default preserves v0.4.1 RxSock behaviour. */
+::class ApiSocketConnector public
+::method connect abstract
+::method lastError
+  return ""
+
+::class ApiRxSockConnector public subclass ApiSocketConnector
+::method init
+  expose lastError
+  lastError=""
+::attribute lastError get
+::method connect
+  expose lastError
+  use strict arg url, config, request=.nil, session=.nil
+  lastError=""
+  sock=.Socket~new("AF_INET","SOCK_STREAM","IPPROTO_TCP")
+  address=.InetAddress~new(url~host,url~port)
+  rc=sock~connect(address)
+  if rc<>0 then do
+    lastError="errno=" || sock~errno
+    sock~close
+    return .nil
+  end
+  if sock~ioctl("FIONBIO",1)==.nil then do
+    lastError="unable to enable nonblocking socket errno=" || sock~errno
+    sock~close
+    return .nil
+  end
+  return sock
+
 ::class ApiHttpsTransport subclass ApiTransport public
 ::attribute config get
 ::method init
-  expose config tlsContext
-  use strict arg configArg
+  expose config tlsContext socketConnector
+  use strict arg configArg, socketConnectorArg=.nil
   config=configArg~validate
+  if socketConnectorArg=.nil then socketConnector=.ApiRxSockConnector~new
+  else socketConnector=socketConnectorArg
   tlsContext=.ApiTlsClientContext~new(config)
 ::method execute
   expose config
@@ -711,17 +745,18 @@ h2Unavailable:
   if detail<>"" then headers["x-oorexx-transport-detail"]=detail
   return .ApiResponse~new(original~id,status,headers,"",0,code,0,"","",current~url,version,count)
 ::method executeOnce private
-  expose config tlsContext
+  expose config tlsContext socketConnector
   use strict arg request,session=.nil
   started=.dateTime~new~microseconds
   signal on syntax name requestFailure
   url=.ApiUrl~new(request~url)
   if url~scheme<>"https" then return self~failed(request,started,"HTTPS_REQUIRED","",url~absolute)
-  sock=.Socket~new("AF_INET","SOCK_STREAM","IPPROTO_TCP")
-  address=.InetAddress~new(url~host,url~port)
-  rc=sock~connect(address)
-  if rc<>0 then do; code="CONNECT_FAILED"; detail="errno=" || sock~errno; sock~close; return self~failed(request,started,code,detail,url~absolute); end
-  if sock~ioctl("FIONBIO",1)==.nil then do; code="SOCKET_NONBLOCK_FAILED"; detail="errno=" || sock~errno; sock~close; return self~failed(request,started,code,detail,url~absolute); end
+  sock=socketConnector~connect(url,config,request,session)
+  if sock=.nil then do
+    detail="socket connector returned no carrier"
+    if socketConnector~hasMethod("LASTERROR") then if socketConnector~lastError<>"" then detail=socketConnector~lastError
+    return self~failed(request,started,"CONNECT_FAILED",detail,url~absolute)
+  end
   tls=.ApiTlsClientSession~new(tlsContext,sock,url~host,config)
   if \tls~handshake then do; detail=tls~lastError; tls~close; sock~close; return self~failed(request,started,"TLS_HANDSHAKE_FAILED",detail,url~absolute); end
   negotiated=tls~applicationProtocol
