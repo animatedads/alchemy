@@ -7,7 +7,7 @@ fatal:
   say "ERROR: ooRexx condition" condition("C") condition("D") condition("O")
   exit 2
 
-/* ooRexx Cloud Console v0.1-dev2
+/* ooRexx Cloud Console v0.1-dev3
  * Provider-neutral machine lifecycle and firewall control.
  * Core logic is ooRexx; provider execution is delegated to official CLIs.
  */
@@ -1325,6 +1325,38 @@ fatal:
   return .Array~of(args, "")
 
 
+::class CloudControlBridge public
+::attribute executable get
+
+::method init
+  expose executable
+  use arg executableArg
+  if arg() < 1 then executable = ""
+  else if executableArg == .nil then executable = ""
+  else executable = "" || executableArg
+
+::method configured
+  expose executable
+  return strip(executable) \= ""
+
+::method build
+  expose executable
+  use arg provider, noun, action, opts
+  if strip(executable) = "" then return .Array~of(.nil, "Alchemy Cloud Control backend requires --cloud_control PATH or ALCHEMY_CLOUD_CONTROL")
+  args = .Array~of(executable, provider~id, noun, action)
+  names = .Array~of("machine", "name", "region", "zone", "project", "account", "configuration", "group", "subscription", "scope", "rule", "protocol", "port", "source", "description", "priority", "compartment", "availability_domain", "subnet", "network", "image", "image_family", "image_project", "size", "security_group", "key_name", "admin_user", "ssh_key", "os", "ssh_keys", "firewall_group", "tags", "aws_profile", "oci_profile", "oci_auth", "vultr_config")
+  do name over names
+    if opts~has(name) then do
+      value = opts~option(name, "")
+      if value \= "" then do
+        args~append("--" || changestr("_", name, "-"))
+        args~append(value)
+      end
+    end
+  end
+  return .Array~of(args, "")
+
+
 ::class CloudRegistry public
 ::method init
   expose providers aliases
@@ -1446,7 +1478,7 @@ fatal:
     return 2
   end
   if parsed~option("version", "false") = "true" then do
-    say "ooRexx Cloud Console 0.1-dev2"
+    say "ooRexx Cloud Console 0.1-dev3"
     return 0
   end
   defaultWorkspace = .CloudUtil~env("OOREXX_CLOUDCTL_WORKSPACE", directory())
@@ -1465,6 +1497,25 @@ fatal:
     return 2
   end
   jsonMode = parsed~option("json", "false") = "true"
+  backendName = .CloudUtil~lower(parsed~option("backend", .CloudUtil~env("OOREXX_CLOUDCTL_BACKEND", "auto")))
+  controlPath = parsed~option("cloud_control", .CloudUtil~env("ALCHEMY_CLOUD_CONTROL", ""))
+  if backendName = "auto" then do
+    if controlPath \= "" then backendName = "cloud-control"
+    else backendName = "provider-cli"
+  end
+  if backendName \= "cloud-control" & backendName \= "provider-cli" then do
+    r = .CloudResult~error("--backend must be cloud-control, provider-cli, or auto")
+    renderer~render(r, jsonMode)
+    return 2
+  end
+  control = .CloudControlBridge~new(controlPath)
+  if backendName = "cloud-control" then do
+    if \control~configured then do
+      r = .CloudResult~error("cloud-control backend requires --cloud_control PATH or ALCHEMY_CLOUD_CONTROL")
+      renderer~render(r, jsonMode)
+      return 2
+    end
+  end
   wordsA = parsed~words
   if parsed~option("help", "false") = "true" | wordsA~items = 0 then do
     self~help
@@ -1507,8 +1558,8 @@ fatal:
     renderer~render(r, jsonMode)
     return 2
   end
-  if noun = "machine" then r = self~machine(provider, action, exec, parsed, interactiveMode)
-  else if noun = "firewall" then r = self~firewall(provider, action, exec, parsed, interactiveMode)
+  if noun = "machine" then r = self~machine(provider, action, exec, parsed, interactiveMode, backendName, control)
+  else if noun = "firewall" then r = self~firewall(provider, action, exec, parsed, interactiveMode, backendName, control)
   else r = .CloudResult~error("unknown command: " || noun)
   r["workspace"] = workspace
   renderer~render(r, jsonMode)
@@ -1533,21 +1584,41 @@ fatal:
   return r
 
 ::method machine private
-  use arg provider, action, exec, opts, interactiveMode
-  if action = "list" then return provider~machineList(exec, opts)
-  if action = "create" then built = provider~machineCreate(opts)
-  else built = provider~machineCommand(action, opts)
-  if built == .nil then return .CloudResult~error("provider could not build machine action")
+  use arg provider, action, exec, opts, interactiveMode, backendName, control
+  if action = "list" then do
+    r = provider~machineList(exec, opts)
+    r["read_backend"] = "provider-cli"
+    r["mutation_backend"] = backendName
+    return r
+  end
+  if backendName = "cloud-control" then built = control~build(provider, "machine", action, opts)
+  else do
+    if action = "create" then built = provider~machineCreate(opts)
+    else built = provider~machineCommand(action, opts)
+  end
+  if built == .nil then return .CloudResult~error("backend could not build machine action")
   if built[1] == .nil then return .CloudResult~error(built[2])
-  return self~mutation(provider, "machine." || action, built[1], exec, opts, interactiveMode)
+  r = self~mutation(provider, "machine." || action, built[1], exec, opts, interactiveMode)
+  r["backend"] = backendName
+  if backendName = "cloud-control" then r["control_api"] = "alchemy.cloud-control/0.1"
+  return r
 
 ::method firewall private
-  use arg provider, action, exec, opts, interactiveMode
-  if action = "list" then return provider~firewallList(exec, opts)
-  built = provider~firewallCommand(action, opts)
-  if built == .nil then return .CloudResult~error("provider could not build firewall action")
+  use arg provider, action, exec, opts, interactiveMode, backendName, control
+  if action = "list" then do
+    r = provider~firewallList(exec, opts)
+    r["read_backend"] = "provider-cli"
+    r["mutation_backend"] = backendName
+    return r
+  end
+  if backendName = "cloud-control" then built = control~build(provider, "firewall", action, opts)
+  else built = provider~firewallCommand(action, opts)
+  if built == .nil then return .CloudResult~error("backend could not build firewall action")
   if built[1] == .nil then return .CloudResult~error(built[2])
-  return self~mutation(provider, "firewall." || action, built[1], exec, opts, interactiveMode)
+  r = self~mutation(provider, "firewall." || action, built[1], exec, opts, interactiveMode)
+  r["backend"] = backendName
+  if backendName = "cloud-control" then r["control_api"] = "alchemy.cloud-control/0.1"
+  return r
 
 ::method mutation private
   use arg provider, action, args, exec, opts, interactiveMode
@@ -1582,7 +1653,7 @@ fatal:
 
 ::method interactive private
   expose registry
-  say "ooRexx Cloud Console 0.1-dev2"
+  say "ooRexx Cloud Console 0.1-dev3"
   say "Provider-neutral lifecycle + firewall console"
   say "Mutations are PLAN-only unless --apply is present; interactive apply asks again."
   say "Type help, or quit."
@@ -1636,10 +1707,11 @@ fatal:
   say "  quit"
 
 ::method help private
-  say "ooRexx Cloud Console 0.1-dev2"
+  say "ooRexx Cloud Console 0.1-dev3"
   say ""
   say "Usage:"
   say "  cloudctl.rex providers [--json] [--workspace DIR]"
+  say "  cloudctl.rex ... [--backend auto|cloud-control|provider-cli] [--cloud_control PATH]"
   say "  cloudctl.rex workspace [--json] [--workspace DIR]"
   say "  cloudctl.rex machine list --provider P [provider context] [--json]"
   say "  cloudctl.rex machine start|stop|reboot --provider P --machine HANDLE [--zone Z] [--apply]"
@@ -1657,11 +1729,13 @@ fatal:
   say "  * credentials are never accepted as command/spec fields; provider CLIs own authentication"
   say "  * --workspace changes provider CLI working directory only; it is not authority or identity"
   say "  * OOREXX_CLOUDCTL_WORKSPACE is the robust Codex/automation override, including paths with spaces"
+  say "  * ALCHEMY_CLOUD_CONTROL selects the alchemy.cloud-control/0.1 RESOURCE transport"
+  say "  * with Cloud Control configured, mutations delegate there; provider-cli is the explicit dev/test fallback"
   say "  * values containing whitespace belong in a --spec key=value file"
   say ""
   say "Provider context:"
   say "  Azure: --subscription ID, --group RG; firewall scope RG:NSG"
-  say "  GCP: --project ID, --configuration NAME; mutations require --zone; firewall scope NETWORK"
+  say "  GCP: --project ID, --account animated-ads-cy|bashqueue; --configuration remains provider-cli context"
   say "  AWS: --region REGION, --aws_profile NAME; firewall scope SECURITY_GROUP_ID"
   say "  OCI: --compartment OCID, --region REGION, --oci_profile NAME, --oci_auth TYPE; firewall scope NSG_OCID"
   say "  Vultr: --vultr_config PATH; firewall scope FIREWALL_GROUP_ID"
