@@ -24,15 +24,21 @@ with `FDSqrt`. Every claim the reference shows with an example carries that exam
 | `05_string_class.md` | 5. String (108 blocks) and MutableBuffer (52) | 924 | 441 |
 | `06_classes.md` | 5. Object, Class, the collection classes, Supplier, Stream, Message, Method, Routine, Package, sorting | 1964 | 122 |
 | `07_functions_a.md`, `07_functions_b.md` | 7. all 83 builtin functions | 474 + 591 | 203 + 191 |
+| `08_rexxutil_a.md`, `08_rexxutil_b.md` | 8. RexxUtil: all 74 functions, and the deprecated ones (B.2.1, B.2.2, B.1.1); each Windows, Linux or Unix only function says so | 540 + 520 | 39 + 34 |
 | `09_parsing.md` | 9. parsing | 105 | 26 |
 | `10_numbers.md` | 10, 16, 17. numbers and arithmetic, reserved keywords, special variables | 166 | 39 |
 | `11_conditions.md` | 11. conditions and condition traps | 168 | 3 |
 | `14_streams.md` | 14. input and output streams | 124 | 3 |
 | `19_errors.md` | C. error numbers 3 to 99 | 108 | 4 |
 
-All files together: **868 words, 6,752 facts, 1,167 examples, 1,186 subjects.**
-Not covered: RexxUtil (chapter 8), the utility classes of 5.4 other than MutableBuffer, the security manager
-(13), debugging aids (15), useful services (18).
+All files together: **1,070 words, 7,809 facts, 1,240 examples, 1,347 subjects.**
+Not covered: the utility classes of 5.4 other than MutableBuffer, the security manager (13), debugging aids (15),
+useful services (18).
+
+**Platforms.** `00_words.md` defines `platform`, `windows`, `unix` (any platform that is not Windows) and `linux`.
+A thing the reference gives for one platform has the fact line `this function runs only on the windows platform.`
+(or linux, or unix), and each of its examples starts with `/* platform: windows */`; `run_examples.rex` runs
+it only there and elsewhere writes `not run: this example is for the windows platform`.
 
 ## How to use it
 
@@ -64,9 +70,10 @@ its `the result:` block (for an error, the error number only). On ooRexx 5.3.0 r
 
 | | Examples |
 |---|---|
-| ooRexx prints what the reference says | **799** |
-| ooRexx prints something else | **190** (each one in `DIFFERENCES.md`) |
-| the reference states no result | **178** |
+| ooRexx prints what the reference says | **802** |
+| ooRexx prints something else | **205** (each one in `DIFFERENCES.md`) |
+| the reference states no result | **198** |
+| for another platform (not run on Linux) | **35** |
 
 A difference is a lesson, not a verdict. Causes seen so far: a page sets a variable in its prose and not in its
 code (`ARG`, `CHARIN(myfile)`); output that changes from run to run (`DATE`, `TIME`, `RANDOM`); a reference

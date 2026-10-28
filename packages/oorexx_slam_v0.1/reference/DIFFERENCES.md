@@ -1,6 +1,6 @@
 # Examples where ooRexx 5.3.0 r13196 does not print what the reference says
 
-Totals over all files: same 798, different 191, no reference 178.
+Totals over all files: same 802, different 205, no reference 198.
 
 Made by `rexx reference/run_examples.rex` (each example run alone, no input, ten seconds) and `tools/differences.py`.
 A difference is a lesson, not yet a verdict: it can be an error in the reference, in the rewrite, a page that sets
@@ -201,6 +201,17 @@ or a difference between the reference and this interpreter.
 | 07_functions_b.md:2520 | `/* then sets K=5              */ / say VALUE(fred)  /* looks up K                 */` | `FRED` | `5` |
 | 07_functions_b.md:2534 | `say VALUE("LIST."k)  /* looks up LIST.5            */` | `LIST.K` | `Hi` |
 | 07_functions_b.md:2589 | `/* Following: DROP A.3; J=3  */ / say VAR("J")` | `0` | `1` |
+
+## 08_rexxutil_b.md (6)
+
+| where | code | ooRexx printed | reference says |
+|---|---|---|---|
+| 08_rexxutil_b.md:156 | `/* platform: linux */ / -- CentOS 7 / say SysVersion()` | `Linux 6.18.44-fc-v180` | `Linux 3.10.0-957.10.1.el7.x86_64` |
+| 08_rexxutil_b.md:171 | `/* platform: linux */ / -- Ubuntu 16.04 / say SysVersion()` | `Linux 6.18.44-fc-v180` | `Linux 4.4.0-154-generic` |
+| 08_rexxutil_b.md:186 | `/* platform: linux */ / -- Raspbian / say SysVersion()` | `Linux 6.18.44-fc-v180` | `Linux 4.14.70-v7+` |
+| 08_rexxutil_b.md:201 | `/* platform: linux */ / -- SLES/390 / say SysVersion()` | `Linux 6.18.44-fc-v180` | `Linux 3.12.74-60.64.40-default` |
+| 08_rexxutil_b.md:795 | `/temp/myfile.667` | `/temp/myfile.341` | `SysTextScreenRead(row, col [,len])` |
+| 08_rexxutil_b.md:1041 | `Linux 6.18.44-fc-v180` | `Windows 10.0.18363` | `SysVolumeLabel([drive])` |
 
 ## 09_parsing.md (19)
 
