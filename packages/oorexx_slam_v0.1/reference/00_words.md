@@ -286,3 +286,9 @@ template: the part of a parse instruction that says how to cut the string and wh
 pattern: a string or a position in a template that says where to cut
 patterns: more than one pattern
 placeholder: a point in a template; it takes a part of the string, but the part goes to no variable
+system: the programs that run a computer and the other programs on it
+platform: a kind of computer and the system on it; some functions run only on one platform
+platforms: more than one platform
+windows: the name of a platform
+unix: the name of a kind of platform
+linux: the name of a platform of the unix kind

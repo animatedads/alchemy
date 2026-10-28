@@ -1,71 +1,71 @@
-reference/01_concepts.md:162 DIFFERENT | /* This is an example of a valid Rexx comment */ / 'You shouldn''t'        -- Same as "You shouldn't
-reference/01_concepts.md:193 DIFFERENT | "REPEAT"   A + 3;                                                                                   
-reference/01_concepts.md:222 NO REFERENCE | "Fred" / "Don't Panic!" / 'You shouldn''t'      /* Same as "You shouldn't" */ / ""                  
-reference/01_concepts.md:252 NO REFERENCE | "ABCD"x / "1d ec f8"X / '1 d8'x                                                                     
-reference/01_concepts.md:279 NO REFERENCE | "11110000"b         == "f0"x / "101 1101"b         == "5d"x / '1'b                == '00000001'b   /
-reference/01_concepts.md:308 DIFFERENT | Fred / Albert.Hall / WHERE? / 17.3E-12 / .03e+9 / .E-12       /* no digits             */           
-reference/01_concepts.md:326 DIFFERENT | 3ae+6       /* non-digit character   */                                                             
-reference/01_concepts.md:339 DIFFERENT | 3..0e+9     /* more than one '.'     */                                                             
-reference/01_concepts.md:373 NO REFERENCE | 12 / "-17.9" / 127.0650 / 73e+128 / " + 7.9E5 "                                                     
-reference/01_concepts.md:403 NO REFERENCE | 345>=123 / 345 >=123 / 345 >= 123 / 345 > = 123 / 345 >/*not smaller*/ = 123                        
-reference/01_concepts.md:427 DIFFERENT | A (Z)          /* concatenation, not the function call A(Z) */ / (A) + (Z)                          
-reference/01_concepts.md:467 NO REFERENCE | say "You can use a comma",       -- this line is continued / "to continue this clause." / say "You c
-reference/01_concepts.md:517 NO REFERENCE | say 1+2          /* the same as: say 1~"+"(2) */ / -z               /* the same as: z~"-"        */ 
-reference/01_concepts.md:541 DIFFERENT | /* Fred has the value 37.4, PETER has the value 1 */ / Fred"%"                                      
-reference/01_concepts.md:554 DIFFERENT | (Fred)(Peter)                                                                                       
-reference/01_concepts.md:566 DIFFERENT | "4a 4b"x"LMN"                                                                                       
-reference/01_concepts.md:578 DIFFERENT | Fred/* The NOT operator precedes Peter. */\Peter                                                    
-reference/01_concepts.md:591 DIFFERENT | (Fred)/* The NOT operator precedes Peter. */(\Peter)                                                
-reference/01_concepts.md:875 DIFFERENT | /* A is 3, DAY is Monday, all other variables are uninitialized */ / 3+2*5                          
-reference/01_concepts.md:888 DIFFERENT | Say A+5                                                                                             
-reference/01_concepts.md:901 DIFFERENT | Say A-4*2                                                                                           
-reference/01_concepts.md:914 DIFFERENT | Say A/2                                                                                             
-reference/01_concepts.md:927 SAME | Say 0.5**2                                                                                          
-reference/01_concepts.md:940 DIFFERENT | Say (A+1)>7  /* that is, .false */                                                                  
-reference/01_concepts.md:953 SAME | Say " "=""  /* that is, .true  */                                                                   
-reference/01_concepts.md:966 SAME | Say " "==""  /* that is, .false */                                                                  
-reference/01_concepts.md:979 SAME | Say " "\==""  /* that is, .true  */                                                                 
-reference/01_concepts.md:992 DIFFERENT | Say (A+1)*3=12  /* that is, .true  */                                                               
-reference/01_concepts.md:1005 SAME | Say "077">"11"  /* that is, .true  */                                                               
-reference/01_concepts.md:1018 SAME | Say "077" >> "11"  /* that is, .false */                                                            
-reference/01_concepts.md:1031 SAME | Say "abc" >> "ab"  /* that is, .true  */                                                            
-reference/01_concepts.md:1044 SAME | Say "abc" << "abd"  /* that is, .true  */                                                           
-reference/01_concepts.md:1057 SAME | Say "ab " << "abd"  /* that is, .true  */                                                           
-reference/01_concepts.md:1070 DIFFERENT | Say Today is Day                                                                                    
-reference/01_concepts.md:1083 DIFFERENT | Say "If it is" day                                                                                  
-reference/01_concepts.md:1096 DIFFERENT | Say Substr(Day,2,3)  /* Substr is a function */                                                     
-reference/01_concepts.md:1109 SAME | Say "!"xxx"!"                                                                                       
-reference/01_concepts.md:1122 DIFFERENT | -3**2  /* not -9  */                                                                                
-reference/01_concepts.md:1134 DIFFERENT | -(2+1)**2  /* not -9  */                                                                            
-reference/01_concepts.md:1146 DIFFERENT | 2**2**3  /* not 256 */                                                                              
-reference/01_concepts.md:1178 DIFFERENT | c="escape" / a="Position of 'e' is:" c~pos("e",3)                                                   
-reference/01_concepts.md:1191 DIFFERENT | "ESCAPE"~POS("E")                                                                                   
-reference/01_concepts.md:1203 DIFFERENT | account = .object~subclass("Account")~~inherit(.persistent)                                         
-reference/01_concepts.md:1238 SAME | a = .array~of(10,20) / say "Second item is" a[2]   /* Same as: a~at(2) */                           
-reference/01_concepts.md:1264 SAME | week = "mon", "tue", "wed", "thu", "fri", "sat", "sun" / say week~items "days"                      
-reference/01_concepts.md:1278 SAME | say ("here", "we", "go")~makeString(, " ")                                                          
-reference/01_concepts.md:1291 SAME | say 0~sendWith("MAX", (2, 3, 5, 7, 11, 13))                                                         
-reference/01_concepts.md:1304 SAME | sparse = ,,,0 / say "size" sparse~size"," sparse~items "items"                                      
-reference/01_concepts.md:1318 SAME | say (1, , 3, ,)~size .Array~of(1, , 3, ,)~size                                                      
-reference/01_concepts.md:1331 SAME | say (,)~size .Array~of(,)~size                                                                      
-reference/01_concepts.md:1344 DIFFERENT | call func "uno", 2, "tre"      -- no Array term: three parms / call func ("uno", 2, "tre")    -- Arr
-reference/01_concepts.md:1359 SAME | say (,)~size                                                                                        
-reference/01_concepts.md:1388 NO REFERENCE | call dir >files, ".txt" / say files~items "files with extension .txt" / use strict arg >array, exten
-reference/01_concepts.md:1512 DIFFERENT | fname = "CHESHIRE" / exten = "CAT" / "TYPE" fname"."exten                                           
-reference/01_concepts.md:1526 DIFFERENT | "TYPE CHESHIRE.CAT"                                                                                 
-reference/01_concepts.md:1538 DIFFERENT | delete "*".lst           /* not "multiplied by" */ / var.003 = anyvalue / type "var.003"           /
-reference/01_concepts.md:1561 DIFFERENT | (myfile~linein)                                                                                     
-reference/01_concepts.md:1608 DIFFERENT | a += 1                                                                                              
-reference/01_concepts.md:1629 NO REFERENCE | 77 / 827.53 / .12345 / 12e5        /* Same as 12E5 */ / 3D / 17E-3                                  
-reference/01_concepts.md:1650 NO REFERENCE | FRED / Whatagoodidea?    /* Same as WHATAGOODIDEA? */ / ?12                                         
-reference/01_concepts.md:1689 SAME | FRED. / A. / hole.   = "empty" / hole.19 = "full" / say  hole.1  hole.mouse  hole.19                
-reference/01_concepts.md:1706 DIFFERENT | hole.   = "empty"  /* setup from the example before */ / hole2. = hole.       /* copies reference to
-reference/01_concepts.md:1721 SAME | total. = 0 / say total.                                                                             
-reference/01_concepts.md:1735 SAME | total. = 0 / null = "" / total.null = total.null + 5 / say total.[] total.null                      
-reference/01_concepts.md:1775 SAME | FRED.3 / Array.I.J / AMESSY..One.2. / a=3       /* assigns "3" to the variable A    */ / z=4        
-reference/01_concepts.md:1822 NO REFERENCE | .method    -- A reference to the Rexx Method class / .true      -- The Rexx "true" object.  Has the 
-reference/01_concepts.md:1845 DIFFERENT | say .number~id                                                                                      
-reference/01_concepts.md:1858 DIFFERENT | say natural:number~id                                                                               
-reference/01_concepts.md:1871 SAME | say rexx:array~of(2, 3, 5, 7)~items                                                                 
-reference/01_concepts.md:1884 DIFFERENT | call natural:verify(17)                 /* call ::routine verify, not built-in function */ / say nat
-reference/01_concepts.md:1898 NO REFERENCE | ::class rationalNumber subclass natural:number / ::requires 'number.cls' namespace natural          
+reference/01_concepts.md:159 DIFFERENT | /* This is an example of a valid Rexx comment */ / 'You shouldn''t'        -- Same as "You shouldn't
+reference/01_concepts.md:190 DIFFERENT | "REPEAT"   A + 3;                                                                                   
+reference/01_concepts.md:219 NO REFERENCE | "Fred" / "Don't Panic!" / 'You shouldn''t'      /* Same as "You shouldn't" */ / ""                  
+reference/01_concepts.md:249 NO REFERENCE | "ABCD"x / "1d ec f8"X / '1 d8'x                                                                     
+reference/01_concepts.md:276 NO REFERENCE | "11110000"b         == "f0"x / "101 1101"b         == "5d"x / '1'b                == '00000001'b   /
+reference/01_concepts.md:305 DIFFERENT | Fred / Albert.Hall / WHERE? / 17.3E-12 / .03e+9 / .E-12       /* no digits             */           
+reference/01_concepts.md:323 DIFFERENT | 3ae+6       /* non-digit character   */                                                             
+reference/01_concepts.md:336 DIFFERENT | 3..0e+9     /* more than one '.'     */                                                             
+reference/01_concepts.md:370 NO REFERENCE | 12 / "-17.9" / 127.0650 / 73e+128 / " + 7.9E5 "                                                     
+reference/01_concepts.md:400 NO REFERENCE | 345>=123 / 345 >=123 / 345 >= 123 / 345 > = 123 / 345 >/*not smaller*/ = 123                        
+reference/01_concepts.md:424 DIFFERENT | A (Z)          /* concatenation, not the function call A(Z) */ / (A) + (Z)                          
+reference/01_concepts.md:464 NO REFERENCE | say "You can use a comma",       -- this line is continued / "to continue this clause." / say "You c
+reference/01_concepts.md:514 NO REFERENCE | say 1+2          /* the same as: say 1~"+"(2) */ / -z               /* the same as: z~"-"        */ 
+reference/01_concepts.md:538 DIFFERENT | /* Fred has the value 37.4, PETER has the value 1 */ / Fred"%"                                      
+reference/01_concepts.md:551 DIFFERENT | (Fred)(Peter)                                                                                       
+reference/01_concepts.md:563 DIFFERENT | "4a 4b"x"LMN"                                                                                       
+reference/01_concepts.md:575 DIFFERENT | Fred/* The NOT operator precedes Peter. */\Peter                                                    
+reference/01_concepts.md:588 DIFFERENT | (Fred)/* The NOT operator precedes Peter. */(\Peter)                                                
+reference/01_concepts.md:872 DIFFERENT | /* A is 3, DAY is Monday, all other variables are uninitialized */ / 3+2*5                          
+reference/01_concepts.md:885 DIFFERENT | Say A+5                                                                                             
+reference/01_concepts.md:898 DIFFERENT | Say A-4*2                                                                                           
+reference/01_concepts.md:911 DIFFERENT | Say A/2                                                                                             
+reference/01_concepts.md:924 SAME | Say 0.5**2                                                                                          
+reference/01_concepts.md:937 DIFFERENT | Say (A+1)>7  /* that is, .false */                                                                  
+reference/01_concepts.md:950 SAME | Say " "=""  /* that is, .true  */                                                                   
+reference/01_concepts.md:963 SAME | Say " "==""  /* that is, .false */                                                                  
+reference/01_concepts.md:976 SAME | Say " "\==""  /* that is, .true  */                                                                 
+reference/01_concepts.md:989 DIFFERENT | Say (A+1)*3=12  /* that is, .true  */                                                               
+reference/01_concepts.md:1002 SAME | Say "077">"11"  /* that is, .true  */                                                               
+reference/01_concepts.md:1015 SAME | Say "077" >> "11"  /* that is, .false */                                                            
+reference/01_concepts.md:1028 SAME | Say "abc" >> "ab"  /* that is, .true  */                                                            
+reference/01_concepts.md:1041 SAME | Say "abc" << "abd"  /* that is, .true  */                                                           
+reference/01_concepts.md:1054 SAME | Say "ab " << "abd"  /* that is, .true  */                                                           
+reference/01_concepts.md:1067 DIFFERENT | Say Today is Day                                                                                    
+reference/01_concepts.md:1080 DIFFERENT | Say "If it is" day                                                                                  
+reference/01_concepts.md:1093 DIFFERENT | Say Substr(Day,2,3)  /* Substr is a function */                                                     
+reference/01_concepts.md:1106 SAME | Say "!"xxx"!"                                                                                       
+reference/01_concepts.md:1119 DIFFERENT | -3**2  /* not -9  */                                                                                
+reference/01_concepts.md:1131 DIFFERENT | -(2+1)**2  /* not -9  */                                                                            
+reference/01_concepts.md:1143 DIFFERENT | 2**2**3  /* not 256 */                                                                              
+reference/01_concepts.md:1175 DIFFERENT | c="escape" / a="Position of 'e' is:" c~pos("e",3)                                                   
+reference/01_concepts.md:1188 DIFFERENT | "ESCAPE"~POS("E")                                                                                   
+reference/01_concepts.md:1200 DIFFERENT | account = .object~subclass("Account")~~inherit(.persistent)                                         
+reference/01_concepts.md:1235 SAME | a = .array~of(10,20) / say "Second item is" a[2]   /* Same as: a~at(2) */                           
+reference/01_concepts.md:1261 SAME | week = "mon", "tue", "wed", "thu", "fri", "sat", "sun" / say week~items "days"                      
+reference/01_concepts.md:1275 SAME | say ("here", "we", "go")~makeString(, " ")                                                          
+reference/01_concepts.md:1288 SAME | say 0~sendWith("MAX", (2, 3, 5, 7, 11, 13))                                                         
+reference/01_concepts.md:1301 SAME | sparse = ,,,0 / say "size" sparse~size"," sparse~items "items"                                      
+reference/01_concepts.md:1315 SAME | say (1, , 3, ,)~size .Array~of(1, , 3, ,)~size                                                      
+reference/01_concepts.md:1328 SAME | say (,)~size .Array~of(,)~size                                                                      
+reference/01_concepts.md:1341 DIFFERENT | call func "uno", 2, "tre"      -- no Array term: three parms / call func ("uno", 2, "tre")    -- Arr
+reference/01_concepts.md:1356 SAME | say (,)~size                                                                                        
+reference/01_concepts.md:1385 NO REFERENCE | call dir >files, ".txt" / say files~items "files with extension .txt" / use strict arg >array, exten
+reference/01_concepts.md:1509 DIFFERENT | fname = "CHESHIRE" / exten = "CAT" / "TYPE" fname"."exten                                           
+reference/01_concepts.md:1523 DIFFERENT | "TYPE CHESHIRE.CAT"                                                                                 
+reference/01_concepts.md:1535 DIFFERENT | delete "*".lst           /* not "multiplied by" */ / var.003 = anyvalue / type "var.003"           /
+reference/01_concepts.md:1558 DIFFERENT | (myfile~linein)                                                                                     
+reference/01_concepts.md:1605 DIFFERENT | a += 1                                                                                              
+reference/01_concepts.md:1626 NO REFERENCE | 77 / 827.53 / .12345 / 12e5        /* Same as 12E5 */ / 3D / 17E-3                                  
+reference/01_concepts.md:1647 NO REFERENCE | FRED / Whatagoodidea?    /* Same as WHATAGOODIDEA? */ / ?12                                         
+reference/01_concepts.md:1686 SAME | FRED. / A. / hole.   = "empty" / hole.19 = "full" / say  hole.1  hole.mouse  hole.19                
+reference/01_concepts.md:1703 DIFFERENT | hole.   = "empty"  /* setup from the example before */ / hole2. = hole.       /* copies reference to
+reference/01_concepts.md:1718 SAME | total. = 0 / say total.                                                                             
+reference/01_concepts.md:1732 SAME | total. = 0 / null = "" / total.null = total.null + 5 / say total.[] total.null                      
+reference/01_concepts.md:1772 SAME | FRED.3 / Array.I.J / AMESSY..One.2. / a=3       /* assigns "3" to the variable A    */ / z=4        
+reference/01_concepts.md:1819 NO REFERENCE | .method    -- A reference to the Rexx Method class / .true      -- The Rexx "true" object.  Has the 
+reference/01_concepts.md:1842 DIFFERENT | say .number~id                                                                                      
+reference/01_concepts.md:1855 DIFFERENT | say natural:number~id                                                                               
+reference/01_concepts.md:1868 SAME | say rexx:array~of(2, 3, 5, 7)~items                                                                 
+reference/01_concepts.md:1881 DIFFERENT | call natural:verify(17)                 /* call ::routine verify, not built-in function */ / say nat
+reference/01_concepts.md:1895 NO REFERENCE | ::class rationalNumber subclass natural:number / ::requires 'number.cls' namespace natural          

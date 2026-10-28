@@ -7,11 +7,7 @@ this file is from the rules of the oorexx language about builtin functions: the 
 fourth: the next after the third
 fifth: the next after the fourth
 raises: raise, for one thing
-system: the program that runs a computer and the other programs on it
 systems: more than one system
-windows: the name of a system
-unix: the name of a kind of system
-linux: the name of a system like unix
 drive: a letter and a colon at the start of a file name on windows; it names a disk
 day: a part of time; each day is the same count of time as each other day
 days: more than one day
@@ -1418,7 +1414,7 @@ say CHARS()  /* perhaps */
 ```
 the result:
 ```
-1
+0
 ```
 the reference says:
 ```
@@ -2355,7 +2351,7 @@ say DATE("F")
 ```
 the result:
 ```
-63928806230408060
+63928806811479041
 ```
 the reference says:
 ```
@@ -2444,7 +2440,7 @@ say DATE("T")
 ```
 the result:
 ```
-1793209430
+1793210011
 ```
 the reference says:
 ```

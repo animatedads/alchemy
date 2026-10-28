@@ -92,7 +92,6 @@ nop: the name of an instruction that does nothing
 subkeyword: a keyword that is a keyword only in one kind of instruction
 subkeywords: more than one subkeyword
 control: the right to run the next step
-system: the programs that run a computer and the other programs on it
 rc: a special variable; it has the return code of the last command
 failure: an event that a command can raise when the caller can not do a thing about it
 failures: more than one failure
@@ -100,8 +99,6 @@ rs: the name of an environment symbol that rexx makes
 least: not less than; at least two is two or more
 address: the name of an instruction and of a builtin function about the environment of commands
 subcommands: commands that a rexx program gives to an other program
-windows: the name of a system for a computer
-unix: the name of an other system for a computer
 cmd: the name of the shell on windows
 sh: the name of a shell on unix
 editor: a program you use to write and change files

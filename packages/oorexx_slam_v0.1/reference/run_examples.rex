@@ -12,6 +12,9 @@
  *   - the result block becomes exactly what the code printed (standard output, line by line);
  *     if the run ended in an error, the result block holds the error number only, e.g. 40.13;
  *     if the run did not end in 10 seconds, the result block says: not run: it did not end in ten seconds
+ *   - an example whose first code line is /* platform: windows */ (or linux, or unix) runs only on that
+ *     platform; on any other its result block says: not run: this example is for the windows platform
+ *     (unix means any platform that is not windows);
  *   - a run is SAME when the result block equals the reference block, DIFFERENT when it does not, and
  *     NO REFERENCE when there is no reference block.
  * The file is written again in place. One line per example goes to a report file next to it
@@ -37,13 +40,13 @@ rexxDir = rexxExe~left(rexxExe~lastPos('/') - 1)
 lib = value('LD_LIBRARY_PATH', , 'ENVIRONMENT')
 .local~slam.run = 'env -i PATH=' || rexxDir || ':/usr/bin:/bin LD_LIBRARY_PATH=' || lib || ' HOME=' || work || '/run'
 totals = .directory~new
-do k over .array~of('SAME', 'DIFFERENT', 'NO REFERENCE', 'ERROR', 'TIMEOUT')
+do k over .array~of('SAME', 'DIFFERENT', 'NO REFERENCE', 'ERROR', 'TIMEOUT', 'SKIPPED')
   totals[k] = 0
 end
 do f = 1 to files~words
   call runFile files~word(f), work, totals
 end
-say 'all files:' 'same' totals['SAME'] ' different' totals['DIFFERENT'] ' no reference' totals['NO REFERENCE'] ' (syntax errors' totals['ERROR'] ' timeouts' totals['TIMEOUT'] || ')'
+say 'all files:' 'same' totals['SAME'] ' different' totals['DIFFERENT'] ' no reference' totals['NO REFERENCE'] ' (syntax errors' totals['ERROR'] ' timeouts' totals['TIMEOUT'] ' other platform' totals['SKIPPED'] || ')'
 address system 'rm -rf' work
 exit 0
 
@@ -115,7 +118,10 @@ runFile: procedure
     end
     out~append(lines[resultBlock[2]])     /* closing fence */
     i = resultBlock[2] + 1
-    if ref == .nil then do
+    otherPlatform = .false
+    if printed~items == 1 then if printed[1]~left(29) == 'not run: this example is for ' then otherPlatform = .true
+    if otherPlatform then verdict = 'OTHER PLATFORM'
+    else if ref == .nil then do
       verdict = 'NO REFERENCE'
       noref += 1
     end
@@ -129,7 +135,7 @@ runFile: procedure
         diff += 1
       end
     end
-    totals[verdict] = totals[verdict] + 1
+    if verdict \== 'OTHER PLATFORM' then totals[verdict] = totals[verdict] + 1
     report~append(file || ':' || codeLine || ' ' || verdict || ' | ' || code[1]~makeString('L', ' / ')~left(100))
   end
   call stream file, 'C', 'OPEN WRITE REPLACE'
@@ -175,6 +181,20 @@ sameLines: procedure
 /* Run the code; give back the lines it printed, or the error number, or the timeout line. */
 runCode: procedure
   use arg code, work, totals
+  parse lower value code[1] with '/*' 'platform:' want '*/'
+  want = want~strip
+  if code~items > 0 then if want \== '' then do
+    parse source os .
+    os = os~lower
+    here = 'unix'
+    if os~pos('windows') > 0 then here = 'windows'
+    if want == 'linux' then if os~pos('linux') == 0 then here = 'other'
+    if want == 'linux' then if os~pos('linux') > 0 then here = 'linux'
+    if want \== here then do
+      totals['SKIPPED'] = totals['SKIPPED'] + 1
+      return .array~of('not run: this example is for the' want 'platform')
+    end
+  end
   dir = work || '/run'
   prog = dir || '/example.rex'
   outFile = work || '/out.txt'

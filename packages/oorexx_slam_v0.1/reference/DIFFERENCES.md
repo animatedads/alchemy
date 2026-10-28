@@ -1,6 +1,6 @@
 # Examples where ooRexx 5.3.0 r13196 does not print what the reference says
 
-Totals over all files: same 799, different 190, no reference 178.
+Totals over all files: same 798, different 191, no reference 178.
 
 Made by `rexx reference/run_examples.rex` (each example run alone, no input, ten seconds) and `tools/differences.py`.
 A difference is a lesson, not yet a verdict: it can be an error in the reference, in the rewrite, a page that sets
@@ -11,42 +11,42 @@ or a difference between the reference and this interpreter.
 
 | where | code | ooRexx printed | reference says |
 |---|---|---|---|
-| 01_concepts.md:162 | `/* This is an example of a valid Rexx comment */ / 'You shouldn''t'        -- Same as "You shouldn't" / if sub` | `35.1` | `error` |
-| 01_concepts.md:193 | `"REPEAT"   A + 3;` | `41.1` | `"REPEAT" A+3;` |
-| 01_concepts.md:308 | `Fred / Albert.Hall / WHERE? / 17.3E-12 / .03e+9 / .E-12       /* no digits             */` | `41.1` | `not a number` |
-| 01_concepts.md:326 | `3ae+6       /* non-digit character   */` | `41.1` | `not a number` |
-| 01_concepts.md:339 | `3..0e+9     /* more than one '.'     */` | `41.1` | `not a number` |
-| 01_concepts.md:427 | `A (Z)          /* concatenation, not the function call A(Z) */ / (A) + (Z)` | `41.1` | `(A)+(Z)` |
-| 01_concepts.md:541 | `/* Fred has the value 37.4, PETER has the value 1 */ / Fred"%"` | ` ` | `37.4%` |
-| 01_concepts.md:554 | `(Fred)(Peter)` | ` ` | `37.41` |
-| 01_concepts.md:566 | `"4a 4b"x"LMN"` | ` ` | `JKLMN` |
-| 01_concepts.md:578 | `Fred/* The NOT operator precedes Peter. */\Peter` | `35.1` | `error: no abuttal` |
-| 01_concepts.md:591 | `(Fred)/* The NOT operator precedes Peter. */(\Peter)` | `34.901` | `37.40` |
-| 01_concepts.md:875 | `/* A is 3, DAY is Monday, all other variables are uninitialized */ / 3+2*5` | ` ` | `13` |
-| 01_concepts.md:888 | `Say A+5` | `41.1` | `8` |
-| 01_concepts.md:901 | `Say A-4*2` | `41.1` | `-5` |
-| 01_concepts.md:914 | `Say A/2` | `41.1` | `1.5` |
-| 01_concepts.md:940 | `Say (A+1)>7  /* that is, .false */` | `41.1` | `0` |
-| 01_concepts.md:992 | `Say (A+1)*3=12  /* that is, .true  */` | `41.1` | `1` |
-| 01_concepts.md:1070 | `Say Today is Day` | `TODAY IS DAY` | `TODAY IS Monday` |
-| 01_concepts.md:1083 | `Say "If it is" day` | `If it is DAY` | `If it is Monday` |
-| 01_concepts.md:1096 | `Say Substr(Day,2,3)  /* Substr is a function */` | `AY` | `ond` |
-| 01_concepts.md:1122 | `-3**2  /* not -9  */` | ` ` | `9` |
-| 01_concepts.md:1134 | `-(2+1)**2  /* not -9  */` | ` ` | `9` |
-| 01_concepts.md:1146 | `2**2**3  /* not 256 */` | ` ` | `64` |
-| 01_concepts.md:1178 | `c="escape" / a="Position of 'e' is:" c~pos("e",3)` | ` ` | `A is "Position of 'e' is: 6"` |
-| 01_concepts.md:1191 | `"ESCAPE"~POS("E")` | ` ` | `1` |
-| 01_concepts.md:1203 | `account = .object~subclass("Account")~~inherit(.persistent)` | `98.942` | `ACCOUNT is the object returned by SUBCLASS, after it gets th` |
-| 01_concepts.md:1344 | `call func "uno", 2, "tre"      -- no Array term: three parms / call func ("uno", 2, "tre")    -- Array term: o` | `43.1` | `0` |
-| 01_concepts.md:1512 | `fname = "CHESHIRE" / exten = "CAT" / "TYPE" fname"."exten` | ` ` | `the string TYPE CHESHIRE.CAT goes to the command processor, ` |
-| 01_concepts.md:1526 | `"TYPE CHESHIRE.CAT"` | ` ` | `the same as the example before` |
-| 01_concepts.md:1538 | `delete "*".lst           /* not "multiplied by" */ / var.003 = anyvalue / type "var.003"           /* not a co` | `97.1` | `the line goes to the variable RESULT` |
-| 01_concepts.md:1561 | `(myfile~linein)` | `97.1` | `the line goes as a command to the external environment` |
-| 01_concepts.md:1608 | `a += 1` | `41.1` | `the same as: a = a + 1` |
-| 01_concepts.md:1706 | `hole.   = "empty"  /* setup from the example before */ / hole2. = hole.       /* copies reference to hole. ste` | `empty empty empty` | `empty empty full` |
-| 01_concepts.md:1845 | `say .number~id` | `97.1` | `The Real Number class` |
-| 01_concepts.md:1858 | `say natural:number~id` | `98.987` | `The Natural Number class` |
-| 01_concepts.md:1884 | `call natural:verify(17)                 /* call ::routine verify, not built-in function */ / say natural:numbe` | `98.987` | `The Integer class` |
+| 01_concepts.md:159 | `/* This is an example of a valid Rexx comment */ / 'You shouldn''t'        -- Same as "You shouldn't" / if sub` | `35.1` | `error` |
+| 01_concepts.md:190 | `"REPEAT"   A + 3;` | `41.1` | `"REPEAT" A+3;` |
+| 01_concepts.md:305 | `Fred / Albert.Hall / WHERE? / 17.3E-12 / .03e+9 / .E-12       /* no digits             */` | `41.1` | `not a number` |
+| 01_concepts.md:323 | `3ae+6       /* non-digit character   */` | `41.1` | `not a number` |
+| 01_concepts.md:336 | `3..0e+9     /* more than one '.'     */` | `41.1` | `not a number` |
+| 01_concepts.md:424 | `A (Z)          /* concatenation, not the function call A(Z) */ / (A) + (Z)` | `41.1` | `(A)+(Z)` |
+| 01_concepts.md:538 | `/* Fred has the value 37.4, PETER has the value 1 */ / Fred"%"` | ` ` | `37.4%` |
+| 01_concepts.md:551 | `(Fred)(Peter)` | ` ` | `37.41` |
+| 01_concepts.md:563 | `"4a 4b"x"LMN"` | ` ` | `JKLMN` |
+| 01_concepts.md:575 | `Fred/* The NOT operator precedes Peter. */\Peter` | `35.1` | `error: no abuttal` |
+| 01_concepts.md:588 | `(Fred)/* The NOT operator precedes Peter. */(\Peter)` | `34.901` | `37.40` |
+| 01_concepts.md:872 | `/* A is 3, DAY is Monday, all other variables are uninitialized */ / 3+2*5` | ` ` | `13` |
+| 01_concepts.md:885 | `Say A+5` | `41.1` | `8` |
+| 01_concepts.md:898 | `Say A-4*2` | `41.1` | `-5` |
+| 01_concepts.md:911 | `Say A/2` | `41.1` | `1.5` |
+| 01_concepts.md:937 | `Say (A+1)>7  /* that is, .false */` | `41.1` | `0` |
+| 01_concepts.md:989 | `Say (A+1)*3=12  /* that is, .true  */` | `41.1` | `1` |
+| 01_concepts.md:1067 | `Say Today is Day` | `TODAY IS DAY` | `TODAY IS Monday` |
+| 01_concepts.md:1080 | `Say "If it is" day` | `If it is DAY` | `If it is Monday` |
+| 01_concepts.md:1093 | `Say Substr(Day,2,3)  /* Substr is a function */` | `AY` | `ond` |
+| 01_concepts.md:1119 | `-3**2  /* not -9  */` | ` ` | `9` |
+| 01_concepts.md:1131 | `-(2+1)**2  /* not -9  */` | ` ` | `9` |
+| 01_concepts.md:1143 | `2**2**3  /* not 256 */` | ` ` | `64` |
+| 01_concepts.md:1175 | `c="escape" / a="Position of 'e' is:" c~pos("e",3)` | ` ` | `A is "Position of 'e' is: 6"` |
+| 01_concepts.md:1188 | `"ESCAPE"~POS("E")` | ` ` | `1` |
+| 01_concepts.md:1200 | `account = .object~subclass("Account")~~inherit(.persistent)` | `98.942` | `ACCOUNT is the object returned by SUBCLASS, after it gets th` |
+| 01_concepts.md:1341 | `call func "uno", 2, "tre"      -- no Array term: three parms / call func ("uno", 2, "tre")    -- Array term: o` | `43.1` | `0` |
+| 01_concepts.md:1509 | `fname = "CHESHIRE" / exten = "CAT" / "TYPE" fname"."exten` | ` ` | `the string TYPE CHESHIRE.CAT goes to the command processor, ` |
+| 01_concepts.md:1523 | `"TYPE CHESHIRE.CAT"` | ` ` | `the same as the example before` |
+| 01_concepts.md:1535 | `delete "*".lst           /* not "multiplied by" */ / var.003 = anyvalue / type "var.003"           /* not a co` | `97.1` | `the line goes to the variable RESULT` |
+| 01_concepts.md:1558 | `(myfile~linein)` | `97.1` | `the line goes as a command to the external environment` |
+| 01_concepts.md:1605 | `a += 1` | `41.1` | `the same as: a = a + 1` |
+| 01_concepts.md:1703 | `hole.   = "empty"  /* setup from the example before */ / hole2. = hole.       /* copies reference to hole. ste` | `empty empty empty` | `empty empty full` |
+| 01_concepts.md:1842 | `say .number~id` | `97.1` | `The Real Number class` |
+| 01_concepts.md:1855 | `say natural:number~id` | `98.987` | `The Natural Number class` |
+| 01_concepts.md:1881 | `call natural:verify(17)                 /* call ::routine verify, not built-in function */ / say natural:numbe` | `98.987` | `The Integer class` |
 
 ## 02_instructions_a.md (2)
 
@@ -106,55 +106,56 @@ or a difference between the reference and this interpreter.
 | 06_classes.md:4944 | `arg = .Array~new(1) / msg = .Message~new(.a~new, "ring", "A", arg) / oneSecond = .Alarm~new(1, msg, arg) / arg` | `processing continues / alarm went off at 2026-10-28T17:43:47` | `processing continues / alarm went off at 2015-12-18T16:54:15` |
 | 06_classes.md:6028 | `a = .array~of("Fred", "George", "FRED", "Mike", "fred") / a~sortwith(.caselesscomparator~new) / do name over a` | `Fred / FRED / fred / George / Mike` | `Fred / fred / FRED / George / Mike` |
 
-## 07_functions_a.md (45)
+## 07_functions_a.md (46)
 
 | where | code | ooRexx printed | reference says |
 |---|---|---|---|
-| 07_functions_a.md:167 | `Say ADDRESS()` | `sh` | `"CMD"   // default for Windows` |
-| 07_functions_a.md:180 | `Say ADDRESS()` | `sh` | `"sh"    // default for Unix-like systems` |
-| 07_functions_a.md:294 | `Say ARG(1,"a")` | ` ` | `.array~of()` |
-| 07_functions_a.md:307 | `/* after: Call name 'a', ,'b'; */ / Say ARG()` | `0` | `3` |
-| 07_functions_a.md:321 | `Say ARG(1)` | ` ` | `a` |
-| 07_functions_a.md:347 | `Say ARG(3)` | ` ` | `b` |
-| 07_functions_a.md:360 | `Say ARG(n)  /* for n>=4 */` | `40.12` | ` ` |
-| 07_functions_a.md:373 | `Say ARG(1,"e")` | `0` | `1` |
-| 07_functions_a.md:412 | `Say ARG(3,"o")` | `1` | `0` |
-| 07_functions_a.md:438 | `Say ARG(1,"A")` | ` ` | `.array~of(a, ,b)` |
-| 07_functions_a.md:451 | `Say ARG(3,"a")` | ` ` | `.array~of(b)` |
-| 07_functions_a.md:1197 | `say CHARIN(myfile,1,3)  /* the first 3        */` | ` ` | `MFC` |
-| 07_functions_a.md:1224 | `say CHARIN(myfile)  /* after last call    */` | ` ` | `M` |
-| 07_functions_a.md:1237 | `say CHARIN(myfile, ,2)  /* after last call    */` | ` ` | `FC` |
-| 07_functions_a.md:1250 | `/* Reading from the default input (here, the keyboard)   */ / /* User types "abcd efg"                        ` | ` ` | `a` |
-| 07_functions_a.md:1265 | `/* 1 character        */ / say CHARIN(, ,5)` | ` ` | `bcd e` |
-| 07_functions_a.md:1352 | `say CHAROUT(,"Hi")  /* typically        */` | `Hi0` | `0` |
-| 07_functions_a.md:1365 | `say CHAROUT(,"Hello")  /* maybe            */` | `Hello0` | `2` |
-| 07_functions_a.md:1389 | `say CHARS(myfile)  /* perhaps */` | `0` | `42` |
-| 07_functions_a.md:1572 | `say CONDITION()  /* perhaps */` | ` ` | `CALL` |
-| 07_functions_a.md:1585 | `say CONDITION("C")` | ` ` | `FAILURE` |
-| 07_functions_a.md:1598 | `say CONDITION("I")` | ` ` | `CALL` |
-| 07_functions_a.md:1611 | `say CONDITION("D")` | ` ` | `FailureTest` |
-| 07_functions_a.md:1624 | `say CONDITION("S")  /* perhaps */` | ` ` | `OFF` |
-| 07_functions_a.md:2300 | `/* this day is 24 Nov 2016 */ / DATE()` | ` ` | `24 Nov 2016` |
-| 07_functions_a.md:2313 | `say DATE("B")` | `739916` | `736291` |
-| 07_functions_a.md:2326 | `say DATE("D")` | `301` | `329` |
-| 07_functions_a.md:2339 | `say DATE("E")` | `28/10/26` | `24/11/16` |
-| 07_functions_a.md:2352 | `say DATE("F")` | `63928806230408060` | `63615600688459000` |
-| 07_functions_a.md:2365 | `say DATE("I")` | `2026-10-28` | `2016-11-24` |
-| 07_functions_a.md:2378 | `DATE("L")` | ` ` | `24 November 2016` |
-| 07_functions_a.md:2390 | `say DATE("M")` | `October` | `November` |
-| 07_functions_a.md:2403 | `DATE("N")` | ` ` | `24 Nov 2016` |
-| 07_functions_a.md:2415 | `say DATE("O")` | `26/10/28` | `16/11/24` |
-| 07_functions_a.md:2428 | `say DATE("S")` | `20261028` | `20161124` |
-| 07_functions_a.md:2441 | `say DATE("T")` | `1793209430` | `1480003888` |
-| 07_functions_a.md:2454 | `say DATE("U")` | `10/28/26` | `11/24/16` |
-| 07_functions_a.md:2467 | `say DATE("W")` | `Wednesday` | `Thursday` |
-| 07_functions_a.md:2584 | `DATE("N", , ,"_")` | ` ` | `"14_May_2017"  (today)` |
-| 07_functions_a.md:2885 | `thisfile = "C:\WINDOWS\UTIL\SYSTEM.INI" / say FILESPEC("drive",thisfile)` | ` ` | `C:` |
-| 07_functions_a.md:2899 | `say FILESPEC("path",thisfile)` | ` ` | `\WINDOWS\UTIL\` |
-| 07_functions_a.md:2912 | `say FILESPEC("location",thisfile)` | ` ` | `C:\WINDOWS\UTIL\` |
-| 07_functions_a.md:2925 | `say FILESPEC("name",thisfile)` | `THISFILE` | `SYSTEM.INI` |
-| 07_functions_a.md:2938 | `say FILESPEC("extension",thisfile)` | ` ` | `INI` |
-| 07_functions_a.md:2951 | `part = "name" / say FILESPEC(part,thisfile)` | `THISFILE` | `SYSTEM.INI` |
+| 07_functions_a.md:163 | `Say ADDRESS()` | `sh` | `"CMD"   // default for Windows` |
+| 07_functions_a.md:176 | `Say ADDRESS()` | `sh` | `"sh"    // default for Unix-like systems` |
+| 07_functions_a.md:290 | `Say ARG(1,"a")` | ` ` | `.array~of()` |
+| 07_functions_a.md:303 | `/* after: Call name 'a', ,'b'; */ / Say ARG()` | `0` | `3` |
+| 07_functions_a.md:317 | `Say ARG(1)` | ` ` | `a` |
+| 07_functions_a.md:343 | `Say ARG(3)` | ` ` | `b` |
+| 07_functions_a.md:356 | `Say ARG(n)  /* for n>=4 */` | `40.12` | ` ` |
+| 07_functions_a.md:369 | `Say ARG(1,"e")` | `0` | `1` |
+| 07_functions_a.md:408 | `Say ARG(3,"o")` | `1` | `0` |
+| 07_functions_a.md:434 | `Say ARG(1,"A")` | ` ` | `.array~of(a, ,b)` |
+| 07_functions_a.md:447 | `Say ARG(3,"a")` | ` ` | `.array~of(b)` |
+| 07_functions_a.md:1193 | `say CHARIN(myfile,1,3)  /* the first 3        */` | ` ` | `MFC` |
+| 07_functions_a.md:1220 | `say CHARIN(myfile)  /* after last call    */` | ` ` | `M` |
+| 07_functions_a.md:1233 | `say CHARIN(myfile, ,2)  /* after last call    */` | ` ` | `FC` |
+| 07_functions_a.md:1246 | `/* Reading from the default input (here, the keyboard)   */ / /* User types "abcd efg"                        ` | ` ` | `a` |
+| 07_functions_a.md:1261 | `/* 1 character        */ / say CHARIN(, ,5)` | ` ` | `bcd e` |
+| 07_functions_a.md:1348 | `say CHAROUT(,"Hi")  /* typically        */` | `Hi0` | `0` |
+| 07_functions_a.md:1361 | `say CHAROUT(,"Hello")  /* maybe            */` | `Hello0` | `2` |
+| 07_functions_a.md:1385 | `say CHARS(myfile)  /* perhaps */` | `0` | `42` |
+| 07_functions_a.md:1411 | `say CHARS()  /* perhaps */` | `0` | `1` |
+| 07_functions_a.md:1568 | `say CONDITION()  /* perhaps */` | ` ` | `CALL` |
+| 07_functions_a.md:1581 | `say CONDITION("C")` | ` ` | `FAILURE` |
+| 07_functions_a.md:1594 | `say CONDITION("I")` | ` ` | `CALL` |
+| 07_functions_a.md:1607 | `say CONDITION("D")` | ` ` | `FailureTest` |
+| 07_functions_a.md:1620 | `say CONDITION("S")  /* perhaps */` | ` ` | `OFF` |
+| 07_functions_a.md:2296 | `/* this day is 24 Nov 2016 */ / DATE()` | ` ` | `24 Nov 2016` |
+| 07_functions_a.md:2309 | `say DATE("B")` | `739916` | `736291` |
+| 07_functions_a.md:2322 | `say DATE("D")` | `301` | `329` |
+| 07_functions_a.md:2335 | `say DATE("E")` | `28/10/26` | `24/11/16` |
+| 07_functions_a.md:2348 | `say DATE("F")` | `63928806811479041` | `63615600688459000` |
+| 07_functions_a.md:2361 | `say DATE("I")` | `2026-10-28` | `2016-11-24` |
+| 07_functions_a.md:2374 | `DATE("L")` | ` ` | `24 November 2016` |
+| 07_functions_a.md:2386 | `say DATE("M")` | `October` | `November` |
+| 07_functions_a.md:2399 | `DATE("N")` | ` ` | `24 Nov 2016` |
+| 07_functions_a.md:2411 | `say DATE("O")` | `26/10/28` | `16/11/24` |
+| 07_functions_a.md:2424 | `say DATE("S")` | `20261028` | `20161124` |
+| 07_functions_a.md:2437 | `say DATE("T")` | `1793210011` | `1480003888` |
+| 07_functions_a.md:2450 | `say DATE("U")` | `10/28/26` | `11/24/16` |
+| 07_functions_a.md:2463 | `say DATE("W")` | `Wednesday` | `Thursday` |
+| 07_functions_a.md:2580 | `DATE("N", , ,"_")` | ` ` | `"14_May_2017"  (today)` |
+| 07_functions_a.md:2881 | `thisfile = "C:\WINDOWS\UTIL\SYSTEM.INI" / say FILESPEC("drive",thisfile)` | ` ` | `C:` |
+| 07_functions_a.md:2895 | `say FILESPEC("path",thisfile)` | ` ` | `\WINDOWS\UTIL\` |
+| 07_functions_a.md:2908 | `say FILESPEC("location",thisfile)` | ` ` | `C:\WINDOWS\UTIL\` |
+| 07_functions_a.md:2921 | `say FILESPEC("name",thisfile)` | `THISFILE` | `SYSTEM.INI` |
+| 07_functions_a.md:2934 | `say FILESPEC("extension",thisfile)` | ` ` | `INI` |
+| 07_functions_a.md:2947 | `part = "name" / say FILESPEC(part,thisfile)` | `THISFILE` | `SYSTEM.INI` |
 
 ## 07_functions_b.md (40)
 

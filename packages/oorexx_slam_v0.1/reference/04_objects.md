@@ -492,8 +492,6 @@ LINUX
 ```
 this object is a string constant.
 its value is the characters that end a line.
-windows: the name of a program that runs a computer and its other programs
-unix: the name of an other program that runs a computer and its other programs
 on windows, its value is two characters.
 on unix, its value is one character.
 it is in the point environment object.
@@ -913,17 +911,17 @@ Object 1 running
 Object 1 running
 Object 1 running
 Object 1 running
+Object 2 running
+Object 2 running
+Object 2 running
+Object 2 running
+Object 2 running
+Object 2 running
+Object 2 running
+Object 2 running
+Object 2 running
+Object 2 running
 Repeated Object 1 running, 10 times.
-Object 2 running
-Object 2 running
-Object 2 running
-Object 2 running
-Object 2 running
-Object 2 running
-Object 2 running
-Object 2 running
-Object 2 running
-Object 2 running
 Repeated Object 2 running, 10 times.
 Main ended.
 ```
