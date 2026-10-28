@@ -339,11 +339,20 @@ saveRollback:
     app~installSubviewDefinition(row["parent_form"], row["subview_name"], row["source_form"], row["link_field"], columns, rowCalcs, columnCalcs)
   end
 
-  documentsResult = db~selectAll("documents")
-  if documentsResult~status \= .Error~SUCCESS then return 0
+  /* SQLite reads at most 100 rows per query via indexed rowid seeking.
+   * Legacy file mode keeps its original selectAll contract. */
   records = .array~new
   restoredIndex = .Table~new
-  do row over documentsResult~rows
+  paged = db~hasMethod("selectPageAfter")
+  cursor = 0
+  do forever
+    if paged then documentsResult = db~selectPageAfter("documents", cursor, 100)
+    else documentsResult = db~selectAll("documents")
+    if documentsResult~status \= .Error~SUCCESS then -
+      raise syntax 93.900 array("Cannot read NotNotes documents:" documentsResult~message)
+    if documentsResult~rows~items = 0 then leave
+    do row over documentsResult~rows
+      if paged then cursor = row["NN_CURSOR"]
     record = .Directory~new
     record["DOC_KEY"] = row["doc_key"]
     record["FORM_NAME"] = row["form_name"]
@@ -356,7 +365,10 @@ saveRollback:
     record["FIELDS"] = self~decodeCustomFields(row["fields_hex"])
     restoredDocument = app~restoreDocumentRecord(record)
     if restoredDocument \== .nil then restoredIndex[record["DOC_KEY"]~string~upper] = restoredDocument
-    records~append(record)
+      records~append(record)
+    end
+    if \paged then leave
+    if documentsResult~rows~items < 100 then leave
   end
   do record over records
     app~restoreDocumentState(record, restoredIndex[record["DOC_KEY"]~string~upper])
