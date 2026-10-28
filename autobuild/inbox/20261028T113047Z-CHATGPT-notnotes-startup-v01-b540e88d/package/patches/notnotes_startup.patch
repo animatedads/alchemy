@@ -1,0 +1,74 @@
+--- a/src/MiniNotesApp.cls
++++ b/src/MiniNotesApp.cls
+@@ -476,18 +476,26 @@
+ 
+ ::method sortByKey
+   use strict arg documents
+-  out = .array~new
++  /* Preserve the existing DocKey ordering, but sort native String keys rather
++   * than doing quadratic ooRexx document-object comparisons.  The bucketed
++   * index retains all documents, even for duplicate keys.  This is a local
++   * presentation acceleration; document authority remains in NotNotes. */
++  keys = .Array~new
++  buckets = .Table~new
+   do document over documents
+-    out~append(document)
++    key = document~DocKey~string
++    if \buckets~hasIndex(key) then do
++      bucket = .Array~new
++      buckets[key] = bucket
++      keys~append(key)
++    end
++    buckets[key]~append(document)
+   end
+-  if out~items < 2 then return out
+-  do i = 1 to out~items - 1
+-    do j = i + 1 to out~items
+-      if out[j]~DocKey < out[i]~DocKey then do
+-        swap = out[i]
+-        out[i] = out[j]
+-        out[j] = swap
+-      end
++  keys~sort
++  out = .Array~new
++  do key over keys
++    do document over buckets[key]
++      out~append(document)
+     end
+   end
+   return out
+@@ -1647,8 +1655,8 @@
+ 
+ ::method restoreDocumentState
+   expose node reviewer
+-  use strict arg record
+-  document = self~byKey(record["DOC_KEY"])
++  use strict arg record, document = .nil
++  if document == .nil then document = self~byKey(record["DOC_KEY"])
+   if document == .nil then return .false
+   ignore = self~bindDependencies(document)
+   formName = document~formName
+--- a/src/MiniNotesPersistence.cls
++++ b/src/MiniNotesPersistence.cls
+@@ -261,6 +261,7 @@
+   documentsResult = db~selectAll("documents")
+   if documentsResult~status \= .Error~SUCCESS then return 0
+   records = .array~new
++  restoredIndex = .Table~new
+   do row over documentsResult~rows
+     record = .Directory~new
+     record["DOC_KEY"] = row["doc_key"]
+@@ -272,11 +273,12 @@
+     record["WORKFLOW"] = row["workflow"]
+     record["STATUS"] = row["status"]
+     record["FIELDS"] = self~decodeCustomFields(row["fields_hex"])
+-    app~restoreDocumentRecord(record)
++    restoredDocument = app~restoreDocumentRecord(record)
++    if restoredDocument \== .nil then restoredIndex[record["DOC_KEY"]~string~upper] = restoredDocument
+     records~append(record)
+   end
+   do record over records
+-    app~restoreDocumentState(record)
++    app~restoreDocumentState(record, restoredIndex[record["DOC_KEY"]~string~upper])
+   end
+   return records~items

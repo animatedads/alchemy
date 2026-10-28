@@ -1,0 +1,25 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "notnotes_startup_patch",
+    "version": "0.1",
+    "kind": "python"
+  },
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "static-patch-contract",
+      "argv": [
+        "python3",
+        "tests/test_patch_contract.py"
+      ],
+      "timeout_seconds": 30
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/notnotes_startup_patch_v0.1"
+    }
+  }
+}
