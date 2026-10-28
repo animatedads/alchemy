@@ -1,5 +1,14 @@
 # Wire UI Swing changelog
 
+## v0.2-dev12 — 2026-10-28
+
+- Add renderer-only secondary metadata to document-style collection rows from already projected `meta`/`subtitle`/`type`/`owner` fields.
+- Keep document activation detail narrow: secondary presentation metadata and unrelated row fields are never echoed as application authority.
+- Refine navigation selection presentation with accent, hierarchy and selected-state rail without emitting semantic actions.
+- Raise document row height for three-line web-quality hierarchy while retaining compact projected lifecycle chips.
+- Add two strict regression tests; renderer suite advances from 59/59 to 61/61.
+- Fix `--notnotes-demo` launcher routing so the interactive option opens the NotNotes fixture rather than the generic Search demo; add executable smoke coverage.
+
 ## v0.2-dev11 — 2026-10-23
 
 - Add renderer-owned two-line document rows for semantic collection items with projected `label`, stable `id`, and projected `status`.

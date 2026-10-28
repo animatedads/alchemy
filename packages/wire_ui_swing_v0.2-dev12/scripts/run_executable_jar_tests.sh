@@ -2,10 +2,10 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 "$ROOT/scripts/build.sh"
-JAR="$ROOT/build/wire-ui-swing-v0.2-dev11.jar"
+JAR="$ROOT/build/wire-ui-swing-v0.2-dev12.jar"
 
 VERSION_OUTPUT="$(java -jar "$JAR" --version)"
-[[ "$VERSION_OUTPUT" == "wire-ui-swing 0.2-dev11" ]]
+[[ "$VERSION_OUTPUT" == "wire-ui-swing 0.2-dev12" ]]
 
 if ! command -v xvfb-run >/dev/null 2>&1; then
   echo "xvfb-run is required for executable-JAR GUI smoke test" >&2
@@ -13,7 +13,10 @@ if ! command -v xvfb-run >/dev/null 2>&1; then
 fi
 
 SMOKE_OUTPUT="$(xvfb-run -a java -Djava.awt.headless=false -jar "$JAR" --smoke-window)"
-grep -Fq 'wire-ui-swing 0.2-dev11 READY view=SEARCH revision=0' <<<"$SMOKE_OUTPUT"
+grep -Fq 'wire-ui-swing 0.2-dev12 READY view=SEARCH revision=0' <<<"$SMOKE_OUTPUT"
+
+NOTNOTES_SMOKE_OUTPUT="$(xvfb-run -a java -Djava.awt.headless=false -jar "$JAR" --notnotes-smoke)"
+grep -Fq 'wire-ui-swing 0.2-dev12 READY view=NOTNOTES.HOME revision=1' <<<"$NOTNOTES_SMOKE_OUTPUT"
 
 # Exercise the exact no-argument launch form a user/double-click handler uses.
 LOG="$ROOT/build/executable-jar-noargs.log"
@@ -24,7 +27,7 @@ xvfb-run -a bash -c '
   pid=$!
   trap '\''kill "$pid" 2>/dev/null || true'\'' EXIT
   for _ in $(seq 1 50); do
-    if grep -Fq "wire-ui-swing 0.2-dev11 READY view=SEARCH revision=0" "$2" 2>/dev/null; then
+    if grep -Fq "wire-ui-swing 0.2-dev12 READY view=NOTNOTES.HOME revision=1" "$2" 2>/dev/null; then
       kill "$pid" 2>/dev/null || true
       wait "$pid" 2>/dev/null || true
       trap - EXIT
@@ -42,4 +45,5 @@ xvfb-run -a bash -c '
 
 echo "PASS executable JAR manifest/version"
 echo "PASS java -jar --smoke-window under Xvfb"
+echo "PASS java -jar --notnotes-smoke under Xvfb"
 echo "PASS exact no-argument java -jar launch under Xvfb"

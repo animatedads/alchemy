@@ -1,4 +1,4 @@
-# Wire UI Swing v0.2-dev11
+# Wire UI Swing v0.2-dev12
 
 Defensive Java Swing renderer and desktop shell for `WIRE-UI/0.1`.
 
@@ -68,8 +68,8 @@ Browser-parity field hints create suitable Swing editors (`date`, `number`, `ema
 ```bash
 ./scripts/run_tests.sh
 ./scripts/build.sh
-java -jar build/wire-ui-swing-v0.2-dev11.jar --version
-java -jar build/wire-ui-swing-v0.2-dev11.jar
+java -jar build/wire-ui-swing-v0.2-dev12.jar --version
+java -jar build/wire-ui-swing-v0.2-dev12.jar
 ```
 
 Real-window tests require a graphics environment; the automated acceptance uses Xvfb.
@@ -102,3 +102,10 @@ The Java renderer now gives document-style semantic collections a stronger two-l
 ## dev10: modern desktop material + NotNotes Java presentation fixture
 
 `--notnotes-demo` opens a renderer-only NotNotes composition using the same WIRE-UI/0.1 runtime. It demonstrates the intended Java visual quality without moving document, lifecycle, report or intention authority into Swing. dev10 adds a modern neutral material layer (quiet canvas, elevated cards, dense collection rows, stronger type hierarchy, modern buttons/fields and controlled spacing). The fixture uses stable semantic document identities and bounded collection metadata; it is presentation evidence, not a second NotNotes domain implementation.
+
+
+## dev12: richer document hierarchy and navigation
+
+Dev12 continues the renderer-only visual refinement of the NotNotes Java fixture. Document rows may now show a secondary line assembled from already-projected presentation values such as document type and owner, while stable identity remains separately visible and lifecycle status remains a compact chip. The renderer does not return those extra display values in semantic action detail.
+
+Navigation selection gains clearer hierarchy and an accent rail. This is local presentation state only: rendering or selecting a navigation row does not itself create application authority.
