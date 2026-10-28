@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.5
+- Record Terminal Machine v0.22-candidate15 as the current 3270 P0 delivery.
+- Record the independent r13196 candidate13 fixture failure and its root cause: SF plus eight data cells in an 8-column row consumed nine buffer positions.
+- Enforce exact ReadBuffer row geometry in the reference adapter and fail closed on row width/count mismatches.
+- Preserve candidate14 complete-response status/keyboard binding, NONDISPLAY masking and DBCS fail-closed behavior.
+- Keep the next release gate as an independent r13196 rerun before live ED209 qualification.
+
 ## 0.4
 - Record Terminal Machine v0.22-candidate14 as the current IBM 3270 P0 delivery.
 - Bind complete s3270 peer-script evidence: ReadBuffer data, 12-field status and final ok/error.
