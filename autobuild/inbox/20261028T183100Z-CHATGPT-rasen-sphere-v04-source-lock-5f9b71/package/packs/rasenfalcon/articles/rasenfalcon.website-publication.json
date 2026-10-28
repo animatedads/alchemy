@@ -1,0 +1,77 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.website-publication",
+  "version": "0.3",
+  "sphere": "rasenfalcon",
+  "section": "publication",
+  "title": "Website editorial-to-CMS/Brand/Wire publication authority",
+  "summary": "Website Publisher v0.3 export and native read-back can now be staged offline by Rasen Falcon v0.4.2 site compiler, with strict nine-page schema/site checks, digest provenance and isolated noindex preview. The browser editor and candidate CLI remain outside authenticated CMS/Brand/Wire publication authority.",
+  "invariants": [
+    "Website Publisher v0.3 runs a side-by-side editor with import/export, review-request preparation and revision compare; browser export is not a release or authenticated review.",
+    "Native Publisher v0.3 uses NoSQLServer v0.90 candidate as an explicitly qualified offline file-to-ooRexx CLI handoff, not a browser-connected CMS service.",
+    "NoSQLServer v0.91 exists as an additional candidate but cannot silently replace the v0.90 pinned Publisher source without full qualification.",
+    "CMS/Brand Builder must hold editorial truth and review authority; a local string, SHA-256 or timestamp is not a verified approval receipt.",
+    "Wire UI Builder/Resource Editor composes and projects semantically typed resources; pending real resource authority receipts must not be invented.",
+    "ooRexx HTTPS Server is the owned public listener; public apex routes must not inherit Office/NOC private TLS or capability states.",
+    "Only authenticated and independently checked CMS, brand approval and Wire resource release receipts may allow a future production site build.",
+    "All nine preview pages emit noindex,nofollow independent of editorial approval flags; production fails closed until the receipt verifier is genuinely implemented.",
+    "No remote persistence, multi-writer safety, live publishing, RexxOS commissioning, ACME/SNI or operator approval is claimed by the offline editor or static tests.",
+    "Candidate staging accepts only publisher.export/0.1 or native-record/0.2 with candidate authority, exact site and page identity; other schemas and conflicting/extra page/approval fields fail closed.",
+    "Staging records SHA-256 of the received bytes and normalized candidate pages, but native revision is explicitly unverified and every imported page becomes candidate regardless of claimed approval.",
+    "Output is staged to a new path atomically, never overwrite/delete the source or an existing review directory; isolated preview is noindex.",
+    "Production must continue to refuse even complete candidate bundles: authentication, institutional Brand decision and Wire release receipts are not implemented."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "alchemy_website_publisher_source_sync_v0.3.zip",
+      "sha256": "ad77b87bd8c7a433d67368f5bd6affe3947a412cec04d94c4959f5f2129841a4",
+      "member": "packages/alchemy_website_publisher_v0.3/docs/INTEGRATION.md",
+      "claim": "Publisher native snapshot/revision handoff and explicit missing live authenticated CMS service."
+    },
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.zip",
+      "sha256": "60bf049a436c9f653b60cbf315331a85872ab4f6724f7ef685fec322de96bc5c",
+      "member": "public_site/INTEGRATION.md",
+      "claim": "Prior public site and deployment boundary."
+    },
+    {
+      "artifact": "rasenfalcon_site_publisher_handoff_v0.2.zip",
+      "sha256": "0d85822b4e0d0bac0795c7f09e971955d07dfe11a90cd596c197a73d6f1859c8",
+      "member": "docs/PUBLISHER_HANDOFF_V0.2.md",
+      "claim": "Real CLI candidate staging, offline integration, negative cases and review-only output."
+    }
+  ],
+  "published_source_paths": [
+    "packages/alchemy_website_publisher_v0.3",
+    "packages/rasenfalcon_delivery_v0.4"
+  ],
+  "pending_source_candidate": "https://github.com/animatedads/alchemy/tree/autobuild-submit/20261027T163400Z-CHATGPT-rasen-v042-publisher-stage-b12ce4",
+  "integration_steps": [
+    "Use Website Publisher v0.3 export/0.1 or native-record/0.2 and stage with tools/site.py stage-publisher INPUT NEW_STAGING_DIR; preview with --content-dir staging/content --output-dir NEW_PREVIEW_DIR.",
+    "Implement authenticated ooRexx CMS candidate read/write and review service against an accepted NoSQLServer backend.",
+    "Bind identity, authorship, brand approval and source/revision lineage with an independently verifiable release receipt.",
+    "Compile/publish Wire resources under their own authority and check resource receipt linkage to each page version.",
+    "Only then enable production mode in the site compiler and qualify native HTTPS/SNI, cache and rollback on target host."
+  ],
+  "state": {
+    "editor": "SOURCE_MAIN_V0.3",
+    "native_store": "DEVELOPMENT_QUALIFIED_V0.90",
+    "cms_service": "NOT_IMPLEMENTED",
+    "wire_release": "NOT_QUALIFIED",
+    "production": "BLOCKED"
+  },
+  "publisher_to_site_bridge": {
+    "command": "python3 website/tools/site.py stage-publisher EXPORT.json NEW_STAGE_DIRECTORY",
+    "preview_command": "python3 website/tools/site.py build --mode preview --content-dir STAGE/content --output-dir NEW_PREVIEW_DIRECTORY",
+    "accepted": [
+      "alchemy.website.publisher.export/0.1",
+      "alchemy.website.publisher.native-record/0.2"
+    ],
+    "output": "rasenfalcon.publisher-stage/0.1",
+    "authority": "CANDIDATE_UNREVIEWED",
+    "native_revision_verified": false,
+    "verifies": "local source schema/domain/nine-page identity only",
+    "production": "DENIED_PENDING_AUTHENTICATED_CMS_BRAND_WIRE_RELEASE_RECEIPTS"
+  }
+}
