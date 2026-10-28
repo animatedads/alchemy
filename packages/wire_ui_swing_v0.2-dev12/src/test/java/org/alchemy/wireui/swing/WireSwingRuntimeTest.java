@@ -42,6 +42,8 @@ public final class WireSwingRuntimeTest {
         testFormEnterQueuesSemanticAction();
         testCollectionPresentationKeepsAuthorityNarrow();
         testDocumentCollectionRendersIdentityAndProjectedStatusChip();
+        testDocumentCollectionRendersProjectedSecondaryMetadataWithoutAuthorityLeak();
+        testNavigationSelectionStylingIsPresentationOnly();
         testHeadingStyleRoleIsPresentationOnly();
         testStandaloneDemoJourneyAuthorityIsOutsideRenderer();
         testServerOrderedCollectionAppendMovePreservesIdentity();
@@ -522,6 +524,64 @@ public final class WireSwingRuntimeTest {
         pass();
     }
 
+
+    private static void testDocumentCollectionRendersProjectedSecondaryMetadataWithoutAuthorityLeak() throws Exception {
+        WireSwingRuntime runtime = baseRuntimeWithManifest(List.of(ref("DOCS", 1, "docs")));
+        Map<String, Object> documentDefinition = new LinkedHashMap<>(def("DOCS", 1, "SEMANTIC_COLLECTION", "OPEN", "", "docs", Map.of()));
+        documentDefinition.put("styleRole", "document-list card");
+        runtime.accept(documentDefinition);
+        Map<String, Object> row = Map.of(
+                "id", "TR-0014",
+                "label", "TPS-2026-014",
+                "status", "PENDING APPROVAL",
+                "type", "TPS Report",
+                "owner", "Fred",
+                "secret", "must-not-return");
+        runtime.accept(snapshot(8, List.of(inst("docs", "DOCS@1", "", Map.of("items", List.of(row))))));
+        JList<?> list = find(runtime.rootComponent(), JList.class);
+        final Component[] cell = new Component[1];
+        SwingUtilities.invokeAndWait(() -> {
+            cell[0] = renderedListComponent(list, 0);
+            list.setSelectedIndex(0);
+            list.getActionMap().get("wire.activate").actionPerformed(new java.awt.event.ActionEvent(list, 0, "test"));
+        });
+        java.util.List<JLabel> labels = findAll(cell[0], JLabel.class);
+        check(labels.stream().anyMatch(label -> "TPS Report · Fred".equals(label.getText())), "document row renders projected secondary metadata");
+        Map<String, Object> detail = castMap(runtime.pollAction().get("detail"));
+        eq(2, detail.size(), "secondary display metadata does not widen action detail");
+        eq(0, ((Number) detail.get("index")).intValue(), "document action index remains narrow");
+        eq("TR-0014", detail.get("id"), "document action returns only stable server identity");
+        check(!detail.containsKey("owner") && !detail.containsKey("type") && !detail.containsKey("secret"), "display metadata is not echoed as authority");
+        pass();
+    }
+
+    private static void testNavigationSelectionStylingIsPresentationOnly() throws Exception {
+        WireSwingRuntime runtime = baseRuntimeWithManifest(List.of(ref("NAV", 1, "nav")));
+        Map<String, Object> navDefinition = new LinkedHashMap<>(def("NAV", 1, "LIST", "NAVIGATE", "", "nav", Map.of()));
+        navDefinition.put("styleRole", "navigation card");
+        runtime.accept(navDefinition);
+        runtime.accept(snapshot(3, List.of(inst("nav", "NAV@1", "", Map.of("items", List.of("Home", "Documents"))))));
+        JList<?> list = find(runtime.rootComponent(), JList.class);
+        final boolean[] inactiveBold = new boolean[1];
+        final Color[] inactiveForeground = new Color[1];
+        final boolean[] activeBold = new boolean[1];
+        final Color[] activeForeground = new Color[1];
+        SwingUtilities.invokeAndWait(() -> {
+            JLabel plain = (JLabel) renderedListComponent(list, 0);
+            inactiveBold[0] = plain.getFont().isBold();
+            inactiveForeground[0] = plain.getForeground();
+            JLabel active = (JLabel) renderedListComponent(list, 1, true);
+            activeBold[0] = active.getFont().isBold();
+            activeForeground[0] = active.getForeground();
+        });
+        check(!inactiveBold[0], "inactive navigation remains visually quiet");
+        eq(WireSwingPresentation.INK, inactiveForeground[0], "inactive navigation uses ordinary ink");
+        check(activeBold[0], "selected navigation receives renderer-only hierarchy");
+        eq(WireSwingPresentation.ACCENT, activeForeground[0], "selected navigation uses renderer accent");
+        check(runtime.pollAction() == null, "navigation rendering creates no semantic action");
+        pass();
+    }
+
     private static void testHeadingStyleRoleIsPresentationOnly() {
         WireSwingRuntime runtime = baseRuntimeWithManifest(List.of(ref("TITLE", 1, "title")));
         Map<String, Object> definition = def("TITLE", 1, "TEXT", "", "Visible heading", "title", Map.of("styleRole", "page-heading"));
@@ -998,3 +1058,108 @@ public final class WireSwingRuntimeTest {
                 "rangeWindow", Map.of("start", 0L, "count", 1L, "total", 200000L))))));
         runtime.accept(patch(4, 5, List.of(
                 Map.of("op", "SET_SLOT", "instanceId", "messages", "slot", "items", "value", List.of(Map.of("id", "M100", "label", "Message 100"))),
+                Map.of("op", "SET_SLOT", "instanceId", "messages", "slot", "rangeWindow", "value", Map.of("start", 100L, "count", 1L, "total", 200000L)))));
+        JList<?> list = find(runtime.rootComponent(), JList.class);
+        JScrollBar virtual = findVirtualRangeBar(runtime.rootComponent());
+        eq(5L, runtime.revision(), "server range patch advances revision");
+        eq("M100", castMap(list.getModel().getElementAt(0)).get("id"), "authoritative patch replaces resident window");
+        eq(100L, virtual.getClientProperty("wire.rangeStart"), "authoritative start retained as renderer metadata");
+        check(runtime.pollAction() == null, "authoritative range patch must not echo RangeRequested");
+        pass();
+    }
+
+    private static JScrollBar findVirtualRangeBar(Component root) {
+        for (JScrollBar bar : findAll(root, JScrollBar.class)) {
+            if (bar.getClientProperty("wire.rangeTotal") != null) return bar;
+        }
+        throw new AssertionError("virtual range scrollbar not found");
+    }
+
+    private static Map<String, Object> snapshot(long revision, List<Map<String, Object>> instances) { return msg("UI_VIEW_SNAPSHOT", Map.of("viewRef", "view-1", "revision", revision, "rootInstanceId", instances.get(0).get("instanceId"), "instances", instances)); }
+    private static Map<String, Object> patch(long previous, long next, List<Map<String, Object>> ops) { return msg("UI_VIEW_PATCH", Map.of("viewRef", "view-1", "previousRevision", previous, "newRevision", next, "operations", ops)); }
+
+    private static Map<String,Object> material(String id, String version, String address, Map<String,Object> tokens, Map<String,Object> recipes, Map<String,Object> siteRelease) {
+        Map<String,Object> fields = new LinkedHashMap<>(); fields.put("materialId", id); fields.put("version", version); fields.put("contentAddress", address);
+        fields.put("tokens", tokens); fields.put("recipes", recipes); fields.put("siteRelease", siteRelease);
+        return msg("UI_MATERIAL_SET", fields);
+    }
+
+    private static Map<String, Object> msg(String type, Map<String, Object> fields) {
+        Map<String, Object> m = new LinkedHashMap<>(); m.put("type", type); m.put("protocolVersion", "WIRE-UI/0.1"); m.putAll(fields); return m;
+    }
+
+    private static boolean hasOutbound(WireSwingRuntime runtime, String type, String... codes) {
+        for (Map<String, Object> m : runtime.drainOutbound()) {
+            if (!type.equals(m.get("type"))) continue;
+            if (codes == null || codes.length == 0 || codes[0] == null) return true;
+            for (String c : codes) if (c != null && c.equals(m.get("code"))) return true;
+        }
+        return false;
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static Component renderedListComponent(JList<?> list, int index) {
+        return renderedListComponent(list, index, false);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static Component renderedListComponent(JList<?> list, int index, boolean selected) {
+        ListCellRenderer renderer = list.getCellRenderer();
+        return renderer.getListCellRendererComponent(
+                list, list.getModel().getElementAt(index), index, selected, false);
+    }
+
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private static String renderedListText(JList<?> list, int index) {
+        ListCellRenderer renderer = list.getCellRenderer();
+        Component cell = renderer.getListCellRendererComponent(
+                list, list.getModel().getElementAt(index), index, false, false);
+        return ((JLabel) cell).getText();
+    }
+
+    @SuppressWarnings("unchecked") private static Map<String, Object> castMap(Object o) { return (Map<String, Object>) o; }
+
+    private static JButton findButton(Component root, String text) {
+        if (root instanceof JButton button && text.equals(button.getText())) return button;
+        if (root instanceof Container c) {
+            for (Component child : c.getComponents()) {
+                JButton found = findButtonOrNull(child, text);
+                if (found != null) return found;
+            }
+        }
+        throw new AssertionError("button not found: " + text);
+    }
+
+    private static JButton findButtonOrNull(Component root, String text) {
+        if (root instanceof JButton button && text.equals(button.getText())) return button;
+        if (root instanceof Container c) {
+            for (Component child : c.getComponents()) {
+                JButton found = findButtonOrNull(child, text);
+                if (found != null) return found;
+            }
+        }
+        return null;
+    }
+
+    private static <T extends Component> T find(Component root, Class<T> type) {
+        if (type.isInstance(root)) return type.cast(root);
+        if (root instanceof Container c) for (Component child : c.getComponents()) { T found = findOrNull(child, type); if (found != null) return found; }
+        throw new AssertionError("not found: " + type.getSimpleName());
+    }
+    private static <T extends Component> T findOrNull(Component root, Class<T> type) {
+        if (type.isInstance(root)) return type.cast(root);
+        if (root instanceof Container c) for (Component child : c.getComponents()) { T found = findOrNull(child, type); if (found != null) return found; }
+        return null;
+    }
+    private static <T extends Component> java.util.ArrayList<T> findAll(Component root, Class<T> type) {
+        java.util.ArrayList<T> out = new java.util.ArrayList<>(); collect(root, type, out); return out;
+    }
+    private static <T extends Component> void collect(Component root, Class<T> type, java.util.List<T> out) {
+        if (type.isInstance(root)) out.add(type.cast(root));
+        if (root instanceof Container c) for (Component child : c.getComponents()) collect(child, type, out);
+    }
+
+    private static void eq(Object expected, Object actual, String label) { if (!java.util.Objects.equals(expected, actual)) throw new AssertionError(label + ": expected=" + expected + " actual=" + actual); }
+    private static void check(boolean value, String label) { if (!value) throw new AssertionError(label); }
+    private static void pass() { tests++; }
+}
