@@ -1,0 +1,33 @@
+== BEFORE dev8
+PASS  small x=0.0004       -> 0.02
+PASS  small x=0.25         -> 0.5
+PASS  small x=0.5          -> 0.70710678
+PASS  small x=1            -> 1
+PASS  small x=2            -> 1.41421356
+PASS  small x=3            -> 1.73205081
+PASS  small x=9            -> 3
+PASS  small x=10           -> 3.16227766
+PASS  small x=99.5         -> 9.97496865
+PASS  small x=144          -> 12
+PASS  small x=1000         -> 31.6227766
+PASS  small x=12345.678    -> 111.111107
+PASS  small x=65025        -> 255
+PASS  small x=250000       -> 500
+PASS  small x=999999       -> 999.9995
+PASS  small x=1000000      -> 1000
+       large        1000001 -> 1000.0005          second 1000.0005          anchor 1000.0004999998750001  1
+       large       10000000 -> 3162.47757         second 3162.27766         anchor 3162.2776601683793320  0
+       large     12345678.9 -> 3514.2679          second 3513.64183         anchor 3513.6418286444621617  0
+       large       99999999 -> 10784.5947         second 9999.99995         anchor 9999.9999499999998750  0
+       large      100000000 -> 10784.5948         second 10000              anchor 10000                  0
+       large      330000000 -> 25327.9896         second 18165.9021         anchor 18165.902124584949993  0
+       large     1000000000 -> 66401.189          second 31622.7766         anchor 31622.776601683793320  0
+       large     2000000000 -> 127483.396         second 44721.3596         anchor 44721.359549995793928  0
+       large    10000000000 -> 615803.15          second 100000             anchor 100000                 0
+       large   777000000000 -> 47429777.9         second 881476.035         anchor 881476.03484156051104  0
+       large  1000000000000 -> 61040618           second 1000000            anchor 1000000                0
+       large           1E15 -> 6.1035162E+10      second 31622776.6         anchor 31622776.601683793320  0
+       large           4E18 -> 2.44140625E+14     second 2E+9               anchor 2000000000             0
+PASS  12 of 13 large values are false before the change (the bug, shown with data)
+      timing: BEFORE 3000 calls 0.0664 s
+FDSQRT BEFORE TEST: PASS (17 checks)

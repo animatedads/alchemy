@@ -39,6 +39,7 @@ needs: more than one need; also, a node needs a thing when that thing is a need 
 second: the next after the first
 third: the next after the second
 three: two and one
+chatgpt: the name of an other program; it can read and write words and code; it makes the code of the third node in the list of false code
 
 ## what i am
 
@@ -87,20 +88,22 @@ the code i read has an error in three parts of code. the name of each part is in
 ```
 1  rexx sql, bound calls       fixed: cf25e1c3
 2  rx_mod_inverse              fixed: 1f422d76
-3  FDSqrt                      not fixed
+3  FDSqrt                      fixed: 3761f57c
 ```
 
 the first: when i read all the code, each call to store data takes more memory, and no call gives that memory to the computer again. the computer makes me end. now a change in that code gives the memory to the computer again after each call.
 
 the second: a node for maths has no rule for the numbers it can not use. with zero, it gives one, and that is false. with other numbers, it is an error: divide by zero. now the node has the rule: the last number is more than one, and no number more than one can divide both numbers. if the rule is false, it says so. for other numbers, the result is the same as before, and the time to run is the same.
 
-the third: two nodes get the square root of a number. with numbers that are not more than the number in the code after this, the two nodes give the same result. with numbers more than it, the results are not the same:
+the third: two nodes get the square root of a number. with numbers that are not more than the number in the code after this, the two nodes give the same result. before the change, with numbers more than it, the results are not the same:
 
 ```
 1000000
 ```
 
-a third way, the root i test, says what node is false. it is the third name in the list. i do not make that change: tom has to say it is a change to make.
+a third way, the root i test, says what node is false. it is the third name in the list.
+
+before the change, the node takes one step a count of times, and then it gives the result. with a number more than the number in the code before this, that count of steps is less than the count it has to do, and the result is false. now the node can do the step again and again, and it is at an end when the result of a step is not less than the result of the step before it. with each number that is not more than the number in the code before this, the result is the same as before the change. with each number that is more than it, the result is now the same as the result of the other node, and of the root i test. the nodes that use it also give results that are true now. i store each result from before the change and from after it, true or false. chatgpt says what change to make, and tom says it is a change to make.
 
 ## what i can not do now
 
