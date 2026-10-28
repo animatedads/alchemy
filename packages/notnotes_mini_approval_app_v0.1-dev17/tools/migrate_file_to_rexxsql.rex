@@ -36,6 +36,26 @@ if destinationEngine~backendId \= "rexxsql-sqlite" then -
   raise syntax 93.900 array("SQLite adapter was not selected")
 tables = .Array~of("formats", "reports", "relationships", "subviews", -
                    "documents", "temporal_evidence")
+/* Refuse silently dropping a future application table or accepting missing
+ * required tables. Dev16 has no temporal_evidence; its empty target table
+ * is legitimate, but later retained temporal evidence must be copied. */
+sourceCatalog = source~readCatalog
+catalogTables = sourceCatalog["tables"]
+if catalogTables == .nil then -
+  raise syntax 93.900 array("Legacy database has no table catalogue")
+do foundName over catalogTables
+  known = .false
+  do tableName over tables
+    if foundName~string~caselessEquals(tableName) then known = .true
+  end
+  if \known then -
+    raise syntax 93.900 array("Unexpected legacy table; refusing lossy migration:" foundName)
+end
+do tableName over tables
+  if tableName = "temporal_evidence" then iterate
+  if source~table(tableName) == .nil then -
+    raise syntax 93.900 array("Required legacy table missing:" tableName)
+end
 /* Preserve every column/field value. Refuse SQL NULL from legacy input because
  * Rexx/SQL's current textual result API cannot round-trip NULL distinctly
  * from empty text; accepting would be silent loss. */
@@ -45,6 +65,10 @@ call requireSql r, "BEGIN"
 inTransaction = .true
 total = 0
 do tableName over tables
+  if tableName = "temporal_evidence" & source~table(tableName) == .nil then do
+    say "MIGRATION_VERIFIED" tableName 0 "(not present in older source)"
+    iterate
+  end
   result = source~selectAll(tableName)
   call requireSql result, "legacy read" tableName
   count = 0
