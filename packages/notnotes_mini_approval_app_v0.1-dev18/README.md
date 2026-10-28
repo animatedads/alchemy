@@ -1,4 +1,7 @@
-# Mini NotNotes Approval Desk v0.1-dev17
+# Mini NotNotes Approval Desk v0.1-dev18 (indexed SQLite candidate)
+
+**Development branch only.** This dev18 package derives from immutable dev17 and has not passed the real native Rexx/SQL and regression release gates. The original dev17 source remains unchanged in Git main.
+
 
 ## Indexed SQLite default — implementation candidate (28 October 2026)
 
