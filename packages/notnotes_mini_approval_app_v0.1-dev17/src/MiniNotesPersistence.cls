@@ -353,18 +353,18 @@ saveRollback:
     if documentsResult~rows~items = 0 then leave
     do row over documentsResult~rows
       if paged then cursor = row["NN_CURSOR"]
-    record = .Directory~new
-    record["DOC_KEY"] = row["doc_key"]
-    record["FORM_NAME"] = row["form_name"]
-    record["TITLE"] = row["title"]
-    record["AMOUNT"] = row["amount"]
-    record["RISK"] = row["risk"]
-    record["DEPENDS_ON"] = row["depends_on"]
-    record["WORKFLOW"] = row["workflow"]
-    record["STATUS"] = row["status"]
-    record["FIELDS"] = self~decodeCustomFields(row["fields_hex"])
-    restoredDocument = app~restoreDocumentRecord(record)
-    if restoredDocument \== .nil then restoredIndex[record["DOC_KEY"]~string~upper] = restoredDocument
+      record = .Directory~new
+      record["DOC_KEY"] = row["doc_key"]
+      record["FORM_NAME"] = row["form_name"]
+      record["TITLE"] = row["title"]
+      record["AMOUNT"] = row["amount"]
+      record["RISK"] = row["risk"]
+      record["DEPENDS_ON"] = row["depends_on"]
+      record["WORKFLOW"] = row["workflow"]
+      record["STATUS"] = row["status"]
+      record["FIELDS"] = self~decodeCustomFields(row["fields_hex"])
+      restoredDocument = app~restoreDocumentRecord(record)
+      if restoredDocument = \== .nil then restoredIndex[record["DOC_KEY"]~string~upper] = restoredDocument
       records~append(record)
     end
     if \paged then leave
