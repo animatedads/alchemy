@@ -1,5 +1,18 @@
 # Mini NotNotes Approval Desk v0.1-dev17
 
+## Indexed SQLite default — implementation candidate (28 October 2026)
+
+The new product default is **Rexx/SQL SQLite** (provider id `rexxsql-sqlite`), rather than the previous `FileDatabaseEngine`. Source change is on the dedicated branch pending release qualification; do not describe the released dev17 artifact as already migrated.
+
+The application composition boundary `MiniNotesPersistence~init` selects the existing `oorexx_rexxsql_backend_v0.1` (`RexxSqlSqliteSession`) via `MININOTES_DB_BACKEND`. Omit that environment variable to select SQLite; set `MININOTES_DB_BACKEND=file` for **explicit legacy compatibility**, including running old file-store regression fixtures. SQLite defaults to `./mininotes.sqlite` when `MININOTES_DB_ROOT` is absent. An explicit `MININOTES_DB_ROOT` is treated as a SQLite pathname if it ends in `.sqlite`, otherwise `.sqlite` is appended. The default legacy file root remains `data/mininotes`.
+
+The runtime must be configured to resolve `RexxSqlBackend.cls` and `NativeDatabaseBackend.cls` through the **actual** provider source on `REXX_PATH`, with the built `librexxsql.so` on `LD_LIBRARY_PATH`; there is no vendored new Rexx/SQL provider. If dependencies are absent, SQLite fails closed; it does not fall back to the file engine. A pre-existing `database.yaml` legacy store is rejected in SQLite mode. **Migration is not yet implemented:** open a legacy store explicitly, back up a copy, and do not point this candidate at production. Native SQLite end-to-end qualification and migration/release acceptance remain open.
+
+SQLite writes are wrapped in one transaction and restored documents are fetched in bounded 100-row rowid keyset pages. Restored object lookup and sort use native indexed operations. SQL values use binds for non-empty text, literal `''` for empty text because this Rexx/SQL binds empty text as SQL NULL, and explicit SQL NULL for `.nil`. SQL column affinity is TEXT to preserve lexical decimal representation. Rexx/SQL limitations still apply: process-global connection selection, no writable BLOB binds and in-memory Rexx result materialisation per page. Those limitations must be regression-tested before release.
+
+**Executed local source contract test:** ooRexx 5.3.0 r13196 `REXXSQL_ADAPTER_NATIVE_CONTRACT_PASS` using a mock SQL package, plus `rexxc` parse of the adapter. Run the checked-in mock fixture from the package root with `REXX_PATH=tests/fixtures:. rexx tests/test_rexxsql_adapter_mock.rex`; **never** put the mock provider on a product `REXX_PATH`. Real `librexxsql.so`, corpus migration, security-path Crypto acceleration, complete full-suite PASS, and SQLite/legacy differential qualification were not executable in the local container and remain required.
+
+
 ## New in dev17: retained temporal authority evidence
 
 DATE/DATETIME writes still use the injected Single Time Service boundary and zoned DATETIME resolution still goes through ConnectSelector. Dev17 retains the Time Service evidence that established the accepted meaning instead of keeping only the human civil string. For non-empty temporal fields NotNotes can persist and project the temporal kind, canonical civil value, zone, resolved POSIX instant, tzdb edition and UNIQUE/FOLD resolution where supplied by Time Service. Blank temporal fields remain blank and do not invent an instant.
