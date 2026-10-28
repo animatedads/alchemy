@@ -1,4 +1,4 @@
-/* JudgmentReasoningLedger/0.1 - public-source judicial reasoning trace.
+/* JudgmentReasoningLedger/0.2 - public-source judicial reasoning trace.
  * Architecture: Tom Dyer. Code: ChatGPT GPT-6.
  * Generic, domain-neutral; does not judge whether witness events are true.
  * Source-anchored actors must remain distinct: prior tribunal vs appellate court.
@@ -53,36 +53,84 @@
   end
   return a
 
+/* Relationship qualification is structural, not semantic authentication.
+ * The same judicial ACTOR may make several very different kinds of finding.
+ * A valid actor alone cannot warrant arbitrary inferential edges. */
+::method classifyEdge private
+  use strict arg f, t, relation
+  select
+    when relation = 'QUALIFIES_NO_DUTY' then do
+      if f['actor'] \= 'CA_LEGAL_RULE' | t['actor'] \= 'CA_LEGAL_RULE' then -
+        return 'RELATION_ACTOR_MISMATCH'
+      if f['kind'] \= 'CORROBORATION' | t['kind'] \= 'CORROBORATION' then -
+        return 'RELATION_KIND_MISMATCH'
+    end
+    when relation = 'REMAKES_PRIOR' then do
+      if f['actor'] \= 'CA_OUTCOME' | t['actor'] \= 'UT_AS_REPORTED' then -
+        return 'RELATION_ACTOR_MISMATCH'
+      if f['kind'] \= 'DISPOSITION' | t['kind'] \= 'DISPOSITION' then -
+        return 'RELATION_KIND_MISMATCH'
+    end
+    otherwise do
+      if f['actor'] \= 'CA_JUDICIAL_FINDING' | t['actor'] \= 'UT_AS_REPORTED' then -
+        return 'RELATION_ACTOR_MISMATCH'
+      select
+        when relation = 'CORRECTS_STANDARD' then -
+          valid = (f['kind'] = 'APPLIED_STANDARD' & t['kind'] = 'STATED_STANDARD')
+        when relation = 'CHALLENGES_CORROBORATION' then -
+          valid = (f['kind'] = 'WARRANT' & t['kind'] = 'CREDIBILITY_INFERENCE')
+        when relation = 'REJECTS_CONFLATION' then -
+          valid = (f['kind'] = 'PROPOSITION_IDENTITY' & t['kind'] = 'CREDIBILITY')
+        when relation = 'IDENTIFIES_OMISSION' then -
+          valid = (f['kind'] = 'OMITTED_EVIDENCE' & t['kind'] = 'REASONS')
+        /* No defined proposition-kind schema for this catch-all edge yet. */
+        otherwise valid = .false
+      end
+      if \valid then return 'RELATION_KIND_MISMATCH'
+    end
+  end
+  return ''
+
 ::method audit
   expose nodes edges
   out = .directory~new
   out['validatedTruth'] = .false
   out['outcomeIndependentlyDetermined'] = .false
+  out['citationValidated'] = .false
   out['sourceCount'] = nodes~items
   out['relationCount'] = edges~items
   findings = .array~new
+  rejected = .array~new
   out['findings'] = findings
+  out['rejectedEdges'] = rejected
+  seen = .set~new
   do e over edges
     from = nodes[e['from']]; to = nodes[e['to']]
     typ = e['relation']
-    /* A source record is not a judicial decision; fail closed instead of
-     * having a litigant's reported contention become the court's own finding. */
-    if typ = 'QUALIFIES_NO_DUTY' then do
-      if from['actor'] \= 'CA_LEGAL_RULE' | to['actor'] \= 'CA_LEGAL_RULE' then iterate
-    end
-    else if typ = 'REMAKES_PRIOR' then do
-      if from['actor'] \= 'CA_OUTCOME' | to['actor'] \= 'UT_AS_REPORTED' then iterate
-    end
-    else do
-      if from['actor'] \= 'CA_JUDICIAL_FINDING' | to['actor'] \= 'UT_AS_REPORTED' then iterate
+    defect = self~classifyEdge(from, to, typ)
+    /* Repeated citations to one inferential edge are not fresh evidence.
+     * Length-prefixed key prevents delimiter ambiguities in arbitrary IDs. */
+    if defect = '' then do
+      key = length(from['id']) || ':' || from['id'] || -
+            length(to['id']) || ':' || to['id'] || -
+            length(typ) || ':' || typ
+      if seen~hasItem(key) then defect = 'DUPLICATE_RELATION'
+      else seen~put(key)
     end
     d = .directory~new
     d['type'] = typ; d['sourceId'] = from['id']; d['targetId'] = to['id']
     d['sourceCite'] = from['cite']; d['targetCite'] = to['cite']
     d['authority'] = 'JUDGMENT_REPORT_ONLY'
     d['validatedTruth'] = .false
+    d['citationValidated'] = .false
+    if defect \= '' then do
+      d['reason'] = defect
+      rejected~append(d)
+      iterate
+    end
     findings~append(d)
   end
+  out['unqualifiedCount'] = rejected~items
   return out
 
 ::method hasFinding
