@@ -23,9 +23,10 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamGround.cls` | Grounding: maths/statistics words anchored to tested ooRexx code; `ask` |
 | `src/SlamContract.cls` | Contracts: what a unit NEEDS (argument kinds, messages, guards) and GIVES (return kind), its effects, pure/standalone |
 | `src/SlamCompose.cls` | Lift standalone routines, check each link against contracts before running, run, keep every result as a lesson |
-| `bin/slam.rex` | `ingest`, `corpus`, `read`, `ground`, `ask`, `stats`, `node`, `follows`, `into`, `record` |
+| `bin/slam.rex` | `ingest`, `corpus`, `read`, `facts`, `about`, `ground`, `ask`, `stats`, `node`, `follows`, `into`, `record` |
 | `README_SLAM.md` | This README in SLAM's own words: SLAM reads it with no unknown word |
 | `corpus/` | The circular corpus plus closure, grounding-distance and sentence checks |
+| `reference/` | The ooRexx 5 reference (rexxref) as facts in SLAM's words, with 1,167 examples run on ooRexx 5.3.0: see `reference/README.md` |
 | `tests/test_slam.rex` | 58-check qualification |
 | `tests/test_compose.rex` | ChatGPT's task on real estate routines, 6 checks |
 | `tests/test_needs.rex` | Ability before score on real contracts (rule proposed by Claude (Opus 4.8)), 13 checks |

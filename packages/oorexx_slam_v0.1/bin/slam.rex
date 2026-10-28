@@ -13,8 +13,9 @@
  *   rexx slam.rex read DB DOC              read a document with SLAM's own vocabulary (its WORD nodes);
  *                                            'word: definition' lines add words; ``` blocks are code, not words
  *   rexx slam.rex facts DB DOC             read DOC as above; if each word is known, also store each text line
- *                                            as a FACT about the SUBJECT named by the code block before it,
- *                                            and each 'code -> result' line of an examples block as an EXAMPLE
+ *                                            as a FACT about the SUBJECT named by the code block before it;
+ *                                            'the code:' / 'the result:' / 'the reference says:' blocks are one
+ *                                            EXAMPLE with its RESULT and REFERENCE
  *   rexx slam.rex about DB SUBJECT         the facts and examples stored about SUBJECT (any case)
  * NODE is a display id (#00EF), a numeric id, or a canonical text.
  */
@@ -236,18 +237,25 @@ readDoc: procedure
   say 'i know each word here. i can read all of it.'
   return .true
 
-/* Facts. A document that SLAM can read (readDoc gives .true) is read again. A code block names the
-   SUBJECT: the first word of its first line, cut at '(' or '[', plus the next word when that word is a
-   whole number ('Error 40'). A code block whose first line is '/* examples */' keeps the subject; each of
-   its lines with '->' is stored as an EXAMPLE of the subject. Every other line outside code (not a heading,
-   not blank) is a FACT about the subject: a unit of kind FACT whose sequence is its words (numerals are
-   VALUE nodes, not words), so facts also give word -> word edges. A fact before the first code block has
-   the subject '-'. Each unit's sig is FACT:file:line or EXAMPLE:file:line, so a second run stores nothing new. */
+/* Facts. A document that SLAM can read (readDoc gives .true) is read again.
+   A code block after a blank line or a heading names the SUBJECT (subjectOf its first line: 'SUBSTR',
+   'PARSE ARG', 'Error 40', '.String~pos', '::CLASS'). A code block right after a text line names a part of the
+   subject (an option, a sub keyword): the subject becomes the main subject and that name ('STREAM OPEN').
+   Three text lines mark an example instead, and are not facts:
+     the code:             the next code block is the code of an example of the subject (EXAMPLE)
+     the result:           the next code block is what that code printed when it was run, or 'not run' (RESULT)
+     the reference says:   the next code block is what the reference says the code gives (REFERENCE)
+   The three units of one example share the line number of its 'the code:' line, in their sig
+   (EXAMPLE:file:line, RESULT:file:line, REFERENCE:file:line), so a second run stores nothing new.
+   Every other line outside code (not a heading, not blank) is a FACT about the subject: a unit of kind FACT
+   whose sequence is its words (numerals are VALUE nodes, not words), so facts also give word -> word edges.
+   A fact before the first code block has the subject '-'. */
 readFacts: procedure
   use arg store, file
   if \readDoc(store, file) then return
-  subject = '-'; inCode = .false; firstCode = .false; inExamples = .false; lineNo = 0
-  facts = 0; examples = 0
+  subject = '-'; main = '-'; inCode = .false; mode = ''; pending = ''; first = .false; prevBlank = .true
+  lineNo = 0; exLine = 0; facts = 0; examples = 0
+  nl = '0a'x
   store~begin
   do while lines(file) > 0
     line = linein(file)~strip('T', '0d'x)
@@ -255,27 +263,66 @@ readFacts: procedure
     s = line~strip
     if s~left(3) == '```' then do
       inCode = \inCode
-      firstCode = inCode
-      if \inCode then inExamples = .false
+      if inCode then do
+        mode = pending
+        if mode == '' then do
+          if prevBlank then mode = 'SUBJECT'
+          else mode = 'PART'
+        end
+        pending = ''
+        buf = ''
+        first = .true
+        iterate
+      end
+      if wordpos(mode, 'EXAMPLE RESULT REFERENCE') > 0 then do
+        uid = store~unitInsert(file, mode, subject, buf, exLine, mode || ':' || file || ':' || exLine)
+        if mode == 'EXAMPLE' then if uid \== 0 then examples += 1
+      end
+      mode = ''
+      prevBlank = .false
       iterate
     end
     if inCode then do
-      if firstCode then do
-        firstCode = .false
-        if s~left(14)~lower == '/* examples */' then do
-          inExamples = .true
-          iterate
+      if mode == 'SUBJECT' then do
+        if first then do
+          main = subjectOf(s)
+          subject = main
         end
-        subject = subjectOf(s)
+        first = .false
         iterate
       end
-      if inExamples then if s~pos('->') > 0 then do
-        if store~unitInsert(file, 'EXAMPLE', subject, s, lineNo, 'EXAMPLE:' || file || ':' || lineNo) \== 0 then examples += 1
+      if mode == 'PART' then do
+        if first then subject = partOf(main, s)
+        first = .false
+        iterate
       end
+      if first then buf = line
+      else buf = buf || nl || line
+      first = .false
       iterate
     end
-    if s == '' then iterate
-    if s~left(1) == '#' then iterate
+    prevBlank = .false
+    if s == '' then do
+      prevBlank = .true
+      iterate
+    end
+    if s~left(1) == '#' then do
+      prevBlank = .true
+      iterate
+    end
+    if s == 'the code:' then do
+      pending = 'EXAMPLE'
+      exLine = lineNo
+      iterate
+    end
+    if s == 'the result:' then do
+      pending = 'RESULT'
+      iterate
+    end
+    if s == 'the reference says:' then do
+      pending = 'REFERENCE'
+      iterate
+    end
     segs = .array~new
     do x over cleanWords(s)
       if datatype(x, 'N') then do
@@ -302,24 +349,53 @@ readFacts: procedure
   say 'facts stored' facts ' examples stored' examples
   return
 
+/* The name in the first line of a code block: optional [ ] parts go, the text from '(' goes, then the first
+   word and up to three more words that are whole numbers or names in upper case ('PARSE ARG', 'Error 40'). */
 subjectOf: procedure
   use arg codeLine
-  w = codeLine~word(1)
-  cut = verify(w, '([', 'M')
-  if cut > 0 then w = w~left(cut - 1)
-  if w == '' then w = codeLine~word(1)
-  nxt = codeLine~word(2)
-  if datatype(nxt, 'W') then w = w nxt
-  return w
+  t = codeLine
+  do forever
+    a = t~pos('[')
+    if a == 0 then leave
+    b = t~pos(']', a)
+    if b == 0 then leave
+    t = t~left(a - 1) t~substr(b + 1)
+  end
+  if t~strip~left(1) \== '(' then parse var t t '(' .
+  if t~words == 0 then do
+    if codeLine~words == 0 then return '-'
+    return codeLine~word(1)
+  end
+  out = t~word(1)
+  do k = 2 to min(4, t~words)
+    w = t~word(k)
+    if datatype(w, 'W') then out = out w
+    else if isUpperName(w) then out = out w
+    else leave
+  end
+  return out
+
+isUpperName: procedure
+  use arg w
+  if verify(w~left(1), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ') \== 0 then return .false
+  return verify(w, 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_.') == 0
+
+/* A part of the main subject: its own name when it starts with the same word ('NUMERIC FORM' under
+   'NUMERIC DIGITS'), else the main subject and its name ('STREAM OPEN'). */
+partOf: procedure
+  use arg main, codeLine
+  n = subjectOf(codeLine)
+  if n~word(1) == main~word(1) then return n
+  return main n
 
 about: procedure
   use arg store, subject
-  r = store~q("SELECT id AS id, kind AS kind, selector AS sel, path AS path, line AS line FROM unit WHERE kind IN ('FACT', 'EXAMPLE') AND lower(owner) = lower(?) ORDER BY path, line", store~binds(subject))
+  r = store~q("SELECT id AS id, kind AS kind, selector AS sel, path AS path, line AS line FROM unit WHERE kind IN ('FACT', 'EXAMPLE', 'RESULT', 'REFERENCE') AND lower(owner) = lower(?) ORDER BY path, line, kind", store~binds(subject))
   n = 0
   do row over r~rows
     n += 1
-    if row['KIND'] == 'EXAMPLE' then do
-      say '  example:' row['SEL']
+    if row['KIND'] \== 'FACT' then do
+      say '  ' || row['KIND']~lower || ':' row['SEL']~changestr('0a'x, ' | ')
       iterate
     end
     ws = store~q('SELECT s.canon AS canon FROM instance i JOIN shape s ON s.id = i.shape_id WHERE i.unit_id = ? AND i.parent_id = 0 ORDER BY i.seq', store~binds(row['ID']))
@@ -331,7 +407,6 @@ about: procedure
   end
   if n == 0 then say 'i know no facts about' subject
   return
-
 cleanWords: procedure
   use arg text
   clean = text~lower~translate('', '.,;:()"''?!#*`[]{}<>')   /* output table empty: every listed character becomes a blank */
