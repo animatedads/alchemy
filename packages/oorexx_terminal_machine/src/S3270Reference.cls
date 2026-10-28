@@ -172,7 +172,8 @@
     rowSeen+=1
     if rowSeen>rowsArg then return .TerminalResult~failure("S3270_TOO_MANY_DATA_ROWS",rowSeen)
     expectedStart=(rowSeen-1)*columnsArg
-    if address<expectedStart then address=expectedStart
+    address=expectedStart
+    rowCells=0
     do tokenIndex=1 to words(line)
       token=word(line,tokenIndex)
       upper=token~upper
@@ -183,6 +184,7 @@
         fieldAddresses~append(address//size)
         fieldBasics~append(basic)
         address=(address+1)//size
+        rowCells+=1
         iterate
       end
       if left(upper,3)=="GE(" then do
@@ -192,6 +194,7 @@
         if length(hex)<>2 | verify(hex,"0123456789ABCDEF")<>0 then return .TerminalResult~failure("S3270_BAD_GE",token)
         cells=cells~overlay(x2c(hex),address+1)
         address=(address+1)//size
+        rowCells+=1
         iterate
       end
       /* In the single-byte TK5/MVS qualification path each display position is
@@ -200,8 +203,11 @@
       if length(upper)<>2 | verify(upper,"0123456789ABCDEF")<>0 then return .TerminalResult~failure("S3270_UNSUPPORTED_CELL_TOKEN",token)
       cells=cells~overlay(x2c(upper),address+1)
       address=(address+1)//size
+      rowCells+=1
     end
+    if rowCells<>columnsArg then return .TerminalResult~failure("S3270_ROW_WIDTH","row "||rowSeen||" positions="||rowCells||" expected="||columnsArg)
   end
+  if rowSeen<>rowsArg then return .TerminalResult~failure("S3270_ROW_COUNT","rows="||rowSeen||" expected="||rowsArg)
 
   fields=.array~new
   do i=1 to fieldAddresses~items
