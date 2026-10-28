@@ -2,8 +2,9 @@
 signal on syntax name onSyntax
 parse arg file '|' wanted
 text = charin(file, 1, chars(file)); call stream file, 'C', 'CLOSE'
-units = .SlamUnitSplitter~new~split(text)
-seg = .SlamSegmenter~new
+lang = .SlamLanguages~of(file)                    /* REXX or JAVA, by extension */
+units = .SlamLanguages~splitter(lang)~split(text)
+seg = .SlamLanguages~segmenter(lang)
 say units~items 'units in' file
 do u over units
   id = u~owner || '~' || u~selector
@@ -28,3 +29,4 @@ onSyntax:
   say 'SYNTAX rc=' || rc 'sigl=' || sigl condition('C') condition('D') condition('O')~traceback~makeString
   exit 1
 ::requires 'SlamSegmenter.cls'
+::requires 'SlamJava.cls'

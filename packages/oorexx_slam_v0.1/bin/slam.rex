@@ -1,7 +1,8 @@
 /* slam.rex - SLAM v0.1 command line.
  * Architecture: Tom Dyer.  Code: Claude (Opus 5.5), 2026-10-28.
  *
- *   rexx slam.rex ingest DB DIR [DIR...]     segment every .cls/.rex/.rexx/.orx file into the store
+ *   rexx slam.rex ingest DB DIR [DIR...]     segment every .cls/.rex/.rexx/.orx and .java file into the store
+ *                                            (each file by its own language's reader, into the same nodes)
  *   rexx slam.rex corpus DB CSV              load a circular corpus (word,category,definition)
  *   rexx slam.rex stats DB                   counts and the most common nodes
  *   rexx slam.rex node DB NODE               one node: its shape and where it occurs
@@ -79,16 +80,18 @@ exit 0
 
 ingest: procedure
   use arg store, dirs
-  splitter = .SlamUnitSplitter~new
-  segmenter = .SlamSegmenter~new
+  readers = .directory~new                                  /* one splitter and segmenter per language */
+  do lang over .array~of('REXX', 'JAVA')
+    readers[lang] = .array~of(.SlamLanguages~splitter(lang), .SlamLanguages~segmenter(lang))
+  end
   files = 0; skipped = 0; units = 0; dupes = 0; segsTotal = 0
   call time 'R'
   do d = 1 to dirs~words
     call SysFileTree dirs~word(d) || '/*', 'f.', 'FSO'
     do i = 1 to f.0
-      ext = f.i~substr(f.i~lastPos('.') + 1)~lower
-      if wordpos(ext, 'cls rex rexx orx') == 0 then iterate
-      r = ingestFile(store, splitter, segmenter, f.i)
+      lang = .SlamLanguages~of(f.i)
+      if lang == '' then iterate
+      r = ingestFile(store, readers[lang][1], readers[lang][2], f.i)
       if r == .nil then do
         skipped += 1
         iterate
@@ -456,5 +459,6 @@ onSyntax:
   exit 1
 
 ::requires 'SlamSegmenter.cls'
+::requires 'SlamJava.cls'
 ::requires 'SlamStore.cls'
 ::requires 'SlamGround.cls'

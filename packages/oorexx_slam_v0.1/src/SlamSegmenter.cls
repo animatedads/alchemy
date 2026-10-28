@@ -622,11 +622,18 @@
       when s~kind == 'DO' then segs~append(self~doSegment(s, ctx))
       when s~kind == 'SELECT' then segs~append(self~selectSegment(s, ctx))
       when s~kind == 'LABEL' then segs~append(self~leaf('LABEL', .array~of(s~clause), ctx))
-      otherwise nop
+      otherwise do
+        extra = self~otherSegment(s, ctx)
+        if extra \== .nil then segs~append(extra)
+      end
     end
   end
   run = self~flush(run, segs, ctx)
   return self~collapse(segs)
+/* A statement kind the ooRexx reader never makes (another language's reader adds its own): no segment. */
+::method otherSegment
+  use strict arg s, ctx
+  return .nil
 ::method flush
   use strict arg run, segs, ctx
   if run~isEmpty then return run

@@ -6,7 +6,8 @@
 **Database:** SQLite through Rexx/SQL 2.6B3 (Mark Hessling) via `oorexx_rexxsql_backend_v0.1`.
 **Corpus:** the circular corpus is Tom Dyer's; `i`, `am`, `me`, `my` added by Claude (Opus 5.5).
 **Reviews that shaped it:** ChatGPT (four letters to SLAM), Claude (Fable 5.1), Claude (Opus 4.8).
-**Finds credited to SLAM:** the Rexx/SQL bound-call leak, `rx_mod_inverse`'s missing condition, `FDSqrt` above 10⁶ (all three now fixed; see "Credits for SLAM's finds").
+**Finds credited to SLAM:** the Rexx/SQL bound-call leak, `rx_mod_inverse`'s missing condition, `FDSqrt` above 10⁶ (all three now fixed), and Federation Bank's Java side describing the bank's old late-advice rule (reported, not fixed); see "Credits for SLAM's finds".
+**Languages:** ooRexx, and Java since the polylingual experiment (Tom Dyer's, 2026-10-28; Java reader and rule reader by Claude (Opus 5.5)).
 
 SLAM does not learn word tokens. Its vocabulary is **logic segments**: pieces of real ooRexx identified by
 shape, the way an object in an image is identified regardless of where it sits or what colour it is. Every
@@ -23,7 +24,9 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamGround.cls` | Grounding: maths/statistics words anchored to tested ooRexx code; `ask` |
 | `src/SlamContract.cls` | Contracts: what a unit NEEDS (argument kinds, messages, guards) and GIVES (return kind), its effects, pure/standalone |
 | `src/SlamCompose.cls` | Lift standalone routines, check each link against contracts before running, run, keep every result as a lesson |
-| `bin/slam.rex` | `ingest`, `corpus`, `read`, `facts`, `about`, `ground`, `ask`, `stats`, `node`, `follows`, `into`, `record` |
+| `src/SlamJava.cls` | Second language: Java lexer, unit splitter (methods, constructors, initializers by class), statement parser and shaper, into the same segment kinds |
+| `src/SlamRules.cls` | Rules read the same way in ooRexx and Java (what a GUARD makes MUST hold); keyed readers found by behaviour; RULE nodes; predicting a rule's outcome |
+| `bin/slam.rex` | `ingest` (ooRexx and Java), `corpus`, `read`, `facts`, `about`, `ground`, `ask`, `stats`, `node`, `follows`, `into`, `record` |
 | `README_SLAM.md` | This README in SLAM's own words: SLAM reads it with no unknown word |
 | `corpus/` | The circular corpus plus closure, grounding-distance and sentence checks |
 | `reference/` | The ooRexx 5 reference (rexxref) as facts in SLAM's words, with 1,167 examples run on ooRexx 5.3.0: see `reference/README.md` |
@@ -36,6 +39,10 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_fdsqrt_door.rex` | The door code that calls `FDSqrt`: noise sigmas, pixel sigma, gradient size (17 checks on dev8, 15 on dev5) |
 | `tests/fdsqrt_sweep.rex` | Old against new `FDSqrt` on random door-range values |
 | `evidence/fdsqrt/` | The before and after data for the `FDSqrt` change, kept as ChatGPT asked |
+| `tests/test_java.rex` | The Java reader: lexer, a javac-compiled fixture, the Federation Bank ATM, one store with both languages, Task on Java nodes (33 checks) |
+| `tests/test_rules.rex` | One rule, two languages: the Federation Bank offline-cash rule in the ooRexx engine and the Java ATM, predicted then run (24 checks) |
+| `tests/rules/` | `OfflineRuleProbe.java` runs the real Java ATM, `offline_rule_probe.rex` the real ooRexx bank, on the cases SLAM chose |
+| `tests/show_rules.rex` | Read a unit's rules, find the other language's closest units, list what both have and what each lacks |
 | `run_tests.sh` | Builds Rexx/SQL and the foreign runtime, then runs everything |
 
 ### Segments (nodes)
@@ -224,14 +231,74 @@ What the data says about the door itself: its own inputs (pixel variances, frame
 
 An honest limit on the path SLAM chose: it feeds a decimal number to a hex decoder. The contract allows that, because a number is a valid string, but it means little. Kinds can say a path *runs*, not that it makes sense.
 
+### Second language: Java
+
+The experiment: can SLAM keep making progress when the code is in a second language? The language was chosen on the merits:
+- **It is ooRexx's partner in the estate.** BSF4ooRexx is the Rexx–Java bridge, and Federation Bank runs a Java ATM (`examples/federationbank_java_atm_v0.1.9`) against an ooRexx engine (`examples/federationbank_engine_v0.9.1`). The same bank rules are enforced on both sides, in real code.
+- **That covers business rules too.** A DRL or DMN file would have been synthetic: the estate has none.
+- **Java declares types,** so SLAM's lexical contracts can later be scored against declarations rather than only stated.
+- **It runs here,** so the TESTED tier works in the second language.
+
+Not chosen: Python (no declared types; not ooRexx's partner). C++ was Tom's other idea, and it is the next language (see the end of this README).
+
+**What changed.** Only the language-specific parts are new (`src/SlamJava.cls`). The segmenter got one additive hook (`otherSegment`), so a reader can add statement kinds that ooRexx does not have. ooRexx statements never reach it, and the 201 existing checks still pass. Store, edges, weights, Task, contracts and corpus are unchanged.
+
+| Java | SLAM kind |
+|---|---|
+| the parameter list | ENTRY (Java has no `use arg`) |
+| `if (c) return/throw/break/continue/yield …;` with no else (`{ }` around the one statement is unwrapped) | GUARD |
+| `if`/`else`; `for`, for-each, `while`, `do`…`while`; `{ }`, `synchronized (x) { }` | BRANCH; LOOP; BLOCK |
+| `switch`, each `case`/`default` an ARM | SELECT |
+| `try`/`catch`/`finally` | TRY (Java's own kind; ooRexx has `signal on`, a TRAP leaf) |
+
+Roles are as in ooRexx: parameters A, fields of the class F (a parameter of the same name hides the field), locals L. `true false null` render `.true .false .nil`, as ooRexx's do. Lambdas, anonymous classes and switch expressions stay inside the statement that holds them.
+
+**On the estate.** All 165 Java files (84 distinct after the versioned Wire UI Swing copies) give 595 distinct units, 3,864 segment instances and 2,101 nodes, in 35 seconds, with no file skipped. On the fixture (compiled by javac in `run_tests.sh`), the GA test's result holds in Java: the range guard on two parameters is one node with two bindings, the one in `{ }` included.
+
+**Shared without translation.** In one store with the Federation Bank engine, three nodes come from both languages unchanged: `EXIT: return A1`, `return F1`, `return L1`. An accessor is the same node in Java and ooRexx. Nothing was done to get this; it falls out of roles.
+
+### One rule, two languages
+
+Shapes keep each language's words (`if ( … ) ; continue` is not `if … then return …`), so they are not where the languages meet. Rules are. `SlamRules.cls` cuts a GUARD's condition at its top-level OR. Each atom is one reason to stop, and the rule is its negation, what MUST hold:
+
+```
+ooRexx  if rec["status"] <> "ACTIVE" then return .FederationBankResult~failure(...)   MUST EQ K:status S:ACTIVE   REJECT
+Java    if (!"ACTIVE".equals(s(d,"status"))) continue;                                MUST EQ K:status S:ACTIVE   SKIP
+```
+
+Operands: `K:key` is a keyed read, written `rec["key"]` in ooRexx and `m.get("key")` in Java, or a call to a **keyed reader**. SLAM finds keyed readers by what they do: a unit taking (Map m, String k, …) that reads m with k, directly or through another keyed reader. In `AtmService` it finds `s` and `n`, and nothing else. `V` is a value given or held (its name kept as a binding), and `NOW` is the time now. The others are `S:`, `N:`, `NIL`, `B:` and `E:` (anything else). Conversions read as the same value: `~string`, `+ 0`, `String.valueOf`, one-argument `parse…` calls. `~upper` and `toUpperCase()` mark the value `^U`. A local assigned once from a keyed read or the time now is read through, and a local assigned twice is not. Each RULE is a node (`RULE: EQ K:status S:ACTIVE`). Each GUARD that stops on it gets a made edge GUARD → RULE with no prior, scored only by tests. This RULE node is where the languages meet.
+
+**Federation Bank** (`tests/test_rules.rex`, 24 checks):
+- **The ooRexx bank's rules.** `validateAdvice` (engine) gives 15 rules from 13 guards. Two hold only under an enclosing IF (the session and sequence checks), and a stop on `a & b` is one NOTALL rule.
+- **Its Java counterpart, found by SLAM.** Of 80 Java units with rules in the ATM, the closest are `requestOfflineAllowance` (0.44), where the ATM checks the authority it is given, and `withdrawOffline` (0.36), where it checks it again before cash. Both are right.
+- **8 rules are the same** in `validateAdvice` and `withdrawOffline`: status, terminal, customer, account, currency, ruleset, rules version, max amount.
+- **Each difference located.** The amount-above-zero rule is not missing on the Java side. `withdrawOffline` has one caller, `withdraw`, which checks it at line 153 before the call at line 155. Expiry is only on the Java side (the ATM refuses expired authority; the bank looks at when the cash went out). Currency: the bank upper-cases the presented value (`^U`) and the ATM compares exactly.
+- **Predicted, then run.** SLAM chose four cases from the differences and predicted each side's answer from the rules alone (`SlamRule~holds`). It predicted that the sides would differ on `gbp`. Then the real code ran: the ATM through `withdraw` offline on `DemoBankNetwork`, and the bank's `validateAdvice` loaded with its dependencies. **8 of 8 predictions held.** Each is a lesson on that language's GUARD → RULE edge, so the currency RULE node is now reached by a TESTED edge from each language.
+
+| Case | ooRexx bank | Java ATM |
+|---|---|---|
+| amount = authority max | accepted | dispensed |
+| max + 1 | refused | refused |
+| 0 | refused | refused (in `withdraw`) |
+| currency `gbp` against `GBP` | **accepted** | **refused** |
+
+The currency split is safe in that direction (the ATM is stricter, and its account list comes from the bank in upper case). Whether the two sides should agree is a design call, not SLAM's.
+
+**Late advice: the Java side describes the bank's old rule.** SLAM reads `DemoBankNetwork` (the Java ATM's test double for the bank) line 215 as `MUST LE NOW V [expiresAt]`, REJECT: it refuses offline-cash advice once the authority has expired. `validateAdvice` has no rule on when advice arrives. Run, the ooRexx bank accepts advice 2 hours late when the cash went out inside the authority (`ATM_OFFLINE_DELAYED_EVIDENCE_ACCEPTED`), and refuses it when the cash went out after expiry (`ATM_OFFLINE_DISPENSE_OUTSIDE_AUTHORITY`). The Java package's own `ATM_JMS_CONTRACT.md` (line 268) and `SPECIFICATION.md` (line 185) still say the bank validates expiry when advice is processed, and list delayed reconciliation as a follow-up. Engine v0.9.1 has done that follow-up. So the Java ATM's suite tests against a bank rule the real bank no longer has. The Java side was read, not run: the demo bank's 10-minute expiry is fixed in code.
+
+**How the engine's dependencies were met.** `DEPENDENCIES.txt` names security_effect 0.10, queue_fabric 0.9-dev4, db_skeleton 0.45 and civicport 0.12, which are not in the repository. `run_tests.sh` uses the nearest versions there (0.14, 0.9-dev5, 0.46, 0.14). `FederationBankAtmOfflineAuthorityService` takes a `.nil` topic fabric and keeps its authorities in memory.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
 1. **The Rexx/SQL bound-call leak.** Its whole-estate ingest was killed at 6.1 GB. Fixed: backend patch 0005, commit `cf25e1c3`.
 2. **`rx_mod_inverse` returning false numbers or dividing by zero** (12 copies). Found by composing it and breaking the path on purpose. Fixed: commit `1f422d76`.
 3. **`FDSqrt` wrong above 10⁶.** Found by its own path choice and a third way. Fixed: commit `3761f57c` (both copies), on ChatGPT's method.
+4. **Federation Bank's Java side describes the bank's old late-advice rule.** Found by reading the offline-cash rule in both languages. The ooRexx side was run, and the Java test double was read. Reported, not fixed: which side moves is Tom's call.
 
 ## Qualification (LOCAL_PASS)
+
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1):** the 201 checks below, plus **33/33** in `test_java.rex` and **24/24** in `test_rules.rex`: **258 checks**.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
@@ -302,4 +369,9 @@ rexx bin/slam.rex follows slam.db '#0004'
 - **A passing run says the test passed, not that each edge was right.** Per-node exit checks are planned to put the blame on a specific node.
 - **The run cut is a heuristic.** Clauses sharing no variable start a new RUN.
 - **A failed turn rolls back the database,** but the in-memory step state is not rewound.
+- **Second language, first cut.** Java enum constant bodies and local classes are not read as units. `@interface` types are not recognised.
+- **Rules come from GUARDs only.** A check that ends in a block (`then do; signal off; return …; end`) or an accepting BRANCH is not read as a rule. That is why the bank's reconciliation window is not one.
+- **Rule matching is on keys.** It finds the ATM's `withdrawOffline`, but not `DemoBankNetwork.offlineWithdrawalAdvice`, as the closest match to `validateAdvice`. The demo reads the presented values by key and holds the authority's values as fields, the reverse of the other two. Matching with the roles swapped is the fix.
+- **The conversions SLAM reads through are a short fixed list** (`~string`, `+ 0`, `valueOf`, `parse…`). It is stated in `SlamRules.cls`.
+- **Next language: C++** (Tom's other idea). rx2cpp emits C++ from ooRexx, so the same logic exists in both by construction, and the interpreter source is ooRexx's own semantics. C++ shares Java's statement grammar, so the Java parser and shaper carry over. Only the lexer (preprocessor, `::`, templates, pointers) and the unit splitter (`Class::method(...) {` outside the class) are new.
 - **Speed: about 770 source lines a second**, because the lexer runs interpreted. Compiling the lexer with rx2cpp is the obvious speed-up.

@@ -40,6 +40,14 @@ second: the next after the first
 third: the next after the second
 three: two and one
 chatgpt: the name of an other program; it can read and write words and code; it makes the code of the third node in the list of false code
+rexx: the name of the way to write the code i read first
+java: the name of an other way to write code
+rule: a thing that has to be true before the code can run the next node
+rules: more than one rule
+programs: more than one program
+tests: more than one test
+four: two and two
+eight: four and four
 
 ## what i am
 
@@ -104,6 +112,22 @@ the third: two nodes get the square root of a number. with numbers that are not 
 a third way, the root i test, says what node is false. it is the third name in the list.
 
 before the change, the node takes one step a count of times, and then it gives the result. with a number more than the number in the code before this, that count of steps is less than the count it has to do, and the result is false. now the node can do the step again and again, and it is at an end when the result of a step is not less than the result of the step before it. with each number that is not more than the number in the code before this, the result is the same as before the change. with each number that is more than it, the result is now the same as the result of the other node, and of the root i test. the nodes that use it also give results that are true now. i store each result from before the change and from after it, true or false. chatgpt says what change to make, and tom says it is a change to make.
+
+## code in java
+
+now i read code in java also. i make nodes and edges from it the same way as from rexx: i do not use the name of a variable, and if two parts of code do the same thing in the same way, the two parts are one node.
+
+a part of code in java and a part of code in rexx can be one node. three nodes are this way now, and i make no change to the way i make a node to get the three.
+
+## rules
+
+i read each rule in rexx and in java the same way. so a rule in rexx and the same rule in java are one rule node. i make an edge to it from the node of each part of code that has the rule.
+
+two programs have to use the same rules: one is in rexx, and one is in java. i get eight rules that are the same in both. in one of the eight, the rexx program makes a change to the word before the test, and the java program makes no change. so with some words, one program says true and the other program says false.
+
+before you run the two programs, i say the result of each program with four tests. then you run the programs. what i say is true eight times of eight. i store each result.
+
+a java program that is a test of the java program has a rule for the time that the rexx program has no rule for. you run the rexx program, and the result is what the rexx rule says, not what the rule in the java test program says.
 
 ## what i can not do now
 

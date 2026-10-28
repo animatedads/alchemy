@@ -1,7 +1,8 @@
 #!/bin/sh
 # SLAM v0.1 qualification: segmenter, SQLite node store, edge weights, Task turns, corpus.
 # Architecture: Tom Dyer. Code: Claude (Opus 5.5), 2026-10-28.
-# Needs: ooRexx 5.x (rexx on PATH, plus its headers to build Rexx/SQL and the foreign runtime), gcc, g++, make, patch, SQLite 3 dev files.
+# Needs: ooRexx 5.x (rexx on PATH, plus its headers to build Rexx/SQL and the foreign runtime), gcc, g++, make, patch, SQLite 3 dev files,
+# and a JDK 17 or later (javac, java) for the Java reader and the Federation Bank ATM probe.
 # ALCHEMY_REPO_ROOT: the alchemy checkout (default: two directories above this package).
 # REXXSQL_LIBDIR: a directory that already holds librexxsql.so (default: build it now).
 # REXX_INCDIR, REXX_LIBDIR: passed to the Rexx/SQL build when ooRexx is not installed system-wide.
@@ -43,3 +44,18 @@ echo "== the door code that uses FDSqrt: standard deviation and gradient size"
 for v in dev8 dev5; do
   REXX_PATH="$P/fd_door_micro_motion_v0.2-$v/src:$FOREIGN/rexx:$REXX_PATH:$REXX_BINDIR" rexx tests/test_fdsqrt_door.rex "$WORK|CHECK|$WORK/fdsqrt_door_$v.db|$v"
 done
+echo "== second language: the Java reader (fixture compiled by javac first, so it is real Java)"
+E="$REPO/examples"
+ATM="$E/federationbank_java_atm_v0.1.9"
+mkdir -p "$WORK/javac" "$WORK/atm/c" "$WORK/atm/p"
+javac -d "$WORK/javac" "$ROOT/tests/fixtures/Shapes.java"
+rexx tests/test_java.rex "$WORK|$ROOT/tests/fixtures/Shapes.java|$ATM|$E/federationbank_engine_v0.9.1/src/FederationBankAtmGateway.cls"
+echo "== one rule, two languages: run the real ATM (Java) and the real bank (ooRexx) on the cases SLAM chose"
+find "$ATM/src/main/java" -name '*.java' | xargs javac --release 17 -d "$WORK/atm/c"
+javac --release 17 -cp "$WORK/atm/c" -d "$WORK/atm/p" "$ROOT/tests/rules/OfflineRuleProbe.java"
+java -cp "$WORK/atm/c:$WORK/atm/p" OfflineRuleProbe > "$WORK/probe_java.txt"
+# The engine's dependencies at the nearest versions in the repository (its DEPENDENCIES.txt names
+# security_effect 0.10, queue_fabric 0.9-dev4, db_skeleton 0.45, civicport 0.12, which are not here).
+FB="$E/federationbank_engine_v0.9.1/src:$P/security_effect_v0.14/src:$P/security_effect_v0.14/runtime:$P/legal_effect_v0.14/src:$P/institutional_policy_v0.8/src:$P/oorexx_queue_fabric_v0.9-dev5/src:$P/alchemy_objects_v0.8/src:$P/oorexx_crypto_v0.1/src:$P/oorexx_db_skeleton_v0_46:$P/civicport_v0.14/src:$P/oorexx_jms_queue_bridge_v0.1-dev7-fb1/src"
+(cd "$WORK" && REXX_PATH="$FB" rexx "$ROOT/tests/rules/offline_rule_probe.rex" > "$WORK/probe_rexx.txt")
+rexx tests/test_rules.rex "$WORK|$E/federationbank_engine_v0.9.1/src/FederationBankAtmGateway.cls|$ATM/src|$WORK/probe_rexx.txt|$WORK/probe_java.txt"
