@@ -222,11 +222,30 @@
   /* Documents are append/update persisted in place. Rebuilding this table on
    * every save destroys the journal for a large imported dataset and can leave
    * the table directory half removed if a filesystem handle is still active. */
-  existingResult = db~selectAll("documents")
-  if existingResult~status \= .Error~SUCCESS then raise syntax 93.900 array("cannot read Mini Notes documents table:" existingResult~message)
   existingKeys = .Directory~new
-  do oldRow over existingResult~rows
-    existingKeys[oldRow["doc_key"]~string~upper] = oldRow
+  if db~hasMethod("selectPageAfter") then do
+    /* Keep SQL result materialisation bounded; this document map is needed
+     * to preserve change-only writes and the existing journal semantics. */
+    cursor = 0
+    do forever
+      existingResult = db~selectPageAfter("documents", cursor, 100)
+      if existingResult~status \= .Error~SUCCESS then -
+        raise syntax 93.900 array("cannot page Mini Notes documents table:" existingResult~message)
+      if existingResult~rows~items = 0 then leave
+      do oldRow over existingResult~rows
+        existingKeys[oldRow["doc_key"]~string~upper] = oldRow
+        cursor = oldRow["NN_CURSOR"]
+      end
+      if existingResult~rows~items < 100 then leave
+    end
+  end
+  else do
+    existingResult = db~selectAll("documents")
+    if existingResult~status \= .Error~SUCCESS then -
+      raise syntax 93.900 array("cannot read Mini Notes documents table:" existingResult~message)
+    do oldRow over existingResult~rows
+      existingKeys[oldRow["doc_key"]~string~upper] = oldRow
+    end
   end
   do document over app~allDocuments
     row = .table~new
