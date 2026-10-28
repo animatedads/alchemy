@@ -44,6 +44,8 @@ echo "== the door code that uses FDSqrt: standard deviation and gradient size"
 for v in dev8 dev5; do
   REXX_PATH="$P/fd_door_micro_motion_v0.2-$v/src:$FOREIGN/rexx:$REXX_PATH:$REXX_BINDIR" rexx tests/test_fdsqrt_door.rex "$WORK|CHECK|$WORK/fdsqrt_door_$v.db|$v"
 done
+echo "== PROVED: a tier above TESTED (certificates checked in exact rationals, ooRexx Maths v0.8 CERTIFIED route)"
+REXX_PATH="$REXX_PATH:$P/oorexx_maths_v0.8/rexx" rexx tests/test_proof.rex "$WORK|$P/fd_door_micro_motion_v0.2-dev8/src/FDDoorMicroMotion.cls|$ROOT/tests/fixtures/fdsqrt_fixed14.cls|$P/oorexx_vision/src/Vision.cls|$P/oorexx_crypto_v0.8.3/src/crypto.cls|$P/oorexx_adb_v0.1-dev1/src/AdbAuth.cls"
 echo "== second language: the Java reader (fixture compiled by javac first, so it is real Java)"
 E="$REPO/examples"
 ATM="$E/federationbank_java_atm_v0.1.9"

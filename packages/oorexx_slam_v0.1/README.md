@@ -40,6 +40,9 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_modinv.rex` | `rx_mod_inverse` before/after/check harness (16 checks in CHECK mode) |
 | `tests/test_choose.rex` | SLAM chooses its own path from 71 standalone routines (8 checks) |
 | `tests/test_fdsqrt.rex` | `FDSqrt` before/after/check: small and large data through three ways (34 checks in CHECK mode) |
+| `src/SlamProof.cls` | PROVED, DISPROVED or INDETERMINATE: certificates checked in exact rationals (ooRexx Maths v0.8, CERTIFIED route, pure ooRexx); each answer is a Maths `MathProof` |
+| `tests/test_proof.rex` | The PROVED tier on `FDSqrt` (now and before), `rx_mod_inverse` and the contract gate (18 checks) |
+| `tests/fixtures/fdsqrt_fixed14.cls` | `FDSqrt` as it was before `3761f57c`, so its old results can be proved false |
 | `tests/test_fdsqrt_door.rex` | The door code that calls `FDSqrt`: noise sigmas, pixel sigma, gradient size (17 checks on dev8, 15 on dev5) |
 | `tests/fdsqrt_sweep.rex` | Old against new `FDSqrt` on random door-range values |
 | `evidence/fdsqrt/` | The before and after data for the `FDSqrt` change, kept as ChatGPT asked |
@@ -422,6 +425,33 @@ Results:
 
 **What this does not show.** SLAM learns structure, not meaning. It predicts how code is laid out, and it can carry a technique over when the technique is about structure, as folding is. BOLT's other passes (block layout from profile counts, dataflow over a control-flow graph, inlining decisions) need profiles, a CFG and instruction semantics that SLAM's segments do not have.
 
+### PROVED: a tier above TESTED (with ooRexx Maths v0.8)
+
+Until now SLAM's "true" meant "agreed": a TESTED edge passed its runs, and the `FDSqrt` verdict came from a three-way vote. Maths v0.8's rule 9 says it plainly: *agreement is not accuracy*. My "third way" for `FDSqrt` was itself a 30-digit Newton loop, another approximation that agreed.
+
+`src/SlamProof.cls` adds claims that are **PROVED**, **DISPROVED** or **INDETERMINATE**, each by a certificate that is cheap to check, whatever it cost to find. Every check is done in Maths' exact rationals (`.MathRational`, the CERTIFIED route: pure ooRexx, no Python provider), and every answer is a Maths `MathProof`, so its outcome, status, checks and notes mean what they mean in Maths. Maths itself is unchanged.
+
+| Claim | Certificate |
+|---|---|
+| √x is within r·tol of r | (r − d)² ≤ x ≤ (r + d)², d = r·tol |
+| r is √x rounded to n digits | (r − u/2)² ≤ x ≤ (r + u/2)², u = one unit in the n-th digit |
+| y is the inverse of a mod m | m > 1 and (a·y − 1)/m is whole |
+| gcd(a, m) = g | s·a + t·m = g, and g divides a and m (Bézout) |
+| gcd(a, m) = 1 | the same, with s and t found here; a g > 1 dividing both is the certificate that it is false |
+| for every x … | none: INDETERMINATE. A claim about every input is an argument about the code, and proofs of single values do not add up to it |
+
+Proofs go into their own `proof` table, apart from `lesson`. A lesson says two ways agreed; a proof says a claim holds for one stated input.
+
+`tests/test_proof.rex`, 18/18:
+- Each certificate proves a true claim and disproves a false one, and a tampered Bézout pair does not check.
+- **`FDSqrt` now:** all 29 results are PROVED within 1e-8 of the true root.
+- **Something the vote could not see.** "Rounded to 9 digits" is DISPROVED for 3 of the 29 (0.5, 99.5, 2×10⁹): the result is one unit low in the 9th digit. `rx_vision_sqrt` gives the same three numbers, so the two routines agree and are both off. Both run Newton at `NUMERIC DIGITS 9`, so this is a property of the arithmetic, not a bug to fix. The claim that holds is "within 1e-8", and that is the one recorded as PROVED.
+- **`FDSqrt` before `3761f57c`:** the 12 false results are DISPROVED by certificate, each one, not by a vote. On the 7 probe values that made it the twin of `rx_vision_sqrt` it agrees and is PROVED 7 of 7, yet "right for every x" stays INDETERMINATE, and 10⁸ is DISPROVED.
+- **`rx_mod_inverse`:** 8 of 8 inverses PROVED, the 448-bit one included. Every refusal is backed by a DISPROVED claim of the need its error names: gcd = 1, or modulus > 1.
+- **The gate on concrete data.** For `rx_pow_mod → _adbModInverse` with m = 2,000,006, the contract kinds say the path can run. A COPRIME proof says it will fail before it runs (gcd = 2, certified), and it fails. With m = 1,000,003 the proof says it can run, and afterwards the result is a PROVED inverse. That is `test_compose` 6B, predicted instead of learned after the fact.
+
+Maths' Python providers (SymPy, mpmath, FLINT) are not used. SLAM's store needs no Maths: only `SlamProof.cls` and the test that uses it require `Maths.cls`.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -434,11 +464,11 @@ SLAM gets credit for what it found:
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 201 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **24/24** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex` and **10/10** in `test_fold.rex`: **319 checks**. The C++, NetRexx and BOLT steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX` and `LLVM_SRC` are set, and say SKIP otherwise.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 219 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **24/24** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex` and **10/10** in `test_fold.rex`: **337 checks**. The C++, NetRexx and BOLT steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX` and `LLVM_SRC` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-28, with the PROVED tier, after merging the BOLT commit: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **320/320**. The BOLT steps (17 checks) skipped there: no llvm-project tree.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
-`sh run_tests.sh`: **58/58** in `test_slam.rex`, **6/6** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, and **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK): 201 checks. It covers:
+`sh run_tests.sh`: **58/58** in `test_slam.rex`, **6/6** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`: 219 checks. It covers:
 - the segmenter on unmodified `MLEvolution.cls` (54 units; shared guard nodes; collapsed setters; then/else bodies sharing a node with different bindings);
 - ingest of the GA package with duplicate units skipped on re-ingest;
 - aabb → Eeff = 0.4 and b00b → Eeff = 0.8 from recorded outcomes;

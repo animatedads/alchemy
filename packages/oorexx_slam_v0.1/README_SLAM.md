@@ -139,6 +139,28 @@ the program that can run rexx code is in cpp. i read all of it. an other program
 
 netrexx is rexx in an other way. the same program is in netrexx and in rexx, with an other name for each variable. some nodes of the two are the same nodes. you run the two programs, and the two give the same words each time.
 
+## what is true, and how i know it
+
+claim: a thing that you say is true of the result of a node, for one value
+proof: a list of numbers for one claim; when i test each number, and each test is true, the claim is true, and it can not be false
+prove: make a proof
+proved: a word for a claim with a proof that it is true
+disproved: a word for a claim with a proof that it is false
+places: more than one place
+nine: eight and one
+
+a tested score is the count of times a test is true. a proof is not a score: it says one claim is true or false, for one value.
+
+i test each proof with whole numbers, and with one whole number divide by an other whole number. so each number in the test is the same as the true number, in each place.
+
+when two nodes give the same result, that is not a proof that the result is true. here is how i know it. with three numbers, the root node gives a result with nine places, and the last of the nine places is one less than it has to be. the other node that gives the root gives the same result with the same three numbers. so the two nodes give the same result, and the result of each is not true in the last place. also, for each result, the difference to the root is less than the root divide by one with eight zero after it, and that claim is proved.
+
+the root node before the change: each result that is false is disproved now, with a proof, and not with a count of nodes that give the same result.
+
+a node for maths needs this: no number more than one can divide both numbers. before a path with that node can run, i get the first number from the node before it, and i prove the need true or false. if it is false, i say the path can not give a result, and then i run it: the run gives an error.
+
+a claim of all values: i can not prove it with one value, or with a list of values. for that claim, i say: not known.
+
 ## what i can not do now
 
 i can not read a task in words and make the steps from it. you give me the first node and the last node of each step.

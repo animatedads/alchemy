@@ -97,6 +97,9 @@
   /* translation edges: a node in one language -> the node it becomes in another (from compiler pairs);
      freq is the prior, trials / passes the tested tier, kept apart from the edges Task searches */
   self~q('CREATE TABLE IF NOT EXISTS translate (from_id INTEGER NOT NULL, to_id INTEGER NOT NULL, freq INTEGER NOT NULL, trials INTEGER NOT NULL, passes INTEGER NOT NULL, PRIMARY KEY (from_id, to_id))')
+  /* proofs: a claim about one result, PROVED / DISPROVED / INDETERMINATE by a certificate checked in exact
+     rationals (SlamProof.cls).  Kept apart from lesson: a lesson says two ways agreed; a proof says a claim holds. */
+  self~q('CREATE TABLE IF NOT EXISTS proof (id INTEGER PRIMARY KEY, node_id INTEGER NOT NULL, claim TEXT NOT NULL, outcome TEXT NOT NULL, strength TEXT NOT NULL, data TEXT, detail TEXT)')
   self~q('CREATE INDEX IF NOT EXISTS slam_instance_shape ON instance (shape_id)')
   self~q('CREATE INDEX IF NOT EXISTS slam_instance_unit ON instance (unit_id)')
   self~q('CREATE INDEX IF NOT EXISTS slam_edge_to ON edge (to_id)')
@@ -315,6 +318,20 @@
   if passed then p = 1
   self~q('INSERT INTO lesson (from_id, to_id, passed, predicted, reason, data) VALUES (?, ?, ?, ?, ?, ?)', self~binds(f, t, p, predicted, reason, data))
   self~record(f, t, passed)
+/* Keep one proof (a .MathProof from SlamCertify, SlamProof.cls) about a node's result on DATA.  Returns its outcome. */
+::method proof
+  use strict arg node, mathProof, data
+  n = self~resolve(node)
+  c = mathProof~claim
+  claimText = c~kind
+  if c~parameter \== .nil then claimText = claimText c~parameter~string
+  detail = mathProof~outcome mathProof~status c~kind   /* the store needs no Maths: it only reads the proof */
+  if c~expected \== .nil then detail = detail 'expected=' || c~expected~string
+  do note over mathProof~notes
+    detail = detail '|' note
+  end
+  self~q('INSERT INTO proof (node_id, claim, outcome, strength, data, detail) VALUES (?, ?, ?, ?, ?, ?)', self~binds(n, claimText, mathProof~outcome, mathProof~status, data, detail))
+  return mathProof~outcome
 ::method codeNode
   use strict arg label
   return self~shapeId('CODE', 'CODE', 'CODE: ' || label)
