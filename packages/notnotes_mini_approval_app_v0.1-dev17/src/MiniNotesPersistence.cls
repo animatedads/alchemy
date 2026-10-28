@@ -1,5 +1,5 @@
 /* MiniNotesPersistence.cls
- * Durable Mini NotNotes application persistence over NoSQLServer's file engine.
+ * Durable Mini NotNotes persistence. Indexed Rexx/SQL SQLite is default;\n * legacy NoSQL file storage requires explicit selection.
  * This is an application-store adapter: NotNotes remains the document authority.
  */
 
@@ -10,8 +10,29 @@
   use strict arg requestedRoot = ""
   root = requestedRoot~strip
   if root = "" then root = value("MININOTES_DB_ROOT",, "ENVIRONMENT")
-  if root = "" then root = "data/mininotes"
-  db = .FileDatabaseEngine~new(root)
+  backend = value("MININOTES_DB_BACKEND",, "ENVIRONMENT")~lower~strip
+  if backend = "" then backend = "rexxsql-sqlite"
+  select
+    when backend = "file" then do
+      if root = "" then root = "data/mininotes"
+      db = .FileDatabaseEngine~new(root)
+    end
+    when backend = "rexxsql-sqlite" then do
+      if root = "" then do
+        /* Refuse to silently open a new empty database beside the old
+         * default legacy store: conversion must be explicit and verified. */
+        if stream("data/mininotes/database.yaml", "c", "query exists") \= "" then -
+          raise syntax 93.900 array("Existing legacy NotNotes store: choose MININOTES_DB_BACKEND=file or migrate a verified copy before selecting SQLite")
+        root = "mininotes"
+      end
+      if stream(root || "/database.yaml", "c", "query exists") \= "" then -
+        raise syntax 93.900 array("Legacy NotNotes store exists at" root || "; explicit migration is required")
+      sqlitePath = root
+      if root~right(7)~lower \= ".sqlite" then sqlitePath = root || ".sqlite"
+      db = .MiniNotesRexxSqlEngine~new(sqlitePath)
+    end
+    otherwise raise syntax 93.900 array("Unknown MININOTES_DB_BACKEND:" backend)
+  end
   self~ensureSchema
 
 ::method root
@@ -119,6 +140,15 @@
 ::method saveFrom
   expose db
   use strict arg app
+  transactional = db~hasMethod("beginTransaction")
+  inTxn = .false
+  if transactional then do
+    transactionResult = db~beginTransaction
+    if transactionResult~status \= .Error~SUCCESS then -
+      raise syntax 93.900 array("Cannot begin SQLite transaction:" transactionResult~message)
+    inTxn = .true
+  end
+  signal on syntax name saveRollback
   dropResult = db~dropTable("formats")
   if dropResult~status \= .Error~SUCCESS then raise syntax 93.900 array("cannot reset formats table:" dropResult~message)
   createResult = self~createFormatsTable
@@ -247,7 +277,19 @@
     resultObject = db~insert("temporal_evidence", row)
     if resultObject~status \= .Error~SUCCESS then raise syntax 93.900 array("cannot save temporal evidence:" evidence["DOC_KEY"] || "." || evidence["FIELD_NAME"])
   end
+  if inTxn then do
+    commitResult = db~commitTransaction
+    if commitResult~status \= .Error~SUCCESS then -
+      raise syntax 93.900 array("Cannot commit SQLite transaction:" commitResult~message)
+  end
+  signal off syntax
   return .true
+saveRollback:
+  failure = condition("O")
+  detail = failure["MESSAGE"]
+  if inTxn then ignore = db~rollbackTransaction
+  signal off syntax
+  raise syntax 93.900 array("Mini NotNotes persistence failure (SQLite rollback attempted):" detail)
 
 ::method evidenceValue
   use strict arg evidence, key
@@ -300,6 +342,7 @@
   documentsResult = db~selectAll("documents")
   if documentsResult~status \= .Error~SUCCESS then return 0
   records = .array~new
+  restoredIndex = .Table~new
   do row over documentsResult~rows
     record = .Directory~new
     record["DOC_KEY"] = row["doc_key"]
@@ -311,11 +354,12 @@
     record["WORKFLOW"] = row["workflow"]
     record["STATUS"] = row["status"]
     record["FIELDS"] = self~decodeCustomFields(row["fields_hex"])
-    app~restoreDocumentRecord(record)
+    restoredDocument = app~restoreDocumentRecord(record)
+    if restoredDocument \== .nil then restoredIndex[record["DOC_KEY"]~string~upper] = restoredDocument
     records~append(record)
   end
   do record over records
-    app~restoreDocumentState(record)
+    app~restoreDocumentState(record, restoredIndex[record["DOC_KEY"]~string~upper])
   end
   temporalResult = db~selectAll("temporal_evidence")
   if temporalResult~status = .Error~SUCCESS then do row over temporalResult~rows
@@ -488,3 +532,4 @@
   return out
 
 ::requires 'vendor/nosql/NoSQLServer.cls'
+::requires 'src/MiniNotesRexxSqlEngine.cls'
