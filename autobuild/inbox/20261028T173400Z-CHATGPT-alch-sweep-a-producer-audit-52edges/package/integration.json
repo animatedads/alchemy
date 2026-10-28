@@ -1,0 +1,26 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "alch_sweep_a_core_dependency_audit",
+    "version": "0.1-20261028",
+    "kind": "documentation"
+  },
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "ledger-and-edge-integrity",
+      "argv": [
+        "python3",
+        "-c",
+        "import csv;from pathlib import Path; p=Path('CORE_DEPENDENCY_LEDGER.md'); q=Path('CORE_DEPENDENCY_EDGES.csv'); assert '28 October 2026' in p.read_text(); assert len(list(csv.DictReader(q.open(newline='')))) == 52; print('AUDIT_DOCS_PASS: 52 edges')"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/alch_sweep_a_core_dependency_audit_v0.1-20261028"
+    }
+  }
+}
