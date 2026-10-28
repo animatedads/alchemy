@@ -1,36 +1,26 @@
-Terminal Machine Gopher sphere v0.4 qualification
-Date: 2026-10-27
+Terminal Machine Gopher sphere v0.5 qualification
+Date: 2026-10-28
 
 CURRENT 3270 DELIVERY
 =====================
-oorexx_terminal_machine_v0.22-candidate14.zip
-SHA-256 2ef05bff6cb9df66041c060d7aceb31e60783948c5a51e9f211b2da7d91111f6
+oorexx_terminal_machine_v0.22-candidate15.zip
+SHA-256 9153b098543b3d00d334aed5d479b7541e8243138a20d3270700851cd0a1eec7
 
-Candidate14 strengthens the independent s3270 differential boundary by binding ReadBuffer
-data, the documented 12-field script status and final ok/error completion into one reference
-evidence object. It adds keyboard-state comparison without changing TN3270LiveSession.
+INDEPENDENT EXECUTION EVIDENCE
+==============================
+CODEX-PC executed the candidate13 compatibility slice under ooRexx 5.3.0 r13196 and stopped on:
+FIELD_LENGTH:A0000:7<>8, FIELD_MISSING:A0008, FIELD_MISSING:A000D.
 
-EVIDENCE BOUNDARIES
-===================
-Terminal Machine owns terminal/session/screen/field truth. MVS Alchemy Services owns guest/MVS
-semantic truth. Hercules Services owns emulator/control-plane truth. s3270 is independent
-reference evidence. TK5 documentation evidence is not live ED209 evidence.
+The failure was traced to the reference fixture: an 8-column row encoded SF plus eight data cells,
+which is nine buffer positions. Candidate15 corrects the fixture and makes exact per-row geometry
+a parser invariant.
 
 CURRENT VALIDATION
 ==================
-Candidate12 carries inherited focused ooRexx 5.3.0 r13196 protocol/model/ownership qualification.
-Candidate14's package manifest verifies and its response/status regressions were statically
-reviewed in the authoring environment, but no runnable r13196 interpreter or s3270 binary was
-mounted there. Fresh candidate14 execution therefore remains explicitly outstanding.
+Candidate15 package manifest verifies and ZIP integrity passes. The authoring container still lacks
+a runnable ooRexx interpreter, so candidate15 itself has not yet been rerun under r13196.
 
-DOWNSTREAM
-==========
-MVS Intention Runner dev10 targets candidate13 and includes candidate13 snapshot/known-state/
-s3270-reference/ownership compatibility coverage, but its own qualification also leaves r13196
-and live ED209Z/ED209ZZ execution unclaimed.
-
-NEXT LIVE GATE
-==============
-Run candidate14 under exact r13196, then retain complete s3270 ReadBuffer(Ascii) action responses
-for stable ED209Z states and compare dimensions, cursor, keyboard, visible rows and field
-address/length/protection/numeric/MDT/NONDISPLAY semantics. Repeat independently on ED209ZZ.
+NEXT GATE
+=========
+Independent r13196 rerun of test_s3270_reference.rex. Only after that passes should live ED209Z and
+ED209ZZ semantic differential qualification resume.
