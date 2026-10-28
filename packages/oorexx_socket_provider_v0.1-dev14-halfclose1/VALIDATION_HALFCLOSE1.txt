@@ -1,0 +1,65 @@
+Socket Provider v0.1-dev14-halfclose1 validation record
+
+Architecture: Tom Dyer
+Coding: Claude (Opus 5.5)
+Written by: Claude (Opus 5.5), 2026-10-28
+
+STATUS: NOT RUN.
+The code was written in a cloud workspace with no ooRexx interpreter.
+Building ooRexx r13196 there from its source was refused by that
+workspace's permission check. No result below has been observed yet.
+
+Independent review (read-only, by a separate Claude agent that had not seen
+the work being written), 2026-10-28. Findings and what was done:
+- Live tests would hang, not fail, when a check failed while the server
+  thread was blocked: fixed, each failure now releases the thread first.
+- DebugSocketTransport looks for SHUTDOWNWRITE: shutdownWrite added.
+- A guarded shutdownSend cannot run while another thread is blocked in recv:
+  shutdownSend is now unguarded; the UnixSocket lock caveat is documented.
+- TCP declared halfCloseSend before test 0 had run: now .false until it passes.
+- shutdownSend after close could half-close a reused descriptor: now returns
+  CLOSED without touching the transport; recv after close returns .nil.
+- Documentation mismatches (manifest, UDP/NORM wording): fixed.
+- Confirmed correct by the review: the dev14 accept/tryAccept address defect
+  is real and the fix is right; backward compatibility of every caller in the
+  repository; the contract and negotiation tests would catch a wrong
+  implementation.
+- Open, needs a run: what .Socket~string and .Socket~recv return at end of
+  stream (test 0), and whether UnixSocket~recv's getBytes(0,0) returns "" at
+  end of stream (live UNIX test).
+
+Static checks done instead:
+- bash -n on tests/environment_test.sh and qualification/run_environment_test.sh: OK.
+- Every existing caller of SocketCapabilities~new, SocketNegotiationRequest~new,
+  ProviderSocketConnection~new and ProviderSocketListener~new in the
+  repository passes no more positional arguments than before, so each keeps
+  its meaning.
+
+To run on a machine with ooRexx 5.3.0 r13196, from the package folder:
+
+1. Contract suite (no network). Expected: the existing PASS lines, then
+   "PASS socket.halfclose/0.1 contract", "PASS socket.halfclose/0.1
+   negotiation" and "PASS Socket Provider dev14-halfclose1 contract suite".
+
+   REXX_BIN=/usr/local/bin/rexx bash tests/environment_test.sh
+
+2. Test 0 and the live TCP round trip (127.0.0.1 only). RXSOCK_SRC is the
+   folder that holds ooRexx's socket.cls. Expected: every line "ok ...",
+   then "PASS RxSock SockShutDown half-close route" and
+   "PASS live TCP half-close round trip".
+
+   RUN_REAL_RXSOCK_TCP=1 RXSOCK_SRC=/folder/with/socket.cls REXX_BIN=/usr/local/bin/rexx bash tests/environment_test.sh
+
+   The TCP family ships with halfCloseSend=.false. The live TCP test prints
+   an INFO line saying so and skips only the recvOpen checks. If both tests
+   pass, set the last argument of SocketCapabilities~new in
+   SocketFamilies~tcp (src/SocketProvider.cls) to .true and rerun them.
+   If test 0 fails, leave it .false and report the INFO lines: they show
+   what .Socket~string and .Socket~recv actually return.
+
+3. Live UNIX round trip, only where ooRexx Unix Socket v0.6 and its Foreign
+   Runtime build exist. Expected: "PASS live UNIX half-close round trip".
+
+   RUN_REAL_UNIX_SOCKET=1 UNIX_SOCKET_SRC=/path/to/oorexx_unix_socket_v0.6 FOREIGN_RUNTIME_SRC=/path/to/foreign_runtime REXX_BIN=/usr/local/bin/rexx bash tests/environment_test.sh
+
+Results: none yet.
