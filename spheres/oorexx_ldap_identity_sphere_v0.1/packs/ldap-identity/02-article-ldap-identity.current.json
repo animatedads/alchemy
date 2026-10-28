@@ -5,22 +5,20 @@
   "sphere": "ldap-identity",
   "title": "Current LDAP Identity continuation baseline",
   "baseline": {
-    "package": "oorexx_ldap_identity_v0.1-dev20.zip",
-    "sha256": "f709328b4127608d7723031b279e830df298bac99ee01b91242e04cb9f233bbc",
-    "implementation_line": "0.1-dev20",
-    "version_note": "dev20 closes the dev19 VERSION.txt and standards-handler defects. The exact complete archive is authoritative; the exploded GitHub package tree is still older and is not claimed byte-equivalent."
+    "package": "oorexx_ldap_identity_v0.1-dev21.zip",
+    "sha256": "bfc1c3d787215eab96a3a8afdbfd22451443213624c8a035960408f611220813",
+    "implementation_line": "0.1-dev21",
+    "version_note": "dev21 closes the dev20 aggregate-suite wiring gap. The recovery journal regression is now required by both normal and fast semantic unit suites."
   },
   "current_work": [
-    "IdentityPeerAuthoritySnapshot captures logical peer, authority epoch, holder, directory revision, last committed peer-update identity and evidence time.",
-    "IdentityPeerAuthorityJournal is the restart/recovery authority boundary for those application-level facts.",
-    "Recovery rejects authority-epoch regression.",
-    "Recovery rejects a different authority holder claiming the same epoch.",
-    "XTP delivery, transport ACK and replay state cannot satisfy LDAP application commit authority.",
-    "dev20 repairs the recovery test condition-reporting path without changing those authority semantics."
+    "Restart-safe authority recovery remains fenced by logical peer, authority epoch and holder identity.",
+    "Epoch regression and same-epoch holder substitution fail closed.",
+    "XTP transport delivery and replay evidence remain separate from LDAP application-commit authority.",
+    "Both aggregate semantic unit suites now require test_authority_recovery_journal.rex."
   ],
   "qualification": {
-    "runtime": "NOT-RUN: ooRexx executable unavailable in the build container",
-    "standards": "PASS: direct standards-enforcer run scanned 81 files with 0 errors and 136 warnings",
-    "claim": "standards-clean development candidate; fresh runtime qualification still required"
+    "runtime": "NOT-RUN: ooRexx executable unavailable in the current build container",
+    "standards": "PASS: exact dev21 ZIP scanned 81 files with 0 errors and 136 warnings",
+    "claim": "standards-clean development candidate; fresh r13196 runtime qualification still required"
   }
 }

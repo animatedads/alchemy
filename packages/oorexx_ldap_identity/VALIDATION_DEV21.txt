@@ -1,0 +1,37 @@
+ooRexx Identity Directory / LDAP v0.1-dev21 qualification
+========================================================
+
+Purpose
+-------
+Close the dev20 qualification wiring gap: restart-safe authority recovery must
+be part of every aggregate semantic unit-suite run.
+
+Changes
+-------
+- tests/all_unit_tests.rex requires tests/test_authority_recovery_journal.rex.
+- tests/all_unit_tests_fast.rex requires the same recovery regression.
+- the recovery test requires src/IdentityPeerAuthorityJournal.cls from package
+  root, making aggregate execution resolution explicit.
+- authority semantics are unchanged from dev20.
+
+Executed here
+-------------
+- bash syntax on run_tests.sh: PASS.
+- aggregate-suite membership check: PASS.
+
+Runtime boundary
+----------------
+Fresh ooRexx runtime execution is NOT RUN in this container because no ooRexx
+executable is mounted. Historical r13196 evidence is not promoted into a fresh
+dev21 PASS.
+
+Final standards gate
+--------------------
+oorexx_standards_enforcer.py --json on the exact dev21 archive:
+- files_scanned: 81
+- errors: 0
+- warnings: 136
+- verdict: PASS
+
+Warnings are inherited private-method/message-boundary and loop-invariance review
+warnings; no hard standards errors remain.

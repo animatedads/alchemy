@@ -1,31 +1,21 @@
-ooRexx LDAP Identity Gopher sphere v0.1 — dev20 update
+ooRexx LDAP Identity Gopher sphere v0.1 — dev21 update
 =====================================================
 
 Current candidate
 -----------------
-oorexx_ldap_identity_v0.1-dev20.zip
-SHA-256 f709328b4127608d7723031b279e830df298bac99ee01b91242e04cb9f233bbc
+oorexx_ldap_identity_v0.1-dev21.zip
+SHA-256 bfc1c3d787215eab96a3a8afdbfd22451443213624c8a035960408f611220813
 
-Documented contract
--------------------
-- restart-safe IdentityPeerAuthoritySnapshot / IdentityPeerAuthorityJournal boundary;
-- reject authority-epoch regression;
-- reject same-epoch / different-holder recovery;
-- keep XTP/carrier ACK and replay evidence separate from LDAP application commit authority;
-- keep Instrumentation Mesh correlation as observation evidence only.
-
-Dev20 qualification closure
----------------------------
-PASS ZIP integrity.
-PASS package MANIFEST.sha256 verification.
-PASS direct oorexx_standards_enforcer.py scan: 81 files, 0 errors, 136 warnings.
-PASS correction of the dev19 SIGNAL_NO_ANNOUNCE hard error.
-PASS complete archive VERSION.txt = 0.1-dev20.
+Qualification completeness
+--------------------------
+PASS both aggregate semantic unit-suite entry points now require the restart-safe authority-recovery regression.
+PASS recovery regression uses the package-root authority-journal require path.
+PASS exact dev21 ZIP standards scan: 81 files, 0 errors, 136 warnings.
 NOT RUN fresh ooRexx runtime regression: no ooRexx executable in this container.
-NOT CLAIMED full RexxOS WAN kill/promote field qualification.
+NOT CLAIMED full RexxOS WAN kill/promote qualification.
 
-GitHub publication truth
-------------------------
-The exact complete dev20 archive hash is recorded and the dev20 source/test delta is committed.
-The pre-existing exploded packages/oorexx_ldap_identity tree is older and is not claimed byte-equivalent to dev20.
-Full exploded-tree synchronisation remains an explicit continuation gate.
+Authority boundary
+------------------
+Epoch regression and same-epoch holder substitution fail closed. XTP delivery,
+transport ACK, replay and instrumentation evidence do not become LDAP application
+commit authority.

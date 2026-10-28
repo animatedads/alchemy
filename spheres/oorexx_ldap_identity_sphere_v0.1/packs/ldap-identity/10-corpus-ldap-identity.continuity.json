@@ -4,24 +4,14 @@
   "sphere": "ldap-identity",
   "title": "LDAP Identity durable continuation ledger",
   "records": [
-    {"topic":"baseline","package":"oorexx_ldap_identity_v0.1-dev20.zip","sha256":"f709328b4127608d7723031b279e830df298bac99ee01b91242e04cb9f233bbc","status":"standards-clean development candidate"},
-    {"topic":"dev19","rule":"Restart recovery persists LDAP application authority facts through IdentityPeerAuthorityJournal and IdentityPeerAuthoritySnapshot."},
-    {"topic":"dev20","rule":"Qualification closure repairs version drift and condition-reporting in the recovery regression without changing authority semantics."},
+    {"topic":"baseline","package":"oorexx_ldap_identity_v0.1-dev21.zip","sha256":"bfc1c3d787215eab96a3a8afdbfd22451443213624c8a035960408f611220813","status":"standards-clean development candidate"},
+    {"topic":"authority recovery","rule":"Restart recovery persists logical peer, epoch, holder, directory revision and committed update identity."},
     {"topic":"epoch fencing","rule":"Recovered authority epoch may advance but may not regress."},
-    {"topic":"holder fencing","rule":"Within the same authority epoch, a different holder is rejected. Holder transfer requires a newer epoch."},
+    {"topic":"holder fencing","rule":"A holder change requires a newer authority epoch."},
     {"topic":"commit authority","rule":"XTP transport ACK or replay evidence cannot satisfy LDAP application-commit authority."},
-    {"topic":"observation","rule":"Instrumentation Mesh correlation and causation are evidence only; they do not imply directory commit or failover authority."},
-    {"topic":"peer identity","rule":"Logical peer identity survives runtime replacement and carrier change; physical node identity is not the semantic peer."},
-    {"topic":"replication","rule":"One authoritative DirectoryChange has one peer-update request identity independent of target count; replication is not consensus."},
-    {"topic":"retry","rule":"Durable recovery retries only targets lacking application ACK evidence."},
-    {"topic":"identity","rule":"oorexxEntityId is platform semantic identity; entryUUID is LDAP entry identity; DN is an address."},
-    {"topic":"authentication","rule":"LDAP Bind attribution is not authorization and not exact object-method permission."},
-    {"topic":"persistence","rule":"Directory commit is write-before-memory; durable append failure must not advance in-memory truth."},
-    {"topic":"secrets","rule":"Persistent credential records carry secretRef and never raw secret values."},
-    {"topic":"schema","rule":"Native LDAP schema enforcement is an LDAP-personality concern and does not move semantic authority out of Identity Directory."},
-    {"topic":"qualification","rule":"Direct standards rerun on dev20: 81 files, 0 errors, 136 warnings, PASS."},
-    {"topic":"qualification","rule":"Fresh dev20 ooRexx runtime qualification is NOT-RUN in the current build container."},
-    {"topic":"github","rule":"The exact dev20 candidate is published with hash/provenance while the older exploded package tree remains explicitly unsynchronised."},
-    {"topic":"next","rule":"Run r13196/full-estate qualification, synchronise exploded source, then perform RexxOS failover field qualification without conflating carrier delivery with directory authority."}
+    {"topic":"dev21","rule":"Both aggregate semantic unit suites now require the authority-recovery journal regression; a full suite can no longer omit it."},
+    {"topic":"qualification","rule":"Exact dev21 ZIP standards scan: 81 files, 0 errors, 136 warnings, PASS."},
+    {"topic":"qualification","rule":"Fresh dev21 ooRexx runtime qualification is NOT-RUN in the current build container."},
+    {"topic":"next","rule":"Run r13196 aggregate/full-estate qualification, finish exploded-tree byte sync, then perform RexxOS failover field qualification."}
   ]
 }

@@ -52,4 +52,4 @@ rejected:
   signal off syntax
   return
 
-::requires '../src/IdentityPeerAuthorityJournal.cls'
+::requires "src/IdentityPeerAuthorityJournal.cls"

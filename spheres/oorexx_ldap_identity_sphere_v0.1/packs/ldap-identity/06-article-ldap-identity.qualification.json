@@ -3,25 +3,23 @@
   "id": "ldap-identity.qualification",
   "version": "0.1",
   "sphere": "ldap-identity",
-  "title": "dev20 qualification and non-claims",
+  "title": "dev21 qualification and non-claims",
   "evidence": [
-    "Archive SHA-256: f709328b4127608d7723031b279e830df298bac99ee01b91242e04cb9f233bbc.",
-    "dev20 retains src/IdentityPeerAuthorityJournal.cls and tests/test_authority_recovery_journal.rex from the dev19 authority-recovery increment.",
-    "The dev19 SIGNAL_NO_ANNOUNCE standards defect is repaired: the expected SYNTAX handler now announces RC, SIGL, condition code and condition description.",
-    "VERSION.txt in the complete dev20 archive reports 0.1-dev20.",
-    "Direct oorexx_standards_enforcer.py scan of the exact dev20 ZIP: 81 files, 0 errors, 136 warnings, PASS.",
-    "Fresh runtime qualification was not run because ooRexx is unavailable in the current build container."
+    "Archive SHA-256: bfc1c3d787215eab96a3a8afdbfd22451443213624c8a035960408f611220813.",
+    "tests/all_unit_tests.rex requires tests/test_authority_recovery_journal.rex.",
+    "tests/all_unit_tests_fast.rex requires the same recovery regression.",
+    "The recovery test uses the package-root src/IdentityPeerAuthorityJournal.cls require path.",
+    "Direct standards scan of the exact dev21 ZIP: 81 files, 0 errors, 136 warnings, PASS."
   ],
   "non_claims": [
-    "No fresh ooRexx runtime PASS is claimed for dev20.",
-    "No full RexxOS WAN kill/promote field qualification is claimed by this sphere.",
-    "No transport ACK, observability correlation or recovery journal entry is promoted into consensus evidence.",
-    "The older exploded GitHub package tree is not claimed byte-equivalent to the complete dev20 archive."
+    "No fresh ooRexx runtime PASS is claimed for dev21.",
+    "No full RexxOS WAN kill/promote field qualification is claimed.",
+    "Transport ACK, replay or instrumentation evidence is not promoted into directory authority or consensus."
   ],
   "next_acceptance_gates": [
-    "Run the authority-recovery regression under ooRexx 5.3.0 r13196.",
-    "Run the full packaged regression suite against the pinned dependency closure.",
-    "Synchronise the complete dev20 archive into the exploded GitHub package tree without losing provenance.",
-    "Then perform RexxOS failover field qualification while preserving application-authority versus carrier-delivery separation."
+    "Run both aggregate semantic suites under ooRexx 5.3.0 r13196.",
+    "Run the full package suite against the pinned dependency closure.",
+    "Complete the remaining GitHub exploded-tree byte synchronisation from the dev21 archive.",
+    "Then perform RexxOS failover field qualification."
   ]
 }
