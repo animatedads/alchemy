@@ -40,3 +40,7 @@ Archive includes `MANIFEST.sha256`, `QUALIFICATION_DEV35.txt` through `QUALIFICA
 ## Repository synchronization
 
 This sphere is a documentation commit, not a claim that the complete dev39 source tree has been synchronized. The distributable archive remains the named candidate until a full source-tree import and qualification is committed.
+
+## dev40 — Builder state-machine correction (2026-10-28)
+
+Candidate archive: `wire_direct_linux_v0.1-dev40.zip`; SHA-256 `2675713bccbe035f1ee107f859726ab249ac0d20e4aff6b4de042acd7e156c50`. `WireBuilderSession~selectElement` now clears the selected trigger when the selected element changes. `bindBehaviour` and `commitBehaviourDraft` now call the same private `assertUnusedBindingId`, eliminating duplicate IDs across manual and editor paths. Added `tests/test_builder_selection_invalidation_static.py`; adjusted the roundtrip static test to assert the shared guard is invoked before metadata is committed. The new and downstream static checks passed; a full build rerun timed out and GTK/ooRexx runtime qualification is outstanding. Archive source is not yet committed to GitHub; this sphere records the candidate only.
