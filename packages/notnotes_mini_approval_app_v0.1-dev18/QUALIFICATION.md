@@ -6,6 +6,7 @@
 - Native mocked SQLite provider adapter contract: PASS. Actual SQLite I/O: NOT EXECUTED because librexxsql.so unavailable.
 - Isolated 10,002-key native sort algorithm: PASS; real MiniNotesApp integrated sort script pending.
 - Real SQLite transaction/round-trip, copied-corpus migration/reopen, complete inherited run_tests.sh, 954-/10k-document benchmarks and cryptographic policy: NOT QUALIFIED.
+- Vendored NoSQL `crypto.cls` now carries the latest SLAM-found `rx_mod_inverse` invalid-input guard from main (Git blob `e9e55d3a2090fab604454283144380b547092f70`). This is a correctness fix, not a cryptographic signature provider.
 - Historical dev17 source retained verbatim. See ../notnotes_mini_approval_app_v0.1-dev17/ and the Gopher sphere candidate evidence.
 
 ---
