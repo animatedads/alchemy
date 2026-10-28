@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1-dev7
+
+- rebased the optional observation integration to qualified Instrumentation Mesh v0.1-dev8 while retaining `instrumentation.mesh/0.1`;
+- propagated only explicit caller-supplied event `correlation_id`, `causation_id`, `context_refs` and observation time into plan/handoff lifecycle events;
+- deliberately does not infer correlation from timestamps, host/resource identity, service kind, severity, candidate order or event proximity;
+- retained the existing privacy boundary: correlation metadata never includes workload/prompt/model/credential payloads;
+- added a real dev8 regression to prove explicit propagation and absence of inferred correlation.
+
 ## 0.1-dev6
 
 - added an optional concrete bridge to `ai.model.router/0.1` for LLM/model-route planning;

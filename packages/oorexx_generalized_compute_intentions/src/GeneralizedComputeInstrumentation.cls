@@ -1,7 +1,7 @@
 /* GeneralizedComputeInstrumentation.cls
  * Optional Instrumentation Mesh adapter for Generalized Compute Intentions.
  *
- * v0.1-dev5 aligns with Instrumentation Mesh v0.1-dev7.  The planner still
+ * v0.1-dev7 aligns with Instrumentation Mesh v0.1-dev8.  The planner still
  * owns no execution authority.  Mesh health, freshness and events are advisory
  * observations only and cannot make an inadmissible route admissible.
  */
@@ -123,7 +123,7 @@
   end
 
 /* Service-local telemetry source.  Metrics remain the compact operational
- * aggregate; dev5 additionally publishes bounded instrumentation.event/1
+ * aggregate; dev7 publishes bounded instrumentation.event/1
  * occurrences for plan/handoff lifecycle.  Events never carry workload text,
  * prompts, credentials, model input/output, or arbitrary resource payloads.
  */
@@ -151,7 +151,7 @@
 
 ::method planningAccepted
   expose emitter eventJournal semanticRef planSequence
-  use strict arg observedAt=''
+  use strict arg observedAt='', correlationId='', causationId='', contextRefs=.nil
   planSequence += 1
   operationId = 'plan-' || planSequence
   emitter~requestAccepted
@@ -162,13 +162,13 @@
   eventJournal~append(.InstrumentationCodec~event( -
       'compute-intentions:' || operationId || ':STARTED', 'COMPUTE_PLAN_STARTED', -
       semanticRef, 'GENERALIZED_COMPUTE_INTENTIONS', observedAt, -
-      .InstrumentationEventSeverity~INFO, '', operationId, 'planned admittance started', -
-      .array~new, evidence))
+      .InstrumentationEventSeverity~INFO, correlationId, operationId, 'planned admittance started', -
+      .array~new, evidence, .nil, .false, causationId, contextRefs))
   return operationId
 
 ::method planningCompleted
   expose emitter eventJournal semanticRef
-  use strict arg route, operationId='', observedAt=''
+  use strict arg route, operationId='', observedAt='', correlationId='', causationId='', contextRefs=.nil
   emitter~requestCompleted
   emitter~counterAdd('compute.intentions.plan.completed.total', 1)
   if route == .nil then do
@@ -192,13 +192,13 @@
   if route~state = 'INFEASIBLE' then severity = .InstrumentationEventSeverity~NOTICE
   eventJournal~append(.InstrumentationCodec~event( -
       'compute-intentions:' || operationId || ':COMPLETED', 'COMPUTE_PLAN_COMPLETED', -
-      semanticRef, 'GENERALIZED_COMPUTE_INTENTIONS', observedAt, severity, '', operationId, -
-      route~reason, .array~new, evidence))
+      semanticRef, 'GENERALIZED_COMPUTE_INTENTIONS', observedAt, severity, correlationId, operationId, -
+      route~reason, .array~new, evidence, .nil, .false, causationId, contextRefs))
   return self
 
 ::method planningFailed
   expose emitter eventJournal semanticRef
-  use strict arg reason='', operationId='', observedAt=''
+  use strict arg reason='', operationId='', observedAt='', correlationId='', causationId='', contextRefs=.nil
   emitter~requestFailed
   emitter~counterAdd('compute.intentions.plan.failed.total', 1)
   self~setLastState('FAILED')
@@ -208,12 +208,12 @@
   eventJournal~append(.InstrumentationCodec~event( -
       'compute-intentions:' || operationId || ':FAILED', 'COMPUTE_PLAN_FAILED', -
       semanticRef, 'GENERALIZED_COMPUTE_INTENTIONS', observedAt, -
-      .InstrumentationEventSeverity~ERROR, '', operationId, reason, .array~new, evidence))
+      .InstrumentationEventSeverity~ERROR, correlationId, operationId, reason, .array~new, evidence, .nil, .false, causationId, contextRefs))
   return self
 
 ::method handoffPrepared
   expose emitter eventJournal semanticRef
-  use strict arg operationId='', observedAt=''
+  use strict arg operationId='', observedAt='', correlationId='', causationId='', contextRefs=.nil
   emitter~counterAdd('compute.intentions.handoff.prepared.total', 1)
   if operationId == '' then operationId = 'handoff-unspecified'
   evidence = .directory~new
@@ -221,13 +221,13 @@
   eventJournal~append(.InstrumentationCodec~event( -
       'compute-intentions:' || operationId || ':HANDOFF_PREPARED', 'COMPUTE_HANDOFF_PREPARED', -
       semanticRef, 'GENERALIZED_COMPUTE_INTENTIONS', observedAt, -
-      .InstrumentationEventSeverity~INFO, '', operationId, -
-      'planned route prepared; authoritative admission revalidation required', .array~new, evidence))
+      .InstrumentationEventSeverity~INFO, correlationId, operationId, -
+      'planned route prepared; authoritative admission revalidation required', .array~new, evidence, .nil, .false, causationId, contextRefs))
   return self
 
 ::method handoffRefused
   expose emitter eventJournal semanticRef
-  use strict arg reason='', operationId='', observedAt=''
+  use strict arg reason='', operationId='', observedAt='', correlationId='', causationId='', contextRefs=.nil
   emitter~requestRejected
   emitter~counterAdd('compute.intentions.handoff.refused.total', 1)
   self~setLastState('HANDOFF_REFUSED')
@@ -237,7 +237,7 @@
   eventJournal~append(.InstrumentationCodec~event( -
       'compute-intentions:' || operationId || ':HANDOFF_REFUSED', 'COMPUTE_HANDOFF_REFUSED', -
       semanticRef, 'GENERALIZED_COMPUTE_INTENTIONS', observedAt, -
-      .InstrumentationEventSeverity~NOTICE, '', operationId, reason, .array~new, evidence))
+      .InstrumentationEventSeverity~NOTICE, correlationId, operationId, reason, .array~new, evidence, .nil, .false, causationId, contextRefs))
   return self
 
 ::method setCandidateCounts private
@@ -265,14 +265,15 @@
 ::method planAdmittance
   expose planner telemetry
   use arg workload, context=.nil
-  operationId = telemetry~planningAccepted
+  eventContext = self~eventContext(context)
+  operationId = telemetry~planningAccepted(eventContext['observed_at'], eventContext['correlation_id'], eventContext['causation_id'], eventContext['context_refs'])
   signal on syntax name planningError
   route = planner~planAdmittance(workload, context)
   signal off syntax
-  telemetry~planningCompleted(route, operationId)
+  telemetry~planningCompleted(route, operationId, eventContext['observed_at'], eventContext['correlation_id'], eventContext['causation_id'], eventContext['context_refs'])
   return route
 planningError:
-  telemetry~planningFailed(condition('D'), operationId)
+  telemetry~planningFailed(condition('D'), operationId, eventContext['observed_at'], eventContext['correlation_id'], eventContext['causation_id'], eventContext['context_refs'])
   signal off syntax
   raise propagate
 
@@ -288,17 +289,18 @@ planningError:
 ::method prepareAdmission
   expose planner telemetry
   use arg workload, context=.nil
-  operationId = telemetry~planningAccepted
+  eventContext = self~eventContext(context)
+  operationId = telemetry~planningAccepted(eventContext['observed_at'], eventContext['correlation_id'], eventContext['causation_id'], eventContext['context_refs'])
   signal on syntax name prepareError
   route = planner~planAdmittance(workload, context)
   signal off syntax
-  telemetry~planningCompleted(route, operationId)
+  telemetry~planningCompleted(route, operationId, eventContext['observed_at'], eventContext['correlation_id'], eventContext['causation_id'], eventContext['context_refs'])
   handoff = route~handoff
-  if handoff \== .nil then telemetry~handoffPrepared(operationId)
-  else telemetry~handoffRefused(route~reason, operationId)
+  if handoff \== .nil then telemetry~handoffPrepared(operationId, eventContext['observed_at'], eventContext['correlation_id'], eventContext['causation_id'], eventContext['context_refs'])
+  else telemetry~handoffRefused(route~reason, operationId, eventContext['observed_at'], eventContext['correlation_id'], eventContext['causation_id'], eventContext['context_refs'])
   return handoff
 prepareError:
-  telemetry~planningFailed(condition('D'), operationId)
+  telemetry~planningFailed(condition('D'), operationId, eventContext['observed_at'], eventContext['correlation_id'], eventContext['causation_id'], eventContext['context_refs'])
   signal off syntax
   raise propagate
 
@@ -306,6 +308,33 @@ prepareError:
   expose planner
   use arg context=.nil
   return planner~discover(context)
+
+/* Mesh dev8 correlation is producer/caller supplied only.  GCI deliberately
+ * does not infer groups from time, host, service, severity, resource identity,
+ * or operation proximity. */
+::method eventContext private
+  use strict arg context=.nil
+  d = .directory~new
+  d['observed_at'] = ''
+  d['correlation_id'] = ''
+  d['causation_id'] = ''
+  d['context_refs'] = .array~new
+  if context == .nil then return d
+  if \context~isA(.Directory) then return d
+  if context['INSTRUMENTATION_EVENT_OBSERVED_AT'] \== .nil then d['observed_at'] = context['INSTRUMENTATION_EVENT_OBSERVED_AT']~string
+  if context['INSTRUMENTATION_CORRELATION_ID'] \== .nil then d['correlation_id'] = context['INSTRUMENTATION_CORRELATION_ID']~string
+  if context['INSTRUMENTATION_CAUSATION_ID'] \== .nil then d['causation_id'] = context['INSTRUMENTATION_CAUSATION_ID']~string
+  refs = context['INSTRUMENTATION_CONTEXT_REFS']
+  if refs \== .nil then do
+    if refs~isA(.Collection) then do
+      copied = .array~new
+      do ref over refs
+        copied~append(ref~string)
+      end
+      d['context_refs'] = copied
+    end
+  end
+  return d
 
 ::requires 'GeneralizedComputeIntentions.cls'
 ::requires 'InstrumentationMesh.cls'
