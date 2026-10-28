@@ -80,3 +80,14 @@ if [ -n "${NETREXX_HOME:-}" ] && [ -n "${OOREXX_SRC:-}" ] && [ -n "${SYSUTILS_NR
 else
   echo "SKIP NetRexx: set NETREXX_HOME, OOREXX_SRC and SYSUTILS_NRX to run it"
 fi
+echo "== compiler code: BOLT (needs LLVM_SRC: an llvm-project tree holding bolt/; RX2CPP_ROOT)"
+if [ -n "${LLVM_SRC:-}" ] && [ -n "${RX2CPP_ROOT:-}" ] && [ -d "${LLVM_SRC}/bolt" ]; then
+  rexx bin/slam.rex ingest "$WORK/bolt.db" "$LLVM_SRC/bolt"
+  rexx bin/slam.rex ingest "$WORK/rx2cpp.db" "$RX2CPP_ROOT/core" "$RX2CPP_ROOT/rules" "$RX2CPP_ROOT/hybrid" "$RX2CPP_ROOT/native" "$RX2CPP_ROOT/external" "$RX2CPP_ROOT/inspector" "$RX2CPP_ROOT/kernel"
+  rexx tests/llvm/next_node.rex "$WORK/next_node.txt|BOLT=$WORK/bolt.db>$WORK/bolt.db@KIND,KIND+,SKELETON,SKELETON+,FAMILY,FAMILY+|RX2CPP_SELF=$WORK/rx2cpp.db:REXX>$WORK/rx2cpp.db:REXX@KIND,KIND+,SKELETON,SKELETON+|BOLT_TO_RX2CPP=$WORK/bolt.db>$WORK/rx2cpp.db:REXX@KIND,KIND+,SKELETON,SKELETON+"
+  rexx tests/test_llvm.rex "$WORK/bolt.db|$WORK/rx2cpp.db|$WORK/next_node.txt"
+  echo "== identical code folding, learned from BOLT's IdenticalCodeFolding"
+  rexx tests/test_fold.rex "$WORK|$ROOT/tests/fixtures|$WORK/bolt.db|$WORK/rx2cpp.db"
+else
+  echo "SKIP BOLT: set LLVM_SRC and RX2CPP_ROOT to run it"
+fi

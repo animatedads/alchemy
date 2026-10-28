@@ -276,14 +276,16 @@
 ::attribute line
 ::attribute repeat
 ::attribute binding
+::attribute consts         /* the literal values in the segment's own clauses, in order (folding needs them) */
 ::attribute sequences
 ::method init
-  expose kind fine family line repeat binding sequences
+  expose kind fine family line repeat binding consts sequences
   use strict arg kind, line
   fine = ''
   family = ''
   repeat = 1
   binding = ''
+  consts = ''
   sequences = .array~new
 ::method addSequence
   expose sequences
@@ -640,6 +642,20 @@
   end
   run = self~flush(run, segs, ctx)
   return self~collapse(segs)
+/* The literal values (strings and numbers) of some clauses, in order, '1f'x between them: what a shape
+   abstracts to S and N. Every reader's tokens have kinds STRING and NUMBER. */
+::method literals
+  use strict arg clauses
+  buf = .mutablebuffer~new
+  do c over clauses
+    do t over c
+      if t~kind == 'STRING' | t~kind == 'NUMBER' then do
+        buf~append(t~text)
+        buf~append('1f'x)
+      end
+    end
+  end
+  return buf~string
 /* A statement kind the ooRexx reader never makes (another language's reader adds its own): no segment. */
 ::method otherSegment
   use strict arg s, ctx
@@ -680,6 +696,7 @@
   seg~fine = kind || ': ' || parts~makeString('L', ' ; ')
   seg~family = kind || ': ' || famParts~makeString('L', ' ; ')
   seg~binding = roles~binding
+  seg~consts = self~literals(clauses)
   return seg
 /* Statement -> the statement sequence it stands for (a bare DO ... END is its body). */
 ::method asSeq
@@ -777,6 +794,7 @@
   seg~fine = seg~kind || ': ' || head~makeString('L', ' ; ') || tail
   seg~family = seg~kind || ': ' || famHead~makeString('L', ' ; ') || tail
   seg~binding = roles~binding
+  seg~consts = self~literals(headerClauses)
 /* Consecutive siblings with the same fine shape become one segment with a repeat count. */
 ::method collapse
   use strict arg segs

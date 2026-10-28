@@ -28,6 +28,7 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamCpp.cls` | Third language: C++ lexer (preprocessor lines dropped, raw strings), splitter (namespaces, `Class::m` outside its class, macro-made `NAME(X) { }`), shaper; Java's statement parser |
 | `src/SlamNetRexx.cls` | Fourth language: NetRexx, written as ooRexx tokens (`a.b` is `a~b`, `this` is `self`, `null` is `.nil`, `loop` is `DO <LOOP>`), read by the ooRexx parser and shaper |
 | `src/SlamLanguages.cls` | Which reader a file needs, by extension |
+| `src/SlamFold.cls` | Identical code folding over the store, ported from BOLT's IdenticalCodeFolding: congruent buckets, identical folds, repeated to a fixpoint |
 | `src/SlamRules.cls` | Rules read the same way in ooRexx and Java (what a GUARD makes MUST hold); keyed readers found by behaviour; RULE nodes; predicting a rule's outcome |
 | `bin/slam.rex` | `ingest` (ooRexx and Java), `corpus`, `read`, `facts`, `about`, `ground`, `ask`, `stats`, `node`, `follows`, `into`, `record` |
 | `README_SLAM.md` | This README in SLAM's own words: SLAM reads it with no unknown word |
@@ -49,6 +50,9 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/bif/` | BIF contract reader for the interpreter and the rx2cpp native pack; case generator; a runner for each side |
 | `tests/test_netrexx.rex` | NetRexx: lexer, `sysutils.nrx`, QTIME in NetRexx and ooRexx run through a day, NetRexx -> Java translation edges predicted on held-out files (20 checks) |
 | `tests/netrexx/` | Runs NetRexx's `qtime.nrx` and ooRexx's `qtime.rex` at the same 206 times; translates every NetRexx example with NetRexxC and learns NetRexx -> Java translation edges (`translate_all.sh`, `translate_pairs.rex`) |
+| `tests/test_llvm.rex` | Compiler code: BOLT read whole; next-segment prediction on held-out BOLT and on rx2cpp's ooRexx (7 checks) |
+| `tests/llvm/next_node.rex` | Next-segment prediction at KIND, SKELETON and FAMILY level, with and without context, scored in SQL against a baseline |
+| `tests/test_fold.rex` | Identical code folding on a fixture, on BOLT's source and on rx2cpp (10 checks) |
 | `tests/show_rules.rex` | Read a unit's rules, find the other language's closest units, list what both have and what each lacks |
 | `run_tests.sh` | Builds Rexx/SQL and the foreign runtime, then runs everything |
 
@@ -362,6 +366,62 @@ Tom's next: "how we handle two different object oriented rexx languages". NetRex
 
 **Found in SLAM's own ooRexx reader, by this pairing.** Rexx allows `if c` with `then x` on the next line, and both QTIMEs use it. SLAM's clause builder made the lone `THEN` a clause of its own. So `if … <newline> then return …` was not a GUARD, and its `return` fell outside the IF. Fixed in `SlamClauses`: a THEN that starts a clause joins the IF or WHEN clause before it. The whole-estate numbers above were counted before this fix.
 
+### Compiler code: BOLT and Clang
+
+Tom's next: "give it that cpp to learn advanced compiler techniques", then "bolt and clang". From his `llvm-project` upload, SLAM read BOLT whole (LLVM's post-link optimizer) and Clang's compiler proper, `lib` and `include` (Clang's 2M-line test suite is input to the compiler, not compiler code, and was left out).
+
+| | Files | Units | Nodes | Time |
+|---|---|---|---|---|
+| BOLT | 274 read, none skipped (257 hold code) | 4,060 | 18,470 | 82 s |
+| Clang `lib` + `include` (1.9M lines) | 2,567 read, none skipped (2,091 hold code) | 77,497 | 271,179 (554,133 segments) | 1,730 s |
+
+"Learning a technique" is made measurable in two ways.
+
+**1. How compiler code is written: predicting the next segment in code SLAM has not seen.** SLAM's edges ("after this node, that node", with counts) are learned from some files and predict the next segment in held-out ones (every fifth file by a fixed path checksum; `tests/llvm/next_node.rex`). Three levels:
+- **KIND:** RUN, GUARD, LOOP, and so on.
+- **SKELETON:** the kind plus how it stops or what it holds, such as `GUARD:continue` or `BRANCH{THEN=RUN,EXIT}`. Rexx's `leave`/`iterate`/`raise` count as `break`/`continue`/`throw`, so this level is the same in every language.
+- **FAMILY:** the shape with names abstracted.
+
+A `+` variant also conditions on the enclosing segment, which SLAM's `<START:ctx>` markers already record. The baseline is the most common segment.
+
+| Learned from → predicting | Level | SLAM | Baseline |
+|---|---|---|---|
+| BOLT → held-out BOLT (5,084 segments) | KIND / KIND+ | 52.4% / **58.4%** | 49.4% |
+| | SKELETON / SKELETON+ | 50.6% / **55.7%** | 49.4% |
+| | FAMILY / FAMILY+ | 5.0% / 5.8% | 1.7% |
+| Clang → held-out Clang (99,194 segments) | KIND / KIND+ | 47.0% / **60.7%** | 39.0% |
+| | SKELETON / SKELETON+ | 44.5% / **56.9%** | 39.0% |
+| | FAMILY / FAMILY+ | 9.3% / **10.2%** | 2.0% |
+| **Clang → BOLT** (the same held-out BOLT files) | KIND / KIND+ | 52.4% / **58.6%** | 49.4% |
+| | SKELETON+ | **56.1%** | 49.4% |
+| | FAMILY+ | 3.5% | 1.7% |
+| rx2cpp → held-out rx2cpp's ooRexx (3,397) | KIND+ | **81.6%** | 76.9% |
+| **BOLT's C++ → rx2cpp's ooRexx** | KIND / KIND+ | 76.6% / **80.2%** | 76.9% |
+| | SKELETON+ | **79.4%** | 76.9% |
+| **Clang's C++ → rx2cpp's ooRexx** | KIND / KIND+ | 77.2% / **80.4%** | 76.9% |
+| | SKELETON+ | **79.5%** | 76.9% |
+
+What this shows:
+- **First-order edges hardly beat "mostly a RUN comes next".** That is the limit this README already states.
+- **The enclosing segment helps,** in every case.
+- **Structure learned from one C++ compiler predicts another as well as that compiler's own files do.** Clang → BOLT scores 58.6% at KIND+ and 56.1% at SKELETON+; BOLT's own other files score 58.4% and 55.7%. Only FAMILY drops (3.5% against 5.8%), because names do not carry over.
+- **The structure transfers across languages.** What SLAM learned from BOLT's or Clang's C++ beats the baseline on rx2cpp's ooRexx, a compiler in another language by other people: 80.2% and 80.4% against 76.9%. From BOLT it recovers 69% of the gain rx2cpp's own files give (111 of 161 segments over the baseline). Without context it does not transfer.
+- **Clang is the reproducible-by-hand part.** Its ingest takes 29 minutes, so `run_tests.sh` checks BOLT and rx2cpp. The Clang rows come from `rexx tests/llvm/next_node.rex` on a Clang store made with `rexx bin/slam.rex ingest`, as in the BOLT step. That store was made before literals were stored, so Clang was not folded.
+
+**2. A technique read from BOLT and applied: identical code folding** (`SlamFold.cls`). BOLT's `IdenticalCodeFolding.cpp` hashes functions ignoring symbol operands, buckets the congruent ones, folds the identical ones in each bucket (a call to a folded function counting as a call to its parent), and repeats until a pass folds nothing. SLAM already had the parts: FAMILY is "names abstracted", which is BOLT's congruence, and FINE is identity. Token-identical units are skipped at ingest, so what folds here is the same code under other names. Two things were needed to match BOLT:
+- **Literal values.** Shapes abstract them to `S` and `N`; BOLT compares constants exactly. Each instance now stores its literals (`instance.consts`, added to older stores when opened).
+- **Renames apply from the next pass,** so the passes do not depend on bucket order.
+
+Results:
+- **The fixture** folds 1, 1, 0: `areaB` → `areaA`, then `totalB` → `totalA`, which is identical only once `areaB` is folded. `y + 2` is not `y + 1`.
+- **On BOLT's own source**, 392 units fold in the first pass, 8 in the second (callers identical only after their callees fold), then none. All are small accessors (`successors`/`throwers`/`landing_pads` into `predecessors`). At 5 segments or more nothing folds: BOLT is well factored.
+- **On rx2cpp's ooRexx**, three pairs of 5 segments or more:
+  - **`RxStmtIf~branch` = `RxStmtSelect~whenBody`:** the same "bare `DO` then a clause boundary is a block, else one statement" logic in two rule classes. Only the IF copy says why (`DO UNTIL` and `DO var=` are rules of their own), and a fix to one must be made by hand in the other.
+  - **`BifDefinition~joined` = `RxCppEmitter~body`:** the same line-joining loop.
+  - **`RxNative~kind` = `RxNative~form`.**
+
+**What this does not show.** SLAM learns structure, not meaning. It predicts how code is laid out, and it can carry a technique over when the technique is about structure, as folding is. BOLT's other passes (block layout from profile counts, dataflow over a control-flow graph, inlining decisions) need profiles, a CFG and instruction semantics that SLAM's segments do not have.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -370,10 +430,11 @@ SLAM gets credit for what it found:
 3. **`FDSqrt` wrong above 10⁶.** Found by its own path choice and a third way. Fixed: commit `3761f57c` (both copies), on ChatGPT's method.
 4. **Federation Bank's Java side describes the bank's old late-advice rule.** Found by reading the offline-cash rule in both languages. The ooRexx side was run, and the Java test double was read. Reported, not fixed: which side moves is Tom's call.
 5. **SLAM's own ooRexx reader misread `then` on a new line.** Found by reading NetRexx's QTIME beside ooRexx's. Fixed in `SlamClauses`.
+6. **Duplicate code in rx2cpp** (`RxStmtIf~branch` = `RxStmtSelect~whenBody`, `BifDefinition~joined` = `RxCppEmitter~body`, `RxNative~kind` = `RxNative~form`). Found by identical code folding ported from BOLT. Reported, not fixed: that is the rx2cpp lane's call.
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 201 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **24/24** in `test_cpp.rex` and **20/20** in `test_netrexx.rex`: **302 checks**. The C++ and NetRexx steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME` and `SYSUTILS_NRX` are set, and say SKIP otherwise.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 201 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **24/24** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex` and **10/10** in `test_fold.rex`: **319 checks**. The C++, NetRexx and BOLT steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX` and `LLVM_SRC` are set, and say SKIP otherwise.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 

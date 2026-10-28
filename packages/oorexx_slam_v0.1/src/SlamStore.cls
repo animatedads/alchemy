@@ -83,7 +83,9 @@
 ::method ensureSchema
   self~q('CREATE TABLE IF NOT EXISTS shape (id INTEGER PRIMARY KEY, kind TEXT NOT NULL, family TEXT NOT NULL, canon TEXT NOT NULL UNIQUE)')
   self~q('CREATE TABLE IF NOT EXISTS unit (id INTEGER PRIMARY KEY, path TEXT, kind TEXT, owner TEXT, selector TEXT, line INTEGER, sig TEXT NOT NULL UNIQUE)')
-  self~q('CREATE TABLE IF NOT EXISTS instance (id INTEGER PRIMARY KEY, unit_id INTEGER NOT NULL, parent_id INTEGER NOT NULL, seq INTEGER NOT NULL, shape_id INTEGER NOT NULL, line INTEGER, repeat INTEGER NOT NULL, binding TEXT)')
+  self~q('CREATE TABLE IF NOT EXISTS instance (id INTEGER PRIMARY KEY, unit_id INTEGER NOT NULL, parent_id INTEGER NOT NULL, seq INTEGER NOT NULL, shape_id INTEGER NOT NULL, line INTEGER, repeat INTEGER NOT NULL, binding TEXT, consts TEXT)')
+  /* a store made before consts existed gets the column (empty for its old rows) */
+  if self~scalar("SELECT count(*) AS n FROM pragma_table_info('instance') WHERE name = 'consts'") = 0 then self~q('ALTER TABLE instance ADD COLUMN consts TEXT')
   self~q('CREATE TABLE IF NOT EXISTS edge (from_id INTEGER NOT NULL, to_id INTEGER NOT NULL, freq INTEGER NOT NULL, PRIMARY KEY (from_id, to_id))')
   self~q('CREATE TABLE IF NOT EXISTS weight (from_id INTEGER NOT NULL, to_id INTEGER NOT NULL, trials INTEGER NOT NULL, passes INTEGER NOT NULL, PRIMARY KEY (from_id, to_id))')
   self~q('CREATE TABLE IF NOT EXISTS anchor (word_id INTEGER NOT NULL, shape_id INTEGER NOT NULL, note TEXT, PRIMARY KEY (word_id, shape_id))')
@@ -137,8 +139,8 @@
   self~q('INSERT INTO unit (path, kind, owner, selector, line, sig) VALUES (?, ?, ?, ?, ?, ?)', self~binds(path, kind, owner, selector, line, sig))
   return self~scalar('SELECT last_insert_rowid() AS id')
 ::method instanceInsert
-  use strict arg unitId, parentId, seq, shapeId, line, repeat, binding
-  self~q('INSERT INTO instance (unit_id, parent_id, seq, shape_id, line, repeat, binding) VALUES (?, ?, ?, ?, ?, ?, ?)', self~binds(unitId, parentId, seq, shapeId, line, repeat, binding))
+  use strict arg unitId, parentId, seq, shapeId, line, repeat, binding, consts = ''
+  self~q('INSERT INTO instance (unit_id, parent_id, seq, shape_id, line, repeat, binding, consts) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', self~binds(unitId, parentId, seq, shapeId, line, repeat, binding, consts))
   return self~scalar('SELECT last_insert_rowid() AS id')
 ::method edgeAdd
   expose edgeBuf
@@ -167,7 +169,7 @@
   do s over segs
     seq += 1
     sid = self~shapeId(s~kind, s~family, s~fine)
-    iid = self~instanceInsert(uid, parentId, seq, sid, s~line, s~repeat, s~binding)
+    iid = self~instanceInsert(uid, parentId, seq, sid, s~line, s~repeat, s~binding, s~consts)
     self~edgeAdd(prev, sid)
     prev = sid
     do sq over s~sequences
