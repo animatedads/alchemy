@@ -40,3 +40,11 @@ Both `assess('FUTURE_RISK', 'YES')` and `assess('WITNESS_UNTRUTHFUL','YES')` ret
 6. Ensure every proposition in the ledger is defensibly grounded in the paragraph indicated, without importing findings from another person's case.
 
 This is a partial source-grounded qualification fixture for the real engine. It should not be labelled full legal automation.
+
+## Edge soundness regression (v0.2)
+
+The ledger's first implementation checked the **actor** on a correction edge but not the **kind of proposition** being connected. Thus a court statement about the applicable proof standard could masquerade as an appellate rejection of a witness-dishonesty finding, provided its actor was still `CA_JUDICIAL_FINDING`. Likewise, repeated entry of one correction edge could be counted twice. Both are structurally unsound.
+
+`tests/test_mah_edge_soundness.rex` demonstrates the defects against v0.1 (first failure: unsupported edge counted), and guards the v0.2 correction: an allowed edge must satisfy both actor and relation-specific proposition kinds. The fixture checks two valid and three wrong-kind edges, plus one repeated edge. v0.2 retains all six in the attempted history, qualifies two, and explicitly rejects four (three `RELATION_KIND_MISMATCH`, one `DUPLICATE_RELATION`). This prevents a court statement of one kind being silently promoted to an unrelated judicial finding.
+
+**Not authenticated:** the ledger currently checks only the presence of citation strings. It does not retrieve, parse, verify or authenticate those paragraphs. `citationValidated` and `validatedTruth` are always false. This is a structural/source-attribution audit, not a signature or source-truth oracle. The generic `DISTINGUISHES_ISSUES` relation remains unqualified until a precise source/target proposition-kind contract is agreed.
