@@ -1,4 +1,4 @@
-# Architecture — ooRexx Cloud Console v0.1-dev2
+# Architecture — ooRexx Cloud Console v0.1-dev3 candidate
 
 ## Control flow
 
@@ -147,3 +147,19 @@ Protocol names are normalized where practical (`6` -> `tcp`, `17` -> `udp`, `1` 
 - malformed provider record shapes: adapters use staged type checks rather than short-circuit assumptions.
 
 The last point is important in ooRexx because `&` and `|` always evaluate both operands.
+
+
+## dev3 control authority seam
+
+```text
+human / Codex / ooRexx caller
+        |
+   CloudApp PLAN/APPLY
+        |
+        +-- read -> provider-native observation -> normalization
+        |
+        `-- mutate -> alchemy.cloud-control/0.1 RESOURCE
+                        -> provider/account policy + native syntax
+```
+
+`provider-cli` remains a development/test backend and must be selected explicitly when Cloud Control is configured. The workspace path is passed only as execution cwd. It never selects an account, provider authority or managed-node identity.
