@@ -1,4 +1,21 @@
-# ooRexx Cloud Console v0.1-dev2
+
+## dev3 — Alchemy Cloud Control mutation backend
+
+The console now has an executable authority seam rather than only a documented one. Mutations may be delegated to `alchemy.cloud-control/0.1 RESOURCE` by setting:
+
+```sh
+export ALCHEMY_CLOUD_CONTROL=/path/to/alchemy_cloud_control/adapters/cloudctl.sh
+```
+
+Or select it explicitly with `--backend cloud-control --cloud_control PATH`. With the path configured, `--backend auto` selects Cloud Control for machine/firewall mutation. `--backend provider-cli` remains an explicit development/test fallback.
+
+Read-side inventory is intentionally independent: it continues through provider-native read commands and is labelled `read_backend=provider-cli`, while the result records the selected `mutation_backend`. This preserves the distinction between observation evidence and mutation authority.
+
+The Cloud Control command receives only normalized operation/context fields, never provider credentials. PLAN/APPLY and exact destroy confirmation remain in this console before delegation. `--workspace` remains only the working directory for the selected transport; it is not authority.
+
+**Qualification status:** dev2 remains the last r13196-qualified console. This dev3 source is a continuation candidate until its ooRexx suite is rerun under 5.3.0 r13196. The included tests extend the dev2 suite with Cloud Control backend cases.
+
+# ooRexx Cloud Console v0.1-dev3 candidate
 
 One provider-neutral ooRexx control surface for:
 
