@@ -3,10 +3,10 @@
   "id": "librarian-v2.qualification",
   "title": "Qualification truth and blockers",
   "section": "qualification",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "sphere": "librarian-v2",
   "authority": "project-continuity",
-  "summary": "Native interpreter qualification now executed (not merely source inspection): ooRexx 5.3.0 r13196 debug PASS on 102 positive assertions in nine suites and 13 expected-negative rejections (115 checks), with dev8 and dev9 class compiler checks. This qualifies observed test behaviour of the delivered dev9 archive, not independent media provenance or production deployment. LLM Gopher sphere activation/validate/lint still not executed in this environment.",
+  "summary": "Dev10 passed 116 positive native ooRexx assertions in ten suites and 13 expected-negative rejection cases (129 total) under ooRexx 5.3.0 r13196 on the cumulative source archive. Dev10 class compiled with rexxc. ZIP integrity PASS. This is code-level regression evidence, not Gopher activation, full source authentication, Time Service v0.9 compatibility, verified independence or production qualification.",
   "invariants": [
     "Before promotion: ooRexx 5.3.0 r13196 rexxc + runtime suites, deterministic permutation fixtures, cycle and malformed relationship tests, historical as-of revisions, Unicode/source spans, limits and regression scenarios.",
     "Before claiming a Gopher-activated sphere: run Sphere Editor validate/lint and Gopher profile context/open tests against a compatible installed version.",
@@ -14,7 +14,10 @@
     "Real ooRexx checks: 115 PASS on dev9 archive with pinned Time Service v0.3; archive integrity PASS.",
     "Single Time Service v0.9 and Gopher profile runtime remain unqualified for this Librarian increment.",
     "GitHub dev9 is an incremental delta; full development source dependencies are in the ZIP, not the PR branch checkout.",
-    "No production qualification or verified source independence is claimed."
+    "No production qualification or verified source independence is claimed.",
+    "Dev10 canonical materialisation schema is LIBRARIAN-PROVENANCE-SNAPSHOT/2; no implicit comparison with incomplete dev9 identity.",
+    "129 native checks PASS on 2026-10-28 with pinned Time Service v0.3.",
+    "Alchemy sphere_check must report the archive/version it actually selected before deployment can be claimed."
   ],
   "provenance": [
     {
@@ -40,6 +43,14 @@
       "line_start": 1,
       "line_end": 12,
       "claim": "Native interpreter acceptance results."
+    },
+    {
+      "artifact": "librarian_v2_dev10_20261028.zip",
+      "sha256": "aa48ba861e5a25341349302de0e7dad64979631d33dea7c7955f6a292a187223",
+      "member": "librarian_v2_dev10/DEV10_NOTES.md",
+      "line_start": 26,
+      "line_end": 38,
+      "claim": "Native regression qualification and outstanding risks."
     }
   ]
 }
