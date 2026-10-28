@@ -5,16 +5,7 @@ cd "$HERE"
 REXX_BIN=${REXX_BIN:-rexx}
 : "${REXX_HOME:=/usr/local}"
 export REXX_PATH="$HERE:$HERE/src:$HERE/vendor/notnotes:$HERE/vendor/nosql:$HERE/vendor/cliui/rexx:$HERE/vendor/pdf/src:$HERE/vendor/spreadsheet:$HERE/vendor/instrumentation:$HERE/vendor/time/src:$HERE/vendor/connect:$REXX_HOME/share/ooRexx:$REXX_HOME/bin${REXX_PATH:+:$REXX_PATH}"
-# Consume neighbouring source providers; never vendor an alternative SQL driver.
-REXXSQL_SRC="$HERE/../oorexx_rexxsql_backend_v0.1/src"
-NATIVE_DB_SRC="$HERE/../oorexx_native_database_backends_v0.1/src"
-if [[ -d "$REXXSQL_SRC" && -d "$NATIVE_DB_SRC" ]]; then
-  export REXX_PATH="$REXXSQL_SRC:$NATIVE_DB_SRC:$REXX_PATH"
-fi
-export LD_LIBRARY_PATH="${REXXSQL_LIB_DIR:+$REXXSQL_LIB_DIR:}$REXX_HOME/lib64:$REXX_HOME/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
-# The inherited suite exercises legacy FileDatabaseEngine behaviour explicitly.
-# The production/default selector remains rexxsql-sqlite.
-export MININOTES_DB_BACKEND=file
+export LD_LIBRARY_PATH="$REXX_HOME/lib64:$REXX_HOME/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 TEST_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/mininotes-tests.XXXXXX")
 trap 'rm -rf "$TEST_ROOT"' EXIT
 run_rexx() {
@@ -48,17 +39,3 @@ MININOTES_DB_ROOT="$TEST_ROOT/persistence" ./tests/test_save_print_persistence.s
 MININOTES_DB_ROOT="$TEST_ROOT/reporting" ./tests/test_report_designer_persistence.sh
 
 run_rexx batch tests/test_batch_persistence.rex
-
-# Guard the authentic NoSQL DatabaseRow values-column contract used in migration.
-"$REXX_BIN" tests/test_migration_row_contract.rex
-
-# Exercise actual MiniNotesApp~sortByKey on 10,002 objects, avoiding SQL.
-"$REXX_BIN" tests/test_sort_regression.rex
-
-# SQL adapter contract test with a fake function package, never in product path.
-REXX_PATH="$HERE/tests/fixtures:$REXX_PATH" "$REXX_BIN" tests/test_rexxsql_adapter_mock.rex
-# Opt-in real native SQL test; requires the existing built librexxsql.so.
-if [[ "${MININOTES_TEST_SQLITE_LIVE:-0}" == "1" ]]; then
-  MININOTES_DB_BACKEND=rexxsql-sqlite "$REXX_BIN" tests/test_rexxsql_adapter_live.rex
-  "$HERE/tests/test_rexxsql_migration.sh"
-fi

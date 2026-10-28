@@ -518,23 +518,18 @@
 
 ::method sortByKey
   use strict arg documents
-  /* Native sort of string keys: preserve duplicate-key documents without
-   * quadratic comparisons or changing domain/document authority. */
-  keys = .Array~new
-  buckets = .Table~new
+  out = .array~new
   do document over documents
-    key = document~DocKey~string
-    if \buckets~hasIndex(key) then do
-      buckets[key] = .Array~new
-      keys~append(key)
-    end
-    buckets[key]~append(document)
+    out~append(document)
   end
-  keys~sort
-  out = .Array~new
-  do key over keys
-    do document over buckets[key]
-      out~append(document)
+  if out~items < 2 then return out
+  do i = 1 to out~items - 1
+    do j = i + 1 to out~items
+      if out[j]~DocKey < out[i]~DocKey then do
+        swap = out[i]
+        out[i] = out[j]
+        out[j] = swap
+      end
     end
   end
   return out
@@ -1712,8 +1707,8 @@
 
 ::method restoreDocumentState
   expose node reviewer
-  use strict arg record, document = .nil
-  if document == .nil then document = self~byKey(record["DOC_KEY"])
+  use strict arg record
+  document = self~byKey(record["DOC_KEY"])
   if document == .nil then return .false
   ignore = self~bindDependencies(document)
   formName = document~formName

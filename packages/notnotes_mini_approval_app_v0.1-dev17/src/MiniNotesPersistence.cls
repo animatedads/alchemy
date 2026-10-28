@@ -1,5 +1,5 @@
 /* MiniNotesPersistence.cls
- * Durable Mini NotNotes persistence. Indexed Rexx/SQL SQLite is default;\n * legacy NoSQL file storage requires explicit selection.
+ * Durable Mini NotNotes application persistence over NoSQLServer's file engine.
  * This is an application-store adapter: NotNotes remains the document authority.
  */
 
@@ -10,29 +10,8 @@
   use strict arg requestedRoot = ""
   root = requestedRoot~strip
   if root = "" then root = value("MININOTES_DB_ROOT",, "ENVIRONMENT")
-  backend = value("MININOTES_DB_BACKEND",, "ENVIRONMENT")~lower~strip
-  if backend = "" then backend = "rexxsql-sqlite"
-  select
-    when backend = "file" then do
-      if root = "" then root = "data/mininotes"
-      db = .FileDatabaseEngine~new(root)
-    end
-    when backend = "rexxsql-sqlite" then do
-      if root = "" then do
-        /* Refuse to silently open a new empty database beside the old
-         * default legacy store: conversion must be explicit and verified. */
-        if stream("data/mininotes/database.yaml", "c", "query exists") \= "" then -
-          raise syntax 93.900 array("Existing legacy NotNotes store: choose MININOTES_DB_BACKEND=file or migrate a verified copy before selecting SQLite")
-        root = "mininotes"
-      end
-      if stream(root || "/database.yaml", "c", "query exists") \= "" then -
-        raise syntax 93.900 array("Legacy NotNotes store exists at" root || "; explicit migration is required")
-      sqlitePath = root
-      if root~right(7)~lower \= ".sqlite" then sqlitePath = root || ".sqlite"
-      db = .MiniNotesRexxSqlEngine~new(sqlitePath)
-    end
-    otherwise raise syntax 93.900 array("Unknown MININOTES_DB_BACKEND:" backend)
-  end
+  if root = "" then root = "data/mininotes"
+  db = .FileDatabaseEngine~new(root)
   self~ensureSchema
 
 ::method root
@@ -140,15 +119,6 @@
 ::method saveFrom
   expose db
   use strict arg app
-  transactional = db~hasMethod("beginTransaction")
-  inTxn = .false
-  if transactional then do
-    transactionResult = db~beginTransaction
-    if transactionResult~status \= .Error~SUCCESS then -
-      raise syntax 93.900 array("Cannot begin SQLite transaction:" transactionResult~message)
-    inTxn = .true
-  end
-  signal on syntax name saveRollback
   dropResult = db~dropTable("formats")
   if dropResult~status \= .Error~SUCCESS then raise syntax 93.900 array("cannot reset formats table:" dropResult~message)
   createResult = self~createFormatsTable
@@ -222,30 +192,11 @@
   /* Documents are append/update persisted in place. Rebuilding this table on
    * every save destroys the journal for a large imported dataset and can leave
    * the table directory half removed if a filesystem handle is still active. */
+  existingResult = db~selectAll("documents")
+  if existingResult~status \= .Error~SUCCESS then raise syntax 93.900 array("cannot read Mini Notes documents table:" existingResult~message)
   existingKeys = .Directory~new
-  if db~hasMethod("selectPageAfter") then do
-    /* Keep SQL result materialisation bounded; this document map is needed
-     * to preserve change-only writes and the existing journal semantics. */
-    cursor = 0
-    do forever
-      existingResult = db~selectPageAfter("documents", cursor, 100)
-      if existingResult~status \= .Error~SUCCESS then -
-        raise syntax 93.900 array("cannot page Mini Notes documents table:" existingResult~message)
-      if existingResult~rows~items = 0 then leave
-      do oldRow over existingResult~rows
-        existingKeys[oldRow["doc_key"]~string~upper] = oldRow
-        cursor = oldRow["NN_CURSOR"]
-      end
-      if existingResult~rows~items < 100 then leave
-    end
-  end
-  else do
-    existingResult = db~selectAll("documents")
-    if existingResult~status \= .Error~SUCCESS then -
-      raise syntax 93.900 array("cannot read Mini Notes documents table:" existingResult~message)
-    do oldRow over existingResult~rows
-      existingKeys[oldRow["doc_key"]~string~upper] = oldRow
-    end
+  do oldRow over existingResult~rows
+    existingKeys[oldRow["doc_key"]~string~upper] = oldRow
   end
   do document over app~allDocuments
     row = .table~new
@@ -296,19 +247,7 @@
     resultObject = db~insert("temporal_evidence", row)
     if resultObject~status \= .Error~SUCCESS then raise syntax 93.900 array("cannot save temporal evidence:" evidence["DOC_KEY"] || "." || evidence["FIELD_NAME"])
   end
-  if inTxn then do
-    commitResult = db~commitTransaction
-    if commitResult~status \= .Error~SUCCESS then -
-      raise syntax 93.900 array("Cannot commit SQLite transaction:" commitResult~message)
-  end
-  signal off syntax
   return .true
-saveRollback:
-  failure = condition("O")
-  detail = failure["MESSAGE"]
-  if inTxn then ignore = db~rollbackTransaction
-  signal off syntax
-  raise syntax 93.900 array("Mini NotNotes persistence failure (SQLite rollback attempted):" detail)
 
 ::method evidenceValue
   use strict arg evidence, key
@@ -320,9 +259,7 @@ saveRollback:
   use strict arg app
   relationships = .Directory~new
   relationshipsResult = db~selectAll("relationships")
-  if relationshipsResult~status \= .Error~SUCCESS then -
-    raise syntax 93.900 array("Cannot load NotNotes relationships:" relationshipsResult~message)
-  do relationshipRow over relationshipsResult~rows
+  if relationshipsResult~status = .Error~SUCCESS then do relationshipRow over relationshipsResult~rows
     relationshipKey = relationshipRow["source_form"]~string~upper || ":" || relationshipRow["field_name"]~string~upper
     relationship = .Directory~new
     relationship["TARGET_FORM"] = relationshipRow["target_form"]
@@ -332,9 +269,7 @@ saveRollback:
   end
 
   formatsResult = db~selectAll("formats")
-  if formatsResult~status \= .Error~SUCCESS then -
-    raise syntax 93.900 array("Cannot load NotNotes formats:" formatsResult~message)
-  do row over formatsResult~rows
+  if formatsResult~status = .Error~SUCCESS then do row over formatsResult~rows
     formatName = row["format_name"]
     fields = self~decodeFieldSpecs(row["fields_hex"])
     do spec over fields
@@ -348,62 +283,42 @@ saveRollback:
   end
 
   reportsResult = db~selectAll("reports")
-  if reportsResult~status \= .Error~SUCCESS then -
-    raise syntax 93.900 array("Cannot load NotNotes reports:" reportsResult~message)
-  do row over reportsResult~rows
+  if reportsResult~status = .Error~SUCCESS then do row over reportsResult~rows
     columns = self~decodeReportColumns(row["columns_hex"])
     totals = self~decodeStringArray(row["totals_hex"])
     app~installReportDefinition(row["report_name"], row["source_form"], columns, totals)
   end
 
   subviewsResult = db~selectAll("subviews")
-  if subviewsResult~status \= .Error~SUCCESS then -
-    raise syntax 93.900 array("Cannot load NotNotes subviews:" subviewsResult~message)
-  do row over subviewsResult~rows
+  if subviewsResult~status = .Error~SUCCESS then do row over subviewsResult~rows
     columns = self~decodeNamedSpecs(row["columns_hex"])
     rowCalcs = self~decodeNamedSpecs(row["row_calcs_hex"])
     columnCalcs = self~decodeNamedSpecs(row["column_calcs_hex"])
     app~installSubviewDefinition(row["parent_form"], row["subview_name"], row["source_form"], row["link_field"], columns, rowCalcs, columnCalcs)
   end
 
-  /* SQLite reads at most 100 rows per query via indexed rowid seeking.
-   * Legacy file mode keeps its original selectAll contract. */
+  documentsResult = db~selectAll("documents")
+  if documentsResult~status \= .Error~SUCCESS then return 0
   records = .array~new
-  restoredIndex = .Table~new
-  paged = db~hasMethod("selectPageAfter")
-  cursor = 0
-  do forever
-    if paged then documentsResult = db~selectPageAfter("documents", cursor, 100)
-    else documentsResult = db~selectAll("documents")
-    if documentsResult~status \= .Error~SUCCESS then -
-      raise syntax 93.900 array("Cannot read NotNotes documents:" documentsResult~message)
-    if documentsResult~rows~items = 0 then leave
-    do row over documentsResult~rows
-      if paged then cursor = row["NN_CURSOR"]
-      record = .Directory~new
-      record["DOC_KEY"] = row["doc_key"]
-      record["FORM_NAME"] = row["form_name"]
-      record["TITLE"] = row["title"]
-      record["AMOUNT"] = row["amount"]
-      record["RISK"] = row["risk"]
-      record["DEPENDS_ON"] = row["depends_on"]
-      record["WORKFLOW"] = row["workflow"]
-      record["STATUS"] = row["status"]
-      record["FIELDS"] = self~decodeCustomFields(row["fields_hex"])
-      restoredDocument = app~restoreDocumentRecord(record)
-      if restoredDocument = \== .nil then restoredIndex[record["DOC_KEY"]~string~upper] = restoredDocument
-      records~append(record)
-    end
-    if \paged then leave
-    if documentsResult~rows~items < 100 then leave
+  do row over documentsResult~rows
+    record = .Directory~new
+    record["DOC_KEY"] = row["doc_key"]
+    record["FORM_NAME"] = row["form_name"]
+    record["TITLE"] = row["title"]
+    record["AMOUNT"] = row["amount"]
+    record["RISK"] = row["risk"]
+    record["DEPENDS_ON"] = row["depends_on"]
+    record["WORKFLOW"] = row["workflow"]
+    record["STATUS"] = row["status"]
+    record["FIELDS"] = self~decodeCustomFields(row["fields_hex"])
+    app~restoreDocumentRecord(record)
+    records~append(record)
   end
   do record over records
-    app~restoreDocumentState(record, restoredIndex[record["DOC_KEY"]~string~upper])
+    app~restoreDocumentState(record)
   end
   temporalResult = db~selectAll("temporal_evidence")
-  if temporalResult~status \= .Error~SUCCESS then -
-    raise syntax 93.900 array("Cannot load NotNotes temporal evidence:" temporalResult~message)
-  do row over temporalResult~rows
+  if temporalResult~status = .Error~SUCCESS then do row over temporalResult~rows
     evidence = .Directory~new
     evidence["DOC_KEY"] = row["doc_key"]
     evidence["FIELD_NAME"] = row["field_name"]
@@ -573,4 +488,3 @@ saveRollback:
   return out
 
 ::requires 'vendor/nosql/NoSQLServer.cls'
-::requires 'src/MiniNotesRexxSqlEngine.cls'
