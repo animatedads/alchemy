@@ -6,6 +6,8 @@
  * Tables
  *   shape    one row per node: a segment shape, a word, or a START/END marker. canon is the identity.
  *   unit     one row per ingested code unit (or corpus word); sig is the duplicate filter.
+ *   alias    a unit skipped at ingest because its text is the same as a kept unit's, under its own
+ *            name: unit_id is the unit kept. SlamFold renames calls to an alias as calls to that unit.
  *   instance every occurrence of a node: unit, parent instance, position, line, repeat, role binding.
  *   edge     (from, to) adjacency in the source, with frequency: the PRIOR tier.
  *   weight   (from, to) recorded outcomes, trials and passes: the TESTED tier. The edge is the key, so
@@ -83,6 +85,7 @@
 ::method ensureSchema
   self~q('CREATE TABLE IF NOT EXISTS shape (id INTEGER PRIMARY KEY, kind TEXT NOT NULL, family TEXT NOT NULL, canon TEXT NOT NULL UNIQUE)')
   self~q('CREATE TABLE IF NOT EXISTS unit (id INTEGER PRIMARY KEY, path TEXT, kind TEXT, owner TEXT, selector TEXT, line INTEGER, sig TEXT NOT NULL UNIQUE)')
+  self~q('CREATE TABLE IF NOT EXISTS alias (unit_id INTEGER NOT NULL, path TEXT, owner TEXT, selector TEXT)')
   self~q('CREATE TABLE IF NOT EXISTS instance (id INTEGER PRIMARY KEY, unit_id INTEGER NOT NULL, parent_id INTEGER NOT NULL, seq INTEGER NOT NULL, shape_id INTEGER NOT NULL, line INTEGER, repeat INTEGER NOT NULL, binding TEXT, consts TEXT)')
   /* a store made before consts existed gets the column (empty for its old rows) */
   if self~scalar("SELECT count(*) AS n FROM pragma_table_info('instance') WHERE name = 'consts'") = 0 then self~q('ALTER TABLE instance ADD COLUMN consts TEXT')
@@ -138,7 +141,13 @@
 /* ---- ingest ---- */
 ::method unitInsert
   use strict arg path, kind, owner, selector, line, sig
-  if self~scalar('SELECT id AS id FROM unit WHERE sig = ?', self~binds(sig)) \== '' then return 0
+  kept = self~scalar('SELECT id AS id FROM unit WHERE sig = ?', self~binds(sig))
+  if kept \== '' then do
+    /* the same text again: kept as an alias, unless it is the kept unit itself read a second time */
+    same = self~scalar('SELECT count(*) AS n FROM unit WHERE id = ? AND path = ? AND owner = ? AND selector = ?', self~binds(kept, path, owner, selector))
+    if same = 0 then self~q('INSERT INTO alias (unit_id, path, owner, selector) VALUES (?, ?, ?, ?)', self~binds(kept, path, owner, selector))
+    return 0
+  end
   self~q('INSERT INTO unit (path, kind, owner, selector, line, sig) VALUES (?, ?, ?, ?, ?, ?)', self~binds(path, kind, owner, selector, line, sig))
   return self~scalar('SELECT last_insert_rowid() AS id')
 ::method instanceInsert

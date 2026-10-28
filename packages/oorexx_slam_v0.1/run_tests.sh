@@ -93,3 +93,12 @@ if [ -n "${LLVM_SRC:-}" ] && [ -n "${RX2CPP_ROOT:-}" ] && [ -d "${LLVM_SRC}/bolt
 else
   echo "SKIP BOLT: set LLVM_SRC and RX2CPP_ROOT to run it"
 fi
+echo "== runtime libraries: LLVM libc and libc++ (needs LIBC_SRC: an llvm-project tree holding libc/ and libcxx/; about 6 minutes)"
+if [ -n "${LIBC_SRC:-}" ] && [ -d "${LIBC_SRC}/libc" ] && [ -d "${LIBC_SRC}/libcxx" ]; then
+  rexx bin/slam.rex ingest "$WORK/libc.db" "$LIBC_SRC/libc/src" "$LIBC_SRC/libc/include"
+  rexx bin/slam.rex ingest "$WORK/libcxx.db" "$LIBC_SRC/libcxx/include" "$LIBC_SRC/libcxx/src"
+  rexx tests/llvm/next_node.rex "$WORK/libc_node.txt|LIBC=$WORK/libc.db>$WORK/libc.db@KIND,KIND+,SKELETON+|LIBCXX=$WORK/libcxx.db>$WORK/libcxx.db@KIND,KIND+,SKELETON+|LIBC_TO_LIBCXX=$WORK/libc.db>$WORK/libcxx.db@KIND,KIND+,SKELETON+|LIBCXX_TO_LIBC=$WORK/libcxx.db>$WORK/libc.db@KIND,KIND+,SKELETON+"
+  rexx tests/test_libc.rex "$WORK/libc.db|$WORK/libcxx.db|$WORK/libc_node.txt"
+else
+  echo "SKIP libc: set LIBC_SRC to run it"
+fi

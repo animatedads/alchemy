@@ -21,12 +21,13 @@ st~commit
 f = .SlamFold~new(st)
 f~load('%')
 p = f~run(1)
-call check p~makeString('L', ' ') == '1 1 0', 'folds per pass: 1, 1, 0 (areaB into areaA; then totalB into totalA, identical only once areaB is folded; then none)'
+call check f~aliases~items = 1, 'areaC is areaA''s text: skipped at ingest and kept as an alias of areaA (pass 0)'
+call check p~makeString('L', ' ') == '2 1 0', 'folds per pass: 2, 1, 0 (areaB into areaA, and totalC, which calls the alias areaC; then totalB, identical only once areaB is folded; then none)'
 names = .directory~new
 do child over f~foldedInto~allIndexes
   names[f~units[child]['SEL']] = f~units[f~foldedInto[child]]['SEL']
 end
-call check names['AREAB'] == 'AREAA' & names['TOTALB'] == 'TOTALA', 'areaB -> areaA, totalB -> totalA'
+call check names['AREAB'] == 'AREAA' & names['TOTALB'] == 'TOTALA' & names['TOTALC'] == 'TOTALA', 'areaB -> areaA, totalB -> totalA, totalC -> totalA'
 call check \names~hasIndex('NOTTHESAME'), 'notTheSame (y + 2, not y + 1) is not folded: literals are compared, as BOLT compares constants'
 st~close
 
@@ -35,13 +36,14 @@ f = .SlamFold~new(.SlamStore~new(boltDb))
 f~load('%')
 p = f~run(1)
 say '      folds per pass' p~makeString('L', ' ')
-call check p~makeString('L', ' ') == '392 8 0', 'BOLT''s source: 392 units fold in the first pass, 8 more in the second, then none (BOLT''s fixpoint, on BOLT)'
+call check p~makeString('L', ' ') == '398 8 0', 'BOLT''s source: 398 units fold in the first pass (392 in its C++, 6 in its C test inputs), 8 more in the second, then none (BOLT''s fixpoint, on BOLT)'
 g = .SlamFold~new(.SlamStore~new(boltDb)); g~load('%')
 second = 0
 do child over f~foldedInto~allIndexes
   if g~resolved(child) \== g~resolved(f~foldedInto[child]) then second += 1
 end
-call check second = 8, 'the 8 second-pass folds are the ones whose calls differ until their callees are folded'
+say "      folds that needed a rename (an alias, or a callee folded first):" second
+call check second = 10, "10 folds have calls that differ until a callee is renamed: the 8 second-pass folds, and 2 first-pass folds whose callee is an alias from ingest (got" second || ")"
 f5 = .SlamFold~new(.SlamStore~new(boltDb)); f5~load('%')
 call check f5~run(5)~makeString('L', ' ') == '0', 'at 5 segments or more, nothing in BOLT folds: the folds are small accessors'
 

@@ -14,7 +14,9 @@ files = st~scalar("SELECT count(DISTINCT path) AS n FROM unit WHERE path LIKE '%
 units = st~scalar('SELECT count(*) AS n FROM unit')
 nodes = st~scalar('SELECT count(DISTINCT shape_id) AS n FROM instance')
 say '      files' files ' units' units ' nodes' nodes
-call check files = 257 & units = 4060 & nodes = 18470, 'BOLT: 274 files read with none skipped; 257 hold code (4060 units, 18470 nodes), the rest are declarations only'
+cfiles = st~scalar("SELECT count(DISTINCT path) AS n FROM unit WHERE path LIKE '%.c'")
+say '      .c files' cfiles
+call check files = 256 & cfiles = 41 & units = 4156 & nodes = 18573, 'BOLT: 328 files read with none skipped (C is read as C++ too: 54 .c test inputs); 256 .cpp / .h and 41 .c hold code (4156 units, 18573 nodes), the rest are declarations only'
 st~close
 
 r = .directory~new

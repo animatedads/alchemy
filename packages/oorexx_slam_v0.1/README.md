@@ -25,10 +25,10 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamContract.cls` | Contracts: what a unit NEEDS (argument kinds, messages, guards) and GIVES (return kind), its effects, pure/standalone |
 | `src/SlamCompose.cls` | Lift standalone routines, check each link against contracts before running, run, keep every result as a lesson |
 | `src/SlamJava.cls` | Second language: Java lexer, unit splitter (methods, constructors, initializers by class), statement parser and shaper, into the same segment kinds |
-| `src/SlamCpp.cls` | Third language: C++ lexer (preprocessor lines dropped, raw strings), splitter (namespaces, `Class::m` outside its class, macro-made `NAME(X) { }`), shaper; Java's statement parser |
+| `src/SlamCpp.cls` | Third language: C++ lexer (preprocessor lines dropped, raw strings), splitter (namespaces, `Class::m` outside its class, macro-made `NAME(X) { }` and `NAME(type, name, (params)) { }`, `operator>>`, conversion operators, `f<T>`), shaper; Java's statement parser; C is read with it |
 | `src/SlamNetRexx.cls` | Fourth language: NetRexx, written as ooRexx tokens (`a.b` is `a~b`, `this` is `self`, `null` is `.nil`, `loop` is `DO <LOOP>`), read by the ooRexx parser and shaper |
-| `src/SlamLanguages.cls` | Which reader a file needs, by extension |
-| `src/SlamFold.cls` | Identical code folding over the store, ported from BOLT's IdenticalCodeFolding: congruent buckets, identical folds, repeated to a fixpoint |
+| `src/SlamLanguages.cls` | Which reader a file needs, by extension; a file with none is C++ when its first line says so (libc++'s `<vector>`) |
+| `src/SlamFold.cls` | Identical code folding over the store, ported from BOLT's IdenticalCodeFolding: congruent buckets, identical folds, repeated to a fixpoint; units skipped at ingest as the same text are aliases (pass 0) |
 | `src/SlamRules.cls` | Rules read the same way in ooRexx and Java (what a GUARD makes MUST hold); keyed readers found by behaviour; RULE nodes; predicting a rule's outcome |
 | `bin/slam.rex` | `ingest` (ooRexx and Java), `corpus`, `read`, `facts`, `about`, `ground`, `ask`, `stats`, `node`, `follows`, `into`, `record` |
 | `README_SLAM.md` | This README in SLAM's own words: SLAM reads it with no unknown word |
@@ -49,13 +49,14 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_java.rex` | The Java reader: lexer, a javac-compiled fixture, the Federation Bank ATM, one store with both languages, Task on Java nodes (33 checks) |
 | `tests/test_rules.rex` | One rule, two languages: the Federation Bank offline-cash rule in the ooRexx engine and the Java ATM, predicted then run (24 checks) |
 | `tests/rules/` | `OfflineRuleProbe.java` runs the real Java ATM, `offline_rule_probe.rex` the real ooRexx bank, on the cases SLAM chose |
-| `tests/test_cpp.rex` | C++: lexer, a g++-checked fixture, the interpreter's `BuiltinFunctions.cpp`, three languages in one store, BIF contracts from two C++ codebases predicted and run (24 checks) |
+| `tests/test_cpp.rex` | C++: lexer, a g++-checked fixture, the interpreter's `BuiltinFunctions.cpp`, three languages in one store, BIF contracts from two C++ codebases predicted and run (29 checks) |
 | `tests/bif/` | BIF contract reader for the interpreter and the rx2cpp native pack; case generator; a runner for each side |
 | `tests/test_netrexx.rex` | NetRexx: lexer, `sysutils.nrx`, QTIME in NetRexx and ooRexx run through a day, NetRexx -> Java translation edges predicted on held-out files (20 checks) |
 | `tests/netrexx/` | Runs NetRexx's `qtime.nrx` and ooRexx's `qtime.rex` at the same 206 times; translates every NetRexx example with NetRexxC and learns NetRexx -> Java translation edges (`translate_all.sh`, `translate_pairs.rex`) |
 | `tests/test_llvm.rex` | Compiler code: BOLT read whole; next-segment prediction on held-out BOLT and on rx2cpp's ooRexx (7 checks) |
 | `tests/llvm/next_node.rex` | Next-segment prediction at KIND, SKELETON and FAMILY level, with and without context, scored in SQL against a baseline |
-| `tests/test_fold.rex` | Identical code folding on a fixture, on BOLT's source and on rx2cpp (10 checks) |
+| `tests/test_fold.rex` | Identical code folding on a fixture, on BOLT's source and on rx2cpp (11 checks) |
+| `tests/test_libc.rex` | Runtime libraries: LLVM libc and libc++ read whole, predicted (each on itself and on the other) and folded (16 checks) |
 | `tests/show_rules.rex` | Read a unit's rules, find the other language's closest units, list what both have and what each lacks |
 | `run_tests.sh` | Builds Rexx/SQL and the foreign runtime, then runs everything |
 
@@ -375,7 +376,7 @@ Tom's next: "give it that cpp to learn advanced compiler techniques", then "bolt
 
 | | Files | Units | Nodes | Time |
 |---|---|---|---|---|
-| BOLT | 274 read, none skipped (257 hold code) | 4,060 | 18,470 | 82 s |
+| BOLT | 328 read, none skipped (256 `.cpp`/`.h` and 41 `.c` test inputs hold code) | 4,156 | 18,573 | 96 s |
 | Clang `lib` + `include` (1.9M lines) | 2,567 read, none skipped (2,091 hold code) | 77,497 | 271,179 (554,133 segments) | 1,730 s |
 
 "Learning a technique" is made measurable in two ways.
@@ -389,14 +390,14 @@ A `+` variant also conditions on the enclosing segment, which SLAM's `<START:ctx
 
 | Learned from → predicting | Level | SLAM | Baseline |
 |---|---|---|---|
-| BOLT → held-out BOLT (5,084 segments) | KIND / KIND+ | 52.4% / **58.4%** | 49.4% |
-| | SKELETON / SKELETON+ | 50.6% / **55.7%** | 49.4% |
-| | FAMILY / FAMILY+ | 5.0% / 5.8% | 1.7% |
+| BOLT → held-out BOLT (5,135 segments) | KIND / KIND+ | 52.2% / **58.4%** | 49.1% |
+| | SKELETON / SKELETON+ | 50.4% / **55.7%** | 49.1% |
+| | FAMILY / FAMILY+ | 5.1% / 5.9% | 1.7% |
 | Clang → held-out Clang (99,194 segments) | KIND / KIND+ | 47.0% / **60.7%** | 39.0% |
 | | SKELETON / SKELETON+ | 44.5% / **56.9%** | 39.0% |
 | | FAMILY / FAMILY+ | 9.3% / **10.2%** | 2.0% |
-| **Clang → BOLT** (the same held-out BOLT files) | KIND / KIND+ | 52.4% / **58.6%** | 49.4% |
-| | SKELETON+ | **56.1%** | 49.4% |
+| **Clang → BOLT** (the same held-out BOLT files) | KIND / KIND+ | 52.3% / **58.5%** | 49.1% |
+| | SKELETON+ | **56.1%** | 49.1% |
 | | FAMILY+ | 3.5% | 1.7% |
 | rx2cpp → held-out rx2cpp's ooRexx (3,397) | KIND+ | **81.6%** | 76.9% |
 | **BOLT's C++ → rx2cpp's ooRexx** | KIND / KIND+ | 76.6% / **80.2%** | 76.9% |
@@ -407,17 +408,18 @@ A `+` variant also conditions on the enclosing segment, which SLAM's `<START:ctx
 What this shows:
 - **First-order edges hardly beat "mostly a RUN comes next".** That is the limit this README already states.
 - **The enclosing segment helps,** in every case.
-- **Structure learned from one C++ compiler predicts another as well as that compiler's own files do.** Clang → BOLT scores 58.6% at KIND+ and 56.1% at SKELETON+; BOLT's own other files score 58.4% and 55.7%. Only FAMILY drops (3.5% against 5.8%), because names do not carry over.
+- **Structure learned from one C++ compiler predicts another as well as that compiler's own files do.** Clang → BOLT scores 58.5% at KIND+ and 56.1% at SKELETON+; BOLT's own other files score 58.4% and 55.7%. Only FAMILY drops (3.5% against 5.9%), because names do not carry over.
 - **The structure transfers across languages.** What SLAM learned from BOLT's or Clang's C++ beats the baseline on rx2cpp's ooRexx, a compiler in another language by other people: 80.2% and 80.4% against 76.9%. From BOLT it recovers 69% of the gain rx2cpp's own files give (111 of 161 segments over the baseline). Without context it does not transfer.
 - **Clang is the reproducible-by-hand part.** Its ingest takes 29 minutes, so `run_tests.sh` checks BOLT and rx2cpp. The Clang rows come from `rexx tests/llvm/next_node.rex` on a Clang store made with `rexx bin/slam.rex ingest`, as in the BOLT step. That store was made before literals were stored, so Clang was not folded.
 
-**2. A technique read from BOLT and applied: identical code folding** (`SlamFold.cls`). BOLT's `IdenticalCodeFolding.cpp` hashes functions ignoring symbol operands, buckets the congruent ones, folds the identical ones in each bucket (a call to a folded function counting as a call to its parent), and repeats until a pass folds nothing. SLAM already had the parts: FAMILY is "names abstracted", which is BOLT's congruence, and FINE is identity. Token-identical units are skipped at ingest, so what folds here is the same code under other names. Two things were needed to match BOLT:
+**2. A technique read from BOLT and applied: identical code folding** (`SlamFold.cls`). BOLT's `IdenticalCodeFolding.cpp` hashes functions ignoring symbol operands, buckets the congruent ones, folds the identical ones in each bucket (a call to a folded function counting as a call to its parent), and repeats until a pass folds nothing. SLAM already had the parts: FAMILY is "names abstracted", which is BOLT's congruence, and FINE is identity. Token-identical units are skipped at ingest, so what folds here is the same code under other names. Three things were needed to match BOLT:
 - **Literal values.** Shapes abstract them to `S` and `N`; BOLT compares constants exactly. Each instance now stores its literals (`instance.consts`, added to older stores when opened).
 - **Renames apply from the next pass,** so the passes do not depend on bucket order.
+- **The units skipped at ingest are kept as aliases** (table `alias`): the same text under another name, such as libc's `putc` and `fputc`. They are pass 0, so a call to `putc` counts as a call to `fputc` from the first pass on. A name that more than one body has is never renamed.
 
 Results:
-- **The fixture** folds 1, 1, 0: `areaB` → `areaA`, then `totalB` → `totalA`, which is identical only once `areaB` is folded. `y + 2` is not `y + 1`.
-- **On BOLT's own source**, 392 units fold in the first pass, 8 in the second (callers identical only after their callees fold), then none. All are small accessors (`successors`/`throwers`/`landing_pads` into `predecessors`). At 5 segments or more nothing folds: BOLT is well factored.
+- **The fixture** folds 2, 1, 0: `areaB` → `areaA` and `totalC` → `totalA` (it calls `areaC`, an alias of `areaA`), then `totalB` → `totalA`, which is identical only once `areaB` is folded. `y + 2` is not `y + 1`.
+- **On BOLT's own source**, 398 units fold in the first pass (392 in its C++, 6 in its C test inputs; 2 of them through an alias), 8 in the second (callers identical only after their callees fold), then none. All are small accessors (`successors`/`throwers`/`landing_pads` into `predecessors`). At 5 segments or more nothing folds: BOLT is well factored.
 - **On rx2cpp's ooRexx**, three pairs of 5 segments or more:
   - **`RxStmtIf~branch` = `RxStmtSelect~whenBody`:** the same "bare `DO` then a clause boundary is a block, else one statement" logic in two rule classes. Only the IF copy says why (`DO UNTIL` and `DO var=` are rules of their own), and a fix to one must be made by hand in the other.
   - **`BifDefinition~joined` = `RxCppEmitter~body`:** the same line-joining loop.
@@ -452,6 +454,39 @@ Proofs go into their own `proof` table, apart from `lesson`. A lesson says two w
 
 Maths' Python providers (SymPy, mpmath, FLINT) are not used. SLAM's store needs no Maths: only `SlamProof.cls` and the test that uses it require `Maths.cls`.
 
+### Runtime libraries: libc and libc++
+
+Tom's next upload: LLVM's `libc` (a C library written in C++) and `libc++` (the C++ standard library). SLAM read both whole. Two reader changes came first, each found by reading these trees:
+- **libc++'s headers have no extension** (`<vector>`, `<string>`). A file with none is read as C++ when its first line is an editor mode line `-*- C++ -*-`. `.c` and `.inc` are read as C++ too, the nearest reader.
+- **libc defines its functions through a macro,** `LLVM_LIBC_FUNCTION(int, fputc, (int c, ::FILE *stream)) { }`. That is now unit `fputc` of owner `LLVM_LIBC_FUNCTION`, with those parameters and that return type; before, all 1,660 were one name, and the function name sat in the parameter list. Also named properly now: `operator>>` (the lexer gives `> >`), conversion operators (`operator T`), and templated names (`__do_strtod<float>`, not `>`).
+
+| | Files | Units kept | Aliases | Segments | Time |
+|---|---|---|---|---|---|
+| libc `src` + `include` | 5,123 read, none skipped | 5,553 | 200 | 28,926 | 222 s |
+| libc++ `include` + `src` | 1,824 read, none skipped | 8,671 | 4,984 (mostly the `__cxx03` copy of the headers) | 33,795 | 128 s |
+
+**Prediction** (`tests/llvm/next_node.rex`, held-out fifth by path checksum):
+
+| Learned from → predicting | KIND | KIND+ | SKELETON+ | Baseline |
+|---|---|---|---|---|
+| libc → held-out libc (6,252 segments) | 44.5% | **61.4%** | 58.2% | 33.2% |
+| libc++ → held-out libc++ (6,509) | 41.5% | **57.4%** | 54.3% | 34.9% |
+| libc++ → libc | 44.0% | **58.1%** | 54.1% | 33.2% |
+| libc → libc++ | 39.5% | **53.5%** | 49.2% | 34.9% |
+| Clang → libc | 42.9% | **61.1%** | 55.1% | 33.2% |
+| Clang → libc++ | 37.4% | **54.6%** | 54.6% | 34.9% |
+
+- The gain over the baseline is the largest so far: 28 points on libc at KIND+. Library code is more regular than compiler code.
+- **Clang's compiler code predicts libc almost as well as libc's own files** (61.1% against 61.4%), as it did for BOLT. It predicts libc++ less well (54.6% against 57.4%): template-heavy header code is a style of its own.
+- The two libraries predict each other above the baseline, libc++ → libc better than the reverse.
+
+**Folding** (`SlamFold.cls`, as on BOLT):
+- **libc:** 276 folds, 1 more in the second pass, then none; 12 at 5 segments or more. Among them: `readv` = `writev`, `mlock` = `munlock`, `tcflush` = `tcflow`, `strtoimax` = `strtoumax` (the same wrapper with another system call or type), and Float80's `operator T` = Float128's (to an integer: FE_INVALID on inf or NaN, then saturate). 200 more were the same text and are aliases, such as `putc` = `fputc` and `getc` = `fgetc`.
+- **libc++:** 695 folds, 10 in the second pass, then none; 24 at 5 segments or more. The largest group: the `operator>>` that reads a random distribution's parameters is one body under seven names when there are two parameters (weibull, cauchy, gamma, fisher_f, uniform_real, extreme_value, uniform_int), and under three when there is one (chi_squared, student_t, exponential); binomial = negative_binomial and geometric = poisson as well. Also `__to_gcc_failure_order` = `__to_gcc_order`, and `__val_expr::min` = `max`.
+- **Congruent is not identical.** libc implements most math functions once per type, as one-line wrappers. They are congruent: `sqrtf`'s bucket holds 56 units (`sinf`, `logf`, `truncf`, ...), each one call on a float. None fold, because each calls a different function. BOLT would not fold them either.
+
+`run_tests.sh` runs this step when `LIBC_SRC` names an llvm-project tree holding `libc/` and `libcxx/` (about 6 minutes). The Clang rows are by hand, as above.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -461,10 +496,11 @@ SLAM gets credit for what it found:
 4. **Federation Bank's Java side describes the bank's old late-advice rule.** Found by reading the offline-cash rule in both languages. The ooRexx side was run, and the Java test double was read. Reported, not fixed: which side moves is Tom's call.
 5. **SLAM's own ooRexx reader misread `then` on a new line.** Found by reading NetRexx's QTIME beside ooRexx's. Fixed in `SlamClauses`.
 6. **Duplicate code in rx2cpp** (`RxStmtIf~branch` = `RxStmtSelect~whenBody`, `BifDefinition~joined` = `RxCppEmitter~body`, `RxNative~kind` = `RxNative~form`). Found by identical code folding ported from BOLT. Reported, not fixed: that is the rx2cpp lane's call.
+7. **SLAM's own C++ reader named every libc function `LLVM_LIBC_FUNCTION`, and libc++'s templated functions `>`.** Found by folding libc and libc++: the groups it printed had no names. Fixed in `SlamCppSplitter`.
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 219 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **24/24** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex` and **10/10** in `test_fold.rex`: **337 checks**. The C++, NetRexx and BOLT steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX` and `LLVM_SRC` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-28, with the PROVED tier, after merging the BOLT commit: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **320/320**. The BOLT steps (17 checks) skipped there: no llvm-project tree.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 219 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex` and **16/16** in `test_libc.rex`: **359 checks**. The C++, NetRexx, BOLT and libc steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC` and `LIBC_SRC` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-28, with the PROVED tier, after merging the BOLT commit: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **320/320**. The BOLT steps (17 checks) skipped there: no llvm-project tree.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 

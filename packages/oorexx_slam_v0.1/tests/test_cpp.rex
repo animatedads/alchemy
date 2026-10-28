@@ -36,6 +36,20 @@ tot = seg~segmentUnit(units[3])
 call check kindsOf(tot) == 'ENTRY RUN LOOP EXIT' & tot[3]~sequences[1][2][1]~kind == 'GUARD', 'template function: range-for LOOP with an if constexpr GUARD'
 pk = seg~segmentUnit(units[4])
 call check kindsOf(pk) == 'ENTRY GUARD SELECT RUN LOOP TRY' & pk[2]~fine == 'GUARD: if ( A1 == .nil ) ; return - N', 'nullptr is .nil; switch, do-while, try / catch (...)'
+src = 'LLVM_LIBC_FUNCTION(int, fputc, (int c, ::FILE *stream)) {' || '0a'x || '  if (c < 0) return EOF;' || '0a'x || '  return c;' || '0a'x || '}' || '0a'x ||,
+      'template <class C, class R> istream<C>& operator>>(istream<C>& is, dist<R>& x) { is >> x.a; return is; }'
+lu = .SlamCppSplitter~new~split(src)
+call check lu~items = 2, 'two units: a macro-made libc function and an operator>>'
+call check lu[1]~owner == 'LLVM_LIBC_FUNCTION' & lu[1]~selector == 'fputc' & lu[1]~returns == 'int', 'LLVM_LIBC_FUNCTION(int, fputc, (params)) is unit fputc of owner LLVM_LIBC_FUNCTION, returning int (got' lu[1]~owner || '~' || lu[1]~selector lu[1]~returns || ')'
+lf = seg~segmentUnit(lu[1])
+call check lf[1]~fine == 'ENTRY: int A1 , :: file * A2' & lf[2]~fine == 'GUARD: if ( A1 < N ) ; return L1', 'its parameters are read from the third argument: c is A1 (got' lf[2]~fine || ')'
+call check lu[2]~selector == 'operator>>', 'operator>> keeps both > (the lexer gives them as two tokens; got' lu[2]~selector || ')'
+src = 'template <> inline float __do_strtod<float>(const char* a, char** p) { return 0; }' || '0a'x ||,
+      'struct R { explicit operator int() const { return 1; } };' || '0a'x ||,
+      'template <class V> X<V>::operator valarray<typename X<V>::T>() const { return 2; }'
+names = ''
+do u over .SlamCppSplitter~new~split(src); names = names || u~owner || '~' || u~selector || ';'; end
+call check names == '~__do_strtod<float>;R~operator int;X~operator valarray<typename X<V>::T>;', 'template arguments and conversion operators name their units: __do_strtod<float>, operator int, X<V>::operator valarray<...> of owner X (got' names || ')'
 
 say '== 3. the ooRexx interpreter''s own source'
 bfFile = interpDir || '/expression/BuiltinFunctions.cpp'

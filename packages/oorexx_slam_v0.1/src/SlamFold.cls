@@ -16,7 +16,9 @@
  *               passes do not depend on the order buckets are visited in
  * Units whose text is the same were already skipped at ingest (SlamUnit~signature), so what folds here
  * is the same code under other names: other variable names, and, from the second pass on, calls to
- * functions that were themselves the same.
+ * functions that were themselves the same. The units skipped at ingest are the store's aliases (the
+ * same body under another name, as libc's putc and fputc): they count as pass 0, so a call to an alias
+ * is a call to the unit kept from the first pass on.
  * A called name is the word just before a "(" in a FINE shape. Names are matched by selector; a selector
  * that more than one unit has is never renamed (it would be a guess).
  *
@@ -32,17 +34,23 @@
 ::attribute foldedInto     /* unit id -> the unit id it was folded into */
 ::attribute renames        /* lower-case selector -> lower-case selector it now stands for */
 ::attribute passes         /* folds made in each pass */
+::attribute aliases        /* the units skipped at ingest as the same text: .array of (kept unit id, selector, owner, path) */
 ::method init
-  expose store units foldedInto renames passes
+  expose store units foldedInto renames passes aliases
   use strict arg store
   units = .directory~new
   foldedInto = .directory~new
   renames = .directory~new
   passes = .array~new
+  aliases = .array~new
 /* Load the units whose path matches the SQL LIKE pattern (all when omitted). */
 ::method load
-  expose store units
+  expose store units aliases
   use strict arg like = '%'
+  rows = store~q('SELECT a.unit_id AS uid, a.selector AS sel, a.owner AS owner, a.path AS path FROM alias a JOIN unit u ON u.id = a.unit_id WHERE u.path LIKE ? AND a.path LIKE ?', store~binds(like, like))~rows
+  do r over rows
+    aliases~append(.array~of(r['UID'], r['SEL'], r['OWNER'], r['PATH']))
+  end
   rows = store~q('SELECT id AS id, selector AS sel, owner AS owner, path AS path FROM unit WHERE path LIKE ?', store~binds(like))~rows
   do r over rows
     d = .directory~new
@@ -103,14 +111,27 @@
   return self~treeText(out, d['PARENTS'])
 /* Fold to a fixpoint. minSize: the fewest segments a unit needs to be folded (1 folds everything). */
 ::method run
-  expose units foldedInto renames passes
+  expose units foldedInto renames passes aliases
   use strict arg minSize = 1
-  /* how many units have each selector: only a selector that one unit has is ever renamed */
+  /* how many units (aliases too) have each selector: only a selector that one unit has is ever renamed */
   selCount = .directory~new
-  do id over units~allIndexes
-    s = units[id]['SEL']~lower
+  names = .array~new
+  do id over units~allIndexes; names~append(units[id]['SEL']~lower); end
+  /* an alias under its kept unit's own name (libc++'s __cxx03 copies) is the same code: not a second unit */
+  do a over aliases
+    if units~hasIndex(a[1]) then if a[2]~lower == units[a[1]]['SEL']~lower then iterate
+    names~append(a[2]~lower)
+  end
+  do s over names
     if selCount~hasIndex(s) then selCount[s] = selCount[s] + 1
     else selCount[s] = 1
+  end
+  /* pass 0, made at ingest: a call to an alias is a call to the unit kept */
+  do a over aliases
+    if \units~hasIndex(a[1]) then iterate
+    as = a[2]~lower
+    ks = units[a[1]]['SEL']~lower
+    if as \== ks then if selCount[as] == 1 then renames[as] = ks
   end
   /* 1. congruent buckets */
   buckets = .directory~new

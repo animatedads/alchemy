@@ -338,11 +338,46 @@
   nameTok = header[open - 1]
   name = nameTok~text
   at = open - 1
-  /* operator==, operator() */
+  /* operator==, operator(), operator>> (the lexer gives > > as two tokens) */
   if nameTok~kind == 'OP' then do
-    if open >= 3 then if header[open - 2]~text == 'operator' then do
-      name = 'operator' || nameTok~text
-      at = open - 2
+    k = open - 1
+    sym = ''
+    do while k >= 2
+      if header[k]~kind \== 'OP' then leave
+      sym = header[k]~text || sym
+      k -= 1
+    end
+    if k >= 1 then if header[k]~text == 'operator' then do
+      name = 'operator' || sym
+      at = k
+    end
+  end
+  /* a name with template arguments, __do_strtod<float>(: the name is the whole of it, not ">" */
+  if name == '>' then do
+    depth = 0
+    k = open - 1
+    do while k >= 2
+      if header[k]~text == '>' then depth += 1
+      if header[k]~text == '<' then depth -= 1
+      if depth == 0 then leave
+      k -= 1
+    end
+    if depth == 0 then if header[k - 1]~kind == 'IDENT' then do
+      name = self~joinText(header, k - 1, open - 1)
+      at = k - 1
+    end
+  end
+  /* a conversion operator, operator T( or operator ranges::result<I>(: named "operator T" */
+  if name~left(8) \== 'operator' then do
+    k = at - 1
+    do while k >= 1
+      if header[k]~text == 'operator' then leave
+      if header[k]~text \== '::' then if header[k]~kind \== 'IDENT' then leave
+      k -= 1
+    end
+    if k >= 1 then if header[k]~text == 'operator' then do
+      name = 'operator' self~joinText(header, k + 1, open - 1)
+      at = k
     end
   end
   /* ~Destructor */
@@ -351,7 +386,21 @@
     at -= 1
   end
   unitOwner = owner
-  if at >= 3 then if header[at - 1]~text == '::' then unitOwner = header[at - 2]~text
+  if at >= 3 then if header[at - 1]~text == '::' then do
+    unitOwner = header[at - 2]~text
+    /* X<V>::name: the owner is X */
+    if unitOwner == '>' then do
+      depth = 0
+      k = at - 2
+      do while k >= 2
+        if header[k]~text == '>' then depth += 1
+        if header[k]~text == '<' then depth -= 1
+        if depth == 0 then leave
+        k -= 1
+      end
+      if depth == 0 then if header[k - 1]~kind == 'IDENT' then unitOwner = header[k - 1]~text
+    end
+  end
   kind = 'FUNCTION'
   if unitOwner \== '' then kind = 'METHOD'
   if name == unitOwner then kind = 'CTOR'
@@ -375,8 +424,20 @@
     name = header[open + 1]~text
     kind = 'FUNCTION'
   end
+  /* a macro-made definition NAME(type, name, (params)) { }, as LLVM libc's LLVM_LIBC_FUNCTION:
+     unit name of owner NAME, with those parameters and that return type */
+  macroArgs = .nil
+  if \isMacro then if close1 > 0 then if name == name~upper then if name~verify(xrange('A', 'Z') || '_0123456789') == 0 then macroArgs = self~macroArgs(header, open, close1)
+  if macroArgs \== .nil then do
+    unitOwner = name
+    name = macroArgs[2]
+    kind = 'FUNCTION'
+  end
   u = .SlamJavaUnit~new(kind, unitOwner, name, nameTok~line)
-  if \isMacro then if close1 > 0 then do
+  if macroArgs \== .nil then do
+    do t over macroArgs[3]; u~params~append(t); end
+  end
+  else if \isMacro then if close1 > 0 then do
     do k = open + 1 to close1 - 1
       u~params~append(header[k])
     end
@@ -389,10 +450,55 @@
     ret~append(t~text)
   end
   u~returns = ret~makeString('L', ' ')
+  if macroArgs \== .nil then u~returns = macroArgs[1]
   do k = j + 1 to close - 1
     u~tokens~append(toks[k])
   end
   return u
+/* Header tokens from .. to as text, a blank only between two words (X<typename Y::T>). */
+::method joinText
+  use strict arg header, first, last
+  out = ''
+  prevWord = .false
+  do m = first to last
+    t = header[m]
+    word = (t~kind == 'IDENT' | t~kind == 'KEYWORD')
+    if word then if prevWord then out = out || ' '
+    out = out || t~text
+    prevWord = word
+  end
+  return out
+/* The arguments of NAME(type, name, (params)): .array~of(type text, name, param tokens), else .nil. */
+::method macroArgs
+  use strict arg header, open, close1
+  args = .array~new
+  cur = .array~new
+  depth = 0
+  do k = open + 1 to close1 - 1
+    t = header[k]
+    if t~text == '(' | t~text == '<' then depth += 1
+    if t~text == ')' | t~text == '>' then depth -= 1
+    if depth == 0 then if t~text == ',' then do
+      args~append(cur)
+      cur = .array~new
+      iterate
+    end
+    cur~append(t)
+  end
+  args~append(cur)
+  if args~items \= 3 then return .nil
+  if args[2]~items \= 1 then return .nil
+  if args[2][1]~kind \== 'IDENT' then return .nil
+  p = args[3]
+  if p~items < 2 then return .nil
+  if p[1]~text \== '(' then return .nil
+  if p[p~items]~text \== ')' then return .nil
+  inner = .array~new
+  do k = 2 to p~items - 1; inner~append(p[k]); end
+  if inner~items == 1 then if inner[1]~text == 'void' then inner = .array~new
+  type = .array~new
+  do t over args[1]; type~append(t~text); end
+  return .array~of(type~makeString('L', ' '), args[2][1]~text, inner)
 
 /* ------------------------------------------------------------------------------------------------ */
 ::class SlamCppShaper public subclass SlamJavaShaper

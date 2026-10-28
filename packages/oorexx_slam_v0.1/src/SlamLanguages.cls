@@ -10,11 +10,20 @@
 ::class SlamLanguages public
 ::method of class
   use strict arg file
+  base = file~substr(file~lastPos('/') + 1)
+  if base~pos('.') == 0 then do
+    /* no extension: a file that says it is C++ on its first line (libc++'s <vector>, <string>: an
+       editor mode line '-*- C++ -*-') is read as C++; anything else is not read */
+    first = linein(file)
+    call stream file, 'C', 'CLOSE'
+    if first~pos('-*- C++ -*-') > 0 then return 'CPP'
+    return ''
+  end
   ext = file~substr(file~lastPos('.') + 1)~lower
   if wordpos(ext, 'cls rex rexx orx') > 0 then return 'REXX'
   if ext == 'nrx' then return 'NETREXX'
   if ext == 'java' then return 'JAVA'
-  if wordpos(ext, 'cpp cc cxx hpp hh hxx h') > 0 then return 'CPP'
+  if wordpos(ext, 'cpp cc cxx hpp hh hxx h c inc') > 0 then return 'CPP'          /* C, too: the nearest reader */
   return ''
 ::method splitter class
   use strict arg lang
