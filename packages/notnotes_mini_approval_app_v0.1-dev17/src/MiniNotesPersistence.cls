@@ -320,7 +320,9 @@ saveRollback:
   use strict arg app
   relationships = .Directory~new
   relationshipsResult = db~selectAll("relationships")
-  if relationshipsResult~status = .Error~SUCCESS then do relationshipRow over relationshipsResult~rows
+  if relationshipsResult~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot load NotNotes relationships:" relationshipsResult~message)
+  do relationshipRow over relationshipsResult~rows
     relationshipKey = relationshipRow["source_form"]~string~upper || ":" || relationshipRow["field_name"]~string~upper
     relationship = .Directory~new
     relationship["TARGET_FORM"] = relationshipRow["target_form"]
@@ -330,7 +332,9 @@ saveRollback:
   end
 
   formatsResult = db~selectAll("formats")
-  if formatsResult~status = .Error~SUCCESS then do row over formatsResult~rows
+  if formatsResult~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot load NotNotes formats:" formatsResult~message)
+  do row over formatsResult~rows
     formatName = row["format_name"]
     fields = self~decodeFieldSpecs(row["fields_hex"])
     do spec over fields
@@ -344,14 +348,18 @@ saveRollback:
   end
 
   reportsResult = db~selectAll("reports")
-  if reportsResult~status = .Error~SUCCESS then do row over reportsResult~rows
+  if reportsResult~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot load NotNotes reports:" reportsResult~message)
+  do row over reportsResult~rows
     columns = self~decodeReportColumns(row["columns_hex"])
     totals = self~decodeStringArray(row["totals_hex"])
     app~installReportDefinition(row["report_name"], row["source_form"], columns, totals)
   end
 
   subviewsResult = db~selectAll("subviews")
-  if subviewsResult~status = .Error~SUCCESS then do row over subviewsResult~rows
+  if subviewsResult~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot load NotNotes subviews:" subviewsResult~message)
+  do row over subviewsResult~rows
     columns = self~decodeNamedSpecs(row["columns_hex"])
     rowCalcs = self~decodeNamedSpecs(row["row_calcs_hex"])
     columnCalcs = self~decodeNamedSpecs(row["column_calcs_hex"])
@@ -393,7 +401,9 @@ saveRollback:
     app~restoreDocumentState(record, restoredIndex[record["DOC_KEY"]~string~upper])
   end
   temporalResult = db~selectAll("temporal_evidence")
-  if temporalResult~status = .Error~SUCCESS then do row over temporalResult~rows
+  if temporalResult~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot load NotNotes temporal evidence:" temporalResult~message)
+  do row over temporalResult~rows
     evidence = .Directory~new
     evidence["DOC_KEY"] = row["doc_key"]
     evidence["FIELD_NAME"] = row["field_name"]
