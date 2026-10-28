@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "arch.audio-spectral-integrity.null-controls",
+  "version": "0.3",
+  "sphere": "audio-spectral-integrity",
+  "title": "Known-source oracle, negative controls and blinded perceptual trial",
+  "summary": "A 4-arm experiment retains individual source A, a notch-filtered A, an ordinary A+B overlap, and a deliberate A-even/B-odd weave. Oracle projection requires exact reference A and B and must not be applied as if those references exist for an unknown field clip.",
+  "authority": "research-method",
+  "invariants": [
+    "Two exact and independent source reference PCMs are required by the oracle, with matching alignment, rate and channel geometry.",
+    "Least-squares coefficients on two parity groups describe only fit to provided known templates, not human speaker number or source provenance.",
+    "A normal overlap, an engineered interleave, and a filtered single source all undergo the identical listening-view pipeline.",
+    "Clip identifiers must not encode condition names; the unblinding key is stored separately with restricted permissions and is never published.",
+    "Free transcription and confidence are collected before targeted phrases or condition labels are revealed.",
+    "A synthetic positive cannot prove field manipulation; sensitivity, specificity, codec, hearing, language and device effects need independent testing."
+  ],
+  "procedure": [
+    "Prepare two independently sourced consented voice exemplars, aligned in sample/time without chopping words.",
+    "Produce the 4 controlled conditions; keep a hashed, private mapping from anonymous trial codes to conditions.",
+    "Level-match gross RMS with headroom, log peak limiting, present anonymous clips and record unprompted transcriptions.",
+    "After locking responses, unblind and compare exact-source oracle projection, null confusion and inter-listener disagreement.",
+    "Repeat with natural captured overlapping voices, loudspeaker/room playback, noise, codec and unknown-source hold-out data."
+  ],
+  "provenance": [
+    {
+      "artifact": "audio_spectral_integrity_v0.3",
+      "member": "src/blind_trial.py",
+      "claim": "Executable method reference with synthetic tests; no source/media attribution."
+    }
+  ]
+}

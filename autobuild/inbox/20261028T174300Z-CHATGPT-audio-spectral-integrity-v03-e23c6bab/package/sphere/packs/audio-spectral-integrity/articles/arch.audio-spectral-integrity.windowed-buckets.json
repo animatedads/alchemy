@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "arch.audio-spectral-integrity.windowed-buckets",
+  "version": "0.3",
+  "sphere": "audio-spectral-integrity",
+  "title": "Windowed STFT buckets and FFT-boundary artefacts",
+  "summary": "A 4096-sample default windowed Fourier transform with quarter-hop overlap applies complementary odd/even masks locally, avoiding full-clip circular ringing. Its output has distinct edge and Nyquist semantics from the v0.2 whole-clip FFT method.",
+  "authority": "research-method",
+  "invariants": [
+    "Preserve input channel identity, source sample count and sample rate; never silently downmix.",
+    "Keep full-clip FFT and local WOLA methods independently selectable and logged, including frame size, hop, origin and ceiling.",
+    "For a full-Nyquist ceiling include its terminal frequency bin; otherwise frequency ceilings are half-open.",
+    "Odd and even WOLA outputs sum to the WOLA-bandlimited reference, not necessarily the unfiltered source.",
+    "The same utterance may yield different filtered listening experiences without requiring multiple digital sources."
+  ],
+  "procedure": [
+    "Window the padded input with periodic sqrt-Hann; FFT by channel and apply binary complementary parity masks.",
+    "Inverse FFT, weight with the same synthesis window, overlap-add with window-square normalization and trim the exact source interval.",
+    "Compare full-clip FFT and windowed versions on identical synthetic impulse and voiced controls; report ringing and leakage.",
+    "Vary frame sizes/phase origins, keep originals and all parameters immutable."
+  ],
+  "provenance": [
+    {
+      "artifact": "audio_spectral_integrity_v0.3",
+      "member": "src/spectral_integrity.py",
+      "claim": "Executable method reference with synthetic tests; no source/media attribution."
+    }
+  ]
+}
