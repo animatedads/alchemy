@@ -49,9 +49,13 @@ MININOTES_DB_ROOT="$TEST_ROOT/reporting" ./tests/test_report_designer_persistenc
 
 run_rexx batch tests/test_batch_persistence.rex
 
+# Exercise actual MiniNotesApp~sortByKey on 10,002 objects, avoiding SQL.
+"$REXX_BIN" tests/test_sort_regression.rex
+
 # SQL adapter contract test with a fake function package, never in product path.
 REXX_PATH="$HERE/tests/fixtures:$REXX_PATH" "$REXX_BIN" tests/test_rexxsql_adapter_mock.rex
 # Opt-in real native SQL test; requires the existing built librexxsql.so.
 if [[ "${MININOTES_TEST_SQLITE_LIVE:-0}" == "1" ]]; then
   MININOTES_DB_BACKEND=rexxsql-sqlite "$REXX_BIN" tests/test_rexxsql_adapter_live.rex
+  "$HERE/tests/test_rexxsql_migration.sh"
 fi
