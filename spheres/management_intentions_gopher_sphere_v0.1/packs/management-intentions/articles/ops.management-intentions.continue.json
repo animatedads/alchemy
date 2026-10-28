@@ -1,15 +1,15 @@
 {
   "kind": "article",
   "id": "ops.management-intentions.continue",
-  "version": "0.3",
+  "version": "0.4",
   "sphere": "management-intentions",
   "title": "Continuation and missing work",
-  "summary": "Continue by binding more real domain authorities to the existing discovery/relationship/instrumentation seams, not by expanding Management into a domain implementation. For cloud work, keep Alchemy Cloud Control authoritative and evolve the ooRexx console as the consistent caller-facing facade.",
+  "summary": "Continue by accepting the new Cloud Control/Cloud Console dev3 execution seam under r13196, then add generic firewall source-set reconciliation and bounded live qualification without moving provider semantics into Management.",
   "authority": "project-continuity",
   "invariants": [
     "Instrumentation Intentions dev2 / Management dev9 are the current executable read-side baseline for Mesh dev8 events, correlations, relationships and freshness.",
     "Do not widen Management with provider-specific vocabularies when a specialist object/service can publish its own intention surface.",
-    "ALCHEMY_CLOUD_CONTROL / alchemy.cloud-control/0.1 remains authority for cloud RESOURCE/NODE operations; oorexx_cloud_console_v0.1-dev2 is an interaction facade, not a competing cloud authority.",
+    "ALCHEMY_CLOUD_CONTROL / alchemy.cloud-control/0.1 remains authority for cloud RESOURCE/NODE operations; ooRexx Cloud Console dev3 now has an executable mutation delegation seam but is not yet r13196-accepted.",
     "Bring real machine/service/cloud/GPU/LLM/RexxOS intention providers onto the same dynamic advertisement seam.",
     "Use current Network Transport Intentions dev3 and current transport providers rather than the older dev8 qualification vendor slices when building a new network increment.",
     "Preserve cross-plane contradictory evidence rather than collapsing it into one UP/DOWN boolean.",
@@ -27,7 +27,9 @@
     "Advertise the specialist transiently from related authoritative objects.",
     "Qualify fresh discovery by changing authoritative state and repeating identical natural language.",
     "Record provenance and update this sphere when the architectural contract changes.",
-    "Rebase the ooRexx Cloud Console backend onto alchemy.cloud-control/0.1 without changing its common human/code/Codex vocabulary or leaking provider syntax into Management.",
+    "Rerun the ooRexx Cloud Console dev3 extended suite under exact ooRexx 5.3.0 r13196; dev2 remains accepted until that gate passes.",
+    "Qualify the Alchemy Cloud Control dev3 RESOURCE candidate as a consumer-visible replacement before rebasing Development Floor from its pinned dev2 package.",
+    "After both candidates are accepted, run bounded read-only and reversible live operations through the Cloud Control backend; retain provider command/output evidence separately.",
     "Recover the later Library multi-peer firewall behaviour as generic authority-backed firewall source-set add/replace/remove reconciliation; keep XTP peer/topology semantics in XTP.",
     "Re-run the console fake-provider suite under exact ooRexx 5.3.0 r13196, then add bounded live read-only qualification before any live mutation acceptance.",
     "Put any Wire UI cloud presentation over the same CloudApp/Cloud Control seam rather than creating another provider implementation.",
@@ -61,6 +63,14 @@
       "artifact": "oorexx_cloud_console_v0.1-dev2.zip",
       "sha256": "9c93d6c4e0c9ac7a6964cdb69770236c8ced1c22cd14f90408cb71c31e96086f",
       "claim": "Published qualified caller-facing console baseline; future authority-backend integration must preserve this qualification as historical evidence rather than silently rewriting it."
+    },
+    {
+      "artifact": "alchemy_cloud_control_v0.1-dev3 candidate",
+      "claim": "Five-provider normalized RESOURCE transport implemented and offline fixture-qualified on 2026-10-28; no live provider mutation acceptance."
+    },
+    {
+      "artifact": "oorexx_cloud_console_v0.1-dev3 candidate",
+      "claim": "Cloud Control mutation backend implemented; r13196 rerun pending, so not promoted over dev2."
     }
   ]
 }
