@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "ops.customer-service.asr-evidence",
+  "version": "0.1",
+  "sphere": "customer-service-agents",
+  "title": "Hash-pinned Google/Azure word-evidence import",
+  "summary": "The legacy recovery reviewer requires source-video and prepared-audio SHA-256 bindings absent from the earlier ASR normalizers. Dev2 imports independently acquired Google Speech-to-Text or Azure batch JSON against exactly one planned clip, verifies timestamp and media bounds, and emits customer.agent.transcript.words/0.1 with unverified status.",
+  "authority": "implementation-contract",
+  "invariants": [
+    "Google batch result URIs must resolve unambiguously to the selected clip; do not assign a single unrelated entry as a fallback.",
+    "Azure tick offsets are integer 100 ns units; string duration guesses and Google missing offsets fail closed.",
+    "The selected work definition must contain exact 64-character lowercase SHA-256 for video and audio, plus valid source timing.",
+    "Word start/end offsets remain provider estimates relative to extracted audio start, not sample-exact phoneme truth.",
+    "Record SHA-256 of original provider-response bytes. This protects reproducibility, but it does not authenticate the provider.",
+    "Reject empty, reversed, out-of-range or nonmonotonic word intervals and invalid confidence.",
+    "Output status is RECOGNIZED_UNVERIFIED and asset_authority_granted=false; no customer data disclosure, voice-match or facial identity inference.",
+    "No provider requests, credentials, media upload or mesh jobs are executed by the importer.",
+    "Web/LDAP/HTTPS permissions and Storage Fabric, Migratable Job and Node Allocation remain separate authoritative components."
+  ],
+  "procedure": [
+    "Build the 83 readback definitions from the 227 completed A02 preparations.",
+    "Associate one independently acquired Google/Azure response with the exact planned clip and pinned video/audio hashes.",
+    "Run src/asr_evidence.py with --plan, --clip, --provider, --response, --output (and --source-uri for exact cloud mapping when required).",
+    "Pass the resulting words JSON to legacy_recovery.py review. Audit selected word and neighbouring speech and confirm source video PTS before human approval.",
+    "Do not imply video production or mesh node deployment from 26/26 local regression tests."
+  ],
+  "provenance": [
+    {
+      "artifact": "customer_service_readback_legacy_v0.1-dev2.zip",
+      "sha256": "dd35349a5ca522797b94652797c00200c086c86ef84e85c5d16892d7de4246c0",
+      "member": "src/asr_evidence.py",
+      "claim": "Exact standalone source and importer regression tests."
+    }
+  ]
+}
