@@ -1,5 +1,12 @@
 # Alchemy NotNotes — Gopher sphere v0.1
 
+## 29 October 2026 — dev18 current-main integration candidate
+
+The current NotNotes dev18 application candidate from draft PR #77 has been transplanted onto current main rather than merging the stacked historical branch. This makes the already-owned shared DatabaseBackendSelector / RexxSQL provider source available in the exact checkout without vendoring or forking database-owner code.
+
+The integration candidate also carries the proven persisted-field compatibility repair and refreshes dependency provenance to exact Library Single Time Service v0.10 and ConnectSelector dev8. The consumed SingleTime/TZif and base ConnectSelector source files are byte-identical to the older vendored subset; ooRexx r13196 DIRECT DATE/DATETIME regression passes. Remote authenticated routing and live SQLite/WAL remain separate release gates.
+
+
 ## 29 October 2026 — dev17 compatibility repair and current temporal seam
 
 A Project Alchemy v0.5 dogfood reload exposed a persistence compatibility defect in the GitHub dev17 line: legacy field specifications contain a tenth empty reserved slot, while the decoder treated the residual delimiter as hexadecimal ambiguity-policy data and called `x2c(':')`. The repair checkpoint `packages/notnotes_mini_approval_app_v0.1-dev17-compat1` uses bounded slot parsing, accepts the known empty legacy tail, rejects unknown non-empty trailing data, and retains current nine-slot DATE/DATETIME metadata.
