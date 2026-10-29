@@ -1,7 +1,11 @@
-ooRexx Source / Code / Class Editor v0.1-dev5 qualification
-Target runtime: ooRexx 5.3.0 r13196 (user-supplied debug distribution)
+ooRexx Source / Code / Class Editor qualification
+Target runtime: ooRexx 5.3.0 r13196
 
-Core suite:
+Accepted delivered baseline
+===========================
+v0.1-dev5 remains the last fully qualified delivered baseline.
+
+Dev5 suite:
   PASS language cpp
   PASS class start
   PASS function start
@@ -28,24 +32,41 @@ Core suite:
   PASS completion tree file
   PASS ooRexx source editor dev5
 
-Dev5 qualification:
-  - SourceCompletionCandidate carries label, kind, detail, path, line and insertion text.
-  - SourceCompletionProvider completes document symbols and source-tree files as reusable ooRexx objects.
-  - completion order is deterministic and independent of Directory iteration.
-  - CLI/UI/MCP may project the same completion objects; terminal text is not the authority.
-  - Semantic Source Store / Development Desk remains authority for semantic object creation and materialisation.
-  - SourceDocument remains authority only for conventional materialised-file inspection/editing.
+Dev6 candidate
+==============
+SourceDocument~save now consumes oorexx.atomic-file/0.1 dev1:
+- stale-generation reread/fence remains before publication;
+- optional .newshell-bak is published through AtomicFile;
+- live candidate is published through AtomicFile;
+- FULL durability is requested;
+- lastBackupResult / lastPublicationResult expose evidence;
+- backup + live publication are NOT claimed as one atomic transaction;
+- Atomic File dev1 does not provide race-free expected-generation CAS.
 
-Platform alignment:
-  - recursive traversal uses RexxUtil SysFileTree.
-  - regex uses ooRexx RegularExpression.
-  - no Python implementation files.
-  - no external find/grep subprocess in source-tree search.
-  - save retains exact-generation fencing and backup but makes no crash-durable atomicity claim; Atomic File remains the intended publication authority.
+Rasen Falcon qualification request REQ-00000589 returned NOT_RUN because the worker did not have a checkout matching the requested commits plus the Atomic File native/source closure. This is not a failure result and not a PASS. Dev6 remains unqualified.
 
-Dogfood:
-  - completion classes, CLI commands, tests, README, manifest and qualification were edited through SourceDocument generation-checked saves.
-  - final source was self-searched, self-completed and validated under the supplied r13196 runtime.
+Dev7 candidate
+==============
+Dev7 adds SourceEditorCliSearchArgs and changes find/grep CLI parsing so multi-word expressions survive the flattened ooRexx command tail.
 
-Known CLI limit:
-  the ooRexx launcher flattens the script command tail; the current small CLI parser cannot faithfully recover shell grouping for arbitrary multi-word patterns. The object API has no such restriction.
+Regression assertions added:
+- cli multiword expression
+- cli explicit mode
+- cli explicit case
+- cli legacy expression
+- cli legacy mode
+- cli legacy case
+
+Canonical examples:
+  code-editor find FILE words with spaces --mode code --case insensitive
+  code-editor grep FILE regular expression here --mode text --case sensitive
+
+The historical single-token positional form remains compatible.
+
+Qualification status
+====================
+CURRENT GIT CANDIDATE: dev7
+ACCEPTED DELIVERED BASELINE: dev5
+FRESH r13196 + Atomic File native-provider execution: PENDING
+
+Do not promote/package dev7 as accepted until the full source-editor suite passes with oorexx_atomic_file_v0.1-dev1 resolvable and the AtomicFile publication assertions execute successfully.
