@@ -5,21 +5,21 @@
   "sphere": "ldap-identity",
   "title": "Current LDAP Identity continuation baseline",
   "baseline": {
-    "package": "oorexx_ldap_identity_v0.1-dev22.zip",
-    "sha256": "03578dbf59d5535ba749e1ec0c73fcd61d33bee8b791139cb5184f3d77ee0481",
-    "implementation_line": "0.1-dev22",
-    "version_note": "dev22 is the Rasen Falcon LDAP activation rehearsal increment over dev21; production remains NOT_INSTALLED."
+    "package": "oorexx_ldap_identity_v0.1-dev23.zip",
+    "sha256": "8f5b7b76c2297e3c63bccc868cb3894ae6a1e34391420a77dfc2f0cdab01abdb",
+    "implementation_line": "0.1-dev23",
+    "version_note": "dev23 unifies the activation/revocation rehearsal and the owned persistent LDAPS/systemd deployment boundary."
   },
   "current_work": [
-    "One activation rehearsal now joins native LDAP bind/search authority, NoSQL restart recovery, STARTTLS/LDAPS and Access Permissions.",
-    "Human, CHATGPT and CLAUDE principals are qualified as separate authorities with no implicit cross-principal mail or website rights.",
-    "Revoked principals fail the service-admission gate before ACL-authorised actions.",
-    "Authentication, signature verification and EMAIL_SEND remain separate decisions.",
-    "Live host installation remains operator-gated through the existing Rasen Falcon Deployment service."
+    "Rasen Falcon now has an owned persistent LDAP service bootstrap over IdentityDirectory, NoSQLDirectoryStore, Secret Broker and mandatory TLS.",
+    "The production daemon fails closed unless durable state already contains ACTIVE resource:directory and required secret/TLS references are available.",
+    "A hardened non-root rasenfalcon-ldap.service is supplied; startup does not provision identities, ACLs or credentials.",
+    "The pre-install rehearsal covers principal isolation, revoked-principal denial, native wire listener, restart recovery, STARTTLS/LDAPS and Access Permissions.",
+    "Website, SMTP, IMAP and MCP consume the same directory truth with explicit per-action authority; Bind and signing do not imply EMAIL_SEND."
   ],
   "qualification": {
-    "runtime": "NOT-RUN: ooRexx r13196 and full dependency closure are not mounted in the current construction container",
-    "standards": "PASS: exact dev22 ZIP scanned 82 files with 0 errors and 136 warnings",
+    "static": "PASS: exact dev23 ZIP scanned 83 ooRexx files with 0 errors and 136 warnings; deployment contract and shell/JSON checks pass",
+    "runtime": "NOT-RUN: fresh ooRexx r13196/full dependency activation rehearsal is not available in this construction container",
     "production": "NOT_INSTALLED"
   }
 }
