@@ -4,7 +4,7 @@ ctx["json"] = 'a"b' || "0a"x || "c\\d"
 html = .StringTemplate~new("${value}")~render(ctx, .TemplateRenderPolicy~strictHtml)
 call assertEq html, "&lt;tag a=&quot;b&quot;&gt;&amp;&#39;x&#39;&lt;/tag&gt;", "html escape"
 json = .StringTemplate~new("${json}")~render(ctx, .TemplateRenderPolicy~strictJson)
-call assertEq json, 'a\\"b\\nc\\\\d', "json escape"
+call assertEq json, 'a\"b\nc\\\\d', "json escape"
 
 ctx["controls"] = "00"x || "01"x || "1f"x
 controls = .StringTemplate~new("${controls}")~render(ctx, .TemplateRenderPolicy~strictJson)
