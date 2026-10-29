@@ -16,5 +16,14 @@ if view~current \== second then raise syntax 93.900 array('invalid selection cha
 view~replaceCandidates(.array~of(first))
 if view~selected<>0 then raise syntax 93.900 array('stale selection retained')
 if view~current<>.nil then raise syntax 93.900 array('stale candidate retained')
+items2=.array~of(second,first)
+view~replaceCandidates(items)
+if view~select(2)<>.true then raise syntax 93.900 array('reselection failed')
+view~preserveSelection(items2)
+if view~selected<>1 then raise syntax 93.900 array('reorder lost selected identity')
+if view~current \\== second then raise syntax 93.900 array('reorder changed selected object')
+view~preserveSelection(.array~of(first))
+if view~selected<>0 then raise syntax 93.900 array('removed candidate retained')
+if view~select('bad')<>.false then raise syntax 93.900 array('nonnumeric selection accepted')
 say 'PASS completion presentation preserves candidate identity and order'
 ::requires 'CliUiCompletionPresentation.cls'
