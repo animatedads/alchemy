@@ -1,0 +1,65 @@
+# NotNotes dev18 SQLite transaction capability — fail-closed guard
+
+Date: 29 October 2026
+Owner boundary: NotNotes application persistence (NOT Claude's Rexx/SQL native provider)
+Status: SOURCE CANDIDATE; product/production acceptance NOT_GRANTED
+Branch: `chatgpt/notnotes-transaction-capability-guard-20261029`
+Parent: dependent draft application PR #69, itself based on draft SQL product-default PR #66.
+
+## Source finding and correction
+
+`MiniNotesPersistence~saveFrom(app)` inherited an optional transaction branch:
+`transactional = db~hasMethod("beginTransaction")`. When the selected SQLite
+backend was missing `beginTransaction`, the method could continue into
+`DROP TABLE formats`, `DROP TABLE reports`, and further metadata DDL without
+an atomic rollback boundary. Separately, `saveDocumentOnly` checked only for
+`beginTransaction`, indexed SELECT, and DELETE, but not the matching
+`commitTransaction` and `rollbackTransaction` capabilities.
+
+The application now rejects `rexxsql-sqlite` full snapshots unless BEGIN,
+COMMIT, and ROLLBACK methods are all available, before any table mutation.
+Single-document SQLite writes likewise require the complete transaction API
+before BEGIN or a document lookup. Legacy FileDatabaseEngine compatibility is
+unchanged. The native SQL executor and Crypto provider have NOT been modified.
+
+Regression candidate:
+`packages/notnotes_mini_approval_app_v0.1-dev18/tests/test_sqlite_transaction_capability_guard.rex`.
+It models a partial adapter that has BEGIN, per-key SELECT and DELETE but
+**does not implement COMMIT or ROLLBACK**; both save entry points must reject
+without performing BEGIN, DDL, or SELECT. The test must be run from the package
+root with the documented `REXX_PATH`, on exact accepted source, using:
+`rexx tests/test_sqlite_transaction_capability_guard.rex`.
+It is not yet wired into the aggregate `run_tests.sh`; this is a known
+qualification gap, not a claim of full suite acceptance.
+
+## Executed local qualification, with limits
+
+User-supplied ooRexx 5.3.0 r13196 extracted into an isolated directory.
+The available Library NotNotes v0.1-dev17, dated 9 October, was adapted in
+an isolated disposable working copy to **replicate the new dev18
+transaction preconditions only**. A regression probe rejected both partial
+adapter cases BEFORE any attempted SQL:
+`NOTNOTES_SQLITE_TRANSACTION_GUARD_SUBSET_PASS checks=2`, process exit 0.
+
+This test is **source-equivalent, not an exact dev18/PR #69 checkout**. The
+local dev17 copy has only the dev18 guard preconditions, not its complete
+SQLite delta persistence method. The exact Git regression exists as source
+and requires an independent run in a clean checkout with the accepted dev18
+dependency closure. A mock backend does not demonstrate physical rollback,
+journal durability, concurrent sessions, or a real `librexxsql.so` call.
+
+## Release gates retained
+
+- Real library SQLite `rexxsql-sqlite` with Claude's patched 0005 provider;
+  NULL/empty/BLOB, WAL crash/restart, 954- and 10k-document timing.
+- No table mutation without a successful atomic transaction; rollback on
+  injected failure; unchanged persisted approval/referral/temporal/relationship
+  content after restart.
+- End-to-end saved forms, intentions, dynamic reports, PDF, migration.
+- Required Crypto signature and revocation policy through the existing
+  accelerated `foreign.openssl.crypto`/Foreign Runtime path. Never skip required
+  signing, and do not count an approval's `"SIGN"` action as a cryptographic signature.
+- Full exact dev18 suite, independent peer test, upstream provider owner receipt,
+  managed source acceptance, and separate installation qualification.
+
+No live service was changed. No source was merged to main.
