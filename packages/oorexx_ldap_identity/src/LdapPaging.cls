@@ -156,7 +156,7 @@
     entries = .array~new
     maxCount = sourceSize
     truncated = .false
-    if sizeLimit > 0 & maxCount > sizeLimit then do
+    if sizeLimit > 0 then if maxCount > sizeLimit then do
       maxCount = sizeLimit
       truncated = .true
     end
@@ -177,7 +177,7 @@
   if take > state~remaining then take = state~remaining
   start = state~offset + 1
   do i = start to start + take - 1
-    if i >= 1 & i <= state~entries~items then pageEntries~append(state~entries[i])
+    if i >= 1 then if i <= state~entries~items then pageEntries~append(state~entries[i])
   end
   ignore = state~advance(take)
 

@@ -38,6 +38,9 @@ rm -rf "$NOSQL_TEST_ROOT"
 export LDAP_NOSQL_TEST_ROOT="$NOSQL_TEST_ROOT"
 trap 'rm -rf "$NOSQL_TEST_ROOT"' EXIT
 
+# Qualify the real socket path before the semantic suite.  The supplied r13196
+# debug runtime's shared API service becomes sluggish after a crypto-heavy
+# interpreter exits; the product has no dependency on that ordering.
 echo "==> tests/wire_smoke.sh"
 bash tests/wire_smoke.sh
 
@@ -57,6 +60,8 @@ else
   echo "==> tests/ldaps_wire_smoke.sh (SKIP: Runtime Reference / Foreign Runtime unavailable)"
 fi
 
+# Load the semantic/unit suite in one ooRexx interpreter so qualification does
+# not repeatedly start the shared API service.
 echo "==> $UNIT_SUITE"
 "$REXX" "$UNIT_SUITE"
 
