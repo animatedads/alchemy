@@ -1,0 +1,51 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.dependency-namespace",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Deterministic ooRexx dependency namespace and REXX_PATH",
+  "summary": "After semantic resolution, Deployment materialises only reachable locked package files into a release-local namespace, verifies component-root and file content authority, emits a deterministic REXX_PATH, and uses the same namespace for package-load verification and final launch. Ambient REXX_PATH is replaced, not inherited.",
+  "authority": "project-doctrine",
+  "section": "dependencies",
+  "invariants": [
+    "Semantic closure and target namespace are separate receipts.",
+    "Only explicit entry packages and reachable locked dependency files are materialised unless the whole archive is explicitly the deployable artifact.",
+    "A component root with a mismatched authority hash is rejected before publication.",
+    "Unsafe relative paths and traversal are rejected.",
+    "Every materialised file is hashed and the namespace itself has a verifiable content manifest.",
+    "The generated REXX_PATH replaces ambient REXX_PATH unless separately verified external roots are explicitly declared.",
+    "Package-load qualification and final process/host activation use the same generated namespace."
+  ],
+  "topics": [
+    "REXX_PATH",
+    "namespace",
+    "materialisation",
+    "content-authority",
+    "deterministic",
+    "package-load"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.4.md",
+      "sha256": "4407182b556e01cafb2b15a3568084b4530f95881c3dc963d4de5bffbcf4b26e",
+      "member": "General_ooRexx_Deployment_Component_v0.4.md",
+      "line_start": 1517,
+      "line_end": 1615,
+      "claim": "Defines semantic-closure/namespace split, materialisation, root substitution protection and REXX_PATH replacement."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/bin/materialize_dependency_namespace.sh",
+      "claim": "POSIX provider implementation of deterministic namespace materialisation."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/qualification/DEV4_DEPENDENCY_NAMESPACE.txt",
+      "line_start": 1,
+      "line_end": 22,
+      "claim": "Positive namespace and negative substitution/unsatisfied-lock qualification evidence."
+    }
+  ]
+}

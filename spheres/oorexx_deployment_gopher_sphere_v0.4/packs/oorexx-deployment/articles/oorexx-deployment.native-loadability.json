@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.native-loadability",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Native artifacts are accepted by target loadability, not by filename or controller ABI",
+  "summary": "A supplied native library is reusable only when the application-declared target probe succeeds. If it fails and policy permits, rebuild from supplied authoritative source with the target toolchain and rerun the same probe. ABI heuristics such as GLIBC symbol inspection are evidence, not final acceptance.",
+  "authority": "project-doctrine",
+  "section": "architecture",
+  "invariants": [
+    "Target load/use probe is the acceptance authority for a native artifact.",
+    "A loader-path change is not an ABI repair.",
+    "Rebuild occurs only when source is supplied and deployment policy permits it.",
+    "The rebuilt object must pass the same probe before it is accepted.",
+    "If rebuild is forbidden or still unloadable, deployment fails closed."
+  ],
+  "topics": [
+    "native",
+    "ABI",
+    "loadability",
+    "rebuild",
+    "glibc"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/docs/NATIVE_ARTIFACTS.md",
+      "claim": "Defines target-loadability and rebuild contract.",
+      "line_start": 1,
+      "line_end": 5
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/docs/AUDIO_FIRST_CONSUMER.md",
+      "claim": "Documents the Audio Foreign Runtime GLIBC mismatch and reuse/rebuild behavior.",
+      "line_start": 1,
+      "line_end": 7
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/README.md",
+      "claim": "Summarizes NativeDeployment reuse-or-rebuild semantics.",
+      "line_start": 3,
+      "line_end": 9
+    }
+  ]
+}

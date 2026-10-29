@@ -1,0 +1,22 @@
+# Loose/development intake example. For a sealed SSC production deployment,
+# prefer source.get_deployment_package/getDeploymentPackage and retain exact
+# deployment ids.
+
+OOREXX_REXX=/usr/local/bin/rexx \
+  bin/resolve_ssc_dependencies.sh \
+  --ssc-root /opt/oorexx_semantic_source_control_v0.2.3 \
+  --consumer /opt/oorexx_deployment_v0.1-dev4 \
+  --entry src/SscDeploymentDependencies.cls \
+  --provider /opt/oorexx_semantic_source_control_v0.2.3 \
+  --out deployment-dependencies.lock.tsv
+
+# The resolver now emits artifact rows. Supply controller-verified extracted
+# component roots separately; local paths are not embedded in the portable lock.
+printf 'OorexxDeployment\t/opt/oorexx_deployment_v0.1-dev4\t<artifact-hash>\n' > component-roots.tsv
+printf 'SemanticSourceControl\t/opt/oorexx_semantic_source_control_v0.2.3\t<artifact-hash>\n' >> component-roots.tsv
+
+bin/materialize_dependency_namespace.sh \
+  --lock deployment-dependencies.lock.tsv \
+  --roots component-roots.tsv \
+  --output /srv/app/dependency-namespace \
+  --entry OorexxDeployment:src/SscDeploymentDependencies.cls
