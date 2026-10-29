@@ -45,6 +45,18 @@ call check a~vs=2 & a~va=2 & b~vr=2,'modulo-8 counters wrap'
 p=b~drainDelivered
 call check p~items=10,'ten delivered messages without duplicate'
 
+say 'RUN LAPB repeated REJ consumes bounded N2 budget'
+a=.X25LapbLink~new('DTE',2,20,2)
+b=.X25LapbLink~new('DCE',2,20,2)
+ignore=a~start(0);out=a~drainOutgoing;ignore=b~receive(out[1],1);out=b~drainOutgoing;ignore=a~receive(out[1],2)
+call check a~send('10010B11'x,3),'prepare one pending I'
+ignore=a~drainOutgoing
+rej=.X25LapbCodec~emit('DCE','REJ',0,0)
+call check a~receive(rej,4)='ACK_REJ','first REJ consumes permitted retry'
+call check a~drainOutgoing~items=1,'one bounded REJ replay'
+call check a~receive(rej,5)='N2_EXHAUSTED','second REJ fails closed on N2'
+call check a~state='FAILED' & a~drainOutgoing~items=0,'no unbounded REJ retransmission'
+
 say 'PASS LAPB negative FCS, flags, unsupported types, ACK, wrap, no-mutation'
 exit 0
 check:
