@@ -7,6 +7,9 @@ export PYTHONPATH="$ROOT/python${PYTHONPATH:+:$PYTHONPATH}"
 cd "$ROOT/tests"
 "$REXX_BIN" test_core.rex
 "$REXX_BIN" test_theory_foundations.rex
+"$REXX_BIN" test_ordered_structures.rex
+"$REXX_BIN" test_statistics.rex
+"$REXX_BIN" test_paired_statistics.rex
 "$REXX_BIN" test_algebra_foundations.rex
 "$REXX_BIN" test_claims.rex
 "$REXX_BIN" test_rational.rex

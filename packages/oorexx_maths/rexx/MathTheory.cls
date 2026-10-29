@@ -745,3 +745,87 @@
 ::routine math_theory_equal
   use strict arg left,right
   return math_theory_key(left)==math_theory_key(right)
+
+
+/* Finite chain / ordered-scale foundation.
+ * The order is mathematical only: values supplied earlier are lower than values
+ * supplied later. Domain packages own the meaning of those labels. */
+::class MathFiniteChain public
+::method init
+  expose _values _rankByKey
+  use strict arg values
+  if \values~isA(.Array) then raise syntax 88.900 array('Array of ordered values',values)
+  if values~items=0 then raise syntax 88.900 array('non-empty finite chain',0)
+  _values=.array~new; _rankByKey=.directory~new
+  rank=0
+  do value over values
+    key=math_theory_key(value)
+    if _rankByKey~hasIndex(key) then raise syntax 88.900 array('unique finite-chain value',key)
+    rank+=1
+    _values~append(value)
+    _rankByKey[key]=rank
+  end
+::method values
+  expose _values
+  return _values~copy
+::method cardinality
+  expose _values
+  return _values~items
+::method contains
+  expose _rankByKey
+  use strict arg value
+  return _rankByKey~hasIndex(math_theory_key(value))
+::method rank
+  expose _rankByKey
+  use strict arg value
+  key=math_theory_key(value)
+  if \_rankByKey~hasIndex(key) then raise syntax 88.900 array('member of finite chain',key)
+  return _rankByKey[key]
+::method compare
+  use strict arg left,right
+  lr=self~rank(left); rr=self~rank(right)
+  if lr<rr then return -1
+  if lr>rr then return 1
+  return 0
+::method lessThan
+  use strict arg left,right
+  return self~compare(left,right)<0
+::method lessOrEqual
+  use strict arg left,right
+  return self~compare(left,right)<=0
+::method greaterThan
+  use strict arg left,right
+  return self~compare(left,right)>0
+::method greaterOrEqual
+  use strict arg left,right
+  return self~compare(left,right)>=0
+::method min
+  use strict arg left,right
+  if self~compare(left,right)<=0 then return left
+  return right
+::method max
+  use strict arg left,right
+  if self~compare(left,right)>=0 then return left
+  return right
+::method meet
+  use strict arg left,right
+  return self~min(left,right)
+::method join
+  use strict arg left,right
+  return self~max(left,right)
+::method bottom
+  expose _values
+  return _values[1]
+::method top
+  expose _values
+  return _values[_values~items]
+::method canonical
+  expose _values
+  out='finite-chain['
+  do i=1 to _values~items
+    if i>1 then out=out'<'
+    value=math_theory_key(_values[i])
+    out=out||value~length||':'||value
+  end
+  return out']'
+::method string; return self~canonical

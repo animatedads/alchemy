@@ -1,3 +1,14 @@
+# ooRexx Maths v0.20 API summary
+
+## v0.20 ordered structures
+
+- `.Maths~finiteChain(values)` -> `.MathFiniteChain`
+- `chain~contains(value)`, `~rank(value)`, `~compare(a,b)`
+- `~lessThan`, `~lessOrEqual`, `~greaterThan`, `~greaterOrEqual`
+- `~min`, `~max`, `~meet`, `~join`, `~bottom`, `~top`, `~values`, `~cardinality`, `~canonical`
+
+The order is mathematical only; consumer packages own label meaning and policy.
+
 
 ## v0.16 discrete state-space systems
 
@@ -294,3 +305,21 @@ Factories on `.Maths` include `set`, `map`, `relation`, `finiteOperation`, `fini
 ## Exact algebra (v0.19)
 
 `.Maths~rationalField` exposes Q over existing exact rational values. `.Maths~polynomialRing(variable)` and `.Maths~polynomial(coefficients, variable)` construct exact univariate polynomials with formal derivative, Horner evaluation, Euclidean division/divisibility, monic normalization and gcd. `.Maths~rationalVectorSpace(n)` and `.Maths~linearMap(source,target,matrix)` provide exact Q^n spaces and linear transformations using existing Maths vector/matrix authority.
+
+
+## v0.20 candidate2 statistics
+
+- `.Maths~statistics(values, context=.nil)` -> `.MathStatistics`
+- `~count`, `~sum`, `~product`, `~mean`, `~median`
+- `~modes`, `~uniqueMode`, `~minimum`, `~maximum`, `~range`
+- `~deviations`, `~squaredValues`
+- `~populationVariance`, `~sampleVariance`
+- `~populationStdDev`, `~sampleStdDev`
+
+
+## v0.20 candidate3 paired statistics
+
+- `.Maths~pairedStatistics(leftValues,rightValues,context=.nil)` -> `.MathPairedStatistics`
+- `~count`, `~left`, `~right`, `~leftMean`, `~rightMean`
+- `~populationCovariance`, `~sampleCovariance`
+- `~populationCorrelation`, `~sampleCorrelation`

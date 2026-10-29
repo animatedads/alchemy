@@ -84,3 +84,8 @@ The next natural layers are:
 ## v0.19 algebra continuation
 
 v0.19 follows the finite reference structures with exact rational-field algebra: Q[x] polynomials with Euclidean algorithms, Q^n vector spaces and exact linear maps. This is the first step toward modules, ideals, algebraic extensions and the algebraic vocabulary required by number theory and geometry. See \`ALGEBRA.md\`.
+
+
+## v0.20 finite chain
+
+`MathFiniteChain` supplies a reusable finite total order and its induced meet/join operations. It is the first explicit order-theoretic structure in the theoretical layer and is useful beyond evidence reasoning: priority scales, finite ordinal categories, severity orderings and other domain-defined chains can share it without Maths owning their semantics.
