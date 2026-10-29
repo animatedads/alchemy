@@ -19,3 +19,23 @@ Start:
 
     gopher --profile https-server context https-server --full
     gopher --profile https-server search '<term>' --sphere https-server
+
+## Exact promotion gate
+
+The sealed candidates and the cross-component fixture are persisted in the ChatGPT Library folder `/Alchemy/WebDAV-HTTPS-Streaming/`.
+
+The Git qualification entrypoint is:
+
+`spheres/https-server/qualification/qualify_https_webdav_streaming.sh`
+
+It fails closed unless all of the following are supplied:
+
+- exact ooRexx 5.3.0 r13196;
+- exact Foreign Runtime v0.17.1;
+- HTTPS v0.4.8 SHA-256 `d38ddd049e5d8f5683e4ebf09e09a870c9c562bd3663db32950df711f7040fbe`;
+- WebDAV dev6 SHA-256 `8129e50b20efdaf03980eed8e9f10f09edfec45aae82a27be6a1732c1c98299e`;
+- the Storage Fabric dependency path.
+
+The gate runs the inherited HTTPS and WebDAV suites and then performs a real local TLS 16 MiB PUT, byte-identical full GET, six concurrent full GETs, and a truncated PUT that must leave no published DAV resource or non-empty staging file.
+
+A previous CODEX-PC request returned NOT_RUN only because the candidate artifacts were not available on that host. That handoff defect is now fixed by the persistent Library copies and committed qualification fixture. Promotion still waits for a real PASS.
