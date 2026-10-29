@@ -78,3 +78,7 @@ if [[ -n "${INTENTION_SERVICE_ROOT:-}" ]]; then
 else
   echo "==> tests/intention_service_smoke.sh (SKIP: INTENTION_SERVICE_ROOT unavailable)"
 fi
+
+# dev22 deployment contract: static/shell qualification; not a substitute for live LDAP acceptance.
+echo "==> tests/deployment/test_rasenfalcon_deployment_contract.sh"
+bash tests/deployment/test_rasenfalcon_deployment_contract.sh
