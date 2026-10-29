@@ -23,7 +23,7 @@ say "CONVERSATION AUTHORITY: OK"
 ::class TestLdapAuthenticator subclass LdapAuthenticator
 ::method bind
   use strict arg bindName, credential
-  if bindName~caselessEquals("uid=alice,ou=people,dc=example,dc=org") & credential = "correct" then return .LdapBindResult~new(.true, "OK", "principal:alice")
+  if bindName~caselessEquals("uid=alice,ou=people,dc=example,dc=org") then if credential = "correct" then return .LdapBindResult~new(.true, "OK", "principal:alice")
   return .LdapBindResult~new(.false, "INVALID_CREDENTIALS")
 
 ::requires "tests/TestSupport.cls"

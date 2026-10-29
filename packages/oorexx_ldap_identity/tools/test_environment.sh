@@ -35,6 +35,8 @@ if ! "$REXX_BIN" -v 2>&1 | grep -q '13196'; then
   exit 2
 fi
 
+# Optional accelerated TLS/crypto paths are enabled automatically by run_tests.sh
+# when both package roots are supplied.
 export RUNTIME_REFERENCE_ROOT="${RUNTIME_REFERENCE_ROOT:-}"
 export FOREIGN_RUNTIME_ROOT="${FOREIGN_RUNTIME_ROOT:-}"
 

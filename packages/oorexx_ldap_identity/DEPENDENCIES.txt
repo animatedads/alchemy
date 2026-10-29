@@ -3,9 +3,10 @@ Required for core semantic/runtime operation:
 - ooRexx Crypto v0.8.3 (`crypto.cls`)
 - ooRexx distribution `json.cls` for durable store / peer request / ACK codecs
 
-Required for full dev14 qualification:
-- NoSQLServer v0.85 integer-precision line (qualified FILE engine inherited from dev12)
-- ooRexx Socket Provider v0.1-dev12 (current merged SocketSelector/SocketAddress contract)
+Required for full dev18 qualification:
+- NoSQLServer v0.88 query-instrumentation line (FILE engine, bulk materialisation, query/materialisation observation)
+- ooRexx Socket Provider v0.1-dev14 (current merged SocketSelector/SocketAddress contract)
+- ooRexx Instrumentation Mesh v0.1-dev8
 - ooRexx Secret Broker v0.2
 - Alchemy Objects v0.8
 
@@ -26,8 +27,15 @@ Optional Access Permissions integration:
 - ooRexx Crypto v0.8.3
 
 Architecture/integration companions, not hard-loaded by the semantic core:
-- ooRexx XTP v0.1-dev14 — current XTP provider. Its capability truth explicitly says XTP multicast=false; LDAP must not select XTP merely because a group-shaped address exists.
+- ooRexx XTP v0.1-dev18 — current executable multicast provider. LDAP uses its multicastSender contract while retaining application ACK/quorum authority above transport.
 - ooRexx NORM v0.1-dev3 — current multicast sibling provider when a deployment has a qualified multicast route/session.
-- RexxOS/RTO2 continuous ACTIVE/SPARE failover line — supplies external promotion/failover authority. dev14 retains dev12 epoch fencing and durable recovery semantics.
+- RexxOS/RTO2 Grid v0.1-dev14 — current ACTIVE/SPARE integration companion; LDAP retains semantic commit/epoch authority while RTO2 supplies external reachability/promotion context.
 - Intention Service v0.1-dev11 — optional at semantic runtime, required for the dev14 dynamic intention-integration qualification lane. Discovery is refreshed per fresh input; registrations do not grant execution authority.
 - Runtime Registry / Observation / Journal / Provenance Ledger as deployment companions.
+
+Optional peer multicast carrier:
+- ooRexx XTP v0.1-dev18 (`XtpSocketBackend~multicastSender`), via `src/IdentityPeerXtpTransport.cls`.
+
+Optional observation:
+- ooRexx Instrumentation Mesh v0.1-dev8 (`InstrumentationMesh.cls`).
+- NoSQLServer v0.88 query instrumentation is the current durable-store baseline; LDAP injects its observer but does not reimplement NoSQL metrics.

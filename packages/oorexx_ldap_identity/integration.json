@@ -27,22 +27,61 @@
   "tests": [
     {
       "name": "ldap-identity-dev21-suite",
-      "argv": ["bash","run_tests.sh"],
+      "argv": [
+        "bash",
+        "run_tests.sh"
+      ],
       "timeout_seconds": 240,
       "environment": {
-        "require_dirs": ["OOREXX_CRYPTO_ROOT","SECRET_BROKER_ROOT","ALCHEMY_OBJECTS_ROOT","NOSQLSERVER_ROOT","SOCKET_PROVIDER_ROOT","RUNTIME_REFERENCE_ROOT","FOREIGN_RUNTIME_ROOT","INSTRUMENTATION_MESH_ROOT"],
-        "report": ["OOREXX_CRYPTO_ROOT","SECRET_BROKER_ROOT","ALCHEMY_OBJECTS_ROOT","NOSQLSERVER_ROOT","SOCKET_PROVIDER_ROOT","RUNTIME_REFERENCE_ROOT","FOREIGN_RUNTIME_ROOT","INSTRUMENTATION_MESH_ROOT"]
+        "require_dirs": [
+          "OOREXX_CRYPTO_ROOT",
+          "SECRET_BROKER_ROOT",
+          "ALCHEMY_OBJECTS_ROOT",
+          "NOSQLSERVER_ROOT",
+          "SOCKET_PROVIDER_ROOT",
+          "RUNTIME_REFERENCE_ROOT",
+          "FOREIGN_RUNTIME_ROOT",
+          "INSTRUMENTATION_MESH_ROOT"
+        ],
+        "report": [
+          "OOREXX_CRYPTO_ROOT",
+          "SECRET_BROKER_ROOT",
+          "ALCHEMY_OBJECTS_ROOT",
+          "NOSQLSERVER_ROOT",
+          "SOCKET_PROVIDER_ROOT",
+          "RUNTIME_REFERENCE_ROOT",
+          "FOREIGN_RUNTIME_ROOT",
+          "INSTRUMENTATION_MESH_ROOT"
+        ]
       }
     },
     {
       "name": "ldap-identity-access-permissions-adapter",
-      "argv": ["bash","tests/access_permissions_smoke.sh"],
+      "argv": [
+        "bash",
+        "tests/access_permissions_smoke.sh"
+      ],
       "timeout_seconds": 120,
       "environment": {
-        "require_dirs": ["OOREXX_CRYPTO_ROOT","ALCHEMY_OBJECTS_ROOT","ACCESS_PERMISSIONS_ROOT","INSTITUTIONAL_POLICY_ROOT","SECURITY_EFFECT_ROOT"],
-        "report": ["ACCESS_PERMISSIONS_ROOT","INSTITUTIONAL_POLICY_ROOT","SECURITY_EFFECT_ROOT"]
+        "require_dirs": [
+          "OOREXX_CRYPTO_ROOT",
+          "ALCHEMY_OBJECTS_ROOT",
+          "ACCESS_PERMISSIONS_ROOT",
+          "INSTITUTIONAL_POLICY_ROOT",
+          "SECURITY_EFFECT_ROOT"
+        ],
+        "report": [
+          "ACCESS_PERMISSIONS_ROOT",
+          "INSTITUTIONAL_POLICY_ROOT",
+          "SECURITY_EFFECT_ROOT"
+        ]
       }
     }
   ],
-  "publish": {"tree":{"source":".","path":"packages/oorexx_ldap_identity_v0.1-dev21"}}
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_ldap_identity_v0.1-dev21"
+    }
+  }
 }
