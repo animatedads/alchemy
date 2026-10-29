@@ -1,0 +1,54 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.ssc-sealed-deployments",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Production authority: sealed SSC module deployments",
+  "summary": "For a production release represented in current SSC, Deployment consumes a QUALIFIED module deployment as an immutable fixed point. It traverses exact ssc_deployment_dependency ids, verifies deployment manifest authority, obtains source.get_deployment_package/getDeploymentPackage exact materialisation, and rejects floating development package semantics.",
+  "authority": "project-doctrine",
+  "section": "dependencies",
+  "invariants": [
+    "Root and every transitive dependency deployment must be QUALIFIED and carry immutable manifest authority.",
+    "Exact dependency deployment ids are semantic release authority; Deployment never substitutes newer qualified dependencies.",
+    "Deployment consumes SSC services rather than querying or recreating SSC persistence semantics.",
+    "getDeploymentPackage must report sealed-deployment-exact-closure for release deployment.",
+    "Every returned semantic object/resource must be attributable to the exact reachable sealed deployment set.",
+    "Development source.get_package/latest-accepted resolution is not an acceptable substitute for an already sealed release."
+  ],
+  "topics": [
+    "SSC",
+    "sealed-deployment",
+    "QUALIFIED",
+    "module",
+    "exact-dependency",
+    "production"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.4.md",
+      "sha256": "4407182b556e01cafb2b15a3568084b4530f95881c3dc963d4de5bffbcf4b26e",
+      "member": "General_ooRexx_Deployment_Component_v0.4.md",
+      "line_start": 1456,
+      "line_end": 1514,
+      "claim": "Defines sealed SSC production authority and service boundary."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/src/SscSealedDeploymentDependencies.cls",
+      "line_start": 1,
+      "line_end": 150,
+      "claim": "Candidate adapter validates qualified exact sealed dependency closure through injected SSC services."
+    },
+    {
+      "artifact": "animatedads/alchemy:packages/oorexx_semantic_source_store/src/SemanticSourceModuleService.cls",
+      "git_blob_sha": "2893f0ff8b1da5281232b3705777ead67b078821",
+      "claim": "Current SSC exact deployment dependency authority."
+    },
+    {
+      "artifact": "animatedads/alchemy:packages/oorexx_semantic_source_store/src/SemanticSourcePackageService.cls",
+      "git_blob_sha": "893b0e4bf7be60da1100920c3f794d72ee19e79f",
+      "claim": "Current SSC sealed exact package reconstruction."
+    }
+  ]
+}

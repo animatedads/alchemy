@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.dependencies",
+  "version": "0.2",
+  "sphere": "oorexx-deployment",
+  "title": "Dependency authority: resolve before target mutation",
+  "summary": "Dependency resolution remains pre-mutation authority. Production ooRexx release deployment now prefers SSC qualified sealed module deployments with exact dependency deployment ids; Deployment then materialises those semantic bytes into a deterministic target namespace. Legacy SSC_MANIFEST/@source-requires/::requires closure remains a development/archive intake path, while native/runtime capabilities remain ordinary Deployment requirements.",
+  "authority": "project-doctrine",
+  "section": "dependencies",
+  "invariants": [
+    "Dependencies are resolved before target mutation.",
+    "For production releases, qualified SSC deployment ids and sealed dependency ids are preferred semantic authority.",
+    "Development/archive intake may use SSC_MANIFEST, @source-requires and reachable ::requires, but must not be described as sealed deployment authority.",
+    "Semantic source closure, package-load edges, target namespace and native/runtime capabilities are different evidence classes.",
+    "REXX_PATH is produced after resolution as explicit launch state; ambient REXX_PATH is not dependency authority.",
+    "A DeploymentManifest that declares dependencies but lacks a satisfied dependency resolution/lock must fail before executable actions are planned.",
+    "Non-ooRexx dependencies such as libc, compiler, native loadability and ffmpeg capability remain ordinary Deployment requirements rather than being forced into SSC."
+  ],
+  "topics": [
+    "dependencies",
+    "authority",
+    "planning",
+    "fail-closed"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.4.md",
+      "sha256": "4407182b556e01cafb2b15a3568084b4530f95881c3dc963d4de5bffbcf4b26e",
+      "member": "General_ooRexx_Deployment_Component_v0.4.md",
+      "line_start": 1456,
+      "line_end": 1659,
+      "claim": "Defines sealed-vs-development dependency authority and deterministic namespace rules."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/docs/DEPENDENCIES.md",
+      "line_start": 1,
+      "line_end": 145,
+      "claim": "Executable documentation for current dependency authority split and target namespace."
+    }
+  ]
+}

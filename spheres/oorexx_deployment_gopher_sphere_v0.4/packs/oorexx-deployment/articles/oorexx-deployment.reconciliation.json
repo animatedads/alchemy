@@ -1,0 +1,57 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.reconciliation",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Reconciliation is the object model, installation is only an action",
+  "summary": "The core abstraction is reconcile target with declared state. Discovery, assessment, planning, apply and verification are separate phases so an already-correct machine can yield NO_ACTION_REQUIRED and a changed or damaged machine can be repaired deterministically.",
+  "authority": "project-doctrine",
+  "section": "architecture",
+  "invariants": [
+    "discover != assess != plan != apply != verify.",
+    "Discovery and planning are non-destructive.",
+    "Identical manifest + discovery + policy should produce the same plan.",
+    "A second discovery after successful deployment should have zero required unsatisfied conditions.",
+    "Repeated reconciliation covers initial install, repair, drift, upgrades, corruption and configuration change."
+  ],
+  "topics": [
+    "reconciliation",
+    "idempotence",
+    "phases",
+    "drift"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 101,
+      "line_end": 124,
+      "claim": "Separates discover, assess, plan, apply and verify semantics."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 531,
+      "line_end": 600,
+      "claim": "Defines deterministic plans, no hidden mutation and idempotence."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 920,
+      "line_end": 940,
+      "claim": "Defines repeated reconciliation as the common repair/update model."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 1035,
+      "line_end": 1047,
+      "claim": "States that reconcile-target-with-declared-state is the central abstraction."
+    }
+  ]
+}

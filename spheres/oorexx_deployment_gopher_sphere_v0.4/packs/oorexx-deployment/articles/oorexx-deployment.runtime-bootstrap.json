@@ -1,0 +1,49 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.runtime-bootstrap",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Runtime deployment and the minimal bootstrap boundary",
+  "summary": "ooRexx itself is a runtime requirement and Deployment must support staging the runtime that executes application code without assuming a pre-existing remote rexx. A deliberately small bootstrap may transfer Deployment, stage the required runtime and invoke the ooRexx entry point; after that, ordinary Deployment objects own reconciliation.",
+  "authority": "project-doctrine",
+  "section": "architecture",
+  "invariants": [
+    "Do not assume remote ooRexx is already correctly installed merely because deployment code is written in ooRexx.",
+    "Prefer explicitly staged executables over ambient PATH when a manifest defines one.",
+    "Record the exact resolved executable path used for launch.",
+    "Bootstrap is transport/runtime bootstrapping, not application deployment semantics.",
+    "Do not reinstall an already-satisfied exact runtime merely because an installer path exists."
+  ],
+  "topics": [
+    "runtime",
+    "oorexx",
+    "bootstrap",
+    "private-runtime"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 450,
+      "line_end": 504,
+      "claim": "Defines general and private runtime requirements and exact executable resolution."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 1005,
+      "line_end": 1029,
+      "claim": "Defines ooRexx runtime deployment and the minimal bootstrap boundary."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/docs/AUDIO_FIRST_CONSUMER.md",
+      "claim": "Audio first-consumer contract reuses already-installed exact r13196 on the fleet.",
+      "line_start": 1,
+      "line_end": 7
+    }
+  ]
+}

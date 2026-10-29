@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.rasenfalcon-identity-role",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Rasen Falcon LDAP identity role: first concrete sealed-namespace consumer",
+  "summary": "Deployment dev5 packages the owned LDAP Identity dev22 service plus an already verified dependency namespace into the existing Rasen Falcon identity-role release shape. A Deployment-owned launcher verifies the namespace and replaces ambient REXX_PATH before executing the LDAP-owned bootstrap; identity, LDAP, TLS, authorization, secret and activation authority remain outside Deployment.",
+  "authority": "project-doctrine",
+  "section": "integration",
+  "invariants": [
+    "LDAP Identity owns daemon/bootstrap semantics; General Deployment owns exact staging, namespace and launch mechanics only.",
+    "The generated rasenfalcon-ldap.service retains LDAP-owned hardening and changes only ExecStart to the namespace-verifying launch seam.",
+    "Ambient REXX_PATH must not select production LDAP dependencies.",
+    "The identity role carries ready:ldap_bind, e2e:ldap_revoke and e2e:sign_verify_revoke acceptance names exactly.",
+    "Missing live revoke or Crypto/PKI probes are NOT_RUN/fail-closed; fixture PASS is not commissioning evidence.",
+    "Production ldap.env, secret mappings, private keys, certificate issuance, service start and cutover remain operator/Secret Broker/PKI authority."
+  ],
+  "topics": [
+    "rasenfalcon",
+    "ldap",
+    "identity-role",
+    "dependency-namespace",
+    "systemd",
+    "REXX_PATH",
+    "operator-gate"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_deployment_v0.1-dev5.zip",
+      "sha256": "109087c9e77d06987f0a8b4365540da76df97fe65eb8fa89952387e5e9db9802",
+      "member": "oorexx_deployment_v0.1-dev5/docs/RASENFALCON_IDENTITY_ROLE.md",
+      "claim": "Defines the concrete identity-role packaging and authority boundary."
+    },
+    {
+      "artifact": "oorexx_ldap_identity_v0.1-dev22.zip",
+      "sha256": "697c301c37ad1d77252a34db9028420c4c9a3e3dbe5c60de9be6fc91940341fc",
+      "member": "oorexx_ldap_identity_v0.1-dev22/deployment/rasenfalcon/README.md",
+      "claim": "LDAP-owned deployment contribution requires General Deployment to install the complete sealed namespace under /opt/rasenfalcon/ldap."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.5.md",
+      "sha256": "6c60627599760394133982672bee69e4f6c52fa7b6bc74ce283f484e977b6aa8",
+      "member": "General_ooRexx_Deployment_Component_v0.5.md",
+      "claim": "Records the dev5 programme integration and role-specific NOC/Office HTTPS unit requirement."
+    }
+  ]
+}
