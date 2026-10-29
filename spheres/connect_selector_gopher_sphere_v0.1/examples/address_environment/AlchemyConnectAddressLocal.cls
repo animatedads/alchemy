@@ -11,8 +11,14 @@
 ::class AlchemyConnectAddressLocal public inherit CommandHandler
 
 ::method init
-  expose selector
-  use strict arg selector
+  expose selector localDestination
+  use strict arg selector, localDestination = 'LOCAL'
+  alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-'
+  if localDestination == '' then
+    raise syntax 93.900 additional('local destination required')
+  if verify(localDestination,alphabet) \== 0 then
+    raise syntax 93.900 additional('invalid local destination')
+  localDestination = localDestination~translate
   if \selector~hasMethod('execute') | \selector~hasMethod('policy') then
     raise syntax 93.900 additional('ConnectSelector with a policy is required')
   if selector~policy == .nil then
@@ -23,7 +29,7 @@
  * stream redirection, untrusted credentials, or shell forwarding.
  */
 ::method command
-  expose selector
+  expose selector localDestination
   use arg command, caller
   if words(command) \== 3 then return 64
   verb = word(command, 1)~translate
@@ -33,6 +39,8 @@
   alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-'
   if verify(destination,alphabet) \== 0 then return 64
   if verify(operation,alphabet) \== 0 then return 64
+  /* A DIRECT provider registration is not proof of local endpoint identity. */
+  if destination~translate \== localDestination then return 13
 
   /* No implicit provider fallback: local DIRECT only. */
   signal on syntax name failed
