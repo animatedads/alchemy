@@ -5,7 +5,7 @@
  * routing/Intention authority. This package does not choose XTP or any family.
  */
 ::class ApiClientSocketProviderAdapterBuild public
-::constant VERSION "0.1-dev2"
+::constant VERSION "0.1-dev3"
 ::constant API "api.client.socket-provider/0.1"
 
 ::class ApiSocketProviderRouteResolver public
@@ -21,15 +21,69 @@
   use strict arg url, request=.nil, session=.nil
   return resolver~resolve(url,request,session)
 
+/* Optional deployment-owned admission of the exact selected route.  This is
+ * deliberately separate from SocketNegotiator: generic socket selection owns
+ * capability truth, while deployment policy may require additional attested
+ * evidence on the selected SocketAddress. */
+::class ApiSocketRouteAdmissionPolicy public
+::method admit abstract
+::method denialCode
+  return "SOCKET_ROUTE_POLICY_DENIED"
+
+/* Generic exact-metadata policy.  It does not know what XTP, LDAP, a private
+ * CA or any other evidence means; deployment supplies the required keys and
+ * values, and the lower route authority supplies the address metadata. */
+::class ApiSocketRequiredMetadataPolicy public subclass ApiSocketRouteAdmissionPolicy
+::method init
+  expose required lastAddress lastUrl lastRequest lastSession lastSelection missingKey mismatchedKey
+  use strict arg requirements
+  if requirements=.nil then raise syntax 88.900 array("route metadata requirements are required")
+  required=requirements
+  lastAddress=.nil; lastUrl=.nil; lastRequest=.nil; lastSession=.nil; lastSelection=.nil
+  missingKey=""; mismatchedKey=""
+::attribute lastAddress get
+::attribute lastUrl get
+::attribute lastRequest get
+::attribute lastSession get
+::attribute lastSelection get
+::attribute missingKey get
+::attribute mismatchedKey get
+::method denialCode
+  expose missingKey mismatchedKey
+  if missingKey<>"" then return "SOCKET_ROUTE_METADATA_MISSING"
+  if mismatchedKey<>"" then return "SOCKET_ROUTE_METADATA_MISMATCH"
+  return "SOCKET_ROUTE_METADATA_REQUIRED"
+::method admit
+  expose required lastAddress lastUrl lastRequest lastSession lastSelection missingKey mismatchedKey
+  use strict arg address, url, request=.nil, session=.nil, selection=.nil
+  lastAddress=address; lastUrl=url; lastRequest=request; lastSession=session; lastSelection=selection
+  missingKey=""; mismatchedKey=""
+  if address=.nil then do; missingKey="ADDRESS"; return .false; end
+  if \address~hasMethod("METADATA") then do; missingKey="METADATA"; return .false; end
+  metadata=address~metadata
+  if metadata=.nil then do; missingKey="METADATA"; return .false; end
+  do key over required
+    if \metadata~hasIndex(key) then do
+      missingKey=key~string
+      return .false
+    end
+    if metadata[key]<>required[key] then do
+      mismatchedKey=key~string
+      return .false
+    end
+  end
+  return .true
+
 ::class ApiSocketIntentionRouteResolver public subclass ApiSocketProviderRouteResolver
 ::method init
-  expose intentionPort logicalNameResolver allowedSchemes lastSelection lastNegotiationRequest lastError generation
-  use strict arg intentionPortArg, logicalNameResolverArg=.nil, allowedSchemesArg=.nil
+  expose intentionPort logicalNameResolver allowedSchemes admissionPolicy lastSelection lastNegotiationRequest lastError generation
+  use strict arg intentionPortArg, logicalNameResolverArg=.nil, allowedSchemesArg=.nil, admissionPolicyArg=.nil
   if intentionPortArg=.nil then raise syntax 88.900 array("Socket Intention port is required")
   intentionPort=intentionPortArg
   logicalNameResolver=logicalNameResolverArg
   if allowedSchemesArg=.nil then allowedSchemes=.array~of(.SocketScheme~XTP,.SocketScheme~TCP)
   else allowedSchemes=allowedSchemesArg
+  admissionPolicy=admissionPolicyArg
   lastSelection=.nil
   lastNegotiationRequest=.nil
   lastError=""
@@ -39,7 +93,7 @@
 ::attribute lastError get
 ::attribute generation get
 ::method resolve
-  expose intentionPort logicalNameResolver allowedSchemes lastSelection lastNegotiationRequest lastError generation
+  expose intentionPort logicalNameResolver allowedSchemes admissionPolicy lastSelection lastNegotiationRequest lastError generation
   use strict arg url, request=.nil, session=.nil
   lastError=""
   logicalName=""
@@ -88,7 +142,15 @@
     lastError="SOCKET_NEGOTIATION_" || selection~status
     return .nil
   end
-  return selection~address
+
+  address=selection~address
+  if admissionPolicy<>.nil then do
+    if \admissionPolicy~admit(address,url,request,session,selection) then do
+      lastError=admissionPolicy~denialCode
+      return .nil
+    end
+  end
+  return address
 
 ::class ApiSocketProviderConnector public subclass ApiSocketConnector
 ::method init
