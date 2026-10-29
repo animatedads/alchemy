@@ -100,9 +100,34 @@
   gate['FEASIBLE'] = .false
   gate['FAILED_AT'] = ''
   gate['PREDICTION'] = 'will fail: empty path'
+  /* Reject malformed paths before looking up any units or running code. */
+  if \steps~isA(.array) then do
+    gate['PREDICTION'] = 'will fail: steps are not an Array'
+    return gate
+  end
   if steps~items == 0 then return gate
   do i = 1 to steps~items
+    if \steps[i]~isA(.array) then do
+      gate['FAILED_AT'] = i
+      gate['PREDICTION'] = 'will fail: step is not an Array'
+      return gate
+    end
+    if steps[i]~items \= 2 then do
+      gate['FAILED_AT'] = i
+      gate['PREDICTION'] = 'will fail: step must contain alias and argument Array'
+      return gate
+    end
     alias = steps[i][1]
+    if \alias~isA(.string) then do
+      gate['FAILED_AT'] = i
+      gate['PREDICTION'] = 'will fail: alias is not text'
+      return gate
+    end
+    if \steps[i][2]~isA(.array) then do
+      gate['FAILED_AT'] = alias
+      gate['PREDICTION'] = 'will fail: arguments are not an Array'
+      return gate
+    end
     if \units~hasIndex(alias) then do
       gate['FAILED_AT'] = alias
       gate['PREDICTION'] = 'will fail: no lifted unit' alias
@@ -123,11 +148,38 @@
           return gate
         end
       end
+      else do
+        /* The prior gate checked only PREV links. Check known kinds of literal
+           arguments too. Missing semantic guards remain an explicit limit. */
+        need = .nil
+        do contractArg over units[alias]~contract~args
+          if contractArg['POS'] = p then need = contractArg
+        end
+        if need \== .nil then if need['KINDS']~items > 0 then do
+          given = self~literalKind(args[p])
+          if \.SlamContract~satisfies(given, need['KINDS']) then do
+            gate['FAILED_AT'] = alias
+            gate['PREDICTION'] = 'will fail: ' || alias 'argument' p 'needs' .SlamContract~keys(need['KINDS']) || ', given' given
+            return gate
+          end
+        end
+      end
     end
   end
   gate['FEASIBLE'] = .true
   gate['PREDICTION'] = 'can work'
   return gate
+/* ooRexx numeric scalars are Strings, so test their value before calling them
+   NUMBER. No coercion of arbitrary objects: a known type mismatch blocks. */
+::method literalKind
+  use strict arg v
+  if v~isA(.array) then return 'ARRAY'
+  if v~isA(.directory) then return 'DIRECTORY'
+  if v~isA(.string) then do
+    if datatype(v, 'N') then return 'NUMBER'
+    return 'STRING'
+  end
+  return 'OBJECT'
 /* Production-style admission: a predicted bad path is BLOCKED before any routine executes.
    Exploration stays available as run(steps), which still runs predicted failures on purpose. */
 ::method runAdmitted
