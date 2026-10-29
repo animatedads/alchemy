@@ -69,20 +69,22 @@ need_file "$BSF_HOME/BSF.CLS"
 need_file "$BSF_JAR"
 [[ ${BSF_NATIVE_LIBRARY:-} == /* ]] || fail 'BSF_NATIVE_LIBRARY must be an absolute, architecture-matched native .so'
 need_file "$BSF_NATIVE_LIBRARY"
-need_cmd java
 if [[ -n ${JAVA_HOME:-} ]]; then
   need_dir "$JAVA_HOME/lib"
 else
+  need_cmd java
   need_cmd readlink
   java_binary=$(readlink -f "$(command -v java)")
   JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 | sed -n 's/^ *java\.home = //p' | head -1)
   [[ -n $JAVA_HOME ]] || JAVA_HOME=$(dirname "$(dirname "$java_binary")")
 fi
+JAVA_BIN="$JAVA_HOME/bin/java"
+[[ -x $JAVA_BIN ]] || fail "Java executable missing at $JAVA_BIN"
 [[ -f $JAVA_HOME/lib/server/libjvm.so ]] || fail "libjvm.so missing at $JAVA_HOME/lib/server; set JAVA_HOME"
 if [[ -n ${EVIDENCE_DIR:-} ]]; then
   printf 'java_home=%s\nbsf_jar=%s\nbsf_native=%s\n' "$JAVA_HOME" "$BSF_JAR" "$BSF_NATIVE_LIBRARY" >>"$work/receipt.txt"
   sha256sum "$BSF_JAR" "$BSF_NATIVE_LIBRARY" "$BSF_HOME/BSF.CLS" >>"$work/receipt.txt"
-  java -version >>"$work/java-version.txt" 2>&1
+  "$JAVA_BIN" -version >>"$work/java-version.txt" 2>&1
 fi
 export CLASSPATH="$BSF_JAR${BSF_EXTRA_CLASSPATH:+:$BSF_EXTRA_CLASSPATH}"
 mkdir -p "$work/native"
@@ -134,7 +136,7 @@ if [[ -n ${JAVAFX_MODULE_PATH:-} ]]; then
   [[ $JAVAFX_MODULE_PATH != *[[:space:]]* ]] || fail 'JAVAFX_MODULE_PATH with whitespace unsupported by JAVA_TOOL_OPTIONS'
   export JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:-} --module-path=$JAVAFX_MODULE_PATH --add-modules=javafx.graphics,javafx.controls"
 fi
-if ! java --list-modules 2>/dev/null | grep -Eq '^javafx.graphics(@|$)'; then
+if ! "$JAVA_BIN" --list-modules 2>/dev/null | grep -Eq '^javafx.graphics(@|$)'; then
   [[ -n ${JAVAFX_MODULE_PATH:-} || -n ${JAVAFX_CLASSPATH:-} ]] || fail 'JavaFX graphics absent: configure module/class path explicitly'
 fi
 [[ -n ${DISPLAY:-} || -n ${WAYLAND_DISPLAY:-} || ${JDORFX_HEADLESS_OK:-0} == 1 ]] || fail 'JDORFX needs a display or explicit headless configuration'
