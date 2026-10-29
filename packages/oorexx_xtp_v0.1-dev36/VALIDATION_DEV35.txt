@@ -1,0 +1,80 @@
+ooRexx XTP v0.1-dev35: validation record
+==========================================
+
+Architecture: Tom Dyer (decision D-07)
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for dev26 to dev35
+Validation written and run by: Claude (Opus 5.5), 29 October 2026
+Independent review: a fourth separate Claude (Opus 5.5) agent checked dev34 against
+docs/SECURITY.md, with probes and test mutations, before this work.  dev35's own new code
+(the session socket, client keys, the review fixes) was not reviewed independently.
+
+Baseline:  oorexx_xtp_v0.1-dev34 as committed to animatedads/alchemy main in b4558707
+Planner:   oorexx_operational_degradation_planner_v0.1-dev5, built locally
+libcrypto: OpenSSL 3.0.13; ooRexx 5.3.0 r13196; Socket Provider from packages/oorexx_socket_provider/src
+Host:      Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror, run as root
+Evidence class: LOCAL_PASS. FIELD_PASS is NOT claimed.
+
+1. Changes against dev34 (lines added / removed, sha256)
+  rexx/XtpSocketProvider.cls     +213 -0   7caf7feb519f4f28c488f2b06baf6a91c4ae62fe3925baf872c581ee5ca6c8d4
+      XtpSessionSocket, XtpSessionSocketListener, session mode selection by address metadata
+  rexx/XtpLdapKeySource.cls      +79 -27   337b1200a249c3cd271c79b3d69d4ea04dca2e3731244d3f289690486b6a84d3
+      client-owned key sets; sets by DN; serviceBaseDn
+  src/xtp_multipath.cpp          +26 -13   61dd2ae8064a5c44f1bc44e38d78c17b3b91bee0fc57611e4fce6a3909a8b122
+  src/xtp_transport.cpp          +15 -9    5fe8bf634e9cad54a69303450c530856f37740d1311c8786cca5f113f562706a
+  src/xtp_security.cpp           +4 -1     ccad02b31a9b42aba90b55933f43d0900caee02ce5996aff7922411ed6123ae5
+  include/xtp/xtp_security.hpp   +9 -1     3ef36f6ca664dcffc03ebf6c61b2dfd71664520c0a2c595850cf7b92de93a590
+  src/xtp_socket.cpp             +2 -1     a257a705f372ea2d9b1598885e236be6b85089e0718ddd46a84ac429beae5f76
+  src/xtp_rexx_native.cpp        +7 -3     58258f1dba4f4fb2b4ea0818f9fe6d7ba582209bb0bfc5de1f66876d8f9b3094
+  rexx/XtpSession.cls            +5 -3     001e3d0d779aa37e9008c9585fac4966ae21ecf16d8d23ac170ad858cdee1eb9
+  New tests: tests/test_xtp_session_socket_{rexx.sh,client.rex,server.rex}; P28; M13, M14, M20
+  rewritten; hostile LDAP modes client and anchor.
+
+2. SocketProvider stream (tests/test_xtp_session_socket_rexx.sh, two ooRexx processes)
+  PASS pump(300) with nothing to read returned .false after 0.30 s
+  PASS 200,000 bytes written in 7 uneven writes through SocketProvider~streamSender, read to the
+       end with bounded pumps, answered reversed and byte-exact; session protection=encrypt
+
+3. Client keys (gateway mode B)
+  P28  an opener naming no principal used the service key (2801); naming alice used her key
+       (2802), and the listener reported principal alice; naming bob: refused, no active key  PASS
+  hostile LDAP client mode: alice's key installed for principal alice next to the service's;
+       mallory, whose principal sits in the tenant's subtree, skipped and reported             PASS
+
+4. Fourth review findings
+  1 (high) multipath slots: M13 sends 40 transfers claiming 2^20 chunks: memory grew 20 KB;
+           with eager slots (mutation) 958,892 KB, and M13 fails                              PASS
+  2  M13 now keeps each case under its own transfer id, with a 30 s watchdog                 PASS
+  3  M20 counts the contexts the receiver forgets (receiver check every 250 ms); with
+     key_still_valid forced true (mutation) M20 fails                                         PASS
+  4, 5  order lists cleaned on forget and on completion                          inspection
+  6  sets taken by DN; serviceBaseDn: hostile anchor mode, a service principal inside the
+     tenant's subtree is ignored and its key not installed                                    PASS
+  7  ProtectionError: no failover, no path-health mark                           inspection
+  M14 now also replaces genuine DATA with clear DATA carrying the return bit; with the H1
+  fix removed (mutation) M14 fails on both its FIRST and its DATA cases                       PASS
+
+5. Interoperability (PEER_ROOT = committed dev34)
+  I1 dev35 -> dev34  35 resent   I2 dev34 -> dev35  36   I3 dev35 -> dev35  36   all delivered
+  A protected message to a dev34 listener: refused there, nothing delivered.
+
+6. Full regression on dev35 (final run, scratch copy, suites one after another)
+  11 make targets: service 3, capacity-rate 1, auto-key 1, negative 7/7, segmentation 10/10,
+    interop 3/3 + protected 1, sync-diag 5/5, diag-hardening 8/8, session 22/22,
+    security 28/28, message-security 20/20                                      all rc=0
+  30 shell suites, including the new session-socket test, the ooRexx suites and
+    test_storage_capacity_xtp.sh                                                 all rc=0
+  Totals: 231 PASS, 0 FAIL, 1 SKIP (run_tests.sh proxy stress: proxy binary absent)
+
+7. Behaviour changes to note
+  - KeyTable::for_open matches the principal exactly: an opener naming no principal no longer
+    uses a principal's key.
+  - An LDAP key set's owner service name may not contain a slash.
+  - Key and protection refusals (ProtectionError) no longer fail over to other routes or mark
+    them DOWN.
+
+8. Not run
+  - HTTPS (TLS above the stream) over XTP end to end: the consumer is ChatGPT's API Client.
+  - Real Ethernet; the ED209 field path.
+  - An independent review of dev35's own code.
+
+Claude (Opus 5.5)

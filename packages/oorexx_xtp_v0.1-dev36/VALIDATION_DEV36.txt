@@ -1,0 +1,94 @@
+ooRexx XTP v0.1-dev36: validation record
+==========================================
+
+Architecture: Tom Dyer (decision D-07)
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for dev26 to dev36
+Validation written and run by: Claude (Opus 5.5), 29 October 2026
+Requested by: ChatGPT, REQ-00001733 (protection evidence for HTTPS-over-XTP admission)
+Independent review: a separate Claude (Opus 5.5) agent checked the first dev36 build against
+docs/SECURITY.md, "Protection evidence", with its own probes and mutations, before commit.
+All eleven findings are fixed (section 3). The fixes were not reviewed a second time.
+
+Baseline:  oorexx_xtp_v0.1-dev35 as committed to animatedads/alchemy main in a3e2d6c0
+Planner:   oorexx_operational_degradation_planner_v0.1-dev5, built locally
+libcrypto: OpenSSL 3.0.13; ooRexx 5.3.0 r13196; Socket Provider from packages/oorexx_socket_provider/src
+Host:      Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror, run as root
+Evidence class: LOCAL_PASS. FIELD_PASS is NOT claimed.
+
+1. Changes against dev35 (lines added / removed, sha256)
+  src/xtp_rexx_native.cpp        +103 -2   2d2197b3a7e46cdb73ffe65b80e01f1bb5c0a9863ca3cd8f109894bc5d7edd08
+      xtpNativeSessionEvidence, xtpNativeServiceEvidence; key sources limited to ldap, file, api
+  rexx/XtpSession.cls            +72 -6    4067974017bebf468767baac0840b5a3c388bbd1fcc7878dd5a7dac7e9894b3a
+      serviceEvidence, evidence, role, the record kept at close
+  rexx/XtpSocketProvider.cls     +33 -1    a51c49afc05ad8493b9a6faad9f944db5fd0e50af2063e65dff6149e9720edf3
+      XtpSocketBackend~routeEvidence, XtpSessionSocket~evidence and ~routeEvidence
+  src/xtp_security.cpp           +21 -6    c397d83715dd2bcda752ff5bdbadcdd6cd146d4053a61fb1ae0d3b04db84a02a
+  include/xtp/xtp_security.hpp   +9 -1     e2862242cb7eea89aba0a0c8980a5806144a0f6dda49e53dc895c489b55c5e73
+      key serials: a new secret under an existing key id gets a new serial
+  src/xtp_transport.cpp          +13 -11   75c1527205a0fd228260d7bc89cec980e14f4250169571ef2438dea9c657be25
+  include/xtp/xtp_session.hpp    +2 -0     7c89a89569739c01f10324f0a8bc206fa9bf51797fd7c818c13435f5fa5e11df
+      sessions and message contexts check the serial with their key; Session::suite, key_serial
+  New tests: tests/test_xtp_protection_evidence_{rexx.sh,client.rex,server.rex}; M21.
+  Changed tests: test_xtp_service_keys_client.rex (KEYSOURCE=ldap and file); M20 matches the
+  new log text.
+
+2. Protection evidence (tests/test_xtp_protection_evidence_rexx.sh, two ooRexx processes,
+   four sessions; 36 PASS lines, no FAIL)
+  Before the open: the route and key the open would use; MODE; a floor of none does not lower
+    it; a floor of encrypt over an authenticate profile raises it; no key, no principal key,
+    no route (the route is the reason even with no key); client keys; source api for keys
+    installed by calls; a call naming ldap, and an unknown source name, are refused; '=' kept
+    exactly (svc.a=b and svc.a_b stay distinct); an invalid name raises.
+  After the open, at both ends: service, protection, suite, key, principal, profile; a session
+    above its profile shows both; each acceptor reports the opener's key.
+  Key changes, shown at once and then closed by libxtp:
+    retiring           KEYSTATE retiring, session kept, route not openable
+    secret replaced    KEYSTATE replaced, closed after 1.02 s
+    not yet valid      KEYSTATE notyet, closed after about 1 s
+    expired            KEYSTATE expired, closed after 1.02 s
+    revoked            KEYSTATE absent, closed after 0.96 s
+  After close: the record at release, OPEN 0.
+  No secret, and no 64-hex-digit value, in anything either side printed.
+  LDAP test: KEYSOURCE ldap from the real LdapWireServer; file when LDAP is down.
+
+3. Review findings (all fixed; docs/SECURITY.md has the table)
+  Medium: KEYSOURCE was a label any caller set (1); values were rewritten, so two services
+    could look alike (2); a new secret under the same key id went unnoticed and the session
+    ran on (3); the test missed regressions in KEYSTATE, PROFILE and the floor (4).
+  Low: evidence after close raised (5); acceptor choices and listener floor understated in
+    the documentation (6, 7); wrong REASON with neither route nor key (8); a narrow race
+    between choosing and reading the key (9); no MODE (10); one state for three cases (11).
+  Mutation checks on the fixed code, in a scratch copy, each run against the tests:
+    serial check removed         M21 FAIL; ooRexx step 12 FAIL
+    KEYSTATE always active       retiring, notyet, expired checks FAIL
+    floor raises only from none,
+    session PROFILE = protection floor, session-above-profile and acceptor checks FAIL
+  Found by the regression: the first serial code was O(n) per key in a reload (P27: 32,000
+  keys in 797 ms, worst wait 765 ms). Fixed with the reload's existing hash lookup: 46 ms,
+  worst wait 7 ms.
+
+4. Interoperability (PEER_ROOT = committed dev35)
+  I1 dev36 -> dev35  35 resent   I2 dev35 -> dev36  35   I3 dev36 -> dev36  36   all delivered
+  The wire is unchanged in dev36.
+
+5. Full regression on dev36 (final run, scratch copy, suites one after another)
+  11 make targets: service 3, capacity-rate 1, auto-key 1, negative 7/7, segmentation 10/10,
+    interop 3/3 + protected 1, sync-diag 5/5, diag-hardening 8/8, session 22/22,
+    security 28/28, message-security 21/21                                      all rc=0
+  31 shell suites, including the new evidence test, the ooRexx suites and
+    test_storage_capacity_xtp.sh                                                 all rc=0
+  Totals: 270 PASS, 0 FAIL, 1 SKIP (run_tests.sh proxy stress: proxy binary absent)
+
+6. Behaviour changes to note
+  - Re-installing a key id with a different secret now ends the sessions and message
+    contexts under the old secret within about a second, as a revocation does. The same
+    secret again changes nothing.
+  - xtpNativeKeyInstall accepts only source api (or none); xtpNativeKeyReplaceSource only
+    ldap, file or api.
+
+7. Not run
+  - HTTPS (TLS above the stream) over XTP end to end: the consumer is ChatGPT's API Client.
+  - Real Ethernet; the ED209 field path; any MU/MI pair.
+  - A second independent review of the dev36 fixes.
+
+Claude (Opus 5.5)
