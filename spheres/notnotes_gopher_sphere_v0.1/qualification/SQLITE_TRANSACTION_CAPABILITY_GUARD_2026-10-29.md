@@ -63,3 +63,25 @@ journal durability, concurrent sessions, or a real `librexxsql.so` call.
   managed source acceptance, and separate installation qualification.
 
 No live service was changed. No source was merged to main.
+
+## Test-harness correction and negative control
+
+The first local mock used `::method init; expose db` in a subclass of
+`MiniNotesPersistence`. This was **not valid proof** because ooRexx keeps
+instance-variable scope by declaring class: superclass methods saw an
+uninitialised DB variable rather than the injected backend. That initial
+green result is withdrawn.
+
+The corrected test uses `.MiniNotesPersistence~define(... .Method~new(...))`
+to inject a fake backend in **the production class's own scope**, without
+modifying a production source file on disk. It also checks the explicit
+failure message; an unrelated missing-method exception cannot pass.
+Actual local source-equivalent r13196 executions:
+- With the two capability checks inserted: `checks=2`, exit 0.
+- Against the original unguarded October Library source: deliberately failed
+  on the attempted DDL (`DDL must never be reached`), exit 1. The old
+  baseline has no delta method, so this negative control proves the
+  **full-save guard discrimination only**.
+
+The new Git test source includes the corrected injection and message checks.
+**Exact dev18 branch retest and aggregate suite remain NOT_RUN**.
