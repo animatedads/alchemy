@@ -21,7 +21,7 @@
 ::method validate
   expose bridgeDirectory verifyPeer readChunkSize readTimeout writeTimeout
   if bridgeDirectory="" then raise syntax 88.900 array("LDAP client TLS bridgeDirectory required")
-  if verifyPeer<>.true & verifyPeer<>.false then raise syntax 88.900 array("verifyPeer must be logical")
+  if verifyPeer<>.true then if verifyPeer<>.false then raise syntax 88.900 array("verifyPeer must be logical")
   if readChunkSize<1024 | readChunkSize>1048576 then raise syntax 88.900 array("LDAP client TLS readChunkSize out of range")
   if readTimeout<=0 | writeTimeout<=0 then raise syntax 88.900 array("LDAP client TLS timeouts must be positive")
   return self
@@ -187,7 +187,7 @@
     step=tls~sslStep("ssl_read",.array~of(ssl,buffer,n),ssl); rc=step[1]; ec=step[2]
     if \self~drainOutput then return .nil
     if rc>0 then return buffer~bytes~substr(1,rc)
-    if rc=0 & (ec=0 | ec=6) then return ""
+    if rc=0 then if ec=0 | ec=6 then return ""
     if ec=6 then return ""
     if ec=2 then do
       feed=self~receiveEncrypted(config~readTimeout)
@@ -250,6 +250,7 @@
   if \session~handshake then do; detail=session~lastError; session~close; return .DirectoryResult~failure("TLS_HANDSHAKE_FAILED",detail); end
   return .DirectoryResult~success(session)
 failed:
+  if value("LDAP_DIAGNOSTICS",,"ENVIRONMENT") = "1" then say "LDAP trapped condition" condition("C") condition("D") "RC=" rc "SIGL=" sigl
   return .DirectoryResult~failure("TLS_PROVIDER_FAILED",condition("D"))
 ::method capabilities
   expose context
