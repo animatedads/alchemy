@@ -1,6 +1,6 @@
 # Missing work — Messaging & Presence / XMPP / BOSH
 
-Checked 2026-10-27.
+Checked 2026-10-29.
 
 This list is deliberately limited to work that cannot be honestly closed from the current repository and Library evidence.
 
@@ -24,11 +24,12 @@ This list is deliberately limited to work that cannot be honestly closed from th
    - Current evidence does not prove a generic shared-provider same-stream TLS-upgrade seam.
    - Required action: qualify an explicit lower transport/TLS operation before enabling XMPP SASL over STARTTLS.
 
-5. **BOSH/API Client adapter qualification and lower selector backend**
-   - API Client v0.4.1 is the authoritative outbound HTTP/HTTPS client and the new separate `oorexx_bosh_api_client_adapter` source candidate binds `BoshHttpExchangeProvider` to `ApiRequest` / `ApiResponse`.
-   - The candidate is rebased onto current main, preserves rich ooRexx header/route objects, denies cleartext HTTP by default, and has no XMPP/SocketProvider/XTP dependency.
-   - Required action: execute its deterministic test under ooRexx r13196 and current exact roots, then qualify live HTTPS.
-   - HTTPS-over-XTP remains lower-layer work because API Client v0.4.1 currently documents RxSock socket ownership. Add/qualify a shared SocketProvider/selector backend there; do not put XTP knowledge into BOSH or this adapter.
+5. **Runtime qualification of integrated BOSH/API Client and SocketProvider seams**
+   - `oorexx_bosh_api_client_adapter` is now integrated on `main` at squash merge `12077975acaa9610ad1c696a703ce9f698b928ad`.
+   - `oorexx_api_client_socket_provider_adapter` and the optional `ApiSocketConnector` seam are integrated on `main` at squash merge `265aeaa86714cfc5c014b9b4cca136d9e6c9476d`.
+   - RxSock remains the API Client default. The provider adapter preserves the exact selected `SocketAddress` and fails closed unless native `SELECT`, `PUMP` or `POLL` readiness exists.
+   - Required action: run both deterministic suites under ooRexx r13196 from a checkout containing current `main`, then qualify an exact current XTP dev33 stream and live HTTPS over that carrier.
+   - Do not add XTP selection to BOSH or API Client; current XTP dev33 remains behind SocketProvider and now provides per-service protection using LDAP Identity Directory / Secret Broker key sources.
 
 6. **Rasen Falcon sphere-checker configuration**
    - GitHub sphere content exists and the authenticated Rasen Falcon lane `messaging-presence` links the sphere artifact.
