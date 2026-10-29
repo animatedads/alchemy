@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.renderer-neutrality",
+  "version": "0.4",
+  "sphere": "wire-ui-runtime",
+  "title": "Renderer neutrality: Web, Swing, GTK/Direct Linux and Android must agree",
+  "summary": "All first-class renderers implement one Wire semantic contract. Native presentation may differ, but exact identities, revisions, semantic actions, bounded demand, resource authority, observation/subscription meaning and fail-closed behaviour must not drift.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Do not fork journey, business, security, resource or observation semantics by renderer.",
+    "Exact definitionId@version and event-time renderedRevision have one meaning on every renderer.",
+    "Virtual collections select/activate by stable application identity; row ordinal is never semantic identity.",
+    "Bounded virtual demand is RangeRequested(start,count); renderer reports need, application/source authority decides what data to project.",
+    "Workspace-bound actions carry exact opaque server-projected workspaceContext captured at the same event-time boundary as renderedRevision.",
+    "Required customer-facing resources are exact published ResourceRefs; renderers must not invent labels, URLs or copy.",
+    "Renderer-owned styling, including Swing chips or GTK/Android presentation choices, must not create or deny semantic actions.",
+    "A renderer is conformant only when a real adapter emits the canonical normalized transcript and the comparator passes."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev11.zip",
+      "sha256": "294be3939be9ff0fc32c057c1d7e0287ba7d3f074fdda9663c6da48fe9bd8ad7",
+      "member": "wire_ui_swing_v0.2-dev11/VALIDATION_DEV11.txt",
+      "claim": "59/59 dev11 presentation regression; semantic baseline retained from dev10 including RangeRequested/workspace context."
+    },
+    {
+      "artifact": "wire_direct_linux_v0.1-dev38.zip",
+      "sha256": "e39e0ac7bd1e9b15dd704cbedf9ee40ab1a871481b344a457da35c57d7f81686",
+      "member": "wire_direct_linux_v0.1-dev38/tests/test_ui_proxy.rex",
+      "claim": "Renderer-neutral semantic UI proxy and semantic activation."
+    },
+    {
+      "artifact": "wire_direct_linux_v0.1-dev38.zip",
+      "sha256": "e39e0ac7bd1e9b15dd704cbedf9ee40ab1a871481b344a457da35c57d7f81686",
+      "member": "wire_direct_linux_v0.1-dev38/tests/test_mailreader_roundtrip.rex",
+      "claim": "Stable application identity and renderer-neutral roundtrip."
+    },
+    {
+      "artifact": "VISUAL_REXX_ARCHAEOLOGY_WIRE_UI_HANDOVER_20260920.md",
+      "sha256": "45cf9c3d8d5544c39edb32a92fc7d18e6cfbffa6d46f0ed5bc004f53a9068734",
+      "claim": "Explicit no-drift doctrine across GTK/Linux, Android, Web/Swing and Windows.",
+      "member": "VISUAL_REXX_ARCHAEOLOGY_WIRE_UI_HANDOVER_20260920.md"
+    }
+  ],
+  "related_spheres": [
+    "wire-ui",
+    "wire-ui-builder",
+    "wire-ui-swing"
+  ]
+}

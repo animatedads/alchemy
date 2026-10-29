@@ -1,0 +1,61 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.architecture",
+  "version": "0.4",
+  "sphere": "wire-ui-runtime",
+  "title": "Wire UI runtime architecture: server truth, renderer access points",
+  "summary": "Wire UI is a renderer-neutral, queue-connected presentation protocol. Authoritative application truth lives in ooRexx/server objects; Web, Swing, GTK/Direct Linux and Android are peer access points that consume the same semantic state and emit the same semantic actions.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Business state, journey state, security decisions, pricing and transaction authority remain server-side.",
+    "Web, Swing, GTK/Direct Linux and Android are access points, never independent application models.",
+    "Stable semantic element identity is not a DOM node, JComponent, GtkWidget, Android View/Compose node or HWND.",
+    "Builder authoring truth is semantic and renderer-neutral; toolkit construction never enters ordinary application Rexx.",
+    "Queue Fabric remains the live transport substrate where remote transport is used; HTTP/static delivery does not become a second business API.",
+    "Semantic activation enters Wire action/event machinery and never synthesizes toolkit-native input."
+  ],
+  "procedure": [
+    "Bind the running application to an exact compiled site release.",
+    "Select an authorised renderer profile from capability facts.",
+    "Deliver exact definitions/material/resource references required by active subscriptions.",
+    "Render the authoritative snapshot and revisioned patches.",
+    "Return only semantic actions carrying exact rendered-revision context."
+  ],
+  "related_spheres": [
+    "wire-ui",
+    "wire-ui-builder",
+    "wire-ui-swing"
+  ],
+  "provenance": [
+    {
+      "artifact": "VISUAL_REXX_ARCHAEOLOGY_WIRE_UI_HANDOVER_20260920.md",
+      "sha256": "45cf9c3d8d5544c39edb32a92fc7d18e6cfbffa6d46f0ed5bc004f53a9068734",
+      "claim": "Cross-renderer doctrine, stable identity, semantic activation, Android convergence and WireUIProxy boundary.",
+      "member": "VISUAL_REXX_ARCHAEOLOGY_WIRE_UI_HANDOVER_20260920.md"
+    },
+    {
+      "artifact": "wire_ui_server_v0.17.1.zip",
+      "sha256": "5a20d6da1866cecad9c452915616cb6926d3291c74a82c0dc69252963a96fb33",
+      "member": "wire_ui_server_v0.17.1/README.md",
+      "claim": "Server-authoritative WIRE-UI/0.1 runtime and projection boundary."
+    },
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev6.zip",
+      "sha256": "67cc8fd08172e3efa45f9eb6bbecadaa576b3c713508b7f5d5c902208f40ebcc",
+      "member": "alchemy_wire_ui_js_v0.4-dev6/README.md",
+      "claim": "Current application-integration browser access-point baseline."
+    },
+    {
+      "artifact": "wire_ui_swing_v0.2-dev11.zip",
+      "sha256": "294be3939be9ff0fc32c057c1d7e0287ba7d3f074fdda9663c6da48fe9bd8ad7",
+      "member": "wire_ui_swing_v0.2-dev11/VALIDATION_DEV11.txt",
+      "claim": "Current Swing renderer presentation head, retaining dev10 semantic/runtime authority baseline."
+    },
+    {
+      "artifact": "wire_direct_linux_v0.1-dev38.zip",
+      "sha256": "e39e0ac7bd1e9b15dd704cbedf9ee40ab1a871481b344a457da35c57d7f81686",
+      "member": "wire_direct_linux_v0.1-dev38/QUALIFICATION_DEV38.txt",
+      "claim": "Current supplied Direct Linux archive; semantic renderer line with known internal version-label debt."
+    }
+  ]
+}

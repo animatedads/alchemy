@@ -1,0 +1,52 @@
+{
+  "schema": "rasenfalcon-wire-surface-readiness/0.2",
+  "captured": "2026-10-29",
+  "status": "NOT_READY",
+  "public_apex": {
+    "delivery": "rasenfalcon_delivery_v0.4.5",
+    "git_commit": "ff9643b8418b971452c457e23c468d0c55e82939",
+    "status": "NOT_READY",
+    "gates": {
+      "source_on_main": true,
+      "review_stage_materialised": true,
+      "public_role_source_slice_assembled": true,
+      "public_role_manifest_verified": true,
+      "content_approval_accepted": false,
+      "owned_https_service_unit_admitted": false,
+      "exact_https_0_4_8_runtime_qualified": false,
+      "live_tls_qualified": false,
+      "nonproduction_install_observed": false,
+      "running_observed": false
+    },
+    "ldap_required": false,
+    "rule": "Public rasenfalcon.com is a separate security boundary. LDAP/private mTLS must not be propagated to the public apex."
+  },
+  "private_noc_office": {
+    "policy_source": "rasenfalcon_delivery_v0.4.5/handoff/contracts/PRIVATE_HTTPS_POLICY.json",
+    "status": "NOT_READY",
+    "ldap": {
+      "candidate": "oorexx_ldap_identity v0.1-dev23",
+      "git_pr": 71,
+      "head": "725502de4aee93397e8e99bfb7c4446d07cb12c9",
+      "merged_to_main": false,
+      "installed": false,
+      "live_ldaps_bind_search_revoke": false
+    },
+    "gates": {
+      "owned_https_instance": false,
+      "private_ca_server_leaf": false,
+      "device_mtls_live": false,
+      "active_ldap_principal_attribution": false,
+      "explicit_HTTPS_LOGIN_authority": false,
+      "no_fallback_identity_store": true
+    },
+    "rule": "Private NOC/Office requires dedicated owned HTTPS, device mTLS, active attributed LDAP principal and explicit HTTPS_LOGIN. Source/PR evidence is not installation."
+  },
+  "wire_application": {
+    "deployment_candidate": "wire_application_deployment_v0.1_candidate3",
+    "durable_ingress_qualified": true,
+    "live_browser_semantic_roundtrip": false,
+    "rule": "Durable Queue Fabric ingress does not prove an HTTPS/WSS browser semantic session."
+  },
+  "overall_rule": "Source-only, source-slice, review-staged, PR-open and locally-qualified states must never be reported as installed or running."
+}
