@@ -1,0 +1,52 @@
+{
+  "kind": "article",
+  "id": "xtp.start",
+  "sphere": "xtp",
+  "version": "0.1-dev1",
+  "title": "Current baselines and development state",
+  "section": "start",
+  "summary": "XTP dev25 and Planner dev5 are latest inspected local source candidates, Storage Fabric dev23 is a companion pressure candidate, and XTP route/service publication candidate1 is OFFLINE contract evidence only. GitHub main acceptance and ED209 field promotion are separate facts.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "Never promote a development ZIP because it is newer than accepted main",
+    "The 2026-10-22 handover pinned Planner dev4 as earlier head, superseded locally by dev5 pressure changes",
+    "Do not call a GitHub Autobuild submission accepted until an acceptance receipt confirms it",
+    "ooRexx r13196 local UDP qualification does not imply raw36/L2 field qualification",
+    "Kernel AF_XTP scaffolding and endpoint ROUTE/XROUTE exchange are not multi-hop routing"
+  ],
+  "procedure": [
+    "Review src manifest SHA-256 before tests",
+    "Read xtp.qualification before any field rollout",
+    "Use exact stored source members when planning changes"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/README.md",
+      "claim": "XTP v0.1-dev25 source candidate"
+    },
+    {
+      "artifact": "oorexx_operational_degradation_planner_v0.1-dev5.zip",
+      "sha256": "422dd2a2f2ef03ab9376e7e3f7ed9a847eb6212cf03eeba84a909ccd133b5479",
+      "member": "oorexx_operational_degradation_planner_v0.1-dev5/README.md",
+      "claim": "dev5 planner pressure changes"
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev23(2).zip",
+      "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
+      "member": "oorexx_storage_fabric_v0.1-dev23/tests/test_parallel_fetch_pressure.rex",
+      "claim": "Storage concurrent fan-in pressure test"
+    },
+    {
+      "artifact": "xtp_route_publication_v0.1_candidate1.zip",
+      "sha256": "f7d244551a8c7c3372ac723b9a40e04adfafbc46d09d9498eea7c0dfab53d5df",
+      "member": "xtp_route_publication_v0.1_candidate1/README.md",
+      "claim": "offline provisioning contract only"
+    }
+  ],
+  "qualification_boundaries": {
+    "source_package": "inspected archive hashes; no native field rollout in this sphere",
+    "source_acceptance": "not a main-branch or release declaration"
+  }
+}
