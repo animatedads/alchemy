@@ -15,3 +15,7 @@ Start:
 
 For source archaeology use the exact project ZIP and the shared archive/source examiner.
 
+
+## 29 October 2026 source-review addendum
+
+See `queue-fabric.xtp-protected-session` for XTP dev34 encrypted session-wire candidate, Queue Fabric application-receipt separation and outstanding MI-MU/LDAP integration gates. This is a review-branch update, not a promoted Gopher sphere or executable Queue Fabric-over-XTP release. Autobuilder is stopped.

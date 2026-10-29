@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "queue-fabric.xtp-protected-session",
+  "version": "0.2-source-review",
+  "sphere": "queue-fabric",
+  "section": "integration",
+  "authority": "project-artifact",
+  "title": "XTP dev34 protected session wire and Queue Fabric durable receipt boundary",
+  "summary": "Source-review candidate implements a real XtpSession-shaped ooRexx transport collaborator and fail-closed Queue Fabric receipt gate, with r13196 injected-session tests; not yet a qualified authenticated Queue Fabric over XTP implementation.",
+  "invariants": [
+    "XTP dev34 provides per-service encrypt/authenticate on sessions, named messages, streams and multipath. The authoritative LDAP/Secret Broker service key registry is independent of Queue Fabric manager/channel ACL.",
+    "XtpSession~open(peer,service,timeout,'encrypt') must be invoked only for a Service Descriptor resolved logical route peer and registered service. Verify PROTECTION, SERVICE, PEER and KEYID before writing payload.",
+    "XTP CNTL, ECHO, DIAG, encrypted-session establishment and multicast quorum are not durable Queue Fabric receiver receipts.",
+    "Bound reply size and read timeout. A missing/truncated/oversized/unverified response is uncertain; QueueChannelFabric~pump must RELEASE its transmission item, not ACK.",
+    "Only the injected authenticated queue.transport/2 proof verifier may turn an XTP application reply into QueueOperationResult success with matched transferId, queueName, source manager and durable receipt markers.",
+    "Queue Fabric v0.9-dev6 TCP/TLS socket transport remains independently supported. SocketSelector and ConnectSelector are not replaced by an XTP-only selector.",
+    "Candidate local ZIP sha256 8e941fdbbb2df8aad1bbf5ebe050a6d0498cb7b8b416f3c82c7b319f8dc2d9ce passed 18 session-wire and 13 receipt-gate r13196 mock assertions. GitHub source review variant requires its own execution before promotion.",
+    "Still missing actual queue.transport/2 over XTP server/client authentication, graph codec, remote UOW reply, live LDAP/Secret Broker provisioning, Planner/WLU admission, multicast durable per-manager repair and ED209 MI-MU L2/raw36/authorized UDP field tests.",
+    "Autobuilder is stopped on 2026-10-29; the candidate branch is neither installed nor accepted source."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "packages/oorexx_xtp_v0.1-dev34/rexx/XtpSession.cls",
+      "claim": "Interactive protected session API."
+    },
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "packages/oorexx_xtp_v0.1-dev34/docs/SECURITY.md",
+      "claim": "Per-service key source and cryptographic scope."
+    },
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "packages/oorexx_queue_fabric_v0.9-dev6/src/ObjectQueueChannels.cls",
+      "claim": "QueueChannelFabric pump release/ack ownership."
+    },
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "review/queue-fabric-xtp-session-wire-candidate1/src/QueueXtpSessionWire.cls",
+      "claim": "New candidate source-only collaborator; qualification pending."
+    }
+  ]
+}
