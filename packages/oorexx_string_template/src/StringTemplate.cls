@@ -1,6 +1,6 @@
 /*
  * StringTemplate.cls
- * ooRexx String Template v0.1-dev2
+ * ooRexx String Template v0.1-dev3
  *
  * Safe, compiled string interpolation for ooRexx.
  * Template text is data.  It is never passed to INTERPRET and arbitrary
@@ -184,8 +184,9 @@
 ::class TemplateFormatterRegistry public
 
 ::method init
-  expose _formatters
+  expose _formatters _sealed
   _formatters = .Directory~new
+  _sealed = .false
 
 ::method default class
   registry = self~new
@@ -198,8 +199,9 @@
   return registry
 
 ::method register
-  expose _formatters
+  expose _formatters _sealed
   use strict arg name, formatter
+  if _sealed then raise syntax 88.900 array("template formatter registry is sealed")
   name = name~strip~lower
   if name = "" then raise syntax 88.900 array("formatter name is required")
   if \formatter~isa(.TemplateFormatter) then raise syntax 88.900 array("formatter must subclass TemplateFormatter")
@@ -217,6 +219,23 @@
   key = name~lower
   if \_formatters~hasIndex(key) then raise syntax 88.900 array("unknown template formatter: " || name)
   return _formatters[key]
+
+::method isSealed
+  expose _sealed
+  return _sealed
+
+::method seal
+  expose _sealed
+  _sealed = .true
+  return self
+
+::method snapshot
+  expose _formatters
+  copy = .TemplateFormatterRegistry~new
+  do name over _formatters
+    copy~register(name, _formatters[name])
+  end
+  return copy~seal
 
 
 ::class TemplateRenderPolicy public
@@ -354,7 +373,7 @@
   end
   formatter = formatters~formatter(_formatterName)
   formatted = formatter~format(resolved~value, _formatterArgument)
-  return policy~escape(formatted)
+  return policy~escape(formatted~string)
 
 
 ::class TemplateParser public
@@ -425,6 +444,7 @@
     end
   end
   if path = "" then raise syntax 88.900 array("template path is empty: " || expression)
+  if formatterName = "" then raise syntax 88.900 array("template formatter name is empty: " || expression)
   self~validatePath(path)
   parsed[1] = path
   parsed[2] = formatterName
@@ -470,7 +490,7 @@
   _source = source
   if formatters == .nil then formatters = .TemplateFormatterRegistry~default
   if \formatters~isa(.TemplateFormatterRegistry) then raise syntax 88.900 array("formatters must be a TemplateFormatterRegistry")
-  _formatters = formatters
+  _formatters = formatters~snapshot
   _segments = .TemplateParser~new~parse(source)
   _variables = self~collectVariables(_segments)
   _formatterNames = self~collectFormatterNames(_segments)
@@ -502,14 +522,8 @@
 ::method render
   expose _segments _formatters
   use strict arg context, policy=.nil
-  if context~isa(.Directory) then do
-    converted = .TemplateContext~new
-    do key over context
-      converted~put(key, context[key])
-    end
-    context = converted
-  end
-  if \context~isa(.TemplateContext) then raise syntax 88.900 array("render context must be TemplateContext or Directory")
+  self~validateBindings
+  context = self~normaliseContext(context)
   if policy == .nil then policy = .TemplateRenderPolicy~strictPlain
   if \policy~isa(.TemplateRenderPolicy) then raise syntax 88.900 array("render policy must be TemplateRenderPolicy")
   output = ""
@@ -521,14 +535,8 @@
 ::method renderTo
   expose _segments _formatters
   use strict arg sink, context, policy=.nil
-  if context~isa(.Directory) then do
-    converted = .TemplateContext~new
-    do key over context
-      converted~put(key, context[key])
-    end
-    context = converted
-  end
-  if \context~isa(.TemplateContext) then raise syntax 88.900 array("render context must be TemplateContext or Directory")
+  self~validateBindings
+  context = self~normaliseContext(context)
   if policy == .nil then policy = .TemplateRenderPolicy~strictPlain
   if \policy~isa(.TemplateRenderPolicy) then raise syntax 88.900 array("render policy must be TemplateRenderPolicy")
   written = 0
@@ -538,6 +546,36 @@
     written += text~length
   end
   return written
+
+::method normaliseContext
+  use strict arg context
+  if context~isa(.Directory) then do
+    converted = .TemplateContext~new
+    do key over context
+      converted~put(key, context[key])
+    end
+    return converted
+  end
+  if \context~isa(.TemplateContext) then raise syntax 88.900 array("render context must be TemplateContext or Directory")
+  return context
+
+::method missingFormatterNames
+  expose _formatterNames _formatters
+  missing = .Array~new
+  do name over _formatterNames
+    if \_formatters~has(name) then missing~append(name)
+  end
+  return missing
+
+::method validateBindings
+  missing = self~missingFormatterNames
+  if missing~items > 0 then raise syntax 88.900 array("unknown template formatter: " || missing[1])
+  return self
+
+::method withFormatters
+  expose _source
+  use strict arg registry
+  return .StringTemplate~new(_source, registry)
 
 ::method collectVariables
   use strict arg segments
