@@ -275,11 +275,12 @@
   return out
 ::method planRunsForPurpose
   expose coverageProviders
-  use strict arg purposeName, text, maxFamilies=16, language=""
+  use strict arg purposeName, text, maxFamilies=16, language="", requiredFormat=""
   runPlan=.FontRunPlan~new(purposeName,text)
   if text=="" then return runPlan
   query=self~queryForPurpose(purposeName)
   if language<>"" then query~language=language
+  if requiredFormat<>"" then query~format=requiredFormat
   chars=self~utf8Characters(text)
   unique=.Directory~new; covered=.Directory~new; selected=.Array~new; selectedIds=.Directory~new
   do ch over chars
@@ -287,7 +288,13 @@
   end
   remaining=unique~items
 
-  primary=self~find(query)
+  if requiredFormat=="" then primary=self~find(query)
+  else do
+    primary=.nil
+    do candidate over self~matches(query)
+      if translate(candidate~face~format)==translate(requiredFormat) then do; primary=candidate; leave; end
+    end
+  end
   if primary<>.nil then do
     plan=self~glyphPlan(primary~face,text)
     added=self~recordCoverage(plan,unique,covered)
@@ -314,6 +321,7 @@
         end
         if cp>0 then do provider over coverageProviders
           face=provider~findCovering(query,cp,language)
+          if face<>.nil then if requiredFormat<>"" then if translate(face~format)<>translate(requiredFormat) then face=.nil
           if face<>.nil then do
             self~registerFace(face)
             if \selectedIds~hasIndex(face~id) then do
@@ -339,6 +347,7 @@
     candidates=self~fallbackMatches(query,maxFamilies)
     do match over candidates
       if remaining<=0 then leave
+      if requiredFormat<>"" then if translate(match~face~format)<>translate(requiredFormat) then iterate
       if \selectedIds~hasIndex(match~face~id) then do
         plan=self~glyphPlan(match~face,text)
         added=self~recordCoverage(plan,unique,covered)
