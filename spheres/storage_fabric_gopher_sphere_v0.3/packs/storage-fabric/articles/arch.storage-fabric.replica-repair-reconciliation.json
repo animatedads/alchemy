@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "arch.storage-fabric.replica-repair-reconciliation",
-  "version": "0.3-continuation-20261027",
+  "version": "0.3-continuation-20261029",
   "sphere": "storage-fabric",
   "title": "Durable replica repair and topology reconciliation",
   "summary": "Provider and topology transitions are committed by Storage authority first, then affected StorageRefs are re-assessed against current replica policy. Missing policy fails closed rather than defaulting to one replica. Real deficits become durable Queue Fabric repair work; replayed work re-assesses before copying, and release-line compatibility is gated by protected semantics rather than version labels.",
@@ -26,7 +26,13 @@
     "The Library dev24 standards report is FAIL and does not prove the divergent dev23/networking/dev22(1) lines were coherently merged.",
     "Queue Fabric claim tokens are authority-bearing queue state. Storage repair must read packageId and claimToken from the claimed Queue Package and must never derive them from repair id, correlation id or telemetry.",
     "A successful semantic repair is ACKed only after Storage reports success; semantic failure is NACKed into Queue Fabric retry/backout/dead-letter handling.",
-    "ACK failure after an already-successful Storage repair is surfaced as ACK_FAILED_AFTER_REPAIR. The adapter does not guess whether another ACK or NACK is safe; replay safety comes from re-assessing current Storage policy."
+    "ACK failure after an already-successful Storage repair is surfaced as ACK_FAILED_AFTER_REPAIR. The adapter does not guess whether another ACK or NACK is safe; replay safety comes from re-assessing current Storage policy.",
+    "Repair destination selection is Storage policy, not Job-to-Node execution placement. The planner may consume provider performance/locality evidence but does not allocate an execution node.",
+    "A repair destination must produce positive bounded gain against requiredReplicas, distinctVendors, distinctSites or distinctFailureDomains before optimisation preference is considered.",
+    "Provider preference is a tiebreaker only. Fast Azure Store-to-Git may rank highly when measured, but provider/vendor identity itself is not performance evidence.",
+    "Source materialisation must be independently digest-verified against the StorageRef before destination storage begins.",
+    "The materialisation resolver may use authenticated XTP named Storage services for MU/MI transfer but exposes only verified local staged bytes to the repair planner; carrier, route, IP and port stay outside repair policy.",
+    "A Git repair is admitted only after the existing Git provider confirms the remote ref/commit and verifies the object, returning an AVAILABLE/VERIFIED/SAFE durable StorageLocation."
   ],
   "procedure": [
     "Commit the provider/location transition in Storage authority.",
@@ -39,7 +45,12 @@
     "Choose an eligible destination through placement policy, then copy, independently verify and admit the new location.",
     "Re-assess current policy; ACK only after protection is satisfied, otherwise NACK/retry according to Queue Fabric policy.",
     "Publish bounded Instrumentation Mesh repair/progress observations only after the corresponding authoritative transition succeeds.",
-    "Claim one durable repair package through the current Queue Fabric manager, execute its payload, then ACK the exact package/token on Storage success or NACK it on semantic failure."
+    "Claim one durable repair package through the current Queue Fabric manager, execute its payload, then ACK the exact package/token on Storage success or NACK it on semantic failure.",
+    "Resolve a verified local source through the injected materialisation resolver.",
+    "Simulate each eligible repair destination as a durable StorageLocation and calculate bounded policy gain.",
+    "Reject zero-gain destinations; break equal-gain ties only with injected observed preference.",
+    "Invoke the selected provider store operation and admit only its returned verified durable location.",
+    "Let the repair execution boundary re-assess the authoritative requirement before Queue Fabric ACK."
   ],
   "topics": [
     "replica repair",
@@ -95,7 +106,19 @@
       "sha256": "git-source-evidence",
       "member": "src/StorageRepairQueue.cls",
       "claim": "Exact Queue Fabric worker adapter; local static contract suite passed before publication."
+    },
+    {
+      "artifact": "packages/oorexx_storage_fabric_instrumentation_mesh_v0.1-dev8",
+      "sha256": "git-source-evidence",
+      "member": "src/StorageRepairPlanner.cls",
+      "claim": "Executable repair destination policy/provider seam, Git adapter and verified materialisation boundary."
+    },
+    {
+      "artifact": "packages/oorexx_storage_fabric",
+      "sha256": "git-source-evidence",
+      "member": "src/StorageGit.cls",
+      "claim": "Existing first-class storage.fabric.git/0.1 provider performs bounded chunking, remote push/ref confirmation, fetch and post-push verification before returning a durable StorageLocation."
     }
   ],
-  "qualification_boundary": "Dev7 local static tests pass for instrumentation, durable queue payload, topology reconciliation, fail-closed policy, Mesh dev8 pin and exact Queue Fabric worker call shape. No local ooRexx runtime was available; runtime/real durable-store evidence remains delegated to the test-only Rasen Falcon request."
+  "qualification_boundary": "Dev8 source and static contract are committed as a development increment. Real Git/Azure store execution and XTP MU/MI materialisation remain separately qualified provider/transport operations; no field deployment is claimed by this sphere update."
 }

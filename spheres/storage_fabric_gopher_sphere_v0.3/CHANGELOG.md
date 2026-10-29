@@ -1,5 +1,14 @@
 # Changelog
 
+## Repository continuation — 2026-10-29
+- Add executable Storage repair destination planner contract.
+- Add Git repair adapter over existing storage.fabric.git/0.1 post-push verification.
+- Require policy gain before performance/locality preference can rank a repair target.
+- Require digest-verified staged source before destination provider write.
+- Define sourceResolver seam for Storage XTP / MU-MI materialisation without transferring replica-placement authority.
+- Keep Job-to-Node out of durable replica repair destination choice.
+
+
 ## Repository continuation — 2026-10-27 worker binding
 - Add Storage repair dev7 exact Queue Fabric dev6 CLAIM/ACK/NACK adapter.
 - Preserve Queue Package claimToken/packageId as the only acknowledgement authority.
