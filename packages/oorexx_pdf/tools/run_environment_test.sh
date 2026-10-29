@@ -55,10 +55,20 @@ if command -v fc-match >/dev/null 2>&1 && command -v pyftsubset >/dev/null 2>&1 
   fi
   if command -v pdftotext >/dev/null 2>&1; then
     pdftotext -layout "$OUTDIR/managed-unicode.pdf" "$OUTDIR/managed-unicode.txt"
+  pdftotext -layout "$OUTDIR/mixed-fallback.pdf" "$OUTDIR/mixed-fallback.txt"
+  grep -q "日本語" "$OUTDIR/mixed-fallback.txt"
+  grep -q "Καλημέρα" "$OUTDIR/mixed-fallback.txt"
+  grep -q "Привет" "$OUTDIR/mixed-fallback.txt"
     grep -q 'naïve assumptions' "$OUTDIR/managed-unicode.txt"
     grep -q 'Καλημέρα' "$OUTDIR/managed-unicode.txt"
     grep -q 'Привет' "$OUTDIR/managed-unicode.txt"
   fi
+fi
+
+if command -v pdffonts >/dev/null 2>&1; then
+  pdffonts "$OUTDIR/mixed-fallback.pdf" > "$OUTDIR/mixed-fallback.pdffonts.txt"
+  grep -q "CID TrueType" "$OUTDIR/mixed-fallback.pdffonts.txt"
+  if grep -q "CID Type 0C" "$OUTDIR/mixed-fallback.pdffonts.txt"; then echo "FAIL unexpected CFF/CID Type0 font in dev6" >&2; exit 9; fi
 fi
 
 echo "PASS environment qualification: $OUTDIR"
