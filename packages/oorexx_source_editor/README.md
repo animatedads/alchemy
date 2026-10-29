@@ -1,4 +1,4 @@
-# ooRexx Source / Code / Class Editor v0.1-dev6
+# ooRexx Source / Code / Class Editor v0.1-dev7
 
 A native ooRexx implementation of the NewShell code/class editing model. This is **not** the emergency line editor. It is the normal development/source editing API that AI assistants, NewShell tools, class builders and CLI UI front-ends can consume.
 
@@ -51,11 +51,11 @@ Both operations accept `text` or `code`. `code` mode first uses the language-awa
 CLI forms:
 
 ```text
-code-editor find FILE NEEDLE [text|code [sensitive|insensitive]]
-code-editor grep FILE REGEX [text|code [sensitive|insensitive]]
+code-editor find FILE WORDS... [--mode text|code] [--case sensitive|insensitive]
+code-editor grep FILE REGEX... [--mode text|code] [--case sensitive|insensitive]
 ```
 
-The current development CLI receives a flattened command tail from the ooRexx launcher. Multi-word patterns therefore remain an explicit CLI parser backlog item; the object API itself accepts arbitrary strings correctly.
+Dev7 adds `SourceEditorCliSearchArgs`: the flattened command tail is interpreted as a complete middle-field search expression plus explicit `--mode` / `--case` switches. The older single-token positional form remains compatible.
 
 ## Class editing
 
@@ -112,7 +112,7 @@ The runtime/package path must make the declared `::requires` dependencies resolv
 
 ## Current limitations
 
-C/C++ symbol discovery is a deterministic lexical/brace scanner, not a substitute for a compiler AST. It deliberately reports only ranges it can bound. A future compiler-backed provider can strengthen symbol/reference evidence while preserving the same editor API. JSON structural mutation by JSON Pointer, semantic C++ references, atomic publication, and robust multi-word CLI argument transport remain next gates.
+C/C++ symbol discovery is a deterministic lexical/brace scanner, not a substitute for a compiler AST. It deliberately reports only ranges it can bound. A future compiler-backed provider can strengthen symbol/reference evidence while preserving the same editor API. JSON structural mutation by JSON Pointer, semantic C++ references, and richer guarded change/reference navigation remain next gates.
 
 ## Dev5 completion and semantic-source boundary
 
@@ -141,3 +141,21 @@ Dev6 removes Source Editor's direct live-file replacement path. Save now:
 5. exposes the returned `AtomicFileResult` objects.
 
 If Atomic File reports `published=.true` but `ok=.false` (for example a post-rename parent-directory sync failure), SourceDocument updates its remembered generation to the published candidate before surfacing the durability failure. It therefore never pretends the old source is still current after a partially satisfied durability promise.
+
+
+## Dev7 multi-word CLI search
+
+Dev7 removes the old assumption that host-shell quoting can be reconstructed after ooRexx receives the flattened script command tail. `SourceEditorCliSearchArgs` instead treats all non-option middle tokens as the search expression and gives mode/case explicit syntax:
+
+```text
+code-editor find FILE words with spaces --mode code --case insensitive
+code-editor grep FILE regular expression here --mode text --case sensitive
+```
+
+The historical single-token positional form remains supported:
+
+```text
+code-editor grep FILE token code insensitive
+```
+
+For multi-word expressions, explicit switches avoid ambiguity when the expression itself ends in words such as `code` or `sensitive`. The parser is native ooRexx and has regression coverage for both the multi-word and compatibility forms.
