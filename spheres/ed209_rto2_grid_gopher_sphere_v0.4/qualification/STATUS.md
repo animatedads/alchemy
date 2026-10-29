@@ -9,3 +9,5 @@
 - R-10 MI-only digital result attribution remains open.
 - Live controller-committed F/H 4/4 and estate 20/20: NOT OBSERVED.
 - Reboot persistence, failover promotion, WAN service-first federation and mirrored RTO2 replay: NOT ACCEPTED.
+
+- **2026-10-29:** Grid dev17 native runtime: authorization PASS, RPC dispatcher/ACL PASS, five static tests PASS on ooRexx 5.3.0 r13196. Earlier dev16 NOT_RUN claim superseded for this local test only; field 20/20 still NOT_ACCEPTED.

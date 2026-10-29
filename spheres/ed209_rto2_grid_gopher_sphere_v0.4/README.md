@@ -43,3 +43,7 @@ Use `gopher --profile ed209-rto2-grid context ed209-rto2-grid --full` after inst
 A single run ID must still produce twenty distinct authenticated and locally committed RTO2 receipts, one from each assigned MI route, all computing `500500`. Synthetic fixtures, source publication, LDAP authorization tests and XTP local tests do not substitute for that field gate.
 
 Tracking: https://github.com/animatedads/alchemy/issues/17
+
+## 29 October 2026 runtime qualification
+
+Grid dev17 now passes two native r13196 LDAP Identity/RPC tests and five static tests; malformed service contexts fail with UNAUTHENTICATED rather than an opaque internal fault. This is not a field 20/20 RTO2 result.
