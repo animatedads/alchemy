@@ -35,9 +35,14 @@
 ::attribute shapeCache
 ::attribute edgeBuf
 ::attribute inTransaction
+/* How many tests a prior is worth once an edge has test results (Gemini's question, 2026-10-29). The prior
+   counts how often code was written this way, not whether it works, so it is worth one test: the first
+   result moves the score without wiping the prior. 0 gives the old rule (a test result replaces the prior). */
+::attribute priorWeight
 ::method init
-  expose session path shapeCache edgeBuf inTransaction
+  expose session path shapeCache edgeBuf inTransaction priorWeight
   use strict arg path
+  priorWeight = 1
   session = .RexxSqlSqliteSession~open(path)
   shapeCache = .directory~new
   edgeBuf = .directory~new
@@ -222,14 +227,16 @@
           '(SELECT sum(x.freq) FROM edge x WHERE x.from_id = e.from_id) AS outfreq' ,
           'FROM edge e LEFT JOIN weight w ON w.from_id = e.from_id AND w.to_id = e.to_id WHERE e.from_id = ?' ,
           'UNION ALL SELECT w.to_id AS other, 0 AS freq, w.trials AS trials, w.passes AS passes, 0 AS outfreq FROM weight w' ,
-          'WHERE w.from_id = ? AND NOT EXISTS (SELECT 1 FROM edge e WHERE e.from_id = w.from_id AND e.to_id = w.to_id)'
+          'WHERE w.from_id = ? AND NOT EXISTS (SELECT 1 FROM edge e WHERE e.from_id = w.from_id AND e.to_id = w.to_id)' ,
+          'ORDER BY other'   /* a stated order: nothing may depend on how SQLite returns rows */
   end
   else do
     sql = 'SELECT e.from_id AS other, e.freq AS freq, w.trials AS trials, w.passes AS passes,' ,
           '(SELECT sum(x.freq) FROM edge x WHERE x.from_id = e.from_id) AS outfreq' ,
           'FROM edge e LEFT JOIN weight w ON w.from_id = e.from_id AND w.to_id = e.to_id WHERE e.to_id = ?' ,
           'UNION ALL SELECT w.from_id AS other, 0 AS freq, w.trials AS trials, w.passes AS passes, 0 AS outfreq FROM weight w' ,
-          'WHERE w.to_id = ? AND NOT EXISTS (SELECT 1 FROM edge e WHERE e.from_id = w.from_id AND e.to_id = w.to_id)'
+          'WHERE w.to_id = ? AND NOT EXISTS (SELECT 1 FROM edge e WHERE e.from_id = w.from_id AND e.to_id = w.to_id)' ,
+          'ORDER BY other'
   end
   r = self~q(sql, self~binds(id, id))
   out = .array~new
@@ -238,6 +245,7 @@
   end
   return out
 ::method scored
+  expose priorWeight
   use strict arg other, freq, outfreq, trials, passes
   if trials == '' then trials = 0
   if passes == '' then passes = 0
@@ -253,7 +261,11 @@
     when trials > 0 then do
       d['TIER'] = 'TESTED'
       d['RATE'] = passes / trials
-      d['SCORE'] = .SlamStore~wilson(passes, trials)
+      /* the prior goes in as priorWeight pseudo-trials, passing at the prior chance; tests add to it */
+      k = 0
+      if outfreq > 0 then k = priorWeight
+      if k > 0 then d['SCORE'] = .SlamStore~wilson(passes + k * freq / outfreq, trials + k)
+      else d['SCORE'] = .SlamStore~wilson(passes, trials)
     end
     when outfreq > 0 then do
       d['TIER'] = 'PRIOR'
@@ -464,4 +476,6 @@
   if a['SCORE'] < b['SCORE'] then return 1
   if a['FREQ'] > b['FREQ'] then return -1
   if a['FREQ'] < b['FREQ'] then return 1
+  if a['NODE'] < b['NODE'] then return -1   /* last: the lower node number, so the order is a rule */
+  if a['NODE'] > b['NODE'] then return 1
   return 0

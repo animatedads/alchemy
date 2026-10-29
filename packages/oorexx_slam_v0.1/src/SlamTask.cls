@@ -89,13 +89,22 @@
   expanded = 0
   rejected = .array~new
 ::method entry
-  use strict arg node, value, path, tier
+  use strict arg node, value, path, tier, evidence = 0
   e = .directory~new
+  e['EVIDENCE'] = evidence
   e['NODE'] = node
   e['VALUE'] = value
   e['PATH'] = path
   e['TIER'] = tier
   return e
+/* Which frontier entry is taken first (Gemini's question, 2026-10-29): the higher value; on a tie, fewer
+   edges; then more test results behind the path; then the lower node number. Never storage order. */
+::method before
+  use strict arg a, b
+  if a['VALUE'] \= b['VALUE'] then return a['VALUE'] > b['VALUE']
+  if a['PATH']~items \= b['PATH']~items then return a['PATH']~items < b['PATH']~items
+  if a['EVIDENCE'] \= b['EVIDENCE'] then return a['EVIDENCE'] > b['EVIDENCE']
+  return a['NODE'] < b['NODE']
 ::method weaker
   use strict arg a, b
   if wordpos(a, 'NONE PRIOR TESTED') < wordpos(b, 'NONE PRIOR TESTED') then return a
@@ -134,7 +143,7 @@
   end
   k = 1
   do i = 2 to frontier~items
-    if frontier[i]['VALUE'] > frontier[k]['VALUE'] then k = i
+    if self~before(frontier[i], frontier[k]) then k = i
   end
   e = frontier[k]
   frontier~delete(k)
@@ -174,7 +183,7 @@
     self~keep(n, v, edges)
     p = e['PATH']~copy
     p~append(n)
-    frontier~append(self~entry(n, v, p, self~weaker(e['TIER'], d['TIER'])))
+    frontier~append(self~entry(n, v, p, self~weaker(e['TIER'], d['TIER']), e['EVIDENCE'] + d['TRIALS']))
     pushed += 1
   end
   out['ACTION'] = 'EXPANDED'

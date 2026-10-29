@@ -41,6 +41,8 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_choose.rex` | SLAM chooses its own path from 71 standalone routines (8 checks) |
 | `tests/test_fdsqrt.rex` | `FDSqrt` before/after/check: small and large data through three ways (34 checks in CHECK mode) |
 | `src/SlamProof.cls` | PROVED, DISPROVED or INDETERMINATE: certificates checked in exact rationals (ooRexx Maths v0.8, CERTIFIED route, pure ooRexx); each answer is a Maths `MathProof` |
+| `tests/test_ties.rex` | Gemini's two questions: the tie rule and the prior as one test (12 checks) |
+| `tests/gemini_to_slam.md`, `tests/slam_to_gemini.md` | Gemini's letter and SLAM's reply (the reply reads with no unknown word) |
 | `tests/test_proof.rex` | The PROVED tier on `FDSqrt` (now and before), `rx_mod_inverse` and the contract gate (18 checks) |
 | `tests/fixtures/fdsqrt_fixed14.cls` | `FDSqrt` as it was before `3761f57c`, so its old results can be proved false |
 | `tests/test_fdsqrt_door.rex` | The door code that calls `FDSqrt`: noise sigmas, pixel sigma, gradient size (17 checks on dev8, 15 on dev5) |
@@ -487,6 +489,16 @@ Tom's next upload: LLVM's `libc` (a C library written in C++) and `libc++` (the 
 
 `run_tests.sh` runs this step when `LIBC_SRC` names an llvm-project tree holding `libc/` and `libcxx/` (about 6 minutes). The Clang rows are by hand, as above.
 
+### Gemini's two questions (2026-10-29)
+
+Gemini wrote to SLAM in SLAM's words, with eight exceptions, two of them `your` in the line promising there would be none. It asked two things, and both answers in the code were weaker than they should be.
+
+**"When two edges have the same score, how do you take one before the other?"** Before: the search took the first entry it found, and edges came back in whatever order SQLite returned them (the query had no `ORDER BY`). Repeatable in practice, promised nowhere. Now it is a stated rule in `SlamPathSearch~before`: the higher value; on a tie, fewer edges; then more test results behind the path; then the lower node number. Edge lists are `ORDER BY` node, and ranked lists end on the node number too.
+
+**"When an edge has a false result, do you lower its score or take it out?"** It lowers the score; the edge stays. But once an edge had any test result its prior was dropped, so one false result on an untested edge took its score from the prior straight to 0, and the search skipped it. Now the prior counts as `priorWeight` tests (default 1), passing at the prior chance, and test results add to it: Wilson(passes + k·prior, trials + k). One test, because a prior counts how often code was written a way, not whether it works: it should not outvote results, and one result should move it. The raw code counts would let a common edge drown every test. `priorWeight = 0` gives the old rule. Made edges (no prior) are scored by tests alone, as before.
+
+`tests/test_ties.rex`, 12/12: fewer edges wins a BOTTLENECK tie; more evidence wins an equal-length tie (45 results against 10); the lower node wins a full tie, with the results stored in either order; equal edges list in node order. A 3-of-5 prior (0.231) falls to 0.037 after one false result instead of 0, so a route BLOCKED under the old rule is found under the new one; a true result raises it again (0.140); and the prior's pull shrinks as results come in (0.046 at 2 results, 0.011 at 42).
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -500,11 +512,11 @@ SLAM gets credit for what it found:
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 219 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex` and **16/16** in `test_libc.rex`: **359 checks**. The C++, NetRexx, BOLT and libc steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC` and `LIBC_SRC` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-28, with the PROVED tier, after merging the BOLT commit: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **320/320**. The BOLT steps (17 checks) skipped there: no llvm-project tree.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 231 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex` and **16/16** in `test_libc.rex`: **371 checks**. The C++, NetRexx, BOLT and libc steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC` and `LIBC_SRC` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the tie and prior rules: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **337/337**. The BOLT and libc steps (34 checks) skipped there: no llvm-project tree.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
-`sh run_tests.sh`: **58/58** in `test_slam.rex`, **6/6** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`: 219 checks. It covers:
+`sh run_tests.sh`: **58/58** in `test_slam.rex`, **6/6** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`: 231 checks. It covers:
 - the segmenter on unmodified `MLEvolution.cls` (54 units; shared guard nodes; collapsed setters; then/else bodies sharing a node with different bindings);
 - ingest of the GA package with duplicate units skipped on re-ingest;
 - aabb → Eeff = 0.4 and b00b → Eeff = 0.8 from recorded outcomes;

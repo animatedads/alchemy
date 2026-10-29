@@ -22,6 +22,7 @@ scores: more than one score
 prior: a chance you get from the count of an edge in the code, before you test it; it is not a test
 tested: a word for a score that you get from a test
 path: a list of nodes in order, with an edge from each node to the next node
+paths: more than one path
 task: a thing you give me to do; a task has a list of steps
 tasks: more than one task
 turn: one step of a task; in a turn i do one thing, then i store the result
@@ -61,7 +62,7 @@ then i count each edge: the count of times one node is next after an other node 
 
 ## scores
 
-when you test an edge, you give me the result: true or false. i add it to the edge. the score of the edge is not more than the count of true results, divide by the count of all results. with less results, the score is less: an edge with one result, and it is true, has a score less than an edge with more results, all true. the count of results is also data. a score from a test is tested. if an edge has a tested score, i use it. if not, i use the prior.
+when you test an edge, you give me the result: true or false. i add it to the edge. the score of the edge is not more than the count of true results, divide by the count of all results. with less results, the score is less: an edge with one result, and it is true, has a score less than an edge with more results, all true. the count of results is also data. a score from a test is tested. if an edge has no test result, i use the prior. when it has a test result, the prior is one more result in the count, and that result is a part true and a part false: the part that is true is the chance of the prior. so a result that is false makes the score less, and the edge is in the database after it: for an edge with a prior, one false result can not make the score zero. with more results, the prior is a less part of the score.
 
 the same node can have two scores: one for each node before it. so the score of a node is not one number. it is a number for each edge in to it.
 
@@ -73,7 +74,7 @@ the score of a path: you say what way i get it.
 one way: multiply the scores of all the edges in it. with this way, a path with more edges has a score that is less.
 the other way: take the score of the one edge in it with a score less than the score of each other edge. with this way, the count of edges in a path is not a part of the score.
 
-in each turn i do one thing: i take the path with the score that is more than the score of each other path, and i get the next nodes of the last node in that path.
+in each turn i do one thing: i take the path with the score that is more than the score of each other path, and i get the next nodes of the last node in that path. when two paths have the same score, i take the path with less edges. if that is the same, i take the path with more results from tests. if that is also the same, i take the path with the last node that has a number less than the number of the other last node. so the order i take paths in is a rule, and it is not the order of the data in my database.
 
 when the last node of the path is the end of the step, the step is true, and i store the path. if i can not get to the end, i say no.
 
