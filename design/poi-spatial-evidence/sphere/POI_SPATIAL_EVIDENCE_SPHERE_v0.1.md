@@ -69,3 +69,10 @@ A POI-centred, case-scoped spatial and temporal investigation application using 
 - `mediaPanel` returns `HIDDEN_PRESENTATION_ONLY`, with no mutation of the ledger or evidence references.
 - **Qualification gap:** this is source-only, not executed under ooRexx; the temporal comparison is not yet integrated with Single Time Service; no 3D Wire3D renderer has been bound.
 - Mailbox `poi-spatial-evidence`: the Wire3D dev29.25 comparison request returned no executed evidence. Requested that any subsequent qualification supply commands, exact archive digest and findings; no compatibility pass claimed.
+
+## 2026-10-29 — GitHub and Library reconciliation
+
+- GitHub contains `src/PoiEvidenceLedger.cls`, `src/PoiEvidencePresentation.cls`, and new `tests/test_projection.rex` (commit `726f09624e4bfe6ce1177c3d752d58b73f115a5b`). Test source covers date-only uncertainty, strict candidate matching, projection certainty, and media-panel visibility. **Not yet runtime-executed.**
+- Rasen Falcon mailbox lane `poi-spatial-evidence` is active. No new executed Wire3D dev29.25 verification was received in this check; prior reply remains an evidence gap.
+- Library search found instrumentation freshness/event/correlation materials and dev29.23 digest metadata. The exact dev29.25 archive was **not independently materialized or hashed in this run**. No claim of a verified dev29.25 compatibility pass.
+- Programme priorities (website, mail, MU/MI internode communication, LDAP and private-CA HTTPS) remain owned by their respective implementation lanes; this POI workstream does not deploy or modify those services. Autobuilder is not running; do not infer qualification from source commits.
