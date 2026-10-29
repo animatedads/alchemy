@@ -70,3 +70,23 @@ Fabric's existing retry/backout/dead-letter semantics. If ACK fails after Storag
 has already satisfied the repair, the adapter reports `ACK_FAILED_AFTER_REPAIR`
 and does not guess at a second control action; safe replay relies on the repair
 boundary's current-policy reassessment.
+
+
+## 2026-10-29 executable repair destination planning
+
+Storage repair now has an executable destination-planning seam rather than an
+opaque `planner~repair` placeholder. The planner is strictly Storage-owned:
+it evaluates durable replica count plus vendor/site/failure-domain improvement,
+then delegates bytes to a provider adapter. Job-to-Node remains execution
+placement authority and is not called by replica repair.
+
+The first concrete destination adapter is the existing Git/Azure-capable
+`storage.fabric.git/0.1` provider. Git/Azure speed may contribute only as an
+injected preference tiebreaker after policy improvement has been established.
+The provider's post-push verification must return a durable verified
+`StorageLocation` before admission.
+
+Source acquisition is a separate verified-materialisation resolver. This is the
+integration seam to Storage XTP named-service networking: MU/MI transport may
+materialise the exact StorageRef to a local staged path, but it does not select
+the repair destination or admit the replica.
