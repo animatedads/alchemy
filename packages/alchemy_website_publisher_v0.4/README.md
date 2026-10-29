@@ -58,3 +58,7 @@ The split-screen editor now exposes a **Rasen Falcon handoff** action and export
 The full v0.4 release ZIP includes an executed 36-assertion cross-package regression invoking the real `stage-publisher` and `build --mode preview` commands on nine pages. Production release remains denied. This repository increment owns only the editor/test/contract, not the Rasen Falcon compiler.
 
 See `docs/INTEGRATION.md` and `tests/test_rasenfalcon_handoff.py` for offline qualification. No additional ooRexx runtime or RexxOS qualification is claimed by v0.4.
+
+## 29 October — one-command candidate preview pipeline
+
+Use `python3 tools/preview_pipeline.py --candidate candidate.json --builder /path/to/rasenfalcon_site_v0.2 --output /private/preview-unique-id`. See `docs/PREVIEW_PIPELINE.md`. This composes the **real** Rasenfalcon owned builder and verifies all nine private preview pages and hashes, with no deployment, LDAP, CMS approval or Wire release authority. Local operator tool only; not a Python application server.

@@ -10,7 +10,7 @@ assert sphere['kind']=='sphere' and sphere['id']=='website-publisher'
 profile=json.loads((root/'profiles/website-publisher.json').read_text())
 assert 'packs/website-publisher' in profile['packs']
 art=list((pack/'articles').glob('*.json'))
-assert len(art)==7
+assert len(art)==8
 ids={json.loads(f.read_text())['id'] for f in art}
 assert set(sphere['start_here'])==ids
 for f in art:
