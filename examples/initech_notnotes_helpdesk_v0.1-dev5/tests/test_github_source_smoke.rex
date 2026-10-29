@@ -1,84 +1,75 @@
-/* Clean-checkout consumer smoke.
- * Builds only the minimum TPS schema needed by the Help Desk, using committed
- * package sources rather than the historical delivery ZIP/data fixture.
- */
-root = value("TEST_DATA_ROOT",,"ENVIRONMENT")
-if root = "" then do
-  say "FAIL TEST_DATA_ROOT required"
-  exit 2
-end
+/* Fresh-storage source-only Help Desk qualification. No retained TPS fixture. */
+store = value('TEST_DATA_ROOT',,'ENVIRONMENT')
+if store = '' then raise syntax 93.900 array('TEST_DATA_ROOT required')
+app = .MiniNotesApp~new(store)
 
-app = .MiniNotesApp~new(root)
-if app~userFormatCanonicalName("TPS Report") = "" then do
-  fields = .Array~new
-  fields~append(fieldSpec("TPSNumber","TPS Number","IDENTIFIER"))
-  fields~append(fieldSpec("User","User","USER_REFERENCE"))
-  fields~append(fieldSpec("Cost","Cost","MONEY"))
-  ignore = app~installUserFormat("TPS Report", fields)
-end
-if app~userFormatCanonicalName("TPS Report Review") = "" then do
-  fields = .Array~new
-  ref = fieldSpec("TheTPSReport","The TPS Report","DOCUMENT_REFERENCE")
-  ref["REF_TARGET"] = "TPS Report"
-  fields~append(ref)
-  fields~append(fieldSpec("TheReview","The Review","TEXT"))
-  fields~append(fieldSpec("TheRating","The Rating","TEXT"))
-  ignore = app~installUserFormat("TPS Report Review", fields)
-end
-ignore = app~persistNow
+fields = .Array~new
+fields~append(spec('TPSNumber', 'TPS Number', 'IDENTIFIER'))
+fields~append(spec('User','User','USER_REFERENCE'))
+fields~append(spec('Cost','Cost','MONEY'))
+call assertTrue app~installUserFormat('TPS Report', fields) \== .nil, 'TPS format installation'
 
-session = .InitechHelpDeskSession~new(root,"alice")
-discovery = session~discover
-call assertEq "MININOTES.SEMANTIC_APPLICATION/1", discovery["CONTRACT"], "semantic application discovery"
-call assertTrue discovery["SPECIALISTS"]~items >= 1, "specialist discovered"
+reviews = .Array~new
+r = spec('TheTPSReport','The TPS Report','DOCUMENT_REFERENCE')
+r['REF_TARGET'] = 'TPS Report'
+reviews~append(r)
+reviews~append(spec('TheReview','The Review','TEXT'))
+reviews~append(spec('TheRating','The Rating','TEXT'))
+call assertTrue app~installUserFormat('TPS Report Review', reviews) \== .nil, 'TPS Review format installation'
 
-logged = session~handle("log business clean checkout smoke")
-call assertEq "SUCCESS", logged["STATUS"], "business log through committed source closure"
+/* Prove the next process loads the persisted format definitions. */
+session = .InitechHelpDeskSession~new(store, 'alice')
+cat = session~discover
+call assertEquals 'MININOTES.SEMANTIC_APPLICATION/1', cat['CONTRACT'], 'semantic contract'
+call assertTrue cat['FORMATS']~items >= 3, 'fresh TPS and business log formats'
+call assertTrue cat['SPECIALISTS']~items > 0, 'fresh specialist discovery'
 
-health = session~handle("show NotNotes health and metrics")
-call assertEq "SUCCESS", health["STATUS"], "read-only instrumentation specialist"
-call assertEq "INSTRUMENTATION", health["AUTHORITY"], "instrumentation stays evidence authority"
+health = session~handle('show NotNotes health and metrics')
+call assertEquals 'SUCCESS', health['STATUS'], 'instrumentation request'
+call assertEquals 'INSTRUMENTATION', health['AUTHORITY'], 'specialist authority'
 
-closed = session~close
-call assertEq "SUCCESS", closed["RATING"], "session TPS process succeeds"
-call assertTrue closed["TPS_KEY"] <> "", "session TPS report created"
-call assertTrue closed["REVIEW_KEY"] <> "", "linked TPS review created"
+logged = session~handle('log business source-only check')
+call assertEquals 'SUCCESS', logged['STATUS'], 'business log request'
+call assertContains logged['DOCUMENT_KEY'], 'BL-', 'document key'
 
-next = .InitechHelpDeskSession~new(root,"alice")
-history = next~handle("what happened in " || closed["TPS_NUMBER"])
-call assertEq "SUCCESS", history["STATUS"], "later session reads prior TPS process evidence"
-call assertContains history["TEXT"], closed["REVIEW_KEY"], "linked review is authoritative evidence"
+close = session~close
+call assertEquals 'SUCCESS', close['RATING'], 'session TPS rating'
+call assertContains close['TPS_KEY'],'TR-','TPS report written'
+call assertContains close['REVIEW_KEY'],'TRR-','TPS review written'
 
-say "PASS clean-checkout Initech Help Desk source closure"
+session2 = .InitechHelpDeskSession~new(store, 'alice')
+history = session2~handle('show my successful Help Desk TPS processes')
+call assertEquals 'SUCCESS',history['STATUS'],'reopen support history'
+call assertContains history['TEXT'],close['TPS_NUMBER'],'durable TPS history'
+
+failed = .InitechHelpDeskSession~new(store, 'bob')
+unknown = failed~handle('please recalibrate the quantum stapler')
+call assertEquals 'UNKNOWN',unknown['STATUS'],'unsupported request is unknown'
+failedClose = failed~close
+call assertEquals 'FAILURE',failedClose['RATING'],'failure persisted as TPS review'
+reloadedFailed = .InitechHelpDeskSession~new(store, 'bob')
+failedHistory = reloadedFailed~handle('show my failed Help Desk TPS processes')
+call assertEquals 'SUCCESS',failedHistory['STATUS'],'failure history survives restart'
+call assertContains failedHistory['TEXT'],failedClose['TPS_NUMBER'],'durable failed TPS history'
+
+say 'PASS source-only Initech NotNotes Help Desk: live discovery, instrumentation, business write, durable TPS success/failure'
 exit 0
 
-::routine fieldSpec
-  use strict arg name,label,type
-  d=.Directory~new
-  d["NAME"]=name
-  d["LABEL"]=label
-  d["TYPE"]=type
+::routine spec
+  use strict arg field,label,type
+  d = .Directory~new
+  d['NAME'] = field; d['LABEL'] = label; d['TYPE'] = type
   return d
-
-::routine assertEq
+::routine assertEquals
   use strict arg expected,actual,label
-  if expected \== actual then do
-    say "FAIL" label "expected="expected "actual="actual
-    exit 1
-  end
-
+  if expected \== actual then raise syntax 93.900 array(label || ' expected=' || expected || ' actual=' || actual)
+  return
 ::routine assertTrue
   use strict arg condition,label
-  if \condition then do
-    say "FAIL" label
-    exit 1
-  end
-
+  if \condition then raise syntax 93.900 array(label)
+  return
 ::routine assertContains
-  use strict arg text,needle,label
-  if pos(needle,text)=0 then do
-    say "FAIL" label "missing="needle
-    exit 1
-  end
-
-::requires "InitechHelpDesk.cls"
+  use strict arg haystack,needle,label
+  if pos(needle,haystack) = 0 then raise syntax 93.900 array(label || ' missing=' || needle)
+  return
+::requires 'InitechHelpDesk.cls'
