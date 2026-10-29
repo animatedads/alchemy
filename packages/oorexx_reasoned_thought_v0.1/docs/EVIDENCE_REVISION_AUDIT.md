@@ -100,3 +100,29 @@ model's reported self-correction. This increment is **not** an independent
 transcript classifier; FISH/NEPO corpora remain replay-oriented until a live
 structured-utterance/dependency extractor exists. Tests must be run under the
 actual ooRexx interpreter before claiming native qualification.
+
+## v0.3 trace-binding correction (29 October 2026)
+
+`EvidenceCombiner~evaluate` previously emitted a deterministic transcript that
+bound the proposition ID and several ground-link fields, but not the exact
+proposition statement or a Ground's explanatory `note`. Two different submitted
+claims or context-bearing notes could therefore produce identical derivations
+when their tiers, IDs and final stance happened to agree.
+
+Version `ordinal-evidence-combiner/0.3` now writes a length-prefixed claim-text
+field (or `UNAVAILABLE` for older contract doubles), and a note-presence flag
+plus length-prefixed note contents for each listed ground. The change is tested
+with otherwise identical claims/notes that keep the same stance but must yield
+different derivations. Same-origin deduplication still operates on source identity,
+not on arbitrary note wording; duplicates retain audit entries.
+
+This strengthens reproducibility **of what was submitted**, not validation of
+what was actually observed, who wrote it, or whether its reasoning is sound.
+The derivation remains plaintext, not a cryptographic commitment or signature.
+The authoritative `ProofBundle` and its source-validation receipts are separate
+surfaces. No assumption is made that a historical conversational excerpt
+provides authenticated source identity.
+
+New owner-side checks (additional to v0.3 comparison checks) cover claim-text
+and note-driven trace divergence and the explicit version bump. Native
+qualification remains pending until the exact branch runs under ooRexx r13196.
