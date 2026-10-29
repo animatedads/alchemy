@@ -1,15 +1,15 @@
 /* Rasen Falcon owned LDAP service bootstrap.
- * Deployment composition only: Identity Directory remains semantic authority,
- * NoSQLServer owns persistence, Secret Broker owns secret materialisation and
- * OpenSSL/Foreign Runtime owns TLS mechanics.
+ * Identity Directory remains semantic authority; NoSQLServer owns persistence;
+ * Secret Broker owns secret materialisation; OpenSSL/Foreign Runtime owns TLS.
  */
 signal on syntax name fatalSyntax
 
 host = requiredEnv('RF_LDAP_HOST')
 portText = requiredEnv('RF_LDAP_PORT')
 if \portText~datatype('W') then call fail 'RF_LDAP_PORT must be a whole number'
-port = portText + 0
-if port < 1 | port > 65535 then call fail 'RF_LDAP_PORT out of range'
+port = portText
+if port < 1 then call fail 'RF_LDAP_PORT out of range'
+if port > 65535 then call fail 'RF_LDAP_PORT out of range'
 peerId = requiredEnv('RF_LDAP_PEER_ID')
 namingContext = requiredEnv('RF_LDAP_NAMING_CONTEXT')
 storeRoot = requiredEnv('RF_LDAP_STORE_ROOT')
@@ -45,6 +45,8 @@ if env('RF_LDAP_REQUIRE_CLIENT_CERT')~caselessEquals('YES') then tlsConfig~requi
 tls = .OpenSslLdapTlsProvider~new(tlsConfig)
 if \tls~available then call fail 'LDAP TLS provider unavailable'
 
+/* Production identity is LDAPS-only. STARTTLS remains independently qualified
+ * by the package but is not a production fallback for this unit. */
 server = .LdapWireServer~new(service, host, port, namingContext, tls, .nil, .true)
 say 'Rasen Falcon LDAP starting peer='peerId 'host='host 'port='port 'namingContext='namingContext
 ignore = server~serve(0, readyFile)
@@ -52,12 +54,12 @@ exit 0
 
 requiredEnv: procedure
   use strict arg name
-  v = value(name,, 'ENVIRONMENT')
-  if v = '' then do
+  valueText = value(name,, 'ENVIRONMENT')
+  if valueText = '' then do
     say 'LDAP SERVICE CONFIGURATION ERROR: missing' name
     exit 78
   end
-  return v
+  return valueText
 
 env: procedure
   use strict arg name
@@ -82,8 +84,12 @@ loadSecretMap: procedure
     end
     reference = line~left(tab - 1)~strip
     environmentName = line~substr(tab + 1)~strip
-    if reference = '' | environmentName = '' then do
-      say 'LDAP SERVICE CONFIGURATION ERROR: empty secret reference or environment variable'
+    if reference = '' then do
+      say 'LDAP SERVICE CONFIGURATION ERROR: empty secret reference'
+      exit 78
+    end
+    if environmentName = '' then do
+      say 'LDAP SERVICE CONFIGURATION ERROR: empty secret environment variable'
       exit 78
     end
     if value(environmentName,, 'ENVIRONMENT') = '' then do
