@@ -1,17 +1,22 @@
 {
   "kind": "article",
   "id": "rasenfalcon.qualification",
-  "version": "0.1",
+  "version": "0.6",
   "sphere": "rasenfalcon",
   "section": "qualification",
-  "title": "Current evidence and remaining commissioning requirements",
-  "summary": "The source package was checked locally, then sent to GitHub Autobuild. The intake branch is verified; the receipt and accepted main-branch component were not visible as of this sphere revision. The live service tests remain outstanding.",
+  "title": "Verified source and still-unqualified production boundary",
+  "summary": "CLAUDE-PC independently retested v0.4.3: website 18/18 PASS, handoff 21/21 PASS, source lock 28 and 9-page validation PASS. v0.4.5 local website 18/18 and handoff 42/42 PASS; original ooRexx r13196 syntax compiler accepted owned serve.rex. The 16-file public role source slice passed hash verification, while full check-release denied missing services.txt.",
   "invariants": [
     "Reported website preview tests 9/9 and delivery security-contract tests 13/13 are not TLS handshake evidence.",
     "Receiver acceptance must be verified from its receipt; a ready.json marker is only submission.",
     "CMS/Wire publisher, live HTTPS SNI, mTLS negative tests, LDAP, SMTP/IMAP, terminal and MCP integration all require real service tests.",
     "No production cutover without distinct operator approval; source submission does not install keys or change hosts.",
-    "Never mark fixture-only results LIVE_PASS; missing credentials and deployment facts are NOT_RUN."
+    "Never mark fixture-only results LIVE_PASS; missing credentials and deployment facts are NOT_RUN.",
+    "A forged editorial approval record with local hashes, names and dates must never enable production release.",
+    "Preview cannot be indexed even if content is marked approved; local 12/12 assertions are not live HTTPS/browser integration evidence.",
+    "A NoSQLServer native-record/0.2 revision is imported as unverified metadata only; this is not an independently checked database or CMS receipt.",
+    "Separate CLAUDE-PC read-only qualification requested via Rasen Falcon component lane rasenfalcon-website, request REQ-00000481; no external test PASS may be inferred before reply.",
+    "A General Deployment content-addressed local review stage is not an installed service; must preserve installed/running NOT_OBSERVED until independent host evidence."
   ],
   "authority": "project-continuity",
   "provenance": [
@@ -23,10 +28,38 @@
     }
   ],
   "reported_local_tests": {
-    "website": "9/9",
-    "handoff": "13/13"
+    "website": "18/18 PASS v0.4.5",
+    "handoff": "42/42 PASS v0.4.5"
   },
-  "github_submission": "VERIFIED",
-  "acceptance": "PENDING_RECEIPT",
-  "native_services": "NOT_RUN"
+  "github_submission": "REVIEW_BRANCH_V0.4.5",
+  "acceptance": "PENDING_REVIEW_AUTOBUILD_STOPPED",
+  "native_services": "NOT_RUN",
+  "independent_qualification": {
+    "request": "REQ-00000943",
+    "result": "REQ-00001007",
+    "version": "0.4.2",
+    "website": "18/18 PASS",
+    "handoff": "12/13 FAIL stale source lock",
+    "v043_retest": "PENDING"
+  },
+  "independent_v043_retest": {
+    "request": "REQ-00001217",
+    "report": "REQ-00001289",
+    "website": "18/18 PASS",
+    "handoff": "21/21 PASS",
+    "source_lock": 28,
+    "validate_pages": 9,
+    "production_gate": "DENIED"
+  },
+  "general_deployment_stage": "STAGED_LOCAL_REVIEW",
+  "public_host_installed": "NOT_OBSERVED",
+  "public_https_running": "NOT_OBSERVED",
+  "public_role_slice": {
+    "files": 16,
+    "site_files": 15,
+    "manifest": "COMPLETE_SITE_ONLY",
+    "service_unit": "MISSING_OWNED_HTTPS",
+    "readiness_tests": "MISSING_LIVE_PROBES",
+    "install_gate": "FAIL_CLOSED"
+  }
 }

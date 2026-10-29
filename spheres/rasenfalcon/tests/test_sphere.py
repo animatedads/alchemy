@@ -13,7 +13,7 @@ class SphereTests(unittest.TestCase):
     def test_manifest_and_profile(self):
         self.assertEqual(read("integration.json")["publish"]["tree"]["path"],"spheres/rasenfalcon")
         self.assertIn("packs/rasenfalcon",read("profiles/rasenfalcon.json")["packs"])
-        self.assertEqual(len(self.a),11)
+        self.assertEqual(len(self.a),14)
     def test_article_provenance(self):
         sections={s["id"] for s in self.sphere["sections"]}
         for key,a in self.a.items():
@@ -38,7 +38,7 @@ class SphereTests(unittest.TestCase):
         self.assertEqual(self.a["rasenfalcon.gateway"]["targets"],{"tn3270":["ed209zz","ed209z"],"web":["ed209cray","ed209tops"]})
     def test_published_does_not_mean_live(self):
         s=self.a["rasenfalcon.start"]["status"]
-        self.assertEqual(s["github_source"],"SUBMITTED")
+        self.assertEqual(s["github_source"],"MAIN_V0.4_AND_V0.4.5_REVIEW_BRANCH")
         self.assertEqual(s["mTLS_live"],"NOT_RUN")
         self.assertEqual(s["CMS_publication"],"NOT_QUALIFIED")
         self.assertEqual(self.a["rasenfalcon.qualification"]["native_services"],"NOT_RUN")
@@ -48,6 +48,43 @@ class SphereTests(unittest.TestCase):
         self.assertIn("no system crond",b)
         c=" ".join(self.a["rasenfalcon.capability-lifecycle"]["invariants"])
         self.assertIn("withdraws no-longer-owned listeners",c)
+    def test_site_publication_receipt_boundary(self):
+        a=self.a["rasenfalcon.website-publication"]
+        self.assertEqual(a["state"]["production"],"BLOCKED")
+        self.assertEqual(a["state"]["cms_service"],"NOT_IMPLEMENTED")
+        self.assertEqual(a["state"]["wire_release"],"NOT_QUALIFIED")
+        self.assertEqual(len(a["published_source_paths"]),2)
+        self.assertIn("noindex,nofollow"," ".join(a["invariants"]))
+        self.assertIn("receipt verifier"," ".join(a["invariants"]).lower())
+        self.assertEqual(self.a["rasenfalcon.public-site"]["CMS_state"],"NOT_QUALIFIED")
+        self.assertEqual(self.a["rasenfalcon.qualification"]["native_services"],"NOT_RUN")
+    def test_candidate_editor_bridge_does_not_escalate_authority(self):
+        a=self.a["rasenfalcon.website-publication"]
+        bridge=a["publisher_to_site_bridge"]
+        self.assertEqual(bridge["authority"],"CANDIDATE_UNREVIEWED")
+        self.assertFalse(bridge["native_revision_verified"])
+        self.assertEqual(len(bridge["accepted"]),2)
+        self.assertIn("DENIED",bridge["production"])
+        self.assertEqual(a["state"]["production"],"BLOCKED")
+        self.assertEqual(a["state"]["cms_service"],"NOT_IMPLEMENTED")
+        self.assertEqual(self.a["rasenfalcon.qualification"]["native_services"],"NOT_RUN")
+    def test_local_stage_not_host_install_or_release(self):
+        d=self.a["rasenfalcon.deployment-stage"]
+        self.assertEqual(d["stage"]["state"],"STAGED_VERIFIED")
+        self.assertEqual(d["stage"]["pages"],9)
+        self.assertEqual(d["stage"]["files"],15)
+        self.assertEqual(d["installation"]["state"],"NOT_PERFORMED")
+        self.assertEqual(d["running"]["state"],"NOT_OBSERVED")
+        self.assertEqual(d["production"],"BLOCKED")
+        self.assertEqual(d["qualification"]["independent_v043"],"REQUESTED_REQ-00001217")
+    def test_site_only_role_does_not_claim_https_service(self):
+        a=self.a["rasenfalcon.deployment-stage"]["public_role_slice"]
+        self.assertEqual(a["files"],16)
+        self.assertEqual(a["state"],"SOURCE_SLICE_VERIFIED_NOT_INSTALL_READY")
+        self.assertEqual(a["installed"],"NOT_OBSERVED")
+        self.assertEqual(a["running"],"NOT_OBSERVED")
+        self.assertEqual(a["check_release"],"DENIED_MISSING_OWNED_HTTPS_UNIT")
+        self.assertEqual(self.a["rasenfalcon.start"]["status"]["production_site"],"NOT_DEPLOYED")
     def test_source_hashes(self):
         for x in self.a["rasenfalcon.source-map"]["artifact_hashes"].values():
             self.assertRegex(x,r"^[0-9a-f]{64}$")

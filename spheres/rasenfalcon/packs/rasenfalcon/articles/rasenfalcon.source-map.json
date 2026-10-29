@@ -1,16 +1,17 @@
 {
   "kind": "article",
   "id": "rasenfalcon.source-map",
-  "version": "0.1",
+  "version": "0.6",
   "sphere": "rasenfalcon",
   "section": "references",
   "title": "Pinned artifacts and Codex engineering work",
-  "summary": "The v0.4 website and delivery source, the original Website Builder, and the HTTPS v0.4.7 source candidate have exact SHA-256 provenance. GitHub issues #6–#14 carry the implementation backlog.",
+  "summary": "Latest public role site-only package is v0.4.5 on a direct review branch while Autobuild is off. Site install manifest and 16 source files verified locally; external native HTTPS, real readiness/e2e tests, host install and running listener remain pending. Independent v0.4.3 retest PASS.",
   "invariants": [
     "Never infer accepted HTTPS runtime from the candidate 0.4.7 archive; the GitHub HTTPS package inspected previously was 0.4.6.",
     "Use Autobuild two-commit ready-marker intake, not a direct merged PR or ad hoc writes to main.",
     "No secrets in Git; only metadata, source and reproducible tests.",
-    "This sphere is a continuity/qualification artefact and cannot supersede executable package authority."
+    "This sphere is a continuity/qualification artefact and cannot supersede executable package authority.",
+    "NoSQLServer v0.90 native candidate is qualified only in the Publisher development slice; v0.91 and live RexxOS/CMS operation require separate qualification."
   ],
   "authority": "project-continuity",
   "provenance": [
@@ -38,5 +39,16 @@
     12,
     13,
     14
-  ]
+  ],
+  "publisher_main": "packages/alchemy_website_publisher_v0.3",
+  "publisher_source_archive_sha256": "ad77b87bd8c7a433d67368f5bd6affe3947a412cec04d94c4959f5f2129841a4",
+  "website_main": "packages/rasenfalcon_delivery_v0.4",
+  "website_correction_submission": "https://github.com/animatedads/alchemy/tree/autobuild-submit/20261027T163400Z-CHATGPT-rasen-v042-publisher-stage-b12ce4",
+  "website_latest_submission": "https://github.com/animatedads/alchemy/tree/review/rasenfalcon-v045-public-role-20261029",
+  "website_candidate_version": "0.4.5",
+  "editor_bridge_zip_sha256": "0d85822b4e0d0bac0795c7f09e971955d07dfe11a90cd596c197a73d6f1859c8",
+  "mailbox_component_id": "rasenfalcon-website",
+  "website_source_zip_sha256": "db0958a5bc8035236ffbbb8f5c7a984849af8181c8a9de60b1a657e8f6aea641",
+  "general_deployment_component": "packages/oorexx_deployment_v0.1-dev4",
+  "general_deployment_staging": "LOCAL_REVIEW_VERIFIED"
 }

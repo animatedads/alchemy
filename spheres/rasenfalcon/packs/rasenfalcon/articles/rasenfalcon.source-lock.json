@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.source-lock",
+  "version": "0.6",
+  "sphere": "rasenfalcon",
+  "section": "qualification",
+  "title": "Current website source SHA-256 lock: independent failure and correction",
+  "summary": "Independent CLAUDE-PC v0.4.2 check: website 18/18 PASS, handoff 12/13 FAIL because a source hash described the original Builder archive instead of a changed file. v0.4.3 reconciles all 28 current source files and adds eight drift-detection tests.",
+  "invariants": [
+    "The original v0.1 Builder ZIP SHA-256 remains historical provenance; it is not repurposed as the current website tree hash.",
+    "All 28 editable owned website source files are pinned; generated website/site output is excluded.",
+    "The read-only checker rejects missing, changed, added or symlinked source files; refresh requires explicit review.",
+    "Local v0.4.3 suite passes 18/18 website and 21/21 handoff checks. Independent v0.4.3 rerun is pending.",
+    "A source digest is not authenticated CMS/Brand approval or a Wire resource release receipt.",
+    "Public production and private native services remain NOT_RUN or NOT_QUALIFIED.",
+    "CLAUDE-PC independent v0.4.3 retest confirms corrected 28-file lock and 18/18 plus 21/21 regression tests."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.3_source_candidate.zip",
+      "sha256": "617a89e0d513d490d436af16d56efc3f56652098106addb71ae75960f7580aa3",
+      "member": "handoff/public_site/SOURCE_LOCK_RECONCILIATION_V0.4.3.md",
+      "claim": "Current website source lock, independently exposed failure and local qualification."
+    }
+  ],
+  "independent_report": {
+    "request": "REQ-00000943",
+    "reply": "REQ-00001007",
+    "website": "18/18_PASS",
+    "handoff": "12/13_FAIL_SOURCE_LOCK"
+  },
+  "correction": {
+    "candidate": "0.4.3",
+    "source_files": 28,
+    "website": "18/18_PASS_LOCAL",
+    "handoff": "21/21_PASS_LOCAL",
+    "independent_retest": "PASS_REQ-00001289"
+  },
+  "production": "BLOCKED",
+  "native_services": "NOT_RUN",
+  "acceptance": "PENDING_RECEIPT"
+}
