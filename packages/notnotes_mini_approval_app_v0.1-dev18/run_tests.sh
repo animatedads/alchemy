@@ -49,6 +49,11 @@ MININOTES_DB_ROOT="$TEST_ROOT/reporting" ./tests/test_report_designer_persistenc
 
 run_rexx batch tests/test_batch_persistence.rex
 
+# Negative-control guard: an incomplete SQLite transaction provider must not
+# reach either metadata DDL or document SQL. Run even when the native SQLite
+# extension is unavailable so fail-closed coverage is part of every suite.
+"$REXX_BIN" tests/test_sqlite_transaction_capability_guard.rex
+
 # Guard the authentic NoSQL DatabaseRow values-column contract used in migration.
 "$REXX_BIN" tests/test_migration_row_contract.rex
 
