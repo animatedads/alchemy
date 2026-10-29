@@ -4,12 +4,15 @@
   "version": "0.1",
   "sphere": "jdorfx-bsf-qualification",
   "title": "Three executable gates and qualification limits",
-  "summary": "Phase native: forced-GC stale activation and control. Phase bsf: interpreted BSF Java objects, Comparator, Java-thread Runnable. Phase jdorfx: caller-selected genuine sample smoke. Local shell preflight checks passed; installed ooRexx, selected BSF and Ismaili JDORFX archive were unavailable, so runtime and visual tests remain NOT_RUN.",
+  "summary": "Phase native: forced-GC stale activation and control. Phase bsf: interpreted BSF Java objects, Comparator, Java-thread Runnable. Phase jdorfx: caller-selected genuine sample smoke. Local shell preflight checks passed; installed ooRexx, selected BSF and Ismaili JDORFX archive were unavailable, so runtime and visual tests remain NOT_RUN. On 2026-10-29 a separate mock-only runner contract suite passed three accepted control paths, six negative paths, and opt-in receipt retention. Live ooRexx, BSF and Ismaili JDORFX remain NOT_RUN; CLAUDE-PC's read-only test response identified missing workstation approval/paths.",
   "invariants": [
     "Missing runtime inputs fail; never report a silent SKIP/PASS.",
     "Use exact selected dependency paths and versions; no duplicate JAR/native guessing.",
     "Every gate emits and retains its own exact interpreter/build, JAR, JavaFX, sample hashes, logs and exit statuses.",
-    "Visual parity must be independently evaluated; production qualification BLOCKED."
+    "Visual parity must be independently evaluated; production qualification BLOCKED.",
+    "A bare zero exit code from a JDORFX sample is insufficient: require a known output marker; sample must reside under the selected source distribution and run from its source directory.",
+    "JVM discovery must handle Java alternatives wrappers and an explicit GUI/JavaFX graphics+controls configuration.",
+    "Retained evidence is opt-in through EVIDENCE_DIR; mock suite PASS must not be conflated with live runtime or visual approval."
   ],
   "related": [
     "ref.jd-bsf.interpreter-defects",
@@ -24,6 +27,11 @@
       "repository": "animatedads/oorexx",
       "revision": "fa1179f13d417329599198805665600d42ce9336",
       "path": "oorexx2cpp/native/fixtures/bsf_callback.cls"
+    },
+    {
+      "repository": "animatedads/alchemy",
+      "path": "packages/jdorfx_bsf_qualification_v0.1/tests/test_runner_contract.sh",
+      "claim": "Mock-only preflight state machine tests, three happy paths and six negative paths"
     }
   ]
 }
