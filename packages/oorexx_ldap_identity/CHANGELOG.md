@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1-dev22 — 2026-10-29
+
+Rasen Falcon service-deployment integration increment over dev21.
+
+- Added an owned production LDAP bootstrap over persistent NoSQL Identity Directory state, Secret Broker credential references and mandatory OpenSSL/Foreign Runtime LDAPS.
+- Added a hardened non-root `rasenfalcon-ldap.service` unit and explicit configuration/secret-reference map templates.
+- Startup fails closed when durable directory authority is not provisioned (`resource:directory` missing/inactive), TLS material is absent, or mapped secret environment values are unavailable.
+- No identity/ACL/key provisioning is performed at daemon startup; General Deployment remains installation authority and Rasen Falcon delivery remains activation/acceptance authority.
+- Added static deployment-contract qualification; live host installation and LDAP bind/revoke acceptance remain separate operator/runtime gates.
+
 ## 0.1-dev14 — 2026-10-07
 
 Dynamic Intention Service integration increment over dev13.
