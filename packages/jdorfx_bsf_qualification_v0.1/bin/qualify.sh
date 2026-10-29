@@ -12,12 +12,25 @@ need_file "$OO_ROOT/bin/rexx"
 need_dir "$OO_ROOT/lib"
 need_cmd mktemp
 need_cmd timeout
+need_cmd sha256sum
 repeats=${REPEATS:-3}
 [[ $repeats =~ ^[1-9][0-9]*$ && ${#repeats} -le 5 ]] || fail 'REPEATS must be an integer from 1 to 99999'
 max_seconds=${MAX_SECONDS:-90}
 [[ $max_seconds =~ ^[1-9][0-9]*$ && ${#max_seconds} -le 5 ]] || fail 'MAX_SECONDS must be a positive integer <= 99999'
-work=$(mktemp -d)
-trap 'rm -rf -- "$work"' EXIT
+# Evidence capture is opt-in; preserve logs and receipt only when selected.
+umask 077
+if [[ -n ${EVIDENCE_DIR:-} ]]; then
+  [[ $EVIDENCE_DIR == /* ]] || fail 'EVIDENCE_DIR must be absolute'
+  [[ ! -L $EVIDENCE_DIR ]] || fail 'EVIDENCE_DIR must not be a symlink'
+  mkdir -p -- "$EVIDENCE_DIR" || fail 'could not create EVIDENCE_DIR'
+  work=$(mktemp -d "$EVIDENCE_DIR/jdorfx-${phase}-XXXXXXXX")
+  printf 'phase=%s\ninterpreter=%s\n' "$phase" "$OO_ROOT/bin/rexx" >"$work/receipt.txt"
+  sha256sum "$OO_ROOT/bin/rexx" >>"$work/receipt.txt"
+  printf 'EVIDENCE %s\n' "$work"
+else
+  work=$(mktemp -d)
+  trap 'rm -rf -- "$work"' EXIT
+fi
 run_case(){
   local name=$1 outfile=$2
   shift 2
@@ -62,7 +75,14 @@ if [[ -n ${JAVA_HOME:-} ]]; then
 else
   need_cmd readlink
   java_binary=$(readlink -f "$(command -v java)")
-  JAVA_HOME=$(dirname "$(dirname "$java_binary")")
+  JAVA_HOME=$(java -XshowSettings:properties -version 2>&1 | sed -n 's/^ *java\.home = //p' | head -1)
+  [[ -n $JAVA_HOME ]] || JAVA_HOME=$(dirname "$(dirname "$java_binary")")
+fi
+[[ -f $JAVA_HOME/lib/server/libjvm.so ]] || fail "libjvm.so missing at $JAVA_HOME/lib/server; set JAVA_HOME"
+if [[ -n ${EVIDENCE_DIR:-} ]]; then
+  printf 'java_home=%s\nbsf_jar=%s\nbsf_native=%s\n' "$JAVA_HOME" "$BSF_JAR" "$BSF_NATIVE_LIBRARY" >>"$work/receipt.txt"
+  sha256sum "$BSF_JAR" "$BSF_NATIVE_LIBRARY" "$BSF_HOME/BSF.CLS" >>"$work/receipt.txt"
+  java -version >>"$work/java-version.txt" 2>&1
 fi
 export CLASSPATH="$BSF_JAR${BSF_EXTRA_CLASSPATH:+:$BSF_EXTRA_CLASSPATH}"
 mkdir -p "$work/native"
@@ -82,7 +102,7 @@ if [[ $phase == bsf ]]; then
     printf '\n::requires "%s.cls"\n' "$demo" >>"$work/$demo.rex"
     for ((i=1;i<=repeats;i++)); do
       (cd "$work" && run_case "$demo" "$work/$demo.$i.log" "$OO_ROOT/bin/rexx" "$demo.rex")
-      grep -Fq 'done' "$work/$demo.$i.log" || fail "$demo did not complete"
+      grep -qx 'done' "$work/$demo.$i.log" || fail "$demo did not complete"
       if [[ $demo == bsf_callback ]]; then
         grep -Fq 'after Java thread:' "$work/$demo.$i.log" || fail 'Java-thread callback missing'
         grep -Fq 'sorted by length:' "$work/$demo.$i.log" || fail 'Comparator callback missing'
@@ -98,9 +118,19 @@ fi
 need_dir "$JDORFX_HOME"
 [[ ${JDORFX_SCRIPT:-} == /* ]] || fail 'JDORFX_SCRIPT must name a real sample from the selected archive'
 need_file "$JDORFX_SCRIPT"
+need_cmd realpath
+release_root=$(realpath -e -- "$JDORFX_HOME")
+script_file=$(realpath -e -- "$JDORFX_SCRIPT")
+[[ $script_file == "$release_root/"* ]] || fail 'JDORFX_SCRIPT must reside inside the selected JDORFX_HOME (no external symlink)'
+[[ -n ${JDORFX_EXPECTED_TEXT:-} ]] || fail 'JDORFX_EXPECTED_TEXT is mandatory; process exit alone is not a meaningful sample test'
+if [[ -n ${EVIDENCE_DIR:-} ]]; then
+  printf 'jdorfx_home=%s\njdorfx_script=%s\nexpected_text=%s\n' "$release_root" "$script_file" "$JDORFX_EXPECTED_TEXT" >>"$work/receipt.txt"
+  sha256sum "$script_file" >>"$work/receipt.txt"
+fi
 if [[ -n ${JAVAFX_MODULE_PATH:-} ]]; then
   need_dir "$JAVAFX_MODULE_PATH"
   need_file "$JAVAFX_MODULE_PATH/javafx.graphics.jar"
+  need_file "$JAVAFX_MODULE_PATH/javafx.controls.jar"
   [[ $JAVAFX_MODULE_PATH != *[[:space:]]* ]] || fail 'JAVAFX_MODULE_PATH with whitespace unsupported by JAVA_TOOL_OPTIONS'
   export JAVA_TOOL_OPTIONS="${JAVA_TOOL_OPTIONS:-} --module-path=$JAVAFX_MODULE_PATH --add-modules=javafx.graphics,javafx.controls"
 fi
@@ -110,9 +140,7 @@ fi
 [[ -n ${DISPLAY:-} || -n ${WAYLAND_DISPLAY:-} || ${JDORFX_HEADLESS_OK:-0} == 1 ]] || fail 'JDORFX needs a display or explicit headless configuration'
 export REXX_PATH="$JDORFX_HOME:$REXX_PATH"
 for ((i=1;i<=repeats;i++)); do
-  run_case jdorfx "$work/jdorfx.$i.log" "$OO_ROOT/bin/rexx" "$JDORFX_SCRIPT"
-  if [[ -n ${JDORFX_EXPECTED_TEXT:-} ]]; then
-    grep -Fq -- "$JDORFX_EXPECTED_TEXT" "$work/jdorfx.$i.log" || fail 'JDORFX expected output missing'
-  fi
+  (cd "$(dirname "$script_file")" && run_case jdorfx "$work/jdorfx.$i.log" "$OO_ROOT/bin/rexx" "$script_file")
+  grep -Fq -- "$JDORFX_EXPECTED_TEXT" "$work/jdorfx.$i.log" || fail 'JDORFX expected output missing'
 done
 printf 'PASS jdorfx: selected sample exited normally (%s repeats); visual equivalence NOT assessed\n' "$repeats"
