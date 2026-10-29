@@ -1,0 +1,70 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "structured_utterance_producer",
+    "version": "0.2-dev1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "STRUCTURED_UTTERANCE_ROOT": "${REPO_ROOT}/packages/structured_utterance_v0.3",
+      "ALCHEMY_OBJECTS_ROOT": "${REPO_ROOT}/packages/alchemy_objects_v0.8",
+      "OOREXX_CRYPTO_ROOT": "${REPO_ROOT}/packages/oorexx_crypto_v0.8.3",
+      "RUNTIME_REGISTRY_ROOT": "${REPO_ROOT}/packages/runtime_registry_v0.14",
+      "INTERACTION_EVENT_ROOT": "${REPO_ROOT}/packages/interaction_event_v0.3"
+    },
+    "rexx_path": {
+      "mode": "replace",
+      "entries": [
+        "${PACKAGE_ROOT}/tests",
+        "${PACKAGE_ROOT}/src",
+        "${PACKAGE_ROOT}/runtime",
+        "${REPO_ROOT}/packages/structured_utterance_v0.3/src",
+        "${REPO_ROOT}/packages/structured_utterance_v0.3/runtime",
+        "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+        "${REPO_ROOT}/packages/oorexx_crypto_v0.8.3/src",
+        "${REPO_ROOT}/packages/runtime_registry_v0.14/src",
+        "${REPO_ROOT}/packages/interaction_event_v0.3/src",
+        "${REPO_ROOT}/packages/interaction_event_v0.3/runtime"
+      ],
+      "require_entries": true
+    },
+    "require_dirs": [
+      "STRUCTURED_UTTERANCE_ROOT",
+      "ALCHEMY_OBJECTS_ROOT",
+      "OOREXX_CRYPTO_ROOT",
+      "RUNTIME_REGISTRY_ROOT",
+      "INTERACTION_EVENT_ROOT"
+    ],
+    "report": [
+      "STRUCTURED_UTTERANCE_ROOT",
+      "ALCHEMY_OBJECTS_ROOT",
+      "OOREXX_CRYPTO_ROOT",
+      "RUNTIME_REGISTRY_ROOT",
+      "INTERACTION_EVENT_ROOT"
+    ]
+  },
+  "tests": [
+    {
+      "name": "manifest",
+      "argv": [
+        "sha256sum",
+        "-c",
+        "MANIFEST.sha256"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "suite",
+      "argv": [
+        "bash",
+        "run_tests.sh"
+      ],
+      "timeout_seconds": 600
+    }
+  ],
+  "publish": {
+    "artifact_only": true
+  }
+}
