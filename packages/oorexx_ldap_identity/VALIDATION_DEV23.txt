@@ -1,0 +1,37 @@
+ooRexx Identity Directory / LDAP v0.1-dev23 qualification
+========================================================
+Date: 2026-10-29
+
+Increment
+---------
+Unified Rasen Falcon LDAP activation/revocation rehearsal plus owned persistent
+LDAPS daemon and hardened systemd deployment boundary.
+
+Executed in construction environment
+------------------------------------
+PASS activation/ldap_service_rehearsal.sh shell syntax.
+PASS activation/LDAP_SERVICE_INSTALL.json parse.
+PASS tests/deployment/test_rasenfalcon_deployment_contract.sh.
+PASS deployment shell syntax.
+PASS package MANIFEST.sha256 regeneration.
+PASS oorexx_standards_enforcer.py on exact dev23 ZIP:
+     files_scanned=83, errors=0, warnings=136, verdict=PASS.
+
+Exact dev23 archive SHA-256
+---------------------------
+8f5b7b76c2297e3c63bccc868cb3894ae6a1e34391420a77dfc2f0cdab01abdb
+
+Runtime/live boundary
+---------------------
+NOT RUN fresh ooRexx 5.3.0 r13196 activation rehearsal in this construction
+container because the runtime/full dependency closure is not mounted.
+NOT INSTALLED on a Rasen Falcon production host.
+NOT RUN live LDAPS bind/search/revoke or Crypto sign/verify/revoke acceptance.
+
+Production contract
+-------------------
+The daemon restores already-provisioned durable Identity Directory state,
+requires ACTIVE resource:directory, obtains bind material only through Secret
+Broker references and requires LDAPS. Startup does not provision identities,
+ACLs or credentials. General Deployment remains install authority and live
+certificate/host activation remains operator-gated.
