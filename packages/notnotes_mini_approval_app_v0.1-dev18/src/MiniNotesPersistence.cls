@@ -137,6 +137,15 @@
     .DatabaseColumn~new("fields_hex", "TEXT", .false))
   return db~createTable("documents", columns, .array~of("doc_key"))
 
+/* Do not collapse SQL NULL into the empty TEXT value when deciding which
+ * columns require an UPDATE. Rexx/SQL's valueFragment owns the actual bound
+ * representation; this comparison only decides whether to write it. */
+::method columnDiffers
+  use strict arg oldValue, newValue
+  if oldValue == .nil then return newValue \== .nil
+  if newValue == .nil then return .true
+  return oldValue~string \== newValue~string
+
 ::method saveFrom
   expose db
   use strict arg app
@@ -266,9 +275,7 @@
       do column over .array~of("form_name", "title", "amount", "risk", "depends_on", "workflow", "status", "fields_hex")
         oldValue = oldRow[column]
         newValue = row[column]
-        if oldValue == .nil then oldValue = ""
-        if newValue == .nil then newValue = ""
-        if oldValue~string \= newValue~string then do
+        if self~columnDiffers(oldValue, newValue) then do
           changed = .true
           assignments[column] = row[column]
         end
@@ -351,9 +358,7 @@ saveRollback:
     do column over .array~of("form_name", "title", "amount", "risk", "depends_on", "workflow", "status", "fields_hex")
       oldValue = previous[column]
       newValue = row[column]
-      if oldValue == .nil then oldValue = ""
-      if newValue == .nil then newValue = ""
-      if oldValue~string \= newValue~string then assignments[column] = row[column]
+      if self~columnDiffers(oldValue, newValue) then assignments[column] = row[column]
     end
     if assignments~items > 0 then writeResult = db~updateWhereEquals("documents", "doc_key", key, assignments)
     else writeResult = .nil
