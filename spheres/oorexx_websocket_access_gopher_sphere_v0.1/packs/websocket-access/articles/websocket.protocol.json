@@ -4,17 +4,28 @@
   "version": "0.1",
   "sphere": "websocket-access",
   "title": "RFC 6455 protocol ownership",
-  "summary": "The WebSocket layer owns only WebSocket protocol mechanics above the selected stream: HTTP Upgrade validation, framing, masking, message/control opcodes and close lifecycle.",
+  "summary": "The WebSocket layer owns RFC 6455 mechanics above an already-selected/accepted stream: Upgrade validation, directional framing and masking, fragmentation, message/control opcodes, ping/pong and close lifecycle. HTTP/TLS carrier ownership remains outside it.",
   "invariants": [
-    "Client frames are masked and the mask source is injected.",
+    "Client frames are masked; server frames are unmasked.",
+    "Server access rejects unmasked client frames and reserved/RSV/control-frame violations fail closed.",
     "Text, binary, continuation, ping, pong and close opcode identity is represented explicitly.",
     "Extended payload lengths belong to WebSocketCodec, not to the carrier.",
-    "Ping/pong and the close handshake are WebSocket lifecycle, not generic socket lifecycle.",
-    "Fragment FIN/opcode identity is represented, but dev1 does not claim complete fragmented multi-frame message reassembly.",
-    "permessage-deflate and other WebSocket extensions are not implemented in dev1.",
-    "RFC 8441 WebSocket over HTTP/2 and RFC 9220 WebSocket over HTTP/3 are separate future access/carrier compositions; dev1 does not claim either."
+    "Fragmented TEXT/BINARY messages are reassembled while control frames may interleave.",
+    "Client and server handshake readers preserve post-header bytes so a coalesced first WebSocket frame is not discarded.",
+    "Server Upgrade admission supports expected path, Origin allowlist, subprotocol selection, version 13 and canonical key shape.",
+    "Ping/pong and close are WebSocket lifecycle; TCP/TLS shutdown remains owned by the stream provider/HTTPS wrapper.",
+    "permessage-deflate and other WebSocket extensions remain unimplemented.",
+    "RFC 8441 over HTTP/2 and RFC 9220 over HTTP/3 remain separate future carrier compositions."
   ],
   "provenance": [
+    {
+      "artifact": "packages/oorexx_websocket_access/src/WebSocketAccess.cls",
+      "claim": "Current dev4 client/common codec source."
+    },
+    {
+      "artifact": "packages/oorexx_websocket_access/src/WebSocketServerAccess.cls",
+      "claim": "Current dev4 server source."
+    },
     {
       "artifact": "oorexx_websocket_access_v0.1-dev1.zip",
       "sha256": "91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655",
