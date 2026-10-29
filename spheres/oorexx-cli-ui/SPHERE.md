@@ -80,3 +80,7 @@ Mailbox REQ-00000593 identifies Source Editor `SourceCompletionCandidate` and `S
 ## 2026-10-29 development increment
 
 GitHub commits `456a5bf3` and `1f69bd72` add identity-preserving completion refresh and regression cases for reordered, removed and invalid candidate selections. Source Editor remains the sole authority for completion candidates; CLI UI retains only presentation selection. The test is committed but **has not been executed under ooRexx r13196**. GitHub remains a source-only development branch; autobuilder is not running. CLI UI is not an owner of the website, SMTP, IMAP, LDAP, HTTPS or MU/MI transport, and makes no deployment claims for them.
+
+## dev12 evidence (2026-10-29)
+
+Source archive `oorexx_cli_ui_v0.1-dev12.zip`, SHA-256 `700488b02dad2b6ee844a6b3c8a8734664ad04e0961ce9d5f587f302120c16ca`. Composite screen now divides available rows into disjoint table, detail and form regions, enforced by `CliUiBoundedRenderer~region(first,last)`. Regression fixture `tests/test_region_isolation.rex` added. C and Python contract checks passed; actual ooRexx r13196 execution is **not qualified**. GitHub source synchronization is still in progress until the full archive is imported.
