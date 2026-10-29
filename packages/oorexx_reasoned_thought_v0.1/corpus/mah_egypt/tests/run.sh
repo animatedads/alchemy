@@ -19,3 +19,4 @@ else
 fi
 REXX_PATH="$CASE_ROOT/src:$AUDIT_ROOT:$WORLDS_ROOT" "$REXX_BIN" "$CASE_ROOT/tests/test_mah_judgment.rex"
 REXX_PATH="$CASE_ROOT/src:$AUDIT_ROOT:$WORLDS_ROOT" "$REXX_BIN" "$CASE_ROOT/tests/test_mah_edge_soundness.rex"
+REXX_PATH="$CASE_ROOT/src:$AUDIT_ROOT:$WORLDS_ROOT" "$REXX_BIN" "$CASE_ROOT/tests/test_mah_node_integrity.rex"
