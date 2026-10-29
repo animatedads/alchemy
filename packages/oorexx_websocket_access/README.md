@@ -1,4 +1,4 @@
-# ooRexx WebSocket Access v0.1-dev2 source candidate
+# ooRexx WebSocket Access v0.1-dev3 source candidate
 
 Spiral 1 COTS interface slice for RFC 6455 WebSocket.
 
@@ -14,38 +14,49 @@ application / intention
         -> native/COTS socket
 ```
 
-The access layer owns RFC 6455 HTTP Upgrade negotiation, frame encoding/decoding, client masking, data/control sequencing and close lifecycle. It does not own native socket acquisition, socket policy, peer routing, TLS keys, entropy or digest implementation.
+The access layer owns RFC 6455 Upgrade negotiation, frame encoding/decoding, client masking, fragmentation sequencing and close lifecycle. It does not own native socket acquisition, route selection, TLS material or production entropy.
 
-## dev2 source changes
+## dev2 protocol repairs
 
-dev2 closes two concrete dev1 defects and strengthens fail-closed behaviour:
+dev2 repaired fragmented TEXT/BINARY reassembly, control-frame interleaving, bounded message assembly, reserved/RSV validation and the dev1 close-state bug that prevented the close control frame from being written.
 
-- fragmented TEXT/BINARY messages are reassembled across CONTINUATION frames;
-- PING/PONG/CLOSE control frames can be processed while a fragmented message is active;
-- continuation without an active fragmented message fails closed with protocol close 1002;
-- starting a second data message while fragmentation is active fails closed;
-- assembled message size is bounded, with close 1009 on overflow;
-- reserved opcodes, unexpected RSV bits and invalid control frames fail closed;
-- local and peer close paths now transmit the close control frame before stream close. dev1 changed state to CLOSING and then called sendMessage(), which only permits OPEN.
+## dev3 estate crypto adapter
+
+dev3 adds the optional `WebSocketPlatformCrypto.cls` adapter.
+
+It binds RFC 6455's standards-required SHA-1 `Sec-WebSocket-Accept` calculation to the existing `crypto.auth/0.1` authority, which is the narrow SHA-1/HMAC companion to ooRexx Crypto v0.8.3. It also supplies the ordinary RFC 4648 base64 encoding needed for the handshake.
+
+Entropy remains explicitly injected through `WebSocketEntropySource`. The same entropy authority can back both:
+
+- the 16-byte client handshake nonce; and
+- fresh four-byte client frame masks.
+
+This adapter deliberately does **not** add another RNG, shell out to OpenSSL, acquire TLS credentials or bypass Socket Provider. Production installations must bind `WebSocketEntropySource` to the estate cryptographic/randomness authority.
+
+TLS remains below WebSocket in the Socket Provider TLS family and its `SocketSecurityMaterialProvider`.
 
 ## Evidence state
 
 The immutable qualified release remains **v0.1-dev1**, SHA-256
 `91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655`.
 
-dev1 evidence remains ACCESS, RFC 6455 contract PASS, SocketProvider isolation PASS and an independent Python `websockets` loopback wire PASS under ooRexx 5.3.0 r13196.
+The current Git line is **v0.1-dev3 SOURCE_CANDIDATE**. It is not promoted until the expanded protocol and crypto-adapter tests execute under ooRexx 5.3.0 r13196 against the current Socket Provider authority.
 
-The current external socket authority is Socket Provider **v0.1-dev16**. Library reconciliation carries the dev1 COTS result as inherited evidence and explicitly says WebSocket was **not freshly rerun against dev16**.
+Current external socket authority:
 
-dev2 is therefore a **source candidate** until its expanded contract suite and independent COTS wire test execute against the current Socket Provider authority.
+- Socket Provider v0.1-dev16
+- SHA-256 `fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2`
 
-## Security/entropy authority
+Current crypto authority used by the optional adapter:
 
-`WebSocketHandshakeCrypto` remains the injected authority for client nonce and `Sec-WebSocket-Accept`. `WebSocketMaskSource` remains the injected authority for fresh client masks. Production entropy is not bundled or claimed.
+- ooRexx Crypto v0.8.3
+- SHA-256 `5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49`
+- ooRexx Crypto Authentication Primitives v0.1-dev1 / `crypto.auth/0.1`
 
 ## Non-claims
 
-- RFC 8441 WebSocket over HTTP/2 is not implemented.
-- RFC 9220 WebSocket over HTTP/3 is not implemented.
-- permessage-deflate/extensions are not implemented.
-- production nonce/mask entropy provider is not bundled.
+- fresh dev16 live WebSocket qualification;
+- production entropy-provider binding;
+- RFC 8441 WebSocket over HTTP/2;
+- RFC 9220 WebSocket over HTTP/3;
+- permessage-deflate/extensions.
