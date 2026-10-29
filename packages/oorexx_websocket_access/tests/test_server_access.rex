@@ -36,8 +36,24 @@ call assert conn~sendText("World"), "server sends text"
 wire=substr(stream~written,before+1)
 call assert wire="8105"x||"World", "server frames are unmasked"
 
-badRequest=request
-badStream=.FakeServerStream~new(.array~of(badRequest||"8101"x||"x"),address)
+/* HTTPS-owned parser handoff: no raw HTTP bytes are re-read. */
+headers=.directory~new
+headers["host"]="rasenfalcon.com"
+headers["upgrade"]="websocket"
+headers["connection"]="Upgrade"
+headers["sec-websocket-key"]="dGhlIHNhbXBsZSBub25jZQ=="
+headers["sec-websocket-version"]="13"
+headers["origin"]="https://rasenfalcon.com"
+headers["sec-websocket-protocol"]="wire.v1"
+upgrade=.WebSocketUpgradeRequest~new("GET","/wire","HTTP/1.1",headers)
+handoffFrame=.WebSocketCodec~encodeClient(.WebSocketMessage~new(.WebSocketOpcode~TEXT,"HTTPS-HANDOFF"),"11223344"x)
+handoffStream=.FakeServerStream~new(.array~new,address)
+handoff=server~acceptParsedRequest(handoffStream,address,upgrade,options,handoffFrame)
+call assert handoff<>.nil, "parsed HTTPS upgrade handoff accepted"
+handoffMessage=handoff~receive
+call assert handoffMessage<>.nil & handoffMessage~payload="HTTPS-HANDOFF", "HTTPS handoff preserves first WebSocket bytes"
+
+badStream=.FakeServerStream~new(.array~of(request||"8101"x||"x"),address)
 badConn=server~acceptStream(badStream,address,options)
 call assert badConn<>.nil, "bad-frame connection upgrades first"
 before=length(badStream~written)
@@ -45,7 +61,7 @@ bad=badConn~receive
 call assert bad=.nil, "unmasked client frame fails closed"
 call assert badConn~state=.WebSocketState~CLOSED, "protocol violation closes server connection"
 closeWire=substr(badStream~written,before+1)
-call assert left(closeWire,2)="881A"x | left(closeWire,2)="881F"x | left(closeWire,1)="88"x, "server emits unmasked close on protocol failure"
+call assert left(closeWire,1)="88"x, "server emits unmasked close on protocol failure"
 
 forbidden="GET /wire HTTP/1.1"||"0d0a"x||,
           "Host: rasenfalcon.com"||"0d0a"x||,
@@ -72,12 +88,24 @@ call assert rejected=.nil, "unsupported WebSocket version rejected"
 call assert pos("HTTP/1.1 426 Upgrade Required",versionStream~written)>0, "version rejection uses 426"
 call assert pos("Sec-WebSocket-Version: 13",versionStream~written)>0, "version rejection advertises RFC6455 version"
 
-say "PASS websocket server access/own-stream contract"
+badKey="GET /wire HTTP/1.1"||"0d0a"x||,
+       "Host: rasenfalcon.com"||"0d0a"x||,
+       "Upgrade: websocket"||"0d0a"x||,
+       "Connection: Upgrade"||"0d0a"x||,
+       "Sec-WebSocket-Key: short"||"0d0a"x||,
+       "Sec-WebSocket-Version: 13"||"0d0a"x||,
+       "Origin: https://rasenfalcon.com"||"0d0a0d0a"x
+badKeyStream=.FakeServerStream~new(.array~of(badKey),address)
+rejected=server~acceptStream(badKeyStream,address,options)
+call assert rejected=.nil, "noncanonical client key rejected"
+call assert pos("HTTP/1.1 400 Bad Request",badKeyStream~written)>0, "bad key rejection is explicit"
+
+say "PASS websocket server access/HTTPS-upgrade contract"
 exit 0
 
 assert: procedure
   use strict arg ok,label
-  if \ok then do
+  if ok=.false then do
     say "FAIL" label
     exit 1
   end
@@ -108,14 +136,14 @@ assert: procedure
 ::method read
   expose reads open
   use strict arg maximumBytes
-  if \open | reads~items=0 then return .nil
+  if open=.false | reads~items=0 then return .nil
   chunk=reads[1]
   reads~remove(1)
   return chunk
 ::method write
   expose written open
   use strict arg bytes
-  if \open then return .false
+  if open=.false then return .false
   written=written||bytes
   return .true
 ::method close
