@@ -25,3 +25,10 @@ Pin upstream SHA, run upstream suite, implement Alchemy adapter, preserve Inspec
 
 ## Ownership
 CHATGPT owns this Alchemy sphere; upstream authors own upstream bridge. No upstream source is copied into this sphere. Apache-2.0 obligations apply if later vendoring is authorized.
+
+## 2026-10-29 upstream qualification checkpoint
+- Immutable upstream candidate: `JosepMariaBlasco/oorexxnet@bffd7ae127d559ad51e8128f9c9c27175ef4c35a`.
+- New upstream condition-serialization repair covers overridden VALUE/KIND/MAKESTRING and callback replies. A condition must propagate before any CLR invocation; do not convert it into an unrelated CLR error.
+- Upstream reported phase3 (7) and HostTests (1) coverage; these are not locally executed Alchemy results.
+- The Alchemy adapter must delegate generic reflection/overload binding to upstream, not duplicate it. Details and qualification gates: `packages/oorexx_dotnet_alchemy_v0.2.15/docs/UPSTREAM_OOREXXNET_ADOPTION.md`.
+- Autobuilder is not running; no CI or live acceptance is claimed.
