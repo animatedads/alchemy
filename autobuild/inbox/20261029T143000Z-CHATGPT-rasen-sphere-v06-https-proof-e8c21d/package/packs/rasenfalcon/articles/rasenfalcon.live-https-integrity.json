@@ -1,0 +1,44 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.live-https-integrity",
+  "version": "0.6",
+  "sphere": "rasenfalcon",
+  "section": "qualification",
+  "title": "Native public HTTPS release identity and content-integrity qualification",
+  "summary": "RasenFalcon v0.4.5 implements a live public HTTPS probe that uses platform TLS validation or explicit CA and optional leaf fingerprint, then compares nine page bodies and four static assets against a pinned local build. Tests use a localhost TLS server, not the production native ooRexx server. Autobuilder is offline and no live host was contacted.",
+  "invariants": [
+    "A 200 response is not proof of the intended published site: verify the exact 13 path bytes against SHA-256.",
+    "Verify the TLS certificate chain, intended hostname/SNI and TLS minimum 1.2; no -k, plaintext HTTP or redirect fallback.",
+    "The operator CLI accepts only rasenfalcon.com and www.rasenfalcon.com for public endpoint checks, and refuses arbitrary IP targets.",
+    "Do not issue an unknown-route probe on a live protected service: the owned HTTPS hostile-source firewall may block that test source.",
+    "Local source integrity and remote response integrity are separately verified; a source-manifest mismatch or remote body alteration is FAIL.",
+    "The test fixture uses an ephemeral localhost TLS server and tests invalid trust, hostname, leaf fingerprint, redirects and tampered content; these tests prove the probe, not a running ooRexx HTTPS service.",
+    "Even if content_integrity=PASS, CMS/Brand/Wire release authorized, private mTLS, installed systemd and production approval remain NOT_TESTED.",
+    "Public apex is not equivalent to NOC or Office; those must separately require client mTLS with owner-private CA, LDAP active principal and HTTPS_LOGIN.",
+    "Source v0.4.5 test run: website 18/18 and handoff/deployment 38/38 locally PASS, including 9 local TLS-fixture tests; live public HTTPS NOT_RUN."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.5_source_candidate.zip",
+      "sha256": "30d8122e39b481d16bc3b313718dd6ab530c9132a3a778dd2fefddc65fdfb5bd",
+      "member": "rasenfalcon_delivery_v0.4.5/website/deploy/public_https_integrity_probe.py",
+      "claim": "Executable 13-path HTTPS identity, TLS and body verification."
+    },
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.5_source_candidate.zip",
+      "sha256": "30d8122e39b481d16bc3b313718dd6ab530c9132a3a778dd2fefddc65fdfb5bd",
+      "member": "rasenfalcon_delivery_v0.4.5/handoff/tests/test_public_https_integrity.py",
+      "claim": "Ephemeral TLS success and negative qualification."
+    }
+  ],
+  "source_branch": "https://github.com/animatedads/alchemy/tree/autobuild-submit/20261029T140000Z-CHATGPT-rasen-v045-live-https-content-proof-09f62a",
+  "source_ready_commit": "3199b2f48c625e58c69221c3416213e728da4e67",
+  "path_count": 13,
+  "local_tls_tests": "9_PASS",
+  "site_tests": "18_PASS",
+  "handoff_tests": "38_PASS",
+  "public_https_live": "NOT_RUN",
+  "native_server_installed": "NOT_OBSERVED",
+  "production_release": "BLOCKED"
+}

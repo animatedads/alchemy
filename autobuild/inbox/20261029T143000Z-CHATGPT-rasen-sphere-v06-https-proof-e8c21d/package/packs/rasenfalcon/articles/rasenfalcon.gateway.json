@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.gateway",
+  "version": "0.1",
+  "sphere": "rasenfalcon",
+  "section": "architecture",
+  "title": "Four allowlisted operations targets",
+  "summary": "Wire gateway authenticates and authorizes before backend TN3270 or HTTPS/WebSocket connections. It does not become a generic proxy.",
+  "invariants": [
+    "Exactly two TN3270 targets: ed209zz and ed209z.",
+    "Exactly two web targets: ed209cray and ed209tops, never ed209dec.",
+    "Authorization checked before opening target sockets and at each effectful operation.",
+    "No arbitrary target URL/port, SSRF, X-Forwarded-For source authority or proxy bypass.",
+    "Session teardown upon logout and truthful NOT_RUN status for unknown ports/hosts."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_alchemy_autobuild_v0.4.zip",
+      "sha256": "fb4ce5bdecf0c9c312e21459f5ea74dc7d0eeb73fa37682cada06a5835028189",
+      "member": "handoff/codex/CX-07.md",
+      "claim": "Approved fixed destination set."
+    }
+  ],
+  "targets": {
+    "tn3270": [
+      "ed209zz",
+      "ed209z"
+    ],
+    "web": [
+      "ed209cray",
+      "ed209tops"
+    ]
+  }
+}

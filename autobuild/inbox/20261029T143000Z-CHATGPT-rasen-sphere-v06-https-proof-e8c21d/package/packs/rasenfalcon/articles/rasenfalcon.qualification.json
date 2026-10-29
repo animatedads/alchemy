@@ -1,0 +1,65 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.qualification",
+  "version": "0.6",
+  "sphere": "rasenfalcon",
+  "section": "qualification",
+  "title": "Verified source and still-unqualified production boundary",
+  "summary": "v0.4.3 was independently retested by CLAUDE-PC under owner-approved REQ-00001217: website 18/18 PASS, handoff 21/21 PASS, source-lock 28 files PASS, explicit site validate PASS and production denied. v0.4.5 locally tested website 18/18 and handoff/deployment 38/38 with General Deployment available. Public TLS endpoint has NOT been probed and target install/running remains unobserved.",
+  "invariants": [
+    "Reported website preview tests 9/9 and delivery security-contract tests 13/13 are not TLS handshake evidence.",
+    "Receiver acceptance must be verified from its receipt; a ready.json marker is only submission.",
+    "CMS/Wire publisher, live HTTPS SNI, mTLS negative tests, LDAP, SMTP/IMAP, terminal and MCP integration all require real service tests.",
+    "No production cutover without distinct operator approval; source submission does not install keys or change hosts.",
+    "Never mark fixture-only results LIVE_PASS; missing credentials and deployment facts are NOT_RUN.",
+    "A forged editorial approval record with local hashes, names and dates must never enable production release.",
+    "Preview cannot be indexed even if content is marked approved; local 12/12 assertions are not live HTTPS/browser integration evidence.",
+    "A NoSQLServer native-record/0.2 revision is imported as unverified metadata only; this is not an independently checked database or CMS receipt.",
+    "Separate CLAUDE-PC read-only qualification requested via Rasen Falcon component lane rasenfalcon-website, request REQ-00000481; no external test PASS may be inferred before reply.",
+    "A General Deployment content-addressed local review stage is not an installed service; must preserve installed/running NOT_OBSERVED until independent host evidence.",
+    "v0.4.5 integrity probe is qualified against an ephemeral localhost TLS fixture only; do not claim any HTTPS service is installed or running on rasenfalcon.com."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_alchemy_autobuild_v0.4.zip",
+      "sha256": "fb4ce5bdecf0c9c312e21459f5ea74dc7d0eeb73fa37682cada06a5835028189",
+      "member": "README.md",
+      "claim": "Submitted candidate explicitly disclaims deployment and acceptance."
+    }
+  ],
+  "reported_local_tests": {
+    "website": "18/18 PASS v0.4.5",
+    "handoff": "38/38 PASS v0.4.5",
+    "tls_fixture": "9/9 PASS LOCAL"
+  },
+  "github_submission": "V0.4.5_SOURCE_COMMITTED",
+  "acceptance": "AUTOBUILDER_OFFLINE_V045_SOURCE_ONLY",
+  "native_services": "NOT_RUN",
+  "independent_qualification": {
+    "request": "REQ-00000943",
+    "result": "REQ-00001007",
+    "version": "0.4.2",
+    "website": "18/18 PASS",
+    "handoff": "12/13 FAIL stale source lock",
+    "v043_retest": "PENDING"
+  },
+  "independent_v043_retest": {
+    "request": "REQ-00001217",
+    "results": [
+      "REQ-00001283",
+      "REQ-00001285",
+      "REQ-00001289"
+    ],
+    "git_head": "d38a4d71f32d2ce9de79c5063e714c1303692b4e",
+    "website": "18/18 PASS",
+    "handoff": "21/21 PASS",
+    "source_lock": "28/28 PASS",
+    "standalone_validate": "PASS",
+    "production_gate": "DENIED_AS_DESIGNED",
+    "host_install": "NOT_OBSERVED"
+  },
+  "general_deployment_stage": "STAGED_LOCAL_REVIEW",
+  "public_host_installed": "NOT_OBSERVED",
+  "public_https_running": "NOT_OBSERVED"
+}

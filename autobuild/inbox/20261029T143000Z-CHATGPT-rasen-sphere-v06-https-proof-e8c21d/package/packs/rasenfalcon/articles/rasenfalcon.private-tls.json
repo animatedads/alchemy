@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.private-tls",
+  "version": "0.1",
+  "sphere": "rasenfalcon",
+  "section": "security",
+  "title": "Two independently certified private HTTPS services and mandatory mTLS",
+  "summary": "The owner private CA issues distinct NOC and Office server leaf certificates. Approved browsers trust the private CA; each authorized device additionally holds an individually issued client certificate. Server-side client-certificate validation is the access gate, before LDAP/Access Permissions.",
+  "invariants": [
+    "NOC certificate covers noc.rasenfalcon.com, irrespective of DNS CNAME; Office certificate covers office.rasenfalcon.com.",
+    "Two separate server private keys, systemd units and service users; no public shared vhost.",
+    "No cert, wrong CA, incorrect EKU, expired or revoked device certificate must fail during handshake.",
+    "Reject missing/unknown SNI and SNI/Host mismatch; absent issuer or failed rotation must fail closed.",
+    "FORBID public CA or ACME fallback, password-only admission, anonymous TLS, plaintext HTTP, default shared vhost and untrusted reverse proxy.",
+    "Only owner-approved devices get the private CA trust anchor and a separate device client identity; never ship private root or server keys in source.",
+    "Real positive and negative TLS handshakes are required before reporting live readiness."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.zip",
+      "sha256": "60bf049a436c9f653b60cbf315331a85872ab4f6724f7ef685fec322de96bc5c",
+      "member": "rasenfalcon_delivery_v0.4/contracts/PRIVATE_HTTPS_POLICY.json",
+      "claim": "Binding owner private HTTPS security directive, not installed."
+    }
+  ],
+  "units": [
+    "rasenfalcon-noc-https.service",
+    "rasenfalcon-office-https.service"
+  ],
+  "client_auth": "mTLS_REQUIRED",
+  "fallback": "FORBIDDEN",
+  "test_state": "NOT_RUN"
+}
