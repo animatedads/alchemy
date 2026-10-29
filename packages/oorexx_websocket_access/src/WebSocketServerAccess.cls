@@ -83,9 +83,10 @@
   expose stream receiveBuffer state fragmentOpcode fragmentPayload maximumMessageBytes
   use strict arg maximumRead=65536
   if state=.WebSocketState~CLOSED then return .nil
-  signal on syntax name decodeFailure
   do forever
+    signal on syntax name decodeFailure
     parsed=.WebSocketCodec~decodeClient(receiveBuffer)
+    signal off syntax
     if parsed<>.nil then do
       receiveBuffer=substr(receiveBuffer,parsed["consumed"]+1)
       msg=parsed["message"]
@@ -222,10 +223,11 @@ decodeFailure:
   end
 
   key=headers["sec-websocket-key"]
-  if key=.nil | strip(key)="" then do
+  if key=.nil | \self~validClientKey(strip(key)) then do
     self~reject(stream,400,"Bad Request")
     return .nil
   end
+  key=strip(key)
 
   origin=""
   if headers["origin"]<>.nil then origin=headers["origin"]
@@ -309,6 +311,16 @@ decodeFailure:
     if lower(strip(p))=lower(wanted) then return .true
   end
   return .false
+
+::method validClientKey private
+  use strict arg key
+  if length(key)<>24 then return .false
+  if right(key,2)<>"==" then return .false
+  alphabet="ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/"
+  do i=1 to 22
+    if pos(substr(key,i,1),alphabet)=0 then return .false
+  end
+  return .true
 
 ::method selectSubprotocol private
   use strict arg offered, supported
