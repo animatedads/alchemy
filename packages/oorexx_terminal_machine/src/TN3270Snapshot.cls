@@ -64,6 +64,21 @@
   metadata["protocol"] = "TN3270"
   metadata["model"] = rows || "x" || columns
   metadata["replyMode"] = "FIELD"
+  characterSignature = ""
+  do a = 0 to model~size - 1
+    if a > 0 then characterSignature ||= "|"
+    attrsAt = model~characterAttributesAt(a)
+    part = ""
+    do key over .array~of("41", "42", "43", "45")
+      value = attrsAt~at(key)
+      if value <> .nil then do
+        if part <> "" then part ||= ","
+        part ||= key || "=" || value~c2x
+      end
+    end
+    characterSignature ||= part
+  end
+  metadata["characterAttributeDigest"] = .TerminalUtil~stableDigest(characterSignature)
   if profile \== .nil then do
     if profile~hasMethod("TN3270EACTIVE") then do
       if profile~tn3270eActive then do
