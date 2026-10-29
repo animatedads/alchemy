@@ -1,4 +1,4 @@
-# ooRexx Architecture Intentions v0.1-dev10
+# ooRexx Architecture Intentions v0.1-dev11
 
 An **ooRexx-native, intention-driven architecture planner** for the Project
 Alchemy stack. It accepts business scope statements and existing-estate facts,
@@ -173,3 +173,8 @@ Adds the read-only `ArchitectureSscReceipt` and offline fake-authority test. It 
 ## dev10 addition
 
 Read-only NotNotes document publication request in `src/ArchitectureNotNotesPublication.cls`. This does not publish, modify or deploy anything.
+
+
+## dev11 — Rasen Falcon evidence-gated service readiness
+
+See `docs/RASENFALCON_SERVICE_READINESS.md`; nothing in this source slice authorizes production activation.
