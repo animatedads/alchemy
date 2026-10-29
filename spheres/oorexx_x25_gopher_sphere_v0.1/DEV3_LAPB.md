@@ -21,3 +21,5 @@ A serial adapter may deliver de-stuffed frame octets with FCS to the codec, or s
 ## Release and evidence
 
 Interpreter: user-supplied ooRexx 5.3.0 r13196. Six tests PASS with no network, no root and no autobuilder. The code was not load-tested against real X.25 carriers. `docs/NOT_CLAIMED.md` must remain authoritative for unimplemented gateway/physical/LDAP/HTTPS/mesh. This sphere records ownership and continuation, not qualification or new authority.
+
+**Adversarial correction:** A repeated peer REJ can trigger repeated I retransmissions; dev3 now charges those against N2 exactly like T1, and fails the link closed at exhaustion. See `test_lapb_negative.rex`.
