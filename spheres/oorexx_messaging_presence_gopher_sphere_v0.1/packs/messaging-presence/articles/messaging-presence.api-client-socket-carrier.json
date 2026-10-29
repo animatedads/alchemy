@@ -34,13 +34,19 @@
     }
   ],
   "qualification": {
-    "status": "source-candidate",
+    "status": "source-integrated-runtime-pending",
     "runtimeExecuted": false,
     "open": [
-      "Compile the modified ApiHttpTransport and adapter under ooRexx 5.3.0 r13196.",
-      "Run the deterministic carrier identity/readiness/fail-closed suite.",
-      "Qualify an exact current XTP sender with bounded PUMP/POLL through SocketProvider.",
-      "Run live HTTPS over that XTP carrier before making any HTTPS-over-XTP claim."
-    ]
+      "Run deterministic carrier identity/readiness/fail-closed qualification under ooRexx 5.3.0 r13196 from current main.",
+      "Qualify an exact XTP dev33 selected sender/stream with bounded provider-native PUMP/POLL readiness.",
+      "Run live API Client HTTPS over that XTP carrier before making any HTTPS-over-XTP claim."
+    ],
+    "integratedCommit": "265aeaa86714cfc5c014b9b4cca136d9e6c9476d"
+  },
+  "current_xtp_context": {
+    "version": "0.1-dev33",
+    "source": "packages/oorexx_xtp_v0.1-dev33",
+    "selectorDependency": "Socket Provider 0.1-dev16",
+    "protection": "per-service sessions/messages/streams; LDAP Identity Directory + Secret Broker optional key source"
   }
 }
