@@ -1,0 +1,19 @@
+Cluster Object / Memory Fabric Gopher sphere v0.1
+Date: 2026-10-29
+
+Source continuity:
+- packages/cluster_object_memory_fabric_transport_v0.2
+- cluster.object.peer/0.2
+- Queue Fabric QueueXtpSessionWire + QueueXtpReceiptGate candidate1, ZIP SHA-256 8e941fdbbb2df8aad1bbf5ebe050a6d0498cb7b8b416f3c82c7b319f8dc2d9ce
+- XTP dev35 commit a3e2d6c0 (owner-reported LOCAL_PASS, 231 PASS / 0 FAIL / 1 SKIP)
+- Memory Fabric XTP candidate5 observed in Library
+- cluster.object.xtp-binding/0.1 dev1
+
+Current evidence boundary:
+- binding static contract, JSON, shell and SHA checks: PASS
+- binding ooRexx semantic test: NOT_RUN in the authoring container because no `rexx` executable is installed
+- XTP MU-to-own-MI or MU-to-MU FIELD_PASS: NONE, explicitly reported by the XTP owner on 2026-10-29
+- production Queue Fabric XTP receiver/durable receipt verifier: external gate, not supplied by this component
+- Deployment readiness: NOT QUALIFIED
+
+The sphere must not imply live internode readiness from local XTP or mock Queue Fabric evidence.
