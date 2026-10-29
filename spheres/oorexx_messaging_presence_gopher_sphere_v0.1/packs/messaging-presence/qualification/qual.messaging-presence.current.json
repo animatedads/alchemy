@@ -16,14 +16,15 @@
     "Authenticated Rasen Falcon resolves lane `messaging-presence` and links the Messaging/Presence/BOSH artifacts; its current sphere_check call fails with SPHERE_CHECKER_UNAVAILABLE because no checker is configured.",
     "BOSH/API Client adapter v0.1-dev1 is source-integrated on main by squash merge 12077975acaa9610ad1c696a703ce9f698b928ad; it maps BoshHttpExchangeProvider to API Client v0.4.1 without importing XMPP, SocketProvider or XTP and denies cleartext HTTP by default.",
     "API Client SocketProvider carrier seam is source-integrated on main by squash merge 265aeaa86714cfc5c014b9b4cca136d9e6c9476d. ApiHttpsTransport now accepts an optional ApiSocketConnector while RxSock remains the default; the separate adapter preserves exact SocketAddress identity and fails closed without native SELECT/PUMP/POLL readiness.",
-    "Current Git XTP development head reviewed is dev33. dev33 keeps Socket Provider dev16 as its protocol-independent selector dependency, adds per-service protection for sessions/messages/streams, and uses LDAP Identity Directory plus Secret Broker as the optional key-source path; this does not transfer XTP selection authority into BOSH or API Client."
+    "Current Git XTP development head reviewed is dev33. dev33 keeps Socket Provider dev16 as its protocol-independent selector dependency, adds per-service protection for sessions/messages/streams, and uses LDAP Identity Directory plus Secret Broker as the optional key-source path; this does not transfer XTP selection authority into BOSH or API Client.",
+    "API Client SocketProvider adapter advanced on main to v0.1-dev2. ApiSocketIntentionRouteResolver now performs fresh socket.negotiation/0.1 selection per request, preserves exact ApiRouteRequirement/ApiRequest objects in metadata, defaults to raw XTP/TCP stream schemes, and deliberately sets requireSecure=false because API Client TLS runs above the carrier."
   ],
   "open_work": [
     "Publish the exact Socket Provider v0.1-dev16 source tree under the first-class GitHub package path and byte/revision-verify it against the Library archive before using the repo tree for dev16 qualification.",
     "Publish the exact Instrumentation Mesh v0.1-dev8 runtime source tree as a first-class package; do not reconstruct it from older vendored copies.",
     "Run BOSH dev6 environment qualification against exact Socket Provider dev16, Instrumentation Mesh dev8 and ooRexx r13196 source/runtime roots once those roots are available together.",
     "Run the current provider-neutral Messaging & Presence XMPP transport fixture against the exact dev16 source tree after source publication; retain fail-closed STARTTLS until a generic same-stream upgrade route is explicitly qualified.",
-    "Run deterministic ooRexx r13196 qualification for the now-main BOSH/API Client adapter and API Client SocketProvider carrier seam once the executor checkout contains current main and exact roots.",
+    "Run deterministic ooRexx r13196 qualification for the now-main BOSH/API Client adapter and API Client SocketProvider dev2 carrier/intention resolver once the executor checkout contains current main and exact roots.",
     "Qualify an exact current XTP dev33 selected stream through SocketProvider with bounded PUMP/POLL readiness, then run live API Client HTTPS over that carrier before making any HTTPS-over-XTP production claim.",
     "Enable/configure the sphere checker in the authenticated Rasen Falcon deployment, then run sphere_check for the linked messaging-presence sphere; current result is SPHERE_CHECKER_UNAVAILABLE, not SPHERE_NOT_FOUND."
   ],
@@ -81,9 +82,14 @@
       "runtimeQualification": "pending"
     },
     {
-      "name": "oorexx_api_client_socket_provider_adapter v0.1-dev1",
+      "name": "oorexx_api_client_socket_provider_adapter v0.1-dev2",
       "commit": "265aeaa86714cfc5c014b9b4cca136d9e6c9476d",
-      "runtimeQualification": "pending"
+      "runtimeQualification": "pending",
+      "followupCommits": [
+        "8f10590346b25c9cc8d5e80e5e6b0a07f3fc9f92",
+        "a2700ff3e2e2474468738bc56a87ed054d975043",
+        "7df71efea2c9a4d39a4e9483f5172178f9d8ab36"
+      ]
     }
   ]
 }
