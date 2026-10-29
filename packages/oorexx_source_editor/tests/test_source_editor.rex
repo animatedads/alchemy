@@ -72,6 +72,19 @@ tf=.SourceTreeFinder~new(tmp)
 files=tf~files('treeprobe.rex','oorexx'); call assertEq 1,files~items,'tree file find'
 tg=tf~grep('tree[ ]+visible','treeprobe.rex','code','sensitive','oorexx'); call assertEq 1,tg~items,'tree grep code'
 th=tf~grep('hidden[ ]+tree','treeprobe.rex','code','sensitive','oorexx'); call assertEq 0,th~items,'tree grep ignores comment'
+/* CLI search argument model preserves multi-word expressions after shell quote removal. */
+ca=.array~of('find','dummy.rex','visible','token','--mode','code','--case','insensitive')
+cpArgs=.SourceEditorCliSearchArgs~parse(ca,3,'text','sensitive')
+call assertEq 'visible token',cpArgs~expression,'cli multiword expression'
+call assertEq 'code',cpArgs~mode,'cli explicit mode'
+call assertEq 'insensitive',cpArgs~caseMode,'cli explicit case'
+
+legacy=.array~of('grep','dummy.rex','token','code','insensitive')
+legacyArgs=.SourceEditorCliSearchArgs~parse(legacy,3,'text','sensitive')
+call assertEq 'token',legacyArgs~expression,'cli legacy expression'
+call assertEq 'code',legacyArgs~mode,'cli legacy mode'
+call assertEq 'insensitive',legacyArgs~caseMode,'cli legacy case'
+
 /* completion provider is semantic and deterministic; CLI/UI/MCP may project the same candidates. */
 cp=.SourceCompletionProvider~new
 cc=cp~completeDocument(.SourceDocument~new(rootFile()),'Source','class')
@@ -79,7 +92,7 @@ call assertTrue cc~items>=5,'completion document classes'
 call assertEq 'SourceCompletionCandidate',cc[1]~label,'completion deterministic order'
 ct=cp~completeTree(tmp,'tree','treeprobe.rex','oorexx')
 call assertEq 1,ct~items,'completion tree file'
-say 'PASS ooRexx source editor dev6'
+say 'PASS ooRexx source editor dev7'
 exit 0
 
 failed:
