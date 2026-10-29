@@ -4,14 +4,15 @@
   "sphere": "ldap-identity",
   "title": "LDAP Identity durable continuation ledger",
   "records": [
-    {"topic":"baseline","package":"oorexx_ldap_identity_v0.1-dev21.zip","sha256":"bfc1c3d787215eab96a3a8afdbfd22451443213624c8a035960408f611220813","status":"standards-clean development candidate"},
+    {"topic":"baseline","package":"oorexx_ldap_identity_v0.1-dev22.zip","sha256":"697c301c37ad1d77252a34db9028420c4c9a3e3dbe5c60de9be6fc91940341fc","status":"deployable source contribution"},
+    {"topic":"service activation","rule":"dev22 supplies the owned Rasen Falcon LDAP daemon bootstrap and hardened rasenfalcon-ldap.service; it does not claim installation or live activation."},
+    {"topic":"deployment authority","rule":"General ooRexx Deployment stages/installs sealed releases; Rasen Falcon delivery authorizes activation and acceptance. LDAP does not implement another deployer."},
+    {"topic":"persistence","rule":"Rasen Falcon LDAP restores semantic directory truth through NoSQLDirectoryStore; daemon startup does not create identity/ACL truth."},
+    {"topic":"secrets","rule":"Persistent credentials retain secretRef only; deployment maps secret references to environment-variable names through Secret Broker and stores no raw values."},
+    {"topic":"tls","rule":"The Rasen Falcon production bootstrap is LDAPS-only and fails closed without owned certificate/private-key material."},
     {"topic":"authority recovery","rule":"Restart recovery persists logical peer, epoch, holder, directory revision and committed update identity."},
-    {"topic":"epoch fencing","rule":"Recovered authority epoch may advance but may not regress."},
-    {"topic":"holder fencing","rule":"A holder change requires a newer authority epoch."},
     {"topic":"commit authority","rule":"XTP transport ACK or replay evidence cannot satisfy LDAP application-commit authority."},
-    {"topic":"dev21","rule":"Both aggregate semantic unit suites now require the authority-recovery journal regression; a full suite can no longer omit it."},
-    {"topic":"qualification","rule":"Exact dev21 ZIP standards scan: 81 files, 0 errors, 136 warnings, PASS."},
-    {"topic":"qualification","rule":"Fresh dev21 ooRexx runtime qualification is NOT-RUN in the current build container."},
-    {"topic":"next","rule":"Run r13196 aggregate/full-estate qualification, finish exploded-tree byte sync, then perform RexxOS failover field qualification."}
+    {"topic":"qualification","rule":"dev22 deployment-contract qualification PASS; fresh r13196 and live host protocol qualification remain NOT-RUN."},
+    {"topic":"next","rule":"Package identity role through General Deployment, install on approved host, then run real bind/revoke and separate Crypto signing lifecycle acceptance."}
   ]
 }
