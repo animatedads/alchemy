@@ -1,16 +1,19 @@
 /* SLAM writes ooRexxUnit (ooTest) groups for standalone ooRexx routines, and a random-input group of
  * the same size for each, for comparison.
  * Architecture: Tom Dyer.  Code: Claude (Opus 5.5), 2026-10-29.
- * Args: alchemy repo root | pool file (lines: path-under-repo routine) | output directory | summary file
+ * Args: alchemy repo root | pool file (lines: path-under-repo routine [class]) | output directory | summary file
+ *   A line with a class names a method of that class: one that uses nothing of its object (no SELF,
+ *   SUPER or EXPOSE), lifted and run alone like a routine.
  * Summary lines: UNIT name path cases written predicted right wrong  |  SKIP name reason
+ *   name is ROUTINE, or CLASS~METHOD for a method
  */
 signal on syntax name onSyntax
 parse arg repo '|' poolFile '|' outDir '|' summary
-call SysMkDir outDir
+address system 'mkdir -p "' || outDir || '"'
 parse source . . me
 here = me~left(me~lastPos('/') - 1)
 w = .SlamTestWriter~new
-c = .SlamComposer~new
+x = .SlamContractExtractor~new
 rr = .SlamRuleReader~new
 call SysFileDelete summary
 call SysFileDelete outDir || '/cases.txt'
@@ -18,28 +21,42 @@ k = 0
 unitCache = .directory~new
 textCache = .directory~new
 do while lines(poolFile) > 0
-  parse value linein(poolFile) with path name .
-  if name = '' then iterate
+  parse value linein(poolFile) with path rname owner .
+  if rname = '' then iterate
   k += 1
+  name = rname
+  if owner \== '' then name = owner || '~' || rname
   file = repo || '/' || path
   if \unitCache~hasIndex(file) then do
     text = charin(file, 1, chars(file)); call stream file, 'C', 'CLOSE'
-    textCache[file] = text
+    textCache[file] = text~makeArray('0a'x)
     unitCache[file] = .SlamUnitSplitter~new~split(text)
   end
-  lifted = liftOne(c, file, name, 'U' || k, unitCache[file], textCache[file])
-  if lifted == .nil then do
+  unit = unitOf(file, rname, owner, unitCache)
+  if unit == .nil then do
+    call lineout summary, 'SKIP' name 'not found'
+    iterate
+  end
+  contract = x~extract(unit)
+  if \contract~standalone then do
+    call lineout summary, 'SKIP' name 'not standalone'
+    iterate
+  end
+  if owner \== '' then if \slamLiftableMethod(unit, textCache[file][unit~line]) then do
+    call lineout summary, 'SKIP' name 'uses its object (SELF, SUPER or EXPOSE)'
+    iterate
+  end
+  if slamLiftFile(file, rname, owner) == .nil then do
     call lineout summary, 'SKIP' name 'not liftable'
     iterate
   end
-  unit = unitOf(file, name, unitCache)
   nd = w~nondeterministic(unit~tokens)
   if nd \== '' then do
     call lineout summary, 'SKIP' name 'reads random numbers or the clock (' || nd || ')'
     iterate
   end
   rules = rr~rexxUnit(unit, file)
-  kn = w~knobs(name, lifted~contract, rules)
+  kn = w~knobs(name, contract, rules)
   if kn == .nil then do
     call lineout summary, 'SKIP' name w~notes[name]
     iterate
@@ -49,8 +66,8 @@ do while lines(poolFile) > 0
   cases = w~cases(name, kn)
   pr = observe(w, file, name, cases, outDir, here)
   n = w~countWritten(cases)
-  cls = 'SLAM_' || name~upper || '.testGroup'
-  grp = w~ooTestGroup(cls, file, name, cases, 'SLAM-chosen cases for' name)
+  cls = slamGroupName('SLAM', name)
+  grp = w~ooTestGroup(cls, file, rname, cases, 'SLAM-chosen cases for' name, owner)
   if grp == .nil then do
     call lineout summary, 'SKIP' name 'no case gives the same outcome twice'
     iterate
@@ -58,8 +75,8 @@ do while lines(poolFile) > 0
   call writeLines outDir || '/' || cls, grp
   rnd = w~randomCases(kn, n, 20261029)
   prr = observe(w, file, name, rnd, outDir, here)
-  cls = 'RAND_' || name~upper || '.testGroup'
-  grp = w~ooTestGroup(cls, file, name, rnd, 'Random cases (the comparison) for' name)
+  cls = slamGroupName('RAND', name)
+  grp = w~ooTestGroup(cls, file, rname, rnd, 'Random cases (the comparison) for' name, owner)
   if grp \== .nil then call writeLines outDir || '/' || cls, grp
   call dumpCases outDir || '/cases.txt', name, 'SLAM', cases
   call dumpCases outDir || '/cases.txt', name, 'RAND', rnd
@@ -77,7 +94,10 @@ observe: procedure
   call SysFileDelete cf
   do c over cases
     ln = c~args~items
-    do a over c~args; ln = ln a~c2x || '.'; end
+    do a over c~args
+      if a == w~OMITTED then ln = ln '-'
+      else ln = ln a~c2x || '.'
+    end
     call lineout cf, ln
   end
   call stream cf, 'C', 'CLOSE'
@@ -107,21 +127,13 @@ runChild: procedure
   end
   return lines
 
-liftOne: procedure
-  use arg c, file, name, alias, units, text
-  signal on syntax name liftFailed
-  return c~lift(file, name, alias, units, text)
-liftFailed:
-  return .nil
-
 unitOf: procedure
-  use arg file, name, cache
-  if \cache~hasIndex(file) then do
-    text = charin(file, 1, chars(file)); call stream file, 'C', 'CLOSE'
-    cache[file] = .SlamUnitSplitter~new~split(text)
-  end
+  use arg file, name, owner, cache
   do u over cache[file]
-    if u~kind == 'ROUTINE' then if u~selector == name~upper then return u
+    if owner == '' then do
+      if u~kind == 'ROUTINE' then if u~selector == name~upper then return u
+    end
+    else if u~kind == 'METHOD' then if u~selector == name~upper then if u~owner~upper == owner~upper then return u
   end
   return .nil
 
@@ -130,8 +142,13 @@ dumpCases: procedure
   use arg f, name, suite, cases
   do c over cases
     if c~kind == 'OTHER' then iterate
-    ln = 'CASE' name suite c~kind c~expected~c2x || '.' c~args~items
-    do a over c~args; ln = ln a~c2x || '.'; end
+    e = c~expected
+    if c~kind == 'ERROR' then e = e || '0a'x || c~message
+    ln = 'CASE' name suite c~kind e~c2x || '.' c~args~items
+    do a over c~args
+      if a == .SlamTestWriter~new~OMITTED then ln = ln '-'
+      else ln = ln a~c2x || '.'
+    end
     call lineout f, ln
   end
   call stream f, 'C', 'CLOSE'
@@ -149,3 +166,4 @@ onSyntax:
   exit 1
 
 ::requires 'SlamTestWriter.cls'
+::requires 'SlamLift.cls'

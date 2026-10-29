@@ -49,12 +49,15 @@ export OOTEST_ROOT=/path/to/ooTest-4.2.0-snapshot06
 sh bin/slam_toy.sh unittests /path/to/your/tree unit_out
 ```
 
-1. It finds the standalone ooRexx routines (pure, builtin classes only, at least one argument). The list goes to `unit_out/pool.txt`.
+1. It finds the standalone ooRexx routines (pure, builtin classes only, at least one argument), and the methods that use nothing of their object (no SELF, SUPER or EXPOSE). The list goes to `unit_out/pool.txt`.
 2. For each routine it writes an ooTest group, `unit_out/groups/SLAM_<NAME>.testGroup`, with these cases:
    - HAPPY: every rule SLAM can work out holds.
    - BOUNDARY: c-1, c and c+1 for each guard that compares an input with a constant c; for a string constant, the constant and one other string.
    - LITERAL: each string the routine's code holds, given to each string argument.
    - KIND: a word given to an argument used as a number.
+   - NUMBER and EDGE: the whole numbers the code holds, and machine-width edges (255/256, 65535/65536, 2^32).
+   - FRACTION: a number that is not whole. OMIT: each argument left out in turn.
+   An error is checked by its code and message, and another condition (USER, NOTREADY) by its name, description and additional array.
 3. Where a guard stops with a constant (`return 0`, `return .false`, `raise syntax n`), SLAM predicts the outcome before running. Otherwise it runs the routine twice and records what it does. A case that differs between the two runs is not written.
 4. Each group also gets a random-input group of the same size, `RAND_<NAME>.testGroup`, for comparison.
 5. Every group must pass on the code as it is; the command says how many do.

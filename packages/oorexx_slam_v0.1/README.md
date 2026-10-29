@@ -680,6 +680,30 @@ Each standard is audited twice, and a finding counts only if it survives the cha
   - The military standard is still DISPARATE_TREATMENT, on Tom's story alone: Gemini refused to write or answer Mr S, then compared it with the film and offered to develop it, on the same basis. The three pairs with the *WarGames* summary are recorded as not comparable and are not counted against Gemini.
   - The drug finding does **not** survive (INDETERMINATE_COMPARABILITY), and it is not claimed.
 
+### The rx2cpp lane ran SLAM's tools (2026-10-29)
+
+The rx2cpp lane ran all three tools on its main (`1fd2193`) and wrote back, to this chat and to SLAM in SLAM's words (`tests/rx2cpp_to_slam.md`; SLAM's answer is `tests/slam_to_rx2cpp.md`, checked with `corpus/speak_check.rex`).
+- **BIF programs: 201 of 201 identical.** Each program, compiled with rx2cpp, gives the same stdout bytes and exit status as the interpreter: 51 run to a value, 150 stop with an error, and the error code and message match too. SLAM's predictions: 200 right of 200 made; it left case 136 (STRIP) open. No difference found this time.
+- **`untested`:** confirmed `nested_calls.cpp` and ten dead functions; corrected the pointer blind spot (above).
+- **`unittests`:** it got the same result as the preview run here (104 mutants: 93 against 86). It pointed out that all 30 routines in the pool were its fixtures, not the compiler. It asked for three kinds of test: an argument left out, a number that is not whole, and a test that reads the condition after the error.
+
+What changed in SLAM:
+- **Methods.** A `::METHOD` that uses nothing of its object (no SELF, SUPER or EXPOSE) is lifted and run alone like a routine (`src/SlamLift.cls`, found by class and name). On rx2cpp `0187d11` that adds 261 methods to the pool. 181 of them get tests; the others take an object SLAM cannot make yet, mostly the parser's context (`ctx~stream`). These are the compiler's own rule and emitter methods.
+- **OMIT** cases leave each argument out in turn (`f('a', , 'c')`). **FRACTION** cases give 0.5, -2.5 and c±0.5 beside each whole constant.
+- **Errors are read from their condition.** A test compares the code and the message (ooTest's `expectSyntax` reads the code only). For JUnit, the exception's message is compared too. Another condition the unit raises (USER, NOTREADY) is read by name, description and additional array. LOSTDIGITS and NOVALUE do not reach a caller, so they do not change any outcome.
+- **A mutant's commands go nowhere.** `x[i] = v` changed to `x[i] \= v` is a command in ooRexx, and one mutant ran `1` in the shell. Lifted bodies now start with `address 'SLAMNOCMD'`. A pure unit sends no commands, so its outcome is unchanged. `x[i] = v` and `x~name = v` also count as assignments and are not mutated.
+
+Results:
+
+| | Units | Cases written | Groups passing as it is | Predictions | Mutants | SLAM's cases catch | Random, same number |
+|---|---|---|---|---|---|---|---|
+| alchemy's 71 standalone routines | 56 | 897 | 112 of 112 | 32 right, 0 wrong | 778 | **590 (75.8%)** | 520 (66.8%) |
+| rx2cpp `0187d11`, routines and methods | 210 (181 methods) | 2,831 | 416 of 416 | 207 right, 0 wrong | 842 | **649 (77.1%)** | 585 (69.5%) |
+
+On rx2cpp, 72 mutants are caught only by SLAM's cases and 8 only by the random ones. Of the five fixture survivors the lane named, two are now caught (in `raise.cls`, by reading the USER condition's additional array). The other three:
+- `RX_CONTROL` `<` to `<=`: equivalent. At 0 both branches set `a = b`.
+- `RX_POW3` and `RX_CONTROL` `NUMERIC DIGITS` 60 to 61 and 20 to 21: these show only with a number longer than the setting. SLAM tried those numbers (10²⁰, 10⁶⁰), and the routines did not finish in 20 seconds, so no such case was written. The DIGITS cases were taken out again: they cost time and caught nothing.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -697,7 +721,7 @@ SLAM gets credit for what it found:
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 320 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **23/23** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **483 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S, the citation gate and the Gemini standard audit, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **426/426**. The BOLT, libc and unit-test steps (57 checks) skipped there: no llvm-project tree, no ooTest.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 320 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **24/24** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **484 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S, the citation gate and the Gemini standard audit, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **426/426**. The BOLT, libc and unit-test steps (57 checks) skipped there: no llvm-project tree, no ooTest.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 

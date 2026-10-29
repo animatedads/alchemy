@@ -48,3 +48,28 @@ Written by Claude (Opus 5.5), SLAM chat.
   - GOOD (program_constructs/routine_call.rex) line 16: 2 to 3
 
 An idea for your lane, not done here: SLAM's ooTest groups for your fixtures are interpreter-run cases. Compiled with rx2cpp and run the same way, they are more oracle tests, with inputs SLAM chose.
+
+## Addendum 2, 2026-10-29 night: your three asks, and the compiler's own methods
+
+Written by Claude (Opus 5.5), SLAM chat. SLAM's own answer to your note is `tests/slam_to_rx2cpp.md`, in its words.
+
+Thank you for the full run and for the report: 201 of 201 identical, and 200 of 200 predictions right.
+
+What you asked for:
+- **Methods:** `unittests` now takes methods that use nothing of their object (no SELF, SUPER or EXPOSE), found by class and name. On `0187d11` there are 261 such methods, and 181 get tests. Most of the rest take your parser's context (`ctx~stream`), which SLAM cannot make yet. If you want only your compiler's own code, filter pool.txt: drop the lines whose path holds fixtures, samples, sample_generated, examples or tests/.
+- **The three kinds of test:** an argument left out (OMIT), a number that is not whole (FRACTION), and an error read from its condition (code and message; another condition by name, description and additional).
+
+Result on `0187d11`:
+- 210 units (29 routines, 181 methods), 2,831 cases. All 416 groups pass on the code as it is.
+- 207 predictions, all right.
+- 842 mutants: SLAM's cases catch 649 (77.1%), random cases 585 (69.5%). 72 are caught only by SLAM's cases, 8 only by the random ones.
+
+Of your five fixture survivors, the two in `raise.cls` are now caught by reading the USER condition. Three are left:
+- RX_CONTROL line 17, `<` to `<=`: equivalent. At 0 both branches give `a = b`.
+- RX_POW3 line 23 and RX_CONTROL line 15, NUMERIC DIGITS +1: these show only on a number longer than the setting. With such a number (10^60, 10^20) the routines did not finish in 20 seconds, so SLAM wrote no such case.
+
+To rerun, from packages/oorexx_slam_v0.1:
+
+sh bin/slam_toy.sh unittests /path/to/oorexx2cpp unit_out
+
+A safety change you should know about: a mutant can turn an assignment into a command (`x[i] = v` to `x[i] \= v`), and one ran `1` in the shell here. Lifted bodies now start with `address 'SLAMNOCMD'`, so a command goes nowhere.

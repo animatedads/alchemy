@@ -29,6 +29,15 @@ say '      units' units ' cases' cases ' written' written ' random' rnd ' predic
 call check units = 56, '56 of the 71 standalone routines get a group (the other 15 take a collection or an object SLAM cannot make)'
 call check written > 600 & rnd = written, written 'cases written; each routine also gets a random group of the same size'
 call check right > 20 & wrong = 0, 'SLAM predicted' right 'outcomes before running (a guard''s constant return or raise syntax), and none was wrong'
+kinds = .directory~new
+call SysFileTree u || '/groups/SLAM_*.testGroup', 'g.', 'FO'
+do i = 1 to g.0
+  t = charin(g.i, 1, chars(g.i)); call stream g.i, 'C', 'CLOSE'
+  do w over .array~of('_omit', '_fraction', 'self~errorOf(')
+    if t~pos(w) > 0 then kinds[w] = .true
+  end
+end
+call check kinds~hasIndex('_omit') & kinds~hasIndex('_fraction') & kinds~hasIndex('self~errorOf('), 'the cases the rx2cpp lane asked for are written: an argument left out, a number that is not whole, and an error read from its condition (code and message)'
 parse value linein(u || '/originals.txt') with . ok bad .
 call check ok = 2 * units & bad = 0, 'every group, SLAM''s and random, passes under the real ooTest framework on the code as it is (' || ok || ')'
 

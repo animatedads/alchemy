@@ -39,10 +39,12 @@
 ::attribute kind          /* the outcome the test expects: VALUE NIL ERROR OTHER */
 ::attribute expected
 ::attribute hex16         /* a Java value: its chars as 4 hex digits each (for the Java literal) */
+::attribute message       /* for an ERROR: the condition's message, which the test reads too */
 ::method init
-  expose name args source why predicted kind expected hex16
+  expose name args source why predicted kind expected hex16 message
   use strict arg name, args, source, why
   hex16 = ''
+  message = ''
   predicted = ''
   kind = ''
   expected = ''
@@ -54,6 +56,8 @@
 /* ------------------------------------------------------------------------------------------------ */
 ::class SlamTestWriter public
 ::attribute notes         /* why a unit got no tests, per unit name */
+/* An argument left out: the call has nothing at that place (f('a', , 'c')). */
+::constant OMITTED 'SLAM:OMITTED'
 ::method init
   expose notes
   notes = .directory~new
@@ -335,6 +339,35 @@
     vs[a['POS']] = 'abc'
     call add self, out, seen, vs, 'KIND', 'argument' a['NAME'] 'is used as a number: given a word'
   end
+  /* FRACTION: a number that is not whole, beside each whole constant the unit compares with, and
+     0.5 and -2.5 (asked for by the rx2cpp lane's note to SLAM) */
+  do a over args
+    if \a['NUMBER'] then iterate
+    fr = .array~of(0.5, -2.5)
+    do rk over rules
+      k = rk['KNOB']
+      if k == '' then iterate
+      parse var k pos '.' part
+      if pos \= a['POS'] then iterate
+      if part \== '' then iterate
+      c = self~constOf(rk['RULE'])
+      if c[1] == 'N' then if datatype(c[2], 'W') then do
+        fr~append(c[2] + 0.5)
+        fr~append(c[2] - 0.5)
+      end
+    end
+    do v over fr
+      vs = happy~copy
+      vs[a['POS']] = v
+      call add self, out, seen, vs, 'FRACTION', 'a number that is not whole, as' a['NAME']
+    end
+  end
+  /* OMIT: each argument left out in turn (the rx2cpp lane: "a test with no second value") */
+  do a over args
+    vs = happy~copy
+    vs[a['POS']] = self~OMITTED
+    call add self, out, seen, vs, 'OMIT', 'argument' a['NAME'] 'left out'
+  end
   return out
 
 add: procedure
@@ -355,7 +388,10 @@ add: procedure
   if rules == .nil then rules = currentRules
   if rules == .nil then return ''
   values = .array~new
-  do p = 1 to c~args~items; values[p] = c~args[p]; end
+  do p = 1 to c~args~items
+    if c~args[p] == self~OMITTED then return ''      /* what an omitted argument does is the unit's business */
+    values[p] = c~args[p]
+  end
   w = self~walk(rules, values)
   if w[1] \== 'STOP' then return ''
   return self~stopOutcome(w[2])
@@ -444,12 +480,13 @@ failed:
 /* One ooTest group for routine NAME of FILE. The group lifts the routine from the file each time it
  * runs (SLAM_UNDER_TEST overrides the file, for mutants), so it tests the code as it is now. */
 ::method ooTestGroup
-  use strict arg className, file, name, cases, header
+  use strict arg className, file, name, cases, header, owner = ''
   b = .array~new
   b~append('#!/usr/bin/env rexx')
   b~append('/*' header)
   b~append('   Written by SLAM (SlamTestWriter): Architecture: Tom Dyer.  Code: Claude (Opus 5.5).')
-  b~append('   Unit under test: routine' name 'in' file)
+  if owner == '' then b~append('   Unit under test: routine' name 'in' file)
+  else b~append('   Unit under test: method' name 'of class' owner 'in' file '(it uses nothing of its object, so it is lifted and run alone)')
   b~append('   Run: rexx' className '(with ooTest.frm and framework/ on REXX_PATH) */')
   b~append('parse source . . sourceFile')
   b~append('group = .TestGroup~new(sourceFile)')
@@ -465,7 +502,30 @@ failed:
   b~append('::method underTest')
   b~append("  file = value('SLAM_UNDER_TEST', , 'ENVIRONMENT')")
   b~append("  if file == '' then file =" self~rexxLiteral(file))
-  b~append('  return slamLift(file,' self~rexxLiteral(name) || ')')
+  if owner == '' then b~append('  return slamLift(file,' self~rexxLiteral(name) || ')')
+  else b~append('  return slamLift(file,' self~rexxLiteral(name) || ',' self~rexxLiteral(owner) || ')')
+  b~append('')
+  b~append('/* The error a call raises, read from its condition: code and message (expectSyntax reads the')
+  b~append('   code only). */')
+  b~append('::method errorOf')
+  b~append('  signal on syntax name failed')
+  b~append("  v = self~underTest~callWith(arg(1, 'A'))")
+  b~append("  return 'NO ERROR'")
+  b~append('failed:')
+  b~append("  c = condition('O')")
+  b~append("  return c['CODE'] c['MESSAGE']")
+  b~append('')
+  b~append('/* Another condition a call raises (USER, NOTREADY ...): its name, description and additional. */')
+  b~append('::method conditionOf')
+  b~append('  signal on any name other')
+  b~append("  v = self~underTest~callWith(arg(1, 'A'))")
+  b~append("  return 'NO CONDITION'")
+  b~append('other:')
+  b~append("  c = condition('O')")
+  b~append("  t = ''")
+  b~append("  add = c['ADDITIONAL']")
+  b~append("  if add \== .nil then do x over add; t = t || ',' || x~string; end")
+  b~append("  return c['CONDITION'] c['DESCRIPTION'] '[' || t~substr(2) || ']'")
   k = 0
   do c over cases
     if c~kind == 'OTHER' then iterate
@@ -477,48 +537,55 @@ failed:
     b~append('::method test_' || right(k, 3, '0') || '_' || c~source~lower)
     call = 'self~underTest~call(' || self~argList(c~args) || ')'
     select
-      when c~kind == 'ERROR' then do
-        b~append('  self~expectSyntax(' || c~expected || ')')
-        b~append('  v =' call)
-      end
+      when c~kind == 'ERROR' then b~append('  self~assertSame(' || self~rexxLiteral(c~expected c~message) || ', self~errorOf(' || self~argList(c~args) || '))')
+      when c~kind == 'CONDITION' then b~append('  self~assertSame(' || self~rexxLiteral(c~expected) || ', self~conditionOf(' || self~argList(c~args) || '))')
       when c~kind == 'NIL' then b~append('  self~assertNull(' || call || ')')
       otherwise b~append('  self~assertSame(' || self~rexxLiteral(c~expected) || ',' call || ')')
     end
   end
   if k == 0 then return .nil
   b~append('')
-  b~append('/* The routine, lifted from its file as SLAM lifts a standalone unit: the lines after its')
-  b~append('   ::routine directive, up to the next directive. */')
+  b~append('/* The unit, lifted from its file as SLAM lifts a standalone unit: the lines after its')
+  b~append('   ::routine directive (or its class''s ::method directive), up to the next directive. */')
   b~append('::routine slamLift')
-  b~append('  use strict arg file, name')
+  b~append('  use strict arg file, name, owner = ''''')
   b~append('  lines = .array~new')
-  b~append("  call stream file, 'C', 'OPEN READ'")
+  b~append('  call stream file, ''C'', ''OPEN READ''')
   b~append('  do while lines(file) > 0; lines~append(linein(file)); end')
-  b~append("  call stream file, 'C', 'CLOSE'")
+  b~append('  call stream file, ''C'', ''CLOSE''')
   b~append('  body = .array~new')
   b~append('  inside = .false')
+  b~append('  cls = ''''')
   b~append('  do ln over lines')
   b~append('    s = ln~strip')
-  b~append("    if s~left(2) == '::' then do")
+  b~append('    if s~left(2) == ''::'' then do')
   b~append('      if inside then leave')
-  b~append("      parse upper value s with d nm rest")
+  b~append('      parse upper value s with d nm rest')
   b~append('      nm = nm~strip(''B'', '';'')~strip(''B'', "''")~strip(''B'', ''"'')')
-  b~append("      if d == '::ROUTINE' then if nm == name~upper then do")
-  b~append('        inside = .true')
-  b~append("        semi = s~pos(';')")
+  b~append('      if d == ''::CLASS'' then cls = nm')
+  b~append('      if owner == '''' then do')
+  b~append('        if d == ''::ROUTINE'' then if nm == name~upper then inside = .true')
+  b~append('      end')
+  b~append('      else if d == ''::METHOD'' then if nm == name~upper then if cls == owner~upper then inside = .true')
+  b~append('      if inside then do')
+  b~append('        semi = s~pos('';'')')
   b~append('        if semi > 0 then body~append(s~substr(semi + 1))')
   b~append('      end')
   b~append('      iterate')
   b~append('    end')
   b~append('    if inside then body~append(ln)')
   b~append('  end')
+  b~append('  body~insert("address ''SLAMNOCMD''", .nil)   /* a command goes nowhere, not to the shell */')
   b~append('  return .Routine~new(name, body)')
   return b
 ::method argList
   use strict arg args
   out = .array~new
-  do v over args; out~append(self~rexxLiteral(v)); end
-  return out~makeString('L', ', ')
+  do v over args
+    if v == self~OMITTED then out~append('')
+    else out~append(self~rexxLiteral(v))
+  end
+  return out~makeString('L', ', ')~strip('T')
 ::method countWritten
   use strict arg cases
   n = 0
@@ -602,6 +669,7 @@ failed:
 /* An argument in Java for a declared type; .nil when the value cannot be one (a word for an int). */
 ::method javaArg
   use strict arg v, type
+  if v == self~OMITTED then return .nil                 /* Java has no omitted argument */
   t = type~substr(type~lastPos('.') + 1)
   select
     when t == 'Rexx' then return 'new netrexx.lang.Rexx(' || self~javaLiteral(v) || ')'
@@ -655,6 +723,11 @@ failed:
   b~append('    for (char x : String.valueOf(v).toCharArray()) h.append(String.format("%04X", (int) x));')
   b~append('    OUT.println("@@SLAM " + i + " VALUE " + h + ".");')
   b~append('  }')
+  b~append('  static String hex(String v) {')
+  b~append('    StringBuilder h = new StringBuilder();')
+  b~append('    for (char x : v.toCharArray()) h.append(String.format("%04X", (int) x));')
+  b~append('    return h + ".";')
+  b~append('  }')
   b~append('  public static void main(String[] args) {')
   b~append('    int start = args.length > 0 ? Integer.parseInt(args[0]) : 1;')
   b~append('    System.setOut(new java.io.PrintStream(java.io.OutputStream.nullOutputStream()));')
@@ -663,7 +736,7 @@ failed:
     i += 1
     call = self~javaCall(target, method, types, c~args)
     if call == .nil then b~append('    if (start <=' i || ') OUT.println("@@SLAM' i 'SKIP");')
-    else b~append('    if (start <=' i || ') try { out(' || i || ', (Object)' call || '); } catch (Throwable e) { OUT.println("@@SLAM' i 'ERROR " + e.getClass().getName()); }')
+    else b~append('    if (start <=' i || ') try { out(' || i || ', (Object)' call || '); } catch (Throwable e) { OUT.println("@@SLAM' i 'ERROR " + e.getClass().getName() + " " + hex(String.valueOf(e.getMessage()))); }')
   end
   b~append('  }')
   b~append('}')
@@ -711,8 +784,11 @@ failed:
         c~expected = ''
       end
       when k == 'ERROR' then do
+        /* the exception class, and its message as chars (4 hex digits each), which the test reads too */
         c~kind = 'ERROR'
-        c~expected = v
+        parse var v cls msg
+        c~expected = cls
+        c~hex16 = msg~strip('T', '.')
       end
       otherwise do
         c~kind = 'OTHER'
@@ -753,7 +829,10 @@ failed:
     else b~append('       observed: SLAM could not predict it */')
     b~append('    @Test public void test_' || right(k, 3, '0') || '_' || c~source~lower || '() {')
     select
-      when c~kind == 'ERROR' then b~append('        assertThrows(' || c~expected || '.class, () ->' call || ');')
+      when c~kind == 'ERROR' then do
+        b~append('        Throwable e = assertThrows(' || c~expected || '.class, () ->' call || ');')
+        b~append('        assertEquals(' || self~javaLiteral(c~source 'message') || ',' self~javaLiteral16(c~hex16) || ', String.valueOf(e.getMessage()));')
+      end
       when c~kind == 'NIL' then b~append('        assertNull(' || call || ');')
       otherwise do
         lit = self~javaLiteral(c~expected)
@@ -800,9 +879,15 @@ failed:
         c~kind = 'NIL'
         c~expected = ''
       end
+      when k == 'CONDITION' then do
+        c~kind = 'CONDITION'
+        c~expected = v~strip('T', '.')~x2c
+      end
       when k == 'ERROR' then do
         c~kind = 'ERROR'
-        c~expected = v
+        parse var v code msg
+        c~expected = code
+        c~message = msg~strip('T', '.')~x2c
       end
       otherwise do
         c~kind = 'OTHER'
