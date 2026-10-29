@@ -2,13 +2,13 @@
   "kind": "article",
   "id": "src-editor.current",
   "title": "Current Source Editor baseline",
-  "summary": "The accepted delivery baseline remains oorexx_source_editor_v0.1-dev5, SHA-256 7b72bdf6195d6b752c92ffe0831888b834de2323fa0a887bf8dfddc45191a440, qualified under ooRexx 5.3.0 r13196. Git now contains a dev6 candidate that replaces direct live-file writes with oorexx.atomic-file/0.1 dev1 publication: generation check first, optional backup publication through AtomicFile, then live candidate publication through AtomicFile with FULL durability requested. Independent r13196 qualification is pending under Rasen Falcon request REQ-00000589; do not promote dev6 until that evidence returns.",
+  "summary": "The accepted delivered baseline remains oorexx_source_editor_v0.1-dev5. Git now contains a dev7 candidate: dev6 routes backup/live publication through oorexx.atomic-file/0.1 dev1 with FULL durability requested, and dev7 adds native ooRexx SourceEditorCliSearchArgs so multi-word find/grep expressions survive the flattened command tail via explicit --mode/--case switches. Rasen Falcon REQ-00000589 returned NOT_RUN because the qualifier lacked the exact checkout plus Atomic File closure; dev7 therefore remains candidate-only pending fresh r13196/native-provider qualification.",
   "invariants": [
     "Implementation remains native ooRexx; do not move semantic ownership into Python.",
     "Literal find stays literal; regex grep uses ooRexx RegularExpression semantics.",
     "Recursive file traversal uses ooRexx/RexxUtil facilities rather than an external find subprocess.",
     "Source results retain original path/line/column and enclosing-symbol provenance where available.",
     "User-visible completion order is deterministic and must not depend on Directory iteration order.",
-    "Dev6 Atomic File candidate must not be called qualified until the independent r13196/native-provider run passes."
+    "Dev7 must not be called accepted until the full r13196 + Atomic File native-provider suite passes."
   ]
 }
