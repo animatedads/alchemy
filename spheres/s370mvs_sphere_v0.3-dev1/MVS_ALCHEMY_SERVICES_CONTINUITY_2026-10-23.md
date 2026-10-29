@@ -116,3 +116,16 @@ Rasen Falcon lane `mvs-alchemy-services`:
 - CHATGPT follow-up `REQ-00001747` requests separately identified, read-only prerequisite checks with unique sshnode job IDs. No login, JES, IPL or code modification is authorized by this request.
 
 Acceptance: PRE24 static PASS; limited host gateway PASS; ED209C preflight BLOCKED; ED209Z live NOT_RUN. Preserve exact evidence and avoid conflating host smoke with full runtime or guest qualification. LDAP identity, HTTPS, mail and MU↔MI transport remain separately owned platform boundaries; MAS must consume them through qualified interfaces, not duplicate them.
+
+
+## 2026-10-29 — PRE25 authenticated-route / LDAP dev22 reconciliation
+
+PRE25 supersedes PRE24 for host integration development while freezing guest carrier/wire semantics.
+
+Artifact: `mvs_alchemy_services_v0.1-dev3-pre25-authenticated-routes.zip`, SHA-256 `cd2c75542bb7e3f38483f24127356b34f178511e3e5e7a3264b912b48af48ea7` (Library).
+
+Current reviewed platform inputs are ConnectSelector dev8 (`1cc89a61...`), LDAP Identity dev22 (`697c301c...`) and HTTPS Server v0.4.8 (`d38ddd04...`). PRE25 adds a fail-closed `authorizeRoute` composition requiring authenticated LDAP session attribution, independent endpoint-security evidence and exact IdentityDirectory ACL allow. TLS protocol/cipher/peer values alone are not identity or access authority.
+
+PRE25 also adds a split read-only ED209C preflight with one explicit `sshnode.sh --job-id` per gate and Python matching for literal `$HASP`; this addresses CLAUDE-PC REQ-00000851 where the earlier composite preflight stopped after Hercules service active and shell expansion removed the HASP term.
+
+Construction static checks PASS (nine package checkers plus bash/card/JCL gates). PRE25 host route-authority runtime and ED209Z/JES remain NOT_RUN until the sealed artifact is rerun. PRE24 independent evidence from CODEX-PC REQ-00000883 remains historical: exact hash verified, eight static checks PASS, package host gateway suite PASS under ooRexx r13196.

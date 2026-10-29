@@ -1,0 +1,21 @@
+MVS Alchemy Services dev3-pre10 live/JES-gated qualification
+
+PRE9 live run ED209C-ED209Z-PRE9-20261005A:
+  INCONCLUSIVE -- operator interrupted while waiting for guest output.
+  PASS host gateway compile/start/listen.
+  OBSERVED Hercules 3505 socket-reader TCP connection and deck transfer.
+  NOT PROVEN JES2 accepted MASLIVE.
+  NOT PROVEN assembler/link/run.
+  NOT PROVEN X'75' guest connection.
+  NOT PROVEN Queue/DB/IMAP/SMTP/PATH.
+
+PRE10 changes:
+  - reader/JES smoke job MASRDR before gateway/MASLIVE
+  - explicit $HASP100/$HASP373/$HASP395 gates
+  - printer evidence collection
+  - explicit INCONCLUSIVE/BLOCKED/FAIL/PASS status
+  - SIGINT/SIGTERM interruption records INCONCLUSIVE with current stage
+  - bounded waits; no indefinite guest-output wait
+  - MASLIVE job acceptance/start/end separated from facility completion
+
+NOT_RUN unchanged PRE10 archive on ED209C/ED209Z.

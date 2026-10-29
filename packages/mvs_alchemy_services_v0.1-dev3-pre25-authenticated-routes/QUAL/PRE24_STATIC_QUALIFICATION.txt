@@ -1,0 +1,12 @@
+MVS Alchemy Services PRE24 qualification delta
+Date: 2026-10-27
+Status: STATIC QUALIFICATION ONLY; HOST RUNTIME NOT_RUN HERE; ED209Z LIVE NOT_RUN
+
+Change from PRE23:
+- every remote EXEC issued by the package live harness goes through sshnode.sh --job-id;
+- job IDs carry run prefix, qualification stage, Bash process identity and per-process sequence;
+- file staging remains on the separately supported sshnode.sh --transfer path;
+- raw ssh/scp are forbidden by a package-owned static checker.
+
+PRE23 HASP395/final-spool gate is retained unchanged.
+No carrier/wire/RPC/provider/authority semantics changed.
