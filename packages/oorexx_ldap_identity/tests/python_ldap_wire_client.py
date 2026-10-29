@@ -290,7 +290,7 @@ while True:
     else: raise AssertionError(hex(tag))
 assert len(extensible_entries)==1 and extensible_entries[0][1]['uid']==['alice']
 # A syntactically valid but unknown matching-rule id fails closed as inappropriateMatching(18).
-s.sendall(search_raw(23,'dc=example,dc=org',2,extensible_filter('cn','Alice','192.0.2.1'),['uid']))
+s.sendall(search_raw(23,'dc=example,dc=org',2,extensible_filter('cn','Alice','1.2.3.4'),['uid']))
 seen=[]
 while True:
     mid,tag,op=decode_message(recv_frame(s)); assert mid==23
