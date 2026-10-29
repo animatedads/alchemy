@@ -31,3 +31,28 @@ Local isolated ooRexx 5.3.0 r13196 (user-supplied Debian SHA-256 `8add57fd246340
 At 954 and 10,000+ records, same accepted r13196, same accepted `librexxsql.so`, same frozen dataset: compare (a) unchanged save (full snapshot), (b) one-field document update (new delta path), (c) multi-document batch, (d) legacy `FileDatabaseEngine`, with query counts, elapsed and CPU. Confirm a one-field change does not visit or encode unrelated documents. Force an error after temporal delete but before temporal insert, reopen the database, and prove prior durable document and temporal rows are unchanged. Re-run intentions/forms, document links (MANY), approvals, PDF saved reports, temporal Time Service, and migration checks. Verify that all explicit full-snapshot paths remain correct and that no crypto policy is weakened.
 
 Use existing `notnotes-core` application ownership for review/merge, and Claude's previously assigned `REQ-00001051` for **separate** Rexx/SQL provider hardening. Do not merge this into dev18 release until real-native tests pass.
+
+
+## Follow-up correctness fix: SQL NULL is not empty TEXT (29 October)
+
+`MiniNotesPersistence~columnDiffers` now compares NULL identity before textual
+bytes. Both full `saveFrom` and one-key `saveDocumentOnly` use the same
+predicate. Previously each normalised SQL NULL into empty text while comparing,
+which could suppress the UPDATE that changes a stored NULL into an actual empty
+string, or vice versa, even though `MiniNotesRexxSqlEngine~valueFragment`
+correctly renders them as distinct SQL values. This is an **application-side
+bug fix**, not a Rexx/SQL native provider change.
+
+Added `tests/test_sqlite_null_empty_change_detection.rex` and wired it into
+`run_tests.sh`. Eight cases cover NULL-to-empty, empty-to-NULL, unchanged
+NULL, unchanged empty, exact text, case-only changes, trailing whitespace and
+embedded NUL. **Local native ooRexx 5.3.0 r13196: 8/8 PASS, compile rc0,
+test rc0** against a source-equivalent copy of this comparison method added
+to the pinned 9 October dev17 library. **NOT an exact dev18 clean-checkout
+test, native sqlite3 round trip or complete regression suite**. The native
+test under the new Git branch still requires independent execution.
+
+This does not solve arbitrary semantic round trips for nullable custom
+document fields (the inherited `encodeCustomFields` may normalise nil); those
+remain separate differential acceptance cases. It does protect the SQL
+column-level change-detection boundary for both save paths.
