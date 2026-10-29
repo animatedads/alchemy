@@ -1,4 +1,4 @@
-# ooRexx Generalized Compute Intentions v0.1-dev7
+# ooRexx Generalized Compute Intentions v0.1-dev8
 
 A separate convenience/intention package in front of Generalized Compute, the
 Job-to-Node/allocation authority, Work Load Units, and the existing router. It
@@ -10,6 +10,39 @@ Customer Service/NotNotes and the LLM Coding Workbench/code-generation tools:
 callers hand over native workload/context objects and receive native route,
 resource and evidence objects. Internal objects are not flattened into command
 prose and reconstructed later.
+
+## dev8: RexxOS RTO2 Grid compute projection
+
+`GeneralizedComputeRTO2Adapter.cls` now binds the documented
+RTO2 Grid -> Generalized Compute Intentions compute projection.
+
+```text
+RTO2 estate controller
+    |
+    +-- MU members  -> estate/control membership only
+    |
+    +-- MI members  -> GCI compute candidates
+                         |
+                         +-- injected Grid eligibility policy
+                         +-- exact memberId + incarnation recheck
+```
+
+The native RTO2 member object is retained inside
+`RexxOSGridComputeResource`; it is not flattened into a hostname or endpoint.
+An optional native `estateSnapshot` is retained as discovery evidence.
+
+GCI deliberately does not define which RTO2 membership-state strings mean
+usable compute. The owning Grid-side eligibility policy is injected. A
+previously discovered MI is rejected as
+`RTO2_MEMBER_ABSENT_OR_REINCARNATED` if the same member ID is no longer
+present at the same incarnation.
+
+Even a current MI is only compute-membership evidence. WLU admission,
+Job-to-Node placement/lease, ACTIVE/SPARE ownership and execution remain
+separate authorities.
+
+Reviewed Library baseline: `rexxos_rto2_grid_v0.1-dev15.zip`, SHA-256
+`e94ba156182567752e7e3b86e88b6a0e8a25fb8710648bb373a4c33271226543`.
 
 ## dev7: Instrumentation Mesh dev8 correlation
 
