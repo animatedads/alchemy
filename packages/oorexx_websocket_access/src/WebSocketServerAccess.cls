@@ -1,8 +1,9 @@
 /* WebSocketServerAccess.cls
  * ooRexx WebSocket Access v0.1-dev4 server-side RFC 6455 access.
  *
- * This class consumes an already accepted SocketProvider / TLS stream. It does
- * not listen on native sockets and it does not own TLS material.
+ * Consumes an already accepted plaintext stream. When composed with the owned
+ * HTTPS server, that stream is a TLS-plaintext upgrade wrapper; Socket/TLS
+ * objects remain owned by HTTPS/SocketProvider and are never exposed here.
  */
 
 ::class WebSocketServerOptions public
@@ -22,6 +23,21 @@
 ::attribute maximumHeaderBytes get
 ::attribute maximumMessageBytes get
 
+::class WebSocketUpgradeRequest public
+::method init
+  expose method path version headers rawRequest
+  use strict arg method, path, version="HTTP/1.1", headers=.nil, rawRequest=""
+  if headers=.nil then headers=.directory~new
+::attribute method get
+::attribute path get
+::attribute version get
+::attribute headers get
+::attribute rawRequest get
+::method header
+  expose headers
+  use strict arg name
+  return headers[lower(name)]
+
 ::class WebSocketServerHandshakeResult public
 ::method init
   expose path headers subprotocol origin rawRequest
@@ -36,9 +52,6 @@
 ::method init
   expose stream socketAddress state subprotocol handshake receiveBuffer fragmentOpcode fragmentPayload maximumMessageBytes
   use strict arg stream, socketAddress, handshake, maximumMessageBytes=16777216, initialReceiveBuffer=""
-  stream=stream
-  socketAddress=socketAddress
-  handshake=handshake
   subprotocol=handshake~subprotocol
   state=.WebSocketState~OPEN
   receiveBuffer=initialReceiveBuffer
@@ -173,7 +186,6 @@ decodeFailure:
   expose handshakeCrypto
   use strict arg handshakeCrypto
   if handshakeCrypto=.nil then raise syntax 88.900 array("WebSocket handshake crypto authority is required")
-  handshakeCrypto=handshakeCrypto
 
 ::method accept
   use strict arg listener, options=.nil
@@ -182,38 +194,41 @@ decodeFailure:
   return self~acceptStream(stream,stream~socketAddress,options)
 
 ::method acceptStream
-  expose handshakeCrypto
   use strict arg stream, socketAddress, options=.nil
   if options=.nil then options=.WebSocketServerOptions~new
-
   headerRead=self~readHttpHeaders(stream,options~maximumHeaderBytes)
   if headerRead=.nil then do
     ignore=stream~close
     return .nil
   end
-
   request=self~parseRequest(headerRead["raw"])
   if request=.nil then do
     self~reject(stream,400,"Bad Request")
     return .nil
   end
+  return self~acceptParsedRequest(stream,socketAddress,request,options,headerRead["remainder"])
 
-  if request["method"]<>"GET" | request["version"]<>"HTTP/1.1" then do
+::method acceptParsedRequest
+  expose handshakeCrypto
+  use strict arg stream, socketAddress, request, options=.nil, initialReceiveBuffer=""
+  if options=.nil then options=.WebSocketServerOptions~new
+  if request=.nil | request~isA(.WebSocketUpgradeRequest)=.false then do
     self~reject(stream,400,"Bad Request")
     return .nil
   end
-  if options~expectedPath<>"" & request["path"]<>options~expectedPath then do
+  if request~method<>"GET" | request~version<>"HTTP/1.1" then do
+    self~reject(stream,400,"Bad Request")
+    return .nil
+  end
+  if options~expectedPath<>"" & request~path<>options~expectedPath then do
     self~reject(stream,404,"Not Found")
     return .nil
   end
-
-  headers=request["headers"]
-  if lower(headers["upgrade"])<>"websocket" | self~headerHasToken(headers["connection"],"upgrade") then do
+  if lower(request~header("upgrade"))<>"websocket" | self~headerHasToken(request~header("connection"),"upgrade")=.false then do
     self~reject(stream,400,"Bad Request")
     return .nil
   end
-
-  if headers["sec-websocket-version"]<>"13" then do
+  if request~header("sec-websocket-version")<>"13" then do
     response="HTTP/1.1 426 Upgrade Required"||"0d0a"x||,
              "Sec-WebSocket-Version: 13"||"0d0a"x||,
              "Connection: close"||"0d0a0d0a"x
@@ -222,27 +237,31 @@ decodeFailure:
     return .nil
   end
 
-  key=headers["sec-websocket-key"]
-  if key=.nil | \self~validClientKey(strip(key)) then do
+  key=request~header("sec-websocket-key")
+  if key=.nil then do
     self~reject(stream,400,"Bad Request")
     return .nil
   end
   key=strip(key)
+  if self~validClientKey(key)=.false then do
+    self~reject(stream,400,"Bad Request")
+    return .nil
+  end
 
   origin=""
-  if headers["origin"]<>.nil then origin=headers["origin"]
+  if request~header("origin")<>.nil then origin=request~header("origin")
   if options~allowedOrigins~items>0 then do
     allowed=.false
     do o over options~allowedOrigins
       if o=origin then allowed=.true
     end
-    if allowed then do
+    if allowed=.false then do
       self~reject(stream,403,"Forbidden")
       return .nil
     end
   end
 
-  selected=self~selectSubprotocol(headers["sec-websocket-protocol"],options~subprotocols)
+  selected=self~selectSubprotocol(request~header("sec-websocket-protocol"),options~subprotocols)
   accept=handshakeCrypto~expectedAccept(key)
   if accept="" then do
     self~reject(stream,500,"Internal Server Error")
@@ -255,13 +274,13 @@ decodeFailure:
            "Sec-WebSocket-Accept: "||accept||"0d0a"x
   if selected<>"" then response=response||"Sec-WebSocket-Protocol: "||selected||"0d0a"x
   response=response||"0d0a"x
-  if stream~write(response) then do
+  if stream~write(response)=.false then do
     ignore=stream~close
     return .nil
   end
 
-  result=.WebSocketServerHandshakeResult~new(request["path"],headers,selected,origin,headerRead["raw"])
-  return .WebSocketServerConnection~new(stream,socketAddress,result,options~maximumMessageBytes,headerRead["remainder"])
+  result=.WebSocketServerHandshakeResult~new(request~path,request~headers,selected,origin,request~rawRequest)
+  return .WebSocketServerConnection~new(stream,socketAddress,result,options~maximumMessageBytes,initialReceiveBuffer)
 
 ::method readHttpHeaders private
   use strict arg stream, maximumBytes
@@ -296,12 +315,7 @@ decodeFailure:
     if headers[name]=.nil then headers[name]=value
     else headers[name]=headers[name]||", "||value
   end
-  out=.directory~new
-  out["method"]=first[1]
-  out["path"]=first[2]
-  out["version"]=first[3]
-  out["headers"]=headers
-  return out
+  return .WebSocketUpgradeRequest~new(first[1],first[2],first[3],headers,raw)
 
 ::method headerHasToken private
   use strict arg value, wanted
