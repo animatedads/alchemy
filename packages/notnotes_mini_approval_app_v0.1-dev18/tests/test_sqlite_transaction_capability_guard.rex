@@ -19,6 +19,9 @@ checks = checks + 1
 
 fakeDelta = .BeginOnlySqlBackend~new
 delta = .TransactionGuardPersistence~new(fakeDelta)
+if \delta~hasMethod("saveDocumentOnly") then do
+  say "FAIL: production delta method not loaded"; exit 1
+end
 signal on syntax name deltaRejected
 ignore = delta~saveDocumentOnly(.nil, .Table~new)
 say "FAIL: SQLite document delta accepted incomplete transaction API"
