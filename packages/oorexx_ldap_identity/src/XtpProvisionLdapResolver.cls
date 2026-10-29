@@ -112,9 +112,7 @@
     if self~parentOf(generation~dn) <> keySet~dn~lower then iterate
 
     if generation~state = 'ACTIVE' then do
-      if keySet~activeGenerationId <> '' then do
-        if keySet~activeGenerationId <> generation~entityId then iterate
-      end
+      if keySet~activeGenerationId <> generation~entityId then iterate
     end
 
     miPrincipal = directory~entryById(miPrincipalId)
