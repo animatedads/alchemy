@@ -111,6 +111,7 @@
   signal off syntax
   return .DirectoryResult~success(dn)
 invalid:
+  if value("LDAP_DIAGNOSTICS",,"ENVIRONMENT") = "1" then say "LDAP trapped condition" condition("C") condition("D") "RC=" rc "SIGL=" sigl
   signal off syntax
   return .DirectoryResult~failure("LDAP_INVALID_DN", text~string)
 ::method isValid class
@@ -168,7 +169,7 @@ invalid:
   if \bp~ok then return .false
   b = bp~value
   if rdns~items < b~rdns~items then return .false
-  if \allowEqual & rdns~items = b~rdns~items then return .false
+  if \allowEqual then if rdns~items = b~rdns~items then return .false
   offset = rdns~items - b~rdns~items
   do i = 1 to b~rdns~items
     if rdns[i + offset]~canonicalKey <> b~rdns[i]~canonicalKey then return .false
@@ -270,8 +271,8 @@ invalid:
     n = c2d(c)
     escape = .false
     if c = "," | c = "+" | c = '"' | c = "\" | c = "<" | c = ">" | c = ";" then escape = .true
-    if i = 1 & (c = " " | c = "#") then escape = .true
-    if i = value~length & c = " " then escape = .true
+    if i = 1 then if c = " " | c = "#" then escape = .true
+    if i = value~length then if c = " " then escape = .true
     if n = 0 | n < 32 | n >= 127 then out ||= "\" || d2x(n,2)~lower
     else if escape then out ||= "\" || c
     else out ||= c
