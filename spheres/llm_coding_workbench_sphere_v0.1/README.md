@@ -23,3 +23,14 @@ coordinates those authorities without absorbing them.
 Current baseline is dev14. The last complete recorded r13196 environment run is
 dev13; dev14 has a narrow source change and must be fully rerun before claiming
 a dev14 runtime PASS.
+
+
+## dev15 continuity update
+
+The Workbench now guards semantic edits against stale model turns. The session
+retains the method revision it inspected and re-reads the method immediately
+before `WRITE_METHOD`; a moved base is rejected as
+`STALE_SEMANTIC_BASE` before Development Desk mutation.
+
+This is intentionally an early Workbench guard, not a replacement for current
+Semantic Source Control exact-base mutation/conflict-branch authority.
