@@ -1,0 +1,32 @@
+Alchemy Cloud Control v0.1-dev4 qualification
+Date: 2026-10-29
+API: alchemy.cloud-control/0.1 RESOURCE
+
+PRESERVED PROVENANCE
+- Historical v0.1-dev2 cloudctl transport is retained at adapters/cloudctl-v0.1-dev2.sh.
+- dev2 cloudctl SHA-256: 73eac5116d4e7f93f3450d71627070e67eb876e3993605b2c00188cd936d38be
+- gcloud-account.sh SHA-256: 27f408d4e1105c6b4b1bea8afe9afcf4a2812b19ed61fa933cc9de6b3dbac906
+- Historical dev2 package SHA-256: 0a29487b499b19c164ffc6af481b6e9feebade01ba152a96b3e7ae60e6e12bf2
+
+EXECUTED OFFLINE GATES
+- bash syntax: PASS
+- five-provider machine list: PASS
+- start/stop/reboot/destroy mappings: PASS
+- five-provider machine create mappings: PASS
+- firewall list/allow/revoke: PASS
+- firewall reconcile exact source-set operation: PASS for Azure/GCP/AWS/OCI/Vultr fixtures
+- reconcile empty desired source set: FAIL CLOSED
+- GCP explicit account: FAIL CLOSED when absent/unknown
+- secret-bearing option rejection: PASS
+- OCI SOFTRESET excludes invalid compartment-id: PASS
+- fresh package extraction test: PASS (recorded during release packaging)
+
+CURRENT PROVIDER COMMAND REFERENCE CHECK — 2026-10-29
+- Azure NSG create/show/update and multi-value source-address-prefixes checked against Microsoft Learn.
+- Google VPC firewall-rules update/create source-ranges/rules checked against Google Cloud documentation.
+- AWS security-group rule list/authorize/revoke-by-rule-id checked against AWS CLI 2.38.6 documentation.
+- OCI NSG rules add/list/remove/update checked against OCI CLI 3.95.1 documentation.
+- Vultr firewall rule create/list/delete checked against current Vultr CLI documentation.
+
+BOUNDARY
+No live cloud mutation was performed. This is provider-command mapping, source-set diff and authority-contract qualification against controlled provider fixtures.
