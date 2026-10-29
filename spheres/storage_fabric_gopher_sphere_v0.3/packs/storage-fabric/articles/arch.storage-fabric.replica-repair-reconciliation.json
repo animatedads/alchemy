@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "arch.storage-fabric.replica-repair-reconciliation",
-  "version": "0.3-continuation-20261029",
+  "version": "0.3-continuation-20261029-dev9",
   "sphere": "storage-fabric",
   "title": "Durable replica repair and topology reconciliation",
   "summary": "Provider and topology transitions are committed by Storage authority first, then affected StorageRefs are re-assessed against current replica policy. Missing policy fails closed rather than defaulting to one replica. Real deficits become durable Queue Fabric repair work; replayed work re-assesses before copying, and release-line compatibility is gated by protected semantics rather than version labels.",
@@ -32,7 +32,12 @@
     "Provider preference is a tiebreaker only. Fast Azure Store-to-Git may rank highly when measured, but provider/vendor identity itself is not performance evidence.",
     "Source materialisation must be independently digest-verified against the StorageRef before destination storage begins.",
     "The materialisation resolver may use authenticated XTP named Storage services for MU/MI transfer but exposes only verified local staged bytes to the repair planner; carrier, route, IP and port stay outside repair policy.",
-    "A Git repair is admitted only after the existing Git provider confirms the remote ref/commit and verifies the object, returning an AVAILABLE/VERIFIED/SAFE durable StorageLocation."
+    "A Git repair is admitted only after the existing Git provider confirms the remote ref/commit and verifies the object, returning an AVAILABLE/VERIFIED/SAFE durable StorageLocation.",
+    "Repair source peer selection is explicit and bounded: a peer must be allowlisted and represented by a current AVAILABLE+VERIFIED Storage location for the object.",
+    "A requested source_peer is a selection hint only; it cannot bypass the allowlist or current Storage location evidence.",
+    "StoragePeerMaterialiser remains the byte-integrity authority for peer transfer and must verify the complete StorageRef digest before publishing staged bytes.",
+    "The repair peer resolver independently compares the returned digest with the StorageRef and returns a temporary verified source, not a durable replica.",
+    "Temporary repair materialisation is deleted after the destination provider consumes it; durable admission belongs only to the destination provider's verified StorageLocation."
   ],
   "procedure": [
     "Commit the provider/location transition in Storage authority.",
@@ -50,7 +55,11 @@
     "Simulate each eligible repair destination as a durable StorageLocation and calculate bounded policy gain.",
     "Reject zero-gain destinations; break equal-gain ties only with injected observed preference.",
     "Invoke the selected provider store operation and admit only its returned verified durable location.",
-    "Let the repair execution boundary re-assess the authoritative requirement before Queue Fabric ACK."
+    "Let the repair execution boundary re-assess the authoritative requirement before Queue Fabric ACK.",
+    "Select an allowlisted source peer backed by current AVAILABLE+VERIFIED object-location evidence.",
+    "Materialise the StorageRef through the existing StoragePeerClient/StoragePeerMaterialiser into an unused staged path.",
+    "Require VERIFIED status and exact StorageRef SHA-256 before exposing the staged source to the destination planner.",
+    "After provider store, delete the temporary peer materialisation; do not admit it as durable."
   ],
   "topics": [
     "replica repair",
@@ -118,7 +127,19 @@
       "sha256": "git-source-evidence",
       "member": "src/StorageGit.cls",
       "claim": "Existing first-class storage.fabric.git/0.1 provider performs bounded chunking, remote push/ref confirmation, fetch and post-push verification before returning a durable StorageLocation."
+    },
+    {
+      "artifact": "packages/oorexx_storage_fabric_instrumentation_mesh_v0.1-dev9",
+      "sha256": "git-source-evidence",
+      "member": "src/StorageRepairPeerSource.cls",
+      "claim": "Verified StoragePeer repair-source adapter with explicit peer selection and temporary staged-source lifecycle."
+    },
+    {
+      "artifact": "packages/oorexx_storage_fabric",
+      "sha256": "git-source-evidence",
+      "member": "src/StoragePeer.cls",
+      "claim": "Existing StoragePeerClient and StoragePeerMaterialiser provide bounded remote reads and complete SHA-256 verified materialisation."
     }
   ],
-  "qualification_boundary": "Dev8 source and seven local Python static gates are qualified as a development increment. Real Git/Azure store execution and XTP MU/MI materialisation remain separately qualified provider/transport operations; no field deployment is claimed by this sphere update."
+  "qualification_boundary": "Dev9 adds the existing StoragePeer data plane as a verified repair source. Static contract qualification is required in the package build; live MU↔MI XTP named-service execution remains networking-owned and separately field-qualified."
 }
