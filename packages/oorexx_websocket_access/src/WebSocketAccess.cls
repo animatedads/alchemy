@@ -282,9 +282,10 @@
   expose stream receiveBuffer state fragmentOpcode fragmentPayload maximumMessageBytes
   use strict arg maximumRead=65536
   if state=.WebSocketState~CLOSED then return .nil
-  signal on syntax name decodeFailure
   do forever
+    signal on syntax name decodeFailure
     parsed=.WebSocketCodec~decodeServer(receiveBuffer)
+    signal off syntax
     if parsed<>.nil then do
       consumed=parsed["consumed"]
       receiveBuffer=substr(receiveBuffer,consumed+1)
