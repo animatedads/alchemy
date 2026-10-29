@@ -1,11 +1,11 @@
 {
   "kind": "article",
   "id": "messaging-presence.api-client-socket-carrier",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "messaging-presence",
   "section": "transport",
   "title": "API Client HTTPS over the shared SocketProvider carrier boundary",
-  "summary": "API Client keeps HTTP/TLS authority while an optional carrier connector acquires the exact current SocketProvider stream selected by lower routing/Intention authority.",
+  "summary": "API Client keeps HTTP/TLS authority while Socket Intention dynamically selects a raw SocketProvider stream for each request.",
   "authority": "transport-composition-contract",
   "invariants": [
     "ApiHttpsTransport owns HTTP/1.1, HTTP/2, redirects, TLS identity, SNI and ALPN.",
@@ -14,7 +14,10 @@
     "The route resolver must supply the exact current SocketAddress selected by lower routing/Intention authority.",
     "RxSock remains the default API Client carrier when no ApiSocketConnector is injected.",
     "Provider-backed TLS fails closed unless the native endpoint exposes bounded SELECT, PUMP or POLL progress/readiness.",
-    "The adapter creates an architectural HTTPS-over-XTP route but does not constitute live HTTPS-over-XTP qualification."
+    "The adapter creates an architectural HTTPS-over-XTP route but does not constitute live HTTPS-over-XTP qualification.",
+    "ApiSocketIntentionRouteResolver performs fresh negotiation on every resolve and does not cache a startup route.",
+    "API Client route requirements remain exact ooRexx objects in negotiation metadata; they are not converted into socket-family policy.",
+    "Lower carrier negotiation requires a stream but not a secure socket because API Client TLS runs above it; TLS SocketProvider is excluded from the default raw carrier schemes."
   ],
   "provenance": [
     {
@@ -31,17 +34,23 @@
       "artifact": "packages/oorexx_socket_provider",
       "member": "src/SocketProvider.cls",
       "claim": "Provides streamSenderAt plus stream read/write/close and provider-native PUMP/POLL delegation."
+    },
+    {
+      "artifact": "packages/oorexx_api_client_socket_provider_adapter",
+      "member": "src/ApiClientSocketProviderAdapter.cls",
+      "claim": "dev2 adds ApiSocketIntentionRouteResolver with fresh per-request socket.negotiation/0.1 selection and exact ApiRouteRequirement preservation."
     }
   ],
   "qualification": {
-    "status": "source-integrated-runtime-pending",
+    "status": "source-integrated-dev2-runtime-pending",
     "runtimeExecuted": false,
     "open": [
-      "Run deterministic carrier identity/readiness/fail-closed qualification under ooRexx 5.3.0 r13196 from current main.",
+      "Run carrier and Socket Intention resolver deterministic suites under ooRexx 5.3.0 r13196 from current main.",
       "Qualify an exact XTP dev33 selected sender/stream with bounded provider-native PUMP/POLL readiness.",
       "Run live API Client HTTPS over that XTP carrier before making any HTTPS-over-XTP claim."
     ],
-    "integratedCommit": "265aeaa86714cfc5c014b9b4cca136d9e6c9476d"
+    "integratedCommit": "265aeaa86714cfc5c014b9b4cca136d9e6c9476d",
+    "sourceVersion": "0.1-dev2"
   },
   "current_xtp_context": {
     "version": "0.1-dev33",
