@@ -21,10 +21,15 @@ assert room['measurements'][0]['metres']==2.750
 assert room['measurements'][1]['metres']==3.750
 assert room['measurements'][2]['metres']==5.000
 base=arts['ref.photo.current-baselines']['baselines']
-assert base['python_macrospace']['qualified']=='0.31.6'
-assert base['python_macrospace']['library_newer_head']=='0.31.7'
-assert base['physics_world']['qualified']=='0.1-dev46'
-assert base['physics_world']['library_newer_head']=='0.1-dev47.2'
+assert base['maths']['dev21_qualified']=='0.14'
+assert base['maths']['current_canonical']=='0.19'
+assert base['physics_world']['dev21_qualified']=='0.1-dev46'
+assert base['physics_world']['current_canonical']=='0.1-dev50.2'
+assert base['python_bridge']['dev21_qualified']=='Macrospace 0.31.6'
+assert base['python_bridge']['historical_line_status']=='RETIRED_AS_PRODUCTION_DEVELOPMENT_LINE'
+assert base['python_bridge']['current_adapter']=='alchemy_oorexxpython_upstream_adapter_v0.2'
+assert base['oorexx']['dev21_qualification_runtime']=='5.3.0-r13196'
+assert base['oorexx']['upstream_python_thread_gate']=='5.3.0-r13265+'
 manifest=root/'qualification'/'MANIFEST.sha256'
 for line in manifest.read_text().splitlines():
     if not line.strip(): continue
