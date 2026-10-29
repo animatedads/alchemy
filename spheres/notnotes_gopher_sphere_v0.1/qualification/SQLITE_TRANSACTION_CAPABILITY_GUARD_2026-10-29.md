@@ -85,3 +85,16 @@ Actual local source-equivalent r13196 executions:
 
 The new Git test source includes the corrected injection and message checks.
 **Exact dev18 branch retest and aggregate suite remain NOT_RUN**.
+
+
+## 29 October continued implementation: required source provider and default selector
+
+The NotNotes dev18 draft now obtains SQLite through the **existing generic** `DatabaseBackendSelector` with provider `REXXSQL-SQLITE` and `RexxSqlDatabaseProvider.cls`, instead of calling `RexxSqlSqliteSession~open` directly. It requires indexed lookup, TRANSACTIONS, ROLLBACK, WAL, BIND_PLACMARKERS and BYTE_EXACT_TEXT before using the returned session. This is a composition contract, not a second driver.
+
+**Detected source-version blocker:** when this stacked child PR was checked, its ancestor tree still held an older selector (Git blob `878df82b40eb727172f2daacae9d2a58e2a4c3a5`) and did not yet contain `RexxSqlDatabaseProvider.cls`. Git main contained the upstream owner source at exact blobs: selector `96eb8f187b902fd034196f11aa76cc0e61795805`, provider `6239b80747c25192f307611d3ac87bb89056058e`, RexxSqlBackend `693f0dfc65e5b8e38252a48183d28fa70df480ca`. Do not import duplicate copies into NotNotes. Until those existing upstream paths are reconciled in the final source checkout, launch scripts and opt-in native SQL test reject with `NOTNOTES_PROVIDER_NOT_READY`. Legacy `MININOTES_DB_BACKEND=file` remains explicit and independent.
+
+**Executed isolated local native evidence this continuation:** extracted user-supplied ooRexx r13196 Debian locally; `rexxc` accepted the constructor excerpt (exit 0). The same constructor excerpt executed against a fake shared selector: accepted a compatible test session (`MOCKED_SELECTOR_SESSION_PASS`, exit 0) and rejected an explicit provider-error object before session use (ooRexx error `93.900`, exit 163). This was a **source-equivalent constructor excerpt, not a complete dev18 clean-checkout test**. No native `librexxsql.so` or real SQL data was used. The Git test fixture `tests/fixtures/DatabaseBackendSelector.cls` additionally checks the six required capabilities, but an exact Git-source run is still outstanding.
+
+**Runner fixes actually committed:** the transaction-capability guard now executes early in `run_tests.sh` and the source-qualification runner; the latter selects historical file mode explicitly. The native SQL integration runner refuses a checkout lacking the new provider/selector contract. All are development-branch source commits only.
+
+**Release blocker unchanged:** real shared provider integration and patched native Rexx/SQL, exact 954/10k corpus, SQLite/legacy differential tests, atomic save/restart, Time Service/ConnectSelector, and actual Crypto sign/verify authority remain unqualified. No live estate change or main merge.
