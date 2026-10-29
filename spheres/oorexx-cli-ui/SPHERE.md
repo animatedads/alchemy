@@ -76,3 +76,7 @@ Branch: `cli-ui-dev11-sync-20261023`. This sphere documents work and gates; a sp
 ## dev12 completion ownership integration (2026-10-28)
 
 Mailbox REQ-00000593 identifies Source Editor `SourceCompletionCandidate` and `SourceCompletionProvider` as the authoritative ooRexx source-completion API. CLI UI must not implement competing source completion logic. The `CliUiCompletionPresentation` adapter holds exact supplied candidate objects, preserving identity and order; it only tracks presentation selection and resets selection on candidate replacement. NewShell retains command/completion transport authority. The new identity regression fixture is committed under `packages/oorexx-cli-ui/tests/test_completion_presentation.rex`. Candidate accessor binding to the accepted Source Editor revision is pending. dev12 is source-only; no r13196 qualification claimed.
+
+## 2026-10-29 development increment
+
+GitHub commits `456a5bf3` and `1f69bd72` add identity-preserving completion refresh and regression cases for reordered, removed and invalid candidate selections. Source Editor remains the sole authority for completion candidates; CLI UI retains only presentation selection. The test is committed but **has not been executed under ooRexx r13196**. GitHub remains a source-only development branch; autobuilder is not running. CLI UI is not an owner of the website, SMTP, IMAP, LDAP, HTTPS or MU/MI transport, and makes no deployment claims for them.
