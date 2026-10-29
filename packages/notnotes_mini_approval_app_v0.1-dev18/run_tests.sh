@@ -65,6 +65,12 @@ run_rexx batch tests/test_batch_persistence.rex
 REXX_PATH="$HERE/tests/fixtures:$REXX_PATH" "$REXX_BIN" tests/test_rexxsql_adapter_mock.rex
 # Opt-in real native SQL test; requires the existing built librexxsql.so.
 if [[ "${MININOTES_TEST_SQLITE_LIVE:-0}" == "1" ]]; then
+  if [[ ! -f "$REXXSQL_SRC/RexxSqlDatabaseProvider.cls" ]] || \
+     [[ ! -f "$NATIVE_DB_SRC/DatabaseBackendSelector.cls" ]] || \
+     ! grep -q 'REXXSQL-SQLITE' "$NATIVE_DB_SRC/DatabaseBackendSelector.cls"; then
+    echo "NOTNOTES_PROVIDER_NOT_READY: native live test requires integrated shared REXXSQL-SQLITE provider" >&2
+    exit 69
+  fi
   MININOTES_DB_BACKEND=rexxsql-sqlite "$REXX_BIN" tests/test_rexxsql_adapter_live.rex
   "$HERE/tests/test_rexxsql_migration.sh"
 fi
