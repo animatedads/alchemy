@@ -1,0 +1,49 @@
+NoSQLServer v0.57 validation
+============================
+
+Focus
+-----
+Frozen read-only snapshots of live object tables.
+
+Snapshot semantics
+------------------
+- ObjectTableStorage~freeze() copies mapped DatabaseRow values once.
+- ObjectDatabaseEngine~registerSnapshot(name, collection, mapping) registers a
+  frozen table directly.
+- ObjectDatabaseEngine~snapshotTable(sourceName, snapshotName) freezes an
+  already registered live object table.
+- Snapshot rows participate in ordinary SELECT, WHERE, ORDER BY, JOIN and
+  aggregate paths through the same table port.
+- Subsequent mutations of the original ooRexx objects are not visible in the
+  snapshot.
+- Snapshot rows are copied when read so SQL consumers cannot mutate the frozen
+  backing rows accidentally.
+
+Mutation honesty
+----------------
+- INSERT on snapshot: SQLUNSUPPORTED
+- UPDATE on snapshot: SQLUNSUPPORTED
+- DELETE on snapshot: SQLUNSUPPORTED
+- No transaction capability is advertised or implied.
+- A snapshot is a consistency/read model, not a fake unit-of-work transaction.
+
+Federation
+----------
+- FederatedDatabaseEngine delegates registerSnapshot/snapshotTable to its object
+  catalog, so frozen object tables can coexist and join with file-backed tables.
+- msqlshim remains untouched.
+
+Regression evidence
+-------------------
+- 33 gates green.
+- v0.57 object snapshot smoke: PASS
+- v0.56 object INSERT/DELETE: PASS
+- v0.55 federation: PASS
+- v0.54 object UPDATE/events: PASS
+- v0.53 object joins/aggregates: PASS
+- v0.52 object SELECT: PASS
+- file/storage/planner/SQL regressions all green
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 14/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

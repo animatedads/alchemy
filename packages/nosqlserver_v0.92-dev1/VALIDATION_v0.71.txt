@@ -1,0 +1,154 @@
+NoSQLServer v0.71 validation
+============================
+
+Date
+----
+20 August 2026
+
+Base
+----
+NoSQLServer v0.70 SHA-256:
+  9461bf2f047af28ce6dc6e18405f1dec3a72b81b1528a6e279fd2fe21a6ec387
+
+Runtime
+-------
+Open Object Rexx 5.3.0 r13196 Internal Test Version
+Build date 3 August 2026, 64 bit
+
+Defect reproduced
+-----------------
+Against stock v0.70, a SQL UPDATE targeting a registered Virtual RYTA v0.11
+external Algorithm Relation returned:
+
+  NOTEXECUTED NOTFOUND Table not found: ryta_actions
+
+The relation itself existed and was queryable.  Federation had routed every
+non-OBJECT mutation into FileDatabaseEngine instead of resolving the owning
+provider.
+
+v0.71 repair
+------------
+FederatedDatabaseEngine now resolves table ownership OBJECT -> FILE -> external
+before table-scoped mutation dispatch.
+
+  owner absent                         -> NOTFOUND
+  owner lacks requested mutation       -> SQLUNSUPPORTED
+  owner implements mutation            -> delegated result
+
+The same owner resolution is used by selectWhere and index-candidate estimation.
+Feature flag:
+
+  FEDERATED_PROVIDER_NEUTRAL_MUTATION_DISPATCH
+
+Focused shipped regression
+---------------------------
+tests/v071_external_mutation_dispatch_smoke.rex: PASS
+
+The regression proves:
+  read-only external UPDATE            -> SQLUNSUPPORTED
+  writable external UPDATE             -> delegated once
+  writable external DELETE             -> delegated once
+  writable external INSERT             -> delegated once
+  writable external multi-row INSERT   -> delegated once
+  provider DatabaseResult preserved
+
+Core regression surface
+-----------------------
+73 self-contained historical/current Rexx scripts completed successfully in the
+broad sweep before the runner's overall wall-clock limit.  The remaining
+v051 concurrency hardening gate was rerun separately with its required database
+root and passed.
+
+Selected mutation/federation compatibility gates:
+  v048 append insert                    PASS
+  v049 tombstone storage                PASS
+  v050 PK locator cache                 PASS
+  v051 concurrency hardening            PASS
+  v052 object table select              PASS
+  v054 object update/events             PASS
+  v056 object insert/delete             PASS
+  v057 object snapshot                  PASS
+  v060 UPDATE FROM                      PASS
+  v061 DELETE USING                     PASS
+  v067 GeoPackage fixture               PASS
+  v068 external federation              PASS
+  v068 legacy federation facade         PASS
+  v069 DB Core v0.34 geometry           PASS
+  v070 external metadata boundary       PASS
+  v071 external mutation boundary       PASS
+
+The v067 live GeoPackage probe reaches its normal SKIP when the full external
+OS datasets are not mounted.
+
+Oracle / torture gates
+----------------------
+Claude torture seed-42:       12/12 PASS
+Hell Corpus v1:               24/25 PASS
+                              1 PARSE_ERROR
+                              0 WRONG_RESULT
+                              0 EXECUTION_ERROR
+Hell Corpus v2:               25/30 PASS
+                              2 UNSUPPORTED
+                              3 PARSE_ERROR
+                              0 WRONG_RESULT
+                              0 EXECUTION_ERROR
+Progressive SQL torture:      72/72 PASS
+SQL-92 company smoke:         PASS
+
+Companion package integration
+-----------------------------
+Virtual RYTA / HardWorld v0.11 external engine:
+  PASS; provider invocations remain 1
+  attempted external UPDATE now SQLUNSUPPORTED rather than FILE NOTFOUND
+
+Librarian v0.11 external engine:
+  PASS; provider invocations 1; target hits 6
+
+HardWorld legacy Camera Algorithm Relation adapter with Camera v0.26:
+  PASS; provider invocations 1
+
+msqlshim v0.10 rebound to NoSQLServer v0.71 without shim source changes:
+  compile                             PASS
+  text protocol smoke                 PASS
+  idle multi-client isolation         PASS
+  compressed protocol                 PASS
+  utility command surface             PASS
+  mixed compression concurrency       PASS
+  FIFO backend fairness               PASS
+  binary prepared statements          PASS
+  read-only prepared cursor/fetch     PASS
+
+Observed reduced-size concurrency validation:
+  mixed unread compressed stream: second client query completed in 0.019s
+  fairness: queued COUNT completed in 0.136s while writer advanced 25->27
+
+Spatial honesty
+---------------
+GEOMETRY / subtype / SRID transport remains supported.
+SPATIALFUNCTIONS remains unadvertised.  No ST_* predicate was invented.
+
+Companion source policy
+-----------------------
+No source changes were made to msqlshim, Camera Behaviour, or Virtual
+RYTA/HardWorld for this NoSQLServer release.
+
+Candidate package fresh-extraction audit
+----------------------------------------
+Before final documentation/manifest rebuild, a fresh extraction of the v0.71
+candidate verified:
+  manifest payload entries              160/160 PASS
+  shipped .cls/.rex compile targets     89
+  rexxc failures                        0
+  v071 external mutation boundary       PASS
+  v070 external metadata boundary       PASS
+  v069 DB Core v0.34 compatibility      PASS
+  v068 external federated facade        PASS
+  v066 legacy federated facade          PASS
+
+Independent companions rerun against that freshly extracted source:
+  Virtual RYTA / HardWorld v0.11        PASS; invocations 1
+  Librarian v0.11                       PASS; invocations 1; target hits 6
+  legacy Camera adapter + Camera v0.26 PASS; invocations 1
+
+Only documentation and manifest bytes are rebuilt after this audit; the tested
+NoSQLServer.cls is unchanged.

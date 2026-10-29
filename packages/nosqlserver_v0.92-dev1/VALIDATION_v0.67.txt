@@ -1,0 +1,111 @@
+NoSQLServer v0.67 validation
+============================
+
+Focus
+-----
+Read-only GeoPackage backend and heterogeneous federation.
+
+Implemented
+-----------
+- GeoPackageDatabaseEngine
+- GeoPackageDatabaseTable
+- automatic discovery from:
+    gpkg_contents
+    gpkg_geometry_columns
+    PRAGMA table_info
+- automatic NoSQLServer TableDefinition construction
+- GeoPackage POINT/POLYGON/MULTIPOINT/etc BLOBs preserved as typed
+  GeoPackageGeometry values carrying geometry type and SRID
+- direct ordinary NoSQLServer SELECT/WHERE/ORDER BY/LIMIT over GeoPackage tables
+- FederatedDatabaseEngine can register arbitrary external read engines using
+  addEngine(), while retaining FILE and OBJECT sources
+- joins can therefore cross independent GeoPackage files
+- read-only bridge uses SQLite itself through tools/gpkg_bridge
+- bridge source and rebuild script are included; the bundled binary is the
+  Linux x86_64 test build and can be rebuilt with:
+      tools/build_gpkg_bridge.sh
+
+Deliberate v0.67 boundary
+-------------------------
+Geometry is typed and preserved, but ST_WITHIN/ST_INTERSECTS/ST_DISTANCE are
+not yet SQL functions. v0.67 proves the backend/catalog boundary first.
+GeoPackage mutation is not exposed.
+
+Real Ordnance Survey proof
+--------------------------
+Input:
+- add_gb_builtaddress.gpkg
+  add_gb_builtaddress: 16,508 rows, POINT, EPSG:27700
+- asu_funcarea_retailareaminor.gpkg
+  asu_funcarea_retailareaminor: POLYGON, EPSG:27700
+  asu_funcarea_retailareaminor_rltenty: OS related-entity table
+
+NoSQLServer direct query:
+  SELECT uprn,fulladdress,postcode,townname
+  FROM add_gb_builtaddress
+  WHERE townname='INVERNESS'
+  ORDER BY postcode
+  LIMIT 3;
+
+PASS. Sample:
+  130032887 | IV2 3AR | 33, DENNY STREET, INVERNESS, IV2 3AR
+  130032889 | IV2 3AR | 37, DENNY STREET, INVERNESS, IV2 3AR
+  130032890 | IV2 3AR | 74, DENNY STREET, INVERNESS, IV2 3AR
+
+Cross-GeoPackage federation:
+The OS Retail Area Minor related-entity table explicitly relates retail-area
+features to Built Address UPRNs using relationshiptype='Within'. NoSQLServer
+joins that table from the Functional Areas GeoPackage directly to the Built
+Address table in the independent Address GeoPackage.
+
+Observed through NoSQLServer:
+- Retail Area Minor features: 41
+- linked Built Address rows: 54
+- distinct linked postcodes: 13
+
+Postcodes:
+  IV2 3RH
+  IV2 3TW
+  IV2 3XQ
+  IV2 4HT
+  IV2 4PF
+  IV2 4QE
+  IV2 4UA
+  IV2 5GH
+  IV2 6AA
+  IV2 6BZ
+  IV2 6HF
+  IV3 5NN
+  IV3 5NZ
+
+Sample linked addresses include:
+  AMAZON POSTAL LOCKERS, KINGSWELL FILLING STATION, OLD PERTH ROAD, INVERNESS
+  SHELL, KINGSWELL FILLING STATION, OLD PERTH ROAD, INVERNESS
+  SPAR, KINGSWELL FILLING STATION, OLD PERTH ROAD, INVERNESS
+  B&M, B AND M BARGINS, INSHES RETAIL PARK, INVERNESS
+  CITY BARBERS, INSHES RETAIL PARK, INVERNESS
+  COSTA, COSTA COFFEE, INSHES RETAIL PARK, INVERNESS
+  DEICHMANN, INSHES RETAIL PARK, SIR WALTER SCOTT DRIVE, INVERNESS
+  DUNELM, INSHES RETAIL PARK, INVERNESS
+  HOBBYCRAFT, UNIT 4, INSHES RETAIL PARK, SIR WALTER SCOTT DRIVE, INVERNESS
+
+Portable regression fixture
+---------------------------
+tests/fixtures/v067_inverness_sample.gpkg is a small GeoPackage fixture
+containing real sample POINT/POLYGON blobs and related-address rows from the
+provided Inverness datasets. It proves schema discovery, typed geometry,
+ordinary SQL, and federated joining without requiring the full source datasets.
+
+Regression evidence
+-------------------
+- 44 gates green.
+- v0.67 GeoPackage portable smoke: PASS
+- v0.67 live OS GeoPackage smoke: PASS with supplied datasets
+- v0.66 OLAP grouping: PASS
+- v0.65 NATURAL JOIN: PASS
+- all historical storage/object/federation/planner/database-core gates: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 25/30 PASS, 0 wrong results
+- NoSQLServer.cls and all retained tests/*.rex compile cleanly under
+  ooRexx 5.3.0 r13196.

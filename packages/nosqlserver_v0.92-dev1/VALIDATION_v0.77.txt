@@ -1,0 +1,66 @@
+NoSQLServer v0.77 validation
+Date: 2026-08-23
+Runtime: Open Object Rexx 5.3.0 r13196, 64-bit debug build
+House dependency: Alchemy Objects v0.4.4
+Crypto dependency: oorexx_crypto_v0.1
+Unicode dependency: TUTOR 0.7 only when explicitly enabled
+
+New acceptance
+--------------
+  tests/v077_alchemy_object_base_smoke.rex                      PASS
+
+The v0.77 smoke proves:
+  - File/Object/JSON/SQLite/GeoPackage/Federated engines inherit AlchemyObject
+  - runtime, SQL executor, transaction and Database Core adapter inherit it
+  - service objects receive Alchemy identity/lifecycle evidence
+  - registered NoSQL method contracts match the live service surface
+  - configured sealer/authority propagates to created service objects
+  - federated child engines inherit the house base
+  - public sealed snapshot carries NoSQL package version and service role
+  - house compliance is NOT falsely claimed merely because the base is used
+  - SQL executor's ordinary version() method remains operational
+  - capability ALCHEMY_OBJECT_BASE_0_4_4 is advertised
+
+Preserved current boundaries on the candidate source
+----------------------------------------------------
+  v0.76 POINT/POLYGON spatial predicates                           PASS
+  v0.75 optional TUTOR Unicode                                    PASS
+  v0.74 native SQLite/GeoPackage                                  PASS
+  v0.73 JSON relation                                             PASS
+  v0.72 general INNER JOIN ON                                     PASS
+  v0.71 external mutation dispatch                                PASS
+  v0.70 external metadata boundary                               PASS
+  v0.69 DB Core compatibility                                     PASS
+  SQL-92 company smoke                                             PASS
+
+SQL correctness oracles
+-----------------------
+  Claude torture                                                  12/12
+  Hell v1                                                         24/25
+    WRONG_RESULT                                                       0
+    EXECUTION_ERROR                                                     0
+  Hell v2                                                         25/30
+    WRONG_RESULT                                                       0
+    EXECUTION_ERROR                                                     0
+  Progressive feature torture                                     72/72
+  SQL-92 company smoke                                              PASS
+
+Historical/versioned regression
+--------------------------------
+The existing versioned suite was exercised across the candidate lineage. The
+argument-style v02-v07/v051 gates pass when supplied their required database
+root argument. v061_torture_harness_smoke.rex remains an obsolete pre-FK
+assertion and is not a current correctness gate. The live GeoPackage smoke is an
+external-dataset probe; the packaged GeoPackage fixture tests pass.
+
+Compilation
+-----------
+  shipped .cls/.rex targets: 95
+  rexxc failures:             0
+
+Architecture boundary
+---------------------
+Only stateful service/facade/transaction objects are migrated in v0.77. Rows,
+relational values, predicate nodes, geometry values and parser/value objects
+remain lightweight and do not acquire Alchemy telemetry/security overhead.
+Existing callers do not need to supply a sealer or authority.

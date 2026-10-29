@@ -1,0 +1,81 @@
+NoSQLServer v0.45 validation
+============================
+
+Focus
+-----
+Staged multi-table mutation graph, atomic FK cascades, and staged object-event
+mutations.
+
+Mutation graph
+--------------
+- db~stagedMutationGraph returns a DatabaseMutationGraph over a stable clone.
+- Graph operations mutate only the clone until commit.
+- Publication reuses DatabaseFileSystem stable-clone/signature/publishClone
+  crash-recovery semantics.
+- Database signature is rechecked before publication.
+- Graph publication uses the same runtime publication exclusion as transactions.
+- Graph cycle keys reject recursive re-entry instead of unbounded recursion.
+- BEFORE_COMMIT may veto a graph.
+- AFTER_COMMIT is emitted only after successful authoritative publication.
+- Failed/vetoed graphs emit no AFTER_COMMIT.
+
+Event integration
+-----------------
+- Staged engines intentionally reuse the live database event registry.
+- DatabaseEvent~mutationGraph exposes the active graph to object handlers.
+- A registered object may call graph~execute(...) or graph staging methods to
+  add work to the same atomic publication unit.
+- FK rule objects resolve data through event~engine so staged events read staged
+  rows rather than accidentally consulting live authoritative state.
+- AFTER mutation handlers remain observational; graph state captures dependent
+  staging failures before commit.
+
+Foreign-key actions
+-------------------
+- ON DELETE CASCADE
+- ON DELETE SET NULL
+- ON UPDATE CASCADE
+- ON UPDATE SET NULL
+- Existing RESTRICT / NO ACTION remain supported.
+- SET NULL requires a nullable child column.
+- SET DEFAULT remains SQLUNSUPPORTED.
+- Cascades may recurse across multiple FK levels in the staged clone.
+- Parent update CASCADE expands from staged AFTER_UPDATE so the new parent key
+  exists before child FK validation.
+- Primary affectedRows remains the root SQL mutation count, not a sum of hidden
+  FK side effects.
+
+Atomic rollback proof
+---------------------
+The v0.45 smoke stages, in one parent DELETE:
+  - an object-handler audit INSERT,
+  - child CASCADE DELETE,
+  - grandchild CASCADE DELETE,
+  - SET NULL of another child relation.
+
+A grandchild BEFORE_DELETE veto then proves that parent, child, grandchild,
+SET-NULL and audit changes are all absent from authoritative state.
+
+Capabilities
+------------
+- DATABASE_EVENTS
+- MUTATION_EVENT_VETO
+- STAGED_MUTATION_GRAPH
+- FOREIGN_KEYS
+- FOREIGN_KEY_RESTRICT
+- FOREIGN_KEY_CASCADE
+- FOREIGN_KEY_SET_NULL
+- COMMIT_EVENTS
+
+Regression evidence
+-------------------
+- v0.45 staged mutation graph smoke: PASS
+- v0.44 FK/event smoke: PASS
+- v0.43 database event smoke: PASS
+- v0.42 and prior feature gates: PASS
+- database_core adapter smoke: PASS
+- SQL-92 company smoke: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 13/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

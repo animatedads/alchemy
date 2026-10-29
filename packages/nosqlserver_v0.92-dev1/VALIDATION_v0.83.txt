@@ -1,0 +1,50 @@
+NoSQLServer v0.83 DB2 personality validation
+Date: 2026-10-04
+
+Runtime:
+  Open Object Rexx 5.3.0 r13196 - Internal Test Version
+  private extracted runtime from the user-supplied debug .deb
+
+Dependencies used for qualification:
+  user-supplied Alchemy Objects v0.8
+  user-supplied ooRexx Crypto v0.8.3
+  ooRexx distribution csvStream.cls / yaml.cls / json.cls
+
+Source/load gate:
+  src/NoSQLServerDB2Personality.cls loaded and executed successfully under the
+  r13196 runtime through the v0.80-v0.83 DB2 smoke suite.
+
+PASS (rc=0):
+  tests/v080_db2_personality_smoke.rex
+  tests/v081_db2_catalog_schema_smoke.rex
+  tests/v082_db2_named_constraints_index_smoke.rex
+  tests/v083_db2_isolation_smoke.rex
+  tests/v077_alchemy_object_base_smoke.rex
+  tests/v078_alchemy_adoption_smoke.rex
+  tests/v079_alchemy_v08_adoption_smoke.rex
+  tests/v014_interop_transaction_smoke.rex
+  tests/v032_database_core_adapter_smoke.rex
+  tests/sql92_company_smoke.rex
+  tests/v041_limit_offset_smoke.rex
+  tests/v042_fetch_with_ties_smoke.rex
+  tests/v047_values_table_source_smoke.rex
+
+v0.83-specific proof:
+  - CURRENT ISOLATION initially projects the DB2 reset/package-default state;
+  - SET CURRENT ISOLATION REPEATABLE READ normalizes to RR;
+  - CURRENT ISOLATION then reports RR;
+  - CS, UR and RS fail SQLUNSUPPORTED rather than being silently strengthened;
+  - direct statement-level WITH RR fails unless an explicit DB2 personality
+    transaction is used;
+  - a DB2 transaction inherits current RR session isolation;
+  - WITH RR is accepted inside that staged transaction;
+  - staged RR reads commit and resolve deferred results;
+  - a concurrent live publication invalidates the staged transaction and is
+    reported as TRANSACTIONFAILED rather than overwriting newer live state;
+  - a fresh RR transaction then commits normally;
+  - SET CURRENT ISOLATION RESET clears the session register.
+
+Alchemy adoption gap closed:
+  With the exact user-supplied Crypto v0.8.3 package present, the historical
+  v0.77 base, v0.78 STANDARD-adoption and v0.79 Alchemy Objects v0.8 INIT
+  construction tests all pass against the real Alchemy dependency chain.
