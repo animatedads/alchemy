@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "cloud-economics.migration-economics",
+  "version": "0.1",
+  "sphere": "cloud-economics",
+  "title": "Marginal cost of continuing versus moving",
+  "section": "architecture",
+  "summary": "Dev5 computes only remaining future economics: stay cost versus move cost, checkpoint/restart, transfer, stop fees, billing floors, prepaid intervals and downtime. Sunk spend is not a savings lever. No real migration is triggered.",
+  "authority": "project-architecture",
+  "implementation_status": "IMPLEMENTED",
+  "invariants": [
+    "A lower hourly rate does not imply moving is cheaper.",
+    "Account for stranded prepaid compute, transfer fees, checkpoint I/O and restart time.",
+    "Apply minimum residence, absolute/percentage savings and deadline gates against migration churn.",
+    "The existing Migratable Job state machine remains the only owner of continuation operations."
+  ],
+  "provenance": [
+    {
+      "artifact": "cloud_economics_v0.1-dev8.zip",
+      "sha256": "8354043fc133ef9b6fdb593ec8d000e278e0748228224464b9ebb7feb485e735",
+      "member": "docs/MIGRATION_ECONOMICS_DEV5.md",
+      "claim": "Cloud Economics v0.1-dev8 source evidence; status=IMPLEMENTED."
+    }
+  ],
+  "procedure": [
+    "Establish remaining work and active source lease.",
+    "Check current native migration/continuation eligibility and route.",
+    "Evaluate marginal future stay and move cost across billing boundaries.",
+    "Classify recommendation only as OBSERVE, STAY or MOVE_ADVISORY; never dispatch."
+  ]
+}

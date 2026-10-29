@@ -1,0 +1,52 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "cloud_economics",
+    "version": "0.1-dev9",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "status-observer",
+      "argv": [
+        "python3",
+        "tests/test_migration_status.py"
+      ],
+      "timeout_seconds": 90
+    },
+    {
+      "name": "financial-evidence",
+      "argv": [
+        "python3",
+        "tests/test_financial_evidence.py"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "shell-syntax",
+      "argv": [
+        "bash",
+        "-n",
+        "tools/cloud-cost",
+        "tools/poll-providers",
+        "tests/run.sh"
+      ],
+      "timeout_seconds": 30
+    },
+    {
+      "name": "native-core",
+      "argv": [
+        "bash",
+        "tests/run.sh"
+      ],
+      "timeout_seconds": 900
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/cloud_economics_v0.1-dev9"
+    }
+  }
+}

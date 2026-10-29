@@ -1,0 +1,279 @@
+#!/usr/bin/env python3
+"""Cloud Economics v0.1-dev9 — evidence-bound, read-only financial comparison.
+
+This is an *observer*, not the estate's ledger, authentication, billing or
+purchase authority. Local hashes detect accidental changes, not forgery.
+"""
+import argparse
+from decimal import Decimal, InvalidOperation
+import hashlib
+import json
+import os
+import re
+import sqlite3
+import sys
+from pathlib import Path
+
+SCHEMA = 'cloud.economics.financial-evidence/0.1'
+ZERO = '0' * 64
+KEY = re.compile(r'^[A-Za-z0-9][A-Za-z0-9_.:@/-]{0,159}$')
+HEX = re.compile(r'^[0-9a-f]{64}$')
+MONEY = re.compile(r'^(?:0|[1-9][0-9]{0,17})(?:\.[0-9]{1,6})?$')
+KINDS = {'BASELINE', 'USAGE', 'CHARGE'}
+BASE = {'schema', 'id', 'kind', 'case_id', 'job_id', 'lease_id', 'start',
+        'end', 'currency', 'source_system', 'source_ref', 'source_sha256',
+        'source_class', 'observed_at'}
+EXTRAS = {
+    'BASELINE': {'amount', 'baseline_policy', 'like_for_like', 'expected_charge_lines'},
+    'USAGE': {'quantity', 'unit', 'resource'},
+    'CHARGE': {'amount', 'invoice_id', 'line_id', 'charge_status'},
+}
+USAGE_UNITS = {'CPU_S', 'MEMORY_GIB_H', 'GPU_S', 'NETWORK_GIB', 'DISK_GIB_H', 'IO_GIB'}
+
+class EvidenceError(ValueError):
+    pass
+
+
+def nonduplicate(pairs):
+    obj = {}
+    for k, v in pairs:
+        if k in obj:
+            raise EvidenceError('duplicate JSON key: ' + k)
+        obj[k] = v
+    return obj
+
+
+def canonical(event):
+    return json.dumps(event, sort_keys=True, separators=(',', ':'), ensure_ascii=False)
+
+
+def identifier(value, name):
+    if not isinstance(value, str) or not KEY.fullmatch(value):
+        raise EvidenceError('invalid identifier: ' + name)
+    return value
+
+
+def number(value, name):
+    if not isinstance(value, str) or not MONEY.fullmatch(value):
+        raise EvidenceError('invalid exact decimal string: ' + name)
+    try:
+        n = Decimal(value)
+    except InvalidOperation as e:
+        raise EvidenceError('invalid decimal: ' + name) from e
+    return n
+
+
+def validate(e):
+    if not isinstance(e, dict) or e.get('schema') != SCHEMA or e.get('kind') not in KINDS:
+        raise EvidenceError('unsupported financial evidence schema/kind')
+    kind = e['kind']
+    if set(e) != BASE | EXTRAS[kind]:
+        raise EvidenceError('missing or unexpected fields for ' + kind)
+    for k in ('id', 'case_id', 'job_id', 'lease_id', 'source_system', 'source_ref'):
+        identifier(e[k], k)
+    if not HEX.fullmatch(str(e['source_sha256'])):
+        raise EvidenceError('invalid source SHA-256')
+    if e['source_class'] not in ('FIXTURE', 'UNVERIFIED'):
+        raise EvidenceError('source class is not an authenticated authority')
+    if not isinstance(e['currency'], str) or not re.fullmatch(r'[A-Z]{3}', e['currency']):
+        raise EvidenceError('currency requires three uppercase letters; no FX conversion')
+    for k in ('start', 'end', 'observed_at'):
+        if type(e[k]) is not int or e[k] < 0:
+            raise EvidenceError('invalid time ' + k)
+    if e['end'] <= e['start'] or e['observed_at'] < e['start']:
+        raise EvidenceError('invalid measurement period')
+    if kind == 'BASELINE':
+        number(e['amount'], 'amount')
+        identifier(e['baseline_policy'], 'baseline_policy')
+        if e['like_for_like'] is not True:
+            raise EvidenceError('counterfactual must explicitly require like-for-like outcome')
+        if type(e['expected_charge_lines']) is not int or not (1 <= e['expected_charge_lines'] <= 500):
+            raise EvidenceError('invalid expected charge count')
+    elif kind == 'USAGE':
+        number(e['quantity'], 'quantity')
+        if e['unit'] not in USAGE_UNITS:
+            raise EvidenceError('unknown usage unit')
+        identifier(e['resource'], 'resource')
+    else:
+        number(e['amount'], 'amount')
+        identifier(e['invoice_id'], 'invoice_id')
+        identifier(e['line_id'], 'line_id')
+        if e['charge_status'] not in ('ESTIMATED', 'INVOICED'):
+            raise EvidenceError('unrecognized provider charge status')
+    return e
+
+
+def scope(e):
+    return canonical([e[k] for k in ('case_id','job_id','lease_id','start','end','currency')])
+
+
+def charge_key(e):
+    return canonical([e['source_system'], e['invoice_id'], e['line_id']]) if e['kind'] == 'CHARGE' else None
+
+
+def db_open(state):
+    state.mkdir(parents=True, exist_ok=True)
+    os.umask(0o077)
+    db_path = state / 'financial-evidence.sqlite3'
+    conn = sqlite3.connect(str(db_path), timeout=20)
+    os.chmod(db_path, 0o600)
+    conn.execute('PRAGMA busy_timeout=20000')
+    conn.execute('PRAGMA synchronous=FULL')
+    conn.execute('PRAGMA journal_mode=WAL')
+    conn.executescript('''
+CREATE TABLE IF NOT EXISTS evidence (
+ seq INTEGER PRIMARY KEY AUTOINCREMENT,
+ event_id TEXT NOT NULL UNIQUE,
+ case_id TEXT NOT NULL,
+ kind TEXT NOT NULL,
+ scope TEXT NOT NULL,
+ charge_key TEXT UNIQUE,
+ body TEXT NOT NULL,
+ digest TEXT NOT NULL,
+ prev_hash TEXT NOT NULL,
+ row_hash TEXT NOT NULL
+);
+''')
+    return conn
+
+
+def audit(conn):
+    prior = ZERO
+    count = 0
+    ids = set()
+    charges = set()
+    baselines = set()
+    for seq, eid, cid, kind, sc, ck, body, digest, prev, rowhash in conn.execute(
+            'SELECT seq,event_id,case_id,kind,scope,charge_key,body,digest,prev_hash,row_hash FROM evidence ORDER BY seq'):
+        try:
+            e = validate(nonduplicate(json.loads(body, object_pairs_hook=nonduplicate).items()))
+        except (ValueError, TypeError, KeyError) as exc:
+            raise EvidenceError(f'corrupt evidence row {seq}: {exc}') from exc
+        if body != canonical(e) or e['id'] != eid or e['case_id'] != cid or e['kind'] != kind or scope(e) != sc or charge_key(e) != ck:
+            raise EvidenceError(f'altered evidence row {seq}')
+        dg = hashlib.sha256(body.encode('utf-8')).hexdigest()
+        calc = hashlib.sha256(f'{prior}|{dg}|{eid}'.encode('ascii')).hexdigest()
+        if digest != dg or prev != prior or rowhash != calc:
+            raise EvidenceError(f'broken local journal chain at {seq}')
+        if eid in ids or ck is not None and ck in charges:
+            raise EvidenceError(f'duplicate identity at {seq}')
+        if kind == 'BASELINE':
+            if sc in baselines:
+                raise EvidenceError('duplicate unmanaged baseline')
+            baselines.add(sc)
+        ids.add(eid)
+        if ck is not None:
+            charges.add(ck)
+        prior = calc
+        count += 1
+    return {'local_journal': 'CONSISTENT_UNAUTHENTICATED', 'events': count, 'chain_head': prior}
+
+
+def ingest(conn, path):
+    if not path.is_file():
+        raise EvidenceError('input file not found')
+    events = []
+    with path.open('r', encoding='utf-8') as inp:
+        for i, line in enumerate(inp, 1):
+            if len(line) > 100_000 or i > 5000:
+                raise EvidenceError('bounded batch exceeded')
+            if not line.strip():
+                continue
+            try:
+                e = validate(json.loads(line, object_pairs_hook=nonduplicate))
+            except (KeyError, ValueError, TypeError) as exc:
+                raise EvidenceError(f'line {i}: {exc}') from exc
+            events.append(e)
+    with conn:
+        conn.execute('BEGIN IMMEDIATE')
+        audit(conn)
+        last = conn.execute('SELECT row_hash FROM evidence ORDER BY seq DESC LIMIT 1').fetchone()
+        prior = last[0] if last else ZERO
+        inserted, duplicates = 0, 0
+        scopes = {r[0]: r[1] for r in conn.execute('SELECT case_id,scope FROM evidence')}
+        for e in events:
+            body = canonical(e)
+            saved = conn.execute('SELECT body FROM evidence WHERE event_id=?',(e['id'],)).fetchone()
+            if saved:
+                if saved[0] != body:
+                    raise EvidenceError('event ID equivocation: ' + e['id'])
+                duplicates += 1
+                continue
+            sc = scope(e)
+            if e['case_id'] in scopes and scopes[e['case_id']] != sc:
+                raise EvidenceError('case scope drift: ' + e['case_id'])
+            scopes[e['case_id']] = sc
+            if e['kind'] == 'BASELINE' and conn.execute("SELECT 1 FROM evidence WHERE scope=? AND kind='BASELINE'",(sc,)).fetchone():
+                raise EvidenceError('duplicate unmanaged baseline for case')
+            ck = charge_key(e)
+            if ck and conn.execute('SELECT 1 FROM evidence WHERE charge_key=?',(ck,)).fetchone():
+                raise EvidenceError('invoice line already claimed by another evidence ID')
+            dg = hashlib.sha256(body.encode('utf-8')).hexdigest()
+            h = hashlib.sha256(f'{prior}|{dg}|{e["id"]}'.encode('ascii')).hexdigest()
+            conn.execute('INSERT INTO evidence(event_id,case_id,kind,scope,charge_key,body,digest,prev_hash,row_hash) VALUES(?,?,?,?,?,?,?,?,?)',
+                         (e['id'], e['case_id'], e['kind'], sc, ck, body, dg, prior, h))
+            prior = h
+            inserted += 1
+        # Re-audit within the same transaction before committing any claims.
+        audit(conn)
+    return {'accepted': inserted, 'idempotent_replays': duplicates,
+            'authority': 'OBSERVATION_ONLY', 'external_source_verified': False}
+
+
+def report(conn, selected=None):
+    integrity = audit(conn)
+    cases = {}
+    for (body,) in conn.execute('SELECT body FROM evidence ORDER BY seq'):
+        e = json.loads(body)
+        cases.setdefault(e['case_id'], []).append(e)
+    result = []
+    for cid, rows in sorted(cases.items()):
+        if selected and selected != cid:
+            continue
+        base = [r for r in rows if r['kind'] == 'BASELINE']
+        charges = [r for r in rows if r['kind'] == 'CHARGE']
+        usage = [r for r in rows if r['kind'] == 'USAGE']
+        b = base[0] if len(base) == 1 else None
+        charged = sum((number(r['amount'], 'amount') for r in charges), Decimal('0'))
+        baseline = number(b['amount'], 'amount') if b else None
+        statuses = {r['charge_status'] for r in charges}
+        eligible = b is not None and len(charges) == b['expected_charge_lines'] and bool(usage) and statuses == {'INVOICED'}
+        case = {'case_id': cid, 'job_id': rows[0]['job_id'], 'currency': rows[0]['currency'],
+                'baseline_estimate': str(baseline) if b else None,
+                'reported_provider_charge': str(charged) if charges else None,
+                'charge_lines_seen': len(charges), 'charge_lines_expected': b['expected_charge_lines'] if b else None,
+                'usage_observations_seen': len(usage),
+                'external_source_verified': False,
+                'realized_savings': None,
+                'status': 'UNVERIFIED_COUNTERFACTUAL_DELTA' if eligible else 'INCOMPLETE_EVIDENCE',
+                'reported_delta_not_realized': str(baseline - charged) if eligible else None,
+                'evidence_ids': [r['id'] for r in rows]}
+        result.append(case)
+    return {'schema':'cloud.economics.financial-report/0.1', 'journal': integrity,
+            'currency_conversion': 'DISABLED', 'authority':'OBSERVATION_ONLY',
+            'realized_savings_supported':False,'cases':result}
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('command', choices=['ingest','audit','report'])
+    p.add_argument('--state', type=Path, required=True)
+    p.add_argument('--file', type=Path)
+    p.add_argument('--case')
+    args = p.parse_args()
+    if args.command == 'ingest' and args.file is None:
+        p.error('ingest requires --file')
+    try:
+        db = db_open(args.state)
+        try:
+            result = ingest(db, args.file) if args.command == 'ingest' else audit(db) if args.command == 'audit' else report(db, args.case)
+        finally:
+            db.close()
+        print(json.dumps(result, sort_keys=True))
+    except (EvidenceError, sqlite3.DatabaseError, OSError) as exc:
+        print('FINANCIAL_EVIDENCE_REJECTED: ' + str(exc), file=sys.stderr)
+        return 3
+    return 0
+
+if __name__ == '__main__':
+    raise SystemExit(main())

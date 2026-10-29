@@ -1,0 +1,198 @@
+#!/usr/bin/env python3
+"""Read-only durable observer of Migratable Job Queue Fabric status snapshots.
+
+Input is JSON projection of MigratableJobStatusTopicCodec.toDirectory.
+The invoker must independently operate an authorized Queue Fabric subscription.
+Neither observations nor local hash chains grant migration or purchase authority.
+"""
+import argparse
+import hashlib
+import json
+import os
+import sqlite3
+import sys
+from datetime import datetime, timezone
+from pathlib import Path
+
+SCHEMA = "migratable.job.status/1"
+STATES = {"NEW", "PREPARING", "READY", "TRANSFERRING", "COMMITTING", "AWAITING_DESTINATION", "RUNNING", "PAUSED", "FAILED"}
+REQUIRED = {
+    "schema", "jobId", "migrationId", "state", "sequence", "startedEpochMs",
+    "updatedEpochMs", "sourceNodeId", "sourcePlacementId", "sourceOwnershipEpoch",
+    "sourceFenced", "sourceAdmissionReleased", "destinationNodeId",
+    "destinationPlacementId", "destinationOwnershipEpoch", "checkpointId",
+    "handoffMode", "handoffId", "destinationResumed", "executionRef",
+    "failureCode", "failureDetail", "resumeState",
+}
+IDENTITY = ("jobId", "migrationId", "sourceNodeId", "sourcePlacementId", "sourceOwnershipEpoch")
+BOOLS = ("sourceFenced", "sourceAdmissionReleased", "destinationResumed")
+STRINGS = REQUIRED - set(BOOLS) - {"sequence", "startedEpochMs", "updatedEpochMs", "sourceOwnershipEpoch", "destinationOwnershipEpoch"}
+
+class Rejected(Exception):
+    pass
+
+def validate(p):
+    if type(p) is not dict or not REQUIRED.issubset(p):
+        raise Rejected("INVALID_SCHEMA")
+    for key in STRINGS:
+        if type(p[key]) is not str or len(p[key]) > 2048 or '\x00' in p[key]:
+            raise Rejected("INVALID_STRING:" + key)
+    for key in BOOLS:
+        if type(p[key]) is not bool:
+            raise Rejected("INVALID_BOOLEAN:" + key)
+    for key in ("sequence", "startedEpochMs", "updatedEpochMs", "sourceOwnershipEpoch", "destinationOwnershipEpoch"):
+        if type(p[key]) is not int or p[key] < 0 or p[key] > 9223372036854775807:
+            raise Rejected("INVALID_INTEGER:" + key)
+    for key in IDENTITY[:4]:
+        if not p[key]:
+            raise Rejected("MISSING_IDENTITY:" + key)
+    if p["schema"] != SCHEMA or p["state"] not in STATES:
+        raise Rejected("UNSUPPORTED_STATUS")
+    if not p["startedEpochMs"] or p["updatedEpochMs"] < p["startedEpochMs"]:
+        raise Rejected("INVALID_TIME_ORDER")
+    if p["destinationNodeId"]:
+        if not p["destinationPlacementId"] or p["destinationOwnershipEpoch"] <= p["sourceOwnershipEpoch"]:
+            raise Rejected("DESTINATION_LEASE_INCONSISTENT")
+    elif p["destinationPlacementId"] or p["destinationOwnershipEpoch"]:
+        raise Rejected("PARTIAL_DESTINATION_LEASE")
+    if p["destinationResumed"] and not p["destinationNodeId"]:
+        raise Rejected("RESUME_WITHOUT_DESTINATION")
+    # Normalize the known schema; ancillary transport headers cannot affect comparisons.
+    return {key: p[key] for key in sorted(REQUIRED)}
+
+def canonical(p):
+    return json.dumps(p, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
+
+def digest(x):
+    return hashlib.sha256(x.encode("utf-8")).hexdigest()
+
+def open_db(path):
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.exists() and path.is_symlink():
+        raise Rejected("SYMLINK_DATABASE_DENIED")
+    db = sqlite3.connect(path, timeout=15, isolation_level=None)
+    os.chmod(path, 0o600)
+    db.execute("PRAGMA busy_timeout=15000")
+    db.execute("PRAGMA journal_mode=WAL")
+    db.execute("PRAGMA synchronous=FULL")
+    db.execute("""CREATE TABLE IF NOT EXISTS events (
+        row_no INTEGER PRIMARY KEY AUTOINCREMENT,
+        job_id TEXT NOT NULL, migration_id TEXT NOT NULL,
+        seq INTEGER NOT NULL, observed_ms INTEGER NOT NULL,
+        payload TEXT NOT NULL, previous_hash TEXT NOT NULL, row_hash TEXT NOT NULL,
+        UNIQUE (job_id, migration_id, seq))""")
+    return db
+
+def audit(db):
+    previous = "GENESIS"
+    count = 0
+    seen = {}
+    for n, j, m, seq, observed, payload, prev, rowhash in db.execute(
+        "SELECT row_no, job_id, migration_id, seq, observed_ms, payload, previous_hash, row_hash FROM events ORDER BY row_no"):
+        count += 1
+        if n != count or prev != previous:
+            raise Rejected("BROKEN_JOURNAL_CHAIN")
+        p = validate(json.loads(payload))
+        if p["jobId"] != j or p["migrationId"] != m or p["sequence"] != seq:
+            raise Rejected("ROW_IDENTITY_ALTERED")
+        expected = digest(previous + "\n" + str(n) + "\n" + str(observed) + "\n" + payload)
+        if expected != rowhash or payload != canonical(p):
+            raise Rejected("ROW_HASH_MISMATCH")
+        key = (j, m)
+        if key in seen:
+            old = seen[key]
+            if seq <= old["sequence"] or p["updatedEpochMs"] < old["updatedEpochMs"]:
+                raise Rejected("JOURNAL_SEQUENCE_REVERSED")
+            check_transition(old, p)
+        seen[key] = p
+        previous = rowhash
+    return count, previous
+
+def check_transition(old, p):
+    if any(old[k] != p[k] for k in IDENTITY):
+        raise Rejected("SOURCE_IDENTITY_CHANGED")
+    for flag in BOOLS:
+        if old[flag] and not p[flag]:
+            raise Rejected("MONOTONIC_FLAG_REVERSED:" + flag)
+    if old["destinationNodeId"] and (p["destinationNodeId"], p["destinationPlacementId"], p["destinationOwnershipEpoch"]) != (
+        old["destinationNodeId"], old["destinationPlacementId"], old["destinationOwnershipEpoch"]):
+        raise Rejected("DESTINATION_IDENTITY_CHANGED")
+    if old["checkpointId"] and p["checkpointId"] != old["checkpointId"]:
+        raise Rejected("CHECKPOINT_IDENTITY_CHANGED")
+    if old["state"] in {"RUNNING", "FAILED"} and old["state"] != p["state"]:
+        raise Rejected("TERMINAL_STATE_CHANGED")
+
+def record(db, raw):
+    p = validate(raw)
+    data = canonical(p)
+    db.execute("BEGIN IMMEDIATE")
+    try:
+        _, previous = audit(db)
+        oldrow = db.execute("SELECT payload FROM events WHERE job_id=? AND migration_id=? AND seq=?",
+                            (p["jobId"], p["migrationId"], p["sequence"])).fetchone()
+        if oldrow:
+            if oldrow[0] != data:
+                raise Rejected("CONFLICTING_REDELIVERY")
+            db.execute("COMMIT")
+            return "DUPLICATE"
+        oldrow = db.execute("SELECT payload FROM events WHERE job_id=? AND migration_id=? ORDER BY seq DESC LIMIT 1",
+                            (p["jobId"], p["migrationId"])).fetchone()
+        if oldrow:
+            old = json.loads(oldrow[0])
+            if p["sequence"] < old["sequence"]:
+                # Retained and delayed messages can arrive out of order; discard them, never rewrite history.
+                db.execute("COMMIT")
+                return "STALE"
+            if p["updatedEpochMs"] < old["updatedEpochMs"]:
+                raise Rejected("CLOCK_REVERSED")
+            check_transition(old, p)
+        n = db.execute("SELECT COALESCE(MAX(row_no),0)+1 FROM events").fetchone()[0]
+        observed = int(datetime.now(timezone.utc).timestamp() * 1000)
+        h = digest(previous + "\n" + str(n) + "\n" + str(observed) + "\n" + data)
+        db.execute("INSERT INTO events(row_no,job_id,migration_id,seq,observed_ms,payload,previous_hash,row_hash) VALUES(?,?,?,?,?,?,?,?)",
+                   (n,p["jobId"],p["migrationId"],p["sequence"],observed,data,previous,h))
+        db.execute("COMMIT")
+        return "OBSERVED"
+    except BaseException:
+        db.execute("ROLLBACK")
+        raise
+
+def report(db):
+    count, tip = audit(db)
+    rows = list(db.execute("SELECT job_id,migration_id,payload FROM events WHERE row_no IN (SELECT MAX(row_no) FROM events GROUP BY job_id,migration_id) ORDER BY job_id,migration_id"))
+    return {"schema":"cloud.economics.migration-observations/0.1", "mode":"OBSERVATION_ONLY", "authenticated":False,
+            "capacityAuthorized":False, "migrationAllowed":False, "purchaseAllowed":False,
+            "providerInvoiceReconciled":False, "events":count, "chainTip":tip,
+            "migrations":[{"jobId":j,"migrationId":m,"sequence":p["sequence"],"state":p["state"],
+                           "updatedEpochMs":p["updatedEpochMs"],"destinationNodeId":p["destinationNodeId"]}
+                          for j,m,raw in rows for p in [json.loads(raw)]]}
+
+def main(argv=None):
+    ap=argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("command", choices=["ingest","watch","report","audit"])
+    ap.add_argument("--state", default=os.environ.get("CLOUD_ECONOMICS_STATE","state"))
+    ap.add_argument("--file", help="JSON status snapshot for ingest")
+    args=ap.parse_args(argv)
+    try:
+        db=open_db(Path(args.state)/"migration_observations.sqlite3")
+        if args.command == "ingest":
+            if not args.file or not Path(args.file).is_file() or Path(args.file).stat().st_size>65536:
+                raise Rejected("INPUT_REQUIRED_OR_OVERSIZED")
+            print(record(db,json.loads(Path(args.file).read_text(encoding="utf-8"))))
+        elif args.command == "watch":
+            for line in sys.stdin:
+                if len(line)>65536:
+                    raise Rejected("OVERSIZED_STATUS_MESSAGE")
+                print(record(db,json.loads(line)), flush=True)
+        elif args.command == "audit":
+            n, tip=audit(db)
+            print("OBSERVATION_AUDIT_OK", n, tip)
+        else:
+            print(json.dumps(report(db),sort_keys=True))
+        return 0
+    except (Rejected,ValueError,sqlite3.DatabaseError,OSError,UnicodeError) as ex:
+        print("OBSERVATION_REJECTED",str(ex),file=sys.stderr)
+        return 3
+
+if __name__ == "__main__":
+    sys.exit(main())

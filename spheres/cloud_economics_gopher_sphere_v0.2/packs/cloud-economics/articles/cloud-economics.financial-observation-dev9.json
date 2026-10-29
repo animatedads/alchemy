@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "cloud-economics.financial-observation-dev9",
+  "version": "0.2",
+  "sphere": "cloud-economics",
+  "title": "Dev9 read-only usage and provider-reported financial evidence",
+  "section": "operations",
+  "authority": "project-artifact",
+  "implementation_status": "IMPLEMENTED_OBSERVER_ONLY",
+  "summary": "Cloud Economics dev9 adds deterministic evidence correlation of case/job/lease/execution period/currency, an explicit unmanaged like-for-like baseline, exact-decimal metered usage and caller-reported provider charge lines. The resulting delta is never an authenticated provider invoice or realized savings.",
+  "invariants": [
+    "All inputs are FIXTURE or UNVERIFIED; no source authenticity or financial settlement is asserted.",
+    "case/job/lease/start/end/currency scope must match exactly for every observation.",
+    "Invoice line identity is unique and cannot be billed twice under another local evidence ID.",
+    "Missing usage, incomplete charge lines, ESTIMATED charges or missing baseline yield INCOMPLETE_EVIDENCE and no delta.",
+    "A completed set of caller-reported INVOICED lines yields UNVERIFIED_COUNTERFACTUAL_DELTA only.",
+    "realized_savings is always null and external_source_verified=false.",
+    "Local SHA-256 chain is non-authoritative tamper evidence; a malicious actor can rewrite or truncate local history.",
+    "No cross-currency conversion, adjustments, credits, taxes, provider authentication, cloud provisioning, migration or Accounting Core posting is implemented."
+  ],
+  "procedure": [
+    "Ingest exact JSONL under the documented schema with a unique evidence ID and caller-supplied source digest.",
+    "Run reconcile-audit to verify the local journal chain before rendering any report.",
+    "Require like-for-like unmanaged baseline, observed usage, expected number of INVOICED charge lines, and identical execution scope.",
+    "Emit evidence IDs, count, reported charges and, only if complete, the unverified counterfactual difference.",
+    "Escalate provider attestation, invoice adjustments, accounting treatment, IAM and transport to their authoritative owners."
+  ],
+  "provenance": [
+    {
+      "artifact": "cloud_economics_v0.1-dev9.zip",
+      "sha256": "47217d781808db6b22694150a0047465798b92ba7c1e99b041338b87da57b84c",
+      "member": "docs/FINANCIAL_EVIDENCE_DEV9.md",
+      "claim": "Source-qualified read-only observer; not provider authenticated."
+    }
+  ]
+}

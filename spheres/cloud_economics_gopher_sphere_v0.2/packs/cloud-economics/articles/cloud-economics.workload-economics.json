@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "cloud-economics.workload-economics",
+  "version": "0.1",
+  "sphere": "cloud-economics",
+  "title": "Whole-job billing and partition/fabric economics",
+  "section": "architecture",
+  "summary": "Dev4 whole-job model includes billing quanta/minima, startup, storage, I/O, ingress/egress, checkpoint frequency, runtime overhead and interruption provision; segmented 32+32 GiB placement requires actual Memory Fabric capacity semantics, not arithmetic on VM RAM labels.",
+  "authority": "project-architecture",
+  "implementation_status": "IMPLEMENTED",
+  "invariants": [
+    "Two 32 GiB VMs are not necessarily a contiguous 64 GiB address space.",
+    "CPU ownership, memory contributors, site locality, fabric traffic and latency must be represented separately.",
+    "Minimum billing periods and failed/abandoned restarts can reverse a nominal per-hour price ranking.",
+    "Fabrics and multi-cloud migration must include network and data-movement charges."
+  ],
+  "provenance": [
+    {
+      "artifact": "cloud_economics_v0.1-dev8.zip",
+      "sha256": "8354043fc133ef9b6fdb593ec8d000e278e0748228224464b9ebb7feb485e735",
+      "member": "docs/WHOLE_JOB_ECONOMICS_DEV4.md",
+      "claim": "Cloud Economics v0.1-dev8 source evidence; status=IMPLEMENTED."
+    }
+  ],
+  "procedure": [
+    "Qualify memory model (contiguous vs segmented/distributed).",
+    "Ask native Memory Fabric for executable capacity plan and provider/fragment identity.",
+    "Calculate separately each billed VM and fabric/routing component.",
+    "Compare total eligible cost with same intended outcome and quality constraints."
+  ]
+}
