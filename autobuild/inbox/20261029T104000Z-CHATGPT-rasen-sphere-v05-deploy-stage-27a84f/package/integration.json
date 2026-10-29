@@ -1,0 +1,30 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "rasenfalcon_gopher_sphere",
+    "version": "0.5",
+    "kind": "python"
+  },
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "sphere-provenance-and-security-contract",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-v"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "spheres/rasenfalcon"
+    }
+  }
+}

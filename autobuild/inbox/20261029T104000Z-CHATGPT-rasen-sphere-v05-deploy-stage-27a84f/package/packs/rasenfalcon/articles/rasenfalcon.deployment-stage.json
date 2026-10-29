@@ -1,0 +1,56 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.deployment-stage",
+  "version": "0.5",
+  "sphere": "rasenfalcon",
+  "section": "operations",
+  "title": "Public website preview staging with General ooRexx Deployment",
+  "summary": "Rasen Falcon v0.4.4 reuses the existing General Deployment v0.1-dev4 POSIX backend for source-locked noindex preview staging in a temporary local review workspace. It has actual stage and byte-for-byte verification evidence but not a host installation or running service.",
+  "invariants": [
+    "General Deployment remains sole deployment/staging primitive; Rasen Falcon owns only application-specific preview build, validation and policy gates.",
+    "Source is Rasen Falcon v0.4.4 and external General Deployment v0.1-dev4; do not vendor or silently replace the deployment provider.",
+    "Local review target is a dedicated nested directory under /tmp; remote SSH, system install, HTTPS activation and production route updates are not accessible through this adapter.",
+    "All nine HTML pages must carry noindex,nofollow, robots disallow, content SHA-256 and complete source digest lock.",
+    "Positive local stage has 15 files and General Deployment generation d2585c2cae73fe3afcea00e1e2bbf4c91517291120ce6dfedf8edcc88f685ab1.",
+    "Public role check-release refuses without reviewed roles/public/manifest.tsv, services.txt, tests.tsv and owned native HTTPS and protocol tests; no fabricated unit/port/service evidence.",
+    "Source availability, local staging, target-host installation, process running and production acceptance are separate evidence states.",
+    "Public cutover requires independent operator approval, authenticated CMS/Brand/Wire receipts, qualified native HTTPS/SNI and target-host readiness; no fallback reverse proxy is authorized."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.4_source_candidate.zip",
+      "sha256": "15f6056fb599d4e0a77fa64040cfdad4f7f6386019bb3dd845c2ef013b30cede",
+      "member": "handoff/deployment/REVIEW_STAGE_EVIDENCE_20261029.json",
+      "claim": "Local content-addressed stage and installation readiness evidence."
+    }
+  ],
+  "general_provider": "oorexx_deployment_v0.1-dev4/bin/deploy_tree.sh",
+  "stage": {
+    "kind": "LOCAL_REVIEW_ONLY",
+    "state": "STAGED_VERIFIED",
+    "workspace": "/tmp/rasenfalcon-review-20261029/site1",
+    "generation": "d2585c2cae73fe3afcea00e1e2bbf4c91517291120ce6dfedf8edcc88f685ab1",
+    "files": 15,
+    "pages": 9
+  },
+  "installation": {
+    "state": "NOT_PERFORMED",
+    "blocker": "MISSING_ROLES_PUBLIC_MANIFEST_AND_OWNED_COMPONENT_RELEASE"
+  },
+  "running": {
+    "state": "NOT_OBSERVED",
+    "public_https": "NOT_PROBED",
+    "systemd": "NOT_PROBED",
+    "dns_sni_tls": "NOT_PROBED"
+  },
+  "qualification": {
+    "website": "18/18_PASS_LOCAL",
+    "handoff_and_deployment": "29/29_PASS_LOCAL",
+    "general_reconcile": "PASS_LOCAL",
+    "general_dependency_namespace": "PASS_LOCAL",
+    "independent_v043": "REQUESTED_REQ-00001217",
+    "autobuild": "PENDING_RECEIPT"
+  },
+  "production": "BLOCKED"
+}
