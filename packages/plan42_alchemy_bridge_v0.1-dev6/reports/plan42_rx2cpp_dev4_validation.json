@@ -1,0 +1,78 @@
+{
+  "schema": "alchemy.plan42.rx2cpp.dev4.validation/1",
+  "status": "integration-candidate",
+  "baseline": "alchemy_framework_65_plan42_rx2cpp_integrated_dev3.zip",
+  "upstream": {
+    "repository": "animatedads/oorexx",
+    "observed_main_commit": "f63993cda664465523d4cd7650106bbcd0ccfb4d",
+    "observed_main_date": "2026-10-17T13:56:11Z",
+    "dev3_pinned_commit": "9047f0e13c8cd67acf4258bd69cf78ea946944ac",
+    "pinned_revision_promoted": false,
+    "compiler_version": "0.30.18",
+    "inspector_wire_format": "RX2CPP_OBJECT_MODEL/0.1",
+    "inspector_source_blob_sha": "81fe4d1b74beb6a9d2a19f2a4271c238cfb4eba9",
+    "inspector_cli_blob_sha": "af5ed686e910f974b8082c9b9a3eaa88bb8c8519"
+  },
+  "interface": {
+    "service": "plan42.native.inventory",
+    "schema": "plan42.rx2cpp.inventory/0.1",
+    "scope_handoff": "non-executing, unattested object-model proposal",
+    "native_plan_with_optional_model": true
+  },
+  "tests": {
+    "unittest_plan42_suite": 48,
+    "failed": 0,
+    "postmerge_test_run": "pass",
+    "python_compilation": "pass",
+    "fop_oorexx_static": {
+      "errors": 0,
+      "warnings": 0
+    },
+    "fop_unified_diff_guarded_apply": "pass",
+    "inspector_interpreter_executed": false,
+    "real_interpreter_model_map_imported": false,
+    "native_compiler_executed": false
+  },
+  "limitations": [
+    "Synthetic model regression fixtures only; no live rexx interpreter",
+    "Imported model is not authenticated as interpreter output",
+    "RX2CPP --tree REQUIRES dependency graph export not imported",
+    "Plan42 generated class_greeter.rex currently has ::REQUIRES; standalone inspector refuses it",
+    "No RX2CPP emitter integration or C++ binary generated",
+    "Runtime Registry, Semantic Source Store and CODELET publication not performed"
+  ],
+  "diff": {
+    "modified_existing": 6,
+    "unchanged_existing": 795,
+    "removed": 0,
+    "added": 4,
+    "modified_files": [
+      "alchemy/estate/plan42.estate.candidate.json",
+      "alchemy/plan42/AlchemyPlan42Service.cls",
+      "alchemy/plan42/plan42.integration.json",
+      "alchemy/tools/plan42_bridge.py",
+      "alchemy/tools/plan42_rx2cpp_plan.py",
+      "alchemy/plan42/rx2cpp.upstream.pin.json"
+    ],
+    "new_files": [
+      "alchemy/tools/plan42_rx2cpp_inventory.py",
+      "alchemy/tests/test_plan42_rx2cpp_inventory.py",
+      "alchemy/docs/PLAN42_RX2CPP_OBJECT_MODEL_DEV4.md",
+      "alchemy/reports/plan42_rx2cpp_dev4_validation.json"
+    ]
+  },
+  "source_sha256": {
+    "alchemy/estate/plan42.estate.candidate.json": "914eb0c1e101e5d7ecd3f7010e7d387004d23e7bc863de325479c21bac07e101",
+    "alchemy/plan42/AlchemyPlan42Service.cls": "add21ca8bba42155334891ec0b462319f58217c61368fd5dadc6d10d026d51ed",
+    "alchemy/plan42/plan42.integration.json": "3d1e19f7312e1f5553e72e1416a0eca0bb8bd6eccdd42a76bde00b2926a07759",
+    "alchemy/tools/plan42_bridge.py": "437080dc50a9a7c25b7e2a585fa7e4ea6281239a503adb9814ed2941a278ad45",
+    "alchemy/tools/plan42_rx2cpp_plan.py": "54ee4e6111c75ae104a72ef204f73febc99572f120171424552b79ca09cffa03",
+    "alchemy/plan42/rx2cpp.upstream.pin.json": "309ba83dd302306a299fa6a5789ba8e3a56a2e8968bf184f71e9ed247a3acfd8",
+    "alchemy/tools/plan42_rx2cpp_inventory.py": "f6e5c0a8113cc1b3d087d849b77e6ac4c388a37b026776d4f2f775ea6c2a1175",
+    "alchemy/tests/test_plan42_rx2cpp_inventory.py": "a76f7226c715a5fb1d89dbcb0f68434216d9ceaf76d57dbb27fe87ee645e9f40",
+    "alchemy/docs/PLAN42_RX2CPP_OBJECT_MODEL_DEV4.md": "6f5199b279fb0246126e7de9d75f94ba690d28d5d1f32c3c2be3c0650b8fd6c9"
+  },
+  "execution": false,
+  "publication": false,
+  "hot_replacement": false
+}

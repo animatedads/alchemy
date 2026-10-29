@@ -1,0 +1,248 @@
+{
+  "spec": "1.0",
+  "module": "ouroboros_python_sample",
+  "description": "Python module converted into a Plan42 program specification.",
+  "source": {
+    "language": "python3",
+    "filename": "tools/ouroboros_python_sample.py",
+    "sha256": "9ef548185382fff23bbb6c65d588783d6b9379649ea05a4dbb9a8601e2aec527",
+    "conversion": "structural where possible; python impl fallback where required"
+  },
+  "nodes": [
+    {
+      "op": "const",
+      "name": "GREETING",
+      "value": "hello",
+      "business_purpose": "Module-level Python constant preserved from source.",
+      "python_location": {
+        "lineno": 1,
+        "col_offset": 0,
+        "end_lineno": 1,
+        "end_col_offset": 18
+      }
+    },
+    {
+      "op": "routine",
+      "name": "double",
+      "business_purpose": "Python function `double` converted to a Plan42 routine.",
+      "params": [
+        "x"
+      ],
+      "body": [
+        {
+          "op": "return",
+          "expr": {
+            "op": "mul",
+            "left": "x",
+            "right": {
+              "op": "literal",
+              "value": 2
+            }
+          },
+          "value": {
+            "op": "mul",
+            "left": "x",
+            "right": {
+              "op": "literal",
+              "value": 2
+            }
+          },
+          "python_location": {
+            "lineno": 4,
+            "col_offset": 4,
+            "end_lineno": 4,
+            "end_col_offset": 16
+          }
+        }
+      ],
+      "python": {
+        "async": false,
+        "decorators": [],
+        "returns": null,
+        "signature": "def double(x)"
+      },
+      "python_location": {
+        "lineno": 3,
+        "col_offset": 0,
+        "end_lineno": 4,
+        "end_col_offset": 16
+      }
+    },
+    {
+      "op": "routine",
+      "name": "main",
+      "business_purpose": "Python function `main` converted to a Plan42 routine.",
+      "params": [
+        "name"
+      ],
+      "body": [
+        {
+          "op": "declare",
+          "name": "n",
+          "target": "n",
+          "value": {
+            "op": "literal",
+            "value": 21
+          },
+          "expr": {
+            "op": "literal",
+            "value": 21
+          },
+          "python_location": {
+            "lineno": 7,
+            "col_offset": 4,
+            "end_lineno": 7,
+            "end_col_offset": 10
+          }
+        },
+        {
+          "op": "output",
+          "expr": {
+            "op": "add",
+            "left": {
+              "op": "add",
+              "left": "GREETING",
+              "right": {
+                "op": "literal",
+                "value": " "
+              }
+            },
+            "right": "name"
+          },
+          "python_location": {
+            "lineno": 8,
+            "col_offset": 4,
+            "end_lineno": 8,
+            "end_col_offset": 32
+          }
+        },
+        {
+          "op": "if",
+          "cond": {
+            "op": "eq",
+            "left": {
+              "op": "call",
+              "routine": "double",
+              "args": [
+                "n"
+              ]
+            },
+            "right": {
+              "op": "literal",
+              "value": 42
+            }
+          },
+          "then": [
+            {
+              "op": "output",
+              "expr": {
+                "op": "literal",
+                "value": "logic preserved"
+              },
+              "python_location": {
+                "lineno": 10,
+                "col_offset": 8,
+                "end_lineno": 10,
+                "end_col_offset": 32
+              }
+            }
+          ],
+          "body": [
+            {
+              "op": "output",
+              "expr": {
+                "op": "literal",
+                "value": "logic preserved"
+              },
+              "python_location": {
+                "lineno": 10,
+                "col_offset": 8,
+                "end_lineno": 10,
+                "end_col_offset": 32
+              }
+            }
+          ],
+          "else": [
+            {
+              "op": "output",
+              "expr": {
+                "op": "literal",
+                "value": "logic broken"
+              },
+              "python_location": {
+                "lineno": 12,
+                "col_offset": 8,
+                "end_lineno": 12,
+                "end_col_offset": 29
+              }
+            }
+          ],
+          "python_location": {
+            "lineno": 9,
+            "col_offset": 4,
+            "end_lineno": 12,
+            "end_col_offset": 29
+          }
+        },
+        {
+          "op": "for_each",
+          "var": "item",
+          "item": "item",
+          "in": "['a', 'b', 'c']",
+          "iter_expr": {
+            "op": "literal",
+            "value": [
+              "a",
+              "b",
+              "c"
+            ]
+          },
+          "body": [
+            {
+              "op": "output",
+              "expr": {
+                "op": "add",
+                "left": {
+                  "op": "literal",
+                  "value": "item="
+                },
+                "right": "item"
+              },
+              "python_location": {
+                "lineno": 14,
+                "col_offset": 8,
+                "end_lineno": 14,
+                "end_col_offset": 29
+              }
+            }
+          ],
+          "python_location": {
+            "lineno": 13,
+            "col_offset": 4,
+            "end_lineno": 14,
+            "end_col_offset": 29
+          }
+        }
+      ],
+      "python": {
+        "async": false,
+        "decorators": [],
+        "returns": null,
+        "signature": "def main(name)"
+      },
+      "python_location": {
+        "lineno": 6,
+        "col_offset": 0,
+        "end_lineno": 14,
+        "end_col_offset": 29
+      }
+    }
+  ],
+  "conversion_stats": {
+    "structural_nodes": 11,
+    "impl_blocks": 0,
+    "unsupported_statements": 0,
+    "unsupported_expressions": 0,
+    "warnings": []
+  }
+}
