@@ -3,24 +3,25 @@
   "id": "ldap-identity.qualification",
   "version": "0.1",
   "sphere": "ldap-identity",
-  "title": "dev22 activation qualification and non-claims",
+  "title": "dev23 activation/deployment qualification and non-claims",
   "evidence": [
-    "Archive SHA-256: 03578dbf59d5535ba749e1ec0c73fcd61d33bee8b791139cb5184f3d77ee0481.",
-    "activation/ldap_service_rehearsal.sh is shell-syntax clean.",
-    "activation/LDAP_SERVICE_INSTALL.json parses and names rasenfalcon-ldap.service, dependency roots, secret-reference boundaries and website/mail/MCP consumers.",
-    "tests/test_activation_identity_policy.rex separates human, CHATGPT and CLAUDE rights and checks revoked-principal admission denial.",
-    "Direct standards scan of the exact dev22 ZIP: 82 files, 0 errors, 136 warnings, PASS."
+    "Archive SHA-256: 8f5b7b76c2297e3c63bccc868cb3894ae6a1e34391420a77dfc2f0cdab01abdb.",
+    "Direct standards scan of the exact dev23 ZIP: 83 files, 0 errors, 136 warnings, PASS.",
+    "tests/deployment/test_rasenfalcon_deployment_contract.sh passes.",
+    "activation/ldap_service_rehearsal.sh and deployment scripts pass shell syntax; activation/LDAP_SERVICE_INSTALL.json parses.",
+    "bin/rasenfalcon_ldap_service.rex uses persistent NoSQL directory state, Secret Broker mappings and mandatory OpenSSL/Foreign Runtime TLS.",
+    "rasenfalcon-ldap.service runs non-root with a constrained writable state/runtime surface."
   ],
   "non_claims": [
-    "No fresh ooRexx r13196 runtime PASS is claimed for dev22.",
-    "LDAP is not installed on a production Rasen Falcon host.",
-    "No production certificate, private key, bind password, DNS, firewall or service activation is claimed.",
-    "No third-party LDAP daemon substitutes for the owned ooRexx listener."
+    "No fresh ooRexx r13196 full activation PASS is claimed for dev23.",
+    "LDAP is not yet installed or started on a production Rasen Falcon host.",
+    "No production certificate/private key, DNS, firewall or live cutover is claimed.",
+    "No slapd or other third-party directory daemon is introduced."
   ],
   "next_acceptance_gates": [
-    "Run activation/ldap_service_rehearsal.sh with the real r13196 dependency closure.",
-    "Feed the resulting dependency/secret contract into the existing Rasen Falcon Deployment service identity role.",
-    "Qualify HTTPS, SMTP submission and IMAP access against the same LDAP principals and revocation state.",
-    "Only then request operator-gated host installation and live protocol acceptance."
+    "Run the exact dev23 activation rehearsal with r13196 and the declared dependency closure.",
+    "Provision test directory state through the existing Deployment/provisioning authority and run real LDAPS bind/search/revoke.",
+    "Qualify website HTTPS_LOGIN, SMTP EMAIL_SEND and IMAP mailbox access against the same LDAP principals and revocation state.",
+    "Perform operator-gated installation and live acceptance only after those probes pass."
   ]
 }
