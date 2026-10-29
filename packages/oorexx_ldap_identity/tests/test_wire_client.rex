@@ -79,7 +79,7 @@ ignore = .LdapIdentityTest~equal(1, r~value~items, "extensible match count")
 r = client~search("dc=example,dc=org", "SUB", "(&(objectClass=oorexxPrincipal)(uid:dn:caseIgnoreMatch:=ALICE))", .array~of("uid"))
 ignore = .LdapIdentityTest~assert(r~ok, "dnAttributes extensible filter over wire")
 ignore = .LdapIdentityTest~equal(1, r~value~items, "dnAttributes match count")
-r = client~search("dc=example,dc=org", "SUB", "(cn:192.0.2.1:=Alice)", .array~of("uid"))
+r = client~search("dc=example,dc=org", "SUB", "(cn:1.2.3.4:=Alice)", .array~of("uid"))
 ignore = .LdapIdentityTest~assert(\r~ok, "unknown matching rule refused")
 ignore = .LdapIdentityTest~equal("LDAP_RESULT_18", r~code, "inappropriateMatching result")
 say "WIRE STEP alice-compare"
