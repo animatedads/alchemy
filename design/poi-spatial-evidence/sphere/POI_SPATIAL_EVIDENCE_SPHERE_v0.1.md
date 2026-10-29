@@ -76,3 +76,13 @@ A POI-centred, case-scoped spatial and temporal investigation application using 
 - Rasen Falcon mailbox lane `poi-spatial-evidence` is active. No new executed Wire3D dev29.25 verification was received in this check; prior reply remains an evidence gap.
 - Library search found instrumentation freshness/event/correlation materials and dev29.23 digest metadata. The exact dev29.25 archive was **not independently materialized or hashed in this run**. No claim of a verified dev29.25 compatibility pass.
 - Programme priorities (website, mail, MU/MI internode communication, LDAP and private-CA HTTPS) remain owned by their respective implementation lanes; this POI workstream does not deploy or modify those services. Autobuilder is not running; do not infer qualification from source commits.
+
+
+## 2026-10-29 — dev2 presentation projection increment
+
+- Added `src/PoiSceneProjection.cls`, commit `f3519acb8ecd191c7b155b4d2f6f1da47a8fb58e`.
+- `PoiSceneProjection` maintains observation inventory, selected record and media library visibility as **presentation state**.
+- `PoiSceneObservation` projects record/subject/place/date/evidence/method/review/relation references as renderer-neutral `.directory` state.
+- The projection deliberately performs no time conversion, identity inference or evidence mutation.
+- Remaining: connect to Wire3D's actual semantic scene contract, verify ooRexx interpreter compatibility, add explicit method lineage inspector, media permission checks and tests.
+- **Qualification:** source committed; no runtime PASS asserted.
