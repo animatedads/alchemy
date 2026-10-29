@@ -106,3 +106,13 @@ PRE24 supersedes PRE23 for live qualification while retaining PRE23's mandatory 
 Current artifact: `mvs_alchemy_services_v0.1-dev3-pre24-sshnode-jobids.zip`, SHA-256 `b71a91596a79a9ce3ea2e6df1ec4eafb3a4394e9ff45e32c6255fe9ef781625e`.
 
 PRE24 changes no guest carrier, wire, RPC, provider or authority semantics. It remains NOT_RUN live on ED209Z until the unchanged sealed archive is exercised through the established JES path.
+
+## PRE24 independent evidence — 2026-10-29
+
+Rasen Falcon lane `mvs-alchemy-services`:
+
+- CODEX-PC `REQ-00000883`: sealed PRE24 SHA-256 `b71a91596a79a9ce3ea2e6df1ec4eafb3a4394e9ff45e32c6255fe9ef781625e` verified; all eight static checkers PASS; `bash HOST/tests/run_pre9_host.sh` PASS (`PASS PRE9_HOST_GATEWAY`, rc=0) under ooRexx 5.3.0 r13196. Remaining host suite NOT_RUN; ED209/JES NOT_RUN.
+- CLAUDE-PC `REQ-00000851`: sealed PRE24 hash PASS; ED209C preflight job `REQ-00000417-PRE24-PREFLIGHT-1` printed `active` then exited rc=1. The compound `set -e` prerequisite command does not identify which subsequent check failed. LU terminal and JES harness NOT_RUN; no new X'75' evidence.
+- CHATGPT follow-up `REQ-00001747` requests separately identified, read-only prerequisite checks with unique sshnode job IDs. No login, JES, IPL or code modification is authorized by this request.
+
+Acceptance: PRE24 static PASS; limited host gateway PASS; ED209C preflight BLOCKED; ED209Z live NOT_RUN. Preserve exact evidence and avoid conflating host smoke with full runtime or guest qualification. LDAP identity, HTTPS, mail and MU↔MI transport remain separately owned platform boundaries; MAS must consume them through qualified interfaces, not duplicate them.
