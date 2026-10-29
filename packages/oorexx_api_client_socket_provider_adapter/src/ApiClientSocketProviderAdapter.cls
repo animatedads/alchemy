@@ -5,7 +5,7 @@
  * routing/Intention authority. This package does not choose XTP or any family.
  */
 ::class ApiClientSocketProviderAdapterBuild public
-::constant VERSION "0.1-dev1"
+::constant VERSION "0.1-dev2"
 ::constant API "api.client.socket-provider/0.1"
 
 ::class ApiSocketProviderRouteResolver public
@@ -20,6 +20,75 @@
   expose resolver
   use strict arg url, request=.nil, session=.nil
   return resolver~resolve(url,request,session)
+
+::class ApiSocketIntentionRouteResolver public subclass ApiSocketProviderRouteResolver
+::method init
+  expose intentionPort logicalNameResolver allowedSchemes lastSelection lastNegotiationRequest lastError generation
+  use strict arg intentionPortArg, logicalNameResolverArg=.nil, allowedSchemesArg=.nil
+  if intentionPortArg=.nil then raise syntax 88.900 array("Socket Intention port is required")
+  intentionPort=intentionPortArg
+  logicalNameResolver=logicalNameResolverArg
+  if allowedSchemesArg=.nil then allowedSchemes=.array~of(.SocketScheme~XTP,.SocketScheme~TCP)
+  else allowedSchemes=allowedSchemesArg
+  lastSelection=.nil
+  lastNegotiationRequest=.nil
+  lastError=""
+  generation=0
+::attribute lastSelection get
+::attribute lastNegotiationRequest get
+::attribute lastError get
+::attribute generation get
+::method resolve
+  expose intentionPort logicalNameResolver allowedSchemes lastSelection lastNegotiationRequest lastError generation
+  use strict arg url, request=.nil, session=.nil
+  lastError=""
+  logicalName=""
+
+  if request<>.nil then do
+    md=request~metadata
+    if md<>.nil then do
+      x=md["socketLogicalName"]
+      if x<>.nil then logicalName=x~string~strip
+    end
+  end
+
+  if logicalName="" & logicalNameResolver<>.nil then
+    logicalName=logicalNameResolver~resolve(url,request,session)
+
+  if logicalName="" then logicalName=url~host
+  logicalName=logicalName~string~strip
+  if logicalName="" then do
+    lastError="SOCKET_LOGICAL_NAME_UNAVAILABLE"
+    return .nil
+  end
+
+  metadata=.directory~new
+  metadata["apiUrl"]=url
+  metadata["apiRequest"]=request
+  metadata["apiSession"]=session
+  if request<>.nil then metadata["apiRouteRequirement"]=request~routeRequirement
+
+  negotiation=.SocketNegotiationRequest~new(logicalName,.SocketRole~SENDER,.true,.false,.false,.false,allowedSchemes,url~host,metadata)
+  lastNegotiationRequest=negotiation
+  generation+=1
+
+  context=.directory~new
+  context["apiUrl"]=url
+  context["apiRequest"]=request
+  context["apiSession"]=session
+  if request<>.nil then context["apiRouteRequirement"]=request~routeRequirement
+
+  selection=intentionPort~negotiate(negotiation,context)
+  lastSelection=selection
+  if selection=.nil then do
+    lastError="SOCKET_NEGOTIATION_NO_RESULT"
+    return .nil
+  end
+  if \selection~selected then do
+    lastError="SOCKET_NEGOTIATION_" || selection~status
+    return .nil
+  end
+  return selection~address
 
 ::class ApiSocketProviderConnector public subclass ApiSocketConnector
 ::method init
@@ -133,3 +202,4 @@
 
 ::requires "ApiHttpTransport.cls"
 ::requires "SocketProvider.cls"
+::requires "SocketIntentions.cls"
