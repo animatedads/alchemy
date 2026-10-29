@@ -18,10 +18,26 @@ or an object implementing:
 
     allowIntention(candidate, target, context)
 
-The full candidate is retained in the ChatGPT Library as
+The complete candidate is retained in the ChatGPT Library as
 `layered_audio_oorexx_v0.22-dev9.zip`, SHA-256
 `97c74f998d2daafac3a0c68dcd8d50f883b1ce1379c4a7d09ed46262176ed6b8`.
 
-Because the earlier dev8 GitHub source projection was incomplete, this directory
-records the exact dev8->dev9 source delta plus the new regression rather than
-pretending that the partial dev8 projection is a complete build tree.
+## Exact Git candidate
+
+Autobuilder is currently not running, and independent qualification workers
+cannot read ChatGPT Library bytes directly. The exact candidate is therefore
+also committed under `exact_candidate/` as five deterministic base64 chunks.
+
+Use:
+
+    exact_candidate/reconstruct.sh /tmp/layered_audio_oorexx_v0.22-dev9.zip
+
+to reconstruct and verify the exact ZIP, or:
+
+    exact_candidate/hydrate.sh /tmp/layered-audio-dev9
+
+to reconstruct, verify, unpack, check the package manifest and expose the full
+source/test tree.
+
+This removes the previous dev9 qualification blocker without pretending that
+the older partial dev8 Git projection is complete.
