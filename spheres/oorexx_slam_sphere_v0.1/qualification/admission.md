@@ -7,4 +7,4 @@
 | ADBINV(PREV,1000003) first | reject | BLOCKED, trace empty | No previous result exists |
 | Exploratory HEXENC -> ADBINV via run | predict failure | FAILED at ADBINV | Experimental negative evidence intentionally retained |
 
-These are assertions added to \ \`tests/test_compose.rex\`, not results from this workspace. Recheck the real ooRexx interpreter before deployment.
+These are assertions added to `tests/test_compose.rex`, not results from this workspace. Recheck the real ooRexx interpreter before deployment.
