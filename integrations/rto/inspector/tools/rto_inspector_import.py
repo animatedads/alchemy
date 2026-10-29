@@ -8,6 +8,7 @@ coverage; arbitrary JSON text never does. The bridge cannot dispatch work.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import re
 from pathlib import Path
@@ -101,11 +102,62 @@ def structured_classes(payload: Any, kind: str) -> set[str]:
 
 
 def receipt_identity(path: Path, payload: dict) -> tuple[str, str | None]:
+    """Bind receipt identity to the configured project trace-request namespace.
+
+    A receipt may use a bare filename or the documented relative drop-folder
+    path; an absolute filename, traversal or unrelated directory is not an
+    acceptable authority for asserting that an RTO project rule was loaded.
+    """
     stem = trace_stem_from_receipt(path, payload)
     file_stem = path.name.lstrip(".").removesuffix(".receipt.json")
     if stem != file_stem or not re.fullmatch(r"[a-z0-9][a-z0-9-]*", stem):
         return stem, "receipt file and declared request identity differ"
+    source = next((payload.get(key) for key in (
+        "trace_request", "request_file", "source_file", "file"
+    ) if isinstance(payload.get(key), str) and payload.get(key)), None)
+    if source is not None:
+        # Accept the Inspector's documented basename or project-relative form.
+        normalized = source.replace("\\", "/")
+        allowed = {stem + ".json", TRACE_DIR.as_posix() + "/" + stem + ".json"}
+        if normalized not in allowed:
+            return stem, "receipt source path is outside the configured trace-request namespace"
     return stem, None
+
+
+def configured_requests(root: Path) -> tuple[dict[str, str], list[str]]:
+    """Determine the exact project requests permitted to contribute receipts.
+
+    Digests fingerprint the current local configuration only. Because the
+    Inspector receipt schema does not bind a digest or host signature, these
+    fingerprints do not attest to the request version loaded on a host.
+    """
+    directory = root / TRACE_DIR
+    configured: dict[str, str] = {}
+    failures: list[str] = []
+    if directory.is_symlink():
+        return configured, ["project trace-request directory is a symlink"]
+    if not directory.exists():
+        return configured, failures
+    if not directory.is_dir():
+        return configured, ["project trace-request path is not a directory"]
+    for path in sorted(directory.glob("*.json")):
+        if path.is_symlink() or not path.is_file():
+            failures.append(f"{rel(root, path)}: project trace request is not a regular file")
+            continue
+        if not re.fullmatch(r"[a-z0-9][a-z0-9-]*", path.stem):
+            failures.append(f"{rel(root, path)}: invalid project trace request filename")
+            continue
+        try:
+            raw = path.read_bytes()
+            config = json.loads(raw)
+        except (OSError, ValueError) as exc:
+            failures.append(f"{rel(root, path)}: invalid project trace request: {exc}")
+            continue
+        if not isinstance(config, dict) or config.get("schema") != "alchemy.inspector.trace-request.v1":
+            failures.append(f"{rel(root, path)}: invalid trace request schema")
+            continue
+        configured[path.stem] = hashlib.sha256(raw).hexdigest()
+    return configured, failures
 
 
 def summarize_live(root: Path, live_dir: Path) -> Dict[str, Any]:
@@ -122,8 +174,9 @@ def summarize_live(root: Path, live_dir: Path) -> Dict[str, Any]:
     event_counts = {k: 0 for k in (
         "trace_request_events", "trace_request_load_reports", "unknown_method_events",
         "security_events", "warnings")}
-    trace_files = sorted((root / TRACE_DIR).glob("*.json")) if (root / TRACE_DIR).exists() else []
-    configured_stems = {p.stem for p in trace_files}
+    config_digests, config_failures = configured_requests(root)
+    failures.extend(config_failures)
+    configured_stems = set(config_digests)
     required_existing = REQUIRED_TRACE_STEMS & configured_stems
 
     if not live_path.exists():
@@ -173,6 +226,9 @@ def summarize_live(root: Path, live_dir: Path) -> Dict[str, Any]:
                     reason = err or "receipt schema/status/loaded_rules invalid"
                     item.update({"ok": False, "error": reason})
                     failures.append(f"{rel(root, path)}: {reason}")
+                elif stem not in configured_stems:
+                    item.update({"ok": False, "error": "receipt has no matching configured project trace request"})
+                    failures.append(f"{rel(root, path)}: unknown project trace request {stem}")
                 elif stem in seen_receipts:
                     item.update({"ok": False, "error": "duplicate receipt identity"})
                     failures.append(f"{rel(root, path)}: duplicate receipt identity {stem}")
@@ -183,7 +239,14 @@ def summarize_live(root: Path, live_dir: Path) -> Dict[str, Any]:
             elif kind == "trace_request_load":
                 value = payload.get("trace_request") or payload.get("request_file")
                 if schema == LOAD_SCHEMA and str(payload.get("status", "")).lower() in SUCCESS and isinstance(value, str):
-                    loaded_stems.add(Path(value).stem)
+                    acknowledged = Path(value).stem
+                    if acknowledged in configured_stems and value.replace("\\", "/") in {
+                        acknowledged + ".json", TRACE_DIR.as_posix() + "/" + acknowledged + ".json"
+                    }:
+                        loaded_stems.add(acknowledged)
+                    else:
+                        item.update({"ok": False, "error": "trace acknowledgement is not bound to a configured project request"})
+                        failures.append(f"{rel(root, path)}: trace acknowledgement outside project request namespace")
                 else:
                     warnings.append(f"{rel(root, path)}: trace load acknowledgement is not successful")
             files.append(item)
@@ -200,13 +263,16 @@ def summarize_live(root: Path, live_dir: Path) -> Dict[str, Any]:
         "ok": not failures, "files": files, "counts": counts,
         "receipt_stems": sorted(receipt_stems), "loaded_trace_stems": sorted(loaded_stems),
         "configured_trace_stems": sorted(configured_stems),
+        "configured_trace_sha256": dict(sorted(config_digests.items())),
+        "receipt_binding": "CONFIGURED_FILENAME_ONLY_UNATTESTED_SOURCE_VERSION",
+        "host_attestation": "NOT_VERIFIED",
         "covered_classes": sorted(observed_classes | receipt_classes),
         "observed_classes": sorted(observed_classes),
         "receipt_declared_classes": sorted(receipt_classes),
         "missing_receipts_for_required_traces": missing_required,
         "event_counts": event_counts, "failures": failures, "warnings": warnings,
         "live_required_to_clear_warnings": bool(missing_required or not observed_classes or failures),
-        "evidence_qualification": "STRUCTURED_REPORT_ONLY_NOT_EXECUTION_PROOF",
+        "evidence_qualification": "STRUCTURED_REPORT_ONLY_NOT_EXECUTION_PROOF_OR_HOST_ATTESTATION",
         "boundary_statement": "Read-only import of Inspector artefacts; no ooRexx execution or authority decisions are performed.",
     }
 

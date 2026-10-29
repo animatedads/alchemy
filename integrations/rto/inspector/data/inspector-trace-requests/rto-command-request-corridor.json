@@ -1,0 +1,50 @@
+{
+  "bundle_id": "rto-command-request-corridor",
+  "requests": [
+    {
+      "class": "RTOCOMMAND",
+      "enabled": true,
+      "kind": "source_trail",
+      "method": "RUN",
+      "report_prefix": "./rto-inspector-command-run"
+    },
+    {
+      "class": "RTOCOMMAND",
+      "enabled": true,
+      "kind": "source_trail",
+      "method": "REQUEST*",
+      "report_prefix": "./rto-inspector-request"
+    },
+    {
+      "class": "RTOOPERATIONREGISTRY",
+      "enabled": true,
+      "kind": "source_trail",
+      "method": "*",
+      "report_prefix": "./rto-inspector-operation-registry"
+    },
+    {
+      "class": "RTOCOMMANDREGISTRY",
+      "enabled": true,
+      "kind": "source_trail",
+      "method": "*",
+      "report_prefix": "./rto-inspector-command-registry"
+    },
+    {
+      "class": "RTOOPERATIONSECURITYCONTEXT",
+      "enabled": true,
+      "kind": "source_trail",
+      "method": "*",
+      "report_prefix": "./rto-inspector-security-context"
+    },
+    {
+      "class": "*",
+      "enabled": true,
+      "kind": "signal_report",
+      "method": "*",
+      "report_prefix": "./rto-inspector-signal"
+    }
+  ],
+  "schema": "alchemy.inspector.trace-request.v1",
+  "trace_goal": "Capture command parsing, operation resolution, and security-context decisions without changing RTO state.",
+  "trace_group": "rto request command to operation authority corridor"
+}
