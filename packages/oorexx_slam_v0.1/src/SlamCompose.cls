@@ -89,6 +89,57 @@
   out['OK'] = .true
   out['REASON'] = fromAlias 'gives' .SlamContract~keys(f~gives) || ',' toAlias 'argument' pos 'needs' .SlamContract~keys(need['KINDS'])
   return out
+/* A contract gate for use outside exploratory tests. The ordinary run method remains
+   intentionally exploratory: it records a predicted failure AND tries the path.
+   The admitted route never executes a path that its current contracts reject.
+   It does not claim that all missing semantic requirements have been learned. */
+::method admit
+  expose units
+  use strict arg steps
+  gate = .directory~new
+  gate['FEASIBLE'] = .false
+  gate['FAILED_AT'] = ''
+  gate['PREDICTION'] = 'will fail: empty path'
+  if steps~items == 0 then return gate
+  do i = 1 to steps~items
+    alias = steps[i][1]
+    if \units~hasIndex(alias) then do
+      gate['FAILED_AT'] = alias
+      gate['PREDICTION'] = 'will fail: no lifted unit' alias
+      return gate
+    end
+    args = steps[i][2]
+    do p = 1 to args~items
+      if args[p] == 'PREV' then do
+        if i == 1 then do
+          gate['FAILED_AT'] = alias
+          gate['PREDICTION'] = 'will fail: first unit has no prior result'
+          return gate
+        end
+        c = self~canFollow(steps[i - 1][1], alias, p)
+        if \c['OK'] then do
+          gate['FAILED_AT'] = alias
+          gate['PREDICTION'] = 'will fail: ' || c['REASON']
+          return gate
+        end
+      end
+    end
+  end
+  gate['FEASIBLE'] = .true
+  gate['PREDICTION'] = 'can work'
+  return gate
+/* Production-style admission: a predicted bad path is BLOCKED before any routine executes.
+   Exploration stays available as run(steps), which still runs predicted failures on purpose. */
+::method runAdmitted
+  use strict arg steps
+  gate = self~admit(steps)
+  if \gate['FEASIBLE'] then do
+    gate['STATUS'] = 'BLOCKED'
+    gate['TRACE'] = .array~new
+    gate['ERROR'] = gate['PREDICTION']
+    return gate
+  end
+  return self~run(steps)
 /* Run a path. steps: Array of .array(alias, argArray); an argument 'PREV' is the previous result.
    Returns a Directory: FEASIBLE, PREDICTION, STATUS (OK|FAILED), RESULT, FAILED_AT, ERROR, TRACE. */
 ::method run

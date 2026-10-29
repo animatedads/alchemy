@@ -70,6 +70,16 @@ r = c~run(.array~of(.array~of('HEXENC', .array~of(255)), .array~of('ADBINV', .ar
 say '       prediction:' r['PREDICTION']
 say '       actual:    ' r['STATUS'] 'at' r['FAILED_AT'] '-' r['ERROR']
 call check \r['FEASIBLE'] & r['STATUS'] == 'FAILED' & r['FAILED_AT'] == 'ADBINV', 'predicted before running, from the contracts, and it failed where predicted'
+/* An admitted path must not run a route its contracts have already refused. */
+badSteps = .array~of(.array~of('HEXENC', .array~of(255)), .array~of('ADBINV', .array~of('PREV', 1000003)))
+gate = c~admit(badSteps)
+call check \gate['FEASIBLE'] & gate['FAILED_AT'] == 'ADBINV', 'admit predicts the incompatible argument before execution'
+blocked = c~runAdmitted(badSteps)
+call check blocked['STATUS'] == 'BLOCKED' & blocked['TRACE']~items == 0 & blocked['FAILED_AT'] == 'ADBINV' & \blocked~hasIndex('RESULT'), 'a known bad path is blocked with zero executed steps'
+good = c~runAdmitted(.array~of(.array~of('POWMOD', .array~of(2, 3, 1000003)), .array~of('ADBINV', .array~of('PREV', 1000003))))
+call check good['FEASIBLE'] & good['STATUS'] == 'OK' & (8 * good['RESULT']) // 1000003 == 1, 'an admitted good path still runs and gives the right inverse'
+first = c~runAdmitted(.array~of(.array~of('ADBINV', .array~of('PREV', 1000003))))
+call check first['STATUS'] == 'BLOCKED' & first['TRACE']~items == 0, 'a first step cannot take a result that does not exist'
 store~begin
 store~lesson(nHex, nAdb, .false, r['PREDICTION'], r['ERROR'], 'HEXENC(255) into ADBINV')
 store~commit

@@ -107,6 +107,10 @@ d = store~rate(aabb, eeff)             -- d['TIER'] d['RATE'] d['TRIALS'] d['PAS
 best = store~entriesInto(eeff)         -- best ways into Eeff
 ```
 
+### Admitted execution (ChatGPT review, 2026-10-29)
+
+\`SlamComposer~run\` remains an **exploratory** operation: even when its contracts predict a mismatch, it deliberately attempts the call to learn from the failure. Do not use it as a fail-closed execution boundary. The new \ \`SlamComposer~admit(steps)\` checks every \ \`PREV\` link, missing lifted units, and a first step incorrectly asking for a prior result. \ \`SlamComposer~runAdmitted(steps)\` returns \ \`STATUS=BLOCKED\` with an empty trace and no result when admission fails; only admitted paths execute. Contract completeness is not claimed: numeric relationships such as coprimality still require runtime checks or proofs. The existing exploratory test continues to exercise deliberate failure; four additional checks cover admission and valid execution. Run the package suite to qualify this change before using it in services.
+
 ### Task
 
 ```rexx
