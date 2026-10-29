@@ -1,3 +1,13 @@
+# Qualification — ooRexx Maths v0.20 candidate
+
+Status: **CANDIDATE; native r13196 rerun pending.**
+
+The source increment adds `MathFiniteChain` and `tests/test_ordered_structures.rex` (21 assertions). Candidate archive `oorexx_maths_v0.20-candidate1.zip` has SHA-256 `152faeb8ba2562087957fe0e9d7e1561237ef4508faa4a8ee2150bc6287abcac` and passes the portfolio standards gate with 0 errors / 135 reviewed warnings. The preparation host does not expose the qualified ooRexx r13196 interpreter, so v0.19's 666 PASS assertions are retained only as historical baseline evidence and are **not** relabelled as v0.20 PASS.
+
+Promotion requires the new ordered-structures test, the existing non-foreign suite, enabled Foreign Runtime provider lanes, and resealed manifest/receipts on the exact candidate bytes.
+
+The Reasoned Thought cross-pillar is a consumer/design input only; its semantic suite is separate and must not be counted as Maths assertions.
+
 # Qualification — ooRexx Maths v0.19
 
 v0.19 adds exact algebra over Q while retaining the v0.18 finite-theory, theorem/proof, numerical, exact and provider surfaces.
@@ -38,3 +48,15 @@ See \`STANDARDS_ENFORCER_REVIEW.md\` and the machine-readable receipts under \`q
 ## Evidence discipline
 
 The algebra layer reuses \`MathRational\`, \`MathVector\` and \`MathMatrix\`; it does not create a second numeric authority. Polynomial equality and algorithms are exact over retained rational values. No external research theorem is imported as truth merely because it appears in a paper or formalization catalogue.
+
+
+## v0.20 candidate2 SLAM-derived statistics
+
+Candidate2 adds `MathStatistics` and `tests/test_statistics.rex` (29 assertions) after inspection of Library `oorexx_slam_v0.1-1.zip`. This host still does not expose the exact ooRexx r13196 runtime, so the new assertions are PENDING native qualification; no v0.19 PASS is inherited. The candidate archive `oorexx_maths_v0.20-candidate2.zip` has SHA-256 `db4be88afc25ecb694a2909fa48153141e69f0752a2c20bacde50b821e8527e4` and passes the portfolio standards gate with 0 errors / 136 reviewed warnings.
+
+
+## v0.20 candidate3 paired statistics
+
+Candidate3 adds `MathPairedStatistics` and `tests/test_paired_statistics.rex` (12 assertions). Native ooRexx r13196 execution remains PENDING on this preparation host. The new test covers exact rational population/sample covariance, exact perfect positive/negative correlations, defensive state, length rejection and zero-variance rejection.
+
+Candidate archive: `oorexx_maths_v0.20-candidate3.zip`, SHA-256 `3d687b4ac51f43058a41560d0d8f168cb36f4a285299784bb1164cf75560c457`. ZIP integrity PASS; internal manifest has 131 entries; portfolio standards gate: 61 files, 0 errors, 136 reviewed warnings, default PASS. These are static/archive gates only, not a substitute for r13196 execution.

@@ -1,3 +1,7 @@
+# ooRexx Maths v0.20 candidate — finite ordered structures
+
+v0.20 adds `.MathFiniteChain`, an explicit finite total order with rank, comparison, min/max and meet/join. It is semantic-neutral: Reasoned Thought can consume it for evidence-tier order while retaining authority for evidence admission, warrants, bindings and belief-state policy. This source remains a candidate until fresh ooRexx r13196 qualification closes. See `ORDERED_STRUCTURES.md` and `CROSS_PILLAR_REASONED_THOUGHT.md`.
+
 # ooRexx Maths v0.19
 
 
@@ -285,3 +289,13 @@ A guitar-shaped benchmark on the qualification host (1024 samples, six damped mo
 ### Context-sized named constants
 
 Use `.Maths~namedConstant(name, ctx)` for context-sized mathematical constants; `.Maths~constant(...)` retains its existing expression-constructor meaning. v0.13 promoted the earlier PI cache into a registry with exact structural constants, derived algebraic constants, transcendental constants, aliases, discovery (`constantNames`), and metadata (`constantInfo`). PI, TAU, E, Euler-Mascheroni, the golden ratio, sqrt(2), zero, one, and the imaginary unit are the initial catalogue.
+
+
+## v0.20 candidate2 — SLAM-derived statistics authority
+
+Inspection of `oorexx_slam_v0.1-1.zip` found a consumer-private `SlamMaths`. Candidate2 adds `MathStatistics` with explicit population/sample variance semantics and exact rational preservation. See `STATISTICS.md` and `CROSS_PILLAR_SLAM.md`. SLAM remains authority for grounding and language composition.
+
+
+## v0.20 candidate3 — paired statistics
+
+Adds `MathPairedStatistics` for explicit population/sample covariance and correlation over paired scalar observations. This extends the SLAM-driven statistics authority into a reusable seam for ML, Vision and media consumers without moving their domain semantics into Maths. See `PAIRED_STATISTICS.md`.
