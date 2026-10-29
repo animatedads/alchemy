@@ -53,3 +53,10 @@ Required next: workstation evidence on a compatible r13289+ runtime; verify pack
 This adapter does not own Rasen Falcon website release, SMTP/IMAP operations, native HTTPS/private CA, LDAP validation or MU↔MI XTP transport. For remote provider admission, `ConnectAuthenticatedRoutePolicy~permitted` requires a platform-owned `authorizeRoute(intent,provider)`; a caller-populated LDAP or TLS flag is not proof. Current cross-component requests for concrete contracts are: LDAP identity REQ-00001641, native HTTPS REQ-00001643, XTP named service REQ-00001645. No remote application route may be called deployment-ready until actual authenticated peer identity, authorization, live reachability and service receipt evidence are available.
 
 Do not ask CODEX-PC or CLAUDE-PC to write code or start unapproved host probes. The ConnectSelector code remains an admission/selection boundary, never a second authentication system or alternative transport.
+
+
+### XTP dependency checkpoint, 2026-10-29
+
+GitHub main has `packages/oorexx_xtp_v0.1-dev34` (replacing dev33). The XTP owner reports that dev34 closes two clear-packet message admission defects and protects XMP1 chunks for protected services. Do not treat dev33 as adequate for the remote named-service path. Protected one-way messages are not an exactly-once guarantee across a listener pool; for that requirement use the owner-provided authenticated session contract and caller-level application deduplication. ConnectSelector must demand a session/peer identity bound to the *actual* remote invocation before admitting an authenticated provider. This is a dependency checkpoint, not an end-to-end network qualification.
+
+Current LDAP deployment input is [GitHub PR #71](https://github.com/animatedads/alchemy/pull/71) (open, mergeable at time of check). A PR is not an installed LDAP identity daemon or proof of a verified remote TLS/XTP peer.
