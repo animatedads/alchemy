@@ -1,5 +1,5 @@
 /* NoSQLDirectoryStore.cls
- * ooRexx Identity Directory v0.1-dev13
+ * ooRexx Identity Directory v0.1-dev16
  *
  * Durable DirectoryStore provider backed by NoSQLServer's native FILE engine.
  * NoSQLServer owns physical persistence, journaling and CsvStream-backed table
@@ -15,11 +15,13 @@
 ::class NoSQLDirectoryStore subclass DirectoryStore public
 ::attribute root get
 ::method init
-  expose root engine ready
-  use strict arg rootArg
+  expose root engine ready instrumentation
+  use strict arg rootArg, instrumentationArg=.nil
   root = rootArg~string
   if root = "" then raise syntax 88.900 array("NoSQL directory store root required")
+  instrumentation=instrumentationArg
   engine = .FileDatabaseEngine~new(root)
+  if instrumentation <> .nil then if engine~hasMethod("INSTRUMENTATION=") then engine~instrumentation=instrumentation
   ready = self~ensureSchema
   if \ready~ok then raise syntax 88.900 array("NoSQL directory store schema failure:" ready~code ready~detail)
 
@@ -132,9 +134,9 @@
   if \self~resultOk(rs) then return .DirectoryResult~failure("STORE_READ_FAILED", rs~message)
   remaining = .array~new
   do row over rs~rows
-    signal on syntax name corruptRow
-    change = .DirectoryChangeCodec~fromJson(row["payload"]~string)
-    signal off syntax
+    decoded = self~decodeChangeRow(row)
+    if \decoded~ok then return decoded
+    change = decoded~value
     if change~changeId <> row["change_id"]~string then return .DirectoryResult~failure("STORE_CORRUPT_CHANGE_ID", row["change_id"])
     if change~localRevision <> row["local_revision"] then return .DirectoryResult~failure("STORE_CORRUPT_REVISION", row["change_id"])
     if change~originPeerId <> row["origin_peer_id"]~string then return .DirectoryResult~failure("STORE_CORRUPT_ORIGIN", row["change_id"])
@@ -168,7 +170,15 @@
     remaining = next
   end
   return .DirectoryResult~success(out, "LOADED")
+
+::method decodeChangeRow private
+  use strict arg row
+  signal on syntax name corruptRow
+  change = .DirectoryChangeCodec~fromJson(row["payload"]~string)
+  signal off syntax
+  return .DirectoryResult~success(change)
 corruptRow:
+  if value("LDAP_DIAGNOSTICS",,"ENVIRONMENT") = "1" then say "LDAP NoSQL change decode trapped" condition("C") condition("D") "RC=" rc "SIGL=" sigl
   conditionObject = condition("O")
   signal off syntax
   detail = conditionObject["MESSAGE"]
@@ -184,6 +194,7 @@ corruptRow:
   c["peerBinding"] = .true
   c["provider"] = "NOSQLSERVER_FILE"
   c["nosqlServerOwnsPhysicalPersistence"] = .true
+  c["instrumentationInjection"] = .true
   return c
 
 ::requires "src/DirectoryStore.cls"
