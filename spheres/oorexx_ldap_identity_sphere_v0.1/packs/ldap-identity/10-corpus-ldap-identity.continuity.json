@@ -4,13 +4,15 @@
   "sphere": "ldap-identity",
   "title": "LDAP Identity durable continuation ledger",
   "records": [
-    {"topic":"baseline","package":"oorexx_ldap_identity_v0.1-dev22.zip","sha256":"03578dbf59d5535ba749e1ec0c73fcd61d33bee8b791139cb5184f3d77ee0481","status":"standards-clean activation candidate"},
-    {"topic":"activation","rule":"The Rasen Falcon rehearsal joins native LDAP listener, NoSQL restart recovery, STARTTLS/LDAPS and Access Permissions; missing real dependencies produce NOT_RUN rather than substitution."},
-    {"topic":"principal isolation","rule":"Human, CHATGPT and CLAUDE are distinct principals; rights are not inherited across principals unless explicitly granted."},
-    {"topic":"revocation","rule":"Service admission checks principal ACTIVE state before authorised action; a revoked principal fails closed."},
-    {"topic":"mail","rule":"LDAP authentication is not a signature and neither authentication nor signature alone grants EMAIL_SEND."},
-    {"topic":"website","rule":"Private website admission consumes LDAP identity plus explicit HTTPS_LOGIN authority; public site publication is a separate authority."},
-    {"topic":"deployment","rule":"Production LDAP is NOT_INSTALLED; owned Deployment service remains installation/activation authority."},
-    {"topic":"qualification","rule":"Exact dev22 ZIP standards scan: 82 files, 0 errors, 136 warnings, PASS; fresh r13196 runtime rehearsal remains NOT_RUN."}
+    {"topic":"baseline","package":"oorexx_ldap_identity_v0.1-dev23.zip","sha256":"8f5b7b76c2297e3c63bccc868cb3894ae6a1e34391420a77dfc2f0cdab01abdb","status":"standards-clean activation/deployment candidate"},
+    {"topic":"owned service","rule":"rasenfalcon_ldap_service.rex restores persistent Identity Directory state, requires ACTIVE resource:directory, materialises secrets only through Secret Broker mappings and serves mandatory LDAPS."},
+    {"topic":"deployment","rule":"rasenfalcon-ldap.service runs as the dedicated rasenfalcon-ldap identity with hardened systemd protections and narrow writable state/runtime paths."},
+    {"topic":"provisioning","rule":"The daemon never provisions people, ACLs, credentials or service accounts at startup; provisioning remains an external reviewed authority."},
+    {"topic":"activation","rule":"The rehearsal joins native LDAP wire semantics, NoSQL restart recovery, STARTTLS/LDAPS, Access Permissions and principal revocation/admission."},
+    {"topic":"principal isolation","rule":"Human, CHATGPT and CLAUDE are distinct principals; rights do not cross without explicit grants."},
+    {"topic":"mail","rule":"LDAP authentication is not signature verification and neither one alone grants EMAIL_SEND."},
+    {"topic":"website","rule":"Private HTTPS admission requires attributed active principal plus explicit HTTPS_LOGIN authority."},
+    {"topic":"production","rule":"LDAP remains NOT_INSTALLED until owned Deployment and operator-gated live acceptance complete."},
+    {"topic":"qualification","rule":"Exact dev23 ZIP: standards PASS, 83 files, 0 errors, 136 warnings; deployment contract PASS; fresh r13196/full-estate runtime remains NOT_RUN."}
   ]
 }
