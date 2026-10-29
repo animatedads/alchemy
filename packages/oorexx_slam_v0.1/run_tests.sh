@@ -106,3 +106,10 @@ if [ -n "${LIBC_SRC:-}" ] && [ -d "${LIBC_SRC}/libc" ] && [ -d "${LIBC_SRC}/libc
 else
   echo "SKIP libc: set LIBC_SRC to run it"
 fi
+echo "== unit tests SLAM writes: ooTest and JUnit (needs OOTEST_ROOT: an unzipped ooTest snapshot; JUNIT_CP and NETREXX_HOME for JUnit; about 40 minutes)"
+if [ -n "${OOTEST_ROOT:-}" ] && [ -f "${OOTEST_ROOT}/ooTest.frm" ]; then
+  sh tests/unit/qualify.sh "$WORK" "$REPO" "$OOTEST_ROOT" "${JUNIT_CP:-}" "${NETREXX_HOME:-}"
+  rexx tests/test_unit.rex "$WORK"
+else
+  echo "SKIP unit tests: set OOTEST_ROOT to run it"
+fi

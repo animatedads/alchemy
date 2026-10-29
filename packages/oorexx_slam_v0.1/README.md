@@ -62,6 +62,12 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_fold.rex` | Identical code folding on a fixture, on BOLT's source and on rx2cpp (11 checks) |
 | `tests/test_libc.rex` | Runtime libraries: LLVM libc and libc++ read whole, predicted (each on itself and on the other) and folded (16 checks) |
 | `tests/show_rules.rex` | Read a unit's rules, find the other language's closest units, list what both have and what each lacks |
+| `src/SlamTestWriter.cls` | SLAM writes unit tests: cases from guards, contracts and the code's own strings and numbers, predicted where it can; ooTest groups and JUnit 4 classes |
+| `tests/test_unit.rex` | The unit-test round: what SLAM learned of both frameworks, the groups and classes it wrote, mutation scores against random cases, the untested report on its fixture |
+| `tests/unit/` | `learn_frameworks.rex`, `write_tests.rex` (ooTest), `write_junit.rex` (JUnit), `observe_runner.rex`, `mutate.rex`, `mutate_junit.rex`, `run_mutants.sh`, `run_junit_mutants.sh`, `run_jobs.sh` (the real ooTest runner on mutants), `mutant_runner.rex`, `score.rex`, `agree.rex`, `qualify.sh` |
+| `bin/slam_untested.rex` | Which files and units no test reaches, read statically |
+| `bin/slam_toy.sh`, `TOY.md` | SLAM's test tools in one command each, for a lane to run on its own tree |
+| `tools/` | `bif_oracle_programs.rex` (interpreter-oracle BIF programs), `find_pool.rex` (standalone routines under a tree) |
 | `run_tests.sh` | Builds Rexx/SQL and the foreign runtime, then runs everything |
 
 ### Segments (nodes)
@@ -535,6 +541,60 @@ When two levels disagree, the deciding one wins and the other is kept as `CONFLI
 
 `tests/test_provenance.rex`, 19/19. It needs a git checkout of alchemy; a shallow one is fine, and the test says which it ran on.
 
+### SLAM writes unit tests: ooRexxUnit and JUnit
+
+Tom's next: "If we teach SLAM how to write a unit test using junit and oorexx unit testing, it will have cracked some real utility." He sent the ooTest 4.2 snapshot (ooRexxUnit, `OOREXXUNIT.CLS`, and ooRexx's own 314 test groups). JUnit 4.13.2 was already on the machine.
+
+**1. What SLAM learns before it writes** (`tests/unit/learn_frameworks.rex`). SLAM read ooTest's `ooRexx` folder into a store: 348 files, 314 of them test groups, 19,140 units. In those tests:
+- `assertSame` (strict `==`) is the assertion used most: 17,950 times, against 1,939 `assertTrue` and 1,689 `assertEquals`. So SLAM writes `assertSame`.
+- `expectSyntax` is how they expect an error (3,314 times). So SLAM writes it for a `raise syntax`.
+
+It then asks each framework directly. It writes one assertion that must fail, with `FIRST` as the first value and `SECOND` as the second, and reads the report:
+- ooTest calls the first value expected.
+- JUnit calls the value after the message expected.
+
+**2. How it chooses cases** (`src/SlamTestWriter.cls`). SLAM already reads what a unit checks (each GUARD's rule, and the clause that stops it) and what each argument must be (its contract). From those it builds these cases:
+- HAPPY: every rule holds.
+- BOUNDARY: c-1, c and c+1 for a guard that compares an input, or an input's length, with a constant c.
+- LITERAL: the strings the code holds, given to each string argument.
+- NUMBER: the whole numbers the code holds (a `WHEN n = 3`, a mask).
+- EDGE: machine-width edges (0, 1, -1, 255/256, 65535/65536, 2³²-1/2³²).
+- KIND: a word given to an argument used as a number.
+
+Before running anything, SLAM walks the rules in order with each case's values. When the first rule that fails stops with a constant (`return 0`, `return .false`, `raise syntax n`), that outcome is its prediction. Otherwise the unit runs twice in a child process with a time limit. A case that differs between the two runs (random, time) or does not finish is not written. A test group lifts the routine from its file each time it runs, so it tests the code as it is now.
+
+**3. ooTest groups for the 71 standalone routines** (`tests/unit/write_tests.rex`).
+
+| | |
+|---|---|
+| Routines with a group | 56 (the other 15 take a collection or an object SLAM cannot make) |
+| Cases written | 716, and a random group of the same size for each routine |
+| Predicted before running | 26, all right |
+| Groups passing under the real ooTest framework on the code as it is | 112 of 112 |
+
+**How good are they?** Mutation testing (`tests/unit/mutate.rex`, `run_mutants.sh`): each mutant changes one operator or one whole number in the routine (`=`/`\=`, `<`/`<=`, `+`/`-`, `//`/`%`, `&`/`|`, n to n+1). A suite catches a mutant when a test fails, or when the mutant runs past the time limit.
+
+| 778 mutants | SLAM's cases | Random cases, same number |
+|---|---|---|
+| First cut (guards, literals, one HAPPY value) | 430 (55.3%) | 488 (62.7%) |
+| With the code's own numbers and the width edges | **584 (75.1%)** | 497 (63.9%) |
+| Caught only by this suite | **111** | 24 |
+| Routines where this suite catches more | **26** | 6 (18 the same) |
+
+- **The first cut lost to random.** It won on validation code but lost on arithmetic, where it had only one HAPPY value to try. The numbers a routine's code holds, and the edges integer code is written around, fixed that.
+- **Where SLAM wins most:** `BIN2OCT` 13 against 1 (of 18), `LEXCATEGORYNAME` 56 against 46, `SAFEBASENAME` 13 against 5, `_ADBLE32` 8 against 2.
+- **The fast runner agrees with the real framework.** All cases of a suite run in one process for speed. On a sample of 200 verdicts, the real ooTest framework run against the same mutant files agreed every time.
+
+**4. JUnit 4 classes** (`tests/unit/write_junit.rex`). NetRexx compiles to Java classes, so JUnit tests NetRexx code the way it tests Java. SLAM reads each method's signature from the compiled class with `javap`, runs the cases once through a small observer program, and writes one JUnit class per method.
+- **NetRexx's `xclasses` utilities** (`xmath`, `xstring`, compiled with NetRexxC): 18 methods, 95 cases. SLAM's classes and the random ones pass on the code as it is (95 and 92 tests).
+  - Of 188 mutants, each compiled by NetRexxC: SLAM's cases catch 93 (49.5%), random ones 85 (45.2%). 27 are caught only by SLAM's cases, 19 only by random ones.
+  - `xmath.random` was left out: it reads random numbers. Two runs that agree can still be chance (one of its cases did, in one full-suite run), so a unit that calls `random`, `time`, `date` or a clock gets no test.
+- **Java in this repo:** the static methods on plain types are few. Two from wire_ui (`inputType`, `compactStatus`) got 18 cases each, and both pass. Their mutants are too few to score (2 compile; SLAM's cases catch both, the random ones neither).
+
+**5. For the rx2cpp lane** (its asks: code no test reaches, and inputs for interpreter-oracle tests). See `TOY.md`; `bin/slam_toy.sh` runs each tool in one command.
+- `bin/slam_untested.rex`: files no test names (directly, or through files a test names, including by a script's pattern), and units in reached files that no reached code calls. Comments do not count. On rx2cpp at `9850473`: 51 of 895 files and 99 of 3,243 units are not reached. The four checked by hand (`smallDecimalAdd`, `plainCount`, `numericString`, `requireClassLibrary`) are defined and used nowhere else.
+- `tools/bif_oracle_programs.rex`: one program per BIF case SLAM chose (201), each `say c2x(BIF(args))`, with the interpreter's stdout and exit status beside it. 51 run to a value; 150 stop with a syntax error (exit status 216 or 163). rx2cpp compiles each program and compares bytes and status.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -546,10 +606,12 @@ SLAM gets credit for what it found:
 6. **Duplicate code in rx2cpp** (`RxStmtIf~branch` = `RxStmtSelect~whenBody`, `BifDefinition~joined` = `RxCppEmitter~body`, `RxNative~kind` = `RxNative~form`). Found by identical code folding ported from BOLT. Reported, not fixed: that is the rx2cpp lane's call.
 7. **SLAM's own C++ reader named every libc function `LLVM_LIBC_FUNCTION`, and libc++'s templated functions `>`.** Found by folding libc and libc++: the groups it printed had no names. Fixed in `SlamCppSplitter`.
 8. **`FDSqrt`'s error habit in a second package:** `sqrtNumber` in `brand_intervention_effectiveness_v0.2` runs Newton's step a fixed 20 times. Found by searching for the shape of the `FDSqrt` error. PROVED harmless for every input its caller can give (at most 0.9604); DISPROVED as a general square root from 10¹¹. Its tool is not recorded. Reported, not changed.
+9. **ooRexx's own test groups put the expected value second about 6,000 times.** In `assertEquals` and `assertSame` calls with one literal argument, the literal is first 9,642 times and second 6,019 times (counted over shapes). ooTest reports the first value as expected, so in those calls a failure names expected and actual the wrong way round. Found by reading ooTest's 314 groups and asking the framework which value it calls expected. Reported, not changed.
+10. **SLAM's lifter took the next directive into the last routine's body.** A routine just before `::requires` lifted with the `::requires` line, so it could not run alone. 10 of the 71 routines in the standalone pool were affected. Found while writing their tests. Fixed in `SlamComposer~lift`.
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 250 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex` and **16/16** in `test_libc.rex`: **390 checks**. The C++, NetRexx, BOLT and libc steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC` and `LIBC_SRC` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the tie and prior rules and provenance, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **356/356**. The BOLT and libc steps (34 checks) skipped there: no llvm-project tree.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 250 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **22/22** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **412 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the tie and prior rules and provenance, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **356/356**. The BOLT and libc steps (34 checks) skipped there: no llvm-project tree.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
