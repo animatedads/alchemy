@@ -1,0 +1,42 @@
+LDAP Identity / XTP provisioning principal-binding qualification
+===============================================================
+Date: 2026-10-29
+
+Delivered
+---------
+- packages/oorexx_ldap_identity/src/XtpProvisionLdapResolver.cls
+- packages/oorexx_ldap_identity/tests/test_xtp_provision_ldap_resolver.rex
+- packages/oorexx_ldap_identity/docs/XTP_PROVISION_IDENTITY_BINDING.md
+
+Contract
+--------
+PASS design/static review for fail-closed exclusive binding:
+- service exactly xtp.provision;
+- nonzero 16-hex established KEYID;
+- ACTIVE service/resource/client/MI authority chain;
+- current ACTIVE or RETIRING XTP_ENCRYPT generation;
+- shared service key counts as identity conflict;
+- duplicate current MI binding fails exclusivity;
+- explicit XTP_PROVISION ACL required;
+- key/principal revocation and ACL withdrawal deny admission;
+- directory revision must remain unchanged across the decision;
+- no Secret Broker value is materialized by the resolver.
+
+Standards
+---------
+PASS oorexx_standards_enforcer.py on the integration candidate archive:
+- files_scanned: 2
+- errors: 0
+- warnings: 6
+- verdict: PASS
+The six warnings are the project enforcer's advisory PRIVATE_METHOD review rule.
+
+Runtime / field boundary
+------------------------
+NOT RUN native ooRexx regression in this construction container because no
+rexx/oorexx executable is installed here.
+NOT CLAIMED live ED209 MU/MI commissioning, XTP session exercise or route
+activation. XTP dev36 owns protected-session evidence; this increment supplies
+the LDAP identity/ACL resolver only.
+
+Autobuilder was not run, per programme direction.
