@@ -64,3 +64,7 @@ The next qualified successor should:
 - adopt the current generic management-specialist seam read-only first;
 - fix any consumer-local defects without modifying separately owned NotNotes core;
 - run the committed-source smoke and full Help Desk/NotNotes/specialist suite.
+
+## Repository-source smoke, 29 October 2026
+
+The existing `tools/run_github_source_smoke.sh` now verifies core source paths and SHA-256 pinned compatibility classes before interpreter execution. The fresh-state test covers dynamic semantic/specialist discovery, instrumentation, Business Log writes, a persisted SUCCESS TPS Report/Review and a separately persisted FAILURE session visible after restart. See `REPOSITORY_SOURCE_QUALIFICATION.md` for the command and qualification limitations; no promotion of newer dev18 SQLite or any LDAP/HTTPS/MU-MI capability is implied.

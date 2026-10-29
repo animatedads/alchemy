@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "ref.initech-helpdesk.repository-source-smoke",
+  "version": "0.1",
+  "sphere": "initech-notnotes-helpdesk",
+  "title": "Source-only checkout smoke and authority boundaries",
+  "summary": "An additive ooRexx r13196 test starts Help Desk with source packages rather than a bundled deps tree, on isolated fresh NotNotes storage; release remains gated on exact-current-GitHub dependency replay and full historical fixture qualification.",
+  "authority": "source-qualification-evidence",
+  "invariants": [
+    "Historical dev5 source and approved immutable ZIP remain untouched; the additive source-only runner is a separate qualification route.",
+    "App startup loads Mini NotNotes dev16 with its pinned patched domain; AlchemyNotNotesIntentionRuntime comes independently from dev15.",
+    "Intention interpretation and read-only Instrumentation do not inherit LDAP, HTTPS or persistence authority.",
+    "Missing source or wrong recorded class checksum fails closed before running the Help Desk.",
+    "A source-layout PASS against retained specialist sources is not equivalent to full current-main or dev18 SQLite qualification."
+  ],
+  "procedure": [
+    "From repository root run examples/initech_notnotes_helpdesk_v0.1-dev5/tools/run_github_source_smoke.sh with OOREXX_ROOT pointing to extracted r13196.",
+    "The runner checks source paths and three pinned class hashes, sets a narrowly ordered REXX_PATH and creates throwaway database state.",
+    "It exercises dynamic semantic and specialist discovery, document creation, successful TPS accounting, and durable failed-session history.",
+    "For release, repeat on an actual clean GitHub checkout with exact current instrumentation/intention packages, then run the retained management fixture and security/transport integration gates."
+  ],
+  "provenance": [
+    {
+      "repository_path": "examples/initech_notnotes_helpdesk_v0.1-dev5/tools/run_github_source_smoke.sh",
+      "claim": "Source-only test launcher with explicit dependencies and fail-closed version/require checks."
+    },
+    {
+      "repository_path": "examples/initech_notnotes_helpdesk_v0.1-dev5/tests/test_github_source_smoke.rex",
+      "claim": "Fresh-state native ooRexx test of semantic discovery, instrumentation, business document persistence and dual TPS outcome recording."
+    },
+    {
+      "repository_path": "examples/initech_notnotes_helpdesk_v0.1-dev5/REPOSITORY_SOURCE_QUALIFICATION.md",
+      "claim": "Exact test scope, retained-archive specialist-source limits and current-main follow-up gate."
+    }
+  ],
+  "related": [
+    "ref.initech-helpdesk.continuation",
+    "ref.initech-helpdesk.architecture",
+    "ref.initech-helpdesk.dynamic-discovery"
+  ]
+}
