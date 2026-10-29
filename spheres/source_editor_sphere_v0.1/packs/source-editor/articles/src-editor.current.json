@@ -2,13 +2,13 @@
   "kind": "article",
   "id": "src-editor.current",
   "title": "Current Source Editor baseline",
-  "summary": "The accepted delivered baseline remains oorexx_source_editor_v0.1-dev5. Git now contains a dev7 candidate: dev6 routes backup/live publication through oorexx.atomic-file/0.1 dev1 with FULL durability requested, and dev7 adds native ooRexx SourceEditorCliSearchArgs so multi-word find/grep expressions survive the flattened command tail via explicit --mode/--case switches. Rasen Falcon REQ-00000589 returned NOT_RUN because the qualifier lacked the exact checkout plus Atomic File closure; dev7 therefore remains candidate-only pending fresh r13196/native-provider qualification.",
+  "summary": "The accepted delivered baseline remains oorexx_source_editor_v0.1-dev5. Git now contains a dev8 candidate. Dev6 routes backup/live publication through oorexx.atomic-file/0.1 dev1 with FULL durability requested; dev7 adds native ooRexx multi-word find/grep argument semantics; dev8 adds lexical/source-aware document/tree reference navigation with declaration/reference classification. Fresh r13196 + Atomic File native-provider qualification remains required before promotion.",
   "invariants": [
     "Implementation remains native ooRexx; do not move semantic ownership into Python.",
     "Literal find stays literal; regex grep uses ooRexx RegularExpression semantics.",
     "Recursive file traversal uses ooRexx/RexxUtil facilities rather than an external find subprocess.",
     "Source results retain original path/line/column and enclosing-symbol provenance where available.",
     "User-visible completion order is deterministic and must not depend on Directory iteration order.",
-    "Dev7 must not be called accepted until the full r13196 + Atomic File native-provider suite passes."
+    "Dev8 must not be called accepted until the full r13196 + Atomic File native-provider suite passes."
   ]
 }
