@@ -1,0 +1,25 @@
+{
+  "kind": "article",
+  "id": "cmp.exceptions",
+  "version": "0.1",
+  "sphere": "scotty-computer",
+  "title": "Run-scoped expected exception rules",
+  "summary": "Registered rules include runaway_space DIRECTORY N meg, runtime_overrun N seconds and output_contains NEEDLE [stdout|stderr|both]. They are snapshotted into run approval and checked during that job only.",
+  "authority": "development-source-evidence",
+  "invariants": [
+    "10 meg is 10,000,000 bytes; 10 MiB is 10,485,760 bytes.",
+    "Breach is strictly greater than registered size; a sampled 11-meg size breaches 10 meg.",
+    "Workspace size is sampled about every 100 ms; short spikes can go unseen.",
+    "Exceptions report and do not terminate the process.",
+    "Case-sensitive output matches and child exit status are independent facts.",
+    "Observation unavailable or over budget cannot count as clean.",
+    "Remote space rules require a remote-side observer not supplied by dev8."
+  ],
+  "provenance": [
+    {
+      "artifact": "scotty_computer_v0.1-dev8.zip",
+      "sha256": "1e779ef89d938f2102c146842f2e8f8814196acf02b4dc87a3f157c06993cdd0",
+      "member": "scotty_computer_v0.1-dev8/docs/JOB_EXCEPTIONS.md"
+    }
+  ]
+}

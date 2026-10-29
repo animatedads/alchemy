@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "cmp.timeout-lifetime",
+  "version": "0.3",
+  "sphere": "scotty-computer",
+  "title": "Timeout-based local POSIX process group termination",
+  "summary": "Each local foreground process is in an isolated session. On configured timeout, Computer sends SIGTERM to that process group and attempts SIGKILL after a bounded grace period, then records termination evidence.",
+  "authority": "development-source-evidence",
+  "invariants": [
+    "Exception registration and observation are report-only.",
+    "Timeout termination never proves remote, detached or uninterruptible descendants stopped.",
+    "Metadata distinguishes termination attempt, scope, signals, errors and direct-child reaping.",
+    "Never signal Computer's own process group."
+  ],
+  "provenance": [
+    {
+      "artifact": "scotty_computer_v0.1-dev10.zip",
+      "sha256": "fcbcfc50a66f22536298087fe49b60220f842989a95f600a7b304068bfa703ec",
+      "member": "scotty_computer_v0.1-dev10/docs/DEV10_CHANGES.md",
+      "submission_branch": "autobuild-submit/20261029T162900Z-CHATGPT-scotty-computer-dev10-fcbcfc50"
+    }
+  ]
+}
