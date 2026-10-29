@@ -137,6 +137,15 @@
     .DatabaseColumn~new("fields_hex", "TEXT", .false))
   return db~createTable("documents", columns, .array~of("doc_key"))
 
+/* Do not collapse SQL NULL into the empty TEXT value when deciding which
+ * columns require an UPDATE. Rexx/SQL's valueFragment owns the actual bound
+ * representation; this comparison only decides whether to write it. */
+::method columnDiffers
+  use strict arg oldValue, newValue
+  if oldValue == .nil then return newValue \== .nil
+  if newValue == .nil then return .true
+  return oldValue~string \== newValue~string
+
 ::method saveFrom
   expose db
   use strict arg app
@@ -266,9 +275,7 @@
       do column over .array~of("form_name", "title", "amount", "risk", "depends_on", "workflow", "status", "fields_hex")
         oldValue = oldRow[column]
         newValue = row[column]
-        if oldValue == .nil then oldValue = ""
-        if newValue == .nil then newValue = ""
-        if oldValue~string \= newValue~string then do
+        if self~columnDiffers(oldValue, newValue) then do
           changed = .true
           assignments[column] = row[column]
         end
@@ -309,6 +316,87 @@ saveRollback:
   if inTxn then ignore = db~rollbackTransaction
   signal off syntax
   raise syntax 93.900 array("Mini NotNotes persistence failure (SQLite rollback attempted):" detail)
+
+
+::method saveDocumentOnly
+  /* Fast SQL path for one ordinary document mutation. No metadata DDL, no
+   * SELECT of other documents, no re-signing or re-verification. Bulk/schema
+   * operations continue to use saveFrom. The SQL transaction includes the
+   * document and the exact temporal evidence for its live fields. */
+  expose db
+  use strict arg app, document
+  if document == .nil then raise syntax 93.900 array("Cannot save absent document")
+  if \db~hasMethod("beginTransaction") | \db~hasMethod("selectWhereEquals") | -
+     \db~hasMethod("deleteWhereEquals") then -
+       raise syntax 93.900 array("Indexed SQLite single-document operations unavailable")
+  transactionResult = db~beginTransaction
+  if transactionResult~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot begin document SQLite transaction:" transactionResult~message)
+  signal on syntax name saveDocumentRollback
+  key = document~DocKey
+  resultObject = db~selectWhereEquals("documents", "doc_key", key)
+  if resultObject~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot look up document:" key)
+  if resultObject~rows~items > 1 then -
+    raise syntax 93.900 array("Multiple document keys in SQLite:" key)
+  row = .table~new
+  row["doc_key"] = key
+  row["form_name"] = document~formName
+  row["title"] = document~Title
+  row["amount"] = document~Amount
+  row["risk"] = document~Risk
+  row["depends_on"] = document~DependsOn
+  row["workflow"] = document~Workflow
+  row["status"] = document~ApprovalStatus
+  row["fields_hex"] = self~encodeCustomFields(document)
+  if resultObject~rows~items = 0 then do
+    writeResult = db~insert("documents", row)
+  end
+  else do
+    previous = resultObject~rows[1]
+    assignments = .table~new
+    do column over .array~of("form_name", "title", "amount", "risk", "depends_on", "workflow", "status", "fields_hex")
+      oldValue = previous[column]
+      newValue = row[column]
+      if self~columnDiffers(oldValue, newValue) then assignments[column] = row[column]
+    end
+    if assignments~items > 0 then writeResult = db~updateWhereEquals("documents", "doc_key", key, assignments)
+    else writeResult = .nil
+  end
+  if writeResult \== .nil then do
+    if writeResult~status \= .Error~SUCCESS then -
+      raise syntax 93.900 array("Cannot persist changed document:" key || " " || writeResult~message)
+  end
+  /* Clear old temporal rows for this one document, including removed fields.
+   * Reinsert only the records exposed by this document's current live fields. */
+  deleteResult = db~deleteWhereEquals("temporal_evidence", "doc_key", key)
+  if deleteResult~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot clear changed document temporal evidence:" key)
+  do evidence over app~temporalEvidenceForDocument(document)
+    evidenceRow = .table~new
+    evidenceRow["doc_key"] = evidence["DOC_KEY"]
+    evidenceRow["field_name"] = evidence["FIELD_NAME"]
+    evidenceRow["kind"] = self~evidenceValue(evidence, "KIND")
+    evidenceRow["canonical_value"] = self~evidenceValue(evidence, "VALUE")
+    evidenceRow["zone"] = self~evidenceValue(evidence, "ZONE")
+    evidenceRow["instant_posix_seconds"] = self~evidenceValue(evidence, "INSTANT_POSIX_SECONDS")
+    evidenceRow["tzdb_edition"] = self~evidenceValue(evidence, "TZDB_EDITION")
+    evidenceRow["resolution"] = self~evidenceValue(evidence, "RESOLUTION")
+    evidenceResult = db~insert("temporal_evidence", evidenceRow)
+    if evidenceResult~status \= .Error~SUCCESS then -
+      raise syntax 93.900 array("Cannot save changed temporal field:" key || "." || evidence["FIELD_NAME"])
+  end
+  commitResult = db~commitTransaction
+  if commitResult~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot commit document SQLite transaction:" commitResult~message)
+  signal off syntax
+  return .true
+saveDocumentRollback:
+  failure = condition("O")
+  detail = failure["MESSAGE"]
+  ignore = db~rollbackTransaction
+  signal off syntax
+  raise syntax 93.900 array("NotNotes document transaction rollback attempted:" detail)
 
 ::method evidenceValue
   use strict arg evidence, key
