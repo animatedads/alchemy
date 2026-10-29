@@ -112,6 +112,20 @@ notedAfter~add(.MockGround~new("gbase","SUPPORT",2,"sourceA","GENERAL","","beta 
 r = ra~compare(notedBefore,notedAfter)
 call check r["classification"]="MUTATED_GROUND_ID", -
  "changed source note under the same ground ID is quarantined"
+/* No longer permit identical derivation certificates for changed claim/note
+ * contents just because the final stance and ground IDs stayed the same. */
+notedOldDecision = c~evaluate(notedBefore)
+notedNewDecision = c~evaluate(notedAfter)
+call check notedOldDecision["derivation"] \= notedNewDecision["derivation"] & -
+ notedOldDecision["stance"] = notedNewDecision["stance"], -
+ "changed note changes derivation content even when the result is unchanged"
+renamedDecision = c~evaluate(renamed)
+baseDecision = c~evaluate(old)
+call check baseDecision["derivation"] \= renamedDecision["derivation"] & -
+ baseDecision["stance"] = renamedDecision["stance"], -
+ "changed exact claim text changes deterministic derivation content"
+call check renamedDecision["derivationVersion"]="ordinal-evidence-combiner/0.3", -
+ "derivation format version increments after changing bound transcript fields"
 
 /* Control: same proposition, same grounds and policy => no revision. */
 same = .MockProposition~new("C1",2,4,.nil)
