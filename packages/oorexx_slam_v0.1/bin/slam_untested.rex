@@ -201,6 +201,7 @@ unitsOf: procedure
   if k \== 'REXX' & k \== 'CPP' then return out
   text = charin(p, 1, chars(p)); call stream p, 'C', 'CLOSE'
   if k == 'REXX' then text = stripComments(text, k)
+  if k == 'CPP' then text = stripComments(text, k)
   lines = text~makeArray('0a'x)
   starts = .array~new            /* .array(line, name) */
   if k == 'REXX' then do
@@ -250,7 +251,9 @@ unitsOf: procedure
   top['NAME'] = ''
   top['LINE'] = 0
   if k == 'REXX' then top['WORDS'] = wordsOf(linesText(lines, 1, first - 1))
-  else top['WORDS'] = .directory~new
+  /* C++: a function installed by its address (hook() = &name, a table of &name) is used, though no
+     call names it; a prototype at top level is not a use (a header declares everything) */
+  else top['WORDS'] = addressTaken(stripComments(text, 'CPP'))
   out~append(top)
   do i = 1 to starts~items
     s = starts[i]
@@ -328,6 +331,29 @@ wild: procedure
   if s == '' then return .false
   if c == '?' | c == s~left(1) then return wild(g~substr(2), s~substr(2))
   return .false
+
+/* The names whose address a C++ text takes: &name, &Class::name, &ns::name (the last part counts). */
+addressTaken: procedure
+  use arg text
+  out = .directory~new
+  ident = xrange('a', 'z') || xrange('A', 'Z') || xrange('0', '9') || '_:'
+  at = text~pos('&')
+  do while at > 0
+    j = at + 1
+    do while j <= text~length
+      if text~subchar(j) \== ' ' then leave
+      j += 1
+    end
+    k = text~verify(ident, 'N', j)
+    if k == 0 then k = text~length + 1
+    if k > j then do
+      nm = text~substr(j, k - j)~upper
+      if nm~lastPos('::') > 0 then nm = nm~substr(nm~lastPos('::') + 2)
+      if nm \== '' then if nm~left(1)~verify(xrange('0', '9')) > 0 then out[nm] = .true
+    end
+    at = text~pos('&', at + 1)
+  end
+  return out
 
 /* The text without its comments (a comment that names a routine does not call it): ooRexx block and
    line comments, C and C++ comments, # in scripts. Quoted strings are kept; line breaks are kept, so

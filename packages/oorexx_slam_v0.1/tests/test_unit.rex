@@ -50,6 +50,7 @@ txt = r~makeString('L', '0a'x)
 call check txt~pos('FILE native/dropped.cpp') > 0 & txt~pos('FILE src/Orphan.cls') > 0, 'files no test names, directly or through what it names: dropped.cpp (no script builds it), Orphan.cls'
 call check txt~pos('UNIT src/Shapes.cls UNUSED') > 0 & txt~pos('UNIT native/helper.cpp helperNever') > 0, 'units no reached code calls: unused, helperNever (named only in a comment, which does not count)'
 call check txt~pos('PERIMETER') == 0 & txt~pos('helperTwice') == 0, 'perimeter (called by area, which the test calls) and helperTwice (called by helperUser) are reached'
+call check txt~pos('helperByPointer') == 0, 'helperByPointer is reached: installed by its address (hook() = &helperByPointer), as rx2cpp installs its hooks (the rx2cpp lane''s report)'
 
 j = work || '/junit'
 if stream(j || '/summary.txt', 'C', 'QUERY EXISTS') \== '' then do

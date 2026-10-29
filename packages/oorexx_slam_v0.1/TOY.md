@@ -29,7 +29,7 @@ The report lists files that no test names, directly or through a file a test nam
 - A test is any file whose path holds `/tests/`, `/test/`, `/ootest/`, `test_` or `.testGroup`. To use other markers, give them after the root: `sh bin/slam_toy.sh untested /path/to/tree /qualification/ run_`
 - The report errs towards "reached": a name two units share reaches both.
 - It cannot see calls made through a computed name (interpret, function pointers). Check those `UNIT` lines by hand.
-- On rx2cpp at commit `9850473`: 895 files, 51 not reached; 3,243 units in reached files, 99 not reached. Spot checks: `smallDecimalAdd`, `plainCount`, `numericString` and `requireClassLibrary` are defined and used nowhere else.
+- On rx2cpp `0187d11`: 895 files, 51 not reached; 3,261 units in reached files, 69 not reached. The rx2cpp lane confirmed `artifacts/v026/nested_calls.cpp` (it no longer compiles) and ten dead functions. It also found that functions installed by address (`hook() = &x`) were wrongly reported; `&name` now counts as a use.
 - 25 of the 51 are under `external/bif/block_tests/`, whose own scripts are tests but whose path does not hold `/tests/`. To count them, add the marker: `sh bin/slam_toy.sh untested /path/to/oorexx2cpp /tests/ /test/ /ootest/ test_ .testGroup /block_tests/`
 
 ## Step 3: inputs for interpreter-oracle tests
