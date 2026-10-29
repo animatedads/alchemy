@@ -25,10 +25,14 @@ When checked out within the canonical Alchemy tree, the runner loads existing `.
 
 ## Native qualification and its ceiling
 
-Locally run against ooRexx **5.3.0 r13196** from the user-supplied Linux package: **34/34 PASS (25 original + 9 additional edge-integrity)**. The original suite checks: judicial actor/source boundaries, lower-standard versus operative-high-threshold reasoning as a court finding, the non-mandatory but potentially probative nature of absent corroboration, the Art 4(5)/339L inverse fallacy, conflation between credibility and claim merit, omitted family-visit testimony, CA remaking, rejected alternative appeal grounds, negative comparisons without invented numbers, and independent countermodel dimensions.
+Locally run against ooRexx **5.3.0 r13196** from the user-supplied Linux package: **46/46 PASS (25 original + 9 edge-integrity + 12 source-node integrity)**. The original suite checks: judicial actor/source boundaries, lower-standard versus operative-high-threshold reasoning as a court finding, the non-mandatory but potentially probative nature of absent corroboration, the Art 4(5)/339L inverse fallacy, conflation between credibility and claim merit, omitted family-visit testimony, CA remaking, rejected alternative appeal grounds, negative comparisons without invented numbers, and independent countermodel dimensions.
 
 The separate `test_mah_edge_soundness.rex` first failed against v0.1, then passed 9/9 after the v0.2 repair. Its false-relationship and duplicate-edge cases are synthetic, not additional allegations about the court.
 
 Not claimed: fresh adjudication, quantified legal standard, authentication of original witness or expert evidence, actual future persecution probability, causal proof of why every appellate judge agreed, or proof that all relevant questions and evidence have been encoded. The appellate outcome is recorded as an input **because the court made it**, not computed from assumptions.
 
 See `docs/JUDGMENT_PROVENANCE.md` for paragraph-by-paragraph sources, constraints, known limitations and replication details.
+
+## Source integrity v0.3
+
+`node()` returns a detached snapshot rather than a mutable internal record. The audit refuses self-qualifying edges (`SELF_RELATION`). Native r13196 qualification: 25 original, 9 edge-soundness, and 12 source-integrity checks pass (46 total). `citationValidated=false` remains: the software does not independently authenticate paragraph content or verify that a quoted passage supports its proposition. This is an audit of the published judicial reasoning, not a fresh asylum determination.
