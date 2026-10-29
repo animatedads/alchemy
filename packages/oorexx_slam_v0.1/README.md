@@ -46,7 +46,7 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamLaw.cls` | Legislation → small model → SLAM → Reasoned Thought: rule and guidance files, their gates, elements as claims |
 | `src/SlamLegislation.cls` | Reads legislation.gov.uk XML (CLML) in pure ooRexx: a section's text as it stands in one extent |
 | `tests/test_reasoning.rex` | The bridge on `FDSqrt`, authorship and a model's statement (16 checks) |
-| `tests/test_law.rex` | Computer Misuse Act 1990 s.1 and s.3ZA, the CPS guidance, two made-up cases (30 checks) |
+| `tests/test_law.rex` | Computer Misuse Act 1990 s.1 and s.3ZA, the CPS guidance, three made-up cases, the citation gate (43 checks) |
 | `tests/law/` | Rule and guidance files, the official sources (XML, text, CPS guidance; Open Government Licence), `HOW_TO_WRITE_A_RULE.md` for the small model |
 | `tests/test_provenance.rex` | Provenance on real files, a habit found by shape, outcomes by tool (19 checks) |
 | `tests/test_ties.rex` | Gemini's two questions: the tie rule and the prior as one test (12 checks) |
@@ -656,6 +656,17 @@ Each element then becomes a claim that accepts only its own kinds of evidence, a
   - Testimony against testimony is DISPUTED. A dated, read e-mail settles knowledge, and the denial stays on record, outranked.
 - **s.3ZA:** the same recklessness evidence counts for element (d), "intends or is reckless as to damage", and is refused for (b), "knows it is unauthorised".
 
+**After Gemini's review (2026-10-29).** Tom gave Gemini the s.1 case's facts, stripped of everything SLAM knows. Its answers moved: the read receipt "can easily … prove that P knew", then "does not prove P actually read or understood". It cited "R v Mukaetova", which its own later search could not find, and it said Allison "overturned" Bignell, where the CPS text says Allison "confirmed the conclusion". But two of its points were right about my case file, where I had bound evidence too widely:
+- **The read receipt binds `READ_RECEIPT`**, a message opened, not knowledge.
+- **The hardware key binds `KEY_USE`**, the key used, not who held it.
+
+Re-bound, element 1 waits for a person at the desk, and element 4 stays DISPUTED until P's own acknowledgement and a clean 48 hours are in. What else changed:
+- **Guidance by kind of case.** A note says which kind of case it is for: Allison's ("clearly defined the limits") is for an EMPLOYEE, and must not narrow "unauthorised" for an outsider, where s.17(5) decides. Case files declare their tags.
+- **`SlamLaw~gaps`, "what is missing".** It names the open elements, the evidence they take, and the tier it must beat. SLAM says what would count; it does not invent it.
+- **The answer does not move.** "Is it supported?" and "what is missing?" name the same open element, and the same evidence admitted in reverse order ends in the same statuses.
+- **Mr S** (Tom's story: a scan for protocol 36, XTP, left running with tools an LLM wrote). He is an outsider, so s.17(5) applies. The documented launch outweighs "asleep at the keys"; `admin`/`ADMIN1` is refused, because weak security is not consent; a default in a tool an LLM wrote is refused, because it is not his intent. Intent and knowledge are DISPUTED, and what is missing is stronger evidence of each. What S asked the LLM to write would be that evidence.
+- **The citation gate (`SlamLaw~citations`).** Every "X v Y" a model cites is looked for in the sources SLAM holds. Bignell and Bow Street (Allison) are in the CPS text. R v Mukaetova is in none: unverified, and it carries no weight.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -673,11 +684,11 @@ SLAM gets credit for what it found:
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 300 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **23/23** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **463 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge and the legislation chain, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **406/406**. The BOLT, libc and unit-test steps (57 checks) skipped there: no llvm-project tree, no ooTest.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 313 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **23/23** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **476 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S and the citation gate, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **419/419**. The BOLT, libc and unit-test steps (57 checks) skipped there: no llvm-project tree, no ooTest.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
-`sh run_tests.sh`: **58/58** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, and **30/30** in `test_law.rex`: 300 checks. It covers:
+`sh run_tests.sh`: **58/58** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, and **43/43** in `test_law.rex`: 313 checks. It covers:
 - the segmenter on unmodified `MLEvolution.cls` (54 units; shared guard nodes; collapsed setters; then/else bodies sharing a node with different bindings);
 - ingest of the GA package with duplicate units skipped on re-ingest;
 - aabb → Eeff = 0.4 and b00b → Eeff = 0.8 from recorded outcomes;

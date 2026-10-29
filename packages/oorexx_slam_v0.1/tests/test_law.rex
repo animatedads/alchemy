@@ -14,6 +14,13 @@
  *     operator; authority without defined limits; recklessness for knowledge), and the elements supported
  *     only when the evidence that counts is in
  *  4. s.3ZA: the same kind of evidence, recklessness, counts for its element (d) and not for its element (b)
+ *  5. the answer does not move: asked "what is supported" and "what is missing", SLAM names the same open
+ *     elements; the same evidence admitted in another order gives the same statuses
+ *  6. Mr S (Tom Dyer's story: a scan for protocol 36 left running): an outsider, so Allison's note does not
+ *     apply and s.17(5) decides; default credentials are not consent; intent and knowledge stay DISPUTED,
+ *     and the gaps say what evidence would count
+ *  7. the citation gate: of the cases Gemini cited, those in a source SLAM holds are found; "R v Mukaetova"
+ *     is in none, and is unverified
  */
 signal on syntax name onSyntax
 parse arg work '|' pkg
@@ -44,9 +51,13 @@ e = .SlamLaw~check(s3, leg~section(s3['SECTION'], s3['EXTENT']))
 do x over e; say '       ' x; end
 call check e~items = 0, 's.3ZA (E.W.): the same, (a) (b) (c) (d) covered'
 cps = text(L || '/source/cps_cma_guidance.txt')
-g = .SlamLaw~applyGuidance(s1, L || '/cps_cma.md', cps)
+tags = caseTags(L || '/case_s1_made_up.txt')
+g = .SlamLaw~applyGuidance(s1, L || '/cps_cma.md', cps, tags)
 do x over g; say '       ' x; end
-call check g~items = 0 & .SlamLaw~element(s1, 3)['BINDS'][1] == 'DEFINED_LIMITS' & \.SlamLaw~element(s1, 4)['BINDS']~hasItem('RECKLESSNESS'), 'CPS guidance applied to s.1: element 3 now takes DEFINED_LIMITS (Allison), element 4 refuses RECKLESSNESS, element 1 refuses PHYSICAL_CONTACT, SCREEN_READING, REQUEST_TO_ANOTHER'
+call check g~items = 0 & .SlamLaw~element(s1, 3)['BINDS'][1] == 'DEFINED_LIMITS' & \.SlamLaw~element(s1, 4)['BINDS']~hasItem('RECKLESSNESS'), 'CPS guidance applied to s.1 for an employee: element 3 takes DEFINED_LIMITS (Allison), element 4 refuses RECKLESSNESS, element 1 refuses PHYSICAL_CONTACT, SCREEN_READING, REQUEST_TO_ANOTHER'
+outsider = .SlamLaw~parse(L || '/cma1990_s1.md')
+g = .SlamLaw~applyGuidance(outsider, L || '/cps_cma.md', cps, caseTags(L || '/case_s1_mr_s_made_up.txt'))
+call check g~items = 0 & .SlamLaw~element(outsider, 3)['BINDS'][1] == 'AUTHORITY' & \.SlamLaw~element(outsider, 4)['BINDS']~hasItem('RECKLESSNESS'), 'the same guidance for an outsider: Allison''s note (for an employee) does not apply, element 3 keeps AUTHORITY (s.17(5)); the other notes still do'
 
 say '== 2. drifts, each refused'
 good = text(L || '/cma1990_s1.md')
@@ -72,29 +83,45 @@ say '== 3. s.1 with the CPS guidance, step by step (made up: no real person)'
 r = .SlamReasoning~new
 off = .SlamLaw~build(r, s1)
 cases = lines(L || '/case_s1_made_up.txt')
-expect = .array~of('1 UNDETERMINED', '1 HINT', '1 SETTLED', '2 SETTLED', '3 SETTLED', '4 DISPUTED', '4 SETTLED')
-do step = 1 to 7
+expect = .array~of('1 UNDETERMINED', '1 HINT', '1 HINT', '1 SETTLED', '2 SETTLED', '3 SETTLED', '4 DISPUTED', '4 DISPUTED', '4 SETTLED')
+whyNot = ''
+do step = 1 to 9
   call admitStep r, s1, cases, step
   parse value expect[step] with el want
   a = r~assess(.SlamLaw~elementId(s1, el))
   m = r~mayAct(off)
   say '       step' step || ': element' el a['status']~left(13) 'offence:' m['STATUS']
   if m['OK'] then said = 'all supported on the evidence given'; else said = 'not all supported yet'
-  call check a['status'] == want & (step = 7) = m['OK'], 'step' step || ': element' el want || '; the elements are' said
-  if step = 1 then do
-    rf = .SlamLaw~refusals(r, s1, 1)
-    do x over rf; say '         refused:' x~left(150); end
-    call check rf~items = 2 & hasText(rf, 'merely been to request another'), 'step 1: the account log (binds the account) and asking the operator (Bignell, quoted) are refused for "the person caused it"'
-  end
-  if step = 5 then do
-    rf = .SlamLaw~refusals(r, s1, 3)
-    do x over rf; say '         refused:' x~left(150); end
-    call check rf~items = 1 & hasText(rf, 'clearly defined the limits'), 'step 5: a manager''s view that P should not have looked is refused (Allison, quoted); the written access list counts'
-  end
-  if step = 6 then do
-    rf = .SlamLaw~refusals(r, s1, 4)
-    do x over rf; say '         refused:' x~left(150); end
-    call check rf~items = 1 & hasText(rf, 'mere recklessness is not sufficient'), 'step 6: "must have guessed" is recklessness, refused for knowledge (the CPS, quoted)'
+  call check a['status'] == want & (step = 9) = m['OK'], 'step' step || ': element' el want || '; the elements are' said
+  select
+    when step = 1 then do
+      rf = .SlamLaw~refusals(r, s1, 1)
+      do x over rf; say '         refused:' x~left(150); end
+      call check rf~items = 2 & hasText(rf, 'merely been to request another'), 'step 1: the account log (binds the account) and asking the operator (Bignell, quoted) are refused for "the person caused it"'
+    end
+    when step = 3 then do
+      rf = .SlamLaw~refusals(r, s1, 1)
+      call check hasText(rf, 'KEY_USE'), 'step 3: the hardware key is refused for "P caused it": it shows the key was used, not who held it (Gemini''s point); a person at the desk settles it at step 4'
+    end
+    when step = 6 then do
+      rf = .SlamLaw~refusals(r, s1, 3)
+      do x over rf; say '         refused:' x~left(150); end
+      call check rf~items = 1 & hasText(rf, 'clearly defined the limits'), 'step 6: a manager''s view that P should not have looked is refused (Allison, quoted); the written access list counts'
+    end
+    when step = 7 then do
+      rf = .SlamLaw~refusals(r, s1, 4)
+      do x over rf; say '         refused:' x~left(150); end
+      call check rf~items = 1 & hasText(rf, 'mere recklessness is not sufficient'), 'step 7: "must have guessed" is recklessness, refused for knowledge (the CPS, quoted)'
+      gp = .SlamLaw~gaps(r, s1)
+      do x over gp; say '         missing: element' x['ELEMENT'] x['STATUS'] 'takes' x['TAKES'] 'at' x['BEAT']; end
+      call check gp~items = 1 & gp[1]['ELEMENT'] = 4 & gp[1]['BEAT'] == 'more than TESTIMONY', 'step 7, "what is missing": element 4 only; it needs KNOWLEDGE evidence stronger than testimony'
+      whyNot = m['WHY']
+    end
+    when step = 8 then do
+      rf = .SlamLaw~refusals(r, s1, 4)
+      call check hasText(rf, 'READ_RECEIPT'), 'step 8: the read receipt is refused for "P knew": it shows the message was opened, not understood (Gemini''s point); element 4 stays DISPUTED'
+    end
+    otherwise nop
   end
 end
 
@@ -106,8 +133,59 @@ e2 = r3~assess(.SlamLaw~elementId(s3, 2)); e4 = r3~assess(.SlamLaw~elementId(s3,
 call check e4['status'] == 'SETTLED' & e4['ineligible']~items = 0, 'element 4 (intends or is reckless as to damage): R''s message counts, SETTLED'
 call check e2['status'] == 'SETTLED' & e2['ineligible']~items = 1, 'element 2 (knows it is unauthorised): the same message is refused there, on record; settled by R''s other message'
 call check r3~mayAct(off3)['OK'], 's.3ZA: all four elements supported on the evidence given'
+
+say '== 5. the answer does not move'
+call check whyNot~pos(':4 (needs assertible) -> DISPUTED') > 0 & whyNot~pos(':1 (') = 0 & whyNot~pos(':2 (') = 0 & whyNot~pos(':3 (') = 0, 'at step 7, "is it supported?" and "what is missing?" name the same open element, 4, and no other'
+rr = .SlamReasoning~new
+s1b = .SlamLaw~parse(L || '/cma1990_s1.md'); ignored = .SlamLaw~applyGuidance(s1b, L || '/cps_cma.md', cps, tags)
+offb = .SlamLaw~build(rr, s1b)
+do step = 9 to 1 by -1
+  call admitStep rr, s1b, cases, step
+end
+same = .true
+do n = 1 to 4
+  if rr~assess(.SlamLaw~elementId(s1b, n))['status'] \== r~assess(.SlamLaw~elementId(s1, n))['status'] then same = .false
+end
+call check same & rr~mayAct(offb)['OK'] = r~mayAct(off)['OK'], 'the same evidence admitted last step first: every element ends with the same status, and the same answer'
+
+say '== 6. Mr S: an outsider, protocol 36 (made up)'
+rs = .SlamReasoning~new
+offs = .SlamLaw~build(rs, outsider)
+call admitStep rs, outsider, lines(L || '/case_s1_mr_s_made_up.txt'), 1
+st = ''
+do n = 1 to 4; st = st rs~assess(.SlamLaw~elementId(outsider, n))['status']; end
+say '       elements 1-4:' st
+call check st~word(1) == 'SETTLED' & st~word(3) == 'SETTLED', 'element 1: he wrote and started the scan (documented) outweighs "asleep at the keys" (his word); element 3: s.17(5), SETTLED'
+rf = .SlamLaw~refusals(rs, outsider, 3)
+call check hasText(rf, 'WEAK_SECURITY'), 'admin / ADMIN1 is refused as evidence about authority: weak security is not consent (s.17(5))'
+call check st~word(2) == 'DISPUTED' & st~word(4) == 'DISPUTED' & hasText(.SlamLaw~refusals(rs, outsider, 2), 'TOOL_DEFAULT'), 'elements 2 and 4 DISPUTED; a default in a tool an LLM wrote is not S''s intent (refused)'
+gp = .SlamLaw~gaps(rs, outsider)
+do x over gp; say '         missing: element' x['ELEMENT'] x['STATUS'] 'takes' x['TAKES'] 'at' x['BEAT']; end
+call check gp~items = 2 & \rs~mayAct(offs)['OK'], 'not supported on the evidence given; what is missing: INTENT and KNOWLEDGE evidence stronger than testimony (what S asked the LLM to write would be such evidence)'
+
+say '== 7. the citation gate'
+said = text(L || '/gemini_answers_excerpt.txt')
+held = text(L || '/source/cps_cma_guidance.txt') || text(L || '/source/cma1990_offences.txt')
+cs = .SlamLaw~citations(said, held)
+found = ''; unverified = ''
+do c over cs
+  if c['FOUND'] then found = found c['TEXT'] || ';'; else unverified = unverified c['TEXT'] || ';'
+end
+say '       found in a source SLAM holds:' found
+say '       unverified:' unverified
+call check unverified~pos('Mukaetova') > 0 & found~pos('Bignell') > 0 & found~pos('Bow Street') > 0, 'Bignell and Bow Street (Allison) are in the CPS text; R v Mukaetova is in no source SLAM holds: unverified, and carries no weight'
 say 'LAW TEST: PASS (' || checks || ' checks)'
 exit 0
+
+caseTags: procedure
+  use arg path
+  out = .array~new
+  do ln over text(path)~makeArray('0a'x)
+    if ln~left(8) == '# tags: ' then do
+      do w = 3 to ln~words; out~append(ln~word(w)); end
+    end
+  end
+  return out
 
 admitStep: procedure
   use arg r, rule, cases, step

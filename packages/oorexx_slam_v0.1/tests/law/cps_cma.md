@@ -22,6 +22,8 @@ cause: make
 law: a list of rules for each person
 guidance: words that say how to use a law
 note: a part of the guidance
+case: a thing a person can do, and the evidence for it
+employee: a person that the one that has the computer gives a part to do
 
 note 1:
 
@@ -57,7 +59,13 @@ note 3:
 an employee would only be guilty of an offence if the employer clearly defined the limits of the employee's authority
 ```
 
-when the one that has the computer gives a person some access, it has to say in a list what access the person can have. access that is not in that list is unauthorised. with no list, i can not say that the access is unauthorised.
+when the one that has the computer gives a person some access, it has to say in a list what access the person can have. access that is not in that list is unauthorised. with no list, i can not say that the access is unauthorised. this note is for an employee, and not for an other person.
+
+it is for a case of:
+
+```
+EMPLOYEE
+```
 
 for element 3, it takes evidence of:
 

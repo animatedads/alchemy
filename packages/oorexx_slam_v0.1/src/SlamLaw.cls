@@ -130,11 +130,16 @@
    SLAM's words, and a change to one element's kinds of evidence:
      "for element N, it takes evidence of:"      the element takes these, and only these
      "for element N, it can not take evidence of:" these are refused, and the refusal cites the quote
+   A note may say which kind of case it is for ("it is for a case of:" and a code block of tags, e.g.
+   EMPLOYEE): Allison is about an employee's authority, so it must not narrow "unauthorised" for an
+   outsider, where s.17(5)'s entitlement and consent decide.  Such a note applies only when TAGS (the
+   case's own tags) hold one of its tags; a note with no tags applies to every case.
    Guidance narrows which evidence counts; it never adds an element.  Applied before build.  Returns an
    Array of reasons it is refused (empty when it applies): its quotes must be in GUIDANCETEXT, word for
    word, it must be for this rule, and each element it names must exist. */
 ::method applyGuidance class
-  use strict arg rule, path, guidanceText
+  use strict arg rule, path, guidanceText, tags = .nil
+  if tags == .nil then tags = .array~new
   errs = .array~new
   lines = self~linesOf(path)
   forRule = ''; notes = .array~new; note = .nil; expect = ''
@@ -151,6 +156,7 @@
       select
         when expect == 'QUOTE' & note \== .nil then note['QUOTE'] = block~strip('T', '0a'x)~strip
         when expect == 'BINDS' & note \== .nil then note['BINDS'] = block~translate(' ', '0a0d09'x)~space~makeArray(' ')
+        when expect == 'TAGS' & note \== .nil then note['TAGS'] = block~translate(' ', '0a0d09'x)~space~makeArray(' ')
         when forRule == '' then do
           parse var block 'for:' fr '0a'x
           forRule = fr~strip
@@ -160,9 +166,10 @@
       expect = ''
     end
     else if t~word(1)~lower == 'note' & t~right(1) == ':' & t~words = 2 then do
-      note = .directory~new; note['ID'] = t~word(2)~strip('T', ':'); note['QUOTE'] = ''; note['BINDS'] = .array~new
+      note = .directory~new; note['ID'] = t~word(2)~strip('T', ':'); note['QUOTE'] = ''; note['BINDS'] = .array~new; note['TAGS'] = .array~new
       notes~append(note); expect = 'QUOTE'
     end
+    else if t~lower == 'it is for a case of:' & note \== .nil then expect = 'TAGS'
     else if t~lower~left(12) == 'for element ' & note \== .nil then do
       note['ELEMENT'] = t~word(3)~strip('T', ',')
       if t~lower~pos('can not take') > 0 then note['MODE'] = 'EXCLUDE'; else note['MODE'] = 'ONLY'
@@ -180,6 +187,11 @@
   end
   if errs~items > 0 then return errs
   do note over notes
+    if note['TAGS']~items > 0 then do                 /* a note for some cases only */
+      hit = .false
+      do tg over note['TAGS']; if tags~hasItem(tg) then hit = .true; end
+      if \hit then iterate
+    end
     el = self~element(rule, note['ELEMENT'])
     if \el~hasIndex('EXCLUDES') then el['EXCLUDES'] = .directory~new
     if note['MODE'] == 'ONLY' then do
@@ -208,6 +220,52 @@
     why = 'not a kind of evidence element' n 'takes'
     if el~hasIndex('EXCLUDES') then if el['EXCLUDES']~hasIndex(g~binds) then why = 'the guidance says: "' || el['EXCLUDES'][g~binds] || '"'
     out~append(g~binds || ':' g~note '--' why)
+  end
+  return out
+
+/* What is missing: one Directory per element that is not assertible on the evidence given, with its
+   STATUS, the kinds of evidence it takes (TAKES), the tier that evidence must beat (BEAT: the live rebut's,
+   or the floor to assert), and the refusals.  SLAM does not invent the evidence; it says what would count. */
+::method gaps class
+  use strict arg reasoning, rule
+  out = .array~new
+  do el over rule['ELEMENTS']
+    d = reasoning~assess(self~elementId(rule, el['ID']))
+    if d['assertible'] & d['stance'] == 'PRO' then iterate
+    g = .directory~new
+    g['ELEMENT'] = el['ID']; g['STATUS'] = d['status']
+    takes = ''
+    do b over el['BINDS']; takes = takes b; end
+    g['TAKES'] = takes~strip
+    tiers = .array~of('STYLOMETRIC', 'TESTIMONY', 'DOCUMENTARY', 'PROVENANCE')
+    if d['rebutTier'] > 0 then g['BEAT'] = 'more than' tiers[d['rebutTier']]
+    else g['BEAT'] = 'TESTIMONY or more'
+    g['REFUSED'] = self~refusals(reasoning, rule, el['ID'])
+    out~append(g)
+  end
+  return out
+
+/* Case names a text cites ("R v Bignell", "DPP v Bignell", "R v Bow Street ..."), each checked against
+   SOURCES (the texts SLAM holds).  A Directory per citation: TEXT, NAME (the party after "v"), FOUND.  A
+   citation not FOUND is unverified testimony: a model's word for a case nobody here can read. */
+::method citations class
+  use strict arg text, sources
+  out = .array~new; seen = .set~new
+  src = self~words(sources)
+  w = text~translate(' ', '0a0d09'x)~space
+  do i = 2 to w~words - 1
+    if w~word(i) \== 'v' then iterate
+    before = w~word(i - 1); after = w~word(i + 1)
+    if \datatype(before~left(1), 'U') | \datatype(after~left(1), 'U') then iterate
+    name = after~strip('T', ',.;:)')
+    if after~strip('T', ',.;:)') == 'Bow' & i + 2 <= w~words then name = 'Bow' w~word(i + 2)~strip('T', ',.;:)')
+    cite = before name
+    if seen~hasItem(cite) then iterate
+    seen~put(cite)
+    c = .directory~new
+    c['TEXT'] = before 'v' name; c['NAME'] = name
+    c['FOUND'] = src~pos(self~words(name)) > 0
+    out~append(c)
   end
   return out
 

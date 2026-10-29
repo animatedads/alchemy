@@ -1,13 +1,19 @@
 # A made-up case for tests/test_law.rex, under CMA 1990 s.1 (E.W.) with the CPS guidance: no real person,
-# place or system.  Written by Claude (Opus 5.5), 2026-10-29.  step | element | SUPPORT or REBUT | tier | binding | text
+# place or system.  Written by Claude (Opus 5.5), 2026-10-29; re-bound after Gemini's review: a read receipt
+# shows a message was opened, not understood (READ_RECEIPT); a hardware key shows the key was used, not who
+# held it (KEY_USE).  step | element | SUPPORT or REBUT | tier | binding | text
+# tags: EMPLOYEE
 1 | 1 | SUPPORT | DOCUMENTARY | ACCOUNT_ACT | the server log of S shows the account p.user ran a command at 02:14
 1 | 1 | SUPPORT | DOCUMENTARY | REQUEST_TO_ANOTHER | an e-mail from P asks the operator Q to pull the payroll report from S
 2 | 1 | SUPPORT | STYLOMETRIC | PERSON_ACT | the command history reads like the way P types
-3 | 1 | SUPPORT | PROVENANCE | PERSON_ACT | the login at 02:14 was approved by the hardware key registered to P, signature verified
-4 | 2 | SUPPORT | DOCUMENTARY | INTENT | the command at 02:14 was cat payroll.csv: it reads a data file
-5 | 3 | SUPPORT | DOCUMENTARY | AUTHORITY | a manager writes that P should not have looked at payroll
-5 | 3 | SUPPORT | DOCUMENTARY | DEFINED_LIMITS | the written access list for P's role, issued to P, does not include server S
-6 | 4 | SUPPORT | TESTIMONY | KNOWLEDGE | a colleague says P was told not to use server S
-6 | 4 | REBUT | TESTIMONY | KNOWLEDGE | P says he believed his role had access to server S
-6 | 4 | SUPPORT | TESTIMONY | RECKLESSNESS | a colleague says P must have guessed it might be off limits
-7 | 4 | SUPPORT | DOCUMENTARY | KNOWLEDGE | an e-mail from the administrator to P, two days before, refusing access to server S, with P's read receipt
+3 | 1 | SUPPORT | PROVENANCE | KEY_USE | the login at 02:14 was approved by the hardware key registered to P, signature verified
+4 | 1 | SUPPORT | DOCUMENTARY | PERSON_ACT | the building entry record shows P's badge at 02:09, and the camera on that floor shows P at his desk at 02:14
+5 | 2 | SUPPORT | DOCUMENTARY | INTENT | the command at 02:14 was cat payroll.csv: it reads a data file
+6 | 3 | SUPPORT | DOCUMENTARY | AUTHORITY | a manager writes that P should not have looked at payroll
+6 | 3 | SUPPORT | DOCUMENTARY | DEFINED_LIMITS | the written access list for P's role, issued to P, does not include server S
+7 | 4 | SUPPORT | TESTIMONY | KNOWLEDGE | a colleague says P was told not to use server S
+7 | 4 | REBUT | TESTIMONY | KNOWLEDGE | P says he believed his role had access to server S
+7 | 4 | SUPPORT | TESTIMONY | RECKLESSNESS | a colleague says P must have guessed it might be off limits
+8 | 4 | SUPPORT | DOCUMENTARY | READ_RECEIPT | an e-mail from the administrator to P, two days before, refusing access to server S, with P's read receipt
+9 | 4 | SUPPORT | DOCUMENTARY | KNOWLEDGE | P's reply to the administrator, the same day: understood, I will not use S
+9 | 4 | SUPPORT | DOCUMENTARY | KNOWLEDGE | P's mail and chat for the 48 hours after the refusal hold no message that changed his access to S
