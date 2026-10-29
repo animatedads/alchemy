@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "ldap-identity.service-activation",
+  "version": "0.1",
+  "sphere": "ldap-identity",
+  "title": "Rasen Falcon LDAP service activation contribution",
+  "status": "SOURCE_DEPLOYMENT_CONTRACT_DELIVERED",
+  "delivered": [
+    "Owned rasenfalcon_ldap_service.rex daemon bootstrap",
+    "Persistent Identity Directory recovery through NoSQLDirectoryStore",
+    "Secret Broker secretRef-to-environment mapping with no raw deployment secrets",
+    "Mandatory implicit TLS through OpenSSL/Foreign Runtime",
+    "Hardened non-root rasenfalcon-ldap.service systemd unit",
+    "Static deployment contract qualification"
+  ],
+  "authority": [
+    "LDAP Identity owns identity semantics and LDAP conversation behavior.",
+    "General ooRexx Deployment owns sealed staging/install mechanics.",
+    "Rasen Falcon delivery owns activation and acceptance.",
+    "Crypto/PKI owns sign/verify/revoke; LDAP does not acquire signing authority."
+  ],
+  "live_gates": [
+    "Package the identity role with the accepted General Deployment dependency namespace.",
+    "Install on the approved identity host with private-CA TLS and provisioned durable directory state.",
+    "Run ready:ldap_bind and e2e:ldap_revoke against the live owned service.",
+    "Run e2e:sign_verify_revoke under Crypto/PKI ownership."
+  ]
+}
