@@ -42,6 +42,12 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_fdsqrt.rex` | `FDSqrt` before/after/check: small and large data through three ways (34 checks in CHECK mode) |
 | `src/SlamProof.cls` | PROVED, DISPROVED or INDETERMINATE: certificates checked in exact rationals (ooRexx Maths v0.8, CERTIFIED route, pure ooRexx); each answer is a Maths `MathProof` |
 | `src/SlamProvenance.cls` | Which tool wrote each unit: HEADER, PROVENANCE, GIT (blame per line), README, else NOT_RECORDED |
+| `src/SlamReasoning.cls` | SLAM's evidence as Reasoned Thought grounds (tier + binding); decisions SLAM acts on (`mayAct`) |
+| `src/SlamLaw.cls` | Legislation → small model → SLAM → Reasoned Thought: rule and guidance files, their gates, elements as claims |
+| `src/SlamLegislation.cls` | Reads legislation.gov.uk XML (CLML) in pure ooRexx: a section's text as it stands in one extent |
+| `tests/test_reasoning.rex` | The bridge on `FDSqrt`, authorship and a model's statement (16 checks) |
+| `tests/test_law.rex` | Computer Misuse Act 1990 s.1 and s.3ZA, the CPS guidance, two made-up cases (30 checks) |
+| `tests/law/` | Rule and guidance files, the official sources (XML, text, CPS guidance; Open Government Licence), `HOW_TO_WRITE_A_RULE.md` for the small model |
 | `tests/test_provenance.rex` | Provenance on real files, a habit found by shape, outcomes by tool (19 checks) |
 | `tests/test_ties.rex` | Gemini's two questions: the tie rule and the prior as one test (12 checks) |
 | `tests/gemini_to_slam.md`, `tests/slam_to_gemini.md` | Gemini's letter and SLAM's reply (the reply reads with no unknown word) |
@@ -597,6 +603,59 @@ Before running anything, SLAM walks the rules in order with each case's values. 
   - **Wrong, and fixed:** functions installed by their address (`inline const bool xInstalled = (hook() = &x, true);`) were reported as not reached, since no call names them. That covered `requireClassLibrary`, `hostStringBif`, `stringMethodViaBif` and `interpreterCollect`, and `plainCount`, which only `quickStringBif` (such a function) calls. Two of my four hand checks were these. Now `&name` counts as a use; a prototype at top level still does not (a header declares everything). That took the count of units not reached from 100 to 69.
 - `tools/bif_oracle_programs.rex`: one program per BIF case SLAM chose (201), each `say c2x(BIF(args))`, with the interpreter's stdout and exit status beside it. 51 run to a value; 150 stop with a syntax error (exit status 216 or 163). rx2cpp compiles each program and compares bytes and status.
 
+### SLAM and the Reasoned Thought engine (2026-10-29)
+
+Tom: "SLAM would be dangerously effective if it could engage the rational thinking engine." `src/SlamReasoning.cls` makes every piece of SLAM's evidence a ground in `oorexx_reasoned_thought_v0.1`. The engine is used unchanged: its object model and journal are by Claude (Opus 4.8), and its combiner design is ChatGPT's (GPT-6). Each ground carries a **tier** for how strong the evidence is and a **binding** for what it is about:
+
+| SLAM evidence | Tier | Why |
+|---|---|---|
+| a shape resembles another; an edge's prior | STYLOMETRIC | resemblance is a hunch |
+| a credit line, a README, a contract read from code, a model's statement | TESTIMONY | something asserts it |
+| a recorded run, two ways agreeing, a commit record | DOCUMENTARY | a dated record |
+| an exact certificate (PROVED, DISPROVED) | PROVENANCE | anyone can re-check it |
+
+Bindings move rules SLAM had hand-coded into the engine:
+- **A proof binds one value** (`VALUE`), so it is INELIGIBLE for "correct for every input". A counterexample (`COUNTEREXAMPLE`) refutes that claim.
+- **A commit trailer binds the commit** (`COMMIT`), not authorship.
+- **Agreement (DOCUMENTARY) never outranks a certificate (PROVENANCE).**
+
+Decisions are BeliefJournal decisions resting on claims. SLAM calls `mayAct` before it acts, and gets the failing claims when the answer is no.
+
+`tests/test_reasoning.rex`, 16/16:
+- `FDSqrt` now is SETTLED at each tested value. For every input it stays UNDETERMINED, with all 13 proofs on record as INELIGIBLE. The old `FDSqrt` is REBUTTED for every input.
+- At 0.5 the two square roots agree (tier 3), and the certificate says the answer is not the nearest (tier 4): REBUTTED.
+- "ChatGPT wrote the old `FDSqrt`" is SUPPORTED. "Claude (Opus 5.5) wrote it" is UNDETERMINED, with the commit INELIGIBLE. "A Claude session committed it" is SETTLED.
+- "The fix is justified" holds. "Use the old `FDSqrt` above 10⁶" is refused, naming the rebutted claims, and SLAM takes the fixed one.
+- Gemini's "a tested score is the count of true divide by all" is SUPPORTED on its word and REBUTTED once SLAM runs its own scoring code. Saying it again does not move it.
+- The engine's naive combiner, which ignores bindings, would SETTLE "correct for every input": the overclaim the bindings stop.
+
+### Legislation → small model → SLAM → Reasoned Thought (2026-10-29)
+
+Tom's chain. A small model (Luna, Haiku) rewrites one section of legislation as a **rule file** in SLAM's words: the section verbatim as code, defined words, one element per condition, and a rule line. Each element carries its exact quote, a sentence, and the kinds of evidence it takes. The model's output is testimony, so SLAM gates it before it becomes a rule:
+
+1. **Reader:** SLAM knows every word.
+2. **Official text:** the section is the official text for the rule's extent, from the legislation.gov.uk **XML** (`SlamLegislation.cls`, pure ooRexx).
+3. **Quotes:** each quote is in the section, word for word.
+4. **Coverage:** every lettered paragraph has an element.
+5. **Rule line:** it names every element.
+
+Each element then becomes a claim that accepts only its own kinds of evidence, and the offence becomes a decision resting on all of them. What comes out is whether the elements are supported **on the evidence given**, with the reason. It is not a verdict, and no standard of proof is modelled. **Guidance** (CPS) is a second file, quote-checked the same way, that only narrows which evidence counts for an element. Instructions for the small model: `tests/law/HOW_TO_WRITE_A_RULE.md`.
+
+**Extent is in the law, and the XML is what shows it.** My first draft of s.1, written from memory, had the words "or to enable any such access to be secured". Those were inserted for Scotland only, and the inserting provision was repealed for England, Wales and Northern Ireland. The gate refuses that draft for E.W. and accepts it for S. Two further points:
+- On the web pages the amendment footnotes renumber with the page (F1 on a section's page is F15 on the whole Act's), so the XML's stable commentary ids are used instead.
+- An inserted phrase's own extent is only in its commentary's words ("inserted (S.)"), which the reader follows. The pasted web text, resolved by its notes, gives the same s.1(1) word for word.
+
+`tests/test_law.rex`, 30/30, on CMA 1990 s.1 and s.3ZA (E.W.), the CPS guidance, and two made-up cases with no real person:
+- **Drifts refused:** an undefined word ("reckless as to whether"); a paraphrased quote ("ought to know"); a dropped condition; an element left out of the rule; Scotland's words under E.W.; a guidance quote not in the CPS text; s.1's guidance offered for s.3ZA.
+- **s.1, step by step, with each refusal quoting its reason:**
+  - The account's log is refused for "the person caused it": it binds the account.
+  - Asking an operator is refused, quoting Bignell.
+  - A resemblance is a HINT. A hardware-key signature SETTLES the act.
+  - A manager's view is refused, quoting Allison ("clearly defined the limits"). The written access list counts.
+  - "Must have guessed" is refused for knowledge ("mere recklessness is not sufficient").
+  - Testimony against testimony is DISPUTED. A dated, read e-mail settles knowledge, and the denial stays on record, outranked.
+- **s.3ZA:** the same recklessness evidence counts for element (d), "intends or is reckless as to damage", and is refused for (b), "knows it is unauthorised".
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -614,11 +673,11 @@ SLAM gets credit for what it found:
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 250 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **23/23** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **413 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the tie and prior rules and provenance, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **356/356**. The BOLT and libc steps (34 checks) skipped there: no llvm-project tree.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 300 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **23/23** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **463 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge and the legislation chain, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **406/406**. The BOLT, libc and unit-test steps (57 checks) skipped there: no llvm-project tree, no ooTest.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
-`sh run_tests.sh`: **58/58** in `test_slam.rex`, **6/6** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`: 250 checks. It covers:
+`sh run_tests.sh`: **58/58** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, and **30/30** in `test_law.rex`: 300 checks. It covers:
 - the segmenter on unmodified `MLEvolution.cls` (54 units; shared guard nodes; collapsed setters; then/else bodies sharing a node with different bindings);
 - ingest of the GA package with duplicate units skipped on re-ingest;
 - aabb → Eeff = 0.4 and b00b → Eeff = 0.8 from recorded outcomes;
