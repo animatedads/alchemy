@@ -1,0 +1,40 @@
+{
+  "schema": "wire-ui-renderer-conformance-status/0.3",
+  "status": "PARTIAL_REAL_RENDERER_EVIDENCE",
+  "renderers": {
+    "web": {
+      "evidence": "Rasen Falcon integration still pins alchemy_wire_ui_js_v0.4-dev6; real v0.3 adapter not yet executed",
+      "adapter": "TODO",
+      "pass": false
+    },
+    "swing": {
+      "evidence": "wire_ui_swing_v0.2-dev12; 61/61 PASS; 8/10 shared gates",
+      "adapter": "tools/probe_real_heads.py",
+      "pass": false,
+      "missing": [
+        "exact-published-resource-ref",
+        "positive-list-observation"
+      ]
+    },
+    "gtk-direct-linux": {
+      "evidence": "wire_direct_linux_v0.1-dev41; native C/loader/filter + dev41 authority/static tests PASS; 3/10 shared gates",
+      "adapter": "tools/probe_real_heads.py",
+      "pass": false,
+      "missing": [
+        "exact-definition",
+        "exact-published-resource-ref",
+        "revision-ordering",
+        "event-time-renderedRevision",
+        "opaque-workspaceContext",
+        "positive-list-observation",
+        "deauthorisation-fail-closed"
+      ]
+    },
+    "android": {
+      "evidence": "renderer semantic checkpoint remains dev7; native resident host lineage is separate",
+      "adapter": "TODO",
+      "pass": false
+    }
+  },
+  "qualification_rule": "Full PASS requires all required semantic gates on the real renderer/access-point implementation."
+}

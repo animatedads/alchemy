@@ -1,0 +1,153 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.current-baseline",
+  "version": "0.3",
+  "sphere": "wire-ui-runtime",
+  "title": "Current evidenced runtime/renderer heads and provenance boundaries",
+  "summary": "Current evidence as of 2026-10-29. Use exact artifact plus digest, distinguish renderer heads from host/tooling heads, and do not infer production readiness from source or review staging.",
+  "authority": "project-continuity",
+  "invariants": [
+    "Package identity is exact artifact plus digest, not version-like filename alone.",
+    "Renderer-head evidence and host/runtime-tooling evidence are separate; do not call Android renderer dev16 merely because native host tooling is dev16.",
+    "Application integration may pin an older renderer runtime than a separately qualified development head; record both rather than silently substituting.",
+    "Sphere authority is documentation/continuity only; it does not supersede executable packages.",
+    "Direct Linux dev41 has corrected VERSION metadata; the earlier dev38 mismatch is historical and closed."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_builder_v0.12-dev1.zip",
+      "sha256": "73dea2f650dddeba862b8402b52b0a7c97d6d385b970ebaf746814174aa3b88c",
+      "claim": "Current semantic Builder integration evidence.",
+      "member": "wire_ui_builder_v0.12-dev1/README.md"
+    },
+    {
+      "artifact": "wire_ui_server_v0.17.1.zip",
+      "sha256": "5a20d6da1866cecad9c452915616cb6926d3291c74a82c0dc69252963a96fb33",
+      "claim": "Current server runtime evidence.",
+      "member": "wire_ui_server_v0.17.1/README.md"
+    },
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev6.zip",
+      "sha256": "67cc8fd08172e3efa45f9eb6bbecadaa576b3c713508b7f5d5c902208f40ebcc",
+      "claim": "Current application-integration Web runtime evidence.",
+      "member": "alchemy_wire_ui_js_v0.4-dev6/README.md"
+    },
+    {
+      "artifact": "wire_ui_swing_v0.2-dev12.zip",
+      "sha256": "142dbb54adb9d0c2b88a3af043166894354cdb58d600cbd6f5f506b08f03d499",
+      "claim": "Current Swing renderer head and 61/61 qualification evidence.",
+      "member": "wire_ui_swing_v0.2-dev12/VALIDATION_DEV12.txt"
+    },
+    {
+      "artifact": "wire_direct_linux_v0.1-dev41.zip",
+      "sha256": "2c93462bf5c2746eca4c3c235ae07e956680e8016a998cfe849dd3dd95461845",
+      "claim": "Current Direct Linux renderer head; corrected version metadata and dev41 safety qualification.",
+      "member": "wire_direct_linux_v0.1-dev41/QUALIFICATION_DEV41.txt"
+    },
+    {
+      "artifact": "oorexx_https_server_v0.4.8.zip",
+      "sha256": "d38ddd049e5d8f5683e4ebf09e09a870c9c562bd3663db32950df711f7040fbe",
+      "claim": "Current HTTPS static qualification boundary; exact modified runtime/live TLS remains open.",
+      "member": "oorexx_https_server_v0.4.8/VALIDATION.txt"
+    },
+    {
+      "artifact": "oorexx_ldap_identity_v0.1-dev22.zip",
+      "sha256": "697c301c37ad1d77252a34db9028420c4c9a3e3dbe5c60de9be6fc91940341fc",
+      "claim": "Current LDAP deployment/service boundary; not installed/live-qualified.",
+      "member": "oorexx_ldap_identity_v0.1-dev22/VALIDATION_DEV22.txt"
+    }
+  ],
+  "current_integration_evidence": {
+    "builder": {
+      "artifact": "wire_ui_builder_v0.12-dev1.zip",
+      "sha256": "73dea2f650dddeba862b8402b52b0a7c97d6d385b970ebaf746814174aa3b88c",
+      "contract": "WIRE-UI-DESIGN/0.7"
+    },
+    "server": {
+      "artifact": "wire_ui_server_v0.17.1.zip",
+      "sha256": "5a20d6da1866cecad9c452915616cb6926d3291c74a82c0dc69252963a96fb33",
+      "contract": "WIRE-UI/0.1"
+    },
+    "web": {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev6.zip",
+      "sha256": "67cc8fd08172e3efa45f9eb6bbecadaa576b3c713508b7f5d5c902208f40ebcc",
+      "status": "current application-integration evidence; do not erase separately qualified dev7 lineage"
+    },
+    "resource_editor": {
+      "artifact": "wire_ui_resource_editor_v0.3.zip",
+      "sha256": "835fc9e1dcc70ef242372908c02e254c2788d47b922685ccfc5037bf664d3b0f",
+      "status": "resource publication/byte authority"
+    },
+    "resource_contract": {
+      "artifact": "wire_ui_resource_contract_v0.1.zip",
+      "sha256": "f7f077519d9113c2de29b125bdc4c143d8a088d629c9eaa2e2cd3670051dd924"
+    },
+    "swing": {
+      "artifact": "wire_ui_swing_v0.2-dev12.zip",
+      "sha256": "142dbb54adb9d0c2b88a3af043166894354cdb58d600cbd6f5f506b08f03d499",
+      "status": "61/61 renderer tests PASS in 2026-10-29 qualification; cross-renderer gate count 8/10"
+    },
+    "gtk_direct_linux": {
+      "artifact": "wire_direct_linux_v0.1-dev41.zip",
+      "sha256": "2c93462bf5c2746eca4c3c235ae07e956680e8016a998cfe849dd3dd95461845",
+      "status": "native C/loader/filter plus dev41 authority/static tests PASS; cross-renderer gate count 3/10; VERSION metadata corrected"
+    },
+    "android_renderer": {
+      "checkpoint": "ooRexx Android Wire Mobile v0.1-dev7",
+      "status": "latest renderer checkpoint supported by cross-renderer handover evidence found in Library"
+    },
+    "android_native_host": {
+      "artifact": "build-wire-mobile-host-dev16.sh",
+      "sha256": "1804fc6f95312954a1a0fef638569ad0185e33da92547ed80fb0476ca0a5c862",
+      "status": "resident ooRexx host tooling; not renderer-version authority"
+    },
+    "https_server": {
+      "artifact": "oorexx_https_server_v0.4.8.zip",
+      "sha256": "d38ddd049e5d8f5683e4ebf09e09a870c9c562bd3663db32950df711f7040fbe",
+      "status": "static contract qualification present; modified 0.4.8 runtime/live TLS not qualified"
+    },
+    "ldap_identity": {
+      "artifact": "oorexx_ldap_identity_v0.1-dev22.zip",
+      "sha256": "697c301c37ad1d77252a34db9028420c4c9a3e3dbe5c60de9be6fc91940341fc",
+      "status": "owned daemon/systemd deployment shape present; not installed and live LDAPS not qualified"
+    },
+    "rasenfalcon_delivery": {
+      "artifact": "rasenfalcon_delivery_v0.4.4_source_candidate.zip",
+      "sha256": "15f6056fb599d4e0a77fa64040cfdad4f7f6386019bb3dd845c2ef013b30cede",
+      "status": "source candidate with local review-only General Deployment stage; not installed/running"
+    }
+  },
+  "prior_project_candidates": {
+    "browser_js": {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev7.zip",
+      "sha256": "38bebd4783abc143b7365793d337f4682b0f80cac8478afa115befb0440cd15a",
+      "status": "qualified project increment; not present in supplied roll-up"
+    },
+    "resource_resolver": {
+      "artifact": "wire_ui_resource_resolver_v0.1.zip",
+      "sha256": "d821518e4e2db8504fa5b43584794565232d13fdaf63304d4c6d2515049e00d8",
+      "status": "qualified project component; separate from Resource Editor/Authority"
+    },
+    "server_resource_transport": {
+      "artifact": "wire_ui_server_v0.17.1.zip",
+      "sha256": "70e4897a40abf10174574e0442cf17635574fef3ec861b6a55804b238cc4abd5",
+      "status": "resourceBindings transport reconciliation over server v0.17"
+    },
+    "builder_gprs_launcher": {
+      "artifact": "wire_ui_builder_v0.11.2.zip",
+      "sha256": "7b24441080a24b9b568315bbdb9e3a9d9dc0e7e02d713c17cbd2f6d495f2fa3e",
+      "status": "optimised delivery/resource policy continuation over Builder v0.11"
+    }
+  },
+  "historical_rollup_20260902": {
+    "rollup": "oorexxapis(20260902-164722).zip",
+    "rollup_sha256": "190c3e9f7b484cfccc3e0fa4fe7fe07e6f0d15838ae2024b028ccaffd9652830",
+    "builder": "wire_ui_builder_v0.11.zip",
+    "server": "wire_ui_server_v0.17.zip",
+    "browser_js": "alchemy_wire_ui_js_v0.4-dev4.zip",
+    "web_gateway": "oorexx_queue_fabric_web_gateway_v0.2.zip",
+    "queue_fabric": "oorexx_queue_fabric_v0.9-dev5.zip",
+    "flylo_testapp": "flylo_v0.4.10.zip",
+    "swing_testapp": "wire_ui_swing_v0.2-dev6.zip"
+  }
+}

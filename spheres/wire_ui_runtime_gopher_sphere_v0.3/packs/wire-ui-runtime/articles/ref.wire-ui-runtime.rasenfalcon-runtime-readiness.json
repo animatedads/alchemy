@@ -1,0 +1,48 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.rasenfalcon-runtime-readiness",
+  "version": "0.3",
+  "sphere": "wire-ui-runtime",
+  "title": "Rasen Falcon website/runtime admission state \u2014 2026-10-29",
+  "summary": "Executable v0.3 readiness evidence reports NOT_READY. The website source candidate and review-only stage exist, HTTPS 0.4.8 static contracts and Wire deployment durable ingress are qualified, but release admission, exact modified HTTPS runtime/live TLS, LDAP installation/live LDAPS and live browser semantic roundtrip are not yet proved.",
+  "authority": "project-runtime",
+  "state": {
+    "source_candidate": true,
+    "review_stage": true,
+    "installed": false,
+    "running": false,
+    "production_ready": false
+  },
+  "invariants": [
+    "Source-only != staged locally != installed != running.",
+    "Do not inherit v0.4.7 HTTPS runtime evidence as proof of modified v0.4.8 runtime.",
+    "Do not treat LDAP daemon/systemd source shape as installed/live LDAPS.",
+    "A durable Wire deployment ingress test does not prove a live browser semantic roundtrip."
+  ],
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.4_source_candidate.zip",
+      "sha256": "15f6056fb599d4e0a77fa64040cfdad4f7f6386019bb3dd845c2ef013b30cede",
+      "member": "rasenfalcon_delivery_v0.4.4/README.md",
+      "claim": "Source candidate and local review stage; install remains refused."
+    },
+    {
+      "artifact": "oorexx_https_server_v0.4.8.zip",
+      "sha256": "d38ddd049e5d8f5683e4ebf09e09a870c9c562bd3663db32950df711f7040fbe",
+      "member": "oorexx_https_server_v0.4.8/VALIDATION.txt",
+      "claim": "0.4.8 static qualification present; exact modified runtime/live TLS open."
+    },
+    {
+      "artifact": "oorexx_ldap_identity_v0.1-dev22.zip",
+      "sha256": "697c301c37ad1d77252a34db9028420c4c9a3e3dbe5c60de9be6fc91940341fc",
+      "member": "oorexx_ldap_identity_v0.1-dev22/VALIDATION_DEV22.txt",
+      "claim": "Owned LDAP deployment shape present; install/live LDAPS open."
+    },
+    {
+      "artifact": "wire_application_deployment_v0.1_candidate3.zip",
+      "sha256": "8aa156951a6f2326ef7c8df944a04a3afcb9929ce1f89d5ce347ba4fed87dbe9",
+      "member": "wire_application_deployment_v0.1_candidate3/QUALIFICATION.md",
+      "claim": "Durable ingress qualified; live browser/semantic roundtrip remains unproved."
+    }
+  ]
+}

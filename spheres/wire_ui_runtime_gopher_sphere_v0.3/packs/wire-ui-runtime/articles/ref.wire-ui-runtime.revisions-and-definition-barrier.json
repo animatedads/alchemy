@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.revisions-and-definition-barrier",
+  "version": "0.1",
+  "sphere": "wire-ui-runtime",
+  "title": "Exact versions, rendered revisions and the cold-definition barrier",
+  "summary": "Wire UI correctness is fenced by exact definition identities and monotonically increasing view revisions. A CREATE_INSTANCE that references an authorised but not-yet-downloaded immutable definition waits behind a definition barrier rather than forcing a false resync.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Definitions are addressed by exact definitionId@version; there is no implicit latest resolution.",
+    "Every semantic UI action carries the rendered revision against which the user acted.",
+    "Stale actions are detected server-side and never silently treated as current actions.",
+    "A genuine revision gap causes resynchronisation.",
+    "Cold-cache definition latency is not a revision gap: ordered patches wait behind the missing-definition barrier and replay after exact definition installation.",
+    "Snapshots are deterministic parent-before-child so a direct renderer can reconstruct state without table-iteration assumptions."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_server_v0.17.1.zip",
+      "sha256": "70e4897a40abf10174574e0442cf17635574fef3ec861b6a55804b238cc4abd5",
+      "member": "wire_ui_server_v0.17.1/README.md",
+      "claim": "Dynamic CREATE_INSTANCE and immutable-definition barrier contract.",
+      "line_start": 96,
+      "line_end": 114
+    },
+    {
+      "artifact": "wire_ui_server_v0.17.1.zip",
+      "sha256": "70e4897a40abf10174574e0442cf17635574fef3ec861b6a55804b238cc4abd5",
+      "member": "wire_ui_server_v0.17.1/README.md",
+      "claim": "Renderer manifest, cache-miss validation and deterministic parent-before-child snapshot.",
+      "line_start": 117,
+      "line_end": 131
+    },
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev7.zip",
+      "sha256": "38bebd4783abc143b7365793d337f4682b0f80cac8478afa115befb0440cd15a",
+      "member": "alchemy_wire_ui_js_v0.4-dev7/README.md",
+      "claim": "Reconciled cold-cache handling queues CREATE_INSTANCE behind missing immutable definitions.",
+      "line_start": 10,
+      "line_end": 18
+    }
+  ]
+}
