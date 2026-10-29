@@ -15,6 +15,9 @@ export LD_LIBRARY_PATH="${REXXSQL_LIB_DIR:+$REXXSQL_LIB_DIR:}$REXX_HOME/lib64:$R
 # The inherited suite exercises legacy FileDatabaseEngine behaviour explicitly.
 # The production/default selector remains rexxsql-sqlite.
 export MININOTES_DB_BACKEND=file
+# Native fail-closed guard runs BEFORE the inherited long-running corpus suite.
+# It has no external SQLite/Crypto dependency and remains a release gate.
+"$REXX_BIN" tests/test_sqlite_transaction_capability_guard.rex
 TEST_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/mininotes-tests.XXXXXX")
 trap 'rm -rf "$TEST_ROOT"' EXIT
 run_rexx() {
@@ -48,11 +51,6 @@ MININOTES_DB_ROOT="$TEST_ROOT/persistence" ./tests/test_save_print_persistence.s
 MININOTES_DB_ROOT="$TEST_ROOT/reporting" ./tests/test_report_designer_persistence.sh
 
 run_rexx batch tests/test_batch_persistence.rex
-
-# Negative-control guard: an incomplete SQLite transaction provider must not
-# reach either metadata DDL or document SQL. Run even when the native SQLite
-# extension is unavailable so fail-closed coverage is part of every suite.
-"$REXX_BIN" tests/test_sqlite_transaction_capability_guard.rex
 
 # Guard the authentic NoSQL DatabaseRow values-column contract used in migration.
 "$REXX_BIN" tests/test_migration_row_contract.rex
