@@ -149,6 +149,17 @@
 ::method saveFrom
   expose db
   use strict arg app
+  /* SQLite full snapshots DROP/CREATE metadata tables. A selected SQL
+   * provider without a complete transaction API must fail BEFORE any DDL.
+   * The historical FileDatabaseEngine intentionally remains compatible. */
+  if db~hasMethod("backendId") then do
+    if db~backendId = "rexxsql-sqlite" then do
+      if \db~hasMethod("beginTransaction") | -
+         \db~hasMethod("commitTransaction") | -
+         \db~hasMethod("rollbackTransaction") then -
+           raise syntax 93.900 array("Indexed SQLite requires begin, commit and rollback for full persistence")
+    end
+  end
   transactional = db~hasMethod("beginTransaction")
   inTxn = .false
   if transactional then do
@@ -326,9 +337,10 @@ saveRollback:
   expose db
   use strict arg app, document
   if document == .nil then raise syntax 93.900 array("Cannot save absent document")
-  if \db~hasMethod("beginTransaction") | \db~hasMethod("selectWhereEquals") | -
+  if \db~hasMethod("beginTransaction") | \db~hasMethod("commitTransaction") | -
+     \db~hasMethod("rollbackTransaction") | \db~hasMethod("selectWhereEquals") | -
      \db~hasMethod("deleteWhereEquals") then -
-       raise syntax 93.900 array("Indexed SQLite single-document operations unavailable")
+       raise syntax 93.900 array("Indexed SQLite single-document transaction methods unavailable")
   transactionResult = db~beginTransaction
   if transactionResult~status \= .Error~SUCCESS then -
     raise syntax 93.900 array("Cannot begin document SQLite transaction:" transactionResult~message)
