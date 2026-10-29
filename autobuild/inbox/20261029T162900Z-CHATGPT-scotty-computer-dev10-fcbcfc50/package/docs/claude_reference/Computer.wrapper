@@ -1,0 +1,20 @@
+#!/bin/sh
+# Computer - wrapper. Finds IntentionService, sets REXX_PATH, runs Computer.rex.
+# Architecture: Tom Dyer. Coding: Claude Sonnet 5.5. UNTESTED first cut.
+# Override the IntentionService location with COMPUTER_INTENTION_SRC=/path/to/src
+DIR=$(cd "$(dirname "$0")" && pwd)
+SRC=${COMPUTER_INTENTION_SRC:-}
+if [ -z "$SRC" ]; then
+  for d in "$DIR"/oorexx_intention_service*/src "$DIR"/oorexx_intention_service*/*/src "$DIR"/../oorexx_intention_service*/src "$DIR"/../oorexx_intention_service*/*/src; do
+    if [ -f "$d/IntentionService.cls" ]; then SRC=$d; break; fi
+  done
+fi
+if [ -z "$SRC" ] || [ ! -f "$SRC/IntentionService.cls" ]; then
+  echo "FAIL intent=startup reason=IntentionService.cls not found; set COMPUTER_INTENTION_SRC to the src directory"
+  exit 2
+fi
+REXX_PATH="$DIR:$SRC:$SRC/nlp${REXX_PATH:+:$REXX_PATH}"
+export REXX_PATH
+COMPUTER_DIR=$DIR
+export COMPUTER_DIR
+exec rexx "$DIR/Computer.rex" "$@"

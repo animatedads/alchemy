@@ -1,0 +1,44 @@
+#!/usr/local/bin/rexx
+/* Scotty Computer: a thin ooRexx intention client.  No text is evaluated as shell. */
+parse source . . executable
+base = filespec('L', executable)
+call value 'REXX_PATH', base || '/src:' || base || '/vendor:' || value('REXX_PATH',,'ENVIRONMENT'), 'ENVIRONMENT'
+parse arg utterance
+utterance = strip(utterance)
+if translate(left(utterance, 9)) == 'COMPUTER ' then utterance = strip(substr(utterance, 10))
+if utterance == '' then utterance = 'help'
+
+service = .IntentionService~new
+service~registerBucket('COMPUTER', .IntentionBucketPolicy~new('EXPLICIT', 80, 5, .false, .false))
+event = .ComputerExecution~new(base)
+ids = 'HELP DISCOVER INSTRUCTIONS FILE_INTEGRITY SEARCH_SCOPES ADD_SEARCH_SCOPE SEARCH_NAMED FIND_DIRECTORIES GITHUB LEARN RUN_LEARNED JOBS READ_DOCUMENT CHECK_FREE_SPACE CHECK_FREE_MEMORY DEPLOY_ZIPFILE CONFIRM_ACTION RUN_TESTS ADD_FIND_LOCATION ADD_TEMP_DIRECTORY RECENT_FILES CONTENT_SEARCH LATEST_CLASS REXXPATH_SHOW REXXPATH_SETUP SSH_LOGIN FIREWALL_REPAIR CONFIG_SHOW'
+do i = 1 to words(ids)
+  id = word(ids, i)
+  service~register(id, event, 'COMPUTER')
+end
+service~registerDiscoveryProvider(.ComputerDiscovery~new(base))
+d = service~input(utterance)
+select
+  when d~status == 'READY' then do
+    /* Dispatch is the IntentionService READY gate, not a bypass.  The action
+       performs independent capability, argument and permission rechecks. */
+    result = service~dispatch(d)
+    exit result
+  end
+  when d~status == 'CLARIFY' then do
+    say 'CLARIFY:' d~question
+    exit 3
+  end
+  when d~status == 'CONFIRM' then do
+    say 'CONFIRM:' d~question
+    exit 3
+  end
+  otherwise do
+    say 'UNKNOWN:' d~question
+    say 'Try: Computer help'
+    exit 2
+  end
+end
+::requires 'vendor/IntentionService.cls'
+::requires 'vendor/IntentionProviders.cls'
+::requires 'src/ComputerIntentions.cls'

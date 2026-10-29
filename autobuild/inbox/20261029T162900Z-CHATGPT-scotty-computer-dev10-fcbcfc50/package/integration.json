@@ -1,0 +1,39 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "scotty_computer",
+    "version": "0.1-dev10",
+    "kind": "oorexx"
+  },
+  "tests": [
+    {
+      "name": "computer-python-regression",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py"
+      ],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "computer-native-qualify",
+      "argv": [
+        "bash",
+        "tools/qualify.sh"
+      ],
+      "timeout_seconds": 600
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/scotty_computer_v0.1-dev10"
+    }
+  }
+}
