@@ -2,7 +2,7 @@
   "schema": "alchemy.autobuild.integration/0.3",
   "package": {
     "name": "oorexx_ldap_identity",
-    "version": "0.1-dev13",
+    "version": "0.1-dev21",
     "kind": "oorexx"
   },
   "working_directory": ".",
@@ -14,71 +14,35 @@
       "ACCESS_PERMISSIONS_ROOT": "${REPO_ROOT}/packages/oorexx_access_permissions_v0.2",
       "INSTITUTIONAL_POLICY_ROOT": "${REPO_ROOT}/packages/institutional_policy_v0.8",
       "SECURITY_EFFECT_ROOT": "${REPO_ROOT}/packages/security_effect_v0.14",
-      "NOSQLSERVER_ROOT": "${REPO_ROOT}/packages/nosqlserver_v085_db2",
+      "NOSQLSERVER_ROOT": "${REPO_ROOT}/packages/nosqlserver_v0.88_query_instrumentation",
       "RUNTIME_REFERENCE_ROOT": "${REPO_ROOT}/packages/runtime_reference_v0.4",
       "FOREIGN_RUNTIME_ROOT": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6",
-      "SOCKET_PROVIDER_ROOT": "${REPO_ROOT}/packages/oorexx_socket_provider_v0.1-dev12",
-      "XTP_ROOT": "${REPO_ROOT}/packages/oorexx_xtp_v0.1-dev14",
+      "SOCKET_PROVIDER_ROOT": "${REPO_ROOT}/packages/oorexx_socket_provider_v0.1-dev14",
+      "XTP_ROOT": "${REPO_ROOT}/packages/oorexx_xtp_v0.1-dev18",
       "INTENTION_SERVICE_ROOT": "${REPO_ROOT}/packages/oorexx_intention_service_v0.1-dev11",
-      "NORM_ROOT": "${REPO_ROOT}/packages/oorexx_norm_v0.1-dev3"
+      "NORM_ROOT": "${REPO_ROOT}/packages/oorexx_norm_v0.1-dev3",
+      "INSTRUMENTATION_MESH_ROOT": "${REPO_ROOT}/packages/oorexx_instrumentation_mesh_v0.1-dev8"
     }
   },
   "tests": [
     {
-      "name": "ldap-identity-dev13-suite",
-      "argv": [
-        "bash",
-        "run_tests.sh"
-      ],
+      "name": "ldap-identity-dev21-suite",
+      "argv": ["bash","run_tests.sh"],
       "timeout_seconds": 240,
       "environment": {
-        "require_dirs": [
-          "OOREXX_CRYPTO_ROOT",
-          "SECRET_BROKER_ROOT",
-          "ALCHEMY_OBJECTS_ROOT",
-          "NOSQLSERVER_ROOT",
-          "SOCKET_PROVIDER_ROOT",
-          "RUNTIME_REFERENCE_ROOT",
-          "FOREIGN_RUNTIME_ROOT"
-        ],
-        "report": [
-          "OOREXX_CRYPTO_ROOT",
-          "SECRET_BROKER_ROOT",
-          "ALCHEMY_OBJECTS_ROOT",
-          "NOSQLSERVER_ROOT",
-          "SOCKET_PROVIDER_ROOT",
-          "RUNTIME_REFERENCE_ROOT",
-          "FOREIGN_RUNTIME_ROOT"
-        ]
+        "require_dirs": ["OOREXX_CRYPTO_ROOT","SECRET_BROKER_ROOT","ALCHEMY_OBJECTS_ROOT","NOSQLSERVER_ROOT","SOCKET_PROVIDER_ROOT","RUNTIME_REFERENCE_ROOT","FOREIGN_RUNTIME_ROOT","INSTRUMENTATION_MESH_ROOT"],
+        "report": ["OOREXX_CRYPTO_ROOT","SECRET_BROKER_ROOT","ALCHEMY_OBJECTS_ROOT","NOSQLSERVER_ROOT","SOCKET_PROVIDER_ROOT","RUNTIME_REFERENCE_ROOT","FOREIGN_RUNTIME_ROOT","INSTRUMENTATION_MESH_ROOT"]
       }
     },
     {
       "name": "ldap-identity-access-permissions-adapter",
-      "argv": [
-        "bash",
-        "tests/access_permissions_smoke.sh"
-      ],
+      "argv": ["bash","tests/access_permissions_smoke.sh"],
       "timeout_seconds": 120,
       "environment": {
-        "require_dirs": [
-          "OOREXX_CRYPTO_ROOT",
-          "ALCHEMY_OBJECTS_ROOT",
-          "ACCESS_PERMISSIONS_ROOT",
-          "INSTITUTIONAL_POLICY_ROOT",
-          "SECURITY_EFFECT_ROOT"
-        ],
-        "report": [
-          "ACCESS_PERMISSIONS_ROOT",
-          "INSTITUTIONAL_POLICY_ROOT",
-          "SECURITY_EFFECT_ROOT"
-        ]
+        "require_dirs": ["OOREXX_CRYPTO_ROOT","ALCHEMY_OBJECTS_ROOT","ACCESS_PERMISSIONS_ROOT","INSTITUTIONAL_POLICY_ROOT","SECURITY_EFFECT_ROOT"],
+        "report": ["ACCESS_PERMISSIONS_ROOT","INSTITUTIONAL_POLICY_ROOT","SECURITY_EFFECT_ROOT"]
       }
     }
   ],
-  "publish": {
-    "tree": {
-      "source": ".",
-      "path": "packages/oorexx_ldap_identity_v0.1-dev13"
-    }
-  }
+  "publish": {"tree":{"source":".","path":"packages/oorexx_ldap_identity_v0.1-dev21"}}
 }
