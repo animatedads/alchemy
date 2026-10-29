@@ -1,4 +1,4 @@
-/* ooRexx Source / Code / Class Editor v0.1-dev6
+/* ooRexx Source / Code / Class Editor v0.1-dev7
  * Language-neutral editing core with first-tier ooRexx, C, C++, JSON and Python profiles.
  * The implementation language is ooRexx; source semantics stay language-neutral.
  */
@@ -419,6 +419,73 @@ badPattern:
     work[j+1]=item
   end
   return work
+
+::class SourceEditorCliSearchArgs public
+::method init
+  use arg expression, mode='text', caseMode='sensitive'
+  self~expression=expression
+  self~mode=mode
+  self~caseMode=caseMode
+::attribute expression get
+::attribute mode get
+::attribute caseMode get
+
+::method parse class
+  use arg argv, startIndex=3, defaultMode='text', defaultCase='sensitive'
+  mode=defaultMode
+  caseMode=defaultCase
+  endIndex=argv~items
+  explicit=.false
+
+  do i=startIndex to endIndex
+    if argv[i]='--mode' | argv[i]='--case' then explicit=.true
+  end
+
+  if \explicit then do
+    if endIndex>=startIndex+1 then do
+      last=argv[endIndex]~lower
+      if last='sensitive' | last='insensitive' then do
+        caseMode=last
+        endIndex=endIndex-1
+      end
+    end
+    if endIndex>=startIndex+1 then do
+      last=argv[endIndex]~lower
+      if last='text' | last='code' then do
+        mode=last
+        endIndex=endIndex-1
+      end
+    end
+  end
+
+  words=.array~new
+  i=startIndex
+  do while i<=endIndex
+    token=argv[i]
+    if token='--mode' then do
+      i=i+1
+      if i>endIndex then raise syntax 88.900 array('--mode requires text or code')
+      mode=argv[i]~lower
+    end
+    else if token='--case' then do
+      i=i+1
+      if i>endIndex then raise syntax 88.900 array('--case requires sensitive or insensitive')
+      caseMode=argv[i]~lower
+    end
+    else words~append(token)
+    i=i+1
+  end
+
+  if mode<>'text' & mode<>'code' then raise syntax 88.900 array('invalid search mode:' mode)
+  if caseMode<>'sensitive' & caseMode<>'insensitive' then raise syntax 88.900 array('invalid search case:' caseMode)
+  if words~items=0 then raise syntax 88.900 array('search expression is empty')
+
+  expression=''
+  do word over words
+    if expression<>'' then expression=expression||' '
+    expression=expression||word
+  end
+  return self~new(expression,mode,caseMode)
 
 ::class SourceScannerFactory public
 ::method scannerFor
