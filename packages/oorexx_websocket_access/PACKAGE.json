@@ -1,11 +1,12 @@
 {
   "name": "oorexx_websocket_access",
-  "version": "0.1-dev3",
+  "version": "0.1-dev4",
   "status": "SOURCE_CANDIDATE",
   "api": [
     "websocket.access/0.1",
     "websocket.message/0.1",
-    "websocket.handshake.crypto/0.1"
+    "websocket.handshake.crypto/0.1",
+    "websocket.server.access/0.1"
   ],
   "spiral": 1,
   "standard": [
@@ -17,20 +18,25 @@
   },
   "optional_dependencies": {
     "oorexx_crypto": "0.8.3",
-    "oorexx_crypto_auth": "0.1-dev1"
+    "oorexx_crypto_auth": "0.1-dev1",
+    "oorexx_https_server": "owned upgrade-handoff counterpart"
   },
   "optional_live_qualification": [
-    "Python websockets 16.x"
+    "independent RFC6455 COTS client/server"
   ],
   "implemented": [
-    "opening handshake validation",
+    "client opening handshake validation",
     "client masking",
+    "server-side RFC6455 acceptance over existing plaintext stream",
+    "parsed HTTPS upgrade handoff",
+    "coalesced post-HTTP frame preservation",
     "text/binary/control framing",
     "fragmented data-message reassembly",
     "control-frame interleaving during fragmentation",
     "close/ping/pong handling",
     "bounded assembled message size",
     "fail-closed reserved opcode and RSV handling",
+    "Origin allowlist and subprotocol selection",
     "optional estate crypto.auth SHA-1/base64 handshake adapter",
     "shared injected entropy authority for handshake nonce and frame masks"
   ],
@@ -45,6 +51,7 @@
   },
   "candidate_nonclaims": [
     "fresh Socket Provider dev16 live qualification",
+    "owned HTTPS -> WebSocket live qualification",
     "production entropy provider binding",
     "RFC8441",
     "RFC9220",
