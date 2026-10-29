@@ -1,4 +1,4 @@
-/* Presentation adapter: Source Editor owns candidate semantics and ordering. */
+/* Presentation-only adapter; Source Editor owns completion candidates. */
 ::class CliUiCompletionPresentation public
 ::method init
   expose candidates selected
@@ -16,6 +16,7 @@
 ::method select
   expose candidates selected
   use strict arg index
+  if \datatype(index,'W') then return .false
   if index<1 | index>candidates~items then return .false
   selected=index
   return .true
@@ -28,4 +29,17 @@
   use strict arg nextCandidates
   candidates=nextCandidates
   selected=0
+  return self
+::method preserveSelection
+  expose candidates selected
+  use strict arg nextCandidates
+  old=self~current
+  candidates=nextCandidates
+  selected=0
+  if old==.nil then return self
+  do i=1 to candidates~items
+    if candidates[i] \== old then iterate
+    selected=i
+    leave
+  end
   return self
