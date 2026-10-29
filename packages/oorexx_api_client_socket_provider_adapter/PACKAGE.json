@@ -1,20 +1,31 @@
 {
   "name": "oorexx_api_client_socket_provider_adapter",
-  "version": "0.1-dev1",
+  "version": "0.1-dev2",
   "api": "api.client.socket-provider/0.1",
-  "role": "optional API Client byte-carrier acquisition through SocketProvider",
+  "role": "API Client byte-carrier acquisition through SocketProvider with dynamic Socket Intention route resolution",
   "dependencies": {
     "api_client": "api.client/0.4",
-    "socket_provider": "socket.provider/0.1"
+    "socket_provider": "socket.provider/0.1",
+    "socket_intention": "socket.negotiation/0.1"
   },
   "authority": {
     "api_client": "HTTP/TLS/redirect/ALPN semantics",
     "socket_provider": "native transport acquisition and selected SocketAddress",
-    "adapter": "carrier shape and readiness bridge only"
+    "adapter": "carrier shape and readiness bridge only",
+    "socket_intention": "fresh per-request carrier offer discovery and selection"
   },
   "xtp": {
     "dependency": false,
     "selection": false,
     "live_https_claim": false
+  },
+  "dynamic_route_resolution": {
+    "defaultAllowedSchemes": [
+      "xtp",
+      "tcp"
+    ],
+    "requireStream": true,
+    "requireSecure": false,
+    "reason": "API Client TLS runs above the selected raw byte carrier"
   }
 }
