@@ -1,4 +1,4 @@
-/* JudgmentReasoningLedger/0.2 - public-source judicial reasoning trace.
+/* JudgmentReasoningLedger/0.3 - public-source judicial reasoning trace.
  * Architecture: Tom Dyer. Code: ChatGPT GPT-6.
  * Generic, domain-neutral; does not judge whether witness events are true.
  * Source-anchored actors must remain distinct: prior tribunal vs appellate court.
@@ -41,7 +41,12 @@
   expose nodes
   use strict arg id
   if \nodes~hasIndex(id) then raise syntax 93.900 array('UNKNOWN_RECORD:' || id)
-  return nodes[id]
+  /* The caller receives a detached snapshot, never the admitted source. */
+  n = nodes[id]; copy = .directory~new
+  do key over n~allIndexes
+    copy[key] = n[key]
+  end
+  return copy
 
 ::method trace
   expose nodes edges
@@ -107,7 +112,8 @@
   do e over edges
     from = nodes[e['from']]; to = nodes[e['to']]
     typ = e['relation']
-    defect = self~classifyEdge(from, to, typ)
+    if from['id'] = to['id'] then defect = 'SELF_RELATION'
+    else defect = self~classifyEdge(from, to, typ)
     /* Repeated citations to one inferential edge are not fresh evidence.
      * Length-prefixed key prevents delimiter ambiguities in arbitrary IDs. */
     if defect = '' then do
