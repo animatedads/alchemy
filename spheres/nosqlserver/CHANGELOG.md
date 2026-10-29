@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4 — 2026-10-29
+- GitHub now contains full NoSQLServer v0.91 and v0.92-dev1 source.
+- Documented exact SQLite INTEGER rowid seek, lazy counts and the passing 10,002-row regression.
+- Distinguished separately selected Rexx/SQL native SQLite indexed execution from NoSQLServer's governing SQL semantics.
+- Preserved historical v0.79/v0.91 provenance, performance and infrastructure deployment limits.
+
 ## 0.3 — 2026-10-23 SQLite writable candidate continuity
 - Added `nosqlserver.sqlite-writable-v091`: opt-in backend, native prepared mutations, WAL-coherent snapshots, BEGIN IMMEDIATE schema/row validation and failure semantics.
 - Distinguished complete GitHub v0.79 source, separately delivered complete v0.91 candidate and merged PR #20 patch intake.
