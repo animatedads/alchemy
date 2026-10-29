@@ -111,9 +111,9 @@
   if \self~resultOk(rs) then return .DirectoryResult~failure("PEER_OUTBOX_READ_FAILED",rs~message)
   out=.array~new
   do row over rs~rows
-    signal on syntax name corruptRequest
-    request=.IdentityPeerUpdateCodec~fromJson(row["payload"]~string)
-    signal off syntax
+    decoded=self~decodeRequestRow(row)
+    if \decoded~ok then return decoded
+    request=decoded~value
     if request~requestId<>row["request_id"]~string then return .DirectoryResult~failure("PEER_OUTBOX_CORRUPT_REQUEST_ID",row["request_id"])
     if request~semanticIdentity<>row["request_identity"]~string then return .DirectoryResult~failure("PEER_OUTBOX_CORRUPT_IDENTITY",row["request_id"])
     if request~originPeerId<>row["origin_peer_id"]~string then return .DirectoryResult~failure("PEER_OUTBOX_CORRUPT_ORIGIN",row["request_id"])
@@ -122,7 +122,14 @@
     out~append(request)
   end
   return .DirectoryResult~success(out,"REQUESTS_LOADED")
+::method decodeRequestRow private
+  use strict arg row
+  signal on syntax name corruptRequest
+  request=.IdentityPeerUpdateCodec~fromJson(row["payload"]~string)
+  signal off syntax
+  return .DirectoryResult~success(request)
 corruptRequest:
+  if value("LDAP_DIAGNOSTICS",,"ENVIRONMENT") = "1" then say "LDAP peer outbox decode trapped" condition("C") condition("D") "RC=" rc "SIGL=" sigl
   signal off syntax
   return .DirectoryResult~failure("PEER_OUTBOX_CORRUPT_PAYLOAD")
 ::method loadAcks
