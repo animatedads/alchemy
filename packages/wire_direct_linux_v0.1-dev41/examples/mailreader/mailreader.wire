@@ -1,0 +1,16 @@
+# WIRE-DIRECT/0.1 declarative model. Same semantic tree as mailreader.xml.
+Window mailreader title="Wire MailReader" width=1200 height=760
+  Split main orientation=horizontal position=260
+    Stack foldersPane width=260
+      Label foldersHeading text="Folders"
+      Scroll foldersScroll expand=true
+        VirtualList folders source=folders start=0 count=12
+    Split reading orientation=horizontal position=700
+      Stack messagesPane expand=true
+        Label messagesHeading text="Messages — virtual window / 200,000 backing messages"
+        Scroll messagesScroll expand=true
+          VirtualList messages source=messages start=0 count=100
+      Stack messagePane width=480
+        Label messageHeading text="Message"
+        Scroll messageScroll expand=true
+          Document message value="Select a message"

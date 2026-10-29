@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<wire>
+  <Window id="mailreader" title="Wire MailReader" width="1200" height="760">
+    <Split id="main" orientation="horizontal" position="260">
+      <Stack id="foldersPane" width="260">
+        <Label id="foldersHeading" text="Folders"/>
+        <Scroll id="foldersScroll" expand="true">
+          <VirtualList id="folders" source="folders" start="0" count="12"/>
+        </Scroll>
+      </Stack>
+      <Split id="reading" orientation="horizontal" position="700">
+        <Stack id="messagesPane" expand="true">
+          <Label id="messagesHeading" text="Messages — virtual window / 200,000 backing messages"/>
+          <Scroll id="messagesScroll" expand="true">
+            <VirtualList id="messages" source="messages" start="0" count="100"/>
+          </Scroll>
+        </Stack>
+        <Stack id="messagePane" width="480">
+          <Label id="messageHeading" text="Message"/>
+          <Scroll id="messageScroll" expand="true">
+            <Document id="message" value="Select a message"/>
+          </Scroll>
+        </Stack>
+      </Split>
+    </Split>
+  </Window>
+</wire>
