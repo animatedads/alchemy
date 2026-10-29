@@ -1,0 +1,168 @@
+{
+  "component": "libxtp",
+  "version": "0.1-dev34",
+  "capabilities": {
+    "unicast": true,
+    "listener": true,
+    "multipath": true,
+    "path_requalification": true,
+    "wire_filters": true,
+    "multicast": true,
+    "multicast_stream": true,
+    "rate_control": true,
+    "priority_sort": true,
+    "priority_deadline": true,
+    "route_xroute_exchange": true,
+    "named_service": true,
+    "unicast_segmentation": true,
+    "selective_retransmission": true,
+    "sync_echo": true,
+    "diag": true
+  },
+  "named_service": {
+    "first_address_segment": true,
+    "pre_ack_admission": true,
+    "application_identity_is_symbolic": true,
+    "ip_addresses_route_only": true
+  },
+  "multicast": {
+    "advertised": true,
+    "xtp_revision": "3.4 profile",
+    "multi_flag": "common-header OPTIONS byte 3 bit 3",
+    "carriers": [
+      "l2",
+      "raw36",
+      "udp"
+    ],
+    "reliable_mode": "go-back-n",
+    "noerr": true,
+    "acknowledgement_quorum": true,
+    "receiver_replay_suppression": true,
+    "slowest_receiver_alloc_pacing": true,
+    "multicast_reject_suppression": true,
+    "stream_profile": "FIRST plus DATA packets with byte sequence space",
+    "go_back_n": "receiver CNTL RSEQ selects rollback byte; sender resumes from containing segment",
+    "allocation_pacing": "sender advances only within minimum receiver ALLOC after population discovery",
+    "reject_suppression": "receiver multicasts reject notice and suppresses its own reject when an observed RSEQ is <= its required RSEQ",
+    "segment_bytes_default": 1200,
+    "binary_cli_file_io": true,
+    "receiver_rate_burst_pacing": true,
+    "rate_control": "sender honors minimum receiver RATE/BURST from CNTL; RATE=0xffffffff disables pacing"
+  },
+  "route_exchange": {
+    "common_route_field": "32-bit common-header ROUTE at bytes 20..23",
+    "control_xroute_field": "32-bit CNTL XROUTE at control offset 32",
+    "return_form": "incoming ROUTE with high direction bit set",
+    "scope": "endpoint ROUTE/XROUTE exchange; full multi-hop router forwarding remains separate"
+  },
+  "operationalPriorityClasses": true,
+  "operationalPlannerAuthority": "external",
+  "operationalCapacityScopes": {
+    "per_context_cap_percent": true,
+    "max_parallel_contexts": "external admission/orchestration",
+    "aggregate_cap_percent": "external admission/orchestration"
+  },
+  "dev26_hardening": {
+    "control_source_binding": "unicast sender accepts a close-ACK only from the route destination: IPv4 address+port (udp), IPv4 address (raw36), destination MAC addressed to own MAC (l2). Source binding only; not authentication.",
+    "l2_destination_mac_enforced": "unicast listener ignores frames not addressed to its own MAC",
+    "zero_throttle_fails_closed": "operational_path_permitted is false and operational_delay_for_bytes is maximal when the effective rate is 0%, matching the planner CapacityGovernor; ooRexx XtpOperationalSocket returns -7",
+    "malformed_first_dropped": "a FIRST with a malformed priority option, named-service segment or wire envelope is dropped unacknowledged (stderr XTP_DROP_MALFORMED); receive() keeps serving",
+    "decode_before_acknowledge": "the wire envelope is decoded before the close-ACK, so an undecodable FIRST is never reported delivered",
+    "replay_scope": "(peer host, KEY, FIRST payload digest): source MAC on l2, source IPv4 address on raw36/udp (port excluded so a restarted sender retrying the same KEY and payload is still suppressed); a colliding KEY with different bytes is delivered",
+    "replay_window_entries_default": 65536,
+    "not_addressed": [
+      "authenticated FIRST/ACK (gateway contract steps 2 and 6)",
+      "multicast listener replay scope",
+      "send_message consulting the operational plan directly"
+    ],
+    "control_return_bit_required": "a close-ACK is accepted only if its KEY carries the XTP return bit"
+  },
+  "dev27_unicast_segmentation": {
+    "single_packet_unchanged": "a message plus its named-service segment that fits SendOptions::segment_bytes is one FIRST with EOM, byte-identical to dev26",
+    "stream": "larger messages are FIRST (no EOM) + DATA packets with byte SEQ, MULTI clear, SREQ on every packet; receiver must be dev27+",
+    "segment_bytes_default": "l2: interface MTU - 40; raw36 and udp: one maximal IP datagram (65472 / 65464 data bytes) so every message that worked before keeps the single-FIRST path",
+    "flow_control": "reuses the multicast go-back-N engine with one receiver: receiver ALLOC bounded by half the real socket receive buffer; RATE/BURST and operational capacityRate honoured",
+    "retries": "bound consecutive rounds without progress (streams only; multicast unchanged)",
+    "receiver": "reassembly per (peer host, KEY); service admission at FIRST; decode before the final close-ACK; up to 256 open streams; completed streams re-ACK a lost final close",
+    "limitation": "no selective retransmission (ECNTL/SPANS): under 20% forward / 14% reverse loss a 200-segment stream retransmitted 8867 packets"
+  },
+  "dev28_selective_retransmission": {
+    "wire": "XTP 3.4 CNTL NSPAN at control-segment offset +36 (always 0 before dev28) followed by NSPAN pairs [start,end) after the 40-byte control segment; DCHECK covers them; at most 64 spans",
+    "compatibility": "an NSPAN=0 CNTL is byte-identical to dev27; dev26/dev27 parsers ignore spans; malformed NSPAN (overlong or inverted span) is refused",
+    "receiver": "keeps out-of-order segments inside its advertised window and reports them as SPANs; a FIRST identical to one already seen is a retransmission: it no longer resets the stream, and after completion it only re-sends the close",
+    "sender": "unicast streams use selective repeat: holes below the highest SPAN are resent after 2xSRTT; a receiver that never reports SPANs (dev27) gets go-back-N after three duplicate CNTLs; a full timeout resends everything unacknowledged inside ALLOC",
+    "measured": "200 segments through 20% forward / 14% reverse loss: 49 retransmissions (dev27: 8867)",
+    "multicast": "unchanged (still go-back-N)"
+  },
+  "dev29_sync_echo_diag": {
+    "status_request": "sender CNTL (KEY without the return bit), SYNC at control +20, SREQ in the trailer; dev28 and earlier receivers ignore it",
+    "echo": "receiver CNTLs carry ECHO at control +16 = the last SYNC received for that stream (0 until one arrives; byte-identical to dev28 when 0)",
+    "context_binding": "once the peer has echoed, the stream sender believes only CNTLs whose ECHO is a SYNC of this context (random 31-bit base per context); a stale or duplicated CNTL from another context with the same KEY is ignored",
+    "exact_repair": "the reply to SYNC k reflects every packet sent before k; any segment sent before k and still uncovered is resent at once",
+    "wtimer": "2 x SYNC/ECHO round trip, floor 10 ms, doubling per consecutive timeout, cap 8 x timeout_ms; a peer that never echoes keeps fixed timeout_ms",
+    "diag": "packet type 8 (XTP 4.0 code), data CODE(4) VALUE(4) ASCII reason; code 1 CONTEXT_REFUSED with value 1 SERVICE_NOT_ADMITTED, 2 OVERSIZE, 3 MALFORMED; sent by the listener on refusal; every unicast sender fails fast on a DIAG that passes the same source and return-bit binding as an ACK",
+    "measured": "stale close injection: dev28 reports success without delivery, dev29 delivers; 100 KB at 20%/14% loss with timeout_ms=2000: dev28 2010 ms, dev29 7 ms; refused service: dev28 6.1 s, dev29 1 ms",
+    "scope": "SYNC/ECHO covers unicast streams; single-FIRST unicast and multicast are unchanged apart from DIAG"
+  },
+  "dev30_diag_hardening": {
+    "reason_on_wire": "only the VALUE name; the requested service name and parser messages stay in the local log (dev29 echoed both)",
+    "size_bound": "a DIAG is never larger than the packet that caused it: the named reason is dropped if it does not fit, and no DIAG is sent if a bare one does not fit",
+    "rate_limit": "token buckets per peer host (ListenOptions diag_rate_per_sec 10, diag_burst 20) and in total (diag_global_rate_per_sec 100, burst twice that); over the limit the peer gets silence; 0 turns DIAG off; at most 4096 peers are tracked, idle ones are forgotten, and beyond that DIAG is withheld",
+    "reserved_values": "VALUE 16 POLICY_DENIED, 17 AUTH_REQUIRED, 18 FACILITY_UNSUPPORTED, 19 QUOTA_EXCEEDED, 20 LOOP_DETECTED, 21 INSPECTION_DENIED, 22 NOT_READY, 23 EMERGENCY_VETO are reserved for an XTP gateway (docs/DIAG_REGISTRY.md); libxtp names them in a sender error but never sends them",
+    "wire_compatibility": "packet format unchanged from dev29; dev29 senders already fail fast on any CODE 1 DIAG and report an unknown VALUE as UNKNOWN",
+    "measured": "dev29: 300 refused FIRSTs from one peer drew 300 DIAGs, and a 48-byte FIRST drew an 80-byte DIAG carrying the parser message; dev30: 20 DIAGs (the burst), and a 48-byte bare DIAG"
+  },
+  "dev31_interactive_contexts": {
+    "api": "include/xtp/xtp_session.hpp (open_session, SessionListener, Session read/write/shutdown_write/close/abort); rexx/XtpSession.cls (XtpSession, XtpSessionListener)",
+    "open": "FIRST with named-service descriptor byte 4 = 0x01 INTERACTIVE; the responder accepts with a return-bit FIRST carrying the same flag; dev30 and earlier listeners never accept, so open fails at its timeout with a reason",
+    "directions": "initiator packets use KEY, responder packets KEY with the return bit; each direction has its own byte sequence; DATA trailer EOM ends a message, WCLOSE ends the direction",
+    "status": "CNTL from either end: RSEQ, ALLOC = bytes read by the application + receive window, DSEQ = bytes read by the application, SPANs, ECHO; SREQ+SYNC requests status; RCLOSE = the peer WCLOSE has arrived; RCLOSE+WCLOSE+END finishes, END alone aborts",
+    "repair": "selective (SPANs) plus dev29 exact repair after an echoed SYNC; timer 2 x SRTT with 10 ms floor, doubling, capped at rto_max_ms",
+    "liveness": "status request after keepalive_ms of silence; the context fails after dead_after_ms of silence or of no acknowledgement progress",
+    "refusal": "DIAG code 1: VALUE 1 SERVICE_NOT_ADMITTED, VALUE 4 MODE_UNSUPPORTED (new), VALUE 19 QUOTA_EXCEEDED; rate limited and size bounded as in dev30",
+    "carriers": "UDP, raw IP protocol 36, L2 EtherType 0x817D",
+    "measured": "2 MB each way at once through 20%/14% loss in 65 ms on loopback, byte-exact, both directions closed; 20 concurrent sessions on one listener; refused open 50 ms; older listener detected at the 800 ms open timeout",
+    "hostile_peer_bounds": "RSEQ inside a held segment is taken as the segment start; out-of-order store bounded by the receive window and 1024 segments, overlaps refused; END needs an in-context ECHO once SYNC/ECHO is established; DIAG honoured only while opening; random SYNC bases and automatic KEYs; aborts resent at most every 200 ms; one log line per second per endpoint",
+    "review": "independent agent review before commit found 10 defects, all fixed; tests S15-S21",
+    "stream_sender_fix": "a stream sender whose receiver reported a SPAN and then went silent resent for ever (dev28-dev30); it now fails after (retries+1) x 8 x timeout_ms without progress; segmentation test S10 (dev30 still sending at 60 s, dev31 fails at 3.2 s)",
+    "limits": "no authentication, no wire filters, unicast only, 2^32-1 bytes per direction"
+  },
+  "dev32_service_protection": {
+    "decision": "D-07 (Tom Dyer, 28 October 2026): mechanism in libxtp; keys, identities and policy outside it; LDAP first, key file as fallback; authenticate and encrypt; per named service; the same strategy for X.25",
+    "scope": "sessions (open_session, SessionListener); one-way messages, streams and multicast are unchanged and unprotected",
+    "profiles": "none, authenticate, encrypt per named service, from the key set usage (XTP_AUTHENTICATE, XTP_ENCRYPT) or the key file; sticky once a service has had keys: expiry, revocation or a refresh without the keys makes opens fail, never fall back to clear; forget_profile lowers one, require sets one ahead of keys",
+    "primitives": "libcrypto (OpenSSL 3): HKDF-SHA256; AES-256-GCM or ChaCha20-Poly1305 with a 16-byte tag; authenticate mode is the AEAD over the whole packet with no plaintext",
+    "wire": "descriptor byte 4 adds 0x02 AUTHENTICATED and 0x04 ENCRYPTED; the open FIRST carries XSEC block (key id, initiator nonce, Unix ms) under an open key; the accept carries the responder nonce; every later packet ends its segment with a 24-byte tail (8-byte counter, 16-byte tag); checksums recomputed so packets stay valid 3.4",
+    "keys_per_context": "HKDF(secret, both nonces, 'XTP-CTX-1' service KEY protection suite), one key per direction; suite and protection bound into keys and tag (no downgrade)",
+    "replay": "1024-packet window per direction; opens within +-30 s of the responder clock; open nonces remembered 60 s once admitted (hash set and expiry queue, cap 65536, 16384 per key id)",
+    "key_confirmation": "a protected context reaches accept() only after a packet verifies under the opener's context key; an open replayed to another listener holding the key never does; unconfirmed contexts resend the accept at most 8 times and are dropped silently after 10 s",
+    "open_rate_limit": "protected opens limited before any cryptography: 200/s burst 400 per sending address, 2000/s in total (SessionListenOptions open_rate_per_sec, open_burst, open_global_rate_per_sec)",
+    "listener_policy": "a service with a profile refuses weaker opens with DIAG 17 AUTH_REQUIRED (authenticated under the open key when the open was protected); require_protection also refuses unprotected opens of services with no profile",
+    "key_lifetime": "about once a second each endpoint ends protected contexts whose key was revoked, expired or removed; RETIRING keys stay valid, so rotation does not end sessions",
+    "key_table": "KeyTable::global(): install, replace_source (checked first, swapped in one step), replace_source_text, revoke, clear_source, load_file, for_open, by_id, valid, required, require, forget_profile, list; secrets wiped on destruction",
+    "key_file": "one key per line: service key_id(16 hex) protection suite secret(64 hex) [principal|- not_before_ms not_after_ms active|retiring]; opened with O_NOFOLLOW; must be a regular file owned by the process user, mode 600 or stricter, at most 4 MB; strict parser shared with LDAP and the ooRexx install routine",
+    "oorexx": "rexx/XtpServiceKeys.cls (XtpServiceKeys refresh/require/forgetProfile/protectionOf/list, XtpFileKeySource) and rexx/XtpLdapKeySource.cls (Identity Directory over the estate LdapWireClient and Secret Broker; zero keys or any bad entry fails the fetch; placement, ownership, duplicate and secret-prefix checks); native routines xtpNativeKeyInstall, xtpNativeKeyReplaceSource, xtpNativeKeyClearSource, xtpNativeKeyLoadFile, xtpNativeKeyRevoke, xtpNativeServiceProtection, xtpNativeServiceRequire, xtpNativeServiceForgetProfile, xtpNativeKeyList; XtpSession open(peer, service, timeout, protection) and XtpSessionListener(peer, services, requireProtection)",
+    "diag": "VALUE 17 AUTH_REQUIRED is now sent by libxtp",
+    "evidence": "make test-security P1-P20; tests/test_xtp_service_keys_rexx.sh; VALIDATION_DEV32.txt",
+    "not_yet": "messages and streams (dev33); multicast group keys; LDAP client-owned key sets for gateway mode B; LDAP push updates; rekeying within a context"
+  },
+  "dev33_message_protection": {
+    "decision": "D-07 (Tom Dyer): per named service, now for one-way messages and streams as well as sessions",
+    "scope": "send_message and Listener on UDP, raw IP protocol 36 and L2; a protected service's messages always go as FIRST+DATA streams; multicast carries no named service and is unchanged; multipath (XMP1) not covered",
+    "wire": "FIRST: descriptor with AUTHENTICATED/ENCRYPTED flags, an 8-byte guard ('XWF1',1,0xFF,0,0) that older listeners refuse as MALFORMED, the 40-byte XSEC open block, data; every packet both ways ends its segment with the 24-byte tail (fresh counter per send); encrypt mode encrypts the data",
+    "keys": "HKDF-SHA256(secret, sender nonce, 'XTP-MSG-1' service KEY protection suite), 64 bytes, one key per direction; separate from session keys",
+    "receiver": "checks rate limit (per host), key, tag, clock (+-30 s), nonce (60 s cache), profile, admission; strips the tail and open block and hands the stream code a plain packet; replies are sealed; ReceiveResult protection, key_id, key_principal; ListenOptions require_protection, open rate limits, protected_contexts (4096)",
+    "sender": "believes only verified CNTLs and refusals; forged close-acknowledgements are dropped and counted (SendResult auth_failures); SendOptions protection is a minimum; no active key refuses before sending",
+    "limit": "no handshake: within the 30 s clock window a captured message can be delivered once at another listener holding the same service key; never twice at one listener",
+    "oorexx": "XtpNamedAcceptedSocket protection, keyId, keyPrincipal; xtpNativeListenerLastProtection; sends apply the service profile automatically",
+    "second_review": "nine findings on dev32 fixed: tenant key planting through crafted names (F1), one bad LDAP entry blocking every update (F2), clear sessions surviving a new profile (F3), clear-open crowding (F4), per-port open limit (F5), timer spin (Q4), refusal nonce reuse (Q5), secret copies in freed heap (Q6), O(n^2) key replacement (Q7)",
+    "session_changes": "every session open rate limited per host; unprotected contexts capped at half the table and backlog once any profile exists; at most an eighth of the table unconfirmed per host; contexts weaker than a new profile closed; refusal counters random; protected session segments leave room for the tail (L2 at full MTU failed in dev32)",
+    "ldap_changes": "entries checked one by one; a bad entry is skipped and reported in WARNINGS, never blocking other services; service names validated; misplaced generations ignored",
+    "evidence": "make test-security P1-P27; make test-message-security M1-M12; tests/test_xtp_ldap_hostile_rexx.sh; tests/test_xtp_message_keys_rexx.sh; tests/test_interop_protected.sh; VALIDATION_DEV33.txt"
+  },
+  "dev34_multipath_and_third_review": {
+    "multipath": "XMP1 chunks to a service with a profile are protected per chunk (send_message); MultipathListener keys a transfer by id, service, protection and key, so clear chunks never mix into a protected transfer; MultipathReceiveResult service_name, protection, key_id; malformed or oversized chunks are dropped, not thrown; at most 1024 transfers, 2^20 chunks; ooRexx XtpMultipathSocket service argument, xtpNativeMultipathLastProtection",
+    "third_review": "dev33 message code: return-bit FIRST/DATA dropped (H1); interactive FIRSTs never delivered as messages (H2); receiver counters start at a random 63-bit value (M1); empty protected messages sent (M2); finished contexts evicted first (L1); too-small protected segments refused (L2); revoked keys end message contexts at both ends (L3); duplicate principal and set ids handled (L4)",
+    "evidence": "make test-message-security M1-M20; make test-security P1-P27; ooRexx message and multipath test; VALIDATION_DEV34.txt"
+  }
+}
