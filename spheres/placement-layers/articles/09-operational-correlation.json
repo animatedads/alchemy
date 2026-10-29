@@ -1,0 +1,14 @@
+{
+  "id": "pl-operational-correlation",
+  "title": "Operational Correlation Does Not Create Placement Authority",
+  "summary": "Instrumentation Mesh dev8 can group GCI planning and handoff events by explicit source-supplied correlation, causation and context references. The grouping is an evidence view only.",
+  "why": "Cross-component operations need trace continuity, but inferred causality would silently turn observation into orchestration truth.",
+  "invariants": [
+    "GCI propagates explicit correlation_id, causation_id and context_refs from caller context.",
+    "Absent correlation metadata remains absent.",
+    "GCI does not infer correlation from timestamps, resource/node identity, service kind, severity, candidate order or event proximity.",
+    "Correlation does not change route admissibility, WLU admission, allocator placement, lease/release authority or execution status."
+  ],
+  "evidence_note": "Grounded in Instrumentation Mesh v0.1-dev8 event contract and GCI v0.1-dev8 test_mesh_dev8_correlation.rex.",
+  "grounding": "oorexx-grounded"
+}
