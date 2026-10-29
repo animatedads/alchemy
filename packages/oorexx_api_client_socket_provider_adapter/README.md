@@ -1,4 +1,4 @@
-# ooRexx API Client / SocketProvider Adapter v0.1-dev1
+# ooRexx API Client / SocketProvider Adapter v0.1-dev2
 
 Optional carrier adapter for API Client HTTPS transport.
 
@@ -32,3 +32,26 @@ That requires exact current SocketProvider/XTP source plus executable runtime
 qualification.
 
 No BOSH or XMPP dependency exists here.
+
+
+## dev2 — dynamic Socket Intention route resolution
+
+`ApiSocketIntentionRouteResolver` is the standard resolver for the adapter. It performs a fresh Socket Intention negotiation on every API request rather than caching a startup route.
+
+API Client route requirements such as country, VPN, network, egress class and tags remain API Client objects and are carried unchanged in negotiation metadata. They are not reinterpreted as socket-family choices.
+
+The lower Socket request is intentionally:
+
+```text
+role             SENDER
+requireStream    true
+requireSecure    false
+requireMulticast false
+allowedSchemes   xtp, tcp
+```
+
+`requireSecure=false` is deliberate. API Client owns TLS above the selected byte carrier, so selecting a lower TLS socket would create TLS-inside-TLS. The resolver therefore asks for a raw stream carrier and lets Socket negotiation choose between currently available raw stream providers.
+
+The semantic socket logical name comes from `ApiRequest~metadata["socketLogicalName"]` when supplied. An injected logical-name resolver may override the mapping. URL host is only the bounded fallback for ordinary public HTTPS calls.
+
+Every resolve increments its generation and retains the exact `SocketNegotiationSelection` and request for evidence. No XTP selection logic is added to API Client; XTP remains one offer behind the common Socket negotiation boundary.
