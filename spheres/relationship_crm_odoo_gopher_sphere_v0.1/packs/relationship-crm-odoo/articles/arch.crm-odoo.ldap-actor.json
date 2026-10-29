@@ -1,0 +1,27 @@
+{
+  "kind":"article",
+  "id":"arch.crm-odoo.ldap-actor",
+  "version":"0.1",
+  "sphere":"relationship-crm-odoo",
+  "title":"LDAP-authenticated actor attribution for CRM service commands",
+  "summary":"Dev12 binds Relationship CRM service actor attribution to the platform LDAP identity contract while keeping authentication, role authorization, CRM command policy and Odoo provider authority distinct.",
+  "authority":"project-architecture",
+  "invariants":[
+    "LDAP owns authentication attribution and principal/group state; the Odoo provider never receives LDAP credentials.",
+    "An authenticated LdapSession and ACTIVE LDAP principal are required before a CRM service actor can be constructed.",
+    "CRM actor role is admitted only through explicit local principal/group bindings; LDAP principalType is not a role and is never promoted implicitly.",
+    "The semantic LDAP principal ID becomes Relationship CRM Service actorId so command attribution is stable across providers.",
+    "Relationship CRM Service remains command, idempotency, persistence and Queue Fabric authority after LDAP actor resolution.",
+    "Missing, unauthenticated, inactive or unbound principals fail closed before a CRM service envelope is emitted."
+  ],
+  "procedure":[
+    "Authenticate through the platform LDAP service and retain its LdapSession.",
+    "Build explicit OdooRelationshipCRMLdapRoleBinding entries for approved CRM principals/groups.",
+    "Resolve the actor through OdooRelationshipCRMLdapActorResolver and call envelopesForLdapCallProjection.",
+    "Submit resulting envelopes only through Relationship CRM Service."
+  ],
+  "provenance":[
+    {"artifact":"oorexx_odoo_crm_provider_v0.1-dev12.zip","sha256":"451d9e5a5f4d4bd361d5c91488d08e34838623b4d724f7fe30b7e0f2fe017e3a","claim":"LDAP actor resolver and service-envelope integration"},
+    {"artifact":"oorexx_ldap_identity_v0.1-dev22.zip","sha256":"0000000000000000000000000000000000000000000000000000000000000000","claim":"structural LdapSession and IdentityDirectory contract inspected from current Library package"}
+  ]
+}

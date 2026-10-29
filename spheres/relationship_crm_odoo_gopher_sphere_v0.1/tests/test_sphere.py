@@ -15,7 +15,7 @@ class SphereQualification(unittest.TestCase):
     self.assertEqual(self.meta['access_policy'],self.policy['id'])
   def test_articles(self):
     ids=[a['id'] for a in self.articles]
-    self.assertEqual(len(ids),5); self.assertEqual(len(ids),len(set(ids)))
+    self.assertEqual(len(ids),6); self.assertEqual(len(ids),len(set(ids)))
     self.assertTrue(set(self.meta['start_here'])<=set(ids))
     for a in self.articles:
       self.assertEqual(a['sphere'],self.meta['id'])
@@ -24,11 +24,11 @@ class SphereQualification(unittest.TestCase):
         self.assertRegex(p['sha256'],r'^[0-9a-f]{64}$')
   def test_authority_boundaries(self):
     text=' '.join(x for a in self.articles for x in a['invariants'])
-    for term in ('SIP Call-ID','Relationship CRM','Odoo','mutation authority','Queue Fabric'):
+    for term in ('SIP Call-ID','Relationship CRM','Odoo','mutation authority','Queue Fabric','LDAP'):
       self.assertIn(term,text)
   def test_qualification_honesty(self):
     q=READ(ROOT/'qualification'/'QUALIFICATION.json')
-    self.assertIn('dev11 Relationship CRM Service integration regression on r13196',q['unqualified'])
+    self.assertIn('dev12 LDAP actor/service regression on r13196',q['unqualified'])
     self.assertIn('outbound SIP originating INVITE/UAC',q['unqualified'])
     a=next(a for a in self.articles if a['id']=='qual.crm-odoo.current')
     self.assertIn('HTTP1_ONLY',' '.join(a['invariants']+a['procedure']))
@@ -36,4 +36,9 @@ class SphereQualification(unittest.TestCase):
     a=next(a for a in self.articles if a['id']=='arch.crm-odoo.service')
     s=' '.join(a['invariants']+a['procedure'])
     self.assertLess(s.index('CRM.RELATIONSHIP.OPEN'),s.index('CRM.INTERACTION.RECORD'))
+  def test_ldap_fail_closed(self):
+    a=next(a for a in self.articles if a['id']=='arch.crm-odoo.ldap-actor')
+    s=' '.join(a['invariants'])
+    for term in ('authenticated LdapSession','ACTIVE LDAP principal','explicit local principal/group bindings','fail closed'):
+      self.assertIn(term,s)
 if __name__=='__main__': unittest.main()
