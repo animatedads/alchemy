@@ -1,0 +1,38 @@
+{
+  "schema": "single.time.service.event.v0.5",
+  "operation": "time.event.resolve",
+  "request": {
+    "institution": "EXAMPLE-SCHOOL",
+    "phrase": "dinner",
+    "onDate": "2026-10-26"
+  },
+  "responseFields": {
+    "status": [
+      "RESOLVED",
+      "FOLD",
+      "GAP",
+      "CLOSED",
+      "CANCELLED",
+      "NOT_SCHEDULED",
+      "OUT_OF_SCOPE",
+      "UNKNOWN_CONTEXT",
+      "UNKNOWN_EXPRESSION",
+      "AMBIGUOUS"
+    ],
+    "context": "string",
+    "phrase": "string",
+    "date": "YYYY-MM-DD",
+    "eventId": "string if unambiguous",
+    "zone": "IANA zone if unambiguous",
+    "calendarRevision": "string if unambiguous",
+    "eventRevision": "string if unambiguous",
+    "catalogRevision": "integer if unambiguous",
+    "tzdbEdition": "string if unambiguous",
+    "elapsedDurationSeconds": "integer if unambiguous",
+    "durationKind": "ELAPSED if unambiguous",
+    "reason": "optional explanatory string",
+    "meanings": "array of candidate event identities when ambiguous",
+    "occurrences": "zero or more TimeOccurrence.asRecord records"
+  },
+  "guarantees": "read-only; no persistence, dispatch or clock inference; dynamic phrase mappings local to institution"
+}
