@@ -72,3 +72,17 @@ the common Socket Provider boundary.  This package must not modify
 The dev1 tests in this directory remain evidence for the historical checked-in
 snapshot.  Current estate qualification is documented separately until the
 exact dev3 source delivery can be imported without invention.
+
+## Deployment preflight
+
+`tests/deployment_preflight.sh` now provides a fail-closed target check for the
+installed IPv6 socket closure. It reruns the checked-in TCP6 provider contract /
+negotiation / live loopback tests and adds a direct `socket6.cls` UDP6
+connected-datagram loopback test.
+
+The preflight deliberately reports
+`RXSOCK6_PREFLIGHT_PROVIDER_DEV3_SOURCE=NOT_ASSERTED`: proving that the target
+native class layer can perform UDP6 is not the same as claiming that the missing
+RxSock6 Socket Provider dev3 source has been synchronized.
+
+See `DEPLOYMENT_PREFLIGHT.md`.
