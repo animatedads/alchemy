@@ -11,6 +11,8 @@
 - Consolidated context normalization so `render` and `renderTo` share the same conversion path.
 - Added `test_formatter_binding.rex` covering registry isolation, sealed mutation rejection, unbound requirement inspection, render-time fail-closed behaviour and explicit rebinding.
 - Template syntax is unchanged.
+- Corrected the JSON-policy fixture expectation to match ooRexx literal semantics; the JSON escaper implementation itself was unchanged.
+- Fresh ooRexx 5.3.0 r13196 qualification on 2026-10-29: `rexxc` PASS and 7/7 runtime fixtures PASS.
 
 ## v0.1-dev2 — 2026-10-23
 
