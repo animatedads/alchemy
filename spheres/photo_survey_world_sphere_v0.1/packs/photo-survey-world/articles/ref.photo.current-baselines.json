@@ -1,54 +1,21 @@
 {
-  "kind": "article",
-  "id": "ref.photo.current-baselines",
-  "version": "0.1",
-  "sphere": "photo-survey-world",
-  "title": "Current baselines and dependency drift",
-  "summary": "Photo World dev21 remains the qualified Library authority; newer Library/GitHub dependency heads require explicit compatibility qualification before any rebase.",
-  "authority": "project-authoritative",
-  "baselines": {
-    "photo_world": {
-      "version": "0.1-dev21",
-      "artifact": "oorexx_photo_world_v0.1-dev21.zip",
-      "sha256": "ab63a8fcd453623cc371ccfda71f60588256260251d6f71deb338a6e85b97707",
-      "status": "CURRENT_LIBRARY"
-    },
-    "maths": {
-      "qualified": "0.14",
-      "library_register_head": "0.17",
-      "github_head": "0.19",
-      "status": "REQUALIFICATION_REQUIRED_BEFORE_REBASE"
-    },
-    "physics_world": {
-      "qualified": "0.1-dev46",
-      "library_register_head": "0.1-dev47.2",
-      "github_head": "0.1-dev50.1",
-      "status": "REQUALIFICATION_REQUIRED_BEFORE_REBASE"
-    },
-    "python_macrospace": {
-      "qualified": "0.31.6",
-      "library_newer_head": "0.31.7",
-      "status": "REQUALIFICATION_REQUIRED_BEFORE_REBASE"
-    },
-    "oorexx": {
-      "version": "5.3.0-r13196",
-      "status": "QUALIFICATION_RUNTIME"
-    }
+  "kind":"article",
+  "id":"ref.photo.current-baselines",
+  "version":"0.1",
+  "sphere":"photo-survey-world",
+  "title":"Current baselines and dependency drift",
+  "summary":"Photo World dev21 is current Library authority; its qualified dependency lock is retained until newer Library heads are explicitly requalified.",
+  "authority":"project-authoritative",
+  "baselines":{
+    "photo_world":{"version":"0.1-dev21","artifact":"oorexx_photo_world_v0.1-dev21.zip","sha256":"ab63a8fcd453623cc371ccfda71f60588256260251d6f71deb338a6e85b97707","status":"CURRENT_LIBRARY"},
+    "maths":{"version":"0.14","status":"PINNED_QUALIFIED_DEPENDENCY"},
+    "physics_world":{"qualified":"0.1-dev46","library_newer_head":"0.1-dev47.2","status":"REQUALIFICATION_REQUIRED_BEFORE_REBASE"},
+    "python_macrospace":{"qualified":"0.31.6","library_newer_head":"0.31.7","status":"REQUALIFICATION_REQUIRED_BEFORE_REBASE"},
+    "oorexx":{"version":"5.3.0-r13196","status":"QUALIFICATION_RUNTIME"}
   },
-  "invariants": [
-    "A newer Library package does not silently replace an exact qualified dependency.",
-    "Sealed dependency snapshots are reproducibility material, not source authority."
-  ],
-  "provenance": [
-    {
-      "artifact": "Project_Alchemy_Package_Register_v0.4.pdf",
-      "claim": "Current Library package placements as of 2026-10-09."
-    },
-    {
-      "artifact": "oorexx_photo_world_v0.1-dev21.zip",
-      "sha256": "ab63a8fcd453623cc371ccfda71f60588256260251d6f71deb338a6e85b97707",
-      "member": "compatibility-lock.json",
-      "claim": "Exact dev21 qualified dependency lock."
-    }
+  "invariants":["A newer Library package does not silently replace an exact qualified dependency.","Sealed dependency snapshots are reproducibility material, not source authority."],
+  "provenance":[
+    {"artifact":"Project_Alchemy_Package_Register_v0.4.pdf","claim":"Current Library package placements as of 2026-10-09."},
+    {"artifact":"oorexx_photo_world_v0.1-dev21.zip","sha256":"ab63a8fcd453623cc371ccfda71f60588256260251d6f71deb338a6e85b97707","member":"compatibility-lock.json","claim":"Exact dev21 qualified dependency lock."}
   ]
 }

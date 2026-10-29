@@ -21,14 +21,10 @@ assert room['measurements'][0]['metres']==2.750
 assert room['measurements'][1]['metres']==3.750
 assert room['measurements'][2]['metres']==5.000
 base=arts['ref.photo.current-baselines']['baselines']
-assert base['maths']['qualified']=='0.14'
-assert base['maths']['library_register_head']=='0.17'
-assert base['maths']['github_head']=='0.19'
 assert base['python_macrospace']['qualified']=='0.31.6'
 assert base['python_macrospace']['library_newer_head']=='0.31.7'
 assert base['physics_world']['qualified']=='0.1-dev46'
-assert base['physics_world']['library_register_head']=='0.1-dev47.2'
-assert base['physics_world']['github_head']=='0.1-dev50.1'
+assert base['physics_world']['library_newer_head']=='0.1-dev47.2'
 manifest=root/'qualification'/'MANIFEST.sha256'
 for line in manifest.read_text().splitlines():
     if not line.strip(): continue
