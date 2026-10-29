@@ -1,0 +1,83 @@
+{
+  "kind": "article",
+  "id": "ops.brand.current-source-state",
+  "version": "0.2",
+  "sphere": "brand-interaction-stack",
+  "title": "Current source state versus executable qualification",
+  "summary": "Git main remains ahead of the latest recorded whole-stack executable baseline. Manual source publication is not Autobuild qualification. Structured Utterance Producer v0.2-dev1 was superseded before independent qualification after an eager-boolean nil-guard audit; v0.2-dev2 is the current source candidate and is queued for exact-r13196 qualification.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "packages/ presence on main is not sufficient qualification evidence.",
+    "Manual publication commit 99f4a1b03b353c21e0f0dfa21fc873299d12055d is explicitly NOT AUTOBUILD-QUALIFIED.",
+    "The Sep-2 roll-up remains this sphere's latest recorded whole-stack executable baseline.",
+    "Brand Intervention v0.2.1 repairs the Journey Population v0.3 provenance ownership call in source, but its manual publication is not a fresh qualification.",
+    "Structured Utterance Producer v0.2-dev1 is SUPERSEDED_BEFORE_QUALIFICATION; v0.2-dev2 is SOURCE_CANDIDATE until independent exact-r13196 evidence returns.",
+    "Brand Narrative Directive v0.1-dev4 remains NO_DISPATCH with publication authority NONE.",
+    "Nil/type fail-closed guards in Producer code are sequential; ooRexx eager |/& evaluation must not be relied on to protect object message sends."
+  ],
+  "procedure": [
+    "Use source heads for continued development.",
+    "Use Sep-2 qualification evidence for claims requiring an executable whole-stack baseline.",
+    "Promote newer heads only when exact test evidence exists; do not infer a pass from manual publication."
+  ],
+  "manual_publication": {
+    "commit": "99f4a1b03b353c21e0f0dfa21fc873299d12055d",
+    "record": "autobuild/manual-publication/2026-10-23.json",
+    "status": "NOT_AUTOBUILD_QUALIFIED",
+    "tests_run": false,
+    "receipts_written": false
+  },
+  "producer_v02_dev1": {
+    "path": "packages/structured_utterance_producer_v0.2-dev1",
+    "commit": "c4ebebcb0fc71e8a953e5946397460419597b41d",
+    "api": "structured.utterance.producer/0.1",
+    "payload_schema": "structured.utterance.production-result/0.1",
+    "status": "SUPERSEDED_BEFORE_QUALIFICATION",
+    "test_request": "REQ-00001495",
+    "superseded_by": "packages/structured_utterance_producer_v0.2-dev2",
+    "superseded_commit": "faa81c230408c8954ded7669a3d0e57fee246ac0"
+  },
+  "brand_intervention_v021": {
+    "path": "packages/brand_intervention_v0.2.1",
+    "api": "brand.intervention/0.2",
+    "status": "MANUALLY_PUBLISHED_NOT_AUTOBUILD_QUALIFIED"
+  },
+  "brand_narrative_directive": {
+    "path": "packages/brand_narrative_directive_v0.1-dev4",
+    "api": "brand.narrative.directive/0.1",
+    "status": "MANUALLY_PUBLISHED_NOT_AUTOBUILD_QUALIFIED",
+    "dispatch": "NO_DISPATCH",
+    "publication_authority": "NONE"
+  },
+  "provenance": [
+    {
+      "artifact": "github:animatedads/alchemy@99f4a1b03b353c21e0f0dfa21fc873299d12055d",
+      "member": "autobuild/manual-publication/2026-10-23.json",
+      "claim": "Manual publication records NOT AUTOBUILD-QUALIFIED status, no tests and no receipts."
+    },
+    {
+      "artifact": "github:animatedads/alchemy@c4ebebcb0fc71e8a953e5946397460419597b41d",
+      "member": "packages/structured_utterance_producer_v0.2-dev1/VALIDATION.txt",
+      "claim": "Producer v0.2-dev1 is a source candidate awaiting exact-r13196 independent qualification."
+    },
+    {
+      "artifact": "github:animatedads/alchemy@99f4a1b03b353c21e0f0dfa21fc873299d12055d",
+      "member": "packages/brand_intervention_v0.2.1/VALIDATION.txt",
+      "claim": "Brand Intervention v0.2.1 requires fresh executable acceptance and does not claim it from source publication."
+    },
+    {
+      "artifact": "github:animatedads/alchemy@faa81c230408c8954ded7669a3d0e57fee246ac0",
+      "member": "packages/structured_utterance_producer_v0.2-dev2/VALIDATION.txt",
+      "claim": "Producer v0.2-dev2 supersedes dev1 before qualification and records the eager-boolean nil-guard correctness repair while preserving API and payload schema."
+    }
+  ],
+  "producer_v02_dev2": {
+    "path": "packages/structured_utterance_producer_v0.2-dev2",
+    "commit": "faa81c230408c8954ded7669a3d0e57fee246ac0",
+    "api": "structured.utterance.producer/0.1",
+    "payload_schema": "structured.utterance.production-result/0.1",
+    "status": "SOURCE_CANDIDATE",
+    "test_request": "REQ-00002161",
+    "correction": "sequential fail-closed nil/type guards; no API or Structured Response envelope ownership change"
+  }
+}
