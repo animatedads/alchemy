@@ -6,23 +6,17 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 : "${OOREXX_CRYPTO_ROOT:?set OOREXX_CRYPTO_ROOT to ooRexx Crypto v0.8.3}"
 : "${SECRET_BROKER_ROOT:?set SECRET_BROKER_ROOT to ooRexx Secret Broker v0.2}"
 : "${ALCHEMY_OBJECTS_ROOT:?set ALCHEMY_OBJECTS_ROOT to Alchemy Objects v0.8}"
-: "${NOSQLSERVER_ROOT:?set NOSQLSERVER_ROOT to NoSQLServer v0.85}"
-: "${SOCKET_PROVIDER_ROOT:?set SOCKET_PROVIDER_ROOT to ooRexx Socket Provider v0.1-dev12}"
+: "${NOSQLSERVER_ROOT:?set NOSQLSERVER_ROOT to NoSQLServer v0.88}"
+: "${SOCKET_PROVIDER_ROOT:?set SOCKET_PROVIDER_ROOT to ooRexx Socket Provider v0.1-dev14}"
 : "${INTENTION_SERVICE_ROOT:?set INTENTION_SERVICE_ROOT to ooRexx Intention Service v0.1-dev11}"
+: "${INSTRUMENTATION_MESH_ROOT:?set INSTRUMENTATION_MESH_ROOT to ooRexx Instrumentation Mesh v0.1-dev8}"
 
-for f in \
-  "$OOREXX_DEB" \
-  "$OOREXX_CRYPTO_ROOT/src/crypto.cls" \
-  "$SECRET_BROKER_ROOT/src/SecretBroker.cls" \
-  "$ALCHEMY_OBJECTS_ROOT/src/AlchemyObject.cls" \
-  "$NOSQLSERVER_ROOT/src/NoSQLServer.cls" \
-  "$SOCKET_PROVIDER_ROOT/src/SocketProvider.cls" \
-  "$INTENTION_SERVICE_ROOT/src/IntentionService.cls"
+for f in   "$OOREXX_DEB"   "$OOREXX_CRYPTO_ROOT/src/crypto.cls"   "$SECRET_BROKER_ROOT/src/SecretBroker.cls"   "$ALCHEMY_OBJECTS_ROOT/src/AlchemyObject.cls"   "$NOSQLSERVER_ROOT/src/NoSQLServer.cls"   "$SOCKET_PROVIDER_ROOT/src/SocketProvider.cls"   "$INTENTION_SERVICE_ROOT/src/IntentionService.cls"   "$INSTRUMENTATION_MESH_ROOT/src/InstrumentationMesh.cls"   "$INSTRUMENTATION_MESH_ROOT/src/InstrumentationServiceAdapters.cls"   "$INSTRUMENTATION_MESH_ROOT/src/InstrumentationCorrelation.cls"
 do
   [[ -e "$f" ]] || { echo "missing environment dependency: $f" >&2; exit 2; }
 done
 
-work="$(mktemp -d "${TMPDIR:-/tmp}/ldap-dev14-env.XXXXXX")"
+work="$(mktemp -d "${TMPDIR:-/tmp}/ldap-dev21-env.XXXXXX")"
 trap 'rm -rf "$work"' EXIT
 runtime="$work/oorexx"
 dpkg-deb -x "$OOREXX_DEB" "$runtime"
@@ -58,4 +52,4 @@ if [[ "${LDAP_RUN_ACCESS_PERMISSIONS:-0}" == "1" ]]; then
   bash ./tests/access_permissions_smoke.sh
 fi
 
-echo "LDAP DEV14 ENVIRONMENT: OK"
+echo "LDAP DEV21 ENVIRONMENT: OK"

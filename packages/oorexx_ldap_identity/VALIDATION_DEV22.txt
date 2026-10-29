@@ -1,0 +1,31 @@
+ooRexx Identity Directory / LDAP v0.1-dev22 activation qualification
+=====================================================================
+
+Scope
+-----
+P0 Rasen Falcon LDAP activation rehearsal over the dev21 semantic baseline.
+
+Added
+-----
+- activation/ldap_service_rehearsal.sh
+- activation/LDAP_SERVICE_INSTALL.json
+- activation/README.md
+- tests/test_activation_identity_policy.rex
+
+Static qualification in this construction container
+---------------------------------------------------
+- bash -n activation/ldap_service_rehearsal.sh: PASS
+- JSON parse activation/LDAP_SERVICE_INSTALL.json: PASS
+- oorexx_standards_enforcer.py on exact dev22 ZIP: 82 files, 0 errors, 136 warnings, PASS
+- exact dev22 ZIP SHA-256: 03578dbf59d5535ba749e1ec0c73fcd61d33bee8b791139cb5184f3d77ee0481
+
+Runtime qualification
+---------------------
+NOT RUN here: a real ooRexx r13196 executable and complete dependency closure
+are not present in this execution container. The rehearsal fails NOT_RUN rather
+than substituting a test daemon or third-party LDAP stack.
+
+Production status
+-----------------
+NOT INSTALLED. Live host install/certificate issuance/firewall/DNS/activation
+remain operator-gated through the existing Rasen Falcon Deployment service.

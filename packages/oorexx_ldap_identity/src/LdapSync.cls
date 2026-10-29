@@ -171,7 +171,7 @@
   if e["tag"] = 128 then do
     out["kind"] = "NEW_COOKIE"; out["cookie"] = e["value"]; return out
   end
-  if e["tag"] <> 161 & e["tag"] <> 162 then return self~failure("LDAP_SYNC_INFO_UNSUPPORTED")
+  if e["tag"] <> 161 then if e["tag"] <> 162 then return self~failure("LDAP_SYNC_INFO_UNSUPPORTED")
   out["kind"] = "REFRESH"; out["refreshDeletes"] = e["tag"] = 161; out["refreshDone"] = .true
   pos = 1
   if pos <= e["value"]~length then do
@@ -245,11 +245,12 @@
   if prefix <> "IDLDAPSYNC1" | peerHex = "" | revisionText = "" | cookieHash = "" then return .DirectoryResult~failure("SYNC_REFRESH_REQUIRED")
   signal on syntax name badCookie
   peer=x2c(peerHex)
-  revision=revisionText+0
+  revision=revisionText*1
   signal off syntax
   if peer <> directory~peerId | cookieHash <> queryHash | revision < 0 | revision > directory~revision then return .DirectoryResult~failure("SYNC_REFRESH_REQUIRED")
   return .DirectoryResult~success(revision)
 badCookie:
+  if value("LDAP_DIAGNOSTICS",,"ENVIRONMENT") = "1" then say "LDAP trapped condition" condition("C") condition("D") "RC=" rc "SIGL=" sigl
   signal off syntax
   return .DirectoryResult~failure("SYNC_REFRESH_REQUIRED")
 ::method inScope private
@@ -293,7 +294,7 @@ badCookie:
   do change over directory~changesSince(fromRevision)
     beforeEntry=self~projectedMatch(change~beforeEntity,baseDn,scope,filterText,requestedAttributes)
     afterEntry=self~projectedMatch(change~afterEntity,baseDn,scope,filterText,requestedAttributes)
-    if beforeEntry == .nil & afterEntry == .nil then iterate
+    if beforeEntry == .nil then if afterEntry == .nil then iterate
     if beforeEntry == .nil then do
       entity=change~afterEntity
       records~append(.LdapSyncRecord~new("ADD",afterEntry,.LdapSyncCodec~uuidBytes(afterEntry~attributes~first("entryUUID")),entity~entityId))

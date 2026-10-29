@@ -1,0 +1,46 @@
+{
+  "schema": "rasenfalcon.ldap.install-contract/0.1",
+  "service": "rasenfalcon-ldap.service",
+  "component": "oorexx_ldap_identity",
+  "candidate": "0.1-dev22",
+  "runtime": "ooRexx 5.3.0 r13196",
+  "authority": {
+    "identity": "IdentityDirectory",
+    "authentication": "LDAP Bind via Secret Broker-backed authenticator",
+    "authorization": "LDAP operation authority plus Access Permissions at consuming service boundary",
+    "rule": "authentication is not authorization; signature is not EMAIL_SEND"
+  },
+  "listeners": [
+    {"purpose":"LDAP/STARTTLS","default_port":389,"production_bind":"operator supplied","plaintext_simple_bind":"DENY"},
+    {"purpose":"LDAPS","default_port":636,"production_bind":"operator supplied","tls":"required"}
+  ],
+  "dependencies": [
+    "oorexx_crypto_v0.8.3",
+    "oorexx_secret_broker_v0.2",
+    "alchemy_objects_v0.8",
+    "NoSQLServer current accepted durable backend",
+    "oorexx_socket_provider",
+    "runtime_reference_v0.4",
+    "oorexx_foreign_runtime_v0.22.6",
+    "oorexx_access_permissions_v0.2",
+    "institutional_policy_v0.8",
+    "security_effect_v0.14"
+  ],
+  "host_owned_secret_inputs": [
+    "private CA/server leaf certificate reference",
+    "server private-key secret reference",
+    "LDAP bind credential secret references",
+    "signing/key-generation private-material secret references"
+  ],
+  "forbidden_in_release": ["private keys","bind passwords","production certificates with private material"],
+  "consumers": ["rasenfalcon HTTPS private surfaces","SMTP authenticated submission","IMAP mailbox access","MCP tools","Wire Office/NOC"],
+  "activation_gate": [
+    "principal exists and state ACTIVE",
+    "successful LDAP authentication attribution",
+    "required resource/action authorization",
+    "revocation checked before service action",
+    "TLS/private-CA requirements satisfied where configured"
+  ],
+  "production_status": "NOT_INSTALLED",
+  "operator_gate": "live host install, certificate issuance, firewall/DNS and production activation require explicit owner approval"
+}

@@ -33,9 +33,9 @@
   ignore = request~putAttribute("LDAP_SESSION_ID", session~sessionId)
   request~seal
 
-  result = accessAuthority~decide(request, policy)
-  if \result~ok then return .DirectoryResult~failure("ACCESS_PERMISSIONS_FAILURE", result~code)
-  envelope = result~value
+  permissionResult = accessAuthority~decide(request, policy)
+  if \permissionResult~ok then return .DirectoryResult~failure("ACCESS_PERMISSIONS_FAILURE", permissionResult~code)
+  envelope = permissionResult~value
   if envelope == .nil then return .DirectoryResult~failure("ACCESS_PERMISSIONS_FAILURE", "missing envelope")
   if envelope~decision == .nil then return .DirectoryResult~failure("ACCESS_PERMISSIONS_FAILURE", "missing decision")
   decision = envelope~decision

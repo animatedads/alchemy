@@ -1,0 +1,27 @@
+LDAP Identity v0.1-dev17 focused qualification
+Date: 2026-10-11
+Runtime: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+
+Library inputs checked:
+- Crypto v0.8.3 (current Library copy)
+- Instrumentation Mesh v0.1-dev7
+- NoSQLServer v0.88 query instrumentation
+- RexxOS/RTO2 Grid v0.1-dev14
+
+Behavioral tests executed with real Crypto v0.8.3 and real Instrumentation Mesh v0.1-dev7:
+IDENTITY CORE: OK
+IDENTITY PEER AUTHORITY FENCING: OK
+IDENTITY PEER FABRIC: OK
+LDAP IDENTITY INSTRUMENTATION MESH: OK
+CONVERSATION AUTHORITY: OK
+LDAP PERSONALITY: OK
+LDAP DN SYNTAX: OK
+LDAP FILTER SEMANTICS: OK
+LDAP PAGING: OK
+LDAP BER: OK
+
+Standards authority:
+oorexx_standards_enforcer.py --json: PASS, 0 errors. Advisory warnings remain and are not represented as hard failures.
+
+Qualification boundary:
+The complete NoSQL/failover and wire/TLS suite was not rerun in this container because the full Secret Broker / Alchemy Objects / Foreign Runtime dependency estate was not available. NoSQLServer v0.88 was materialized and its public dependency shape inspected; dev17 therefore does not claim a new full-estate field PASS beyond the retained earlier evidence.

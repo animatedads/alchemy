@@ -1,4 +1,4 @@
-ignore = .LdapIdentityTest~assert(.IdentityDirectoryBuild~RELEASE = "0.1-dev13", "release")
+ignore = .LdapIdentityTest~assert(.IdentityDirectoryBuild~RELEASE = "0.1-dev18", "release")
 dir = .IdentityDirectory~new("peer-a")
 r = dir~createPrincipal("principal:alice", "uid=alice,ou=people,dc=example,dc=org", "PERSON", "Alice Example", "alice")
 ignore = .LdapIdentityTest~assert(r~ok, "create principal")

@@ -25,7 +25,7 @@
   credential = .nil
   now = .DateTime~new
   do c over directory~entriesOfKind("CREDENTIAL")
-    if c~ownerId = principal~entityId & c~credentialType = credentialType & c~state = "ACTIVE" then do
+    if c~ownerId = principal~entityId then if c~credentialType = credentialType then if c~state = "ACTIVE" then do
       /* Lifetime is semantic state, not a string comparison at the LDAP edge.
        * An ACTIVE record outside its DateTime validity window is unusable. */
       if c~validAt(now) then do

@@ -68,7 +68,7 @@ say "PERSONALITY FILTER: OK"
 ::method bind
   expose expectedName expectedCredential principalId
   use strict arg bindName, credential
-  if bindName = expectedName & credential = expectedCredential then return .LdapBindResult~new(.true, "OK", principalId)
+  if bindName = expectedName then if credential = expectedCredential then return .LdapBindResult~new(.true, "OK", principalId)
   return .LdapBindResult~new(.false, "INVALID_CREDENTIALS")
 
 ::requires "tests/TestSupport.cls"

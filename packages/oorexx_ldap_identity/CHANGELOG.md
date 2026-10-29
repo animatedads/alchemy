@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1-dev22 — 2026-10-29
+
+Rasen Falcon LDAP activation rehearsal increment over dev21.
+
+- Added one executable rehearsal joining the existing native LDAP listener, STARTTLS/LDAPS, NoSQL restart/failover, and Access Permissions qualification lanes.
+- Added cross-service admission qualification for distinct human, CHATGPT and CLAUDE principals, explicit EMAIL_SEND separation and immediate revoked-principal denial.
+- Added a machine-readable host install/dependency/secret contract for rasenfalcon-ldap.service; no private material is carried in the release.
+- Production installation remains NOT_INSTALLED and operator-gated through the existing Rasen Falcon Deployment service.
+
 ## 0.1-dev14 — 2026-10-07
 
 Dynamic Intention Service integration increment over dev13.

@@ -187,7 +187,7 @@
     step=tls~sslStep("ssl_read",.array~of(ssl,buffer,n),ssl); rc=step[1]; ec=step[2]
     if \self~drainOutput then return .nil
     if rc>0 then return buffer~bytes~substr(1,rc)
-    if rc=0 & (ec=0 | ec=6) then return ""
+    if rc=0 then if ec=0 | ec=6 then return ""
     if ec=2 then do
       feed=self~receiveEncrypted(readTimeout)
       if feed="data" | feed="retry" then iterate
@@ -247,6 +247,7 @@
   if \session~handshake then do; detail=session~lastError; session~close; return .DirectoryResult~failure("TLS_HANDSHAKE_FAILED",detail); end
   return .DirectoryResult~success(session)
 failed:
+  if value("LDAP_DIAGNOSTICS",,"ENVIRONMENT") = "1" then say "LDAP trapped condition" condition("C") condition("D") "RC=" rc "SIGL=" sigl
   return .DirectoryResult~failure("TLS_PROVIDER_FAILED",condition("D"))
 ::method capabilities
   expose context

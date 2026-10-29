@@ -1,0 +1,36 @@
+ooRexx Identity Directory / LDAP v0.1-dev20 qualification
+========================================================
+
+Purpose
+-------
+Qualification closure for the dev19 authority-recovery increment.
+
+Corrections
+-----------
+- VERSION.txt in the complete candidate archive reports 0.1-dev20.
+- tests/test_authority_recovery_journal.rex announces trapped SYNTAX evidence
+  with RC, SIGL, condition("C") and condition("D") before returning from the
+  expected negative-path handler.
+- Authority semantics are unchanged from dev19: epoch regression and
+  same-epoch holder substitution fail closed; carrier/transport evidence does
+  not become LDAP application-commit authority.
+
+Executed in this environment
+----------------------------
+PASS ZIP integrity.
+PASS MANIFEST.sha256 verification.
+PASS oorexx_standards_enforcer.py default gate:
+     files_scanned=81
+     errors=0
+     warnings=136
+     verdict=PASS
+
+Not executed in this environment
+--------------------------------
+NOT RUN ooRexx runtime regression: no ooRexx executable is present in the
+current build container. Historical runtime evidence is not promoted into a
+fresh dev20 PASS.
+
+Complete candidate archive SHA-256
+----------------------------------
+f709328b4127608d7723031b279e830df298bac99ee01b91242e04cb9f233bbc

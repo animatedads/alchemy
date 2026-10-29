@@ -36,7 +36,7 @@ say "LDAP SASL PROVIDER: OK"
 ::method bind
   expose expectedName expectedSecret principalId
   use strict arg bindName, credential
-  if bindName=expectedName & credential=expectedSecret then return .LdapBindResult~new(.true,"OK",principalId)
+  if bindName=expectedName then if credential=expectedSecret then return .LdapBindResult~new(.true,"OK",principalId)
   return .LdapBindResult~new(.false,"INVALID_CREDENTIALS")
 
 ::requires "tests/TestSupport.cls"

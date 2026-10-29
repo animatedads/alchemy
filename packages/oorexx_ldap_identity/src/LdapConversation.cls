@@ -71,7 +71,7 @@
   authcid = rest~left(second - 1)
   password = rest~substr(second + 1)
   if authcid = "" then return .LdapBindResult~new(.false, "SASL_PLAIN_INVALID")
-  if authzid <> "" & \authzid~caselessEquals(authcid) then return .LdapBindResult~new(.false, "SASL_AUTHZID_UNSUPPORTED")
+  if authzid <> "" then if \authzid~caselessEquals(authcid) then return .LdapBindResult~new(.false, "SASL_AUTHZID_UNSUPPORTED")
   return authenticator~bind(authcid, password)
 
 ::class LdapOperationAuthority public
@@ -111,19 +111,19 @@
 ::method bind
   expose authenticator sessionSequence
   use strict arg bindName, credential
-  result = authenticator~bind(bindName, credential)
+  authResult = authenticator~bind(bindName, credential)
   sessionSequence += 1
-  if \result~ok then return .DirectoryResult~failure(result~code)
-  session = .LdapSession~new("ldap-session-" || sessionSequence, result~principalId, .true)
+  if \authResult~ok then return .DirectoryResult~failure(authResult~code)
+  session = .LdapSession~new("ldap-session-" || sessionSequence, authResult~principalId, .true)
   return .DirectoryResult~success(session, "BIND_ATTRIBUTION_ONLY")
 ::method bindSasl
   expose saslProvider sessionSequence
   use strict arg mechanism, credentials = .nil, tlsActive = .false
   if saslProvider == .nil then return .DirectoryResult~failure("SASL_NOT_CONFIGURED")
-  result = saslProvider~authenticate(mechanism, credentials, tlsActive)
+  authResult = saslProvider~authenticate(mechanism, credentials, tlsActive)
   sessionSequence += 1
-  if \result~ok then return .DirectoryResult~failure(result~code)
-  session = .LdapSession~new("ldap-session-" || sessionSequence, result~principalId, .true)
+  if \authResult~ok then return .DirectoryResult~failure(authResult~code)
+  session = .LdapSession~new("ldap-session-" || sessionSequence, authResult~principalId, .true)
   return .DirectoryResult~success(session, "SASL_BIND_ATTRIBUTION_ONLY")
 ::method saslMechanisms
   expose saslProvider

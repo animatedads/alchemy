@@ -16,6 +16,7 @@
   owner~left
   return value
 failed:
+  if value("LDAP_DIAGNOSTICS",,"ENVIRONMENT") = "1" then say "LDAP trapped condition" condition("C") condition("D") "RC=" rc "SIGL=" sigl
   owner~left
   raise propagate
 ::method sslStep
@@ -28,6 +29,7 @@ failed:
   owner~left
   return .array~of(rc,ec)
 failed:
+  if value("LDAP_DIAGNOSTICS",,"ENVIRONMENT") = "1" then say "LDAP trapped condition" condition("C") condition("D") "RC=" rc "SIGL=" sigl
   owner~left
   raise propagate
 ::method closeObject
@@ -39,6 +41,7 @@ failed:
   owner~left
   return .nil
 failed:
+  if value("LDAP_DIAGNOSTICS",,"ENVIRONMENT") = "1" then say "LDAP trapped condition" condition("C") condition("D") "RC=" rc "SIGL=" sigl
   owner~left
   raise propagate
 ::method closeLibrary
@@ -50,6 +53,7 @@ failed:
   owner~left
   return .nil
 failed:
+  if value("LDAP_DIAGNOSTICS",,"ENVIRONMENT") = "1" then say "LDAP trapped condition" condition("C") condition("D") "RC=" rc "SIGL=" sigl
   owner~left
   raise propagate
 
