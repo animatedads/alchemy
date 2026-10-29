@@ -39,11 +39,12 @@ RUN test_lapb_negative.rex
 RUN LAPB negative encoding and stuffing
 RUN LAPB ACK and FCS corruption cannot mutate state
 RUN LAPB modulo-8 wrap and bounded window
+RUN LAPB repeated REJ consumes bounded N2 budget
 PASS LAPB negative FCS, flags, unsupported types, ACK, wrap, no-mutation
 PASS X.25 dev3 ooRexx packet, SVC and LAPB laboratory suites
 ```
 
-Exit **0**; six test scripts passed; no skipped cases. Tests include the standard binary HDLC FCS vector `123456789 -> 6E90`, DTE/DCE address roles, SABM P-bit/UA, duplicate suppression, window=2 stop/reopen, RR/RNR/REJ, out-of-order recovery, T1 retransmit and N2 exhaustion, DISC/UA, modulo-8 wrap, binary X.25 PLP DATA over modelled HDLC bit stuffing, malformed stuffing/flags/FCS/invalid N(R) no-mutation. The caller injects all clock ticks; no background scheduling is involved.
+Exit **0**; six test scripts passed; no skipped cases. Tests include the standard binary HDLC FCS vector `123456789 -> 6E90`, DTE/DCE address roles, SABM P-bit/UA, duplicate suppression, window=2 stop/reopen, RR/RNR/REJ, out-of-order recovery, T1 retransmit and N2 exhaustion, DISC/UA, modulo-8 wrap, binary X.25 PLP DATA over modelled HDLC bit stuffing, malformed stuffing/flags/FCS/invalid N(R) no-mutation, repeated malicious REJ bounded by N2. The caller injects all clock ticks; no background scheduling is involved.
 
 ## Qualification boundary
 
