@@ -1,8 +1,8 @@
-# Current integration baseline checked 2026-10-27
+# Current integration baseline checked 2026-10-29
 
 ## Source and qualification split
 
-Current Git source candidate: **ooRexx WebSocket Access v0.1-dev2**.
+Current Git source candidate: **ooRexx WebSocket Access v0.1-dev3**.
 
 Immutable qualified release remains:
 
@@ -11,14 +11,25 @@ Immutable qualified release remains:
 - ooRexx 5.3.0 r13196 contract pass
 - independent Python `websockets` COTS loopback wire pass
 
-dev2 repairs fragmented-message sequencing and the dev1 close-frame state bug, but is not promoted until the expanded tests execute against the current socket authority.
+dev2 repaired fragmented-message sequencing and the close-frame state defect. dev3 adds the optional estate crypto adapter for RFC 6455 SHA-1/base64 handshake calculations while keeping entropy injected.
 
 ## Current external socket authority
 
 - Socket Provider **v0.1-dev16**
 - SHA-256 `fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2`
 
-The 2026-10-13 Spiral 1 reconciliation records WebSocket as ACCESS + CONTRACT PASS with the dev1 COTS wire pass inherited into the dev16 estate. It explicitly records that WebSocket was **not freshly rerun against dev16**.
+The current Library transport reconciliation still carries WebSocket dev1's live COTS result as inherited evidence and explicitly says WebSocket was not freshly rerun against dev16.
+
+## Crypto authority
+
+Optional dev3 adapter:
+
+- ooRexx Crypto **v0.8.3**
+- SHA-256 `5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49`
+- ooRexx Crypto Authentication Primitives **v0.1-dev1**
+- API `crypto.auth/0.1`
+
+`WebSocketPlatformCrypto.cls` uses the estate SHA-1 authority for `Sec-WebSocket-Accept` and standard base64 encoding. It does not own entropy. `WebSocketEntropySource` is the production binding seam for the 16-byte handshake nonce and four-byte frame masks.
 
 Architecture remains:
 
@@ -30,15 +41,16 @@ WebSocketAccess
   -> selected TCP/TLS provider
 ```
 
-## dev2 qualification gates
+## dev3 qualification gates
 
-1. run the expanded RFC 6455 contract suite under ooRexx 5.3.0 r13196;
-2. run against Socket Provider dev16, not the historical dev10 fixture;
-3. exercise an independent COTS peer with fragmented TEXT/BINARY and interleaved PING;
-4. prove local and peer close frames are sent before stream close;
-5. retain exact SocketAddress object identity;
-6. preserve fail-closed behaviour for continuation/reserved opcode/RSV/control violations.
+1. run the dev2 fragmentation/close contract suite under ooRexx 5.3.0 r13196;
+2. run `tests/test_platform_crypto.rex` against exact `crypto.auth/0.1` + Crypto v0.8.3;
+3. run independent COTS WebSocket qualification through Socket Provider dev16;
+4. exercise fragmented TEXT/BINARY and interleaved control frames on wire;
+5. prove local and peer close frames are sent before stream close;
+6. retain exact SocketAddress object identity;
+7. bind `WebSocketEntropySource` to the estate production randomness authority before claiming production nonce/mask entropy.
 
 ## Remaining non-claims
 
-RFC 8441, RFC 9220, permessage-deflate/extensions and a production nonce/mask entropy provider remain outside the implemented/qualified surface.
+RFC 8441, RFC 9220, permessage-deflate/extensions, fresh dev16 live qualification and the final production entropy-provider binding remain outside the qualified surface.
