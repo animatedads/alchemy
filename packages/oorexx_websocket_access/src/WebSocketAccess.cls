@@ -1,12 +1,12 @@
 /* WebSocketAccess.cls
- * ooRexx WebSocket Access v0.1-dev2
+ * ooRexx WebSocket Access v0.1-dev4
  *
  * RFC 6455 access layer above SocketProvider's SocketStreamAdapter.
  * SocketProvider remains the sole socket acquisition/isolation authority.
  */
 
 ::class WebSocketAccessBuild public
-::constant VERSION "0.1-dev2"
+::constant VERSION "0.1-dev4"
 ::constant ACCESS_API "websocket.access/0.1"
 ::constant MESSAGE_API "websocket.message/0.1"
 ::constant HANDSHAKE_CRYPTO_API "websocket.handshake.crypto/0.1"
@@ -120,6 +120,32 @@
   if parsed=.nil then return .nil
   return parsed
 
+::method decodeClient class
+  use strict arg bytes
+  parsed=.WebSocketCodec~decodeFrame(bytes,.true)
+  if parsed=.nil then return .nil
+  if \parsed["masked"] then raise syntax 88.900 array("client-to-server WebSocket frame must be masked")
+  return parsed
+
+::method encodeServer class
+  use strict arg message
+  if message=.nil then raise syntax 88.900 array("WebSocket message required")
+  payload=message~payload
+  opcode=message~opcode
+  if \.WebSocketCodec~validOpcode(opcode) then raise syntax 88.900 array("reserved WebSocket opcode")
+  if message~isControl then do
+    if \message~final then raise syntax 88.900 array("WebSocket control frames must not be fragmented")
+    if length(payload)>125 then raise syntax 88.900 array("WebSocket control payload exceeds 125 bytes")
+  end
+  first=opcode
+  if message~final then first=first+128
+  header=.WebSocketCodec~byte(first)
+  n=length(payload)
+  if n<=125 then header=header||.WebSocketCodec~byte(n)
+  else if n<=65535 then header=header||.WebSocketCodec~byte(126)||.WebSocketCodec~uintBytes(n,2)
+  else header=header||.WebSocketCodec~byte(127)||.WebSocketCodec~uintBytes(n,8)
+  return header||payload
+
 ::method decodeFrame class
   use strict arg bytes, allowMasked=.false
   if length(bytes)<2 then return .nil
@@ -158,6 +184,7 @@
   out=.directory~new
   out["message"]=msg
   out["consumed"]=consumed
+  out["masked"]=masked
   return out
 
 ::method validOpcode class
@@ -205,14 +232,14 @@
 ::class WebSocketConnection public
 ::method init
   expose stream socketAddress state subprotocol receiveBuffer maskSource handshake fragmentOpcode fragmentPayload maximumMessageBytes
-  use strict arg stream, socketAddress, maskSource, handshake, maximumMessageBytes=16777216
+  use strict arg stream, socketAddress, maskSource, handshake, maximumMessageBytes=16777216, initialReceiveBuffer=""
   stream=stream
   socketAddress=socketAddress
   maskSource=maskSource
   handshake=handshake
   state=.WebSocketState~OPEN
   subprotocol=handshake~subprotocol
-  receiveBuffer=""
+  receiveBuffer=initialReceiveBuffer
   fragmentOpcode=.nil
   fragmentPayload=""
   maximumMessageBytes=maximumMessageBytes+0
@@ -255,6 +282,7 @@
   expose stream receiveBuffer state fragmentOpcode fragmentPayload maximumMessageBytes
   use strict arg maximumRead=65536
   if state=.WebSocketState~CLOSED then return .nil
+  signal on syntax name decodeFailure
   do forever
     parsed=.WebSocketCodec~decodeServer(receiveBuffer)
     if parsed<>.nil then do
@@ -307,6 +335,10 @@
     if chunk=.nil | chunk="" then return .nil
     receiveBuffer=receiveBuffer||chunk
   end
+
+decodeFailure:
+  signal off syntax
+  return self~protocolFailure(1002,"invalid server WebSocket frame")
 
 ::method protocolFailure private
   expose stream state fragmentOpcode fragmentPayload
@@ -384,11 +416,12 @@
   end
   request=request||"0d0a"x
   if \stream~write(request) then do; stream~close; return .nil; end
-  response=self~readHttpHeaders(stream)
-  if response=.nil then do; stream~close; return .nil; end
+  headerRead=self~readHttpHeaders(stream)
+  if headerRead=.nil then do; stream~close; return .nil; end
+  response=headerRead["raw"]
   result=self~validateHandshake(response,key,options)
   if result=.nil then do; stream~close; return .nil; end
-  return .WebSocketConnection~new(stream,socketAddress,maskSource,result)
+  return .WebSocketConnection~new(stream,socketAddress,maskSource,result,16777216,headerRead["remainder"])
 
 ::method readHttpHeaders
   use strict arg stream
@@ -400,7 +433,11 @@
     data=data||chunk
     if length(data)>65536 then return .nil
   end
-  return left(data,pos(marker,data)+3)
+  endPos=pos(marker,data)+3
+  out=.directory~new
+  out["raw"]=left(data,endPos)
+  out["remainder"]=substr(data,endPos+1)
+  return out
 
 ::method validateHandshake
   expose handshakeCrypto
