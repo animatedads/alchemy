@@ -18,7 +18,9 @@
     "A verified second copy in Azure Git and a permanent local copy are independently accounted for; an unavailable, unsafe or unverified location does not satisfy durability.",
     "Live ED209 L2/proto36/UDP session admission, persistent KEY and WAN transfer remain unqualified until exercised end-to-end.",
     "Storage repair consumes MU/MI networking through a verified materialisation resolver: networking returns exact locally staged StorageRef bytes plus verification evidence and does not choose or admit the repair destination.",
-    "Named Storage service carrier selection remains below repair policy; no IP, UDP port, raw protocol or TAP identity belongs in the repair destination planner."
+    "Named Storage service carrier selection remains below repair policy; no IP, UDP port, raw protocol or TAP identity belongs in the repair destination planner.",
+    "StoragePeerClient/StoragePeerMaterialiser are the repair source data-plane seam. The network transport behind StoragePeerClient may be XTP named-service networking without exposing carrier details to repair policy.",
+    "Successful peer materialisation is temporary verified source evidence only; it does not itself become a durable replica."
   ],
   "procedure": [
     "Select ordinary Socket Provider for unbound operations, or resolve a canonical named service and planner rule for bound operations.",

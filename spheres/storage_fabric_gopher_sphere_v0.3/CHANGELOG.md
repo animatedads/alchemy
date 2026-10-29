@@ -1,5 +1,13 @@
 # Changelog
 
+## Repository continuation — 2026-10-29 peer source
+- Add dev9 StoragePeer repair source resolver over existing StoragePeerClient/StoragePeerMaterialiser.
+- Require explicit peer allowlist plus AVAILABLE+VERIFIED object-location evidence.
+- Reverify StorageRef digest at resolver boundary.
+- Mark staged peer materialisation temporary and remove it after destination provider store.
+- Keep peer transfer separate from durable replica admission and destination selection.
+
+
 ## Repository continuation — 2026-10-29
 - Add executable Storage repair destination planner contract.
 - Add Git repair adapter over existing storage.fabric.git/0.1 post-push verification.
