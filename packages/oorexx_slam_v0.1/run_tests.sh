@@ -55,6 +55,8 @@ echo "== SLAM's evidence argued by the Reasoned Thought engine; SLAM's actions r
 REXX_PATH="$REXX_PATH:$P/oorexx_maths_v0.8/rexx:$RT" rexx tests/test_reasoning.rex "$WORK|$REPO"
 echo "== legislation -> small model -> SLAM -> Reasoned Thought: Computer Misuse Act 1990 (XML), CPS guidance, made-up cases"
 REXX_PATH="$REXX_PATH:$RT" rexx tests/test_law.rex "$WORK|$ROOT"
+echo "== did Gemini apply its own stated standard evenly? (the Reasoned Thought standard-application audit, unchanged)"
+REXX_PATH="$REXX_PATH:$RT" rexx tests/test_gemini_standard.rex
 echo "== second language: the Java reader (fixture compiled by javac first, so it is real Java)"
 E="$REPO/examples"
 ATM="$E/federationbank_java_atm_v0.1.9"
