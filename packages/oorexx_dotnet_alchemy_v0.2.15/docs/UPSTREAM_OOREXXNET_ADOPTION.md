@@ -34,3 +34,11 @@ Upstream reports .net/.NetObject projection, C# RexxInterpreter/RexxObject hosti
 - Manuel Raffel, ooRexx.NET thesis (2015): https://wi.wu-wien.ac.at/rgf/diplomarbeiten/BakkStuff/2015/20150810_Raffel-Manuel-ooRexx-Net-architecture.pdf
 
 Status: architecture decision and migration backlog committed; no upstream runtime qualification asserted.
+
+## Upstream revision observation (2026-10-29)
+Pinned integration candidate: `JosepMariaBlasco/oorexxnet@bffd7ae127d559ad51e8128f9c9c27175ef4c35a` (observed upstream HEAD; integration must use this immutable SHA, not a moving branch).
+Latest upstream change repairs propagation of Rexx conditions while encoding custom LogicalWrapper/NetRef/NetTyped/NetHandler values, including callback replies; upstream commit reports seven phase3 tests and one HostTests case. This is upstream-authored evidence only, not a locally reproduced PASS.
+
+Additional mandatory adapter regression: an overridden VALUE, KIND or MAKESTRING raising a Rexx condition must abort argument serialization before invoking CLR code; the original Rexx condition must reach the caller, including on callback return. No synthetic 91.999 error or silent coercion to false. Verify the upstream fix under the pinned revision and document test output before adoption.
+
+Do not apply the legacy v0.2.15 binder to upstream's member resolution: upstream owns generic CLR overload binding. Preserve Alchemy-specific generation/observer behavior as an adapter layer.
