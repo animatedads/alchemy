@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1-dev23 — 2026-10-29
+
+Unified Rasen Falcon LDAP activation and owned-service deployment increment.
+
+- Combined the dev22 activation/revocation rehearsal with the owned persistent LDAPS bootstrap and hardened systemd unit from the parallel deployment work.
+- Production bootstrap restores persistent Identity Directory state through NoSQLDirectoryStore, resolves bind material only through Secret Broker mappings, requires TLS and refuses an unprovisioned/inactive directory authority.
+- Added non-root rasenfalcon-ldap.service, environment/secret-reference templates and a static deployment contract test.
+- Kept startup provisioning out of the daemon: General Deployment remains install authority and production certificate/host activation remains operator-gated.
+- Corrected bootstrap code to the current ooRexx standards rules; the exact dev23 ZIP scans with zero hard errors.
+
 ## 0.1-dev22 — 2026-10-29
 
 Rasen Falcon LDAP activation rehearsal increment over dev21.
