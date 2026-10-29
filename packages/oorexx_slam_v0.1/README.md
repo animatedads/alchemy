@@ -629,3 +629,11 @@ rexx bin/slam.rex follows slam.db '#0004'
 - **rx2cpp's generated C++** is read as runtime calls, so it does not meet its ooRexx source yet (see the C++ section).
 - **NetRexx, first cut.** `catch`/`finally` inside `do`/`loop` are plain clauses. `java2nrx` (Java to NetRexx, the other direction) is not paired yet. `sysutils.nrx` against ooRexx's RexxUtil (C++) is a three-language triangle not yet compared.
 - **Speed: about 770 source lines a second**, because the lexer runs interpreted. Compiling the lexer with rx2cpp is the obvious speed-up.
+
+## Admission input validation candidate — 2026-10-29
+
+The exploratory `SlamComposer~run` remains deliberately permissive for counterexample collection. The separate `runAdmitted` entrypoint now returns BLOCKED with an empty trace for malformed path/step/argument containers and for literal arguments whose inferred kind cannot satisfy an explicitly inferred NEEDS kind. Numeric text remains numeric in ooRexx. Its existing PREV edge guard remains in force.
+
+This is **contract-level admission only**, not a proof that a numeric operation is defined over the supplied values. Inferred contracts can omit semantic restrictions, e.g. modular inverse coprimality, and can misclassify code. No side-effecting production operation, certificate approval or deployment authority is granted by this guard.
+
+Focused regression: `REXX_PATH=src:vendor/rx2cpp rexx tests/test_admission_inputs.rex ../oorexx_crypto_v0.8.3/src/crypto.cls` (from the SLAM package root). Run the existing `tests/test_compose.rex` as well. Candidate is committed with runtime qualification **NOT_RUN** in this environment; Autobuilder is offline. Do not promote or claim a native PASS from source checks alone.
