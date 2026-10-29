@@ -1,0 +1,334 @@
+{
+  "kind": "corpus",
+  "id": "oorexx-deployment.continuity",
+  "sphere": "oorexx-deployment",
+  "title": "General ooRexx Deployment durable continuity corpus",
+  "records": [
+    {
+      "id": "reconcile",
+      "topic": "core",
+      "rule": "Deployment reconciles desired state with observed target state; installation is only one possible action."
+    },
+    {
+      "id": "meaning",
+      "topic": "authority",
+      "rule": "Deployment never weakens application meaning to accommodate a target; it changes the target, selects another permitted strategy, or fails."
+    },
+    {
+      "id": "phases",
+      "topic": "core",
+      "rule": "discover, assess, plan, apply and verify are distinct; only apply mutates."
+    },
+    {
+      "id": "fresh-verify",
+      "topic": "verification",
+      "rule": "Successful commands are not deployment success; fresh observed state must satisfy the manifest."
+    },
+    {
+      "id": "target-id",
+      "topic": "identity",
+      "rule": "targetId is opaque and must not be equated with hostname, IP address or worker name."
+    },
+    {
+      "id": "capability-vs-requirement",
+      "topic": "model",
+      "rule": "Capabilities are observations; requirements are desired-state declarations."
+    },
+    {
+      "id": "testable",
+      "topic": "verification",
+      "rule": "A requirement that cannot be tested must not masquerade as verified state."
+    },
+    {
+      "id": "provider",
+      "topic": "provider",
+      "rule": "OS/package/transport mechanics belong behind providers, not hard-coded application branches."
+    },
+    {
+      "id": "transport-orthogonal",
+      "topic": "transport",
+      "rule": "Changing Local/SSH/container/cloud-agent transport must not change desired state."
+    },
+    {
+      "id": "managed-ssh",
+      "topic": "transport",
+      "rule": "Managed SSH configuration can invalidate a direct SSH helper; swap provider/transport while preserving hashes, plan and verification."
+    },
+    {
+      "id": "content-hash",
+      "topic": "artifact",
+      "rule": "A generation name/marker is not authority; rehash actual content before reuse."
+    },
+    {
+      "id": "drift-repair",
+      "topic": "artifact",
+      "rule": "Content-addressed reconciliation must repair drift/corruption rather than trust stale markers."
+    },
+    {
+      "id": "native-loadability",
+      "topic": "native",
+      "rule": "Accept a native artifact by target load/use probe, not filename equality, controller ABI or GLIBC heuristic alone."
+    },
+    {
+      "id": "native-rebuild",
+      "topic": "native",
+      "rule": "If the target probe fails and policy permits, rebuild from supplied source on the target and rerun the same probe."
+    },
+    {
+      "id": "loader-path",
+      "topic": "native",
+      "rule": "A loader-path change is not an ABI repair."
+    },
+    {
+      "id": "runtime-bootstrap",
+      "topic": "runtime",
+      "rule": "Deployment must be able to stage the runtime that runs application code; a minimal pre-ooRexx bootstrap is allowed."
+    },
+    {
+      "id": "private-runtime",
+      "topic": "runtime",
+      "rule": "Prefer the explicitly staged executable over ambient PATH when the manifest defines one, and record the resolved path."
+    },
+    {
+      "id": "hosted-lifecycle",
+      "topic": "hosted",
+      "rule": "Hosted success is staged -> package-loadable -> composed -> activated -> live-probed."
+    },
+    {
+      "id": "staged-not-live",
+      "topic": "hosted",
+      "rule": "Files beside a server are not a deployed/live module."
+    },
+    {
+      "id": "https-compose",
+      "topic": "hosted",
+      "rule": "HTTPS Server v0.4.4 route activation is compose-before-start because routes are immutable after listener start."
+    },
+    {
+      "id": "package-binding",
+      "topic": "hosted",
+      "rule": "An ooRexx module must directly require the package that exports classes it references; sibling package imports do not grant visibility."
+    },
+    {
+      "id": "mcp-wire",
+      "topic": "hosted",
+      "rule": "MCP and Wire share the hosted-module lifecycle; protocol-specific details belong in adapter declarations."
+    },
+    {
+      "id": "policy",
+      "topic": "policy",
+      "rule": "Requirements state what must be true; deployment policy states which strategies may be used."
+    },
+    {
+      "id": "privilege",
+      "topic": "security",
+      "rule": "Model privilege explicitly; never casually prepend sudo."
+    },
+    {
+      "id": "fail-closed",
+      "topic": "security",
+      "rule": "Missing provenance, failed hash, incompatible architecture/runtime or failed verification blocks deployment."
+    },
+    {
+      "id": "secrets",
+      "topic": "security",
+      "rule": "Secrets are transient inputs and must not be copied into ordinary deployment evidence."
+    },
+    {
+      "id": "launch-separate",
+      "topic": "process",
+      "rule": "Readiness/repair and process launch are separate; start is explicit."
+    },
+    {
+      "id": "process-identity",
+      "topic": "process",
+      "rule": "A similar command line is not sufficient evidence of RUNNING_EXPECTED."
+    },
+    {
+      "id": "evidence",
+      "topic": "evidence",
+      "rule": "Retain intent, discovery, plan, actions, observed hashes/versions/paths, final discovery and verification."
+    },
+    {
+      "id": "rollback",
+      "topic": "evidence",
+      "rule": "Rollback is evidence-driven and may be unavailable; reversibility must be explicit before execution."
+    },
+    {
+      "id": "independent-targets",
+      "topic": "concurrency",
+      "rule": "Independent targets may reconcile concurrently with distinct DeploymentResult objects."
+    },
+    {
+      "id": "single-flight",
+      "topic": "concurrency",
+      "rule": "Same target + generation + repair key must be single-flight; concurrent callers join/observe rather than launch duplicate mutating rebuilds."
+    },
+    {
+      "id": "building-not-ready",
+      "topic": "concurrency",
+      "rule": "BUILDING/PREPARING is not READY; timeout or termination cannot promote readiness."
+    },
+    {
+      "id": "audio-first",
+      "topic": "integration",
+      "rule": "Audio V9 is the first heterogeneous proof, not a source of Audio-specific behavior for core Deployment."
+    },
+    {
+      "id": "corpus-gate",
+      "topic": "integration",
+      "rule": "Application-declared corpus/hash verification can block READY even when package staging itself succeeded."
+    },
+    {
+      "id": "real-host-test",
+      "topic": "qualification",
+      "rule": "Hosted-module qualification must include the real host/package boundary and live probe, not only fake-host unit tests."
+    },
+    {
+      "id": "current-baseline",
+      "topic": "qualification",
+      "rule": "Current executable authority is oorexx_deployment_v0.1-dev3.zip SHA-256 796b4375b7abac6e13e5f23f632c8aa75f86fe777f3d7c130ea8e440ff5dbd79; SSC identity OorexxDeployment/MAIN/sourceLevel 1."
+    },
+    {
+      "id": "sphere-separate",
+      "topic": "continuity",
+      "rule": "Keep the Deployment Gopher sphere separate from the executable package and update it whenever architecture, accepted baseline or hard-won operational lessons change."
+    },
+    {
+      "id": "dependencies-before-mutation",
+      "topic": "dependencies",
+      "rule": "Resolve and lock declared component dependencies before Deployment plans any target mutation."
+    },
+    {
+      "id": "ssc-authority",
+      "topic": "dependencies",
+      "rule": "Use Semantic Source Control as ooRexx semantic dependency authority; Deployment consumes SSC rather than inventing a second source-level system."
+    },
+    {
+      "id": "source-requires-vs-requires",
+      "topic": "dependencies",
+      "rule": "@source-requires AT_LEAST is semantic component/surface authority; ::requires is package-load authority; preserve both separately."
+    },
+    {
+      "id": "entry-package-closure",
+      "topic": "dependencies",
+      "rule": "Start production dependency closure from explicit deployment entry packages so tests/examples do not become dependencies merely by sharing a ZIP."
+    },
+    {
+      "id": "ssc-manifest",
+      "topic": "dependencies",
+      "rule": "SSC_MANIFEST component/lineage/sourceLevel is authoritative; never infer sourceLevel from ZIP names, marketing versions or timestamps."
+    },
+    {
+      "id": "cross-component-versioned",
+      "topic": "dependencies",
+      "rule": "A cross-component ::requires should be backed by active @source-requires or an explicit equivalent component requirement; otherwise fail closed by default."
+    },
+    {
+      "id": "dependency-lock",
+      "topic": "dependencies",
+      "rule": "Emit a durable lock that records semantic component binding separately from exact package-file binding and reuse that lock for plan/apply evidence."
+    },
+    {
+      "id": "rexx-path-not-authority",
+      "topic": "dependencies",
+      "rule": "REXX_PATH is explicit execution state and evidence, not a semantic dependency resolver or version authority."
+    },
+    {
+      "id": "at-least-not-compatibility",
+      "topic": "dependencies",
+      "rule": "Passing SSC AT_LEAST proves only the known minimum; later semantic compatibility/impact qualification and application verification remain separate."
+    },
+    {
+      "id": "ssc-bootstrap-optional",
+      "topic": "runtime",
+      "rule": "Keep the SSC dependency resolver optional so minimal ooRexx/Deployment bootstrap does not become circular."
+    },
+    {
+      "id": "hosted-dependency-order",
+      "topic": "hosted",
+      "rule": "For MCP/Wire hosted modules: resolve/lock dependencies -> materialise closure -> package-loadable -> composed -> activated -> live-probed."
+    },
+    {
+      "id": "dependency-failures",
+      "topic": "dependencies",
+      "rule": "Missing/duplicate component identity, lineage mismatch, insufficient/unknown source level, unresolved/ambiguous package file or unversioned cross-component require blocks resolution."
+    },
+    {
+      "id": "sealed-ssc-production",
+      "topic": "dependencies",
+      "rule": "For production releases represented in current SSC, use a QUALIFIED sealed module deployment and its exact transitive ssc_deployment_dependency ids; do not float providers during Deployment."
+    },
+    {
+      "id": "development-vs-sealed",
+      "topic": "dependencies",
+      "rule": "source.get_package/latest-accepted development resolution may float under SSC policy; source.get_deployment_package/getDeploymentPackage for a sealed release must reproduce the exact qualified closure."
+    },
+    {
+      "id": "namespace-after-semantics",
+      "topic": "dependencies",
+      "rule": "SSC determines which semantic bytes belong to the release; Deployment separately materialises those bytes into a deterministic target namespace and records that namespace receipt."
+    },
+    {
+      "id": "reachable-only-materialisation",
+      "topic": "dependencies",
+      "rule": "Materialise only explicit entry packages and reachable locked dependency files unless the whole archive is explicitly declared as the deployable artifact."
+    },
+    {
+      "id": "component-root-substitution",
+      "topic": "security",
+      "rule": "A component root whose observed artifact/content hash differs from the dependency lock or sealed receipt is a substituted provider and must fail before namespace publication."
+    },
+    {
+      "id": "rexx-path-replacement",
+      "topic": "dependencies",
+      "rule": "For a locked generation, generated REXX_PATH replaces ambient REXX_PATH unless separately verified external roots are explicitly declared; package-load qualification and final launch use the same path."
+    },
+    {
+      "id": "rasenfalcon-identity-role",
+      "rule": "Rasen Falcon LDAP identity role packages the owned LDAP tree plus an already verified exact dependency namespace; Deployment does not acquire LDAP, authorization, TLS or secret authority."
+    },
+    {
+      "id": "namespace-process-launch",
+      "rule": "Production ooRexx service units must launch through a namespace-verifying seam that replaces ambient REXX_PATH with the exact materialised namespace before exec."
+    },
+    {
+      "id": "rasenfalcon-private-https-units",
+      "rule": "Rasen Falcon NOC and Office private mTLS endpoints are separate services named rasenfalcon-noc-https.service and rasenfalcon-office-https.service; a generic rasenfalcon-https.service must not substitute for either role."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/docs/DEPENDENCIES.md",
+      "line_start": 1,
+      "line_end": 145,
+      "claim": "Current dependency authority and namespace continuity grounding."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/qualification/DEV4_DEPENDENCY_NAMESPACE.txt",
+      "line_start": 1,
+      "line_end": 22,
+      "claim": "Current deterministic namespace qualification grounding."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev3.zip",
+      "sha256": "796b4375b7abac6e13e5f23f632c8aa75f86fe777f3d7c130ea8e440ff5dbd79",
+      "member": "oorexx_deployment_v0.1-dev3/qualification/TEST_TRANSCRIPT.txt",
+      "line_start": 1,
+      "line_end": 9,
+      "claim": "Last full r13196 executable baseline grounding."
+    },
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 199,
+      "line_end": 345,
+      "claim": "Fleet concurrency/readiness operational lessons."
+    }
+  ]
+}
