@@ -1,0 +1,57 @@
+{
+  "bundle_id": "rto-authority-corridor-project-rules",
+  "enabled": true,
+  "requests": [
+    {
+      "class": "RTOCOMMAND",
+      "enabled": true,
+      "kind": "source_trail",
+      "method": "RUN",
+      "reason": "capture the operator request entry point before registry or policy decisions",
+      "report_prefix": "reports/inspector/rto-authority-command-run"
+    },
+    {
+      "class": "RTOCOMMAND",
+      "enabled": true,
+      "kind": "source_trail",
+      "method": "REQUEST*",
+      "reason": "capture request-token parsing before operation resolution",
+      "report_prefix": "reports/inspector/rto-authority-request"
+    },
+    {
+      "class": "RTOCOMMANDREGISTRY",
+      "enabled": true,
+      "kind": "source_trail",
+      "method": "*",
+      "reason": "show whether command visibility, not implementation absence, controls access",
+      "report_prefix": "reports/inspector/rto-authority-command-registry"
+    },
+    {
+      "class": "RTOOPERATIONREGISTRY",
+      "enabled": true,
+      "kind": "source_trail",
+      "method": "*",
+      "reason": "record operation lookup and alias resolution without changing registry contents",
+      "report_prefix": "reports/inspector/rto-authority-operation-registry"
+    },
+    {
+      "class": "RTOOPERATIONSECURITYCONTEXT",
+      "enabled": true,
+      "kind": "source_trail",
+      "method": "*",
+      "reason": "capture the authority decision boundary while leaving policy enforcement in RTO",
+      "report_prefix": "reports/inspector/rto-authority-security-context"
+    },
+    {
+      "class": "*",
+      "enabled": true,
+      "kind": "signal_report",
+      "method": "*",
+      "reason": "preserve condition evidence when the command corridor fails before execution",
+      "report_prefix": "reports/inspector/rto-authority-signal"
+    }
+  ],
+  "schema": "alchemy.inspector.trace-request.v1",
+  "trace_goal": "prove command parsing, visibility, operation lookup, and security decisions without mutating authority state",
+  "trace_group": "rto-command-authority"
+}
