@@ -1,22 +1,30 @@
 ooRexx String Template v0.1-dev3 qualification
-Date: 2026-10-27
+Date: 2026-10-29
 
-Inherited evidence
-------------------
-dev1: ooRexx 5.3.0 r13196 compile and 5/5 runtime fixtures PASS.
-dev2: project ooRexx standards enforcer strict PASS; fresh r13196 runtime was not recorded in its release evidence.
+Runtime authority
+-----------------
+Open Object Rexx 5.3.0 r13196 - Internal Test Version, 64-bit
+Build date: Aug 3 2026
 
-Dev3 current-session evidence
------------------------------
-PASS project ooRexx standards enforcer --strict --json for the dev3 executable source/test set: 0 errors, 0 warnings.
-PASS deterministic source hashing and package manifest verification.
+Fresh dev3 evidence
+-------------------
+PASS package manifest before test execution.
+PASS rexxc src/StringTemplate.cls.
+PASS test_basic.rex.
+PASS test_fail_closed.rex.
+PASS test_formatter_binding.rex.
+PASS test_formatters.rex.
+PASS test_nested_and_object_view.rex.
+PASS test_policies.rex.
+PASS test_requirements_and_stream.rex.
+PASS 7/7 StringTemplate fixtures.
+
+The only defect observed in the prior dev3 carrier was in tests/test_policies.rex: its expected JSON string was over-escaped for ooRexx literal semantics. CODEX-PC had independently identified this discrepancy during the earlier dev2 qualification. The fixture expectation was corrected; src/StringTemplate.cls was not changed for this repair. The corrected test confirms quote, newline and backslash JSON string-content escaping against the actual input bytes.
+
+Additional qualification gates
+------------------------------
+PASS deterministic package manifest regeneration and verification.
 PASS ZIP structural integrity.
+PASS project ooRexx standards enforcer --strict --json: 0 errors, 0 warnings.
 
-NOT CLAIMED: fresh ooRexx r13196 compile/runtime PASS. The historical r13196 Debian attachment is visible in conversation metadata but its backing bytes are not materializable in this tool session. A Rasen Falcon qualification request was sent to CODEX-PC as REQ-00000371; dev3 evidence will remain pending until the actual runtime result is returned.
-
-New dev3 runtime fixture awaiting r13196 execution:
-- formatter registry snapshot isolation;
-- sealed captured-registry mutation rejection;
-- unbound formatter requirement inspection;
-- render-time fail-closed validation before output;
-- explicit `withFormatters` rebinding.
+Detailed native evidence: qualification/r13196_2026-10-29.txt
