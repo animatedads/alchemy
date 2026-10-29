@@ -2,7 +2,7 @@
   "schema": "alchemy.autobuild.integration/0.3",
   "package": {
     "name": "oorexx_ldap_identity",
-    "version": "0.1-dev22",
+    "version": "0.1-dev23",
     "kind": "oorexx"
   },
   "working_directory": ".",
@@ -26,7 +26,7 @@
   },
   "tests": [
     {
-      "name": "ldap-identity-dev22-suite",
+      "name": "ldap-identity-dev23-suite",
       "argv": [
         "bash",
         "run_tests.sh"
@@ -99,12 +99,20 @@
           "INSTRUMENTATION_MESH_ROOT"
         ]
       }
+    },
+    {
+      "name": "ldap-identity-rasenfalcon-deployment-contract",
+      "argv": [
+        "bash",
+        "tests/deployment/test_rasenfalcon_deployment_contract.sh"
+      ],
+      "timeout_seconds": 60
     }
   ],
   "publish": {
     "tree": {
       "source": ".",
-      "path": "packages/oorexx_ldap_identity_v0.1-dev22"
+      "path": "packages/oorexx_ldap_identity_v0.1-dev23"
     }
   }
 }
