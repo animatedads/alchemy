@@ -1,4 +1,4 @@
-# ooRexx PDF v0.1-dev5
+# ooRexx PDF v0.1-dev6
 
 A native ooRexx PDF 1.4 writer and flowed report renderer. Runtime PDF generation does not shell out to a PDF library or compressor.
 
@@ -101,3 +101,11 @@ The bundled `vendor/font_manager` directory is a qualification snapshot of the i
 ## GitHub source layout
 
 PDF dev5 consumes the independently published `oorexx_font_manager` package. The standalone release archive contains a qualification copy under `vendor/font_manager`; the Alchemy GitHub source tree deliberately omits that embedded copy. `tools/run_environment_test.sh` resolves sibling `packages/oorexx_font_manager` by default; set `FONT_MANAGER_ROOT` to override it.
+
+
+## dev6 — mixed-script FontRunPlan consumption
+
+- `PdfManagedFontSet` pre-plans the report corpus through Font Manager and embeds one subset per face actually used.
+- Text width and drawing use the precomputed character-to-face assignment; wrapping does not redo host discovery.
+- PDF currently requires TrueType because its descendant emitter is CIDFontType2; OpenType/CFF is rejected rather than mislabeled.
+- PDF metadata and outline strings use direct UTF-16BE independently of page-font fallback.
