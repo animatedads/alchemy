@@ -20,7 +20,7 @@ Executable grounding added by this workstream:
     oorexx_management_intention_discovery_v0.1-dev9
     oorexx_instrumentation_intentions_v0.1-dev2
 
-Important non-architectural tools remain exactly that: `cloudctl.sh` and `sshnode.sh` are constrained operator/developer shortcuts and must not become capability truth, routing authority or semantic APIs.
+Important non-architectural tools remain exactly that: historical provider-native `cloudctl.sh` and `sshnode.sh` transports are constrained implementation adapters and must not become capability truth, routing authority or Management semantics. The first-class authority is `alchemy.cloud-control/0.1`.
 
 ## MVS specialist continuity
 
@@ -33,6 +33,14 @@ ED209Z and ED209ZZ are distinct scopes: ED209Z is hosted by ED209C and ED209ZZ b
 
 Instrumentation Intentions dev2 now consumes Mesh dev8 events, explicit correlation/causation/context, observed relationships and publication freshness. Management dev9 discovers those facts transiently and remains domain-blind and non-mutating.
 
-## 2026-10-29 Cloud Control source landing
+## 2026-10-29 Cloud Control dev4 qualification
 
-`alchemy_cloud_control` dev3 candidate and `oorexx_cloud_console` dev3 candidate are now present on current `main`. Cloud Control owns normalized cloud RESOURCE/NODE operations; Cloud Console owns PLAN/APPLY interaction and exact destructive confirmation. Their current status is source/offline-qualified candidate, not live-cloud acceptance. `cloudctl.sh` remains an adapter/shortcut behind the authority boundary, not Management semantics.
+`alchemy_cloud_control_v0.1-dev4` and `oorexx_cloud_console_v0.1-dev4` supersede the dev3 source candidates in this workstream. Cloud Control remains the normalized cloud RESOURCE/NODE authority; Cloud Console remains the consistent human, ooRexx-code and Codex facade with PLAN/APPLY and exact destructive confirmation.
+
+Cloud Control dev4 adds generic firewall source-set reconciliation. For one scoped ingress protocol/port rule it reconciles the source CIDR set to the exact caller-supplied set while preserving unrelated rules. An empty desired set fails closed. XTP/network/service authorities choose the desired set; Cloud Control does not infer topology.
+
+Cloud Console dev4 delegates mutation through Cloud Control when configured while retaining provider-native reads as separately attributable observations. A real cross-package regression exercises Console -> Cloud Control -> provider fixture. That integration test exposed and drove repair of quote/backslash/newline handling in the ooRexx JSON encoder/parser.
+
+Both release ZIPs passed fresh-extraction qualification. Cloud Console compiled and ran under exact ooRexx 5.3.0 r13196 using DEB SHA-256 `8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae`. No live cloud mutation, DNS/certificate change, host reconfiguration, or website/mail/LDAP/HTTPS installation was performed.
+
+This dev4 primitive is available for the existing deployment, internode-network, mail, LDAP and HTTPS owners to consume when their accepted dependency graph permits it; this lane does not take over those service implementations.
