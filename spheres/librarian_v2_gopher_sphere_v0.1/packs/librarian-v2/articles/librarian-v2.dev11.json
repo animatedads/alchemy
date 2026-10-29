@@ -1,0 +1,54 @@
+{
+  "kind": "article",
+  "id": "librarian-v2.dev11",
+  "title": "Dev11 checkpoint — query-scoped conflicts and cycles",
+  "section": "qualification",
+  "version": "0.1.3",
+  "sphere": "librarian-v2",
+  "authority": "project-continuity",
+  "summary": "Dev11 repairs whole-snapshot uncertainty overreach. Conflicts and cycles now block only provenance relationship queries reaching affected child occurrences through declared dependencies. Unrelated declared relationships remain assessable, while historical canonical materialisation remains complete. 21 new native assertions pass, yielding 150 interpreter checks under ooRexx 5.3.0 r13196. This remains an experimental evidence service and cannot publish CMS or Brand decisions.",
+  "invariants": [
+    "Do not treat an unrelated contradiction as evidence against another source relationship.",
+    "Conflicting lineage child occurrences and their downstream dependents must fail closed as INDETERMINATE_CONFLICT.",
+    "Cycles reachable from a queried occurrence must fail closed as UNRESOLVED_CYCLE; global hasCycle is diagnostic only.",
+    "CORROBORATION_CLAIM never constitutes established provenance dependency.",
+    "Unknown source independence remains INDEPENDENCE_NOT_ESTABLISHED.",
+    "Scope-limited query outcomes do not remove global conflicting evidence from canonical historical identity.",
+    "Single Time Service v0.3 is still pinned; v0.9 remains unqualified.",
+    "Librarian is not LDAP, HTTPS, mail, MU/MI transport or CMS publishing authority."
+  ],
+  "provenance": [
+    {
+      "artifact": "librarian_v2_dev11_20261029.zip",
+      "sha256": "72211d64de28424f8acdc51f62f0d07418a18e5db8f0619e216bf474158d27a8",
+      "member": "librarian_v2_dev11/src/LibrarianProvenanceHistory.cls",
+      "line_start": 120,
+      "line_end": 149,
+      "claim": "The conflicting occurrence set is defined during snapshot materialisation."
+    },
+    {
+      "artifact": "librarian_v2_dev11_20261029.zip",
+      "sha256": "72211d64de28424f8acdc51f62f0d07418a18e5db8f0619e216bf474158d27a8",
+      "member": "librarian_v2_dev11/src/LibrarianProvenanceHistory.cls",
+      "line_start": 205,
+      "line_end": 258,
+      "claim": "Scoped conflict and cycle relationship algorithms."
+    },
+    {
+      "artifact": "librarian_v2_dev11_20261029.zip",
+      "sha256": "72211d64de28424f8acdc51f62f0d07418a18e5db8f0619e216bf474158d27a8",
+      "member": "librarian_v2_dev11/tests/scoped_relationships.rex",
+      "line_start": 1,
+      "line_end": 63,
+      "claim": "21 executable assertions for local/disconnected uncertainties."
+    },
+    {
+      "artifact": "librarian_v2_dev11_20261029.zip",
+      "sha256": "72211d64de28424f8acdc51f62f0d07418a18e5db8f0619e216bf474158d27a8",
+      "member": "librarian_v2_dev11/DEV11_NOTES.md",
+      "line_start": 1,
+      "line_end": 50,
+      "claim": "Known boundaries and qualification from delivered source package."
+    }
+  ]
+}
