@@ -28,11 +28,21 @@ do while streams~items<2
 end
 id1=streams[1]~streamId; id2=streams[2]~streamId
 if id1=id2 then exit 12
+if \streams[1]~setBlockingMode(.false) then exit 13
+if \streams[2]~setBlockingMode(.false) then exit 14
 do i=1 to 2
   st=streams[i]
-  bytes=st~recv(65536)
-  if bytes=.nil then exit 20+i
-  if st~sendAll(bytes)<>length(bytes) then exit 30+i
+  rr=st~tryRecv(65536)
+  do n=1 to 100 while rr~retryable
+    rr=st~tryRecv(65536)
+  end
+  if \rr~ok then exit 20+i
+  bytes=rr~bytes
+  wr=st~trySend(bytes)
+  do n=1 to 100 while wr~retryable
+    wr=st~trySend(bytes)
+  end
+  if \wr~ok | wr~count<>length(bytes) then exit 30+i
 end
 do i=1 to 2
   streams[i]~close
