@@ -29,6 +29,6 @@ RPC Portfolio source candidate: `oorexx_rpc_portfolio_v0.1-dev1.zip`, SHA-256 `c
 3. Autobuild integration tests PASS, source published to versioned path, matching receipt and accepted branch commit.
 
 ## HTTPS ingress source addition 2026-10-29
-- Static source contract checks PASS 14; eight named runtime test fixtures supplied but unexecuted.
+- Static source contract checks PASS 14; standards enforcer 0 errors / 0 warnings; eight named runtime test fixtures supplied but unexecuted.
 - ooRexx runtime unavailable in packaging environment; LDAP dev22 authentication and HTTPS server dev8 live integration **PENDING**.
 - No HTTPS/Rasen Falcon deployment or completed field test is asserted.

@@ -98,6 +98,8 @@
   end
  denied:
   signal off syntax
+  if value('OOREXX_RPC_DEBUG_DIAGNOSTICS',,'ENVIRONMENT') == '1' then
+    say 'RPC HTTPS authorize failure' rc sigl condition('C') condition('D')
   return .JsonRpcFault~new(-32001,'Permission denied')
 
 /* Route this method using:
@@ -121,7 +123,7 @@
   registry = .RpcHttpsPublishedRegistry~new(serviceRegistry,dispatcher,authority)
   protocol = .JsonRpcDispatcher~new(registry,.JsonRpcCodec~new(maximumBytes))
 ::attribute registry get
-::method errorResponse private
+::method errorResponse
   use strict arg status, message
   response = .HttpResponse~text(message,status,'text/plain; charset=utf-8')
   response~header('Cache-Control','no-store')
@@ -135,12 +137,25 @@
   if request~method \== 'POST' then return self~errorResponse(405,'Method not allowed')
   /* A real HttpsServer attaches the transport-originated exchange context. */
   if request~context == .nil then return self~errorResponse(403,'Secure request context required')
-  if request~tlsProtocol \== 'TLSv1.2' & request~tlsProtocol \== 'TLSv1.3' then return self~errorResponse(403,'TLS required')
+  select
+    when request~tlsProtocol == 'TLSv1.2' then nop
+    when request~tlsProtocol == 'TLSv1.3' then nop
+    otherwise return self~errorResponse(403,'TLS required')
+  end
   if request~body~length > maximumBytes then return self~errorResponse(413,'Request too large')
   contentType = request~header('content-type','')~lower~strip
-  if contentType \== 'application/json' & contentType \== 'application/json; charset=utf-8' & contentType \== 'application/json-rpc' then return self~errorResponse(415,'Unsupported media type')
+  select
+    when contentType == 'application/json' then nop
+    when contentType == 'application/json; charset=utf-8' then nop
+    when contentType == 'application/json-rpc' then nop
+    otherwise return self~errorResponse(415,'Unsupported media type')
+  end
   encoding = request~header('content-encoding','identity')~lower~strip
-  if encoding \== 'identity' & encoding \== '' then return self~errorResponse(415,'Unsupported content encoding')
+  select
+    when encoding == 'identity' then nop
+    when encoding == '' then nop
+    otherwise return self~errorResponse(415,'Unsupported content encoding')
+  end
   /* Identity is verified by an injected platform authority, not by headers. */
   signal on syntax name authenticationDenied
   principal = authority~authenticate(request,request~context)
@@ -161,4 +176,6 @@
   return response
  authenticationDenied:
   signal off syntax
+  if value('OOREXX_RPC_DEBUG_DIAGNOSTICS',,'ENVIRONMENT') == '1' then
+    say 'RPC HTTPS authentication failure' rc sigl condition('C') condition('D')
   return self~errorResponse(401,'Authentication required')

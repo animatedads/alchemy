@@ -10,7 +10,7 @@ required={
  'per-call policy': "authority~authorizeOperation(context~principal,service,operation,context~exchange)",
  'request auth': 'authority~authenticate(request,request~context)',
  'transport-bound identity': 'principal~requestId \\== request~context~requestId',
- 'TLS required': "request~tlsProtocol \\== 'TLSv1.2'",
+ 'TLS required': "when request~tlsProtocol == 'TLSv1.2'",
  'request byte cap': 'request~body~length > maximumBytes',
  'missing context rejected': 'request~context == .nil',
  'notification no response': '.HttpResponse~empty(204)',
