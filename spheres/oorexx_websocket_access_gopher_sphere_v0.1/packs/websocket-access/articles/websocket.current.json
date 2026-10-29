@@ -4,15 +4,17 @@
   "version": "0.1",
   "sphere": "websocket-access",
   "title": "Current WebSocket baseline",
-  "summary": "The current Git source candidate is ooRexx WebSocket Access v0.1-dev3; v0.1-dev1 remains the immutable qualified release. dev3 adds an optional estate crypto.auth SHA-1/base64 handshake adapter while preserving injected entropy and the SocketProvider boundary.",
+  "summary": "The current Git source candidate is ooRexx WebSocket Access v0.1-dev4; v0.1-dev1 remains the immutable qualified release. dev4 adds server-side RFC 6455 access, coalesced-handshake byte preservation and a parsed owned-HTTPS upgrade handoff while retaining SocketProvider/TLS authority boundaries.",
   "invariants": [
     "Qualified delivery remains oorexx_websocket_access_v0.1-dev1.zip with SHA-256 91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655.",
-    "Git source candidate v0.1-dev3 includes dev2 fragmentation/close repairs plus WebSocketPlatformCrypto.cls.",
-    "WebSocketPlatformCrypto.cls binds RFC 6455 SHA-1 to crypto.auth/0.1 and keeps entropy behind WebSocketEntropySource.",
+    "Git source candidate v0.1-dev4 includes dev2 fragmentation/close repairs, dev3 estate crypto adapter, and dev4 server/HTTPS handoff.",
+    "Client and server handshakes preserve already-read WebSocket bytes beyond the HTTP header terminator.",
+    "WebSocketServerAccess accepts a plaintext duplex stream already owned by the socket/HTTPS layer; it does not acquire TCP or TLS itself.",
+    "WebSocketUpgradeRequest and acceptParsedRequest() form the explicit parsed-request handoff for the owned ooRexx HTTPS server.",
     "Current external Socket Provider authority remains v0.1-dev16 with SHA-256 fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2.",
-    "Current optional crypto authority is ooRexx Crypto v0.8.3 SHA-256 5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49 plus crypto.auth/0.1.",
-    "Do not rewrite dev1 history to claim a fresh dev16 qualification.",
-    "WebSocketAccess remains above SocketStreamAdapter and does not own TLS or socket acquisition.",
+    "Current optional crypto authority remains ooRexx Crypto v0.8.3 SHA-256 5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49 plus crypto.auth/0.1.",
+    "Stable packages/oorexx_https_server API inspected 2026-10-29 documents v0.4.6 and intentionally hides raw transport objects from ordinary route/interceptor handlers.",
+    "Do not rewrite dev1 history to claim a fresh dev16 or owned-HTTPS qualification.",
     "Rasen Falcon coordination lane is websocket-access."
   ],
   "provenance": [
@@ -23,12 +25,11 @@
     },
     {
       "artifact": "packages/oorexx_websocket_access",
-      "claim": "Git source candidate v0.1-dev3; SOURCE_CANDIDATE pending fresh qualification."
+      "claim": "Git source candidate v0.1-dev4; SOURCE_CANDIDATE pending fresh qualification."
     },
     {
-      "artifact": "oorexx_crypto_v0.8.3.zip",
-      "sha256": "5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49",
-      "claim": "Existing estate crypto authority used by the optional dev3 adapter."
+      "artifact": "packages/oorexx_websocket_access/HTTPS_UPGRADE_CONTRACT.md",
+      "claim": "Defines the owned-HTTPS -> RFC6455 upgrade handoff without raw transport exposure."
     },
     {
       "artifact": "SPIRAL1_TRANSPORT_COTS_INTERFACE_GRID_CURRENT_2026-10-13.md",
