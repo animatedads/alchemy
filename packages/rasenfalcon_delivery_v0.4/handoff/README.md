@@ -14,3 +14,9 @@ This integrates the v0.3 nine-lane delivery board with the real preexisting **We
 **Verified:** existing Website Builder suite 9/9 PASS; JSON site validation PASS; unauthorized production build blocked; HTTPS v0.4.7 exact source archive SHA-256 matches builder lock. Full v0.4 handoff tests run separately. No validated live TLS, Wire CMS, LDAP device enrollment or publish approvals; do not mark those PASS.
 
 Canonical source submission rules remain in `https://github.com/animatedads/alchemy/blob/main/GIT_SUBMISSION.md`. Do not deploy or install server keys from this package.
+
+## General Deployment dev5 integration — 29 October 2026
+
+The controller now follows `HOSTS.json` for independent private HTTPS units: NOC requires `rasenfalcon-noc-https.service`; Office requires `rasenfalcon-office-https.service`. A regression test prevents return to the generic-unit mismatch.
+
+General Deployment dev5 supplies the LDAP identity-role builder and relocatable verified ooRexx namespace launcher. See `deployment/GENERAL_DEPLOYMENT_DEV5.md`. Source/staging integration is delivered; live LDAP, mTLS, mail and public cutover remain operator-gated.

@@ -125,23 +125,24 @@ validate_manifest(){
 required_units(){
  case "$ROLE" in
  gateway) printf '%s\n' rasenfalcon-https.service rasenfalcon-smtp.service rasenfalcon-imap.service rasenfalcon-wire-gateway.service rasenfalcon-terminal3270.service rasenfalcon-webrelay.service;;
- office) printf '%s\n' rasenfalcon-https.service rasenfalcon-wire-office.service rasenfalcon-notnotes.service;;
- noc|public) printf '%s\n' rasenfalcon-https.service;;
+ office) printf '%s\\n' rasenfalcon-office-https.service rasenfalcon-wire-office.service rasenfalcon-notnotes.service;;
+ noc) printf '%s\\n' rasenfalcon-noc-https.service;;
+ public) printf '%s\\n' rasenfalcon-https.service;;
  mcp) printf '%s\n' rasenfalcon-https.service rasenfalcon-mcp.service;;
  identity) printf '%s\n' rasenfalcon-ldap.service;;
- all) printf '%s\n' rasenfalcon-https.service rasenfalcon-smtp.service rasenfalcon-imap.service rasenfalcon-wire-office.service rasenfalcon-wire-gateway.service rasenfalcon-notnotes.service rasenfalcon-mcp.service rasenfalcon-ldap.service rasenfalcon-terminal3270.service rasenfalcon-webrelay.service;;
+ all) printf '%s\\n' rasenfalcon-https.service rasenfalcon-noc-https.service rasenfalcon-office-https.service rasenfalcon-smtp.service rasenfalcon-imap.service rasenfalcon-wire-office.service rasenfalcon-wire-gateway.service rasenfalcon-notnotes.service rasenfalcon-mcp.service rasenfalcon-ldap.service rasenfalcon-terminal3270.service rasenfalcon-webrelay.service;;
  esac
 }
 required_test_names(){
  # 'ready' and 'e2e' are distinct: process up != application operational.
  case "$ROLE" in
  gateway) printf '%s\n' 'ready:https_gateway' 'ready:smtp_listener' 'ready:imap_listener' 'ready:ldap_portal_auth' 'e2e:incoming_mail' 'e2e:outbound_submission' 'e2e:no_open_relay' 'e2e:gateway_ldap_denial' 'e2e:3270_ed209zz' 'e2e:3270_ed209z' 'e2e:web_ed209cray' 'e2e:web_ed209tops';;
- office) printf '%s\n' 'ready:https_office' 'ready:wire_mail' 'ready:wire_notnotes' 'e2e:office_mail_read_send' 'e2e:office_notnotes_revision' 'e2e:office_ldap_denial';;
+ office) printf '%s\\n' rasenfalcon-office-https.service rasenfalcon-wire-office.service rasenfalcon-notnotes.service;;
  noc) printf '%s\n' 'ready:https_noc_alias' 'e2e:noc_cname_sni_host';;
  mcp) printf '%s\n' 'ready:https_mcp' 'ready:mcp_mail' 'ready:mcp_notnotes' 'e2e:agent_chatgpt_mail' 'e2e:agent_claude_mail' 'e2e:notnotes_acl_revision' 'e2e:mcp_denials';;
  identity) printf '%s\n' 'ready:ldap_bind' 'e2e:ldap_revoke' 'e2e:sign_verify_revoke';;
  public) printf '%s\n' 'ready:https_public' 'e2e:public_site_tls';;
- all) printf '%s\n' 'ready:https_gateway' 'ready:smtp_listener' 'ready:imap_listener' 'ready:ldap_bind' 'ready:wire_mail' 'ready:wire_notnotes' 'ready:mcp_mail' 'ready:mcp_notnotes' 'e2e:incoming_mail' 'e2e:no_open_relay' 'e2e:office_mail_read_send' 'e2e:office_notnotes_revision' 'e2e:agent_chatgpt_mail' 'e2e:agent_claude_mail' 'e2e:3270_ed209zz' 'e2e:3270_ed209z' 'e2e:web_ed209cray' 'e2e:web_ed209tops' 'e2e:noc_cname_sni_host' 'e2e:ldap_revoke' 'e2e:sign_verify_revoke';;
+ all) printf '%s\\n' rasenfalcon-https.service rasenfalcon-noc-https.service rasenfalcon-office-https.service rasenfalcon-smtp.service rasenfalcon-imap.service rasenfalcon-wire-office.service rasenfalcon-wire-gateway.service rasenfalcon-notnotes.service rasenfalcon-mcp.service rasenfalcon-ldap.service rasenfalcon-terminal3270.service rasenfalcon-webrelay.service;;
  esac
 }
 
