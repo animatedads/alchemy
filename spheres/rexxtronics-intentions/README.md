@@ -69,3 +69,10 @@ At this review, code search in `animatedads/alchemy` showed historical `packages
 - Earlier Rexx-tronics development-turn artifacts: dev25 through dev28 qualified claims; dev29 explicitly a source candidate.
 - Current GitHub inspection: public historical source trees and a dev29 review branch.
 - No fresh dev29 runtime qualification or complete source synchronization is claimed by this sphere.
+
+## 2026-10-29 — concrete comparison gate increment
+
+- Rasen Falcon lane `rexxtronics` created and linked to package/sphere artifacts; coordination request `REQ-00002063` sent to CLAUDE.
+- Published `packages/rexxtronics_v0.1-dev29/src/RexxTronicsComparisonGate.cls` and a focused test to the review branch. The gate requires matching dimension, method, excitation, window, solver and instrument before numerical comparison; no private numeric solver is introduced.
+- This is a **source-only integration increment**. It is not wired to the dev29 experiment plan, and the test has not been executed against ooRexx r13196. Do not merge or label as qualified without those checks.
+- GitHub main still exposes older dev5/dev15 trees; dev29 owned-source reconciliation remains incomplete. Autobuilder is currently stopped; no automated test result is implied.
