@@ -1,6 +1,6 @@
-# ooRexx Identity Directory / LDAP v0.1-dev13
+# ooRexx Identity Directory / LDAP v0.1-dev22
 
-`oorexx_ldap_identity_v0.1-dev13` is a network-capable development cut of the platform identity directory for the ooRexx/Alchemy stack.
+`oorexx_ldap_identity_v0.1-dev22` is a network-capable development cut of the platform identity directory for the ooRexx/Alchemy stack.
 
 The defining rule is:
 
@@ -9,6 +9,11 @@ The defining rule is:
 Identity Directory owns neutral identity, resource, ACL declaration, credential metadata and cryptographic-key lifetime semantics. LDAP is the first native directory personality. Microsoft AD/Entra and other vendor dialects belong at the conversation-filter edge; they do not become platform policy or semantic truth.
 
 This is the same architectural discipline used by NoSQLServer and its compatibility gateways: an edge can emulate a foreign conversation without making that foreign conversation the backend model.
+
+## dev22 — Rasen Falcon deployable LDAP service boundary
+
+dev22 adds the owned Rasen Falcon LDAP daemon bootstrap and hardened non-root systemd unit required by the current service-activation path. The daemon restores durable Identity Directory state through NoSQLServer, resolves bind material only through Secret Broker references, requires certificate/private-key material, and starts the existing LDAP wire server in implicit-TLS mode. Startup fails closed if `resource:directory` is missing/inactive. It does not auto-provision people, ACLs, credentials or keys, and it does not substitute slapd or another directory runtime. General ooRexx Deployment remains install/staging authority; the Rasen Falcon delivery role remains activation/acceptance authority.
+
 
 ## dev13 — current carrier truth and semantic multicast bridge
 
