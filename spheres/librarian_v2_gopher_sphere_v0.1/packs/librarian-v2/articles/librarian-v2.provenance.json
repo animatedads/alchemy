@@ -3,10 +3,10 @@
   "id": "librarian-v2.provenance",
   "title": "Provenance graph: declarations versus verification",
   "section": "provenance",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "sphere": "librarian-v2",
   "authority": "project-continuity",
-  "summary": "Dev10 strengthens exact historical evidence identity over dev9: source edition, occurrence, spans, declared relations, corrected/retracted/forked records, publication/observation times, both cutoffs and query scope are all represented in sorted length-prefixed canonical serialization. Still a claim ledger, not a cryptographic media-capture or source-independence certification.",
+  "summary": "Dev11 keeps the full dev10 historical evidence identity but removes whole-graph uncertainty contamination from individual comparisons. Contradictory tip lineages taint their own child occurrences and downstream dependency chains; cyclic ancestry blocks only affected queries. Disconnected parts retain evidence-level relationships. CORROBORATION_CLAIM is not dependency and absent links are never proofs of independence.",
   "invariants": [
     "CORROBORATION_CLAIM is not confirmation of corroboration.",
     "Use explicit evidence references and source identity; do not substitute shared domain, publisher or syndication speculation for evidence.",
@@ -46,6 +46,14 @@
       "line_start": 73,
       "line_end": 166,
       "claim": "Canonical closure including all eligible revisions, source spans and knowledge-cutoff identity."
+    },
+    {
+      "artifact": "librarian_v2_dev11_20261029.zip",
+      "sha256": "72211d64de28424f8acdc51f62f0d07418a18e5db8f0619e216bf474158d27a8",
+      "member": "librarian_v2_dev11/src/LibrarianProvenanceHistory.cls",
+      "line_start": 205,
+      "line_end": 258,
+      "claim": "Query-scoped conflict and cycle projections."
     }
   ]
 }
