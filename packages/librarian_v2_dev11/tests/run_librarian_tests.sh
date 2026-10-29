@@ -1,6 +1,5 @@
 #!/bin/sh
-# Native ooRexx regression suite for the COMPLETE dev10 ZIP source tree.
-# The GitHub dev10 delta alone does not contain the earlier source closure.
+# Native ooRexx package qualification, including expected interpreter failures.
 set -eu
 cd "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)"
 : "${REXX:=rexx}"
