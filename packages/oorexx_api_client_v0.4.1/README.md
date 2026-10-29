@@ -11,3 +11,15 @@ HTTP version policy is `HTTP1_ONLY`, `NEGOTIATE`, or `HTTP2_REQUIRED`. TLS ALPN 
 `native/build.sh` builds `bridge/liboorexx_api_h2.so` and requires libnghttp2, OpenSSL and a C compiler. The packaged shared object is a Linux x86-64 build artifact for the current construction environment; rebuild it on the target ABI rather than treating it as portable.
 
 The native bridge has been strict-compiled and directly checked to emit the HTTP/2 client connection preface/SETTINGS. The packaged ooRexx tests include real TLS ALPN + python-h2 server coverage for HTTP/2, response handling, redirect following, redirect-loop rejection and cross-origin rejection. They require the ooRexx r13196 qualification environment plus Foreign Runtime v0.22.6; this container has no `rexx` executable, so those ooRexx tests are included but are not claimed as executed here.
+
+
+## Development compatibility seam
+
+The `messaging-presence/api-client-socket-provider-dev1` candidate keeps RxSock
+as the default v0.4.1 carrier but adds an optional `ApiSocketConnector`
+constructor seam to `ApiHttpsTransport`. A separate SocketProvider adapter uses
+that seam; it does not alter HTTP, redirect, TLS, ALPN, routing/session/WLU or
+completion authority.
+
+This is source-candidate work until ooRexx r13196 qualification is recorded.
+No live HTTPS-over-XTP claim is made by this README.
