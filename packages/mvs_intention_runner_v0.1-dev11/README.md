@@ -359,7 +359,7 @@ Complete real-environment dual-guest qualification:
 export TERMINAL_MACHINE_ROOT=/path/to/oorexx_terminal_machine_v0.22-candidate8
 export OOREXX_DEB=/path/to/oorexx-5.3.0-r13196.deb
 export TSO_USER=HERC03
-export TSO_PASSWORD=PASS4U
+export TSO_PASSWORD='<runtime-secret>'
 ./tools/run_dual_terminal_machine_tso_live.sh
 ```
 
@@ -450,3 +450,5 @@ This does **not** relabel s3270 evidence as Terminal Machine evidence.  The
 candidate16 differential algorithm remains Terminal Machine's qualification
 mechanism; MVS Intention only retains the independent reference facts and raw
 response needed to audit that comparison.
+
+Security correction in dev11: authenticated x3270 reference tooling has no packaged TSO password default. `TSO_PASSWORD` is mandatory at runtime and retained evidence remains redacted.
