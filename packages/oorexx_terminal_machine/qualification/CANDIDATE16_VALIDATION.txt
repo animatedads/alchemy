@@ -1,0 +1,37 @@
+Terminal Machine v0.22-candidate16 validation note
+Date: 2026-10-29
+
+SCOPE
+=====
+Candidate16 extends independent s3270 semantic comparison to extended 3270 attributes.
+It does not alter TN3270LiveSession, host mutation, credentials or MVS/Hercules authority.
+
+REFERENCE CONTRACT
+==================
+x3270/s3270 ReadBuffer(Ascii) emits start-field positions as SF(aa=nn[,...]); SF consumes
+one display position. Extended character attributes are emitted as SA(aa=nn) and do not
+consume display positions. Candidate16 retains SF extended attributes 41/42/43/45 and
+tracks SA runs with 00=00 reset-all semantics matching the Terminal Machine data-stream model.
+
+DETACHED EVIDENCE
+=================
+- Field extended attributes compare directly as x41/x42/x43/x45 values.
+- Character attributes are canonicalized per address in stable 41,42,43,45 order and reduced
+  with TerminalUtil~stableDigest on both Terminal Machine and reference snapshots.
+- NONDISPLAY contents remain masked; the digest contains only attribute values, not display data.
+- DBCS/multi-byte ReadBuffer cells remain fail-closed.
+
+REGRESSION COVERAGE
+===================
+The candidate16 s3270 regression adds:
+- positive SFE field highlight/foreground equivalence;
+- positive SA highlight run plus reset-all equivalence;
+- deliberate field extended-attribute divergence;
+- deliberate character-attribute divergence.
+
+CURRENT VALIDATION
+==================
+Package manifest and ZIP integrity are verified in the authoring container. No runnable ooRexx
+r13196 interpreter is mounted here. Candidate15 already has an outstanding exact-command r13196
+rerun request on Rasen Falcon; candidate16 therefore requires the same independent execution gate
+before live ED209Z/ED209ZZ differential work is promoted.
