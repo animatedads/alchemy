@@ -1,54 +1,45 @@
-# Librarian v2 — engineering Gopher sphere v0.1.2
+# Librarian v2 engineering Gopher sphere v0.1.3
 
-Current experimental source baseline: **dev10** (2026-10-28).
+**Current experimental code checkpoint:** Librarian v2 dev11, 29 October 2026.
 
-This knowledge sphere documents the clean-room ooRexx Librarian rewrite. It is
-not the original WordNet/HardWorld Librarian; its evidence authority excludes
-truth certification, media-independence claims, causal Brand Effect and CMS
-publication decisions.
+Librarian is an evidence/meaning and comparative-media consumer. It ingests
+claims from media and social sources, models source occurrences and historical
+corrections/retractions, reconstructs time-scoped knowledge, and provides
+conservative source-provenance observations to Communications CMS and Brand Effect.
+It has no factual/causal authority and controls no HTTPS, LDAP, mail or XTP service.
 
-## Current source and qualification
+## Exact source and native qualification
 
-- Cumulative ZIP: `librarian_v2_dev10_20261028.zip`
-- SHA-256: `aa48ba861e5a25341349302de0e7dad64979631d33dea7c7955f6a292a187223`
-- Native ooRexx 5.3.0 r13196: **129 PASS checks** (116 assertions, 13 rejected invalid cases).
-- Updated canonical schema: `LIBRARIAN-PROVENANCE-SNAPSHOT/2` includes full
-  event/proposition query scope, knowledge cutoffs and complete historical
-  source evidence rows.
-- Single Time Service v0.3 is pinned. v0.9 is upstream but unqualified here.
+Cumulative archive: `librarian_v2_dev11_20261029.zip`
+SHA-256: `72211d64de28424f8acdc51f62f0d07418a18e5db8f0619e216bf474158d27a8`
 
-Source deltas are in `packages/librarian_v2_dev8/`,
-`packages/librarian_v2_dev9/`, and `packages/librarian_v2_dev10/`.
-Earlier source and the Time Service fixture closure are bundled with the
-cumulative ZIP but not entirely mirrored into GitHub.
+- New dev11: scope uncertainty from contradictory lineage forks and provenance
+  cycles only to affected queried occurrences and their dependents.
+- Whole-snapshot contradictory evidence remains in the canonical audit record.
+- ooRexx 5.3.0 r13196 native qualification: **150 checks PASS** (137 positive,
+  13 expected-negative). `rexxc` compilation and ZIP integrity also PASS.
+- Dev8-dev11 deltas are committed to GitHub; earlier dev1-dev7 and pinned
+  Single Time Service v0.3 dependency are carried by the cumulative ZIP.
+- Single Time Service v0.9 is a separate, unqualified integration boundary.
 
-## Gopher installation and smoke test
+## Gopher deployment status
 
-The repository folder is a **source**, not a live Gopher registration.
-A Gopher deployment actor must package and install these files as the
-`librarian-v2` sphere, preserving the canonical layout:
-
-- `packs/librarian-v2/00-sphere.json`
-- `packs/librarian-v2/01-access-policy.json`
-- `packs/librarian-v2/articles/*.json`
-- `profiles/librarian-v2.json`
-
-Once deployed to the Alchemy sphere catalogue and LLM Gopher runtime:
+**GitHub sphere source is not evidence of Alchemy runtime activation.** The
+source layout is `packs/librarian-v2/` and `profiles/librarian-v2.json`.
+After a supported Gopher installation/publishing action, verify:
 
 ```sh
 ./gopher --profile librarian-v2 context librarian-v2
 ./gopher --profile librarian-v2 open librarian-v2.start
-./gopher --profile librarian-v2 open librarian-v2.dev10
+./gopher --profile librarian-v2 open librarian-v2.dev11
 ./gopher --profile librarian-v2 open librarian-v2.qualification
 ```
 
-The expected Alchemy `sphere_check(sphereId="librarian-v2")` response is
-`SPHERE_RESOLVED` with version **0.1.2** and a selected manifest. Anything
-else is unqualified and must not be described as deployed.
+Alchemy `sphere_check(sphereId='librarian-v2')` must report
+`SPHERE_RESOLVED`, selected sphere version `0.1.3`, and source provenance.
 
 ## Coordination
 
-The authenticated Rasen Falcon lane is `librarian_v2`, created by CHATGPT.
-All messages use that component ID; look for unread replies on the same lane.
-Github PR #53 is the currently open draft; do not confuse the prior merged
-PR #24 with the dev9/dev10 review.
+Authenticated Rasen Falcon lane: `librarian_v2` (principal CHATGPT).
+GitHub review: PR #53 (draft; no production promotion). Autobuilder is not
+running; do not imply autobuild qualification or installation.
