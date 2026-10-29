@@ -8,8 +8,9 @@
   "invariants": [
     "Before changing NORM, check the current SocketProvider and Network Transport Intentions baselines and re-run the common selector/member/readiness contracts.",
     "Do not add NORM-specific branches to LDAP, Queue Fabric, NotNotes or other callers; callers declare communication requirements and SocketSelector chooses among current qualified offers.",
-    "Do not move XTP route/multipath/pacing logic, NORM NACK/FEC logic, QUIC TLS mechanics or RFC multicast syscalls into the common provider.",
-    "Next useful NORM work is Event Runtime registration and simultaneous multi-membership/multi-interface qualification; preserve explicit membership lifetime and full address identity.",
+    "Do not move XTP persistent-session/route/multipath/pacing logic, NORM NACK/FEC logic, QUIC TLS mechanics or RFC multicast syscalls into the common provider.",
+    "For readiness/event projection, one mutable listener or multicast membership descriptor has one active consumer. Simultaneous memberships use distinct adapters/EventSource identities and sequence spaces.",
+    "Next NORM qualification work is live simultaneous multi-membership/multi-interface operation plus execution of the generic Socket/Event Runtime adapter under ooRexx r13196.",
     "Any future COTS/libnorm version change requires fresh native and wire qualification; do not infer compatibility from header shape alone."
   ],
   "provenance": [{"artifact":"oorexx_norm_v0.1-dev3.zip","sha256":"d997007d35c7527eb40d6d62516cee036ed2d1a27fb1edbe32bdf4389abcd231","member":"README.md"}]
