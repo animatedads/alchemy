@@ -89,3 +89,25 @@ A completed parse that leaves unresolved identifiers is a **semantic failure**. 
 - Turning a native renderer or Qt-based ooDialog implementation into the application's authoritative object model.
 - Generating ooRexx executable source from untrusted .rc/JSON event fields.
 - Merging OS/2 PM grammar into the Windows parser to accelerate the eventual legacy-port story.
+
+
+## 2026-10-29 recovery and direct-publication update
+
+Rasen Falcon component lane **windows-rc-tree** created and linked to package/sphere artifacts. The coordinator was informed by immutable Rasen Falcon request **REQ-00001877**. Automated builder is currently stopped; use direct audited GitHub commits instead of claiming autobuild results.
+
+Recovered historical ZIP packages from the Library and checked that each is a valid ZIP, passes CRC, and contains the required filenames:
+
+| Version | SHA-256 |
+|---|---|
+| v9 | `9843d0b6b5c77b9cecf586315a21e426602bb542603d7ef2e80d8bb1de0275d8` |
+| v10 | `4c987a9dbf646bca074b22862d4abb2e9d5572fcca7475e2d3be25b50d7de7b9` |
+| v11 | `b3019b6142cd65e631efa5ca6fbe38865358f96a1b770e8dd7f197f7c06c31c9` |
+| v12 | `ce14d03a1afb976a71b4dc72fb8620142bf2f19f42e4471776f9f0b4a40e7ea1` |
+| v13 | `0f91f97161f320bdc902ccad8c81cd77db05bb41fff583a730804d57b83d1e01` |
+| v14 | `69d2d1ff4c4f530b5d1b08dd19758e090b97d64c205ecdbba30511478dfb08ac` |
+
+Reproduction tool: `packages/oorexx_rc_executable_tree/tools/verify_release_archives.py --directory /path/to/archive-directory`.
+
+**Qualification boundary:** this proves archive integrity, not verified ooRexx execution, full Windows semantic compatibility, or upstream corpus coverage. The recovered actual source archives are locally available, but the historical parser and class source remain to be individually imported and verified on GitHub.
+
+Critical deployment priorities (Rasen Falcon website, native HTTPS, SMTP/IMAP, LDAP and XTP MI↔MU) belong to their own lanes. This Windows resource-tree lane does not deploy or modify those services; keep its progress scoped and report blockers without hijacking their ownership.
