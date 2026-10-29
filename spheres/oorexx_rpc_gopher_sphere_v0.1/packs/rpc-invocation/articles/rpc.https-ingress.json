@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "rpc.https-ingress",
+  "sphere": "rpc-invocation",
+  "version": "0.1.1",
+  "title": "Authenticated HTTPS ingress for JSON-RPC registered services",
+  "section": "security",
+  "summary": "The separate ooRexx RPC HTTPS Gateway v0.1-dev1 integrates HttpsServer v0.4.8 POST routes with JSON-RPC Fabric v0.1-dev3 and the exact RpcServiceRegistry/Dispatcher. Platform LDAP dev22 must supply a trusted identity authority; no request header or JSON identity claim is sufficient.",
+  "invariants": [
+    "HTTPS Server owns TLS, the accepted socket and HttpExchangeContext; private-CA validation must be demonstrated by the server, not claimed by RPC.",
+    "Gateway rejects absent context or non-TLS requests, oversize/unsupported bodies, unsealed publications, unsupported callback operations, and absent or stale identity attestations.",
+    "Trusted identity authority authenticates and binds its proof to context requestId, peerAddress and tlsGeneration, then authorizes each published operation separately; application and gateway fail closed.",
+    "RpcHttpsPublishedRegistry resolves only explicitly named JSON-RPC operations to already registered RpcServiceCore entries; neither wire request nor client chooses an ooRexx target method.",
+    "JsonRpcDispatcher owns JSON-RPC errors, batches, notifications and IDs. Notification HTTP 204 is not a durability acknowledgement.",
+    "Connect Selector dev8 retains remote route selection/admission; SOAP and gRPC continue on their own protocol bindings; no new router or serializer is introduced."
+  ],
+  "qualification": {
+    "source_integrity": "Static invariant check 14/14 PASS, 8 named fixture checks present; no ooRexx runtime interpreter available in source container",
+    "target_runtime": "PENDING: full rexx test_gateway.rex with HttpsServer v0.4.8, RPC Core dev1 and JSON-RPC dev3",
+    "ldap_https": "PENDING: real dev22 LDAP authority, private-CA TLS/HTTPS and server installation field qualification",
+    "site_operation": "NOT CLAIMED: website, SMTP/IMAP, MU/MI or LDAP/HTTPS rollout"
+  },
+  "source": {
+    "package": "oorexx_rpc_https_gateway_v0.1-dev1",
+    "path": "packages/oorexx_rpc_https_gateway_v0.1-dev1",
+    "componentKind": "new source integration"
+  },
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "oorexx_rpc_https_gateway_v0.1-dev1.zip",
+      "sha256": "89fda97163f5148671da7cc41035d757a7a94087abbbe1d62eb479e76402e187",
+      "member": "src/RpcHttpsJsonGateway.cls",
+      "member_sha256": "dd15f78db5243415ce43734066af8bf87eab7f268bdc4e683a6347a4140faf36",
+      "claim": "Source authored and static contract verified; executable ooRexx integration not yet qualified."
+    }
+  ]
+}
