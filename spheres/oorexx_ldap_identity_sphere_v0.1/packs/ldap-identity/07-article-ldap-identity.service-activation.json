@@ -1,17 +1,25 @@
 {
   "kind": "article",
   "id": "ldap-identity.service-activation",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "ldap-identity",
-  "title": "Rasen Falcon LDAP service activation contribution",
-  "status": "SOURCE_DEPLOYMENT_CONTRACT_DELIVERED",
+  "title": "Rasen Falcon owned LDAP service activation",
+  "status": "SOURCE_DEPLOYMENT_AND_REHEARSAL_DELIVERED",
   "delivered": [
     "Owned rasenfalcon_ldap_service.rex daemon bootstrap",
     "Persistent Identity Directory recovery through NoSQLDirectoryStore",
     "Secret Broker secretRef-to-environment mapping with no raw deployment secrets",
-    "Mandatory implicit TLS through OpenSSL/Foreign Runtime",
+    "Mandatory implicit TLS through OpenSSL/Foreign Runtime with no plaintext production fallback",
     "Hardened non-root rasenfalcon-ldap.service systemd unit",
-    "Static deployment contract qualification"
+    "Static deployment contract qualification",
+    "Pre-install activation rehearsal for native LDAP wire, NoSQL restart recovery, STARTTLS/LDAPS and Access Permissions",
+    "Principal-isolation and revocation admission regression for human, CHATGPT and CLAUDE"
+  ],
+  "consumer_contract": [
+    "Website private admission requires ACTIVE attributed principal plus explicit HTTPS_LOGIN authority.",
+    "Mail read requires explicit MAIL_READ authority.",
+    "SMTP send requires explicit EMAIL_SEND authority; Bind and signature do not grant EMAIL_SEND.",
+    "Revoked principals fail service admission before the protected action."
   ],
   "authority": [
     "LDAP Identity owns identity semantics and LDAP conversation behavior.",
@@ -20,9 +28,15 @@
     "Crypto/PKI owns sign/verify/revoke; LDAP does not acquire signing authority."
   ],
   "live_gates": [
-    "Package the identity role with the accepted General Deployment dependency namespace.",
-    "Install on the approved identity host with private-CA TLS and provisioned durable directory state.",
+    "Install the owned service through General Deployment with the accepted dependency namespace and private-CA TLS material.",
+    "Provision durable directory state through reviewed provisioning authority; daemon startup never creates identities or ACLs.",
     "Run ready:ldap_bind and e2e:ldap_revoke against the live owned service.",
+    "Run website HTTPS_LOGIN and mail MAIL_READ/EMAIL_SEND consumer probes against the same principal/revocation state.",
     "Run e2e:sign_verify_revoke under Crypto/PKI ownership."
+  ],
+  "non_claims": [
+    "Production LDAP is not installed by this source contribution.",
+    "Fresh full ooRexx r13196 activation execution is not claimed from the construction container.",
+    "No third-party LDAP daemon is used."
   ]
 }
