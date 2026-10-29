@@ -176,7 +176,7 @@
   vs=(vs+1)//8
   return .true
 ::method receive
-  expose role state vs va vr remoteBusy unacked outbound delivered deadline attempts t1 controlWaiting
+  expose role state vs va vr remoteBusy unacked outbound delivered deadline attempts t1 n2 controlWaiting
   use strict arg wire,now
   if \datatype(now,'N') then raise syntax 88.900 array('monotonic tick required')
   frame=.X25LapbCodec~decode(wire,role)
@@ -237,6 +237,14 @@
   end
   if k='REJ' then do
     remoteBusy=.false
+    if unacked~items=0 then return 'ACK_REJ_EMPTY'
+    /* REJ-triggered replay counts against N2 as much as a T1 timeout;
+     * an untrusted peer cannot force unbounded I-frame amplification. */
+    if attempts>=n2 then do
+      state='FAILED';deadline=-1
+      return 'N2_EXHAUSTED'
+    end
+    attempts=attempts+1;deadline=now+t1
     self~resendOutstanding
     return 'ACK_REJ'
   end
