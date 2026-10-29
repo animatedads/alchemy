@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "id": "ops.social.qualification",
+  "version": "0.1",
+  "sphere": "social-media",
+  "title": "Qualification state is evidence scoped",
+  "summary": "The dev6 bundle includes regression suites and a shell driver but there was no usable ooRexx binary in this authoring runtime; zip integrity and static inspection do not establish interpreter pass.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Inspect the original dev6 VALIDATION.txt before claiming runtime coverage.",
+    "Dev1–dev5 regression suites are retained in dev6.",
+    "Test adapter emits simulation receipts and cannot be used as evidence of a live provider or external spend.",
+    "A GitHub submission marker is not an Autobuild acceptance receipt."
+  ],
+  "procedure": [
+    "Run bash tests/run_all.sh /path/to/rexx on installed r13196 or qualified newer interpreter.",
+    "Run rexxc on each source file where available.",
+    "Check Autobuild result/receipt on main before promoting a candidate.",
+    "Perform live provider verification only with approved test accounts and scoped permissions."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "VALIDATION.txt",
+      "line_start": 11,
+      "line_end": 13,
+      "claim": "Qualification statement from package"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "tests/run_all.sh",
+      "line_start": 6,
+      "line_end": 8,
+      "claim": "Test runner inventory"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "tests/adapter_contract.rex",
+      "line_start": 46,
+      "line_end": 48,
+      "claim": "Simulated adapter behaviour test"
+    }
+  ]
+}

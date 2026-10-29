@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "arch.social.conversation",
+  "version": "0.1",
+  "sphere": "social-media",
+  "title": "Authenticated inbound events and relationship graphs",
+  "summary": "SocialReference and SocialInteraction preserve scoped identities and parent-child links. The inbound gate verifies before graph insertion and rejects duplication.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Conversation edges are evidence about replies, not proof of identity, ownership or consent.",
+    "Live adapters must bind immutable raw provider-originated evidence to a normalized interaction; trusting mutable interaction metadata is insufficient.",
+    "Replay/dedup is scoped to stable provider/account/event identity; cannot infer that identical text equals an identical event.",
+    "No synthetic adapter authenticates inbound events."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialMedia.cls",
+      "line_start": 190,
+      "line_end": 192,
+      "claim": "Graph and child edge semantics"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialMedia.cls",
+      "line_start": 225,
+      "line_end": 227,
+      "claim": "Gate before graph mutation"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialAdapterContract.cls",
+      "line_start": 90,
+      "line_end": 92,
+      "claim": "Adapter-specific verification boundary"
+    }
+  ]
+}

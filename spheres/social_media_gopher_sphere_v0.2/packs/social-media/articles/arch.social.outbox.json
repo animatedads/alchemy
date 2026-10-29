@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "arch.social.outbox",
+  "version": "0.1",
+  "sphere": "social-media",
+  "title": "Outbox state machine and limits of durability",
+  "summary": "The dev4 file journal records preparation, dispatch and uncertain completion; restart replay and reconciliation avoid blind reposting after ambiguous provider outcomes.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "A possible side effect followed by exception is UNKNOWN and requires reconciliation; never retry from uncertainty.",
+    "Journal integrity and replay are not the same as fsync, multiwriter fencing, crash consistency or remote exactly-once delivery.",
+    "Single-process development implementation must not be advertised as production durable persistence.",
+    "Next persistence integration must use the existing estate journal/storage authority and retain publication semantics."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialPublicationJournal.cls",
+      "line_start": 6,
+      "line_end": 8,
+      "claim": "Local journal and replay implementation"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "docs/DEV4_OUTBOX_CONTRACT.md",
+      "line_start": 1,
+      "line_end": 3,
+      "claim": "Dev4 outbox behavioural contract"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "tests/outbox_unknown.rex",
+      "line_start": 11,
+      "line_end": 13,
+      "claim": "Test covering unknown/recovery states"
+    }
+  ]
+}

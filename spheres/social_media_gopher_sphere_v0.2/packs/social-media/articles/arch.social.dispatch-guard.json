@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "arch.social.dispatch-guard",
+  "version": "0.2",
+  "sphere": "social-media",
+  "title": "Dev7 enforced adapter dispatch and outbox-bound authority",
+  "summary": "Adapter dispatch refuses a missing guard and independently revalidates publication approval, exact account/surface capability, policy, full request binding and an already acknowledged outbox dispatching checkpoint. Does not claim production secure storage or live vendor adapters.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "SocialAdapterProvider must be constructed with SocialDispatchGuard; an unguarded provider wrapper cannot be used.",
+    "An approvalRef is only lineage. Independent publication authority and exact scoped capability must both approve at time of dispatch.",
+    "A low-level call to SocialLibrary~execute with valid approval and capability but no dispatching outbox checkpoint cannot dispatch.",
+    "The local requestObject is removed before vendor-adapter dispatch, and the journal does not serialise that object.",
+    "Development journal is single writer with checksum only; no production fsync, interprocess lease, tamper-proof signature or exact-once guarantee.",
+    "Raw adapter objects must remain inaccessible to untrusted callers; a plain in-process wrapper does not sandbox them."
+  ],
+  "procedure": [
+    "Configure one journal, scoped resolver, trusted publication authority and provider policy.",
+    "Construct SocialDispatchGuard(authority,resolver,policy,journal) and SocialAdapterProvider(adapter,guard).",
+    "Construct SocialScopedPublicationService with the SAME journal and resolver; set authority.",
+    "Submit through scoped facade: journal records prepared then dispatching; guarded provider checks recorded state before real dispatch.",
+    "On unknown remote outcome, reconcile using independent remote proof; never blindly retry."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_social_media_v0.1-dev7.zip",
+      "sha256": "35f25f8fc6c9c7c057af0fa92784847b5b6607584598001fd639621fcce7c5e1",
+      "member": "src/SocialAdapterContract.cls",
+      "line_start": 60,
+      "line_end": 113,
+      "claim": "Lower-layer dispatch guard and required adapter wrapper"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev7.zip",
+      "sha256": "35f25f8fc6c9c7c057af0fa92784847b5b6607584598001fd639621fcce7c5e1",
+      "member": "src/SocialPublicationJournal.cls",
+      "line_start": 7,
+      "line_end": 134,
+      "claim": "Non-recovering journal inspection for active dispatch"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev7.zip",
+      "sha256": "35f25f8fc6c9c7c057af0fa92784847b5b6607584598001fd639621fcce7c5e1",
+      "member": "src/SocialPublication.cls",
+      "line_start": 81,
+      "line_end": 81,
+      "claim": "Local-only request binding"
+    }
+  ]
+}

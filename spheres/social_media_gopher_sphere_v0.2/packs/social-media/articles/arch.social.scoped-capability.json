@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "arch.social.scoped-capability",
+  "version": "0.1",
+  "sphere": "social-media",
+  "title": "Exact scoped capability discovery",
+  "summary": "A capability is an observed, versioned claim for one provider, account, surface and action, with declared mechanical limits; it does not grant organisational permission.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Fail closed without an exact matching current capability for new dispatches.",
+    "Provider-wide capability is not transferable to all accounts or surfaces.",
+    "Re-check scope for each new request; return immutable recorded receipts for idempotent replay, even after subsequent revocation.",
+    "A capability revision/evidence string is not proof of current platform authorization unless the live resolver validates it."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialScopedPublication.cls",
+      "line_start": 14,
+      "line_end": 16,
+      "claim": "Scoped offer fields"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialScopedPublication.cls",
+      "line_start": 94,
+      "line_end": 96,
+      "claim": "Exact checks and size limits"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "tests/scoped_publication.rex",
+      "line_start": 67,
+      "line_end": 69,
+      "claim": "Dev5 regression coverage (source-level provenance, not runtime claim)"
+    }
+  ]
+}

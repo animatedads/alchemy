@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "arch.social.publication",
+  "version": "0.1",
+  "sphere": "social-media",
+  "title": "Publication requests, approval and immutable receipts",
+  "summary": "SocialPublicationRequest carries versioned CMS context; independent publication authority and SocialLibrary policy precede provider execution. Duplicate requests return their existing receipt if the fingerprint matches.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Idempotency identity is scoped to the full publication fingerprint; a reused request ID with altered payload must fail.",
+    "The same CMS content revision may be rendered in channel-specific variants only with explicit provenance and approval references.",
+    "A recorded dispatch intent is not proof that the remote content was published.",
+    "The simulated provider cannot claim live delivery."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialPublication.cls",
+      "line_start": 9,
+      "line_end": 11,
+      "claim": "Publication request context and fingerprint"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialPublication.cls",
+      "line_start": 166,
+      "line_end": 168,
+      "claim": "Publication authority and receipt controller"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialPublication.cls",
+      "line_start": 111,
+      "line_end": 113,
+      "claim": "Publication receipt projection"
+    }
+  ]
+}

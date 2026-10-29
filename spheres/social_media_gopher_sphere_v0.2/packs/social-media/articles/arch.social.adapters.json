@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "arch.social.adapters",
+  "version": "0.1",
+  "sphere": "social-media",
+  "title": "Provider adapter SPI and independent evidence channels",
+  "summary": "Dev6 SocialAdapter SPI supports provider discovery, dispatch, authenticated inbound acceptance and remote delivery reconciliation as independent operations.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Adapter registration must never confer brand publishing or advertising privileges.",
+    "dispatch returns provider acknowledgment, not verified remote delivery.",
+    "Inbound proof and reconciliation proof are separate verification domains; the inert test adapter denies both.",
+    "Platform adapters must use API Client for transport, Secret Broker for secrets and existing Identity/Institutional Policy for governance.",
+    "Commercial API availability and platform-specific permissions must be validated before a live adapter can be declared qualified."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialAdapterContract.cls",
+      "line_start": 6,
+      "line_end": 8,
+      "claim": "Six-operation provider adapter SPI"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialAdapterContract.cls",
+      "line_start": 120,
+      "line_end": 122,
+      "claim": "Inert simulated adapter"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "docs/DEV6_ADAPTER_CONTRACT.md",
+      "line_start": 56,
+      "line_end": 58,
+      "claim": "Acceptance conditions for live providers"
+    }
+  ]
+}

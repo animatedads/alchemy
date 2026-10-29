@@ -1,0 +1,54 @@
+{
+  "kind": "article",
+  "id": "arch.social.authority",
+  "version": "0.1",
+  "sphere": "social-media",
+  "title": "Authority map and anti-bypass boundaries",
+  "summary": "CMS owns approved content and brand intention; institutional policy owns review/operative rules; social library owns semantic exposure and local publication sequencing; adapter owns provider protocol proof only; brand analytics own effects.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "A social surface or discovered capability is descriptive, not a publication grant.",
+    "Authorisation and scoped capability must independently pass, then SocialLibrary policy must permit dispatch.",
+    "The public lower-level SocialLibrary~execute and SocialPublicationService are currently callable outside the strict scoped facade; production exposure MUST enforce only SocialScopedPublicationService, and redesign to make bypass structurally impossible is a documented gap.",
+    "A provider transport receipt is not delivery proof, a conversation graph entry is not a verified inbound event, and a brand-effect claim is not causal proof.",
+    "Spend, marketplace commerce, private-message outreach and moderation must have separate effectful authorisation."
+  ],
+  "procedure": [
+    "Expose only the strict facade at application/service registration.",
+    "Resolve exact provider/account/surface/action live capability and production publication approval.",
+    "Use existing institutional policy, identity, API Client and Secret Broker; never implement lookalike mechanisms."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialScopedPublication.cls",
+      "line_start": 121,
+      "line_end": 123,
+      "claim": "Strict facade does not conceal lower-level public classes"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "src/SocialAdapterContract.cls",
+      "line_start": 60,
+      "line_end": 62,
+      "claim": "Adapter is a provider wrapper, not an authorizer"
+    },
+    {
+      "artifact": "oorexx_social_media_v0.1-dev6.zip",
+      "sha256": "f86ff802725ea83e856f8df10863bff8fcf7adcecf80240bc490696965ebfcda",
+      "member": "docs/DEV6_ADAPTER_CONTRACT.md",
+      "line_start": 28,
+      "line_end": 30,
+      "claim": "Dev6 documents separate authority controls"
+    }
+  ],
+  "integrates_with": [
+    "CMS Brand Builder (external, contract only)",
+    "Dynamic Story (external, contract only)",
+    "Brand Interaction Stack sphere (separate authority)",
+    "Institutional Policy (external authority)",
+    "API Client / Secret Broker / Identity (external authorities)"
+  ]
+}

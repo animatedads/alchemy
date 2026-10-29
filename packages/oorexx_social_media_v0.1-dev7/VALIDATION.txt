@@ -1,0 +1,18 @@
+ooRexx Social Media v0.1-dev7 — 2026-10-29
+
+Baseline: dev6 source restored from the delivered ZIP.
+Changed: SocialAdapterContract.cls, SocialPublication.cls, SocialPublicationJournal.cls,
+         tests/adapter_contract.rex, tests/run_all.sh, README and dev7 contract.
+
+Static checks: Python package verification + shell syntax + ZIP CRC: PASS.
+Runtime: NOT RUN — ooRexx 5.3.0 r13196 binary absent in current execution container.
+Production: NOT QUALIFIED — no credentialled platform adapter, institutional
+           journal backend or interprocess execution fencing.
+
+New tests ready for ooRexx:
+- unguarded provider constructor rejected;
+- direct low-level dispatch denied without current scoped offer;
+- direct low-level dispatch denied WITHOUT outbox checkpoint even WITH offer;
+- normal journaled simulation accepted once;
+- repeated direct invocation denied;
+- inbound and reconciliation evidence remain independently rejected.
