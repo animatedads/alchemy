@@ -1,7 +1,7 @@
 {
   "schema": "generalized.compute.intentions.dependencies/1",
   "package": "oorexx-generalized-compute-intentions",
-  "version": "0.1-dev7",
+  "version": "0.1-dev8",
   "core": {
     "requires": [],
     "note": "The semantic planning core remains dependency-free and consumes injected adapters."
@@ -42,6 +42,13 @@
         "AIModelRouter.cls"
       ],
       "purpose": "non-entitling WLU/policy-backed LLM route selection projected into the GCI router assessment"
+    },
+    {
+      "name": "rexxos-rto2-grid",
+      "version": "0.1-dev15",
+      "api": "RTO2 estate membership projection",
+      "artifactSha256": "e94ba156182567752e7e3b86e88b6a0e8a25fb8710648bb373a4c33271226543",
+      "purpose": "current MU/MI estate membership and incarnation evidence; MI members may be projected as compute candidates but Grid does not grant placement or lease authority"
     }
   ],
   "pathRequirements": [
@@ -71,6 +78,13 @@
         "AIModelRouter.cls"
       ],
       "resolution": "package src plus explicit AI Model Router v0.1 src path; AI Model Router's own Alchemy Objects, WLU v0.12 and Institutional Policy v0.6 dependencies must also resolve"
+    },
+    {
+      "source": "src/GeneralizedComputeRTO2Adapter.cls",
+      "requires": [
+        "GeneralizedComputeIntentions.cls"
+      ],
+      "resolution": "no RTO2 source is vendored or required by ::requires; the adapter consumes an injected current estate-controller object exposing estateMembers and optional estateSnapshot"
     }
   ]
 }
