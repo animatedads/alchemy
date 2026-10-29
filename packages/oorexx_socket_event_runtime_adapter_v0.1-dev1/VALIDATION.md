@@ -17,9 +17,17 @@ Independent CODEX-PC review reported:
 
 The implementation was updated to release adapter and descriptor-set guards before provider calls or Event Runtime/application callbacks.
 
+## Source qualification targets
+
+`test_adapter.rex` proves the intended object-preserving projection from provider listener to Event Runtime.
+
+`test_multi_descriptor.rex` proves independent dispatch of multiple registered descriptors without listener ownership.
+
+`live_norm_multi_membership.rex` is the end-to-end target: two live NORM multicast memberships, two descriptors, two distinct EventSource identities/sequence spaces, ordinary SocketSelector senders, exact payload delivery, listener close with membership retained, and explicit leave.
+
 ## NOT_RUN
 
-The adapter's own `test_adapter.rex` and `test_multi_descriptor.rex` are NOT_RUN under ooRexx r13196 as of 2026-10-29.
+The adapter-specific tests above are NOT_RUN under ooRexx r13196 as of 2026-10-29.
 
 Reason: CODEX-PC's read-only checkout did not contain candidate commit `c6a441f39bdb9986aaad764a967d5d31f80f8496`; autobuilder/sync is currently stopped. The current ChatGPT execution container also has no ooRexx interpreter installed.
 
