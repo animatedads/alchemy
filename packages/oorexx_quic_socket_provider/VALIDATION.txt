@@ -1,9 +1,14 @@
-ooRexx QUIC Socket Provider v0.1-dev4 validation
+ooRexx QUIC Socket Provider v0.1-dev5 validation
 
-Environment in this packaging pass:
-- OpenSSL 3.5.5 headers/libraries available.
-- ooRexx runtime/header package not mounted in this execution container.
+Development qualification in this pass:
+- OpenSSL 3.5.5 semantics confirmed for QUIC SSL_ERROR_WANT_READ / SSL_ERROR_WANT_WRITE.
+- Native source uses Rexx arrays for structured status+value returns.
+- Package/source guards and test-source consistency reviewed.
+- Generic SocketStreamAdapter contract intentionally unchanged.
 
-PASS: OpenSSL API compile probe for SSL_STREAM_FLAG_NO_BLOCK and SSL_get_quic_stream_*_local_avail.
-PASS: package static guards, JSON parse, shell syntax and ZIP integrity.
-NOT RUN HERE: ooRexx/native extension rebuild and live QUIC loopback/multiplex qualification. The qualification script is included and must be run against ooRexx 5.3.0 r13196 before promotion beyond development status.
+NOT RUN HERE:
+- ooRexx 5.3.0 r13196 native rebuild and live QUIC loopback/multiplex suite. The runtime/header package is not mounted in this execution container.
+
+Promotion rule:
+- dev3 remains the last fully live-qualified baseline.
+- dev5 is a development source baseline until qualification/run_environment_test.sh passes under r13196 with OpenSSL QUIC.
