@@ -18,13 +18,17 @@
  *                                            'the code:' / 'the result:' / 'the reference says:' blocks are one
  *                                            EXAMPLE with its RESULT and REFERENCE
  *   rexx slam.rex about DB SUBJECT         the facts and examples stored about SUBJECT (any case)
+ *   rexx slam.rex provenance DB [REPO]     record which tool wrote each unit (header, PROVENANCE.md, git blame
+ *                                            per line when REPO is the git checkout, README; else NOT_RECORDED)
+ *   rexx slam.rex tools DB [SHAPE]         units, lessons and proofs by tool; with SHAPE (an SQL LIKE pattern on
+ *                                            a shape's text, e.g. 'LOOP: do N %'), how many of each tool's units hold it
  * NODE is a display id (#00EF), a numeric id, or a canonical text.
  */
 signal on syntax name onSyntax
 parse arg cmd db rest
 cmd = cmd~lower
 if cmd == '' | db == '' then do
-  say 'usage: rexx slam.rex ingest|corpus|read|facts|about|ground|ask|stats|node|follows|into|record DB ...'
+  say 'usage: rexx slam.rex ingest|corpus|read|facts|about|ground|ask|stats|node|follows|into|record|provenance|tools DB ...'
   exit 2
 end
 store = .SlamStore~new(db)
@@ -60,6 +64,8 @@ select
     end
   end
   when cmd == 'stats' then call stats store
+  when cmd == 'provenance' then call provenance store, rest~strip
+  when cmd == 'tools' then call tools store, rest~strip
   when cmd == 'node' then call node store, rest~strip
   when cmd == 'follows' then call edgesOut store, rest~strip, 'OUT'
   when cmd == 'into' then call edgesOut store, rest~strip, 'IN'
@@ -419,6 +425,34 @@ cleanWords: procedure
   end
   return out
 
+provenance: procedure
+  use arg store, repo
+  repo = repo~strip('B', '"')~strip('T', '/')
+  c = .SlamProvenance~recordAll(store, repo)
+  do lv over .array~of('HEADER', 'PROVENANCE', 'GIT', 'README', 'NOT_RECORDED')
+    say lv~left(13) c[lv]~right(8) 'units'
+  end
+  return
+
+tools: procedure
+  use arg store, pattern
+  pattern = pattern~strip('B', "'")~strip('B', '"')
+  say 'units by tool (and the level of evidence for it):'
+  do r over store~toolUnits
+    say '  ' r['TOOL']~left(50) r['LEVEL']~left(13) r['UNITS']~right(7) 'units in' r['FILES'] 'files'
+  end
+  say 'what happened to each tool''s code (lessons and proofs about nodes tagged with a tool):'
+  do r over store~toolOutcomes
+    say '  ' r['TOOL']~left(50) r['KIND']~left(7) r['OUTCOME']~left(14) r['N']~right(7)
+  end
+  if pattern \== '' then do
+    say 'units holding a segment whose shape is LIKE' pattern || ':'
+    do r over store~toolHabit(pattern)
+      if r['UNITS'] > 0 then say '  ' r['TOOL']~left(50) r['WITH']~right(7) 'of' r['UNITS'] 'units (' || format(100 * r['WITH'] / r['UNITS'], , 1) || '%)'
+    end
+  end
+  return
+
 stats: procedure
   use arg store
   d = store~stats
@@ -462,3 +496,4 @@ onSyntax:
 ::requires 'SlamLanguages.cls'
 ::requires 'SlamStore.cls'
 ::requires 'SlamGround.cls'
+::requires 'SlamProvenance.cls'

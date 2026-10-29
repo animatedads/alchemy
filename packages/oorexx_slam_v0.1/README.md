@@ -41,6 +41,8 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_choose.rex` | SLAM chooses its own path from 71 standalone routines (8 checks) |
 | `tests/test_fdsqrt.rex` | `FDSqrt` before/after/check: small and large data through three ways (34 checks in CHECK mode) |
 | `src/SlamProof.cls` | PROVED, DISPROVED or INDETERMINATE: certificates checked in exact rationals (ooRexx Maths v0.8, CERTIFIED route, pure ooRexx); each answer is a Maths `MathProof` |
+| `src/SlamProvenance.cls` | Which tool wrote each unit: HEADER, PROVENANCE, GIT (blame per line), README, else NOT_RECORDED |
+| `tests/test_provenance.rex` | Provenance on real files, a habit found by shape, outcomes by tool (19 checks) |
 | `tests/test_ties.rex` | Gemini's two questions: the tie rule and the prior as one test (12 checks) |
 | `tests/gemini_to_slam.md`, `tests/slam_to_gemini.md` | Gemini's letter and SLAM's reply (the reply reads with no unknown word) |
 | `tests/test_proof.rex` | The PROVED tier on `FDSqrt` (now and before), `rx_mod_inverse` and the contract gate (18 checks) |
@@ -499,6 +501,36 @@ Gemini wrote to SLAM in SLAM's words, with eight exceptions, two of them `your` 
 
 `tests/test_ties.rex`, 12/12: fewer edges wins a BOTTLENECK tie; more evidence wins an equal-length tie (45 results against 10); the lower node wins a full tie, with the results stored in either order; equal edges list in node order. A 3-of-5 prior (0.231) falls to 0.037 after one false result instead of 0, so a route BLOCKED under the old rule is found under the new one; a true result raises it again (0.140); and the prior's pull shrinks as results come in (0.046 at 2 results, 0.011 at 42).
 
+### Which tool wrote which code (2026-10-29)
+
+Tom's rule: "Failure to credit tools used in generation is a technical weakness. By knowing which tool generated which code, if the tool has a habit of embedding a given error that error can be identified at a tool level." `src/SlamProvenance.cls` records, for every unit in a store, the tool that wrote it and the evidence for it. Commands:
+
+```
+rexx bin/slam.rex provenance DB REPO
+rexx bin/slam.rex tools DB 'LOOP: do N %'
+```
+
+**Levels, in the order they decide.** Claims of authorship come before records of who committed:
+1. **HEADER:** a credit line in the file's first 40 lines (`Code:`, `Coding:`, `Author:`, `Door code:` …).
+2. **PROVENANCE:** a `PROVENANCE.md` met walking up from the file. Vendored code keeps its own record: SLAM's copy of the rx2cpp lexer is "ChatGPT and Claude", not SLAM's own credit.
+3. **GIT:** `git blame` of the unit's own lines, then each commit's `Co-Authored-By` trailer. This is per line, never per file: the last commit to touch the door file is my `FDSqrt` fix, and crediting 2,700 lines to it would be false.
+4. **README:** the package README, package-wide and least precise. A credit naming several tools comes back `MIXED:` in full; none is picked.
+5. **NOT_RECORDED:** said plainly, as a gap.
+
+When two levels disagree, the deciding one wins and the other is kept as `CONFLICT:`.
+
+**Two traps, both handled.**
+- **A shallow clone.** The clone this was built in is shallow, and git charges every older line to the boundary commit, which here is a Claude session's. Those lines are `UNKNOWN_HISTORY`, not that session's.
+- **A commit is not authorship.** The old `FDSqrt` fixture says "Code: ChatGPT" in its header, but sits in a commit by a Claude session. The header decides, and the commit record is kept as a conflict.
+
+**What the estate records.** 309 of 7,877 code files name a tool at all (many of them as data, like `codex:mcp`). About 14 of 381 package READMEs say who coded them. Of the commits here, 41 by `animatedads` carry no trailer and 21 carry Claude's. Most of the estate is `NOT_RECORDED`, and that is the finding.
+
+**A habit, found by shape.** `FDSqrt`'s error is Newton's step inside a fixed-count loop. Searching for that shape (a `LOOP: do N` holding `RUN: L1 = ( L1 + … A1 / L1 …`) finds the old `FDSqrt` and one more: `sqrtNumber` in `brand_intervention_effectiveness_v0.2`, `do 20; x=(x+value/x)/2; end`. Certificates then judge it. Every input its only caller can give (a Wilson variance, at most 0.9604 for n = 1 to 60) is PROVED within 1e-8, so the habit is there but the harm is not. As a general square root it is DISPROVED from 10¹¹. Its tool is NOT_RECORDED, so the find cannot be charged to any tool: the gap Tom's rule is about, shown on real code. It is reported, not changed.
+
+**Outcomes by tool.** Lessons and proofs about a node tagged with a tool count against that tool. In `tests/test_provenance.rex` the old `FDSqrt` (ChatGPT, by its header) has 6 DISPROVED and 6 PROVED. The fix (Claude (Opus 5.5), by git: 9 of its 14 lines) has 12 PROVED. `sqrtNumber`'s DISPROVED counts against no one.
+
+`tests/test_provenance.rex`, 19/19. It needs a git checkout of alchemy; a shallow one is fine, and the test says which it ran on.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -509,14 +541,15 @@ SLAM gets credit for what it found:
 5. **SLAM's own ooRexx reader misread `then` on a new line.** Found by reading NetRexx's QTIME beside ooRexx's. Fixed in `SlamClauses`.
 6. **Duplicate code in rx2cpp** (`RxStmtIf~branch` = `RxStmtSelect~whenBody`, `BifDefinition~joined` = `RxCppEmitter~body`, `RxNative~kind` = `RxNative~form`). Found by identical code folding ported from BOLT. Reported, not fixed: that is the rx2cpp lane's call.
 7. **SLAM's own C++ reader named every libc function `LLVM_LIBC_FUNCTION`, and libc++'s templated functions `>`.** Found by folding libc and libc++: the groups it printed had no names. Fixed in `SlamCppSplitter`.
+8. **`FDSqrt`'s error habit in a second package:** `sqrtNumber` in `brand_intervention_effectiveness_v0.2` runs Newton's step a fixed 20 times. Found by searching for the shape of the `FDSqrt` error. PROVED harmless for every input its caller can give (at most 0.9604); DISPROVED as a general square root from 10¹¹. Its tool is not recorded. Reported, not changed.
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 231 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex` and **16/16** in `test_libc.rex`: **371 checks**. The C++, NetRexx, BOLT and libc steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC` and `LIBC_SRC` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the tie and prior rules: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **337/337**. The BOLT and libc steps (34 checks) skipped there: no llvm-project tree.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 250 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex` and **16/16** in `test_libc.rex`: **390 checks**. The C++, NetRexx, BOLT and libc steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC` and `LIBC_SRC` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the tie and prior rules and provenance, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **356/356**. The BOLT and libc steps (34 checks) skipped there: no llvm-project tree.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
-`sh run_tests.sh`: **58/58** in `test_slam.rex`, **6/6** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`: 231 checks. It covers:
+`sh run_tests.sh`: **58/58** in `test_slam.rex`, **6/6** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`: 250 checks. It covers:
 - the segmenter on unmodified `MLEvolution.cls` (54 units; shared guard nodes; collapsed setters; then/else bodies sharing a node with different bindings);
 - ingest of the GA package with duplicate units skipped on re-ingest;
 - aabb → Eeff = 0.4 and b00b → Eeff = 0.8 from recorded outcomes;

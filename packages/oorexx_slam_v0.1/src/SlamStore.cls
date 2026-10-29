@@ -108,6 +108,10 @@
   /* proofs: a claim about one result, PROVED / DISPROVED / INDETERMINATE by a certificate checked in exact
      rationals (SlamProof.cls).  Kept apart from lesson: a lesson says two ways agreed; a proof says a claim holds. */
   self~q('CREATE TABLE IF NOT EXISTS proof (id INTEGER PRIMARY KEY, node_id INTEGER NOT NULL, claim TEXT NOT NULL, outcome TEXT NOT NULL, strength TEXT NOT NULL, data TEXT, detail TEXT)')
+  /* provenance: which tool wrote a unit, at which level of evidence (SlamProvenance.cls); node_tool: the same
+     for a node that lessons and proofs are about.  Tool-level errors can only be found if tools are recorded. */
+  self~q('CREATE TABLE IF NOT EXISTS provenance (unit_id INTEGER PRIMARY KEY, tool TEXT NOT NULL, level TEXT NOT NULL, evidence TEXT)')
+  self~q('CREATE TABLE IF NOT EXISTS node_tool (node_id INTEGER PRIMARY KEY, tool TEXT NOT NULL, level TEXT NOT NULL, evidence TEXT)')
   self~q('CREATE INDEX IF NOT EXISTS slam_instance_shape ON instance (shape_id)')
   self~q('CREATE INDEX IF NOT EXISTS slam_instance_unit ON instance (unit_id)')
   self~q('CREATE INDEX IF NOT EXISTS slam_edge_to ON edge (to_id)')
@@ -353,6 +357,35 @@
   end
   self~q('INSERT INTO proof (node_id, claim, outcome, strength, data, detail) VALUES (?, ?, ?, ?, ?, ?)', self~binds(n, claimText, mathProof~outcome, mathProof~status, data, detail))
   return mathProof~outcome
+/* ---- provenance: which tool wrote which code ---- */
+::method setProvenance
+  use strict arg unitId, tool, level, evidence
+  self~q('INSERT INTO provenance (unit_id, tool, level, evidence) VALUES (?, ?, ?, ?) ON CONFLICT (unit_id) DO UPDATE SET tool = excluded.tool, level = excluded.level, evidence = excluded.evidence', self~binds(unitId, tool, level, evidence))
+/* Say which tool wrote the code a node stands for (a lifted routine, say), so its lessons and proofs count
+   against that tool.  PROV is a Directory from SlamProvenance (TOOL LEVEL EVIDENCE). */
+::method tagNode
+  use strict arg node, prov
+  n = self~resolve(node)
+  self~q('INSERT INTO node_tool (node_id, tool, level, evidence) VALUES (?, ?, ?, ?) ON CONFLICT (node_id) DO UPDATE SET tool = excluded.tool, level = excluded.level, evidence = excluded.evidence', self~binds(n, prov['TOOL'], prov['LEVEL'], prov['EVIDENCE']))
+/* Units by tool and level of evidence. Rows TOOL LEVEL UNITS FILES. */
+::method toolUnits
+  return self~q('SELECT p.tool AS tool, p.level AS level, count(*) AS units, count(DISTINCT u.path) AS files FROM provenance p JOIN unit u ON u.id = p.unit_id GROUP BY p.tool, p.level ORDER BY units DESC, p.tool, p.level')~rows
+/* What happened to each tool's code: lessons passed and failed, proofs by outcome. Rows TOOL KIND OUTCOME N. */
+::method toolOutcomes
+  sql = "SELECT t.tool AS tool, 'LESSON' AS kind, CASE l.passed WHEN 1 THEN 'PASSED' ELSE 'FAILED' END AS outcome, count(*) AS n" ,
+        "FROM lesson l JOIN node_tool t ON t.node_id = l.to_id GROUP BY t.tool, l.passed" ,
+        "UNION ALL SELECT t.tool AS tool, 'PROOF' AS kind, p.outcome AS outcome, count(*) AS n" ,
+        "FROM proof p JOIN node_tool t ON t.node_id = p.node_id GROUP BY t.tool, p.outcome" ,
+        "ORDER BY tool, kind, outcome"
+  return self~q(sql)~rows
+/* A habit search: for each tool, how many of its units hold a segment whose shape matches PATTERN (SQL LIKE
+   on the shape's canonical text), against all its units. Rows TOOL UNITS WITH. */
+::method toolHabit
+  use strict arg pattern
+  sql = 'SELECT p.tool AS tool, count(*) AS units,' ,
+        ' sum(CASE WHEN EXISTS (SELECT 1 FROM instance i JOIN shape s ON s.id = i.shape_id WHERE i.unit_id = p.unit_id AND s.canon LIKE ?) THEN 1 ELSE 0 END) AS "WITH"' ,
+        'FROM provenance p GROUP BY p.tool ORDER BY p.tool'
+  return self~q(sql, self~binds(pattern))~rows
 ::method codeNode
   use strict arg label
   return self~shapeId('CODE', 'CODE', 'CODE: ' || label)

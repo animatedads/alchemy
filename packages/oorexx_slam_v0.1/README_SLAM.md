@@ -162,6 +162,14 @@ a node for maths needs this: no number more than one can divide both numbers. be
 
 a claim of all values: i can not prove it with one value, or with a list of values. for that claim, i say: not known.
 
+## what program makes the code
+
+for each part of code i read, i store the name of the program that makes it, and how i know it: from the words at the start of the file, from a file that says where the code is from, or from the list of each change to the code. if i do not get a name from data, i say: not known. i do not say a name i do not get from data.
+
+when a part of code has an error, i can say what program makes it. then i can test other code from that program, for the same error.
+
+i do that with the error of the root node: a loop with a count of steps. i get an other node with the same way, in an other part of code. with each value that the code before it can give it, the result is proved true. with some numbers that are more than each value it can get, the result is disproved. the name of the program that makes that node is not known: no data says it. so the error is not in the count for a program.
+
 ## what i can not do now
 
 i can not read a task in words and make the steps from it. you give me the first node and the last node of each step.

@@ -48,6 +48,8 @@ echo "== Gemini's two questions: a stated tie rule; a false result lowers a scor
 rexx tests/test_ties.rex "$WORK"
 echo "== PROVED: a tier above TESTED (certificates checked in exact rationals, ooRexx Maths v0.8 CERTIFIED route)"
 REXX_PATH="$REXX_PATH:$P/oorexx_maths_v0.8/rexx" rexx tests/test_proof.rex "$WORK|$P/fd_door_micro_motion_v0.2-dev8/src/FDDoorMicroMotion.cls|$ROOT/tests/fixtures/fdsqrt_fixed14.cls|$P/oorexx_vision/src/Vision.cls|$P/oorexx_crypto_v0.8.3/src/crypto.cls|$P/oorexx_adb_v0.1-dev1/src/AdbAuth.cls"
+echo "== which tool wrote which code: provenance, a habit found by shape, outcomes by tool (needs git history)"
+REXX_PATH="$REXX_PATH:$P/oorexx_maths_v0.8/rexx" rexx tests/test_provenance.rex "$WORK|$REPO"
 echo "== second language: the Java reader (fixture compiled by javac first, so it is real Java)"
 E="$REPO/examples"
 ATM="$E/federationbank_java_atm_v0.1.9"
