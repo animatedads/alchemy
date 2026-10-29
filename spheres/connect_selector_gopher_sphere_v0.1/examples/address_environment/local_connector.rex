@@ -29,12 +29,16 @@ if fixture~calls \== 1 then do
   exit 4
 end
 
+/* A misconfigured DIRECT adapter at a nonlocal destination must still fail. */
+remoteFixture = .LocalStatusFixture~new
+policy~allow('status.read','REQUEST','DIRECT','REMOTE')
+selector~register('DIRECT', .ConnectCallAdapter~new(remoteFixture,'DIRECT','REMOTE'), 'REMOTE')
 address ALCHEMY_LOCAL "CALL REMOTE status.read"
 if rc \== 13 then do
   say 'FAIL unexpected destination, RC' rc
   exit 5
 end
-if fixture~calls \== 1 then do
+if fixture~calls \== 1 | remoteFixture~calls \== 0 then do
   say 'FAIL remote destination dispatched via local adapter'
   exit 6
 end
@@ -54,8 +58,23 @@ if fixture~calls \== 1 then do
   exit 9
 end
 
-say 'PASS RFE882 local ADDRESS -> ConnectSelector: completed, denied, no shell'
+/* An accepted receipt without execution completion may not return RC zero. */
+.CommandHandler~register('ALCHEMY_ASYNC_LOCAL', .AlchemyConnectAddressLocal~new(.IncompleteSelector~new))
+address ALCHEMY_ASYNC_LOCAL "CALL LOCAL status.read"
+if rc \== 75 then do
+  say 'FAIL accepted but incomplete call returned RC' rc
+  exit 10
+end
+
+say 'PASS RFE882 local ADDRESS -> ConnectSelector: completed, denied, no shell, incomplete'
 exit 0
+
+::class IncompleteSelector
+::method policy
+  return .ConnectRoutePolicy~new
+::method execute
+  use strict arg intention, payload
+  return .ConnectResult~success('DIRECT',.nil,.true,.false,.false)
 
 ::class LocalStatusFixture
 ::attribute calls
