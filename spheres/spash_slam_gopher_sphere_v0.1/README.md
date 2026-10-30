@@ -30,3 +30,10 @@ Correctly normalized comparison is `1 - mean_over_time(sum_over_frequency(abs(Q-
 A match-only listening renderer preserves exact original source sample indices and source + derived clip SHA-256, refuses changed sources and refuses overwrites. It is a PCM crop of the source, NOT spatial extraction, source-separated audio, hallucinated microphone evidence or forensic authentication. Private source material and derived WAVs stay out of the Git repository.
 
 The published source still requires independent checkout qualification before merge. The locally qualified ZIP plus its SHA-256 manifest is a separate, explicit provenance lineage.
+
+
+## User validation of ranked speech-containing acoustic matches (2026-10-30)
+
+The user listened to the three SPASH same-recording matches previously presented from their private example and reported that **all three were valid matches to human-voice speech extracted from audio intercepts**. This is external user review of speech presence in those candidate passages, not independent algorithmic speech recognition or verified same-speaker identity. The first two comparisons substantially revisit the same interval pair in opposite directions, so avoid treating the three ranked matches as three independent physical observations. No recall estimate is available for unreviewed candidates or excluded results.
+
+The separate, local-only `spash.feedback.receipt/0.1` evidence prototype binds each review to a canonical source-report hash and to its ranked match hash, with labels `HUMAN_SPEECH_PRESENT`, `NOT_HUMAN_SPEECH`, `UNDETERMINED`. It preserves algorithm score and external review separately, rejects altered/duplicate reviews and retains speaker, words, physical source and location as NOT_ASSESSED. The privacy-sensitive user-specific receipt and source audio are **not** placed in Git. Local feedback qualification was 16/16; independent exact-GitHub-checkout qualification and integration into the PR runtime remain outstanding.
