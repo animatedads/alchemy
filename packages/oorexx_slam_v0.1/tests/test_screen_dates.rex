@@ -38,7 +38,7 @@ call check nsw~asAt('253', '2008') == 'EARLIER_TEXT_NEEDED' & nsw~asAt('117', '2
 
 say '== 2. the NSW rule packs'
 v = .SlamLaw~vocabulary(L || '/VOCABULARY.md')
-do pk over .array~of(.array~of('crimes1900_s192E.md', 10), .array~of('crimes1900_s54.md', 2))
+do pk over .array~of(.array~of('crimes1900_s192E.md', 10), .array~of('crimes1900_s54.md', 2), .array~of('crimes1900_s33.md', 25), .array~of('crimes1900_s35.md', 10))
   r = .SlamLaw~parse(L || '/' || pk[1])
   e = .SlamLaw~check(r, .SlamLaw~officialFor(nsw, r))~union(.SlamLaw~checkMaximum(r, nsw))~union(.SlamLaw~kindErrors(v, .SlamLaw~kindsOfRule(r, pk[1])))
   do x over e; say '       ' x; end

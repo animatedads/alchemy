@@ -34,6 +34,7 @@ pkg = me~left(me~lastPos('/') - 1); pkg = pkg~left(pkg~lastPos('/') - 1)
 parse arg cmd round rest
 cmd = cmd~lower
 dir = value('SLAM_WORDS_DIR', , 'ENVIRONMENT'); if dir == '' then dir = pkg || '/corpus/rounds'
+.local~dir = dir
 if cmd == '' | round == '' then do
   say 'usage: rexx words.rex open|load|define|accept|status ROUND ...'
   exit 2
@@ -341,13 +342,24 @@ sourcesOf: procedure
   do s over led['sources']; srcs~append(.array~of(s, linesOf(abs(s)))); end
   return srcs
 
+/* the answers already given: in this round, and in every other round in the same place (an answer is
+   about a line of a file, not about a round, so a second round does not ask again) */
 resolvedOf: procedure
   use arg led
   r = .directory~new
+  call add r, led
+  call SysFileTree .dir || '/*.json', 'f.', 'FO'
+  do i = 1 to f.0
+    if f.i~substr(f.i~lastPos('/') + 1) == led['round'] || '.json' then iterate
+    call add r, .json~fromJsonFile(f.i)
+  end
+  return r
+add: procedure
+  use arg r, led
   if led~hasIndex('senses') then do e over led['senses']
     do k over e['keys']; r[k] = .true; end
   end
-  return r
+  return
 
 /* preparse: the questions not yet answered.  When there are any, they are listed (and written to
    ROUND.senses.md), and the caller stops */

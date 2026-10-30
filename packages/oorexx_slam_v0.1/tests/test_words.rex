@@ -96,6 +96,14 @@ call check l3['DIFFER']~hasIndex('reckless') & l3['DIFFER']['reckless']~items = 
 say '== 7. two meanings: false, or false [legal]'
 sn = .SlamWords~senses(pkg || '/corpus/senses.csv')
 call check sn['ERRORS']~items = 0 & sn['TOKENS']~hasIndex('false-legal') & sn['WORDS']['false']~items = 1 & v['FINDINGWORDS']~hasItem('false-legal') & \v['FINDINGWORDS']~hasItem('false') & v['ERRORS']~items = 0, 'the register: "false-legal" is the law''s false; VOCABULARY.md''s words of a finding name "false-legal", not "false"; gate 6 passes'
+closed = .true
+do t over sn['TOKENS']~allIndexes
+  do x over .SlamWords~clean(sn['TOKENS'][t]['TEXT'])
+    if \k['WORDS']~hasIndex(x) & x \== sn['TOKENS'][t]['WORD'] then do; say '       ' t 'uses' x; closed = .false; end
+  end
+end
+dq = .SlamWords~preparse(.array~of(.array~of('X', .array~of('act: a thing that a person does', 'the act of the crimes act'))), sn, .directory~new, k['WORDS'])
+call check closed & sn['TOKENS']~items = 2 & dq~items = 2 & dq[1]['LINE'] = 2, 'each second meaning (false-legal, act-law) is defined in words of the circular corpus; "act: ..." defines the word''s first meaning and is not asked about; "the act of the crimes act" is asked twice'
 bad = work || '/words_senses_bad.csv'
 call write bad, .array~of('token,category,definition', 'false-legal,sense false legal,x', 'false-legal-legal,sense false-legal legal,y', 'untrue,sense false legal,z')
 sb = .SlamWords~senses(bad)

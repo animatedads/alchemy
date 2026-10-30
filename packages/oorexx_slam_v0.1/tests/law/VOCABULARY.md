@@ -2,8 +2,8 @@
 
 ```
 vocabulary: law.kinds
-version: 0.6
-written by: Claude (Opus 5.5), 2026-10-30 (0.2: the first list; 0.3: kinds for the Fraud Act 2006 s.2 and the Theft Act 1968 ss.1 and 21; 0.4: cheques, an injury, and NSW Crimes Act 1900 ss.192E and 54; 0.5: a throw, an interview, a past conviction, and hostility to a group; 0.6: "false" in the law is "false-legal" (corpus/senses.csv), and "false" is the value of logic)
+version: 0.7
+written by: Claude (Opus 5.5), 2026-10-30 (0.2: the first list; 0.3: kinds for the Fraud Act 2006 s.2 and the Theft Act 1968 ss.1 and 21; 0.4: cheques, an injury, and NSW Crimes Act 1900 ss.192E and 54; 0.5: a throw, an interview, a past conviction, and hostility to a group; 0.6: "false" in the law is "false-legal" (corpus/senses.csv), and "false" is the value of logic; 0.7: a wound, an intent to do serious hurt, and recklessness as to hurt, for NSW Crimes Act 1900 ss.33 and 35)
 architecture: Tom Dyer
 from: the event names of ChatGPT (GPT-6), OFFENCE_EVENT_CONTRACT_v0.1.md, with the changes in docs/architecture/fixtures/MIGRATION_v0.1_to_v0.2.md;
   and the kinds of evidence of the Computer Misuse Act rule and case files of 2026-10-29
@@ -95,6 +95,8 @@ court: a place where the law is used to say if a person did a thing that a rule 
 guilty: a word a court says of a person that did what a rule says a person can not do
 was: a word for is, when it is before now
 hand: the part of a person that can take a thing and put it at a place
+skin: the part of the body that is the first part a thing gets to, when it gets to the body
+break: a place where a thing is not whole
 go: be at one place, and then at an other place
 ask: say to a person: say this to me
 about: a word for what a thing is for
@@ -719,3 +721,33 @@ HOSTILITY_TO_GROUP
 it is a finding.
 
 the person did the act because of what group the person took an other person to be in.
+
+kind 62:
+
+```
+WOUND
+```
+
+it is a finding.
+
+the hurt is a break in all of the skin of the person, as the law says.
+
+kind 63:
+
+```
+INTENT_GRIEVOUS_HARM
+```
+
+it is a finding.
+
+the person intends that the act makes hurt to the body of a person that is serious, as the law says.
+
+kind 64:
+
+```
+RECKLESSNESS_BODILY_HARM
+```
+
+it is a finding.
+
+the person knows that hurt to the body of a person can be the result of the act, and does the act all the same.

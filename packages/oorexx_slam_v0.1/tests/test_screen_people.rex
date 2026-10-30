@@ -16,6 +16,10 @@
  *  5. why he threw it: first interview against second, his own word against his own word: DISPUTED
  *  6. the law not held: in England and Wales no rule pack here is about the injury or the throws, and the
  *     screen lists them
+ *  7. a deliberate throw, NSW ss.33 and 35 (2026-10-30): the same injury, two more rule packs.  s.33 needs an
+ *     intent to cause grievous bodily harm, and nothing in the account is offered for it: UNKNOWN.  s.35(2)
+ *     needs recklessness as to hurt to a person: his first interview (he took the figure to be a man) against
+ *     his second (a cat): DISPUTED.  s.35 was amended in 2012: for a 2009 injury the older text is needed
  */
 signal on syntax name onSyntax
 parse arg work '|' pkg '|' repo
@@ -29,7 +33,7 @@ case = .json~fromJsonFile(FIXTURES || '/mrs_p_roof_credit_pension_v0.4.json')
 v = .SlamLaw~vocabulary(L || '/VOCABULARY.md')
 used = .array~new
 do e over case['events']; used~append(.array~of(e['eventType'], e['eventId'])); end
-call check v['ERRORS']~items = 0 & v['KINDS']~items = 61 & case['events']~items = 28 & .SlamLaw~kindErrors(v, used, 'EVENT')~items = 0, 'law.kinds 0.5 (61 kinds); v0.4''s 28 events (the throw, the brick, two interviews, the convictions added), each an EVENT on the list'
+call check v['ERRORS']~items = 0 & v['KINDS']~items = 64 & case['events']~items = 28 & .SlamLaw~kindErrors(v, used, 'EVENT')~items = 0, 'law.kinds 0.7 (64 kinds); v0.4''s 28 events (the throw, the brick, two interviews, the convictions added), each an EVENT on the list'
 cf = case['conflicts'][1]
 kept = .false
 do c over case['claims']; if c['claimId'] == 'CLM_D_HIT_B' then kept = (c['text'] == 'the tile which hit Mr B'); end
@@ -39,7 +43,7 @@ ev = .json~fromJsonFile(L || '/mrs_p_evidence_made_up.json')
 evm = .json~fromJsonFile(L || '/mrs_p_evidence_m_made_up.json')
 do it over evm['evidenceItems']; ev['evidenceItems']~append(it); end
 paths = .array~new
-do f over .array~of('cma1990_s1.md', 'cma1990_s1_scotland.md', 'cma1990_s2.md', 'cma1990_s3za.md', 'fraud2006_s2.md', 'theft1968_s1.md', 'theft1968_s21.md', 'crimes1900_s192E.md', 'crimes1900_s54.md')
+do f over .array~of('cma1990_s1.md', 'cma1990_s1_scotland.md', 'cma1990_s2.md', 'cma1990_s3za.md', 'fraud2006_s2.md', 'theft1968_s1.md', 'theft1968_s21.md', 'crimes1900_s192E.md', 'crimes1900_s54.md', 'crimes1900_s33.md', 'crimes1900_s35.md')
   paths~append(L || '/' || f)
 end
 g = .array~of(.array~of(L || '/cps_cma.md', text(L || '/source/cps_cma_guidance.txt')))
@@ -48,7 +52,7 @@ nsw = .SlamNswLegislation~new(NSWX)
 laws = .directory~new
 laws['cma1990.s1'] = cma; laws['cma1990.s2'] = cma; laws['cma1990.s3za'] = cma
 laws['fraud2006.s2'] = fr; laws['theft1968.s1'] = th; laws['theft1968.s21'] = th
-laws['crimes1900nsw.s192E'] = nsw; laws['crimes1900nsw.s54'] = nsw
+laws['crimes1900nsw.s192E'] = nsw; laws['crimes1900nsw.s54'] = nsw; laws['crimes1900nsw.s33'] = nsw; laws['crimes1900nsw.s35'] = nsw
 
 say '== 2. the cheque'
 ew = .SlamScreen~screen(case, ev, paths, 'E.W.', g, laws)
@@ -90,6 +94,22 @@ say '== 6. the law not held'
 u = ''
 do d over .SlamScreen~unscreened(case, ev, paths, 'E.W.'); u = u d['EVENT']; end
 call check wordpos('EV23', u) > 0 & wordpos('EV24', u) > 0 & wordpos('EV25', u) > 0, 'E.W.: the injury (EV23), the throw (EV24) and the brick at the cat (EV25): no rule pack here is about them, and the screen lists them (Offences against the Person Act 1861, Animal Welfare Act 2006: not held)'
+
+say '== 7. a deliberate throw: NSW ss.33 and 35'
+do pk over .array~of(.array~of('crimes1900_s33.md', 25), .array~of('crimes1900_s35.md', 10))
+  rr = .SlamLaw~parse(L || '/' || pk[1])
+  e = .SlamLaw~check(rr, .SlamLaw~officialFor(nsw, rr))~union(.SlamLaw~checkMaximum(rr, nsw))~union(.SlamLaw~kindErrors(v, .SlamLaw~kindsOfRule(rr, pk[1])))
+  do x over e; say '       ' x; end
+  call check e~items = 0 & rr['MAXIMUM']['YEARS'] = pk[2] & rr['EXTENT'] == 'NSW', pk[1] || ': the NSW text word for word, quotes, paragraphs, rule line, kinds; the most the law says,' pk[2] 'years, in the XML'
+end
+a = find(ns, 'crimes1900nsw.s33', 'EV23'); b = find(ns, 'crimes1900nsw.s35', 'EV23')
+say '      ' .SlamScreen~line(a[1]); say '      ' .SlamScreen~line(b[1])
+sa = ''; do e over a[1]['ELEMENTS']; sa = sa e['STATUS']; end
+sb = ''; do e over b[1]['ELEMENTS']; sb = sb e['STATUS']; end
+call check a~items = 1 & a[1]['PERSON'] == 'M' & \a[1]['OK'] & sa~space == 'SUPPORTED SETTLED SETTLED UNDETERMINED' & a[1]['ASAT'] == 'IN_FORCE_TEXT', 's.33 (25 years): he threw it (his word), the cause and the harm (the hospital); the intent to cause grievous bodily harm: nothing offered, open; this text was the law in 2009 (substituted 2007)'
+call check b~items = 1 & b[1]['PERSON'] == 'M' & \b[1]['OK'] & sb~space == 'SUPPORTED SETTLED SETTLED DISPUTED' & b[1]['ASAT'] == 'EARLIER_TEXT_NEEDED', 's.35(2) (10 years): recklessness as to hurt to a person is DISPUTED, his first interview (a man) against his second (a cat); amended 2012, so the 2009 text is needed'
+call check hasText(a[1]['ELEMENTS'][1]['REFUSED'], 'PREVIOUS_CONVICTION: E20') & hasText(b[1]['ELEMENTS'][1]['REFUSED'], 'OBJECT_THROWN: E21'), 'in both, as in s.54: his record and the brick at the cat are refused for "he did it"'
+
 say 'SCREEN PEOPLE TEST: PASS (' || checks || ' checks)'
 exit 0
 

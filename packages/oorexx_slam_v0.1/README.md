@@ -51,12 +51,12 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamScreen.cls` | One case (offence-event JSON, read with ooRexx's `json.cls`) screened against every rule pack, per extent, event and person |
 | `tests/law/VOCABULARY.md` | The shared word list (law.kinds 0.2): 42 kinds, each an event or a finding, defined in SLAM's words; gate 6 |
 | `src/SlamNswLegislation.cls` | Reads NSW legislation XML (Parliamentary Counsel exchange format): a section's text, the version's dates, and each section's history notes, for what was the law on a date |
-| `tests/test_screen_people.rex` | Who did it, and what does not show it: Mr H's cheque, Mr M's tile, his previous convictions refused, his two interviews DISPUTED (8 checks) |
+| `tests/test_screen_people.rex` | Who did it, and what does not show it: Mr H's cheque, Mr M's tile, his previous convictions refused, his two interviews DISPUTED; NSW ss.33 and 35 for a deliberate throw (13 checks) |
 | `src/SlamWords.cls`, `bin/words.rex` | The word loop: a round of words for one intention. Load what is said, list the words SLAM does not know, enter definitions, review how each one links to the words SLAM knows, accept into the shared list (`corpus/law_words.csv`), load again |
-| `tests/test_words.rex` | The word loop: the same missing words as SLAM's reader; three turns on a made-up account (20, 18, 4, then none missing); each refusal; the writer can not accept their own words; "false" or "false [legal]", asked at entry and corrected in the input, with nothing replaced twice (20 checks) |
-| `corpus/senses.csv` | Second meanings, each a word of its own (`false-legal`), in the circular corpus's format so the reader loads it |
+| `tests/test_words.rex` | The word loop: the same missing words as SLAM's reader; three turns on a made-up account (20, 18, 4, then none missing); each refusal; the writer can not accept their own words; "false" or "false [legal]", asked at entry and corrected in the input, with nothing replaced twice (21 checks) |
+| `corpus/senses.csv` | Second meanings, each a word of its own (`false-legal`, `act-law`), in the circular corpus's format so the reader loads it |
 | `corpus/rounds/` | Each round: its ledger (JSON), the form of missing words, the definitions the sources write for themselves, each turn's definitions, the review sheet |
-| `tests/test_screen_dates.rex` | The law on the date: the 2008 cheque and 2009 injury in E.W. and NSW; NSW Crimes Act ss.192E and 54 (17 checks) |
+| `tests/test_screen_dates.rex` | The law on the date: the 2008 cheque and 2009 injury in E.W. and NSW; NSW Crimes Act ss.192E, 54, 33 and 35 (19 checks) |
 | `tests/test_screen_uk.rex` | Fraud Act 2006 s.2, Theft Act 1968 ss.1 and 21 beside the CMA: the same events and evidence, three more rule packs (16 checks) |
 | `tests/test_screen.rex` | Gate 6, the Mrs P case after her death, Computer Misuse Act ss.1, 2, 3ZA in E.W. and S. (31 checks) |
 | `tools/migrate_case_v01_v02.rex` | ChatGPT's Mrs P case v0.1 to v0.2 (`docs/architecture/fixtures/`), every change listed |
@@ -834,6 +834,31 @@ Tom: "preparse on entry. Where two words have different meanings, we need to ask
 - **Never twice.** To the reader a hyphen is part of a word, so `false-legal` is one word, not "false", and is never asked about again. The register refuses a sense that is itself a word with senses, which is the only way to get `false-legal-legal`. An answer that keeps "false" is recorded against the line as it then reads; if the line changes, it is asked again. The test runs `sense` three times on the same file and checks that the second and third change nothing.
 - **Round R0001, answered** (by Claude; the ledger records who and what): 14 places. Thirteen are "true or false", the logic value, including cps_cma.md's "a false result" from a computer. One is the law's: REPRESENTATION_FALSE is now "a thing a person said, as true, is false-legal."
 - **VOCABULARY.md 0.6:** the words of a finding name `false-legal`, not `false`. Gate 6 now reads words as the reader does, keeping the hyphen. Two of Gemini's glosses in `tests/test_screen.rex` ("a person says a false thing about a council") are the law's false and now say `false-legal`; both are still refused as events that carry a conclusion.
+
+### A deliberate throw: NSW ss.33 and 35, through the word loop (2026-10-30)
+
+Two more rule packs for the same injury (EV23), from the NSW XML we hold:
+- **s.33(1)** (25 years): wounds, or causes grievous bodily harm, *with intent to cause grievous bodily harm*.
+- **s.35(2)** (10 years): causes grievous bodily harm and *is reckless as to causing actual bodily harm*.
+
+VOCABULARY.md 0.7 adds three findings: WOUND, INTENT_GRIEVOUS_HARM and RECKLESSNESS_BODILY_HARM.
+
+**Round R0002** ran the word loop over the law files before any test did:
+- **It found my mistakes first.** I had left words out of the new files: "break" and "skin" in VOCABULARY.md's new kind, and hand, most, gets and knows in the packs. They were added, word for word as VOCABULARY.md already has them.
+- **The new packs agree with every other file**, except on the three words still waiting in R0001: reckless, sees and serious.
+- **Answers carry between rounds.** An answer belongs to a line of a file, not to a round, so R0002 asked only about the new files' "false". Both are the logic value.
+- **"Act" has two meanings too.** The round's intention said "the crimes act": the law, not a deed. `corpus/senses.csv` now has `act-law`, so the intention reads "the crimes act-law". The other 24 uses of "act" outside code are all the deed. A line that defines the word, "act: a thing that a person does", is its first meaning and is not asked about.
+
+**Mr M, NSW:**
+- **s.33: NOT_SUPPORTED.**
+  - He threw the tile: SUPPORTED on his own word.
+  - That it caused the harm, and that the harm is grievous: SETTLED by the hospital record.
+  - The intent to cause grievous bodily harm: nothing in the account is offered for it, so it is open (UNKNOWN).
+  - This text was the law in 2009: it was substituted in 2007.
+- **s.35(2): NOT_SUPPORTED.**
+  - Recklessness is DISPUTED. In his first interview he took the figure to be a man; in his second, a cat. These two items, E29 and E30, are made up.
+  - s.35 was amended in 2012, so for a 2009 injury the earlier text is needed. It is not held.
+- **In both,** as in s.54, his previous convictions and the brick at the cat are refused for "he did it".
 
 ### Credits for SLAM's finds
 

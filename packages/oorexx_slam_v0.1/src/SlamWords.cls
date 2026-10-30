@@ -415,6 +415,8 @@
       if ln~strip~left(3) == '```' then do; inCode = \inCode; iterate; end
       if inCode then iterate
       do o over self~occurrences(ln, senses['WORDS'])
+        /* "act: a thing that a person does" defines the word: its first meaning, nothing to ask */
+        if ln~left(o['POS'] - 1)~strip == '' & ln~substr(o['POS'] + o['LEN'], 1) == ':' then iterate
         key = self~senseKey(label, ln, o['WORD'], o['NTH'])
         if resolved~hasIndex(key) then iterate
         q = .directory~new
