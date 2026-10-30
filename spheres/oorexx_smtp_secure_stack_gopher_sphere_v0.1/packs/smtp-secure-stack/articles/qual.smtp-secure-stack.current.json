@@ -1,17 +1,18 @@
 {
   "kind": "article",
   "id": "qual.smtp-secure-stack.current",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "smtp-secure-stack",
   "title": "Current qualification baseline",
-  "summary": "SMTP Secure Stack v0.1-dev11 is the current qualified implementation baseline. It was exercised under Open Object Rexx 5.3.0 r13196 and qualified with the exact dependency inputs recorded in the package.",
+  "summary": "SMTP Secure Stack v0.1-dev11 remains the last complete qualified implementation baseline under ooRexx 5.3.0 r13196. The current Git line has a dev7.1 source hotfix that closes the remaining post-final-DATA cleanup retry hole and records the LDAP PR #71 mail authority contract. Autobuilder is not running, so no fresh dev7.1 runtime qualification is claimed.",
   "authority": "qualification-evidence",
   "invariants": [
     "Complete SMTP policy, S/MIME, MAS/MAIL, wire, durable-delivery, outbound-dispatch, STARTTLS, Socket Provider, RPC-over-SMTP and instrumentation regression suite passed.",
     "Mandatory dev11 source classes compile with rexxc under ooRexx 5.3.0 r13196.",
     "Claude ooRexx standards enforcer reported 0 errors and PASS; remaining warnings are non-fatal heuristics.",
     "Live IPv6 was not claimed because the rxSock6 socket6.cls runtime dependency was not present in the qualification environment.",
-    "The package documents newer estate component heads separately when exact executable archives were unavailable; it does not falsely claim execution against those unavailable heads."
+    "The package documents newer estate component heads separately when exact executable archives were unavailable; it does not falsely claim execution against those unavailable heads.",
+    "Current Git dev7.1 adds a regression for QUIT/close syntax exceptions after final DATA 250; the fix is source-committed while dev11 remains the last full executable qualification."
   ],
   "provenance": [
     {

@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "smtp-secure-stack.authority-boundaries",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "smtp-secure-stack",
   "title": "SMTP authority boundaries and signed relay invariants",
   "summary": "SMTP transport, authentication attribution, message-signature verification, EMAIL_SEND authority, and ingress/egress policy are independent gates. Authentication alone never grants relay and the server never manufactures a user signature to make an unsigned message relayable.",
@@ -13,7 +13,8 @@
     "Signed plus EMAIL_SEND-authorized mail remains subject to egress deterministic and configured ML/LLM policy.",
     "Inbound verified-signed mail routes to INBOX; unsigned or invalid-signature mail routes to INBOX-UNSIGNED unless stronger ingress policy rejects or quarantines it.",
     "Signature evidence is projected before ingress and egress inspection so policy and models can use it without owning signature semantics.",
-    "Durability, queue presence, authentication, TLS, and instrumentation never become release authority."
+    "Durability, queue presence, authentication, TLS, and instrumentation never become release authority.",
+    "Current LDAP consumer contract is active attributed IdentityDirectory principal plus explicit MAIL_READ/EMAIL_SEND; LDAP Bind or message signing never implies EMAIL_SEND."
   ],
   "procedure": [
     "For relay, re-verify the immutable message signature against the attributed principal.",
