@@ -48,3 +48,7 @@ The public record does not contain the original intercept audio, listening clips
 ## Relation to release
 
 The existing PR #104 is source publication, not production promotion. Its new V7 reference scanner is not yet demonstrated to be byte-identical to the historical 912-clip run. Independent tests of the exact GitHub checkout remain required.
+
+## Further user listening confirmation (30 October 2026)
+
+The user reports that all 463 reviewed Tier A clips contain **English-language human speech**, and that both male-sounding and female-sounding voices were audible across the entire reviewed collection. The result is **463/463 user-reported English-speech-positive clips**, with vocal variety reported for the collection as a whole. These are user listening observations, not an automatic language detector or an individual-speaker classification. The review does not establish speaker identity, the number of individuals, the recall of the search or speech in excluded intervals.
