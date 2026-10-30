@@ -76,3 +76,10 @@ python3 tools/spash_v7_render.py --source /private/dual_feed.ogg --plan-dir /pri
 ```
 
 This renderer is **new code**; it is not asserted to reconstruct the original 912 clip files or identical boundaries. Opus packet rounding and source-seek implementation can shift playback duration by milliseconds. Its JSON receipt and CSV maintain original recording times, source hash, output clip hash and channel-preserving listening derivative authority. Synthetic regression `tests/test_v7_render.py` checks source SHA mismatch, exclusive output, channel count and clip hashes. The exact GitHub checkout has not yet been independently run; do not represent tests of a separate local ZIP as qualification of this branch.
+
+
+## Completed Tier A listening review — 463/463 user-positive (30 October 2026)
+
+The user confirms having **listened to the entire Tier A collection** (all 463 candidate clips), finding human voice/speech in **463/463**, with zero false positives reported. This is an observed **100% positive fraction within the fully reviewed Tier A candidate set** for the private V7 recording—not recall, not an independently adjudicated benchmark and not a guarantee on other recordings. Candidate clips may overlap or share acoustic sources. Tier B/C candidates and the excluded timeline have not been evaluated for missed speech by this report.
+
+The complete public, privacy-safe qualification record is `packages/oorexx_spash_slam_v0.1-dev1/docs/V7_TIER_A_USER_REVIEW_20261030.md`. A **private** receipt binds the user-reported positive review to each of 463 verified Tier A archive clip IDs and hashes; original audio, exact clip identities and private source hashes remain outside GitHub.
