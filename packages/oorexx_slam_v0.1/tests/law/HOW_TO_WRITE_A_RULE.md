@@ -35,6 +35,15 @@ You turn ONE section of UK legislation into ONE rule file. SLAM checks your file
 - Do not leave out a paragraph. Every one of (a), (b), (c) … needs an element.
 - Do not write a quote that is not in the section word for word ("ought to know" is not "knows").
 - Do not use a word that SLAM does not know and that you did not define. For example, "reckless" and "whether" must be defined before you use them.
+- Do not give a word a second meaning. Before you define a word, check `corpus/law_words.csv` (the shared list) and the other rule files. If the word is there, use that meaning. If it is not there, put your definition through the word loop so that every file gets the same meaning:
+
+  ```
+  rexx bin/words.rex open ROUND "YOUR NAME" -- the rule for SECTION -- tests/law/<your file>.md
+  rexx bin/words.rex load ROUND
+  rexx bin/words.rex define ROUND "YOUR NAME" -- corpus/rounds/ROUND.missing.md
+  ```
+
+  Fill in each line of `ROUND.missing.md` before you run `define`. Someone other than you accepts the words.
 - Do not add words from a different extent. Words marked as inserted for Scotland are not England and Wales's law.
 - Do not decide anything about a case. You only write the rule.
 - Do not use a kind that is not in `VOCABULARY.md`, and do not make a new name for a thing that has one. If a thing has no kind, stop and ask: a new kind needs a definition, and a new version of the list.

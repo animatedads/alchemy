@@ -65,6 +65,8 @@ echo "== the law on the date: a 2008 cheque, a 2009 injury; E.W. and NSW (Crimes
 REXX_PATH="$REXX_PATH:$RT:$(dirname "$(command -v rexx)")" rexx tests/test_screen_dates.rex "$WORK|$ROOT|$REPO"
 echo "== who did it, and what does not show it: the drawer, the thrower, previous convictions refused, two interviews DISPUTED"
 REXX_PATH="$REXX_PATH:$RT:$(dirname "$(command -v rexx)")" rexx tests/test_screen_people.rex "$WORK|$ROOT|$REPO"
+echo "== the word loop: words missing, defined, reviewed, accepted, read again"
+REXX_PATH="$REXX_PATH:$RT:$(dirname "$(command -v rexx)")" rexx tests/test_words.rex "$WORK|$ROOT"
 echo "== second language: the Java reader (fixture compiled by javac first, so it is real Java)"
 E="$REPO/examples"
 ATM="$E/federationbank_java_atm_v0.1.9"

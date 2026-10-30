@@ -52,6 +52,9 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/law/VOCABULARY.md` | The shared word list (law.kinds 0.2): 42 kinds, each an event or a finding, defined in SLAM's words; gate 6 |
 | `src/SlamNswLegislation.cls` | Reads NSW legislation XML (Parliamentary Counsel exchange format): a section's text, the version's dates, and each section's history notes, for what was the law on a date |
 | `tests/test_screen_people.rex` | Who did it, and what does not show it: Mr H's cheque, Mr M's tile, his previous convictions refused, his two interviews DISPUTED (8 checks) |
+| `src/SlamWords.cls`, `bin/words.rex` | The word loop: a round of words for one intention. Load what is said, list the words SLAM does not know, enter definitions, review how each one links to the words SLAM knows, accept into the shared list (`corpus/law_words.csv`), load again |
+| `tests/test_words.rex` | The word loop: the same missing words as SLAM's reader; three turns on a made-up account (20, 18, 4, then none missing); each refusal; the writer can not accept their own words (13 checks) |
+| `corpus/rounds/` | Each round: its ledger (JSON), the form of missing words, the definitions the sources write for themselves, each turn's definitions, the review sheet |
 | `tests/test_screen_dates.rex` | The law on the date: the 2008 cheque and 2009 injury in E.W. and NSW; NSW Crimes Act ss.192E and 54 (17 checks) |
 | `tests/test_screen_uk.rex` | Fraud Act 2006 s.2, Theft Act 1968 ss.1 and 21 beside the CMA: the same events and evidence, three more rule packs (16 checks) |
 | `tests/test_screen.rex` | Gate 6, the Mrs P case after her death, Computer Misuse Act ss.1, 2, 3ZA in E.W. and S. (31 checks) |
@@ -782,6 +785,42 @@ It said the tile "hit Mr B". Tom's next message (account E): "That's a typo, but
 - **Refused, and on the record:** his previous convictions and the brick at the cat, each offered for "he threw this tile". Take away his two admissions and the element is open: **propensity is not proof of the act.** Every element now lists what was refused for it, even when it holds.
 - **Why he threw it: DISPUTED.** It is his first interview against his second, testimony against testimony. The law that would weigh hostility based on the group someone is taken to be in is not held.
 - **Not held, and listed rather than passed over:** in England and Wales, the injury, the throw and the brick have no rule pack here (Offences against the Person Act 1861, Animal Welfare Act 2006). In NSW, a deliberate throw may fit s.33 or s.35 better than s.54, which is about negligence. Both are in the XML we hold.
+
+### Words missing: the word loop (2026-10-30)
+
+Tom asked for "a circular submission for words missing": a tool that uses intentions, loads what is said, lets definitions be entered, and reviews what each definition means when it is added, so that the links are right. Then the same again, until no word is missing.
+
+`bin/words.rex` runs a **round**. A round has an intention ("read the words of the fourth account"), a list of what is said, and a ledger (`corpus/rounds/ROUND.json`). The intention is read as well: its own words have to be known. One turn:
+
+```
+rexx bin/words.rex open   R0002 "Tom Dyer" -- read the fifth account -- account_f.txt
+rexx bin/words.rex load   R0002
+rexx bin/words.rex define R0002 "Claude (Opus 5.5)" -- corpus/rounds/R0002.missing.md
+rexx bin/words.rex accept R0002 "Tom Dyer"
+rexx bin/words.rex load   R0002
+```
+
+- **load** reads each source the way SLAM's reader does, and the test checks that both give the same words. It writes `ROUND.missing.md`: one `word:` line for each unknown word, with where it was found, ready to fill in. When a source already defines words for itself, it also writes `ROUND.inline.md`, listing each word once. Where the sources disagree, every version is shown and the line is left blank.
+- **define** reviews each definition against the words SLAM knows and against the other definitions in the same turn:
+  - **Refused:** a known word given another meaning; a word defined twice; a definition containing only the word itself; new words defined only through each other; a meaning that would make an event kind carry a finding.
+  - **Waiting:** a definition that needs words not yet defined, or that uses a word which is itself waiting. It goes round again without being rewritten, and the next load asks for the words it needs.
+  - **Warned:** "throws" when "throw" is known and the definition does not use it; a circle of new words that rests on known words; a source that defines the word differently.
+  - **Noted:** a word that carries a finding (through other words, it reaches knows, intends, false...); two words with the same definition.
+  - **Shown for review:** each word in the definition, with its own definition, one step down, so a person or a second model can read the meaning.
+- **accept** moves passed definitions into the shared list, `corpus/law_words.csv`. That file has the circular corpus's format, so `slam.rex corpus` loads it. **Whoever wrote a definition cannot accept it.** A definition is testimony. A word also goes in only together with every word its definition uses.
+
+**On the made-up account** (`tests/words`), three turns took the missing words from 20 to 18 to 4, then none, and the round closed with 44 words. Then SLAM's own reader, given the circular corpus and the shared list, read the whole account.
+
+**Round R0001** (`corpus/rounds/R0001.*`) gathered the definitions the law's rule files write for themselves: 104 words across 11 files.
+- **Three words are defined in more than one way.** "Reckless" ends in "a bad result", "damage" or "a false result". "Sees" is "has as an input", with or without "by the eyes or the mind". "Serious" applies to damage in one file and to any thing in another. Turn 1 takes the most general meaning of each, so that every file's meaning is a case of it.
+- **The intention's own words** (meaning, files, themselves) went round as well. "Themselves" waited a turn for "ones" and "they", and was then rewritten from known words.
+- **All 107 definitions pass.** They wait for a reviewer other than Claude, so nothing is in the shared list yet.
+- **What the review found:**
+  - five forms not linked to their stem (writes, knows, causes, pays, meaning);
+  - "taken" and "took" with one definition;
+  - "sentence" carries a finding through "offence";
+  - no event kind uses a word that carries a finding.
+- **A word with two meanings.** The review also says that "evidence", "finding" and "case" carry a finding through "false". That is not true. In "true or false", "false" is the logic value from the circular corpus. In the list of a finding's words, it is the law's word, as in "a false representation". One spelling has two meanings. The loop shows the problem but does not decide it.
 
 ### Credits for SLAM's finds
 
