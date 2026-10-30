@@ -316,7 +316,13 @@
      edges of the machine widths integer code is written around */
   nums = kn['NUMBERS']
   if nums == .nil then nums = .array~new
-  edges = .array~of(0, 1, -1, 255, 256, 65535, 65536, 4294967295, 4294967296)
+  /* Leg Drop, turn 1 (2026-10-30): 0, 1 and -1 always; the width pairs only for code that is width- or
+     digits-sensitive (kn['WIDTH'], from widthSensitive). Measured before: the width pairs made EDGE's only
+     catches in width code (ROTL32, LE_HEX_ENCODE32, ADBLE32) and in SQ (NUMERIC DIGITS 4), nowhere else. */
+  edges = .array~of(0, 1, -1)
+  if kn['WIDTH'] \== .false then do v over .array~of(255, 256, 65535, 65536, 4294967295, 4294967296)
+    edges~append(v)
+  end
   do a over args
     if \a['NUMBER'] then iterate
     n = 0
@@ -618,6 +624,35 @@ failed:
     out~append(v)
   end
   return out
+/* Is a unit's code width- or digits-sensitive? (Leg Drop, turn 1.) Yes when it holds a whole number from 8
+   up that is a power of two or one less (8, 15, 255, 256, 65535, ...), a hex literal (0xFF), calls a BIF
+   that works on bytes or bits (D2C, C2D, D2X, X2D, X2C, C2X, X2B, B2X, BITAND, BITOR, BITXOR), or sets
+   NUMERIC DIGITS. Then the width edges (255/256, 65535/65536, 2**32-1/2**32) are worth their cases. */
+::method widthSensitive
+  use strict arg tokens
+  bifs = 'D2C C2D D2X X2D X2C C2X X2B B2X BITAND BITOR BITXOR DIGITS'
+  do t over tokens
+    if t~kind == 'IDENT' then do
+      if wordpos(t~text~upper, bifs) > 0 then return .true
+      iterate
+    end
+    if t~kind \== 'NUMBER' then iterate
+    v = t~text
+    if v~left(2)~upper == '0X' then return .true
+    if \datatype(v, 'W') then iterate
+    if v < 8 then iterate
+    numeric digits 20
+    if self~powerOfTwo(v) | self~powerOfTwo(v + 1) then return .true
+  end
+  return .false
+::method powerOfTwo
+  use strict arg v
+  numeric digits 20
+  do while v // 2 = 0
+    v = v % 2
+  end
+  return v = 1
+
 /* The distinct strings a unit's code holds (its literals), in order, without the empty one. */
 ::method literalsOf
   use strict arg tokens

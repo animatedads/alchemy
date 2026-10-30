@@ -63,6 +63,7 @@ do while lines(poolFile) > 0
   end
   kn['LITERALS'] = w~literalsOf(unit~tokens)
   kn['NUMBERS'] = w~numbersOf(unit~tokens)
+  kn['WIDTH'] = w~widthSensitive(unit~tokens)        /* Leg Drop, turn 1: the width edges only where they count */
   cases = w~cases(name, kn)
   pr = observe(w, file, name, cases, outDir, here)
   n = w~countWritten(cases)

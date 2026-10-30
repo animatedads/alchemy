@@ -713,8 +713,8 @@ Results:
 
 | | Units | Cases written | Groups passing as it is | Predictions | Mutants | SLAM's cases catch | Random, same number |
 |---|---|---|---|---|---|---|---|
-| alchemy's 71 standalone routines | 56 | 897 | 112 of 112 | 32 right, 0 wrong | 778 | **593 (76.2%)** | 525 (67.5%) |
-| rx2cpp `0187d11`, routines and methods | 210 (181 methods) | 2,831 | 416 of 416 | 207 right, 0 wrong | 842 | **649 (77.1%)** | 585 (69.5%) |
+| alchemy's 71 standalone routines | 56 | 721 (897 before Leg Drop turn 1) | 112 of 112 | 32 right, 0 wrong | 778 | **593 (76.2%)** | 525 (67.5%) |
+| rx2cpp `0187d11`, routines and methods | 210 (181 methods) | 2,831 (2,433 after Leg Drop turn 1; scores below are from before it) | 416 of 416 | 207 right, 0 wrong | 842 | **649 (77.1%)** | 585 (69.5%) |
 
 On rx2cpp, 72 mutants are caught only by SLAM's cases and 8 only by the random ones. Of the five fixture survivors the lane named, two are now caught (in `raise.cls`, by reading the USER condition's additional array). The other three:
 - `RX_CONTROL` `<` to `<=`: equivalent. At 0 both branches set `a = b`.
@@ -889,6 +889,25 @@ Alchemy has 778 mutants and 897 cases; rx2cpp `0187d11` has 842 mutants and 2,81
 - **Not the same:** HAPPY carries alchemy (67 caught only by it), and BOUNDARY carries rx2cpp (103). That is why one estate is tuned and the other held out.
 - **The mutant score alone would remove OMIT, and that would be wrong.** OMIT is an oracle against compiled code (how rx2cpp handles an argument left out), which no mutant tests. So Leg Drop's score must count what each case finds when run compiled, from the rx2cpp lane's compiled test, as well as mutants.
 - **Timeouts move between runs.** rx2cpp: 638 killed and 12 timeouts here, 649 together in the first-case run. A keep-or-undo decision must not rest on a timeout.
+
+**Turn 1 (2026-10-30): EDGE. KEPT.**
+- **The measurement.** Of EDGE's sole catches, 0, 1 and −1 made 12 of 14 on alchemy and 5 of 6 on rx2cpp. The width pairs (255/256, 65535/65536, 2³²−1/2³²) caught alone only in width code (ROTL32, LE_HEX_ENCODE32, ADBLE32) and in SQ, which sets `numeric digits 4`.
+- **The change.** 0, 1 and −1 are always used. The width pairs are used only where the code is width- or digits-sensitive. That means it holds a power of two from 8 up (or one less), a hex literal, a byte or bit BIF, or NUMERIC DIGITS (`SlamTestWriter~widthSensitive`).
+- **The decision**, by `tests/unit/legdrop_turn.rex`, stored in the store's `rule_turn` table. Evidence is in `tests/unit/legdrop/turn1/`.
+
+| Estate | EDGE cases | Caught only by EDGE | Score (only ÷ cases) | Suite catches | Every other rule |
+|---|---|---|---|---|---|
+| alchemy | 412 → 236 | 14 → 14 | 0.0340 → 0.0593 | 593 → 593 | none fewer (NUMBER 8 → 9) |
+| rx2cpp `0187d11` | 654 → 262 | 5 → 5 | 0.0076 → 0.0191 | 650 → 650 | none fewer |
+
+568 cases fewer across the two estates, and nothing lost on either. The predictions are unchanged too: 32 on alchemy and 207 on rx2cpp, all right.
+
+- **A third estate the turn was not scored on lost catches: NetRexx on the JVM.** In the full unit round after the turn, SLAM's JUnit cases went from 99 to 85, and their catches from 93 to 86 of 188.
+  - On the JVM every `int` and `long` wraps at its width, whatever the code holds, so the width pairs matter in every method.
+  - Turn 1 is now for ooRexx only: `write_junit.rex` keeps all nine edges.
+  - The lesson for Leg Drop: score a turn on every estate it changes, not only on the two it was tuned and checked on.
+- **The headline is unchanged** (`tests/test_unit.rex`, 24 checks): alchemy's 778 mutants, SLAM 593 (76.2%), random 525 (67.5%), with 721 cases each, not 897.
+  - The random suite's verdicts are the same, mutant by mutant: random catches come almost all from the first few cases (287 at case 1).
 
 ### Credits for SLAM's finds
 
