@@ -34,3 +34,17 @@ Observation identity is not real-world emitter identity. A LIKE family is a thre
 No DSP decoder/FFT or V9 input adapter yet. Pure memory, all-pairs similarity and naive path selection are designed for small test fixtures; numeric thresholds are uncalibrated. A later slice should use Audio V9 measured boxes/tracks with exact bin geometry and source hash, verify distributed chunk continuation, preserve ranked alternatives and create a governed partial renderer. Audio V9, Media Methodologies, Physics World, SLAM, Body SLAM and the King Kong Bundy JCL project are unchanged.
 
 See spheres/spash_slam_gopher_sphere_v0.1.
+
+## Query by example (experimental addition)
+
+To ask SPASH for audio passages similar to a WAV specimen, run the measured WAV reference adapter:
+
+    python3 tools/spash_find_similar.py example_8k_mono.wav candidate1_8k_mono.wav candidate2_8k_mono.wav --segment-seconds 0.96 --min-score 0.80
+
+Requires Python 3 and NumPy. Inputs are **8000 Hz, mono, uncompressed 16-bit PCM WAV**, already converted explicitly; no hidden resampling. Each match returns both query and candidate subsecond ranges, source SHA-256, method, tested time scaling, tested coarse log-band frequency shift and algorithm-only likeness. It selects short active templates rather than comparing only whole recordings. Same-recording self-overlaps are excluded. It neither transcribes speech nor infers room geometry or real-world source identity.
+
+    python3 tests/test_wav_query.py
+
+The synthetic WAV test checks a modified-gain excerpt inserted five seconds later into another recording, rejects uncorrelated noise at the chosen threshold, and validates provenance. The supplied private WAV and any fingerprint derived from it are intentionally **not committed**.
+
+The native class `SpashExampleSearch.cls` separately offers `find(queryObservations, candidateObservations, maxResults)` for already-extracted SPASH observation trajectories, matching across different recording IDs when sample rate and processing-method foundation are compatible. It returns ranked interval candidates and rejects unaligned, incompatible methods. Its 15 native checks run in `sh run_tests.sh`. The Python WAV reference score and native block-trajectory score are separate experimental methods, **not** one calibrated probability. A production integration requires a verified bridge and shared feature contract.
