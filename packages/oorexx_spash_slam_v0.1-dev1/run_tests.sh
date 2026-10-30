@@ -3,6 +3,7 @@ set -eu
 cd "$(dirname "$0")"
 export REXX_PATH="$PWD/src${REXX_PATH:+:$REXX_PATH}"
 rexx tests/test_spash.rex
+rexx tests/test_example_search.rex
 n=0
 for test_name in BAD_SAMPLE BAD_VECTOR BAD_PITCH DUPLICATE UNKNOWN_STEP NONEDGE_REPLAY CROSSFEED_REPLAY INVALID_SPEED INVALID_METHOD; do
   report=$(mktemp)
