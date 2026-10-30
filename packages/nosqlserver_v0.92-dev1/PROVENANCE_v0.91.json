@@ -1,0 +1,16 @@
+{
+  "component": "nosqlserver",
+  "version": "0.91",
+  "base": "nosqlserver_v0.90_sqlite_wal_read_write_candidate.zip",
+  "base_sha256": "08534dc11858863a6efa82e4689e07ceb420691c4a9ab7fab7da69819c8cf9da",
+  "release": "development candidate",
+  "qualification": "ooRexx 5.3.0 r13196 debug, libsqlite3",
+  "scope": "sqlite writable single-table predicate mutation snapshot guard",
+  "limitations": [
+    "full database snapshot per SQL statement",
+    "full table comparison per update/delete",
+    "not multi-table/global serializable",
+    "no multi-statement transaction API",
+    "no production soak/crash/ABI certification"
+  ]
+}

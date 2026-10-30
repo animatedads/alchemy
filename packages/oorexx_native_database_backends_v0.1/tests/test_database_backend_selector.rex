@@ -32,6 +32,18 @@ noSqlSpec = .DatabaseBackendSelector~new~resolve(builtInNoSql)
 call assert noSqlSpec["package"] = "NoSQLDatabaseCoreProvider.cls", "built-in NoSQLServer package"
 call assert noSqlSpec["class"] = "NoSQLDatabaseCoreProvider", "built-in NoSQLServer class"
 
+builtInRexxSql = .directory~new
+builtInRexxSql["provider"] = "REXXSQL-SQLITE"
+rxSpec = .DatabaseBackendSelector~new~resolve(builtInRexxSql)
+call assert rxSpec["provider"] = "REXXSQL-SQLITE", "built-in Rexx/SQL provider id"
+call assert rxSpec["package"] = "RexxSqlDatabaseProvider.cls", "built-in Rexx/SQL SQLite package"
+call assert rxSpec["class"] = "RexxSqlDatabaseProvider", "built-in Rexx/SQL SQLite class"
+
+aliasRexxSql = .directory~new
+aliasRexxSql["provider"] = "SQLITE"
+rxAliasSpec = .DatabaseBackendSelector~new~resolve(aliasRexxSql)
+call assert rxAliasSpec["provider"] = "REXXSQL-SQLITE", "SQLite alias normalizes to Rexx/SQL provider"
+
 optsB = .directory~new
 optsB["provider"] = "MOCKB"
 optsB["package"] = fixture || "ProviderB.cls"

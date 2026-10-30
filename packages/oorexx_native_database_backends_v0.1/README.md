@@ -38,6 +38,9 @@ Built-in provider ids are:
   namespaced Database Core facade.
 - `POSTGRESQL` → `PostgreSQLDatabaseProvider.cls`; loads Database Core and the
   libpq-backed PostgreSQL implementation inside the selected provider package.
+- `REXXSQL-SQLITE` (aliases `REXXSQL`, `SQLITE`) → `RexxSqlDatabaseProvider.cls`;
+  selects the existing indexed Rexx/SQL SQLite backend. This is a provider adapter only,
+  not another SQLite implementation.
 
 Selection is deployment configuration:
 
@@ -58,6 +61,18 @@ SSC_POSTGRESQL_BRIDGE=/path/to/libpq.bridge.json
 ```
 
 `SSC_DB_PASSWORD` is accepted when password authentication is required. Standard libpq `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, and `PGPASSWORD` remain fallback aliases; `OOREXX_POSTGRES_BRIDGE` is a fallback alias for `SSC_POSTGRESQL_BRIDGE`.
+
+For the indexed Rexx/SQL SQLite provider:
+
+```text
+OOREXX_DATABASE_PROVIDER=REXXSQL-SQLITE
+OOREXX_DATABASE_PATH=/var/lib/application/application.sqlite
+```
+
+Consumers with stricter persistence semantics should pass `requiredCapabilities` to the
+provider. The current Rexx/SQL backend publishes `BLOB_WRITE` and
+`NULL_EMPTY_DISTINCT` as unsupported and threaded connections as unqualified; selection
+must fail closed rather than silently changing those semantics.
 
 `OOREXX_DATABASE_PROVIDER_PACKAGE` and `OOREXX_DATABASE_PROVIDER_CLASS` may
 override package/class resolution. An unknown or unloadable provider fails closed.

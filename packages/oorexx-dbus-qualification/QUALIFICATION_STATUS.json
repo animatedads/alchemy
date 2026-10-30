@@ -1,17 +1,33 @@
 {
-  "schema": "alchemy.dbus.qualification/0.5",
-  "date": "2026-10-23",
+  "schema": "alchemy.dbus.qualification/0.6",
+  "date": "2026-10-29",
   "component": "oorexx-dbus-qualification",
-  "scope": "archive-inspection-only",
+  "scope": "archive-screening, content diff and static ooRexx API inventory",
   "core_dependency": "none",
-  "local_archive_test_count": 14,
-  "local_archive_test_result": "PASS",
+  "test_suite_local": {
+    "archive_audit": {
+      "passed": 14
+    },
+    "api_inventory": {
+      "passed": 11
+    },
+    "upstream_content_diff": {
+      "passed": 4
+    },
+    "total_passed": 29,
+    "result": "PASS",
+    "test_environment": "Python 3.13.5 on sandbox, synthetic fixtures"
+  },
+  "host_session_bus_probe": "PASS_NOT_OOREXX",
   "github_ci": "NOT_RUN",
+  "autobuilder": "NOT_RUNNING",
   "native_cpp": "NOT_RUN",
   "native_oorexx": "NOT_RUN",
   "historical_vs_2026_source_diff": "NOT_RUN",
   "native_source_imported": false,
   "gopher_runtime_validation": "NOT_RUN",
   "sphere_source_published": "spheres/oorexx_dbus_connector_gopher_sphere_v0.1",
-  "next_gate": "Retrieve and hash upstream native sources, compare, compile unchanged original with pinned ooRexx"
+  "rasen_falcon_lane": "oorexx-dbus",
+  "coordination_request": "REQ-00001903",
+  "next_gate": "Obtain, hash and review both upstream source packages; compare with gates; compile unchanged original"
 }

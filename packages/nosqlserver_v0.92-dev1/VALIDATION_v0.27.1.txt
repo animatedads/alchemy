@@ -1,0 +1,26 @@
+NoSQLServer v0.27.1 diagnostic preservation validation
+Runtime: ooRexx 5.3.0 r13196
+
+Repair:
+- SQL top-level SYNTAX safety handler captures condition("O") before leaving the handler.
+- MESSAGE is used as the primary diagnostic; ADDITIONAL is fallback.
+- insert/insertMany/update constraint handlers use the same preservation rule.
+
+Focused runtime evidence:
+NOSQLSERVER V0.27.1 DIAGNOSTIC PRESERVATION SMOKE: OK
+  parser diagnostic: Missing ')' in WHERE predicate.
+  constraint diagnostic: UNIQUE constraint failed.
+
+Regression evidence:
+NOSQLSERVER V0.27 MUTATION/CAST SMOKE: OK
+NOSQLSERVER SQL-92 COMPANY SMOKE: OK
+Hell corpus: PASS 22, UNSUPPORTED 2, PARSE_ERROR 1, WRONG_RESULT 0, EXECUTION_ERROR 0
+
+Remaining frontier diagnostics are nonblank:
+- window function: SQLPARSEERROR | Non-aggregate projection requires GROUP BY
+- recursive CTE: SQLUNSUPPORTED | Unsupported SQL statement
+- DISTINCT/AVG ORDER BY: SQLUNSUPPORTED | ORDER BY expression is not implemented: AVG(e.salary)
+
+Compilation:
+- rexxc src/NoSQLServer.cls: PASS
+- rexxc tests/*.rex: PASS

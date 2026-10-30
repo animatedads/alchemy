@@ -17,6 +17,11 @@ call check .SemanticSourceRexxSqlProvider~handles("nosqlserver") = 0, "does not 
 root = work || "/sel"
 call SysMkDir root
 
+genericOptions = .directory~new
+genericOptions["databaseRoot"] = root
+genericExecutor = .SemanticSourceRexxSqlProvider~open(genericOptions)
+call check genericExecutor~isA(.RexxSqlSqliteSession), "generic provider open() returns indexed Rexx/SQL executor"
+
 /* The composition seam the store declares: executor injected, store stays neutral. */
 comp = .SemanticSourceRexxSqlProvider~composition(root)
 call check comp~isA(.SemanticSourceDatabaseComposition), "composition() returns the store's composition boundary"

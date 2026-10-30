@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.6
+- Record Terminal Machine v0.22-candidate16 as the current 3270 P0 delivery.
+- Extend s3270 differential evidence to SFE extended field attributes 41/42/43/45.
+- Track SA character-attribute runs and compare them through a canonical detached digest.
+- Preserve NONDISPLAY secrecy: the character digest contains attribute state only, never display bytes.
+- Preserve candidate15 row-geometry gates and candidate14 complete-response status/keyboard binding.
+- Keep exact r13196 execution as the next release gate before live ED209Z/ED209ZZ promotion.
+
 ## 0.5
 - Record Terminal Machine v0.22-candidate15 as the current 3270 P0 delivery.
 - Record the independent r13196 candidate13 fixture failure and its root cause: SF plus eight data cells in an 8-column row consumed nine buffer positions.

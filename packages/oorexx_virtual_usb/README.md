@@ -1,4 +1,4 @@
-# ooRexx Virtual USB v0.1-dev10
+# ooRexx Virtual USB v0.1-dev11
 
 Device-side USB emulation for ooRexx, now with generic HID descriptor support and a development FIDO2 / CTAP2 authenticator.
 
@@ -21,6 +21,27 @@ device~present
 On a Raw Gadget-capable host, the same semantic device can be presented through `LinuxRawGadgetProvider`. dev4 adds the blocking-I/O event/endpoint activity model needed for a real Raw Gadget host path and a dedicated live presenter. The supplied qualification container has no `/dev/raw-gadget`, so live host enumeration remains a target-environment qualification step rather than a claim of this package build.
 
 
+
+## dev11 hidraw generation identity
+
+dev11 closes the remaining stale-generation gap identified by the independent
+CODEX-PC review of dev10.  USB device generation was already protected by
+`<sysfs-path>:<devnum>`, but dev10 matched the later hidraw object by USB path
+ancestry plus `/dev/hidrawN` existence.  A hidraw class object that survived
+long enough for a reused USB path to resolve again could therefore satisfy that
+predicate without proving that the HID core had rebound hidraw for this run.
+
+dev11 snapshots the identity of every pre-existing hidraw **class object**
+(`device:inode:mtime` of the class entry) before presenter launch.  A candidate
+hidraw must be a new/rebound class generation, resolve under the selected HID
+interface, and the selected USB `devnum` must remain unchanged throughout HID
+and hidraw binding waits.
+
+`tests/test_live_hidraw_generation_guard.sh` reproduces the edge case: an old
+`hidraw7` class symlink and `/dev/hidraw7` survive while USB path `5-1` changes
+from devnum 2 to 3.  The stale class entry becomes path-resolvable again but
+may not pass; only after the class object itself is removed/recreated can the
+qualifier complete.
 
 ## dev10 live binding wait
 

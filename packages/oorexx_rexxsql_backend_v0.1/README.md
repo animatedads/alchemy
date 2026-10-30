@@ -108,3 +108,38 @@ v0.91 source (2,295 revisions): 49 s with, 43 s without. SQLite scans a few thou
 microseconds. The plan stays the default because the estate is roughly 35 times larger than the
 largest corpus tested and a scan's cost grows with both table size and call count; that benefit is
 an engineering expectation, not yet measured. `SSC_INDEX_PLAN=0` switches it off for comparison.
+
+
+## Generic DatabaseBackendSelector provider
+
+`src/RexxSqlDatabaseProvider.cls` exposes the existing Rexx/SQL SQLite backend through the
+shared `DatabaseBackendSelector` contract. It is a composition adapter only; it does not
+implement another SQLite driver and does not supersede `RexxSqlSqliteBackend`.
+
+Provider ids accepted by the shared selector are `REXXSQL-SQLITE`, `REXXSQL`, and
+`SQLITE`; they normalize to `REXXSQL-SQLITE`.
+
+The provider accepts `databaseFile`, `database`, or `path` in the options Directory.
+Environment-only composition may use `OOREXX_DATABASE_PATH` or
+`OOREXX_REXXSQL_SQLITE_PATH`. A `databaseRoot`/ `root` option (or
+`SSC_DATABASE_ROOT`) resolves to `<root>/app.sqlite`.
+
+A consumer may pass `requiredCapabilities` as an Array. The provider checks the existing
+`RexxSqlSqliteBackend` capability model before opening the database and fails closed if
+any required capability is unsupported. This is the required migration guard for consumers
+such as NotNotes.
+
+Current migration-critical capability publication is explicit:
+
+- `KEYED_LOOKUP_INDEXED`: SUPPORTED / TESTED.
+- `TRANSACTIONS`, `ROLLBACK`, `WAL`: SUPPORTED / TESTED.
+- `NULL_EMPTY_DISTINCT`: UNSUPPORTED / TESTED. Rexx/SQL `NULLSTRINGIN` maps an empty
+  bound string to SQL NULL; a consumer that must distinguish the two must encode/reject
+  before adopting this backend.
+- `BLOB_WRITE`: UNSUPPORTED / TESTED. BLOB reads work, writes are not a safe contract.
+- `THREAD_SAFE_CONNECTIONS`: UNKNOWN / UNTESTED. Rexx/SQL keeps a process-wide current
+  connection and this package does not qualify simultaneous threaded session use.
+
+The package-owned `tests/test_database_provider.rex` verifies normal open, WAL, and
+fail-closed capability requirements. No consumer should silently weaken those requirements
+to make a migration pass.

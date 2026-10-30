@@ -1,0 +1,61 @@
+{
+  "schema": "rasenfalcon.hostmap/0.1",
+  "canonical": {
+    "noc.rasenfalcon.com": {
+      "cname": "london1.rasenfalcon.com"
+    },
+    "london1.rasenfalcon.com": {
+      "A": "213.255.246.44"
+    }
+  },
+  "services": {
+    "rasenfalcon.com": [
+      "public_site"
+    ],
+    "gateway.rasenfalcon.com": [
+      "smtp_inbound",
+      "smtp_submission",
+      "imaps",
+      "wire_gateway_portal"
+    ],
+    "office.rasenfalcon.com": [
+      "wire_webmail:/mail",
+      "wire_notnotes:/notes"
+    ],
+    "mcp.rasenfalcon.com": [
+      "mcp_mail",
+      "mcp_notnotes"
+    ],
+    "noc.rasenfalcon.com": [
+      "noc_web"
+    ]
+  },
+  "gateway_targets": {
+    "tn3270": [
+      "ed209zz",
+      "ed209z"
+    ],
+    "web": [
+      "ed209cray",
+      "ed209tops"
+    ]
+  },
+  "external_dns_control": [
+    "mcp.rasenfalcon.com"
+  ],
+  "unknown": [
+    "gateway_A_or_AAAA",
+    "office_A_or_AAAA",
+    "mcp_A_or_AAAA",
+    "host_os",
+    "target_ports",
+    "certificates"
+  ],
+  "private_https_contract": "contracts/PRIVATE_HTTPS_POLICY.json",
+  "public_source_contract": "public_site/builder.lock.json",
+  "separate_private_https_services": {
+    "noc.rasenfalcon.com": "rasenfalcon-noc-https.service",
+    "office.rasenfalcon.com": "rasenfalcon-office-https.service"
+  },
+  "application_scheduling": "bashqueues_cron_bridge_systemd_ticker"
+}

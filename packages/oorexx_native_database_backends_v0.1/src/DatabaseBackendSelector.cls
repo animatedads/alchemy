@@ -22,6 +22,7 @@
  * Built-in provider defaults:
  *   NOSQLSERVER -> NoSQLDatabaseCoreProvider.cls / NoSQLDatabaseCoreProvider
  *   POSTGRESQL  -> PostgreSQLDatabaseProvider.cls / PostgreSQLDatabaseProvider
+ *   REXXSQL-SQLITE -> RexxSqlDatabaseProvider.cls / RexxSqlDatabaseProvider
  */
 ::class DatabaseBackendSelectionError public
 ::attribute message
@@ -117,6 +118,11 @@ loadFailed:
       providerName = "POSTGRESQL"
       if packageName = "" then packageName = "PostgreSQLDatabaseProvider.cls"
       if className = "" then className = "PostgreSQLDatabaseProvider"
+    end
+    when providerKey = "REXXSQL" | providerKey = "REXXSQL-SQLITE" | providerKey = "SQLITE" then do
+      providerName = "REXXSQL-SQLITE"
+      if packageName = "" then packageName = "RexxSqlDatabaseProvider.cls"
+      if className = "" then className = "RexxSqlDatabaseProvider"
     end
     otherwise do
       if packageName = "" then

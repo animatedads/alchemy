@@ -34,10 +34,13 @@
 /* Lift routine NAME from FILE under ALIAS. Raises when the unit is missing or not standalone. */
 ::method lift
   expose units
-  use strict arg file, name, alias
-  text = charin(file, 1, chars(file))
-  call stream file, 'C', 'CLOSE'
-  unitList = .SlamUnitSplitter~new~split(text)
+  use strict arg file, name, alias, unitList = .nil, text = .nil
+  /* a caller lifting many routines from one file can pass its text and units, read once */
+  if text == .nil then do
+    text = charin(file, 1, chars(file))
+    call stream file, 'C', 'CLOSE'
+  end
+  if unitList == .nil then unitList = .SlamUnitSplitter~new~split(text)
   unit = .nil
   do u over unitList
     if u~kind == 'ROUTINE' then if u~selector == name~upper then unit = u
@@ -53,12 +56,19 @@
   end
   body = .array~new
   do i = unit~line + 1 to min(lastLine, lines~items)
+    /* the next directive (a ::requires after the last routine) is not part of the body */
+    if lines[i]~strip~left(2) == '::' then leave
     body~append(lines[i]~strip('T', '0d'x))
   end
   /* The directive line itself may carry the body after a ';' (::routine x; return 1). */
   first = lines[unit~line]~strip('T', '0d'x)
   semi = first~pos(';')
   if semi > 0 then body~insert(first~substr(semi + 1), .nil)
+  /* the file's ::OPTIONS (digits, form, fuzz) come too, last, so the routine runs with its package's
+     settings (found by the rx2cpp lane: a file's ::options digits 25 was lost) */
+  do ln over lines
+    if ln~strip~left(9)~upper == '::OPTIONS' then body~append(ln~strip('T', '0d'x))
+  end
   r = .Routine~new(alias, body)
   lifted = .SlamLifted~new(alias, file, name, k, r)
   units[alias] = lifted
@@ -89,6 +99,57 @@
   out['OK'] = .true
   out['REASON'] = fromAlias 'gives' .SlamContract~keys(f~gives) || ',' toAlias 'argument' pos 'needs' .SlamContract~keys(need['KINDS'])
   return out
+/* A contract gate for use outside exploratory tests. The ordinary run method remains
+   intentionally exploratory: it records a predicted failure AND tries the path.
+   The admitted route never executes a path that its current contracts reject.
+   It does not claim that all missing semantic requirements have been learned. */
+::method admit
+  expose units
+  use strict arg steps
+  gate = .directory~new
+  gate['FEASIBLE'] = .false
+  gate['FAILED_AT'] = ''
+  gate['PREDICTION'] = 'will fail: empty path'
+  if steps~items == 0 then return gate
+  do i = 1 to steps~items
+    alias = steps[i][1]
+    if \units~hasIndex(alias) then do
+      gate['FAILED_AT'] = alias
+      gate['PREDICTION'] = 'will fail: no lifted unit' alias
+      return gate
+    end
+    args = steps[i][2]
+    do p = 1 to args~items
+      if args[p] == 'PREV' then do
+        if i == 1 then do
+          gate['FAILED_AT'] = alias
+          gate['PREDICTION'] = 'will fail: first unit has no prior result'
+          return gate
+        end
+        c = self~canFollow(steps[i - 1][1], alias, p)
+        if \c['OK'] then do
+          gate['FAILED_AT'] = alias
+          gate['PREDICTION'] = 'will fail: ' || c['REASON']
+          return gate
+        end
+      end
+    end
+  end
+  gate['FEASIBLE'] = .true
+  gate['PREDICTION'] = 'can work'
+  return gate
+/* Production-style admission: a predicted bad path is BLOCKED before any routine executes.
+   Exploration stays available as run(steps), which still runs predicted failures on purpose. */
+::method runAdmitted
+  use strict arg steps
+  gate = self~admit(steps)
+  if \gate['FEASIBLE'] then do
+    gate['STATUS'] = 'BLOCKED'
+    gate['TRACE'] = .array~new
+    gate['ERROR'] = gate['PREDICTION']
+    return gate
+  end
+  return self~run(steps)
 /* Run a path. steps: Array of .array(alias, argArray); an argument 'PREV' is the previous result.
    Returns a Directory: FEASIBLE, PREDICTION, STATUS (OK|FAILED), RESULT, FAILED_AT, ERROR, TRACE. */
 ::method run

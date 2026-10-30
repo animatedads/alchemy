@@ -2,6 +2,7 @@ call testParser
 call testActionEnvelope
 call testDifferential
 call testAttributeMasks
+call testExtendedAttributeDifferential
 call testRowWidthGuards
 say "PASS S3270 REFERENCE DIFFERENTIAL"
 exit 0
@@ -81,6 +82,46 @@ testAttributeMasks:
     call assertEq f~nonDisplay,wantSecret[i]==1,"nondisplay "||attrs[i]
   end
   return
+
+testExtendedAttributeDifferential:
+  model=.PresentationSpace3270~new(2,8)
+  stream=.DataStream3270~new(model)
+  cp=stream~codepage
+  rec=.Command3270~ERASE_WRITE||"02"x||,
+      .Order3270~SBA||.Address3270~encode(0)||,
+      .Order3270~SFE||"03"x||,
+        .Attribute3270~BASIC_FIELD||"20"x||,
+        .Attribute3270~HIGHLIGHT||"F2"x||,
+        .Attribute3270~FOREGROUND||"F1"x||,
+      cp~encode("ABC")||,
+      .Order3270~SA||.Attribute3270~HIGHLIGHT||"F1"x||cp~encode("HI")||,
+      .Order3270~SA||.Attribute3270~RESET_ALL||"00"x||cp~encode("X ")||,
+      .Order3270~SBA||.Address3270~encode(8)||.Order3270~SF||"00"x||cp~encode("       ")
+  a=stream~applyHostRecord(rec); call assert a~ok,"extended host record"
+  projected=.TN3270Snapshot~fromModel(model,cp); call assert projected~ok,"extended terminal snapshot"
+  data="data: SF(c0=20,41=f2,42=f1) 41 42 43 SA(41=f1) 48 49 SA(00=00) 58 20"||"0a"x||,
+       "data: SF(c0=00) 20 20 20 20 20 20 20"||"0a"x
+  response=data||"U F U C(ed209z) I 2 2 8 0 0 0 0.004"||"0a"x||"ok"||"0a"x
+  ref=.S3270ReferenceParser~parseActionResponse(response); call assert ref~ok,"extended reference snapshot"
+  f=ref~value~fields[1]
+  call assertEq f~attributes~at("x41"),"F2","reference field highlight"
+  call assertEq f~attributes~at("x42"),"F1","reference field foreground"
+  d=.S3270Differential~compare(projected~value,ref~value)
+  call assert d~equivalent,"extended equivalent fixture: "||join(d~mismatches)
+
+  badField=data~changestr("42=f1","42=f2")
+  badResponse=badField||"U F U C(ed209z) I 2 2 8 0 0 0 0.004"||"0a"x||"ok"||"0a"x
+  bad=.S3270ReferenceParser~parseActionResponse(badResponse); call assert bad~ok,"bad field reference parse"
+  mismatch=.S3270Differential~compare(projected~value,bad~value)
+  call assert \mismatch~equivalent,"field extended attribute mismatch detected"
+
+  badChar=data~changestr("SA(41=f1)","SA(41=f2)")
+  badResponse=badChar||"U F U C(ed209z) I 2 2 8 0 0 0 0.004"||"0a"x||"ok"||"0a"x
+  bad=.S3270ReferenceParser~parseActionResponse(badResponse); call assert bad~ok,"bad character reference parse"
+  mismatch=.S3270Differential~compare(projected~value,bad~value)
+  call assert \mismatch~equivalent,"character attribute mismatch detected"
+  return
+
 
 testRowWidthGuards:
   over="data: SF(c0=20) 54 53 4F 20 20 20 20 20"||"0a"x||,

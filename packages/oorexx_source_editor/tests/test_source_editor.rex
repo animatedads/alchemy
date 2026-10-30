@@ -52,7 +52,7 @@ call assertTrue .SourceEditorUtil~readAll(cpp)~pos('void reset();')>0,'cpp membe
 
 /* reusable finder: text mode sees comments; code mode projects comments away. */
 findFile=tmp||'/find.rex'
-findText='/* secret token */'||d2c(10)||'say "visible token"'||d2c(10)||'::method tokenMethod'||d2c(10)||'return "token"'||d2c(10)
+findText='/* secret token */'||d2c(10)||'say "visible token"'||d2c(10)||'say tokenMethod'||d2c(10)||'::method tokenMethod'||d2c(10)||'return "token"'||d2c(10)
 dummy=.SourceEditorUtil~writeAll(findFile,findText)
 fd=.SourceDocument~new(findFile)
 ft=fd~find('secret token','text','sensitive'); call assertEq 1,ft~items,'find text comment'
@@ -64,6 +64,16 @@ gr=fd~grep('vis[a-z]+ token','code','sensitive'); call assertEq 1,gr~items,'grep
 gc=fd~grep('secret.*token','code','sensitive'); call assertEq 0,gc~items,'grep regex ignores comment'
 gt=fd~grep('secret[ ]+token','text','sensitive'); call assertEq 1,gt~items,'grep regex text comment'
 gi=fd~grep('VISIBLE TOKEN','code','insensitive'); call assertEq 1,gi~items,'grep regex insensitive'
+/* lexical references preserve source evidence and classify scanner-known declarations. */
+refs=fd~references('tokenMethod','sensitive')
+decls=0; uses=0
+do rr over refs
+  if rr~role='declaration' then decls=decls+1
+  else if rr~role='reference' then uses=uses+1
+end
+call assertEq 1,decls,'reference declaration classified'
+call assertTrue uses>=1,'reference use classified'
+
 /* tree finder uses RexxUtil SysFileTree, not a find subprocess. */
 treeDir=tmp||'/tree'; call SysMkDir treeDir
 probe=treeDir||'/treeprobe.rex'
@@ -72,6 +82,20 @@ tf=.SourceTreeFinder~new(tmp)
 files=tf~files('treeprobe.rex','oorexx'); call assertEq 1,files~items,'tree file find'
 tg=tf~grep('tree[ ]+visible','treeprobe.rex','code','sensitive','oorexx'); call assertEq 1,tg~items,'tree grep code'
 th=tf~grep('hidden[ ]+tree','treeprobe.rex','code','sensitive','oorexx'); call assertEq 0,th~items,'tree grep ignores comment'
+tr=tf~references('tree','treeprobe.rex','sensitive','oorexx'); call assertTrue tr~items>=1,'tree references'
+/* CLI search argument model preserves multi-word expressions after shell quote removal. */
+ca=.array~of('find','dummy.rex','visible','token','--mode','code','--case','insensitive')
+cpArgs=.SourceEditorCliSearchArgs~parse(ca,3,'text','sensitive')
+call assertEq 'visible token',cpArgs~expression,'cli multiword expression'
+call assertEq 'code',cpArgs~mode,'cli explicit mode'
+call assertEq 'insensitive',cpArgs~caseMode,'cli explicit case'
+
+legacy=.array~of('grep','dummy.rex','token','code','insensitive')
+legacyArgs=.SourceEditorCliSearchArgs~parse(legacy,3,'text','sensitive')
+call assertEq 'token',legacyArgs~expression,'cli legacy expression'
+call assertEq 'code',legacyArgs~mode,'cli legacy mode'
+call assertEq 'insensitive',legacyArgs~caseMode,'cli legacy case'
+
 /* completion provider is semantic and deterministic; CLI/UI/MCP may project the same candidates. */
 cp=.SourceCompletionProvider~new
 cc=cp~completeDocument(.SourceDocument~new(rootFile()),'Source','class')
@@ -79,7 +103,7 @@ call assertTrue cc~items>=5,'completion document classes'
 call assertEq 'SourceCompletionCandidate',cc[1]~label,'completion deterministic order'
 ct=cp~completeTree(tmp,'tree','treeprobe.rex','oorexx')
 call assertEq 1,ct~items,'completion tree file'
-say 'PASS ooRexx source editor dev6'
+say 'PASS ooRexx source editor dev8'
 exit 0
 
 failed:

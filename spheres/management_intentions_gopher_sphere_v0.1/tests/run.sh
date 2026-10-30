@@ -14,6 +14,7 @@ required={
  'arch.management-intentions.relationships',
  'arch.management-intentions.instrumentation',
  'arch.management-intentions.networking',
+ 'arch.management-intentions.cloud-control',
  'ops.management-intentions.continue'}
 seen=set()
 for p in root.glob('packs/management-intentions/articles/*.json'):

@@ -1,35 +1,23 @@
 {
   "kind": "article",
   "id": "flylo.continuation",
-  "version": "0.3",
+  "version": "0.4",
   "sphere": "flylo",
   "title": "FlyLo continuation rules",
-  "summary": "Continue airline functionality on shared platform components while keeping the MVS backend qualification line independent of UI authority.",
+  "summary": "Continue airline functionality on shared platform components while keeping business, identity, TLS and MVS authority boundaries explicit.",
   "rules": [
     "Before row/list work, inspect current Wire UI documentation/artifacts and reuse the shared implementation.",
     "Keep ./flylo the single operational launcher for the website.",
     "Keep Grok structured and non-authoritative; passenger language is never transaction authority.",
     "Preserve durable Queue/accounting state and exact semantic identities across restart.",
+    "Use project-owned LDAP Identity for authenticated identity; do not create FlyLo-local credential truth.",
+    "Use the project-owned ooRexx HTTPS Server for public TLS termination; do not introduce a second application TLS authority.",
+    "Do not promote a newer LDAP/HTTPS/Terminal source artifact to ACTIVE while recorded live/runtime gates remain.",
     "Treat Flight Status and disruption information as Operations authority; rebooking/refund requires a separate controlled command path.",
     "Do not activate tax, settlement or other Accounting Core policy merely because APIs exist; airline policy must be explicit.",
     "For MVS validation, inventory the actual target before loading application code; exact installed PROC/PGM evidence outranks assumptions from another TK5 host.",
     "Use one planned 3270 session at a time; a blank post-login HERC01 screen is the TSO command environment.",
     "One failed qualification attempt must be diagnosed from preserved evidence before changing the deck or source.",
     "Do not silently change fare, coupon, baggage, cargo, authority or FLCTL semantics merely to make a machine test pass."
-  ],
-  "provenance": [
-    {
-      "artifact": "wire_ui_builder_v0.12-dev1.zip",
-      "sha256": "73dea2f650dddeba862b8402b52b0a7c97d6d385b970ebaf746814174aa3b88c",
-      "member": "wire_ui_builder_v0.12-dev1/ROW_COLLECTIONS.md",
-      "line_start": 38,
-      "line_end": 40,
-      "claim": "Shared row/list capability is a Federation-company platform concern."
-    },
-    {
-      "artifact": "CODEX_ED209ZZ_FLYLO_BACKEND_VALIDATION.md",
-      "sha256": "62dc08cd135c2caa2e5cab84f4694eea6fdcb53be2b3982e995307331cc7d089",
-      "claim": "Clean-room MVS validation rules."
-    }
   ]
 }

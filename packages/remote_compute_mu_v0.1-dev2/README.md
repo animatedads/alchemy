@@ -36,3 +36,7 @@ The supplied `oorexx-5.3.0-13196.ubuntu1604debug.x86_64.deb` was **extracted onl
 - **Migration:** Migratable Job remains the migration protocol and checkpoint/retained-status owner; an ephemeral provider must not promise arbitrary live migration.
 
 The Python controller is reference code until these interfaces are bound. See `docs/ARCHITECTURE.md` and the source tests for the exact state/authority contract.
+
+## 2026-10-29 native mesh ingress increment
+
+Added `src/RemoteComputeMUMeshService.cls`, `tests/test_mesh.rex` and `docs/MESH_INGRESS_DEV3.md`. Transport-derived identity is separated from untrusted envelope content; every operation requires policy admission. Live XTP/LDAP/provider interfaces remain unbound.

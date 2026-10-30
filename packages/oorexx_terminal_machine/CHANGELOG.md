@@ -1,3 +1,12 @@
+## v0.22-candidate16
+
+- Extend the independent s3270 differential beyond basic field flags to the extended 3270 attributes Terminal Machine already implements.
+- Parse extended attributes carried on ReadBuffer(Ascii) SF tokens and compare standard field highlighting (41), foreground (42), character set (43) and background (45) against detached TerminalFieldSnapshot attributes.
+- Parse SA attribute runs without consuming display positions; reset-all (00=00) clears the active character-attribute set.
+- Add a canonical character-attribute digest to TN3270 detached snapshot metadata and to the s3270 reference snapshot, allowing differential detection of character highlighting/color/charset drift without exporting display bytes or inflating the generic snapshot with per-cell mutable structures.
+- Add positive extended-attribute equivalence plus deliberate field-attribute and character-attribute divergence regressions.
+- Preserve candidate15 exact row-geometry gates, candidate14 complete-response status/keyboard binding, NONDISPLAY masking and fail-closed DBCS handling.
+
 ## v0.22-candidate15
 
 - Fix the s3270 differential fixture exposed by an independent ooRexx 5.3.0 r13196 run: the first 8-column row had encoded an SF plus eight data cells (nine positions), shifting every following field address.

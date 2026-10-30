@@ -17,3 +17,4 @@ rc=$?
 set -e
 [[ $rc -eq 2 ]] || { cat "$tmp/out"; exit 1; }
 echo 'PASS syntax and four fail-closed preflight cases; runtime NOT_RUN'
+bash "$ROOT/tests/test_runner_contract.sh"

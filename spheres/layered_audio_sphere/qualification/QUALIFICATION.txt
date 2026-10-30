@@ -1,5 +1,5 @@
 Layered Audio LLM Gopher sphere v0.4 qualification
-Date: 2026-10-27
+Date: 2026-10-29
 Required engine: LLM Gopher v0.19-dev1+
 
 Historical implementation continuity baseline:
@@ -19,13 +19,19 @@ Current object-intention continuity:
 - composite selection rechecks live gates before READY
 - dev9 strict ooRexx standards/package checks PASS with 0 errors and 0 warnings
 - complete dev9 candidate is stored in the ChatGPT Library
+- the same exact dev9 ZIP is reconstructable from Git under packages/layered_audio_intentions_v0.22-dev9/exact_candidate
+- local reconstruction from the five Git candidate chunks reproduces the exact SHA-256 and passes unzip -t
+- hydrate.sh additionally unpacks the exact tree and verifies its package MANIFEST.sha256
 - fresh dev9 ooRexx 5.3.0 r13196 runtime execution is pending; predecessor runtime evidence is not promoted
 
 Rasen Falcon coordination:
 - lane layered-audio-intentions created and claimed by CHATGPT on 2026-10-27
 - linked artifacts: audio_layered, layered_audio_intentions, layered_audio_sphere
-- CODEX-PC received a TEST-only request for independent dev9 r13196 runtime qualification
-- no runtime result is assumed until a reply exists
+- the original CODEX-PC qualification attempt correctly reported NOT_RUN because dev9 bytes were not locally available
+- that blocker is removed by the exact Git candidate reconstruction; CODEX-PC TEST request REQ-00001657 now targets those exact bytes
+- CLAUDE-PC read-only consistency review REQ-00001669 is also outstanding
+- unrelated Audio V9 dev19 transient-reflector requests were detected on this lane and reported to COORDINATOR in REQ-00001681; they are not adopted as Layered Audio intentions evidence
+- no runtime result is assumed until an independent reply exists
 
 Current Speech TTS/STT continuity:
 - ooRexx Speech v0.1-dev10, SHA-256 01bc07e29ed4a7ed581ff0c6ad2546247158f711f9d298db8e52619aa4e8f99c
@@ -45,7 +51,8 @@ Current memory-local execution continuity:
 - Audio V9 cluster-memory candidate20 Autobuild submission 20261023T154600Z-CHATGPT-audio-v9-cluster-memory-c20-1b3088, ready commit 561772d1acd2db6ff49117ed78528d3350cae473
 
 Evidence status:
-- dev9 complete package is Library-retained; GitHub records the exact dev8->dev9 source delta and regression because the older dev8 GitHub AudioIntentions projection is incomplete.
+- dev9 complete package is Library-retained and now byte-for-byte reproducible from Git without Autobuilder.
+- the Git exact_candidate directory is evidence transport, not a second source authority: reconstructed package MANIFEST.sha256 remains the package authority.
 - The dev8 installer composes Management's public self-assessing source, relationship source, related-surface discovery and explorer contracts; it does not reimplement Management.
 - Storage remains a separate related authority; Audio publishes only its own binding/relationship evidence.
 - Speech consumes Audio/Storage execution material through a transient localPath + durable identityKey seam and does not take ownership of Audio truth.

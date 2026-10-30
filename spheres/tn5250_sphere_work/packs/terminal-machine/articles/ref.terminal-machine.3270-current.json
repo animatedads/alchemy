@@ -1,10 +1,10 @@
 {
   "kind": "article",
   "id": "ref.terminal-machine.3270-current",
-  "version": "0.6",
+  "version": "0.7",
   "sphere": "terminal-machine",
   "title": "IBM 3270 P0 current state",
-  "summary": "The current P0 line is candidate15: native IBM 3270/TN3270 first, honest basic TN3270E, one-writer ownership, evidence-backed MVS/TK5 states, and an s3270 differential adapter whose complete-response evidence now also enforces exact per-row buffer geometry.",
+  "summary": "The current P0 line is candidate16: native IBM 3270/TN3270 first, honest basic TN3270E, one-writer ownership, evidence-backed MVS/TK5 states, and an s3270 differential adapter that now checks complete-response status, exact row geometry, field extended attributes and character-attribute state.",
   "authority": "terminal-machine-project",
   "invariants": [
     "Traditional TN3270 remains first-class; TN3270E is used only for functions genuinely negotiated and implemented.",
@@ -21,7 +21,10 @@
     "AID send completion is not host semantic completion; callers must advance on observed presentation generation/known state, not a scripting API return convention.",
     "A complete s3270 peer-script action response is the preferred differential evidence unit: data lines, 12-field status, and final ok/error stay bound together.",
     "Reference keyboard U maps to UNLOCKED; L and operator-error E map to LOCKED for TerminalSnapshot comparison, while the raw s3270 code remains retained in reference status.",
-    "Each ReadBuffer(Ascii) data line must consume exactly the declared column count: SF/data/GE each consume one display position and SA consumes none; malformed row geometry fails closed."
+    "Each ReadBuffer(Ascii) data line must consume exactly the declared column count: SF/data/GE each consume one display position and SA consumes none; malformed row geometry fails closed.",
+    "s3270 field-level extended attributes 41/42/43/45 are compared explicitly, while SA character attributes are compared through a canonical detached digest that contains no display bytes.",
+    "Downstream MVS reference tooling must supply credentials at runtime; Terminal Machine continuity does not authorize packaged/default TSO passwords.",
+    "Candidate16 S3270Reference evidence is detached corroboration and cannot become Terminal Machine, MVS Alchemy or Hercules authority."
   ],
   "known_states": [
     "HERCULES.TK5.WELCOME_PANEL",
@@ -31,13 +34,19 @@
     "MVS.ISPF.PRIMARY_OPTION_MENU"
   ],
   "missing_work": [
-    "Run candidate15 under exact ooRexx 5.3.0 r13196 and confirm the corrected s3270 reference regression plus row-width guards.",
-    "Then differentially qualify candidate15 and s3270 against stable ED209Z states and repeat independently on ED209ZZ.",
+    "Run candidate16 under exact ooRexx 5.3.0 r13196 and execute the s3270 reference regression, including row-geometry and extended-attribute divergence cases.",
+    "Only after that passes, differentially qualify candidate16 against stable ED209Z states and repeat independently on ED209ZZ.",
     "Capture a live Terminal Machine ISPF snapshot and compare it with the retained TK5 Figure 17 reference without promoting documentation evidence to live authority.",
     "Adopt Socket Provider only when its concrete TCP connection exposes a qualified non-blocking readiness contract; do not unwrap raw provider internals to force the migration.",
     "Add optional TN3270E BIND/RESPONSES/SYSREQ semantics only when negotiated and fully implemented; never claim optional functions speculatively."
   ],
   "provenance": [
+    {
+      "artifact": "oorexx_terminal_machine_v0.22-candidate16.zip",
+      "sha256": "af7c0d571269c17724cc79e695f9b3523045cc7f93a76b595a86158556c60f8d",
+      "member": "oorexx_terminal_machine_v0.22-candidate16/qualification/CANDIDATE16_VALIDATION.txt",
+      "claim": "Records the extended field/character attribute differential boundary and detached evidence rules."
+    },
     {
       "artifact": "oorexx_terminal_machine_v0.22-candidate15.zip",
       "sha256": "9153b098543b3d00d334aed5d479b7541e8243138a20d3270700851cd0a1eec7",
@@ -70,6 +79,11 @@
       "artifact": "mvs_intention_runner_v0.1-dev9.zip",
       "sha256": "03a2cc798db5cff171cd7ca37eb5ca686d9f7bfce17cd381c85c77a703fbec52",
       "claim": "Downstream consumer evidence: native TN3270LiveSession usage, terminal fact projection, exact READY gating and clean LOGOFF; qualified historically against candidate8."
+    },
+    {
+      "artifact": "mvs_intention_runner_v0.1-dev11.zip",
+      "sha256": "709ff4296094c5ab900f46067ba8287022da794316e9d2652eceae05fc8e906f",
+      "claim": "Downstream candidate16 consumer retains complete s3270 ReadBuffer action responses and normalizes only detached semantic metadata; no raw display content becomes MVS Intention authority."
     }
   ]
 }

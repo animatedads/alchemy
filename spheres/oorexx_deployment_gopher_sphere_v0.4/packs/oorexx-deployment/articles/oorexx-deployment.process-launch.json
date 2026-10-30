@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.process-launch",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Readiness and process launch are separate operations",
+  "summary": "Deployment may prepare and optionally launch a declared process, but process start is not automatically part of repair/readiness. Existing-process detection must distinguish absent, expected, different, stale and unknown rather than accepting a similar command line.",
+  "authority": "project-doctrine",
+  "section": "architecture",
+  "invariants": [
+    "Repair/readiness can complete while application workers remain stopped.",
+    "Starting a worker/service requires an explicit process requirement or application action.",
+    "A similar command string is not sufficient identity for RUNNING_EXPECTED.",
+    "Launch environment is explicit and should not depend blindly on interactive shell startup files.",
+    "Deployment owns launch mechanics, not what the application subsequently computes."
+  ],
+  "topics": [
+    "process",
+    "launch",
+    "readiness",
+    "identity",
+    "environment"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 668,
+      "line_end": 716,
+      "claim": "Defines explicit launch environment and ProcessRequirement."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 720,
+      "line_end": 735,
+      "claim": "Defines existing process states and rejects command-string-only identity."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/docs/AUDIO_FIRST_CONSUMER.md",
+      "claim": "Audio readiness remains separate from worker start.",
+      "line_start": 3,
+      "line_end": 7
+    }
+  ]
+}

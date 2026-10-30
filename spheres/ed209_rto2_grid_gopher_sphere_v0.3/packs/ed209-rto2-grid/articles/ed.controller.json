@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "ed.controller",
+  "version": "0.2",
+  "sphere": "ed209-rto2-grid",
+  "title": "First-class MU/MI estate controller boundary",
+  "summary": "The dev14 generic controller makes MU and MI native ooRexx estate objects, publishes read-only estate service operations, and preserves authority separation; ED209 must extend that object model to ten MUs/twenty MIs without turning the controller into a scheduler.",
+  "authority": "project-authority",
+  "invariants": [
+    "RexxOSGridEstateController owns Grid identity, membership and observations; it does not own placement, ACTIVE/SPARE choice, Storage residency, Memory allocation, XTP route choice, economics, cloud purchase, transport selection or serialization selection.",
+    "RexxOSManagementUnitController is a first-class MU controller. Its subordinate MI membership is explicit; an MU is not inferred from MI rows.",
+    "RexxOSGridEstateMember preserves semantic member identity and incarnation. Advice or observations fenced to an old incarnation must fail closed after replacement.",
+    "The dev14 service endpoint is read-only through RpcServiceCore; ConnectSelector chooses DirectCall/RPC/Queue and the binding/SerializationSelector owns encoding.",
+    "Instrumentation may publish Grid and per-MU observations but never acquires mutation authority."
+  ],
+  "procedure": [
+    "Extend the generic controller commissioning adapter with the ten current ED209 MU identities and twenty MI memberships.",
+    "Preserve exact MU/MI incarnations across restart and reject stale advice, placement or movement evidence after membership-generation change.",
+    "Keep field carrier commissioning outside the controller domain model; expose observed route evidence rather than carrier policy mutation."
+  ],
+  "provenance": [
+    {
+      "artifact": "rexxos_rto2_grid_v0.1-dev14.zip",
+      "sha256": "693a5e4d696790d10e1c366c77849514918ca558510cbf696189442f464b0e0a",
+      "member": "grid/RexxOSGridEstateController.cls",
+      "claim": "Estate controller implementation"
+    },
+    {
+      "artifact": "rexxos_rto2_grid_v0.1-dev14.zip",
+      "sha256": "693a5e4d696790d10e1c366c77849514918ca558510cbf696189442f464b0e0a",
+      "member": "docs/ESTATE_SERVICE_DEV14.md",
+      "claim": "Read-only RpcServiceCore/ConnectSelector service boundary"
+    }
+  ]
+}

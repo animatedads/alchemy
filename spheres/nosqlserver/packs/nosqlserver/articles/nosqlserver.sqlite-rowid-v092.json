@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "nosqlserver.sqlite-rowid-v092",
+  "title": "NoSQLServer v0.92-dev1 native SQLite rowid B-tree seek",
+  "version": "0.4",
+  "sphere": "nosqlserver",
+  "section": "architecture",
+  "authority": "project-source-and-local-qualification",
+  "summary": "NoSQLServer v0.92-dev1 is a full versioned source package in GitHub. It implements signed INTEGER PRIMARY KEY rowid equality seeks by descending the SQLite table B-tree in ooRexx and evaluates the existing NoSQLServer SQLComparisonPredicate on the returned row; SQLite row counts are now lazy rather than scanned at schema discovery.",
+  "invariants": [
+    "No application SQL delegated to SQLite execution by this seek",
+    "Only INTEGER PRIMARY KEY rowid-alias equality; other predicates continue via NoSQLServer scan",
+    "Signed 64-bit rowids, BLOB, nil and rowid absence preserved",
+    "v0.91 writable backend still requires a full backup snapshot per SQL statement",
+    "Mark Hessling Rexx/SQL is independently selectable but not a silent NoSQLServer evaluator replacement"
+  ],
+  "qualification": {
+    "runtime": "ooRexx 5.3.0 r13196 debug, Alchemy Objects v0.8, Crypto v0.8.3",
+    "run": "packages/nosqlserver_v0.92-dev1/tools/run_sqlite_rw_v092.sh",
+    "result": "LOCAL PASS: v0.89-v0.91 regressions and new 10,002-row 512-byte page fixture; negative 64-bit keys, missing ids, BLOB, range scan fallback, guarded UPDATE, integrity_check"
+  },
+  "performance": {
+    "separateProvider": "packages/oorexx_rexxsql_backend_v0.1",
+    "recordedComparison": "Rexx/SQL indexed ~80us/lookup at 20,000 rows; historical NoSQLServer v0.79 1.2s/lookup at 1,000 rows (different environments/loads)",
+    "limits": "Full backup per statement still dominates large writable database queries; secondary index / native streaming unimplemented"
+  },
+  "production": {
+    "autobuilder": "OFF",
+    "infrastructure": "No website, mail, LDAP, HTTPS or MI/MU deployment by this change",
+    "status": "DEVELOPMENT_ONLY"
+  },
+  "provenance": [
+    {
+      "artifact": "packages/nosqlserver_v0.92-dev1/SQLITE_ROWID_SEEK_v0.92-dev1.md"
+    },
+    {
+      "artifact": "packages/oorexx_rexxsql_backend_v0.1/README.md"
+    }
+  ]
+}

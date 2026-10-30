@@ -45,4 +45,36 @@ Two source-publication boundaries are explicit. The first-class GitHub Socket Pr
 
 Messaging & Presence therefore continues to fail closed for RFC 6120 STARTTLS until a generic same-stream secure-upgrade route is explicitly qualified at the lower transport/TLS boundary. BOSH remains a generic HTTP-carried logical stream; a real generic HTTP/HTTPS exchange provider (including HTTPS-over-XTP composition) remains separate work because no authoritative first-class HTTP client surface was identified in the current repository review.
 
-The sphere is present in GitHub but the LLM Gopher resolver currently returns `SPHERE_NOT_FOUND`; registration/deployment remains an explicit operational gate.
+The sphere is present in GitHub and linked to the authenticated Rasen Falcon `messaging-presence` lane. The current Rasen Falcon deployment reports `SPHERE_CHECKER_UNAVAILABLE` because no sphere checker is configured; this is an infrastructure/configuration gate, not evidence that the sphere ID is absent.
+
+
+## 2026-10-29 source integration
+
+Two previously open lower-transport seams are now integrated on `main`:
+
+- `oorexx_bosh_api_client_adapter` v0.1-dev1, squash merge `12077975acaa9610ad1c696a703ce9f698b928ad`, binds the generic BOSH HTTP exchange seam to API Client v0.4.1 while keeping BOSH free of XMPP, SocketProvider and XTP knowledge.
+- `oorexx_api_client_socket_provider_adapter` v0.1-dev1 plus the optional `ApiSocketConnector` seam, squash merge `265aeaa86714cfc5c014b9b4cca136d9e6c9476d`, lets API Client acquire an exact selected SocketProvider stream while preserving RxSock as the default carrier.
+
+The resulting authority chain is now:
+
+```text
+Messaging / XMPP
+      |
+     BOSH
+      |
+ API Client HTTP/HTTPS
+      |
+ API Client TLS
+      |
+ optional ApiSocketConnector
+      |
+ SocketProvider / selector
+      |
+ TCP / XTP / other qualified stream family
+```
+
+Selection still belongs below API Client. Neither BOSH nor API Client chooses XTP.
+
+Current Git XTP development context reviewed is dev33. dev33 depends on Socket Provider dev16 and adds per-service protection for sessions, messages and streams, with LDAP Identity Directory plus Secret Broker as the optional key-source path. That is relevant to the estate's internode and own-LDAP requirements, but it does not make live HTTPS-over-XTP qualified automatically.
+
+Runtime qualification of the two newly integrated seams under ooRexx r13196, followed by an exact XTP dev33 selected-stream HTTPS run, remains explicit work. Autobuilder is not assumed.

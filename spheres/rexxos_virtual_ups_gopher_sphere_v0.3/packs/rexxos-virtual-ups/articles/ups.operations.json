@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "ups.operations",
+  "version": "0.3",
+  "sphere": "rexxos-virtual-ups",
+  "authority": "project-artifact",
+  "section": "operations",
+  "title": "Non-authoritative guest observation and infrastructure handoffs",
+  "summary": "Standalone synthetic UPS and TOPS-20 text diagnostics cannot claim progress on real mail, website, LDAP, private-CA HTTPS or XTP MU/MI named-service readiness. Coordinate with owning lanes.",
+  "provenance": [
+    {
+      "repository": "animatedads/alchemy",
+      "path": "packages/rexxos_virtual_ups_v0.3/docs/OPERATIONS_HANDOFF.md",
+      "claim": "owner handoff and local package status"
+    }
+  ],
+  "invariants": [
+    "Only 22 local tests are qualified; no ed209j/ed209d runtime claim.",
+    "Autobuilder is off; direct GitHub source commit required.",
+    "No authoritative SMTP/IMAP, LDAP, HTTPS, XTP or website readiness is implied by the UPS tool.",
+    "MX/MAILS is guest historical mail subsystem evidence, not Rasen Falcon mail service health.",
+    "Observed guest text must not authorize power controls, service activation or guest shutdown.",
+    "No cross-owner code was changed without explicit accepted coordination."
+  ],
+  "related": [
+    "ups.baseline",
+    "ups.frontier"
+  ]
+}

@@ -4,15 +4,20 @@
   "version": "0.1",
   "sphere": "rxsock6",
   "title": "Current RxSock6 qualification evidence",
-  "summary": "Fresh ooRexx 5.3.0 r13196 qualification against Socket Provider dev16 passed RxSock6 TCP6 and UDP6 routes. The UDP6 path performed live ::1 datagram request/reply while preserving the peer .Inet6Address object. IPv6 multicast evidence belongs to IP Multicast dev2.",
+  "summary": "Fresh ooRexx 5.3.0 r13196 qualification against Socket Provider dev16 passed RxSock6 TCP6 and UDP6 routes. The repository now also carries a fail-closed deployment preflight that separately proves the checked-in TCP6 provider seam and the installed native socket6.cls UDP6 loopback closure without claiming the missing dev3 provider source is synchronized.",
   "authority": "project-authority",
   "invariants": [
     "TCP6 and UDP6 live evidence are distinct from multicast evidence.",
     "UDP6 qualification must preserve the received peer .Inet6Address object rather than flattening it.",
     "Do not infer an RxSock6 multicast capability from the existence of SOCK_DGRAM.",
-    "Do not infer an MLDv2 implementation from observed host membership state."
+    "Do not infer an MLDv2 implementation from observed host membership state.",
+    "Deployment preflight must distinguish native UDP6 runtime capability from synchronization of the later RxSock6 Socket Provider dev3 source.",
+    "RxSock6 deployment readiness does not replace the ED209 XTP carrier contract for MI-MU or MU-MU internode traffic."
   ],
   "procedure": [
+    "Run packages/oorexx_socket_provider_rxsock6/tests/deployment_preflight.sh on a target with explicit OOREXX_ROOT, SOCKET_PROVIDER_SRC and RXSOCK6_ROOT.",
+    "Require PASS for the historical TCP6 provider seam and native socket6.cls UDP6 connected-datagram loopback before advertising installed IPv6 socket readiness.",
+    "Treat RXSOCK6_PREFLIGHT_PROVIDER_DEV3_SOURCE=NOT_ASSERTED as intentional until the exact dev3 source closure is recovered.",
     "After exact dev3 source is synchronized to GitHub, rerun the TCP6 and UDP6 live suite against Socket Provider dev16 and ooRexx 5.3.0 r13196 before declaring the repository source requalified."
   ],
   "provenance": [
@@ -34,5 +39,14 @@
       "claim": "Records the RxSock6 dev3 UDP6 live qualification and the separate IPv6 multicast/MLDv2 evidence boundary.",
       "note": "Detailed RxSock6 and multicast delta."
     }
-  ]
+  ],
+  "repository_increment": {
+    "date": "2026-10-29",
+    "files": [
+      "packages/oorexx_socket_provider_rxsock6/tests/test_socket6_udp6_live.rex",
+      "packages/oorexx_socket_provider_rxsock6/tests/deployment_preflight.sh",
+      "packages/oorexx_socket_provider_rxsock6/DEPLOYMENT_PREFLIGHT.md"
+    ],
+    "claim": "Executable target preflight added. It reuses the historical checked-in TCP6 provider qualification and adds a direct native socket6.cls UDP6 connected-datagram loopback test. It does not claim provider dev3 source synchronization."
+  }
 }

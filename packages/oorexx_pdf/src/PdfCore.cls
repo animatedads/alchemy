@@ -430,16 +430,13 @@
   if fontManager == .nil then do
     fontRegular = writer~addObject("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>")
     fontBold = writer~addObject("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>")
+    fontResources=" /F1 "||fontRegular||" 0 R /F2 "||fontBold||" 0 R
   end
   else do
     corpus=self~fontCorpus
-    regularMatch=fontManager~findForPurpose(bodyFontPurpose)
-    boldMatch=fontManager~findForPurpose(headingFontPurpose)
-    if regularMatch==.nil | boldMatch==.nil then raise syntax 93.900 array("FontManager could not satisfy PDF font purposes")
-    managedRegular=.PdfManagedFont~new(fontManager,regularMatch~face,corpus,fontTempDir,"OREGUL")
-    managedBold=.PdfManagedFont~new(fontManager,boldMatch~face,corpus,fontTempDir,"OBOLDX")
-    fontRegular=managedRegular~install(writer)
-    fontBold=managedBold~install(writer)
+    managedRegular=.PdfManagedFontSet~new(fontManager,bodyFontPurpose,corpus,fontTempDir,"BR")
+    managedBold=.PdfManagedFontSet~new(fontManager,headingFontPurpose,corpus,fontTempDir,"BH")
+    fontResources=managedRegular~install(writer,"FB")||managedBold~install(writer,"FH")
   end
   canvases = .Array~new
   yPositions = .Array~new
@@ -506,7 +503,7 @@
       annots = annots || " ]"
     end
     body = "<< /Type /Page /Parent " || pagesId || " 0 R /MediaBox [0 0 " || pageWidth || " " || pageHeight || "] " || ,
-           "/Resources << /Font << /F1 " || fontRegular || " 0 R /F2 " || fontBold || " 0 R >>" || xobjects || " >> " || ,
+           "/Resources << /Font <<" || fontResources || " >>" || xobjects || " >> " || ,
            "/Contents " || contentIds[i] || " 0 R" || annots || " >>"
     pageId = writer~addObject(body)
     pageRefs~append(pageId || " 0 R")
@@ -540,7 +537,7 @@
   if outlinesId > 0 then catalogBody = catalogBody || " /Outlines " || outlinesId || " 0 R /PageMode /UseOutlines"
   catalogBody = catalogBody || " >>"
   catalogId = writer~addObject(catalogBody)
-  infoId = writer~addObject("<< /Producer " || .PdfText~literal("Alchemy ooRexx PDF v0.1-dev5") || " /Title " || self~pdfDocString(title) || " >>")
+  infoId = writer~addObject("<< /Producer " || .PdfText~literal("Alchemy ooRexx PDF v0.1-dev6") || " /Title " || self~pdfDocString(title) || " >>")
   writer~rootId = catalogId
   writer~infoId = infoId
   written=writer~writeFile(path)
@@ -922,7 +919,7 @@
   expose managedRegular
   use strict arg value
   if managedRegular==.nil then return .PdfText~literal(value)
-  return "<FEFF"||managedRegular~unicodeHex(value)||">"
+  return "<FEFF"||.PdfUnicode~utf16Hex(value)||">"
 
 ::method putText private
   expose managedRegular managedBold
@@ -930,7 +927,7 @@
   if font=="F2" then managed=managedBold
   else managed=managedRegular
   if managed==.nil then return canvas~text(x,y,size,value,font)
-  return canvas~textHex(x,y,size,managed~encodeHex(value),font)
+  return managed~draw(canvas,x,y,size,value)
 
 ::method textWidth private
   expose managedRegular managedBold
@@ -938,7 +935,7 @@
   if bold then managed=managedBold
   else managed=managedRegular
   if managed==.nil then return length(value)*size*0.50
-  return managed~measure(value,size)~width
+  return managed~measure(value,size)
 
 ::method wrapWidth private
   use strict arg value,width,fontSize,bold=.false

@@ -1,0 +1,63 @@
+{
+  "kind": "article",
+  "id": "xtp.directory-storage",
+  "sphere": "xtp",
+  "version": "0.1-dev1",
+  "title": "Journal/LDAP configuration repository and application gateway",
+  "section": "integration",
+  "summary": "File backend is first write-before-memory durable journal; LDAP Identity dev18 can supply identity entities, delegated ACL metadata and synchronisation, but its replication and bind do not replace provisioning quorum or effectful route activation.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "Stable directory entity id, not LDAP DN, denotes MI identity",
+    "LDAP Bind attributes identity; operation authority separately decides Search/Add/Modify/Delete",
+    "Use directory peer epoch/fencing and persisted outbox/ACK only for semantics they truly provide",
+    "Durable backend write/commit before memory promotion; last-good and last-staged separately persisted",
+    "Signed allocation is source of an immutable generation; services.tsv and routes.tsv are derived projections only",
+    "XTP gateway owns privileged transaction CONFIG_PREPARE/ACTIVATE/REVERT and SERVICE_LIVE checks; not implemented currently",
+    "No raw private keys in directory or Git; use Secret Broker/PKI provider references"
+  ],
+  "procedure": [
+    "Persist signed announcement and controller-approved head in append-only journal",
+    "Reconcile peer/outbox ACK using exact sequence and epoch",
+    "Prepare both service and route projections from one signed snapshot",
+    "Atomically cut over gateway generation after qualified health and policy checks",
+    "Durably record applied generation and isolate rollback path from compromised downloaded routes"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_ldap_identity_v0.1-dev18.zip",
+      "sha256": "6f13be5605b7ad5a70ec204464582c0cbde9a225cefe0b37bec13c224744b40f",
+      "member": "oorexx_ldap_identity_v0.1-dev18/src/IdentityPeerFabric.cls",
+      "claim": "Directory replication and fencing model"
+    },
+    {
+      "artifact": "oorexx_ldap_identity_v0.1-dev18.zip",
+      "sha256": "6f13be5605b7ad5a70ec204464582c0cbde9a225cefe0b37bec13c224744b40f",
+      "member": "oorexx_ldap_identity_v0.1-dev18/src/NoSQLIdentityPeerStateStore.cls",
+      "claim": "Durable request outbox/ACK adapter"
+    },
+    {
+      "artifact": "oorexx_ldap_identity_v0.1-dev18.zip",
+      "sha256": "6f13be5605b7ad5a70ec204464582c0cbde9a225cefe0b37bec13c224744b40f",
+      "member": "oorexx_ldap_identity_v0.1-dev18/src/LdapConversation.cls",
+      "claim": "Bind vs operation authority"
+    },
+    {
+      "artifact": "oorexx_service_descriptors_v0.1-dev2.zip",
+      "sha256": "ed4900b1fbe06bd73616530deea4553e056d6aa509be933e8d88bcfda8e30490",
+      "member": "oorexx_service_descriptors_v0.1-dev2/rexx/ServiceDescriptors.cls",
+      "claim": "Local service descriptor model"
+    },
+    {
+      "artifact": "xtp_gateway_v0.1-dev1_candidate.zip",
+      "sha256": "2fc79dca4f32fdb4dd57aad7fb8249e2e806569b81914447cbc1df064c1a01a8",
+      "member": "xtp_gateway_v0.1-dev1/docs/ARCHITECTURE.md",
+      "claim": "Gateway service registration model"
+    }
+  ],
+  "qualification_boundaries": {
+    "file_backend": "proposed for provisioning; no production implementation",
+    "ldap_adapter": "proposed, not built",
+    "gateway_atomic_apply": "required, missing"
+  }
+}

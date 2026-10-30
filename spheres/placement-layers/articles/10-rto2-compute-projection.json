@@ -1,0 +1,16 @@
+{
+  "id": "pl-rto2-compute-projection",
+  "title": "RTO2 Membership Projects Compute Candidates, Not Placement Rights",
+  "summary": "Generalized Compute Intentions dev8 projects current RexxOS RTO2 MI membership into compute candidates while excluding MU control members and preserving exact member incarnation.",
+  "why": "The estate already knows which MI objects currently exist. GCI should consume that object-rich membership evidence rather than maintain a second node catalogue, but membership must not become placement or lease authority.",
+  "invariants": [
+    "MU members remain estate/control membership and are not projected as worker capacity.",
+    "MI members retain their native RTO2 member object and semantic reference inside the GCI resource wrapper.",
+    "An injected Grid eligibility policy decides whether the current MI incarnation is usable; GCI does not invent membership-state semantics.",
+    "The exact member ID and incarnation are rechecked before compute assessment.",
+    "Absent or reincarnated members fail closed as RTO2_MEMBER_ABSENT_OR_REINCARNATED.",
+    "RTO2 membership never grants WLU admission, Job-to-Node placement/lease, ACTIVE/SPARE or execution authority."
+  ],
+  "evidence_note": "Grounded in GCI v0.1-dev8 GeneralizedComputeRTO2Adapter.cls and reviewed RexxOS RTO2 Grid v0.1-dev15 archive digest e94ba156182567752e7e3b86e88b6a0e8a25fb8710648bb373a4c33271226543.",
+  "grounding": "oorexx-grounded"
+}

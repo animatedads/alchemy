@@ -28,4 +28,9 @@ grep -q 'QUIT_REPRO ok=1 code=REMOTE_ATTEMPT' <<<"$out"
 grep -q 'recipient state=DELIVERED code=250' <<<"$out"
 trap - EXIT
 rm -f "$READY" "$LOG"
+
+out="$($REXX_BIN tests/review_cleanup_exception.rex)"
+echo "$out"
+grep -q 'review_cleanup_exception: PASS' <<<"$out"
+
 echo 'review_protocol_regressions: PASS'

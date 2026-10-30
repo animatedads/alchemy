@@ -32,3 +32,17 @@ No ooRexx/BSF/JDORFX installed in the validation container; phase runtime result
 ## Deterministic dependency search paths
 
 Inherited `CLASSPATH` and `REXX_PATH` are intentionally excluded by the runner, so a globally installed duplicate BSF JAR or class cannot silently override the selected release. If the selected bridge/JDORFX distribution has transitive dependencies, supply them deliberately using `BSF_EXTRA_CLASSPATH` and `BSF_EXTRA_REXX_PATH`, with their exact versions/paths recorded in the qualification receipt.
+
+## 2026-10-29: evidence and stronger qualification controls
+
+The runner now supports `EVIDENCE_DIR=/absolute/private/path`. On an explicitly selected evidence directory, it retains per-run output, Java version and dependency SHA-256 data in a new mode-0700 run directory. Without this option, temporary logs are deleted and no durable runtime PASS claim should be made. Supply exact interpreter patch/revision and distribution SHA-256 separately; the interpreter-binary checksum alone cannot establish patch provenance.
+
+`jdorfx` now **requires** a nonempty `JDORFX_EXPECTED_TEXT` in actual sample output, restricts `JDORFX_SCRIPT` to a canonical path within `JDORFX_HOME`, and executes from the sample's directory for relative assets. This is only a smoke marker, not drawing or animation acceptance. The external JavaFX module path must include `javafx.graphics.jar` **and** `javafx.controls.jar`. The JVM home is derived from `java -XshowSettings:properties -version` when `JAVA_HOME` is unset, matching the modern `rx2cpp/native/test_bsf.sh` approach for JVM alternative wrappers.
+
+The `bsf` test requires `done` on a whole output line, not merely embedded in failure text. Run `bash tests/run.sh` for syntax, four fail-closed input checks and a mock-only suite of three positive / six negative controls plus evidence retention. **Those mocks do not certify ooRexx, BSF or JavaFX execution**. The historical interpreter crash ticket and other distinct errors are in `qualification/UPSTREAM_TRACKER.md`.
+
+```sh
+export JDORFX_EXPECTED_TEXT='exact known sample marker'
+export EVIDENCE_DIR=/absolute/private/qualification-receipts
+REPEATS=3 bash bin/qualify.sh jdorfx
+```

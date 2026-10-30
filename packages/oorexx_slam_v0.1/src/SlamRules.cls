@@ -51,10 +51,12 @@
 ::attribute lang
 ::attribute path
 ::attribute when          /* the key of an enclosing IF the guard sits under, or '' */
+::attribute stopToks      /* the tokens of the clause that stops (return 0, raise syntax 93.900 ...), common form */
 ::method init
-  expose must key names flags stop line unit lang path when
+  expose must key names flags stop line unit lang path when stopToks
   use strict arg must, key, names, flags, stop, line, unit, lang, path
   when = ''
+  stopToks = .array~new
 ::method show
   expose must names flags
   out = must
@@ -574,7 +576,8 @@
         cond = self~condOf(s~clause, lang)
         thenS = s~thenStmt
         if s~elseStmt == .nil then if self~isTerm(thenS, lang) then do
-          stop = self~stopOf(self~common(thenS~clause, lang))
+          stopToks = self~common(thenS~clause, lang)
+          stop = self~stopOf(stopToks)
           line = s~clause[1]~line
           do part over self~splitTop(cond, 'OR')
             ands = self~splitTop(part, 'AND')
@@ -595,11 +598,13 @@
               must = 'NOTALL(' || k~makeString('L', '; ') || ')'
               r = .SlamRule~new(must, must, nm~space, '', stop, line, unit, lang, path)
               r~when = when
+              r~stopToks = stopToks
               out~append(r)
               iterate
             end
             r = self~ruleOf(self~atom(part), stop, line, unit, lang, path)
             r~when = when
+            r~stopToks = stopToks
             out~append(r)
           end
           iterate

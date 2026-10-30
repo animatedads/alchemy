@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.gateway-authority",
+  "version": "0.1",
+  "sphere": "wire-ui-runtime",
+  "title": "Queue Fabric Web Gateway is a narrow trust-boundary adapter",
+  "summary": "The WebSocket edge exposes a fixed browser access point, not a general Queue Fabric client. Claim authority, principal, private bridge material and the ObjectQueueManager remain gateway-private; the browser sees only safe delivery/correlation material and semantic payloads.",
+  "authority": "project-security-boundary",
+  "invariants": [
+    "The browser never receives Queue Fabric credentials or claim tokens.",
+    "The browser cannot choose arbitrary Queue Fabric queues.",
+    "Gateway delivery ACK occurs after semantic handler completion, not merely after WebSocket write.",
+    "Semantic handler failure yields NACK; connection disappearance releases/reclaims transport work without pretending the application rejected it.",
+    "Application/security authority remains in Wire UI/application code; the gateway never authorises business actions."
+  ],
+  "procedure": [
+    "Bind one browser access point to server-derived IN/OUT queues and ACLs.",
+    "CLAIM on the private backend and expose only an opaque deliveryId plus browser-safe payload/provenance.",
+    "ACK after successful semantic dispatch; NACK on semantic failure; RELEASE on transport loss.",
+    "Validate outbound browser PUT against the fixed configured queue before using the private backend."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_web_gateway_v0.2.zip",
+      "sha256": "83118442d7c734e4a194598b0709311de7a055ae33fb4e094cccf3686b7ffcf8",
+      "member": "oorexx_queue_fabric_web_gateway_v0.2/SECURITY_MODEL.md",
+      "claim": "Gateway-private versus browser-visible authority and fixed queue binding.",
+      "line_start": 1,
+      "line_end": 25
+    },
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev7.zip",
+      "sha256": "38bebd4783abc143b7365793d337f4682b0f80cac8478afa115befb0440cd15a",
+      "member": "alchemy_wire_ui_js_v0.4-dev7/README.md",
+      "claim": "Opaque delivery acknowledgement and browser exclusion from Queue Fabric claim tokens.",
+      "line_start": 45,
+      "line_end": 63
+    }
+  ]
+}

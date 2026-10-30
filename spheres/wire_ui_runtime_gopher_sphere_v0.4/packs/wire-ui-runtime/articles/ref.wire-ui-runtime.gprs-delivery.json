@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.gprs-delivery",
+  "version": "0.4",
+  "sphere": "wire-ui-runtime",
+  "title": "Constrained-network delivery: remove round trips before shaving semantics",
+  "summary": "GPRS-class networks expose request latency and uncached module waterfalls. Production-like Wire UI delivery prelinks the immutable JS runtime into one content-addressed gzip module, caches immutable runtime/definitions/resources, and keeps bootstrap/session/live state fresh.",
+  "authority": "project-performance-doctrine",
+  "invariants": [
+    "Optimisation must not change Wire UI semantics or move business state into the browser.",
+    "Development/source mode may remain modular and no-store; optimised delivery serves one content-addressed precompressed runtime with immutable caching.",
+    "HTML/bootstrap/session/live state remain non-cacheable or separately governed.",
+    "Warm clients should reuse immutable runtime, exact definitions and approved resources and receive only fresh authoritative state/deltas.",
+    "Constrained-network mode may reduce prefetch aggressiveness and select approved constrained resource representations, but may not change business eligibility or semantic journey.",
+    "GPRS/EDGE profiles should remain mandatory performance acceptance cases because modern networks hide avoidable request/round-trip waste."
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev7.zip",
+      "sha256": "38bebd4783abc143b7365793d337f4682b0f80cac8478afa115befb0440cd15a",
+      "member": "alchemy_wire_ui_js_v0.4-dev7/README.md",
+      "claim": "Deterministic one-module content-addressed gzip distribution changes only static runtime delivery.",
+      "line_start": 177,
+      "line_end": 186
+    },
+    {
+      "artifact": "wire_ui_resource_resolver_v0.1.zip",
+      "sha256": "d821518e4e2db8504fa5b43584794565232d13fdaf63304d4c6d2515049e00d8",
+      "member": "wire_ui_resource_resolver_v0.1/README.md",
+      "claim": "CONSTRAINED delivery may select smaller approved representation without changing exact resource identity.",
+      "line_start": 9,
+      "line_end": 22
+    },
+    {
+      "artifact": "wire_ui_builder_v0.11.2.zip",
+      "sha256": "7b24441080a24b9b568315bbdb9e3a9d9dc0e7e02d713c17cbd2f6d495f2fa3e",
+      "member": "wire_ui_builder_v0.11.2/README.md",
+      "claim": "Builder launcher includes source/optimised runtime delivery and remains orchestration/static/bootstrap rather than application authority."
+    }
+  ]
+}

@@ -4,15 +4,14 @@
   "version": "0.1",
   "sphere": "quic-socket-provider",
   "title": "Qualification evidence",
-  "summary": "Dev3 remains live-qualified for TLS 1.3 loopback and two-stream multiplexing. Dev4 is currently source/static-qualified: its new OpenSSL stream-count APIs compile against OpenSSL 3.5.5, but the ooRexx r13196/native live suite has not yet been rerun.",
+  "summary": "Dev3 remains live-qualified. Dev5 adds structured nonblocking child-stream I/O state, but the r13196/native live suite has not been rerun in this execution environment.",
   "invariants": [
     "Dev3 observed contract result: CONTRACT_OK.",
-    "Dev3 observed negotiation result: NEGOTIATION_DEV3_OK.",
     "Dev3 observed ordinary live route: CLIENT_OK 42 / SERVER_OK 42.",
     "Dev3 observed multiplex route: CLIENT_MUX_OK 0 4 / SERVER_MUX_OK 0 4.",
-    "Dev4 OpenSSL API probe passed for SSL_STREAM_FLAG_NO_BLOCK and SSL_get_quic_stream_*_local_avail.",
-    "Dev4 package static guards, JSON parse, shell syntax and ZIP integrity passed.",
-    "Dev4 ooRexx/native live qualification is NOT RUN and must not be inferred from dev3 evidence."
+    "Dev5 maps SSL_ERROR_WANT_READ and SSL_ERROR_WANT_WRITE to retryable QuicIoResult states rather than fatal transport failure.",
+    "Dev5 keeps generic SocketStreamAdapter blocking semantics unchanged.",
+    "Dev5 ooRexx/native live qualification is NOT RUN and must not be inferred from dev3 evidence."
   ],
   "provenance": [
     {

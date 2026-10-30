@@ -1,0 +1,64 @@
+NoSQLServer v0.79 validation
+Date: 2026-08-24
+Runtime: Open Object Rexx 5.3.0 r13196, 64-bit debug build
+House dependency: Alchemy Objects v0.8
+House standard: ALCHEMY-HOUSE-OBJECT-0.8
+Crypto dependency: oorexx_crypto_v0.1
+Unicode dependency: TUTOR 0.7 only when explicitly enabled
+
+Alchemy v0.8 dependency checks
+------------------------------
+Alchemy Objects test_base_dispatch_isolation.rex                 PASS
+Alchemy Objects test_adoption_verifier.rex                       PASS
+Alchemy Objects test_adoption_checkpoint.rex                     PASS
+
+New acceptance
+--------------
+tests/v079_alchemy_v08_adoption_smoke.rex                        PASS
+  - service objects verify at STANDARD
+  - verifier base_version = 0.8
+  - construction provenance entrypoint = INIT
+  - adoption checkpoint round-trip PASS
+tests/v078_alchemy_adoption_smoke.rex successor compatibility    PASS
+tests/v077_alchemy_object_base_smoke.rex successor compatibility PASS
+
+Preserved current database gates
+--------------------------------
+v0.76 POINT/POLYGON spatial predicates                           PASS
+v0.75 optional TUTOR Unicode                                     PASS
+v0.74 native SQLite/GeoPackage                                   PASS
+v0.73 JSON relation                                              PASS
+v0.72 general INNER JOIN ON                                      PASS
+v0.71 external mutation dispatch                                 PASS
+v0.70 external metadata boundary                                 PASS
+v0.69 DB Core compatibility                                      PASS
+SQL-92 company smoke                                             PASS
+
+SQL correctness oracles
+-----------------------
+torture_tiny_seed42                                              12/12
+Hell v1                                                          24/25
+  WRONG_RESULT                                                        0
+  EXECUTION_ERROR                                                      0
+Hell v2                                                          25/30
+  WRONG_RESULT                                                        0
+  EXECUTION_ERROR                                                      0
+Progressive feature torture                                      72/72
+SQL-92 company smoke                                               PASS
+
+Known SQL frontier unchanged
+----------------------------
+Hell v1 DISTINCT + ORDER BY non-projected aggregate              PARSE_ERROR
+Hell v2 LATERAL joins                                            PARSE_ERROR
+Hell v2 MERGE                                                     UNSUPPORTED
+Hell v2 recursive SEARCH/CYCLE                                    UNSUPPORTED
+
+Compilation
+-----------
+98 shipped .cls/.rex targets compiled with rexxc
+0 failures
+
+Architecture
+------------
+Alchemy infrastructure remains observational/cross-cutting. It does not confer
+SQL/provider/legal authority. Hot relational/value objects remain lightweight.

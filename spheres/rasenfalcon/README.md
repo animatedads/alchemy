@@ -1,4 +1,4 @@
-# RasenFalcon Gopher engineering sphere v0.1
+# RasenFalcon Gopher engineering sphere v0.6
 
 This is an LLM Gopher **documentation and qualification sphere**, not an executable HTTPS, mail, CMS or RexxOS replacement.
 
@@ -21,3 +21,23 @@ gopher --profile rasenfalcon search 'no fallback' --sphere rasenfalcon
 Source: `fb4ce5bdecf0c9c312e21459f5ea74dc7d0eeb73fa37682cada06a5835028189` (combined v0.4); handoff: `60bf049a436c9f653b60cbf315331a85872ab4f6724f7ef685fec322de96bc5c`; Website Builder: `836c938533a3ac066b9fff3072b5f6183e773c7a1bbc7a548d35f927f601e886`; HTTPS 0.4.7 **candidate**: `ae1a4caa1f48d6348cdfa283323a25e300bda5c30b7ea5f8ef825c635502ac3c`.
 
 See `packs/rasenfalcon/articles/`, profile and `tests/test_sphere.py` for machine-readable continuity. GitHub issues #6–#14 remain the live coding assignments.
+
+## 24 October 2026 — public website and Website Publisher update
+
+The v0.4 delivery source and independent Website Publisher v0.3 source are present on GitHub `main`, with the existing architecture still governing. The v0.4.1 fail-closed static website correction has been **submitted** to Autobuild and has not been asserted accepted. The newer publisher does not provide a production CMS service: its NoSQLServer v0.90 read/write path is a qualified *development/offline* handoff, not an authorised live publish channel. See `rasenfalcon.website-publication` for actual duties, required evidence and remaining tasks. Production still DENY, public/private authority still separate; prior delivery v0.4 and publisher v0.3 are not proof of deployment.
+
+## 27 October 2026 — offline Publisher candidate import
+
+New Rasen Falcon site candidate `v0.4.2` extends the original website compiler to consume Website Publisher v0.3 candidate export and native record read-back. All nine pages are schema/site checked, normalized to candidate, and staged with SHA-256 lineage for separate review; preview builds are isolated and noindex. Local suite: 18/18 PASS, including v0.3 reference export/preview exercise. Production gate remains DENIED. See `rasenfalcon.website-publication`. New authenticated Rasen Falcon mailbox lane: `rasenfalcon-website`; independent test request REQ-00000481. Source submitted, not accepted or deployed.
+
+## 28 October 2026 — current website source lock
+
+The independent read-only qualification reply REQ-00001007 found 18 website tests passed but one of 13 handoff tests failed on an obsolete `github_source.lock.json` hash. The v0.4.3 candidate reconciles 28 current website sources separately from the original Builder ZIP identity. Local checks now pass 18/18 website and 21/21 handoff, including eight new drift-detection tests. Independent requalification and Autobuild acceptance remain pending; live CMS/Brand/Wire and HTTPS/mTLS deployment remain unqualified. See `rasenfalcon.source-lock`.
+
+## 29 October 2026 — General Deployment review stage
+
+The v0.4.4 public site candidate now uses the existing General ooRexx Deployment v0.1-dev4 POSIX content-addressed provider. An actual local scratch stage is verified (15 files, nine noindex pages, generation `d2585c2c…f685ab1`). This is not a target-host installation, not a running HTTPS service and not a live release. Rasen Falcon's public `check-release` refuses because the required reviewed role manifest is absent. Local website 18/18, handoff/deployment 29/29, General Deployment reconciliation and dependency-namespace tests PASS. Independent v0.4.3 retest requested as REQ-00001217. See `rasenfalcon.deployment-stage`.
+
+## 29 October 2026 — v0.4.5 site-only public role installation source
+
+With Autobuild stopped, the complete v0.4.5 site is on a direct GitHub review branch, and this sphere is updated on the same branch. The existing General Deployment preview stage is verified. New site-only role assembly produces 16 SHA-256-pinned installation files (`roles/public/manifest.tsv`), all verified; it omits `services.txt`, `tests.tsv`, qualified HTTPS runtime and TLS identity, so the existing installer rejects activation. Local 18+42 tests PASS. The native ooRexx r13196 syntax compiler parses serve.rex, not a TLS listener qualification. Independent CLAUDE-PC v0.4.3 retest 18+21 PASS (REQ-00001289). No host installed or running. Public and private authority boundaries remain separate.

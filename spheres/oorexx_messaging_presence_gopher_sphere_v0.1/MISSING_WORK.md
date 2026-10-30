@@ -1,6 +1,6 @@
 # Missing work — Messaging & Presence / XMPP / BOSH
 
-Checked 2026-10-24.
+Checked 2026-10-29.
 
 This list is deliberately limited to work that cannot be honestly closed from the current repository and Library evidence.
 
@@ -24,12 +24,21 @@ This list is deliberately limited to work that cannot be honestly closed from th
    - Current evidence does not prove a generic shared-provider same-stream TLS-upgrade seam.
    - Required action: qualify an explicit lower transport/TLS operation before enabling XMPP SASL over STARTTLS.
 
-5. **Concrete HTTP/HTTPS exchange authority for BOSH**
-   - Existing HTTPS-over-XTP evidence is a composition witness using an injected fake HTTP provider.
-   - No authoritative first-class generic HTTP client surface was identified in the current repository review.
-   - Required action: bind BOSH to an existing exact HTTP client contract when one is identified, or create that platform contract in its owning workstream. BOSH itself must remain HTTP-implementation- and XTP-unaware.
+5. **Runtime qualification of integrated BOSH/API Client and SocketProvider seams**
+   - `oorexx_bosh_api_client_adapter` is integrated on `main` at squash merge `12077975acaa9610ad1c696a703ce9f698b928ad`.
+   - `oorexx_api_client_socket_provider_adapter` is integrated on `main` through dev2; dev3 candidate adds exact post-selection route admission.
+   - RxSock remains the API Client default. The provider adapter preserves the exact selected `SocketAddress` and fails closed unless native `SELECT`, `PUMP` or `POLL` readiness exists.
+   - Required action: run the deterministic suites under ooRexx r13196, including dev3 missing/mismatched-route-evidence negatives.
+   - Current XTP context is dev34, with per-service protection using LDAP Identity Directory / Secret Broker key sources and multipath protection.
+   - Do not add XTP selection or XTP security semantics to BOSH/API Client. A deployment policy may require exact lower-route evidence via the generic dev3 admission seam.
 
-6. **Sphere registration**
-   - GitHub sphere content exists.
-   - Current LLM Gopher `sphere_check` returns `SPHERE_NOT_FOUND`.
-   - Required action: register/deploy the sphere through the authoritative Gopher workflow.
+6. **Live private-CA HTTPS over XTP**
+   - The architecture now has all source seams: BOSH -> API Client HTTP/HTTPS -> API Client TLS -> Socket Intention -> route admission -> SocketProvider -> XTP/TCP.
+   - Required action: bind a real current XTP dev34 route through SocketProvider, supply attested lower-route evidence from the owning platform authority, and execute API Client TLS with the estate private CA over that carrier.
+   - HTTPS/private-CA identity and XTP per-service protection are independent layers; neither substitutes for the other.
+   - ConnectSelector dev8's authenticated invocation-route policy remains a separate authority and must not be copied into this adapter.
+
+7. **Rasen Falcon sphere-checker configuration**
+   - GitHub sphere content exists and the authenticated Rasen Falcon lane `messaging-presence` links the sphere artifact.
+   - Current authenticated Rasen Falcon `sphere_check` returns `SPHERE_CHECKER_UNAVAILABLE`: no checker is configured in that deployment.
+   - Required action: configure/enable the sphere checker, then validate the linked sphere.

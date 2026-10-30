@@ -1,0 +1,36 @@
+XTP field qualification kit v0.1-dev1: validation record
+=========================================================
+
+Architecture: Tom Dyer (decision D-07)
+Coding: Claude (Opus 5.5)
+Written and run by: Claude (Opus 5.5), 29 October 2026
+Approval for the field run: Tom, 29 October 2026, 18:03 ("continue" to the proposed field run)
+
+Built against: packages/oorexx_xtp_v0.1-dev36 (commit 4ee94748), unchanged.
+Binary:        bin/xtp-field, static x86-64, glibc 2.39, OpenSSL 3.0.13, g++ 13.3.0
+               sha256 18c508eb137eadad9f48d379fb82a85ed34f483418d3f0cbcdb6b3026abbb3aa
+Evidence class here: LOCAL_PASS (one machine). The field result comes from the run on the
+ED209 hosts, recorded separately when it is back.
+
+1. xtp-field, by hand, on one machine (udp and raw36)
+  encrypted 1 MiB echo         byte-exact, protection=encrypt, same key at both ends,
+                               digests equal at both ends
+  clear open with no key       refused: AUTH_REQUIRED (code 1, value 17); listener logged
+                               XTP_DIAG_SENT value=17
+  wrong secret, same key id    not accepted in 2 s; listener logged "open tag did not verify"
+  no secret in any output
+
+2. make test (tests/test_local_matrix.sh: the controller end to end, stand-in sshnode.sh)
+  PASS three nodes: 6 directed pairs, udp all PASS, raw36 all PASS
+  PASS nothing left on the nodes after the run
+  PASS the receipt exists; the run keys are gone; the only 64-hex values in the logs are
+       24 data digests (the leak check was confirmed to catch a key line and a secret=)
+  PASS an unreachable destination is reported NO_RESPONSE_OR_FILTERED, never PASS
+  PASS an aarch64 node is reported UNSUPPORTED_ARCH and its 4 pair tests skipped
+
+3. Not done
+  - aarch64: building OpenSSL from its release source for aarch64 was not permitted in this
+    session; an aarch64 host is reported, not tested.
+  - The field run itself (sent to the operator's machine as testing work).
+
+Claude (Opus 5.5)

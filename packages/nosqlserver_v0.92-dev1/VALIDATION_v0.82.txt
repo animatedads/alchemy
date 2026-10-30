@@ -1,0 +1,42 @@
+NoSQLServer v0.82 DB2 personality validation
+Date: 2026-10-04
+
+Runtime:
+  Open Object Rexx 5.3.0 r13196 - Internal Test Version
+  private extracted runtime from the user-supplied debug .deb
+
+Compile gate:
+  src/NoSQLServerDB2Personality.cls compiled successfully with rexxc r13196.
+
+Behavioural DB2/regression gate:
+  Because the exact ooRexx Crypto v0.8.3 dependency needed by the supplied
+  Alchemy Objects v0.8 package is not available in the current container,
+  executable NoSQLServer behavioural tests used the same minimal unshipped
+  AlchemyObject test double used only to satisfy the base-class contract.
+  It is not included as a production dependency and this validation does not
+  claim fresh full Alchemy adoption qualification.
+
+PASS (rc=0):
+  tests/v080_db2_personality_smoke.rex
+  tests/v081_db2_catalog_schema_smoke.rex
+  tests/v082_db2_named_constraints_index_smoke.rex
+  tests/sql92_company_smoke.rex
+  tests/v041_limit_offset_smoke.rex
+  tests/v042_fetch_with_ties_smoke.rex
+  tests/v047_values_table_source_smoke.rex
+
+v0.82-specific proof:
+  - declared PK/UQ/FK constraint names are projected in SYSCAT metadata;
+  - declared names survive construction of a fresh DB2 personality object;
+  - CREATE INDEX builds the existing authoritative single-column derived index;
+  - the declared index name is durable and appears in SYSCAT.INDEXCOLUSE;
+  - DROP INDEX removes the physical derived-index file and DB2 identity;
+  - CREATE UNIQUE INDEX fails SQLUNSUPPORTED rather than pretending uniqueness;
+  - multi-column CREATE INDEX fails SQLUNSUPPORTED rather than flattening it.
+
+Alchemy dependency boundary:
+  The user-supplied Alchemy Objects v0.8 source requires Crypto support that
+  includes CryptoMacKeyRing. The available Library crypto.cls is an older API
+  and lacks that class. Full v077/v078/v079 Alchemy adoption qualification
+  therefore remains blocked until the exact oorexx_crypto_v0.8.3 dependency is
+  supplied. No full-Alchemy PASS is claimed by v0.82.

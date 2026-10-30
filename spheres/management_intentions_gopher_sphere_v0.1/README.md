@@ -12,6 +12,7 @@ Start with:
     gopher --profile management-intentions open arch.management-intentions.discovery
     gopher --profile management-intentions open arch.management-intentions.authority
     gopher --profile management-intentions open arch.management-intentions.instrumentation
+    gopher --profile management-intentions open arch.management-intentions.cloud-control
     gopher --profile management-intentions open ops.management-intentions.continue
 
 Executable grounding added by this workstream:
@@ -31,3 +32,7 @@ ED209Z and ED209ZZ are distinct scopes: ED209Z is hosted by ED209C and ED209ZZ b
 ## 2026-10-27 Mesh dev8 read-side completion
 
 Instrumentation Intentions dev2 now consumes Mesh dev8 events, explicit correlation/causation/context, observed relationships and publication freshness. Management dev9 discovers those facts transiently and remains domain-blind and non-mutating.
+
+## 2026-10-29 Cloud Control source landing
+
+`alchemy_cloud_control` dev3 candidate and `oorexx_cloud_console` dev3 candidate are now present on current `main`. Cloud Control owns normalized cloud RESOURCE/NODE operations; Cloud Console owns PLAN/APPLY interaction and exact destructive confirmation. Their current status is source/offline-qualified candidate, not live-cloud acceptance. `cloudctl.sh` remains an adapter/shortcut behind the authority boundary, not Management semantics.

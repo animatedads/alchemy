@@ -1,0 +1,30 @@
+# Job-to-Node network7 journal correction (source patch)
+# Apply to packages/job_node_allocator_v0.6-network1 successor source
+# src/JobNodeExecutionLifecycle.cls, starting from network6.
+# This is a reviewable patch; the complete network7 source archive still needs import.
+
+@@ ::method append guarded
+-  sequence+=1
++  nextSequence=sequence+1
+   state=result~lifecycle
+-  material="EVENT|"||sequence||
++  material="EVENT|"||nextSequence||
+@@
+-  stream~lineout(material); stream~lineout("COMMIT|"||sequence||"|"||digest); stream~close
++  stream~lineout(material); stream~lineout("COMMIT|"||nextSequence||"|"||digest); stream~close
++  sequence=nextSequence
+
+@@ ::method restoreInto guarded
+-    if line~left(6)="EVENT|" then do; pending=line; iterate; end
+-    if line~left(7)<>"COMMIT|" | pending="" then iterate
++    if line~left(6)="EVENT|" then do
++      if pending<>"" then do; stream~close; return .JobNodeExecutionReconcileResult~new(.false,"LIFECYCLE_JOURNAL_UNCOMMITTED_GAP"); end
++      pending=line; iterate
++    end
++    if line~left(7)<>"COMMIT|" | pending="" then do
++      stream~close
++      return .JobNodeExecutionReconcileResult~new(.false,"LIFECYCLE_JOURNAL_UNEXPECTED_RECORD")
++    end
+
+# Note: append success is not a durable fsync/replication guarantee.
+# Runtime qualification and crash injection remain mandatory.

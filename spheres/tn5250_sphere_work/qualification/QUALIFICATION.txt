@@ -1,26 +1,32 @@
-Terminal Machine Gopher sphere v0.5 qualification
-Date: 2026-10-28
+Terminal Machine Gopher sphere v0.6 qualification
+Date: 2026-10-29
 
 CURRENT 3270 DELIVERY
 =====================
-oorexx_terminal_machine_v0.22-candidate15.zip
-SHA-256 9153b098543b3d00d334aed5d479b7541e8243138a20d3270700851cd0a1eec7
+oorexx_terminal_machine_v0.22-candidate16.zip
+SHA-256 af7c0d571269c17724cc79e695f9b3523045cc7f93a76b595a86158556c60f8d
 
-INDEPENDENT EXECUTION EVIDENCE
-==============================
-CODEX-PC executed the candidate13 compatibility slice under ooRexx 5.3.0 r13196 and stopped on:
-FIELD_LENGTH:A0000:7<>8, FIELD_MISSING:A0008, FIELD_MISSING:A000D.
+CURRENT SCOPE
+=============
+Candidate16 preserves the candidate15 exact ReadBuffer row-geometry gate and extends the
+independent s3270 reference path to extended 3270 attributes. SF extended field attributes
+41/42/43/45 compare directly. SA character-attribute state is canonicalized per address and
+reduced to a detached digest on both Terminal Machine and reference sides.
 
-The failure was traced to the reference fixture: an 8-column row encoded SF plus eight data cells,
-which is nine buffer positions. Candidate15 corrects the fixture and makes exact per-row geometry
-a parser invariant.
+SECURITY / AUTHORITY
+====================
+The character digest contains attribute state only and no display bytes. NONDISPLAY data remains
+masked. TN3270/TN3270E mutation, credentials, MVS semantic truth and Hercules control-plane truth
+are unchanged.
 
-CURRENT VALIDATION
+VALIDATION
+==========
+Package manifest verification and ZIP integrity passed in the authoring environment. No runnable
+ooRexx r13196 interpreter is mounted there. The external r13196 qualification request is therefore
+still the release gate before live ED209Z/ED209ZZ differential evidence is promoted.
+
+PROGRAMME BOUNDARY
 ==================
-Candidate15 package manifest verifies and ZIP integrity passes. The authoring container still lacks
-a runnable ooRexx interpreter, so candidate15 itself has not yet been rerun under r13196.
-
-NEXT GATE
-=========
-Independent r13196 rerun of test_s3270_reference.rex. Only after that passes should live ED209Z and
-ED209ZZ semantic differential qualification resume.
+LDAP Identity dev22, HTTPS Server v0.4.8 and current Rasen Falcon website artifacts are present in
+Library, but they are owned by other lanes. Terminal Machine does not duplicate those deployment
+responsibilities or embed independent LDAP/HTTPS implementations.

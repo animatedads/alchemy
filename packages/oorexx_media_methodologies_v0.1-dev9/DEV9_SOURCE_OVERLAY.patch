@@ -1,0 +1,890 @@
+--- a/CHANGELOG.md	2026-10-28 17:53:07.000000000 +0000
++++ b/CHANGELOG.md	2026-10-29 13:55:50.643418118 +0000
+@@ -1,5 +1,14 @@
+ # Changelog
+ 
++## v0.1-dev9
++
++- Rebased the Audio Spectral Integrity provider boundary from v0.2 to v0.3 while retaining all five prior methodology IDs.
++- Added `AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS` for local WOLA falsification against full-clip FFT bucket views.
++- Added exact-known-reference `QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION`; unknown audio is explicitly ineligible.
++- Added `QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL` with private-key withholding and free-transcription-before-unblind controls.
++- Expanded catalogue/work-shape coverage to 183/183 without adding source-separation or semantic-truth authority.
++
++
+ ## v0.1-dev8
+ 
+ - Added five Audio Spectral Integrity v0.2 methodologies; catalogue/work-shape count is now 180.
+--- a/DEPENDENCIES.md	2026-10-28 17:53:07.000000000 +0000
++++ b/DEPENDENCIES.md	2026-10-29 14:09:20.789042487 +0000
+@@ -38,10 +38,10 @@
+ 
+ Audio V9 dev20 Candidate20 supplies `AudioV9SequenceExecutionExperiment.cls`. Media Methodologies consumes that contract only for execution-planning/qualification evidence; Audio V9, GCI, Job-to-Node, Storage Fabric, Memory Fabric and RexxOS/RTO2 keep their existing authorities.
+ 
+-## Dev8 optional integrations
++## Dev9 optional integrations
+ 
+-- **Audio Spectral Integrity v0.2** (SHA-256 `9a9bd452a2f71bb1791b00774b30cb2f5720f262e5e40eb16999095aa66589b4`) is the optional provider for the five `SPECTRAL_INTEGRITY` methodologies.  The adapter dynamically imports its Python backend and never treats alternating bucket views as independent sources.
++- **Audio Spectral Integrity v0.3** (Library ZIP SHA-256 `e23c6bab2ac8a7f6c2d41608d9547445d0153d0a3725c426aeebf5cb9b63c304`) is the optional provider for eight spectral-integrity/falsification methodologies. The adapter dynamically imports its Python backend and never treats alternating bucket views as independent sources. The oracle and blind-trial methods require exact known controls and are not field-source classifiers.
+ - **Evidence Revision ooRexx v0.1-dev2** (SHA-256 `9aae5b671e71d67ff764266b544f0c060a813c10ead841098fbbde13cbe545af`) is optional.  Media Methodologies consumes only its detached audit classification and does not take over belief/truth/provenance authority.
+-- **Generalized Compute Intentions v0.1-dev5** (SHA-256 `4b6d61e651dc7ea729ccc21e66bd471fa51629b77fc86fe8ca8ff1dd5ed25afd`) is optional.  Media tasks may be projected for non-mutating route planning; resulting handoffs always require compute/allocation/WLU/router revalidation.
++- **Generalized Compute Intentions** is optional. Current Git source reports v0.1-dev8 and exposes explicit `revalidationRequired`; dev9 also qualifies against the older packaged v0.1-dev4 planning API. Media tasks remain non-mutating planning evidence in both cases. When the upstream handoff exposes a revalidation flag it must be true; when an older package lacks that accessor, the Media planning observation still requires authoritative COMPUTE/ALLOCATION/WLU/ROUTER revalidation and retains `mutationAuthority=NONE`.
+ - **Memory Fabric/XTP candidate4** and **RexxOS/RTO2 dev15** remain execution/identity authorities outside this package.
+ 
+--- a/README.md	2026-10-28 18:00:02.000000000 +0000
++++ b/README.md	2026-10-29 13:55:50.643283359 +0000
+@@ -1,4 +1,4 @@
+-# ooRexx Media Methodologies v0.1-dev8
++# ooRexx Media Methodologies v0.1-dev9
+ 
+ API family now additionally includes:
+ 
+@@ -10,6 +10,14 @@
+ - `media.methodologies.generalized-compute/0.1`
+ 
+ 
++## Dev9 — v0.3 spectral-integrity falsification methods
++
++Dev9 advances the open catalogue from 180 to **183 methodologies** by consuming Audio Spectral Integrity v0.3 without copying its DSP. It adds WOLA/local complementary bucket views, a strict exact-reference oracle-template qualification method, and a blinded four-condition control-trial generator.
++
++The new methods are deliberately falsification-oriented. WOLA exists to test whether conclusions survive local-window rather than full-clip FFT filtering. The oracle refuses unknown audio because exact A/B references are mandatory. The blind trial keeps its condition key private until free-transcription/source-count responses are locked. None of these methods establishes source separation, recovered transcript truth, playback location or intent.
++
++The v0.2 five-method line remains available with unchanged methodology IDs; the provider dynamically imports the v0.3 upstream implementation and records its source hash. See `spec/AUDIO_SPECTRAL_INTEGRITY_METHODS.md`.
++
+ ## Dev8 — spectral-integrity lineages, revision lifecycle and compute planning
+ 
+ Dev8 grows the open catalogue from 175 to **180 methodologies** by importing five bounded methods from Audio Spectral Integrity v0.2: complementary alternating-bucket views, bucket-origin phase sensitivity, bounded preference listening views, externally seeded harmonic observations, and the known two-input interleave positive control.  These methods preserve the upstream rule that odd/even bucket views split one captured waveform and are **not source separation**.
+--- a/VERSION	2026-10-28 17:43:42.000000000 +0000
++++ b/VERSION	2026-10-29 13:55:50.639797277 +0000
+@@ -1 +1 @@
+-v0.1-dev8
++v0.1-dev9
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/src/MediaMethodologyBuiltins.cls /mnt/data/oorexx_media_methodologies_v0.1-dev9/src/MediaMethodologyBuiltins.cls
+--- a/src/MediaMethodologyBuiltins.cls	2026-10-28 17:45:49.000000000 +0000
++++ b/src/MediaMethodologyBuiltins.cls	2026-10-29 13:55:50.639992025 +0000
+@@ -186,6 +186,9 @@
+   catalogue~register(.MediaMethodologySpec~new("AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW", "Bounded alternating-bucket preference listening view", "AUDIO", "ENHANCEMENT", "EXPERIMENTAL", "RECONSTRUCT", .true, .true, "Create a peak-safe listening view by attenuating non-preferred alternating buckets by a declared relative amount; the transform adds no acoustic information."))
+   catalogue~register(.MediaMethodologySpec~new("AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION", "Externally-seeded harmonic observation", "AUDIO", "ANALYSIS", "EXPERIMENTAL", "MEASURE", .true, .false, "Given an independently supplied voiced fundamental-frequency hypothesis, measure local expected-harmonic peak support without estimating identity or a second source."))
+   catalogue~register(.MediaMethodologySpec~new("QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL", "Known-input alternating spectral interleave positive control", "VALIDATION", "QUALIFICATION", "ESTABLISHED", "PRESERVE", .false, .false, "Construct a controlled two-input spectral weave with known bucket ownership so alternating-band recovery can be tested against known truth rather than unknown field material."))
++  catalogue~register(.MediaMethodologySpec~new("AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS", "Windowed complementary spectral-bucket views", "AUDIO", "ANALYSIS", "EXPERIMENTAL", "MEASURE", .true, .false, "Apply local sqrt-Hann WOLA alternating spectral buckets so boundary effects can be compared with full-clip FFT views without claiming source separation."))
++  catalogue~register(.MediaMethodologySpec~new("QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION", "Known-reference spectral oracle template projection", "VALIDATION", "QUALIFICATION", "ESTABLISHED", "PRESERVE", .false, .false, "Fit exact known A/B reference templates to a known control mixture by alternating bucket parity; unavailable for unknown field audio and never a source classifier."))
++  catalogue~register(.MediaMethodologySpec~new("QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL", "Blinded spectral-integrity control trial", "VALIDATION", "QUALIFICATION", "ESTABLISHED", "PRESERVE", .false, .false, "Generate anonymous matched control conditions and a private key so free transcription and source-count judgements can be locked before unblinding."))
+   return catalogue
+ 
+ ::requires "MediaMethodologies.cls"
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/src/MediaSpectralIntegrityProviders.cls /mnt/data/oorexx_media_methodologies_v0.1-dev9/src/MediaSpectralIntegrityProviders.cls
+--- a/src/MediaSpectralIntegrityProviders.cls	2026-10-28 18:01:12.000000000 +0000
++++ b/src/MediaSpectralIntegrityProviders.cls	2026-10-29 14:10:26.443841697 +0000
+@@ -19,6 +19,9 @@
+   self~add("audio-spectral-integrity.numpy-preference/0.2","AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW",.array~of("MEDIA.AUDIO.PCM","MEDIA.PYTHON.NUMPY","MEDIA.PYTHON.SOUNDFILE"),"RECONSTRUCTABLE")
+   self~add("audio-spectral-integrity.numpy-harmonics/0.2","AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION",.array~of("MEDIA.AUDIO.PCM","MEDIA.PYTHON.NUMPY","MEDIA.EXTERNAL_F0"),"MEASURED_VIEW")
+   self~add("audio-spectral-integrity.numpy-interleave-control/0.2","QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL",.array~of("MEDIA.AUDIO.CONTROL_SOURCES","MEDIA.PYTHON.NUMPY","MEDIA.PYTHON.SOUNDFILE"),"QUALIFICATION_ONLY")
++  self~add("audio-spectral-integrity.numpy-wola-buckets/0.3","AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS",.array~of("MEDIA.AUDIO.PCM","MEDIA.PYTHON.NUMPY","MEDIA.PYTHON.SOUNDFILE"),"MEASURED_VIEW")
++  self~add("audio-spectral-integrity.numpy-oracle-template/0.3","QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION",.array~of("MEDIA.AUDIO.KNOWN_CONTROL_MIXTURE","MEDIA.AUDIO.CONTROL_SOURCES","MEDIA.PYTHON.NUMPY"),"QUALIFICATION_ONLY")
++  self~add("audio-spectral-integrity.blind-control-trial/0.3","QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL",.array~of("MEDIA.AUDIO.CONTROL_SOURCES","MEDIA.PYTHON.NUMPY","MEDIA.PYTHON.SOUNDFILE","MEDIA.PRIVATE_TRIAL_STORAGE"),"QUALIFICATION_ONLY")
+ 
+ ::method add
+   expose profiles
+@@ -68,13 +71,15 @@
+   use strict arg spec,target,context
+   id=spec~id
+   if pos("AUDIO.SPECTRAL_INTEGRITY.",id)<>1 then do
+-    if id<>"QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL" then return .nil
++    if pos("QUAL.AUDIO.SPECTRAL_",id)<>1 then return .nil
+   end
+   attrs=context~attributes
+   source=self~flag(attrs,"SOURCE_AUDIO_AVAILABLE")
+   f0=self~flag(attrs,"EXTERNAL_F0_AVAILABLE")
+   controlA=self~flag(attrs,"CONTROL_SOURCE_A_AVAILABLE")
+   controlB=self~flag(attrs,"CONTROL_SOURCE_B_AVAILABLE")
++  controlMixture=self~flag(attrs,"CONTROL_MIXTURE_AVAILABLE")
++  privateTrial=self~flag(attrs,"PRIVATE_TRIAL_STORAGE_AVAILABLE")
+   select
+     when id="QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL" then do
+       if controlA then do
+@@ -82,6 +87,22 @@
+       end
+       return .MediaMethodologyApplicability~new(id,"UNKNOWN","Known independent A and B control sources are required",attrs)
+     end
++    when id="QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION" then do
++      if controlA then do
++        if controlB then do
++          if controlMixture then return .MediaMethodologyApplicability~new(id,"APPLICABLE","Exact A/B references and a declared known control mixture are available",attrs)
++        end
++      end
++      return .MediaMethodologyApplicability~new(id,"UNKNOWN","Exact A/B references plus the known control mixture are required; unknown field audio is not eligible",attrs)
++    end
++    when id="QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL" then do
++      if controlA then do
++        if controlB then do
++          if privateTrial then return .MediaMethodologyApplicability~new(id,"APPLICABLE","Two declared control sources and private trial storage are available",attrs)
++        end
++      end
++      return .MediaMethodologyApplicability~new(id,"UNKNOWN","Known A/B controls and private non-public trial storage are required",attrs)
++    end
+     when id="AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION" then do
+       if \source then return .MediaMethodologyApplicability~new(id,"NOT_APPLICABLE","No source audio is currently available",attrs)
+       if f0 then return .MediaMethodologyApplicability~new(id,"APPLICABLE","Source audio and independently supplied f0 are available",attrs)
+@@ -117,7 +138,7 @@
+   metadata["SOURCE_SEPARATION_CLAIM"]="FALSE"
+   if providerResult["metrics"]<>.nil then metadata["METRICS"]=providerResult["metrics"]
+   authority="MEASURE"
+-  if methodologyId="QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL" then authority="PRESERVE"
++  if pos("QUAL.AUDIO.SPECTRAL_",methodologyId)=1 then authority="PRESERVE"
+   return .MediaDerivedEvidence~new(methodologyId,sourceRefs,providerResult["output_ref"],timeStart,timeEnd,authority,providerResult["uncertainty_ref"],metadata)
+ 
+ ::method candidate
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/src/MediaWorkShapeBuiltins.cls /mnt/data/oorexx_media_methodologies_v0.1-dev9/src/MediaWorkShapeBuiltins.cls
+--- a/src/MediaWorkShapeBuiltins.cls	2026-10-28 17:45:49.000000000 +0000
++++ b/src/MediaWorkShapeBuiltins.cls	2026-10-29 13:55:50.640068358 +0000
+@@ -117,6 +117,18 @@
+       shard="SOURCE_SET"; state="GLOBAL"; access="REFERENCE_ONLY"
+       before=0; after=0; merge="QUALIFICATION_REPORT_SET"; continuity="NONE"
+     end
++    when spec~id="AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS" then do
++      shard="SAMPLE_RANGE"; state="WINDOW_STATE"; access="SEQUENTIAL_WINDOW"
++      before=4096; after=4096; merge="DERIVED_VIEW_SET"; continuity="OVERLAP_REQUIRED"
++    end
++    when spec~id="QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION" then do
++      shard="SOURCE_SET"; state="GLOBAL"; access="REFERENCE_ONLY"
++      before=0; after=0; merge="QUALIFICATION_REPORT_SET"; continuity="NONE"
++    end
++    when spec~id="QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL" then do
++      shard="SOURCE_SET"; state="GLOBAL"; access="REFERENCE_ONLY"
++      before=0; after=0; merge="QUALIFICATION_REPORT_SET"; continuity="NONE"
++    end
+     otherwise nop
+   end
+ 
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/providers/spectral-integrity-provider.manifest.json /mnt/data/oorexx_media_methodologies_v0.1-dev9/providers/spectral-integrity-provider.manifest.json
+--- a/providers/spectral-integrity-provider.manifest.json	2026-10-28 17:58:08.000000000 +0000
++++ b/providers/spectral-integrity-provider.manifest.json	2026-10-29 13:55:50.640267884 +0000
+@@ -1,20 +1,31 @@
+ {
+   "schema": "media-methodologies.provider-manifest/0.1",
+   "provider_id": "media.spectral-integrity-reference/0.1",
+-  "upstream_api": "audio.spectral-integrity/0.2",
++  "upstream_api": "audio.spectral-integrity/0.3",
+   "authority": "DERIVED_ONLY",
+   "methodologies": [
+     "AUDIO.SPECTRAL_INTEGRITY.COMPLEMENTARY_BUCKET_VIEWS",
+     "AUDIO.SPECTRAL_INTEGRITY.PHASE_SWEEP",
+     "AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW",
+     "AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION",
+-    "QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL"
++    "QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL",
++    "AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS",
++    "QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION",
++    "QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL"
++  ],
++  "requirements": [
++    "python3",
++    "numpy",
++    "soundfile",
++    "audio_spectral_integrity_v0.3"
+   ],
+-  "requirements": ["python3", "numpy", "soundfile", "audio_spectral_integrity_v0.2"],
+   "forbidden_claims": [
+     "odd/even bucket views are independent physical sources",
+     "preference transforms recover original semantic truth",
+     "externally seeded harmonics identify a speaker",
+-    "field material is a known positive control"
++    "field material is a known positive control",
++    "windowed bucket views establish multiple sources",
++    "oracle template projection may be applied without exact known A/B references",
++    "blind-trial private keys or participant responses may be treated as public source evidence before unblinding"
+   ]
+ }
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/providers/spectral_integrity_provider.py /mnt/data/oorexx_media_methodologies_v0.1-dev9/providers/spectral_integrity_provider.py
+--- a/providers/spectral_integrity_provider.py	2026-10-28 17:50:21.000000000 +0000
++++ b/providers/spectral_integrity_provider.py	2026-10-29 13:56:23.615098481 +0000
+@@ -1,9 +1,8 @@
+ #!/usr/bin/env python3
+-"""Media Methodologies adapter for Audio Spectral Integrity v0.2.
++"""Media Methodologies adapter for Audio Spectral Integrity v0.3.
+ 
+ This adapter preserves the upstream method semantics.  Odd/even buckets are
+-complementary views of ONE waveform, not separated sources.  The only two-input
+-case is the explicit positive-control method, whose inputs are known controls.
++complementary views of ONE waveform, not separated sources.  Known-reference and blind-trial methods are qualification-only and refuse unknown field audio.
+ """
+ from __future__ import annotations
+ import argparse
+@@ -23,6 +22,9 @@
+     "AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW": "audio-spectral-integrity.numpy-preference/0.2",
+     "AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION": "audio-spectral-integrity.numpy-harmonics/0.2",
+     "QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL": "audio-spectral-integrity.numpy-interleave-control/0.2",
++    "AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS": "audio-spectral-integrity.numpy-wola-buckets/0.3",
++    "QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION": "audio-spectral-integrity.numpy-oracle-template/0.3",
++    "QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL": "audio-spectral-integrity.blind-control-trial/0.3",
+ }
+ 
+ 
+@@ -42,7 +44,7 @@
+     source = Path(root) / "src" / "spectral_integrity.py"
+     if not source.is_file():
+         raise FileNotFoundError(f"missing upstream spectral_integrity.py: {source}")
+-    spec = importlib.util.spec_from_file_location("audio_spectral_integrity_v02", source)
++    spec = importlib.util.spec_from_file_location("audio_spectral_integrity_v03", source)
+     module = importlib.util.module_from_spec(spec)
+     assert spec.loader is not None
+     spec.loader.exec_module(module)
+@@ -77,8 +79,7 @@
+         "source_evidence_ref": refs[0] if refs else "",
+         "source_evidence_refs": refs,
+         "implementation_foundations": [
+-            "AUDIO_SPECTRAL_INTEGRITY_V0.2",
+-            "NUMPY_RFFT_FULL_CLIP_MASK_V1",
++            "AUDIO_SPECTRAL_INTEGRITY_V0.3",
+         ],
+         "upstream_source_sha256": sha256(upstream_source),
+         "authority": {
+@@ -116,7 +117,8 @@
+                   "odd_ref": str(odd_path), "even_ref": str(even_path), "metrics": metrics})
+     r = base(job, method, "MEASUREMENT", upstream_source, source_refs(job, "source_evidence_ref"))
+     r.update({"output_ref": str(report), "uncertainty_ref": "", "metrics": metrics,
+-              "derived_refs": [str(odd_path), str(even_path)]})
++              "derived_refs": [str(odd_path), str(even_path)],
++              "implementation_foundations": r["implementation_foundations"] + ["NUMPY_RFFT_FULL_CLIP_MASK_V1"]})
+     return r
+ 
+ 
+@@ -133,7 +135,8 @@
+                "maximum_reconstruction_error": max((float(x["reconstruction_max_abs_error"]) for x in rows), default=0.0),
+                "odd_fraction_range": (max((float(x["odd_power_fraction"]) for x in rows), default=0.0) - min((float(x["odd_power_fraction"]) for x in rows), default=0.0))}
+     r = base(job, method, "MEASUREMENT", upstream_source, source_refs(job, "source_evidence_ref"))
+-    r.update({"output_ref": str(report), "uncertainty_ref": "", "metrics": metrics})
++    r.update({"output_ref": str(report), "uncertainty_ref": "", "metrics": metrics,
++              "implementation_foundations": r["implementation_foundations"] + ["NUMPY_RFFT_FULL_CLIP_MASK_V1"]})
+     return r
+ 
+ 
+@@ -156,7 +159,7 @@
+     r.update({"output_ref": str(out), "support_map_ref": str(support), "uncertainty_ref": str(uncertainty),
+               "candidate_kind": "DERIVED_LISTENING_VIEW",
+               "metrics": {"peak_safe_scale": float(scale), "relative_db": relative_db, "preferred": preferred},
+-              "implementation_foundations": r["implementation_foundations"] + ["FIXED_RELATIVE_ATTENUATION_V1", "PEAK_SAFE_SCALE_V1"]})
++              "implementation_foundations": r["implementation_foundations"] + ["NUMPY_RFFT_FULL_CLIP_MASK_V1", "FIXED_RELATIVE_ATTENUATION_V1", "PEAK_SAFE_SCALE_V1"]})
+     return r
+ 
+ 
+@@ -176,7 +179,7 @@
+     r = base(job, method, "MEASUREMENT", upstream_source, source_refs(job, "source_evidence_ref", "external_f0_ref"))
+     r.update({"output_ref": str(report), "uncertainty_ref": "",
+               "metrics": {"observation_count": len(rows), "external_f0_hz": f0},
+-              "implementation_foundations": r["implementation_foundations"] + ["EXTERNALLY_SEEDED_HARMONIC_OBSERVATION_V1"]})
++              "implementation_foundations": r["implementation_foundations"] + ["STFT_HARMONIC_OBSERVATION_V1", "EXTERNALLY_SEEDED_HARMONIC_OBSERVATION_V1"]})
+     return r
+ 
+ 
+@@ -200,7 +203,110 @@
+     r = base(job, method, "MEASUREMENT", upstream_source, refs)
+     r["authority"]["effect"] = "PRESERVE"
+     r.update({"output_ref": str(report), "uncertainty_ref": "", "metrics": metrics,
+-              "derived_refs": [str(composite)], "control_kind": "KNOWN_TWO_INPUT_SPECTRAL_WEAVE"})
++              "derived_refs": [str(composite)], "control_kind": "KNOWN_TWO_INPUT_SPECTRAL_WEAVE",
++              "implementation_foundations": r["implementation_foundations"] + ["NUMPY_RFFT_FULL_CLIP_MASK_V1", "KNOWN_REFERENCE_SYNTHESIS_V1"]})
++    return r
++
++
++def import_blind_upstream(root):
++    source = Path(root) / "src" / "blind_trial.py"
++    if not source.is_file():
++        raise FileNotFoundError(f"missing upstream blind_trial.py: {source}")
++    src_dir = str(source.parent)
++    inserted = False
++    if src_dir not in sys.path:
++        sys.path.insert(0, src_dir)
++        inserted = True
++    try:
++        spec = importlib.util.spec_from_file_location("audio_spectral_integrity_blind_v03", source)
++        module = importlib.util.module_from_spec(spec)
++        assert spec.loader is not None
++        spec.loader.exec_module(module)
++    finally:
++        if inserted:
++            sys.path.remove(src_dir)
++    return module, source
++
++
++def windowed_views(job, up, upstream_source, outdir):
++    method = "AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS"
++    source = Path(job["source_wav"])
++    pcm, rate = load_audio(source)
++    slot = float(job.get("slot_hz", 100))
++    ceiling = float(job.get("ceiling_hz", rate / 2))
++    offset = float(job.get("offset_hz", 0))
++    frame_samples = int(job.get("frame_samples", 4096))
++    hop_samples = int(job.get("hop_samples", frame_samples // 4))
++    odd, even = up.windowed_bucket_views(pcm, rate, slot, ceiling, offset, frame_samples, hop_samples)
++    odd_path, even_path = outdir / "windowed_odd.wav", outdir / "windowed_even.wav"
++    save_pcm24(odd_path, odd, rate); save_pcm24(even_path, even, rate)
++    source_error = None
++    if abs(ceiling - rate / 2) <= 1e-12:
++        source_error = float(np.max(np.abs((odd + even) - pcm)))
++    report = outdir / "windowed_views.json"
++    metrics = {"slot_hz": slot, "ceiling_hz": ceiling, "offset_hz": offset,
++               "frame_samples": frame_samples, "hop_samples": hop_samples,
++               "nyquist_source_reconstruction_max_abs_error": source_error,
++               "sample_rate": rate, "sample_count": int(pcm.shape[0]), "channels": int(pcm.shape[1])}
++    dump(report, {"schema": "media.spectral-integrity.windowed/0.3",
++                  "odd_ref": str(odd_path), "even_ref": str(even_path), "metrics": metrics})
++    r = base(job, method, "MEASUREMENT", upstream_source, source_refs(job, "source_evidence_ref"))
++    r.update({"output_ref": str(report), "uncertainty_ref": "", "metrics": metrics,
++              "derived_refs": [str(odd_path), str(even_path)],
++              "implementation_foundations": r["implementation_foundations"] + ["SQRT_HANN_WOLA_BUCKET_MASK_V03"]})
++    return r
++
++
++def oracle_projection(job, up, upstream_source, outdir):
++    method = "QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION"
++    mixture_path = Path(job["mixture_wav"])
++    a_path = Path(job["source_a_wav"]); b_path = Path(job["source_b_wav"])
++    mixture, rm = load_audio(mixture_path); a, ra = load_audio(a_path); b, rb = load_audio(b_path)
++    if not (rm == ra == rb) or mixture.shape != a.shape or mixture.shape != b.shape:
++        raise ValueError("ORACLE_SOURCE_GEOMETRY_MISMATCH")
++    slot = float(job.get("slot_hz", 100)); ceiling = float(job.get("ceiling_hz", min(8000, rm / 2))); offset = float(job.get("offset_hz", 0))
++    rows = up.oracle_template_projection(mixture, a, b, rm, slot, ceiling, offset)
++    report = outdir / "oracle_template_projection.json"
++    max_residual = max((float(x["relative_fit_residual"]) for x in rows), default=0.0)
++    metrics = {"row_count": len(rows), "maximum_relative_fit_residual": max_residual,
++               "slot_hz": slot, "ceiling_hz": ceiling, "offset_hz": offset, "known_references_required": True}
++    dump(report, {"schema": "media.spectral-integrity.oracle-template/0.3", "rows": rows, "metrics": metrics})
++    refs = source_refs(job, "mixture_evidence_ref", "source_a_evidence_ref", "source_b_evidence_ref")
++    r = base(job, method, "MEASUREMENT", upstream_source, refs)
++    r["authority"]["effect"] = "PRESERVE"
++    r.update({"output_ref": str(report), "uncertainty_ref": "", "metrics": metrics,
++              "control_kind": "EXACT_KNOWN_REFERENCE_ORACLE",
++              "implementation_foundations": r["implementation_foundations"] + ["EXACT_REFERENCE_LEAST_SQUARES_ORACLE_V03"]})
++    return r
++
++
++def blind_control_trial(job, up, upstream_source, outdir, upstream_root):
++    method = "QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL"
++    a_path = Path(job["source_a_wav"]); b_path = Path(job["source_b_wav"])
++    a, ra = load_audio(a_path); b, rb = load_audio(b_path)
++    if ra != rb or a.shape != b.shape:
++        raise ValueError("CONTROL_SOURCE_GEOMETRY_MISMATCH")
++    blind, blind_source = import_blind_upstream(upstream_root)
++    trial_dir = outdir / "blind_trial_private"
++    result = blind.create_trial(a, b, ra, trial_dir,
++                                seed=int(job.get("seed", 7301)),
++                                slot_hz=float(job.get("slot_hz", 100)),
++                                ceiling_hz=float(job.get("ceiling_hz", min(8000, ra / 2))),
++                                offset_hz=float(job.get("offset_hz", 0)))
++    presentation = trial_dir / "PRESENTATION.json"
++    private_key = trial_dir / "PRIVATE_KEY.json"
++    responses = trial_dir / "RESPONSES_TEMPLATE.csv"
++    refs = source_refs(job, "source_a_evidence_ref", "source_b_evidence_ref")
++    r = base(job, method, "MEASUREMENT", upstream_source, refs)
++    r["authority"]["effect"] = "PRESERVE"
++    r.update({"output_ref": str(presentation), "uncertainty_ref": "", "metrics": {
++                  "condition_count": len(result.get("codes", [])), "private_key_withheld": True,
++                  "free_transcription_before_unblind": True},
++              "private_key_ref": str(private_key), "responses_template_ref": str(responses),
++              "publication_forbidden_refs": [str(private_key)],
++              "control_kind": "BLINDED_FOUR_CONDITION_FALSE_POSITIVE_TRIAL",
++              "implementation_foundations": r["implementation_foundations"] + ["BLIND_CONTROL_TRIAL_V03"],
++              "upstream_blind_source_sha256": sha256(blind_source)})
+     return r
+ 
+ 
+@@ -217,6 +323,9 @@
+         elif method == "AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW": result = preference_view(job, up, upstream_source, outdir)
+         elif method == "AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION": result = harmonic(job, up, upstream_source, outdir)
+         elif method == "QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL": result = positive_control(job, up, upstream_source, outdir)
++        elif method == "AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS": result = windowed_views(job, up, upstream_source, outdir)
++        elif method == "QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION": result = oracle_projection(job, up, upstream_source, outdir)
++        elif method == "QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL": result = blind_control_trial(job, up, upstream_source, outdir, args.upstream_root)
+         else: raise ValueError("UNSUPPORTED_METHODOLOGY")
+     except Exception as exc:
+         result = {"schema": SCHEMA, "provider_id": PROVIDER, "implementation_id": METHODS.get(method, ""),
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/integrations/MediaGeneralizedComputeBridge.cls /mnt/data/oorexx_media_methodologies_v0.1-dev9/integrations/MediaGeneralizedComputeBridge.cls
+--- a/integrations/MediaGeneralizedComputeBridge.cls	2026-10-28 17:50:21.000000000 +0000
++++ b/integrations/MediaGeneralizedComputeBridge.cls	2026-10-29 14:03:41.726278346 +0000
+@@ -66,6 +66,11 @@
+   if route~state="READY" then handoff=route~handoff
+   observation=.MediaComputePlanningObservation~new(work,route,handoff)
+   if handoff<>.nil then do
+-    if \handoff~revalidationRequired then raise syntax 93.900 array("Generalized compute handoff must require authoritative revalidation")
++    /* Current Generalized Compute exposes REVALIDATIONREQUIRED directly.
++     * Older planning-only packages do not.  Absence never grants authority:
++     * this Media observation itself remains revalidationRequired=.true. */
++    if handoff~hasMethod("REVALIDATIONREQUIRED") then do
++      if \handoff~revalidationRequired then raise syntax 93.900 array("Generalized compute handoff must require authoritative revalidation")
++    end
+   end
+   return observation
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/spec/AUDIO_SPECTRAL_INTEGRITY_METHODS.md /mnt/data/oorexx_media_methodologies_v0.1-dev9/spec/AUDIO_SPECTRAL_INTEGRITY_METHODS.md
+--- a/spec/AUDIO_SPECTRAL_INTEGRITY_METHODS.md	2026-10-28 17:51:07.000000000 +0000
++++ b/spec/AUDIO_SPECTRAL_INTEGRITY_METHODS.md	2026-10-29 13:55:50.643146506 +0000
+@@ -1,17 +1,25 @@
+ # Audio Spectral Integrity methods
+ 
+-Media Methodologies dev8 consumes **Audio Spectral Integrity v0.2** as a provider-neutral experimental backend.  The provider remains the owner of the transforms; this package owns only methodology registration, applicability, execution profiles, experiment lineage and provenance glue.
++Media Methodologies dev9 consumes **Audio Spectral Integrity v0.3** as a provider-neutral experimental/falsification backend. The provider remains the owner of the transforms; this package owns methodology registration, applicability, execution profiles, experiment lineage and provenance glue.
+ 
+-The methods are intentionally plural and bounded:
++The v0.2 methods remain unchanged:
+ 
+-- `AUDIO.SPECTRAL_INTEGRITY.COMPLEMENTARY_BUCKET_VIEWS` creates complementary odd/even alternating spectral views from **one** captured waveform.  Their exact recombination inside the selected passband is a transform identity, not evidence that the recording contained two physical sources.
+-- `AUDIO.SPECTRAL_INTEGRITY.PHASE_SWEEP` repeats the partition at predeclared bucket origins and measures how strongly conclusions depend on arbitrary mask boundaries.
+-- `AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW` attenuates the non-preferred bucket set and peak-scales the result.  It is a derived listening candidate and adds no information.
+-- `AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION` measures expected-harmonic support only when an independent `f0` hypothesis is supplied.  It does not infer speaker identity or a second source.
+-- `QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL` constructs a mathematically known two-input spectral weave.  Only this controlled fixture has known per-bucket source ownership.
++- `AUDIO.SPECTRAL_INTEGRITY.COMPLEMENTARY_BUCKET_VIEWS` creates full-clip complementary odd/even alternating spectral views from **one** captured waveform. Their exact passband recombination is a transform identity, not evidence that the recording contained two physical sources.
++- `AUDIO.SPECTRAL_INTEGRITY.PHASE_SWEEP` shifts bucket origins and measures sensitivity to arbitrary mask boundaries.
++- `AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW` creates a peak-safe derived listening candidate by attenuation only.
++- `AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION` measures expected-harmonic support only when an independent `f0` hypothesis is supplied.
++- `QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL` constructs a mathematically known two-input spectral weave.
++
++Dev9 adds the three v0.3 falsification/qualification paths:
++
++- `AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS` uses sqrt-Hann WOLA windows to localise bucket-filter ringing in time. It is deliberately compared against the full-clip FFT method. At a Nyquist ceiling, odd+even must reconstruct the source within numerical tolerance; below Nyquist it reconstructs the declared WOLA-bandlimited view.
++- `QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION` requires the **exact known A and B reference waveforms plus the known mixture**. It fits A/B coefficients independently in odd/even bucket regions. This is a controlled oracle and is unavailable for unknown field audio.
++- `QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL` creates anonymous single-A, notched-single-A, ordinary-A+B and engineered-weave controls. The condition key is private and must stay outside public source control until free-transcription/source-count responses are locked.
+ 
+ ## Scientific boundary
+ 
+-Field results may support statements about the declared transform, bucket energy, phase sensitivity, recombination error or externally seeded harmonic support.  They do not by themselves establish words, speakers, source count, emitters, intent, a historical multiplexing process, or criminal conduct.
++Field results may support statements about the declared transform, bucket energy, origin/window sensitivity, recombination error or externally seeded harmonic support. They do not by themselves establish words, speakers, source count, emitters, intent, a historical multiplexing process, or criminal conduct.
++
++The oracle and blind-control methodologies are **known-input qualification only**. Their success cannot be transferred to an unknown recording without an independent held-out classifier/decision rule and natural/codec/room/loudspeaker controls. A notched single voice remains a first-class false-positive control.
+ 
+-All transformed streams remain derived material.  Originals and immutable source references must be retained separately.  Blind listening notes are observations about listeners, not an automatic semantic label on the source waveform.
++All transformed streams remain derived material. Originals and immutable source references must be retained separately. Blind listening notes are observations about listeners, not automatic semantic labels on the source waveform.
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/spec/METHOD_CATALOG.json /mnt/data/oorexx_media_methodologies_v0.1-dev9/spec/METHOD_CATALOG.json
+--- a/spec/METHOD_CATALOG.json	2026-10-28 17:45:49.000000000 +0000
++++ b/spec/METHOD_CATALOG.json	2026-10-29 13:55:50.642048130 +0000
+@@ -2,7 +2,7 @@
+   "schema": "media.methodology.catalog/0.1",
+   "api": "media.methodologies/0.1",
+   "open_world": true,
+-  "method_count": 180,
++  "method_count": 183,
+   "policy": {
+     "no_single_solution": "Multiple methods may be registered and run in parallel; selection is evidence- and goal-dependent.",
+     "experimental_allowed": "Experimental methods are first-class but must declare maturity, assumptions, uncertainty and controls.",
+@@ -6737,6 +6737,151 @@
+         "POSITIVE_CONTROL",
+         "KNOWN_TRUTH"
+       ]
++    },
++    {
++      "id": "AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS",
++      "name": "Windowed complementary spectral-bucket views",
++      "domain": "AUDIO",
++      "family": "ANALYSIS",
++      "maturity": "EXPERIMENTAL",
++      "authority_effect": "MEASURE",
++      "experimental": true,
++      "reconstructive": false,
++      "principle": "Partition one captured waveform into local sqrt-Hann WOLA odd/even spectral-bucket views. Local windows bound ringing in time and provide a falsification comparison against full-clip circular-FFT buckets; the views are not source separation.",
++      "input_kinds": [
++        "PCM_AUDIO"
++      ],
++      "output_kinds": [
++        "WINDOWED_ODD_BUCKET_VIEW",
++        "WINDOWED_EVEN_BUCKET_VIEW",
++        "WOLA_RECOMBINATION_RESIDUAL"
++      ],
++      "assumptions": [
++        "Frame length, hop, slot width, ceiling and origin are declared before interpretation.",
++        "Window overlap covers the source interval with nonzero accumulated weight."
++      ],
++      "failure_modes": [
++        "window/hop sensitivity",
++        "spectral leakage",
++        "post-hoc parameter selection",
++        "mistaking localised listening differences for source identity"
++      ],
++      "required_controls": [
++        "SOURCE_PRESERVATION",
++        "PARAMETER_RECORD",
++        "WOLA_RECOMBINATION_CHECK",
++        "FULL_CLIP_FFT_COMPARISON",
++        "ORIGIN_SWEEP"
++      ],
++      "source_preservation": "MANDATORY",
++      "uncertainty_required": true,
++      "allowed_claim": "deterministic time-local complementary bucket views and their reconstruction residual under the declared WOLA transform",
++      "forbidden_claim": "Do not claim that window-local odd/even content identifies independent sources, recovered words, emitters or a historical multiplexing process.",
++      "composition_tags": [
++        "SPECTRAL_INTEGRITY",
++        "WOLA",
++        "LISTENING_VIEW",
++        "FALSIFICATION"
++      ]
++    },
++    {
++      "id": "QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION",
++      "name": "Known-reference spectral oracle template projection",
++      "domain": "VALIDATION",
++      "family": "QUALIFICATION",
++      "maturity": "ESTABLISHED",
++      "authority_effect": "PRESERVE",
++      "experimental": false,
++      "reconstructive": false,
++      "principle": "With exact known source references A and B, fit real A/B coefficients to a known control mixture separately in odd/even bucket regions and report fit residual. The exact references are mandatory, making this an oracle control rather than an unknown-source detector.",
++      "input_kinds": [
++        "CONTROL_MIXTURE",
++        "EXACT_REFERENCE_AUDIO_A",
++        "EXACT_REFERENCE_AUDIO_B"
++      ],
++      "output_kinds": [
++        "KNOWN_REFERENCE_COEFFICIENT_TABLE",
++        "FIT_RESIDUAL"
++      ],
++      "assumptions": [
++        "Mixture and exact A/B references have identical sample, channel and rate geometry.",
++        "The references are independently retained and provenance-bound."
++      ],
++      "failure_modes": [
++        "reference mismatch",
++        "rank-deficient reference spectra",
++        "using approximate or inferred references",
++        "transferring oracle results to unknown field audio"
++      ],
++      "required_controls": [
++        "KNOWN_INPUTS",
++        "EXACT_GEOMETRY_MATCH",
++        "SOURCE_HASHES",
++        "PARAMETER_RECORD",
++        "ORDINARY_OVERLAY_CONTROL",
++        "NOTCHED_SINGLE_SOURCE_CONTROL"
++      ],
++      "source_preservation": "MANDATORY",
++      "uncertainty_required": true,
++      "allowed_claim": "fit coefficients and residual for exact known references within the declared controlled mixture and bucket geometry",
++      "forbidden_claim": "Do not apply this oracle as a source classifier to unknown audio or infer identity, intent or provenance from a fit.",
++      "composition_tags": [
++        "SPECTRAL_INTEGRITY",
++        "ORACLE_CONTROL",
++        "KNOWN_TRUTH",
++        "FALSIFICATION"
++      ]
++    },
++    {
++      "id": "QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL",
++      "name": "Blinded spectral-integrity control trial",
++      "domain": "VALIDATION",
++      "family": "QUALIFICATION",
++      "maturity": "ESTABLISHED",
++      "authority_effect": "PRESERVE",
++      "experimental": false,
++      "reconstructive": false,
++      "principle": "Generate anonymous, RMS-matched control clips for single-source, notched-single-source, ordinary-overlap and engineered-weave conditions, retain the condition key privately, and collect free transcription/source-count judgements before unblinding.",
++      "input_kinds": [
++        "CONTROL_AUDIO_A",
++        "CONTROL_AUDIO_B",
++        "PRIVATE_TRIAL_STORAGE"
++      ],
++      "output_kinds": [
++        "BLINDED_CONTROL_SET",
++        "PUBLIC_PRESENTATION",
++        "RESPONSE_TEMPLATE",
++        "PRIVATE_CONDITION_KEY"
++      ],
++      "assumptions": [
++        "Control sources are consented/provenance-bound and share exact geometry.",
++        "The private key is withheld until responses are locked."
++      ],
++      "failure_modes": [
++        "listener priming",
++        "key leakage",
++        "non-random playback order",
++        "coarse RMS matching mistaken for loudness matching",
++        "private control material published accidentally"
++      ],
++      "required_controls": [
++        "KNOWN_INPUTS",
++        "PRIVATE_KEY_WITHHELD",
++        "FREE_TRANSCRIPTION_BEFORE_CHOICES",
++        "LOCK_RESPONSES_BEFORE_UNBLIND",
++        "SOURCE_HASHES",
++        "DEVICE_LEVEL_RECORD"
++      ],
++      "source_preservation": "MANDATORY",
++      "uncertainty_required": true,
++      "allowed_claim": "listener/detector performance and false-positive behaviour on the declared blinded control conditions",
++      "forbidden_claim": "Do not transfer synthetic-control performance directly to a private field recording, expose the private key before lock, or treat listener agreement as source identity.",
++      "composition_tags": [
++        "SPECTRAL_INTEGRITY",
++        "BLIND_TRIAL",
++        "FALSE_POSITIVE_CONTROL",
++        "QUALIFICATION"
++      ]
+     }
+   ]
+ }
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/spec/METHOD_INDEX.md /mnt/data/oorexx_media_methodologies_v0.1-dev9/spec/METHOD_INDEX.md
+--- a/spec/METHOD_INDEX.md	2026-10-28 17:52:40.000000000 +0000
++++ b/spec/METHOD_INDEX.md	2026-10-29 13:55:50.642919159 +0000
+@@ -1,6 +1,6 @@
+ # Media Methodology Index
+ 
+-Canonical catalogue contains **180 methodologies**. The catalogue is open-world: this is the baseline set, not a closed claim that no other valid method exists.
++Canonical catalogue contains **183 methodologies**. The catalogue is open-world: this is the baseline set, not a closed claim that no other valid method exists.
+ 
+ ## AUDIO / ACQUISITION
+ 
+@@ -23,6 +23,7 @@
+ | `AUDIO.SPECTRAL_INTEGRITY.COMPLEMENTARY_BUCKET_VIEWS` | Complementary alternating spectral-bucket views | EXPERIMENTAL | MEASURE | yes | no |
+ | `AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION` | Externally-seeded harmonic observation | EXPERIMENTAL | MEASURE | yes | no |
+ | `AUDIO.SPECTRAL_INTEGRITY.PHASE_SWEEP` | Alternating-bucket phase sensitivity sweep | EXPERIMENTAL | MEASURE | yes | no |
++| `AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS` | Windowed complementary spectral-bucket views | EXPERIMENTAL | MEASURE | yes | no |
+ | `AUDIO.TRANSIENT.DETECT` | Transient/onset detection | ESTABLISHED | MEASURE | no | no |
+ | `AUDIO.VAD` | Voice activity detection | ESTABLISHED | MEASURE | no | no |
+ 
+@@ -177,7 +178,9 @@
+ 
+ | ID | Method | Maturity | Authority | Experimental | Reconstructive |
+ |---|---|---|---|---:|---:|
++| `QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL` | Blinded spectral-integrity control trial | ESTABLISHED | PRESERVE | no | no |
+ | `QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL` | Known-input alternating spectral interleave positive control | ESTABLISHED | PRESERVE | no | no |
++| `QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION` | Known-reference spectral oracle template projection | ESTABLISHED | PRESERVE | no | no |
+ | `QUAL.AUTHORITY.GATING` | Evidence-authority gating test | ESTABLISHED | PRESERVE | no | no |
+ | `QUAL.BEFORE_AFTER` | Before/after method A-B qualification | ESTABLISHED | PRESERVE | no | no |
+ | `QUAL.BOOTSTRAP.UNCERTAINTY` | Bootstrap uncertainty | ESTABLISHED | PRESERVE | no | no |
+@@ -331,4 +334,3 @@
+ | ID | Method | Maturity | Authority | Experimental | Reconstructive |
+ |---|---|---|---|---:|---:|
+ | `VIDEO.TRACK.TRAJECTORY` | Trajectory association | ESTABLISHED | MEASURE | no | no |
+-
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/spec/WORK_SHAPE_CATALOG.json /mnt/data/oorexx_media_methodologies_v0.1-dev9/spec/WORK_SHAPE_CATALOG.json
+--- a/spec/WORK_SHAPE_CATALOG.json	2026-10-28 17:45:49.000000000 +0000
++++ b/spec/WORK_SHAPE_CATALOG.json	2026-10-29 13:55:50.642678814 +0000
+@@ -1,7 +1,7 @@
+ {
+   "schema": "media.methodology.work-shapes/0.1",
+   "api": "media.methodologies.execution/0.1",
+-  "count": 180,
++  "count": 183,
+   "note": "Semantic decomposition hints only. Provider-specific runtime/hardware requirements are separate.",
+   "shapes": [
+     {
+@@ -1978,6 +1978,39 @@
+       "shard_axis": "SOURCE_SET",
+       "state_model": "GLOBAL",
+       "access_pattern": "REFERENCE_ONLY",
++      "halo_before": 0,
++      "halo_after": 0,
++      "merge_mode": "QUALIFICATION_REPORT_SET",
++      "continuity": "NONE",
++      "materialization": "REFERENCE_FIRST"
++    },
++    {
++      "methodology_id": "AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS",
++      "shard_axis": "SAMPLE_RANGE",
++      "state_model": "WINDOW_STATE",
++      "access_pattern": "SEQUENTIAL_WINDOW",
++      "halo_before": 4096,
++      "halo_after": 4096,
++      "merge_mode": "DERIVED_VIEW_SET",
++      "continuity": "OVERLAP_REQUIRED",
++      "materialization": "REFERENCE_FIRST"
++    },
++    {
++      "methodology_id": "QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION",
++      "shard_axis": "SOURCE_SET",
++      "state_model": "GLOBAL",
++      "access_pattern": "REFERENCE_ONLY",
++      "halo_before": 0,
++      "halo_after": 0,
++      "merge_mode": "QUALIFICATION_REPORT_SET",
++      "continuity": "NONE",
++      "materialization": "REFERENCE_FIRST"
++    },
++    {
++      "methodology_id": "QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL",
++      "shard_axis": "SOURCE_SET",
++      "state_model": "GLOBAL",
++      "access_pattern": "REFERENCE_ONLY",
+       "halo_before": 0,
+       "halo_after": 0,
+       "merge_mode": "QUALIFICATION_REPORT_SET",
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/spec/WORK_SHAPE_INDEX.md /mnt/data/oorexx_media_methodologies_v0.1-dev9/spec/WORK_SHAPE_INDEX.md
+--- a/spec/WORK_SHAPE_INDEX.md	2026-10-28 17:52:40.000000000 +0000
++++ b/spec/WORK_SHAPE_INDEX.md	2026-10-29 13:55:50.643106627 +0000
+@@ -1,8 +1,8 @@
+-# Media Methodology Work-Shape Index
++# Media Work Shape Index
+ 
+-Semantic decomposition hints only; provider hardware/runtime requirements are separate.
++Canonical work-shape catalogue contains **183 entries**, one for every methodology. Work shape describes safe distribution/assembly; it does not choose an implementation or execution node.
+ 
+-| Methodology | Domain / family | Shard | State | Halo | Merge | Continuity |
++| Methodology | Domain / Family | Shard axis | State | Halo | Merge | Continuity |
+ |---|---|---|---|---:|---|---|
+ | `VIDEO.DECODE.PRESERVE_PTS` | VIDEO / ACQUISITION | FRAME_RANGE | STATELESS | 0+0 | TIMELINE_CONCAT | NONE |
+ | `VIDEO.COLOUR.LINEARIZE` | VIDEO / ACQUISITION | FRAME_RANGE | STATELESS | 0+0 | TIMELINE_CONCAT | NONE |
+@@ -184,3 +184,6 @@
+ | `AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW` | AUDIO / ENHANCEMENT | SAMPLE_RANGE | WINDOW_STATE | 4096+4096 | DERIVED_VIEW_SET | OVERLAP_REQUIRED |
+ | `AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION` | AUDIO / ANALYSIS | SAMPLE_RANGE | WINDOW_STATE | 4096+4096 | MEASUREMENT_SET | OVERLAP_REQUIRED |
+ | `QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL` | VALIDATION / QUALIFICATION | SOURCE_SET | GLOBAL | 0+0 | QUALIFICATION_REPORT_SET | NONE |
++| `AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS` | AUDIO / ANALYSIS | SAMPLE_RANGE | WINDOW_STATE | 4096+4096 | DERIVED_VIEW_SET | OVERLAP_REQUIRED |
++| `QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION` | VALIDATION / QUALIFICATION | SOURCE_SET | GLOBAL | 0+0 | QUALIFICATION_REPORT_SET | NONE |
++| `QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL` | VALIDATION / QUALIFICATION | SOURCE_SET | GLOBAL | 0+0 | QUALIFICATION_REPORT_SET | NONE |
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/tests/test_catalog.rex /mnt/data/oorexx_media_methodologies_v0.1-dev9/tests/test_catalog.rex
+--- a/tests/test_catalog.rex	2026-10-28 17:56:38.000000000 +0000
++++ b/tests/test_catalog.rex	2026-10-29 14:01:21.777593840 +0000
+@@ -5,12 +5,12 @@
+   catalogue = .MediaMethodologyCatalogue~new
+   .MediaMethodologyBuiltins~populate(catalogue)
+ 
+-  call assertEqual 180, catalogue~count, "built-in methodology count"
++  call assertEqual 183, catalogue~count, "built-in methodology count"
+   call assertEqual 84, catalogue~byDomain("VIDEO")~items, "video count"
+-  call assertEqual 70, catalogue~byDomain("AUDIO")~items, "audio count"
++  call assertEqual 71, catalogue~byDomain("AUDIO")~items, "audio count"
+   call assertEqual 10, catalogue~byDomain("CROSS_MODAL")~items, "cross-modal count"
+-  call assertEqual 16, catalogue~byDomain("VALIDATION")~items, "validation count"
+-  call assertEqual 30, catalogue~experimental~items, "experimental count"
++  call assertEqual 18, catalogue~byDomain("VALIDATION")~items, "validation count"
++  call assertEqual 31, catalogue~experimental~items, "experimental count"
+   call assertEqual 62, catalogue~reconstructive~items, "reconstructive count"
+ 
+   leading = catalogue~methodology("video.recon.leading_edge_backprojection")
+@@ -38,7 +38,7 @@
+   provider = .TestProvider~new
+   catalogue~registerProvider(provider)
+   catalogue~refreshProviders
+-  call assertEqual 181, catalogue~count, "dynamic provider refresh"
++  call assertEqual 184, catalogue~count, "dynamic provider refresh"
+   call assertTrue catalogue~methodology("VIDEO.EXPERIMENTAL.TEST_PROVIDER") \== .nil, "provider methodology registered"
+ 
+   say "PASS media methodology catalogue contract"
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/tests/test_execution_shapes.rex /mnt/data/oorexx_media_methodologies_v0.1-dev9/tests/test_execution_shapes.rex
+--- a/tests/test_execution_shapes.rex	2026-10-28 17:52:01.000000000 +0000
++++ b/tests/test_execution_shapes.rex	2026-10-29 14:00:44.245006388 +0000
+@@ -6,7 +6,7 @@
+   .MediaMethodologyBuiltins~populate(methods)
+   shapes=.MediaWorkShapeCatalogue~new
+   .MediaWorkShapeBuiltins~populate(shapes,methods)
+-  call assertEqual 180,shapes~count,"one work shape per built-in methodology"
++  call assertEqual 183,shapes~count,"one work shape per built-in methodology"
+ 
+   leading=shapes~shape("VIDEO.RECON.LEADING_EDGE_BACKPROJECTION")
+   call assertEqual "FRAME_RANGE",leading~shardAxis,"leading-edge shard axis"
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/tests/test_generalized_compute_planning_bridge.rex /mnt/data/oorexx_media_methodologies_v0.1-dev9/tests/test_generalized_compute_planning_bridge.rex
+--- a/tests/test_generalized_compute_planning_bridge.rex	2026-10-28 17:51:07.000000000 +0000
++++ b/tests/test_generalized_compute_planning_bridge.rex	2026-10-29 14:03:41.726403231 +0000
+@@ -16,7 +16,8 @@
+ call assertTrue obs~workload~executionProfile==profile,'exact execution profile retained'
+ prep=bridge~prepare(planner,task,profile,.array~of('sha256:source'))
+ call assertTrue prep~handoff<>.nil,'handoff prepared'
+-call assertTrue prep~handoff~revalidationRequired,'upstream handoff requires revalidation'
++if prep~handoff~hasMethod('REVALIDATIONREQUIRED') then call assertTrue prep~handoff~revalidationRequired,'upstream handoff requires revalidation'
++else call assertTrue prep~revalidationRequired,'legacy upstream handoff remains bounded by media revalidation requirement'
+ call assertTrue prep~handoff~workload==prep~workload,'workload object retained in handoff'
+ say 'PASS generalized compute bridge plans media work without placement authority'
+ exit 0
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/tests/test_spectral_integrity_catalog.rex /mnt/data/oorexx_media_methodologies_v0.1-dev9/tests/test_spectral_integrity_catalog.rex
+--- a/tests/test_spectral_integrity_catalog.rex	2026-10-28 17:51:07.000000000 +0000
++++ b/tests/test_spectral_integrity_catalog.rex	2026-10-29 13:55:50.643521141 +0000
+@@ -1,8 +1,8 @@
+ #!/usr/bin/env rexx
+ c=.MediaMethodologyCatalogue~new
+ .MediaMethodologyBuiltins~populate(c)
+-call assertEq 180,c~count,'catalogue count'
+-ids=.array~of('AUDIO.SPECTRAL_INTEGRITY.COMPLEMENTARY_BUCKET_VIEWS','AUDIO.SPECTRAL_INTEGRITY.PHASE_SWEEP','AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW','AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION','QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL')
++call assertEq 183,c~count,'catalogue count'
++ids=.array~of('AUDIO.SPECTRAL_INTEGRITY.COMPLEMENTARY_BUCKET_VIEWS','AUDIO.SPECTRAL_INTEGRITY.PHASE_SWEEP','AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW','AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION','QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL','AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS','QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION','QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL')
+ do id over ids
+   call assertTrue c~methodology(id)<>.nil,'method present' id
+ end
+@@ -10,9 +10,12 @@
+ call assertTrue \c~methodology('AUDIO.SPECTRAL_INTEGRITY.COMPLEMENTARY_BUCKET_VIEWS')~reconstructive,'complementary view is measurement'
+ shapes=.MediaWorkShapeCatalogue~new
+ .MediaWorkShapeBuiltins~populate(shapes,c)
+-call assertEq 180,shapes~count,'shape count'
++call assertEq 183,shapes~count,'shape count'
+ call assertEq 'DERIVED_VIEW_SET',shapes~shape('AUDIO.SPECTRAL_INTEGRITY.COMPLEMENTARY_BUCKET_VIEWS')~mergeMode,'view merge mode'
+ call assertEq 'QUALIFICATION_REPORT_SET',shapes~shape('QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL')~mergeMode,'control merge mode'
++call assertEq 'DERIVED_VIEW_SET',shapes~shape('AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS')~mergeMode,'windowed view merge mode'
++call assertEq 'QUALIFICATION_REPORT_SET',shapes~shape('QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION')~mergeMode,'oracle merge mode'
++call assertEq 'QUALIFICATION_REPORT_SET',shapes~shape('QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL')~mergeMode,'blind trial merge mode'
+ say 'PASS spectral-integrity methodologies and work shapes'
+ exit 0
+ assertTrue: procedure
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/tests/test_spectral_integrity_provider_registry.rex /mnt/data/oorexx_media_methodologies_v0.1-dev9/tests/test_spectral_integrity_provider_registry.rex
+--- a/tests/test_spectral_integrity_provider_registry.rex	2026-10-28 17:51:07.000000000 +0000
++++ b/tests/test_spectral_integrity_provider_registry.rex	2026-10-29 13:55:50.643562572 +0000
+@@ -1,11 +1,14 @@
+ #!/usr/bin/env rexx
+ r=.MediaSpectralIntegrityProviderRegistry~new('/tmp/providers')
+-call assertEq 5,r~profiles~items,'five profiles'
++call assertEq 8,r~profiles~items,'eight profiles'
+ call assertTrue r~supports('AUDIO.SPECTRAL_INTEGRITY.COMPLEMENTARY_BUCKET_VIEWS'),'complementary supported'
+ call assertTrue r~supports('AUDIO.SPECTRAL_INTEGRITY.PHASE_SWEEP'),'phase supported'
+ call assertTrue r~supports('AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW'),'preference supported'
+ call assertTrue r~supports('AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION'),'harmonic supported'
+ call assertTrue r~supports('QUAL.AUDIO.SPECTRAL_INTERLEAVE_POSITIVE_CONTROL'),'control supported'
++call assertTrue r~supports('AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS'),'windowed supported'
++call assertTrue r~supports('QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION'),'oracle supported'
++call assertTrue r~supports('QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL'),'blind trial supported'
+ cmd=r~command('AUDIO.SPECTRAL_INTEGRITY.PHASE_SWEEP','job.json','result.json','/tmp/upstream')
+ call assertTrue pos('spectral_integrity_provider.py',cmd)>0,'adapter command'
+ call assertTrue pos('--upstream-root',cmd)>0,'upstream is explicit'
+@@ -19,6 +22,17 @@
+ attrs['EXTERNAL_F0_AVAILABLE']=.true
+ a=.MediaSpectralIntegrityApplicabilityProvider~new~assess(c~methodology('AUDIO.SPECTRAL_INTEGRITY.HARMONIC_OBSERVATION'),.nil,ctx)
+ call assertEq 'APPLICABLE',a~state,'harmonic applicable with external f0'
++attrs['CONTROL_SOURCE_A_AVAILABLE']=.true; attrs['CONTROL_SOURCE_B_AVAILABLE']=.true
++a=.MediaSpectralIntegrityApplicabilityProvider~new~assess(c~methodology('QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION'),.nil,ctx)
++call assertEq 'UNKNOWN',a~state,'oracle also needs known mixture'
++attrs['CONTROL_MIXTURE_AVAILABLE']=.true
++a=.MediaSpectralIntegrityApplicabilityProvider~new~assess(c~methodology('QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION'),.nil,ctx)
++call assertEq 'APPLICABLE',a~state,'oracle applicable only with exact references and known mixture'
++a=.MediaSpectralIntegrityApplicabilityProvider~new~assess(c~methodology('QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL'),.nil,ctx)
++call assertEq 'UNKNOWN',a~state,'blind trial also needs private storage'
++attrs['PRIVATE_TRIAL_STORAGE_AVAILABLE']=.true
++a=.MediaSpectralIntegrityApplicabilityProvider~new~assess(c~methodology('QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL'),.nil,ctx)
++call assertEq 'APPLICABLE',a~state,'blind trial applicable with controls and private storage'
+ say 'PASS spectral-integrity provider registry and applicability'
+ exit 0
+ assertTrue: procedure
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/tests/test_spectral_integrity_result_adapter.rex /mnt/data/oorexx_media_methodologies_v0.1-dev9/tests/test_spectral_integrity_result_adapter.rex
+--- a/tests/test_spectral_integrity_result_adapter.rex	2026-10-28 17:51:07.000000000 +0000
++++ b/tests/test_spectral_integrity_result_adapter.rex	2026-10-29 13:55:50.643663632 +0000
+@@ -8,6 +8,12 @@
+ call assertEq 'FALSE',e~metadata['OBSERVATION_PROMOTION'],'measurement cannot promote'
+ call assertEq 'FALSE',e~metadata['SOURCE_SEPARATION_CLAIM'],'no source separation claim'
+ 
++q=.Directory~new
++q['status']='MEASUREMENT'; q['provider_id']='p'; q['implementation_id']='oracle'; q['methodology_id']='QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION'; q['source_evidence_ref']='sha256:mixture'; q['source_evidence_refs']=.array~of('sha256:mixture','sha256:a','sha256:b'); q['output_ref']='file:oracle.json'; q['uncertainty_ref']=''; q['metrics']=.Directory~new
++qe=adapter~evidence(q)
++call assertEq 'PRESERVE',qe~authorityEffect,'oracle qualification preserves authority'
++call assertEq 3,qe~sourceRefs~items,'oracle preserves all exact reference identities'
++
+ c=.Directory~new
+ c['status']='CANDIDATE'; c['provider_id']='p'; c['implementation_id']='i2'; c['methodology_id']='AUDIO.SPECTRAL_INTEGRITY.BOUNDED_PREFERENCE_VIEW'; c['source_evidence_ref']='sha256:source'; c['output_ref']='file:view.wav'; c['support_map_ref']='file:support.npy'; c['uncertainty_ref']='file:unc.json'
+ candidate=adapter~candidate(c,'EXP-SI','LINEAGE-PREF','WORK-1')
+diff -ruN --binary /mnt/data/media_methodologies_current/dev8/oorexx_media_methodologies_v0.1-dev8/tests/test_spectral_integrity_v03_contract.rex /mnt/data/oorexx_media_methodologies_v0.1-dev9/tests/test_spectral_integrity_v03_contract.rex
+--- a/tests/test_spectral_integrity_v03_contract.rex	1970-01-01 00:00:00.000000000 +0000
++++ b/tests/test_spectral_integrity_v03_contract.rex	2026-10-29 13:55:50.643766825 +0000
+@@ -0,0 +1,24 @@
++#!/usr/bin/env rexx
++c=.MediaMethodologyCatalogue~new
++.MediaMethodologyBuiltins~populate(c)
++call assertTrue c~methodology('AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS')<>.nil,'WOLA method'
++call assertTrue c~methodology('QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION')<>.nil,'oracle method'
++call assertTrue c~methodology('QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL')<>.nil,'blind method'
++call assertTrue c~methodology('AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS')~experimental,'WOLA is experimental'
++call assertTrue \c~methodology('AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS')~reconstructive,'WOLA is measurement not reconstruction'
++call assertEq 'PRESERVE',c~methodology('QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION')~authorityEffect,'oracle authority'
++call assertEq 'PRESERVE',c~methodology('QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL')~authorityEffect,'blind authority'
++say 'PASS spectral-integrity v0.3 methodology contract'
++exit 0
++assertTrue: procedure
++  use arg value,label
++  if value then return
++  say 'FAIL' label
++  exit 1
++assertEq: procedure
++  use arg expected,actual,label
++  if expected==actual then return
++  say 'FAIL' label 'expected='expected 'actual='actual
++  exit 1
++::requires 'MediaMethodologies.cls'
++::requires 'MediaMethodologyBuiltins.cls'

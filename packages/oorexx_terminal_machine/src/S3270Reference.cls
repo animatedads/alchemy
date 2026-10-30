@@ -241,19 +241,36 @@
   snap=.S3270ReferenceSnapshot~new(rowsArg,columnsArg,cursorRow0+1,cursorColumn0+1,fields,textRows)
   return .TerminalResult~success(snap)
 
-::method basicAttribute class private
+::method attributePairs class private
   use arg token
-  inside=substr(token,pos("(",token)+1)
-  inside=left(inside,length(inside)-1)
-  do i=1 to words(translate(inside," ",","))
-    pair=word(translate(inside," ",","),i)
+  p1=pos("(",token); p2=lastpos(")",token)
+  if p1==0 | p2<=p1 then return .nil
+  inside=substr(token,p1+1,p2-p1-1)
+  answer=.directory~new
+  if inside=="" then return answer
+  normalized=translate(inside," ",",")
+  do i=1 to words(normalized)
+    pair=word(normalized,i)
     parse var pair key "=" value
-    if key~upper=="C0" then do
-      value=value~strip~upper
-      if length(value)==2 & verify(value,"0123456789ABCDEF")==0 then return value
+    key=key~strip~upper; value=value~strip~upper
+    if length(key)<>2 | verify(key,"0123456789ABCDEF")<>0 then return .nil
+    if length(value)<>2 | verify(value,"0123456789ABCDEF")<>0 then return .nil
+    answer[key]=value
+  end
+  return answer
+
+::method characterAttributeSignature class private
+  use arg attrs
+  if attrs==.nil | attrs~items==0 then return ""
+  out=""
+  do key over .array~of("41","42","43","45")
+    value=attrs~at(key)
+    if value<>.nil then do
+      if out<>"" then out||=","
+      out||=key||"="||value
     end
   end
-  return ""
+  return out
 
 ::method fieldAt class private
   use arg fields,address,size
@@ -308,6 +325,18 @@
     if f~numeric<>ref~numeric then mismatches~append("FIELD_NUMERIC:A"||right(d2x(address),4,"0"))
     if f~modified<>ref~modified then mismatches~append("FIELD_MDT:A"||right(d2x(address),4,"0"))
     if f~nonDisplay<>ref~nonDisplay then mismatches~append("FIELD_NONDISPLAY:A"||right(d2x(address),4,"0"))
+    do attrName over .array~of("x41","x42","x43","x45")
+      leftValue=f~attribute(attrName); rightValue=ref~attributes~at(attrName)
+      if leftValue==.nil then leftValue=""; else leftValue=leftValue~string~upper
+      if rightValue==.nil then rightValue=""; else rightValue=rightValue~string~upper
+      if leftValue<>rightValue then mismatches~append("FIELD_ATTRIBUTE:A"||right(d2x(address),4,"0")||":"||attrName||"="||leftValue||"<>"||rightValue)
+    end
+  end
+  terminalMetadata=terminalSnapshot~metadata
+  terminalCharacterDigest=terminalMetadata~at("characterAttributeDigest")
+  if terminalCharacterDigest==.nil then terminalCharacterDigest=""
+  if referenceSnapshot~characterAttributeDigest<>"" then do
+    if terminalCharacterDigest<>referenceSnapshot~characterAttributeDigest then mismatches~append("CHARACTER_ATTRIBUTES")
   end
   return .S3270DifferentialResult~new(mismatches)
 

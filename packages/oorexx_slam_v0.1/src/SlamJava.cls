@@ -214,13 +214,15 @@
 ::attribute params
 ::attribute fields
 ::attribute returns
+::attribute modifiers     /* public static final ...: the modifiers before the return type */
 ::method init
-  expose params fields returns
+  expose params fields returns modifiers
   use strict arg kind, owner, selector, line
   self~init:super(kind, owner, selector, line)
   params = .array~new
   fields = .directory~new
   returns = ''
+  modifiers = ''
 /* Duplicate filter: the parameter tokens count too, so int f(int a) and long f(long a) differ. */
 ::method signature
   expose params
@@ -518,7 +520,10 @@
   ret = .array~new
   do k = 1 to open - 2
     t = header[k]
-    if t~kind == 'KEYWORD' then if wordpos(t~text, 'public protected private static final abstract synchronized native strictfp default') > 0 then iterate
+    if t~kind == 'KEYWORD' then if wordpos(t~text, 'public protected private static final abstract synchronized native strictfp default') > 0 then do
+      u~modifiers = (u~modifiers t~text)~strip
+      iterate
+    end
     if t~kind == 'IDENT' then if t~text == 'sealed' then iterate
     ret~append(t~text)
   end

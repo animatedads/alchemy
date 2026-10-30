@@ -1,0 +1,30 @@
+digraph wire_dev22 {
+  rankdir=TB;
+  node [shape=box];
+  Builder [label="Wire Builder\nSession / BindingSpec / Compiler"];
+  App [label="Wire Application\nModel / Controller / Event"];
+  Rexx [label="ooRexx 5.3.0 r13196\nbehaviour + live objects"];
+  Lang [label="WireLanguageBlock\n+ Bridge"];
+  JSAlchemy [label="JavaScript Alchemy dev23"];
+  QJS [label="QuickJS-NG 0.17.0"];
+  PrologAlchemy [label="Prolog Alchemy dev13"];
+  SWI [label="SWI-Prolog 10.0.2"];
+  IMAP [label="ooRexx IMAP dev8\nWireImapSource"];
+  Window [label="WireFilterWindow\npull + continuation"];
+  Renderer [label="Renderer ABI 4\nTestRenderer / GTK4"];
+  Builder -> App [label="symbolic binding"];
+  App -> Rexx [label="dispatch"];
+  Rexx -> Lang [label="foreign block"];
+  Lang -> JSAlchemy [label="bounded variables"];
+  JSAlchemy -> QJS [label="ECMAScript"];
+  Lang -> PrologAlchemy [label="retained capability"];
+  PrologAlchemy -> SWI [label="query/backtracking"];
+  IMAP -> Window [label="bounded source windows"];
+  Window -> JSAlchemy [label="candidate only"];
+  Window -> Renderer [label="filtered rows"];
+  SWI -> PrologAlchemy [label="solutions"];
+  PrologAlchemy -> Rexx [label="rexx_send/4 / result"];
+  QJS -> JSAlchemy [label="result"];
+  JSAlchemy -> Rexx [label="ooRexx result"];
+  Rexx -> Renderer [label="semantic update"];
+}

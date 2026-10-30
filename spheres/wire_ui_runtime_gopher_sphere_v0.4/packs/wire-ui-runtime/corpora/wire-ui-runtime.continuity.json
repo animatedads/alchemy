@@ -1,0 +1,119 @@
+{
+  "kind": "corpus",
+  "id": "wire-ui-runtime.continuity",
+  "sphere": "wire-ui-runtime",
+  "title": "Wire UI runtime durable reasoning records",
+  "records": [
+    {
+      "id": "reason.gprs-cold",
+      "situation": "A cold browser on GPRS needs the Wire UI runtime.",
+      "reasoning": "Remove request round trips first: serve one content-addressed gzip runtime, then acquire only authorised cache-miss definitions/resources. Do not change journey/business semantics to compensate for bandwidth."
+    },
+    {
+      "id": "reason.gprs-warm",
+      "situation": "A returning browser on GPRS reconnects.",
+      "reasoning": "Reuse immutable runtime, definitions and approved resources; fetch only fresh server-authoritative snapshot/deltas. Never persist live authoritative session state as a cache optimisation."
+    },
+    {
+      "id": "reason.missing-definition",
+      "situation": "CREATE_INSTANCE arrives before its authorised immutable definition on a cold client.",
+      "reasoning": "Hold the ordered patch behind the definition barrier, request the exact definition, then replay. Do not force resync unless there is a genuine revision gap."
+    },
+    {
+      "id": "reason.stale-action",
+      "situation": "The user acts on revision 41 after the server has advanced to revision 42.",
+      "reasoning": "Send renderedRevision=41 and let the server detect/reject or explicitly handle stale context. The browser must not rewrite the action as current."
+    },
+    {
+      "id": "reason.gateway-disconnect",
+      "situation": "WebSocket disappears while a Queue Fabric package is claimed.",
+      "reasoning": "Release/reclaim transport work; do not increment semantic backout as though the application rejected the message."
+    },
+    {
+      "id": "reason.semantic-handler-fails",
+      "situation": "Browser semantic dispatch throws for a delivered Queue Fabric message.",
+      "reasoning": "NACK the opaque delivery through the gateway so Queue Fabric records semantic rejection/backout; claim tokens remain private."
+    },
+    {
+      "id": "reason.queue-sequence-gap",
+      "situation": "QueueWorkPackage sequence jumps on one browser queue because other manager queues received packages.",
+      "reasoning": "Do not infer missing browser messages. Use the gateway's contiguous per-access-point deliverySequence; retain QueueWorkPackage sequence only as provenance."
+    },
+    {
+      "id": "reason.resource-required",
+      "situation": "A customer-facing definition requires an approved ResourceRef but no resolver/authority is available.",
+      "reasoning": "Fail closed. Do not invent Continue/Send/headline/body copy or derive a URL from the resource identity."
+    },
+    {
+      "id": "reason.resource-gprs",
+      "situation": "An exact resource has standard and constrained approved representations.",
+      "reasoning": "The resolver may choose the constrained representation for GPRS only if both belong to the same exact resourceId@version/manifest; it may not rewrite content or change proposition identity."
+    },
+    {
+      "id": "reason.credit-card-offer",
+      "situation": "Backend assessment decides an approved credit-card proposition is appropriate.",
+      "reasoning": "Project the exact approved ResourceRef and semantic actions. Builder/renderer do not author the marketing copy or image; the Resource Authority owns them."
+    },
+    {
+      "id": "reason.observation-plan",
+      "situation": "Chat starts after support/error/cancellation-related application activity.",
+      "reasoning": "Use an authorised positive-list observation subscription and purpose-scoped downstream interpretation. Do not dump generic browsing history or enable capture-everything analytics."
+    },
+    {
+      "id": "reason.ai-agent",
+      "situation": "An authorised machine access point selects AI_AGENT_OPTIMISED.",
+      "reasoning": "Change semantic presentation projection only. Keep the same server business objects, legal/commercial actions, Queue Fabric and authority checks; do not create a bot-only transaction API."
+    },
+    {
+      "id": "reason.renderer-port",
+      "situation": "A semantic view is rendered in Swing rather than a browser.",
+      "reasoning": "Keep journey/definition/revision/action semantics unchanged. Swing-specific EDT/JComponent mechanics belong to the Swing renderer sphere, not server/business logic."
+    },
+    {
+      "id": "reason.browser-lies",
+      "situation": "Browser submits price, currency, sale identity or other server-owned fields.",
+      "reasoning": "Treat browser material as untrusted input/correlation only. Re-resolve authoritative business values server-side before transaction dispatch."
+    },
+    {
+      "id": "reason.cross-chat-collision",
+      "situation": "Two chats produce the same component/version name with different content.",
+      "reasoning": "Hash and inspect both, preserve unique capabilities, make an explicit reconciliation cut and requalify. Never pick one merely because it arrived later."
+    },
+    {
+      "id": "reason.renderer-drift",
+      "situation": "Two renderers appear visually correct but differ in semantic output.",
+      "reasoning": "Run the canonical renderer-conformance fixture and compare normalized semantic transcripts. Presentation differences are permitted; identity, revisions, actions, resource authority, observation semantics and fail-closed behaviour are not."
+    },
+    {
+      "id": "reason.range-demand",
+      "situation": "A virtualized renderer needs rows/items not currently projected.",
+      "reasoning": "Emit semantic RangeRequested(start,count). The renderer reports bounded demand only; application/server/source authority decides what to fetch/project. Never turn visible row ordinal into application identity."
+    },
+    {
+      "id": "reason.presentation-only",
+      "situation": "A renderer adds visual status chips, colours, cards or platform-native styling.",
+      "reasoning": "Treat styling as presentation only. It may expose already-projected status/accessibility material but must not create/deny actions or infer lifecycle/business truth."
+    },
+    {
+      "id": "reason.package-metadata-mismatch",
+      "situation": "Archive name/qualification and internal VERSION/README disagree.",
+      "reasoning": "Preserve exact artifact digest and report the mismatch as owning-package debt. Do not rewrite provenance in a continuity sphere or infer a new version from filename alone."
+    },
+    {
+      "id": "reason.web-readiness",
+      "situation": "HTTP page loads and WebSocket upgrades, but projected UI is incomplete.",
+      "reasoning": "Report transport/bootstrap stages separately. Wire view readiness requires profile/definition/resource readiness plus authoritative snapshot/revision synchronization; WebSocket 101 is not semantic readiness."
+    },
+    {
+      "id": "reason.http-front",
+      "situation": "A team wants to replace the static/bootstrap front.",
+      "reasoning": "Node, ooRexx HTTP/HTTPS or another conforming front may serve assets/bootstrap. The front must not become a second application/business API or acquire state authority."
+    },
+    {
+      "id": "reason.resource-editor",
+      "situation": "A renderer receives a ResourceRef for customer-facing material.",
+      "reasoning": "Treat Resource Editor/Resource Contract publication as authority. Resolve and verify the exact published identity/bytes; do not author, rewrite, choose arbitrary URLs or synthesize missing copy in the renderer."
+    }
+  ],
+  "version": "0.4"
+}

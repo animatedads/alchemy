@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "ops.terminal-machine.continuation",
-  "version": "0.3",
+  "version": "0.7",
   "sphere": "terminal-machine",
   "title": "How to continue Terminal Machine work safely",
   "summary": "Continue the 3270 P0 line from candidate12 by differential qualification against the mature s3270 reference, preserving one persistent session and evidence authority boundaries; keep TN5250 correctness work as a sibling line rather than allowing either protocol to contaminate the generic core.",
@@ -22,7 +22,9 @@
     "Keep ConnectSelector integration outside native terminal protocol semantics; bind it only at an application/service boundary when needed.",
     "For TN5250, continue the unresolved WRITE ERROR CODE/help and byte-exact Read Immediate work without regressing the 3270 P0 line.",
     "Re-run the MVS Intention native consumer against current candidate12 before promoting it from historical candidate8 qualification.",
-    "Use one live ED209Z session/LU for the Terminal Machine↔s3270 differential, preserving one-writer ownership; repeat independently for ED209ZZ after ED209Z evidence is captured."
+    "Use one live ED209Z session/LU for the Terminal Machine↔s3270 differential, preserving one-writer ownership; repeat independently for ED209ZZ after ED209Z evidence is captured.",
+    "Qualify MVS Intention dev11 against candidate16 under exact r13196 before promoting its downstream compatibility claim.",
+    "For live ED209 evidence, run Terminal Machine first and cleanly log off before the independent s3270 oracle; retain the complete ReadBuffer response and normalized metadata separately."
   ],
   "topics": [
     "terminal",

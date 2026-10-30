@@ -1001,3 +1001,8 @@ An independent ooRexx 5.3.0 r13196 compatibility run exposed a bad candidate13/1
 
 This is deliberately a reference-evidence correction. TN3270/TN3270E wire, presentation-space mutation, ownership and MVS known-state semantics are unchanged from candidate14.
 
+## v0.22-candidate16: extended-attribute differential evidence
+
+Candidate16 closes the remaining obvious semantic gap in the independent s3270 oracle. `ReadBuffer(Ascii)` `SF(...)` tokens may carry both the basic `c0` attribute and extended attributes such as highlighting (41), foreground (42), character set (43) and background (45); `SA(...)` changes character attributes without consuming a display position. The reference adapter now retains those facts. Field-level extended attributes are compared directly with `TerminalFieldSnapshot` attributes. Character-level attributes are reduced on both sides to the same canonical per-screen digest, so drift is detectable without exporting per-cell secrets or changing the generic terminal snapshot contract.
+
+This remains evidence-only. It does not alter TN3270/TN3270E wire negotiation, host mutation, ownership, credentials, MVS state authority, or the candidate15 exact-row gates.

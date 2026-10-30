@@ -1,0 +1,122 @@
+{
+  "schema": "semantic-source.code-examiner.wire-design/1",
+  "siteId": "SSC_CODE_EXAMINER",
+  "applicationId": "SSC-CODE-EXAMINER",
+  "purpose": "Human examination and disposition of semantic source code and work entries.",
+  "authority": "server",
+  "root": {
+    "role": "code-examiner",
+    "regions": [
+      {
+        "id": "NAV",
+        "role": "examiner-nav",
+        "contains": [
+          "CATALOG",
+          "SEARCH",
+          "RESULTS",
+          "TICKETS",
+          "WORK_ENTRIES"
+        ]
+      },
+      {
+        "id": "CODE",
+        "role": "examiner-code",
+        "contains": [
+          "REVISION_PIN",
+          "SOURCE_VIEW",
+          "VERSION_COMPARE"
+        ]
+      },
+      {
+        "id": "CONTEXT",
+        "role": "examiner-context",
+        "contains": [
+          "DESIGN",
+          "FINDINGS",
+          "METHOD_META",
+          "RESOURCES",
+          "TEST_EVIDENCE",
+          "WORK_REVIEW",
+          "MODULES",
+          "BRANCHES",
+          "SEMANTIC_GRAPH",
+          "RUNTIME_SURFACE"
+        ]
+      },
+      {
+        "id": "ACTIONS",
+        "role": "examiner-actions",
+        "contains": [
+          "MARK_ERROR",
+          "RESOLVE_FINDING",
+          "COMPARE_REVISIONS",
+          "ADD_METHOD_REQUIREMENT",
+          "ADD_METHOD_NOTE",
+          "UPLOAD_RESOURCE",
+          "REQUEST_BUILD",
+          "REQUEST_TEST",
+          "ACCEPT_WORK",
+          "REFUSE_WORK",
+          "REFRESH",
+          "CREATE_MODULE_REQUIREMENT",
+          "REQUEST_DEPLOYMENT_PACKAGE",
+          "BRANCH_CLASSIFY",
+          "BRANCH_PROTECT",
+          "BRANCH_PACKAGE_REQUEST",
+          "BRANCH_CONFLICT_RESOLVE",
+          "GOTO_DEFINITION",
+          "FIND_USES",
+          "CALLERS",
+          "CALLEES",
+          "REFERENCE_EXPLAIN",
+          "CLASS_SURFACE",
+          "CLASS_OVERRIDES"
+        ]
+      }
+    ]
+  },
+  "semanticActions": {
+    "SEARCH": "CODE.SEARCH",
+    "OPEN": "CODE.OPEN",
+    "MARK_ERROR": "CODE.FINDING.CREATE",
+    "RESOLVE_FINDING": "CODE.FINDING.RESOLVE",
+    "REQUEST_BUILD": "CODE.PACKAGE.REQUEST",
+    "REQUEST_TEST": "CODE.TEST.REQUEST",
+    "ACCEPT_WORK": "WORK.ACCEPT",
+    "REFUSE_WORK": "WORK.REFUSE",
+    "REFRESH": "CODE.REFRESH",
+    "CREATE_MODULE_REQUIREMENT": "MODULE.REQUIREMENT.CREATE",
+    "REQUEST_DEPLOYMENT_PACKAGE": "DEPLOYMENT.PACKAGE.REQUEST",
+    "GOTO_DEFINITION": "CODE.GOTO_DEFINITION",
+    "FIND_USES": "CODE.FIND_USES",
+    "CALLERS": "CODE.CALLERS",
+    "CALLEES": "CODE.CALLEES",
+    "REFERENCE_EXPLAIN": "CODE.REFERENCE.EXPLAIN",
+    "CLASS_SURFACE": "CODE.CLASS.SURFACE",
+    "CLASS_OVERRIDES": "CODE.CLASS.OVERRIDES",
+    "CATALOG": "CODE.CATALOG",
+    "COMPARE_REVISIONS": "CODE.COMPARE",
+    "ADD_METHOD_REQUIREMENT": "METHOD.REQUIREMENT.CREATE",
+    "ADD_METHOD_NOTE": "METHOD.NOTE.CREATE",
+    "UPLOAD_RESOURCE": "RESOURCE.UPLOAD",
+    "BRANCH_CLASSIFY": "BRANCH.CLASSIFY",
+    "BRANCH_PROTECT": "BRANCH.PROTECT",
+    "BRANCH_PACKAGE_REQUEST": "BRANCH.PACKAGE.REQUEST",
+    "BRANCH_CONFLICT_RESOLVE": "BRANCH.CONFLICT.RESOLVE"
+  },
+  "reviewInvariant": "Source, design, findings, test evidence and disposition controls must all display and act on the same exact semantic object and revision identity.",
+  "browserProhibitions": [
+    "No direct database writes",
+    "No source revision promotion",
+    "No local inference of test result",
+    "No local inference of work acceptance",
+    "No browser-selected dependency revision unless explicitly submitted as a pin",
+    "No hard-coded module or source-file inventory in HTML/JavaScript",
+    "No manually edited browser transport configuration; bootstrap values come from the application service descriptor"
+  ],
+  "catalogInvariant": "Module, source-unit, deployment and branch navigation is populated from server-authoritative catalog data; adding source to the store requires no browser edit.",
+  "contextInvariant": "Opening a semantic object returns design, findings, exact revision identity, revision history, scoped requirements, notes, resources, module/deployment state, branch state, semantic references, runtime surfaces, test evidence, work entries, exports and dependencies from server authority; missing sections fail closed.",
+  "actions": {
+    "CLASS_INSPECT": "CODE.CLASS.INSPECT"
+  }
+}

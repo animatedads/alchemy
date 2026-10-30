@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "arch.brand.effectiveness",
+  "version": "0.1",
+  "sphere": "brand-interaction-stack",
+  "title": "Intervention Effectiveness v0.2: confidence is a separate gate",
+  "summary": "Effectiveness measures observed association between intervention-applied and eligible-not-applied journeys. v0.2 requires denominator sufficiency, effect materiality and, by default, non-overlapping 95% Wilson intervals before directional PROMISING/ADVERSE labels are emitted.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "The denominator is intervention-eligible journeys, not all customers.",
+    "Primary and guardrail outcomes stay separate; no one-metric optimisation.",
+    "Overlapping confidence intervals produce NO_CLEAR_ASSOCIATION by default even when the point estimate looks material.",
+    "The confidence rule is configurable and preserved in canonical reasoning material.",
+    "RANDOMIZED is study-design provenance and never self-promotes causal authority.",
+    "Current, previous and long-baseline studies remain separate."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "brand_intervention_effectiveness_v0.2.zip",
+      "sha256": "dcb1e97adcfcb1e22901094896ae93c6438794844fe8fe3d5c17522d73589c98",
+      "member": "brand_intervention_effectiveness_v0.2/README.md",
+      "line_start": 7,
+      "line_end": 34,
+      "claim": "Eligibility denominator, guardrails, confidence gate and NO_CLEAR_ASSOCIATION on overlap."
+    },
+    {
+      "artifact": "brand_intervention_effectiveness_v0.2.zip",
+      "sha256": "dcb1e97adcfcb1e22901094896ae93c6438794844fe8fe3d5c17522d73589c98",
+      "member": "brand_intervention_effectiveness_v0.2/docs/ARCHITECTURE.md",
+      "line_start": 13,
+      "line_end": 38,
+      "claim": "Association-only causal boundary and configured confidence-gate pipeline."
+    }
+  ]
+}

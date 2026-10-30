@@ -1,0 +1,66 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "ed209_rto2_20mi",
+    "version": "0.1-candidate3",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "guest-image-preflight",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_guest_preflight.py",
+        "-v"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "additive-handler-overlay",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_overlay.py",
+        "-v"
+      ],
+      "timeout_seconds": 60
+    },
+    {
+      "name": "typed-controller-failure",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_mu_controller_failure.py",
+        "-v"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/ed209_rto2_20mi_candidate3"
+    }
+  }
+}

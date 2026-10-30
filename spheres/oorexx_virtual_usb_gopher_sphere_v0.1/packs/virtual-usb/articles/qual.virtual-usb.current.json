@@ -3,24 +3,24 @@
   "id": "qual.virtual-usb.current",
   "version": "0.1",
   "sphere": "virtual-usb",
-  "title": "Current qualification truth: dev10 wait repair, clean live HID generation pending",
-  "summary": "dev9 remains the Current Library semantic/FIDO baseline. Static review found that its live qualifier sampled HID and hidraw only once after new-device discovery, so asynchronous Linux publication could cause a false failure. dev10 fixes that evidence race and passes both generation and delayed-binding shell regressions; clean presenter-owned target HID/hidraw qualification is still pending.",
+  "title": "Current qualification truth: dev11 hidraw generation guard, clean live target pending",
+  "summary": "dev9 remains Current Library. CODEX-PC independently reviewed dev10 and marked the strong stale-generation claim NOT_PROVEN because hidraw matching was path-based. dev11 snapshots pre-existing hidraw class-object identity, requires a new/rebound class generation under the selected HID interface, and keeps the selected USB devnum stable through HID/hidraw waits. Its forcing regression fails dev10 and passes dev11; clean target-host evidence is still pending.",
   "authority": "project-authority",
   "invariants": [
-    "The dev9 package-side suite passed dependency, core, Chapter 9, profile, configuration-state, HID profile, CTAPHID, CTAP2 GetInfo, credential, Raw Gadget presentation-error and Raw Gadget control-direction tests.",
-    "The target Raw Gadget substrate was proven on kernel 7.2.8-1-default with raw_gadget, dummy_hcd, /dev/raw-gadget and dummy_udc.0.",
-    "The earlier dev8 USB node CAFE:F1D0 is not accepted as evidence about the dev8 presenter because that presenter later failed Raw Gadget RUN/UDC registration with EBUSY.",
-    "dev9 correctly added idle-UDC ownership and sysfs-path:devnum generation identity but sampled HID interface and hidraw publication only once.",
-    "dev10 waits independently for HID class 03 and matching hidraw while requiring presenter liveness.",
-    "The delayed-binding regression fails against unmodified dev9 behavior and passes against dev10; the stale-generation guard also passes.",
-    "A clean dev10 live PASS still requires presenter-owned new CAFE:F1D0, HID class 03 and matching hidraw.",
-    "libfido2 discovery, browser/WebAuthn enrollment and relying-party acceptance remain later qualification stages."
+    "dev9 remains the Current Library semantic/FIDO baseline.",
+    "dev10 fixed asynchronous device -> HID -> hidraw publication timing but did not independently identify hidraw class generation.",
+    "CODEX-PC reply REQ-00000901 marked dev10's cannot-accept-stale-generation claim NOT_PROVEN.",
+    "dev11 snapshots pre-existing hidraw class-entry identity and rejects those class generations for the current run.",
+    "A dev11 hidraw candidate must be newly published/rebound, resolve under the selected HID interface, have a matching /dev/hidrawN node, and the selected USB devnum must remain stable.",
+    "tests/test_live_hidraw_generation_guard.sh fails against dev10 because stale hidraw7 is accepted after path reuse, and passes against dev11 only after class rebind.",
+    "The existing stale USB generation guard and delayed-binding wait regression continue to pass.",
+    "A clean live PASS still requires current presenter UDC ownership, new CAFE:F1D0 generation, HID class 03 and matching new/rebound hidraw generation.",
+    "libfido2, browser/WebAuthn and relying-party acceptance remain later gates."
   ],
   "procedure": [
-    "Do not reinterpret the invalid dev8 no-HID result as a provider defect.",
-    "Run the clean dev10 live qualifier on an idle UDC.",
-    "On timeout, inspect persisted Raw Gadget trace and kernel diagnostics before modifying provider semantics.",
-    "Only after HID/hidraw PASS, add libfido2 and browser/WebAuthn evidence as separate gates."
+    "Run the clean dev11 live qualifier on an idle dummy_udc.0 with the locked dependency closure.",
+    "If a phase times out, inspect persisted Raw Gadget trace and kernel/sysfs diagnostics before changing provider semantics.",
+    "After HID/hidraw PASS, qualify libfido2 and browser/WebAuthn separately."
   ],
   "provenance": [
     {
@@ -35,6 +35,13 @@
       "sha256": "e9dc6a1c90e97df563de81a4d64ad53339101cf7b63622aeda853835a303b701",
       "member": "oorexx_virtual_usb_v0.1-dev10/VALIDATION.txt",
       "claim": "dev10 records the delayed binding race, bounded waits, regression result and still-pending clean target acceptance.",
+      "note": "Current development candidate qualification."
+    },
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev11.zip",
+      "sha256": "d052144c13e965fa7bc4e6bfbf1c0feed1cb7804eda6d11555e28f48661a33e3",
+      "member": "oorexx_virtual_usb_v0.1-dev11/VALIDATION.txt",
+      "claim": "dev11 closes the independent hidraw-generation evidence gap and records forcing regression results.",
       "note": "Current development candidate qualification."
     }
   ]

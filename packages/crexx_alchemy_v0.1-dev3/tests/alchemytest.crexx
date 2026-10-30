@@ -1,0 +1,28 @@
+options levelb
+namespace alchemytest_qualification
+import alchemytest
+main: procedure = .int
+  box = .box(41)
+  if box.value() \= 41 then return 1
+  id = box.identity()
+  alias = box
+  if alias.identity() \= id then return 2
+  if alias.increment() \= 42 | box.value() \= 42 then return 3
+  if invoke_callback(.middle_callback(), 111111) \= 333333 then return 4
+  if box.close() \= 0 | alias.close() \= 0 then return 5
+  say "PASS: cREXX Alchemy nested callback"
+  return 0
+middle_callback: class
+  *: factory
+    return
+  on_value: method = .int
+    arg value = .int
+    if value \= 111111 then return -1
+    return nested_invoke_callback(.leaf_callback(), 222222)
+leaf_callback: class
+  *: factory
+    return
+  on_value: method = .int
+    arg value = .int
+    if value \= 222222 then return -2
+    return 333333

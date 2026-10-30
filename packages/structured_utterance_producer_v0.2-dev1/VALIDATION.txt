@@ -1,0 +1,23 @@
+Structured Utterance Producer v0.2-dev1 validation state
+=======================================================
+Date: 2026-10-29
+API: structured.utterance.producer/0.1
+New payload schema: structured.utterance.production-result/0.1
+Status: SOURCE CANDIDATE — fresh r13196 execution pending independent test.
+
+Scope
+-----
+This development candidate adds only the typed domain result projection required for Structured Response convergence. It deliberately does not define the Structured Response common envelope.
+
+Required gates
+--------------
+- all inherited v0.1 executable regressions must remain green;
+- new test_structured_response_payload_boundary.rex must pass;
+- payload must retain delivery/deidentified result and evidence points;
+- payload must not define requestId, receipt, warnings, errors, authority, cognitiveEffects or other common-envelope fields;
+- API structured.utterance.producer/0.1 remains compatible;
+- exact ooRexx runtime gate is 5.3.0 r13196.
+
+Evidence note
+-------------
+The v0.1 package was manually published to Git main on 2026-10-23 during Autobuild outage. That publication explicitly ran no tests and wrote no Autobuild receipt. Historical v0.1 direct qualification remains evidence for the predecessor tree only. Fresh v0.2-dev1 execution is requested independently through the Rasen Falcon lane and must not be inferred from source publication.

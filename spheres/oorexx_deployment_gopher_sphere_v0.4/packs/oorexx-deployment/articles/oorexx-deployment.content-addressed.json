@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.content-addressed",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Content-addressed generations must still be reverified",
+  "summary": "deploy_tree.sh stages immutable-looking release generations keyed by a SHA-256 tree digest and flips a current symlink. A generation marker is only a hint: existing generation contents are rehashed and drift/corruption is repaired rather than trusting the marker.",
+  "authority": "project-doctrine",
+  "section": "architecture",
+  "invariants": [
+    "Content identity is determined by file content, not release name alone.",
+    "Existing generation contents must be reverified before reuse.",
+    "Current should move atomically or as nearly atomically as the provider supports.",
+    "Mutable runtime/work output must stay outside the content digest when it is explicitly excluded from desired package content.",
+    "A damaged release generation is repaired; the marker does not overrule observed bytes."
+  ],
+  "topics": [
+    "content-addressed",
+    "sha256",
+    "generation",
+    "drift",
+    "staging"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/bin/deploy_tree.sh",
+      "claim": "Implements tree hashing, generation directories, rehash-before-reuse, repair and current symlink switch.",
+      "line_start": 22,
+      "line_end": 52
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/VALIDATION.txt",
+      "claim": "Qualification explicitly states content-addressed reconciliation repairs drift.",
+      "line_start": 1,
+      "line_end": 5
+    }
+  ]
+}

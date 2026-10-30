@@ -1,0 +1,56 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.web-readiness",
+  "version": "0.3",
+  "sphere": "wire-ui-runtime",
+  "title": "Web access-point readiness and HTTP-front neutrality",
+  "summary": "Web readiness is a staged semantic condition, not HTTP/WebSocket liveness. For Rasen Falcon, source and review staging are present but exact HTTPS 0.4.8 runtime/live TLS, LDAP installation/live LDAPS, release admission and live browser semantic roundtrip remain required.",
+  "authority": "project-runtime",
+  "readiness_stages": [
+    "HTTP/static shell available",
+    "Wire runtime loaded",
+    "WebSocket transport established",
+    "UI_HELLO/profile negotiation accepted",
+    "authorised definitions/resources ready",
+    "authoritative snapshot committed",
+    "view synchronized and semantic actions enabled",
+    "exact HTTPS package runtime/live TLS qualified for the deployed host",
+    "required LDAP identity service installed and live-qualified when the surface requires it",
+    "deployment receipt says installed/running only after service probes pass"
+  ],
+  "invariants": [
+    "HTTP front may be Node, ooRexx HTTP/HTTPS or another conforming static/bootstrap front without acquiring application authority.",
+    "Do not report a WebSocket 101 as a live synchronized Wire view.",
+    "SOURCE or another semantic surface being alive does not prove DESIGN or every other projected surface is populated.",
+    "HTTP/static delivery must not become a second business API."
+  ],
+  "related_spheres": [
+    "wire-ui-builder"
+  ],
+  "provenance": [
+    {
+      "artifact": "wire-ui-builder-engineering-sphere-v0.2-CHANGELOG.md",
+      "sha256": "824371d40ce693903ed0abf2893373e79432caebfb6d97493bde4d5d66411d0d",
+      "member": "CHANGELOG.md",
+      "claim": "Builder continuity records HTTP-front qualification and truthful browser session readiness."
+    },
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.4_source_candidate.zip",
+      "sha256": "15f6056fb599d4e0a77fa64040cfdad4f7f6386019bb3dd845c2ef013b30cede",
+      "member": "rasenfalcon_delivery_v0.4.4/README.md",
+      "claim": "Review-only General Deployment staging exists and release still refuses installation."
+    },
+    {
+      "artifact": "oorexx_https_server_v0.4.8.zip",
+      "sha256": "d38ddd049e5d8f5683e4ebf09e09a870c9c562bd3663db32950df711f7040fbe",
+      "member": "oorexx_https_server_v0.4.8/VALIDATION.txt",
+      "claim": "Static 0.4.8 contract passes do not qualify modified runtime/live TLS."
+    },
+    {
+      "artifact": "oorexx_ldap_identity_v0.1-dev22.zip",
+      "sha256": "697c301c37ad1d77252a34db9028420c4c9a3e3dbe5c60de9be6fc91940341fc",
+      "member": "oorexx_ldap_identity_v0.1-dev22/VALIDATION_DEV22.txt",
+      "claim": "LDAP deployment shape exists; install/live LDAPS remain open."
+    }
+  ]
+}

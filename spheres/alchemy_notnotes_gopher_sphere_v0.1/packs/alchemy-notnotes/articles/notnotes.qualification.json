@@ -3,24 +3,35 @@
   "id": "notnotes.qualification",
   "title": "Qualification evidence and next steps",
   "section": "qualification",
-  "body": "Archived NotNotes dev15 source and tests are imported byte-exact into Git, verified against the source ZIP for the three core .cls Git blobs. No fresh ooRexx r13196 test or live NotNotes document write was performed in the current session.\n\nRebuild the complete declared dependency closure; qualify document persistence and cluster fencing under real interpreter; verify write authorization and version fencing; integrate the dev10 proposal against actual NotNotes API; and retain the user-facing v0.6.2 corpus as separate authority.",
+  "body": "Alchemy NotNotes dev15 and Mini NotNotes dev16 source are published in Git with retained source-import provenance. Project Alchemy corpus v0.7 has a fresh-process/reopen qualification under ooRexx 5.3.0 r13196 reporting TOTAL=954 and VERIFY=PASS. The corpus also records a real dogfood scale finding: interactive UNLINK target discovery over roughly 952 documents exceeded the bounded execution window, so the repaired import used canonical-key MANY-reference removal through Intention Service and recommends an explicit bulk-safe linkByKey/unlinkByKey-style API.\n\nProgramme NotNotes v0.2 was separately executed in an isolated database and verified three formats, two saved reports, restart durability and native PDF output. Its SQL path intentionally fails closed when the supplied NotNotes runtime lacks the selected native SQL backend. Neither that candidate nor the v0.7 corpus is claimed installed as the production programme database. The next documentation-platform gate is to link programme reuse/dependency/activation records to existing Alchemy Component documents through DOCUMENT_REFERENCE MANY, retain explicit trust/last-verified fields, and qualify a bounded headless/virtualized startup path on the full 954+ document corpus.",
   "version": "0.1",
   "sphere": "alchemy-notnotes",
-  "summary": "Archived NotNotes dev15 source and tests are imported byte-exact into Git, verified against the source ZIP for the three core .cls Git blobs. No fresh ooRexx r13196 test or live NotNotes document write was performed in the current session.",
+  "summary": "v0.7 reopens and verifies 954 corpus documents; Programme NotNotes v0.2 separately proves native forms/reports/restart/PDF while retaining explicit non-deployment and SQL-qualification boundaries.",
   "authority": "project-artifact",
   "invariants": [
     "NotNotes alone owns its document truth and revision state",
     "Transport and UI are adapters, not document authorities",
-    "No qualification can be assumed from Git source publication"
+    "No qualification can be assumed from Git source publication",
+    "No installed/running claim is made without operational evidence",
+    "Native SQL selection must fail closed rather than silently fall back to file storage"
   ],
   "provenance": [
     {
-      "artifact": "alchemy_notnotes_v0.1-dev15.zip",
-      "sha256": "57a7d1b09234621f20c9de5dda312b4e38140b57cb87c45f7318e59730db4488",
-      "claim": "Exact historical source package; not a newer runtime acceptance"
+      "artifact": "project_alchemy_notnotes_corpus_v0.7_working.zip",
+      "claim": "Fresh-process qualification: VERIFY=PASS; TOTAL=954"
+    },
+    {
+      "artifact": "alchemy_programme_notnotes_v0.2.zip",
+      "claim": "Isolated native programme-view test: PROGRAMME_NOTNOTES_NATIVE_PASS reuse=4 referrals=1 activation=3"
+    },
+    {
+      "artifact": "notnotes_source_publication_2026-10-24.zip",
+      "sha256": "a0ce2160e69ba85009541477f3f6bac08452ab4ce83f06ee5ac8411d5fce7553",
+      "claim": "Immutable source publication provenance; not a substitute for rerunning every integration"
     }
   ],
   "related": [
-    "notnotes.integration"
+    "notnotes.integration",
+    "notnotes.programme"
   ]
 }

@@ -45,3 +45,10 @@ The package establishes a separate bounded operational plane (health, counters,
 gauges, progress, publication/history/query) while existing logging remains the
 forensic event stream. SIP dev12 consumes that contract through a read-side
 adapter and creates no second telemetry socket or service transport.
+
+
+## dev17 LDAP Identity integration provenance
+
+- `oorexx_ldap_identity_v0.1-dev22.zip` was read from Library for the current `IdentityDirectory`, `DirectoryCredential`, `LdapAuthenticator` and `SecretBrokerSimpleBindAuthenticator` contracts. SIP does not edit or embed LDAP Identity.
+- Current estate Socket Provider authority is v0.1-dev16 (SHA-256 `fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2`); the dev17 environment runner now names dev16.
+- Current SIP source derives from the sealed dev16 archive and adds only the optional credential-provider seam, LDAP/Secret Broker adapter, tests, docs and dependency reconciliation.

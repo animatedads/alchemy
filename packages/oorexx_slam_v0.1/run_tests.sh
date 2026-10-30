@@ -50,6 +50,15 @@ echo "== PROVED: a tier above TESTED (certificates checked in exact rationals, o
 REXX_PATH="$REXX_PATH:$P/oorexx_maths_v0.8/rexx" rexx tests/test_proof.rex "$WORK|$P/fd_door_micro_motion_v0.2-dev8/src/FDDoorMicroMotion.cls|$ROOT/tests/fixtures/fdsqrt_fixed14.cls|$P/oorexx_vision/src/Vision.cls|$P/oorexx_crypto_v0.8.3/src/crypto.cls|$P/oorexx_adb_v0.1-dev1/src/AdbAuth.cls"
 echo "== which tool wrote which code: provenance, a habit found by shape, outcomes by tool (needs git history)"
 REXX_PATH="$REXX_PATH:$P/oorexx_maths_v0.8/rexx" rexx tests/test_provenance.rex "$WORK|$REPO"
+RT="$P/oorexx_reasoned_thought_v0.1/src"
+echo "== SLAM's evidence argued by the Reasoned Thought engine; SLAM's actions resting on its conclusions"
+REXX_PATH="$REXX_PATH:$P/oorexx_maths_v0.8/rexx:$RT" rexx tests/test_reasoning.rex "$WORK|$REPO"
+echo "== legislation -> small model -> SLAM -> Reasoned Thought: Computer Misuse Act 1990 (XML), CPS guidance, made-up cases"
+REXX_PATH="$REXX_PATH:$RT" rexx tests/test_law.rex "$WORK|$ROOT"
+echo "== did Gemini apply its own stated standard evenly? (the Reasoned Thought standard-application audit, unchanged)"
+REXX_PATH="$REXX_PATH:$RT" rexx tests/test_gemini_standard.rex
+echo "== one set of events, many offences: the shared word list (gate 6), the Mrs P case, the Computer Misuse Act in E.W. and S."
+REXX_PATH="$REXX_PATH:$RT:$(dirname "$(command -v rexx)")" rexx tests/test_screen.rex "$WORK|$ROOT|$REPO"
 echo "== second language: the Java reader (fixture compiled by javac first, so it is real Java)"
 E="$REPO/examples"
 ATM="$E/federationbank_java_atm_v0.1.9"
@@ -65,6 +74,8 @@ java -cp "$WORK/atm/c:$WORK/atm/p" OfflineRuleProbe > "$WORK/probe_java.txt"
 FB="$E/federationbank_engine_v0.9.1/src:$P/security_effect_v0.14/src:$P/security_effect_v0.14/runtime:$P/legal_effect_v0.14/src:$P/institutional_policy_v0.8/src:$P/oorexx_queue_fabric_v0.9-dev5/src:$P/alchemy_objects_v0.8/src:$P/oorexx_crypto_v0.1/src:$P/oorexx_db_skeleton_v0_46:$P/civicport_v0.14/src:$P/oorexx_jms_queue_bridge_v0.1-dev7-fb1/src"
 (cd "$WORK" && REXX_PATH="$FB" rexx "$ROOT/tests/rules/offline_rule_probe.rex" > "$WORK/probe_rexx.txt")
 rexx tests/test_rules.rex "$WORK|$E/federationbank_engine_v0.9.1/src/FederationBankAtmGateway.cls|$ATM/src|$WORK/probe_rexx.txt|$WORK/probe_java.txt"
+echo "== Body Slam: how the estate hangs together (each label proved by an interpreter run; the scanner against RxLexer on real files)"
+rexx tests/test_bodyslam.rex "$WORK|$REPO|25"
 echo "== third language: C++ (needs OOREXX_SRC: an ooRexx source tree; RX2CPP_ROOT: animatedads/oorexx's oorexx2cpp; Boost headers)"
 if [ -n "${OOREXX_SRC:-}" ] && [ -n "${RX2CPP_ROOT:-}" ] && [ -d "${OOREXX_SRC}/interpreter" ]; then
   g++ -std=c++17 -fsyntax-only "$ROOT/tests/fixtures/shapes.cpp"
@@ -105,4 +116,11 @@ if [ -n "${LIBC_SRC:-}" ] && [ -d "${LIBC_SRC}/libc" ] && [ -d "${LIBC_SRC}/libc
   rexx tests/test_libc.rex "$WORK/libc.db|$WORK/libcxx.db|$WORK/libc_node.txt"
 else
   echo "SKIP libc: set LIBC_SRC to run it"
+fi
+echo "== unit tests SLAM writes: ooTest and JUnit (needs OOTEST_ROOT: an unzipped ooTest snapshot; JUNIT_CP and NETREXX_HOME for JUnit; about 40 minutes)"
+if [ -n "${OOTEST_ROOT:-}" ] && [ -f "${OOTEST_ROOT}/ooTest.frm" ]; then
+  sh tests/unit/qualify.sh "$WORK" "$REPO" "$OOTEST_ROOT" "${JUNIT_CP:-}" "${NETREXX_HOME:-}"
+  rexx tests/test_unit.rex "$WORK"
+else
+  echo "SKIP unit tests: set OOTEST_ROOT to run it"
 fi

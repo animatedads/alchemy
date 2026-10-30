@@ -1,0 +1,72 @@
+{
+  "kind": "article",
+  "id": "messaging-presence.api-client-socket-carrier",
+  "version": "0.3",
+  "sphere": "messaging-presence",
+  "section": "transport",
+  "title": "API Client HTTPS over the shared SocketProvider carrier boundary",
+  "summary": "API Client keeps HTTP/TLS authority while Socket Intention dynamically selects a raw SocketProvider stream for each request; optional post-selection admission can require exact lower-route evidence.",
+  "authority": "transport-composition-contract",
+  "invariants": [
+    "ApiHttpsTransport owns HTTP/1.1, HTTP/2, redirects, TLS identity, SNI and ALPN.",
+    "SocketProvider owns native carrier acquisition and retains the exact selected SocketAddress object.",
+    "ApiSocketProviderConnector does not choose TCP, XTP, Unix or any other socket family.",
+    "ApiSocketIntentionRouteResolver performs fresh negotiation on every resolve and does not cache a startup route.",
+    "API Client route requirements remain exact ooRexx objects in negotiation metadata; they are not converted into socket-family policy.",
+    "Lower carrier negotiation requires a stream but not a secure socket because API Client TLS runs above it; TLS SocketProvider is excluded from the default raw carrier schemes.",
+    "An optional ApiSocketRouteAdmissionPolicy runs after selection and before SocketProvider acquisition and receives the exact selected address/request/selection objects.",
+    "ApiSocketRequiredMetadataPolicy compares deployment-required address evidence exactly and fails closed on missing or mismatched evidence.",
+    "The adapter assigns no XTP, LDAP, private-CA or attestation semantics to metadata; those meanings and evidence are owned below this boundary.",
+    "No caller request boolean is itself accepted as authenticated route evidence.",
+    "The adapter creates an architectural HTTPS-over-XTP route but does not constitute live HTTPS-over-XTP qualification."
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_api_client_v0.4.1",
+      "member": "src/ApiHttpTransport.cls",
+      "claim": "Optional ApiSocketConnector acquisition while retaining ApiRxSockConnector as default."
+    },
+    {
+      "artifact": "packages/oorexx_api_client_socket_provider_adapter",
+      "member": "src/ApiClientSocketProviderAdapter.cls",
+      "claim": "dev3 adds fresh Socket Intention selection plus optional exact selected-route admission before SocketProvider acquisition."
+    },
+    {
+      "artifact": "packages/oorexx_socket_provider",
+      "member": "src/SocketProvider.cls",
+      "claim": "Provider owns streamSenderAt and exact SocketAddress acquisition."
+    },
+    {
+      "artifact": "packages/oorexx_xtp_v0.1-dev34",
+      "member": "docs/SECURITY.md",
+      "claim": "Current XTP context provides per-service protection with LDAP Identity Directory and Secret Broker key-source paths."
+    },
+    {
+      "artifact": "packages/oorexx_connect_selector_v0.1-dev8",
+      "member": "README.md",
+      "claim": "Authenticated remote-route admission is a separate platform authority and must bind attestation to the actual peer/channel, not caller options."
+    }
+  ],
+  "qualification": {
+    "status": "dev3-source-candidate-runtime-pending",
+    "runtimeExecuted": false,
+    "open": [
+      "Run carrier, dynamic resolver and route-admission deterministic suites under ooRexx 5.3.0 r13196 from the current candidate.",
+      "Bind a real lower security/route authority to selected SocketAddress evidence; do not manufacture evidence in API Client.",
+      "Qualify an exact XTP dev34 selected sender/stream with bounded provider-native readiness.",
+      "Run live private-CA API Client HTTPS over that XTP carrier before making an HTTPS-over-XTP production claim."
+    ],
+    "sourceVersion": "0.1-dev3"
+  },
+  "current_xtp_context": {
+    "version": "0.1-dev34",
+    "source": "packages/oorexx_xtp_v0.1-dev34",
+    "selectorDependency": "Socket Provider 0.1-dev16",
+    "protection": "per-service sessions/messages/streams/multipath; LDAP Identity Directory + Secret Broker optional key source"
+  },
+  "current_connect_selector_context": {
+    "version": "0.1-dev8",
+    "source": "packages/oorexx_connect_selector_v0.1-dev8",
+    "role": "authenticated invocation-route admission; separate from API Client carrier admission"
+  }
+}

@@ -1,0 +1,46 @@
+NoSQLServer v0.81 DB2 personality validation
+Date: 2026-10-04
+
+Runtime used:
+  Open Object Rexx 5.3.0 r13196 - Internal Test Version
+  extracted privately from the user-supplied Ubuntu debug .deb
+
+Dependencies used:
+  alchemy_objects_v0.8 supplied by the user in this turn
+  crypto.cls retrieved from Library only to satisfy Alchemy class loading
+
+PASS (rc=0):
+  tests/v080_db2_personality_smoke.rex
+  tests/v081_db2_catalog_schema_smoke.rex
+  tests/sql92_company_smoke.rex
+  tests/v041_limit_offset_smoke.rex
+  tests/v042_fetch_with_ties_smoke.rex
+  tests/v047_values_table_source_smoke.rex
+
+Not counted as a failure:
+  tests/sql_smoke.rex requires a source database root argument and exits 2
+  when invoked without one. It was therefore not used as a standalone gate.
+
+Alchemy qualification boundary:
+  The real Alchemy Objects v0.8 source is on REXX_PATH and the DB2 personality
+  constructs/executes through NoSQLAlchemyObject successfully in the passing
+  DB2 tests above.
+
+  Full NoSQLServer Alchemy adoption tests v077/v078/v079 were attempted but
+  cannot be qualified with the available dependencies. They fail before the
+  NoSQLServer assertions because the Library crypto.cls available in this
+  environment does not provide Crypto v0.8.3's CryptoMacKeyRing class:
+
+    Object ".CRYPTOMACKEYRING" does not understand message "NEW".
+
+  Accordingly v0.81 does NOT claim a fresh full Alchemy v0.8 + Crypto v0.8.3
+  adoption requalification. Supply oorexx_crypto_v0.8.3 to close this gate.
+
+DB2 v0.81 qualification scope:
+  - current-schema qualified object references
+  - quoted string preservation during schema translation
+  - SYSCAT.TABLES / SYSCAT.COLUMNS retained
+  - SYSCAT.INDEXES / SYSCAT.INDEXCOLUSE
+  - SYSCAT.TABCONST / SYSCAT.KEYCOLUSE / SYSCAT.REFERENCES
+  - PK/UQ/FK synthetic metadata naming
+  - explicit unsupported behaviour retained for WITH UR and identity generation
