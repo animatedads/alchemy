@@ -6,3 +6,4 @@ python3 tests/test_render_matches.py
 python3 tests/test_review_feedback.py
 python3 tests/test_v7_validate.py
 python3 tests/test_v7_scan.py
+python3 tests/test_v7_render.py
