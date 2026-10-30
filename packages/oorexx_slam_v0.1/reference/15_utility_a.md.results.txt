@@ -1,0 +1,27 @@
+reference/15_utility_a.md:128 SAME | say .DateTime~fromOrdinalDate("2020-041")                                                           
+reference/15_utility_a.md:183 SAME | say .DateTime~fromWeekNumberDate("2020-W07-1")                                                      
+reference/15_utility_a.md:277 SAME | today = .DateTime~new              -- current date and time / say .DateTime~new(date('F', "20170630"
+reference/15_utility_a.md:310 DIFFERENT | t = .dateTime~new~timeOfDay            -- returns TimeSpan for current time / say t                 
+reference/15_utility_a.md:348 SAME | say weekNumber(2018, 12, 31) / say weekNumber(2019, 1, 1) / say weekNumber(2020, 12, 31) / say weekN
+reference/15_utility_a.md:378 SAME | say .DateTime~new(2018, 12, 31)~weekNumberDate / say .DateTime~new(2019, 1, 1)~weekNumberDate / say 
+reference/15_utility_a.md:402 SAME | say weekNumber(2018, 12, 31) / say weekNumber(2019, 1, 1) / say weekNumber(2020, 12, 31) / say weekN
+reference/15_utility_a.md:431 SAME | do year = 2010 to 2030 /   d = .DateTime~new(year, 6, 30) /   if d~weeksInYear \= 52 then /     say 
+reference/15_utility_a.md:481 SAME | say .DateTime~new(2020, 2, 10)~ordinalDate                                                          
+reference/15_utility_a.md:540 SAME | date = .DateTime~new(2016, 6, 30) / say date / say date~addYears(1)                                 
+reference/15_utility_a.md:571 SAME | date = .DateTime~new(2016, 6, 30) / say date / say date~addDays(1.5)                                
+reference/15_utility_a.md:646 SAME | say .DateTime~new(2020, 2, 10)~yearDay                                                              
+reference/15_utility_a.md:913 SAME | say .TimeSpan~new(time('F', "15:37:30", "N")) / say .TimeSpan~new(15, 37, 30) / say .TimeSpan~new(6,
+reference/15_utility_a.md:951 SAME | t1 = .timespan~fromHours(1) / t2 = t1 * 2 / say t1 t2 (t1 + t2)                                     
+reference/15_utility_a.md:1123 SAME | oneSecond = .Alarm~new(1, .Target~new, "a second has passed") / call SysSleep 1.5                   
+reference/15_utility_a.md:1157 SAME | alarm = .Alarm~new(1 ,.message~new(.stdout, "SAY", "I", "Alarm went off")) / call SysSleep 0.5 / ala
+reference/15_utility_a.md:1195 NO REFERENCE | /* Alarm Examples */ / PersonalMessage = .MyMessageClass~new("Call the Bank") / msg = .Message~new(P
+reference/15_utility_a.md:1219 NO REFERENCE | PersonalMessage = .MyMessageClass~new("Call the Bank") / msg = .Message~new(PersonalMessage, "Remind
+reference/15_utility_a.md:1292 SAME | eachSecond = .Ticker~new(1, .Target~new, "once each second") / call SysSleep 1.5                    
+reference/15_utility_a.md:1316 SAME | twiceASecond = .Ticker~new(0.5, .Target~new) / call SysSleep 0.25                     -- too short f
+reference/15_utility_a.md:1343 SAME | tick = .Ticker~new(0.5 ,.message~new(.stdout, "SAY", "I", "knock, knock")) / call SysSleep 0.75 / sa
+reference/15_utility_a.md:1381 NO REFERENCE | .Progress~new(0.5)~monitor(.Task~new, "tenSeconds") /  / -- defines tasks together with their "progr
+reference/15_utility_a.md:1431 DIFFERENT | say .Ticker~new(.TimeSpan~fromSeconds(60), - /  .Message~new(.stdout, "say", "i", - /  "another minu
+reference/15_utility_a.md:1470 SAME | sem = .EventSemaphore~new / say sem~isPosted / sem~post / say sem~isPosted                          
+reference/15_utility_a.md:1519 DIFFERENT | event = .EventSemaphore~new / say "main starts tasks" / do nr = 1 to 5 /   .task~new~waitFor(event, 
+reference/15_utility_a.md:1592 DIFFERENT | mutex = .MutexSemaphore~new / .Task~new~startWork(mutex, "work 1") / .Task~new~startWork(mutex, "wor
+reference/15_utility_a.md:1681 NO REFERENCE | .local~setentry("output",.monitor~new(.stream~new("my.new")~~command("open nobuffer"))) / /* The fol
