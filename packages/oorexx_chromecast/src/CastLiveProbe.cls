@@ -15,21 +15,21 @@
     sessionState='FAILED'
     return .false
   end
-  sessionState='CONNECTED'
+  sessionState='CONNECT_SENT'
   return .true
 ::method ping
   expose connection sessionState
-  if sessionState<>'CONNECTED' then raise syntax 88.900 array('connect first')
+  if sessionState<>'CONNECT_SENT' then raise syntax 88.900 array('send CONNECT first')
   hc=.CastHeartbeatController~new(connection)
   return hc~ping
 ::method receiverStatus
   expose connection sessionState
-  if sessionState<>'CONNECTED' then raise syntax 88.900 array('connect first')
+  if sessionState<>'CONNECT_SENT' then raise syntax 88.900 array('send CONNECT first')
   rc=.CastReceiverController~new(connection)
   return rc~getStatus
 ::method observe
   expose connection sessionState
-  if sessionState<>'CONNECTED' then raise syntax 88.900 array('connect first')
+  if sessionState<>'CONNECT_SENT' then raise syntax 88.900 array('send CONNECT first')
   /* Transmission does not imply the remote receiver replied. */
   return connection~receive
 ::method close
