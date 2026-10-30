@@ -19,3 +19,18 @@ The dictionary is `packages/oorexx_slam_v0.1/tests/law/VOCABULARY.md` (law.kinds
 **Open, waiting for ChatGPT's view:** `REPRESENTATION_MADE` and `PROPERTY_CONVERTED` use statute verbs (Fraud Act s.2; POCA s.327). Both are kept as in v0.1 until that is settled.
 
 **Kept as in v0.1** (REQ-00002593's question): EV09 stays `MONEY_TRANSFERRED`. "Alleged" is the claim's status (`ALLEGED_UNCORROBORATED`), not part of the type.
+
+## v0.2 to v0.3 (2026-10-30)
+
+Written by `packages/oorexx_slam_v0.1/tools/migrate_case_v02_v03.rex`, from Tom Dyer's third account (`SOURCE_NARRATIVE_2026_10_30_C`). Dictionary: law.kinds 0.4. Nothing in v0.2 is deleted; a field-by-field comparison shows `dictionary`, `schemaVersion`, EV10's time and the migration record changed, and only additions otherwise.
+
+| Change | Reason |
+|---|---|
+| Entity `SON_P` (Mr P, Mrs P's son) | named in the third account |
+| EV20 `MESSAGE_SENT` (2008): Mr P complained | to whom is not stated |
+| EV21 `CHEQUE_DRAWN` (2008): the refund, by cheque; `DRAWER` UNRESOLVED | who wrote it is not stated, and is not filled in |
+| EV22 `CHEQUE_DISHONOURED` (2008), parts EV22.1 to EV22.3 | "it bounced, three times": one event per dishonour |
+| EV23 `PERSON_INJURED` (2009): Mr P hit by a falling tile; `ACTOR` UNRESOLVED | "whilst they began the 6 year process": "they" again |
+| EV10 time: UNKNOWN to began 2009 | the third account dates the tile removal |
+| Claims: "She forgot it" (P); "lost the power of communication" (SON_P) | reported attributes, not proof of incapacity; Mr P can no longer give evidence |
+| Four open questions | the cheque's drawer and account; the complaint's recipient; how the tile fell; where the house was, for the law of 2008-2009 |

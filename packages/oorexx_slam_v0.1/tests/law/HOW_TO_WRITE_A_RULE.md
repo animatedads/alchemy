@@ -6,7 +6,7 @@ You turn ONE section of UK legislation into ONE rule file. SLAM checks your file
 
 ## Input you are given
 
-1. The section's text for ONE extent: England and Wales (`E.W.`) or Scotland (`S.`). It comes from the legislation.gov.uk XML (`tests/law/source/`, listed in `MANIFEST_LEGISLATION.md`). Do not use any other copy, and do not use your memory of the law. If the text is the same in both extents, one file can say `extent: E.W. S.`.
+1. The section's text for ONE extent: England and Wales (`E.W.`), Scotland (`S.`) or New South Wales (`NSW`). It comes from the official XML (legislation.gov.uk for the UK; NSW Parliamentary Counsel's for NSW) (`tests/law/source/`, listed in `MANIFEST_LEGISLATION.md`). Do not use any other copy, and do not use your memory of the law. If the text is the same in both extents, one file can say `extent: E.W. S.`.
 2. SLAM's word list (`corpus/circular_corpus_v2.csv`).
 3. The list of kinds (`tests/law/VOCABULARY.md`). Every kind you write must be in it. Do not make up a new name for a thing that is already there.
 

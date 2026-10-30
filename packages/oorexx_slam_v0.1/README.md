@@ -50,6 +50,8 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/law/source/MANIFEST_LEGISLATION.md` | Seven Acts attached by Tom: SHA-256, bytes, valid-from date, each candidate section's extent. Only the Computer Misuse Act's XML is committed here; CODEX-PC owns the copies in `law/` |
 | `src/SlamScreen.cls` | One case (offence-event JSON, read with ooRexx's `json.cls`) screened against every rule pack, per extent, event and person |
 | `tests/law/VOCABULARY.md` | The shared word list (law.kinds 0.2): 42 kinds, each an event or a finding, defined in SLAM's words; gate 6 |
+| `src/SlamNswLegislation.cls` | Reads NSW legislation XML (Parliamentary Counsel exchange format): a section's text, the version's dates, and each section's history notes, for what was the law on a date |
+| `tests/test_screen_dates.rex` | The law on the date: the 2008 cheque and 2009 injury in E.W. and NSW; NSW Crimes Act ss.192E and 54 (17 checks) |
 | `tests/test_screen_uk.rex` | Fraud Act 2006 s.2, Theft Act 1968 ss.1 and 21 beside the CMA: the same events and evidence, three more rule packs (16 checks) |
 | `tests/test_screen.rex` | Gate 6, the Mrs P case after her death, Computer Misuse Act ss.1, 2, 3ZA in E.W. and S. (31 checks) |
 | `tools/migrate_case_v01_v02.rex` | ChatGPT's Mrs P case v0.1 to v0.2 (`docs/architecture/fixtures/`), every change listed |
@@ -751,6 +753,19 @@ All three are England and Wales only; none of these sections extends to Scotland
 - **Results:** the roof, the card, the threat and the savings are all UNKNOWN, because nothing but the story bears on them. J's first withdrawal is SUPPORTED on the evidence given for CMA s.1 and s.2, fraud, and theft.
 - **The sources are in git** (`law/source_corpus/nsw_ny_20261030/`; the UK Acts in `tests/law/source/`, `law/uk/WHERE_THE_UK_XML_IS.md`).
 
+### The law on the date (2026-10-30)
+
+Tom added dated events:
+- in 2008, a refund cheque to Mrs P after her son complained, dishonoured three times ("She forgot it");
+- in 2009, Mr P hit by a falling tile at the start of the six-year tile removal, and left unable to communicate.
+
+Case v0.3 (`docs/architecture/fixtures`, written by `tools/migrate_case_v02_v03.rex`) records these, but not who wrote the cheque or who let the tile fall. Both stay UNRESOLVED, and both are open questions.
+
+- **Each law's own dates.** A UK section's text has a start date of its own (CLML's `RestrictStartDate`). The Fraud Act s.2 text dates from 2007-01-15, so it was the law for a 2008 cheque. Its s.1, the penalty, dates from 2023, so an earlier text is needed for 2008. NSW gives each section's history (`Ins 2009 No 99`, `Subst`, `Am`, `Rep`), read by `SlamNswLegislation`.
+- **The same cheque, two places.** In England and Wales it is screened under Fraud Act s.2: IN_FORCE_TEXT, drawer UNRESOLVED, every element UNKNOWN. In NSW, s.192E was inserted by Act 2009 No 99, so for a 2008 event it is **OUT_OF_SCOPE**: the law then was older, and the valueless cheques offence (s.178B, repealed by that Act) is not in today's text at all.
+- **The same 2025 withdrawal** is SUPPORTED on the evidence given for J under both England and Wales s.2 and NSW s.192E, each on its own text. NSW's "by any deception" covers deceiving a computer (s.192B).
+- **Mr P's injury.** NSW Crimes Act s.54 (grievous bodily harm by an unlawful or negligent act) screens it, with every element UNKNOWN. What's missing is named: who acted, the unlawful or negligent act, causation, and that the harm is grievous. Its date cannot be placed, because the section carries no history note. In England and Wales no rule pack here covers an injury, and the screen lists the event as uncovered rather than reporting nothing.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -778,11 +793,11 @@ SLAM gets credit for what it found:
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 431 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **24/24** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **595 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S, the citation gate, the Gemini standard audit, the shared word list and screen, the Fraud and Theft Act rule packs, and Body Slam, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **537/537**. The BOLT, libc and unit-test steps (58 checks) skipped there: no llvm-project tree, no ooTest.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 448 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **24/24** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **612 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S, the citation gate, the Gemini standard audit, the shared word list and screen, the Fraud and Theft Act rule packs, Body Slam, and the law on the date (NSW), in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **554/554**. The BOLT, libc and unit-test steps (58 checks) skipped there: no llvm-project tree, no ooTest.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
-`sh run_tests.sh`: **60/60** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, **43/43** in `test_law.rex`, **7/7** in `test_gemini_standard.rex`, and **31/31** in `test_screen.rex`, **16/16** in `test_screen_uk.rex`, and **62/62** in `test_bodyslam.rex`: 431 checks. It covers:
+`sh run_tests.sh`: **60/60** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, **43/43** in `test_law.rex`, **7/7** in `test_gemini_standard.rex`, and **31/31** in `test_screen.rex`, **16/16** in `test_screen_uk.rex`, **17/17** in `test_screen_dates.rex`, and **62/62** in `test_bodyslam.rex`: 448 checks. It covers:
 - the segmenter on unmodified `MLEvolution.cls` (54 units; shared guard nodes; collapsed setters; then/else bodies sharing a node with different bindings);
 - ingest of the GA package with duplicate units skipped on re-ingest;
 - aabb → Eeff = 0.4 and b00b → Eeff = 0.8 from recorded outcomes;

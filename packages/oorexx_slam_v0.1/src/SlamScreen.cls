@@ -24,8 +24,9 @@
 ::class SlamScreen public
 
 /* CASE and EVIDENCE: Directories (json.cls) of a case file and of an evidence file (or .nil).  RULES: an
-   Array of rule file paths.  EXTENT: E.W. or S.  GUIDANCE: an Array of .array(path, text), or .nil.
-   VALIDFROM: a Directory, rule id -> the date its official text is valid from, or .nil.  Returns an Array of
+   Array of rule file paths.  EXTENT: E.W., S. or NSW.  GUIDANCE: an Array of .array(path, text), or .nil.
+   VALIDFROM: a Directory, rule id -> the law's reader (SlamLegislation, SlamNswLegislation: asAt for the rule's
+   own section) or a date its official text is valid from; or .nil.  Returns an Array of
    result Directories (see result). */
 ::method screen class
   use strict arg case, evidence, rules, extent, guidance = .nil, validFrom = .nil
@@ -77,7 +78,7 @@
             if \persons~hasItem(it['subject']) then persons~append(it['subject'])
         end
         /* the persons the case itself says did it: who acted, spoke, was paid or lent */
-        if events[id]~hasIndex('roles') then do role over .array~of('ACTOR', 'SPEAKER', 'PAYEE', 'CREDITOR')
+        if events[id]~hasIndex('roles') then do role over .array~of('ACTOR', 'SPEAKER', 'PAYEE', 'CREDITOR', 'DRAWER')
           if \events[id]['roles']~hasIndex(role) then iterate
           rv = events[id]['roles'][role]
           if \rv~isA(.Array) then rv = .array~of(rv)
@@ -138,6 +139,30 @@
   end
   return results
 
+/* The events no rule pack in scope for EXTENT is about: each is a NEEDS_LEGAL_SOURCE, not a silence (an
+   injury with no rule pack for injuries is not "no offence").  A series with recorded parts is counted
+   through its parts.  An Array of Directories: EVENT, EVENTTYPE. */
+::method unscreened class
+  use strict arg case, evidence, rules, extent
+  events = .array~new; parts = .set~new
+  do e over case['events']; events~append(e); end
+  if evidence \== .nil then if evidence~hasIndex('events') then do e over evidence['events']; events~append(e); end
+  do e over events; if e~hasIndex('partOf') then parts~put(e['partOf']); end
+  about = .set~new
+  do path over rules
+    rule = .SlamLaw~parse(path)
+    if wordpos(extent, rule['EXTENT']) = 0 then iterate
+    do k over rule['ABOUT']; about~put(k); end
+  end
+  out = .array~new
+  do e over events
+    if parts~hasItem(e['eventId']) then iterate
+    if about~hasItem(e['eventType']) then iterate
+    d = .directory~new; d['EVENT'] = e['eventId']; d['EVENTTYPE'] = e['eventType']
+    out~append(d)
+  end
+  return out
+
 /* Does evidence item IT reach the instance for event ID and person WHO?  An item bears on the events in its
    bearsOn (else its own eventId): the event itself, or a series it is part of (partOf), or every event
    ("*").  Nothing else: evidence about one event does not reach another because the other is screened and
@@ -166,8 +191,10 @@
   return ''
 
 /* One result: RULE FILE EXTENT EVENT EVENTTYPE PERSON KEY OK STATUS ELEMENTS (Array of Directories: ELEMENT,
-   STATUS (the engine's), REPORT (the report's)) GAPS ASAT (IN_FORCE_TEXT: the event is on or after the
-   date the text is valid from; EARLIER_TEXT_NEEDED: before it; NOT_RUN: the event has no date). */
+   STATUS (the engine's), REPORT (the report's)) GAPS ASAT (IN_FORCE_TEXT: this text was the law on the
+   event's date; EARLIER_TEXT_NEEDED: an older version may have been; NOT_IN_FORCE: the section did not exist
+   then, and the instance is OUT_OF_SCOPE; NO_HISTORY_NOTE: NSW gives no date for it; NOT_RUN: the event has
+   no date). */
 ::method result class private
   use strict arg r, rule, path, extent, event, who, links, validFrom
   out = .directory~new
@@ -198,10 +225,16 @@
   out['ASAT'] = 'NOT_RUN'
   when = ''
   if event~hasIndex('time') then if event['time']~hasIndex('value') then when = event['time']['value']
-  vf = ''
-  if validFrom \== .nil then if validFrom~hasIndex(rule['ID']) then vf = validFrom[rule['ID']]
-  if when \== '' & vf \== '' then do
-    if when >= vf then out['ASAT'] = 'IN_FORCE_TEXT'; else out['ASAT'] = 'EARLIER_TEXT_NEEDED'
+  src = ''
+  if validFrom \== .nil then if validFrom~hasIndex(rule['ID']) then src = validFrom[rule['ID']]
+  if when \== '' & src \== '' then do
+    if src~hasMethod('asAt') then out['ASAT'] = src~asAt(rule['SECTION'], when)   /* the section's own dates */
+    else if when >= src then out['ASAT'] = 'IN_FORCE_TEXT'; else out['ASAT'] = 'EARLIER_TEXT_NEEDED'
+  end
+  /* a section that did not exist when the event happened can not be the law of it */
+  if out['ASAT'] == 'NOT_IN_FORCE' then do
+    out['OK'] = .false; out['STATUS'] = 'OUT_OF_SCOPE'
+    out['WHY'] = 'section' rule['SECTION'] 'was not in force in' when || ': the law of that date is an older text'
   end
   return out
 
@@ -228,7 +261,8 @@
 /* One line per result, for a person to read. */
 ::method line class
   use strict arg res
-  if res['STATUS'] == 'OUT_OF_SCOPE' then return res['RULE'] res['EXTENT'] '(' || res['FILE'] || '): OUT_OF_SCOPE:' res['WHY']
+  if res['STATUS'] == 'OUT_OF_SCOPE' & res['EVENT'] == '' then return res['RULE'] res['EXTENT'] '(' || res['FILE'] || '): OUT_OF_SCOPE:' res['WHY']
+  if res['STATUS'] == 'OUT_OF_SCOPE' then return res['RULE'] res['EXTENT'] res['EVENT'] res['PERSON']~left(10) || ': OUT_OF_SCOPE:' res['WHY']
   t = res['RULE'] res['EXTENT'] res['EVENT'] res['PERSON']~left(10) || ':'
   do e over res['ELEMENTS']; t = t e['ELEMENT'] || '=' || e['REPORT']; end
   return t '->' res['STATUS'] '(as-at:' res['ASAT'] || ')'

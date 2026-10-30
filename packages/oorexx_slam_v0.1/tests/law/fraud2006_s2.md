@@ -11,7 +11,8 @@ text: the Fraud Act 2006 XML, SHA-256 b3a267d809d0b3e1a6a872b29c4192bdd47515ca70
   (tests/law/source/MANIFEST_LEGISLATION.md); section 2 extends to England and Wales, not to Scotland
 offence: fraud, section 1(1) and (2)(a): a person in breach of section 2 is guilty of fraud
 about: section 2(5) says a representation can be made to a system or device, so the use of a card and its
-  number at a machine is an event this rule can be about
+  number at a machine is an event this rule can be about; and section 2(4) says a representation may be
+  express or implied, so a cheque given as payment (an implied representation that it will be paid) is too
 licence of the source: Open Government Licence v3.0, Crown copyright
 ```
 
@@ -48,7 +49,7 @@ years: a way to count time
 it is about an event of kind:
 
 ```
-REPRESENTATION_MADE DOCUMENT_PRESENTED CREDENTIAL_USED
+REPRESENTATION_MADE DOCUMENT_PRESENTED CREDENTIAL_USED CHEQUE_DRAWN
 ```
 
 the most the law says:

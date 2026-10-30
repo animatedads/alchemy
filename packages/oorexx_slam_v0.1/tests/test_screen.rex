@@ -4,7 +4,7 @@
  * (Claude (Opus 4.8); combiner design ChatGPT (GPT-6)) is used unchanged.
  * Args: scratch dir | SLAM package dir | alchemy checkout
  *
- *  1. the word list: SLAM's reader knows every word; 50 kinds, each an event or a finding
+ *  1. the word list: SLAM's reader knows every word; 57 kinds, each an event or a finding
  *  2. every kind used is on the list: rule packs, guidance, the element-addressed cases, the v0.2 case (its
  *     events must be EVENTS) and the made-up evidence; ChatGPT's v0.1 file is refused until migrated
  *  3. refused: an old name (KEY_USE), a synonym (MISREPRESENTATION), a finding used as an event, a kind typed
@@ -30,7 +30,7 @@ ne = 0; nf = 0
 do k over v['ORDER']
   if v['KINDS'][k]['TYPE'] == 'EVENT' then ne += 1; else nf += 1
 end
-call check v['ERRORS']~items = 0 & v['KINDS']~items = 50, '50 kinds (law.kinds 0.3),' ne 'events and' nf 'findings; no kind both, none untyped, no event carries a word of a finding'
+call check v['ERRORS']~items = 0 & v['KINDS']~items = 57, '57 kinds (law.kinds 0.4),' ne 'events and' nf 'findings; no kind both, none untyped, no event carries a word of a finding'
 
 say '== 2. every kind used is on the list'
 leg = .SlamLegislation~new(L || '/source/cma1990.xml')
@@ -52,7 +52,7 @@ e = .SlamLaw~kindErrors(v, caseEvents(case)~union(caseEvents(ev)), 'EVENT')
 do x over e; say '       ' x; end
 call check e~items = 0 & case['events']~items = 16, 'the v0.2 case''s 16 events and the evidence''s 4: each type on the list, and an EVENT'
 e = .SlamLaw~kindErrors(v, evidenceKinds(ev))
-call check e~items = 0 & ev['evidenceItems']~items = 18, 'the 18 evidence items: what each is offered for, and what it binds, are on the list'
+call check e~items = 0 & ev['evidenceItems']~items = 19, 'the 19 evidence items: what each is offered for, and what it binds, are on the list'
 v01 = .json~fromJsonFile(FIXTURES || '/mrs_p_roof_credit_pension_v0.1.json')
 e = .SlamLaw~kindErrors(v, caseEvents(v01), 'EVENT')
 do x over e; say '       ' x; end
@@ -167,7 +167,7 @@ do x over ew
   if x['RULE'] == 'cma1990.s1' & x['ELEMENTS'][3]['REPORT'] == 'SUPPORTED' then in1 += 1
   if x['RULE'] == 'cma1990.s3za' & x['ELEMENTS'][2]['REPORT'] == 'SUPPORTED' then in3 += 1
 end
-call check ev['evidenceItems']~items = 18 & in1 = 3 & in3 = 3, 'the bank''s letter (E02) is one item in the file; it supports "unauthorised" in s.1 and in s.3ZA, for each of the 3 withdrawals'
+call check ev['evidenceItems']~items = 19 & in1 = 3 & in3 = 3, 'the bank''s letter (E02) is one item in the file; it supports "unauthorised" in s.1 and in s.3ZA, for each of the 3 withdrawals'
 
 say '== 8. benign, and the narrative alone'
 ev2 = .json~fromJsonFile(L || '/mrs_p_evidence_made_up.json')

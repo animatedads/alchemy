@@ -61,6 +61,8 @@ echo "== one set of events, many offences: the shared word list (gate 6), the Mr
 REXX_PATH="$REXX_PATH:$RT:$(dirname "$(command -v rexx)")" rexx tests/test_screen.rex "$WORK|$ROOT|$REPO"
 echo "== the same events, more offences: Fraud Act 2006 s.2, Theft Act 1968 ss.1 and 21 (E.W.), and CMA s.2's further offence"
 REXX_PATH="$REXX_PATH:$RT:$(dirname "$(command -v rexx)")" rexx tests/test_screen_uk.rex "$WORK|$ROOT|$REPO"
+echo "== the law on the date: a 2008 cheque, a 2009 injury; E.W. and NSW (Crimes Act 1900 ss.192E, 54) from each law's own dates"
+REXX_PATH="$REXX_PATH:$RT:$(dirname "$(command -v rexx)")" rexx tests/test_screen_dates.rex "$WORK|$ROOT|$REPO"
 echo "== second language: the Java reader (fixture compiled by javac first, so it is real Java)"
 E="$REPO/examples"
 ATM="$E/federationbank_java_atm_v0.1.9"

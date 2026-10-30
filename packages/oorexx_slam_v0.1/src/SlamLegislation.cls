@@ -40,6 +40,35 @@
   if p = 0 then return ''
   return xml~substr(p + 11, 10)
 
+/* The date the section's own text is valid from: RestrictStartDate on its P1group (CLML marks each version
+   of a provision), else the document's.  Fraud Act s.2: 2007-01-15; its s.1, amended: 2023-02-07. */
+::method sectionValidFrom
+  expose xml
+  use strict arg n
+  start = xml~pos('id="section-' || n || '"')
+  if start = 0 then return ''
+  g = xml~lastPos('<P1group', start)
+  if g > 0 then do
+    head = xml~substr(g, xml~pos('>', g) - g)
+    parse var head . 'RestrictStartDate="' d '"' .
+    if d \== '' then return d
+  end
+  return self~validFrom
+
+/* Was section N's text (this version) the law at WHEN (YYYY or YYYY-MM-DD)?  IN_FORCE_TEXT when WHEN is on or
+   after the date this version is valid from; EARLIER_TEXT_NEEDED before it, or in the same year when only
+   the year is known.  (An earlier version, or no section at all, is a question for the point-in-time text.) */
+::method asAt
+  use strict arg n, when
+  from = self~sectionValidFrom(n)
+  if from == '' then return 'NOT_IN_THIS_TEXT'
+  if when~length = 4 then do
+    if when > from~left(4) then return 'IN_FORCE_TEXT'
+    return 'EARLIER_TEXT_NEEDED'
+  end
+  if when >= from then return 'IN_FORCE_TEXT'
+  return 'EARLIER_TEXT_NEEDED'
+
 /* The text of section N (P1 id="section-N") in EXTENT, one line per numbered paragraph, or '' when the
    section does not extend there. */
 ::method section

@@ -2,8 +2,8 @@
 
 ```
 vocabulary: law.kinds
-version: 0.3
-written by: Claude (Opus 5.5), 2026-10-30 (0.2: the first list; 0.3: kinds for the Fraud Act 2006 s.2 and the Theft Act 1968 ss.1 and 21)
+version: 0.4
+written by: Claude (Opus 5.5), 2026-10-30 (0.2: the first list; 0.3: kinds for the Fraud Act 2006 s.2 and the Theft Act 1968 ss.1 and 21; 0.4: cheques, an injury, and NSW Crimes Act 1900 ss.192E and 54)
 architecture: Tom Dyer
 from: the event names of ChatGPT (GPT-6), OFFENCE_EVENT_CONTRACT_v0.1.md, with the changes in docs/architecture/fixtures/MIGRATION_v0.1_to_v0.2.md;
   and the kinds of evidence of the Computer Misuse Act rule and case files of 2026-10-29
@@ -83,6 +83,14 @@ proper: right for the use
 took: a word for take, when it is before now
 demand: words that say to a person to give a thing or to do a thing
 threat: words that say a bad thing is to be the result
+bank: a place that has the money of a person in a computer, in an account for the person
+pay: give money to
+payment: money a person gives to an other person, for a thing
+got: a word for get, when it is before now
+care: what a person does so that no bad result is the result of what the person does
+cheque: a document that says to a bank: pay this money to this person, out of my account
+hurt: made less able to do what it can do, in a part of the person
+body: all the parts of a person
 
 a kind is a name for one thing. a rule file, a guidance file or a case file can use a kind only when it is in this list.
 
@@ -593,3 +601,73 @@ DEMAND_UNWARRANTED
 it is a finding.
 
 the person that made the demand does not have, as true in the mind of the person, both that the demand is right and that the threat is a proper way to make it.
+
+kind 51:
+
+```
+CHEQUE_DRAWN
+```
+
+it is an event.
+
+a person writes a cheque for an account and gives it to an other person, as a payment.
+
+kind 52:
+
+```
+CHEQUE_DISHONOURED
+```
+
+it is an event.
+
+a bank does not pay the money a cheque says: the person the cheque is for does not get it.
+
+kind 53:
+
+```
+PERSON_INJURED
+```
+
+it is an event.
+
+a part of the body of a person is hurt.
+
+kind 54:
+
+```
+PROPERTY_OBTAINED
+```
+
+it is a finding.
+
+the person got a thing that belongs to an other person, or got a gain, or made an other person have a loss.
+
+kind 55:
+
+```
+UNLAWFUL_OR_NEGLIGENT
+```
+
+it is a finding.
+
+what the person did, or did not do, is a thing that a rule says a person can not do, or is not the care a good person takes.
+
+kind 56:
+
+```
+CAUSED
+```
+
+it is a finding.
+
+the act, or the thing the person did not do, is what made the result: with no act, no result.
+
+kind 57:
+
+```
+GRIEVOUS_BODILY_HARM
+```
+
+it is a finding.
+
+the hurt to the body of the person is serious, as the law says.
