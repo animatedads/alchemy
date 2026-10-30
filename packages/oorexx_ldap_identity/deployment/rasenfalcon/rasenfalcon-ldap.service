@@ -1,0 +1,39 @@
+[Unit]
+Description=Rasen Falcon owned ooRexx LDAP Identity Directory
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/etc/rasenfalcon/ldap.env
+ConditionPathExists=/etc/rasenfalcon/ldap-secrets.map
+
+[Service]
+Type=simple
+User=rasenfalcon-ldap
+Group=rasenfalcon-ldap
+EnvironmentFile=/etc/rasenfalcon/ldap.env
+ExecStart=/usr/bin/rexx /opt/rasenfalcon/ldap/bin/rasenfalcon_ldap_service.rex
+Restart=on-failure
+RestartSec=3
+WorkingDirectory=/opt/rasenfalcon/ldap
+RuntimeDirectory=rasenfalcon-ldap
+RuntimeDirectoryMode=0750
+StateDirectory=rasenfalcon-ldap
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+LockPersonality=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+ReadWritePaths=/var/lib/rasenfalcon-ldap /run/rasenfalcon-ldap
+ReadOnlyPaths=/etc/rasenfalcon /opt/rasenfalcon/ldap
+
+[Install]
+WantedBy=multi-user.target

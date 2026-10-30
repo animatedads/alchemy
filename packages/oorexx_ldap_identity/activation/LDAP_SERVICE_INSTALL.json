@@ -1,0 +1,33 @@
+{
+  "schema": "rasenfalcon.ldap.install-contract/0.1",
+  "service": "rasenfalcon-ldap.service",
+  "component": "oorexx_ldap_identity",
+  "runtime": "ooRexx 5.3.0 r13196",
+  "authority": {
+    "identity": "IdentityDirectory",
+    "authentication": "LDAP Bind via Secret Broker-backed authenticator",
+    "authorization": "explicit LDAP/Access Permissions action authority",
+    "rule": "authentication is not authorization; signature is not EMAIL_SEND"
+  },
+  "listeners": [
+    {"purpose":"production LDAPS","default_port":636,"tls":"required","plaintext_fallback":"DENY"},
+    {"purpose":"qualification STARTTLS","default_port":389,"production_fallback":"DENY"}
+  ],
+  "host_owned_secret_inputs": [
+    "private CA/server leaf certificate reference",
+    "server private-key secret reference",
+    "LDAP bind credential secret references",
+    "signing/key-generation private-material secret references"
+  ],
+  "forbidden_in_release": ["private keys","bind passwords","raw production secrets"],
+  "consumers": ["Rasen Falcon private HTTPS","SMTP authenticated submission","IMAP mailbox access","MCP tools","Wire Office/NOC"],
+  "activation_gate": [
+    "principal exists and state ACTIVE",
+    "successful LDAP authentication attribution",
+    "required resource/action authorization",
+    "revocation checked before service action",
+    "TLS/private-CA requirements satisfied"
+  ],
+  "production_status": "NOT_INSTALLED",
+  "operator_gate": "live host install, certificate issuance, firewall/DNS and production activation require explicit owner approval"
+}
