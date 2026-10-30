@@ -191,7 +191,7 @@
   return ''
 
 /* One result: RULE FILE EXTENT EVENT EVENTTYPE PERSON KEY OK STATUS ELEMENTS (Array of Directories: ELEMENT,
-   STATUS (the engine's), REPORT (the report's)) GAPS ASAT (IN_FORCE_TEXT: this text was the law on the
+   STATUS (the engine's), REPORT (the report's), REFUSED (the evidence refused for it, with why)) GAPS ASAT (IN_FORCE_TEXT: this text was the law on the
    event's date; EARLIER_TEXT_NEEDED: an older version may have been; NOT_IN_FORCE: the section did not exist
    then, and the instance is OUT_OF_SCOPE; NO_HISTORY_NOTE: NSW gives no date for it; NOT_RUN: the event has
    no date). */
@@ -213,10 +213,12 @@
       end
       e['STATUS'] = st
       if st == 'OFFENCE_SUPPORTED' then e['REPORT'] = 'SUPPORTED'; else e['REPORT'] = 'UNKNOWN'
+      e['REFUSED'] = .array~new
     end
     else do
       e['STATUS'] = r~assess(.SlamLaw~elementId(rule, el['ID']))['status']
       e['REPORT'] = self~report(e['STATUS'])
+      e['REFUSED'] = .SlamLaw~refusals(r, rule, el['ID'])     /* on the record even when the element holds */
     end
     els~append(e)
   end

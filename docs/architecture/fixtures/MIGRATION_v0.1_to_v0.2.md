@@ -34,3 +34,16 @@ Written by `packages/oorexx_slam_v0.1/tools/migrate_case_v02_v03.rex`, from Tom 
 | EV10 time: UNKNOWN to began 2009 | the third account dates the tile removal |
 | Claims: "She forgot it" (P); "lost the power of communication" (SON_P) | reported attributes, not proof of incapacity; Mr P can no longer give evidence |
 | Four open questions | the cheque's drawer and account; the complaint's recipient; how the tile fell; where the house was, for the law of 2008-2009 |
+
+## v0.3 to v0.4 (2026-10-30)
+
+Written by `packages/oorexx_slam_v0.1/tools/migrate_case_v03_v04.rex`, from Tom Dyer's fourth account (`SOURCE_NARRATIVE_2026_10_30_D`) and his correction (`..._E`). Dictionary: law.kinds 0.5. Nothing in v0.3 is deleted.
+
+| Change | Reason |
+|---|---|
+| Entities `M` (Mr M, a worker for the roofers), `B` (named once, in error), `CAT` | account D |
+| EV21 `DRAWER`: UNRESOLVED to `H` | account D: "Mr H wrote the cheque" |
+| EV23 `ACTOR`: UNRESOLVED to `M`; `howAsReported` keeps both accounts ("falling", "threw") | account D |
+| EV24 `OBJECT_THROWN` (the tile), EV25 `OBJECT_THROWN` (a brick at a cat), EV26 and EV27 `INTERVIEW_ANSWER`, EV28 `PREVIOUS_CONVICTION` | account D |
+| `conflicts`: who the tile hit. Account D says "Mr B"; account E: "That's a typo" (Mr P). `RESOLVED_BY_LATER_SOURCE`; `CLM_D_HIT_B` kept as written | an error in an account, corrected later, is itself evidence about the account |
+| Three open questions | whether the previous convictions may be used at all, and for what; the law for a deliberate throw; the law for hostility |

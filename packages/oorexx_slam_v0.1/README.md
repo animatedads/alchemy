@@ -51,6 +51,7 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamScreen.cls` | One case (offence-event JSON, read with ooRexx's `json.cls`) screened against every rule pack, per extent, event and person |
 | `tests/law/VOCABULARY.md` | The shared word list (law.kinds 0.2): 42 kinds, each an event or a finding, defined in SLAM's words; gate 6 |
 | `src/SlamNswLegislation.cls` | Reads NSW legislation XML (Parliamentary Counsel exchange format): a section's text, the version's dates, and each section's history notes, for what was the law on a date |
+| `tests/test_screen_people.rex` | Who did it, and what does not show it: Mr H's cheque, Mr M's tile, his previous convictions refused, his two interviews DISPUTED (8 checks) |
 | `tests/test_screen_dates.rex` | The law on the date: the 2008 cheque and 2009 injury in E.W. and NSW; NSW Crimes Act ss.192E and 54 (17 checks) |
 | `tests/test_screen_uk.rex` | Fraud Act 2006 s.2, Theft Act 1968 ss.1 and 21 beside the CMA: the same events and evidence, three more rule packs (16 checks) |
 | `tests/test_screen.rex` | Gate 6, the Mrs P case after her death, Computer Misuse Act ss.1, 2, 3ZA in E.W. and S. (31 checks) |
@@ -766,6 +767,22 @@ Case v0.3 (`docs/architecture/fixtures`, written by `tools/migrate_case_v02_v03.
 - **The same 2025 withdrawal** is SUPPORTED on the evidence given for J under both England and Wales s.2 and NSW s.192E, each on its own text. NSW's "by any deception" covers deceiving a computer (s.192B).
 - **Mr P's injury.** NSW Crimes Act s.54 (grievous bodily harm by an unlawful or negligent act) screens it, with every element UNKNOWN. What's missing is named: who acted, the unlawful or negligent act, causation, and that the harm is grievous. Its date cannot be placed, because the section carries no history note. In England and Wales no rule pack here covers an injury, and the screen lists the event as uncovered rather than reporting nothing.
 
+### Who did it, and what does not show it (2026-10-30)
+
+Tom's fourth account named Mr H as the drawer of the cheque and Mr M, a worker for the roofers, as the man who threw the tile. It also gave Mr M's 15 years of previous convictions (threats with menaces, assault, theft of a mailbag), a brick he threw at a cat that day, and two interviews:
+- the first: "a hatred of cats, and ethnic minorities", and he "thought Mr P might be Asian";
+- the second: he withdrew that, and "thought Mr P was a crazy cat".
+
+It said the tile "hit Mr B". Tom's next message (account E): "That's a typo, but it might well be an evidential error which we use". Case v0.4 (`tools/migrate_case_v03_v04.rex`) keeps that claim as written. The correction is a later source, and the conflict is RESOLVED_BY_LATER_SOURCE with the error left on record. Nothing is overwritten.
+
+- **The cheque (England and Wales, Fraud Act s.2) is now screened for Mr H.** Every element is UNKNOWN: an account naming him as the drawer shows neither falsity nor dishonesty.
+- **The tile (NSW s.54) is screened for Mr M.**
+  - "He did it" and "it was unlawful" are SUPPORTED on his own word, from two interviews, but not SETTLED.
+  - The hospital record settles the cause and the harm, so s.54 is SUPPORTED on the evidence given.
+- **Refused, and on the record:** his previous convictions and the brick at the cat, each offered for "he threw this tile". Take away his two admissions and the element is open: **propensity is not proof of the act.** Every element now lists what was refused for it, even when it holds.
+- **Why he threw it: DISPUTED.** It is his first interview against his second, testimony against testimony. The law that would weigh hostility based on the group someone is taken to be in is not held.
+- **Not held, and listed rather than passed over:** in England and Wales, the injury, the throw and the brick have no rule pack here (Offences against the Person Act 1861, Animal Welfare Act 2006). In NSW, a deliberate throw may fit s.33 or s.35 better than s.54, which is about negligence. Both are in the XML we hold.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -793,11 +810,11 @@ SLAM gets credit for what it found:
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 448 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **24/24** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **612 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S, the citation gate, the Gemini standard audit, the shared word list and screen, the Fraud and Theft Act rule packs, Body Slam, and the law on the date (NSW), in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **554/554**. The BOLT, libc and unit-test steps (58 checks) skipped there: no llvm-project tree, no ooTest.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 456 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **24/24** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **620 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S, the citation gate, the Gemini standard audit, the shared word list and screen, the Fraud and Theft Act rule packs, Body Slam, the law on the date (NSW), and who did it, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **562/562**. The BOLT, libc and unit-test steps (58 checks) skipped there: no llvm-project tree, no ooTest.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
-`sh run_tests.sh`: **60/60** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, **43/43** in `test_law.rex`, **7/7** in `test_gemini_standard.rex`, and **31/31** in `test_screen.rex`, **16/16** in `test_screen_uk.rex`, **17/17** in `test_screen_dates.rex`, and **62/62** in `test_bodyslam.rex`: 448 checks. It covers:
+`sh run_tests.sh`: **60/60** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, **43/43** in `test_law.rex`, **7/7** in `test_gemini_standard.rex`, and **31/31** in `test_screen.rex`, **16/16** in `test_screen_uk.rex`, **17/17** in `test_screen_dates.rex`, **8/8** in `test_screen_people.rex`, and **62/62** in `test_bodyslam.rex`: 456 checks. It covers:
 - the segmenter on unmodified `MLEvolution.cls` (54 units; shared guard nodes; collapsed setters; then/else bodies sharing a node with different bindings);
 - ingest of the GA package with duplicate units skipped on re-ingest;
 - aabb → Eeff = 0.4 and b00b → Eeff = 0.8 from recorded outcomes;

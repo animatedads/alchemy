@@ -4,7 +4,7 @@
  * (Claude (Opus 4.8); combiner design ChatGPT (GPT-6)) is used unchanged.
  * Args: scratch dir | SLAM package dir | alchemy checkout
  *
- *  1. the word list: SLAM's reader knows every word; 57 kinds, each an event or a finding
+ *  1. the word list: SLAM's reader knows every word; every kind in it read, each an event or a finding
  *  2. every kind used is on the list: rule packs, guidance, the element-addressed cases, the v0.2 case (its
  *     events must be EVENTS) and the made-up evidence; ChatGPT's v0.1 file is refused until migrated
  *  3. refused: an old name (KEY_USE), a synonym (MISREPRESENTATION), a finding used as an event, a kind typed
@@ -30,7 +30,9 @@ ne = 0; nf = 0
 do k over v['ORDER']
   if v['KINDS'][k]['TYPE'] == 'EVENT' then ne += 1; else nf += 1
 end
-call check v['ERRORS']~items = 0 & v['KINDS']~items = 57, '57 kinds (law.kinds 0.4),' ne 'events and' nf 'findings; no kind both, none untyped, no event carries a word of a finding'
+heads = 0
+do ln over text(L || '/VOCABULARY.md')~makeArray('0a'x); if ln~word(1) == 'kind' & ln~right(1) == ':' & ln~words = 2 then heads += 1; end
+call check v['ERRORS']~items = 0 & v['KINDS']~items = heads & heads >= 42, v['KINDS']~items 'kinds, every "kind N:" in the file,' ne 'events and' nf 'findings; no kind both, none untyped, no event carries a word of a finding'
 
 say '== 2. every kind used is on the list'
 leg = .SlamLegislation~new(L || '/source/cma1990.xml')
