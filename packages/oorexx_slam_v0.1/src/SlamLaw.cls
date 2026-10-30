@@ -424,7 +424,8 @@
     if k['TYPES'] = 0 then errs~append('kind' name 'does not say if it is an event or a finding')
     if k['TEXT'] == '' then errs~append('kind' name 'has no definition')
     if k['TYPE'] == 'EVENT' & k['TYPES'] = 1 then do
-      dw = self~words(k['TEXT'])
+      /* the reader's words: a hyphen is part of a word, so "false-legal" (corpus/senses.csv) is not "false" */
+      dw = ' ' || k['TEXT']~lower~translate('', '.,;:()"''?!#*`[]{}<>')~space || ' '
       do w over fw
         if dw~pos(' ' || w || ' ') > 0 then errs~append('kind' name 'is an event, and its definition uses "' || w || '", a word of a finding: the name carries a conclusion the evidence has to show')
       end

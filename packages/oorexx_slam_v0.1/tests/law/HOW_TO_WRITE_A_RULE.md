@@ -44,6 +44,11 @@ You turn ONE section of UK legislation into ONE rule file. SLAM checks your file
   ```
 
   Fill in each line of `ROUND.missing.md` before you run `define`. Someone other than you accepts the words.
+- Do not write "false" when you mean the law's false (a false representation, a false statement). Write `false-legal`. Plain "false" is the value of logic, as in "true or false". `load` and `define` stop on every "false" that has no answer yet, and this asks you which one it is, then corrects the file:
+
+  ```
+  rexx bin/words.rex sense ROUND "YOUR NAME" -- tests/law/<your file>.md
+  ```
 - Do not add words from a different extent. Words marked as inserted for Scotland are not England and Wales's law.
 - Do not decide anything about a case. You only write the rule.
 - Do not use a kind that is not in `VOCABULARY.md`, and do not make a new name for a thing that has one. If a thing has no kind, stop and ask: a new kind needs a definition, and a new version of the list.
@@ -53,6 +58,7 @@ You turn ONE section of UK legislation into ONE rule file. SLAM checks your file
 
 ```
 rexx bin/slam.rex corpus check.db corpus/circular_corpus_v2.csv
+rexx bin/slam.rex corpus check.db corpus/senses.csv
 rexx bin/slam.rex read check.db tests/law/<your file>.md
 ```
 

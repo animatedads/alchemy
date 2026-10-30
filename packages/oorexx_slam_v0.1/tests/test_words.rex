@@ -17,6 +17,9 @@
  *     event kind carry a finding (CHEQUE_DRAWN, gate 6); a definition that waits for a refused word
  *  6. warnings and notes: a form not linked to its stem; two sources defining a word in two ways; two words
  *     with one definition
+ *  7. two meanings (corpus/senses.csv): load stops at entry on each "false" with no answer; sense asks
+ *     "false, or false [legal]?" and corrects the line as it goes; run again and nothing changes (no
+ *     "false-legal-legal"); with "false-legal" in the words of a finding, "evidence" no longer carries one
  */
 signal on syntax name onSyntax
 parse arg work '|' pkg
@@ -89,6 +92,42 @@ l3 = .SlamWords~load(.array~of(d1, d2), k['WORDS'])
 op['INLINE'] = l3['INLINE']
 res = .SlamWords~review(entries('reckless: makes a change, and knows that a bad result can be the result of it'), k['WORDS'], op)
 call check l3['DIFFER']~hasIndex('reckless') & l3['DIFFER']['reckless']~items = 2 & hasCode(find(res, 'reckless'), 'DEFINED_ELSEWHERE'), 'two sources define "reckless" in two ways: load lists both; a definition for the shared list is warned that they differ from it'
+
+say '== 7. two meanings: false, or false [legal]'
+sn = .SlamWords~senses(pkg || '/corpus/senses.csv')
+call check sn['ERRORS']~items = 0 & sn['TOKENS']~hasIndex('false-legal') & sn['WORDS']['false']~items = 1 & v['FINDINGWORDS']~hasItem('false-legal') & \v['FINDINGWORDS']~hasItem('false') & v['ERRORS']~items = 0, 'the register: "false-legal" is the law''s false; VOCABULARY.md''s words of a finding name "false-legal", not "false"; gate 6 passes'
+bad = work || '/words_senses_bad.csv'
+call write bad, .array~of('token,category,definition', 'false-legal,sense false legal,x', 'false-legal-legal,sense false-legal legal,y', 'untrue,sense false legal,z')
+sb = .SlamWords~senses(bad)
+call check sb['ERRORS']~items = 2 & hasItemText(sb['ERRORS'], 'it would be replaced again') & hasItemText(sb['ERRORS'], 'is "false-legal"'), 'a register that would replace a replacement ("false-legal-legal": its word, "false-legal", is itself a sense) is refused; so is a token that is not WORD-LABEL'
+ev = entries('evidence: data that says an element is true or false')
+old = .directory~new; old['FINDING'] = .array~of('knows', 'false')
+call check hasCode(.SlamWords~review(ev, k['WORDS'], old)[1], 'CARRIES_FINDING') & \hasCode(.SlamWords~review(ev, k['WORDS'], op)[1], 'CARRIES_FINDING'), 'with "false" in the words of a finding, "evidence" (true or false) carried a finding; with "false-legal", it does not'
+doc = work || '/words_false.md'
+call write doc, .array~of('evidence: data that says an element is true or false', 'a thing a person said, as true, is false.', '```', 'false in code is not asked', '```', 'false-legal is not asked', 'it is false, and false again')
+qs = .SlamWords~preparse(.array~of(doc), sn, .directory~new, k['WORDS'])
+lns = ''; do q over qs; lns = lns q['LINE']; end
+call check qs~items = 4 & lns~space == '1 2 7 7' & qs[1]['OPTIONS']~items = 2 & qs[1]['OPTIONS'][1]['TEXT'] == 'not true', 'preparse: four "false" to ask (lines 1, 2, and 7 twice); not in code; not "false-legal"; the choices are "false" (not true) and "false [legal]"'
+call SysFileDelete dir || '/T2.json'
+o = words(pkg, 'open T2' WRITER '-- read what is false --' doc)
+o = words(pkg, 'load T2')
+stopped = o~makeString('L', ' ')~pos('nothing is read until they have one') > 0 & said(o, 'words have more than one meaning') = 5
+ans = work || '/words_answers.txt'
+call write ans, .array~of('1')
+o = words(pkg, 'sense T2' REVIEWER '<"' || ans || '"')
+part = linesOf(doc)
+call write ans, .array~of('1', 'legal', 'false-legal', 'false')
+o = words(pkg, 'sense T2' REVIEWER '<"' || ans || '"')
+after = linesOf(doc)
+call check stopped & part[1] == 'evidence: data that says an element is true or false' & after[2] == 'a thing a person said, as true, is false-legal.' & after[7] == 'it is false-legal, and false again' & after[1] == part[1], 'load stops at entry and asks (five: the intention''s "false" too); one answer, then the input ends: kept, and the rest asked next time; then each line corrected as it is answered'
+o = words(pkg, 'sense T2' REVIEWER '<"' || ans || '"')
+o2 = words(pkg, 'sense T2' REVIEWER '<"' || ans || '"')
+again = linesOf(doc)
+o3 = words(pkg, 'load T2')
+led2 = .json~fromJsonFile(dir || '/T2.json')
+call check o~makeString('L', ' ')~pos('nothing to ask') > 0 & o2~makeString('L', ' ')~pos('nothing to ask') > 0 & again~makeString('L', '|') == after~makeString('L', '|') & again~makeString('L', ' ')~pos('false-legal-legal') = 0 & o3~makeString('L', ' ')~pos('more than one meaning') = 0 & led2['intention'] == 'read what is false', 'run again, and again: nothing to ask, nothing changed, no "false-legal-legal"; load reads on'
+call check .SlamWords~occurrences('it is false-legal, and false-legal.', sn['WORDS'])~items = 0 & .SlamWords~resolve('is false-legal', .array~new) == 'is false-legal', 'a replaced word is not a word with senses: there is nothing left on the line to replace'
+
 say 'WORDS TEST: PASS (' || checks || ' checks)'
 exit 0
 
@@ -110,6 +149,18 @@ reader: procedure
     end
   end
   return out~sort~makeString('L', ' ')
+
+linesOf: procedure
+  use arg path
+  out = .array~new; s = .stream~new(path); s~open('READ')
+  do while s~lines > 0; out~append(s~linein); end
+  s~close
+  return out
+
+hasItemText: procedure
+  use arg arr, needle
+  do e over arr; if e~pos(needle) > 0 then return .true; end
+  return .false
 
 words: procedure
   use arg pkg, args

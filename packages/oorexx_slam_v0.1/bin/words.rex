@@ -10,7 +10,16 @@
  *                                                  them; writes ROUND.review.md
  *   rexx words.rex accept ROUND BY                  passed definitions into the shared list, when BY did not
  *                                                  write them
+ *   rexx words.rex sense  ROUND BY [-- FILE]       ask, for each word with a second meaning (corpus/senses.csv),
+ *                                                  which meaning it has: "false", or "false [legal]".  The answer
+ *                                                  replaces the word in the input ("false-legal"), line by line
+ *                                                  as it goes.  Without FILE: the round's intention and sources
+ *   rexx words.rex review ROUND                    review every definition still waiting again, as define does:
+ *                                                  after the shared list, the senses or the kinds change
  *   rexx words.rex status ROUND
+ * load and define preparse first: while a word with a second meaning has no answer, they stop and say so.
+ * The answers are read one line each from the input (a terminal, or a file: "< answers.txt"): a number, the
+ * word, or the label ("legal").
  * BY is a name ("Tom Dyer", "Claude (Opus 5.5)"): quote it for the shell; " -- " ends it.
  * Then load again.  The round is closed when a load finds no word missing.
  *
@@ -35,6 +44,8 @@ select
   when cmd == 'load' then exit load(file, dir || '/' || round)
   when cmd == 'define' then exit define(file, dir || '/' || round, rest)
   when cmd == 'accept' then exit accept(file, rest)
+  when cmd == 'sense' then exit sense(file, dir || '/' || round, rest)
+  when cmd == 'review' then exit define(file, dir || '/' || round, '', .true)
   when cmd == 'status' then exit status(file)
   otherwise do
     say 'unknown command' cmd
@@ -68,7 +79,7 @@ open: procedure
   led['round'] = round; led['intention'] = intention; led['openedBy'] = by; led['opened'] = today()
   led['category'] = 'law'; led['status'] = 'OPEN'
   led['base'] = .array~of('corpus/circular_corpus_v2.csv'); led['shared'] = rel(shared)
-  led['vocabulary'] = 'tests/law/VOCABULARY.md'
+  led['vocabulary'] = 'tests/law/VOCABULARY.md'; led['senses register'] = 'corpus/senses.csv'; led['senses'] = .array~new
   led['sources'] = srcs; led['turns'] = .array~new; led['entries'] = .array~new
   call save file, led
   say 'round' round 'opened by' by || ':' intention
@@ -79,8 +90,8 @@ load: procedure
   use arg file, stem
   led = .json~fromJsonFile(file)
   known = knownOf(led)
-  srcs = .array~of(.array~of('INTENTION', .array~of(led['intention'])))
-  do s over led['sources']; srcs~append(abs(s)); end
+  srcs = sourcesOf(led)
+  if unasked(led, srcs, stem, '') > 0 then return 3
   l = .SlamWords~load(srcs, known['WORDS'])
   /* a definition that passed waits to be accepted: its word is not asked for again.  A definition that
      waits for words: those words are asked for, with the definition that needs them */
@@ -166,15 +177,21 @@ load: procedure
   return 0
 
 define: procedure
-  use arg file, stem, rest
+  use arg file, stem, rest, again = .false
   parse var rest by ' -- ' path
   by = by~strip; path = path~strip
-  if by == '' | path == '' then do
+  if \again & (by == '' | path == '') then do
     say 'define ROUND BY -- FILE: who wrote the definitions, and the file'
     return 2
   end
   led = .json~fromJsonFile(file)
-  d = .SlamWords~definitions(path)
+  if again then do                                   /* review again: no new definitions */
+    d = .directory~new; d['ENTRIES'] = .array~new; d['BAD'] = .array~new; by = 'the review again'
+  end
+  else do
+    if unasked(led, .array~of(.array~of(rel(qualify(path)), linesOf(path))), stem, ' --' path) > 0 then return 3
+    d = .SlamWords~definitions(path)
+  end
   do b over d['BAD']; say 'not a definition, line' b; end
   turn = led['turns']~items
   /* this turn's words, every word still waiting to be accepted, and every definition waiting for words:
@@ -308,8 +325,166 @@ knownOf: procedure
   use arg led
   ps = .array~new
   do b over led['base']; ps~append(abs(b)); end
+  ps~append(abs(registerOf(led)))
   ps~append(abs(led['shared']))
   return .SlamWords~known(ps)
+
+registerOf: procedure
+  use arg led
+  if led~hasIndex('senses register') then return led['senses register']
+  return 'corpus/senses.csv'
+
+/* what is said: the intention, and each source by its path in this package (the key of an answer) */
+sourcesOf: procedure
+  use arg led
+  srcs = .array~of(.array~of('INTENTION', .array~of(led['intention'])))
+  do s over led['sources']; srcs~append(.array~of(s, linesOf(abs(s)))); end
+  return srcs
+
+resolvedOf: procedure
+  use arg led
+  r = .directory~new
+  if led~hasIndex('senses') then do e over led['senses']
+    do k over e['keys']; r[k] = .true; end
+  end
+  return r
+
+/* preparse: the questions not yet answered.  When there are any, they are listed (and written to
+   ROUND.senses.md), and the caller stops */
+unasked: procedure
+  use arg led, srcs, stem, fileArg
+  sn = .SlamWords~senses(abs(registerOf(led)))
+  if sn['ERRORS']~items > 0 then do
+    do e over sn['ERRORS']; say 'senses register:' e; end
+    return 1
+  end
+  qs = .SlamWords~preparse(srcs, sn, resolvedOf(led), knownOf(led)['WORDS'])
+  if qs~items = 0 then return 0
+  out = .array~of('# round' led['round'] || ': words with more than one meaning, not yet answered.  Answer with:', '#   rexx bin/words.rex sense' led['round'] 'BY' || fileArg, '')
+  say qs~items 'words have more than one meaning and no answer yet; nothing is read until they have one:'
+  i = 0
+  do q over qs
+    i += 1
+    o = .array~new
+    do k = 1 to q['OPTIONS']~items; o~append(k optName(q['OPTIONS'][k], q['WORD'])); end
+    ln = q['FILE']~substr(q['FILE']~lastPos('/') + 1) || ':' || q['LINE'] || ': "' || q['WORD'] || '" in:' q['TEXT']~strip
+    out~append(i || '.' ln); out~append('    ' || o~makeString('L', ';  ')); out~append('')
+    if i <= 5 then say '  ' ln
+  end
+  if qs~items > 5 then say '   ... and' qs~items - 5 'more'
+  call write stem || '.senses.md', out
+  say 'answer them:' rel(stem || '.senses.md')
+  say '  rexx bin/words.rex sense' led['round'] '"YOUR NAME"' || fileArg
+  return qs~items
+
+optName: procedure
+  use arg o, word
+  if o['LABEL'] == '' then return word
+  return word '[' || o['LABEL'] || ']'
+
+/* Ask, line by line: each word with a second meaning, which meaning it has.  The line is corrected in the
+   input as soon as its words are answered, and the ledger saved, so a stop part way keeps what is done. */
+sense: procedure
+  use arg file, stem, rest
+  parse var rest by ' -- ' path
+  by = by~strip; path = path~strip
+  if by == '' then do
+    say 'sense ROUND BY [-- FILE]: who answers, and the file (without one: the round''s intention and sources)'
+    return 2
+  end
+  led = .json~fromJsonFile(file)
+  if \led~hasIndex('senses') then led['senses'] = .array~new
+  sn = .SlamWords~senses(abs(registerOf(led)))
+  if sn['ERRORS']~items > 0 then do
+    do e over sn['ERRORS']; say 'senses register:' e; end
+    return 1
+  end
+  if path == '' then srcs = sourcesOf(led)
+  else srcs = .array~of(.array~of(rel(qualify(path)), linesOf(path)))
+  qs = .SlamWords~preparse(srcs, sn, resolvedOf(led), knownOf(led)['WORDS'])
+  if qs~items = 0 then do
+    say 'nothing to ask: every word with a second meaning has its answer'
+    return 0
+  end
+  i = 1; lines = 0; replaced = 0
+  do while i <= qs~items
+    f = qs[i]['FILE']; n = qs[i]['LINE']; grp = .array~new
+    do while i <= qs~items
+      if qs[i]['FILE'] \== f | qs[i]['LINE'] \== n then leave
+      grp~append(qs[i]); i += 1
+    end
+    choices = .array~new
+    do q over grp
+      say ''
+      head = f~substr(f~lastPos('/') + 1) || ':' || n || ': '
+      say head || q['TEXT']
+      say copies(' ', head~length + q['POS'] - 1) || copies('^', q['LEN'])
+      say 'is this'
+      do k = 1 to q['OPTIONS']~items
+        op = q['OPTIONS'][k]
+        say '  ' k ' ' optName(op, q['WORD'])~left(20) op['TEXT']
+      end
+      a = answer(q['OPTIONS'], q['WORD'])
+      if a = 0 then do
+        call save file, led
+        say ''
+        say 'no more answers:' lines 'lines done,' replaced 'words replaced; the rest is asked next time'
+        return 3
+      end
+      choices~append(.array~of(q, q['OPTIONS'][a]['TOKEN']))
+    end
+    now = .SlamWords~resolve(grp[1]['TEXT'], choices)
+    if f == 'INTENTION' then led['intention'] = now
+    else do
+      p = abs(f); all = linesOf(p); all[n] = now
+      call write p, all
+    end
+    /* every occurrence still on the line kept its first meaning, now or before: recorded against the line
+       as it now reads */
+    keys = .array~new
+    do o over .SlamWords~occurrences(now, sn['WORDS'])
+      keys~append(.SlamWords~senseKey(f, now, o['WORD'], o['NTH']))
+    end
+    e = .directory~new; e['file'] = f; e['line'] = n; e['was'] = grp[1]['TEXT']; e['now'] = now
+    ch = .array~new
+    do c over choices
+      ch~append(c[1]['WORD'] || '@' || c[1]['POS'] '->' c[2])
+      if c[2] \== c[1]['WORD'] then replaced += 1
+    end
+    e['answers'] = ch; e['keys'] = keys; e['by'] = by; e['date'] = today()
+    led['senses']~append(e)
+    lines += 1
+    call save file, led
+    if now \== grp[1]['TEXT'] then say '   now:' now
+  end
+  say ''
+  say lines 'lines answered,' replaced 'words replaced.  Next: load (or define)'
+  return 0
+
+/* one answer: a number, the word or a sense's token, or a label.  0 when the input has ended */
+answer: procedure
+  use arg opts, word
+  do forever
+    call charout , 'answer 1 to' opts~items || ': '
+    if lines() = 0 then return 0
+    a = linein()~strip~lower
+    say ''
+    if datatype(a, 'W') then if a >= 1 & a <= opts~items then return a
+    do k = 1 to opts~items
+      op = opts[k]
+      if a == op['TOKEN'] | a == op['LABEL'] | (a == word & op['LABEL'] == '') | a == optName(op, word)~lower then return k
+    end
+    say 'not an answer:' a
+  end
+
+linesOf: procedure
+  use arg path
+  out = .array~new
+  s = .stream~new(path)
+  if s~open('READ') \== 'READY:' then return out
+  do while s~lines > 0; out~append(s~linein); end
+  s~close
+  return out
 
 /* review options: the words of a finding and the kinds (VOCABULARY.md), and the law's own definitions */
 opts: procedure

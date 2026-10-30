@@ -148,6 +148,7 @@ reader: procedure
   db = work || '/screen_uk_reader.db'
   call SysFileDelete db; call SysFileDelete db || '-wal'; call SysFileDelete db || '-shm'
   address system 'rexx "' || pkg || '/bin/slam.rex" corpus "' || db || '" "' || pkg || '/corpus/circular_corpus_v2.csv"' with output stem ignore.
+  address system 'rexx "' || pkg || '/bin/slam.rex" corpus "' || db || '" "' || pkg || '/corpus/senses.csv"' with output stem ignore.     /* second meanings: false-legal */
   address system 'rexx "' || pkg || '/bin/slam.rex" read "' || db || '" "' || file || '"' with output stem o.
   out = ''
   do i = 1 to o.0

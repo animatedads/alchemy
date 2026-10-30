@@ -68,8 +68,8 @@ e = .SlamLaw~kindErrors(v, .array~of(.array~of('PERSON_ACT', 'an event')), 'EVEN
 call check e~items = 1 & hasText(e, 'is a finding, not an event'), 'a finding (PERSON_ACT) used as an event: refused'
 bad = text(L || '/VOCABULARY.md')
 tokens = .array~of( -
-  .array~of('FALSE_STATEMENT_AUTHORITY', 'a person says a false thing about a council', 'Gemini'), -
-  .array~of('FALSE_STATEMENT_NEED', 'a person says a false thing about the change a house has to have', 'Gemini'), -
+  .array~of('FALSE_STATEMENT_AUTHORITY', 'a person says a false-legal thing about a council', 'Gemini'), -
+  .array~of('FALSE_STATEMENT_NEED', 'a person says a false-legal thing about the change a house has to have', 'Gemini'), -
   .array~of('COERCION_TACTIC', 'a person forces an other person to do a thing', 'Gemini'), -
   .array~of('UNAUTHORIZED_FINANCIAL_ACTIVITY', 'a person gives a loan, and it is unauthorised', 'Gemini'), -
   .array~of('POST_MORTEM_MISAPPROPRIATION', 'after a person died, an other person takes the money of that person, and it is dishonest', 'Gemini'), -
@@ -88,7 +88,7 @@ caught = 0
 do t over tokens
   if hasText(vb['ERRORS'], 'kind' t[1] 'is an event, and its definition uses') then caught += 1
 end
-call check caught = 8, 'event names that carry a conclusion, each refused with the word of a finding it needs: Gemini''s six tokens and two of ChatGPT''s v0.1 names (definitions: their glosses, put in SLAM''s words by Claude)'
+call check caught = 8, 'event names that carry a conclusion, each refused with the word of a finding it needs: Gemini''s six tokens and two of ChatGPT''s v0.1 names (definitions: their glosses, put in SLAM''s words by Claude; Gemini''s "false" is the law''s, false-legal, since VOCABULARY 0.6)'
 call check hasText(vb['ERRORS'], 'kind BOTH_WAYS says it is an event and a finding'), 'a kind typed both ways: refused'
 
 say '== 4. the law'
@@ -232,6 +232,7 @@ reader: procedure
   db = work || '/screen_reader.db'
   call SysFileDelete db; call SysFileDelete db || '-wal'; call SysFileDelete db || '-shm'
   address system 'rexx "' || pkg || '/bin/slam.rex" corpus "' || db || '" "' || pkg || '/corpus/circular_corpus_v2.csv"' with output stem ignore.
+  address system 'rexx "' || pkg || '/bin/slam.rex" corpus "' || db || '" "' || pkg || '/corpus/senses.csv"' with output stem ignore.     /* second meanings: false-legal */
   address system 'rexx "' || pkg || '/bin/slam.rex" read "' || db || '" "' || file || '"' with output stem o.
   out = ''
   do i = 1 to o.0

@@ -48,7 +48,19 @@
  *
  * A finding's words spread only through the law's own definitions (this turn's and the shared list's),
  * not through the circular corpus: there "false" is a value of logic ("not true"), and in the law it is a
- * finding ("a false representation").  The same spelling, two meanings: the corpus is not changed here.
+ * finding ("a false representation").  The same spelling, two meanings.
+ *
+ * Senses (Tom Dyer, 2026-10-30: "preparse on entry; where two words have different meanings, we need to ask:
+ * is this false, or false [legal], with the latter using a fixed word replacement [false-legal] internally,
+ * and replace in input as the corrected item as we go").  corpus/senses.csv lists each second meaning as a
+ * word of its own, in the circular corpus's format, so the reader loads it:
+ *     false-legal,sense false legal,"the word false, as a rule has it: ..."
+ * the token is the word, a hyphen and the label; the word keeps its first meaning.  preparse() finds each
+ * word that has a second meaning in what is said, outside code, and asks which it is; the answer replaces
+ * the word in the input (resolve()).  A token is never the word: "false-legal" is one word to the reader
+ * (a hyphen is not a blank), so a second run finds nothing to ask, and nothing becomes "false-legal-legal".
+ * An answer that keeps the first meaning is recorded against the line as it then reads, so it is not asked
+ * again; if the line changes, it is.
  */
 ::class SlamWords public
 
@@ -336,6 +348,107 @@
   use strict arg word, cat, text
   if text~pos(',') > 0 | text~pos('"') > 0 then text = '"' || text~changestr('"', '""') || '"'
   return word~lower || ',' || cat || ',' || text
+
+/* The senses register: a CSV (token,category,definition) whose category is "sense WORD LABEL".  A
+   Directory: WORDS (word -> Array of Directories TOKEN LABEL TEXT), TOKENS (token -> Directory WORD LABEL
+   TEXT), ERRORS.  Refused: a token that is not WORD-LABEL; a token given twice; a token that is itself a
+   word with senses (it would be asked about, and replaced, again: false-legal-legal). */
+::method senses class
+  use strict arg path
+  words = .directory~new; tokens = .directory~new; errs = .array~new
+  lines = self~linesOf(path)
+  do i = 2 to lines~items
+    ln = lines[i]~strip('T', '0d'x)
+    if ln~strip == '' then iterate
+    parse var ln tok ',' cat ',' rest
+    if rest~left(1) == '"' then rest = rest~substr(2, rest~length - 2)~changestr('""', '"')
+    tok = tok~lower~strip
+    parse var cat kw w label .
+    w = w~lower; label = label~lower
+    if kw~lower \== 'sense' | w == '' | label == '' then do; errs~append(tok || ': the category is not "sense WORD LABEL"'); iterate; end
+    if tok \== w || '-' || label then do; errs~append(tok || ': a sense of "' || w || '" labelled' label 'is "' || w || '-' || label || '"'); iterate; end
+    if tokens~hasIndex(tok) then do; errs~append(tok || ': given twice'); iterate; end
+    d = .directory~new; d['TOKEN'] = tok; d['WORD'] = w; d['LABEL'] = label; d['TEXT'] = rest
+    tokens[tok] = d
+    if \words~hasIndex(w) then words[w] = .array~new
+    words[w]~append(d)
+  end
+  do t over tokens~allIndexes
+    if words~hasIndex(t) then errs~append(t || ': a sense is itself a word with senses; it would be replaced again')
+  end
+  out = .directory~new; out['WORDS'] = words; out['TOKENS'] = tokens; out['ERRORS'] = errs
+  return out
+
+/* Each whole word of LINE that has a second meaning: Directories WORD POS LEN NTH (the Nth time that word
+   is on the line).  A word is what the reader takes as one: "false-legal" is not "false". */
+::method occurrences class
+  use strict arg line, words
+  c = line~lower~translate('', '.,;:()"''?!#*`[]{}<>')~translate(' ', '09'x)
+  out = .array~new; seen = .directory~new
+  do k = 1 to c~words
+    w = c~word(k)
+    if \words~hasIndex(w) then iterate
+    if \seen~hasIndex(w) then seen[w] = 0
+    seen[w] = seen[w] + 1
+    d = .directory~new; d['WORD'] = w; d['POS'] = c~wordIndex(k); d['LEN'] = w~length; d['NTH'] = seen[w]
+    out~append(d)
+  end
+  return out
+
+/* The key that records an answer: the source, the line as it reads, the word, and which time on the line */
+::method senseKey class
+  use strict arg label, text, word, nth
+  return label || '|' || word || '|' || nth || '|' || text
+
+/* Preparse: every word with a second meaning in SOURCES (as load() takes them), outside code, that has no
+   answer in RESOLVED (a Directory of senseKey()s).  An Array of questions: FILE LINE TEXT WORD POS LEN NTH
+   KEY OPTIONS (the word's first meaning, then each sense: Directories TOKEN LABEL TEXT). */
+::method preparse class
+  use strict arg sources, senses, resolved, known = (.directory~new)
+  out = .array~new
+  do src over sources
+    if src~isA(.array) then do; label = src[1]; lines = src[2]; end
+    else do; label = src; lines = self~linesOf(src); end
+    inCode = .false; n = 0
+    do ln over lines
+      n += 1
+      if ln~strip~left(3) == '```' then do; inCode = \inCode; iterate; end
+      if inCode then iterate
+      do o over self~occurrences(ln, senses['WORDS'])
+        key = self~senseKey(label, ln, o['WORD'], o['NTH'])
+        if resolved~hasIndex(key) then iterate
+        q = .directory~new
+        q['FILE'] = label; q['LINE'] = n; q['TEXT'] = ln; q['WORD'] = o['WORD']; q['POS'] = o['POS']
+        q['LEN'] = o['LEN']; q['NTH'] = o['NTH']; q['KEY'] = key
+        first = .directory~new; first['TOKEN'] = o['WORD']; first['LABEL'] = ''
+        if known~hasIndex(o['WORD']) then first['TEXT'] = known[o['WORD']]['TEXT']; else first['TEXT'] = '(its first meaning)'
+        opts = .array~of(first)
+        do sd over senses['WORDS'][o['WORD']]; opts~append(sd); end
+        q['OPTIONS'] = opts
+        out~append(q)
+      end
+    end
+  end
+  return out
+
+/* One line, with its answers: CHOICES is an Array of .array(question, token), for questions on this line.
+   The words are replaced from the right, so each position still holds.  Returns the new line.  A token is
+   never a word with senses (senses() refuses it), so the new line has nothing more to replace. */
+::method resolve class
+  use strict arg line, choices
+  order = .array~new
+  do c over choices; order~append(c); end
+  do i = 1 to order~items - 1                        /* rightmost first */
+    do j = i + 1 to order~items
+      if order[j][1]['POS'] > order[i][1]['POS'] then do; t = order[i]; order[i] = order[j]; order[j] = t; end
+    end
+  end
+  do c over order
+    q = c[1]; tok = c[2]
+    if tok == q['WORD'] then iterate
+    line = line~left(q['POS'] - 1) || tok || line~substr(q['POS'] + q['LEN'])
+  end
+  return line
 
 /* The reader's words: everything but letters, digits and the few other characters it keeps is not a
    blank; these are. */

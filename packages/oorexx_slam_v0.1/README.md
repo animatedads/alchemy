@@ -53,7 +53,8 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamNswLegislation.cls` | Reads NSW legislation XML (Parliamentary Counsel exchange format): a section's text, the version's dates, and each section's history notes, for what was the law on a date |
 | `tests/test_screen_people.rex` | Who did it, and what does not show it: Mr H's cheque, Mr M's tile, his previous convictions refused, his two interviews DISPUTED (8 checks) |
 | `src/SlamWords.cls`, `bin/words.rex` | The word loop: a round of words for one intention. Load what is said, list the words SLAM does not know, enter definitions, review how each one links to the words SLAM knows, accept into the shared list (`corpus/law_words.csv`), load again |
-| `tests/test_words.rex` | The word loop: the same missing words as SLAM's reader; three turns on a made-up account (20, 18, 4, then none missing); each refusal; the writer can not accept their own words (13 checks) |
+| `tests/test_words.rex` | The word loop: the same missing words as SLAM's reader; three turns on a made-up account (20, 18, 4, then none missing); each refusal; the writer can not accept their own words; "false" or "false [legal]", asked at entry and corrected in the input, with nothing replaced twice (20 checks) |
+| `corpus/senses.csv` | Second meanings, each a word of its own (`false-legal`), in the circular corpus's format so the reader loads it |
 | `corpus/rounds/` | Each round: its ledger (JSON), the form of missing words, the definitions the sources write for themselves, each turn's definitions, the review sheet |
 | `tests/test_screen_dates.rex` | The law on the date: the 2008 cheque and 2009 injury in E.W. and NSW; NSW Crimes Act ss.192E and 54 (17 checks) |
 | `tests/test_screen_uk.rex` | Fraud Act 2006 s.2, Theft Act 1968 ss.1 and 21 beside the CMA: the same events and evidence, three more rule packs (16 checks) |
@@ -794,6 +795,7 @@ Tom asked for "a circular submission for words missing": a tool that uses intent
 
 ```
 rexx bin/words.rex open   R0002 "Tom Dyer" -- read the fifth account -- account_f.txt
+rexx bin/words.rex sense  R0002 "Tom Dyer"
 rexx bin/words.rex load   R0002
 rexx bin/words.rex define R0002 "Claude (Opus 5.5)" -- corpus/rounds/R0002.missing.md
 rexx bin/words.rex accept R0002 "Tom Dyer"
@@ -820,7 +822,18 @@ rexx bin/words.rex load   R0002
   - "taken" and "took" with one definition;
   - "sentence" carries a finding through "offence";
   - no event kind uses a word that carries a finding.
-- **A word with two meanings.** The review also says that "evidence", "finding" and "case" carry a finding through "false". That is not true. In "true or false", "false" is the logic value from the circular corpus. In the list of a finding's words, it is the law's word, as in "a false representation". One spelling has two meanings. The loop shows the problem but does not decide it.
+- **A word with two meanings.** The first review also said that "evidence", "finding" and "case" carry a finding through "false". They do not: in "true or false", "false" is the logic value from the circular corpus; in the list of a finding's words, it is the law's word, as in "a false representation". The next section separates them, and the review again finds only "sentence".
+
+### Two meanings: false, or false [legal] (2026-10-30)
+
+Tom: "preparse on entry. Where two words have different meanings, we need to ask: is this false, or false [legal], with the latter using a fixed word replacement [false-legal] internally, and replace in input as the corrected item as we go." And: no "false-legal-legal" on a repeated run.
+
+- **The register,** `corpus/senses.csv`, lists each second meaning as a word of its own: `false-legal`, with its definition in SLAM's words. It has the circular corpus's format, so `slam.rex corpus` loads it, and the law tests' readers now do. "false" keeps its first meaning, the value of logic.
+- **Preparse on entry.** `load` and `define` first look for every word with a second meaning, outside code, that has no answer yet. While there is one, they read nothing: they list each one and stop.
+- **Ask, and correct as you go.** `rexx bin/words.rex sense ROUND "NAME"` shows each line, marks the word, and asks "1 false: not true / 2 false [legal]: ...". The answer can be a number, the word or the label. Each line is corrected in the file as soon as its words are answered, and the ledger is saved, so a stop part way keeps what is done. Answers can come from a file (`< answers.txt`), one per line.
+- **Never twice.** To the reader a hyphen is part of a word, so `false-legal` is one word, not "false", and is never asked about again. The register refuses a sense that is itself a word with senses, which is the only way to get `false-legal-legal`. An answer that keeps "false" is recorded against the line as it then reads; if the line changes, it is asked again. The test runs `sense` three times on the same file and checks that the second and third change nothing.
+- **Round R0001, answered** (by Claude; the ledger records who and what): 14 places. Thirteen are "true or false", the logic value, including cps_cma.md's "a false result" from a computer. One is the law's: REPRESENTATION_FALSE is now "a thing a person said, as true, is false-legal."
+- **VOCABULARY.md 0.6:** the words of a finding name `false-legal`, not `false`. Gate 6 now reads words as the reader does, keeping the hyphen. Two of Gemini's glosses in `tests/test_screen.rex` ("a person says a false thing about a council") are the law's false and now say `false-legal`; both are still refused as events that carry a conclusion.
 
 ### Credits for SLAM's finds
 

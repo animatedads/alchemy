@@ -2,8 +2,8 @@
 
 ```
 vocabulary: law.kinds
-version: 0.5
-written by: Claude (Opus 5.5), 2026-10-30 (0.2: the first list; 0.3: kinds for the Fraud Act 2006 s.2 and the Theft Act 1968 ss.1 and 21; 0.4: cheques, an injury, and NSW Crimes Act 1900 ss.192E and 54; 0.5: a throw, an interview, a past conviction, and hostility to a group)
+version: 0.6
+written by: Claude (Opus 5.5), 2026-10-30 (0.2: the first list; 0.3: kinds for the Fraud Act 2006 s.2 and the Theft Act 1968 ss.1 and 21; 0.4: cheques, an injury, and NSW Crimes Act 1900 ss.192E and 54; 0.5: a throw, an interview, a past conviction, and hostility to a group; 0.6: "false" in the law is "false-legal" (corpus/senses.csv), and "false" is the value of logic)
 architecture: Tom Dyer
 from: the event names of ChatGPT (GPT-6), OFFENCE_EVENT_CONTRACT_v0.1.md, with the changes in docs/architecture/fixtures/MIGRATION_v0.1_to_v0.2.md;
   and the kinds of evidence of the Computer Misuse Act rule and case files of 2026-10-29
@@ -107,7 +107,7 @@ each kind is an event or a finding, and not both. an event is a thing that a rec
 the definition of an event can not have a word of a finding in it. the words of a finding are:
 
 ```
-knows intends unauthorised false dishonest forces reckless offence
+knows intends unauthorised false-legal dishonest forces reckless offence
 ```
 
 kind 1:
@@ -518,7 +518,7 @@ REPRESENTATION_FALSE
 
 it is a finding.
 
-a thing a person said, as true, is false.
+a thing a person said, as true, is false-legal.
 
 kind 42:
 
