@@ -2,7 +2,7 @@
 
 **Architecture:** Tom Dyer.
 **Translation, code and tools:** Claude (Opus 5.5), 2026-10-28, with nine Claude (Opus 5.5) workers, one per part of the reference.
-**Source:** *Open Object Rexx Reference* (rexxref) for ooRexx 5, read from the HTML copy at https://rexx.epbcn.com/rexxref/ (SourceForge, the original home, was not reachable from the authoring container). The rexxref is © its authors under the Common Public License 1.0.
+**Source:** *Open Object Rexx Reference* (rexxref) for ooRexx 5, read from the HTML copy at https://rexx.epbcn.com/rexxref/ (SourceForge, the original home, was not reachable from the authoring container). Files 15, 16 and 17 were read from the `rexxref.pdf` (ooRexx Documentation 5.3.0) that ships in the ooRexx 5.3.0 package, when the web copy could not be reached. The rexxref is © its authors under the Common Public License 1.0.
 **Interpreter used to run the examples:** ooRexx 5.3.0 r13196 (Tom Dyer's build, `oorexx-5.3.0-13196.ubuntu1604debug.x86_64.deb`).
 
 ## What this is
@@ -29,11 +29,13 @@ with `FDSqrt`. Every claim the reference shows with an example carries that exam
 | `10_numbers.md` | 10, 16, 17. numbers and arithmetic, reserved keywords, special variables | 166 | 39 |
 | `11_conditions.md` | 11. conditions and condition traps | 168 | 3 |
 | `14_streams.md` | 14. input and output streams | 124 | 3 |
+| `15_utility_a.md` | 5.4. DateTime, TimeSpan, Alarm, AlarmNotification, Ticker, EventSemaphore, MutexSemaphore, Monitor, MessageNotification | 561 | 27 |
+| `16_utility_b.md` | 5.4. File (Windows and Unix facts apart), RegularExpression, Validate, Buffer, Pointer, Comparable, the comparators, Orderable, Singleton, WeakReference, VariableReference | 431 | 50 |
+| `17_utility_c.md` | 5.2, 5.3, 5.4. RexxContext, RexxInfo, StackFrame, TraceObject, RexxQueue, StreamSupplier, CircularQueue, IdentityTable, Properties, the stream mixins, set operations | 560 | 40 |
 | `19_errors.md` | C. error numbers 3 to 99 | 108 | 4 |
 
-All files together: **1,070 words, 7,809 facts, 1,240 examples, 1,347 subjects.**
-Not covered: the utility classes of 5.4 other than MutableBuffer, the security manager (13), debugging aids (15),
-useful services (18).
+All files together: **1,150 words, 9,361 facts, 1,357 examples, 1,826 subjects.**
+Not covered: the security manager (13), debugging aids (15), useful services (18).
 
 **Platforms.** `00_words.md` defines `platform`, `windows`, `unix` (any platform that is not Windows) and `linux`.
 A thing the reference gives for one platform has the fact line `this function runs only on the windows platform.`
@@ -70,10 +72,10 @@ its `the result:` block (for an error, the error number only). On ooRexx 5.3.0 r
 
 | | Examples |
 |---|---|
-| ooRexx prints what the reference says | **802** |
-| ooRexx prints something else | **205** (each one in `DIFFERENCES.md`) |
-| the reference states no result | **198** |
-| for another platform (not run on Linux) | **35** |
+| ooRexx prints what the reference says | **857** |
+| ooRexx prints something else | **215** (each one in `DIFFERENCES.md`) |
+| the reference states no result | **230** |
+| for another platform (not run on Linux) | **55** |
 
 A difference is a lesson, not a verdict. Causes seen so far: a page sets a variable in its prose and not in its
 code (`ARG`, `CHARIN(myfile)`); output that changes from run to run (`DATE`, `TIME`, `RANDOM`); a reference
