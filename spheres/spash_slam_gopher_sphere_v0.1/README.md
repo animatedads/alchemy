@@ -51,3 +51,10 @@ Public Git work is *code and method only*. `packages/oorexx_spash_slam_v0.1-dev1
 The user confirms having **listened to the entire Tier A collection** (all 463 candidate clips), finding human voice/speech in **463/463**, with zero false positives reported. This is an observed **100% positive fraction within the fully reviewed Tier A candidate set** for the private V7 recording—not recall, not an independently adjudicated benchmark and not a guarantee on other recordings. Candidate clips may overlap or share acoustic sources. Tier B/C candidates and the excluded timeline have not been evaluated for missed speech by this report.
 
 The complete public, privacy-safe qualification record is `packages/oorexx_spash_slam_v0.1-dev1/docs/V7_TIER_A_USER_REVIEW_20261030.md`. A **private** receipt binds the user-reported positive review to each of 463 verified Tier A archive clip IDs and hashes; original audio, exact clip identities and private source hashes remain outside GitHub.
+
+
+## SPASH → original-feed Audio V9 + Physics World 3D model experiments
+
+The next processing stage is specified in `packages/oorexx_spash_slam_v0.1-dev1/docs/SPASH_AUDIO_V9_3D_INTEGRATION.md`. User-reviewed Tier A speech candidates should be treated as prioritized **source-timed search intervals**, not as reconstructed sources. Reopen original independently captured feeds, preserving hashes, clocks, exact sample geometry, source positions and uncertainty. Test competing direct/reflected/spatial paths against genuinely observed channel timing and withheld observations. Four virtual microphone positions are **MODEL_ONLY** predictions. Preserve independent noise and speech-like path hypotheses and produce separate evidential vs listening renderings.
+
+This is a cross-lane integration proposal. No 3D source position, mic geometry, independent physical observation, Audio V9 provider change or deployed production operation is yet claimed.
