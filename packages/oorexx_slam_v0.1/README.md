@@ -80,6 +80,8 @@ edge, so a node's score depends on which node it was entered from.
 | `bin/slam_untested.rex` | Which files and units no test reaches, read statically |
 | `bin/slam_toy.sh`, `TOY.md` | SLAM's test tools in one command each, for a lane to run on its own tree |
 | `tools/` | `bif_oracle_programs.rex` (interpreter-oracle BIF programs), `find_pool.rex` (standalone routines under a tree) |
+| `src/BodySlamScanner.cls`, `src/BodySlam.cls`, `src/BodySlamReport.cls`, `bin/bodyslam.rex` | **Body Slam** (Tom Dyer's): the whole estate's links (requires, classes, uses, topics, declared dependencies) in a temporary SQLite database, resolved as ooRexx 5.3.0 resolves them; see `README_BODYSLAM.md` |
+| `tests/test_bodyslam.rex` | Body Slam: 62 checks, each label proved by an interpreter run; the scanner against RxLexer |
 | `run_tests.sh` | Builds Rexx/SQL and the foreign runtime, then runs everything |
 
 ### Segments (nodes)
