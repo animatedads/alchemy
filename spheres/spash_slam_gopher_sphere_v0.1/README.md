@@ -44,3 +44,10 @@ The separate, local-only `spash.feedback.receipt/0.1` evidence prototype binds e
 Private V7 study: 8h39m surveyed; 912 candidate audio intervals preserved as listening derivatives, 463 stronger voice-like, 242 intermediate and 207 faint/ambiguous. The 2:58 user-confirmed positive is included. Human feedback says every clip listened to thus far in hour 4 contains a verbal, without a supplied reviewed count. This is encouraging positive-review evidence, **not** certified full-corpus accuracy, recall or physical speaker identity.
 
 Public Git work is *code and method only*. `packages/oorexx_spash_slam_v0.1-dev1/docs/V7_CORPUS_METHOD.md` describes the documented historic pass. The new `spash_v7_scan.py` is an experimental streamed reference, not a proven byte-identical recreation of the earlier 912-clip segmentation; `spash_v7_validate.py` audits the original private archive offline. `spash_review_feedback.py` keeps measured likeness and human speech-presence feedback on separate, hash-bound evidential tracks. Original intercept, listening clips, private hashes and annotations are not committed.
+
+
+## Completed Tier A listening review — 463/463 user-positive (30 October 2026)
+
+The user confirms having **listened to the entire Tier A collection** (all 463 candidate clips), finding human voice/speech in **463/463**, with zero false positives reported. This is an observed **100% positive fraction within the fully reviewed Tier A candidate set** for the private V7 recording—not recall, not an independently adjudicated benchmark and not a guarantee on other recordings. Candidate clips may overlap or share acoustic sources. Tier B/C candidates and the excluded timeline have not been evaluated for missed speech by this report.
+
+The complete public, privacy-safe qualification record is `packages/oorexx_spash_slam_v0.1-dev1/docs/V7_TIER_A_USER_REVIEW_20261030.md`. A **private** receipt binds the user-reported positive review to each of 463 verified Tier A archive clip IDs and hashes; original audio, exact clip identities and private source hashes remain outside GitHub.
