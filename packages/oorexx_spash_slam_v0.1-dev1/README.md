@@ -65,3 +65,16 @@ sh ./run_python_tests.sh
 ```
 
 The `run_python_tests.sh` suite requires Python 3 and NumPy; the native graph `run_tests.sh` continues to require ooRexx r13196. Locally observed 40 original native graph + 15 native exemplar + 9 rejected-input + 5 WAV query + 8 replay tests passing. These figures qualify **the local deliverable**, not the published GitHub PR checkout; independent source qualification of the exact branch is still required. Autobuilder is off, and neither private source WAV nor its listening outputs are published.
+
+
+## V7 whole-recording deliverable and Git publication boundary
+
+The user's private V7 recording was surveyed across 8h39m and produced a 912-clip listening archive. User-reported reviewing of hour 4 has so far found verbals in every clip listened to, but no reviewed denominator or false-negative assessment is available; do NOT generalise 100% hit rate across the entire recording. The source, clips, private indexes and source digests remain outside GitHub.
+
+Generic public source now includes:
+- `tools/spash_review_feedback.py`: hash-bound user listening review receipts; no speaker/transcript/source identity assertion
+- `tools/spash_v7_scan.py`: **new streaming 2-channel high-recall reference scanner**, producing candidate plans only; NOT asserted identical to the historical 912-clip generator
+- `tools/spash_v7_validate.py`: offline ZIP/extracted-library integrity audit without uploading original audio
+- `tests/test_review_feedback.py`, `tests/test_v7_scan.py`, `tests/test_v7_validate.py`: synthetic and adverse tests
+
+See `docs/V7_CORPUS_METHOD.md` for the exact historical method description, distinctions between source and listening derivatives, and qualification limits. The Python regression runner includes the new tests. **Local dev3 ZIP tests are not automatically independent exact-checkout Git qualification.**
