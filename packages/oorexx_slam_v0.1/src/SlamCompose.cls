@@ -34,10 +34,13 @@
 /* Lift routine NAME from FILE under ALIAS. Raises when the unit is missing or not standalone. */
 ::method lift
   expose units
-  use strict arg file, name, alias
-  text = charin(file, 1, chars(file))
-  call stream file, 'C', 'CLOSE'
-  unitList = .SlamUnitSplitter~new~split(text)
+  use strict arg file, name, alias, unitList = .nil, text = .nil
+  /* a caller lifting many routines from one file can pass its text and units, read once */
+  if text == .nil then do
+    text = charin(file, 1, chars(file))
+    call stream file, 'C', 'CLOSE'
+  end
+  if unitList == .nil then unitList = .SlamUnitSplitter~new~split(text)
   unit = .nil
   do u over unitList
     if u~kind == 'ROUTINE' then if u~selector == name~upper then unit = u
@@ -53,6 +56,8 @@
   end
   body = .array~new
   do i = unit~line + 1 to min(lastLine, lines~items)
+    /* the next directive (a ::requires after the last routine) is not part of the body */
+    if lines[i]~strip~left(2) == '::' then leave
     body~append(lines[i]~strip('T', '0d'x))
   end
   /* The directive line itself may carry the body after a ';' (::routine x; return 1). */

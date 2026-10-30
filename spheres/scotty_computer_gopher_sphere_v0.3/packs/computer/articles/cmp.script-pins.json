@@ -1,0 +1,25 @@
+{
+  "kind": "article",
+  "id": "cmp.script-pins",
+  "version": "0.2",
+  "sphere": "scotty-computer",
+  "title": "Local script and sidecar input byte pinning",
+  "summary": "Interpreter SHA-256 was insufficient when the script was an independent file. dev9 automatically pins explicit local Python/shell/ooRexx script arguments, supports up to sixteen distinct --pin-file inputs, rejects symlink pins, and includes those hashes in review/execution authority.",
+  "authority": "development-source-evidence",
+  "invariants": [
+    "Local only: remote file pin claims are refused.",
+    "--pin-file precedes --; later tokens remain exact executable arguments.",
+    "File content drift after preview or review invalidates authorization; no silent retry or repair.",
+    "Imported modules, environment state, generated paths, nested commands and remote executables are not transitive closure.",
+    "Hash check just before process launch still has filesystem TOCTOU risk; a content-addressed isolated execution environment would be needed for stronger containment.",
+    "Existing dev8 jobs retain existing definition hashes but receive new observed authority fields; do not overclaim identical environment semantics."
+  ],
+  "provenance": [
+    {
+      "artifact": "scotty_computer_v0.1-dev9.zip",
+      "sha256": "caddc451eb17c1efaa12f9708e5ce772d132b7cd3fab5deae11b984d6f9b13b1",
+      "member": "scotty_computer_v0.1-dev9/docs/EXECUTABLE_JOB_INTENTIONS.md",
+      "submission_branch": "autobuild-submit/20261024T174800Z-CHATGPT-scotty-computer-dev9-caddc451"
+    }
+  ]
+}

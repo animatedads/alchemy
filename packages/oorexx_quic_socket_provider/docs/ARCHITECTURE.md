@@ -1,4 +1,4 @@
-# QUIC socket provider architecture — dev4
+# QUIC socket provider architecture — dev5
 
 QUIC is a socket family below the common SocketProvider boundary.
 
@@ -32,3 +32,12 @@ repository source is the corrected continuation baseline.
 ## Stream-count backpressure
 
 QUIC stream creation is flow-controlled independently of UDP writability. Dev4 exposes this below the QUIC provider seam: `tryOpenStream()` uses OpenSSL's no-block stream creation and maps only `SSL_R_STREAM_COUNT_LIMITED` to a retryable `.nil`. Other failures remain provider errors. The provider also exposes OpenSSL's negotiated local stream allowance for bidirectional and unidirectional streams. These observations are advisory and must not be promoted into generic SocketSelector policy.
+
+
+## Child-stream I/O flow control
+
+Dev5 distinguishes QUIC application flow control from transport failure. A child `QuicStream` may explicitly enter nonblocking application mode and use structured `trySend` / `tryRecv` operations. Native OpenSSL `SSL_ERROR_WANT_READ` and `SSL_ERROR_WANT_WRITE` are projected as retryable `QuicIoResult` states; fatal SSL errors remain errors.
+
+This is deliberately below the common socket-selection contract. Generic consumers continue to see blocking byte-stream semantics through `SocketStreamAdapter`. QUIC-aware consumers may opt into the richer child-stream state after a QUIC socket has already been selected.
+
+A write that returns `WANT_WRITE` must be retried with the same logical bytes before another I/O-triggering operation. The provider enables OpenSSL's moving-write-buffer mode for explicitly nonblocking child streams so the native memory address may change across Rexx calls while the logical write remains the same.

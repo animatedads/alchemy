@@ -1,3 +1,11 @@
+# v0.1 current-state update (2026-10-29)
+
+- Record dev11 repository/package candidate SHA-256 `d052144c13e965fa7bc4e6bfbf1c0feed1cb7804eda6d11555e28f48661a33e3`.
+- Record CODEX-PC review REQ-00000901: dev10 delayed binding wait was sound, but the stronger stale-hidraw-generation claim was NOT_PROVEN because hidraw identity remained path-based.
+- Record dev11 forcing repair: snapshot hidraw class-object identity, require new/rebound class generation under the selected HID interface, and retain stable USB devnum through the wait.
+- Record forcing evidence: the new regression fails against dev10 and passes against dev11.
+- Preserve dev9 as Current Library until clean target-host qualification promotes a successor.
+
 # v0.1 current-state update (2026-10-27)
 
 - Record dev10 repository/package candidate SHA-256 `e9dc6a1c90e97df563de81a4d64ad53339101cf7b63622aeda853835a303b701`.

@@ -1,11 +1,9 @@
-# NoSQLServer engineering sphere v0.4 — 2026-10-29
+# NoSQLServer engineering sphere v0.5 — 2026-10-29
 
-Full source is now in GitHub at `packages/nosqlserver_v0.91` and `packages/nosqlserver_v0.92-dev1`.
+Current Git source includes `packages/nosqlserver_v0.91` and the newer `packages/nosqlserver_v0.92-dev1`. v0.92-dev1 adds native SQLite INTEGER-primary-key rowid seeks and lazy row counts; NoSQLServer SQL predicates remain authoritative.
 
-v0.92-dev1 provides native ooRexx SQLite integer-primary-key B-tree rowid seeks and lazy row counts, with NoSQLServer's SQL predicates still authoritative. Start with `nosqlserver.sqlite-rowid-v092`.
+The Intention Service database-search integration is refreshed to dev30. Capability evidence now consumes the public DatabaseVersion feature registry before compatibility probes, and World population returns to exact INTEGER semantics. The source rebuild also fixes plain MySQL `INSERT INTO country` parsing and proves all 5,302 World rows can be rebuilt.
 
-The independent, explicitly selected patched Mark Hessling Rexx/SQL SQLite backend is at `packages/oorexx_rexxsql_backend_v0.1`. It has much faster indexed query performance in the published Semantic Source Store tests; it is not an implicit NoSQLServer SQL backend. BLOB writes are unsupported by Rexx/SQL.
+The separately selected Rexx/SQL SQLite backend remains independent. NoSQLServer writable SQLite still has the documented large-scale/performance limitations.
 
-NoSQLServer's writable SQLite still makes a complete SQLite backup snapshot per statement and full-table validation for guarded UPDATE/DELETE. Large-scale performance, crash recovery, distributed transactions and production readiness are unqualified.
-
-Autobuilder is OFF. No website, mail, XTP MI/MU, LDAP or private-CA HTTPS deployment is claimed. Historical v0.79 and v0.91 intake source are preserved.
+Autobuilder is OFF. No website, mail, XTP MI/MU, LDAP or private-CA HTTPS deployment is claimed from this sphere update.

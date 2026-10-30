@@ -53,3 +53,4 @@ cd "$ROOT"
 
 "$ROOT/tests/test_live_generation_guard.sh"
 "$ROOT/tests/test_live_binding_wait.sh"
+"$ROOT/tests/test_live_hidraw_generation_guard.sh"

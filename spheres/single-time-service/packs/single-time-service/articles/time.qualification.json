@@ -2,15 +2,17 @@
   "id": "time.qualification",
   "title": "Qualification evidence and claims boundaries",
   "section": "qualification",
-  "summary": "Exact v0.9 ZIP SHA-256 is 914e99e944fcd2e6d4f20c47e0850ca207318d7641c5f432d2d4aa10bd172038. The 81-file SHA-256 manifest was verified locally on 2026-10-23; Python snapshot regression (publish, tamper, traversal) and Python change-contract tests pass. Native ooRexx v0.9 tests have not been executed in the current container. v0.7 native qualification claims are historical, not inherited as new v0.9 evidence.",
+  "summary": "Single Time Service v0.10 full historical source backfilled as 85 files, SHA-256 ZIP f89aac8c3947f794dbf96f39286936f7406d83e7550030505d7aaaf74d74e1fc. Offline manifest 84/84 and Python tests passed. Native v0.10 tests not run because ooRexx interpreter unavailable; no cross-platform security deployment or ConnectSelector dev8 integration qualification claimed. Earlier v0.7 native evidence remains historical only.",
   "invariants": [
     "Do not report native suite PASS without executing it in a qualifying ooRexx 5.3.0 r13196 runtime.",
     "Do not call Adler32 a signature or a trusted time source.",
     "Do not claim the entire service is on GitHub because only the change-publication candidate has been submitted.",
-    "Github managed receiver acknowledgement/receipt is separate from Git branch commit."
+    "Github managed receiver acknowledgement/receipt is separate from Git branch commit.",
+    "Publishing full source to GitHub establishes source provenance, not runtime qualification.",
+    "TimeValidityWindow is neither authenticated time nor certificate-chain validation."
   ],
   "kind": "article",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "single-time-service",
   "authority": "project-artifact",
   "provenance": [

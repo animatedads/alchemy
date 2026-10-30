@@ -28,3 +28,7 @@ Alchemy Foreign Object and Alchemy Objects are optional projection dependencies;
 ## Delivery
 
 Local full replacement source: `oorexx_rust_native_v0.1-dev30.zip`; SHA-256 `fa4a04da499564af05a79ce1b8a2a31834e45f05905fef9923e5d008fa55f5f4`. Shell syntax and ZIP integrity checked; Rust/ooRexx PC runtime qualification pending.
+
+## 2026-10-29 dev32 progress
+
+Library and GitHub checked; Rasen Falcon lane `rust-alchemy-bridge` owns this work. dev31 had an ABBA lock-order hazard: `orx_rust_object_invoke` held the Rust object registry while entering retained registry operations, whereas owner release acquired those locks in reverse order. dev32 moves retained dispatch outside the object registry guard. Full source archive SHA-256 `1dfdd5403e1afcb516ab38855af966344826371a8b0706ef17b0012d4db2b44b`. ZIP integrity and shell syntax PASS. PC Rust compilation and runtime execution pending. Owner release versus retained admission still needs an atomic state gate; invocation pins, revocation and shutdown remain pending. This is not F07 closure.

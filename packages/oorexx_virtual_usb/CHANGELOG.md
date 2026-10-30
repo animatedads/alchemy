@@ -1,3 +1,12 @@
+# v0.1-dev11
+
+- Close the independent-review gap in dev10 hidraw qualification: snapshot pre-existing hidraw class-object generations and refuse to count them for the current run.
+- Require a candidate hidraw class entry to be newly published/rebound after presenter launch, not merely path-resolvable after USB path reuse.
+- Require the hidraw device ancestry to resolve under the selected HID interface and require the selected USB `devnum` to remain stable throughout HID/hidraw waits.
+- Add `tests/test_live_hidraw_generation_guard.sh`, which preserves a stale `hidraw7` class entry and `/dev/hidraw7` across USB path reuse (devnum 2 -> 3), proves the stale class entry is not accepted, then rebinds the class entry and passes.
+- Retain dev10 asynchronous interface/hidraw waits and dev9 presenter/USB generation ownership.
+- No CTAP2, CTAPHID, descriptor, Raw Gadget EP0 or credential semantic changes; public API versions remain unchanged.
+
 # v0.1-dev10
 
 - Fix a live-qualification race after new-device discovery: wait for HID interface publication instead of sampling `<device>:*` once immediately after `CAFE:F1D0` appears.

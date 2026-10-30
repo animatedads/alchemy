@@ -1,10 +1,10 @@
 {
   "kind": "article",
   "id": "ops.font-manager.qualification",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "font-manager",
   "title": "Qualification baseline and known boundary",
-  "summary": "The Font Manager dev3 and PDF dev5 baselines are qualified against ooRexx 5.3.0 r13196. Font Manager proves intentions, Fontconfig discovery, exact metrics, subsetting, glyph planning and mixed-script fallback; PDF proves embedded subset Unicode CID TrueType fonts and exact multilingual text extraction.",
+  "summary": "Font Manager dev4 and PDF dev6 are focused-qualified against ooRexx 5.3.0 r13196 with strict TrueType fallback, TTC/OTC subsetting, multi-face PDF embedding and independent Unicode extraction/font inspection.",
   "invariants": [
     "Qualification evidence names the interpreter baseline and external providers used.",
     "No source package bundles a font binary.",
@@ -40,6 +40,18 @@
       "line_start": 1,
       "line_end": 14,
       "claim": "PDF core/flow/rich regressions plus embedded subset Unicode CID TrueType and multilingual extraction pass; compression performance note retained."
+    },
+    {
+      "artifact": "oorexx_font_manager_v0.1-dev4.zip",
+      "sha256": "d33bb1dc208528b27952ef91738e6fb81fb1a31e985f2ae84d0a76b0945a78b4",
+      "member": "oorexx_font_manager_v0.1-dev4/qualification/r13196-dev4.log",
+      "claim": "Strict TrueType fallback and collection-font subset focused tests pass under r13196."
+    },
+    {
+      "artifact": "oorexx_pdf_v0.1-dev6.zip",
+      "sha256": "84cd8330b731482660995c9fe1a615022682d6743ae5949b3379f5933420fa84",
+      "member": "oorexx_pdf_v0.1-dev6/qualification/r13196-dev6.log",
+      "claim": "Mixed-script PDF generation, CID TrueType embedding and Unicode extraction focused qualification pass under r13196."
     }
   ]
 }

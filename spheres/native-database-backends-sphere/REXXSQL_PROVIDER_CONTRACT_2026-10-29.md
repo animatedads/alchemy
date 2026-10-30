@@ -52,3 +52,22 @@ The Rexx/SQL package-owned suite now includes `tests/test_database_provider.rex`
 provider open, WAL and fail-closed `BLOB_WRITE` / `NULL_EMPTY_DISTINCT` requirements.
 The code is committed to Git; a fresh ooRexx 5.3.0 r13196 execution receipt is still required
 for this 2026-10-29 increment before it is described as newly qualified.
+
+
+## SSC-specific override
+
+Semantic Source Store has a specialized Rexx/SQL provider because SSC owns an index plan
+that is not a generic SQLite concern. `SemanticSourceRexxSqlProvider` now implements the
+same `open(options)` provider contract and returns its index-plan-equipped executor.
+
+Therefore SSC may use the shared selector without source edits by configuring:
+
+```text
+OOREXX_DATABASE_PROVIDER=REXXSQL-SQLITE
+OOREXX_DATABASE_PROVIDER_PACKAGE=SemanticSourceRexxSqlProvider.cls
+OOREXX_DATABASE_PROVIDER_CLASS=SemanticSourceRexxSqlProvider
+SSC_DATABASE_ROOT=/var/lib/alchemy/semantic-source
+```
+
+Generic consumers such as NotNotes use `RexxSqlDatabaseProvider`; SSC uses the specialized
+provider override. The shared selector remains service-neutral.

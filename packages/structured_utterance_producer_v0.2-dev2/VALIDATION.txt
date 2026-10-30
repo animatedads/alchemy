@@ -1,0 +1,27 @@
+Structured Utterance Producer v0.2-dev2 validation state
+=======================================================
+Date: 2026-10-29
+API: structured.utterance.producer/0.1
+Payload schema: structured.utterance.production-result/0.1
+Status: SOURCE CANDIDATE — independent exact-r13196 execution required.
+
+Scope
+-----
+dev2 is a correctness-only successor to dev1. It removes eager boolean guards
+from nil-sensitive public paths. Structured Response remains the external owner
+of common request/result/receipt/warning/error/timing/authority vocabulary.
+
+Authoring checks
+----------------
+- all source/test eager IF/WHEN boolean patterns identified in dev1 were reviewed;
+- every nil-sensitive producer guard is sequential in dev2;
+- the new nil-guard regression is part of run_tests.sh;
+- API structured.utterance.producer/0.1 is unchanged;
+- payload schema structured.utterance.production-result/0.1 is unchanged;
+- manifest is regenerated for this exact source tree.
+
+Qualification state
+-------------------
+Autobuilder is not running. This source commit must not be represented as
+Autobuild-qualified and has no receipt. Independent ooRexx 5.3.0 r13196
+qualification is requested through Rasen Falcon after publication.

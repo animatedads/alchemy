@@ -1,3 +1,6 @@
+## 0.1.1 — 2026-10-29
+- Added authenticated HTTPS JSON-RPC ingress article and explicit LDAP/TLS qualification gaps; kept shared dispatcher and selectors authoritative.
+
 # Changelog
 
 ## 0.1 — 2026-10-23

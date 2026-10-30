@@ -1,7 +1,7 @@
 {
   "schema": "alchemy.rpc.source-ledger/0.1",
-  "captured_date": "2026-10-23",
-  "source_status": "candidate; source submission on GitHub Autobuild; not yet accepted on main",
+  "captured_date": "2026-10-29",
+  "source_status": "RPC portfolio and initial sphere on GitHub main; new HTTPS ingress source still requires ooRexx and field qualification",
   "artifacts": {
     "oorexx_rpc_service_core_v0.1-dev1.zip": {
       "sha256": "e483e3f8ff427da1f92460e819cc7e6391c12edd1e1198403ae5d6c4a5507feb",
@@ -32,11 +32,19 @@
       "member": "docs/RPC_INVOCATION_CONTRACT.md",
       "member_sha256": "84a1726cfcbd9b10b35a4b97ce44b51f137f7c32715c6d5fe4518410adf95274",
       "bytes": 123112
+    },
+    "oorexx_rpc_https_gateway_v0.1-dev1.zip": {
+      "sha256": "c6fba39e6f9e4b6b5e0c674e699858cef9b0fd995c181fa40136ea0d5225f0e6",
+      "member": "src/RpcHttpsJsonGateway.cls",
+      "member_sha256": "28b2c9ef9fcc51277d871caf1aacbf8f328bf6d2187db54571f25174c1a9c915",
+      "bytes": 10858
     }
   },
   "external_contracts": {
-    "ConnectSelector": "v0.1-dev5 examined for optional gRPC seam; current selection authority",
-    "SerialisationSelector": "v0.4-protobuf provides schema-bound protobuf in that historical build; capabilities must be negotiated and checked at runtime"
+    "ConnectSelector": "v0.1-dev8 read and verified; route selection authority, authenticated remote policy remains separate",
+    "SerialisationSelector": "v0.4-protobuf provides schema-bound protobuf in that historical build; capabilities must be negotiated and checked at runtime",
+    "HttpsServer": "v0.4.8 Library ZIP reviewed; HttpRequest and HttpResponse route API present",
+    "LDAP Identity": "v0.1-dev22 Library ZIP reviewed; live private-CA LDAP/session auth not verified"
   },
   "submission": {
     "repository": "animatedads/alchemy",

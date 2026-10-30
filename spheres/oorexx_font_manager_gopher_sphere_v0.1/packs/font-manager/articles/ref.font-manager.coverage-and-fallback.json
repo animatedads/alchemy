@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "ref.font-manager.coverage-and-fallback",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "font-manager",
   "title": "Unicode coverage, fallback and font runs",
   "summary": "dev3 separates preferred semantic font choice from actual glyph coverage. planRunsForPurpose returns ordered FontRun objects, the minimal face set used and explicit missing characters instead of silently substituting glyph zero.",
@@ -10,7 +10,8 @@
     "Fallback faces are introduced only for characters not covered by earlier selected faces.",
     "Coverage-provider suggestions are accepted only after a glyph provider proves a non-zero glyph.",
     "Missing characters remain explicit in FontRunPlan and fullyCovered is false when any scalar is unresolved.",
-    "Coverage/run segmentation is not shaping: grapheme clustering, bidi ordering and OpenType GSUB/GPOS belong to a future shaping-service boundary."
+    "Coverage/run segmentation is not shaping: grapheme clustering, bidi ordering and OpenType GSUB/GPOS belong to a future shaping-service boundary.",
+    "A consumer may require a font format; selection and fallback must then stay within that format or report missing coverage."
   ],
   "related": [
     "ref.font-manager.metrics-and-packaging",
@@ -41,6 +42,12 @@
       "line_start": 259,
       "line_end": 385,
       "claim": "Family-collapsed fallback matching, coverage-provider acceleration and ordered run construction with explicit missing characters."
+    },
+    {
+      "artifact": "oorexx_font_manager_v0.1-dev4.zip",
+      "sha256": "d33bb1dc208528b27952ef91738e6fb81fb1a31e985f2ae84d0a76b0945a78b4",
+      "member": "oorexx_font_manager_v0.1-dev4/src/FontManager.cls",
+      "claim": "dev4 requiredFormat is enforced across primary, coverage-aware and generic fallback selection."
     }
   ]
 }

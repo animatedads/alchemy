@@ -14,7 +14,7 @@ class SphereTests(unittest.TestCase):
         self.assertEqual(corpus['sphere'],sphere['id'])
         self.assertEqual(profile['id'],sphere['id'])
         self.assertIn('packs/remote-compute-mu',profile['packs'])
-        self.assertEqual(len(corpus['records']),10)
+        self.assertEqual(len(corpus['records']),13)
         self.assertTrue(all(row['topic'] and row['rule'] and row['plane'] for row in corpus['records']))
         self.assertFalse(any('exec' in rule['actions'] for rule in policy['rules']))
 if __name__=='__main__':unittest.main()

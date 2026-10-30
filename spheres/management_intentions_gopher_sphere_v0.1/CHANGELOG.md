@@ -17,6 +17,11 @@
 - Closed the Mesh dev8 read-side rebase item.
 - Qualified explicit-only correlation and freshness/health separation under r13196.
 
+## 2026-10-29 — Cloud Control mainline landing
+
+- Landed Alchemy Cloud Control dev3 candidate and ooRexx Cloud Console dev3 candidate source onto current main from the coordinated side branch without importing its stale sphere state.
+- Added Cloud Control authority article and recorded the remaining r13196/live-cloud/policy gates.
+
 ## 2026-10-29 — Cloud Control dev4
 
 - Qualified `alchemy_cloud_control_v0.1-dev4` across Azure, GCP, AWS, OCI and Vultr fixture transports.

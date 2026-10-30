@@ -1,0 +1,21 @@
+ooRexx SIP v0.1-dev17 qualification note
+=========================================
+
+Scope delivered in this increment:
+- optional SipCredentialProvider seam on SipServer
+- Digest username extraction from Authorization
+- lazy external provisioning before native Digest verification
+- fail-closed invalidation of an earlier cached credential when external provisioning fails
+- optional LDAP Identity v0.1-dev22 + Secret Broker adapter
+- no secret values in SIP log/instrumentation fields
+- updated environment roots: RTP dev7, Socket Provider dev16, Instrumentation Mesh dev8
+
+Executed in this work container:
+- Python source-contract probe: PASS
+- project ooRexx standards enforcer: see package validation output
+
+NOT EXECUTED HERE:
+- ooRexx r13196 runtime probe (runtime bytes are not mounted in this container)
+- live LDAP/Secret Broker-backed REGISTER over the wire
+
+The package retains the prior dev16 runtime/COTS evidence and does not upgrade these two NOT EXECUTED items into live claims.

@@ -1,0 +1,70 @@
+ooRexx XTP v0.1-dev37: validation record
+==========================================
+
+Architecture: Tom Dyer (decision D-07)
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for dev26 to dev37
+Validation written and run by: Claude (Opus 5.5), 29 October 2026
+Independent review: a second separate Claude (Opus 5.5) agent checked the dev36 fixes against
+docs/SECURITY.md, with its own probes. It confirmed the key serials on every session and
+message path, and found two medium and three low issues, all fixed here. The dev37 fixes were
+not reviewed again.
+
+Baseline:  oorexx_xtp_v0.1-dev36 as committed to animatedads/alchemy main in 4ee94748
+Planner:   oorexx_operational_degradation_planner_v0.1-dev5, built locally
+libcrypto: OpenSSL 3.0.13; ooRexx 5.3.0 r13196; Socket Provider from packages/oorexx_socket_provider/src
+Host:      Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror, run as root
+Evidence class: LOCAL_PASS. FIELD_PASS is NOT claimed (the field run on the ED209 hosts, with
+packages/xtp_field_qualification_v0.1-dev1, is with the operator's machine).
+
+1. Changes against dev36 (lines added / removed, sha256)
+  src/xtp_transport.cpp          +17 -6    70a2e984609ad1478d6dfcf504953da3f75f08bf411282e10f6ae476c889d605
+      Listener and MulticastListener close(): mark closed and shut down, never close the
+      descriptor under a waiting recvfrom; ReceiveResult carries the key serial
+  src/xtp_security.cpp           +11 -2    d4f0ec711004e1dfea14db258ffe4e1dd2e99c36db92a2bf6c0d099d7e8fc290
+      the serial covers principal, protection and suite as well as the secret
+  src/xtp_multipath.cpp          +3 -2     211a773b28c24fd35931ec226d86a3b020736f7d646b6e4ea5924ae6f51711aa
+      a transfer is assembled per key serial
+  include/xtp/xtp_transport.hpp  +1 -0     61de06f73b37651870179daa7ac1e67667cb4c56b30930c9def81d21d16637c5
+  rexx/XtpSession.cls            +21 -8    82efcbc374b1e6e0dd01593388c3b08fd6f374071796dd2bcd56a3dfae437575
+      MODE=message route evidence is never openable; evidence safe after a failed or
+      concurrent close
+  src/xtp_rexx_native.cpp        +1 -1     29faf6ad7e9642c2c0a5916d7d582e9f30f44a9850251dc5aff590c503731c67
+      version string only
+  Tests: M22, M23, M24 (tests/test_message_security.cpp +64 -1); evidence step 2b
+  (tests/test_xtp_protection_evidence_client.rex +8 -2).
+
+2. New tests
+  M22 same secret, principal changed: session closed after 1007 ms; suite changed: 1008 ms
+  M23 chunk 0 under the old secret, chunk 1 under the new: not joined
+  M24 close() from another thread: a receive with no timeout returned after 10 ms
+  evidence 2b: an address without XTP_MODE=session: MODE=message OPENABLE=0 REASON=message_mode
+  Mutation checks, each in a scratch copy:
+    serial left out of the multipath assembly id     M23 FAIL
+    principal and suite left out of the key match    M22 FAIL
+    the old close()                                  M24 FAIL (still waiting after 3 s)
+
+3. Interoperability (PEER_ROOT = committed dev36)
+  I1 dev37 -> dev36  35 resent   I2 dev36 -> dev37  36   I3 dev37 -> dev37  35   all delivered
+  The wire is unchanged in dev37.
+
+4. Full regression on dev37 (final run, scratch copy, suites one after another)
+  11 make targets: service 3, capacity-rate 1, auto-key 1, negative 7/7, segmentation 10/10,
+    interop 3/3 + protected 1, sync-diag 5/5, diag-hardening 8/8, session 22/22,
+    security 28/28, message-security 24/24                                      all rc=0
+  31 shell suites, including the evidence test (37 PASS lines), the ooRexx suites and
+    test_storage_capacity_xtp.sh                                                 all rc=0
+  Totals: 274 PASS, 0 FAIL, 1 SKIP (run_tests.sh proxy stress: proxy binary absent)
+
+5. Behaviour changes to note
+  - Route evidence for an address without XTP_MODE=session is OPENABLE 0, REASON message_mode.
+  - Re-installing a key with the same secret but another principal, protection or suite ends
+    the contexts under it, as a new secret does.
+  - Listener::close() and MulticastListener::close() no longer free the descriptor; it is freed
+    when the listener is destroyed. A receive() waiting on L2 (AF_PACKET) stops at its next
+    receive timeout, not at once.
+
+6. Not run
+  - Real Ethernet; the ED209 field path (pending, see above).
+  - A third review of the dev37 fixes.
+
+Claude (Opus 5.5)

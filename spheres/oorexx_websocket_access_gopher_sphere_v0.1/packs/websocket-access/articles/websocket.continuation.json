@@ -4,21 +4,28 @@
   "version": "0.1",
   "sphere": "websocket-access",
   "title": "Continuation and missing work",
-  "summary": "Advance the dev2 source candidate through current-baseline qualification and then fill carrier/security extension gaps without bypassing the common socket authority.",
+  "summary": "Advance dev4 by executing current-baseline tests, completing the HTTPS-side upgrade wrapper, qualifying live wss, and binding production entropy while preserving socket, HTTPS, crypto and identity authority boundaries.",
   "invariants": [
-    "Execute the expanded dev2 contract suite and independent COTS tests against Socket Provider dev16 before promotion.",
-    "Exercise fragmented TEXT and BINARY messages with interleaved PING/PONG and both local and peer close paths on wire.",
-    "Bind production nonce and masking entropy to an estate cryptographic/randomness authority; do not add shell-command crypto or ad-hoc weak randomness.",
+    "Execute test_websocket_contract.rex and test_server_access.rex under ooRexx 5.3.0 r13196.",
+    "Execute test_platform_crypto.rex against exact Crypto v0.8.3 plus crypto.auth/0.1.",
+    "Execute independent COTS client and server interoperability against Socket Provider dev16 before promotion.",
+    "Implement the narrow upgrade-stream counterpart in the owning ooRexx HTTPS server; do not expose raw transport internals.",
+    "Qualify Rasen Falcon/Wire wss through the owned HTTPS path with the HTTPS worker/TLS-generation lease retained for the upgraded connection.",
+    "Bind WebSocketEntropySource to the estate production randomness authority and qualify exact nonce/mask delivery.",
+    "Do not add another RNG, shell-command crypto or WebSocket-owned OpenSSL/TLS binding.",
+    "Keep LDAP/application identity and authorization above the WebSocket framing boundary.",
     "Add extension negotiation only through explicit extension objects and fail closed for unsupported negotiated extensions.",
-    "Treat RFC 8441 and RFC 9220 as explicit WebSocket-over-HTTP/2 and WebSocket-over-HTTP/3 compositions; ordinary RFC 6455 Upgrade does not implement them.",
-    "Keep browser, Queue Fabric, RPC, Wire UI and application semantics above WebSocket; they may consume the access class but do not own RFC 6455 framing.",
-    "Preserve full ooRexx objects through every selector/provider seam; do not flatten addresses, messages or authorities into dictionaries.",
-    "Use Rasen Falcon componentId websocket-access for every project request and unread reply check for this work."
+    "Treat RFC 8441 and RFC 9220 as explicit WebSocket-over-HTTP/2 and WebSocket-over-HTTP/3 compositions.",
+    "Use Rasen Falcon componentId websocket-access for all coordination from this lane."
   ],
   "provenance": [
     {
       "artifact": "packages/oorexx_websocket_access",
-      "claim": "Current Git source candidate v0.1-dev2."
+      "claim": "Current Git source candidate v0.1-dev4."
+    },
+    {
+      "artifact": "packages/oorexx_websocket_access/VALIDATION_DEV4.txt",
+      "claim": "Explicit unqualified gates."
     },
     {
       "artifact": "oorexx_websocket_access_v0.1-dev1.zip",

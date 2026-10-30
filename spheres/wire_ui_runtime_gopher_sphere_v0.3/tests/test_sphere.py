@@ -11,4 +11,8 @@ assert base['current_integration_evidence']['swing']['artifact']=='wire_ui_swing
 assert base['current_integration_evidence']['gtk_direct_linux']['artifact']=='wire_direct_linux_v0.1-dev41.zip'
 rf=json.loads((r/'packs/wire-ui-runtime/articles/ref.wire-ui-runtime.rasenfalcon-runtime-readiness.json').read_text())
 assert rf['state']=={'source_candidate':True,'review_stage':True,'installed':False,'running':False,'production_ready':False}
+wapp=json.loads((r/'packs/wire-ui-runtime/articles/ref.wire-ui-runtime.wapp-dev4-live-gate.json').read_text())
+assert wapp['qualification']['installation']=='SOURCE_ONLY'
+assert wapp['qualification']['liveNetwork']=='NOT_TESTED'
+assert wapp['provenance']['dependency']=='oorexx_deployment_v0.1-dev4.zip'
 print('PASS wire-ui-runtime sphere v0.3 static')

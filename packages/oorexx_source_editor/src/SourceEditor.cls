@@ -1,4 +1,4 @@
-/* ooRexx Source / Code / Class Editor v0.1-dev7
+/* ooRexx Source / Code / Class Editor v0.1-dev8
  * Language-neutral editing core with first-tier ooRexx, C, C++, JSON and Python profiles.
  * The implementation language is ooRexx; source semantics stay language-neutral.
  */
@@ -204,20 +204,25 @@
 ::method grep
   use arg pattern, mode='text', caseMode='sensitive'
   return .SourceFinder~new(self)~grep(pattern,mode,caseMode)
+::method references
+  use arg name, caseMode='sensitive'
+  return .SourceFinder~new(self)~references(name,caseMode)
 ::class SourceMatch public
 ::method init
-  use arg path,lineNumber,column,text,kind='text',symbol=''
-  self~path=path; self~lineNumber=lineNumber; self~column=column; self~text=text; self~kind=kind; self~symbol=symbol
+  use arg path,lineNumber,column,text,kind='text',symbol='',role='match'
+  self~path=path; self~lineNumber=lineNumber; self~column=column; self~text=text; self~kind=kind; self~symbol=symbol; self~role=role
 ::attribute path
 ::attribute lineNumber
 ::attribute column
 ::attribute text
 ::attribute kind
 ::attribute symbol
+::attribute role
 ::method asString
-  expose path lineNumber column text kind symbol
+  expose path lineNumber column text kind symbol role
   suffix=''
-  if symbol<>'' then suffix=' symbol='symbol
+  if symbol<>'' then suffix=suffix||' symbol='symbol
+  if role<>'match' then suffix=suffix||' role='role
   return path':'lineNumber':'column' ['kind'] 'text||suffix
 
 ::class SourceFinder public
@@ -289,6 +294,26 @@
 badPattern:
   raise syntax 88.900 array('invalid regular expression:' pattern condition('D'))
 
+::method references
+  expose document
+  use arg name, caseMode='sensitive'
+  if name='' then raise syntax 88.900 array('reference name must not be empty')
+  matches=self~find(name,'code',caseMode)
+  syms=document~symbols
+  do m over matches
+    role='reference'
+    do s over syms
+      sameName=s~name=name
+      if caseMode~lower='insensitive' then sameName=s~name~caselessEquals(name)
+      if sameName & m~lineNumber=s~startLine then do
+        role='declaration'
+        leave
+      end
+    end
+    m~role=role
+  end
+  return matches
+
 ::method symbolAt private
   use arg syms,lineNumber
   do s over syms
@@ -341,6 +366,18 @@ badPattern:
     if mode='code' & (lang='text' | lang='make' | lang='cmake') then iterate
     doc=.SourceDocument~new(f~path,lang)
     matches=doc~grep(pattern,mode,caseMode)
+    do m over matches; results~append(m); end
+  end
+  return results
+
+::method references
+  use arg name, filespec='*', caseMode='sensitive', language=''
+  results=.array~new
+  do f over self~files(filespec,language)
+    lang=f~language
+    if lang='text' | lang='make' | lang='cmake' then iterate
+    doc=.SourceDocument~new(f~path,lang)
+    matches=doc~references(name,caseMode)
     do m over matches; results~append(m); end
   end
   return results

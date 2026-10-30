@@ -1,7 +1,7 @@
 {
   "schema": "oorexx.sip.dependencies/1",
   "component": "oorexx_sip",
-  "version": "0.1-dev16",
+  "version": "0.1-dev17",
   "requires": [
     {
       "name": "ooRexx",
@@ -9,7 +9,7 @@
     },
     {
       "name": "oorexx_socket_provider",
-      "version": "0.1-dev10",
+      "version": "0.1-dev16",
       "api": "socket.provider/0.1"
     },
     {
@@ -39,6 +39,13 @@
       "version": "0.1-dev10",
       "api": "oorexx.speech/0.1",
       "role": "optional PCM STT/TTS bridge; no SIP/RTP/control authority"
+    },
+    {
+      "name": "oorexx_ldap_identity",
+      "version": "0.1-dev22",
+      "api": "identity.credentials/0.1",
+      "role": "optional SIP Digest principal/credential metadata authority; Secret Broker materialization remains separate",
+      "optional": true
     }
   ],
   "spiral1Access": {
@@ -52,6 +59,7 @@
   },
   "notes": [
     "dev16 outbound INVITE/ACK/BYE is implemented in Rexx above the unchanged native SIP parser/registrar library",
-    "current estate Socket Provider authority is reported as dev16, but this package retains the executable dev10 baseline because dev16 source bytes were not retrievable in this session"
+    "current estate Socket Provider authority is reported as dev16, but this package retains the executable dev10 baseline because dev16 source bytes were not retrievable in this session",
+    "dev17 adds optional lazy LDAP Identity/Secret Broker credential provisioning for SIP Digest authentication; provider failure invalidates any previously provisioned secret before verification"
   ]
 }

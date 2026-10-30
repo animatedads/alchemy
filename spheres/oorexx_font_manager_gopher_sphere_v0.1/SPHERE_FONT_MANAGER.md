@@ -1,6 +1,6 @@
-# ooRexx Font Manager — engineering sphere v0.1
+# ooRexx Font Manager — engineering sphere v0.2
 
-This sphere documents the work through `oorexx_font_manager_v0.1-dev3` and the first substantial consumer integration in `oorexx_pdf_v0.1-dev5`.
+This sphere documents the work through `oorexx_font_manager_v0.1-dev4` and `oorexx_pdf_v0.1-dev6`.
 
 ## Authority
 
@@ -20,3 +20,7 @@ PDF dev5 proves the architecture by using FontManager for semantic selection, su
 
 - `oorexx_font_manager_v0.1-dev3.zip` — SHA-256 `a5b9bbe38a3e619f0c9cd8b2a15bcb42e3623ca535117b7f232ab91602748838`
 - `oorexx_pdf_v0.1-dev5.zip` — SHA-256 `4053ddea12178bea122f281f655984be15141d13656a8ad31113ab1ac17e3ae1`
+
+## 2026-10-29 continuation
+
+PDF now consumes `FontRunPlan` concretely through `PdfManagedFontSet`. The report corpus is planned once and mapped to multiple embedded TrueType subsets. The PDF emitter explicitly requires TrueType because it emits CIDFontType2; CFF/OpenType is not mislabeled. Font Manager dev4 adds an optional hard format constraint and preserves TTC/OTC face indices through discovery and pyftsubset packaging.

@@ -1,0 +1,34 @@
+MVS Alchemy Services v0.1-dev3-pre6 qualification evidence
+Date: 2026-10-04
+
+Runtime supplied by user:
+  Open Object Rexx 5.3.0 r13196 - Internal Test Version
+  Build date: Aug 3 2026
+
+Executed from package root:
+  python3 -m py_compile host/reference/*.py HOST/tests/wire_reference.py       PASS
+  python3 HOST/tests/wire_reference.py                                       PASS
+  python3 host/reference/selftest.py                                         PASS
+  python3 host/reference/mail_policy_selftest.py                             PASS
+  python3 host/reference/mail_personality_selftest.py                        PASS
+  python3 host/reference/virtual_services_selftest.py                        PASS
+  python3 host/reference/data_personality_selftest.py                        PASS
+  rexxc HOST/src/MasVirtualServices.cls /tmp/MasVirtualServices.orx          PASS
+  (cd HOST/tests && rexx mas_virtual_services.rex)                           PASS
+
+New executable coverage:
+  QUEUE      PASS - FIFO, depth, opaque byte preservation, session handles
+  DATABASE   PASS - put/get/delete/bounded scan, opaque key/value preservation
+  IMAP       PASS - mailbox catalogue, UIDVALIDITY+UID lookup, seen mutation
+  SMTP       PASS - unsigned/invalid/mismatched/unauthorised/egress refusal and RELAY_ELIGIBLE success
+
+Qualification boundary:
+  Fixture/in-memory host provider qualification                              PASS
+  ooRexx 5.3.0 r13196 execution                                              PASS
+  Live Queue Fabric adapter                                                  NOT_RUN
+  Live NoSQLServer adapter                                                   NOT_RUN
+  Live ooRexx IMAP v0.1-dev10 adapter                                        NOT_RUN
+  Live ooRexx SMTP Secure Stack v0.1-dev6 adapter                            NOT_RUN
+  Live ED209Z DYN75/TK5 crossing                                             NOT_RUN
+
+No NOT_RUN item is represented as delivered live qualification.
