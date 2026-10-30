@@ -116,7 +116,10 @@ def search(query_wav, candidate_wavs, *, segment_seconds=.96, min_score=.70, max
                     stop = min(len(cshape)-width+1, chunk+256)
                     sub = cshape[chunk:stop+width-1]
                     windows = np.lib.stride_tricks.sliding_window_view(sub, width, axis=0).transpose(0,2,1)
-                    scores = np.clip(1.0 - np.abs(windows-variant[None,:,:]).sum(axis=2).mean(axis=1)/2.0,0.,1.)
+                    # Sum per-frame normalized L1 over BANDS, then average over TIME.
+                    # The extra division by band count in earlier publication
+                    # made unrelated noise score near 1.0 (false positives).
+                    scores = np.clip(1.0 - np.abs(windows-variant[None,:,:]).sum(axis=2).mean(axis=1)/2.0, 0., 1.)
                     for ix in np.flatnonzero(scores >= min_score):
                         ci = chunk + int(ix)
                         if candidate_sha == query_sha:
