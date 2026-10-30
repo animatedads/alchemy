@@ -1,0 +1,78 @@
+ooRexx Cloud Console v0.1-dev2 qualification
+Date: 2026-09-06
+
+INPUT HEADS
+===========
+oorexxapis(20260906-192151).zip
+SHA-256 aa1709f24b4a8473fcfb99f36c11c4bb718b9ce0e30d7a4f439d5df8cbdfeafb
+
+sphere(20260906-192150).zip
+SHA-256 b6f49ddfd0864bb2b47e7a9e608a56fd68d530d9ff77dc3d5ff80f14e7e075f2
+
+ooRexx package supplied by user:
+oorexx-5.3.0-13196.ubuntu1604debug.x86_64(20260906-190922).deb
+SHA-256 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+RUNTIME
+=======
+Open Object Rexx 5.3.0 r13196 - Internal Test Version
+Build date: Aug 3 2026
+64-bit
+
+GOPHER RULES APPLIED
+====================
+- Placement Layers: stable allocator nodeId is separate from provider resource identity/network endpoint.
+- Semantic Source Control: carrier/path is not semantic identity.
+- Storage Fabric: path/location/workspace is not durable object identity or safety authority.
+- Workspace GPT: workspace is explicit operational context.
+- ooRexx LLM Pitfalls: do not assume & or | short-circuit; omitted USE ARG value is not reliably .nil.
+
+These rules directly changed the implementation, including the workspace boundary,
+provider handle/nodeId separation, explicit type guards, and optional argument handling.
+
+CURRENT PROVIDER COMMAND SURFACE CHECK
+======================================
+Checked against current official provider documentation on 2026-09-06:
+- Azure CLI VM lifecycle and NSG rule commands.
+- Google Cloud CLI Compute Engine lifecycle and firewall-rule commands.
+- AWS CLI EC2 lifecycle and security-group rule commands.
+- OCI CLI 3.92.0 compute instance actions and NSG rule commands.
+- Vultr CLI instance and firewall rule commands; Vultr instance reference updated 2026-07-24.
+
+Important semantic choices:
+- Azure common stop is az vm deallocate (not billable powered-off allocation).
+- GCP reboot maps to native instances reset (hard reset).
+- OCI stop/reboot use SOFTSTOP/SOFTRESET.
+
+LOCAL BUILD / OFFLINE TESTS
+===========================
+- src/CloudConsole.cls compiled with rexxc: PASS
+- standalone cloudctl.rex compiled with rexxc: PASS (final package gate)
+- tests/test_json.rex: PASS
+- tests/test_api.rex direct CloudApp~runTokens(.Array): PASS
+- tests/run.sh: PASS ALL OOREXX CLOUD CONSOLE v0.1-dev2 TESTS
+- POSIX launcher sh -n: PASS (final package gate)
+- ZIP integrity: PASS
+- fresh-extraction full regression suite: PASS
+- fresh-extraction SHA256SUMS verification: PASS
+
+The provider regression suite uses fake az/gcloud/aws/oci/vultr-cli executables.
+No live provider credential or live mutation is required for qualification.
+
+SAFETY / AUTHORITY ASSERTIONS
+=============================
+- Mutation defaults to PLAN; --apply is mandatory to execute.
+- machine destroy also requires exact --confirm == --machine.
+- interactive apply requires operator to type APPLY.
+- secret-bearing option/spec names are rejected.
+- provider CLI auth/IAM stays authoritative; credentials are not accepted by cloudctl.
+- --workspace changes provider CLI cwd only; it grants no cloud or allocator authority.
+- cloud provider handle is never asserted to be allocator nodeId.
+
+KNOWN LIMITS
+============
+- no live-cloud qualification in this release;
+- firewall rules only, not provider firewall-container lifecycle;
+- OCI machine IP lookup intentionally not expanded to VNIC queries yet;
+- GCP native reset is a hard reboot semantic;
+- official provider CLI installation/authentication is prerequisite for live use.

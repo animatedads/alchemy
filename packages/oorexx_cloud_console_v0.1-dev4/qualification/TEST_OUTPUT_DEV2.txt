@@ -1,0 +1,40 @@
+PASS JSON
+PASS ALL OOREXX CLOUD CONSOLE v0.1-dev2 TESTS
+
+VERSION:
+ooRexx Cloud Console 0.1-dev2
+
+HELP (first 40 lines):
+ooRexx Cloud Console 0.1-dev2
+
+Usage:
+  cloudctl.rex providers [--json] [--workspace DIR]
+  cloudctl.rex workspace [--json] [--workspace DIR]
+  cloudctl.rex machine list --provider P [provider context] [--json]
+  cloudctl.rex machine start|stop|reboot --provider P --machine HANDLE [--zone Z] [--apply]
+  cloudctl.rex machine destroy --provider P --machine HANDLE --apply --confirm HANDLE
+  cloudctl.rex machine create --provider P --spec FILE [--apply]
+  cloudctl.rex firewall list --provider P --scope SCOPE [--json]
+  cloudctl.rex firewall allow --provider P --scope SCOPE --rule NAME --protocol tcp --port 22 --source CIDR [--apply]
+  cloudctl.rex firewall revoke --provider P --scope SCOPE --rule RULE_ID_OR_NAME [--apply]
+
+Providers and aliases: azure/az, vultr, gcp/gcloud, aws/amazon, oci/oracle
+
+Safety:
+  * mutations are plans unless --apply is explicit
+  * destroy additionally requires --confirm to exactly equal --machine
+  * credentials are never accepted as command/spec fields; provider CLIs own authentication
+  * --workspace changes provider CLI working directory only; it is not authority or identity
+  * OOREXX_CLOUDCTL_WORKSPACE is the robust Codex/automation override, including paths with spaces
+  * values containing whitespace belong in a --spec key=value file
+
+Provider context:
+  Azure: --subscription ID, --group RG; firewall scope RG:NSG
+  GCP: --project ID, --configuration NAME; mutations require --zone; firewall scope NETWORK
+  AWS: --region REGION, --aws_profile NAME; firewall scope SECURITY_GROUP_ID
+  OCI: --compartment OCID, --region REGION, --oci_profile NAME, --oci_auth TYPE; firewall scope NSG_OCID
+  Vultr: --vultr_config PATH; firewall scope FIREWALL_GROUP_ID
+
+FRESH EXTRACTION GATE:
+PASS ALL OOREXX CLOUD CONSOLE v0.1-dev2 TESTS
+SHA256SUMS: PASS
