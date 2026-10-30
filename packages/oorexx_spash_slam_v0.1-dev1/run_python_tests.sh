@@ -7,3 +7,4 @@ python3 tests/test_review_feedback.py
 python3 tests/test_v7_validate.py
 python3 tests/test_v7_scan.py
 python3 tests/test_v7_render.py
+python3 tests/test_stage_two_mic.py
