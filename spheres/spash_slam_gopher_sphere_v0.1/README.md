@@ -21,3 +21,12 @@ Next: source-hashed Audio V9 input adapter, drift-resistant family identity, cal
 A caller may supply a short WAV **as an acoustic specimen**, without naming an event. The Python reference provider `tools/spash_find_similar.py` extracts normalized log-frequency spectrotemporal blocks, selects active 0.96-second template subsequences, searches candidate WAVs under limited tempo/coarse-spectral shift experiments, and reports ranked source-verified timestamps. Do not treat the numerical score as a probability. The source itself is never committed.
 
 Native `SpashExampleSearch.cls` compares same-foundation observation subsequences across source IDs, with bounded speed variation, interval provenance, ranked alternatives and overlap suppression. Cross-channel geometry and real pitch-transposition calibration remain open. Requirements: never use a single whole-clip mean as the only query, never present an exact self-overlap as discovery, never interpret spectral likeness as a named source or spoken transcript, and never claim independent evidence where the method or recording is shared.
+
+
+## Spectral distance correction and partial replay boundary
+
+Correctly normalized comparison is `1 - mean_over_time(sum_over_frequency(abs(Q-C))/2)`; the frequency-bin count is NOT another denominator. The initial GitHub WAV publication had an erroneous band-count normalization, encouraging false positive likeness. Requalified local reference distinguishes a deliberately copied 2.56–3.52 s private passage shifted to 6.56–7.52 s, score about 0.968, from white-noise and sine-sweep negative controls (no accepted matches at threshold 0.8). These are algorithm-dependent scores, not likelihoods or source identities.
+
+A match-only listening renderer preserves exact original source sample indices and source + derived clip SHA-256, refuses changed sources and refuses overwrites. It is a PCM crop of the source, NOT spatial extraction, source-separated audio, hallucinated microphone evidence or forensic authentication. Private source material and derived WAVs stay out of the Git repository.
+
+The published source still requires independent checkout qualification before merge. The locally qualified ZIP plus its SHA-256 manifest is a separate, explicit provenance lineage.
