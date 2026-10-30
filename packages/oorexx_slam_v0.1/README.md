@@ -816,7 +816,7 @@ rexx bin/words.rex load   R0002
 **Round R0001** (`corpus/rounds/R0001.*`) gathered the definitions the law's rule files write for themselves: 104 words across 11 files.
 - **Three words are defined in more than one way.** "Reckless" ends in "a bad result", "damage" or "a false result". "Sees" is "has as an input", with or without "by the eyes or the mind". "Serious" applies to damage in one file and to any thing in another. Turn 1 takes the most general meaning of each, so that every file's meaning is a case of it.
 - **The intention's own words** (meaning, files, themselves) went round as well. "Themselves" waited a turn for "ones" and "they", and was then rewritten from known words.
-- **All 107 definitions pass.** They wait for a reviewer other than Claude, so nothing is in the shared list yet.
+- **All 107 definitions pass.** Tom Dyer accepted them (2026-10-30), with R0002's three, so `corpus/law_words.csv` now holds 110 words and both rounds are closed. With the circular corpus, the senses and the shared list loaded, SLAM's reader reads every rule file, guidance file and VOCABULARY.md. Two words added to the files after R0001, skin and break, are submitted in R0002 and wait for acceptance.
 - **What the review found:**
   - five forms not linked to their stem (writes, knows, causes, pays, meaning);
   - "taken" and "took" with one definition;
@@ -845,7 +845,7 @@ VOCABULARY.md 0.7 adds three findings: WOUND, INTENT_GRIEVOUS_HARM and RECKLESSN
 
 **Round R0002** ran the word loop over the law files before any test did:
 - **It found my mistakes first.** I had left words out of the new files: "break" and "skin" in VOCABULARY.md's new kind, and hand, most, gets and knows in the packs. They were added, word for word as VOCABULARY.md already has them.
-- **The new packs agree with every other file**, except on the three words still waiting in R0001: reckless, sees and serious.
+- **The new packs agree with every other file**, except on reckless, sees and serious, where R0001 took the most general meaning. The shared list now has that meaning; the files that still write their own (cma1990_s3za.md, cps_cma.md and three others) can drop their lines.
 - **Answers carry between rounds.** An answer belongs to a line of a file, not to a round, so R0002 asked only about the new files' "false". Both are the logic value.
 - **"Act" has two meanings too.** The round's intention said "the crimes act": the law, not a deed. `corpus/senses.csv` now has `act-law`, so the intention reads "the crimes act-law". The other 24 uses of "act" outside code are all the deed. A line that defines the word, "act: a thing that a person does", is its first meaning and is not asked about.
 
