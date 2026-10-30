@@ -3,15 +3,23 @@
   "id": "librarian-v2.qualification",
   "title": "Qualification truth and blockers",
   "section": "qualification",
-  "version": "0.1",
+  "version": "0.1.3",
   "sphere": "librarian-v2",
   "authority": "project-continuity",
-  "summary": "Dev8 is source-reviewed and SHA-confirmed against the archived package but remains unqualified under ooRexx in the current environment. Earlier increments had separately reported interpreter assertions, but those are not evidence that dev8 passes. The Gopher sphere's JSON structure can be statically checked separately and must not be represented as full Gopher runtime activation. Blockers include graph mutation/time scopes, comparator versioning, provenance identity, malformed inputs and causal/bias authority separation.",
+  "summary": "Dev11 cumulative archive native ooRexx 5.3.0 r13196 qualification PASS: 137 positive assertions over eleven suites plus 13 expected-negative rejected input cases, total 150. rexxc class compilation, ZIP integrity and exact Git blobs for src+new regression test verified. Upstream Single Time Service v0.9 remains unqualified; only v0.3 is pinned. Gopher catalogue activation is not proven and no production source/independence/bias authority is established.",
   "invariants": [
-    "Runtime test count for dev8: not established.",
     "Before promotion: ooRexx 5.3.0 r13196 rexxc + runtime suites, deterministic permutation fixtures, cycle and malformed relationship tests, historical as-of revisions, Unicode/source spans, limits and regression scenarios.",
     "Before claiming a Gopher-activated sphere: run Sphere Editor validate/lint and Gopher profile context/open tests against a compatible installed version.",
-    "Package hash and GitHub commit are provenance, not proof of semantic correctness."
+    "Package hash and GitHub commit are provenance, not proof of semantic correctness.",
+    "Real ooRexx checks: 115 PASS on dev9 archive with pinned Time Service v0.3; archive integrity PASS.",
+    "Single Time Service v0.9 and Gopher profile runtime remain unqualified for this Librarian increment.",
+    "GitHub dev9 is an incremental delta; full development source dependencies are in the ZIP, not the PR branch checkout.",
+    "No production qualification or verified source independence is claimed.",
+    "Dev10 canonical materialisation schema is LIBRARIAN-PROVENANCE-SNAPSHOT/2; no implicit comparison with incomplete dev9 identity.",
+    "129 native checks PASS on 2026-10-28 with pinned Time Service v0.3.",
+    "Alchemy sphere_check must report the archive/version it actually selected before deployment can be claimed.",
+    "150 native interpreter checks PASS on 2026-10-29; new dev11 scoped relationship suite has 21 assertions.",
+    "A passing source regression is not an Alchemy Gopher activation receipt or a production deployment qualification."
   ],
   "provenance": [
     {
@@ -29,6 +37,30 @@
       "line_start": 21,
       "line_end": 48,
       "claim": "Cycle handling and traversal implementation."
+    },
+    {
+      "artifact": "librarian_v2_dev9_20261027.zip",
+      "sha256": "6ebb503d6db6d3ffe9dc93385c02b637af8fa21dfb6fe43da2466f0aba207496",
+      "member": "librarian_v2_dev9/qualification/DEV9_NATIVE_QUALIFICATION.txt",
+      "line_start": 1,
+      "line_end": 12,
+      "claim": "Native interpreter acceptance results."
+    },
+    {
+      "artifact": "librarian_v2_dev10_20261028.zip",
+      "sha256": "aa48ba861e5a25341349302de0e7dad64979631d33dea7c7955f6a292a187223",
+      "member": "librarian_v2_dev10/DEV10_NOTES.md",
+      "line_start": 26,
+      "line_end": 38,
+      "claim": "Native regression qualification and outstanding risks."
+    },
+    {
+      "artifact": "librarian_v2_dev11_20261029.zip",
+      "sha256": "72211d64de28424f8acdc51f62f0d07418a18e5db8f0619e216bf474158d27a8",
+      "member": "librarian_v2_dev11/tests/scoped_relationships.rex",
+      "line_start": 1,
+      "line_end": 63,
+      "claim": "21 adversarial live ooRexx relationship-scope tests."
     }
   ]
 }

@@ -3,15 +3,16 @@
   "id": "librarian-v2.temporal",
   "title": "Event, publication, observation and knowledge times",
   "section": "temporal",
-  "version": "0.1",
+  "version": "0.1.1",
   "sphere": "librarian-v2",
   "authority": "project-continuity",
-  "summary": "Single Time Service v0.3 is the conversion authority. LibrarianTimeAdapter produces normalized instants annotated with timezone and tzdb edition. LibrarianTimedIndex filters by publication and observation cutoffs; event time and the time knowledge became available are distinct. Future interfaces must model intervals, uncertain instants, disputed dates and timezone data versioning without ad-hoc string timestamp comparison.",
+  "summary": "Dev9 uses resolved LibrarianTimePoint objects and scalar UTC seconds from pinned Single Time Service v0.3 to enforce independent publication and observation cutoffs. Dev9 corrections cannot rewrite earlier as-of snapshots. The separate Single Time Service engineering sphere identifies a newer v0.9 line, so an explicit API and zone-data compatibility audit is required before migration; current dev9 tests do NOT qualify v0.9.",
   "invariants": [
     "Never infer local timezone from current host settings.",
     "Historical as-of evaluation must exclude claims not published or not observed at its respective cutoff.",
     "Correction and retraction histories must remain reconstructible; later observations do not retroactively alter historical knowledge.",
-    "Time Services may evolve: bind to verified semantic API; do not build a competing time service in Librarian."
+    "Time Services may evolve: bind to verified semantic API; do not build a competing time service in Librarian.",
+    "Never silently upgrade v0.3 to v0.9 without reviewing both exact dependencies and rerunning native interpreter tests."
   ],
   "provenance": [
     {
@@ -29,6 +30,14 @@
       "line_start": 1,
       "line_end": 30,
       "claim": "Bundled Time Service contract reference."
+    },
+    {
+      "artifact": "librarian_v2_dev9_20261027.zip",
+      "sha256": "6ebb503d6db6d3ffe9dc93385c02b637af8fa21dfb6fe43da2466f0aba207496",
+      "member": "librarian_v2_dev9/src/LibrarianProvenanceHistory.cls",
+      "line_start": 57,
+      "line_end": 106,
+      "claim": "Cutoff projection and scalar time copy."
     }
   ]
 }
