@@ -752,6 +752,7 @@ SLAM gets credit for what it found:
     - Found by SLAM's EDGE cases, run by the rx2cpp lane against rx2cpp-compiled routines (1,323 of 1,327 cases agree; these are the 4 that do not).
     - Fixed in `SlamLift`, the lifter each group carries, and `SlamComposer~lift`: the file's `::OPTIONS` lines go after the body (a leading directive is Error 99.916).
     - The same fault hit alchemy's `crypto.cls` (`::options digits 2000`, 21 pool routines).
+    - Rerun on rx2cpp `0187d11`: SLAM_ADDLONG now expects `4294967302`; 416 of 416 groups pass; the mutant score is unchanged (649 against 585).
 13. **Body Slam's finds** (Body Slam is SLAM's whole-estate link component: architecture Tom Dyer, code Claude (Opus 5.5)). They are listed in `README_BODYSLAM.md`. Among them:
     - `brand_narrative_directive_v0.1-dev4` cannot load (Error 98.909).
     - 12 requires ooRexx refuses (Error 19.904).

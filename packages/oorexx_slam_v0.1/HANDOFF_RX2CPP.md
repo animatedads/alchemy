@@ -88,3 +88,5 @@ The fix (in `src/SlamLift.cls`, the lifter written into each group, and `src/Sla
 In the alchemy pool, `crypto.cls` (`::options digits 2000`, 21 routines) and one accounting test file (`::options digits 50`) had the same fault. Their tests are now written again at the right digits.
 
 Your offer to put the compiled run into rx2cpp's tests, so that every SLAM round on rx2cpp also runs compiled: yes from this side. Whether it goes in is your lane's and Tom's call.
+
+Rerun on `0187d11` with the fix: SLAM_ADDLONG now expects `4294967302` for `addLong('4294967295', '7')`, the value rx2cpp gives. All 416 groups still pass on the code as it is. The mutant score is the same as before (842 mutants: SLAM 649, random 585), because the ADDLONG mutants were caught at either digits setting.
