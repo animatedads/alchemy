@@ -32,6 +32,14 @@
     p = xml~pos('<Commentary ', e)
   end
 
+/* The date this revised text is valid from (dct:valid), YYYY-MM-DD, or '' when the file does not say.  It
+   is the latest text: an act dated before it may have been under different words. */
+::method validFrom
+  expose xml
+  p = xml~pos('<dct:valid>')
+  if p = 0 then return ''
+  return xml~substr(p + 11, 10)
+
 /* The text of section N (P1 id="section-N") in EXTENT, one line per numbered paragraph, or '' when the
    section does not extend there. */
 ::method section

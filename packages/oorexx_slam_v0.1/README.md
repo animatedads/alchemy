@@ -47,6 +47,11 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamLegislation.cls` | Reads legislation.gov.uk XML (CLML) in pure ooRexx: a section's text as it stands in one extent |
 | `tests/test_reasoning.rex` | The bridge on `FDSqrt`, authorship and a model's statement (16 checks) |
 | `tests/test_law.rex` | Computer Misuse Act 1990 s.1 and s.3ZA, the CPS guidance, three made-up cases, the citation gate (43 checks) |
+| `tests/law/source/MANIFEST_LEGISLATION.md` | Seven Acts attached by Tom: SHA-256, bytes, valid-from date, each candidate section's extent. Only the Computer Misuse Act's XML is committed here; CODEX-PC owns the copies in `law/` |
+| `src/SlamScreen.cls` | One case (offence-event JSON, read with ooRexx's `json.cls`) screened against every rule pack, per extent, event and person |
+| `tests/law/VOCABULARY.md` | The shared word list (law.kinds 0.2): 42 kinds, each an event or a finding, defined in SLAM's words; gate 6 |
+| `tests/test_screen.rex` | Gate 6, the Mrs P case after her death, Computer Misuse Act ss.1, 2, 3ZA in E.W. and S. (31 checks) |
+| `tools/migrate_case_v01_v02.rex` | ChatGPT's Mrs P case v0.1 to v0.2 (`docs/architecture/fixtures/`), every change listed |
 | `tests/test_gemini_standard.rex` | Gemini's two refusals against its own answers, through the Reasoned Thought standard-application audit (7 checks) |
 | `tests/law/` | Rule and guidance files, the official sources (XML, text, CPS guidance; Open Government Licence), `HOW_TO_WRITE_A_RULE.md` for the small model |
 | `tests/test_provenance.rex` | Provenance on real files, a habit found by shape, outcomes by tool (19 checks) |
@@ -704,6 +709,28 @@ On rx2cpp, 72 mutants are caught only by SLAM's cases and 8 only by the random o
 - `RX_CONTROL` `<` to `<=`: equivalent. At 0 both branches set `a = b`.
 - `RX_POW3` and `RX_CONTROL` `NUMERIC DIGITS` 60 to 61 and 20 to 21: these show only with a number longer than the setting. SLAM tried those numbers (10²⁰, 10⁶⁰), and the routines did not finish in 20 seconds, so no such case was written. The DIGITS cases were taken out again: they cost time and caught nothing.
 
+### One set of events, many offences (2026-10-30)
+
+Tom's aim: name the events once, consistently, and run them against many offences. ChatGPT (GPT-6) proposed the case schema and the event names (`docs/architecture/OFFENCE_EVENT_CONTRACT_v0.1.md`, a Mrs P case in JSON). This is the merge, built here.
+
+- **The word list** (`tests/law/VOCABULARY.md`, law.kinds 0.2). It has 42 kinds, each an **event** (what happened: `REPRESENTATION_MADE`, `CREDENTIAL_USED`) or a **finding** (what the evidence must show: `PERSON_ACT`, `KNOWLEDGE_UNAUTHORISED`). Each is defined in SLAM's words, and the reader knows every word.
+- **Gate 6.** Every kind in a rule pack, guidance file, case or evidence file must be on the list, and a case's events must be events. An event whose definition needs a word of a finding (knows, intends, unauthorised, false, dishonest, forces, reckless, offence) is refused: its name carries the conclusion. This refuses Gemini's six tokens (`FALSE_STATEMENT_AUTHORITY`, `ACTOR_COCONSPIRATOR`…) and two of ChatGPT's v0.1 names (`INFORMATION_WITHHELD`, `AGREEMENT_TO_OFFEND_ALLEGED`).
+- **What the shared list found in our own files:**
+  - `INTENT`, `KNOWLEDGE` and `RECKLESSNESS` each meant two things. "Reckless as to authority" (s.1) is not "reckless as to damage" (s.3ZA). They are now `INTENT_ACCESS`, `RECKLESSNESS_UNAUTHORISED`, `RECKLESSNESS_DAMAGE` and so on.
+  - The s.3ZA case still bound a key's signature to the person, which the s.1 case had stopped doing after Gemini's review.
+  - s.3ZA's (a), "the person does any unauthorised act", was one element taking two kinds. An element takes any one of its kinds, so the bank's letter alone satisfied "the person did it". The screen showed it; (a) is now two elements.
+  - The test caught one fault in gate 6 itself: it read no finding words at first, so its check passed with nothing to check. A list without them is now refused.
+- **The screen** (`src/SlamScreen.cls`). A rule pack says what kinds of event its offence can be about (`it is about an event of kind:`). The screen runs it once per such event and per person the evidence names; a person the evidence does not name is `UNRESOLVED` ("they" is never filled in). A series ("they keep withdrawing") is screened through its recorded parts. The report uses ChatGPT's set, SUPPORTED, CONTRADICTED, UNKNOWN or OUT_OF_SCOPE, plus DISPUTED. It also says what is missing, and whether the event is on or after the date the official text is valid from.
+- **Computer Misuse Act ss.1, 2 and 3ZA, in both extents** (Tom's idea: the card used after the death). s.2 is one file for E.W. and S.; its element 1 *is* the s.1 offence. s.1 for Scotland has its own words. The CPS guidance (England and Wales) is refused for Scotland.
+- **The made-up evidence** (`tests/law/mrs_p_evidence_made_up.json`: no real person, bank or record):
+  - **Withdrawal 1:** s.1 is SUPPORTED on the evidence given. A camera puts J at the machine, and J's own message shows she knew of the death.
+  - **Withdrawal 2:** nobody is named.
+  - **Withdrawal 3:** the card was in H's wallet a month later, and that is refused for "H used it".
+  - **s.2 for J** waits for one thing: the further offence's rule pack, for its maximum sentence. My own statement of it, from memory, is refused.
+  - **Fails closed:** a bank record of an executor's mandate makes "unauthorised" DISPUTED, and s.1 is no longer supported.
+  - **The narrative alone** gives one instance, every element UNKNOWN.
+- **The legislation** (`tests/law/source/MANIFEST_LEGISLATION.md`). Tom attached the six Acts ChatGPT asked for (this session's network cannot reach legislation.gov.uk). They are recorded by hash, not committed again: CODEX-PC owns the copies in `law/`. Each section's extent comes from its own markup. **Fraud Act ss.2–7, Theft Act ss.1, 21, 24A and Criminal Law Act s.1 do not extend to Scotland**; FSMA, SSAA, POCA and the Computer Misuse Act do.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -721,11 +748,11 @@ SLAM gets credit for what it found:
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 320 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **24/24** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **484 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S, the citation gate and the Gemini standard audit, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **426/426**. The BOLT, libc and unit-test steps (57 checks) skipped there: no llvm-project tree, no ooTest.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 351 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **24/24** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **515 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S, the citation gate, the Gemini standard audit, and the shared word list and screen, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **457/457**. The BOLT, libc and unit-test steps (57 checks) skipped there: no llvm-project tree, no ooTest.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
-`sh run_tests.sh`: **58/58** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, **43/43** in `test_law.rex`, and **7/7** in `test_gemini_standard.rex`: 320 checks. It covers:
+`sh run_tests.sh`: **58/58** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, **43/43** in `test_law.rex`, **7/7** in `test_gemini_standard.rex`, and **31/31** in `test_screen.rex`: 351 checks. It covers:
 - the segmenter on unmodified `MLEvolution.cls` (54 units; shared guard nodes; collapsed setters; then/else bodies sharing a node with different bindings);
 - ingest of the GA package with duplicate units skipped on re-ingest;
 - aabb → Eeff = 0.4 and b00b → Eeff = 0.8 from recorded outcomes;

@@ -3,6 +3,7 @@
 ```
 guidance: cps.cma
 for: cma1990.s1
+extent: E.W.
 written by: Claude (Opus 5.5), 2026-10-29, standing in for the small model (Luna or Haiku)
 source: CPS legal guidance, Computer Misuse Act, as in source/cps_cma_guidance.txt
 licence of the source: Open Government Licence v3.0, Crown copyright
@@ -50,7 +51,7 @@ the person has to know that the access is unauthorised. to be reckless is not to
 for element 4, it can not take evidence of:
 
 ```
-RECKLESSNESS
+RECKLESSNESS_UNAUTHORISED
 ```
 
 note 3:

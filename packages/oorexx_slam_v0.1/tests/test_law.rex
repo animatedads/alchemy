@@ -47,17 +47,17 @@ end
 e = .SlamLaw~check(s1, leg~section(s1['SECTION'], s1['EXTENT']))
 do x over e; say '       ' x; end
 call check e~items = 0, 's.1 (E.W.): its text is the XML''s for E.W.; 4 elements, quotes word for word, (a) (b) (c) covered, all named'
-e = .SlamLaw~check(s3, leg~section(s3['SECTION'], s3['EXTENT']))
+e = .SlamLaw~check(s3, .SlamLaw~officialFor(leg, s3))
 do x over e; say '       ' x; end
-call check e~items = 0, 's.3ZA (E.W.): the same, (a) (b) (c) (d) covered'
+call check e~items = 0, 's.3ZA (E.W. and S., one file): its text is the XML''s in both extents; (a) (b) (c) (d) covered'
 cps = text(L || '/source/cps_cma_guidance.txt')
 tags = caseTags(L || '/case_s1_made_up.txt')
 g = .SlamLaw~applyGuidance(s1, L || '/cps_cma.md', cps, tags)
 do x over g; say '       ' x; end
-call check g~items = 0 & .SlamLaw~element(s1, 3)['BINDS'][1] == 'DEFINED_LIMITS' & \.SlamLaw~element(s1, 4)['BINDS']~hasItem('RECKLESSNESS'), 'CPS guidance applied to s.1 for an employee: element 3 takes DEFINED_LIMITS (Allison), element 4 refuses RECKLESSNESS, element 1 refuses PHYSICAL_CONTACT, SCREEN_READING, REQUEST_TO_ANOTHER'
+call check g~items = 0 & .SlamLaw~element(s1, 3)['BINDS'][1] == 'DEFINED_LIMITS' & \.SlamLaw~element(s1, 4)['BINDS']~hasItem('RECKLESSNESS_UNAUTHORISED'), 'CPS guidance applied to s.1 for an employee: element 3 takes DEFINED_LIMITS (Allison), element 4 refuses RECKLESSNESS, element 1 refuses PHYSICAL_CONTACT, SCREEN_READING, REQUEST_TO_ANOTHER'
 outsider = .SlamLaw~parse(L || '/cma1990_s1.md')
 g = .SlamLaw~applyGuidance(outsider, L || '/cps_cma.md', cps, caseTags(L || '/case_s1_mr_s_made_up.txt'))
-call check g~items = 0 & .SlamLaw~element(outsider, 3)['BINDS'][1] == 'AUTHORITY' & \.SlamLaw~element(outsider, 4)['BINDS']~hasItem('RECKLESSNESS'), 'the same guidance for an outsider: Allison''s note (for an employee) does not apply, element 3 keeps AUTHORITY (s.17(5)); the other notes still do'
+call check g~items = 0 & .SlamLaw~element(outsider, 3)['BINDS'][1] == 'AUTHORITY' & \.SlamLaw~element(outsider, 4)['BINDS']~hasItem('RECKLESSNESS_UNAUTHORISED'), 'the same guidance for an outsider: Allison''s note (for an employee) does not apply, element 3 keeps AUTHORITY (s.17(5)); the other notes still do'
 
 say '== 2. drifts, each refused'
 good = text(L || '/cma1990_s1.md')
@@ -101,7 +101,7 @@ do step = 1 to 9
     end
     when step = 3 then do
       rf = .SlamLaw~refusals(r, s1, 1)
-      call check hasText(rf, 'KEY_USE'), 'step 3: the hardware key is refused for "P caused it": it shows the key was used, not who held it (Gemini''s point); a person at the desk settles it at step 4'
+      call check rf~items = 3 & hasText(rf, 'CREDENTIAL_USED: the login at 02:14 was approved by the hardware key'), 'step 3: the hardware key is refused for "P caused it": it shows the key was used, not who held it (Gemini''s point); a person at the desk settles it at step 4'
     end
     when step = 6 then do
       rf = .SlamLaw~refusals(r, s1, 3)
@@ -129,10 +129,10 @@ say '== 4. s.3ZA: recklessness counts for (d), not for (b)'
 r3 = .SlamReasoning~new
 off3 = .SlamLaw~build(r3, s3)
 call admitStep r3, s3, lines(L || '/case_s3za_made_up.txt'), 1
-e2 = r3~assess(.SlamLaw~elementId(s3, 2)); e4 = r3~assess(.SlamLaw~elementId(s3, 4))
-call check e4['status'] == 'SETTLED' & e4['ineligible']~items = 0, 'element 4 (intends or is reckless as to damage): R''s message counts, SETTLED'
-call check e2['status'] == 'SETTLED' & e2['ineligible']~items = 1, 'element 2 (knows it is unauthorised): the same message is refused there, on record; settled by R''s other message'
-call check r3~mayAct(off3)['OK'], 's.3ZA: all four elements supported on the evidence given'
+e2 = r3~assess(.SlamLaw~elementId(s3, 3)); e4 = r3~assess(.SlamLaw~elementId(s3, 5))
+call check e4['status'] == 'SETTLED' & e4['ineligible']~items = 0, 'element 5, (d) (intends or is reckless as to damage): R''s message counts, SETTLED'
+call check e2['status'] == 'SETTLED' & e2['ineligible']~items = 1, 'element 3, (b) (knows it is unauthorised): the same message is refused there, on record; settled by R''s other message'
+call check r3~mayAct(off3)['OK'], 's.3ZA: all five elements supported on the evidence given ((a) is two: the person did it, and it was unauthorised)'
 
 say '== 5. the answer does not move'
 call check whyNot~pos(':4 (needs assertible) -> DISPUTED') > 0 & whyNot~pos(':1 (') = 0 & whyNot~pos(':2 (') = 0 & whyNot~pos(':3 (') = 0, 'at step 7, "is it supported?" and "what is missing?" name the same open element, 4, and no other'

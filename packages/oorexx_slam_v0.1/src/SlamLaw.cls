@@ -29,13 +29,18 @@
 
 ::class SlamLaw public
 
-/* Parse a rule file.  A Directory: ID SOURCE ELEMENTS (Directories: ID QUOTE TEXT BINDS) RULE (element
-   ids, in order).  Nothing is checked here. */
+/* Parse a rule file.  A Directory: ID EXTENT (one or more of E.W. S.; the law's text must be the official
+   text in each) SECTION SOURCE ABOUT (the kinds of event the offence can be about: what the screen runs the
+   rule on) ELEMENTS RULE (element ids, in order).  Each element: ID, QUOTES (one or more exact quotes: a
+   condition the law writes as "(a) ...; or (b) ..." is one element with two quotes), QUOTE (the first),
+   TEXT, BINDS (the kinds it takes), TAKES0 (BINDS before any guidance), LINK (the rule id of an offence that
+   is itself the element, as "he commits an offence under section 1" is in s.2).  Nothing is checked here. */
 ::method parse class
   use strict arg path
   lines = self~linesOf(path)
   out = .directory~new
   out['ID'] = ''; out['SOURCE'] = ''; out['ELEMENTS'] = .array~new; out['RULE'] = .array~new; out['EXTENT'] = ''; out['SECTION'] = ''
+  out['ABOUT'] = .array~new
   i = 1
   el = .nil; expect = ''
   do while i <= lines~items
@@ -49,13 +54,23 @@
       end
       select
         when expect == 'SOURCE' then out['SOURCE'] = block
-        when expect == 'QUOTE' & el \== .nil then el['QUOTE'] = block~strip('T', '0a'x)~strip
-        when expect == 'BINDS' & el \== .nil then el['BINDS'] = block~translate(' ', '0a0d09'x)~space~makeArray(' ')
+        when expect == 'ABOUT' then out['ABOUT'] = block~translate(' ', '0a0d09'x)~space~makeArray(' ')
+        when expect == 'QUOTE' & el \== .nil then do
+          el['QUOTES']~append(block~strip('T', '0a'x)~strip)
+          el['QUOTE'] = el['QUOTES'][1]
+          i += 1
+          iterate                                   /* a second quote block may follow */
+        end
+        when expect == 'BINDS' & el \== .nil then do
+          el['BINDS'] = block~translate(' ', '0a0d09'x)~space~makeArray(' ')
+          el['TAKES0'] = el['BINDS']~copy
+        end
+        when expect == 'LINK' & el \== .nil then el['LINK'] = block~translate(' ', '0a0d09'x)~strip
         when out['ID'] == '' then do
           parse var block 'rule:' rid '0a'x
           if rid \== '' then out['ID'] = rid~strip
           parse var block 'extent:' ext '0a'x
-          out['EXTENT'] = ext~strip
+          out['EXTENT'] = ext~space
           parse var block 'section:' sec '0a'x
           out['SECTION'] = sec~strip
         end
@@ -64,23 +79,39 @@
       expect = ''
     end
     else if t~lower == 'the law, as code:' then expect = 'SOURCE'
+    else if t~lower == 'it is about an event of kind:' then expect = 'ABOUT'
     else if t~word(1)~lower == 'element' & t~right(1) == ':' & t~words = 2 then do
       el = .directory~new
-      el['ID'] = t~word(2)~strip('T', ':'); el['QUOTE'] = ''; el['TEXT'] = ''; el['BINDS'] = .array~new
+      el['ID'] = t~word(2)~strip('T', ':'); el['QUOTE'] = ''; el['QUOTES'] = .array~new; el['TEXT'] = ''
+      el['BINDS'] = .array~new; el['TAKES0'] = .array~new; el['LINK'] = ''
       out['ELEMENTS']~append(el)
       expect = 'QUOTE'
     end
     else if t~lower == 'it takes evidence of:' then expect = 'BINDS'
+    else if t~lower == 'it is the offence:' then expect = 'LINK'
     else if t~word(1)~lower == 'rule:' then do
       rest = t~substr(6)
       do w = 1 to rest~words - 1
         if rest~word(w)~lower == 'element' then out['RULE']~append(rest~word(w + 1)~strip('T', ',.'))
       end
     end
-    else if t \== '' & el \== .nil & expect == '' then do      /* ooRexx's & does not short-circuit */
-      if el['QUOTE'] \== '' & el['TEXT'] == '' then el['TEXT'] = t
+    else if t \== '' & el \== .nil then do              /* ooRexx's & does not short-circuit */
+      if expect == 'QUOTE' then do
+        if el['QUOTES']~items > 0 then do; el['TEXT'] = t; expect = ''; end
+      end
+      else if expect == '' then if el['QUOTE'] \== '' & el['TEXT'] == '' then el['TEXT'] = t
     end
     i += 1
+  end
+  return out
+
+/* The official text of RULE's section in each of its extents, from a SlamLegislation reader: a Directory,
+   extent -> text, for check(). */
+::method officialFor class
+  use strict arg leg, rule
+  out = .directory~new
+  do ext over rule['EXTENT']~makeArray(' ')
+    out[ext] = leg~section(rule['SECTION'], ext)
   end
   return out
 
@@ -92,24 +123,37 @@
   src = self~flat(rule['SOURCE'])
   if src == '' then errs~append('no source text ("the law, as code:")')
   /* gate 0: the source is the official text, as it stands for the rule's extent.  OFFICIAL is that text
-     already resolved for the extent (SlamLegislation~section from the XML, or resolve() on pasted text). */
+     already resolved for the extent (SlamLegislation~section from the XML, or resolve() on pasted text), or
+     a Directory extent -> text (officialFor) for a rule that says more than one extent. */
   if official \== '' & src \== '' then do
     if rule['EXTENT'] == '' then errs~append('the rule does not say its extent (E.W. or S.)')
-    else if self~words(official)~pos(self~words(rule['SOURCE'])) = 0 then
-      errs~append('the law, as code, is not the official text for extent' rule['EXTENT'] || ', word for word')
+    else if \official~isA(.Directory) then do
+      if self~words(official)~pos(self~words(rule['SOURCE'])) = 0 then
+        errs~append('the law, as code, is not the official text for extent' rule['EXTENT'] || ', word for word')
+    end
+    else do ext over rule['EXTENT']~makeArray(' ')
+      if \official~hasIndex(ext) then errs~append('no official text given for extent' ext)
+      else if official[ext] == '' then errs~append('section' rule['SECTION'] 'does not extend to' ext)
+      else if self~words(official[ext])~pos(self~words(rule['SOURCE'])) = 0 then
+        errs~append('the law, as code, is not the official text for extent' ext || ', word for word')
+    end
   end
   if rule['ELEMENTS']~items = 0 then errs~append('no elements')
   do el over rule['ELEMENTS']
-    if el['QUOTE'] == '' then errs~append('element' el['ID'] 'has no quote')
-    else if self~words(rule['SOURCE'])~pos(self~words(el['QUOTE'])) = 0 then errs~append('element' el['ID'] 'quote is not in the section, word for word:' el['QUOTE']~left(70))
+    if el['QUOTES']~items = 0 then errs~append('element' el['ID'] 'has no quote')
+    do q over el['QUOTES']
+      if self~words(rule['SOURCE'])~pos(self~words(q)) = 0 then errs~append('element' el['ID'] 'quote is not in the section, word for word:' q~left(70))
+    end
     if el['TEXT'] == '' then errs~append('element' el['ID'] 'has no sentence')
-    if el['BINDS']~items = 0 then errs~append('element' el['ID'] 'takes no evidence')
+    if el['BINDS']~items = 0 & el['LINK'] == '' then errs~append('element' el['ID'] 'takes no evidence')
   end
   /* gate 3: each lettered paragraph holds a quote */
   do para over self~paragraphs(rule['SOURCE'])
     covered = .false
     do el over rule['ELEMENTS']
-      if el['QUOTE'] \== '' then if self~flat(para[2])~pos(self~flat(el['QUOTE'])) > 0 then covered = .true
+      do q over el['QUOTES']
+        if self~flat(para[2])~pos(self~flat(q)) > 0 then covered = .true
+      end
     end
     if \covered then errs~append('paragraph' para[1] 'has no element: a condition of the law is missing')
   end
@@ -142,7 +186,7 @@
   if tags == .nil then tags = .array~new
   errs = .array~new
   lines = self~linesOf(path)
-  forRule = ''; notes = .array~new; note = .nil; expect = ''
+  forRule = ''; gext = ''; notes = .array~new; note = .nil; expect = ''
   i = 1
   do while i <= lines~items
     t = lines[i]~strip
@@ -160,6 +204,8 @@
         when forRule == '' then do
           parse var block 'for:' fr '0a'x
           forRule = fr~strip
+          parse var block 'extent:' gx '0a'x
+          gext = gx~space
         end
         otherwise nop
       end
@@ -178,6 +224,10 @@
     i += 1
   end
   if forRule \== rule['ID'] then errs~append('the guidance is for' forRule || ', not for' rule['ID'])
+  /* guidance has an extent too: the CPS prosecutes in England and Wales, not in Scotland */
+  if gext \== '' then do ext over rule['EXTENT']~makeArray(' ')
+    if wordpos(ext, gext) = 0 then errs~append('the guidance is for extent' gext || ', not for' ext)
+  end
   gwords = self~words(guidanceText)
   do note over notes
     if note['QUOTE'] == '' then errs~append('note' note['ID'] 'has no quote')
@@ -227,17 +277,36 @@
    STATUS, the kinds of evidence it takes (TAKES), the tier that evidence must beat (BEAT: the live rebut's,
    or the floor to assert), and the refusals.  SLAM does not invent the evidence; it says what would count. */
 ::method gaps class
-  use strict arg reasoning, rule
+  use strict arg reasoning, rule, links = .nil
   out = .array~new
+  tiers = .array~of('STYLOMETRIC', 'TESTIMONY', 'DOCUMENTARY', 'PROVENANCE')
   do el over rule['ELEMENTS']
+    g = .directory~new
+    g['ELEMENT'] = el['ID']; g['REFUSED'] = .array~new
+    if el['LINK'] \== '' then do                 /* the element is an offence: its own elements decide */
+      linked = .nil
+      if links \== .nil then if links~hasIndex(el['LINK']) then linked = links[el['LINK']]
+      if linked \== .nil then do
+        m = reasoning~mayAct(self~decisionId(linked))
+        if m['OK'] then iterate
+        g['STATUS'] = 'OFFENCE_NOT_SUPPORTED'
+        g['TAKES'] = 'the elements of' el['LINK']
+        g['BEAT'] = m['WHY']
+        out~append(g)
+        iterate
+      end
+      g['STATUS'] = 'NO_RULE_PACK'
+      g['TAKES'] = 'the rule pack for' el['LINK']
+      g['BEAT'] = ''
+      out~append(g)
+      iterate
+    end
     d = reasoning~assess(self~elementId(rule, el['ID']))
     if d['assertible'] & d['stance'] == 'PRO' then iterate
-    g = .directory~new
-    g['ELEMENT'] = el['ID']; g['STATUS'] = d['status']
+    g['STATUS'] = d['status']
     takes = ''
     do b over el['BINDS']; takes = takes b; end
     g['TAKES'] = takes~strip
-    tiers = .array~of('STYLOMETRIC', 'TESTIMONY', 'DOCUMENTARY', 'PROVENANCE')
     if d['rebutTier'] > 0 then g['BEAT'] = 'more than' tiers[d['rebutTier']]
     else g['BEAT'] = 'TESTIMONY or more'
     g['REFUSED'] = self~refusals(reasoning, rule, el['ID'])
@@ -269,6 +338,121 @@
   end
   return out
 
+/* ---- gate 6: one name for one thing (tests/law/VOCABULARY.md) ----
+   Architecture: Tom Dyer ("the terms used to define events in offences [must be] consistent").  Event
+   names from ChatGPT (GPT-6), OFFENCE_EVENT_CONTRACT_v0.1; the event/finding gate: Claude (Opus 5.5).
+   A vocabulary file lists every kind: "kind N:", its name in a code block, "it is an event." or "it is a
+   finding.", then its definition in SLAM's words.  The words of a finding are listed after "the words of a
+   finding are:".  Returns a Directory: KINDS (name -> Directory TYPE TEXT), FINDINGWORDS, ERRORS.  Refused:
+   a kind that says it is both, or neither; a name given twice; a kind with no definition; an EVENT whose
+   definition uses a word of a finding (the name would carry a conclusion: "false statement", "unauthorised
+   activity", "conspirator"). */
+::method vocabulary class
+  use strict arg path
+  lines = self~linesOf(path)
+  kinds = .directory~new; errs = .array~new; fw = .array~new; order = .array~new
+  k = .nil; expect = ''; i = 1
+  do while i <= lines~items
+    t = lines[i]~strip
+    if t == '```' then do
+      block = ''; i += 1
+      do while i <= lines~items
+        if lines[i]~strip == '```' then leave
+        block = block || lines[i] || ' '
+        i += 1
+      end
+      select
+        when expect == 'NAME' then do
+          name = block~space
+          k = .directory~new; k['NAME'] = name; k['TYPE'] = ''; k['TEXT'] = ''; k['TYPES'] = 0
+          if kinds~hasIndex(name) then errs~append('kind' name 'is given twice')
+          kinds[name] = k; order~append(name)
+        end
+        when expect == 'FINDINGWORDS' then fw = block~lower~space~makeArray(' ')
+        otherwise nop
+      end
+      expect = ''
+    end
+    else if t~word(1)~lower == 'kind' & t~right(1) == ':' & t~words = 2 then expect = 'NAME'
+    else if t~lower~right(27) == 'the words of a finding are:' then expect = 'FINDINGWORDS'
+    else if k \== .nil & t~lower == 'it is an event.' then do; k['TYPE'] = 'EVENT'; k['TYPES'] += 1; end
+    else if k \== .nil & t~lower == 'it is a finding.' then do; k['TYPE'] = 'FINDING'; k['TYPES'] += 1; end
+    else if k \== .nil & t \== '' then k['TEXT'] = (k['TEXT'] t)~strip
+    i += 1
+  end
+  if fw~items = 0 then errs~append('the list does not say the words of a finding: an event''s definition can not be checked')
+  do name over order
+    k = kinds[name]
+    if k['TYPES'] > 1 then errs~append('kind' name 'says it is an event and a finding: a kind is one or the other')
+    if k['TYPES'] = 0 then errs~append('kind' name 'does not say if it is an event or a finding')
+    if k['TEXT'] == '' then errs~append('kind' name 'has no definition')
+    if k['TYPE'] == 'EVENT' & k['TYPES'] = 1 then do
+      dw = self~words(k['TEXT'])
+      do w over fw
+        if dw~pos(' ' || w || ' ') > 0 then errs~append('kind' name 'is an event, and its definition uses "' || w || '", a word of a finding: the name carries a conclusion the evidence has to show')
+      end
+    end
+  end
+  out = .directory~new
+  out['KINDS'] = kinds; out['FINDINGWORDS'] = fw; out['ERRORS'] = errs; out['ORDER'] = order
+  return out
+
+/* Each kind USED (an Array of .array(kind, where)) must be on the list; WANT 'EVENT' also requires it to be
+   an event (a case's events: a finding is never an event).  An Array of reasons; empty when all pass. */
+::method kindErrors class
+  use strict arg vocab, used, want = ''
+  errs = .array~new
+  do u over used
+    kind = u[1]; where = u[2]
+    if \vocab['KINDS']~hasIndex(kind) then errs~append(where || ':' kind 'is not in the list of kinds')
+    else if want \== '' then if vocab['KINDS'][kind]['TYPE'] \== want then
+      errs~append(where || ':' kind 'is a' vocab['KINDS'][kind]['TYPE']~lower || ', not an' want~lower)
+  end
+  return errs
+
+/* The kinds a rule file uses: what each element takes, and the events it can be about. */
+::method kindsOfRule class
+  use strict arg rule, where = ''
+  out = .array~new
+  do el over rule['ELEMENTS']
+    do b over el['TAKES0']; out~append(.array~of(b, where 'element' el['ID'])); end
+  end
+  do a over rule['ABOUT']; out~append(.array~of(a, where 'about')); end
+  return out
+
+/* The kinds a guidance file uses: each code block that follows a "for element N, ..." line. */
+::method kindsOfGuidance class
+  use strict arg path
+  out = .array~new; lines = self~linesOf(path); expect = .false; i = 1; note = ''
+  do while i <= lines~items
+    t = lines[i]~strip
+    if t~word(1)~lower == 'note' then note = t~strip('T', ':')
+    if t~lower~left(12) == 'for element ' then expect = .true
+    else if t == '```' then do
+      block = ''; i += 1
+      do while i <= lines~items
+        if lines[i]~strip == '```' then leave
+        block = block lines[i]
+        i += 1
+      end
+      if expect then do b over block~space~makeArray(' '); out~append(.array~of(b, path~substr(path~lastPos('/') + 1) note)); end
+      expect = .false
+    end
+    i += 1
+  end
+  return out
+
+/* The kinds an element-addressed case file uses (step | element | SUPPORT | tier | binding | text). */
+::method kindsOfCaseLines class
+  use strict arg path
+  out = .array~new; name = path~substr(path~lastPos('/') + 1)
+  do ln over self~linesOf(path)
+    if ln~strip == '' | ln~left(1) == '#' then iterate
+    parse var ln step '|' . '|' . '|' . '|' binding '|' .
+    out~append(.array~of(binding~strip, name 'step' step~strip))
+  end
+  return out
+
 ::method element class
   use strict arg rule, n
   do el over rule['ELEMENTS']
@@ -284,19 +468,44 @@
   end
   return out
 
-/* Each element a claim, the offence a decision resting on every element.  Returns the decision's id. */
+/* Each element a claim, the offence a decision resting on every element.  Returns the decision's id.
+   An element that IS an offence (LINK, e.g. s.2's "he commits an offence under section 1") is not a claim:
+   the decision rests on every element of the linked offence instead, found in LINKS (a Directory, rule id ->
+   the linked rule, already built in this reasoning, with the same KEY scheme).  When the linked rule is not
+   given, the element is a claim that no evidence can reach (it takes RULE_PACK, which no evidence binds):
+   it stays open, and gaps() says which rule pack it waits for. */
 ::method build class
-  use strict arg reasoning, rule
+  use strict arg reasoning, rule, links = .nil
   rests = .array~new
   do el over rule['ELEMENTS']
+    if el['LINK'] \== '' then do
+      linked = .nil
+      if links \== .nil then if links~hasIndex(el['LINK']) then linked = links[el['LINK']]
+      if linked \== .nil then do
+        do lel over linked['ELEMENTS']
+          rests~append(.array~of(self~elementId(linked, lel['ID']), 'assertible'))
+        end
+        iterate
+      end
+      cid = reasoning~claim(self~elementId(rule, el['ID']), el['TEXT'], 'DOCUMENTARY', .array~of('RULE_PACK'))
+      rests~append(.array~of(cid, 'assertible'))
+      iterate
+    end
     cid = reasoning~claim(self~elementId(rule, el['ID']), el['TEXT'], 'DOCUMENTARY', el['BINDS'])
     rests~append(.array~of(cid, 'assertible'))
   end
-  return reasoning~decide('OFFENCE:' || rule['ID'], 'the elements of' rule['ID'] 'are supported on the evidence given', rests)
+  return reasoning~decide(self~decisionId(rule), 'the elements of' rule['ID'] 'are supported on the evidence given', rests)
 
+/* Ids: a rule built once uses its ID; the screen builds one instance per extent, event and person, and
+   sets KEY to name it (cma1990.s1/E.W.@EV16#J). */
 ::method elementId class
   use strict arg rule, elementNo
+  if rule~hasIndex('KEY') then return 'ELEMENT:' || rule['KEY'] || ':' || elementNo
   return 'ELEMENT:' || rule['ID'] || ':' || elementNo
+::method decisionId class
+  use strict arg rule
+  if rule~hasIndex('KEY') then return 'OFFENCE:' || rule['KEY']
+  return 'OFFENCE:' || rule['ID']
 
 /* Admit one evidence line: step | element | SUPPORT or REBUT | tier | binding | text */
 ::method admit class

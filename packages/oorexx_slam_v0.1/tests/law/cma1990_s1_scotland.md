@@ -1,0 +1,104 @@
+# a rule
+
+```
+rule: cma1990.s1
+extent: S.
+section: 1
+written by: Claude (Opus 5.5), 2026-10-30, standing in for the small model (Luna or Haiku) of the chain
+  legislation -> small model -> SLAM -> Reasoned Thought; not yet written by that model
+source: Computer Misuse Act 1990, section 1(1), https://www.legislation.gov.uk/ukpga/1990/18/section/1
+text: source/cma1990.xml, section 1 as it stands in Scotland: the words inserted by F1 and F2 are Scotland's
+licence of the source: Open Government Licence v3.0, Crown copyright
+```
+
+person: a thing that can know, can say what it can do, and can do it
+law: a list of rules for each person
+element: a part of a rule that has to be true
+elements: more than one element
+offence: a thing that a rule says a person can not do
+causes: makes
+access: to read data or a program in a computer, or to run a program in a computer
+intends: makes one thing so that an other thing is the result
+authorised: the one that has the computer says the person can do it
+unauthorised: not authorised
+knows: has it in memory as a thing that is true
+evidence: data that says an element is true or false
+
+writes: makes words in a thing
+record: data that a computer or a person writes at the time of a thing
+event: a thing at a place and a time, that a record or a person can say is so
+kind: a name for a set of things that are the same in one way
+about: a word for what a thing is for
+
+it is about an event of kind:
+
+```
+CREDENTIAL_USED
+```
+
+the law, as code:
+
+```
+(1) A person is guilty of an offence if—
+(a) he causes a computer to perform any function with intent to secure access to any program or data held in any computer, or to enable any such access to be secured;
+(b) the access he intends to secure, or to enable to be secured, is unauthorised; and
+(c) he knows at the time when he causes the computer to perform the function that that is the case.
+```
+
+element 1:
+
+```
+he causes a computer to perform any function
+```
+
+the person causes a computer to run a function.
+
+it takes evidence of:
+
+```
+PERSON_ACT
+```
+
+element 2:
+
+```
+with intent to secure access to any program or data held in any computer, or to enable any such access to be secured
+```
+
+the person intends that the result of the function is access to a program or to data in a computer, or that a person is able to get that access.
+
+it takes evidence of:
+
+```
+INTENT_ACCESS
+```
+
+element 3:
+
+```
+the access he intends to secure, or to enable to be secured, is unauthorised
+```
+
+the access that the person intends, or intends a person to be able to get, is unauthorised.
+
+it takes evidence of:
+
+```
+AUTHORITY
+```
+
+element 4:
+
+```
+he knows at the time when he causes the computer to perform the function that that is the case
+```
+
+at the time the person causes the computer to run the function, the person knows that the access is unauthorised.
+
+it takes evidence of:
+
+```
+KNOWLEDGE_UNAUTHORISED
+```
+
+rule: when element 1, element 2, element 3 and element 4 are true, the offence is true.

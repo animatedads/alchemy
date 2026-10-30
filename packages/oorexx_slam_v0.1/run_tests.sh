@@ -57,6 +57,8 @@ echo "== legislation -> small model -> SLAM -> Reasoned Thought: Computer Misuse
 REXX_PATH="$REXX_PATH:$RT" rexx tests/test_law.rex "$WORK|$ROOT"
 echo "== did Gemini apply its own stated standard evenly? (the Reasoned Thought standard-application audit, unchanged)"
 REXX_PATH="$REXX_PATH:$RT" rexx tests/test_gemini_standard.rex
+echo "== one set of events, many offences: the shared word list (gate 6), the Mrs P case, the Computer Misuse Act in E.W. and S."
+REXX_PATH="$REXX_PATH:$RT:$(dirname "$(command -v rexx)")" rexx tests/test_screen.rex "$WORK|$ROOT|$REPO"
 echo "== second language: the Java reader (fixture compiled by javac first, so it is real Java)"
 E="$REPO/examples"
 ATM="$E/federationbank_java_atm_v0.1.9"
