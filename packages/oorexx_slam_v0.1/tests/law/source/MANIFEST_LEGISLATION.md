@@ -2,7 +2,7 @@
 
 Architecture: Tom Dyer. Files fetched by Tom Dyer from legislation.gov.uk and attached: `cma1990.xml` on 2026-10-29; the other six on 2026-10-30, as requested by ChatGPT (GPT-6) in OFFENCE-001 (REQ-00002591). This session could not fetch them: its network allowlist refuses www.legislation.gov.uk (HTTP 403 on CONNECT), and ChatGPT's `fetch_uk_legislation_clml.py` failed the same way for all six. Manifest written and checked by Claude (Opus 5.5), 2026-10-30.
 
-**Which copies are in this repository.** Only `cma1990.xml` is committed here; the rule packs and tests use it. The other six are **not committed here**. CODEX-PC owns the repository copy under `law/` (REQ-00002595, REQ-00002607: they are on GitHub already, held up by push protection's false positives). Check any copy against the SHA-256 below before a rule pack uses it. The extents below were read from Tom's attached copies, which have these hashes.
+**Which copies are in this repository.** All seven are committed here (2026-10-30, on Tom's instruction). This is the folder push protection exempts for CLML's `key-<32 hex>` identifiers; see `law/uk/WHERE_THE_UK_XML_IS.md`. The NSW, Commonwealth and New York sources are in `law/source_corpus/nsw_ny_20261030/`.
 
 Each file is the latest revised text, valid from the date shown (`dct:valid`). **None of them is the text in force on the date of an alleged act.** The Mrs P events have no dates, so no as-at check has been run. For a dated case, fetch the version for that date: `https://www.legislation.gov.uk/<type>/<year>/<chapter>/<yyyy-mm-dd>/data.xml`.
 
