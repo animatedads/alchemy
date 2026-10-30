@@ -48,3 +48,20 @@ Requires Python 3 and NumPy. Inputs are **8000 Hz, mono, uncompressed 16-bit PCM
 The synthetic WAV test checks a modified-gain excerpt inserted five seconds later into another recording, rejects uncorrelated noise at the chosen threshold, and validates provenance. The supplied private WAV and any fingerprint derived from it are intentionally **not committed**.
 
 The native class `SpashExampleSearch.cls` separately offers `find(queryObservations, candidateObservations, maxResults)` for already-extracted SPASH observation trajectories, matching across different recording IDs when sample rate and processing-method foundation are compatible. It returns ranked interval candidates and rejects unaligned, incompatible methods. Its 15 native checks run in `sh run_tests.sh`. The Python WAV reference score and native block-trajectory score are separate experimental methods, **not** one calibrated probability. A production integration requires a verified bridge and shared feature contract.
+
+
+## Continue: accurate query-by-example and exact partial replay (2026-10-30)
+
+**Important correction:** the first GitHub-published WAV provider accidentally divided spectral L1 difference by frequency-band count as well as normalizing by spectral-vector sum. This inflated the likeness of unrelated recordings. Commit `94c4f842c3d71ce418e7375854db7e24ce0a218d` repairs the WAV matcher: its distance is the mean *over time* of the sum of absolute differences *over frequency* divided by 2. A defective-score comparison of private source versus unrelated noise yielded about 0.975; the correctly normalized comparison was about 0.454. The earlier published high score must not be used as qualification.
+
+Local experiments against the 9.996-second private WAV (not committed) used an inserted 2-second passage at +4 seconds with altered gain and added low noise: best exact subinterval original **2.56–3.52 s**, modified **6.56–7.52 s**, heuristic likeness **0.967561**. Independent white-noise and sine-frequency-sweep controls produced zero matches at 0.80. Same-file searches excluded trivial self-overlap but showed seven *hypothesis-only* candidates. These are not seven physical sources or proven echoes.
+
+The new `tools/spash_render_matches.py` converts a JSON search report into *only* its matched query/candidate PCM intervals (8 kHz mono PCM16); each clip retains source/clip SHA-256, exact original sample indices and a replay receipt. The command fails closed when the source changed or when outputs already exist. It does not separate sources or produce independent microphone evidence.
+
+```sh
+python3 tools/spash_find_similar.py example.wav corpus/*.wav --min-score 0.80 > spash_matches.json
+python3 tools/spash_render_matches.py --result spash_matches.json --output-dir spash_listen
+sh ./run_python_tests.sh
+```
+
+The `run_python_tests.sh` suite requires Python 3 and NumPy; the native graph `run_tests.sh` continues to require ooRexx r13196. Locally observed 40 original native graph + 15 native exemplar + 9 rejected-input + 5 WAV query + 8 replay tests passing. These figures qualify **the local deliverable**, not the published GitHub PR checkout; independent source qualification of the exact branch is still required. Autobuilder is off, and neither private source WAV nor its listening outputs are published.
