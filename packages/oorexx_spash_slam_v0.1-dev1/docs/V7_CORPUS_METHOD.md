@@ -62,3 +62,17 @@ Use `tools/spash_review_feedback.py` to bind an external human review of a publi
 5. Run independent QA against the exact GitHub PR head; the historical 912-clip integrity results are not test results for newly published code.
 
 **No audio content is published, no inference of named events is needed, and no production deployment or independent physical source attribution is claimed.**
+
+
+## Generating new private listening clips from a v0.2 scan plan
+
+A new `spash_v7_render.py` renders plan intervals into **new** stereo Ogg Opus derivatives, retaining source/channel provenance and per-clip SHA-256. It verifies the original input audio SHA-256 from the scan manifest, validates candidate identities and timestamp bounds, and refuses overwrite:
+
+```bash
+python3 tools/spash_v7_scan.py /private/dual_feed.ogg --output-dir /private/spash_scan --threshold 0.30
+python3 tools/spash_v7_render.py --source /private/dual_feed.ogg --plan-dir /private/spash_scan --output-dir /private/spash_clips
+# To test only a few candidate clips:
+python3 tools/spash_v7_render.py --source /private/dual_feed.ogg --plan-dir /private/spash_scan --output-dir /private/spash_sample --max-clips 3
+```
+
+This renderer is **new code**; it is not asserted to reconstruct the original 912 clip files or identical boundaries. Opus packet rounding and source-seek implementation can shift playback duration by milliseconds. Its JSON receipt and CSV maintain original recording times, source hash, output clip hash and channel-preserving listening derivative authority. Synthetic regression `tests/test_v7_render.py` checks source SHA mismatch, exclusive output, channel count and clip hashes. The exact GitHub checkout has not yet been independently run; do not represent tests of a separate local ZIP as qualification of this branch.
