@@ -40,7 +40,7 @@
   lines = self~linesOf(path)
   out = .directory~new
   out['ID'] = ''; out['SOURCE'] = ''; out['ELEMENTS'] = .array~new; out['RULE'] = .array~new; out['EXTENT'] = ''; out['SECTION'] = ''
-  out['ABOUT'] = .array~new
+  out['ABOUT'] = .array~new; out['MAXIMUM'] = .nil
   i = 1
   el = .nil; expect = ''
   do while i <= lines~items
@@ -66,6 +66,12 @@
           el['TAKES0'] = el['BINDS']~copy
         end
         when expect == 'LINK' & el \== .nil then el['LINK'] = block~translate(' ', '0a0d09'x)~strip
+        when expect == 'MAXIMUM' then do
+          parse var block 'section:' msec '0a'x mquote
+          mx = .directory~new; mx['SECTION'] = msec~strip; mx['QUOTE'] = mquote~translate(' ', '0a0d09'x)~space
+          mx['YEARS'] = self~years(mx['QUOTE'])
+          out['MAXIMUM'] = mx
+        end
         when out['ID'] == '' then do
           parse var block 'rule:' rid '0a'x
           if rid \== '' then out['ID'] = rid~strip
@@ -80,6 +86,7 @@
     end
     else if t~lower == 'the law, as code:' then expect = 'SOURCE'
     else if t~lower == 'it is about an event of kind:' then expect = 'ABOUT'
+    else if t~lower == 'the most the law says:' then expect = 'MAXIMUM'
     else if t~word(1)~lower == 'element' & t~right(1) == ':' & t~words = 2 then do
       el = .directory~new
       el['ID'] = t~word(2)~strip('T', ':'); el['QUOTE'] = ''; el['QUOTES'] = .array~new; el['TEXT'] = ''
@@ -104,6 +111,36 @@
     i += 1
   end
   return out
+
+/* The most a rule pack's offence carries ("the most the law says:", a code block: "section: N" and then
+   the words of the law that say it, e.g. section 7 of the Theft Act: "imprisonment for a term not exceeding
+   seven years").  years() reads the number of years from those words; checkMaximum() is the gate: the words
+   must be in section N's official text, word for word, in each of the rule's extents.  The screen uses a
+   checked maximum where another offence asks for one (CMA s.2: "a term of five years"). */
+::method years class
+  use strict arg quote
+  w = self~words(quote)~space
+  p = wordpos('years', w)
+  if p < 2 then return ''
+  n = w~word(p - 1)
+  if datatype(n, 'W') then return n
+  names = 'one two three four five six seven eight nine ten eleven twelve thirteen fourteen'
+  if wordpos(n, names) > 0 then return wordpos(n, names)
+  return ''
+::method checkMaximum class
+  use strict arg rule, leg
+  errs = .array~new
+  mx = rule['MAXIMUM']
+  if mx == .nil then return errs
+  if mx['SECTION'] == '' then errs~append('the most the law says: no section given')
+  if mx['YEARS'] == '' then errs~append('the most the law says: no number of years in "' || mx['QUOTE'] || '"')
+  do ext over rule['EXTENT']~makeArray(' ')
+    t = leg~section(mx['SECTION'], ext)
+    if t == '' then errs~append('the most the law says: section' mx['SECTION'] 'does not extend to' ext)
+    else if self~words(t)~pos(self~words(mx['QUOTE'])) = 0 then
+      errs~append('the most the law says: "' || mx['QUOTE'] || '" is not in section' mx['SECTION'] 'for' ext || ', word for word')
+  end
+  return errs
 
 /* The official text of RULE's section in each of its extents, from a SlamLegislation reader: a Directory,
    extent -> text, for check(). */

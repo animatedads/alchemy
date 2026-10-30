@@ -27,7 +27,8 @@ You turn ONE section of UK legislation into ONE rule file. SLAM checks your file
    - one sentence in SLAM's words saying what must be true.
    - `it takes evidence of:` and a code block holding the kinds from `VOCABULARY.md`, for example `PERSON_ACT`, `INTENT_ACCESS`, `KNOWLEDGE_UNAUTHORISED`, `AUTHORITY`. Any ONE kind in the block is enough for the element, so write two kinds only when the law says "or" ("intends ... or is reckless": `INTENT_DAMAGE RECKLESSNESS_DAMAGE`).
    - When the element is itself an offence ("he commits an offence under section 1"), write `it is the offence:` and a code block holding that rule's id (`cma1990.s1`), instead of `it takes evidence of:`.
-6. End with one line: `rule: when element 1, element 2, … and element <last> are true, the offence is true.` Name every element.
+6. If the Act says the most a person can get for the offence, write `the most the law says:` and a code block: `section: <number>` on its first line, then the words of the law that say it, copied from that section (for example `section: 7` and `imprisonment for a term not exceeding seven years`). SLAM checks the words are in that section of the XML.
+7. End with one line: `rule: when element 1, element 2, … and element <last> are true, the offence is true.` Name every element.
 
 ## Do not
 

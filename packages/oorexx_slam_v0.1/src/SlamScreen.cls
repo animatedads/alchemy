@@ -10,9 +10,9 @@
  * evidence names for it (UNRESOLVED when none: "they" is never filled in).  An event reported as a series,
  * with recorded parts (partOf), is screened through its parts.  Evidence reaches an element when the kind
  * it is offered for, or the kind it binds, is one the element takes (before guidance, so that what guidance
- * refuses is refused on the record, with the guidance quoted).  Evidence about the screened event, or
- * about an event this rule does not screen (a death, a message), or about every event ("*"), applies;
- * evidence about another screened event does not.  Evidence with a subject applies only to that person.
+ * refuses is refused on the record, with the guidance quoted).  Evidence reaches the events it says it
+ * bears on (bearsOn, else its eventId): an event, a series (every part of it), or "*".  Nothing reaches an
+ * event by default.  Evidence with a subject applies only to that person.
  *
  * What comes out, per rule, extent, event and person: each element's status, and the gaps (what is
  * missing, and what would count).  Not a verdict, not a charge.  The report's statuses (ChatGPT's set):
@@ -37,6 +37,10 @@
     if evidence~hasIndex('events') then do e over evidence['events']; events[e['eventId']] = e; order~append(e['eventId']); end
     if evidence~hasIndex('evidenceItems') then items = evidence['evidenceItems']
     if evidence~hasIndex('tags') then tags = evidence['tags']
+  end
+  people = .set~new                          /* entities the case says are persons */
+  if case~hasIndex('entities') then do en over case['entities']
+    if en['type'] == 'PERSON' then people~put(en['id'])
   end
   hasParts = .set~new
   do id over order
@@ -72,6 +76,15 @@
           if it['eventId'] == id & self~field(it, 'subject') \== '' then
             if \persons~hasItem(it['subject']) then persons~append(it['subject'])
         end
+        /* the persons the case itself says did it: who acted, spoke, was paid or lent */
+        if events[id]~hasIndex('roles') then do role over .array~of('ACTOR', 'SPEAKER', 'PAYEE', 'CREDITOR')
+          if \events[id]['roles']~hasIndex(role) then iterate
+          rv = events[id]['roles'][role]
+          if \rv~isA(.Array) then rv = .array~of(rv)
+          do pid over rv
+            if people~hasItem(pid) & \persons~hasItem(pid) then persons~append(pid)
+          end
+        end
         if persons~items = 0 then persons~append('UNRESOLVED')
         do who over persons
           rp = .SlamLaw~parse(path)
@@ -89,7 +102,7 @@
           end
           ignored = .SlamLaw~build(r, rp, links)
           do it over items
-            if \self~reaches(it, id, who, screened) then iterate
+            if \self~reaches(it, id, who, events) then iterate
             do el over rp['ELEMENTS']
               if el['LINK'] \== '' then iterate
               ex = .false
@@ -99,6 +112,21 @@
                 note = it['evidenceId'] || ':' it['text']
                 if it['effect'] == 'REBUT' then r~evidenceAgainst(cid, it['tier'], note, it['binding'])
                 else r~evidenceFor(cid, it['tier'], note, it['binding'])
+              end
+              /* "the further offence carries five years": the further offence's own rule pack, in scope here,
+                 says what it carries, in the words of the law (checked by the gate before the screen) */
+              if el['TAKES0']~hasItem('MAXIMUM_SENTENCE') & self~field(it, 'furtherOffence') \== '' then do
+                cid = .SlamLaw~elementId(rp, el['ID'])
+                fo = it['furtherOffence']; fr = .nil
+                do pr2 over parsed; if pr2[2]['ID'] == fo then fr = pr2[2]; end
+                if fr == .nil then
+                  r~evidenceFor(cid, 'DOCUMENTARY', it['evidenceId'] || ':' 'the further offence' fo 'has no rule pack for' extent, 'RULE_PACK_OUT_OF_SCOPE')
+                else if fr['MAXIMUM'] \== .nil then do
+                  mx = fr['MAXIMUM']
+                  note = it['evidenceId'] || ':' fo 'section' mx['SECTION'] || ': "' || mx['QUOTE'] || '" (' || mx['YEARS'] 'years)'
+                  if mx['YEARS'] >= 5 then r~evidenceFor(cid, 'PROVENANCE', note, 'MAXIMUM_SENTENCE')
+                  else r~evidenceAgainst(cid, 'PROVENANCE', note, 'MAXIMUM_SENTENCE')
+                end
               end
             end
           end
@@ -110,11 +138,24 @@
   end
   return results
 
-/* Does evidence item IT reach the instance for event ID and person WHO? */
+/* Does evidence item IT reach the instance for event ID and person WHO?  An item bears on the events in its
+   bearsOn (else its own eventId): the event itself, or a series it is part of (partOf), or every event
+   ("*").  Nothing else: evidence about one event does not reach another because the other is screened and
+   it is not (the bank's letter about the withdrawals is not evidence about the roof).  An item with a
+   subject reaches only that person. */
 ::method reaches class private
-  use strict arg it, id, who, screened
-  ev = it['eventId']
-  if ev \== id & ev \== '*' & screened~hasItem(ev) then return .false
+  use strict arg it, id, who, events
+  targets = .array~new
+  if it~hasIndex('bearsOn') then targets = it['bearsOn']
+  else targets~append(it['eventId'])
+  if \targets~isA(.Array) then targets = .array~of(targets)
+  part = ''
+  if events[id]~hasIndex('partOf') then part = events[id]['partOf']
+  hit = .false
+  do t over targets
+    if t == '*' | t == id | (part \== '' & t == part) then hit = .true
+  end
+  if \hit then return .false
   sub = self~field(it, 'subject')
   if sub \== '' & sub \== who then return .false
   return .true

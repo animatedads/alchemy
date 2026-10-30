@@ -50,6 +50,7 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/law/source/MANIFEST_LEGISLATION.md` | Seven Acts attached by Tom: SHA-256, bytes, valid-from date, each candidate section's extent. Only the Computer Misuse Act's XML is committed here; CODEX-PC owns the copies in `law/` |
 | `src/SlamScreen.cls` | One case (offence-event JSON, read with ooRexx's `json.cls`) screened against every rule pack, per extent, event and person |
 | `tests/law/VOCABULARY.md` | The shared word list (law.kinds 0.2): 42 kinds, each an event or a finding, defined in SLAM's words; gate 6 |
+| `tests/test_screen_uk.rex` | Fraud Act 2006 s.2, Theft Act 1968 ss.1 and 21 beside the CMA: the same events and evidence, three more rule packs (16 checks) |
 | `tests/test_screen.rex` | Gate 6, the Mrs P case after her death, Computer Misuse Act ss.1, 2, 3ZA in E.W. and S. (31 checks) |
 | `tools/migrate_case_v01_v02.rex` | ChatGPT's Mrs P case v0.1 to v0.2 (`docs/architecture/fixtures/`), every change listed |
 | `tests/test_gemini_standard.rex` | Gemini's two refusals against its own answers, through the Reasoned Thought standard-application audit (7 checks) |
@@ -734,6 +735,22 @@ Tom's aim: name the events once, consistently, and run them against many offence
   - **The narrative alone** gives one instance, every element UNKNOWN.
 - **The legislation** (`tests/law/source/MANIFEST_LEGISLATION.md`). Tom attached the six Acts ChatGPT asked for (this session's network cannot reach legislation.gov.uk). They are recorded by hash, not committed again: CODEX-PC owns the copies in `law/`. Each section's extent comes from its own markup. **Fraud Act ss.2–7, Theft Act ss.1, 21, 24A and Criminal Law Act s.1 do not extend to Scotland**; FSMA, SSAA, POCA and the Computer Misuse Act do.
 
+### More offences, the same events (2026-10-30)
+
+Three rule packs from the XML Tom attached:
+- Fraud Act 2006 s.2 (fraud by false representation);
+- Theft Act 1968 s.1 (theft);
+- Theft Act 1968 s.21 (blackmail).
+
+All three are England and Wales only; none of these sections extends to Scotland. The case and the evidence did not change for them. That is the test of the design: an offence is added by adding its rule pack.
+
+- **"The most the law says."** A rule pack quotes its maximum sentence from the Act, and a gate checks the words in the XML: s.1(3) for fraud, 10 years; s.7 for theft, 7; s.21(3) for blackmail, 14. A maximum the law does not say, or the right words from the wrong section, is refused.
+- **That answers CMA s.2's open element.** J's message names the further offence (theft). Its rule pack says seven years, checked, so s.2 is SUPPORTED on the evidence given for J's first withdrawal in England and Wales. In Scotland the Theft Act does not run, so the element stays open, and the record says the further offence has no rule pack there.
+- **The screen found a false positive in my own evidence file.** The bank's letter about card and PIN at a machine was marked as bearing on every event, so it made S's roof statement "false" with no evidence about the roof. Evidence now names the events it bears on (`bearsOn`, or its own event; a series covers its parts). Nothing reaches an event by default, and the test widens the letter back to every event to show the scope is what stops it.
+- **People come from the case's own roles** (actor, speaker, payee, creditor): T for the threat, S for the savings. "They" stays UNRESOLVED.
+- **Results:** the roof, the card, the threat and the savings are all UNKNOWN, because nothing but the story bears on them. J's first withdrawal is SUPPORTED on the evidence given for CMA s.1 and s.2, fraud, and theft.
+- **The sources are in git** (`law/source_corpus/nsw_ny_20261030/`; the UK Acts in `tests/law/source/`, `law/uk/WHERE_THE_UK_XML_IS.md`).
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -761,11 +778,11 @@ SLAM gets credit for what it found:
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 351 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **24/24** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **515 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S, the citation gate, the Gemini standard audit, and the shared word list and screen, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **457/457**. The BOLT, libc and unit-test steps (57 checks) skipped there: no llvm-project tree, no ooTest.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 431 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **24/24** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **595 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S, the citation gate, the Gemini standard audit, the shared word list and screen, the Fraud and Theft Act rule packs, and Body Slam, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **537/537**. The BOLT, libc and unit-test steps (58 checks) skipped there: no llvm-project tree, no ooTest.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
-`sh run_tests.sh`: **58/58** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, **43/43** in `test_law.rex`, **7/7** in `test_gemini_standard.rex`, and **31/31** in `test_screen.rex`: 351 checks. It covers:
+`sh run_tests.sh`: **60/60** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, **43/43** in `test_law.rex`, **7/7** in `test_gemini_standard.rex`, and **31/31** in `test_screen.rex`, **16/16** in `test_screen_uk.rex`, and **62/62** in `test_bodyslam.rex`: 431 checks. It covers:
 - the segmenter on unmodified `MLEvolution.cls` (54 units; shared guard nodes; collapsed setters; then/else bodies sharing a node with different bindings);
 - ingest of the GA package with duplicate units skipped on re-ingest;
 - aabb → Eeff = 0.4 and b00b → Eeff = 0.8 from recorded outcomes;

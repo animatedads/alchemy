@@ -2,8 +2,8 @@
 
 ```
 vocabulary: law.kinds
-version: 0.2
-written by: Claude (Opus 5.5), 2026-10-30
+version: 0.3
+written by: Claude (Opus 5.5), 2026-10-30 (0.2: the first list; 0.3: kinds for the Fraud Act 2006 s.2 and the Theft Act 1968 ss.1 and 21)
 architecture: Tom Dyer
 from: the event names of ChatGPT (GPT-6), OFFENCE_EVENT_CONTRACT_v0.1.md, with the changes in docs/architecture/fixtures/MIGRATION_v0.1_to_v0.2.md;
   and the kinds of evidence of the Computer Misuse Act rule and case files of 2026-10-29
@@ -71,6 +71,18 @@ group: a set of persons
 sentence: what a rule of the law says a person has to get for an offence
 most: more than each other value
 meeting: a time and a place where persons are
+gain: a thing a person gets, as money or a thing that has a value
+had: a word for has, when it is before now
+loss: a thing a person can not have now, that the person had before
+belongs: is a thing that a person has, by a rule
+eyes: the parts of a person that read what is at a place
+mind: the part of a person that can know
+sees: has as an input, by the eyes or the mind
+always: never with an end
+proper: right for the use
+took: a word for take, when it is before now
+demand: words that say to a person to give a thing or to do a thing
+threat: words that say a bad thing is to be the result
 
 a kind is a name for one thing. a rule file, a guidance file or a case file can use a kind only when it is in this list.
 
@@ -501,3 +513,83 @@ DOCUMENT_FALSE
 it is a finding.
 
 a document says it is made by a person or a group, and that person or group did not make it.
+
+kind 43:
+
+```
+DEMAND_MADE
+```
+
+it is an event.
+
+a person says to an other person: give me this, or do this.
+
+kind 44:
+
+```
+DISHONESTY
+```
+
+it is a finding.
+
+the act is dishonest, as an honest person sees it, with what the person knows of it.
+
+kind 45:
+
+```
+KNOWLEDGE_UNTRUE
+```
+
+it is a finding.
+
+the person that said a thing knows that it is, or can be, not true.
+
+kind 46:
+
+```
+INTENT_GAIN_LOSS
+```
+
+it is a finding.
+
+the person intends a gain for the person or an other person, or a loss, or a chance of a loss, for an other person.
+
+kind 47:
+
+```
+BELONGS_TO_ANOTHER
+```
+
+it is a finding.
+
+the thing belongs to a person that is not the person that took it.
+
+kind 48:
+
+```
+INTENT_PERMANENT_DEPRIVATION
+```
+
+it is a finding.
+
+the person intends that the one it belongs to can not have it again, always.
+
+kind 49:
+
+```
+MENACES
+```
+
+it is a finding.
+
+what the person said with the demand is a threat of a bad thing, more than a part of what a person can take.
+
+kind 50:
+
+```
+DEMAND_UNWARRANTED
+```
+
+it is a finding.
+
+the person that made the demand does not have, as true in the mind of the person, both that the demand is right and that the threat is a proper way to make it.
