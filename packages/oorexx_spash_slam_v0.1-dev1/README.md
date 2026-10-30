@@ -78,3 +78,10 @@ Generic public source now includes:
 - `tests/test_review_feedback.py`, `tests/test_v7_scan.py`, `tests/test_v7_validate.py`: synthetic and adverse tests
 
 See `docs/V7_CORPUS_METHOD.md` for the exact historical method description, distinctions between source and listening derivatives, and qualification limits. The Python regression runner includes the new tests. **Local dev3 ZIP tests are not automatically independent exact-checkout Git qualification.**
+
+
+## Completed Tier A listening review — 463/463 user-positive (30 October 2026)
+
+The user confirms having **listened to the entire Tier A collection** (all 463 candidate clips), finding human voice/speech in **463/463**, with zero false positives reported. This is an observed **100% positive fraction within the fully reviewed Tier A candidate set** for the private V7 recording—not recall, not an independently adjudicated benchmark and not a guarantee on other recordings. Candidate clips may overlap or share acoustic sources. Tier B/C candidates and the excluded timeline have not been evaluated for missed speech by this report.
+
+The complete public, privacy-safe qualification record is `packages/oorexx_spash_slam_v0.1-dev1/docs/V7_TIER_A_USER_REVIEW_20261030.md`. A **private** receipt binds the user-reported positive review to each of 463 verified Tier A archive clip IDs and hashes; original audio, exact clip identities and private source hashes remain outside GitHub.
