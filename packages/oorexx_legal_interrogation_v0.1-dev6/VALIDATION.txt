@@ -1,0 +1,80 @@
+Legal Interrogation v0.1-dev6 validation
+========================================
+
+Status: PASS — REAL R13196 + INTENTION DEV11 + LEGAL EFFECT V0.14
+Date: 2026-10-29
+
+Runtime
+-------
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug 3 2026
+Addressing mode: 64
+DEB SHA-256: 8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae
+
+Exact qualification inputs
+--------------------------
+oorexx_intention_service_v0.1-dev11.zip
+  SHA-256 f935dda3740db7a79add3ccd85dfdbabf7bc4c70a5b727d8773e5eb5bd49cc96
+legal_effect_v0.14.zip
+  SHA-256 1eb6190025d18cb08754a6224967d4bf5193c739ea98b07dd8526068535ce93d
+alchemy_objects_v0.8.zip
+  SHA-256 7683ed56ea99097226ea2f13f73305fb49919ba2ec822df2253ccfff59c6c073
+oorexx_crypto_v0.8.3(1).zip
+  SHA-256 5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49
+
+Dev6 delivery
+-------------
+- Added LegalInterrogationLegalEffectV014Adapter: a concrete bridge into the accepted
+  Legal Effect v0.14 source-verification/compiler boundary.
+- Requires real LegalSourceIdentity + NormativeSource and verifier-issued source evidence.
+- A source identity which merely asserts VERIFIED without verification evidence fails
+  LEGAL_SOURCE_VERIFICATION_REQUIRED.
+- Each clause becomes a LegalProvisionReference + LegalProvision and is independently
+  verified with LegalSourceVerifier before proposal admission.
+- Provision references preserve the source identity expressionId, satisfying the real
+  v0.14 PROVISION_EXPRESSION_MISMATCH compiler invariant.
+- Active SUPPORTED/PARTIALLY_SUPPORTED propositions map to real LegalNorm objects and
+  LegalCompileProposal objects carrying verified provision references.
+- Conditions/exceptions must already be real LegalPredicate objects. The bridge does not
+  parse or invent predicates from explanatory prose.
+- The adapter returns a non-authoritative LegalInterrogationLegalEffectCompilation.
+  Only LegalRuleCompiler~compile() can certify/seal the resulting LegalRuleGeneration.
+- Updated dev11 discovery contract test to use the actual IntentionContext public classes
+  instead of shadowing IntentionDiscoverySnapshot/IntentionSurfaceAdvertisement doubles.
+
+Executed suite
+--------------
+PASS tests/test_legal_effect_v014_contract.py
+PASS tests/test_legal_interrogation.rex
+PASS tests/test_intention_port.rex
+PASS tests/test_lifecycle.rex
+PASS tests/test_dev11_discovery.rex
+PASS tests/test_intention_service_dev11_live.rex
+PASS tests/test_legal_effect_v014_live.rex
+PASS complete run_tests.sh
+
+The live Legal Effect test proves:
+- real LegalSourceVerifier source evidence;
+- real provision verification with parent source evidence;
+- real LegalCompilationUnit proposal admission;
+- real LegalRuleCompiler compilation;
+- compiler-certified sealed generation is publicationEligible;
+- mapped norm preserves PROHIBITION / PROHIBITED / ASSIGN;
+- asserted-only source verification is rejected.
+
+Static qualification
+--------------------
+The release source was scanned with the Library-supplied
+oorexx_standards_enforcer.py (SHA-256
+978d0eb24cde13e014f2aeb61bccec1e6e6049792031c593e11407af17d545d8)
+in --strict --json mode: 16 source files scanned, 0 errors, 0 warnings, PASS.
+The final ZIP is re-scanned after manifest generation before publication.
+
+Authority boundaries
+--------------------
+- Intention Service owns discovery generation, CLARIFY/CONFIRM/READY and dispatch authority.
+- Legal Interrogation owns clause/proposition cross-examination and authoring provenance.
+- Legal Effect owns source-verification evidence, compiler diagnostics, certification,
+  sealed generations and executable legal-effect decisions.
+- Institutional Policy owns publication/effective-time/lifecycle governance.
+- No LLM answer, interrogation acceptance or compile handoff is legal authority by itself.

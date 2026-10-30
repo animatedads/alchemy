@@ -1,0 +1,123 @@
+ooRexx XTP v0.1-dev32: validation record
+==========================================
+
+Architecture: Tom Dyer (decision D-07, 28 October 2026)
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for dev26 to dev32
+Validation written and run by: Claude (Opus 5.5), 28 October 2026
+Independent security review: a separate Claude (Opus 5.5) agent, given only the code
+locations, with probes of its own, before commit (section 3)
+
+Baseline:  oorexx_xtp_v0.1-dev31 as committed to animatedads/alchemy main in 40d70ade
+Planner:   oorexx_operational_degradation_planner_v0.1-dev5, built locally
+libcrypto: OpenSSL 3.0.13
+ooRexx:    Open Object Rexx 5.3.0 r13196 (/usr/local/bin/rexx)
+LDAP:      the estate's own LdapWireServer and LdapWireClient (packages/oorexx_ldap_identity),
+           with Secret Broker v0.2 and the Identity Directory key model
+Host:      Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror, run as root
+Evidence class: LOCAL_PASS. FIELD_PASS is NOT claimed.
+
+1. Changes against dev31 (lines added / removed, sha256)
+  src/xtp_transport.cpp          +381 -26  d01b3bf42732d3d542baadc196b8d81617ba8013d5270952767fadf289004a00
+      protection tail, open and accept blocks, key confirmation, open rate limit, nonce
+      cache, refusal under the open key, key lifetime check
+  src/xtp_rexx_native.cpp        +119 -6   754df9c1d30b84fdfd3b9827f127bdc887151dce0187ef64f07c9c383fd8e3c6
+  include/xtp/xtp_session.hpp    +25 -2    569e81c54a2c3fa46ef4de7e7cea955b252ad05506de5348fb6534d56ad45c17
+  include/xtp/xtp_service.hpp    +3 -0     f7a9c94e0adf57c36d2e79018b89a33d2fbaea1fe43855c503c3c314b5cdb90a
+  rexx/XtpSession.cls            +12 -5    574992f9f5d625b0cb420c6acf393a09ee5a22f8a72627ead18d57028a498799
+  Makefile                       +23 -17   8d035288612838dab64b038c4f5857eb86eac781d7c29b4bf582c289e0ec1cd1
+  New:
+  include/xtp/xtp_security.hpp   132 lines bff6e4ec33c05b6bbef90944ad1e8356253b59686535d5ce834a62bf4ce3bb3f
+  src/xtp_security.cpp           255 lines fbcb240014bdeab2ec729d510fea0aebcbd7108877bb1dece237bd9e03860ec8
+  rexx/XtpServiceKeys.cls        134 lines 4a6d50407b48ad8048174c27cc69c3cddd49d4ce6a9155b418d2bbc0aefb6104
+  rexx/XtpLdapKeySource.cls      209 lines 50af5b5f2e7826d92140e6ffb481d7b164ff16980f0d40efccc4601b8d998988
+  tests/test_security.cpp        428 lines (P1-P20)
+  tests/xtp_keys_ldap_fixture.rex, test_xtp_service_keys_{client,server}.rex, test_xtp_service_keys_rexx.sh
+  docs/SECURITY.md               195 lines
+  Five existing test scripts link -lcrypto; tests/run_negative.sh likewise (see section 6).
+
+2. Protection tests (make test-security), final run
+  P1  authenticate: both ways under key 101; data in clear on the wire          PASS
+  P2  encrypt: 2 MB each way through 20%/14% loss, byte-exact, closed;
+      the plaintext marker never on the wire                                     PASS 173 ms, 381 resent
+  P3  ChaCha20-Poly1305, 300 KB echo                                             PASS
+  P4  5 DATA packets changed in transit with valid XTP checksums: dropped,
+      data repaired                                                              PASS
+  P5  forged abort, graceful END and DATA from the peer's own address: dropped   PASS
+  P6  a captured DATA packet replayed 3 times: 3 rejected                        PASS
+  P7  a replayed open FIRST after the session ended opens nothing                PASS
+  P8  a clear open of a service with keys: DIAG 17 AUTH_REQUIRED                 PASS
+  P9  require_protection refuses clear opens of a service with no keys           PASS
+  P10 rotation: new key opens new sessions; the retiring key's session works     PASS
+  P11 no active key: open_session refuses before sending                         PASS
+  P12 key file: mode 600 loads; 644 refused; a bad line named, keys kept         PASS
+  P13 20 MB on loopback: unprotected 100 MB/s, encrypted 77 MB/s                 recorded
+  P14 H1/L3: key expired, profile stays encrypt; opens fail ("none" included);
+      a clear open gets AUTH_REQUIRED; forget_profile lowers it                  PASS
+  P15 H2: 20,000 replacements against 32,870 concurrent checks, 0 without an
+      encrypt key; key id 0, another service's key id, and "0x..." hex each
+      refuse the whole set and change nothing                                   PASS
+  P16 M2: an open captured at listener A and replayed to listener B (same key)
+      never reaches B's accept(); B holds 1 unconfirmed context                  PASS
+  P17 M3: 25 spoofed copies of the open over 2.5 s; the context still dies at
+      dead_after (800 ms); the server sent the spoofed address 4 packets          PASS
+  P18 M1: 84,992 valid opens (another service's key holder) during 40 echoes:
+      40/40, worst round trip 1 ms; a new open during the flood succeeds         PASS
+  P19 L4: revoking the key closes both ends after 1,008 ms                       PASS
+  P20 ML2/L2: a symbolic link, and a 0600 file owned by uid 65534, are refused;
+      secrets "-1...", " f..." and "az..." are refused                           PASS
+
+  ooRexx (tests/test_xtp_service_keys_rexx.sh, real LdapWireServer, 13 PASS):
+  1  LDAP works: keys a11c0 (retiring) and a11c1 (active); encrypted session on a11c1
+  2  LDAP unreachable: key-file fallback; encrypted session
+  2b LDAP answers with no XTP keys: a failure; the file is used, profile encrypt (H3)
+  2c a generation whose secret is outside secret://other/svc.ldap/: whole fetch fails (ML1)
+  2d a source that raises: the next source is used (H3)
+  3  a key file with the wrong secret cannot open
+  4  every key cleared: the profile stays encrypt and an open asking "none" is refused (H1)
+  server: two encrypted sessions accepted, keys from LDAP
+
+3. Independent security review (before commit)
+  The first build passed P1-P13. The reviewer confirmed ten defects by running probes, and
+  reported two more from reading. All are fixed; the table with fixes and tests is in
+  docs/SECURITY.md, "Review". High: protection fell to none when keys expired (H1); key
+  refresh was not atomic and a bad key left the table half-cleared (H2); LDAP with zero or
+  partial results counted as working and removed the file keys (H3).
+  The reviewer found nothing serious in: nonce and counter use, AAD coverage, downgrade,
+  context binding, OpenSSL usage, the replay window, bounds checks, KeyTable locking.
+  The fixes were tested (P14-P20, ooRexx 2b-4) but not reviewed a second time.
+
+4. Interoperability
+  Streams (make test-interop, PEER_ROOT = committed dev31, 150 KB, 20%/14% loss):
+    I1 dev32 -> dev31  36 resent   I2 dev31 -> dev32  35   I3 dev32 -> dev32  36   all delivered
+  Unprotected sessions, separate processes, 200 KB echo:
+    dev31 listener, dev32 opener: byte-exact     dev32 listener, dev31 opener: byte-exact
+
+5. Full regression on dev32 (final run, scratch copy, suites one after another)
+  10 make targets: service 3, capacity-rate 1, auto-key 1, negative 7/7, segmentation
+    10/10, interop 3/3, sync-diag 5/5, diag-hardening 8/8, session 22/22, security 20/20
+  27 shell suites, run_tests.sh and the ooRexx suites included                  all rc=0
+  Totals: 185 PASS, 0 FAIL, 1 SKIP (run_tests.sh proxy stress: proxy binary absent)
+  Two suites needed environment the first pass lacked, and were rerun on the same copy:
+  test-interop with PEER_ROOT (section 4), and test_storage_capacity_xtp.sh, which needs five roots:
+    OP_PLANNER_ROOT=<planner dev5>
+    SERVICE_DESCRIPTOR_ROOT=packages/ssh_over_xtp_v0.1-candidate4/vendor/oorexx_service_descriptors_v0.1-dev2
+    STORAGE_ROOT=packages/oorexx_storage_fabric_v0.1-dev23-precision1
+    SOCKET_PROVIDER_DIR=packages/oorexx_socket_provider/src
+  it passes (first=0.20 s, second=0.40 s).
+
+6. Harness fault found and repaired during this work
+  While adding -lcrypto, an edit of tests/run_negative.sh by Claude produced a stderr
+  redirection into the planner's liboperational_planner.a, which overwrote that build
+  output in the local work tree (not in the repository). The first dev32 regression failed
+  on it. The archive was rebuilt from unchanged sources with the planner's own Makefile,
+  the script was repaired, and the final regression above ran on both.
+
+7. Not run
+  - Real Ethernet between hosts; the ED209 field path.
+  - Protected sessions over raw IP protocol 36 and L2 (they share the code path; only UDP
+    is exercised for protection).
+  - The LDAP placement checks (a key set not under its owner, a generation not under its
+    set) have no fixture yet; the secret-prefix check does.
+  - A second independent review of the fixes.
+
+Claude (Opus 5.5)

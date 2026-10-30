@@ -18,11 +18,11 @@ def verify(archive_root=None):
     sphere = data['packs/rpc-invocation/00-sphere.json']
     profile = data['profiles/rpc-invocation.json']
     ledger = data['SOURCE_ARCHIVES.json']
-    assert sphere['kind']=='sphere' and sphere['id']=='rpc-invocation' and sphere['version']==profile['version']=='0.1'
+    assert sphere['kind']=='sphere' and sphere['id']=='rpc-invocation' and sphere['version']==profile['version']=='0.1.1'
     assert 'packs/rpc-invocation' in profile['packs']
     assert sphere['access_policy']==data['packs/rpc-invocation/01-access-policy.json']['id']
     article_paths = sorted(p for p in data if '/articles/' in p)
-    assert len(article_paths)==10
+    assert len(article_paths)==11
     articles = {data[p]['id']:data[p] for p in article_paths}
     assert set(sphere['start_here']).issubset(articles)
     sections = {a['id'] for a in sphere['sections']}
@@ -38,7 +38,7 @@ def verify(archive_root=None):
             assert p['member_sha256']==rec['member_sha256']
     corpus=data['packs/rpc-invocation/corpora/rpc-invocation.continuity.json']
     assert corpus['kind']=='corpus' and corpus['sphere']==sphere['id'] and len(corpus['records'])>=10
-    assert 'rpc.grpc' in articles and 'rpc.callbacks' in articles
+    assert 'rpc.grpc' in articles and 'rpc.callbacks' in articles and 'rpc.https-ingress' in articles
     reg = articles['rpc.registry']
     assert any('registerMethod' in x for x in reg['api'])
     assert any('registerCallbackMethod' in x for x in reg['api'])

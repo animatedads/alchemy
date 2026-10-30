@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "flylo.platform-integration",
+  "version": "0.1",
+  "sphere": "flylo",
+  "title": "FlyLo own-platform LDAP, HTTPS and terminal integration",
+  "summary": "FlyLo consumes project-owned platform identity, TLS and terminal facilities. Current source candidates are pinned exactly, but activation remains fail-closed until their live/runtime gates are satisfied.",
+  "policy": [
+    "Public FlyLo access must terminate TLS in the project-owned ooRexx HTTPS Server.",
+    "Authenticated FlyLo identities must resolve through the project-owned LDAP Identity authority.",
+    "FlyLo must not copy LDAP credential truth into an application-local identity store.",
+    "External identity providers may federate only through platform authentication policy; they do not replace LDAP directory authority.",
+    "The MVS airline backend remains independently testable and does not acquire TLS or LDAP authority.",
+    "A current source artifact is not ACTIVE merely because it is newer."
+  ],
+  "current_candidates": [
+    {
+      "component": "terminal-machine",
+      "artifact": "oorexx_terminal_machine_v0.22-candidate16.zip",
+      "sha256": "af7c0d571269c17724cc79e695f9b3523045cc7f93a76b595a86158556c60f8d",
+      "status": "QUALIFICATION_PENDING",
+      "open_gates": ["exact r13196 execution", "ED209ZZ live TN3270 regression"]
+    },
+    {
+      "component": "ldap-identity",
+      "artifact": "oorexx_ldap_identity_v0.1-dev22.zip",
+      "sha256": "697c301c37ad1d77252a34db9028420c4c9a3e3dbe5c60de9be6fc91940341fc",
+      "status": "QUALIFICATION_PENDING",
+      "open_gates": ["r13196 runtime", "live LDAPS install", "LDAP bind/revoke end-to-end"]
+    },
+    {
+      "component": "https-server",
+      "artifact": "oorexx_https_server_v0.4.8.zip",
+      "sha256": "d38ddd049e5d8f5683e4ebf09e09a870c9c562bd3663db32950df711f7040fbe",
+      "status": "QUALIFICATION_PENDING",
+      "open_gates": ["modified runtime under r13196", "live private-CA TLS"]
+    }
+  ],
+  "source_contract": "examples/flylo_mvs_backend_v0.1/platform_integration.json",
+  "validator": "examples/flylo_mvs_backend_v0.1/validate_platform_integration.py"
+}

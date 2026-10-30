@@ -1,0 +1,54 @@
+{
+  "kind": "article",
+  "id": "xtp.planner-pressure",
+  "sphere": "xtp",
+  "version": "0.1-dev1",
+  "title": "Transport-neutral degradation and live capacity contracts",
+  "section": "integration",
+  "summary": "Planner v0.1-dev5 controls named capacity domains, contexts and aggregate tickets. Per-context caps, max parallel count and aggregate ceiling are three distinct constraints; XTP must not claim global accounting absent fabric coordination.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "NORMAL, DEGRADED, CONSTRAINED and EMERGENCY are operating-state inputs",
+    "Allowed decisions include ALLOW THROTTLE SAMPLE AGGREGATE DEFER SUSPEND DROP REFUSE_FORWARD",
+    "SAMPLE/AGGREGATE require verified upstream transformation, never forward original unchanged",
+    "fallback ALLOW/FORBID/REQUIRE is independent of disposition and path protection",
+    "Live contraction/recovery must not destroy already verified Storage ranges",
+    "A capacity percentage applies to named resource current capacity, not an IP interface or service label"
+  ],
+  "procedure": [
+    "Admit mu5 and mu7 normal.storage tickets against 100-unit ingress, each <=30 and total <=60",
+    "Reject/queue third mu9 ticket at max_parallel_contexts=2",
+    "Reduce current resource to 50, reconcile tickets to <=15 each and <=30 aggregate",
+    "Verify high-class competition preempts/deprioritises normal.storage safely",
+    "Restore capacity with bounded grant ramp to avoid a thundering herd"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_operational_degradation_planner_v0.1-dev5.zip",
+      "sha256": "422dd2a2f2ef03ab9376e7e3f7ed9a847eb6212cf03eeba84a909ccd133b5479",
+      "member": "oorexx_operational_degradation_planner_v0.1-dev5/tests/test_pressure.cpp",
+      "claim": "Concurrent planner admission and reconciliation"
+    },
+    {
+      "artifact": "oorexx_operational_degradation_planner_v0.1-dev5.zip",
+      "sha256": "422dd2a2f2ef03ab9376e7e3f7ed9a847eb6212cf03eeba84a909ccd133b5479",
+      "member": "oorexx_operational_degradation_planner_v0.1-dev5/tests/test_capacity_governor.cpp",
+      "claim": "Governor enforcement tests"
+    },
+    {
+      "artifact": "oorexx_operational_degradation_planner_v0.1-dev4.zip",
+      "sha256": "44e37f8fd5134a834493ece98f8e513a7199b0b6007acaf9d46d4a049ab1f718",
+      "member": "oorexx_operational_degradation_planner_v0.1-dev4/README.md",
+      "claim": "Earlier dev4 capacity definition"
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/tests/test_storage_capacity_xtp.sh",
+      "claim": "XTP UDP capacity smoke"
+    }
+  ],
+  "qualification_boundaries": {
+    "local_numeric": "planner and synthetic pressure tests; no full sustained multi-source ED209 transfer claimed"
+  }
+}

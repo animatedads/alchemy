@@ -2,7 +2,7 @@
   "schema": "oorexx.package.load-requirements/0.1-dev1",
   "consumer": {
     "component": "oorexx_virtual_usb",
-    "releaseLabel": "0.1-dev10"
+    "releaseLabel": "0.1-dev11"
   },
   "entryPackages": [
     "src/VirtualUsbRuntime.cls",
@@ -78,7 +78,13 @@
         "moduleInstallPath": "/lib/modules/<running-kernel>/extra/oorexx-vusb/dummy_hcd.ko",
         "rebuildPolicy": "reuse only when vermagic matches running kernel; otherwise rebuild against /lib/modules/<running-kernel>/build",
         "kernelSourcePolicy": "prefer running-kernel source tree dummy_hcd.c when available",
-        "buildDependencies": ["kernel-default-devel", "kernel-devel", "kernel-source", "gcc", "make"]
+        "buildDependencies": [
+          "kernel-default-devel",
+          "kernel-devel",
+          "kernel-source",
+          "gcc",
+          "make"
+        ]
       }
     }
   }

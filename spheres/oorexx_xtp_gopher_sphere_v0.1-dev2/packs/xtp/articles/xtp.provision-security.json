@@ -1,0 +1,52 @@
+{
+  "kind": "article",
+  "id": "xtp.provision-security",
+  "sphere": "xtp",
+  "version": "0.1-dev1",
+  "title": "Provisioning cryptography and authority threats",
+  "section": "architecture",
+  "summary": "Cryptographic authorisation includes peer session identity, message provenance, quorum of delegated controller keys, monotonic epoch/revision/sequence, expiry/revocation and immutable trust roots. A signed packet alone is insufficient.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "Source IP, MAC, ROUTE/XROUTE, XTP KEY and service string are not identity proof",
+    "Inbound remote requests bind an authenticated principal to established session and to owner delegation",
+    "Controller keys are distinct from node announcement keys; repeated signatures from same controller count once",
+    "Quorum signatures do not create a consensus log; distinct durable committed revision evidence is required",
+    "Two controllers use 2-of-2 writes; three controllers prefer 2-of-3 with independently fenced commit state",
+    "Never use a single writable mirror as a second independent vote",
+    "Raw private signing material must not be in LDAP attributes, route files, JSON examples, logs or Git",
+    "Canonical signed bytes reject duplicate JSON keys, floats, unexpected extensions, schema downgrade and size overflow",
+    "Revocation and epoch floors survive rollback and reinstallation or re-establish from trusted authority"
+  ],
+  "procedure": [
+    "Verify private key role, controller membership and trusted public key prior to record acceptance",
+    "Bind request to target MI/realm/nonce/policy digest/epoch/revision and expiry",
+    "Require authenticated encrypted XTP session (or independently qualified secure channel correctly bound to it)",
+    "Reject forged service owners, caller class promotion, route collisions, stale updates and duplicate signers",
+    "Stage only committed quorum-certified allocation; refuse mutable bootstrap trust"
+  ],
+  "provenance": [
+    {
+      "artifact": "xtp_route_publication_v0.1_candidate1.zip",
+      "sha256": "f7d244551a8c7c3372ac723b9a40e04adfafbc46d09d9498eea7c0dfab53d5df",
+      "member": "xtp_route_publication_v0.1_candidate1/tests/test_contract.py",
+      "claim": "19 offline positive and negative contract tests"
+    },
+    {
+      "artifact": "oorexx_crypto_v0.8.3(4).zip",
+      "sha256": "5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49",
+      "member": "oorexx_crypto_v0.8.3/VERSION.txt",
+      "claim": "ooRexx Crypto source baseline"
+    },
+    {
+      "artifact": "xtp_gateway_v0.1-dev1_candidate.zip",
+      "sha256": "2fc79dca4f32fdb4dd57aad7fb8249e2e806569b81914447cbc1df064c1a01a8",
+      "member": "xtp_gateway_v0.1-dev1/README.md",
+      "claim": "Gateway remote authentication limitation"
+    }
+  ],
+  "qualification_boundaries": {
+    "offline": "Ed25519 verifier tests pass",
+    "native_security": "gateway mutual remote KEY-bound authentication not qualified; effectful provisioning forbidden"
+  }
+}

@@ -19,3 +19,6 @@ This sphere documents the boundaries that matter most for future work:
 - runtime SHA-256: `8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae`
 
 The implementation is published at `packages/oorexx_smtp_secure_stack/` in this repository. The sphere is documentation/evidence authority; it does not duplicate runtime implementation.
+
+
+2026-10-29 source note: Git dev7.1 carries the post-DATA cleanup hotfix and LDAP PR #71 authority contract. The sphere retains dev11 as the last complete r13196 qualification baseline; autobuilder is not running, so the hotfix is not represented as a fresh full-runtime qualification.

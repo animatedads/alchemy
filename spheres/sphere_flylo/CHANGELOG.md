@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4
+- Pin current Terminal Machine candidate16, LDAP Identity dev22 and HTTPS Server 0.4.8 by exact SHA-256.
+- Require FlyLo public access to consume the project-owned HTTPS and LDAP authorities rather than creating application-local credential/TLS truth.
+- Keep all three current candidates fail-closed pending their explicit runtime/live gates.
+- Add a source-owned platform integration contract and executable static validator.
+
 ## 0.3
 - Add the MVS 3.8J/TK5 backend validation stream and ED209ZZ clean-room evidence.
 - Record the backend chain: schedule -> path -> rules -> fare -> PNR -> ticket/coupon -> boarding -> baggage -> cargo -> FLCTL.

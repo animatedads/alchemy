@@ -170,6 +170,17 @@ when a part of code has an error, i can say what program makes it. then i can te
 
 i do that with the error of the root node: a loop with a count of steps. i get an other node with the same way, in an other part of code. with each value that the code before it can give it, the result is proved true. with some numbers that are more than each value it can get, the result is disproved. the name of the program that makes that node is not known: no data says it. so the error is not in the count for a program.
 
+## what is true of a rule
+
+person: a thing that can know, can say what it can do, and can do it
+law: a list of rules for each person
+element: a part of a rule that has to be true
+evidence: data that says an element is true or false
+
+an other program can write a law in my words: the words of the law, as code, and for each part of the law an element. an element has the words of the law it is from, as code, words that say what has to be true, and a list of the evidence it can take. i do not take it as a rule before i test it. i know each word. the words of the law are the words of the law for the place where it is a law. the words of each element are in the law. each part of the law has an element. the rule has each element in it.
+
+then each element is a claim, and the law is true for a thing a person can do when each element is true with the evidence. some evidence is not for an element: a list of what a computer can run says what a name in it can do, and not what a person can do. so i store that evidence, and i do not count it for that element. i do not say what a person is: i say what the evidence gives, and how i get it.
+
 ## what i can not do now
 
 i can not read a task in words and make the steps from it. you give me the first node and the last node of each step.

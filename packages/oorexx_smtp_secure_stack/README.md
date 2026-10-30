@@ -1,4 +1,4 @@
-# ooRexx SMTP Secure Stack v0.1-dev7
+# ooRexx SMTP Secure Stack v0.1-dev7.1
 
 SMTP server and reusable secure-socket/TLS layer for Open Object Rexx 5.3.0 r13196, integrated with the existing identity, access-control, cryptographic-signature, Storage Fabric, QueueRexx/Queue Fabric, policy, ML/LLM and audit boundaries.
 
@@ -79,3 +79,10 @@ Dev7 rebases the integration edge against the current Library state on 2026-10-0
 - LDAP/Identity v0.1-dev14 is the current identity-directory line; SMTP continues to consume its SASL attribution contract rather than copying LDAP identity semantics.
 
 See `MVS_PRE17_INTEGRATION.md` and `VALIDATION.txt`.
+
+
+## v0.1-dev7.1 — post-DATA cleanup hotfix
+
+Once a next-hop server has returned a definitive final DATA reply, QUIT and close are cleanup only. They now run behind a local syntax-exception boundary so cleanup failures cannot replace a known 2xx/4xx/5xx recipient result with a generic retryable transport failure. `tests/review_cleanup_exception.rex` covers both QUIT and close exceptions after final `250`.
+
+LDAP integration contract is aligned to PR #71: active attributed IdentityDirectory principal plus explicit `MAIL_READ` / `EMAIL_SEND`; Bind or signing alone never implies `EMAIL_SEND`.

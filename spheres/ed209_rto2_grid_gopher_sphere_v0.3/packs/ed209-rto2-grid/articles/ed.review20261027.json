@@ -1,0 +1,48 @@
+{
+  "kind": "article",
+  "id": "ed.review20261027",
+  "version": "0.3",
+  "sphere": "ed209-rto2-grid",
+  "title": "27 October 2026 source and evidence reconciliation",
+  "summary": "Grid dev15 and XTP dev30 are newer sources, while ED209 candidate2 remains on older segmented QFXTP. R-11 fixed locally and submitted; R-10 MI-held signature and live 20/20 are still not accepted.",
+  "authority": "qualification-evidence",
+  "invariants": [
+    "Generic RTO2 Grid controller 8 MU/16 MI reference is not the active 10 MU/20 MI ED209 estate.",
+    "Grid dev15 Library availability is not evidence of installed packages on all ten MUs.",
+    "XTP dev30 ACK source IP/port checks mitigate source confusion only; they are not cryptographic authentication (R-07).",
+    "XTP dev26+ destination MAC checks mitigate R-08; promiscuous bridge adversarial field qualification remains unproven.",
+    "CODEX-PC REQ-00000513 reports the isolated R-09 adapter test passes denied THROTTLE 0%, missing/invalid RATE_PERCENT; no live estate admission proof.",
+    "Controller commit and receipt SHA-256 do not prove R-10 MI-only result origin, because a symmetric key also held by the MU can be used for forgery.",
+    "Candidate2 MU wrapper loses native error classifications (R-11); candidate3 adds redacted typed classes and exit-code preservation, locally tested.",
+    "R-11 local tests 4/4, guest preflight 6/6, overlay 2/2 passed; the full synthetic 20/20 rerun stalled and does not count as PASS.",
+    "RTO2 20/20 live authenticated and controller-committed receipts remain outstanding; no SSH-only or synthetic shortcut can satisfy acceptance.",
+    "Memory Fabric XTP candidate4 and Queue Fabric receipt gate candidate1 exist but do not substitute for Grid/Queue durable execution or Storage commit."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "rexxos_rto2_grid_v0.1-dev15.zip",
+      "sha256": "e94ba156182567752e7e3b86e88b6a0e8a25fb8710648bb373a4c33271226543",
+      "member": "qualification/dev15-controller-standards.json",
+      "claim": "Archive reports a three-file standards review with zero findings; separate from field qualification."
+    },
+    {
+      "artifact": "queue_fabric_xtp_receipt_gate_v0.1_candidate1.zip",
+      "sha256": "9a33b2df21d436639de3ba5f2ef17c97bd04ddbdf51c8eb7dd735a40281da032",
+      "member": "src/QueueXtpReceiptGate.cls",
+      "claim": "A distinct receipt-gate candidate is present in Library."
+    },
+    {
+      "artifact": "oorexx_memory_fabric_xtp_candidate4.zip",
+      "sha256": "3ef13e7cc66a69f684d601d5bd275c926c8580bb0f07a41119544ab8f0326e40",
+      "member": "src/MemoryXtpReadIngress.cls",
+      "claim": "A distinct Memory Fabric XTP read-ingress candidate is present."
+    },
+    {
+      "artifact": "ed209_rto2_20mi_candidate2_managed.zip",
+      "sha256": "940ee1835f9dd53ceea42a14e0eb7880e4dc374d6813cfbc686972debe23b4e1",
+      "member": "bin/mu_controller_run.sh",
+      "claim": "Candidate2 wrapper originally collapsed native failures to generic error."
+    }
+  ]
+}

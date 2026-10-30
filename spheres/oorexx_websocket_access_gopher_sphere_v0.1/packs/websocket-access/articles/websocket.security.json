@@ -3,21 +3,37 @@
   "id": "websocket.security",
   "version": "0.1",
   "sphere": "websocket-access",
-  "title": "Handshake, entropy and TLS authority",
-  "summary": "WebSocket protocol code does not own cryptographic entropy or TLS credentials. Handshake nonce/accept calculation and frame-mask generation are injected authorities; TLS remains owned by the selected socket provider/security profile.",
+  "title": "Handshake, entropy, TLS and browser admission authority",
+  "summary": "WebSocket owns RFC 6455 handshake/frame validation but not TLS credentials, production entropy, identity or authorization. dev4 keeps wss transport in the owned HTTPS/SocketProvider layer and applies browser-facing Origin/client-key/masking admission at the RFC6455 boundary.",
   "invariants": [
-    "WebSocketHandshakeCrypto is the injected authority for client nonce and Sec-WebSocket-Accept calculation.",
-    "WebSocketMaskSource is the injected authority for fresh four-byte client mask keys.",
-    "Production entropy is not bundled or claimed by dev1.",
-    "TLS certificate, trust and private-key material must not move into WebSocket objects.",
-    "wss composition uses the common TLS/socket authority; WebSocket does not acquire OpenSSL or TLS sockets directly.",
-    "The RFC 6455 example key/accept vector is qualification evidence, not a production randomness mechanism."
+    "WebSocketHandshakeCrypto remains the protocol-facing handshake authority contract.",
+    "WebSocketMaskSource remains the client frame-mask authority contract.",
+    "WebSocketPlatformCrypto.cls is optional and separate from WebSocketAccess.cls.",
+    "WebSocketCryptoAuthHandshake uses crypto.auth/0.1 SHA-1 for Sec-WebSocket-Accept and standard base64 encoding.",
+    "Production entropy remains behind WebSocketEntropySource and is not claimed qualified by dev4.",
+    "TLS certificate, trust and private-key material remain in the owned HTTPS/SocketProvider security authority.",
+    "No Socket, BIO, SSL, SSL_CTX or Foreign Runtime object crosses the HTTPS-to-WebSocket handoff.",
+    "Browser-facing server admission supports an explicit Origin allowlist, version 13 enforcement, canonical client-key shape and mandatory masked client frames.",
+    "HTTPS/mTLS or LDAP identity evidence may be projected to application context but does not become WebSocket authorization automatically.",
+    "The RFC 6455 example key/accept vector remains a deterministic contract fixture, not a production randomness mechanism."
   ],
   "provenance": [
     {
-      "artifact": "oorexx_websocket_access_v0.1-dev1.zip",
-      "sha256": "91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655",
-      "member": "README.md"
+      "artifact": "packages/oorexx_websocket_access/src/WebSocketPlatformCrypto.cls",
+      "claim": "Optional estate crypto adapter."
+    },
+    {
+      "artifact": "packages/oorexx_websocket_access/src/WebSocketServerAccess.cls",
+      "claim": "Server-side RFC6455 admission and framing boundary."
+    },
+    {
+      "artifact": "packages/oorexx_websocket_access/HTTPS_UPGRADE_CONTRACT.md",
+      "claim": "Owned HTTPS/TLS authority split."
+    },
+    {
+      "artifact": "oorexx_crypto_v0.8.3.zip",
+      "sha256": "5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49",
+      "claim": "Underlying estate Crypto authority."
     }
   ]
 }

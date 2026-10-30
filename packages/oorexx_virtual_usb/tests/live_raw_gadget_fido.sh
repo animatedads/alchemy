@@ -118,6 +118,33 @@ if [ -s "$BASELINE" ]; then
   sed 's/^/  /' "$BASELINE"
 fi
 
+# hidraw class objects have their own lifetime.  A stale class entry can survive
+# long enough for a reused USB path to make its device symlink resolve again.
+# Snapshot the class-object identity itself (not just its target path) so only a
+# newly published/rebound hidraw generation can satisfy this run.
+hidraw_class_token() {
+  local h=$1 meta
+  meta=$(stat -c '%d:%i:%y' "$h" 2>/dev/null || true)
+  [ -n "$meta" ] || return 1
+  printf '%s|%s\n' "$(basename "$h")" "$meta"
+}
+
+snapshot_hidraw_classes() {
+  local h token
+  for h in "$VUSB_SYSFS_ROOT"/class/hidraw/hidraw*; do
+    [ -e "$h" ] || [ -L "$h" ] || continue
+    token=$(hidraw_class_token "$h" || true)
+    [ -n "$token" ] && printf '%s\n' "$token"
+  done
+}
+
+HIDRAW_BASELINE=$(mktemp /tmp/oorexx-vusb-hidraw-baseline.XXXXXX)
+snapshot_hidraw_classes >"$HIDRAW_BASELINE"
+if [ -s "$HIDRAW_BASELINE" ]; then
+  note "pre-existing hidraw class generations will not count as this run:"
+  sed 's/^/  /' "$HIDRAW_BASELINE"
+fi
+
 LOG=$(mktemp /tmp/oorexx-vusb-fido-live.XXXXXX.log)
 RUN_DIR=$(mktemp -d /tmp/oorexx-vusb-fido-run.XXXXXX)
 READY="$RUN_DIR/presented"
@@ -143,7 +170,7 @@ cleanup() {
     kill -KILL "$PRESENTER_PID" 2>/dev/null
   fi
   [ -z "$PRESENTER_PID" ] || wait "$PRESENTER_PID" 2>/dev/null
-  rm -f "$BASELINE"
+  rm -f "$BASELINE" "$HIDRAW_BASELINE"
   rm -rf "$RUN_DIR"
 }
 trap cleanup EXIT INT TERM
@@ -208,7 +235,10 @@ done
   [ ! -s "$TRACE" ] || cat "$TRACE" >&2
   fail "a new CAFE:F1D0 generation did not enumerate within ${VUSB_LIVE_TIMEOUT}s"
 }
-note "USB enumeration OK: $(basename "$USB_PATH") CAFE:F1D0 devnum=$(cat "$USB_PATH/devnum" 2>/dev/null || printf '?')"
+USB_DEVNUM=$(cat "$USB_PATH/devnum" 2>/dev/null || printf '?')
+USB_REAL=$(readlink -f "$USB_PATH" 2>/dev/null || true)
+[ -n "$USB_REAL" ] || fail "cannot resolve selected USB sysfs object: $USB_PATH"
+note "USB enumeration OK: $(basename "$USB_PATH") CAFE:F1D0 devnum=$USB_DEVNUM"
 
 HID_IF=''
 # Device publication and interface binding are separate sysfs phases.  A new
@@ -220,6 +250,8 @@ for ((i=0; i<VUSB_LIVE_TIMEOUT*10; i++)); do
     [ ! -s "$TRACE" ] || cat "$TRACE" >&2
     fail "presenter exited before HID interface binding completed"
   fi
+  current_devnum=$(cat "$USB_PATH/devnum" 2>/dev/null || printf '?')
+  [ "$current_devnum" = "$USB_DEVNUM" ] || fail "selected USB generation changed during HID binding: expected devnum=$USB_DEVNUM got=$current_devnum"
   for intf in "$USB_PATH":*; do
     [ -f "$intf/bInterfaceClass" ] || continue
     cls=$(tr '[:upper:]' '[:lower:]' <"$intf/bInterfaceClass")
@@ -241,6 +273,8 @@ if [ -z "$HID_IF" ]; then
   find "$(dirname "$USB_PATH")" -maxdepth 1 -name "$(basename "$USB_PATH"):*" -printf '  %f\n' 2>/dev/null >&2 || true
   fail "device enumerated but no HID class interface bound within ${VUSB_LIVE_TIMEOUT}s"
 fi
+HID_IF_REAL=$(readlink -f "$HID_IF" 2>/dev/null || true)
+[ -n "$HID_IF_REAL" ] || fail "cannot resolve HID interface sysfs object: $HID_IF"
 note "HID interface OK: $(basename "$HID_IF")"
 
 HIDRAW=''
@@ -253,11 +287,19 @@ for ((i=0; i<VUSB_LIVE_TIMEOUT*10; i++)); do
     [ ! -s "$TRACE" ] || cat "$TRACE" >&2
     fail "presenter exited before hidraw binding completed"
   fi
+  current_devnum=$(cat "$USB_PATH/devnum" 2>/dev/null || printf '?')
+  [ "$current_devnum" = "$USB_DEVNUM" ] || fail "selected USB generation changed during hidraw binding: expected devnum=$USB_DEVNUM got=$current_devnum"
   for h in "$VUSB_SYSFS_ROOT"/class/hidraw/hidraw*; do
-    [ -e "$h" ] || continue
+    [ -e "$h" ] || [ -L "$h" ] || continue
+    class_token=$(hidraw_class_token "$h" || true)
+    [ -n "$class_token" ] || continue
+    # A class object that existed before presenter launch cannot be evidence for
+    # this run, even if path reuse later makes its device symlink resolve to the
+    # new interface.  Require a newly published/rebound class generation.
+    if grep -Fqx "$class_token" "$HIDRAW_BASELINE"; then continue; fi
     target=$(readlink -f "$h/device" 2>/dev/null || true)
     case "$target" in
-      *"/$base/"*|*"/$base:"*)
+      "$HID_IF_REAL"|"$HID_IF_REAL"/*)
         candidate="$VUSB_DEV_ROOT/$(basename "$h")"
         if [ -e "$candidate" ]; then HIDRAW=$candidate; break; fi
         ;;

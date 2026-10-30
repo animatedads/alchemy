@@ -90,3 +90,22 @@ Source acquisition is a separate verified-materialisation resolver. This is the
 integration seam to Storage XTP named-service networking: MU/MI transport may
 materialise the exact StorageRef to a local staged path, but it does not select
 the repair destination or admit the replica.
+
+
+## 2026-10-29 verified StoragePeer repair source
+
+Dev9 closes the repair source side using the existing Storage peer contract rather
+than adding another network stack. `StoragePeerRepairSourceResolver` consumes
+`StoragePeerClient` and `StoragePeerMaterialiser`; peers must be explicitly
+allowlisted and represented by current AVAILABLE+VERIFIED object-location
+evidence.
+
+The peer materialiser independently SHA-256 verifies the full StorageRef before
+publishing the staged path. The resolver validates the digest again and marks
+the source temporary. After the destination provider consumes it, the repair
+planner removes the staged source. The temporary peer materialisation is never
+promoted into a durable replica merely because transfer succeeded.
+
+This is the concrete consumer seam for MU↔MI Storage networking. XTP named
+service admission and carrier selection remain owned below `StoragePeerClient`;
+repair code contains no L2/raw36/UDP/IP/port authority.

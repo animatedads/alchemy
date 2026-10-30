@@ -6,15 +6,18 @@
  */
 ::class SemanticSourceIntentionController public
 ::method init
-  use strict arg intentionService, secureExaminer
+  use strict arg intentionService, secureExaminer, federation = .nil
   if intentionService == .nil then raise syntax 88.900 array("IntentionService is required")
   if secureExaminer == .nil then raise syntax 88.900 array("SecureExaminer is required")
   self~service = intentionService
   self~secureExaminer = secureExaminer
+  self~federation = federation
 ::attribute service get
 ::attribute service set private
 ::attribute secureExaminer get
 ::attribute secureExaminer set private
+::attribute federation get
+::attribute federation set private
 
 ::method handleWireIntent
   use strict arg accessToken, detail, nowValue, stepUp = .nil
@@ -22,7 +25,11 @@
   if text = "" then raise syntax 88.900 array("intention text is required")
   decision = self~service~input(text)
   response = self~decisionRecord(decision)
-  if decision~status \= "READY" then return response
+  response["specialists"] = self~specialistRecords(text, detail)
+  if decision~status \= "READY" then do
+    if response["specialists"]~items > 0 then response["status"] = "SPECIALIST_AVAILABLE"
+    return response
+  end
 
   action = decision~event
   response["action"] = action
@@ -46,6 +53,13 @@
   response["execution"] = self~secureExaminer~handleAction(accessToken, action, payload, nowValue, stepUp)
   response["status"] = "EXECUTED"
   return response
+
+::method specialistRecords private
+  use strict arg text, detail
+  if self~federation == .nil then return .array~new
+  context=.directory~new
+  if detail \= .nil then if detail~isA(.Directory) then if detail~hasIndex("context") then if detail["context"] \= .nil then context=detail["context"]
+  return self~federation~resolveSpecialists(text, context)
 
 ::method decisionRecord private
   use strict arg decision

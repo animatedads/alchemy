@@ -4,11 +4,12 @@
   "version": "0.1",
   "sphere": "virtual-usb",
   "title": "Current Virtual USB authority and scope",
-  "summary": "The Current Library executable baseline is oorexx_virtual_usb_v0.1-dev9.zip. A dev10 repository/package candidate (e9dc6a1c90e97df563de81a4d64ad53339101cf7b63622aeda853835a303b701) corrects an asynchronous live-qualification timing race after device discovery without changing CTAP2, CTAPHID, descriptor, Raw Gadget EP0 or credential semantics. Clean presenter-owned HID/hidraw live qualification remains pending.",
+  "summary": "The Current Library executable baseline remains oorexx_virtual_usb_v0.1-dev9.zip. The current repository/package candidate is dev11 (d052144c13e965fa7bc4e6bfbf1c0feed1cb7804eda6d11555e28f48661a33e3); it closes the independently reviewed stale-hidraw class-generation gap in dev10 without changing CTAP2, CTAPHID, descriptors, Raw Gadget EP0 or credential semantics. Clean presenter-owned HID/hidraw live qualification remains pending.",
   "authority": "project-authority",
   "invariants": [
     "oorexx_virtual_usb_v0.1-dev9.zip remains the Current Library continuation baseline until a successor is promoted.",
-    "dev10 candidate archive SHA-256 is e9dc6a1c90e97df563de81a4d64ad53339101cf7b63622aeda853835a303b701.",
+    "dev11 candidate archive SHA-256 is d052144c13e965fa7bc4e6bfbf1c0feed1cb7804eda6d11555e28f48661a33e3.",
+    "dev11 adds hidraw class-generation identity; public semantic APIs remain unchanged.",
     "dev10 changes the live qualification timing/evidence path and release metadata only; public semantic APIs remain unchanged.",
     "The application models a semantic USB device; native USB presentation belongs to providers.",
     "Generic HID support is Virtual USB core functionality rather than FIDO-specific special casing.",
@@ -31,6 +32,13 @@
       "sha256": "e9dc6a1c90e97df563de81a4d64ad53339101cf7b63622aeda853835a303b701",
       "member": "oorexx_virtual_usb_v0.1-dev10/VALIDATION.txt",
       "claim": "dev10 candidate records delayed HID/hidraw publication as a qualification timing boundary and preserves dev9 provider semantics.",
+      "note": "Repository/package candidate; not yet Current Library."
+    },
+    {
+      "artifact": "oorexx_virtual_usb_v0.1-dev11.zip",
+      "sha256": "d052144c13e965fa7bc4e6bfbf1c0feed1cb7804eda6d11555e28f48661a33e3",
+      "member": "oorexx_virtual_usb_v0.1-dev11/VALIDATION.txt",
+      "claim": "dev11 records independent review, forcing stale-hidraw regression and the still-pending clean target-host gate.",
       "note": "Repository/package candidate; not yet Current Library."
     }
   ]

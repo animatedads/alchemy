@@ -1,4 +1,4 @@
-# ooRexx Source / Code / Class Editor v0.1-dev7
+# ooRexx Source / Code / Class Editor v0.1-dev8
 
 A native ooRexx implementation of the NewShell code/class editing model. This is **not** the emergency line editor. It is the normal development/source editing API that AI assistants, NewShell tools, class builders and CLI UI front-ends can consume.
 
@@ -159,3 +159,23 @@ code-editor grep FILE token code insensitive
 ```
 
 For multi-word expressions, explicit switches avoid ambiguity when the expression itself ends in words such as `code` or `sensitive`. The parser is native ooRexx and has regression coverage for both the multi-word and compatibility forms.
+
+
+## Dev8 reference navigation
+
+Dev8 adds a first bounded reference-navigation slice without pretending to provide compiler-grade semantic analysis.
+
+`SourceDocument~references(name [, caseMode])` and `SourceTreeFinder~references(name [, filespec [, caseMode [, language]]])` reuse the language-aware `code` projection and literal finder. Each returned `SourceMatch` now carries `role`:
+
+- `declaration` when the occurrence lands on the start line of a scanner-known symbol with the same name;
+- `reference` for other code occurrences;
+- `match` remains the neutral default for ordinary find/grep results.
+
+CLI projections:
+
+```text
+code-editor references FILE NAME [sensitive|insensitive]
+code-editor references-tree ROOT NAME [FILESPEC [LANGUAGE [sensitive|insensitive]]]
+```
+
+This is deliberately lexical/source-aware. It preserves path, physical line/column, original text and enclosing-symbol evidence, but it does not claim overload resolution, dynamic dispatch resolution, macro expansion, compiler AST identity or cross-language semantic binding. Those stronger forms can be introduced later behind the same navigation/result boundary.

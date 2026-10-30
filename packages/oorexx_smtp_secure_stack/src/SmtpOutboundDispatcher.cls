@@ -233,15 +233,29 @@
   do rcpt over accepted
     attempt~setRecipient(rcpt,state,final~code,final~text)
   end
-  /* Final DATA reply is the transaction result. QUIT is cleanup only and must
-   * never turn an accepted message into an ambiguous retry. */
-  ignore=io~sendLine("QUIT")
-  transport~close
+  /* Final DATA reply is the transaction result. QUIT and close are cleanup
+   * only.  Run them behind a local exception boundary so a cleanup exception
+   * cannot replace a definitive 2xx/4xx/5xx transaction result with a generic
+   * transport failure and thereby manufacture an unsafe retry. */
+  ignore=self~cleanupAfterFinalReply(io,transport)
   return .SmtpResult~success(attempt,"REMOTE_ATTEMPT")
 transportFailure:
   say "SmtpRelayTransport syntax rc=" rc "sigl=" sigl "condition=" condition("C") "detail=" condition("D")
   detail=condition("D"); if socket<>.nil then socket~close
   return .SmtpResult~failure("NEXT_HOP_TRANSPORT_EXCEPTION",detail)
+::method cleanupAfterFinalReply private
+  use strict arg io,transport
+  signal on syntax name cleanupFailure
+  ignore=io~sendLine("QUIT")
+  if transport<>.nil then transport~close
+  signal off syntax
+  return .true
+cleanupFailure:
+  /* Remote transaction outcome is already known. Cleanup failure is
+   * operational evidence only and must not change delivery semantics. */
+  signal off syntax
+  return .false
+
 ::method replyState private
   use strict arg reply
   if reply==.nil then return .SmtpSpoolState~DEFERRED

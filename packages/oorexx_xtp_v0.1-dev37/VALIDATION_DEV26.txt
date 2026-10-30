@@ -1,0 +1,76 @@
+ooRexx XTP v0.1-dev26: validation record
+==========================================
+
+Architecture: Tom Dyer
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for the dev26 hardening
+Validation written and run by: Claude (Opus 5.5), 24 October 2026
+
+Baseline: oorexx_xtp_v0.1-dev25, SHA-256 7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b,
+          as held in animatedads/alchemy packages/oorexx_xtp_v0.1-dev25
+Planner:  oorexx_operational_degradation_planner_v0.1-dev5 from the same repository, built locally
+Host:     Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror
+          Root in a container; AF_PACKET and raw sockets available on lo
+Evidence class: LOCAL_PASS for everything below. FIELD_PASS is NOT claimed: no ED209 host was reached.
+
+Files changed against dev25 (lines added / removed)
+  src/xtp_transport.cpp             +65 -8   c096e7699e08bfb5fb0d72c5873fbae32d5e88a7e15916b1bc11b9d1010058e7
+  src/xtp_operational.cpp           +8  -1   f6794d640f5cb1fdf4b370df936fe6777e8b12f986899ada238080471bf751a2
+  include/xtp/xtp_transport.hpp     +10 -0   c1f5f6f8a6999422c04b1965b08cd39f7a955cdc027a51d68e69738e34c80dcf
+  rexx/XtpSocketProvider.cls        +9  -0   e78f4a3abe8ecbcc04dd954fdf60a87e9f80798e57cde7f4ffb160bc59ffb857
+  tests/test_capability_contract.sh +11 -0   f8473764f7c9653d3bc228ff6ed7db2a1e3887fc2e72d70a4b23b30174722c4a
+  New: tests/neg/*.cpp (7 tests), tests/run_negative.sh, Makefile target test-negative,
+       docs/XTP_SPEC_GAPS_DEV26.md
+  Metadata: CAPABILITIES.json, DEPENDENCIES.json, integration.json, README.md
+
+1. Adversarial suite (make test-negative)
+
+   Test   What it checks                                              dev25   dev26
+   N1     UDP sender rejects close-ACK from a non-destination port   FAIL    PASS
+   N1-L2  L2 sender rejects close-ACK from a foreign MAC              FAIL    PASS
+   N1-RTN Sender requires the XTP return bit on a close-ACK           FAIL    PASS
+   N2     L2 listener ignores frames addressed to a foreign MAC       FAIL    PASS
+   N8     Operational adapter refuses zero-THROTTLE like the planner  FAIL    PASS
+   E6     Malformed FIRST is dropped; the listener keeps serving       FAIL    PASS
+   E7     Replay is per (peer host, KEY, payload) in a bounded window;  FAIL    PASS
+          a colliding KEY with different bytes is delivered (part C)
+
+   dev25 was run with: SRC_ROOT=<dev25 tree> DEV26=0 bash tests/run_negative.sh
+   dev26 result: NEGATIVE SUITE: pass=7 fail=0 skip=0
+   dev25 result: NEGATIVE SUITE: pass=0 fail=7 skip=0
+   E7 part B (window bound and refusal of 0 entries) only exists in dev26 and was built with -DXTP_DEV26.
+
+2. dev25 regression suite run against dev26 (unchanged tests)
+
+   make test-service, test-capacity-rate, test-auto-key          all PASS
+   tests/run_tests.sh                                             35 PASS, 5 SKIP, rc=0
+     Test 5 ("same KEY acknowledged twice but delivered once", two separate
+     client processes) still passes. This confirms the host-scoped replay
+     key keeps restart-and-retry suppression.
+   test_libxtp_listener, test_named_service, test_multipath, test_multicast,
+   test_multicast_allocation, test_multicast_rate, test_multicast_reject_suppression,
+   test_path_health, test_route_exchange, test_priority, test_operational,
+   test_xtp_connect_hex, test_capability_contract, test_requalification
+                                                                  all rc=0
+   Totals across the whole run: 74 PASS, 0 FAIL, 5 SKIP
+
+   SKIPs, the same set as on dev25 in this environment:
+     proxy stress: the Queue Fabric proxy interceptor binary is not in the repository
+     native Rexx multicast, native Rexx multicast RATE/BURST,
+     SocketSelector XTP dev17 capability, ooRexx XTP priority hook: no ooRexx interpreter
+
+3. Not run
+   - rexx/XtpSocketProvider.cls XtpOperationalSocket~send, the new -7 refusal on
+     THROTTLE 0%. No ooRexx interpreter was available, and building one from source
+     was refused in this environment. Desk-checked only: nested IFs, no + 0
+     coercion, no use of RESULT.
+   - L2 and raw36 between real hosts. Only loopback was used.
+   - The ED209 field path, which runs dev18 via qf-xtp-rpc and is untouched by this change.
+
+4. Known gaps carried forward (see README "What dev26 does not do" and
+   docs/XTP_SPEC_GAPS_DEV26.md for the protocol-level list)
+   Authenticated FIRST/ACK; multicast listener replay scope; send_message
+   consulting the plan; capacityRate(0) meaning unlimited (an architect decision);
+   planner dev5's ooRexx CapacityGovernor admits a ticket at THROTTLE 0% while
+   the C++ governor refuses (planner finding, not changed here).
+
+Claude (Opus 5.5)

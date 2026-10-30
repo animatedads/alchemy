@@ -1,0 +1,55 @@
+{
+  "kind": "article",
+  "id": "xtp.authority",
+  "sphere": "xtp",
+  "version": "0.1-dev1",
+  "title": "XTP, service, planner, Storage and provisioning ownership",
+  "section": "architecture",
+  "summary": "Applications request a named service; Service Descriptor Registry supplies class/peer/point; Operational Planner supplies admission and resource share; transport and fabric enforce native capabilities only; provisioning is an independently authorised management service.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "Application traffic cannot self-assign operational class or critical priority",
+    "Service identity never contains IP/MAC/UDP carrier fields",
+    "Service Registry is not a cryptographic identity provider",
+    "Storage owns object/range coordinates and source fan-in; XTP owns reliability, sequence, route, pacing",
+    "Queue Fabric, JSON-RPC and direct call are alternative application connector choices and cannot be forced to depend on XTP",
+    "XTP route provisioning must not invent a second carrier selector, endpoint authority or multicast authentication scheme"
+  ],
+  "procedure": [
+    "Resolve service name to registered class, logical route peer and point",
+    "Get a planner decision for resource domain and state",
+    "Ask XTP RouteTable for carrier/path only after service and policy decisions",
+    "Treat range verified bytes as storage-owned independent of XTP context lifetime"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_service_descriptors_v0.1-dev2.zip",
+      "sha256": "ed4900b1fbe06bd73616530deea4553e056d6aa509be933e8d88bcfda8e30490",
+      "member": "oorexx_service_descriptors_v0.1-dev2/docs/ARCHITECTURE.md",
+      "claim": "Service identity/address separation"
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/docs/NAMED_SERVICES.md",
+      "claim": "FIRST and class-derived admission"
+    },
+    {
+      "artifact": "oorexx_operational_degradation_planner_v0.1-dev5.zip",
+      "sha256": "422dd2a2f2ef03ab9376e7e3f7ed9a847eb6212cf03eeba84a909ccd133b5479",
+      "member": "oorexx_operational_degradation_planner_v0.1-dev5/docs/ARCHITECTURE.md",
+      "claim": "Transport neutral degradation"
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev23(2).zip",
+      "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
+      "member": "oorexx_storage_fabric_v0.1-dev23/tests/test_capacity_domains.rex",
+      "claim": "Storage use of capacity domains"
+    }
+  ],
+  "related": [
+    "xtp.named-services",
+    "xtp.planner-pressure",
+    "xtp.storage-fanin"
+  ]
+}

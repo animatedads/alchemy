@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "arch.cluster-object-memory.execution-follows-memory",
+  "version": "0.1",
+  "sphere": "cluster-object-memory",
+  "title": "Execution follows fenced resident memory",
+  "summary": "The cluster moves compact ooRexx runner/object continuation state to the Memory Fabric provider that already owns the required working set. Queue Fabric carries durable object/control envelopes over a protected XTP named-service route; resident memory is not pulled merely because execution moves.",
+  "authority": "project-integration-evidence",
+  "invariants": [
+    "Application objects remain ordinary ooRexx objects and contain no node, Queue Fabric or XTP policy.",
+    "Memory Fabric owns block/provider identity, block generation, provider owner epoch and residency.",
+    "Job-to-Node owns hard execution eligibility, admission, ranking and placement leases.",
+    "Queue Fabric owns transmission queues, receiver ACL/security-domain checks, idempotent acceptTransfer and durable transfer receipts.",
+    "XTP owns protected named-service carrier selection and key/session protection; XTP packet ACK, DIAG, ECHO or session establishment is not Queue Fabric durable acceptance.",
+    "A cluster MOVE carries a fenced memory reference and compact runner state, not resident PCM, decoded media, tensor or other bulk working data.",
+    "A MOVE provider_id must map to the selected peer route before the Queue Fabric transmission queue is touched.",
+    "Queue Fabric may ACK its local transmission package only after an authenticated durable remote receipt.",
+    "cluster.object.peer/0.2 releases the old source object generation only after the destination MOVE response confirms the next generation.",
+    "Any missing route, stale provider mapping, failed readiness evidence, ambiguous transport or absent reply becomes MOVE_UNCERTAIN and leaves the source generation resident.",
+    "Live XTP movement is default-denied until an injected authoritative route-readiness check is backed by current selected-route and field evidence."
+  ],
+  "current_boundary": {
+    "cluster_object": "cluster.object.peer/0.2",
+    "binding": "cluster.object.xtp-binding/0.1 dev1",
+    "queue_fabric": "QueueChannelFabric plus QueueXtpSessionWire/QueueXtpReceiptGate candidate1",
+    "memory_fabric": "Memory Fabric XTP candidate5 observed; provider/block authority remains external",
+    "xtp": "dev35 source/LOCAL_PASS; no MU-MI or MU-MU FIELD_PASS as reported by XTP owner on 2026-10-29",
+    "deployment": "NOT READY until field receipt and selected-route protection evidence exist"
+  },
+  "provenance": [
+    {
+      "artifact": "packages/cluster_object_memory_fabric_transport_v0.2",
+      "claim": "Object generation, Memory Fabric reference validation, Queue Fabric request/reply binding and source release after MOVE response."
+    },
+    {
+      "artifact": "queue_fabric_xtp_session_wire_v0.1_candidate1.zip",
+      "sha256": "8e941fdbbb2df8aad1bbf5ebe050a6d0498cb7b8b416f3c82c7b319f8dc2d9ce",
+      "claim": "Protected XTP session wire plus separate durable Queue Fabric receipt gate."
+    },
+    {
+      "artifact": "packages/oorexx_xtp_v0.1-dev35",
+      "git_commit": "a3e2d6c0",
+      "claim": "Bounded XTP interactive named-service stream/session support; LOCAL_PASS only."
+    },
+    {
+      "artifact": "cluster_object_memory_fabric_xtp_binding_v0.1-dev1",
+      "claim": "Cluster-owned composition, provider-to-peer route fence and default-deny readiness gate."
+    }
+  ]
+}

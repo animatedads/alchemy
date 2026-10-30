@@ -1,4 +1,4 @@
-/* ooRexx LLM Coding Workbench v0.1-dev14
+/* ooRexx LLM Coding Workbench v0.1-dev15
  *
  * Orchestrates one semantic coding action per model turn without flattening
  * SCCD/Development Desk source objects or model-supplied method bodies into
@@ -9,7 +9,7 @@
  */
 
 ::class LlmCodingWorkbenchBuild public
-::constant VERSION "0.1-dev14"
+::constant VERSION "0.1-dev15"
 ::constant API "llm.coding.workbench/0.1"
 
 ::class LlmCodingTurn public
@@ -118,9 +118,10 @@
 ::attribute projectId get
 ::attribute actor get
 ::attribute instrumentation
+::attribute semanticBases get
 
 ::method init
-  expose desk memberPath packageObjectId projectId actor instrumentation
+  expose desk memberPath packageObjectId projectId actor instrumentation semanticBases
   use strict arg deskArg,memberPathArg,packageObjectIdArg,projectIdArg="llm-coding",actorArg="llm-coding-workbench",instrumentationArg=.nil
   if deskArg==.nil then raise syntax 88.900 array("Development Desk object is required")
   desk=deskArg
@@ -129,6 +130,7 @@
   projectId=projectIdArg~string
   actor=actorArg~string
   instrumentation=instrumentationArg
+  semanticBases=.directory~new
 
 ::method controls
   expose desk
@@ -172,7 +174,52 @@
   expose desk
   use strict arg className,methodName
   req=.directory~new; req["class_name"]=className; req["method_name"]=methodName
-  return desk~press("VIEW_METHOD",req)
+  methodObject=desk~press("VIEW_METHOD",req)
+  ignored=self~rememberMethodBase(className,methodName,methodObject)
+  return methodObject
+
+::method rememberMethodBase private
+  expose semanticBases
+  use strict arg className,methodName,methodObject
+  fingerprint=self~methodFingerprint(methodObject)
+  if fingerprint\=="" then semanticBases[className||"::"||methodName]=fingerprint
+  return fingerprint
+
+::method methodFingerprint private
+  use strict arg methodObject
+  if methodObject==.nil then return ""
+  if methodObject~isA(.directory) then do
+    do name over .array~of("revision_id","accepted_revision_id","current_revision_id","source_revision_id")
+      if methodObject~hasIndex(name) then do
+        value=methodObject[name]
+        if value\==.nil then if strip(value~string)\=="" then return "REV:"||value~string
+      end
+    end
+    if methodObject~hasIndex("source_text") then do
+      value=methodObject["source_text"]
+      if value\==.nil then return "SRC:"||value~string
+    end
+  end
+  return ""
+
+::method assertCurrentMethodBase private
+  expose desk semanticBases instrumentation
+  use strict arg className,methodName
+  key=className||"::"||methodName
+  expected=semanticBases~at(key)
+  if expected==.nil then return ""
+  req=.directory~new; req["class_name"]=className; req["method_name"]=methodName
+  current=desk~press("VIEW_METHOD",req)
+  actual=self~methodFingerprint(current)
+  evidence=.directory~new
+  evidence["class_name"]=className
+  evidence["method_name"]=methodName
+  evidence["expected_base"]=expected
+  evidence["actual_base"]=actual
+  if instrumentation\==.nil then ignored=instrumentation~record("SOURCE_GUARD","SEMANTIC_BASE_CHECK",current,evidence)
+  if actual=="" then raise syntax 88.900 array("SEMANTIC_BASE_UNVERIFIABLE: "||className||"::"||methodName)
+  if actual\==expected then raise syntax 88.900 array("STALE_SEMANTIC_BASE: "||className||"::"||methodName||" expected "||expected||" actual "||actual)
+  return expected
 
 ::method execute
   expose desk memberPath packageObjectId projectId actor instrumentation
@@ -225,6 +272,7 @@
       request["member_path"]=memberPath
       request["class_name"]=self~required(args,"class_name")
       request["method_name"]=self~required(args,"method_name")
+      ignored=self~assertCurrentMethodBase(request["class_name"],request["method_name"])
       request["method_body"]=self~required(args,"method_body")
       self~assertMethodBody(request["method_body"])
       request["actor"]=actor

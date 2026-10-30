@@ -65,8 +65,27 @@ The historical single-token positional form remains compatible.
 
 Qualification status
 ====================
-CURRENT GIT CANDIDATE: dev7
+CURRENT GIT CANDIDATE: dev8
 ACCEPTED DELIVERED BASELINE: dev5
 FRESH r13196 + Atomic File native-provider execution: PENDING
 
-Do not promote/package dev7 as accepted until the full source-editor suite passes with oorexx_atomic_file_v0.1-dev1 resolvable and the AtomicFile publication assertions execute successfully.
+Do not promote/package dev8 as accepted until the full source-editor suite passes with oorexx_atomic_file_v0.1-dev1 resolvable and the AtomicFile publication assertions execute successfully.
+
+
+Dev8 candidate
+==============
+Dev8 adds lexical/source-aware reference navigation:
+- SourceDocument~references
+- SourceTreeFinder~references
+- SourceMatch~role = match|declaration|reference
+- CLI references
+- CLI references-tree
+
+Regression assertions added:
+- reference declaration classified
+- reference use classified
+- tree references
+
+The classification contract is intentionally conservative: declaration means scanner-known symbol name + symbol start line. It is not compiler/AST semantic resolution.
+
+Dev8 qualification status remains PENDING together with the inherited dev6 Atomic File dependency. No new accepted delivery is claimed.

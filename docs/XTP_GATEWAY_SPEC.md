@@ -1,5 +1,7 @@
 # XTP Gateway Service Specification — v0.1
 
+> **2026-10-29 X.25 dev3 evidence:** The [independent X.25 package](../packages/oorexx_x25_v0.1-dev3/README.md) now includes a deterministic user-space LAPB frame/HDLC bit model, bounded modulo-8 windows and T1/N2 test states. **No XTP gateway ingress, security admission, persistent stream, live SocketSelector binding, network adapter or operational telemetry has been implemented by that code.** XTP and gateway deployments retain their respective owner gates. Architecture: Tom Dyer. Coding/update: ChatGPT GPT-6.
+
 > **2026-10-27 reconciliation:** Accepted XTP dev30 DIAG registry and non-amplification rules; dev2 X.25 [codec and circuit tests](../packages/oorexx_x25_v0.1-dev2/README.md) correct F1–F6 but implement no gateway wire dispatch. Architecture: Tom Dyer. Coding/update: ChatGPT GPT-6.
 
 > **2026-10-25 dev29 reconciliation:** Read `packages/oorexx_xtp_v0.1-dev29/{README.md,docs/XTP_SPEC_GAPS_DEV29.md}`. dev29 closes prior segmentation, selective-repeat, SYNC/ECHO and DIAG gaps but does not provide authenticated FIRST/CNTL or a long-lived interactive stream. Existing base DIAG VALUE=1/2/3 must not be redefined; propose gateway-specific values only under XTP-owner control. A separate ooRexx X.25 lab parser/XOT framer/VC skeleton now exists in [`packages/oorexx_x25_v0.1-dev1`](../packages/oorexx_x25_v0.1-dev1/README.md); it is not a working GatewaySession. Architecture: Tom Dyer. Coding and correction: ChatGPT GPT-6.

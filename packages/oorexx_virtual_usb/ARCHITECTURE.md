@@ -1,4 +1,4 @@
-# Virtual USB dev10 architecture
+# Virtual USB dev11 architecture
 
 ## Device-side boundary
 
@@ -120,6 +120,26 @@ stable path such as `5-1` across separate USB device numbers.
 The selected UDC must also be idle before launch.  An already-active UDC is a
 qualification failure, not an invitation to inspect whatever device happens to
 be present on the dummy host bus.
+
+## dev11 hidraw class-generation boundary
+
+USB generation identity and hidraw class-object identity are separate facts.
+A stale `/sys/class/hidraw/hidrawN` entry can remain path-resolvable if the USB
+path is reused, so path ancestry alone is not sufficient acceptance evidence.
+The live qualifier now snapshots the class-entry identity before presenter
+launch and accepts only a newly published/rebound class generation whose
+`device` ancestry resolves below the selected HID interface while the selected
+USB `devnum` remains unchanged.
+
+This extends the evidence chain to:
+
+```text
+presenter owns UDC
+    -> new USB path+devnum generation
+    -> HID interface class 03 for that stable generation
+    -> new/rebound hidraw class generation under that HID interface
+    -> matching /dev/hidrawN
+```
 
 ## dev10 live binding publication boundary
 

@@ -50,6 +50,13 @@ echo "== PROVED: a tier above TESTED (certificates checked in exact rationals, o
 REXX_PATH="$REXX_PATH:$P/oorexx_maths_v0.8/rexx" rexx tests/test_proof.rex "$WORK|$P/fd_door_micro_motion_v0.2-dev8/src/FDDoorMicroMotion.cls|$ROOT/tests/fixtures/fdsqrt_fixed14.cls|$P/oorexx_vision/src/Vision.cls|$P/oorexx_crypto_v0.8.3/src/crypto.cls|$P/oorexx_adb_v0.1-dev1/src/AdbAuth.cls"
 echo "== which tool wrote which code: provenance, a habit found by shape, outcomes by tool (needs git history)"
 REXX_PATH="$REXX_PATH:$P/oorexx_maths_v0.8/rexx" rexx tests/test_provenance.rex "$WORK|$REPO"
+RT="$P/oorexx_reasoned_thought_v0.1/src"
+echo "== SLAM's evidence argued by the Reasoned Thought engine; SLAM's actions resting on its conclusions"
+REXX_PATH="$REXX_PATH:$P/oorexx_maths_v0.8/rexx:$RT" rexx tests/test_reasoning.rex "$WORK|$REPO"
+echo "== legislation -> small model -> SLAM -> Reasoned Thought: Computer Misuse Act 1990 (XML), CPS guidance, made-up cases"
+REXX_PATH="$REXX_PATH:$RT" rexx tests/test_law.rex "$WORK|$ROOT"
+echo "== did Gemini apply its own stated standard evenly? (the Reasoned Thought standard-application audit, unchanged)"
+REXX_PATH="$REXX_PATH:$RT" rexx tests/test_gemini_standard.rex
 echo "== second language: the Java reader (fixture compiled by javac first, so it is real Java)"
 E="$REPO/examples"
 ATM="$E/federationbank_java_atm_v0.1.9"
@@ -105,4 +112,11 @@ if [ -n "${LIBC_SRC:-}" ] && [ -d "${LIBC_SRC}/libc" ] && [ -d "${LIBC_SRC}/libc
   rexx tests/test_libc.rex "$WORK/libc.db|$WORK/libcxx.db|$WORK/libc_node.txt"
 else
   echo "SKIP libc: set LIBC_SRC to run it"
+fi
+echo "== unit tests SLAM writes: ooTest and JUnit (needs OOTEST_ROOT: an unzipped ooTest snapshot; JUNIT_CP and NETREXX_HOME for JUnit; about 40 minutes)"
+if [ -n "${OOTEST_ROOT:-}" ] && [ -f "${OOTEST_ROOT}/ooTest.frm" ]; then
+  sh tests/unit/qualify.sh "$WORK" "$REPO" "$OOTEST_ROOT" "${JUNIT_CP:-}" "${NETREXX_HOME:-}"
+  rexx tests/test_unit.rex "$WORK"
+else
+  echo "SKIP unit tests: set OOTEST_ROOT to run it"
 fi

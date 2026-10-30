@@ -16,3 +16,8 @@
 - Advanced executable grounding to Instrumentation Intentions dev2 and Management Intention Discovery dev9.
 - Closed the Mesh dev8 read-side rebase item.
 - Qualified explicit-only correlation and freshness/health separation under r13196.
+
+## 2026-10-29 — Cloud Control mainline landing
+
+- Landed Alchemy Cloud Control dev3 candidate and ooRexx Cloud Console dev3 candidate source onto current main from the coordinated side branch without importing its stale sphere state.
+- Added Cloud Control authority article and recorded the remaining r13196/live-cloud/policy gates.

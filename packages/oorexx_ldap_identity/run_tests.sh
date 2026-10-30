@@ -74,6 +74,13 @@ fi
 echo "==> $UNIT_SUITE"
 "$REXX" "$UNIT_SUITE"
 
+if [[ -n "${XTP_PROVISION_ROOT:-}" ]]; then
+  echo "==> tests/xtp_provision_ingress_smoke.sh"
+  bash tests/xtp_provision_ingress_smoke.sh
+else
+  echo "==> tests/xtp_provision_ingress_smoke.sh (SKIP: XTP_PROVISION_ROOT unavailable)"
+fi
+
 if [[ -n "${INTENTION_SERVICE_ROOT:-}" ]]; then
   echo "==> tests/intention_service_smoke.sh"
   bash tests/intention_service_smoke.sh
