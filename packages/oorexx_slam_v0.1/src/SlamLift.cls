@@ -2,7 +2,10 @@
  * its file as a Routine that runs alone.
  *
  * Architecture: Tom Dyer.  Code: Claude (Opus 5.5), 2026-10-29.
- * The body is the lines after the unit's directive, up to the next directive. A method is found by its
+ * The body is the lines after the unit's directive, up to the next directive, and then the file's
+ * ::OPTIONS directives (digits, form, fuzz ...), so the lifted unit runs with its package's settings
+ * (the rx2cpp lane found addLong worked out at digits 9 in a file that says ::options digits 25). A
+ * Routine's source may end with directives, so they go last. A method is found by its
  * class and its name (method names repeat across classes). A method can be lifted when it does not use
  * SELF, SUPER or EXPOSE (asked for by the rx2cpp lane: "take ::METHOD bodies of classes whose methods
  * are pure", so the compiler's own code gets tests, not only its fixtures).
@@ -15,11 +18,18 @@
   use strict arg lines, name, owner = ''
   body = .array~new
   inside = .false
+  done = .false
   cls = ''
+  opts = .array~new
   do ln over lines
     s = ln~strip
+    if s~left(9)~upper == '::OPTIONS' then opts~append(s)
+    if done then iterate
     if s~left(2) == '::' then do
-      if inside then return body
+      if inside then do
+        done = .true
+        iterate
+      end
       parse upper value s with d nm .
       nm = nm~strip('B', ';')~strip('B', "'")~strip('B', '"')
       if d == '::CLASS' then cls = nm
@@ -35,8 +45,9 @@
     end
     if inside then body~append(ln)
   end
-  if inside then return body
-  return .nil
+  if \inside & \done then return .nil
+  do o over opts; body~append(o); end
+  return body
 
 /* The unit as a Routine from a file, or .nil when it is not there or does not compile. */
 ::routine slamLiftFile public

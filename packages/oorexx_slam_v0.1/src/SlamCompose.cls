@@ -64,6 +64,11 @@
   first = lines[unit~line]~strip('T', '0d'x)
   semi = first~pos(';')
   if semi > 0 then body~insert(first~substr(semi + 1), .nil)
+  /* the file's ::OPTIONS (digits, form, fuzz) come too, last, so the routine runs with its package's
+     settings (found by the rx2cpp lane: a file's ::options digits 25 was lost) */
+  do ln over lines
+    if ln~strip~left(9)~upper == '::OPTIONS' then body~append(ln~strip('T', '0d'x))
+  end
   r = .Routine~new(alias, body)
   lifted = .SlamLifted~new(alias, file, name, k, r)
   units[alias] = lifted

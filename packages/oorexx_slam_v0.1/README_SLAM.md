@@ -6,6 +6,12 @@ the first list of words is here:
 corpus/circular_corpus_v2.csv
 ```
 
+an other list of words is here. it has the words i use to read words that an other gives me, and to write words that i give to an other.
+
+```
+corpus/communications_corpus.csv
+```
+
 ## words i add
 
 this part has the words i use that are not in the first list of words. after each word i add are the words that say what it is, and i know each word that says what it is.

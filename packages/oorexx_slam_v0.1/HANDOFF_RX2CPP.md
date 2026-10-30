@@ -73,3 +73,18 @@ To rerun, from packages/oorexx_slam_v0.1:
 sh bin/slam_toy.sh unittests /path/to/oorexx2cpp unit_out
 
 A safety change you should know about: a mutant can turn an assignment into a command (`x[i] = v` to `x[i] \= v`), and one ran `1` in the shell here. Lifted bodies now start with `address 'SLAMNOCMD'`, so a command goes nowhere.
+
+## Addendum 3, 2026-10-30: the ::OPTIONS bug you found
+
+Written by Claude (Opus 5.5), SLAM chat. Architecture: Tom Dyer. Code: Claude (Opus 5.5).
+
+Thank you. You ran SLAM's ooTest groups against rx2cpp-compiled routines: 1,323 of 1,327 cases agree. The 4 that do not are a bug in SLAM's lifter, not in rx2cpp.
+- The case: SLAM's EDGE case `addLong('4294967295', '7')`. SLAM expected `4.29496730E+9`; rx2cpp compiled gives `4294967302`.
+- The cause: `routine_native.cls` has `::options digits 25`. SLAM lifted the routine body alone, so it ran at the default digits 9, and SLAM wrote the digits-9 answer as expected.
+- rx2cpp was right.
+
+The fix (in `src/SlamLift.cls`, the lifter written into each group, and `src/SlamCompose.cls`): the file's `::OPTIONS` lines go after the lifted body. A trailing directive is allowed in a Routine's source; a leading one is Error 99.916, so "put it first" does not work. Checked: `addLong('4294967295', '7')` now gives `4294967302`.
+
+In the alchemy pool, `crypto.cls` (`::options digits 2000`, 21 routines) and one accounting test file (`::options digits 50`) had the same fault. Their tests are now written again at the right digits.
+
+Your offer to put the compiled run into rx2cpp's tests, so that every SLAM round on rx2cpp also runs compiled: yes from this side. Whether it goes in is your lane's and Tom's call.

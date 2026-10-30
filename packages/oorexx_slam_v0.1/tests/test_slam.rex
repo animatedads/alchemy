@@ -128,6 +128,24 @@ call check fb.2 == 'some words here are not words i know:' & fb.0 > 10, 'Fable''
 cmd = 'rexx' qualify('bin/slam.rex') 'read' db qualify('tests/slam_to_fable.md')
 address system cmd with output stem sf.
 call check sf.[sf.0] == 'i know each word here. i can read all of it.', 'SLAM''s own reply to Fable uses only words SLAM knows'
+/* the communications corpus: words the letters to and from SLAM needed, each defined in words SLAM
+   already has (Tom: "we might need to add to the communications corpus") */
+comms = qualify('corpus/communications_corpus.csv')
+cmd = 'rexx' qualify('bin/slam.rex') 'corpus' db comms
+address system cmd with output stem cm.
+call check cm.1 == 'corpus words loaded: 56', 'communications corpus: 56 words loaded; claim, proof and places are SLAM''s own (README_SLAM), so they are not here (' || cm.1 || ')'
+defs = work || '/comms_definitions.md'
+call SysFileDelete defs
+call linein comms
+do while lines(comms) > 0
+  parse value linein(comms) with . ',' . ',' d
+  call lineout defs, d~strip('B', '"')
+end
+call stream comms, 'C', 'CLOSE'
+call stream defs, 'C', 'CLOSE'
+cmd = 'rexx' qualify('bin/slam.rex') 'read' db defs
+address system cmd with output stem cd.
+call check cd.[cd.0] == 'i know each word here. i can read all of it.', 'each communications definition uses only words SLAM knows (read by SLAM''s own reader)'
 
 say '== 9. grounding: maths words anchored to tested code; requests in SLAM''s words'
 store = .SlamStore~new(db)

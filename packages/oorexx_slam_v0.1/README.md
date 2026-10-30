@@ -32,7 +32,7 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamRules.cls` | Rules read the same way in ooRexx and Java (what a GUARD makes MUST hold); keyed readers found by behaviour; RULE nodes; predicting a rule's outcome |
 | `bin/slam.rex` | `ingest` (ooRexx and Java), `corpus`, `read`, `facts`, `about`, `ground`, `ask`, `stats`, `node`, `follows`, `into`, `record` |
 | `README_SLAM.md` | This README in SLAM's own words: SLAM reads it with no unknown word |
-| `corpus/` | The circular corpus plus closure, grounding-distance and sentence checks |
+| `corpus/` | The circular corpus plus closure, grounding-distance and sentence checks. `communications_corpus.csv`: 56 words the letters to and from SLAM needed (who, why, answer, check, pass, fail, thank...), each defined only in words SLAM already has; `speak_check.rex` checks a letter against any list of word files |
 | `reference/` | The ooRexx 5 reference (rexxref) as facts in SLAM's words, with 1,167 examples run on ooRexx 5.3.0: see `reference/README.md` |
 | `tests/test_slam.rex` | 58-check qualification |
 | `tests/test_compose.rex` | ChatGPT's task on real estate routines, 6 checks |
@@ -592,8 +592,9 @@ Before running anything, SLAM walks the rules in order with each case's values. 
 |---|---|---|
 | First cut (guards, literals, one HAPPY value) | 430 (55.3%) | 488 (62.7%) |
 | With the code's own numbers and the width edges | **584 (75.1%)** | 497 (63.9%) |
-| Caught only by this suite | **111** | 24 |
-| Routines where this suite catches more | **26** | 6 (18 the same) |
+| Now: OMIT, FRACTION, errors read from their condition, each file's `::OPTIONS` kept (2026-10-30) | **593 (76.2%)** | 525 (67.5%) |
+| Caught only by this suite (now) | **96** | 28 |
+| Routines where this suite catches more (now) | **23** | 8 (19 the same) |
 
 - **The first cut lost to random.** It won on validation code but lost on arithmetic, where it had only one HAPPY value to try. The numbers a routine's code holds, and the edges integer code is written around, fixed that.
 - **Where SLAM wins most:** `BIN2OCT` 13 against 1 (of 18), `LEXCATEGORYNAME` 56 against 46, `SAFEBASENAME` 13 against 5, `_ADBLE32` 8 against 2.
@@ -704,7 +705,7 @@ Results:
 
 | | Units | Cases written | Groups passing as it is | Predictions | Mutants | SLAM's cases catch | Random, same number |
 |---|---|---|---|---|---|---|---|
-| alchemy's 71 standalone routines | 56 | 897 | 112 of 112 | 32 right, 0 wrong | 778 | **590 (75.8%)** | 520 (66.8%) |
+| alchemy's 71 standalone routines | 56 | 897 | 112 of 112 | 32 right, 0 wrong | 778 | **593 (76.2%)** | 525 (67.5%) |
 | rx2cpp `0187d11`, routines and methods | 210 (181 methods) | 2,831 | 416 of 416 | 207 right, 0 wrong | 842 | **649 (77.1%)** | 585 (69.5%) |
 
 On rx2cpp, 72 mutants are caught only by SLAM's cases and 8 only by the random ones. Of the five fixture survivors the lane named, two are now caught (in `raise.cls`, by reading the USER condition's additional array). The other three:
@@ -747,6 +748,15 @@ SLAM gets credit for what it found:
 9. **Code no test reaches in rx2cpp:** `artifacts/v026/nested_calls.cpp` had stopped compiling, and ten functions are defined and used nowhere. Found by `bin/slam_untested.rex`; confirmed by the rx2cpp lane (its syntax check of every file, and by hand). Reported; removing them is the rx2cpp lane's call.
 10. **ooRexx's own test groups put the expected value second about 6,000 times.** In `assertEquals` and `assertSame` calls with one literal argument, the literal is first 9,642 times and second 6,019 times (counted over shapes). ooTest reports the first value as expected, so in those calls a failure names expected and actual the wrong way round. Found by reading ooTest's 314 groups and asking the framework which value it calls expected. Reported, not changed.
 11. **SLAM's lifter took the next directive into the last routine's body.** A routine just before `::requires` lifted with the `::requires` line, so it could not run alone. 10 of the 71 routines in the standalone pool were affected. Found while writing their tests. Fixed in `SlamComposer~lift`.
+12. **SLAM's lifter dropped the file's `::OPTIONS`.** So `addLong('4294967295', '7')` in rx2cpp's `routine_native.cls` (`::options digits 25`) ran at digits 9, and SLAM wrote `4.29496730E+9` as expected. rx2cpp's compiled answer, `4294967302`, is right.
+    - Found by SLAM's EDGE cases, run by the rx2cpp lane against rx2cpp-compiled routines (1,323 of 1,327 cases agree; these are the 4 that do not).
+    - Fixed in `SlamLift`, the lifter each group carries, and `SlamComposer~lift`: the file's `::OPTIONS` lines go after the body (a leading directive is Error 99.916).
+    - The same fault hit alchemy's `crypto.cls` (`::options digits 2000`, 21 pool routines).
+13. **Body Slam's finds** (Body Slam is SLAM's whole-estate link component: architecture Tom Dyer, code Claude (Opus 5.5)). They are listed in `README_BODYSLAM.md`. Among them:
+    - `brand_narrative_directive_v0.1-dev4` cannot load (Error 98.909).
+    - 12 requires ooRexx refuses (Error 19.904).
+    - `Crypto.cls` is required by a name that fails on Linux.
+    - 141 requires name files that are not in the repository.
 
 ## Qualification (LOCAL_PASS)
 
