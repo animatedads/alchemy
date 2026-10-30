@@ -15,3 +15,9 @@ Experiment order: admit measured blocks and source/method provenance; compute li
 Qualification: 40 positive and nine negative admission tests PASS using ooRexx 5.3.0 r13196 on 2026-10-30. These are synthetic fixtures, not field audio or independent acoustic triangulation.
 
 Next: source-hashed Audio V9 input adapter, drift-resistant family identity, calibrated branch scoring, chunk-halo continuation, SQL graph indexing, independent spatial model comparison and an actual governed waveform renderer. No changes to SLAM, Body SLAM or JCL ownership.
+
+## Example-driven acoustic search extension (2026-10-30)
+
+A caller may supply a short WAV **as an acoustic specimen**, without naming an event. The Python reference provider `tools/spash_find_similar.py` extracts normalized log-frequency spectrotemporal blocks, selects active 0.96-second template subsequences, searches candidate WAVs under limited tempo/coarse-spectral shift experiments, and reports ranked source-verified timestamps. Do not treat the numerical score as a probability. The source itself is never committed.
+
+Native `SpashExampleSearch.cls` compares same-foundation observation subsequences across source IDs, with bounded speed variation, interval provenance, ranked alternatives and overlap suppression. Cross-channel geometry and real pitch-transposition calibration remain open. Requirements: never use a single whole-clip mean as the only query, never present an exact self-overlap as discovery, never interpret spectral likeness as a named source or spoken transcript, and never claim independent evidence where the method or recording is shared.
