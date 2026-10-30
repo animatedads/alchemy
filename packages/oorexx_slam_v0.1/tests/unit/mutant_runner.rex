@@ -4,8 +4,9 @@
  * Args: cases file | unit | file to lift the routine from | SLAM|RAND
  * Prints KILLED (some case's outcome differs) or SURVIVED, and the first case that differed.
  * Hex fields end in '.', so an empty value is '.'.
+ * A fifth arg ALL (Leg Drop's kill matrix) runs every case: one line KILL n for each case that differs, then END n.
  */
-parse arg casesFile '|' name '|' file '|' suite
+parse arg casesFile '|' name '|' file '|' suite '|' mode
 owner = ''
 rname = name
 if name~pos('~') > 0 then parse var name owner '~' rname    /* CLASS~METHOD */
@@ -42,11 +43,15 @@ do while lines(casesFile) > 0
     otherwise if o[1] == 'VALUE' then ok = (o[2] == expected)
   end
   if \ok then do
-    say 'KILLED case' n
-    exit 0
+    if mode \== 'ALL' then do
+      say 'KILLED case' n
+      exit 0
+    end
+    say 'KILL' n                 /* ALL: every case is run, and each one that catches the mutant is named */
   end
 end
-say 'SURVIVED' n 'cases'
+if mode == 'ALL' then say 'END' n
+else say 'SURVIVED' n 'cases'
 exit 0
 
 outcome: procedure

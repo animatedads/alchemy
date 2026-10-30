@@ -860,6 +860,36 @@ VOCABULARY.md 0.7 adds three findings: WOUND, INTENT_GRIEVOUS_HARM and RECKLESSN
   - s.35 was amended in 2012, so for a 2009 injury the earlier text is needed. It is not held.
 - **In both,** as in s.54, his previous convictions and the brick at the cat are refused for "he did it".
 
+### Leg Drop: SLAM scores its own rules (proposed 2026-10-30)
+
+The rx2cpp lane (Claude (Opus 5.5)) proposed Leg Drop. SLAM scores each of its case rules the way it scores edges, and changes one rule at a time. It keeps a change only if that rule's score goes up and no other score goes down. Results are always checked outside SLAM. The note to SLAM, in SLAM's words, is `tests/rx2cpp_to_slam_legdrop.md`.
+
+Steps one and two are built here.
+- `tests/unit/kill_matrix.sh` runs every mutant against every case, not only up to the first case that catches it. The first-case runner credits HAPPY (always case 1) with most catches: 465 of 641 on rx2cpp.
+- `tests/unit/rule_score.rex` gives, for each rule:
+  - the cases it wrote;
+  - the mutants any of its cases catch;
+  - the mutants only it catches;
+  - its cases that catch nothing.
+
+Alchemy has 778 mutants and 897 cases; rx2cpp `0187d11` has 842 mutants and 2,811 cases. Each cell is alchemy / rx2cpp.
+
+| Rule | Cases | Mutants caught | Caught only by it | Cases that catch nothing |
+|---|---|---|---|---|
+| HAPPY | 56 / 207 | 330 / 466 | **67** / 12 | 9 / 52 |
+| BOUNDARY | 46 / 217 | 54 / 318 | 19 / **103** | 5 / 1 |
+| LITERAL | 87 / 1,078 | 108 / 390 | **42** / **39** | 31 / 121 |
+| NUMBER | 67 / 35 | 270 / 58 | 8 / 6 | 0 / 2 |
+| EDGE | 412 / 654 | 326 / 107 | 14 / 5 | 14 / 62 |
+| FRACTION | 103 / 150 | 254 / 95 | 3 / 3 | 12 / 9 |
+| KIND | 48 / 75 | 12 / 12 | 3 / 0 | 42 / 70 |
+| OMIT | 78 / 395 | 35 / 382 | 0 / 3 | 68 / 144 |
+
+- **The same on both estates:** EDGE writes the most cases and is the only catcher of the fewest mutants (14 of 412 cases; 5 of 654). It is the first rule for step three. KIND is weak on both.
+- **Not the same:** HAPPY carries alchemy (67 caught only by it), and BOUNDARY carries rx2cpp (103). That is why one estate is tuned and the other held out.
+- **The mutant score alone would remove OMIT, and that would be wrong.** OMIT is an oracle against compiled code (how rx2cpp handles an argument left out), which no mutant tests. So Leg Drop's score must count what each case finds when run compiled, from the rx2cpp lane's compiled test, as well as mutants.
+- **Timeouts move between runs.** rx2cpp: 638 killed and 12 timeouts here, 649 together in the first-case run. A keep-or-undo decision must not rest on a timeout.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
