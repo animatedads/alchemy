@@ -10,7 +10,7 @@ cat~put(.StorageObject~new(origin,'original',10000,'video/mp4'))
 layer=.SpashRawVisualStorage~new~registerView(cat,origin,view,1000,'SPASH_PTS_STREAM_250_500_1000_2000')
 call chk layer~eas~get('spash.origin_ref')~value=='original:TP8','catalogue original preserved'
 call chk layer~eas~get('spash.persistence')~value=='CATALOGUE_ONLY_NOT_DURABLE','no false durable claim'
-call chk layer~eas~get('spash.clock')~value=='VIDEO_PTS_90KHZ_AUDIO_UNALIGNED','Storage Fabric keeps clock authority'
+call chk layer~eas~get('spash.clock')~value=='SOURCE_VIDEO_PTS_TIMEBASE_AUDIO_UNALIGNED','Storage Fabric keeps clock authority'
 say 'SPASH_STORAGE_AND_STRATA_TEST_PASS'
 exit 0
 ::routine chk
