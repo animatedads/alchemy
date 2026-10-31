@@ -1,7 +1,7 @@
 #!/bin/sh
 # SPASH original-source -> Audio V9 Candidate21 measured multipath ->
 # conservative virtual-microphone reconstruction (STAGE 1 + STAGE 2 ONLY).
-# Required locally patched owner source: Audio V9 Candidate21 with the
+# Required local patched owner source: Audio V9 Candidate21 with the
 # AudioV9TsvWriter + quoted TSV native reader interoperability fix.
 # No Python audio DSP, no guessed FC/FD clock, no POI1 processing.
 set -eu
@@ -21,8 +21,8 @@ case "$channel" in 0|1|2) ;; *) echo 'FAIL channel' >&2; exit 2;; esac
 mkdir -m 0700 "$output"
 export REXX_PATH="$owner/src${REXX_PATH:+:$REXX_PATH}"
 root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
-# Decode context-bearing 15-second source window at native owner input format.
-# Ogg source offsets are requests, not validated cross-camera clocks.
+# Decode a context-bearing 15-second source window at native owner input
+# format. Ogg source offsets are requests, not validated cross-camera clocks.
 ffmpeg -nostdin -v error -ss "$offset" -i "$source" -t 15 -map 0:a:0 \
   -af "pan=mono|c0=c$channel" -ar 8000 -f f32le "$output/context_15s.f32"
 [ "$(wc -c < "$output/context_15s.f32")" -ge 400000 ] || { echo 'FAIL incomplete 15-second context' >&2; exit 3; }
