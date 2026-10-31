@@ -5,7 +5,10 @@
    All output is OBSERVED_UNTESTED.  No geographic/identity promotion.
 */
 numeric digits 18
-parse arg inputFile outputFile sourceHash
+parse arg inputFile outputFile sourceHash expectedFrames
+if expectedFrames='' then expectedFrames=0
+if \datatype(expectedFrames,'W') then call bad 'expected frame count must be integer'
+if expectedFrames<0 then call bad 'negative frame count'
 if inputFile='' | outputFile='' then call bad 'USAGE input.rgb output.psv mp4_sha256'
 if inputFile=outputFile then call bad 'input equals output'
 if length(sourceHash)<>64 then call bad 'source SHA256 required'
@@ -46,7 +49,7 @@ encoder=.V5VTemporalCodec~new(.V5VCodecPolicy~new(10))
 decoder=.V5VTemporalCodec~new(.V5VCodecPolicy~new(10))
 extractor=.VisionChangeRegionExtractor~new(8,3)
 movement=.CameraLumaTemporalTrackSet~new(source,w,h,4)
-/* Input must be exactly 26 frames.  All failures occur before output creation. */
+/* Source adapter admits all decoded frames; optional count is an integrity check. */
 call stream inputFile,'c','open read'
 rows=.array~new
 previous=.nil
@@ -56,7 +59,7 @@ do forever
  rgb=charin(inputFile,,frameBytes)
  if length(rgb)=0 then leave
  if length(rgb)<>frameBytes then call bad 'truncated frame'
- if frame>=26 then call bad 'unexpected additional frame'
+ if frame>=5000 then call bad 'frame bound exceeded'
  s=.VisionSurface~new(w,h,5,26,model)
  s~sourceRef=source;s~timestamp=frame/5;s~generation=frame
  yellows=0
@@ -96,8 +99,10 @@ do forever
  frame=frame+1
 end
 call stream inputFile,'c','close'
-if frame<>26 then call bad 'frame count is not 26'
-if keyframes<>3 | deltaFrames<>23 then call bad 'incorrect keyframe cadence'
+if frame<2 then call bad 'insufficient source frames'
+if expectedFrames>0 then if frame<>expectedFrames then call bad 'declared frame count mismatch'
+expectedKeys=((frame-1)%10)+1
+if keyframes<>expectedKeys | deltaFrames<>frame-expectedKeys then call bad 'incorrect keyframe cadence'
 /* Apply existing Camera Behaviour movement quality gates, not invented labels. */
 qualities=.CameraLumaBehaviourBridge~quality(movement,w,h,3,4)
 if qualities~totalCount<>movement~trackCount then call bad 'movement/quality mismatch'
