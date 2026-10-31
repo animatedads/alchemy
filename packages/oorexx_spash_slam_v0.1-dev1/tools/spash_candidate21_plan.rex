@@ -1,9 +1,7 @@
-/* SPASH: delegate exact-path planning to Audio V9 Candidate21.
- * Source data and measured spectral trajectory are produced by owner native code.
- */
+/* SPASH: use the *existing* Audio V9 ooRexx virtual mic writer. */
 parse arg inputPath outputPath
 if inputPath='' | outputPath='' then do
-  say 'usage: spash_candidate21_plan.rex TRACKS.tsv PLAN.tsv'
+  say 'usage: spash_candidate21_plan.rex SPECTRAL_TRACKS.tsv PLAN.tsv'
   exit 2
 end
 writer=.AudioV9VirtualMicPlanWriter~new
