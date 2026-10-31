@@ -3,7 +3,6 @@
 Original TP7 is decoded without mutation; POI1 is only read/hashed. Gain happens
 in f64 working arrays and limiter only in derivative WAVs; independent camera
 clock alignment and real four-channel observation are NOT claimed.
-HISTORICAL REFERENCE ONLY: superseded operationally by ooRexx native virtual audio.
 """
 from pathlib import Path
 import csv, hashlib, json, math, subprocess, zipfile, io, time
@@ -240,11 +239,18 @@ if __name__=='__main__':
   w=csv.DictWriter(f,fieldnames=['clip','band_id','lower_hz','upper_hz','input_rms','mean_mask','frequency_bins']);w.writeheader()
   for x in out:
    for b in x['bands']:w.writerow({'clip':x['label'],**b})
- # Historical reference only: actual earlier output README and ZIP were generated
- # in the private conversation workspace and remain outside the Git repository.
- print(json.dumps({'reference_only':True,
-   'results':[{'label':r['label'],'peak_dbfs':r['source_peak_dbfs'],
+ (OUT/'README.md').write_text('''# SPASH bounded +32 dB + four virtual mic test\n\nPOI1 is not modified, gained, filtered or remastered.\n\nOriginal TP7 untouched. Two bounded 18-second windows selected: 26–44 s (previous POI1 candidate at 32.5 s) and 1811–1829 s (nominally overlapping FC TP28 near 11:45; NO clock calibration).\n\nStage 1 `*_stage1_plus32_float.wav` is un-clipped float WAV (some values may exceed 1). `*_stage1_plus32_softlimited.wav` is safer for listening but is not pure +32 dB.\n\n`*_banded_noise_adaptive.wav` is an exploratory 7-band spectral suppression listening derivative.\n\nThe four `*predicted_room_F*`, `*street_hypothesis*`, `*stairwell_centroid*`, `*other_flat_E_centroid*` clips are *counterfactual virtual microphone projections*, NOT physical microphone recordings or acoustically validated reconstructions. Input stereo channels are nearly duplicates and do not establish 3D source position. Reflection coefficients, absorption, source location and street microphone coordinates are uncalibrated.\n\nDo not interpret likeness from these transforms as a speaker/source match. Read TEST_RESULTS.json and BAND_METRICS.csv for measured vs hypothesised quantities.\n''')
+ # Zip only bounded derivative and report material.
+ zipout=BASE/'SPASH_stage1_3d_four_virtual_mic_test_20261031.zip'
+ with zipfile.ZipFile(zipout,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=5) as z:
+  for p in OUT.iterdir():
+   if p.is_file() and p.suffix.lower() in {'.wav','.json','.csv','.md','.py'} and p.name not in {'inspect.py'}:
+    z.write(p,'SPASH_STAGE1_3D/'+p.name)
+ assert zipfile.ZipFile(zipout).testzip() is None
+ print(json.dumps({'zip':str(zipout),'zip_sha256':hash_file(zipout),'elapsed_s':records['elapsed_s'],
+  'results':[{'label':r['label'],'peak_dbfs':r['source_peak_dbfs'],
     'boosted_peak_dbfs':r['stage1_boosted_peak_dbfs'],
     'overload_fraction':r['stage1_32db_overload_fraction'],
-    'ch_corr':r['channel_corr'],'poi1':r['poi1_likeness']} for r in out],
-   'files':records['integrity']},indent=2))
+    'ch_corr':r['channel_corr'],
+    'poi1':r['poi1_likeness']} for r in out],
+  'files':records['integrity']},indent=2))
