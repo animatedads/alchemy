@@ -44,3 +44,6 @@ for scenario in SAME_DIGEST NO_HASH FAKE_PATH WRONG_SOURCE GUESS_CLOCK NO_CLOCK_
   echo "PASS: virtual audio fail-closed $scenario"
 done
 echo "SPASH virtual audio native negative admission: $m/9 PASS"
+
+# Source-only Candidate21 native runner admission; no private recordings required.
+sh tests/test_candidate21_native_runner.sh
