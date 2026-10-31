@@ -1,0 +1,65 @@
+[
+  {
+    "test": "vision normal",
+    "expected": "pass",
+    "actual_rc": 0,
+    "passed": true,
+    "output": "0.7: objects=48 heldout= 6\nFRAME-HELD-OUT: TP=15 FN=1 FP=0 TN=14 ABSTAIN_POS=0 ABSTAIN_NEG=1\nREVIEW_EXCLUDED=17\nVIDEO_MANUALLY_SEEDED_POSITIVE_CROPS=6/6\nDECIDED_PRECISION=1.0000\nRECALL_WITH_ABSTENTION=0.9375\nSCORES_ARE_FEATURE_SUPPORT_NOT_PROBABILITIES_OR_SLAM_GRAPH_SCORES\nFERRY_CLASS_LIMIT=TRADITIONAL_YELLOW_GREEN_ONLY\nGEO_WATER_PLANE_CALIBRATION=NOT_AVAILABLE\nVISION EVIDENCE QUALIFICATION: PASS\n"
+  },
+  {
+    "test": "homography synthetic",
+    "expected": "pass",
+    "actual_rc": 0,
+    "passed": true,
+    "output": "PLANAR_H=1.1000000000000000000 0.14999999999999999999 14 / -0.089999999999999999998 1.0499999999999999999 8 / 0.00039999999999999999996 -0.00070000000000000000008 1\nHOLDOUT_COUNT=3 MAX_ABSOLUTE_COORD_ERROR=0.00000000000000002\nWATER-PLANE HOMOGRAPHY MATH: PASS (SYNTHETIC ONLY)\n"
+  },
+  {
+    "test": "duplicate_id",
+    "expected": "reject",
+    "actual_rc": 2,
+    "passed": true,
+    "output": "VISION EVIDENCE QUALIFICATION: FAIL: duplicated id: P01\n"
+  },
+  {
+    "test": "nonnumeric_feature",
+    "expected": "reject",
+    "actual_rc": 2,
+    "passed": true,
+    "output": "VISION EVIDENCE QUALIFICATION: FAIL: invalid feature numeric\n"
+  },
+  {
+    "test": "unknown_truth",
+    "expected": "reject",
+    "actual_rc": 2,
+    "passed": true,
+    "output": "VISION EVIDENCE QUALIFICATION: FAIL: invalid class\n"
+  },
+  {
+    "test": "bad_hash",
+    "expected": "reject",
+    "actual_rc": 2,
+    "passed": true,
+    "output": "VISION EVIDENCE QUALIFICATION: FAIL: invalid image hash length\n"
+  },
+  {
+    "test": "heldout_provenance",
+    "expected": "reject",
+    "actual_rc": 2,
+    "passed": true,
+    "output": "VISION EVIDENCE QUALIFICATION: FAIL: invalid heldout provenance\n"
+  },
+  {
+    "test": "singular_controls",
+    "expected": "reject",
+    "actual_rc": 2,
+    "passed": true,
+    "output": "WATER-PLANE HOMOGRAPHY: FAIL: singular or nearly singular controls\n"
+  },
+  {
+    "test": "holdout_disagreement",
+    "expected": "reject",
+    "actual_rc": 2,
+    "passed": true,
+    "output": "PLANAR_H=1.1000000000000000000 0.14999999999999999999 14 / -0.089999999999999999998 1.0499999999999999999 8 / 0.00039999999999999999996 -0.00070000000000000000008 1\nHOLDOUT_COUNT=3 MAX_ABSOLUTE_COORD_ERROR=10.00000000000002085\nWATER-PLANE HOMOGRAPHY: FAIL: holdout reprojection error too large\n"
+  }
+]
