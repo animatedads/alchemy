@@ -18,7 +18,7 @@ do while lines(inputFile)>0
  parse var row k '|' v
  if k='' | v='' then call fail 'empty key or value'
  if fields~hasIndex(k) then call fail 'duplicate key'
- allowed='mode baseline_label length_m length_status length_source image_sha256 native_width native_height east_u east_v west_u west_v'
+ allowed='mode baseline_label length_m length_status length_source image_sha256 native_width native_height east_u east_v west_u west_v pixel_source'
  if wordpos(k,allowed)=0 then call fail 'unknown key'
  fields[k]=v
 end
@@ -37,7 +37,8 @@ if mode='LENGTH_ONLY' then do
  pixel='NA';scale='NA';dx='NA';dy='NA'
 end
 else do
- if fields~items<>12 then call fail 'PIXEL_TIED requires full 12-field schema'
+ if fields~items<>13 then call fail 'PIXEL_TIED requires full 13-field schema'
+ if fields['pixel_source']<>'MANUAL_IMAGE_MARKING' & fields['pixel_source']<>'SYNTHETIC_TEST_ONLY' then call fail 'pixel source not admitted'
  hash=fields['image_sha256']
  if length(hash)<>64 | verify(hash,'0123456789abcdef')<>0 then call fail 'invalid frame SHA256'
  if \datatype(fields['native_width'],'W') | \datatype(fields['native_height'],'W') then call fail 'native frame dimensions invalid'
@@ -51,7 +52,8 @@ else do
  pixel=rsqrt(dx*dx+dy*dy)
  if pixel<10 then call fail 'baseline too short to resolve'
  scale=fields['length_m']/pixel
- state='APPROXIMATE_BASELINE_SECANT_ONLY_UNSURVEYED'
+ if fields['pixel_source']='SYNTHETIC_TEST_ONLY' then state='SYNTHETIC_PIXEL_INTERVAL_ONLY'
+ else state='APPROXIMATE_BASELINE_SECANT_ONLY_UNSURVEYED'
 end
 call stream outputFile,'c','open write replace'
 call lineout outputFile,'key|value'
