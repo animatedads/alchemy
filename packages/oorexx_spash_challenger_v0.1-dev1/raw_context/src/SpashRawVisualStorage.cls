@@ -16,7 +16,7 @@
   o=.StorageObject~new(viewRef,'SPASH raw visual PTS window evidence',bytes,'text/tab-separated-values')
   o~eas~put(.StorageEA~new('spash','role','VISUAL_PTS_WINDOW','STRING','SPASH','DERIVED_OBSERVATION'))
   o~eas~put(.StorageEA~new('spash','origin_ref',originRef~objectId,'STRING','SPASH','SOURCE_LINEAGE'))
-  o~eas~put(.StorageEA~new('spash','clock','VIDEO_PTS_90KHZ_AUDIO_UNALIGNED','STRING','SPASH','SOURCE_TIME_AUTHORITY'))
+  o~eas~put(.StorageEA~new('spash','clock','SOURCE_VIDEO_PTS_TIMEBASE_AUDIO_UNALIGNED','STRING','SPASH','SOURCE_TIME_AUTHORITY'))
   o~eas~put(.StorageEA~new('spash','method',methodId,'STRING','SPASH','DERIVATION'))
   o~eas~put(.StorageEA~new('spash','persistence','CATALOGUE_ONLY_NOT_DURABLE','STRING','SPASH','NO_COMMIT_PROOF'))
   catalogue~put(o)
