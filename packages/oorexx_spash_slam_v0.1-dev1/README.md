@@ -90,3 +90,14 @@ The complete public, privacy-safe qualification record is `packages/oorexx_spash
 ## Two-observed-microphone 3D/camera experiment (v0.2)
 
 New `src/SpashDualMic3D.cls` and `tests/test_dual_mic_3d.rex` express a bounded geometric experiment using **two actual microphone positions** (only when original source mapping is established), model-only virtual microphone positions, 3D candidate source coordinates, physically bounded measured TDOA, and optional video-timed passing-vehicle context. Audio V9 dev16 owns whisper automatic gain, dynamic filtering and evidence-protected reflection reconstruction. Native synthetic run on ooRexx 5.3.0 r13196: **17/17 PASS**; no real source localisation or recovered audio claimed. The 463 private Tier A keypoints are staged into 349 fit, 86 withheld and 28 embargo cases, all explicitly awaiting verified original FC/FD timing, location model and camera track bindings. See `docs/SPASH_TWO_MIC_VIRTUAL_CAMERA_MODEL_V02.md`.
+
+
+## Native virtual-audio alignment v0.3 (31 October 2026)
+
+The earlier private Python/NumPy WAV matcher, high-recall V7 scanner and 4-position listening demonstration remain historical experimental reference methods. They are **not** a second production audio-processing stack. **The production SPASH path is ooRexx-native orchestration of Audio V9 Spectral Pattern Field and multipath, the registered Media Methodologies provider line, Physics World F11 v0.4/dev50, and candidate20 Memory Fabric resident processing.** See `docs/SPASH_NATIVE_VIRTUAL_AUDIO_V03.md`.
+
+NEW `src/SpashVirtualAudioExecution.cls` is a compact **native integration seam**: it calls the existing registered five-method Audio V9 profiles, delegates the four model-only viewpoints (predicted source, street, stairwell, adjoining flat) to the existing two-mic model and delegates physical candidate comparisons to Physics World's matcher. It performs no FFT, denoising, new virtual-audio synthesis, source localization or actual PCM rendering. It requires verified original-source hashes, real physical feed independence, measured coherent path evidence and cross-feed clock authority with an explicit uncertainty. Source/clock admission is fail-closed.
+
+**POI1 remains unmodified**; +32 dB is a derived TP-listening gain request only, 0 dB in the measurement stream. User's POI1 uploaded file SHA-256 was independently checked during local qualification; no recording or digest is published in Git.
+
+ooRexx 5.3.0 r13196 native local: `tests/test_virtual_audio_execution.rex` **24/24 PASS** + `tests/test_virtual_audio_reject.rex` **9/9 expected rejections**. Test provider spies validate the execution contract, not actual live Audio V9/Physics/Memory DSP. Both published Git class and positive/negative test blobs match locally qualified source byte for byte; review of the PR head as a whole remains separately required.
