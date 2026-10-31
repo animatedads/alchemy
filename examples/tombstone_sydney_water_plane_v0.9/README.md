@@ -12,7 +12,7 @@ Run with ooRexx in this directory:
 
     rexx qualify_water_plane.rex metadata_synthetic.psv controls_synthetic.psv holdouts_synthetic.psv output_synthetic.psv
     rexx water_pixel_metric.rex output_synthetic.psv points_synthetic.psv metrics_synthetic.psv
-    python qualification_v09.py
+    python qualification_smoke_v09.py
 
 The native arithmetic returned max held-out residual approximately 1.52e-13 in synthetic metres; four directional derivatives were verified against independent finite differences. Local qualification: 21/21 checks PASS (two expected successful calculations, nineteen deliberate bad-input rejections). See qualification_v09.json and full local ZIP for the test suite.
 
