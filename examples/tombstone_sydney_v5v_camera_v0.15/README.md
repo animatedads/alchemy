@@ -13,9 +13,9 @@ V5V is **not** a viewing codec: it processes a quantized 5-bit 26-value evidence
 
 ## Actual source input
 
-User-supplied H.264 mobile recordings `1000066232.mp4` (Manly) and `1000066230.mp4` (other), cropped at x210 to native webcam 1920×1080, sampled via native FFmpeg at 5 fps down to 80×45 RGB24 for a first mechanical test. The fixed scene palette and 4-bit/channel lookup follow already-published v0.14; this is not adaptive palette optimisation. The output records BOTH V5V changed regions and Camera Behaviour movement regions, plus canonical Camera Behaviour quality gates. All evidence is `OBSERVED_UNTESTED`; *no ferry object type is inferred from motion, palette or shape alone*.
+User-supplied H.264 mobile recordings `1000066232.mp4` (Manly) and `1000066230.mp4` (other), cropped at x210 to native webcam 1920×1080, sampled across each entire recording via native FFmpeg at 5 fps down to 80×45 RGB24. Manly yields 156 frames (31.2 s), the other yields 130 frames (26.0 s). The earlier v0.14 26-frame pilot covered only 5.2 seconds. The fixed scene palette and 4-bit/channel lookup follow already-published v0.14; this is not adaptive palette optimisation. The output records BOTH V5V changed regions and Camera Behaviour movement regions, plus canonical Camera Behaviour quality gates. All evidence is `OBSERVED_UNTESTED`; *no ferry object type is inferred from motion, palette or shape alone*.
 
-Run from a checkout in which Vision, Camera Behaviour, AlchemyObject and ForeignRuntime are on `REXX_PATH`, with ooRexx 5.3.0 r13196. Script `run_video.sh` requires VISION_SRC and CAMERA_BEHAVIOUR_SRC and source hash.
+Run from a checkout in which Vision, Camera Behaviour, AlchemyObject and ForeignRuntime are on `REXX_PATH`, with ooRexx 5.3.0 r13196. Full-video V5V cadence is 16 KEYFRAME / 140 DELTA for Manly, 13 KEYFRAME / 117 DELTA for the other clip, when the canonical runtime qualification succeeds. Script `run_video.sh` requires VISION_SRC and CAMERA_BEHAVIOUR_SRC and source hash.
 
 ```
 VISION_SRC=packages/oorexx_vision/src \
@@ -26,7 +26,7 @@ sh run_video.sh 1000066232.mp4 manly.rgb manly_v5v_motion.psv 2ee6fa992d302824bc
 
 ## Qualification status and blockers
 
-- Both exact source hashes verified locally; 26 × 80 × 45 × 3 bytes of FFmpeg RGB24 verified for each MP4 (280800 bytes each).
+- Both exact source hashes verified locally; all 156 and 130 frames of 80 × 45 × 3 bytes of FFmpeg RGB24 verified respectively (1,684,800 and 1,404,000 bytes).
 - Native `rexxc` r13196 compiled the integration script (syntax only, NOT linked dependency runtime).
 - **Canonical full-source runtime integration has NOT RUN:** this container has no mounted current `Vision.cls`, `V5VCodec.cls`, `CameraCore.cls`, `foreign.cls`, `AlchemyObject.cls`. Unlike v0.14's test-only reconstructed mirror, this increment refuses to represent a mirror as a fully qualified canonical test.
 - The existing v0.14 narrow V5V native mirror test produced 26/26 exact indexed reconstructions; that is earlier separate evidence, NOT this integration's qualification.
