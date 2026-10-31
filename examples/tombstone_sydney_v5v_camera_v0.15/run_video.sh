@@ -10,6 +10,9 @@ actual=$(sha256sum "$clip" | cut -d' ' -f1)
 [ "$actual" = "$source_hash" ] || { echo 'SOURCE SHA MISMATCH' >&2; exit 2; }
 ffmpeg -nostdin -hide_banner -loglevel error -y -i "$clip" \
  -vf 'crop=1920:1080:210:0,fps=5,scale=80:45:flags=area,format=rgb24' \
- -frames:v 26 -f rawvideo -pix_fmt rgb24 "$rgb"
-[ "$(wc -c < "$rgb")" -eq 280800 ] || { echo 'RGB source adapter dimensions mismatch' >&2; exit 2; }
-rexx "$(dirname "$0")/sydney_v5v_camera_motion.rex" "$rgb" "$observations" "$source_hash"
+ -f rawvideo -pix_fmt rgb24 "$rgb"
+bytes=$(wc -c < "$rgb")
+[ "$((bytes % 10800))" -eq 0 ] || { echo 'RGB source adapter dimensions mismatch' >&2; exit 2; }
+frames=$((bytes / 10800))
+[ "$frames" -ge 2 ] || { echo 'missing source frames' >&2; exit 2; }
+rexx "$(dirname "$0")/sydney_v5v_camera_motion.rex" "$rgb" "$observations" "$source_hash" "$frames"
