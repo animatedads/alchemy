@@ -90,6 +90,11 @@ edge, so a node's score depends on which node it was entered from.
 | `tools/` | `bif_oracle_programs.rex` (interpreter-oracle BIF programs), `find_pool.rex` (standalone routines under a tree) |
 | `src/BodySlamScanner.cls`, `src/BodySlam.cls`, `src/BodySlamReport.cls`, `bin/bodyslam.rex` | **Body Slam** (Tom Dyer's): the whole estate's links (requires, classes, uses, topics, declared dependencies) in a temporary SQLite database, resolved as ooRexx 5.3.0 resolves them; see `README_BODYSLAM.md` |
 | `tests/test_bodyslam.rex` | Body Slam: 62 checks, each label proved by an interpreter run; the scanner against RxLexer |
+| `src/PiledriverWords.cls`, `src/PiledriverSource.cls`, `src/PiledriverLog.cls`, `src/PiledriverTable.cls`, `bin/piledriver.rex` | **Piledriver** (Tom Dyer's): logs, tables and sheets with no model. What kind of file; records, templates, error codes against identifiers by counts, verdicts with reasons, seen-before in a file and across files; CSV column roles and sheet-error values; see `README_PILEDRIVER.md` |
+| `tests/test_piledriver.rex` | Piledriver: 101 checks on real estate logs and tables, ooRexx's own error output, syslog, log4j, Python and Apache samples, and the independent review's cases |
+| `tests/test_piledriver_gemini_jvm.rex`, `tests/gemini_to_slam_jvm.md`, `tests/slam_to_gemini_jvm.md`, `tests/fixtures/piledriver/jvm_startup.log` | Gemini's problem: a JVM startup log and four tasks (thread paths, patterns and names, a safepoint rule, classes by source), 15 checks; SLAM's reply reads with no unknown word |
+| `tests/test_piledriver_gemini_server.rex`, `tests/gemini_to_slam_server.md`, `tests/slam_to_gemini_server.md`, `tests/fixtures/piledriver/server_crash.log` | Gemini's second problem: a server crash log and four questions (URI patterns, the pool's active count, stack frames logged as events, the error's class), 15 checks |
+| `tests/claude_to_slam_piledriver.md`, `tests/slam_to_claude_piledriver.md` | Claude's question to SLAM (what can you do now; what of it is Piledriver's work) and SLAM's reply from its test results; both read with no unknown word |
 | `run_tests.sh` | Builds Rexx/SQL and the foreign runtime, then runs everything |
 
 ### Segments (nodes)
