@@ -24,3 +24,23 @@ for test_name in BAD_SAMPLE BAD_VECTOR BAD_PITCH DUPLICATE UNKNOWN_STEP NONEDGE_
   echo "PASS: fail-closed $test_name"
 done
 echo "SPASH SLAM negative admission: $n/$n PASS"
+
+
+m=0
+for scenario in SAME_DIGEST NO_HASH FAKE_PATH WRONG_SOURCE GUESS_CLOCK NO_CLOCK_UNCERTAINTY OVERGAIN VIRTUAL_PROMOTION NO_METHOD; do
+  report=$(mktemp)
+  if rexx tests/test_virtual_audio_reject.rex "$scenario" >"$report" 2>&1; then
+    cat "$report"; rm -f "$report"
+    echo "FAIL: virtual audio gate admitted $scenario" >&2
+    exit 1
+  fi
+  if ! grep -q 'Error 88' "$report"; then
+    cat "$report"; rm -f "$report"
+    echo "FAIL: unexpected error for virtual gate $scenario" >&2
+    exit 1
+  fi
+  rm -f "$report"
+  m=$((m + 1))
+  echo "PASS: virtual audio fail-closed $scenario"
+done
+echo "SPASH virtual audio native negative admission: $m/9 PASS"
