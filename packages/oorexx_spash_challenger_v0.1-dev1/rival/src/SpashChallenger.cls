@@ -56,6 +56,19 @@
 ::method vector
   expose shape
   return shape~copy
+/* A spectral run cannot continue across feed, original media object,
+ * trajectory, reversed/duplicate time or a long unobserved interval.
+ * Source time is measured frame_ms, NOT a verified wall-clock origin. */
+::method continues
+  expose feed frameMs trajectory sourceRef
+  use strict arg previous,maxGapMs=250
+  if previous==.nil then return .false
+  if \previous~isA(.SpashRivalFrame) then return .false
+  if feed\==previous~feed | trajectory\==previous~trajectory then return .false
+  if sourceRef~objectId\==previous~sourceRef~objectId then return .false
+  if sourceRef~digest\==previous~sourceRef~digest then return .false
+  delta=frameMs-previous~frameMs
+  return (delta>0 & delta<=maxGapMs)
 
 ::class SpashRivalTsvReader public
 ::method read
@@ -153,8 +166,14 @@
   rows=.array~new
   do config over self~configurations
     kept=0;sum=0;links=0;vetoes=0;framesCount=0
-    last=.nil;run=0
+    last=.nil;previous=.nil;run=0
     do f over frames
+      if previous\==.nil then do
+        if \f~continues(previous) then do
+          run=0;last=.nil
+        end
+      end
+      previous=f
       trial=config~assess(f)
       score=trial[1]
       if trial[2]=='SIREN_LIKE_VETO' | trial[2]=='KLAXON_LIKE_VETO' then vetoes=vetoes+1
@@ -163,7 +182,7 @@
         if run>=config~window then do
           kept=kept+1;sum=sum+score
           if last\==.nil then do
-            if f~trajectory==last~trajectory & f~feed==last~feed & f~frameMs>=last~frameMs & f~frameMs-last~frameMs<=250 then links=links+1
+            if f~continues(last) then links=links+1
           end
           last=f
         end
@@ -188,6 +207,7 @@
     r['STRATEGY_ID']=config~id;r['MERIT']=merit;r['SELECTED_ROWS']=kept
     r['COVERAGE']=coverage;r['CONTINUITY']=continuity;r['MEAN_LIKENESS']=mean
     r['CONFOUND_VETO_COUNT']=vetoes;r['AUTHORITY']='UNSUPERVISED_CANDIDATE_RANKING_NOT_SPEECH_PROOF'
+    r['GROUND_TRUTH_SCORE']='UNSCORED_REQUIRES_BLIND_HUMAN_REVIEW'
     rows~append(r)
   end
   /* Stable deterministic top N; all 100 candidates evaluated. */
@@ -286,22 +306,22 @@
   use strict arg frames,strategy,maxIntervals=40
   if \frames~isA(.array) | \strategy~isA(.SpashRivalStrategy) then raise syntax 88.900 array('measured frames and strategy required')
   if \datatype(maxIntervals,'W') | maxIntervals<1 then raise syntax 88.900 array('bounded number of intervals required')
-  intervals=.array~new;begin=.nil;finish=.nil;count=0;feed='';trajectory=''
+  intervals=.array~new;begin=.nil;finish=.nil;count=0;feed='';trajectory='';lastFrame=.nil
   do f over frames
     result=strategy~assess(f)
     if result[1]>=strategy~selectThreshold & result[2]\=='SIREN_LIKE_VETO' & result[2]\=='KLAXON_LIKE_VETO' then do
       if begin==.nil then do
         begin=f~frameMs;finish=f~frameMs;feed=f~feed;trajectory=f~trajectory;count=0
       end
-      if f~feed\==feed | f~trajectory\==trajectory | f~frameMs-finish>250 then do
+      if lastFrame\==.nil & \f~continues(lastFrame) then do
         if count>=strategy~window then call emitInterval intervals,begin,finish,count,feed,trajectory,strategy
         begin=f~frameMs;finish=f~frameMs;feed=f~feed;trajectory=f~trajectory;count=0
       end
-      finish=f~frameMs;count=count+1
+      finish=f~frameMs;count=count+1;lastFrame=f
     end
     else do
       if begin\==.nil & count>=strategy~window then call emitInterval intervals,begin,finish,count,feed,trajectory,strategy
-      begin=.nil;count=0
+      begin=.nil;count=0;lastFrame=.nil
     end
   end
   if begin\==.nil & count>=strategy~window then call emitInterval intervals,begin,finish,count,feed,trajectory,strategy
@@ -313,6 +333,9 @@
   rec=.directory~new
   rec['FEED']=feed;rec['TRAJECTORY_ID']=trajectory;rec['START_MS']=first;rec['END_MS']=last
   rec['FRAMES']=n;rec['STRATEGY_ID']=strategy~id
+  rec['TIME_REFERENCE']='MEASURED_TRACK_FRAME_MS_ORIGIN_UNVERIFIED'
+  rec['FD_CHAIN_WALL_TIME']='NOT_DERIVABLE_WITHOUT_TRACK_ORIGIN_MAPPING'
+  rec['BLIND_REVIEW_SCORE']='UNSCORED'
   rec['CLASSIFICATION']='ACOUSTIC_CANDIDATE_ONLY_NOT_VERIFIED_VOICE'
   rec['REQUIRES_RECONSTRUCTION']=.true
   intervals~append(rec)
