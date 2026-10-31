@@ -1,0 +1,76 @@
+# SPASH SLAM sphere v0.1
+
+Architecture: Tom Dyer. Initial independent implementation and documentation: ChatGPT GPT-6, 2026-10-30.
+
+Canonical package: packages/oorexx_spash_slam_v0.1-dev1.
+
+OBS != LIKE != PATH != PHYSICAL SOURCE.
+
+An acoustic node carries exact source/sample/time geometry, band, processing-method identity, frequency, optional pitch, spectral pattern, energy and optional location hypothesis. SPASH derives a likeness-family identity from compatible patterns, proposes temporal continuation, allows independent overlapping paths, and produces source-referenced replay plans. None of those operations requires naming the sound.
+
+The graph refuses unaligned cross-feed and cross-method continuation; pattern resemblance across sources does not imply one physical emitter. Spectral-bin incompatibility is INCOMPARABLE rather than dissimilar. Virtual microphone results are MODEL_ONLY predictions, not independent captured measurements. An unadmitted replay path is rejected instead of silently spliced. Method-foundation IDs retain dependency information.
+
+Experiment order: admit measured blocks and source/method provenance; compute likeness; propose competing graph continuations; select and retain alternative paths; emit exact sample/band replay plans; test spatial hypotheses against held-out real measurements if they exist; preserve negative results and model uncertainty.
+
+Qualification: 40 positive and nine negative admission tests PASS using ooRexx 5.3.0 r13196 on 2026-10-30. These are synthetic fixtures, not field audio or independent acoustic triangulation.
+
+Next: source-hashed Audio V9 input adapter, drift-resistant family identity, calibrated branch scoring, chunk-halo continuation, SQL graph indexing, independent spatial model comparison and an actual governed waveform renderer. No changes to SLAM, Body SLAM or JCL ownership.
+
+## Example-driven acoustic search extension (2026-10-30)
+
+A caller may supply a short WAV **as an acoustic specimen**, without naming an event. The Python reference provider `tools/spash_find_similar.py` extracts normalized log-frequency spectrotemporal blocks, selects active 0.96-second template subsequences, searches candidate WAVs under limited tempo/coarse-spectral shift experiments, and reports ranked source-verified timestamps. Do not treat the numerical score as a probability. The source itself is never committed.
+
+Native `SpashExampleSearch.cls` compares same-foundation observation subsequences across source IDs, with bounded speed variation, interval provenance, ranked alternatives and overlap suppression. Cross-channel geometry and real pitch-transposition calibration remain open. Requirements: never use a single whole-clip mean as the only query, never present an exact self-overlap as discovery, never interpret spectral likeness as a named source or spoken transcript, and never claim independent evidence where the method or recording is shared.
+
+
+## Spectral distance correction and partial replay boundary
+
+Correctly normalized comparison is `1 - mean_over_time(sum_over_frequency(abs(Q-C))/2)`; the frequency-bin count is NOT another denominator. The initial GitHub WAV publication had an erroneous band-count normalization, encouraging false positive likeness. Requalified local reference distinguishes a deliberately copied 2.56–3.52 s private passage shifted to 6.56–7.52 s, score about 0.968, from white-noise and sine-sweep negative controls (no accepted matches at threshold 0.8). These are algorithm-dependent scores, not likelihoods or source identities.
+
+A match-only listening renderer preserves exact original source sample indices and source + derived clip SHA-256, refuses changed sources and refuses overwrites. It is a PCM crop of the source, NOT spatial extraction, source-separated audio, hallucinated microphone evidence or forensic authentication. Private source material and derived WAVs stay out of the Git repository.
+
+The published source still requires independent checkout qualification before merge. The locally qualified ZIP plus its SHA-256 manifest is a separate, explicit provenance lineage.
+
+
+## User validation of ranked speech-containing acoustic matches (2026-10-30)
+
+The user listened to the three SPASH same-recording matches previously presented from their private example and reported that **all three were valid matches to human-voice speech extracted from audio intercepts**. This is external user review of speech presence in those candidate passages, not independent algorithmic speech recognition or verified same-speaker identity. The first two comparisons substantially revisit the same interval pair in opposite directions, so avoid treating the three ranked matches as three independent physical observations. No recall estimate is available for unreviewed candidates or excluded results.
+
+The separate, local-only `spash.feedback.receipt/0.1` evidence prototype binds each review to a canonical source-report hash and to its ranked match hash, with labels `HUMAN_SPEECH_PRESENT`, `NOT_HUMAN_SPEECH`, `UNDETERMINED`. It preserves algorithm score and external review separately, rejects altered/duplicate reviews and retains speaker, words, physical source and location as NOT_ASSESSED. The privacy-sensitive user-specific receipt and source audio are **not** placed in Git. Local feedback qualification was 16/16; independent exact-GitHub-checkout qualification and integration into the PR runtime remain outstanding.
+
+
+## V7 full-duration candidate library; release policy
+
+Private V7 study: 8h39m surveyed; 912 candidate audio intervals preserved as listening derivatives, 463 stronger voice-like, 242 intermediate and 207 faint/ambiguous. The 2:58 user-confirmed positive is included. Human feedback says every clip listened to thus far in hour 4 contains a verbal, without a supplied reviewed count. This is encouraging positive-review evidence, **not** certified full-corpus accuracy, recall or physical speaker identity.
+
+Public Git work is *code and method only*. `packages/oorexx_spash_slam_v0.1-dev1/docs/V7_CORPUS_METHOD.md` describes the documented historic pass. The new `spash_v7_scan.py` is an experimental streamed reference, not a proven byte-identical recreation of the earlier 912-clip segmentation; `spash_v7_validate.py` audits the original private archive offline. `spash_review_feedback.py` keeps measured likeness and human speech-presence feedback on separate, hash-bound evidential tracks. Original intercept, listening clips, private hashes and annotations are not committed.
+
+
+## Completed Tier A listening review — 463/463 user-positive (30 October 2026)
+
+The user confirms having **listened to the entire Tier A collection** (all 463 candidate clips), finding human voice/speech in **463/463**, with zero false positives reported. This is an observed **100% positive fraction within the fully reviewed Tier A candidate set** for the private V7 recording—not recall, not an independently adjudicated benchmark and not a guarantee on other recordings. Candidate clips may overlap or share acoustic sources. Tier B/C candidates and the excluded timeline have not been evaluated for missed speech by this report.
+
+The complete public, privacy-safe qualification record is `packages/oorexx_spash_slam_v0.1-dev1/docs/V7_TIER_A_USER_REVIEW_20261030.md`. A **private** receipt binds the user-reported positive review to each of 463 verified Tier A archive clip IDs and hashes; original audio, exact clip identities and private source hashes remain outside GitHub.
+
+
+## SPASH → original-feed Audio V9 + Physics World 3D model experiments
+
+The next processing stage is specified in `packages/oorexx_spash_slam_v0.1-dev1/docs/SPASH_AUDIO_V9_3D_INTEGRATION.md`. User-reviewed Tier A speech candidates should be treated as prioritized **source-timed search intervals**, not as reconstructed sources. Reopen original independently captured feeds, preserving hashes, clocks, exact sample geometry, source positions and uncertainty. Test competing direct/reflected/spatial paths against genuinely observed channel timing and withheld observations. Four virtual microphone positions are **MODEL_ONLY** predictions. Preserve independent noise and speech-like path hypotheses and produce separate evidential vs listening renderings.
+
+This is a cross-lane integration proposal. No 3D source position, mic geometry, independent physical observation, Audio V9 provider change or deployed production operation is yet claimed.
+
+
+## Two real microphones + virtual 3D acoustic positions (v0.2)
+
+SPASH uses the existing 3D location model with **two physically observed microphones for acoustic TDOA/coherence**, moving four or more virtual microphones inside candidate models as *predictions*, not independent observations. Video frames/vehicle motion constrain *timing and moving-reflector hypotheses* after an acoustic compatibility gate; never fabricate audio from footage. Audio V9 dev16 already distinguishes direct/static/transient paths and protects low-level whisper gain from vehicle passes and loud transients; dynamic filtering and auto-levelling remain V9-owned. The 463 confirmed English-speech Tier A intervals are temporal anchors for hypothesis fit, withheld testing and leakage embargo, not 3D source points or speaker identities. New pure-ooRexx two-mic convergence contracts and synthetic tests are under `packages/oorexx_spash_slam_v0.1-dev1/src/SpashDualMic3D.cls`; complete scope is in `docs/SPASH_TWO_MIC_VIRTUAL_CAMERA_MODEL_V02.md`. Real original-FC/FD and camera-clock bindings are still outstanding.
+
+
+## Native virtual-audio alignment v0.3 (31 October 2026)
+
+The earlier private Python/NumPy WAV matcher, high-recall V7 scanner and 4-position listening demonstration remain historical experimental reference methods. They are **not** a second production audio-processing stack. **The production SPASH path is ooRexx-native orchestration of Audio V9 Spectral Pattern Field and multipath, the registered Media Methodologies provider line, Physics World F11 v0.4/dev50, and candidate20 Memory Fabric resident processing.** See `docs/SPASH_NATIVE_VIRTUAL_AUDIO_V03.md`.
+
+NEW `src/SpashVirtualAudioExecution.cls` is a compact **native integration seam**: it calls the existing registered five-method Audio V9 profiles, delegates the four model-only viewpoints (predicted source, street, stairwell, adjoining flat) to the existing two-mic model and delegates physical candidate comparisons to Physics World's matcher. It performs no FFT, denoising, new virtual-audio synthesis, source localization or actual PCM rendering. It requires verified original-source hashes, real physical feed independence, measured coherent path evidence and cross-feed clock authority with an explicit uncertainty. Source/clock admission is fail-closed.
+
+**POI1 remains unmodified**; +32 dB is a derived TP-listening gain request only, 0 dB in the measurement stream. User's POI1 uploaded file SHA-256 was independently checked during local qualification; no recording or digest is published in Git.
+
+ooRexx 5.3.0 r13196 native local: `tests/test_virtual_audio_execution.rex` **24/24 PASS** + `tests/test_virtual_audio_reject.rex` **9/9 expected rejections**. Test provider spies validate the execution contract, not actual live Audio V9/Physics/Memory DSP. Both published Git class and positive/negative test blobs match locally qualified source byte for byte; review of the PR head as a whole remains separately required.
