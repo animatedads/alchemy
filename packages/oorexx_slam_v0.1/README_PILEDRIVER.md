@@ -97,6 +97,30 @@ Gemini sent a second problem: an 11-line server log in log4j/logback form (`[10:
 3. The premise is wrong again. Lines 9 and 10 start with a time stamp, and the tab comes after the logger's ` - `. They are stack frames on the same thread as line 8, so they **join the error record**: 11 lines, 9 records, 2 errors.
 4. The error class is `java.lang.OutOfMemoryError`. The top frame is `com.app.service.DataBuffer.allocate(DataBuffer.java:42)`, so "thrown in DataBuffer" is **true**. "DataBuffer is the cause of the memory use" is **I do not know**: the error is thrown by the allocation that fails, not by the code that used the memory, and the log has no heap data. The trace also has only 2 frames, with no thread entry frame at the bottom.
 
+## Gemini's third problem (2026-10-31)
+
+Gemini's third log is a 10-line mesh network log (`tests/gemini_to_slam_mesh.md`, `tests/fixtures/piledriver/mesh_network.log`). It contains pings and pongs, a timeout and a node drop. SLAM refuses Gemini's definition of *millisecond*, for three reasons:
+- it defines the word using itself ("milliseconds");
+- it uses `small`, which SLAM does not have;
+- its "second" is a unit of time, while in SLAM's list *second* means "the next after the first". That is a second sense, for `corpus/senses.csv` (`second-time`).
+
+The letter says the system has four nodes; the log has three START lines.
+
+**Two faults found in Piledriver, both fixed:**
+- **Line 9 is WARN, but it was ERROR because of the word "Timeout".** A WARN level with only weak keyword evidence now stays WARN.
+- **Piledriver did not read time at all.** `~seconds(record)` now reads uptimes, `HH:MM:SS.fff` and dates. `~timeGaps(threshold)` gives each gap over the threshold, with its size against the median gap. The threshold is the caller's; Piledriver builds none in.
+
+**New, all general:**
+- **`valueRoles(key)` adds a kind Gemini's rule lacks: LINK.** A link is a value that appears in two or more patterns and at most once in each, so it ties lines together. By Gemini's rule alone, `seq` is three things at once: a name in the ping pattern, a code for 101 across all the seq lines (4 of 6), and neither for 102. It is a link.
+- **`entityPaths` follows any `key=value`** (`id=3`, `seq=102`), not only fields. A writer such as `[node-3]` names the thing whose id it carries, so `id=3` written by `[node-3]` is node-3's line. The state comes from the body after the logger's ` - `, up to `stateWords` words.
+- **`valueOf(record, key)`** returns a field or a `key=value` word.
+
+**The answers** (`tests/test_piledriver_gemini_mesh.rex`, 17 checks, every answer worked out by hand first):
+1. The two Send ping lines (4, 8) are **one** pattern, `Send ping to node-# (seq=#)`, for node-2 and node-3. seq 101 links lines 4–7 (ping, receive, pong, receive) and seq 102 links lines 8–9 (ping, timeout).
+2. node-3 appears at lines 3, 8, 9 and 10, but writes only line 3. "Line 9 is about the ping at line 8" is **true**: both lines hold seq=102. "The ping causes the timeout" is **false**: the timeout comes from the pong that never arrived. "Why no pong came" is **I do not know**: no line says node-3 got the ping. The rule "each send_ping has a recv_pong with the same seq" is **false**, for 102.
+3. **False before this log**, because Piledriver read no times. Now the one gap over 1 s is line 8 → 9: 1.001 s, 334 times the median gap. That gap *is* the timeout: node-1 waits from the ping to the timeout, and no node writes in between.
+4. Three START lines and one DROP leave **2** nodes, node-1 and node-2. "Both are still running after line 10" is **I do not know**, so the log is **not enough**: node-1 wrote the last line (10), and node-2 has written nothing since line 6. node-3 was silent after line 3 as well, and it was dropped: a node that writes no lines is not shown to be running.
+
 ## What it found in the estate
 
 | File | Lines | Found |
@@ -121,6 +145,7 @@ Gemini sent a second problem: an 11-line server log in log4j/logback form (`[10:
 | `tests/claude_to_slam_piledriver.md`, `tests/slam_to_claude_piledriver.md` | Claude's question to SLAM, and SLAM's reply (both read with no unknown word) |
 | `tests/test_piledriver_gemini_jvm.rex`, `tests/fixtures/piledriver/jvm_startup.log` | Gemini's problem: 15 checks |
 | `tests/test_piledriver_gemini_server.rex`, `tests/fixtures/piledriver/server_crash.log`, `tests/gemini_to_slam_server.md`, `tests/slam_to_gemini_server.md` | Gemini's second problem: 15 checks, and the letters |
+| `tests/test_piledriver_gemini_mesh.rex`, `tests/fixtures/piledriver/mesh_network.log`, `tests/gemini_to_slam_mesh.md`, `tests/slam_to_gemini_mesh.md` | Gemini's third problem: 17 checks, and the letters |
 | `tests/gemini_to_slam_jvm.md`, `tests/slam_to_gemini_jvm.md` | Gemini's letter (SLAM's reader refuses it, and its reply says why) and SLAM's reply (read with no unknown word) |
 
 ```

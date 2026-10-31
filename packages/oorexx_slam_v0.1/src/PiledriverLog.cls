@@ -46,6 +46,7 @@
  *      STATUS k=v    a named key whose word values are a small set (5+ uses, at most 12 values, 4+ uses each)
  *                    holding an OK value: a STATUS key found by counts (ST=OK x101, ST=UNSUPPORTED x2).
  *                    A record with that key at a value that is not OK is an error
+ *    A WARN level with only weak keyword evidence stays WARN: the program's own level outranks a weak word.
  *    A positive level (PASS, OK, INFO, DEBUG) makes every other piece of evidence a MENTION: the line
  *    "PASS ... fails closed" mentions failure; it is not one.  A heading is NONE: it names a topic.
  *    Keyword evidence alone is WEAK; anything else (or a keyword with a code) is STRONG.
@@ -906,6 +907,12 @@
     return
   end
   if errs~items > 0 then do
+    /* the program's own WARN outranks a weak keyword ("Timeout waiting for pong" at WARN is a warning) */
+    if lev == 'WARN' then if weakOnly then do
+      r~verdict = 'WARN'
+      r~strength = 'STRONG'
+      return
+    end
     r~verdict = 'ERROR'
     if weakOnly then r~strength = 'WEAK'
     else r~strength = 'STRONG'
@@ -990,32 +997,37 @@
    the thing's name as words ("pool-1-thread-2").  The thing's state in that record is the value of field
    STATEKEY (lower case), or, in a record with fields, the last word before them ("attached"), or else the
    first three words ("deadlock_risk_detected").  Edges are the steps from one state to the next, START first.
+   A thing's name can also be the writer of a line that holds its id, when the writer's name ends in the id
+   (the line "Node START id=3" written by [node-3]); then the lines that writer writes are the thing's too.
+   STATEWORDS: how many words of the body make a state (3).
    Returns a directory: PATHS id -> array of states; LINES id -> array of line numbers; NAMES id -> name;
    EDGES "a -> b" -> count; ORDER the ids in the order first seen. */
 ::method entityPaths
   expose records
-  use strict arg idKey = 'id', nameKey = 'name', stateKey = 'state'
+  use strict arg idKey = 'id', nameKey = 'name', stateKey = 'state', stateWords = 3
   out = .directory~new
   paths = .directory~new; lineNos = .directory~new; names = .directory~new; edges = .directory~new; order = .array~new
   out['PATHS'] = paths; out['LINES'] = lineNos; out['NAMES'] = names; out['EDGES'] = edges; out['ORDER'] = order
   do r over records
-    if r~fields~hasIndex(idKey) then do
-      id = r~fields[idKey]
-      if \paths~hasIndex(id) then do
-        paths[id] = .array~new; lineNos[id] = .array~new; order~append(id)
-      end
-      if r~fields~hasIndex(nameKey) then names[id] = r~fields[nameKey]
+    id = self~valueOf(r, idKey)
+    if id == '' then iterate
+    if \paths~hasIndex(id) then do
+      paths[id] = .array~new; lineNos[id] = .array~new; order~append(id)
     end
+    if r~fields~hasIndex(nameKey) then names[id] = r~fields[nameKey]
+    else if \names~hasIndex(id) then if self~contextHolds(r~context, id) then names[id] = r~context
   end
   do r over records
-    words = ' ' || r~message~translate('  ', '(),') || ' '
+    words = ' ' || r~body~translate('   ', '(),') || ' '
     do id over order
-      hit = .false
-      if r~fields~hasIndex(idKey) then if r~fields[idKey] == id then hit = .true
-      if \hit then if words~pos(' ' || id || ' ') > 0 then hit = .true
-      if \hit then if names~hasIndex(id) then if words~pos(' ' || names[id] || ' ') > 0 then hit = .true
+      hit = self~valueOf(r, idKey) == id
+      if \hit then if words~pos(' ' || id || ' ') > 0 then if idKey == 'id' then hit = .true
+      if \hit then if names~hasIndex(id) then do
+        if words~pos(' ' || names[id] || ' ') > 0 then hit = .true
+        else if r~context == names[id] then hit = .true
+      end
       if \hit then iterate
-      paths[id]~append(self~stateOf(r, stateKey))
+      paths[id]~append(self~stateOf(r, stateKey, stateWords))
       lineNos[id]~append(r~lineNo)
     end
   end
@@ -1030,17 +1042,151 @@
   end
   return out
 
-::method stateOf
-  use strict arg r, stateKey
-  if r~fields~hasIndex(stateKey) then return r~fields[stateKey]~lower
-  before = .array~new
+/* Does a writer's name carry the id as its number: node-3 for 3, worker7 for 7 (not node-1 for 101)? */
+::method contextHolds
+  use strict arg context, id
+  if context == '' then return .false
+  if \datatype(id, 'W') then return .false
+  p = context~verify('0123456789', 'M', 1)
+  if p == 0 then return .false
+  last = ''
+  do i = context~length to 1 by -1
+    c = context~substr(i, 1)
+    if '0123456789'~pos(c) == 0 then leave
+    last = c || last
+  end
+  if last == '' then return .false
+  return last = id
+
+/* The value of KEY in a record: its field, or a key=value word ("id=3", "(seq=101)"); '' when it has none. */
+::method valueOf
+  use strict arg r, key
+  if r~fields~hasIndex(key) then return r~fields[key]
   do d over r~tokens
+    if d['KEY'] == key then return d['CORE']
+  end
+  return ''
+
+/* The state of a thing in record R: its STATEKEY field (lower case); in a record with fields, the last word
+   before them ("attached"); else the first WORDS words of the body, up to a "(", a key=value or a field. */
+::method stateOf
+  use strict arg r, stateKey, stateWords = 3
+  if r~fields~hasIndex(stateKey) then return r~fields[stateKey]~lower
+  start = 1
+  if r~body \== r~message then do i = 1 to r~tokens~items
+    if r~tokens[i]['TEXT'] == '-' then do
+      start = i + 1
+      leave
+    end
+  end
+  before = .array~new
+  do i = start to r~tokens~items
+    d = r~tokens[i]
     if d['LEAD']~pos('(') > 0 then leave
     if d['CORE']~pos('@F:') > 0 then leave
+    if d['KEY'] \== '' then leave
     before~append(d['CORE']~lower)
   end
   if r~fields~items > 0 then if before~items > 0 then return before[before~items]
-  return before~section(1, min(3, before~items))~makeString('L', '_')
+  return before~section(1, min(stateWords, before~items))~makeString('L', '_')
+
+/* The time of a record in seconds, from its stamp: an uptime (0.001s, 12ms), HH:MM:SS[.fff] (in brackets or
+   not), with a YYYY-MM-DD date before it counted in days.  '' when the stamp has no time. */
+::method seconds
+  use strict arg r
+  st = r~stamp~translate('  ', '[]')~strip
+  if st == '' then return ''
+  w1 = st~word(1)
+  if w1~right(2) == 'ms' then if datatype(w1~left(w1~length - 2), 'N') then return w1~left(w1~length - 2) / 1000
+  if w1~right(1) == 's' then if datatype(w1~left(w1~length - 1), 'N') then return w1~left(w1~length - 1)
+  days = 0
+  t = ''
+  do w over st~translate(' ', 'T')~subWords
+    if w~length >= 10 then if .PiledriverWords~shape(w~left(10)) == '9999-99-99' then days = date('B', w~left(10)~changeStr('-', ''), 'S')
+    if .PiledriverWords~shape(w)~left(8) == '99:99:99' then t = w
+  end
+  if t == '' then return ''
+  parse var t hh ':' mm ':' ss
+  ss = ss~changeStr(',', '.')
+  p = ss~verify('0123456789.')
+  if p > 0 then ss = ss~left(p - 1)
+  return days * 86400 + hh * 3600 + mm * 60 + ss
+
+/* Gaps in time between one record and the next, larger than THRESHOLD seconds: an array of directories
+   LINE (the record after the gap), FROM (the record before), GAP (seconds), RATIO (the gap to the median gap). */
+::method timeGaps
+  expose records
+  use strict arg threshold
+  gaps = .array~new; all = .array~new
+  prev = .nil
+  do r over records
+    t = self~seconds(r)
+    if t == '' then iterate
+    if prev \== .nil then do
+      g = t - self~seconds(prev)
+      all~append(g)
+      d = .directory~new
+      d['LINE'] = r~lineNo; d['FROM'] = prev~lineNo; d['GAP'] = g
+      gaps~append(d)
+    end
+    prev = r
+  end
+  sorted = all~sortWith(.NumericComparator~new)
+  median = 0
+  if sorted~items > 0 then median = sorted[(sorted~items + 1) % 2]
+  out = .array~new
+  do d over gaps
+    if d['GAP'] > threshold then do
+      if median > 0 then d['RATIO'] = d['GAP'] / median
+      else d['RATIO'] = ''
+      out~append(d)
+    end
+  end
+  return out
+
+/* What each value of KEY is, by Gemini's rule and one more kind.  Over the patterns it is in:
+     LINK    in 2 or more patterns, and at most once in each: new in each pattern, but it ties lines together
+     CODE    in half the lines of KEY or more, seen 2 or more times
+     NAME    seen once
+     REPEAT  neither
+   Returns a directory value -> directory ROLE, COUNT, PATTERNS, LINES. */
+::method valueRoles
+  expose records
+  use strict arg key
+  vals = .directory~new; uses = 0
+  do r over records
+    v = self~valueOf(r, key)
+    if v == '' then iterate
+    uses += 1
+    if \vals~hasIndex(v) then do
+      e = .directory~new
+      e['COUNT'] = 0; e['PATTERNS'] = .directory~new; e['LINES'] = .array~new
+      vals[v] = e
+    end
+    e = vals[v]
+    e['COUNT'] = e['COUNT'] + 1
+    e['LINES']~append(r~lineNo)
+    if e['PATTERNS']~hasIndex(r~template) then e['PATTERNS'][r~template] = e['PATTERNS'][r~template] + 1
+    else e['PATTERNS'][r~template] = 1
+  end
+  do v over vals
+    e = vals[v]
+    most = 0
+    do t over e['PATTERNS']
+      most = max(most, e['PATTERNS'][t])
+    end
+    if e['PATTERNS']~items >= 2 then if most == 1 then do
+      e['ROLE'] = 'LINK'
+      iterate
+    end
+    if e['COUNT'] >= 2 then if e['COUNT'] * 2 >= uses then do
+      e['ROLE'] = 'CODE'
+      iterate
+    end
+    if e['COUNT'] == 1 then e['ROLE'] = 'NAME'
+    else e['ROLE'] = 'REPEAT'
+  end
+  return vals
 
 /* A rule on pairs: each record holding OPENTEXT must have a record holding CLOSETEXT after it, before the next
    OPENTEXT record or the end.  Returns a directory RESULT (.true/.false), PAIRS (array "open close" line

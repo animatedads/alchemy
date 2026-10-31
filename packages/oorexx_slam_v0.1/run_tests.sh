@@ -90,6 +90,8 @@ echo "== Piledriver on Gemini's problem: JVM unified logging, thread paths, the 
 rexx tests/test_piledriver_gemini_jvm.rex
 echo "== Piledriver on Gemini's second problem: a server crash log (URIs, the pool count, logged stack frames, the error's class)"
 rexx tests/test_piledriver_gemini_server.rex
+echo "== Piledriver on Gemini's third problem: a mesh network log (seq links, a node's path, time gaps, who is still running)"
+rexx tests/test_piledriver_gemini_mesh.rex
 echo "== third language: C++ (needs OOREXX_SRC: an ooRexx source tree; RX2CPP_ROOT: animatedads/oorexx's oorexx2cpp; Boost headers)"
 if [ -n "${OOREXX_SRC:-}" ] && [ -n "${RX2CPP_ROOT:-}" ] && [ -d "${OOREXX_SRC}/interpreter" ]; then
   g++ -std=c++17 -fsyntax-only "$ROOT/tests/fixtures/shapes.cpp"

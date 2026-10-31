@@ -94,6 +94,7 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_piledriver.rex` | Piledriver: 101 checks on real estate logs and tables, ooRexx's own error output, syslog, log4j, Python and Apache samples, and the independent review's cases |
 | `tests/test_piledriver_gemini_jvm.rex`, `tests/gemini_to_slam_jvm.md`, `tests/slam_to_gemini_jvm.md`, `tests/fixtures/piledriver/jvm_startup.log` | Gemini's problem: a JVM startup log and four tasks (thread paths, patterns and names, a safepoint rule, classes by source), 15 checks; SLAM's reply reads with no unknown word |
 | `tests/test_piledriver_gemini_server.rex`, `tests/gemini_to_slam_server.md`, `tests/slam_to_gemini_server.md`, `tests/fixtures/piledriver/server_crash.log` | Gemini's second problem: a server crash log and four questions (URI patterns, the pool's active count, stack frames logged as events, the error's class), 15 checks |
+| `tests/test_piledriver_gemini_mesh.rex`, `tests/gemini_to_slam_mesh.md`, `tests/slam_to_gemini_mesh.md`, `tests/fixtures/piledriver/mesh_network.log` | Gemini's third problem: a mesh network log and four questions (seq as a LINK, a node's path, time gaps, which nodes are shown to run), 17 checks |
 | `tests/claude_to_slam_piledriver.md`, `tests/slam_to_claude_piledriver.md` | Claude's question to SLAM (what can you do now; what of it is Piledriver's work) and SLAM's reply from its test results; both read with no unknown word |
 | `run_tests.sh` | Builds Rexx/SQL and the foreign runtime, then runs everything |
 
