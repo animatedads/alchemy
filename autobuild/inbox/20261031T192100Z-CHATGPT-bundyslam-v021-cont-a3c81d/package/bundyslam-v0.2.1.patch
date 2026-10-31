@@ -1,0 +1,56 @@
+--- a/src/BundySlam.cls
++++ b/src/BundySlam.cls
+@@ -187,12 +187,15 @@
+   else do
+     parse var first maybe rest
+     maybe = translate(maybe)
+-    if maybe == 'DD' then do
++    /* A pending statement owns the next continuation card.  In particular,
++       an operand beginning with the word DD at column 16 is NOT an unnamed
++       DD statement.  Test pending BEFORE attempting DD concatenation. */
++    if pending \== .nil then kind = 'CONT'
++    else if maybe == 'DD' then do
+       kind = 'DD'
+       name = ''
+       operand = rest
+     end
+-    else if pending \== .nil then kind = 'CONT'
+     else kind = 'UNKNOWN'
+   end
+   if kind == 'CONT' then do
+--- a/tests/test_bundyslam.rex
++++ b/tests/test_bundyslam.rex
+@@ -63,6 +63,33 @@
+ call test 'unnamed DD has blank name', d~statements[4]['NAME'] == ''
+ call test 'current step preserved', d~memory['STEP'] == 'S1'
+ 
++/* Positional regression: continuation takes precedence over an apparent
++   unnamed DD.  Physical cards in the continuation data area belong to the
++   pending logical statement even if their first token happens to be DD. */
++b = .BundySlam~new
++b~feedCard('//P JOB (SYS),CLASS=A,')
++b~feedCard('//             DD DATA')
++b~finish
++call test 'DD token at continuation position is continued JOB', b~statements~items == 1
++call test 'DD token at continuation position retains both cards', b~statements[1]['CARDS']~items == 2
++call test 'DD token at continuation position is not new DD', countOp(b,'DD') == 0
++call test 'DD token at continuation position is not orphan concat', \diagnostic(b,'ORPHAN_DD_CONCAT')
++call test 'DD token at continuation position does not open data stream', \diagnostic(b,'INSTREAM_AT_EOF')
++call test 'DD token at continuation position preserves operands', pos('CLASS=A,DD DATA', b~statements[1]['OPERANDS']) > 0
++call test 'DD token at continuation position keeps round trip', b~roundTrip == b~bytes
++
++/* Control: without a pending continuation, an unnamed DD is a separate DD,
++   assigned to the preceding named DD, not merged into that DD's operands. */
++b = .BundySlam~new
++b~feedCard('//P JOB CLASS=A')
++b~feedCard('//S EXEC PGM=IFOX00')
++b~feedCard('//SYSLIB DD DSN=SYS1.MACLIB,DISP=SHR')
++b~feedCard('//         DD DSN=SYS1.AMODGEN,DISP=SHR')
++b~finish
++call test 'nonpending unnamed DD remains separate', countOp(b,'DD') == 2
++call test 'nonpending unnamed DD gets prior DD context', b~statements[4]['DD'] == 'SYSLIB'
++call test 'nonpending unnamed DD has empty name', b~statements[4]['NAME'] == ''
++
+ /* Missing continuation must produce a diagnostic; never silently accept. */
+ b = .BundySlam~new
+ b~feedCard('//X JOB ,CLASS=A,')
