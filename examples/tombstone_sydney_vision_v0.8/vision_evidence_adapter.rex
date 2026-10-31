@@ -24,6 +24,7 @@ do i=1 to count
  if \seenPrediction~hasIndex(id.i) then call fail 'prediction absent for 'id.i
 end
 /* No output is written unless every check above passes. */
+call stream outputFile,'c','open write replace'
 call lineout outputFile, 'observation_id|source_kind|source_group|source_sha256|crop_sha256|hypothesis|decision|support_indicator|evidence_state|geometry_state|correlation_group|algorithm'
 do i=1 to count
  if truth.i='review' then do
