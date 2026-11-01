@@ -95,7 +95,7 @@
   call SysFileDelete file
   self~emit('<svg xmlns="http://www.w3.org/2000/svg" width="' w '" height="' h '" viewBox="0 0' w h '">')
   self~emit('<rect x="0" y="0" width="' w '" height="' h '" fill="#f7fafc"/>')
-  self~emit('<text x="18" y="30" font-size="23" font-family="DejaVu Sans" font-weight="bold" fill="#1e293b">Power SLAM |' site[1] '| 50 m ASL | full 360° bearing sweep</text>')
+  self~emit('<text x="18" y="30" font-size="23" font-family="DejaVu Sans" font-weight="bold" fill="#1e293b">Power SLAM |' site[1] '|' cam[3] 'm ASL | full 360° bearing sweep</text>')
   self~emit('<text x="18" y="56" font-size="16" font-family="DejaVu Sans" fill="#64748b">Projected from model cuboids, not a photograph. Empty sectors have no encoded geometry. Vertical range +55° to -35°.</text>')
   /* Altitude grid, level sight line; no invented shoreline or terrain. */
   do ang=-30 to 50 by 10
@@ -126,6 +126,8 @@
     if name=='SALESFORCE' then color='#3b82ae'
     if name~left(2)=='CQ' then color='#0d9488'
     if name~left(2)=='WB' then color='#bc8c57'
+    if name=='CQ_STATION' then color='#8c9aab'
+    if name=='CAHILL' then color='#c65e44'
     do ftxt over .array~of('1 2 4 3','5 6 8 7','1 2 6 5','3 4 8 7','1 3 7 5','2 4 8 6')
       vertices=.array~new;projections=.array~new
       sx=0;sy=0
@@ -184,6 +186,14 @@
     if yy>h-34 then yy=h-34
     self~emit('<circle cx="' xy[1] '" cy="' xy[2] '" r="3" fill="#0f766e"/>')
     self~emit('<text x="' xx+5 '" y="' yy-8 '" font-size="11" font-family="DejaVu Sans" fill="#075985">' id '</text>')
+  end
+  /* Rail/Cahill endpoints are additional 3D references only if loaded. */
+  do id over .array~of('STATION_W','STATION_E','STATION_C','CAHILL_C')
+    if \scene~features~hasIndex(id) then iterate
+    xyz=scene~features[id]
+    xy=self~project(xyz,cam,w,h)
+    self~emit('<circle cx="' xy[1] '" cy="' xy[2] '" r="4" fill="#be3f33"/>')
+    self~emit('<text x="' xy[1]+7 '" y="' xy[2]-7 '" font-size="13" font-family="monospace" fill="#be3f33">' id '</text>')
   end
   self~emit('<rect x="0" y="' h-11 '" width="' w '" height="11" fill="#cbd5e1"/>')
   self~emit('</svg>')
