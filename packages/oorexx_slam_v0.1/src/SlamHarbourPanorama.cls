@@ -124,6 +124,8 @@
     if name=='DECK' then color='#475569'
     if name=='OPERA' then color='#f6f4dc'
     if name=='SALESFORCE' then color='#3b82ae'
+    if name~left(2)=='CQ' then color='#0d9488'
+    if name~left(2)=='WB' then color='#bc8c57'
     do ftxt over .array~of('1 2 4 3','5 6 8 7','1 2 6 5','3 4 8 7','1 3 7 5','2 4 8 6')
       vertices=.array~new;projections=.array~new
       sx=0;sy=0
@@ -171,6 +173,18 @@
     self~emit('<circle cx="' projected[1] '" cy="' projected[2] '" r="5" fill="#b45309" stroke="white" stroke-width="1.4"/>')
     self~emit('<text x="' x+10 '" y="' y-10 '" font-size="17" font-family="DejaVu Sans" font-weight="bold" fill="#7c2d12">' name '</text>')
   end
+  /* Optional wharf annotations are projected from the same feature vectors.
+   * Labels are not estimates of image pixels; they are renderer output. */
+  do id over scene~features~allIndexes~sort
+    if id~left(2)\=='CQ' & id~left(2)\=='WB' then iterate
+    pt=scene~features[id]
+    xy=self~project(pt,cam,w,h)
+    xx=xy[1]; yy=xy[2]
+    if yy<80 then yy=80
+    if yy>h-34 then yy=h-34
+    self~emit('<circle cx="' xy[1] '" cy="' xy[2] '" r="3" fill="#0f766e"/>')
+    self~emit('<text x="' xx+5 '" y="' yy-8 '" font-size="11" font-family="DejaVu Sans" fill="#075985">' id '</text>')
+  end
   self~emit('<rect x="0" y="' h-11 '" width="' w '" height="11" fill="#cbd5e1"/>')
   self~emit('</svg>')
   do text over renderLines
@@ -178,3 +192,4 @@
   end
   call stream file,'C','CLOSE'
   return cam
+
