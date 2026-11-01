@@ -26,7 +26,7 @@ The three boundary solutions touch a deliberately overlarge, unsurveyed rectangu
 
 ## Qualification
 
-- `test_pin_correspondence.rex`: **34/34 PASS** with ooRexx 5.3.0 r13196 (rxmath). Tests enumeration of all four physical feature IDs, direct roof and deck Z coordinates, rejection of midpoint-name world lookups, polygon boundary handling, null-pose blocking, and fail-closed admission after perfect synthetic training fit.
+- `test_pin_correspondence.rex`: **36/36 PASS** with ooRexx 5.3.0 r13196 (rxmath). Tests enumeration of all four physical feature IDs, direct roof and deck Z coordinates, rejection of midpoint-name world lookups, polygon boundary handling, null-pose blocking, and fail-closed admission after perfect synthetic training fit.
 - Existing eight suites v0.12: 357/357 PASS from last qualified local merged-source run, not independently rerun in this increment unless indicated by an accompanying log.
 
 ## Next required correction
