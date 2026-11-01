@@ -17,6 +17,8 @@ do pair over alts
   call ok a[3]=89 & b[3]=89,'pylon tops 89m ASL'
   call ok c~world(o[3][1])[3]=50 & c~world(o[4][1])[3]=50,'deck proxies 50m ASL'
 end
+call ok expectReject(c,'S_TOP'),'midpoint south top refused as photographed tower'
+call ok expectReject(c,'N_DECK'),'midpoint north deck refused as photographed tower'
 f=c~fitter
 initial=f~initialCamera
 call ok c~nearBoundary(initial)==.false,'initial roof centre not at envelope boundary'
@@ -41,4 +43,11 @@ ok: procedure expose checks
   checks+=1
   say 'PASS:' label
   return
+expectReject: procedure
+  use arg c,id
+  signal on syntax name trap
+  dummy=c~world(id)
+  return .false
+trap:
+  return .true
 ::requires 'SlamHarbourPinCorrespondence.cls'
