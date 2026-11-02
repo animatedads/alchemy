@@ -55,6 +55,7 @@
   row=trunc((originN-northing)/resolution+0.5)+1
   if easting<originE-resolution/2 | northing>originN+resolution/2 then return d
   if col<1 | col>columns | row<1 | row>rows then return d
+  d['COLUMN']=col;d['ROW']=row
   v=grid[row][col]
   if v='-' then do
     d['STATUS']='UNKNOWN_NODATA'; return d
