@@ -607,8 +607,9 @@ Before running anything, SLAM walks the rules in order with each case's values. 
 | First cut (guards, literals, one HAPPY value) | 430 (55.3%) | 488 (62.7%) |
 | With the code's own numbers and the width edges | **584 (75.1%)** | 497 (63.9%) |
 | Now: OMIT, FRACTION, errors read from their condition, each file's `::OPTIONS` kept (2026-10-30) | **593 (76.2%)** | 525 (67.5%) |
-| Caught only by this suite (now) | **96** | 28 |
-| Routines where this suite catches more (now) | **23** | 8 (19 the same) |
+| After Leg Drop turns 1 and 2 (2026-11-02) | **627 (80.6%)** | 538 (69.2%) |
+| Caught only by this suite (now) | **107** | 18 |
+| Routines where this suite catches more (now) | **24** | 7 (19 the same) |
 
 - **The first cut lost to random.** It won on validation code but lost on arithmetic, where it had only one HAPPY value to try. The numbers a routine's code holds, and the edges integer code is written around, fixed that.
 - **Where SLAM wins most:** `BIN2OCT` 13 against 1 (of 18), `LEXCATEGORYNAME` 56 against 46, `SAFEBASENAME` 13 against 5, `_ADBLE32` 8 against 2.
@@ -719,7 +720,7 @@ Results:
 
 | | Units | Cases written | Groups passing as it is | Predictions | Mutants | SLAM's cases catch | Random, same number |
 |---|---|---|---|---|---|---|---|
-| alchemy's 71 standalone routines | 56 | 721 (897 before Leg Drop turn 1) | 112 of 112 | 32 right, 0 wrong | 778 | **593 (76.2%)** | 525 (67.5%) |
+| alchemy's 71 standalone routines | 56 | 901 (after Leg Drop turns 1 and 2) | 112 of 112 | 50 right, 0 wrong | 778 | **627 (80.6%)** | 538 (69.2%) |
 | rx2cpp `0187d11`, routines and methods | 210 (181 methods) | 2,831 (2,433 after Leg Drop turn 1; scores below are from before it) | 416 of 416 | 207 right, 0 wrong | 842 | **649 (77.1%)** | 585 (69.5%) |
 
 On rx2cpp, 72 mutants are caught only by SLAM's cases and 8 only by the random ones. Of the five fixture survivors the lane named, two are now caught (in `raise.cls`, by reading the USER condition's additional array). The other three:
@@ -903,7 +904,7 @@ Alchemy has 778 mutants and 897 cases; rx2cpp `0187d11` has 842 mutants and 2,81
 
 | Estate | EDGE cases | Caught only by EDGE | Score (only ÷ cases) | Suite catches | Every other rule |
 |---|---|---|---|---|---|
-| alchemy | 412 → 236 | 14 → 14 | 0.0340 → 0.0593 | 593 → 593 | none fewer (NUMBER 8 → 9) |
+| alchemy | 412 → 236 | 14 → 14 | 0.0340 → 0.0593 | 593 → 593 | none fewer |
 | rx2cpp `0187d11` | 654 → 262 | 5 → 5 | 0.0076 → 0.0191 | 650 → 650 | none fewer |
 
 568 cases fewer across the two estates, and nothing lost on either. The predictions are unchanged too: 32 on alchemy and 207 on rx2cpp, all right.
@@ -914,6 +915,28 @@ Alchemy has 778 mutants and 897 cases; rx2cpp `0187d11` has 842 mutants and 2,81
   - The lesson for Leg Drop: score a turn on every estate it changes, not only on the two it was tuned and checked on.
 - **The headline is unchanged** (`tests/test_unit.rex`, 24 checks): alchemy's 778 mutants, SLAM 593 (76.2%), random 525 (67.5%), with 721 cases each, not 897.
   - The random suite's verdicts are the same, mutant by mutant: random catches come almost all from the first few cases (287 at case 1).
+
+**Two corrections to the scorer, made during turn 2, applied to both turns** (turn 1 checked again: still KEPT):
+- **A run cut off by the time limit gives no rule a catch.** It counts only in the suite's total. Before this, turn 1's "NUMBER 8 → 9" was a timeout artifact; it is 7 → 7.
+- **Other rules are checked on their catches, not on what only they catch.** When a rule starts catching what only another rule caught, the other's sole count falls, and nothing is lost. The check on sole catches is right for a rule that is cut (turn 1). It is wrong for a rule that grows (turn 2). This change was made before turn 2's results were in.
+
+**A reading bug found on the way** (SlamContract): in `text~substr(at + needle~length)`, the `+` before `needle` made SLAM read `needle` as a number. But what is added is `needle~length`, so an operator before an argument that is sent a message no longer says the argument is a number. Found by the turn-2 measurement: KIND's only sole catches on alchemy were three mutants in ReplaceFirst, caught because KIND's `abc` happened to fix the misread argument. With the fix, HAPPY catches them, and the suite is unchanged. No rx2cpp unit changes.
+
+**Turn 2 (2026-11-02): KIND. KEPT.**
+- **The measurement.** KIND (a word given to a number argument) caught nothing alone on either estate. Of alchemy's 185 surviving mutants, 52 were in `isJsonNumber`, which LITERAL gave only single characters.
+- **The change.** KIND means a value of the other kind, both ways. A number argument still gets a word. A string argument now gets numbers written as strings: `12`, `-0`, `01`, `1.5`, `1E5`, `-1.5E-3`.
+
+| Estate | KIND cases | Caught only by KIND | Score | Suite catches | Every other rule |
+|---|---|---|---|---|---|
+| alchemy | 47 → 232 | 0 → 34 | 0 → 0.1466 | 593 → **627** | no catches fewer |
+| rx2cpp `0187d11` | 75 → 1,995 | 0 → 7 | 0 → 0.0035 | 650 → **657** | no catches fewer |
+
+- **Predictions:** alchemy 32 → 50, rx2cpp 207; none wrong.
+- **The cost, for Tom:** rx2cpp's suite grows from 2,433 cases to 4,365 (+79%) for 7 more catches. Its 318 string arguments each get six forms.
+  - On rx2cpp the forms catch the same mutants: only `01` is ever the one form needed (once). On alchemy, each form earns catches of its own (`-1.5E-3` alone, 6 times). So trimming the forms would lose alchemy catches.
+  - Leg Drop's rule has no time budget; the rx2cpp lane's proposal listed one as a guard. Whether to add one, and at what price per catch, is Tom's call.
+- Evidence: `tests/unit/legdrop/turn2/`.
+- **The full unit round after both turns** (`tests/test_unit.rex`, 24 checks): alchemy, 778 mutants, 901 cases each: SLAM 627 (80.6%), random 538 (69.2%); 107 caught only by SLAM, 18 only by random. JUnit unchanged: 99 cases, 93 of 188.
 
 ### The law of 2009: s.35 as it was (2026-11-02)
 
@@ -949,6 +972,7 @@ SLAM gets credit for what it found:
     - 12 requires ooRexx refuses (Error 19.904).
     - `Crypto.cls` is required by a name that fails on Linux.
     - 141 requires name files that are not in the repository.
+14. **SlamContract read an argument as a number when only its length was added** (`at + needle~length`). Found by Leg Drop's turn-2 count, in ReplaceFirst. Fixed in `SlamContract`.
 
 ## Qualification (LOCAL_PASS)
 

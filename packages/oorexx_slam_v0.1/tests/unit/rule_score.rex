@@ -8,6 +8,7 @@
  *   ONLY    mutants only this rule catches (take the rule away and these survive)
  *   IDLE    cases that catch no mutant at all
  * Also: MUTANTS, KILLED, SURVIVED, TIMEOUT, NOCOMPILE over the suite.
+ * Rules are scored on the mutants whose run ended (KILLED, SURVIVED); TIMEOUT runs count for the suite only.
  */
 parse arg groups '|' matrix '|' out
 kindOf = .directory~new          /* 'UNIT n' -> rule */
@@ -34,6 +35,10 @@ do while lines(matrix) > 0
   tally[status] = (tally[status]~isNil)~?(0, tally[status]) + 1
   tally['MUTANTS'] = (tally['MUTANTS']~isNil)~?(0, tally['MUTANTS']) + 1
   unit = mutant~left(mutant~lastPos('_') - 1)
+  /* A run cut by the time limit says nothing about the cases after the cut, so it gives no rule a catch:
+     it counts only in TIMEOUT. (Found in Leg Drop turn 2: KIND's new cases ran first, the limit then cut
+     _ADBMODINVERSE_011 before FRACTION's cases, and FRACTION seemed to catch one fewer.) */
+  if status == 'TIMEOUT' then iterate
   rules = .set~new
   do k over killers~makeArray(' ')
     if k == '' then iterate

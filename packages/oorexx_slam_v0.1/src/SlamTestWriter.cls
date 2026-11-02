@@ -339,11 +339,22 @@
       call add self, out, seen, vs, 'EDGE', 'a machine-width edge, as' a['NAME']
     end
   end
+  /* KIND: a value of the other kind. A number argument gets a word. Leg Drop, turn 2 (2026-10-30):
+     a string argument gets numbers written as strings, the forms number-reading code must sort out
+     (a sign, a leading zero, a fraction, an exponent). Measured before: KIND caught nothing alone on
+     either estate, and isJsonNumber kept 52 mutants alive given single characters only. */
   if kn['NOKIND'] \== .true then do a over args
-    if \a['NUMBER'] then iterate
-    vs = happy~copy
-    vs[a['POS']] = 'abc'
-    call add self, out, seen, vs, 'KIND', 'argument' a['NAME'] 'is used as a number: given a word'
+    if a['NUMBER'] then do
+      vs = happy~copy
+      vs[a['POS']] = 'abc'
+      call add self, out, seen, vs, 'KIND', 'argument' a['NAME'] 'is used as a number: given a word'
+      iterate
+    end
+    do v over .array~of('12', '-0', '01', '1.5', '1E5', '-1.5E-3')
+      vs = happy~copy
+      vs[a['POS']] = v
+      call add self, out, seen, vs, 'KIND', 'argument' a['NAME'] 'is used as a string: given the number' v
+    end
   end
   /* FRACTION: a number that is not whole, beside each whole constant the unit compares with, and
      0.5 and -2.5 (asked for by the rx2cpp lane's note to SLAM) */

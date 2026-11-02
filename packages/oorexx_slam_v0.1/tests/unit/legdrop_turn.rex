@@ -5,7 +5,9 @@
  * The rule's score is the mutants only it catches, for each case it writes (what it adds for what it costs).
  * The change is kept when, on every estate:
  *   1. the rule's score is more;
- *   2. no other rule catches fewer mutants alone than before;
+ *   2. no other rule catches fewer mutants than before (its catches, not its catches alone: when this rule
+ *      starts catching what only another caught, the other's count alone falls and nothing is lost.
+ *      Turn 1 was checked on catches alone; that check is right for a rule that is cut, not one that grows);
  *   3. the suite catches no fewer mutants than before (killed, plus the ones that run past the time limit,
  *      as in run_mutants.sh).
  * Otherwise it is undone. Each estate's line is stored in rule_turn with the decision.
@@ -22,10 +24,10 @@ do e over estates~makeArray(';')
   sb = ratio(b, rule); sa = ratio(a, rule)
   if \(sa > sb) then do; okE = .false; why~append(rule 'score not more:' sb '->' sa); end
   do k over b~allIndexes~sort
-    if k~left(5) \== 'ONLY ' then iterate
-    r = k~substr(6)
+    if k~left(6) \== 'CATCH ' then iterate
+    r = k~substr(7)
     if r == rule then iterate
-    if num(a, k) < num(b, k) then do; okE = .false; why~append(r 'catches fewer alone:' num(b, k) '->' num(a, k)); end
+    if num(a, k) < num(b, k) then do; okE = .false; why~append(r 'catches fewer:' num(b, k) '->' num(a, k)); end
   end
   cb = num(b, 'KILLED') + num(b, 'TIMEOUT'); ca = num(a, 'KILLED') + num(a, 'TIMEOUT')
   if ca < cb then do; okE = .false; why~append('the suite catches fewer:' cb '->' ca); end
