@@ -84,6 +84,10 @@
     self~emit('<polygon points="' || translated || '" fill="' || fill || '" fill-opacity="' || opacity || '" stroke="#334155" stroke-width="1.3" stroke-linejoin="round"/>')
   end
 
+::method featureVisible
+  use strict arg id,cam
+  return .true
+
 ::method render
   expose scene sites renderLines
   use strict arg key,file,w=2880,h=720
@@ -129,6 +133,8 @@
     if name~left(2)=='WB' then color='#bc8c57'
     if name=='CQ_STATION' then color='#8c9aab'
     if name=='CAHILL' then color='#c65e44'
+    if name=='CAHILL_BERM' then color='#ad9379'
+    if name=='CAHILL_RAMP' then color='#5e666e'
     do ftxt over .array~of('1 2 4 3','5 6 8 7','1 2 6 5','3 4 8 7','1 3 7 5','2 4 8 6')
       vertices=.array~new;projections=.array~new
       sx=0;sy=0
@@ -160,7 +166,9 @@
     self~polygon(file,f[2],w,f[3],0.72)
   end
   /* Landmark annotations are derived by projecting the coordinates, not guesses. */
-  do id over .array~of('N','S','O','T')
+  do id over .array~of('N','S','O','T','BPT_ROOF')
+    if \scene~features~hasIndex(id) then iterate
+    if \self~featureVisible(id,cam) then iterate
     p=scene~features[id]
     xyz=.array~of(p[1],p[2],p[3])
     projected=self~project(xyz,cam,w,h)
@@ -169,6 +177,7 @@
     if id=='S' then name='Bridge S'
     if id=='O' then name='Opera box'
     if id=='T' then name='Salesforce 263m'
+    if id=='BPT_ROOF' then name='Blues Point Tower'
     x=projected[1];y=projected[2]
     if y<70 then y=70
     if y>h-45 then y=h-45
@@ -180,6 +189,7 @@
    * Labels are not estimates of image pixels; they are renderer output. */
   do id over scene~features~allIndexes~sort
     if id~left(2)\=='CQ' & id~left(2)\=='WB' then iterate
+    if \self~featureVisible(id,cam) then iterate
     pt=scene~features[id]
     xy=self~project(pt,cam,w,h)
     xx=xy[1]; yy=xy[2]
@@ -191,6 +201,7 @@
   /* Rail/Cahill endpoints are additional 3D fixed references only if loaded. */
   do id over .array~of('STATION_W','STATION_E','STATION_C','CAHILL_C')
     if \scene~features~hasIndex(id) then iterate
+    if \self~featureVisible(id,cam) then iterate
     xyz=scene~features[id]
     xy=self~project(xyz,cam,w,h)
     self~emit('<circle cx="' xy[1] '" cy="' xy[2] '" r="4" fill="#be3f33"/>')
