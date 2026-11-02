@@ -89,14 +89,20 @@
      station deck already exists. The eastern Domain Tunnel, Woolloomooloo
      and north Milsons ground transition must NOT form a surface berm. */
   s=self~scene
-  path=.array~of(,
-     .array~of(-33.85436,151.20926,49),,
-     .array~of(-33.85850,151.20910,26),,
-     .array~of(-33.86146,151.20980,16.5))
+  /* Scene metres from Claude's map-snapped expressway_route.words.
+   * The southern leg reaches the station western endpoint; the station
+   * segment and east extension are supplied by QuayInfrastructure.
+   * The heights remain approximate model hypotheses, not surveyed AHD.
+   */
+  originalW=s~features['STATION_W']
+  path=.array~of(, 
+     .array~of(-34,-218,49),,
+     .array~of(-481,-1022,19.5),,
+     .array~of(originalW[1],originalW[2],16.5))
   segments=0
   do k=1 to path~items-1
     a=path[k];b=path[k+1]
-    ap=s~local(a[1],a[2]);bp=s~local(b[1],b[2])
+    ap=.array~of(a[1],a[2]);bp=.array~of(b[1],b[2])
     dx=bp[1]-ap[1];dy=bp[2]-ap[2]
     dist=HSqrt(dx*dx+dy*dy)
     ux=dx/dist;uy=dy/dist;vx=0-uy;vy=ux
@@ -115,7 +121,8 @@
   end
   self~approachSegments=segments
   m=.directory~new
-  m['STATUS']='APPROACH_BERM_UNSURVEYED_VISIBLE_OCCLUDER'
+  m['STATUS']='APPROACH_BERM_MAP_SNAPPED_UNSURVEYED_VISIBLE_OCCLUDER'
+  m['ROUTE_SOURCE']='expressway_route.words by Claude Opus 5.5; map-derived'
   m['SEGMENTS']=segments
   m['BOXES_ADDED']=2*segments
   m['EASTERN_TUNNEL']='NOT_MODELLED_AS_SURFACE_BERM'
