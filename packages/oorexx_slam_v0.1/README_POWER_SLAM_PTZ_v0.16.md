@@ -21,7 +21,7 @@ overlap_pairs=60
 status=PTZ_PERIOD_CANDIDATE_UNQUALIFIED
 ```
 
-Native ooRexx 5.3.0 r13196 synthetic cycle test: 8/8 PASS. Geographic anchor/admission test: 12/12 PASS. The best lag is stable in exploratory image-reference comparisons too. Since only one full cycle is included, this is **one-cycle recurrence**, not a qualified schedule and not a continuous PTZ motor position calibration. Fixed camera features must be matched again after a pan or preset change; do not confuse ferry movement with background motion.
+Native ooRexx 5.3.0 r13196 synthetic cycle test: 9/9 PASS. Geographic anchor/admission test: 12/12 PASS. The best lag is stable in exploratory image-reference comparisons too. Since only one full cycle is included, this is **one-cycle recurrence**, not a qualified schedule and not a continuous PTZ motor position calibration. Fixed camera features must be matched again after a pan or preset change; do not confuse ferry movement with background motion.
 
 ## Eastern fixed geography for prolonged sweep
 
