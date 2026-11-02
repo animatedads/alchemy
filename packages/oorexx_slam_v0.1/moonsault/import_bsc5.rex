@@ -6,6 +6,7 @@
    Loader is intended for a NEW database. It fails closed if it exists.
    Initial insert may be slow due to NoSQLServer snapshot-per-statement.
    See README for the fast one-time SQLite bulk bootstrap.
+   Set REXX_PATH to packages/nosqlserver_v0.92-dev1/src or equivalent.
 */
 parse arg input db
 if input = '' | db = '' then do
@@ -90,4 +91,4 @@ mustWork: procedure
   end
   return
 
-::requires "../src/NoSQLServerSQLiteWritable.cls"
+::requires "NoSQLServerSQLiteWritable.cls"
