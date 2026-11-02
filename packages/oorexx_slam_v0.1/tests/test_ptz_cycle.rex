@@ -24,7 +24,7 @@ do k=1 to 72;sig[k]=12;end
 do j=1 to 50;b~appendSignature(sig);end
 z=b~estimate(8,15,20)
 if z['STATUS']<>'PTZ_PERIOD_CANDIDATE_UNQUALIFIED' then call fail 'constant scene'
-say 'PTZ SYNTHETIC PASS 8 checks'
+say 'PTZ SYNTHETIC PASS 9 checks'
 exit 0
 fail:
 parse arg reason
