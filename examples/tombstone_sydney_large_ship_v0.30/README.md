@@ -60,3 +60,7 @@ rexx qualify_ship_structure.rex /tmp/v030/features.psv /tmp/v030/predictions.psv
 Optional: unpack `sydney_cruise_ship_v5v_three_camera_v0.28.zip` and `sydney_harbour_normal_traffic_v5v_v0.29.zip` and run `run_coarse_probes.sh cruise_v028_dir baseline_v029_dir` to verify the original packed five-bit V5V palette control.
 
 **Archive:** scripts, exact original RGB24 crops and hashes, 28-row native features, 28 decisions with training/held-out partition, positive and corruption logs, coarse V5V audit logs, and reproducibility SHA256 manifest; **no original video source files or interpreter binaries** are redistributed. This is a **source-bound scene-specific structural evidence increment**, not a released ferry classifier.
+
+### Source-coordinate correction (v0.31 audit, 2 November 2026)
+
+The original FFmpeg YUV420 `crop` filter with requested odd source origins silently rounds x and y down to an even chroma-grid boundary by default. Thus this document's **nominal** source rectangles `x365 y365` and `x225 y95` actually retrieve RGB pixels beginning at **(364,364)** and **(224,94)** respectively. The exact original four frame-900 RGB SHA-256 hashes listed above have been independently reproduced at these corrected pixel origins. This is an image-region provenance correction, not a change in the recorded structural scores or test outcomes. v0.31's exact native RGB cropper explicitly avoids the implicit alignment adjustment. Do not treat the earlier nominal source coordinates as pixel-exact.
