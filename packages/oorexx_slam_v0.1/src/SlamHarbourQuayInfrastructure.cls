@@ -17,8 +17,17 @@
   /* Alias the actual rooftop viewpoint; legacy CIRCULAR remains recognized.
      Its XY location is existing coarse building centre, not a terrace survey. */
   self~sites['CAFE_SYDNEY']=.array~of('Cafe Sydney / Customs House rooftop', -33.862128338141,151.21083913743)
-  a=scene~local(-33.86146,151.20980)
-  b=scene~local(-33.86127,151.21160)
+  /* Retain station eastings but register both ends under the map-aligned
+   * Cahill line (-481,-1022) to (273,-1106); user-approved relocation.
+   * These are approximate map coordinates, not surveyed geography.
+   */
+  originalW=scene~local(-33.86146,151.20980)
+  originalE=scene~local(-33.86127,151.21160)
+  westX=originalW[1];eastX=originalE[1]
+  westY=-1022+(-1106+1022)*(westX+481)/754
+  eastY=-1022+(-1106+1022)*(eastX+481)/754
+  a=.array~of(westX,westY)
+  b=.array~of(eastX,eastY)
   dx=b[1]-a[1];dy=b[2]-a[2]
   length=HSqrt(dx*dx+dy*dy)
   if length<150 | length>190 then raise syntax 88.900 array('station baseline outside 150-190m qualification envelope')
@@ -31,6 +40,15 @@
   /* Segment of Cahill Expressway directly above station only; true bridge
      extends beyond these station endpoints and must not be implied to end here. */
   scene~boxes~append(scene~cuboid('CAHILL',cx,cy,13.5,length,17,3.0,ux,uy,vx,vy))
+  /* Continue east to the last map-supported point only. */
+  extX=273;extY=-1106
+  extDx=extX-b[1];extDy=extY-b[2]
+  extLength=HSqrt(extDx*extDx+extDy*extDy)
+  extUx=extDx/extLength;extUy=extDy/extLength
+  scene~boxes~append(scene~cuboid('CAHILL_EAST_EXTENSION',,
+     (b[1]+extX)/2,(b[2]+extY)/2,13.5,extLength,17,3.0,,
+     extUx,extUy,0-extUy,extUx))
+  scene~features['CAHILL_MAP_EAST_END']=.array~of(extX,extY,16.5)
   scene~features['STATION_W']=.array~of(a[1],a[2],12.5)
   scene~features['STATION_E']=.array~of(b[1],b[2],12.5)
   scene~features['STATION_C']=.array~of(cx,cy,12.5)
@@ -40,6 +58,10 @@
   m=.directory~new
   m['ID']='CQ_STATION';m['WEST_LAT']=-33.86146;m['WEST_LON']=151.20980
   m['EAST_LAT']=-33.86127;m['EAST_LON']=151.21160
+  m['PREVIOUS_WEST_LOCAL']=originalW
+  m['PREVIOUS_EAST_LOCAL']=originalE
+  m['ALIGNMENT']='MOVED_UNDER_SNAPPED_CAHILL_ROUTE'
+  m['ALIGNMENT_SOURCE']='expressway_route.words (Claude Opus 5.5); Tom Dyer approval'
   m['LENGTH_M']=length;m['WIDTH_M']=18
   m['BOTTOM_M_ASL']=4.0;m['TOP_M_ASL']=12.5;m['TRACK_REFERENCE_RL']=8.35
   m['HORIZONTAL']='USER_SUPPLIED_ENDPOINTS'
@@ -51,8 +73,10 @@
   road['ID']='CAHILL';road['LENGTH_M']=length;road['WIDTH_M']=17
   road['BOTTOM_M_ASL']=13.5;road['TOP_M_ASL']=16.5
   road['GEOMETRIC_RELATION']='DIRECTLY_ABOVE_CQ_STATION'
-  road['SCOPE']='STATION_SEGMENT_ONLY'
-  road['HORIZONTAL']='COPIED_FROM_STATION_ENDPOINTS'
+  road['SCOPE']='STATION_SEGMENT_PLUS_MAP_EAST_EXTENSION'
+  road['EAST_EXTENSION_M']=extLength
+  road['MAP_EAST_END']=scene~features['CAHILL_MAP_EAST_END']
+  road['HORIZONTAL']='SNAPPED_MAP_ROUTE_APPROXIMATE'
   road['WIDTH_HEIGHT']='USER_ESTIMATE_PLUS_HYPOTHESIS'
   road['SURVEYED_FOOTPRINT']=.false;road['SURVEYED_ROOF']=.false
   structures['CAHILL']=road
