@@ -50,12 +50,17 @@ From this directory, with the matching NoSQLServer sources and native binary
 dependencies available:
 
 ```sh
+export REXX_PATH="/path/to/alchemy/packages/nosqlserver_v0.92-dev1/src${REXX_PATH:+:$REXX_PATH}"
 rexx import_bsc5.rex bsc5_j2000.csv /var/lib/alchemy/moonsault_bsc5.sqlite
 ```
 
 The Rexx importer uses `SQLiteWritableDatabaseEngine` and
 `NoSQLServerSQL` directly. It refuses to overwrite an existing file and tests
 presence of HR 424 (Polaris), 2491 (Sirius), 7001 (Vega).
+
+The ooRexx alternative executes individual INSERT calls. Its partial new database
+is not automatically rolled back on an error; the transaction-batched SQL seed
+is preferred when atomic initial loading is required.
 
 This initial import is **not** yet claimed as a successful live deployment:
 repository access does not provide the destination database, host permission,
