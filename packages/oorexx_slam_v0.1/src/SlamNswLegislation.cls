@@ -47,7 +47,7 @@
 ::method history
   use strict arg n
   out = .array~new
-  t = self~notes(n)
+  t = self~notes(n)~translate(' ', '0a0d09'x)     /* a newline is not a blank to word(): "Subst 2007<LF>No 38" */
   do w = 1 to t~words - 1
     a = t~word(w)~strip('L', ':')
     if wordpos(a, 'Ins Subst Am Rep Renumbered') = 0 then iterate

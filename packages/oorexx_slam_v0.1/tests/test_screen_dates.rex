@@ -19,6 +19,10 @@
  *  7. Mr P's injury: NSW s.54 screens it (all UNKNOWN; its date can not be placed from the file); England
  *     and Wales has no rule pack for it here, and the screen says so instead of saying nothing
  *  8. entered once: three jurisdictions, one case file, unchanged by any screen
+ *  9. the 2009 text (attached by Tom Dyer, 2026-11-02): its own version dates; s.178B is in it and s.192E is
+ *     not; s.35 was "recklessly causes grievous bodily harm" (before Am 2012 No 41: "reckless as to causing
+ *     actual bodily harm"); a history note split over two lines is read whole ("Subst 2007<LF>No 38"); the
+ *     2009 rule pack passes every gate against the 2009 text, and its words are not in today's
  */
 signal on syntax name onSyntax
 parse arg work '|' pkg '|' repo
@@ -26,6 +30,7 @@ checks = 0
 L = pkg || '/tests/law'
 FIXTURES = repo || '/docs/architecture/fixtures'
 NSWX = repo || '/law/source_corpus/nsw_ny_20261030/nsw/state/act-1900-040_2026-10-01.xml'
+NSW09 = repo || '/law/source_corpus/nsw_ny_20261030/nsw/state/act-1900-040_2009-07-01.xml'
 
 say '== 1. NSW''s own XML'
 nsw = .SlamNswLegislation~new(NSWX)
@@ -102,6 +107,20 @@ call check wordpos('EV23', u) > 0 & find(ew, 'crimes1900nsw.s54', 'EV23')~items 
 
 say '== 8. entered once'
 call check hash(FIXTURES || '/mrs_p_roof_credit_pension_v0.3.json') == before, 'one case file for E.W. and NSW (and S.): unchanged by every screen'
+
+say '== 9. the 2009 text'
+n09 = .SlamNswLegislation~new(NSW09)
+call check n09~title == 'Crimes Act 1900' & n09~validFrom == '2009-07-01' & n09~validTo == '2009-07-06' & n09~section('178B', 'NSW')~pos('passing any cheque which is not paid on presentation') > 0 & n09~asAt('192E', '2009') == 'NOT_IN_THIS_TEXT', 'the 2009 version (valid 2009-07-01 to 2009-07-06): s.178B, valueless cheques, is in it; s.192E is not'
+t09 = n09~section('35', 'NSW'); tnow = nsw~section('35', 'NSW')
+call check t09~pos('(2) A person who recklessly causes grievous bodily harm to any person is guilty of an offence.') = t09~pos('(2)') & tnow~pos('reckless as to causing actual bodily harm') > 0 & t09~pos('actual bodily harm') = 0, 's.35(2) in 2009: "recklessly causes grievous bodily harm"; today: "reckless as to causing actual bodily harm"; the 2009 text has no "actual bodily harm"'
+h = ''; do d over n09~history('35'); h = h d['ACTION'] || d['YEAR']; end
+call check h~space == 'Am1974 Subst1983 Am2001 Subst2007' & n09~asAt('35', '2009') == 'IN_FORCE_TEXT' & nsw~asAt('35', '2009') == 'EARLIER_TEXT_NEEDED', 's.35''s notes in 2009: Am 1974, Subst 1983, Am 2001, Subst 2007 (the last split over two lines, read whole); this text was the law in 2009, today''s was not'
+r09 = .SlamLaw~parse(L || '/crimes1900_s35_2009.md')
+e = .SlamLaw~check(r09, .SlamLaw~officialFor(n09, r09))~union(.SlamLaw~checkMaximum(r09, n09))~union(.SlamLaw~kindErrors(v, .SlamLaw~kindsOfRule(r09, 'crimes1900_s35_2009.md')))
+do x over e; say '       ' x; end
+wrong = .SlamLaw~check(r09, .SlamLaw~officialFor(nsw, r09))
+call check e~items = 0 & reader(work, pkg, L || '/crimes1900_s35_2009.md') == '' & r09['MAXIMUM']['YEARS'] = 10 & wrong~items > 0, 'crimes1900_s35_2009.md: reader, the 2009 text word for word, quotes, kinds, 10 years ("Maximum penalty: Imprisonment for 10 years"); against today''s text it fails'
+
 say 'SCREEN DATES TEST: PASS (' || checks || ' checks)'
 exit 0
 

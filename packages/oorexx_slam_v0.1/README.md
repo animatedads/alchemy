@@ -51,12 +51,12 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamScreen.cls` | One case (offence-event JSON, read with ooRexx's `json.cls`) screened against every rule pack, per extent, event and person |
 | `tests/law/VOCABULARY.md` | The shared word list (law.kinds 0.2): 42 kinds, each an event or a finding, defined in SLAM's words; gate 6 |
 | `src/SlamNswLegislation.cls` | Reads NSW legislation XML (Parliamentary Counsel exchange format): a section's text, the version's dates, and each section's history notes, for what was the law on a date |
-| `tests/test_screen_people.rex` | Who did it, and what does not show it: Mr H's cheque, Mr M's tile, his previous convictions refused, his two interviews DISPUTED; NSW ss.33 and 35 for a deliberate throw (13 checks) |
+| `tests/test_screen_people.rex` | Who did it, and what does not show it: Mr H's cheque, Mr M's tile, his previous convictions refused, his two interviews DISPUTED; NSW ss.33 and 35 for a deliberate throw; s.35 as it was in 2009 (14 checks) |
 | `src/SlamWords.cls`, `bin/words.rex` | The word loop: a round of words for one intention. Load what is said, list the words SLAM does not know, enter definitions, review how each one links to the words SLAM knows, accept into the shared list (`corpus/law_words.csv`), load again |
 | `tests/test_words.rex` | The word loop: the same missing words as SLAM's reader; three turns on a made-up account (20, 18, 4, then none missing); each refusal; the writer can not accept their own words; "false" or "false [legal]", asked at entry and corrected in the input, with nothing replaced twice (21 checks) |
 | `corpus/senses.csv` | Second meanings, each a word of its own (`false-legal`, `act-law`), in the circular corpus's format so the reader loads it |
 | `corpus/rounds/` | Each round: its ledger (JSON), the form of missing words, the definitions the sources write for themselves, each turn's definitions, the review sheet |
-| `tests/test_screen_dates.rex` | The law on the date: the 2008 cheque and 2009 injury in E.W. and NSW; NSW Crimes Act ss.192E, 54, 33 and 35 (19 checks) |
+| `tests/test_screen_dates.rex` | The law on the date: the 2008 cheque and 2009 injury in E.W. and NSW; NSW Crimes Act ss.192E, 54, 33 and 35; the 2009 text of the Crimes Act (23 checks) |
 | `tests/test_screen_uk.rex` | Fraud Act 2006 s.2, Theft Act 1968 ss.1 and 21 beside the CMA: the same events and evidence, three more rule packs (16 checks) |
 | `tests/test_screen.rex` | Gate 6, the Mrs P case after her death, Computer Misuse Act ss.1, 2, 3ZA in E.W. and S. (31 checks) |
 | `tools/migrate_case_v01_v02.rex` | ChatGPT's Mrs P case v0.1 to v0.2 (`docs/architecture/fixtures/`), every change listed |
@@ -822,7 +822,7 @@ rexx bin/words.rex load   R0002
 **Round R0001** (`corpus/rounds/R0001.*`) gathered the definitions the law's rule files write for themselves: 104 words across 11 files.
 - **Three words are defined in more than one way.** "Reckless" ends in "a bad result", "damage" or "a false result". "Sees" is "has as an input", with or without "by the eyes or the mind". "Serious" applies to damage in one file and to any thing in another. Turn 1 takes the most general meaning of each, so that every file's meaning is a case of it.
 - **The intention's own words** (meaning, files, themselves) went round as well. "Themselves" waited a turn for "ones" and "they", and was then rewritten from known words.
-- **All 107 definitions pass.** Tom Dyer accepted them (2026-10-30), with R0002's three, so `corpus/law_words.csv` now holds 110 words and both rounds are closed. With the circular corpus, the senses and the shared list loaded, SLAM's reader reads every rule file, guidance file and VOCABULARY.md. Two words added to the files after R0001, skin and break, are submitted in R0002 and wait for acceptance.
+- **All 107 definitions pass.** Tom Dyer accepted them (2026-10-30), with R0002's three, so `corpus/law_words.csv` now holds 110 words and both rounds are closed. With the circular corpus, the senses and the shared list loaded, SLAM's reader reads every rule file, guidance file and VOCABULARY.md. Two words added to the files after R0001, skin and break, were accepted by Tom in R0002 (2026-11-02): the shared list holds 112 words.
 - **What the review found:**
   - five forms not linked to their stem (writes, knows, causes, pays, meaning);
   - "taken" and "took" with one definition;
@@ -914,6 +914,16 @@ Alchemy has 778 mutants and 897 cases; rx2cpp `0187d11` has 842 mutants and 2,81
   - The lesson for Leg Drop: score a turn on every estate it changes, not only on the two it was tuned and checked on.
 - **The headline is unchanged** (`tests/test_unit.rex`, 24 checks): alchemy's 778 mutants, SLAM 593 (76.2%), random 525 (67.5%), with 721 cases each, not 897.
   - The random suite's verdicts are the same, mutant by mutant: random catches come almost all from the first few cases (287 at case 1).
+
+### The law of 2009: s.35 as it was (2026-11-02)
+
+Tom attached the Crimes Act 1900 (NSW) as it stood on 2009-07-01 (version valid 2009-07-01 to 2009-07-06, SHA-256 `388bac11...`). It is in `law/source_corpus/nsw_ny_20261030/nsw/state/` with its manifest entry.
+- **It is the 2009 law.** s.178B (valueless cheques) is in it, and s.192E is not.
+- **s.35(2) then read:** "A person who recklessly causes grievous bodily harm to any person is guilty of an offence." Today's text reads "is reckless as to causing actual bodily harm". So in 2009, what the person had to foresee was serious hurt, not any hurt.
+- **A reader fault, found and fixed.** A history note split over two lines ("Subst 2007" / "No 38") lost its entry, because to ooRexx's word() a newline is not a blank. The reader now reads the note whole. s.35's notes now include Subst 2007 in both texts.
+- **The pack and the kind.** `tests/law/crimes1900_s35_2009.md` is checked against the 2009 text word for word, and fails against today's. VOCABULARY.md 0.8 adds the finding RECKLESSNESS_GRIEVOUS_HARM. Round R0003 found no new words; the pack's one "false" is the logic value and its "act"s are deeds.
+- **Mr M, s.35(2) as in 2009: NOT_SUPPORTED.** This text is the law of the date (IN_FORCE_TEXT). Recklessness as to serious hurt is DISPUTED: in his first interview he took the figure to be a man, in his second a cat (E31 and E32, made up). Today's s.35 still screens, and still says its text was not the law in 2009.
+- **Not modelled:** what the courts have said "recklessly" asks for. The rule reads only the words of the section.
 
 ### Credits for SLAM's finds
 

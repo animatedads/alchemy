@@ -2,8 +2,8 @@
 
 ```
 vocabulary: law.kinds
-version: 0.7
-written by: Claude (Opus 5.5), 2026-10-30 (0.2: the first list; 0.3: kinds for the Fraud Act 2006 s.2 and the Theft Act 1968 ss.1 and 21; 0.4: cheques, an injury, and NSW Crimes Act 1900 ss.192E and 54; 0.5: a throw, an interview, a past conviction, and hostility to a group; 0.6: "false" in the law is "false-legal" (corpus/senses.csv), and "false" is the value of logic; 0.7: a wound, an intent to do serious hurt, and recklessness as to hurt, for NSW Crimes Act 1900 ss.33 and 35)
+version: 0.8
+written by: Claude (Opus 5.5), 2026-10-30 (0.2: the first list; 0.3: kinds for the Fraud Act 2006 s.2 and the Theft Act 1968 ss.1 and 21; 0.4: cheques, an injury, and NSW Crimes Act 1900 ss.192E and 54; 0.5: a throw, an interview, a past conviction, and hostility to a group; 0.6: "false" in the law is "false-legal" (corpus/senses.csv), and "false" is the value of logic; 0.7: a wound, an intent to do serious hurt, and recklessness as to hurt, for NSW Crimes Act 1900 ss.33 and 35; 0.8: recklessness as to serious hurt, for s.35 as it was in 2009)
 architecture: Tom Dyer
 from: the event names of ChatGPT (GPT-6), OFFENCE_EVENT_CONTRACT_v0.1.md, with the changes in docs/architecture/fixtures/MIGRATION_v0.1_to_v0.2.md;
   and the kinds of evidence of the Computer Misuse Act rule and case files of 2026-10-29
@@ -751,3 +751,13 @@ RECKLESSNESS_BODILY_HARM
 it is a finding.
 
 the person knows that hurt to the body of a person can be the result of the act, and does the act all the same.
+
+kind 65:
+
+```
+RECKLESSNESS_GRIEVOUS_HARM
+```
+
+it is a finding.
+
+the person knows that hurt to the body of a person that is serious, as the law says, can be the result of the act, and does the act all the same.
