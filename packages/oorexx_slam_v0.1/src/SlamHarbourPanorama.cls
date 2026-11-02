@@ -124,6 +124,7 @@
     if name=='DECK' then color='#475569'
     if name=='OPERA' then color='#f6f4dc'
     if name=='SALESFORCE' then color='#3b82ae'
+    if name=='BLUES_POINT_TOWER' then color='#7c3aed'
     if name~left(2)=='CQ' then color='#0d9488'
     if name~left(2)=='WB' then color='#bc8c57'
     if name=='CQ_STATION' then color='#8c9aab'
@@ -187,13 +188,22 @@
     self~emit('<circle cx="' xy[1] '" cy="' xy[2] '" r="3" fill="#0f766e"/>')
     self~emit('<text x="' xx+5 '" y="' yy-8 '" font-size="11" font-family="DejaVu Sans" fill="#075985">' id '</text>')
   end
-  /* Rail/Cahill endpoints are additional 3D references only if loaded. */
+  /* Rail/Cahill endpoints are additional 3D fixed references only if loaded. */
   do id over .array~of('STATION_W','STATION_E','STATION_C','CAHILL_C')
     if \scene~features~hasIndex(id) then iterate
     xyz=scene~features[id]
     xy=self~project(xyz,cam,w,h)
     self~emit('<circle cx="' xy[1] '" cy="' xy[2] '" r="4" fill="#be3f33"/>')
     self~emit('<text x="' xy[1]+7 '" y="' xy[2]-7 '" font-size="13" font-family="monospace" fill="#be3f33">' id '</text>')
+  end
+  /* Versioned optional registered high-rise reference. No fictional skyline. */
+  if scene~features~hasIndex('BPT_ROOF') then do
+    xy=self~project(scene~features['BPT_ROOF'],cam,w,h)
+    labelX=xy[1]+10; labelY=xy[2]-12
+    if labelX>w-240 then labelX=w-240
+    if labelY<70 then labelY=70
+    self~emit('<circle cx="' xy[1] '" cy="' xy[2] '" r="5" fill="#7c3aed" stroke="white" stroke-width="1.4"/>')
+    self~emit('<text x="' labelX '" y="' labelY '" font-size="18" font-family="DejaVu Sans" font-weight="bold" fill="#6d28d9">Blues Point Tower 83m AGL</text>')
   end
   self~emit('<rect x="0" y="' h-11 '" width="' w '" height="11" fill="#cbd5e1"/>')
   self~emit('</svg>')
@@ -202,4 +212,3 @@
   end
   call stream file,'C','CLOSE'
   return cam
-
