@@ -261,6 +261,8 @@ call check c1~mainKind == 'CODE', '... its values are code-shaped (E01000001)'
 call check t~columns[4]~role == 'CONSTANT', 'area_type is one value'
 call check t~errorRows~items == 0, 'no status column, no error rows'
 say '      (' || format(secs, , 1) 'seconds, csvStream.cls reading)'
+t = .PiledriverTable~new~readFile(P || '/oorexx_slam_v0.1/moonsault/bsc5_j2000.csv')
+call check t~columns[1]~role == 'ID' & t~columns[2]~role == 'VALUE' & t~columns[3]~role == 'VALUE', 'Yale bright stars (9,096 rows): hr is an identifier; ra and dec are measurements, not names'
 t = .PiledriverTable~new~readFile(P || '/oorexx_wire3d_v0.1-dev29-national-crime/dependencies/crime_area_analytics_v0.3/tests/fixtures/police/2025-08/2025-08-test-outcomes.csv')
 call check t~errorRows~items + t~sheetErrors~items == 0, '"Unable to prosecute suspect" is an outcome: a table is not searched for error words'
 

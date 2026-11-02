@@ -16,8 +16,9 @@
  *                ERROR/FATAL rows.  Ties between counts go to the first value in sorted order.
  * A UTF-8 byte order mark and blank lines are dropped before the header is taken.
  * The name and the counts are both asked, and both answers are shown:
- *   ID           the values differ in more than half the rows: an identifier, even when the name says "code"
- *                (lsoa_code: E01000001 ... 35,672 values in 35,672 rows).
+ *   ID           whole numbers, codes or text that differ in more than half the rows: an identifier, even
+ *                when the name says "code" (lsoa_code: E01000001 ... 35,672 values in 35,672 rows).  Decimals
+ *                that differ in each row are measurements (VALUE), not names (ra_j2000_deg in bsc5_j2000.csv).
  *   CONSTANT     one value in every row.
  *   CATEGORY     a small set with no status evidence.
  *   VALUE        anything else.
@@ -207,6 +208,12 @@
     return
   end
   if dist == '5000+' then do
+    if wordpos(col~mainKind, 'INT CODE TEXT HEXTEXT') == 0 then do
+      /* decimals with no repeats are measurements (ra 1.29125000), not names */
+      col~role = 'VALUE'
+      ev~append('more than 5000' col~mainKind 'values in' n 'rows: measurements, not names')
+      return
+    end
     col~role = 'ID'
     ev~append('more than 5000 values in' n 'rows')
     if nameSays then ev~append('the name and the values do not agree: the values decide')

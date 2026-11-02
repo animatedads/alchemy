@@ -121,6 +121,43 @@ The letter says the system has four nodes; the log has three START lines.
 3. **False before this log**, because Piledriver read no times. Now the one gap over 1 s is line 8 → 9: 1.001 s, 334 times the median gap. That gap *is* the timeout: node-1 waits from the ping to the timeout, and no node writes in between.
 4. Three START lines and one DROP leave **2** nodes, node-1 and node-2. "Both are still running after line 10" is **I do not know**, so the log is **not enough**: node-1 wrote the last line (10), and node-2 has written nothing since line 6. node-3 was silent after line 3 as well, and it was dropped: a node that writes no lines is not shown to be running.
 
+## Workbooks (2026-11-02)
+
+**Measured, not assumed:** LibreOffice 24.2.7.2 wrote both workbook fixtures from one hand-written `tests/fixtures/piledriver/errors_book.fods`, using `soffice --headless --convert-to ods` and `--convert-to xlsx`.
+- **XLSX** stores an error cell as `t="e"`, and `SpreadsheetReader` gives valueType **ERROR**.
+- **ODS** stores it as `office:value-type="string"`, with `calcext:value-type="error"` and the text `#DIV/0!`. `SpreadsheetReader` reads only `office:value-type`, so it gives **TEXT**.
+
+So the same four errors were ERROR in one format and TEXT in the other. This settles the open question from v0.1. The reader is now fixed; see below.
+
+**`PiledriverSheet` finds error cells in two ways, and names which:**
+- **STORED:** the reader says ERROR.
+- **COMPUTED:** the cell has a formula and its value is an error literal.
+
+A literal with **no** formula was typed by someone. It is listed apart as **TYPED**, not counted as an error.
+
+**References.** It reads each error cell's formula references in both forms:
+- XLSX: `B2`, `$B$2`, `Data!B6`, `'My Sheet'!A1`, `B6:C6`;
+- ODS: `[.B2]`, `[$Data.C3]`, `[$Data.B6:.C6]`.
+
+Ranges are filled in. Text in quotes and function names such as `LOG10(` are skipped.
+
+**Roots.** An error cell whose references hold no error is a **ROOT**, where the error starts. Every other error cell is **passed on**, and is traced back to its roots. For the fixture, both formats give the same answer:
+- 4 roots: `Data!B2` to `B5`;
+- 3 passed on: `Data!C2`, then `C3`, then `Summary!A2`, all back to `Data!B2`;
+- 1 typed: `Data!B7`.
+
+Before the fix, they differed only in how each error was found: STORED in the XLSX, COMPUTED in the ODS. `tests/test_piledriver_sheet.rex` has 27 checks.
+
+**The fix in `oorexx_spreadsheet_intentions` (made 2026-11-02, at Tom's request):**
+- `OdsWorkbookReader~makeOdsCell` now gives a cell with `calcext:value-type="error"` the valueType **ERROR**, with its text as the value, the same as the XLSX path.
+- New `tests/test_ods_errors.rex` in that package uses LibreOffice-written copies of the fixture (`tests/fixtures/libreoffice_errors.ods`, `.xlsx`). It fails on the old reader (`B2` came back TEXT) and passes on the new one.
+- The package's other four tests still pass, run on fixtures rebuilt by its `make_fixtures.py`.
+- Both formats now give STORED. The three vendored copies in `notnotes_mini_approval_app` (`dev16`, `dev17`, `dev17-compat1`, under `vendor/spreadsheet`) were brought up to the fixed reader the same day. The COMPUTED rule stays for any reader that keeps the text only, and `tests/test_piledriver_sheet.rex` section 3 builds such a workbook to test it.
+
+`bin/piledriver.rex read` opens a workbook when `oorexx_spreadsheet_intentions/src` is on `REXX_PATH`. It loads `PiledriverSheet` only then, so logs and tables still read without that package.
+
+**Also fixed (2026-11-02):** in `moonsault/bsc5_j2000.csv` (9,096 stars), `ra_j2000_deg` and `dec_j2000_deg` were labelled ID because each has over 5,000 distinct values. Decimals that differ on every row are measurements, so they are now VALUE.
+
 ## What it found in the estate
 
 | File | Lines | Found |
@@ -145,6 +182,7 @@ The letter says the system has four nodes; the log has three START lines.
 | `tests/claude_to_slam_piledriver.md`, `tests/slam_to_claude_piledriver.md` | Claude's question to SLAM, and SLAM's reply (both read with no unknown word) |
 | `tests/test_piledriver_gemini_jvm.rex`, `tests/fixtures/piledriver/jvm_startup.log` | Gemini's problem: 15 checks |
 | `tests/test_piledriver_gemini_server.rex`, `tests/fixtures/piledriver/server_crash.log`, `tests/gemini_to_slam_server.md`, `tests/slam_to_gemini_server.md` | Gemini's second problem: 15 checks, and the letters |
+| `src/PiledriverSheet.cls`, `tests/test_piledriver_sheet.rex`, `tests/fixtures/piledriver/errors_book.*` | Workbooks: error cells, references, roots; 27 checks |
 | `tests/test_piledriver_gemini_mesh.rex`, `tests/fixtures/piledriver/mesh_network.log`, `tests/gemini_to_slam_mesh.md`, `tests/slam_to_gemini_mesh.md` | Gemini's third problem: 17 checks, and the letters |
 | `tests/gemini_to_slam_jvm.md`, `tests/slam_to_gemini_jvm.md` | Gemini's letter (SLAM's reader refuses it, and its reply says why) and SLAM's reply (read with no unknown word) |
 
@@ -181,6 +219,6 @@ Two more fixes came from the review's cases. A key name such as `error=false` is
 ## What it does not do yet
 
 - **Template merging.** Only a word that is new on every line is merged, as a name. Drain also merges words that repeat, by similarity, and that is the next step.
-- **Workbooks.** Piledriver does not open XLSX or ODS itself; `SpreadsheetReader` does. In `SpreadsheetOpenFormats.cls`, the XLSX path marks error cells `valueType = "ERROR"`, but the ODS path has no error branch. LibreOffice is believed to save error results as text (`#DIV/0!`, `Err:502`), but this has not been checked against an ODS fixture. `PiledriverTable` catches those values by their literal form. Joining the two (workbook cells into `PiledriverTable`'s column roles) is a change to that package, which is not this component's to make.
+- **Workbook column roles.** `PiledriverSheet` finds error cells and their roots. It does not yet give a sheet's tables the column roles that `PiledriverTable` gives a CSV.
 - **Speed.** `csvStream.cls` reads the 35,672-row LSOA file in about 23 to 26 seconds. Logs are fast: 1,033 lines take 1.3 seconds.
 - **Into SLAM's store.** Templates are kept in ooRexx collections and the catalog file. Writing them to `SlamStore` as nodes, with transitions as edges, would let SLAM score paths through a log the way it scores paths through code.

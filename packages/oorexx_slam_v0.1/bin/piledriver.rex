@@ -2,7 +2,9 @@
  * Architecture: Tom Dyer.  Code: Claude (Opus 5.5), 2026-10-30.
  *
  *   rexx piledriver.rex sniff FILE...            what kind of file each one is, and why
- *   rexx piledriver.rex read FILE [N]            read FILE by its kind (a log, or a table) and report
+ *   rexx piledriver.rex read FILE [N]            read FILE by its kind (a log, a table, or a workbook) and report;
+ *                                                a workbook (XLSX, ODS) needs oorexx_spreadsheet_intentions/src
+ *                                                on REXX_PATH too
  *   rexx piledriver.rex errors FILE              every error record of a log, one per line
  *   rexx piledriver.rex learn CATALOG FILE...    read each FILE and add its templates to CATALOG
  *   rexx piledriver.rex compare CATALOG FILE     read FILE against CATALOG: what is new, what went away
@@ -32,7 +34,12 @@ select
       log~readFile(path)
       report = log~report(most)
     end
-    else report = .array~of('piledriver:' path 'is' kind || ': not read here (XLSX/ODS: SpreadsheetReader; JSON: json.cls)')
+    else if kind == 'XLSX' | kind == 'ODS' then do
+      /* loaded only here: PiledriverSheet needs oorexx_spreadsheet_intentions/src on REXX_PATH */
+      .context~package~loadPackage('PiledriverSheet.cls')
+      report = .context~package~findClass('PiledriverSheet')~new~readFile(path)~report
+    end
+    else report = .array~of('piledriver:' path 'is' kind || ': not read here (JSON: json.cls)')
     do line over report
       say line
     end
