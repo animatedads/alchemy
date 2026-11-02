@@ -1,0 +1,106 @@
+{
+  "schema": "sydney.harbour.v5v.causal_aoi/0.31",
+  "date": "2026-11-02",
+  "authority": "OBSERVED_UNTESTED",
+  "camera_ids": [
+    "2",
+    "3"
+  ],
+  "source_periods": [
+    "cruise_20261102T055436Z",
+    "normal_20261102T062311Z"
+  ],
+  "verified_videos": 4,
+  "observed_source_frames_per_video": 1800,
+  "selection": {
+    "keyframes_tested": [
+      450,
+      900,
+      1350
+    ],
+    "earlier_offsets_frames": [
+      150,
+      300
+    ],
+    "candidate_cells": {
+      "width": 12,
+      "height": 12
+    },
+    "context_halo_cells": 2,
+    "top_k": 5,
+    "manual_ship_rectangles_used": false,
+    "external_movement_tracker_used": false,
+    "source": "actual V5V packed five-bit keyframes"
+  },
+  "results": {
+    "proposals": 60,
+    "source_rgb_crops_verified": 60,
+    "native_replay_exact": "4/4",
+    "full_source_video_replay_byte_exact": true,
+    "positive_rexx_receipts": 60,
+    "negative_cases_rejected": "15/15",
+    "mean_crop_area_fraction": 0.06963,
+    "max_crop_area_fraction": 0.071111
+  },
+  "historical_pixel_correction": {
+    "cause": "FFmpeg planar YUV420 crop default chroma alignment",
+    "nominal_roi2": [
+      365,
+      365
+    ],
+    "effective_roi2": [
+      364,
+      364
+    ],
+    "nominal_roi3": [
+      225,
+      95
+    ],
+    "effective_roi3": [
+      224,
+      94
+    ],
+    "previous_rgb_sha_reproduced": "4/4"
+  },
+  "diagnostics": [
+    {
+      "camera": 2,
+      "period": "cruise",
+      "old_static_support": 2,
+      "temporal_anomaly": 0,
+      "n": 15
+    },
+    {
+      "camera": 2,
+      "period": "normal",
+      "old_static_support": 3,
+      "temporal_anomaly": 0,
+      "n": 15
+    },
+    {
+      "camera": 3,
+      "period": "cruise",
+      "old_static_support": 15,
+      "temporal_anomaly": 14,
+      "n": 15
+    },
+    {
+      "camera": 3,
+      "period": "normal",
+      "old_static_support": 9,
+      "temporal_anomaly": 0,
+      "n": 15
+    }
+  ],
+  "caveats": [
+    "current user clips and previous mask geometry; not independent unseen recordings",
+    "temporal thresholds exploratory set during this experiment and not validated independently",
+    "no vessel or ship identity; no Power SLAM real-world camera pose",
+    "proposals may select bridge and skyline; Camera 2 temporal gate abstains",
+    "source frames decoded by FFmpeg sequentially; pixel-area reduction not a measured video decoder runtime speed-up"
+  ],
+  "artifact": {
+    "name": "sydney_v5v_causal_aoi_v0.31.zip",
+    "sha256": "bc361b79e99f274e6a928ccebf64f761ce7a8b0f65cd7b7a1aeeae57f8b19fb1"
+  }
+}
