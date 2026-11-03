@@ -1,0 +1,198 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_slam450",
+    "version": "0.88",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "PHYSICS_WORLD_ROOT": "${REPO_ROOT}/packages/oorexx_physics_world_v0.1-dev51",
+      "MATHS_ROOT": "${REPO_ROOT}/packages/oorexx_maths_v0.20",
+      "FOREIGN_RUNTIME_ROOT": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6",
+      "LD_LIBRARY_PATH": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/build:/usr/local/lib:/usr/lib",
+      "PYTHONPATH": "${REPO_ROOT}/packages/oorexx_maths_v0.20/python"
+    },
+    "rexx_path": {
+      "mode": "replace",
+      "entries": [
+        "${PACKAGE_ROOT}/src",
+        "${REPO_ROOT}/packages/oorexx_physics_world_v0.1-dev51/rexx",
+        "${REPO_ROOT}/packages/oorexx_maths_v0.20/rexx",
+        "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/rexx"
+      ],
+      "require_entries": true
+    },
+    "require_dirs": [
+      "PHYSICS_WORLD_ROOT",
+      "MATHS_ROOT",
+      "FOREIGN_RUNTIME_ROOT"
+    ],
+    "report": [
+      "PHYSICS_WORLD_ROOT",
+      "MATHS_ROOT"
+    ]
+  },
+  "tests": [
+    {
+      "name": "aircraft_type",
+      "argv": [
+        "rexx",
+        "tests/test_aircraft_type450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "battery",
+      "argv": [
+        "rexx",
+        "tests/test_battery450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "broadphase",
+      "argv": [
+        "rexx",
+        "tests/test_broadphase450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "buddy",
+      "argv": [
+        "rexx",
+        "tests/test_buddy450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "buddy_energy",
+      "argv": [
+        "rexx",
+        "tests/test_buddy_energy450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "course",
+      "argv": [
+        "rexx",
+        "tests/test_course450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "explore",
+      "argv": [
+        "rexx",
+        "tests/test_explore450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "fixed_camera",
+      "argv": [
+        "rexx",
+        "tests/test_fixed_camera450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "fixedwing",
+      "argv": [
+        "rexx",
+        "tests/test_fixedwing450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "memory",
+      "argv": [
+        "rexx",
+        "tests/test_memory450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "obstructed",
+      "argv": [
+        "rexx",
+        "tests/test_obstructed450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "precision",
+      "argv": [
+        "rexx",
+        "tests/test_precision450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "race_referee",
+      "argv": [
+        "rexx",
+        "tests/test_race_referee450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "race_tactics",
+      "argv": [
+        "rexx",
+        "tests/test_race_tactics450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "rival_air",
+      "argv": [
+        "rexx",
+        "tests/test_rival_air450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "target_cost",
+      "argv": [
+        "rexx",
+        "tests/test_target_cost450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "visual_separation",
+      "argv": [
+        "rexx",
+        "tests/test_visual_separation450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "wind",
+      "argv": [
+        "rexx",
+        "tests/test_wind450.rex"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "quad-wing-race30-all-auditors",
+      "argv": [
+        "sh",
+        "-c",
+        "d=$(mktemp -d) && rexx bin/race450_trio.rex $d/race 45046 LEGACY 30 WIND BATTERY AUTO FIXED_WING PURE; rc=$?; test $rc -eq 0 -o $rc -eq 5 && python3 tests/audit_battery450.py $d/race >/dev/null && python3 tests/audit_buddy_energy450.py $d/race >/dev/null && python3 tests/audit_target_cost450.py $d/race >/dev/null && python3 tests/audit_aircraft_type450.py $d/race >/dev/null && python3 tests/audit_trio450.py $d/race --scene evidence/powerslam_v040_scene_ORACLE_ONLY.csv --camera-mode battery --out $d/geometry.json >/dev/null"
+      ],
+      "timeout_seconds": 900
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_slam450_v0.88"
+    }
+  }
+}
