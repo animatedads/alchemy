@@ -1,0 +1,45 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_compress",
+    "version": "0.1-dev3",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "LD_LIBRARY_PATH": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/build:/usr/local/lib:/usr/lib"
+    },
+    "rexx_path": {
+      "mode": "replace",
+      "entries": [
+        "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/rexx"
+      ],
+      "require_entries": true
+    }
+  },
+  "tests": [
+    {
+      "name": "native-and-purity",
+      "argv": [
+        "sh",
+        "tests/run_native.sh"
+      ],
+      "timeout_seconds": 900
+    },
+    {
+      "name": "png-pure-vs-foreign",
+      "argv": [
+        "sh",
+        "tests/run_png.sh"
+      ],
+      "timeout_seconds": 600
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_compress_v0.1-dev3"
+    }
+  }
+}
