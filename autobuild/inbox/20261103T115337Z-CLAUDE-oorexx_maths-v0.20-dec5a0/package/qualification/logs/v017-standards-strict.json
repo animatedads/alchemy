@@ -1,0 +1,983 @@
+{
+  "zip": "oorexx_maths_v0.17-pre3.zip",
+  "files_scanned": 55,
+  "files_with_findings": 18,
+  "errors": 0,
+  "warnings": 126,
+  "strict": true,
+  "verdict": "FAIL",
+  "reports": [
+    {
+      "path": "oorexx_maths_v0.17/benchmarks/benchmark_discrete_state_space.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 12,
+          "message": "Why oh why are you calculating 0.02; x2=-0.01; checksum=0 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "x1=0.02; x2=-0.01; checksum=0"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 16,
+          "message": "Why oh why are you calculating 0.7*x1 - 0.25*x2 + (0.02*sample) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "y=0.7*x1 - 0.25*x2 + (0.02*sample)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 18,
+          "message": "Why oh why are you calculating 0.9981*x1 + x2*0.0017 + sample*0.012 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "nx1=0.9981*x1 + x2*0.0017 + sample*0.012"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 19,
+          "message": "Why oh why are you calculating -0.0012*x1 + x2*0.9968 + sample*0.006 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "nx2=-0.0012*x1 + x2*0.9968 + sample*0.006"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 20,
+          "message": "Why oh why are you calculating nx1; x2=nx2 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "x1=nx1; x2=nx2"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/benchmarks/benchmark_guitar_boosters.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 22,
+          "message": "Why oh why are you calculating 64; rows=.array~new; data=.array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "size=64; rows=.array~new; data=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 24,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "row=.array~new"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/benchmarks/benchmark_physics_dev43_guitar_dynamics.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 30,
+          "message": "Why oh why are you calculating .array~new;cr=.array~new;kr=.array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "mr=.array~new;cr=.array~new;kr=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 41,
+          "message": "Why oh why are you calculating .array~new; nutShapes=.array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "shapes=.array~new; nutShapes=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 49,
+          "message": "Why oh why are you calculating start+mj-1; sj=shapes[mj] in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "j=start+mj-1; sj=shapes[mj]"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 59,
+          "message": "Why oh why are you calculating bridge~stiffness*si*p; damp=bridge~dampi in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "term=bridge~stiffness*si*p; damp=bridge~damping*si*p"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 83,
+          "message": "Why oh why are you calculating 0;maxV=0;i=0 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "maxX=0;maxV=0;i=0"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/benchmarks/benchmark_scalar_provider.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 10,
+          "message": "Why oh why are you calculating sum+.Maths~sin(x,ctx)+.Maths~cos(x,ctx)+ in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "sum=sum+.Maths~sin(x,ctx)+.Maths~cos(x,ctx)+.Maths~exp(x/1000,ctx)"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/benchmarks/benchmark_second_order_dynamics.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 7,
+          "message": "Why oh why are you calculating .array~new; cr=.array~new; kr=.array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "mr=.array~new; cr=.array~new; kr=.array~new"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/benchmarks/benchmark_spectrum_provider.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 12,
+          "message": "Why oh why are you calculating .Maths~sin(2*pi*7*t,genctx)+(0.25*.Maths in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "v=.Maths~sin(2*pi*7*t,genctx)+(0.25*.Maths~cos(2*pi*13*t,genctx))"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/benchmarks/benchmark_vector_provider.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 9,
+          "message": "Why oh why are you calculating .MathVector~new(a,ctx); vb=.MathVector~n in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "va=.MathVector~new(a,ctx); vb=.MathVector~new(b,ctx)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 11,
+          "message": "Why oh why are you calculating va in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "x=va"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 13,
+          "message": "Why oh why are you calculating (x+vb)~hadamard(va) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "x=(x+vb)~hadamard(va)"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/examples/rational_roundtrip.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 9,
+          "message": "Why oh why are you calculating f*j in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "exact=f*j"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/rexx/MathNumpyProvider.cls",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 218,
+          "message": "Why oh why are you calculating .MathDerivation~new('spectrum.rfft',.arr in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "deriv=.MathDerivation~new('spectrum.rfft',.array~of(series))"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 219,
+          "message": "Why oh why are you calculating .MathFFTResult~new(bins,1/dt,n,t0,contex in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "out=.MathFFTResult~new(bins,1/dt,n,t0,context,ev,deriv)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 228,
+          "message": "Why oh why are you calculating self~_vectorArray(left); ra=self~_vector in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "la=self~_vectorArray(left); ra=self~_vectorArray(right); outn=left~size+right~size-1"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 233,
+          "message": "Why oh why are you calculating 1; do while fftSize<outn; fftSize=fftSiz in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "fftSize=1; do while fftSize<outn; fftSize=fftSize*2; end"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 234,
+          "message": "Why oh why are you calculating _np~get('fft'); fa=fft~rfft(la[1],fftSiz in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "fft=_np~get('fft'); fa=fft~rfft(la[1],fftSize); fb=fft~rfft(ra[1],fftSize); prod=_np~multiply(fa,fb)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 236,
+          "message": "Why oh why are you calculating .ForeignPython~keywords; kw~put('dtype', in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "kw=.ForeignPython~keywords; kw~put('dtype','float64'); c=_np~array(vals,kw)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 237,
+          "message": "Why oh why are you calculating self~_evidence('signal.convolve',context in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "ev=self~_evidence('signal.convolve',context,.array~of(left~canonical,right~canonical),'numpy-rfft-li"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/rexx/MathRxMathProvider.cls",
+      "findings": [
+        {
+          "rule": "PRIVATE_METHOD",
+          "severity": "WARN",
+          "line": 62,
+          "message": "Private method atan2Native \u2014 private methods are invisible across a Message activity boundary. If anything calls this asynchronously, you have built a trap door and left the sign off.",
+          "snippet": "::method atan2Native private"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/rexx/Maths.cls",
+      "findings": [
+        {
+          "rule": "PRIVATE_METHOD",
+          "severity": "WARN",
+          "line": 3879,
+          "message": "Private method lowerIndex \u2014 private methods are invisible across a Message activity boundary. If anything calls this asynchronously, you have built a trap door and left the sign off.",
+          "snippet": "::method lowerIndex private"
+        },
+        {
+          "rule": "PRIVATE_METHOD",
+          "severity": "WARN",
+          "line": 3951,
+          "message": "Private method lowerIndex \u2014 private methods are invisible across a Message activity boundary. If anything calls this asynchronously, you have built a trap door and left the sign off.",
+          "snippet": "::method lowerIndex private"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1542,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "row=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1620,
+          "message": "Why oh why are you calculating self~_matrixEvidence('vector.add',contex in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "ev=self~_matrixEvidence('vector.add',context,.array~of(left~canonical,right~canonical),'elementwise-"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1627,
+          "message": "Why oh why are you calculating self~_matrixEvidence('vector.sub',contex in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "ev=self~_matrixEvidence('vector.sub',context,.array~of(left~canonical,right~canonical),'elementwise-"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1635,
+          "message": "Why oh why are you calculating self~_matrixEvidence('vector.dot',contex in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "ev=self~_matrixEvidence('vector.dot',context,.array~of(left~canonical,right~canonical),'dot-product'"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1648,
+          "message": "Why oh why are you calculating self~_matrixEvidence('vector.hadamard',c in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "ev=self~_matrixEvidence('vector.hadamard',context,.array~of(left~canonical,right~canonical),'element"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1675,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "row=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1677,
+          "message": "Why oh why are you calculating rx_math_zero(context) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "s=rx_math_zero(context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1816,
+          "message": "Why oh why are you calculating times[i]-t0; angle=2*pi*f*rel in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "rel=times[i]-t0; angle=2*pi*f*rel"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1817,
+          "message": "Why oh why are you calculating re+vals[i]*rx_math_numeric_cos(angle,con in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "re=re+vals[i]*rx_math_numeric_cos(angle,context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1818,
+          "message": "Why oh why are you calculating im-vals[i]*rx_math_numeric_sin(angle,con in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "im=im-vals[i]*rx_math_numeric_sin(angle,context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1853,
+          "message": "Why oh why are you calculating 2*pi*freqs[i]*t+phases[i] in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "angle=2*pi*freqs[i]*t+phases[i]"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1854,
+          "message": "Why oh why are you calculating y+amps[i]*rx_math_numeric_exp(-decays[i] in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "y=y+amps[i]*rx_math_numeric_exp(-decays[i]*t,context)*rx_math_numeric_sin(angle,context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1890,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "fr=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1901,
+          "message": "Why oh why are you calculating 0; do i=1 to n; y+=Hx[r,i]*x[i]+Hv[r,i]* in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "y=0; do i=1 to n; y+=Hx[r,i]*x[i]+Hv[r,i]*v[i]; end; row~append(y)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1921,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "row=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1923,
+          "message": "Why oh why are you calculating rx_math_zero(context) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "y=rx_math_zero(context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 1931,
+          "message": "Why oh why are you calculating rx_math_zero(context) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "v=rx_math_zero(context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 2002,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "products=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 2004,
+          "message": "Why oh why are you calculating rx_math_zero(context); do q over product in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "total=rx_math_zero(context); do q over products; total=total+q; end"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 2014,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "row=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 2016,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "products=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 2018,
+          "message": "Why oh why are you calculating rx_math_zero(context); do q over product in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "total=rx_math_zero(context); do q over products; total=total+q; end"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 2035,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "row=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 2050,
+          "message": "Why oh why are you calculating aug[i][col] in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "factor=aug[i][col]"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 2620,
+          "message": "Why oh why are you calculating .MathRational~of(0,1,context) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "sum=.MathRational~of(0,1,context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 2623,
+          "message": "Why oh why are you calculating sum+(av*xv) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "sum=sum+(av*xv)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 2659,
+          "message": "Why oh why are you calculating proved[j]~proof~primaryEvidence in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "b=proved[j]~proof~primaryEvidence"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 3045,
+          "message": "Why oh why are you calculating rx_math_quantize_flat(source,scheme) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "qres=rx_math_quantize_flat(source,scheme)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 3046,
+          "message": "Why oh why are you calculating .MathQuantizationState~new(scheme,'vecto in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "state=.MathQuantizationState~new(scheme,'vector:'value~size,qres['scales'],value~context,'PURE','0.1"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 3047,
+          "message": "Why oh why are you calculating rx_math_quant_evidence('vector.quantize' in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "ev=rx_math_quant_evidence('vector.quantize',value~context,value~canonical,scheme,state,qres)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 3051,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "source=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 3070,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "row=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 3134,
+          "message": "Why oh why are you calculating .MathRational~of(q,1,.MathContext~ration in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "recon=.MathRational~of(q,1,.MathContext~rational)*scale"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 3148,
+          "message": "Why oh why are you calculating cb~nearestIndex(normalized); payload~app in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "idx=cb~nearestIndex(normalized); payload~append(idx-1); recon=cb~at(idx)*scale"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 3945,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "row=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4083,
+          "message": "Why oh why are you calculating (a~real-b~real)~abs; if d>m then m=d in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "d=(a~real-b~real)~abs; if d>m then m=d"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4084,
+          "message": "Why oh why are you calculating (a~imaginary-b~imaginary)~abs; if d>m th in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "d=(a~imaginary-b~imaginary)~abs; if d>m then m=d"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4151,
+          "message": "Why oh why are you calculating context; numeric digits context~workingD in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "_context=context; numeric digits context~workingDigits"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4152,
+          "message": "Why oh why are you calculating rx_math_coerce_value(a,context); _b=rx_m in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "_a=rx_math_coerce_value(a,context); _b=rx_math_coerce_value(b,context); _c=rx_math_coerce_value(c,co"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4165,
+          "message": "Why oh why are you calculating self~discriminant in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "d=self~discriminant"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4166,
+          "message": "Why oh why are you calculating .MathEvidence~new('quadratic.solve',_con in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "ev=.MathEvidence~new('quadratic.solve',_context,.array~of(_a,_b,_c))"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4168,
+          "message": "Why oh why are you calculating rx_math_numeric_sqrt(d,_context) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "root=rx_math_numeric_sqrt(d,_context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4172,
+          "message": "Why oh why are you calculating 'APPROXIMATE_HIGH_PRECISION'; if _contex in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "guarantee='APPROXIMATE_HIGH_PRECISION'; if _context~numberDomain='RATIONAL' then guarantee='EXACT'"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4518,
+          "message": "Why oh why are you calculating _values[_cursor]; _values[_cursor]=value in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "out=_values[_cursor]; _values[_cursor]=value"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4525,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "out=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4536,
+          "message": "Why oh why are you calculating state~cursor; _values=state~values; _con in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "_cursor=state~cursor; _values=state~values; _context=state~context"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4540,
+          "message": "Why oh why are you calculating 1; _values=.array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "_cursor=1; _values=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4554,
+          "message": "Why oh why are you calculating system; _context=system~context; _time=s in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "_system=system; _context=system~context; _time=startTime; _method=method~upper; _last=.nil"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4670,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "rows=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4709,
+          "message": "Why oh why are you calculating provider~matrixMul(c,v,context); kx=prov in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "cv=provider~matrixMul(c,v,context); kx=provider~matrixMul(k,x,context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4710,
+          "message": "Why oh why are you calculating provider~vectorSub(provider~vectorSub(fn in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "rhs=provider~vectorSub(provider~vectorSub(fn,cv,context),kx,context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4711,
+          "message": "Why oh why are you calculating provider~matrixSolve(m,rhs,context) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "aStep=provider~matrixSolve(m,rhs,context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4712,
+          "message": "Why oh why are you calculating provider~vectorAdd(v,provider~vectorMul( in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "vn=provider~vectorAdd(v,provider~vectorMul(aStep,h,context),context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4713,
+          "message": "Why oh why are you calculating provider~vectorAdd(x,provider~vectorMul( in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "xn=provider~vectorAdd(x,provider~vectorMul(vn,h,context),context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4715,
+          "message": "Why oh why are you calculating provider~matrixMul(c,vn,context); kx1=pr in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "cv1=provider~matrixMul(c,vn,context); kx1=provider~matrixMul(k,xn,context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4716,
+          "message": "Why oh why are you calculating provider~matrixSolve(m,provider~vectorSu in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "an=provider~matrixSolve(m,provider~vectorSub(provider~vectorSub(fn1,cv1,context),kx1,context),contex"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4717,
+          "message": "Why oh why are you calculating xn; v=vn; a=an in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "x=xn; v=vn; a=an"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4728,
+          "message": "Why oh why are you calculating provider~vectorAdd(provider~vectorAdd(pr in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "tx=provider~vectorAdd(provider~vectorAdd(provider~vectorMul(x,a0c,context),provider~vectorMul(v,a2c,"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4729,
+          "message": "Why oh why are you calculating provider~vectorAdd(provider~vectorAdd(pr in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "tc=provider~vectorAdd(provider~vectorAdd(provider~vectorMul(x,a1c,context),provider~vectorMul(v,a4c,"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4731,
+          "message": "Why oh why are you calculating provider~vectorAdd(fn,provider~vectorAdd in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "rhs=provider~vectorAdd(fn,provider~vectorAdd(provider~matrixMul(m,tx,context),provider~matrixMul(c,t"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4732,
+          "message": "Why oh why are you calculating provider~matrixSolve(keff,rhs,context) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "xn=provider~matrixSolve(keff,rhs,context)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4733,
+          "message": "Why oh why are you calculating provider~vectorSub(provider~vectorSub(pr in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "an=provider~vectorSub(provider~vectorSub(provider~vectorMul(provider~vectorSub(xn,x,context),a0c,con"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4734,
+          "message": "Why oh why are you calculating provider~vectorAdd(v,provider~vectorMul( in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "vn=provider~vectorAdd(v,provider~vectorMul(provider~vectorAdd(provider~vectorMul(a,one-gamma,context"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4735,
+          "message": "Why oh why are you calculating xn; v=vn; a=an in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "x=xn; v=vn; a=an"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 4942,
+          "message": "Why oh why are you calculating .MathRational~coerce(value,context) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "r=.MathRational~coerce(value,context)"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/tests/test_causal_continuation_native.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 11,
+          "message": "Why oh why are you calculating cont~advance(.001,25) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "block=cont~advance(.001,25)"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/tests/test_discrete_state_space_native.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 12,
+          "message": "Why oh why are you calculating sys~process(U,.array~of(.02,-.01)) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "native=sys~process(U,.array~of(.02,-.01))"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 18,
+          "message": "Why oh why are you calculating .MathContext~binary64('PURE') in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "pureCtx=.MathContext~binary64('PURE')"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 19,
+          "message": "Why oh why are you calculating .Maths~discreteStateSpace(A,B,C,D,pureCt in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "pureSys=.Maths~discreteStateSpace(A,B,C,D,pureCtx)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 20,
+          "message": "Why oh why are you calculating pureSys~process(U,.array~of(.02,-.01)) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "pure=pureSys~process(U,.array~of(.02,-.01))"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 21,
+          "message": "Why oh why are you calculating 0 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "maxY=0"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 23,
+          "message": "Why oh why are you calculating (native~outputs[i,1]-pure~outputs[i,1])~ in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "diff=(native~outputs[i,1]-pure~outputs[i,1])~abs; if diff>maxY then maxY=diff"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 34,
+          "message": "Why oh why are you calculating cont~advance(u1); snap=cont~snapshot; r2 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "r1=cont~advance(u1); snap=cont~snapshot; r2=cont~advance(u2)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 37,
+          "message": "Why oh why are you calculating cont~restore(snap); r2b=cont~advance(u2) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "ignored=cont~restore(snap); r2b=cont~advance(u2)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 42,
+          "message": "Why oh why are you calculating .MathContext~binary64('AUTO') in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "autoCtx=.MathContext~binary64('AUTO')"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 43,
+          "message": "Why oh why are you calculating .Maths~discreteStateSpace(A,B,C,D,autoCt in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "autoSys=.Maths~discreteStateSpace(A,B,C,D,autoCtx)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 44,
+          "message": "Why oh why are you calculating autoSys~process(U,.array~of(.02,-.01)) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "autoTr=autoSys~process(U,.array~of(.02,-.01))"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 48,
+          "message": "Why oh why are you calculating 16; aa=.array~new; bb=.array~new; ccrow= in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "na=16; aa=.array~new; bb=.array~new; ccrow=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 50,
+          "message": "Why oh why are you calculating .array~new in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "row=.array~new"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 56,
+          "message": "Why oh why are you calculating .array~new; do i=1 to na; xzero~append(0 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "xzero=.array~new; do i=1 to na; xzero~append(0); end"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 57,
+          "message": "Why oh why are you calculating .Maths~discreteStateSpace(aa,bb,cc,dd,au in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "big=.Maths~discreteStateSpace(aa,bb,cc,dd,autoCtx)~process(uu,xzero)"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/tests/test_native_numpy_extended.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 8,
+          "message": "Why oh why are you calculating .MathVector~new(a,ctx); vb=.MathVector~n in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "va=.MathVector~new(a,ctx); vb=.MathVector~new(b,ctx)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 9,
+          "message": "Why oh why are you calculating va+vb in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "vc=va+vb"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 13,
+          "message": "Why oh why are you calculating vc~prove(.MathClaim~independentlyReprodu in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "p=vc~prove(.MathClaim~independentlyReproduced('1E-11'))"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 16,
+          "message": "Why oh why are you calculating vc*2 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "vd=vc*2"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 19,
+          "message": "Why oh why are you calculating va~hadamard(vb) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "vh=va~hadamard(vb)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 21,
+          "message": "Why oh why are you calculating va*vb in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "dot=va*vb"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 22,
+          "message": "Why oh why are you calculating .MathVector~new(a,.MathContext~binary64( in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "pureDot=.MathVector~new(a,.MathContext~binary64('PURE'))*.MathVector~new(b,.MathContext~binary64('PU"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 25,
+          "message": "Why oh why are you calculating .MathSampledScalarSeries~new(ctx) in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "series=.MathSampledScalarSeries~new(ctx)"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 26,
+          "message": "Why oh why are you calculating '3.1415926535897932384626433832795028841 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "pi='3.1415926535897932384626433832795028841971693993751'"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 27,
+          "message": "Why oh why are you calculating 1024 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "count=1024"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 28,
+          "message": "Why oh why are you calculating 7 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "freq=7"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/tests/test_numpy.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 27,
+          "message": "Why oh why are you calculating .array~new; s=0 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "row=.array~new; s=0"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/tests/test_proof_planner_numpy.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 10,
+          "message": "Why oh why are you calculating .array~new; sum=0 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "row=.array~new; sum=0"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/tests/test_rational_roundtrip.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 12,
+          "message": "Why oh why are you calculating f*j in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "x=f*j"
+        }
+      ]
+    },
+    {
+      "path": "oorexx_maths_v0.17/tests/test_second_order_io.rex",
+      "findings": [
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 21,
+          "message": "Why oh why are you calculating sys~integrate(.array~of(.1,-.05),.array~ in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "tr=sys~integrate(.array~of(.1,-.05),.array~of(0,.02),dt,steps,fullF,0,'SYMPLECTIC_EULER')"
+        },
+        {
+          "rule": "LOOP_INVARIANT",
+          "severity": "WARN",
+          "line": 22,
+          "message": "Why oh why are you calculating 0 in a loop when nothing about it changes with the loop variable? It's always going to be the same value. You are the weakest link. Goodbye.",
+          "snippet": "maxd=0"
+        }
+      ]
+    }
+  ]
+}

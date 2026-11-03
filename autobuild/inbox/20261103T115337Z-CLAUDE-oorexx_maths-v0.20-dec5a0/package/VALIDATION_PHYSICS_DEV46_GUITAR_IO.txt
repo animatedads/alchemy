@@ -1,0 +1,29 @@
+ooRexx Maths v0.15 — Physics World dev46.4 guitar input/output projection check
+
+Runtime:
+- user-supplied ooRexx 5.3.0 r13196 debug build
+- user-supplied Foreign Runtime v0.22.6
+- SciPy/NumPy provider enabled
+
+Consumer topology:
+- Physics World dev46.4 GuitarMathsDynamicsProjection
+- 30 string modal coordinates + 2 body coordinates = 32 DOF
+- one scalar generalized input channel representing a caller-owned pressure fixture
+- one caller-owned velocity observation shaped like a pickup-position modal projection
+- 64 SYMPLECTIC_EULER steps at dt=2.5e-6 s
+
+Result:
+PASS guitar 32DOF selected-channel projection
+provider=SCIPY
+dimension=32
+samples=65
+max_output_delta=9.839120504930085894303e-11
+projected_seconds=0.140160
+full_trajectory_seconds=0.814483
+returned_selected_scalars=65
+full_state_scalars=6240
+
+The timing is a focused bridge/materialization fixture, not a universal speed claim.
+The output delta compares projection performed inside NumPy with independent
+projection of the materialized binary64 full trajectory in ooRexx.
+Physics remains the authority for the meaning of B, Hx and Hv.

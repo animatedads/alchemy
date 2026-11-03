@@ -1,0 +1,40 @@
+ooRexx Maths v0.9 — current Physics World dev26 consumer qualification
+
+Consumer inspected:
+  oorexx_physics_world_v0.1-dev26.zip
+  SHA-256 145a1621f6a31e4f06d20f0003087278ebb5661290f74bdf0b7093b2ffee1e2b
+
+Current Physics patterns identified for central Maths ownership:
+  - bounded 1-D linear interpolation
+  - bounded 2-D bilinear interpolation
+  - sampled scalar mean/RMS/selected-frequency Fourier projection
+  - scalar sqrt/sin/cos/atan/exp/log use currently routed through RxMath
+  - quadratic roots in sphere/paraboloid ray intersection
+  - explicit simultaneous-linear-system object over existing matrix solve
+
+Retained in Physics:
+  - physical force/energy equations
+  - shallow-water/Rusanov/CFL solver semantics
+  - fluid/material/contact/fracture/acoustic domain authority
+
+Targeted Physics dev26 tests against Maths v0.9:
+  PASS test_aero_coefficient_table.rex
+  PASS test_aero_surface_bilinear.rex
+  PASS test_spectral_observations.rex
+  PASS test_parabolic_mirror.rex
+  PASS test_world.rex
+
+Direct Physics-dev26 / Maths-v0.9 mathematical comparison:
+  PASS Physics aero table matches Maths linear interpolation
+  PASS Physics aero surface matches Maths bilinear interpolation
+  PASS Physics sampled mean matches Maths mean
+  PASS Physics sampled RMS matches Maths RMS
+  PASS Physics selected-frequency amplitude matches Maths Fourier projection
+  PASS Physics cosine component matches Maths projection
+  PASS Physics sine component matches Maths projection
+  PASS Physics sphere ray root matches Maths quadratic root
+  PASS Physics dev26 -> Maths v0.9 equivalence 8 assertions
+
+A broader Physics suite was also started against v0.9; all tests executed before the bounded tool
+execution window passed. The run was interrupted by the harness timeout, not a Physics/Maths assertion.
+This record therefore makes only the targeted consumer-qualification claims above.
