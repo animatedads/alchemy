@@ -62,13 +62,34 @@
 ::method init
   self~init:super
   self~sites['NORTH_PTZ']=.array~of('North-shore PTZ same-building hypothesis',-33.8487411,151.214266)
-  self~sites['BLUES_PT']=.array~of('Blues Point rooftop hypothesis',-33.8488623,151.203338)
+  /* The native Blues Point Tower catalogue is the ONLY geometry source.
+   * Its illustrative unrotated footprint is 24m east-west by 20m
+   * north-south; choose the south-eastern ROOF corner on the eastern edge.
+   * This is a model camera proposal, not a measured rooftop installation.
+   */
+  blues=.HarbourBluesPointTower~catalogue
+  camLat=blues['LAT']-blues['FOOTPRINT_ACROSS_M']/2/111200
+  camLon=blues['LON']+blues['FOOTPRINT_ALONG_M']/2/92300
+  self~sites['BLUES_PT']=.array~of('Blues Point SE rooftop corner (+2m), hypothesis',camLat,camLon)
   self~approachSegments=0
 ::method siteCamera
   use strict arg key
   c=self~siteCamera:super(key)
   if key~upper=='NORTH_PTZ' then c[3]=79
-  if key~upper=='BLUES_PT' then c[3]=68.06
+  if key~upper=='BLUES_PT' then do
+    /* Configure places tower at an explicitly assumed base ASL of zero.
+       Camera must be 2m ABOVE the same actual model roof, not the old
+       unqualified 68.06m camera-fit candidate. */
+    scene=self~scene
+    if scene~features~hasIndex('BPT_ROOF') then do
+      roof=scene~features['BPT_ROOF']
+      c[3]=roof[3]+2
+    end
+    else do
+      blues=.HarbourBluesPointTower~catalogue
+      c[3]=blues['STRUCTURAL_HEIGHT_M']+2
+    end
+  end
   return c
 ::method polygon
   use strict arg file,pts,w,fill,opacity
