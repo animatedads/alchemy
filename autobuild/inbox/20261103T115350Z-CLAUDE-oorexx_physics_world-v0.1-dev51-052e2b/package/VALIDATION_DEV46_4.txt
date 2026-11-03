@@ -1,0 +1,25 @@
+Physics World v0.1-dev46.4 band repair qualification
+Runtime: ooRexx 5.3.0 r13196 Internal Test Version
+
+Repairs:
+- DrumVoice refreshes cached volume acceleration after every modal step.
+- Bounded acoustic history uses Queue FIFO semantics.
+- Fixed-geometry pressure plan keeps retarded-path semantics and cursor caching.
+- Guitar physical string caches pi and ln(2)/12 semitone constant.
+- Guitar instrument/acoustic-feedback/coupled/body response caches invariant pi/omega terms.
+- GuitarMathsModalRenderer explicitly reports UNCOUPLED_SINGLE_PLUCK_ONLY and LIVE_STEPPED_STATE=false.
+
+Qualification:
+COMPILED=47 .cls files
+PASS drum microphone nonzero pressure peak=8.57506246 Pa
+PASS drum pressure plan old/new difference <= 1e-8 Pa
+PASS drum kit history pruning
+PASS drum kit sympathetic structural coupling
+PASS drum kit freeze/restore/acoustic-pressure test
+PASS guitar cached constants
+
+Real MIDI audition:
+Master of Puppets channel 10, window 29.727243..30.727243 s
+9 MIDI drum events, 6000 samples at 6 kHz
+stateful DrumKitPhysics render, no Python synthesis / no precomputed drum IRs
+WAV PCM peak ~= 0.94 full scale, RMS ~= 0.211 full scale
