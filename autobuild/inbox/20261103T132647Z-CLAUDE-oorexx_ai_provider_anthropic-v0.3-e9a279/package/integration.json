@@ -1,0 +1,43 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_ai_provider_anthropic",
+    "version": "0.3",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "ALCHEMY_OBJECTS_ROOT": "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+      "AI_ACCESS_ROOT": "${REPO_ROOT}/packages/oorexx_ai_access_v0.6/src",
+      "SECRET_BROKER_ROOT": "${REPO_ROOT}/packages/oorexx_secret_broker_v0.2/src",
+      "CRYPTO_SRC": "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+    },
+    "require_dirs": [
+      "ALCHEMY_OBJECTS_ROOT",
+      "AI_ACCESS_ROOT",
+      "SECRET_BROKER_ROOT",
+      "CRYPTO_SRC"
+    ],
+    "report": [
+      "ALCHEMY_OBJECTS_ROOT",
+      "AI_ACCESS_ROOT"
+    ]
+  },
+  "tests": [
+    {
+      "name": "provider-offline-suite",
+      "argv": [
+        "bash",
+        "run_tests.sh"
+      ],
+      "timeout_seconds": 600
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_ai_provider_anthropic_v0.3"
+    }
+  }
+}
