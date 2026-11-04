@@ -5,7 +5,7 @@
  * Numerical provider: ooRexx rxmath; optional Alchemy Maths trig adapter.
  * No Python process or network dependency.
  * This is an EPHEMERIS, not an observed position or GPS fix.
- * Input UTC is strictly YYYY-MM-DDTHH:MM:SSZ, lon positive east, degrees.
+ * Input UTC: ISO YYYY-MM-DDTHH:MM:SSZ or whole POSIX Unix seconds, lon east.
  * Sea-level spherical-earth topocentric lunar approximation, standard refraction.
  */
 
