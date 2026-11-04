@@ -298,7 +298,7 @@ def execute(job):
     elif mid=="VIDEO.RECON.LATENT_MULTI_FRAME": out,support,unc=method_latent(frames,track,cw,ch)
     return write_outputs(job,frames,pts,track,out,support,unc,METHODS[mid])
 
-def _require_private_material_paths(job, result_path):
+def _require_private_material_paths(job_path, job, result_path):
     """Fail closed before decoding if any captured or derived material leaves private storage."""
     private_root = os.environ.get("ALCHEMY_PRIVATE_MEDIA_ROOT", "").strip()
     if not private_root or not os.path.isabs(private_root):
@@ -307,7 +307,7 @@ def _require_private_material_paths(job, result_path):
     if root == os.path.abspath(os.sep) or not os.path.isdir(root):
         raise RuntimeError("PRIVATE_MEDIA_ROOT_UNSAFE")
 
-    paths = [result_path, job.get("output_dir", "")]
+    paths = [job_path, result_path, job.get("output_dir", "")]
     source = job.get("source", {})
     if source.get("kind") == "VIDEO_FILE":
         paths.append(source.get("path", ""))
@@ -339,7 +339,7 @@ def run_job_file(job_path: str, result_path: str, expected_methodology_id: str =
     # boundary must not generate even an error artifact at an unsafe location.
     with open(job_path, "r", encoding="utf-8") as stream:
         job = json.load(stream)
-    _require_private_material_paths(job, result_path)
+    _require_private_material_paths(job_path, job, result_path)
     try:
         actual_method = str(job.get("methodology_id", "")).upper()
         if expected_methodology_id and actual_method != expected_methodology_id.upper():
