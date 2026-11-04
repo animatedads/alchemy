@@ -95,6 +95,13 @@ Historical root documentation has been retained under `docs/history/` rather tha
 
 Alchemy contains components at different maturity levels: experiments, development candidates, qualified components and larger worked systems. A directory being public does not by itself mean that every component is production-certified. Read the component's own qualification, compatibility, safety and dependency documentation.
 
+## Copyright and enquiries
+
+All work copyright and provided under licenses as notified
+Rasen Falcon - Enquiries - Mr Thomas Dyer
+1 1/2 Skyfall Grampian Ave, Paisley, PA2 8DJ
+www.rasenfalcon.com
+
 ## Why ooRexx?
 
 ooRexx remains unusually good at readable automation, object-oriented scripting, systems integration and long-lived operational code. Alchemy is an attempt to give it a much larger modern component estate: not a toy showcase, but enough real machinery that substantial applications can stay in Rexx when Rexx is the right tool.

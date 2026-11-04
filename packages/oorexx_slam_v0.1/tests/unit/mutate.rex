@@ -23,9 +23,15 @@ do while lines(summary) > 0
   file = repo || '/' || path
   text = charin(file, 1, chars(file)); call stream file, 'C', 'CLOSE'
   lines = text~makeArray('0a'x)
+  owner = ''
+  rname = name
+  if name~pos('~') > 0 then parse var name owner '~' rname     /* CLASS~METHOD */
   unit = .nil
   do u over .SlamUnitSplitter~new~split(text)
-    if u~kind == 'ROUTINE' then if u~selector == name~upper then unit = u
+    if owner == '' then do
+      if u~kind == 'ROUTINE' then if u~selector == rname~upper then unit = u
+    end
+    else if u~kind == 'METHOD' then if u~selector == rname~upper then if u~owner~upper == owner~upper then unit = u
   end
   if unit == .nil then iterate
   k = 0
@@ -37,6 +43,9 @@ do while lines(summary) > 0
     prev2 = prev
     prev = t
     /* an assignment (x = ...) or a loop's control variable (do i = ...) is not a comparison */
+    /* x[i] = v and x~name = v are assignments too */
+    if t~text == '=' then if p1 \== .nil then if p1~text == ']' then iterate
+    if t~text == '=' then if p2 \== .nil then if p2~text == '~' | p2~text == '~~' then iterate
     if t~text == '=' then if p1 \== .nil then if p1~kind == 'IDENT' then do
       if p2 == .nil then iterate
       if p2~kind == 'SEP' then iterate
@@ -54,20 +63,24 @@ do while lines(summary) > 0
     mutated = ln~left(t~col - 1) || new || ln~substr(t~endCol)
     m = lines~copy
     m[t~line] = mutated
-    if \compiles(m, name) then do
+    if slamLiftBody(m, rname, owner) == .nil then do
+      stillborn += 1
+      iterate
+    end
+    if \compiles(slamLiftBody(m, rname, owner), rname) then do
       stillborn += 1
       iterate
     end
     k += 1
     mutants += 1
-    id = name || '_' || right(k, 3, '0')
+    id = slamGroupName('M', name)~changeStr('.testGroup', '')~substr(3) || '_' || right(k, 3, '0')
     mf = mutDir || '/' || id || '.rex'
     call SysFileDelete mf
     call charout mf, m~makeString('L', '0a'x)
     call stream mf, 'C', 'CLOSE'
     change = 'line' t~line || ':' t~text '->' new
     do kind over .array~of('SLAM', 'RAND')
-      g = groupDir || '/' || kind || '_' || name~upper || '.testGroup'
+      g = groupDir || '/' || slamGroupName(kind, name)
       call lineout jobsFile, g || '09'x || mf || '09'x || name || '09'x || id || '09'x || kind || '09'x || change
     end
   end
@@ -76,26 +89,9 @@ call stream jobsFile, 'C', 'CLOSE'
 say 'units' units ' mutants' mutants ' stillborn' stillborn
 exit 0
 
-/* Does the routine still compile in the changed file? (the lines after its directive, to the next) */
+/* Does the lifted body still compile? */
 compiles: procedure
-  use arg lines, name
-  body = .array~new
-  inside = .false
-  do ln over lines
-    s = ln~strip
-    if s~left(2) == '::' then do
-      if inside then leave
-      parse upper value s with d nm .
-      nm = nm~strip('B', ';')~strip('B', "'")~strip('B', '"')
-      if d == '::ROUTINE' then if nm == name~upper then do
-        inside = .true
-        semi = s~pos(';')
-        if semi > 0 then body~append(s~substr(semi + 1))
-      end
-      iterate
-    end
-    if inside then body~append(ln)
-  end
+  use arg body, name
   signal on syntax name noCompile
   r = .Routine~new(name, body)
   return .true
@@ -107,3 +103,4 @@ onSyntax:
   exit 1
 
 ::requires 'SlamSegmenter.cls'
+::requires 'SlamLift.cls'

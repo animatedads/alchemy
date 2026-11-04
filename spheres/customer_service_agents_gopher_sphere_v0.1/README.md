@@ -22,3 +22,7 @@ python3 -m unittest discover -s tests -v
 If an LLM Gopher runtime is available, install this pack beside its `packs/core`, place `profiles/customer-service-agents.json` alongside Gopher profiles, then use `gopher --profile customer-service-agents context customer-service-agents --full`.
 
 The sphere contains no remote credentials, raw recordings, customer PII, scripts that dispatch work, or embedded third-party components. The `integration.json` is solely for Alchemy Autobuild publication. The package is additive; it does not claim to update the published business services.
+
+## 29 October 2026 update
+
+The Google/Azure ASR evidence importer v0.1-dev2 is committed directly to GitHub main because Autobuilder is stopped. It binds source/audio SHA-256 to independent word timestamps before legacy recovery review; see `ops.customer-service.asr-evidence`. 26 Python tests pass locally; live cloud transcription, MediaPipe and mesh execution remain unqualified. The original readback capture and video playout packages remain separately owned.

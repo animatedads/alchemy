@@ -41,6 +41,9 @@ do while lines(summary) > 0
     prev2 = prev
     prev = t
     /* an assignment (x = ...) or a loop's control variable (do i = ...) is not a comparison */
+    /* x[i] = v and x~name = v are assignments too */
+    if t~text == '=' then if p1 \== .nil then if p1~text == ']' then iterate
+    if t~text == '=' then if p2 \== .nil then if p2~text == '~' | p2~text == '~~' then iterate
     if t~text == '=' then if p1 \== .nil then if p1~kind == 'IDENT' then do
       if p2 == .nil then iterate
       if p2~kind == 'SEP' then iterate

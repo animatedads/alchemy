@@ -7,11 +7,16 @@
 #include <sstream>
 #include <iomanip>
 #include <string>
+#include <type_traits>
 #include <vector>
 static std::string hex(const std::string &s) {
     std::ostringstream o;
     for (unsigned char c : s) o << std::uppercase << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(c);
     return o.str();
+}
+// rx2cpp 8c5cb30 ("Compact strings") made Value::bytes an rx::RxStr; before, it was a std::string. Both work here.
+template <class S> static std::string text(const S &s) {
+    if constexpr (std::is_same_v<S, std::string>) return s; else return s.str();
 }
 int main(int argc, char **argv) {
     if (argc < 2) return 2;
@@ -29,7 +34,7 @@ int main(int argc, char **argv) {
         rxbif::Context ctx;
         try {
             rx::Value v = rxbif::invoke(f[1], args, ctx);
-            std::cout << f[0] << " ACCEPT " << hex(v.bytes) << "\n";
+            std::cout << f[0] << " ACCEPT " << hex(text(v.bytes)) << "\n";
         } catch (const rxbif::NativeSubsetUnsupported &) {
             std::cout << f[0] << " DEFER\n";
         } catch (const std::exception &e) {

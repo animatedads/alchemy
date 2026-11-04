@@ -1,0 +1,31 @@
+ooRexx XTP v0.1-dev18 validation
+=================================
+
+Build:
+- g++ C++17 -Wall -Wextra -Werror: PASS
+- libxtp.a / libxtp.so: PASS
+- liboorexx_xtp_native.so against ooRexx 5.3.0 r13196 (20261007-174859): PASS
+
+New dev18 coverage:
+- receiver CNTL RATE/BURST parsed and retained per receiver: PASS
+- multicast sender honors slowest receiver RATE/BURST: PASS
+- RATE and ALLOC control remain independent: PASS
+- retransmitted multicast packets pass through same rate gate: covered by common send path
+- CLI --rate / --burst receiver administration: PASS
+- ooRexx multicast sender rate-pacing hook: PASS
+- ooRexx multicast listener advertised RATE/BURST hook: PASS
+- Socket Provider vendored core rebased to v0.1-dev13: PASS
+
+Observed controlled test:
+- advertised RATE=20000 bytes/sec
+- advertised BURST=512 bytes
+- 4096-byte logical transfer, 256-byte segments
+- sender reported paced bursts > 0 and rate sleep > 0
+- reconstructed payload byte-for-byte: PASS
+
+Full environment qualification:
+- UDP/unicast/multipath/filter/path-health/multicast suite: PASS
+- exact supplied ooRexx runtime integration: PASS
+- native XTP IPv4 protocol 36: SKIP in container (CAP_NET_RAW denied)
+- direct L2 EtherType 0x817D: SKIP in container (raw/net-admin capability denied)
+- earlier ED209 real-host qualification remains evidence for native L3/L2 carriers.

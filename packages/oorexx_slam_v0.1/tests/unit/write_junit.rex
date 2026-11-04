@@ -104,6 +104,8 @@ do file over files~makeArray(' ')
     end
     kn['LITERALS'] = w~literalsOf(u~tokens)
     kn['NUMBERS'] = w~numbersOf(u~tokens)
+    kn['WIDTH'] = .true    /* Leg Drop, turn 1, is for ooRexx only: on the JVM every int and long has a width, and the
+                              JUnit round lost 7 of 93 catches when the width pairs were left out (99 cases to 85) */
     kn['NOKIND'] = primitiveNumbers
     cases = w~cases(label, kn)
     sel = sig['NAME']

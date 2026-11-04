@@ -29,6 +29,15 @@ say '      units' units ' cases' cases ' written' written ' random' rnd ' predic
 call check units = 56, '56 of the 71 standalone routines get a group (the other 15 take a collection or an object SLAM cannot make)'
 call check written > 600 & rnd = written, written 'cases written; each routine also gets a random group of the same size'
 call check right > 20 & wrong = 0, 'SLAM predicted' right 'outcomes before running (a guard''s constant return or raise syntax), and none was wrong'
+kinds = .directory~new
+call SysFileTree u || '/groups/SLAM_*.testGroup', 'g.', 'FO'
+do i = 1 to g.0
+  t = charin(g.i, 1, chars(g.i)); call stream g.i, 'C', 'CLOSE'
+  do w over .array~of('_omit', '_fraction', 'self~errorOf(')
+    if t~pos(w) > 0 then kinds[w] = .true
+  end
+end
+call check kinds~hasIndex('_omit') & kinds~hasIndex('_fraction') & kinds~hasIndex('self~errorOf('), 'the cases the rx2cpp lane asked for are written: an argument left out, a number that is not whole, and an error read from its condition (code and message)'
 parse value linein(u || '/originals.txt') with . ok bad .
 call check ok = 2 * units & bad = 0, 'every group, SLAM''s and random, passes under the real ooTest framework on the code as it is (' || ok || ')'
 
@@ -50,6 +59,7 @@ txt = r~makeString('L', '0a'x)
 call check txt~pos('FILE native/dropped.cpp') > 0 & txt~pos('FILE src/Orphan.cls') > 0, 'files no test names, directly or through what it names: dropped.cpp (no script builds it), Orphan.cls'
 call check txt~pos('UNIT src/Shapes.cls UNUSED') > 0 & txt~pos('UNIT native/helper.cpp helperNever') > 0, 'units no reached code calls: unused, helperNever (named only in a comment, which does not count)'
 call check txt~pos('PERIMETER') == 0 & txt~pos('helperTwice') == 0, 'perimeter (called by area, which the test calls) and helperTwice (called by helperUser) are reached'
+call check txt~pos('helperByPointer') == 0, 'helperByPointer is reached: installed by its address (hook() = &helperByPointer), as rx2cpp installs its hooks (the rx2cpp lane''s report)'
 
 j = work || '/junit'
 if stream(j || '/summary.txt', 'C', 'QUERY EXISTS') \== '' then do

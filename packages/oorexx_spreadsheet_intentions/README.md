@@ -133,3 +133,14 @@ Field aliases now strip trailing `[note ...]` annotations and line breaks, while
 ## dev6 — safe interchange and new-workbook creation
 
 Adds an object-first `SpreadsheetTableData` interchange contract plus XLSX, ODS, CSV and TSV writers and CSV/TSV readers. `SpreadsheetTableData~fromRelation` preserves the originating relation and sheet as provenance objects. Export creates a new workbook; dev6 deliberately does not mutate arbitrary existing workbooks. Text values are always written as text even when they begin with spreadsheet formula sigils such as `=` or `@`; formula creation remains an explicit future capability. This is the intended seam for NotNotes and other object systems: adapt authoritative objects to ordered columns + Rexx row objects, then publish them without flattening the source authority into application-specific glue.
+
+## Changes after delivery
+
+**2026-11-02: ODS error cells.** LibreOffice (24.2.7.2, measured) stores a formula's error result as `office:value-type="string"`, with `calcext:value-type="error"` and the error text (`#DIV/0!`, `#N/A`, `#VALUE!`, `#NAME?`). `OdsWorkbookReader~makeOdsCell` read only `office:value-type`, so those cells came back TEXT, while the XLSX reader gives the same cells ERROR (`t="e"`).
+- **The fix:** `makeOdsCell` now reads `calcext:value-type`. An error cell gets valueType **ERROR**, with its text as `rawValue`, `textValue` and `cachedValue`, and it keeps its formula.
+- **The test:** `tests/test_ods_errors.rex`, on `tests/fixtures/libreoffice_errors.ods` and `.xlsx` (both written by LibreOffice from one source). It fails on the old reader and passes on the new one. `test_readers`, `test_relations`, `test_interchange` and `test_intentions` still pass, on fixtures rebuilt by `tests/fixtures/make_fixtures.py`.
+- **Found by:** SLAM Piledriver (Architecture: Tom Dyer). **Fix and test:** Claude (Opus 5.5).
+- **The vendored copies, brought up the same day:** `notnotes_mini_approval_app_v0.1-dev16`, `-dev17` and `-dev17-compat1` each have `vendor/spreadsheet/SpreadsheetOpenFormats.cls`. All three were identical to this reader before the fix, and each is now identical to the fixed one.
+  - Run against each copy, `test_ods_errors` failed before (`B2` came back TEXT) and passes after. `test_readers`, `test_relations` and `test_interchange` pass after.
+  - `test_intentions` needs `SpreadsheetIntentions.cls`, which the app does not vendor.
+  - The app's own suites do not run on ooRexx 5.3.0 r13196, before or after the change, for reasons outside the reader: dev16 lacks its `vendor/time/fixtures/Europe/London` file, and dev17 and dev17-compat1 stop at a syntax error in `src/MiniNotesApp.cls` line 758.

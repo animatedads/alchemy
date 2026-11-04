@@ -292,12 +292,18 @@
       prv = ''
       if i > 1 then prv = self~opText(c[i - 1])
       if wordpos(nxt, self~ARITH) > 0 then a['KINDS']['NUMBER'] = .true
-      if wordpos(prv, '+ * / // % **') > 0 then a['KINDS']['NUMBER'] = .true
-      if prv == '-' then if i > 2 then if c[i - 2]~kind \== 'OP' then a['KINDS']['NUMBER'] = .true
+      /* An operator before the argument says what the argument is only when no message follows it: in
+         'at + needle~length' it is the length that is added, not needle (found by Leg Drop's KIND count:
+         ReplaceFirst's needle was read as a number, so its HAPPY case gave it 7) */
+      sent = (nxt == '~' | nxt == '~~')
+      if \sent then do
+        if wordpos(prv, '+ * / // % **') > 0 then a['KINDS']['NUMBER'] = .true
+        if prv == '-' then if i > 2 then if c[i - 2]~kind \== 'OP' then a['KINDS']['NUMBER'] = .true
+      end
       if nxt == '||' | prv == '||' then a['KINDS']['STRING'] = .true
       if nxt == '[' then a['KINDS']['COLLECTION'] = .true
       if wordpos(nxt, self~COMPARE) > 0 then if i + 2 <= c~items then if c[i + 2]~kind == 'NUMBER' then a['KINDS']['NUMBER'] = .true
-      if wordpos(prv, self~COMPARE) > 0 then if i > 2 then if c[i - 2]~kind == 'NUMBER' then a['KINDS']['NUMBER'] = .true
+      if \sent then if wordpos(prv, self~COMPARE) > 0 then if i > 2 then if c[i - 2]~kind == 'NUMBER' then a['KINDS']['NUMBER'] = .true
       if prv == '' then if i > 1 then if c[i - 1]~kind == 'IDENT' then if c[i - 1]~text == 'OVER' then a['KINDS']['COLLECTION'] = .true
       if nxt == '~' | nxt == '~~' then if i + 2 <= c~items then do
         m = c[i + 2]~text

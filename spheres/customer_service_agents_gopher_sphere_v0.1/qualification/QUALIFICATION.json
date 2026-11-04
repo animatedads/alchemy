@@ -1,7 +1,7 @@
 {
   "schema": "alchemy.customer-service-agents-sphere.qualification/0.1",
-  "date": "2026-10-23",
-  "status": "SPHERE_STATIC_QUALIFIED_PRE_AUTOBUILD",
+  "date": "2026-10-29",
+  "status": "SOURCE_MAIN_PRESENT_LOCAL_TESTS_QUALIFIED_PENDING_LIVE_EVIDENCE",
   "checks": [
     {
       "surface": "zip-regression",
@@ -28,6 +28,19 @@
       "source": "autobuild-submit/20261023T155200Z-CHATGPT-customer-readback-legacy-dev1",
       "result": "submission ready commit exists; no main receipt at last check",
       "limitations": "not accepted main source"
+    },
+    {
+      "surface": "source-regression",
+      "source": "packages/customer_service_readback_legacy_v0.1-dev2/src/asr_evidence.py",
+      "sha256": "dd35349a5ca522797b94652797c00200c086c86ef84e85c5d16892d7de4246c0",
+      "result": "26/26 Python unit tests passed; source/test Git blob SHA matched the tested local files",
+      "limitations": "provider JSON synthetic; no actual cloud requests or provider attestation"
+    },
+    {
+      "surface": "GitHub main",
+      "source": "animatedads/alchemy/packages/customer_service_readback_legacy_v0.1-dev2",
+      "result": "Direct fast-forward commit 6cc714530fcf4bcd5eb906e4bf57dd1a4d0851ad",
+      "limitations": "not a production deployment or site authentication"
     }
   ],
   "unqualified": [

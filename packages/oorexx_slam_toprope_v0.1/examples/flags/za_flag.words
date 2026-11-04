@@ -1,0 +1,43 @@
+-- The flag of the Republic of South Africa
+-- Constitution of the Republic of South Africa 1996, Schedule 1.
+-- Architecture: Tom Dyer.
+-- First script and colours: Gemini (it stopped at line 22: 'mark' is not a shape).
+-- These words: Claude (Opus 5.5).
+--
+-- The flag is 2 high and 3 long, so "one fifth as wide as the flag" is 2/5,
+-- "one fifteenth" is 2/15 and "one third" is 2/3.
+
+colour sagreen is #007749
+colour sagold  is #ffb81c
+colour sablack is #000000
+colour sawhite is #ffffff
+colour sared   is #e03c31
+colour sablue  is #001489
+
+make south africa flag
+  size 3 by 2
+  -- clause 6: red above, blue below
+  paint all sared
+  box sablue from 0 1 to 3 2
+  -- clause 3: the centre lines of the band start in the top and bottom
+  -- corners next to the flag post, meet in the middle, then go to the fly.
+  -- clause 4: white edges, each 2/15. Green 2/5 + two white 2/15 = 2/3.
+  band sawhite from top left to middle thick 2/3
+  band sawhite from bottom left to middle thick 2/3
+  band sawhite from middle to right thick 2/3
+  -- clause 4: on the flag post side the edge is gold, not white.
+  -- Its middle is 1/5 + 1/15 = 4/15 from the centre line, on the inside.
+  band sagold from middle to top left thick 2/15 shift 4/15 left
+  band sagold from bottom left to middle thick 2/15 shift 4/15 left
+  -- clause 3: the green band, one fifth as wide as the flag
+  band sagreen from top left to middle thick 2/5
+  band sagreen from bottom left to middle thick 2/5
+  band sagreen from middle to right thick 2/5
+  -- clause 5: the black triangle. Its sides are 1/3 inside each centre line.
+  -- The corners need the root of 13: 0.400617 is root 13 / 9,
+  -- and 0.899074 is 3/2 less root 13 / 6.
+  shape sablack from 0 0.400617 to 0.899074 1 to 0 1.599383
+end
+
+page 1200 wide
+draw south africa flag

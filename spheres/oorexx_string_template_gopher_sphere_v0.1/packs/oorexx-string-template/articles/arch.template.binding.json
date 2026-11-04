@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "arch.template.binding",
+  "version": "0.1",
+  "sphere": "oorexx-string-template",
+  "title": "Deterministic formatter binding",
+  "authority": "project-authoritative",
+  "summary": "A StringTemplate captures a sealed snapshot of formatter-name bindings. Later mutation of the caller registry cannot silently change an existing template, while missing formatter requirements remain inspectable before rendering.",
+  "semantics": [
+    "Registry membership is snapshotted and sealed at template construction.",
+    "Formatter objects are not deep-cloned; their deliberate internal state remains formatter authority.",
+    "missingFormatterNames observes unsatisfied names without executing formatter code.",
+    "validateBindings, render and renderTo fail closed when a required formatter is absent.",
+    "renderTo validates bindings before emitting the first segment.",
+    "withFormatters creates a new StringTemplate over the same source rather than rebinding an existing object."
+  ],
+  "related": [
+    "arch.template.requirements",
+    "ref.template.api",
+    "ops.template.continuation"
+  ],
+  "provenance": [
+    {
+      "source": "repository",
+      "path": "packages/oorexx_string_template/ARCHITECTURE.md"
+    },
+    {
+      "source": "repository",
+      "path": "packages/oorexx_string_template/src/StringTemplate.cls"
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+MVS Alchemy Services PRE25 qualification delta
+Date: 2026-10-29
+Status: STATIC QUALIFIED IN CONSTRUCTION ENVIRONMENT; PRE25 ROUTE-AUTH HOST RUNTIME NOT_RUN; ED209Z LIVE NOT_RUN
+
+Changes:
+- ConnectSelector dev8 and LDAP Identity dev22 current bindings.
+- HTTPS v0.4.8 transport-evidence boundary.
+- fail-closed LDAP session + endpoint attestation + IdentityDirectory ACL route authority.
+- split read-only ED209C preflight with explicit sshnode job IDs and Python $HASP matching.
+- PRE24 sshnode audit and PRE23 HASP395/final-spool gates retained.
+- guest carrier/wire/opcodes unchanged.
+
+Static results:
+PASS RPC_CORE_ALIGNMENT PRE25
+PASS SSHNODE_JOB_IDS PRE25
+PASS MVS_TYPED_PAYLOADS payloads=22
+PASS MVS_WIRE_BYTES
+PASS MASLIVE_JES_COMPLETION PRE25
+PASS CONNECT_SELECTOR_SECURITY PRE25
+PASS HASP_SHELL_SAFETY
+PASS INSTRUMENTATION_MESH_WIRING PRE25
+PASS PLATFORM_ROUTE_AUTHORITY PRE25
+PASS bash -n harness/preflight
+PASS MASD75/MASLIVE card width <=71
+PASS generated MASLIVE JCL 796 cards, max width 71
+
+PRE24 independent evidence: CODEX-PC REQ-00000883 verified sealed PRE24, eight static checks PASS, HOST/tests/run_pre9_host.sh PASS under ooRexx 5.3.0 r13196. CLAUDE-PC REQ-00000851 blocked before JES due composite preflight shell plumbing.

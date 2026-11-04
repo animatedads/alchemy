@@ -75,7 +75,7 @@ testSession:
   call assert r~wire~pos("A13 OK") > 0, "delete"
 
   r = session~processLine("A14 FETCH 1 FLAGS")
-  call assert r~wire~pos("NOTIMPLEMENTED") > 0, "unimplemented data commands are explicit"
+  call assert r~wire~pos("requires selected state") > 0, "message command enforces selected state"
   r = session~processLine("A15 LOGOUT")
   call assert r~closeConnection, "logout closes endpoint"
   return
@@ -97,7 +97,10 @@ testHonestCapabilities:
   caps = session~capabilityArray
   call assert has(caps, "NAMESPACE"), "implemented extension advertised"
   call assert \has(caps, "AUTH=PLAIN"), "unimplemented SASL mechanism not advertised"
-  call assert \has(caps, "IMAP4rev1"), "mandatory surface not overclaimed"
+  call assert has(caps, "UIDPLUS"), "exact UID expunge/copy result capability advertised"
+  call assert has(caps, "MOVE"), "server MOVE capability advertised"
+  call assert has(caps, "X-OOREXX-SERVER-MESSAGE"), "message-data development capability advertised"
+  call assert \has(caps, "IMAP4rev1"), "mandatory surface still not overclaimed"
   return
 
 has: procedure

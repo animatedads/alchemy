@@ -1,0 +1,29 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "website_publisher_gopher_sphere",
+    "version": "0.1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "sphere_structure_contracts",
+      "argv": [
+        "python3",
+        "tests/verify_sphere.py"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "spheres/website_publisher_gopher_sphere_v0.1"
+    }
+  }
+}

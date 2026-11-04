@@ -1,0 +1,19 @@
+MVS Alchemy Services dev3-pre12 direct X'75' bounded transport
+
+SOURCE BASIS
+- PRE10 live ED209Z: platform/JES PASS; guest build FAIL RC=8 before run.
+- PRE11: static direct-X'75' repair, NOT_RUN live.
+
+PRE12 CHANGES
+- Direct X'75' remains self-contained; no EZASMI/EZASOH03 dependency.
+- CONNECT native -2 is bounded with STIMER backoff.
+- RECEIVE native -2 is bounded with STIMER backoff.
+- MD75RET retains native X'75'/socket result.
+- MD75ERR qualification reason: 1 instruction failure, 2 wait timeout, 3 native function failure.
+
+STATUS
+PASS static source/card/JCL checks in build environment.
+NOT_RUN ED209Z assembly.
+NOT_RUN ED209Z link.
+NOT_RUN ED209Z X'75' execution.
+NOT_RUN live Queue/DB/IMAP/SMTP/PATH.

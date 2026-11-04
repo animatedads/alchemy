@@ -24,8 +24,13 @@ class SphereQualification(unittest.TestCase):
   def test_article_id_uniqueness(self):
     ids=[a["id"] for a in self.articles]
     self.assertEqual(len(ids),len(set(ids)))
-    self.assertEqual(len(ids),10)
+    self.assertEqual(len(ids),11)
     self.assertTrue(set(self.meta["start_here"])<=set(ids))
+  def test_asr_gateway(self):
+    a=next(x for x in self.articles if x['id']=='ops.customer-service.asr-evidence')
+    text=' '.join(a['invariants'])
+    for term in ('SHA-256','Google','Azure','RECOGNIZED_UNVERIFIED','false'):
+      self.assertIn(term,text)
   def test_article_contracts(self):
     for a in self.articles:
       self.assertEqual(a["kind"],"article")

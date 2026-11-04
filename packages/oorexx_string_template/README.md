@@ -1,8 +1,6 @@
-# ooRexx String Template v0.1-dev2
+# ooRexx String Template v0.1-dev3
 
-A small, safe, compiled string-template library for ooRexx.
-
-The package fills a practical gap without inventing a second programming language inside Rexx. Template source is parsed once into segment objects and later rendered against an explicit context. Values remain ooRexx objects until a formatter produces text.
+A small, safe, compiled string-template library for ooRexx. Template source is data, never executable Rexx.
 
 ```rexx
 context = .Directory~of("name", "Fred", "count", 7)
@@ -10,38 +8,27 @@ t = .StringTemplate~new("Hello ${name}. You have ${count} messages.")
 say t~render(context)
 ```
 
-Supported syntax remains deliberately small:
+Syntax remains deliberately small: `${name}`, controlled dotted paths, one registered formatter with optional argument, and `$${...}` for a literal placeholder. There are no template expressions, loops, conditionals, macros or implicit object method calls.
 
-- `${name}` — named value.
-- `${customer.address.city}` — controlled path traversal through `Directory` and `TemplateObjectView` objects.
-- `${name|upper}` — registered formatter.
-- `${code|prefix:ID-}` — formatter argument.
-- `$${name}` — literal `${name}`.
+## dev3
 
-There are no template expressions, loops, conditionals, macros or implicit method calls.
+Dev3 makes formatter binding deterministic without breaking compile-time requirement inspection.
 
-## dev2
+A `StringTemplate` captures a sealed snapshot of the supplied `TemplateFormatterRegistry`. Later changes to the caller-owned registry therefore cannot silently change an already-compiled template. The snapshot freezes registry membership; formatter objects themselves remain the formatter authority and may retain deliberate state.
 
-Dev2 adds introspection and large-output support without changing template syntax:
+A template may still be parsed before its domain formatters are available. `missingFormatterNames` reports unsatisfied formatter requirements and `requirements` remains non-executing. `validateBindings`, `render` and `renderTo` fail closed when a referenced formatter is not bound. `withFormatters(registry)` creates a new template over the same source with an explicit new binding snapshot.
 
-- `formatterNames` returns the unique formatter names in first-use order, including `identity` for unformatted substitutions.
-- `requirements` returns a `TemplateRequirements` object containing copies of the variable and formatter inventories.
-- `renderTo(sink, context [, policy])` renders segment-by-segment to a caller-supplied object supporting `charOut`. The template does not own, flush or close the sink.
-- JSON string-content escaping now covers every control byte from `00`x through `1f`x, using the standard short escapes where applicable and `\u00XX` otherwise.
-- `TemplateContext~putObject` now applies the same non-blank context-name rule as `put`.
+This preserves the useful dev2 workflow:
 
-`render` remains the convenient string-returning API and is semantically equivalent to `renderTo` for the same context and policy.
+```rexx
+t = .StringTemplate~new("At ${time|iso}, ${sensor} measured ${value|unit:lux}.")
+say t~requirements~formatters~toString("l", ", ")
 
-## Object safety
+registry = .TemplateFormatterRegistry~default
+registry~register("iso", isoFormatter)
+registry~register("unit", unitFormatter)
+t = t~withFormatters(registry)
+say t~render(context)
+```
 
-Ordinary ooRexx objects are not traversed from template text. To expose object properties, the caller wraps an object in `TemplateObjectView` or uses `TemplateContext~putObject`, supplying an explicit property-to-message allowlist.
-
-The template cannot invoke arbitrary methods, provide arguments, or use `INTERPRET`.
-
-## Policies
-
-`TemplateRenderPolicy` separates rendering policy from template syntax. The package supplies strict/permissive missing-value handling and PLAIN, HTML and JSON-string-content escaping.
-
-## Formatters
-
-Built-ins are `identity`, `upper`, `lower`, `trim`, `prefix` and `suffix`. Applications register additional formatter objects by subclassing `TemplateFormatter`; domain libraries therefore remain responsible for domain formatting.
+The template language itself is unchanged from dev2.

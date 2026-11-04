@@ -67,3 +67,62 @@ fiction-scope evidence from refuting general claims.
   automatically extract dependencies from natural language. That is the
   separate Structured Utterance/IntentionService extraction seam.
 - The full 57-check upstream suite has not been locally executed in this handoff.
+
+## v0.3: exact proposition identity and evidence-scope policy (27 October 2026)
+
+The immutable proposition ID by itself cannot establish that two compared statements
+mean the same thing. `EvidenceRevisionAudit~compare` now checks **exact statement
+text** where both objects expose `~statement`; a statement change under the
+same identifier is `INVALID_COMPARISON`, not a warranted belief flip. Exact
+text is deliberately conservative rather than a semantic-equivalence oracle:
+normalizing paraphrases, time, modality and fictional-world parameters requires
+separately versioned, provenance-backed premise typing upstream. Historical
+stand-ins lacking `~statement` preserve compatibility but report
+`identityVerified=.false`.
+
+An admission-policy revision is distinguishable from a new evidential defeater.
+The auditor now compares `~acceptsBinding` for each binding scope observed in
+either ground inventory. A changed scope eligibility returns
+`POLICY_CHANGE_REQUIRES_REVIEW`, as does a changed assertion or settlement
+floor **even if the output stance stays the same**. The result includes
+`changedBindings` and `bindingPolicyCoverage=OBSERVED_GROUND_SCOPES_ONLY`:
+unreferenced accepted scopes cannot be compared until the Proposition object
+supplies an immutable policy fingerprint.
+
+Ground identity now includes `~note`, when exposed. A changed note with the
+same Ground ID is `MUTATED_GROUND_ID`. Six owner-side regression assertions
+cover statement substitution, scope eligibility, explicit coverage limit,
+no-output policy change, note mutation, and an unchanged control case.
+
+The comparison still operates on caller-provided admitted grounds. Its results
+prove neither the external truth of those grounds nor the historical cause of a
+model's reported self-correction. This increment is **not** an independent
+transcript classifier; FISH/NEPO corpora remain replay-oriented until a live
+structured-utterance/dependency extractor exists. Tests must be run under the
+actual ooRexx interpreter before claiming native qualification.
+
+## v0.3 trace-binding correction (29 October 2026)
+
+`EvidenceCombiner~evaluate` previously emitted a deterministic transcript that
+bound the proposition ID and several ground-link fields, but not the exact
+proposition statement or a Ground's explanatory `note`. Two different submitted
+claims or context-bearing notes could therefore produce identical derivations
+when their tiers, IDs and final stance happened to agree.
+
+Version `ordinal-evidence-combiner/0.3` now writes a length-prefixed claim-text
+field (or `UNAVAILABLE` for older contract doubles), and a note-presence flag
+plus length-prefixed note contents for each listed ground. The change is tested
+with otherwise identical claims/notes that keep the same stance but must yield
+different derivations. Same-origin deduplication still operates on source identity,
+not on arbitrary note wording; duplicates retain audit entries.
+
+This strengthens reproducibility **of what was submitted**, not validation of
+what was actually observed, who wrote it, or whether its reasoning is sound.
+The derivation remains plaintext, not a cryptographic commitment or signature.
+The authoritative `ProofBundle` and its source-validation receipts are separate
+surfaces. No assumption is made that a historical conversational excerpt
+provides authenticated source identity.
+
+New owner-side checks (additional to v0.3 comparison checks) cover claim-text
+and note-driven trace divergence and the explicit version bump. Native
+qualification remains pending until the exact branch runs under ooRexx r13196.

@@ -19,3 +19,7 @@ Current connector workspace lacks an ooRexx interpreter; syntax/runtime tests ar
 ## Programme interfaces
 
 Website, SMTP/IMAP, MU/MI XTP, LDAP and private-CA HTTPS are separately owned. SLAM's gate may eventually help static qualification of their operation graphs, but no security or deployment authority transfers to SLAM. Autobuilder is offline; Git source publication is not installation or runtime commissioning.
+
+## Literal admission hardening (2026-10-29)
+
+ChatGPT candidate extends the previously committed fail-closed admission route: `admit` now validates array-shaped steps and argument arrays before lookup; where source extraction gives an explicit input kind, non-PREV literal inputs must satisfy that kind. `runAdmitted` reports BLOCKED, no RESULT and zero executed steps on refusal. Legacy `run` stays exploratory. Inferred kinds are documentary, not a security admission or semantic precondition proof. `tests/test_admission_inputs.rex` covers malformed paths, a text-in-NUMBER refusal, and numeric-string acceptance. Native runtime qualification **NOT_RUN** here; manual independent r13196 check requested.

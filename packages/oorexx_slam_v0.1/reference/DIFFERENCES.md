@@ -1,6 +1,6 @@
 # Examples where ooRexx 5.3.0 r13196 does not print what the reference says
 
-Totals over all files: same 802, different 205, no reference 198.
+Totals over all files: same 857, different 215, no reference 230.
 
 Made by `rexx reference/run_examples.rex` (each example run alone, no input, ten seconds) and `tools/differences.py`.
 A difference is a lesson, not yet a verdict: it can be an error in the reference, in the rewrite, a page that sets
@@ -254,6 +254,12 @@ or a difference between the reference and this interpreter.
 | where | code | ooRexx printed | reference says |
 |---|---|---|---|
 | 14_streams.md:145 | `MyStream~charin(10,0)` | `97.1` | `the tenth character is the next character to read; no data` |
+
+## 17_utility_c.md (1)
+
+| where | code | ooRexx printed | reference says |
+|---|---|---|---|
+| 17_utility_c.md:763 | `interpret "call level2" 21 / ::routine level2 / call level3 31, 32 / return / level3: procedure / signal on sy` | `COMPILE ()                  1: 1 *-* ~~ / METHOD NEW(,~~)   ` | `COMPILE ()                  1: 1 *-* ~~ / METHOD NEW(,~~)   ` |
 
 ## 19_errors.md (4)
 

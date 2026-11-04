@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "arch.memory-fabric.capacity-admission",
+  "version": "0.1",
+  "sphere": "memory-fabric",
+  "title": "Operational budgets and native XTP pacing",
+  "summary": "Memory Fabric candidate2 uses OperationalCapacityGovernor dev5 to acquire/reconcile real admission tickets and XTP dev25 capacityRate to enforce live per-context rate on named-service control sends.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "A 64 MiB aligned block window may be split across two independently authorised resident suppliers; each 30% with max parallel 2 and aggregate 60% is an example policy, not a fixed fabric default.",
+    "Aggregate percent constrains the number of full-share contexts: floor(aggregate/perContext) bounds fan-in before tickets are acquired.",
+    "The operational class is registered locally, not accepted from a sender header; ingress capacity domain accounting is in the receiver/placement administrative domain.",
+    "Rate is derived from the current capacity ticket. A socket without CAPACITYRATE is refused rather than downgraded to an unlimited sender.",
+    "At zero effective capacity, emergency suspension, expired ticket, stale owner epoch, or absent replica-authority proof: no send.",
+    "Live proof covers named-service bounded control payload over loopback UDP (300,000 then 150,000 bytes/s). It is NOT a verified multi-MU memory-page transfer or multicast discovery proof."
+  ],
+  "procedure": [],
+  "topics": [
+    "memory-fabric"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_operational_degradation_planner_v0.1-dev5.zip",
+      "sha256": "422dd2a2f2ef03ab9376e7e3f7ed9a847eb6212cf03eeba84a909ccd133b5479",
+      "member": "rexx/OperationalPlanner.cls",
+      "claim": "Capacity registry, shared governor, refresh and reconcile tickets."
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "rexx/XtpSocketProvider.cls",
+      "claim": "Named-service native sender CAPACITYRATE -> rate-enforced XTP send."
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev23(2).zip",
+      "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
+      "member": "PARALLEL_FETCH.md",
+      "claim": "Storage Fabric multi-source 30%x2 / 60% reference processing model."
+    }
+  ]
+}

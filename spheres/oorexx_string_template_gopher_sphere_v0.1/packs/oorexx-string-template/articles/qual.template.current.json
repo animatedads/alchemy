@@ -5,15 +5,27 @@
   "sphere": "oorexx-string-template",
   "title": "Current qualification evidence and limits",
   "authority": "project-authoritative",
-  "summary": "Dev1 has recorded real ooRexx 5.3.0 r13196 compile and 5/5 runtime evidence. Dev2 currently has clean manifest, ZIP integrity and strict standards-enforcer evidence, but its new runtime fixtures have not been rerun because the historical r13196 Debian attachment is not materializable in the current execution session.",
+  "summary": "Dev3 is freshly qualified on Open Object Rexx 5.3.0 r13196: rexxc PASS and 7/7 runtime fixtures PASS. The prior JSON-policy failure was an over-escaped test expectation, not a StringTemplate JSON-escaper defect.",
   "evidence": {
-    "dev1_runtime": "PASS r13196 rexxc plus 5/5 fixtures",
-    "dev2_manifest": "PASS",
-    "dev2_zip_integrity": "PASS",
-    "dev2_standards": "PASS 0 errors 0 warnings",
-    "dev2_runtime": "NOT_RERUN"
+    "dev3_runtime": "PASS r13196 rexxc plus 7/7 fixtures on 2026-10-29",
+    "dev3_manifest": "PASS",
+    "dev3_zip_integrity": "PASS",
+    "dev3_standards": "PASS 0 errors 0 warnings",
+    "prior_independent_diagnosis": "CODEX-PC REQ-00000503 identified the JSON expected-value over-escaping during dev2 qualification"
   },
-  "runtime_gate": "Do not promote the new dev2 fixtures to PASS until an actual r13196 execution is recorded.",
-  "related": ["ops.template.start", "ops.template.continuation"],
-  "provenance": [{"source": "repository", "path": "packages/oorexx_string_template/VALIDATION.txt"}]
+  "runtime_gate": "Future source changes require fresh native qualification; do not inherit this PASS across changed executable source.",
+  "related": [
+    "ops.template.start",
+    "ops.template.continuation"
+  ],
+  "provenance": [
+    {
+      "source": "repository",
+      "path": "packages/oorexx_string_template/VALIDATION.txt"
+    },
+    {
+      "source": "repository",
+      "path": "packages/oorexx_string_template/qualification/r13196_2026-10-29.txt"
+    }
+  ]
 }

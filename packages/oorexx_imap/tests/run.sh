@@ -3,10 +3,18 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REXX_BIN="${REXX_BIN:-rexx}"
 BASE_REXX_PATH="$ROOT/src:$ROOT/tests${REXX_PATH:+:$REXX_PATH}"
-for t in test_security_modes.rex test_core.rex test_wire_reader.rex test_session.rex test_append_literal.rex test_append_result.rex test_mailbox_mutation.rex test_peek_guard.rex test_line_bound.rex test_diagnostics.rex test_semantics.rex test_append_intent.rex test_index_core.rex test_uid_mapping.rex test_move_semantics.rex test_transfer_commit.rex test_review_contracts.rex test_server_core.rex test_ldap_adapter.rex; do
+for t in test_security_modes.rex test_core.rex test_wire_reader.rex test_session.rex test_append_literal.rex test_append_result.rex test_mailbox_mutation.rex test_peek_guard.rex test_line_bound.rex test_diagnostics.rex test_semantics.rex test_append_intent.rex test_index_core.rex test_uid_mapping.rex test_move_semantics.rex test_transfer_commit.rex test_review_contracts.rex test_server_core.rex test_server_messages.rex test_server_idle.rex test_server_literal_endpoint.rex test_ldap_adapter.rex; do
   echo "== $t =="
   REXX_PATH="$BASE_REXX_PATH" "$REXX_BIN" "$ROOT/tests/$t"
 done
+
+if [[ -n "${SOCKET_PROVIDER_SRC:-}" ]]; then
+  echo "== test_socket_provider_server.rex =="
+  REXX_PATH="$ROOT/src:$ROOT/tests:$SOCKET_PROVIDER_SRC${REXX_PATH:+:$REXX_PATH}" "$REXX_BIN" "$ROOT/tests/test_socket_provider_server.rex"
+else
+  echo "SKIP test_socket_provider_server.rex (set SOCKET_PROVIDER_SRC for optional Socket Provider server binding test)"
+fi
+
 if [[ -n "${API_CLIENT_SRC:-}" && -n "${FOREIGN_SRC:-}" ]]; then
   echo "== test_adapter_load.rex =="
   REXX_PATH="$ROOT/src:$ROOT/tests:$API_CLIENT_SRC:$FOREIGN_SRC${REXX_PATH:+:$REXX_PATH}" "$REXX_BIN" "$ROOT/tests/test_adapter_load.rex"
@@ -47,4 +55,20 @@ if [[ -n "${OOREXX_LOGGING_SRC:-}" ]]; then
   REXX_PATH="$ROOT/src:$ROOT/tests:$OOREXX_LOGGING_SRC${REXX_PATH:+:$REXX_PATH}" "$REXX_BIN" "$ROOT/tests/test_logging_adapter.rex"
 else
   echo "SKIP test_logging_adapter.rex (set OOREXX_LOGGING_SRC for optional ooRexx Logging v0.7 test)"
+fi
+
+if [[ -n "${INSTRUMENTATION_MESH_SRC:-}" ]]; then
+  echo "== test_instrumentation_adapter.rex =="
+  REXX_PATH="$ROOT/src:$ROOT/tests:$INSTRUMENTATION_MESH_SRC${REXX_PATH:+:$REXX_PATH}" "$REXX_BIN" "$ROOT/tests/test_instrumentation_adapter.rex"
+  echo "== test_instrumentation_idle.rex =="
+  REXX_PATH="$ROOT/src:$ROOT/tests:$INSTRUMENTATION_MESH_SRC${REXX_PATH:+:$REXX_PATH}" "$REXX_BIN" "$ROOT/tests/test_instrumentation_idle.rex"
+else
+  echo "SKIP Instrumentation Mesh tests (set INSTRUMENTATION_MESH_SRC)"
+fi
+
+if [[ -n "${SOCKET_PROVIDER_SRC:-}" && -n "${SOCKET_TELEMETRY_SRC:-}" ]]; then
+  echo "== test_socket_isolation_telemetry.rex =="
+  REXX_PATH="$ROOT/src:$ROOT/tests:$SOCKET_TELEMETRY_SRC:$SOCKET_PROVIDER_SRC${REXX_PATH:+:$REXX_PATH}" "$REXX_BIN" "$ROOT/tests/test_socket_isolation_telemetry.rex"
+else
+  echo "SKIP test_socket_isolation_telemetry.rex (set SOCKET_PROVIDER_SRC and SOCKET_TELEMETRY_SRC)"
 fi

@@ -1,4 +1,4 @@
-# API — `imap/0.1` — dev8
+# API — `imap/0.1` + `imap.server/0.1` — dev13
 
 ## `ImapTransportSecurity`
 
@@ -272,3 +272,56 @@ one of these destination names.
 ### Storage Fabric dev23 compatibility
 
 `ImapStorageFabricProjection.cls` is the current adapter and requires only the Storage Fabric core/streaming contracts used by the projection. `ImapStorageFabricLegacySemantic.cls` contains the optional legacy `ImapStorageSemanticProvider` and must be loaded only where the older `StorageSemantic.cls` API is present.
+\n\n## Dev11 server message-data API\n\n`ImapMailboxProvider` now has explicit message operations: `appendMessage`, `fetchMessages`, `storeFlags`, `searchMessages`, `copyMessages`, `moveMessages`, and `expungeMessages`. `ImapServerMessage` carries mailbox UID, bytes, flags, internal date and modification sequence. `ImapServerAppendResult` and `ImapServerCopyResult` carry UIDPLUS-style identity evidence. The in-memory provider is a qualification implementation; production storage providers must preserve account/mailbox/UIDVALIDITY/UID identity and commit semantics.\n\n`ImapServerSession~processLineWithLiteral(line, bytes)` is the bounded literal-aware command entrypoint used by `ImapServerEndpoint`. `processLine(line)` remains available for commands without literal bytes. `ImapSocketStreamTransport` adapts a Socket Provider connection to IMAP `readLine/readExact/writeAll` framing, and `ImapSocketProviderServer~serveOne(session)` demonstrates one accepted Rexx-space session without a shell or external IMAP daemon.\n
+
+## Dev11 server message-data API
+
+`ImapServerSession` now routes APPEND/FETCH/STORE/SEARCH/COPY/MOVE/EXPUNGE
+and UID variants through the injected `ImapMailboxProvider`. `ImapServerEndpoint`
+handles bounded synchronizing and non-synchronizing literals through a transport
+`readExact(n)` seam. `ImapServerResponse~status` exposes the terminal protocol
+status (`OK`, `NO`, `BAD` or `BYE`) without exposing response content.
+
+## Dev12 instrumentation API
+
+`ImapServerEndpoint~new(session[, maxCommands[, maxLineBytes[, observer]]])`
+accepts an optional observer. The core knows no Instrumentation Mesh classes.
+When present, the observer may implement the following messages:
+
+* `sessionOpened(tlsActive)` / `sessionClosed(finalState)`
+* `bytesIn(count)` / `bytesOut(count)` / `literalBytesIn(count)`
+* `commandAccepted(command)` / `commandCompleted(command,status)` /
+  `commandFailed(command,code)`
+* `stateTransition(oldState,newState)`
+* `transportFailure(code)`
+
+`ImapInstrumentationSource` implements that seam using
+`InstrumentationEmitter`. It also implements `snapshot(observedAt)`, making it a
+direct `InstrumentationRegistry` source. One source instance is intended to be
+shared by all sessions of one resident IMAP service instance so service-level
+gauges remain coherent.
+
+## Dev13 server change-feed / IDLE API
+
+`ImapMailboxProvider` adds two optional state-observation methods:
+
+* `currentChangeCursor(mailbox)` — returns an opaque monotonic provider cursor.
+* `changesSince(mailbox,cursor,limit)` — returns an `ImapMailboxChangeBatch`.
+
+`ImapMailboxChange` is typed protocol-state evidence with `kind`, mailbox,
+generation, sequence, UID, message count, flags, origin id and an explicit
+`echoToOrigin` policy.  Current server kinds are `EXISTS`, `FLAGS`, and `EXPUNGE`.
+Callers must treat the cursor as provider-owned and handle
+`CHANGE_CURSOR_EXPIRED` by refreshing selected state rather than guessing missed
+changes.
+
+`ImapServerSession~pollSelectedChanges()` converts a batch into IMAP unsolicited
+responses and refreshes its selected-mailbox snapshot/cursor.  The session also
+provides `processIdleStart()`, `finishIdle()` and `abortIdle()` for the endpoint;
+normal application callers should use `ImapServerEndpoint`, which owns the IDLE
+continuation/DONE wire mode.
+
+`ImapSocketStreamTransport~supportsReadiness()` / `waitReadable(timeout)` expose a
+bounded readiness seam for IDLE.  This adapter consumes readiness already supplied
+by the selected Socket Provider endpoint; it does not select or open sockets.
+

@@ -528,6 +528,20 @@ cleanupError:
   formula = .SpreadsheetXml~attribute(tag, "table:formula")
   cell~storageType = valueType
   cell~formula = formula
+  /* A formula's error result: LibreOffice (24.2.7.2, measured) writes office:value-type="string" with
+     calcext:value-type="error" and the error text ("#DIV/0!", "#N/A", "#VALUE!", "#NAME?") in text:p.
+     Read it as ERROR, as the XLSX reader reads t="e".  Fix: Claude (Opus 5.5), 2026-11-02, found by
+     SLAM Piledriver (Architecture: Tom Dyer). */
+  if translate(.SpreadsheetXml~attribute(tag, "calcext:value-type")) == "ERROR" then do
+    texts = .SpreadsheetXml~textContents(block, "text:p")
+    text = ""
+    if texts~items > 0 then text = texts~at(1)
+    cell~valueType = "ERROR"
+    cell~rawValue = text
+    cell~textValue = text
+    cell~cachedValue = text
+    return cell
+  end
   select
     when valueType == "FLOAT" | valueType == "CURRENCY" | valueType == "PERCENTAGE" then do
       cell~valueType = "NUMBER"

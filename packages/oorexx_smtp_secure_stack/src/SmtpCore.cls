@@ -240,6 +240,13 @@
   message~metadata["delivery.mailbox"]=mailbox
   groups=delivery~classifyRecipients(message)
   local=groups["local"]; relay=groups["relay"]
+  /* Do not commit local delivery and then discover that the same SMTP
+   * transaction also requires relay authority. Until recipient routing is
+   * split at RCPT time, mixed local/relay transactions fail before storage. */
+  if local~items>0 & relay~items>0 then do
+    self~event("ingress.denied",session,message,"MIXED_LOCAL_RELAY_TRANSACTION")
+    return .SmtpResult~failure("MIXED_LOCAL_RELAY_TRANSACTION","split local and relay recipients into separate SMTP transactions")
+  end
   if local~items>0 then do
     r=delivery~deliverLocal(session,message,local,mailbox)
     if \r~ok then return r

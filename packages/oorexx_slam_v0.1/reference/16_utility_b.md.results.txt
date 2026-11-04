@@ -1,0 +1,50 @@
+reference/16_utility_b.md:43 OTHER PLATFORM | /* platform: windows */ / say .File~listRoots~toString(, " ")                                       
+reference/16_utility_b.md:53 SAME | /* platform: unix */ / say .File~listRoots~toString(, " ")                                          
+reference/16_utility_b.md:80 NO REFERENCE | filename = "slam_file_test.txt"                     -- setup: a file in this folder / .File~writeCha
+reference/16_utility_b.md:97 NO REFERENCE | filename = "slam_file_test.txt"                     -- setup: a file in this folder / .File~writeCha
+reference/16_utility_b.md:122 OTHER PLATFORM | /* platform: windows */ / say .File~searchPath("rexx.exe")                                          
+reference/16_utility_b.md:132 NO REFERENCE | /* platform: unix */ / say .File~searchPath("rexx")                                                 
+reference/16_utility_b.md:149 SAME | /* platform: unix */ / file = .File~new("dir1" || .File~separator || "dir2" || .File~separator || "f
+reference/16_utility_b.md:164 OTHER PLATFORM | /* platform: windows */ / file = .File~new("dir1" || .File~separator || "dir2" || .File~separator ||
+reference/16_utility_b.md:192 OTHER PLATFORM | /* platform: windows */ / say .File~temporaryPath                                                   
+reference/16_utility_b.md:202 NO REFERENCE | /* platform: unix */ / say .File~temporaryPath                                                      
+reference/16_utility_b.md:219 NO REFERENCE | filename = "slam_file_test.txt"     -- setup: a file in this folder / string = "some text"          
+reference/16_utility_b.md:238 NO REFERENCE | filename = "slam_file_test.txt"                   -- setup: a file in this folder / collection = .ar
+reference/16_utility_b.md:254 OTHER PLATFORM | /* platform: windows */ / 'cd c:\program files\oorexx' / say .File~new("my file")~absoluteFile~class
+reference/16_utility_b.md:277 DIFFERENT | /* platform: linux */ / 'cd /opt/ooRexx' / say .File~new("my file")~absoluteFile / say .File~new("..
+reference/16_utility_b.md:298 OTHER PLATFORM | /* platform: windows */ / 'cd c:\program files\oorexx' / say .File~new("my file")~absolutePath~class
+reference/16_utility_b.md:321 DIFFERENT | /* platform: linux */ / 'cd /opt/ooRexx' / say .File~new("my file")~absolutePath / say .File~new("..
+reference/16_utility_b.md:360 OTHER PLATFORM | /* platform: windows */ / call directory .File~listRoots[1] / file1 = .File~new("file", "dir") / fil
+reference/16_utility_b.md:377 SAME | /* platform: unix */ / call directory .File~listRoots[1] / file1 = .File~new("file", "dir") / file2 
+reference/16_utility_b.md:412 SAME | say .File~new("/usr/local/lib/rexx.img")~extension / say .File~new("c:\windows")~extension / say .Fi
+reference/16_utility_b.md:443 OTHER PLATFORM | /* platform: windows */ / file = .File~new("file") / say file~path / file = .File~new("c:\program fi
+reference/16_utility_b.md:474 DIFFERENT | /* platform: unix */ / file = .File~new("/opt/ooRexx/") / say file~path / 'cd /opt/ooRexx' / samples
+reference/16_utility_b.md:528 DIFFERENT | /* platform: unix */ / say .File~new("/tmp/file")~isHidden / say .File~new("/tmp/.file")~isHidden / 
+reference/16_utility_b.md:556 NO REFERENCE | say .File~new(".")~lastAccessed                                                                     
+reference/16_utility_b.md:580 OTHER PLATFORM | /* platform: windows */ / say .File~new("C:\Program Files")~lastModified~class                      
+reference/16_utility_b.md:594 OTHER PLATFORM | /* platform: windows */ / say .File~new("C:\Program Files")~lastModified / say .File~new("dummy")~la
+reference/16_utility_b.md:613 NO REFERENCE | /* A possible implementation of : touch -c -m -r referenceFile file /    -c, --no-create            
+reference/16_utility_b.md:649 OTHER PLATFORM | /* platform: windows */ / names = .File~new("c:\program files\oorexx\samples")~list / say names~toSt
+reference/16_utility_b.md:668 OTHER PLATFORM | /* platform: windows */ / do file over deepListFiles("c:\program files\oorexx\samples") /     say fi
+reference/16_utility_b.md:717 OTHER PLATFORM | /* platform: windows */ / say .File~new("c:\program files\oorexx\rexx.exe")~name / say .File~new("c:
+reference/16_utility_b.md:733 SAME | /* platform: unix */ / say .File~new("/usr/local/lib/rexx.img")~name / say .File~new("/")~name      
+reference/16_utility_b.md:755 OTHER PLATFORM | /* platform: windows */ / say .File~new("c:\program files\oorexx\rexx.exe")~parent / say .File~new("
+reference/16_utility_b.md:773 SAME | /* platform: unix */ / say .File~new("/opt/ooRexx/bin/rexx.img")~parent / say .File~new("/")~parent 
+reference/16_utility_b.md:836 NO REFERENCE | ::requires "rxregexp.cls" /  / /* /      "(Hi|Hello) World"           Matches "Hi World" and /      
+reference/16_utility_b.md:976 NO REFERENCE | re1 = .RegularExpression~new / re2 = .RegularExpression~new("Hello?*") /  / ::requires "rxregexp.cls
+reference/16_utility_b.md:996 SAME | str = "<p>Paragraph 1</p><p>Paragraph 2</p>" / re1 = .RegularExpression~new("<p>?*</p>", "MINIMAL") 
+reference/16_utility_b.md:1034 SAME | patterns = "A [:alpha:]{4} fl?*.", - /            "?*[l|e]?*e?*[r|g]?*", - /            "[invalid" /
+reference/16_utility_b.md:1076 SAME | nrs = 1, 42, 0, 5436412, "1A", "f43g" / re = .RegularExpression~new("[1-9][0-9]*") / do nr over nrs 
+reference/16_utility_b.md:1120 SAME | text = "It's the year 2016!" / re = .RegularExpression~new("[1-9][0-9]*") / begin = re~pos(text) / i
+reference/16_utility_b.md:1146 SAME | re = .RegularExpression~new / re~parse("[abc")                       -- illegal set definition / say
+reference/16_utility_b.md:1385 SAME | wine = .Array~of("Strawberries", "cherries", "angel's kiss") / wine~sortWith(.Comparator~new) / say 
+reference/16_utility_b.md:1413 SAME | wine = .Array~of("Strawberries", "cherries", "angel's kiss") / wine~sortWith(.CaselessComparator~new
+reference/16_utility_b.md:1447 SAME | wine = .Array~of("1. Strawberries", "2. cherries", "3. angel's kiss") / wine~sortWith(.ColumnCompara
+reference/16_utility_b.md:1480 SAME | wine = .Array~of("1. Strawberries", "2. cherries", "3. angel's kiss") / wine~sortWith(.CaselessColum
+reference/16_utility_b.md:1509 SAME | wine = .Array~of("Strawberries", "cherries", "angel's kiss") / wine~sortWith(.DescendingComparator~n
+reference/16_utility_b.md:1538 SAME | wine = .Array~of("Strawberries", "cherries", "angel's kiss") / wine~sortWith(.CaselessDescendingComp
+reference/16_utility_b.md:1568 SAME | wine = .Array~of("1. Strawberries", "2. cherries", "3. angel's kiss") / wine~sortWith(.InvertingComp
+reference/16_utility_b.md:1614 SAME | primes = .Array~of(23, 19, 17, 13, 11, 7, 5, 3, 2) / primes~sortWith(.NumericComparator~new) / say p
+reference/16_utility_b.md:1713 DIFFERENT | #!/usr/bin/env rexx / do clz over .test, .testSingleton   -- iterate over the two classes /    round
+reference/16_utility_b.md:1808 SAME | variable = 123 / say >variable~name                                                                 
+reference/16_utility_b.md:1837 SAME | array = 1, 2, 3 /  / say >array~class~id / say >array~value~class~id /  / say >array~value~toString(
