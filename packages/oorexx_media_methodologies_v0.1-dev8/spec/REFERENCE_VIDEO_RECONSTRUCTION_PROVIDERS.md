@@ -45,7 +45,7 @@ Python environment must contain NumPy and OpenCV. No `subprocess`,
 
 **Fail-closed private material rule:** `ALCHEMY_PRIVATE_MEDIA_ROOT` must be
 set to an existing absolute private directory other than `/`. For actual
-video jobs, the video source, candidate output directory and result JSON path
+video jobs, the video source, private job JSON, candidate output directory and result JSON path
 must resolve within that root. Any path inside a Git worktree is rejected,
 including through symlinks. Invalid privacy preflight does not write a
 failure-result artifact. The caller is responsible for access control, lawful
