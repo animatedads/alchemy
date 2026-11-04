@@ -1,0 +1,20 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-speech.runtime",
+  "version": "0.1",
+  "sphere": "oorexx-speech",
+  "title": "Speech runtime ownership and concurrency",
+  "summary": "Speech is provider-neutral ooRexx TTS/STT. One channel is one ordered lane; separate channels execute concurrently. Resident Python providers remain behind Macrospace and are independent per lane by default.",
+  "invariants": [
+    "Speech owns TTS/STT semantics, channel state, stream lifecycle, audio profiles, duplex orchestration and dynamic Speech intentions.",
+    "One SpeechTTSChannel or SpeechSTTChannel is an ordered lane. Different channel objects may execute concurrently through separate ooRexx activities.",
+    "One resident Python Macrospace provider object per speech lane is the default. Sharing provider objects requires separate backend qualification.",
+    "Bulk PCM does not cross the scalar Macrospace marshaller. Streaming uses bounded PCM artifacts/chunks while descriptors and events cross Macrospace.",
+    "SIP owns signalling and call state; RTP owns codecs, packetisation and media timing; local audio backends own devices; Speech composes through decoded PCM seams.",
+    "Layered Audio and Storage retain authoritative audio/material identity. Speech may consume transient materialisations but does not replace their authority."
+  ],
+  "qualification": [
+    "dev10 r13196 regressions proved concurrent batch/streaming TTS/STT, local audio and duplex-session behavior.",
+    "dev12 independent r13196 cross-package qualification at commit e65b97548b7d444719726c8554a2cbc51621662d passed against SIP dev15 and RTP dev7; no network calls were made."
+  ]
+}

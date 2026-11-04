@@ -1,0 +1,46 @@
+{
+  "kind": "article",
+  "id": "ops.wire-ui-runtime.qualification",
+  "version": "0.3",
+  "sphere": "wire-ui-runtime",
+  "title": "Qualification matrix for runtime and access-point changes",
+  "summary": "A Wire UI runtime change is not qualified by unit tests alone. Validate exact package integrity, server/browser protocol compatibility, Queue Fabric/gateway reliability, cold/warm definitions, stale actions, resources and constrained-network delivery as applicable.",
+  "authority": "project-operations",
+  "minimum_matrix": [
+    "package manifest/integrity",
+    "JS syntax and unit suite",
+    "server ooRexx suite for changed semantic contracts",
+    "gateway fixed-queue/ACK-NACK-release tests when transport changes",
+    "cold definition delivery and warm content-address cache suppression",
+    "stale rendered-revision rejection",
+    "definition barrier for authorised cold CREATE_INSTANCE",
+    "positive observation allow-list behaviour when observation contracts change",
+    "exact ResourceRef and content-address verification when resources change",
+    "source and optimised/GPRS launcher equivalence when static delivery changes",
+    "one real cross-language application journey through Queue Fabric for integration cuts"
+  ],
+  "anti_claims": [
+    "Do not call a MemoryRenderer microbenchmark a React comparison.",
+    "Do not claim Chromium/Firefox qualification when only a Node DOM-compatible harness ran.",
+    "Do not claim BSF4ooRexx qualification from Java-only Swing tests.",
+    "Do not claim a resource has been rendered when only its identity was transported."
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev7.zip",
+      "sha256": "38bebd4783abc143b7365793d337f4682b0f80cac8478afa115befb0440cd15a",
+      "member": "alchemy_wire_ui_js_v0.4-dev7/README.md",
+      "claim": "JS validation and benchmark scope explicitly exclude React comparison.",
+      "line_start": 166,
+      "line_end": 174
+    },
+    {
+      "artifact": "oorexx_queue_fabric_web_gateway_v0.2.zip",
+      "sha256": "83118442d7c734e4a194598b0709311de7a055ae33fb4e094cccf3686b7ffcf8",
+      "member": "oorexx_queue_fabric_web_gateway_v0.2/SECURITY_MODEL.md",
+      "claim": "Gateway/browser security boundary that must be preserved during qualification.",
+      "line_start": 1,
+      "line_end": 25
+    }
+  ]
+}

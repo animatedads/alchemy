@@ -1,0 +1,64 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.integration-map",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Integration map: consume other authorities, do not absorb them",
+  "summary": "Deployment integrates with Semantic Source Control, Foreign Runtime, HTTPS Server, Wire UI, MCP Project Service, Storage/transfer providers, Job-to-Node allocation and Queue/process execution while preserving their authority boundaries. It prepares/verifies execution state; it does not become those components.",
+  "authority": "project-doctrine",
+  "section": "integration",
+  "invariants": [
+    "Semantic Source Control owns ooRexx semantic component/source dependency identity; Deployment consumes that graph and materialises the selected closure.",
+    "Foreign Runtime owns its runtime/native API semantics; Deployment decides whether the declared artifact is loadable and how permitted repair occurs.",
+    "HTTPS Server owns route/listener behavior; Deployment respects its composition lifecycle.",
+    "MCP and Wire own protocol/UI semantics; Deployment consumes adapter declarations and probes.",
+    "Storage/transport providers move bytes; Deployment owns desired placement and verification.",
+    "Job-to-Node determines placement eligibility/ranking; Deployment reconciles a selected target.",
+    "Queue/application code decides work semantics; Deployment only launches when requested."
+  ],
+  "topics": [
+    "integration",
+    "Semantic Source Control",
+    "Foreign Runtime",
+    "HTTPS Server",
+    "MCP",
+    "Wire",
+    "Storage",
+    "placement",
+    "Queue"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.3.md",
+      "sha256": "7c3981880f49552daee4f96158b478109ba3d9de8d054fe6c53d0843267ee57b",
+      "member": "General_ooRexx_Deployment_Component_v0.3.md",
+      "line_start": 1184,
+      "line_end": 1219,
+      "claim": "Defines SSC versus Deployment authority split."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev3.zip",
+      "sha256": "796b4375b7abac6e13e5f23f632c8aa75f86fe777f3d7c130ea8e440ff5dbd79",
+      "member": "oorexx_deployment_v0.1-dev3/docs/DEPENDENCIES.md",
+      "line_start": 6,
+      "line_end": 30,
+      "claim": "Defines dependency integration flow and split authority."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev3.zip",
+      "sha256": "796b4375b7abac6e13e5f23f632c8aa75f86fe777f3d7c130ea8e440ff5dbd79",
+      "member": "oorexx_deployment_v0.1-dev3/docs/HOSTED_MODULES.md",
+      "claim": "Defines hosted adapter boundary."
+    }
+  ],
+  "related_spheres": [
+    "semantic-source-control",
+    "foreign-runtime",
+    "https-server",
+    "mcp-project-service",
+    "wire-ui-authority",
+    "storage-fabric",
+    "job-node-allocator",
+    "queue-fabric"
+  ]
+}

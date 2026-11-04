@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.resource-resolver",
+  "version": "0.2",
+  "sphere": "wire-ui-runtime",
+  "title": "Resource Resolver: exact identity in, verified approved representation out",
+  "summary": "Runtime resolution is a consumption seam beneath Resource Editor/contract publication authority. It receives an exact published ResourceRef, verifies authority/manifest/bytes, and returns only an approved representation for the renderer/delivery profile.",
+  "authority": "project-runtime-boundary",
+  "invariants": [
+    "Resolver never publishes or edits a resource; Resource Editor/contract own publication authority.",
+    "Definition does not provide a URL/path/inline customer copy.",
+    "Exact resourceId@version/contentAddress must match authority evidence before bytes are rendered.",
+    "Delivery-profile selection may choose only an approved representation of the same exact resource.",
+    "Missing/tampered/unpublished required resource fails closed."
+  ],
+  "current_scope": [
+    "PRIMARY_CONTENT",
+    "text/plain",
+    "safe browser image/*",
+    "approved accessibility name/decorative metadata",
+    "static or HTTP Resource Authority configured independently of ResourceRef"
+  ],
+  "deliberately_not_yet_defined": [
+    "arbitrary structured/compound render recipes",
+    "TERMS/ICON/ILLUSTRATION role mappings beyond an explicit contract"
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_resource_editor_v0.3.zip",
+      "sha256": "835fc9e1dcc70ef242372908c02e254c2788d47b922685ccfc5037bf664d3b0f",
+      "claim": "Publication authority now separately evidenced.",
+      "member": "wire_ui_resource_editor_v0.3/README.md"
+    },
+    {
+      "artifact": "wire_ui_resource_contract_v0.1.zip",
+      "sha256": "f7f077519d9113c2de29b125bdc4c143d8a088d629c9eaa2e2cd3670051dd924",
+      "claim": "Exact resource contract.",
+      "member": "wire_ui_resource_contract_v0.1/README.md"
+    },
+    {
+      "artifact": "wire_ui_resource_resolver_v0.1.zip",
+      "sha256": "d821518e4e2db8504fa5b43584794565232d13fdaf63304d4c6d2515049e00d8",
+      "claim": "Earlier runtime resolver proof; consumption mechanism, not publication authority.",
+      "member": "wire_ui_resource_resolver_v0.1/README.md"
+    }
+  ]
+}

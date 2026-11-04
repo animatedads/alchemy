@@ -1,0 +1,45 @@
+ooRexx SMTP Secure Stack v0.1-dev12 validation
+================================================
+Runtime: Open Object Rexx 5.3.0 r13196 Internal Test Version
+Runtime source: user-supplied oorexx-5.3.0-13196.ubuntu1604debug.x86_64.deb
+
+DEV12 DELIVERED BOUNDARIES
+- inbound MX/local-domain service composition added
+- one authoritative RFC822 Storage Fabric object + mailbox membership projection
+- INBOX / INBOX-UNSIGNED classification retained
+- mixed local+relay transaction rejected before any local side effect
+- post-final-DATA QUIT/close exception isolated from known delivery result
+- IMAP read-side projection over the exact SMTP object/membership store
+- no second message body store
+- authenticated submission is deliberately not part of the inbound MX service profile
+- LDAP remains required for authenticated submission/IMAP attribution and explicit MAIL_READ/EMAIL_SEND authority
+
+RUNTIME RESULTS (2026-11-04)
+PASS existing SMTP policy suite: 9/9
+PASS test_mixed_recipient_atomicity.rex
+PASS Access Permissions SMTP adapter
+PASS MAS/MAIL secure binding
+PASS OpenSSL S/MIME verifier + signer
+PASS Socket Provider v0.1 + dev14 candidate binding
+PASS inbound Socket Provider wire smoke
+PASS test_durable_delivery.rex
+PASS test_smtp_delivered_store.rex
+PASS test_outbound_dispatcher.rex
+PASS test_post_data_cleanup_exception.rex
+PASS live outbound STARTTLS
+PASS live SocketProvider -> STARTTLS
+PASS protocol regression suite
+PASS SMTP secure stack test suite
+
+COMPILE RESULTS
+PASS rexxc src/SmtpCore.cls
+PASS rexxc src/SmtpOutboundDispatcher.cls
+PASS rexxc bin/rasenfalcon_smtp_inbound_service.rex
+PASS rexxc integration/ImapSmtpDeliveredStore.cls
+
+NOT CLAIMED
+- live production host installation
+- DNS/MX/firewall activation
+- authenticated submission daemon
+- full IMAP FETCH/STORE/EXPUNGE server semantics
+- autobuilder execution (autobuilder is not running)

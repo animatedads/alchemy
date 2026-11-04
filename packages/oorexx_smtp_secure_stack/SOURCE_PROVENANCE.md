@@ -51,3 +51,18 @@ existing SMTP release authority path.
 Storage Fabric dev23 remains the exact durable-delivery qualification baseline for this cut.
 The Library contains newer/later-edited Storage Fabric branches and review overlays, but no
 single newer full archive was adopted implicitly by filename/date alone.
+
+
+## dev7.4 mission-critical inbound receive/store integration — 2026-11-04
+
+This Git increment is layered on the concurrent dev7.3 restart-safe/fail-closed
+Storage Fabric store. It adds only SMTP-owned production composition, a
+mixed-recipient transaction safety gate, and an IMAP read-side adapter over the
+existing SMTP object/membership authority.
+
+A separate comprehensive development archive,
+`oorexx_smtp_secure_stack_v0.1-dev12.zip`, was qualified under the exact
+ooRexx 5.3.0 r13196 runtime with Storage Fabric dev23, Socket Provider dev14
+and Foreign Runtime v0.22.6. Its SHA-256 is
+`a2df7226656ea3311f2757050b63255f193225ebe0ee28642dc41a03bd031ffd`.
+Autobuilder was not run and no live production installation is claimed.

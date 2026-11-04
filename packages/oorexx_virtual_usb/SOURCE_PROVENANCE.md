@@ -1,4 +1,4 @@
-# ooRexx Virtual USB v0.1-dev10 source provenance
+# ooRexx Virtual USB v0.1-dev11 source provenance
 
 ## Base
 
@@ -94,3 +94,12 @@ tree. The dev9 qualifier fails when the interface is delayed after device
 publication; the dev10 qualifier waits for the HID interface and then hidraw and
 passes. The existing dev9 stale-generation regression also continues to pass.
 No CTAP2, CTAPHID, descriptor, EP0 or credential semantic change is made.
+
+
+## dev11 independent-review correction
+
+Rasen Falcon request REQ-00000611 received CODEX-PC reply REQ-00000901, which
+confirmed the dev10 delayed-binding wait but marked the stronger stale-generation
+claim NOT_PROVEN: hidraw matching had no independent class-generation identity.
+dev11 adds that identity check and a forcing regression.  No FIDO or Raw Gadget
+provider semantics are changed.

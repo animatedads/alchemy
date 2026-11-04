@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1-dev8
+
+- added a concrete optional RexxOS RTO2 Grid compute projection using the Grid's public estate-membership surface;
+- only MI members are projected as compute candidates; MU members remain estate/control membership and are never treated as worker capacity;
+- preserves the original RTO2 member object and optional estate snapshot as planning evidence;
+- requires an injected Grid eligibility policy rather than inventing membership-state semantics inside GCI;
+- rechecks exact member ID + incarnation before accepting compute-membership evidence, so a reincarnated or absent MI fails closed;
+- retains the existing rule that Grid membership is not WLU admission, Job-to-Node placement, lease, ACTIVE/SPARE or execution authority;
+- added regression coverage for MU exclusion, MI object identity, policy veto, incarnation fencing and dynamic rediscovery.
+
 ## 0.1-dev7
 
 - rebased the optional observation integration to qualified Instrumentation Mesh v0.1-dev8 while retaining `instrumentation.mesh/0.1`;

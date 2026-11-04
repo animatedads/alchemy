@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "ldap-identity.xtp-provision-principal-binding",
+  "version": "0.1",
+  "sphere": "ldap-identity",
+  "title": "XTP provisioning: LDAP-owned exclusive MI principal binding",
+  "section": "integration",
+  "summary": "LDAP Identity now supplies the trusted resolver required by XtpProvisionIngress: a protected xtp.provision session KEYID is admitted only when current Identity Directory state proves one exclusive MI binding, explicit XTP_PROVISION ACL authority and a stable directory revision fence.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "A protected XTP service key is transport evidence; it is not by itself MI identity authority.",
+    "The resolver accepts no principal from request payload or source address; it derives the MI principal from current Identity Directory key ownership.",
+    "service:xtp.provision, resource:xtp.provision, the client principal, key set and MI principal must all be current and ACTIVE where their lifecycle requires ACTIVE.",
+    "The key generation must be current ACTIVE or RETIRING XTP_ENCRYPT material inside its validity window and preserve the same owner/subtree relationship used by XtpLdapKeySource.",
+    "A service-wide shared key or more than one current service binding for the KEYID fails KEY_NOT_EXCLUSIVE.",
+    "The semantic MI principal must be an ACTIVE NODE or WORKLOAD id beginning mi: and must have explicit ALLOW for XTP_PROVISION on resource:xtp.provision.",
+    "The Identity Directory revision is sampled before the decision and must remain unchanged through it; FENCE_REVISION is a local revocation/ACL fence, not a distributed leader-election epoch.",
+    "Key revocation, principal revocation or ACL withdrawal fails closed on the next admission decision.",
+    "XTP remains cryptographic/session authority; LDAP remains identity/ACL authority; XTP route publication remains effect/commissioning authority."
+  ],
+  "implementation": {
+    "source": "packages/oorexx_ldap_identity/src/XtpProvisionLdapResolver.cls",
+    "test": "packages/oorexx_ldap_identity/tests/test_xtp_provision_ldap_resolver.rex",
+    "consumer_smoke": "packages/oorexx_ldap_identity/tests/test_xtp_provision_ingress_ldap_integration.rex",
+    "consumer": "packages/xtp_route_publication_v0.1-dev2/src/XtpProvisionIngress.cls",
+    "transport_baseline": "XTP dev36 protected session/key evidence"
+  },
+  "qualification": {
+    "standards": "PASS: integration candidate scan, 3 ooRexx files, 0 errors, 6 advisory private-method warnings",
+    "runtime": "NOT_RUN in this construction container: ooRexx executable unavailable",
+    "field": "NOT_CLAIMED: no ED209 MU/MI live commissioning evidence from this increment"
+  }
+}

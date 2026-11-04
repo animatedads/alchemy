@@ -1,0 +1,26 @@
+MVS Alchemy Services dev3-pre9 live guest implementation
+
+LOCAL BUILD ENVIRONMENT
+- ooRexx 5.3.0 r13196 exact uploaded test build
+
+PASS MasWire.cls ooRexx compile/tokenize
+PASS MasLiveGateway.cls ooRexx compile/tokenize
+PASS mas-live-gateway.rex ooRexx compile/tokenize
+PASS host TCP mvs.alchemy/1 HELLO/PING
+PASS host Queue gateway reference
+PASS host Database gateway reference
+PASS host IMAP gateway reference
+PASS host SMTP policy gateway reference
+PASS host PATH gateway reference
+PASS Logging v0.7 request/commit projection present
+PASS qualify_ed209c_ed209z_services.sh bash -n
+PASS generated MVS JCL construction
+PASS MVS assembler source <= 80 columns
+
+NOT_RUN ED209Z IFOX00 assemble MASD75.asm
+NOT_RUN ED209Z IFOX00 assemble MASLIVE.asm
+NOT_RUN ED209Z IEWL link with SYS2.LINKLIB(EZASOH03)
+NOT_RUN ED209Z live X'75' connection to ED209C gateway
+NOT_RUN ED209Z live Queue/DB/IMAP/SMTP/PATH IVP
+
+No live MVS PASS is claimed until the full environment script succeeds.

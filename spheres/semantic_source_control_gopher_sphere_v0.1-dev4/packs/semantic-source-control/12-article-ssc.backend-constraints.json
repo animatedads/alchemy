@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "ssc.backend-constraints",
+  "version": "0.1-dev2",
+  "sphere": "semantic-source-control",
+  "title": "Operating SSC on a real database: what the stub hid",
+  "summary": "The store package ran its tests against test/NoSQLServer.cls, a stub that accepts every statement and stores nothing, and ooRexx resolves ::requires from the caller directory before REXX_PATH, so anything run from test/ silently gets the stub. On the real NoSQLServer v0.79 four behaviours matter.",
+  "invariants": [
+    "Never qualify SSC persistence with test/NoSQLServer.cls; run live tests from test_live/ against a real backend.",
+    "NoSQLServer v0.79 UPDATE evaluates quoted literals as expressions: '3*4' is stored as 12 and '12-34' as -22. Put free text only through INSERT; UPDATE only ids (letters, _ and hex), statuses and numbers. SSC ids use '_' not '-'.",
+    "NoSQLServer v0.79 has no IN lists and keys join results by qualified names (r.object_id). Wrap the provider executor in SemanticSourceSqlCompatibility.",
+    "NoSQLServer v0.79 rewrites CRLF to LF on storage. SSC refuses such members rather than storing altered source; re-qualify on NoSQLServer v0.9x.",
+    "Install Crypto's Foreign Runtime provider (.CryptoForeignRuntimeInstaller~install) at the composition root: pure ooRexx SHA-256 is about 1.5 s per KB, Foreign Runtime about 0.5 ms.",
+    "Never name a variable RESULT: a bare message instruction (x~append(y)) sets RESULT to the message's return value."
+  ]
+}

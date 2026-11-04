@@ -1,0 +1,29 @@
+NoSQLServer v0.90 SQLite WAL read/write — observed 2026-10-22
+Runtime: ooRexx 5.3.0 r13196 from supplied ubuntu1604debug.x86_64.deb
+Native build: C++17, libsqlite3 3.46.1, -Wall -Wextra, supplied headers
+Dependencies: Alchemy Objects v0.8, Crypto v0.8.3 (from Library)
+
+PASS v089_sqlite_rw_contract — atomic multi-row operations, rollback, BLOB,
+     64-bit and case normalization, PK-less rejection
+PASS v089_sqlite_rw_smoke — DML + DDL + durable read-only native engine
+PASS v089_sqlite_create_smoke — exclusive SQLite database creation
+PASS v074_sqlite_native_smoke — existing native SQLite/GeoPackage contract
+PASS v060_update_from_smoke — SQL compatibility regression
+PASS v090_sqlite_wal_concurrent — WAL commits visible, native backup coherence,
+     external concurrent writer, INSERT/UPDATE/DELETE/DDL during WAL activity
+PASS independent SQLite PRAGMA integrity_check / foreign_key_check
+PASS v079_alchemy_v08_adoption_smoke
+PASS v083_db2_isolation_smoke
+PASS v085_integer_precision_smoke
+PASS v086_bulk_result_materialisation_smoke
+NOT RUN v087_instrumentation_mesh_smoke / v088_query_execution_instrumentation_smoke
+        because InstrumentationMesh.cls was absent in the isolated environment;
+        both reported ooRexx 43.901 requires resolution, not assertion failures.
+
+The v0.89 test expecting rejection of WAL mode was intentionally archived at
+  tests/historical/obsolete_v089_sqlite_wal_rejection.rex
+It is incompatible with the new capability and is not run in v0.90.
+
+NEGATIVE BOUNDARIES: no cross-statement transaction or external predicate-wide
+serializability, no native direct WAL page reader, no large-database performance
+qualification. See SQLITE_READ_WRITE_v0.90.md.

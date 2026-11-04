@@ -1,0 +1,76 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.rasenfalcon-runtime-readiness",
+  "version": "0.4",
+  "sphere": "wire-ui-runtime",
+  "title": "Rasen Falcon public/private runtime admission state \u2014 2026-10-29",
+  "summary": "Rasen Falcon v0.4.5 is on Git main with a verified 16-file public-role source slice, but public installation/running is still not observed and own HTTPS/runtime/live TLS/content approval gates remain open. LDAP is not a public-apex prerequisite. Private NOC/Office is a separate boundary requiring dedicated owned HTTPS, device mTLS and LDAP/Access Permissions; LDAP dev23 remains open PR #71 and is not installed/live-qualified.",
+  "authority": "project-runtime",
+  "public_apex": {
+    "delivery": "rasenfalcon_delivery_v0.4.5",
+    "git_commit": "ff9643b8418b971452c457e23c468d0c55e82939",
+    "source_on_main": true,
+    "public_role_source_slice": true,
+    "manifest_verified": true,
+    "content_approval_accepted": false,
+    "owned_https_service_admitted": false,
+    "https_runtime_live_tls_qualified": false,
+    "installed": false,
+    "running": false,
+    "ldap_required": false,
+    "production_ready": false
+  },
+  "private_noc_office": {
+    "dedicated_owned_https_required": true,
+    "private_ca_device_mtls_required": true,
+    "ldap_access_permissions_required": true,
+    "ldap_candidate": "v0.1-dev23 PR #71",
+    "ldap_pr_head": "725502de4aee93397e8e99bfb7c4446d07cb12c9",
+    "ldap_merged": false,
+    "ldap_installed": false,
+    "live_ldaps_qualified": false,
+    "principal_contract": "active attributed LDAP principal + explicit HTTPS_LOGIN",
+    "fallback_identity_store_forbidden": true,
+    "production_ready": false
+  },
+  "wire_application": {
+    "durable_deployment_ingress_qualified": true,
+    "live_https_wss_semantic_roundtrip": false
+  },
+  "invariants": [
+    "Public rasenfalcon.com and private NOC/Office are separate security boundaries.",
+    "LDAP/private device mTLS must not be propagated to the public apex.",
+    "Private identity attribution never grants protected action authority by itself; HTTPS_LOGIN remains explicit.",
+    "Source-only, source-slice, review-staged and open-PR states are not installed or running.",
+    "Do not inherit older HTTPS runtime evidence as proof of modified v0.4.8 runtime."
+  ],
+  "git_evidence": [
+    {
+      "repository": "animatedads/alchemy",
+      "commit": "ff9643b8418b971452c457e23c468d0c55e82939",
+      "path": "packages/rasenfalcon_delivery_v0.4.5",
+      "claim": "Public v0.4.5 source, 16-file public source slice and private/public policy are on main."
+    },
+    {
+      "repository": "animatedads/alchemy",
+      "pull_request": 71,
+      "head": "725502de4aee93397e8e99bfb7c4446d07cb12c9",
+      "state": "OPEN",
+      "claim": "LDAP dev23 activation source exists but is not merged/installed/live-qualified."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_https_server_v0.4.8.zip",
+      "sha256": "d38ddd049e5d8f5683e4ebf09e09a870c9c562bd3663db32950df711f7040fbe",
+      "member": "oorexx_https_server_v0.4.8/VALIDATION.txt",
+      "claim": "Modified 0.4.8 static qualification exists; exact runtime/live TLS remains open."
+    },
+    {
+      "artifact": "wire_application_deployment_v0.1_candidate3.zip",
+      "sha256": "8aa156951a6f2326ef7c8df944a04a3afcb9929ce1f89d5ce347ba4fed87dbe9",
+      "member": "wire_application_deployment_v0.1_candidate3/QUALIFICATION.md",
+      "claim": "Durable ingress qualified; live browser semantic roundtrip remains unproved."
+    }
+  ]
+}

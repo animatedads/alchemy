@@ -1,0 +1,11 @@
+[10:00:01.001] INFO  [http-nio-8080-exec-1] c.a.s.RequestHandler - Request START uri=/api/v1/user/101
+[10:00:01.005] INFO  [http-nio-8080-exec-2] c.a.s.RequestHandler - Request START uri=/api/v1/user/102
+[10:00:01.010] DEBUG [http-nio-8080-exec-1] c.a.d.ConnectionPool - Borrow connection from pool (active: 1, idle: 9)
+[10:00:01.012] DEBUG [http-nio-8080-exec-2] c.a.d.ConnectionPool - Borrow connection from pool (active: 2, idle: 8)
+[10:00:01.050] INFO  [http-nio-8080-exec-1] c.a.s.RequestHandler - Request END uri=/api/v1/user/101 status=200
+[10:00:01.052] DEBUG [http-nio-8080-exec-1] c.a.d.ConnectionPool - Return connection to pool (active: 1, idle: 9)
+[10:00:01.100] ERROR [http-nio-8080-exec-2] c.a.s.RequestHandler - Request FAIL uri=/api/v1/user/102 status=500
+[10:00:01.101] ERROR [http-nio-8080-exec-2] c.a.s.RequestHandler - java.lang.OutOfMemoryError: Java heap space
+[10:00:01.102] ERROR [http-nio-8080-exec-2] c.a.s.RequestHandler - 	at com.app.service.DataBuffer.allocate(DataBuffer.java:42)
+[10:00:01.103] ERROR [http-nio-8080-exec-2] c.a.s.RequestHandler - 	at com.app.service.RequestHandler.handle(RequestHandler.java:88)
+[10:00:01.105] DEBUG [http-nio-8080-exec-2] c.a.d.ConnectionPool - Return connection to pool (active: 0, idle: 10)

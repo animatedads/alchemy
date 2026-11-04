@@ -1,20 +1,26 @@
-# Librarian v2 sphere qualification receipt
+# Librarian v2 engineering sphere v0.1.3 qualification
 
-Date: 2026-10-23
-Artifact basis: librarian_v2_dev8_20261023.zip
-SHA-256: 17fd68b251e18ebe9f9c6902b6535db444bec1ce6a125ab6f2b8bd579250b742
+Date: 2026-10-29
+Runtime: ooRexx 5.3.0 r13196 debug (user-supplied)
+Archive: `librarian_v2_dev11_20261029.zip`
+SHA-256: `72211d64de28424f8acdc51f62f0d07418a18e5db8f0619e216bf474158d27a8`
 
-Evidence examined:
-- Archived dev8 `LibrarianProvenanceGraph.cls` and `DEV8_PROVENANCE.md`;
-- Earlier dev1–dev7 source packaged inside the cumulative ZIP;
-- GitHub dev8 source at `packages/librarian_v2_dev8/src/LibrarianProvenanceGraph.cls`.
+All 11 positive suites ran under the native interpreter:
+11 evidence; 11 timeline; 7 Time Service v0.3; 12 positioning;
+10 revisions; 11 retractions; 8 origin; 10 dev8 graph; 22 dev9 history;
+14 dev10 canonical; 21 dev11 scoped relationship.
+Subtotal: 137 positive assertions PASS.
+13 negative interpreter rejection cases PASS.
+**Total 150 checks PASS.** Both required classes compile with rexxc.
+Archive ZIP test PASS. GitHub dev11 source and test blob hashes exactly
+match the locally executed files.
 
-Claims:
-- Source digest verified against archived ZIP.
-- Gopher sphere has canonical manifest, access policy, articles, profile and structured artifact/member/line provenance.
-- Validation performed in authoring step: JSON parse and cross-reference coherence.
-- **Not** executed: full Gopher Sphere Editor lint/validate/activate (tool not available here).
-- **Not** executed: ooRexx 5.3.0 r13196 compile/runtime tests on dev8 (interpreter absent here).
-- **Not** qualified: production media-bias, independent-origin determination, causal/reputational actions.
+New regression proves unrelated disputed/cyclic subgraphs cannot suppress
+established declared relationships elsewhere, while involved or downstream
+queries still fail closed; corroboration claims do not create dependencies.
 
-Promotion is blocked until machine qualification receipts exist. Older cited tests are historical, not dev8 acceptance.
+**Not qualified:** source-media capture authenticity, verified
+independence, production persistence/concurrency, Time Service v0.9,
+Gopher Sphere Editor validate/lint/activation and actual Alchemy Gopher
+SPHERE_RESOLVED receipt. No CMS, Brand, factual, causal, mail, HTTPS, LDAP or
+XTP operational authority is conferred.

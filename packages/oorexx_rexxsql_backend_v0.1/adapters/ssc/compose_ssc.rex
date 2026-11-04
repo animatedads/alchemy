@@ -8,6 +8,11 @@
  *
  *   OOREXX_DATABASE_PROVIDER=rexxsql-sqlite  rexx compose_ssc.rex <database-root>
  *
+ * Through the shared DatabaseBackendSelector, preserve this SSC-specific provider:
+ *   OOREXX_DATABASE_PROVIDER=REXXSQL-SQLITE
+ *   OOREXX_DATABASE_PROVIDER_PACKAGE=SemanticSourceRexxSqlProvider.cls
+ *   OOREXX_DATABASE_PROVIDER_CLASS=SemanticSourceRexxSqlProvider
+ *
  * A real deployment registers several providers and selects among them; this root knows
  * the Rexx/SQL SQLite provider and defers anything else to its own composition root.
  */

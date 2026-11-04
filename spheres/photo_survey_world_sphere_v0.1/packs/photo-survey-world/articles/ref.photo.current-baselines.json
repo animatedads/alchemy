@@ -1,54 +1,73 @@
 {
   "kind": "article",
   "id": "ref.photo.current-baselines",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "photo-survey-world",
   "title": "Current baselines and dependency drift",
-  "summary": "Photo World dev21 remains the qualified Library authority; newer Library/GitHub dependency heads require explicit compatibility qualification before any rebase.",
+  "summary": "Photo World dev21 remains the qualified Library authority while current Maths, Physics and Python-bridge source heads are tracked as explicit requalification candidates.",
   "authority": "project-authoritative",
   "baselines": {
     "photo_world": {
       "version": "0.1-dev21",
       "artifact": "oorexx_photo_world_v0.1-dev21.zip",
       "sha256": "ab63a8fcd453623cc371ccfda71f60588256260251d6f71deb338a6e85b97707",
-      "status": "CURRENT_LIBRARY"
+      "status": "CURRENT_QUALIFIED_LIBRARY"
     },
     "maths": {
-      "qualified": "0.14",
-      "library_register_head": "0.17",
-      "github_head": "0.19",
-      "status": "REQUALIFICATION_REQUIRED_BEFORE_REBASE"
+      "dev21_qualified": "0.14",
+      "current_canonical": "0.19",
+      "current_sha256": "cf92eac71498450fb688569328833b33b122942de89450a4022d9d824c778f40",
+      "current_qualification": "666 PASS under ooRexx r13196 with documented skips/not-run lanes",
+      "status": "REQUALIFICATION_REQUIRED_BEFORE_PHOTO_REBASE"
     },
     "physics_world": {
-      "qualified": "0.1-dev46",
-      "library_register_head": "0.1-dev47.2",
-      "github_head": "0.1-dev50.1",
-      "status": "REQUALIFICATION_REQUIRED_BEFORE_REBASE"
+      "dev21_qualified": "0.1-dev46",
+      "current_canonical": "0.1-dev50.2",
+      "current_qualification": "dev50.2 source/regression committed; r13196 and package-wide gate NOT RUN",
+      "status": "REQUALIFICATION_REQUIRED_BEFORE_PHOTO_REBASE"
     },
-    "python_macrospace": {
-      "qualified": "0.31.6",
-      "library_newer_head": "0.31.7",
-      "status": "REQUALIFICATION_REQUIRED_BEFORE_REBASE"
+    "python_bridge": {
+      "dev21_qualified": "Macrospace 0.31.6",
+      "historical_line_status": "RETIRED_AS_PRODUCTION_DEVELOPMENT_LINE",
+      "current_adapter": "alchemy_oorexxpython_upstream_adapter_v0.2",
+      "native_authority": "JosepMariaBlasco/oorexxpython",
+      "runtime_gate": "ooRexx 5.3.0 r13265+ for upstream thread tests",
+      "status": "MIGRATION_AND_REQUALIFICATION_REQUIRED"
     },
     "oorexx": {
-      "version": "5.3.0-r13196",
-      "status": "QUALIFICATION_RUNTIME"
+      "dev21_qualification_runtime": "5.3.0-r13196",
+      "upstream_python_thread_gate": "5.3.0-r13265+",
+      "status": "RUNTIME_SPLIT_MUST_BE_RESOLVED_EXPLICITLY"
     }
   },
   "invariants": [
-    "A newer Library package does not silently replace an exact qualified dependency.",
-    "Sealed dependency snapshots are reproducibility material, not source authority."
+    "A newer package does not silently replace an exact qualified dependency.",
+    "Sealed dependency snapshots are reproducibility material, not source authority.",
+    "A retired bridge may remain historical qualification evidence without remaining development authority.",
+    "NOT RUN dependency qualification cannot be inherited as PASS by Photo World."
   ],
   "provenance": [
-    {
-      "artifact": "Project_Alchemy_Package_Register_v0.4.pdf",
-      "claim": "Current Library package placements as of 2026-10-09."
-    },
     {
       "artifact": "oorexx_photo_world_v0.1-dev21.zip",
       "sha256": "ab63a8fcd453623cc371ccfda71f60588256260251d6f71deb338a6e85b97707",
       "member": "compatibility-lock.json",
       "claim": "Exact dev21 qualified dependency lock."
+    },
+    {
+      "artifact": "packages/oorexx_maths/README.md",
+      "claim": "Current canonical Maths v0.19 baseline."
+    },
+    {
+      "artifact": "packages/oorexx_physics_world/VERSION.txt",
+      "claim": "Current canonical Physics World v0.1-dev50.2 source version."
+    },
+    {
+      "artifact": "packages/oorexx_physics_world/VALIDATION_DEV50_2.txt",
+      "claim": "dev50.2 source/regression evidence and explicit NOT RUN qualification gates."
+    },
+    {
+      "artifact": "packages/alchemy_oorexxpython_upstream_adapter_v0.2/UPSTREAM_ADOPTION.md",
+      "claim": "Current upstream Python bridge adoption and retirement of Macrospace native development line."
     }
   ]
 }

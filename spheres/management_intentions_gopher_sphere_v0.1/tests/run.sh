@@ -11,9 +11,11 @@ required={
  'arch.management-intentions.discovery',
  'arch.management-intentions.mvs',
  'arch.management-intentions.authority',
+ 'arch.management-intentions.cloud-control',
  'arch.management-intentions.relationships',
  'arch.management-intentions.instrumentation',
  'arch.management-intentions.networking',
+ 'arch.management-intentions.cloud-control',
  'ops.management-intentions.continue'}
 seen=set()
 for p in root.glob('packs/management-intentions/articles/*.json'):

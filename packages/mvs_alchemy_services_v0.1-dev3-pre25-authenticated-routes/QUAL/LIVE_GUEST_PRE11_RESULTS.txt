@@ -1,0 +1,27 @@
+MVS Alchemy Services dev3-pre11 live guest repair
+==================================================
+
+PRE10 LIVE EVIDENCE (ED209C / ED209Z, 2026-10-06)
+  PASS ED209Z IPL and system initialization
+  PASS TCAS accepting logons
+  PASS HERC01 c3270/TSO/ISPF/TIME health check
+  PASS JES2 reader smoke job and spool evidence
+  PASS JES2 accepted and started MASLIVE
+  FAIL ASM75 RC=8
+  FAIL ASMLIVE RC=8
+  FAIL LINK RC=8
+  RUN step FLUSHED
+  NOT_RUN X'75' crossing and service facilities
+
+PRE10 defects repaired in pre11
+  - removed undeclared EZASMI/EZASOH03 guest dependency
+  - MASD75 now drives Hercules TCPIP X'75' directly
+  - removed EZASMTIE/TIELENTH dependency
+  - removed IEWL INCLUDE SYSLIB(EZASOH03)
+  - replaced invalid symbolic =F'LABEL' literals in MASLIVE
+  - all assembler source cards are <= 71 columns
+  - literal-safe HASP regex quoting in environment script
+  - completed MASLIVE with spool diagnostics now classifies FAIL, not INCONCLUSIVE
+
+PRE11 LIVE STATUS
+  NOT_RUN unchanged pre11 archive on ED209Z.

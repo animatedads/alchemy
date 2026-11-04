@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "xtp.route-exchange",
+  "sphere": "xtp",
+  "version": "0.1-dev1",
+  "title": "Endpoint route exchange is not mesh discovery",
+  "section": "architecture",
+  "summary": "XTP common-header ROUTE and CNTL XROUTE carry endpoint exchange hints; they are not a signed node/service publication directory and do not imply a multi-hop XTP router.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "No elevation of unsigned ROUTE/XROUTE values into trust policy",
+    "No inferred forwarding path from a single endpoint route exchange",
+    "IP/interface/MAC only in XTP route/candidate records, not service descriptors",
+    "Node publication is control application DATA on authenticated xtp.provision, not a new meaning of ROUTE wire bits"
+  ],
+  "procedure": [
+    "Use XTP endpoint route exchange for current supported mechanics only",
+    "Install centrally authorised configuration via staged local gateway action",
+    "Gate any new multi-hop router capability on independent forwarding and loop/failure qualification"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/tests/test_route_exchange.sh",
+      "claim": "ROUTE/XROUTE endpoint tests"
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/src/xtp_route.cpp",
+      "claim": "Current route-table mechanics"
+    },
+    {
+      "artifact": "xtp_route_publication_v0.1_candidate1.zip",
+      "sha256": "f7d244551a8c7c3372ac723b9a40e04adfafbc46d09d9498eea7c0dfab53d5df",
+      "member": "xtp_route_publication_v0.1_candidate1/docs/ARCHITECTURE.md",
+      "claim": "Provision service control-plane boundary"
+    }
+  ]
+}

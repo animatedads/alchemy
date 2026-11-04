@@ -1,0 +1,18 @@
+NoSQLServer v0.89 SQLite read/write candidate — validation record
+Date: 2026-10-22
+Runtime: supplied ooRexx 5.3.0 r13196 Ubuntu1604debug x86_64 deb, extracted without system installation
+Native: C++17 SQLite write port compiled against supplied ooRexx 5.3 headers, SQLite 3.46.1
+Dependency material used: Alchemy Objects v0.8, ooRexx Crypto v0.8.3
+
+PASS: v089_sqlite_rw_smoke.rex — INSERT/SELECT/UPDATE/DELETE/CREATE/DROP, cross-instance read-only durability
+PASS: v089_sqlite_rw_contract.rex — atomic multi-row writes, duplicate PK rollback, typed BLOB round-trip, exact signed 64-bit, case-insensitive schema mapping, no-PK mutation denial
+PASS: v089_sqlite_create_smoke.rex — explicit fresh database creation, row mutation
+PASS: v089_sqlite_wal_rejection.rex — refused WAL-mode storage write
+PASS: v074_sqlite_native_smoke.rex — existing native SQLite and GeoPackage reader
+PASS: v060_update_from_smoke.rex — legacy UPDATE FROM
+PASS: independent sqlite3 PRAGMA integrity_check for work, contract, and bootstrap databases
+PASS (earlier targeted execution): v079_alchemy_v08_adoption_smoke.rex, v083_db2_isolation_smoke.rex, v085_integer_precision_smoke.rex
+NOTE: Later combined extended/debug runtime attempt stalled in Crypto and was terminated. The optional extended run is not claimed as having passed in full.
+
+Boundaries: no WAL, no cross-statement transaction API, no guaranteed native-reader snapshot under external concurrent writers, no WITHOUT ROWID or PK-less UPDATE/DELETE; see SQLITE_READ_WRITE_v0.89.md.
+Candidate: read/write implementation provided, not a claim of production hardening or deployment approval.

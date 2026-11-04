@@ -1,0 +1,50 @@
+{
+  "schema": "tombstone.sydney.v5v-source-evidence/0.14",
+  "state": "OBSERVED_UNTESTED",
+  "videos": [
+    {
+      "source": "1000066232.mp4",
+      "sha256": "2ee6fa992d302824bcd126bfc4617e1a2126b6ce6fd24e219513fc76c71bf192",
+      "frames": 26,
+      "keyframes": 3,
+      "deltas": 23,
+      "mean_changed_cells": 36.696,
+      "mean_changed_percent": 1.019,
+      "median_changed_cells": 30,
+      "changed_regions_min3cells": 45,
+      "exact_indexed_surface_reconstructions": 26
+    },
+    {
+      "source": "1000066230.mp4",
+      "sha256": "6f19614717fad0bddab8d3208dbc4d97b1ab774236445146878b2c6035c017fb",
+      "frames": 26,
+      "keyframes": 3,
+      "deltas": 23,
+      "mean_changed_cells": 47.652,
+      "mean_changed_percent": 1.324,
+      "median_changed_cells": 44,
+      "changed_regions_min3cells": 44,
+      "exact_indexed_surface_reconstructions": 26
+    }
+  ],
+  "spatial": {
+    "width": 80,
+    "height": 45,
+    "bits": 5,
+    "values": 26,
+    "packed_bytes_per_keyframe": 2250,
+    "input_adapter": "FFmpeg RGB24 5fps crop fixed source 1920x1080 -> 80x45 area scaling",
+    "quantizer": "fixed scene palette 26 colours with 4bit/axis RGB LUT (4096 bins); not canonical adaptive three curve selector"
+  },
+  "runtime": {
+    "interpreter": "ooRexx 5.3.0 r13196",
+    "test_harness": "local minimal mirrors of current VisionSurface/Delta/V5VTemporalCodec/ChangeRegionExtractor class definitions from GitHub; not full canonical package qualification"
+  },
+  "limits": [
+    "Lossless exactness relative to quantized VisionSurface, NOT original RGB24",
+    "Change region detections not ferry classifications",
+    "Palette labels 14..19 identify warm colour, not a vessel",
+    "Geometry mapping, high-resolution region material, and Camera Behaviour still unintegrated",
+    "The full GitHub Vision package is awaiting independent run"
+  ]
+}

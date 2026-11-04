@@ -1,9 +1,9 @@
 /*----------------------------------------------------------------------------*/
-/* ooRexx Virtual USB v0.1-dev10 - USB semantic model and Chapter 9 codec.    */
+/* ooRexx Virtual USB v0.1-dev11 - USB semantic model and Chapter 9 codec.    */
 /*----------------------------------------------------------------------------*/
 
 ::class VirtualUsbBuild public
-::constant RELEASE "0.1-dev10"
+::constant RELEASE "0.1-dev11"
 ::constant API_VERSION "virtual.usb/0.1"
 
 ::class UsbBinary public

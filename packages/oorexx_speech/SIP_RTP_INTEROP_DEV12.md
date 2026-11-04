@@ -29,3 +29,18 @@ The test checks:
 No SIP signalling, UDP socket, RTP network transmission, Azure call, or local
 audio device is exercised by this regression. Those remain separately owned
 and separately qualified.
+
+
+## Independent native qualification
+
+CODEX-PC independently ran the dev12 regression on ooRexx 5.3.0 r13196 against exact Git commit `e65b97548b7d444719726c8554a2cbc51621662d`.
+
+- RTP native build: PASS.
+- Regression, invoked with `bash tools/run_sip_rtp_interop.sh`: PASS.
+- No SIP signalling/network calls, UDP transmission, Azure access or local-device access were made.
+- The direct `./tools/run_sip_rtp_interop.sh` invocation exited 126 because the Git executable bit was missing; dev13 corrects that packaging defect.
+
+Independent evidence SHA-256 values:
+- `tests/test_sip_rtp_interop.rex`: `85bd001be3da4f042b2d468bcaa45d02bf79988ee04b24c3e2642c4f4326631d`
+- SIP `src/sip_speech.cls`: `14e28eaed79eefd056a3c6a8e124506d4d09a670d60097664f96d9762b132b2e`
+- RTP `src/rtp.cls`: `5f8a1d2a26749b2e4565b321dd2044bd8ca805e680b7c67d06e32215faee4dde`

@@ -1,4 +1,4 @@
-/* oorexx_maths v0.19
+/* oorexx_maths v0.20
  * Provider-neutral mathematical objects with explicit precision, evidence,
  * derivation and independent recomputation support.
  */
@@ -8,7 +8,7 @@ if \.local~hasIndex('OOREXX_MATHS_CONSTANT_CACHE') then .local['OOREXX_MATHS_CON
 
 ::class Maths public
 ::method version class
-  return '0.19'
+  return '0.20'
 
 ::method defaultContext class
   return .MathContext~decimal(50)
@@ -158,6 +158,10 @@ if \.local~hasIndex('OOREXX_MATHS_CONSTANT_CACHE') then .local['OOREXX_MATHS_CON
 
 ::method theoryCatalogue class
   return .MathTheoryCatalogue~new
+
+::method finiteChain class
+  use strict arg values
+  return .MathFiniteChain~new(values)
 
 ::method proofArtifact class
   use strict arg statementId, statementRevision, kind, authority, authorityVersion='', status='VERIFIED', reference=''
@@ -391,6 +395,16 @@ if \.local~hasIndex('OOREXX_MATHS_CONSTANT_CACHE') then .local['OOREXX_MATHS_CON
   use strict arg context=.nil
   if context == .nil then context=self~defaultContext
   return .MathSampledScalarSeries~new(context)
+
+::method statistics class
+  use strict arg values,context=.nil
+  if context == .nil then context=self~defaultContext
+  return .MathStatistics~new(values,context)
+
+::method pairedStatistics class
+  use strict arg leftValues,rightValues,context=.nil
+  if context == .nil then context=self~defaultContext
+  return .MathPairedStatistics~new(leftValues,rightValues,context)
 
 ::method quadratic class
   use strict arg a,b,c,context=.nil
@@ -4067,6 +4081,235 @@ if \.local~hasIndex('OOREXX_MATHS_CONSTANT_CACHE') then .local['OOREXX_MATHS_CON
   guarantee='APPROXIMATE_HIGH_PRECISION'; if _context~numberDomain='RATIONAL' then guarantee='EXACT'
   ev~addStep(.MathPathStep~new('interpolate.bilinear2d','PURE','0.12','bounded-bilinear',_context~numberDomain,_context~workingDigits,'MathBilinearInterpolator2D','Boundary policy='_boundary'; independent interval search on each axis followed by bilinear blend.',guarantee,'PURE,INTERPOLATION,BILINEAR2D'))
   return .MathScalarResult~new(value,'INTERPOLATE_BILINEAR2D',_context,ev)
+
+::class MathStatistics public
+::method init
+  expose _values _context
+  use strict arg values,context=.nil
+  if context==.nil then context=.Maths~defaultContext
+  if \values~isA(.array) then raise syntax 88.900 array('Array of statistical values',values)
+  _context=context
+  _values=.array~new
+  numeric digits context~workingDigits
+  do value over values
+    _values~append(rx_math_coerce_value(value,context))
+  end
+::method context
+  expose _context
+  return _context
+::method values
+  expose _values
+  return _values~copy
+::method count
+  expose _values
+  return _values~items
+::method sum
+  expose _values _context
+  numeric digits _context~workingDigits
+  total=rx_math_coerce_value(0,_context)
+  do value over _values
+    total=total+value
+  end
+  return total
+::method product
+  expose _values _context
+  numeric digits _context~workingDigits
+  product=rx_math_coerce_value(1,_context)
+  do value over _values
+    product=product*value
+  end
+  return product
+::method mean
+  expose _values _context
+  if _values~items=0 then raise syntax 88.900 array('mean of non-empty values',0)
+  numeric digits _context~workingDigits
+  return self~sum/_values~items
+::method sortedValues
+  expose _values
+  out=_values~copy
+  do i=2 to out~items
+    value=out[i]
+    j=i-1
+    do while j>=1
+      if out[j]<=value then leave
+      out[j+1]=out[j]
+      j-=1
+    end
+    out[j+1]=value
+  end
+  return out
+::method minimum
+  expose _values
+  if _values~items=0 then raise syntax 88.900 array('minimum of non-empty values',0)
+  sorted=self~sortedValues
+  return sorted[1]
+::method maximum
+  expose _values
+  if _values~items=0 then raise syntax 88.900 array('maximum of non-empty values',0)
+  sorted=self~sortedValues
+  return sorted[sorted~items]
+::method range
+  expose _values
+  if _values~items=0 then raise syntax 88.900 array('range of non-empty values',0)
+  return self~maximum-self~minimum
+::method median
+  expose _values _context
+  if _values~items=0 then raise syntax 88.900 array('median of non-empty values',0)
+  numeric digits _context~workingDigits
+  sorted=self~sortedValues
+  n=sorted~items
+  if n//2=1 then return sorted[(n+1)%2]
+  left=sorted[n%2]
+  right=sorted[n%2+1]
+  return (left+right)/2
+::method modes
+  expose _values
+  counts=.directory~new
+  retained=.directory~new
+  best=0
+  do value over _values
+    key=self~_key(value)
+    retained[key]=value
+    if counts~hasIndex(key) then counts[key]+=1
+    else counts[key]=1
+    if counts[key]>best then best=counts[key]
+  end
+  out=.array~new
+  if best=0 then return out
+  keys=counts~allIndexes
+  keys~sort
+  do key over keys
+    if counts[key]=best then out~append(retained[key])
+  end
+  return out
+::method uniqueMode
+  modes=self~modes
+  if modes~items<>1 then raise syntax 88.900 array('exactly one modal value',modes~items)
+  return modes[1]
+::method deviations
+  expose _values _context
+  if _values~items=0 then raise syntax 88.900 array('deviations of non-empty values',0)
+  mean=self~mean
+  out=.array~new
+  do value over _values
+    out~append(value-mean)
+  end
+  return .MathVector~new(out,_context)
+::method squaredValues
+  expose _values _context
+  out=.array~new
+  do value over _values
+    out~append(value*value)
+  end
+  return .MathVector~new(out,_context)
+::method populationVariance
+  expose _values _context
+  if _values~items=0 then raise syntax 88.900 array('population variance of non-empty values',0)
+  numeric digits _context~workingDigits
+  deviations=self~deviations~toArray
+  total=rx_math_coerce_value(0,_context)
+  do value over deviations
+    total=total+(value*value)
+  end
+  return total/_values~items
+::method sampleVariance
+  expose _values _context
+  if _values~items<2 then raise syntax 88.900 array('sample variance of at least two values',_values~items)
+  numeric digits _context~workingDigits
+  deviations=self~deviations~toArray
+  total=rx_math_coerce_value(0,_context)
+  do value over deviations
+    total=total+(value*value)
+  end
+  return total/(_values~items-1)
+::method populationStdDev
+  expose _context
+  return rx_math_numeric_sqrt(self~populationVariance,_context)
+::method sampleStdDev
+  expose _context
+  return rx_math_numeric_sqrt(self~sampleVariance,_context)
+::method canonical
+  expose _values
+  out='statistics['
+  do i=1 to _values~items
+    if i>1 then out=out','
+    out=out||self~_key(_values[i])
+  end
+  return out']'
+::method string
+  return self~canonical
+::method _key private
+  use strict arg value
+  if value~hasMethod('CANONICAL') then return value~canonical
+  return value~string
+
+::class MathPairedStatistics public
+::method init
+  expose _left _right _context
+  use strict arg leftValues,rightValues,context=.nil
+  if context==.nil then context=.Maths~defaultContext
+  _context=context
+  _left=.MathStatistics~new(leftValues,context)
+  _right=.MathStatistics~new(rightValues,context)
+  if _left~count<>_right~count then raise syntax 88.900 array('equal paired-statistics lengths',_left~count||':'||_right~count)
+  if _left~count=0 then raise syntax 88.900 array('non-empty paired statistics',0)
+::method context
+  expose _context
+  return _context
+::method count
+  expose _left
+  return _left~count
+::method left
+  expose _left
+  return _left
+::method right
+  expose _right
+  return _right
+::method leftMean
+  expose _left
+  return _left~mean
+::method rightMean
+  expose _right
+  return _right~mean
+::method populationCovariance
+  expose _left _right _context
+  numeric digits _context~workingDigits
+  left=_left~values; right=_right~values
+  lm=_left~mean; rm=_right~mean
+  total=rx_math_coerce_value(0,_context)
+  do i=1 to left~items
+    total=total+((left[i]-lm)*(right[i]-rm))
+  end
+  return total/left~items
+::method sampleCovariance
+  expose _left _right _context
+  if _left~count<2 then raise syntax 88.900 array('sample covariance of at least two pairs',_left~count)
+  numeric digits _context~workingDigits
+  left=_left~values; right=_right~values
+  lm=_left~mean; rm=_right~mean
+  total=rx_math_coerce_value(0,_context)
+  do i=1 to left~items
+    total=total+((left[i]-lm)*(right[i]-rm))
+  end
+  return total/(left~items-1)
+::method populationCorrelation
+  expose _left _right _context
+  numerator=self~populationCovariance
+  denominator=rx_math_numeric_sqrt(_left~populationVariance*_right~populationVariance,_context)
+  if denominator=0 then raise syntax 88.900 array('non-zero population variance for correlation',0)
+  return numerator/denominator
+::method sampleCorrelation
+  expose _left _right _context
+  if _left~count<2 then raise syntax 88.900 array('sample correlation of at least two pairs',_left~count)
+  numerator=self~sampleCovariance
+  denominator=rx_math_numeric_sqrt(_left~sampleVariance*_right~sampleVariance,_context)
+  if denominator=0 then raise syntax 88.900 array('non-zero sample variance for correlation',0)
+  return numerator/denominator
+::method canonical
+  expose _left _right
+  return 'paired-statistics['||_left~canonical||';'||_right~canonical||']'
+::method string
+  return self~canonical
 
 ::class MathSampledScalarSeries public
 ::method init

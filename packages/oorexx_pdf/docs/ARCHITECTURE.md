@@ -14,3 +14,8 @@ Column widths are interpreted proportionally and scaled to the printable width. 
 ## dev3 table metadata boundary
 
 Rows remain ordinary ooRexx Arrays. A caller only constructs a `PdfCell` when a cell needs metadata such as span, alignment, or bold rendering. This preserves the zero-adapter path for existing Array tabular sources while allowing richer report layout. Column presentation metadata belongs to `PdfTable`; the low-level `PdfWriter` remains unaware of tables and flow layout.
+
+
+## dev6 — renderer consumes font runs
+
+The managed-font adapter consumes Font Manager run planning instead of forcing one face per semantic role. `PdfManagedFontSet` pre-plans the corpus, creates one subset per used face and records the character-to-face assignment. PDF retains CID/resource encoding authority. The current emitter constrains planning to TrueType because it emits CIDFontType2/FontFile2; CFF requires a real CIDFontType0/OpenType implementation.

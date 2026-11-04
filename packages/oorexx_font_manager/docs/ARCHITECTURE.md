@@ -20,3 +20,8 @@ Coverage providers are optional accelerators. They answer a narrow question — 
 The returned `FontRunPlan` is renderer-neutral. PDF may map each run to a CID font, Wire may map it to native text runs, and HTML may derive a CSS fallback stack. Missing characters remain explicit evidence.
 
 Run planning currently operates at UTF-8 Unicode-scalar boundaries. It deliberately does not claim shaping authority: grapheme clustering, bidirectional reordering and OpenType GSUB/GPOS shaping require a dedicated shaping provider/service in a later slice.
+
+
+## dev4 — consumer capability constraints
+
+Coverage and renderer capability are separate facts. `planRunsForPurpose(..., requiredFormat)` applies a hard format constraint across primary selection, accelerated coverage lookup and generic fallback. Collection fonts retain their face index through transformation.

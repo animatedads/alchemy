@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.dependency-closure",
+  "version": "0.2",
+  "sphere": "oorexx-deployment",
+  "title": "Exact dependency closure: sealed SSC releases and entry-scoped legacy intake",
+  "summary": "Two closure modes are explicit. SEALED consumes a QUALIFIED SSC deployment and its exact transitive dependency deployment ids without re-resolution. DEVELOPMENT/LEGACY_INTAKE starts from explicit entry packages and reachable package/source requirements, freezes the result before mutation, and must not be represented as a sealed release. Both feed a deterministic Deployment target namespace.",
+  "authority": "project-doctrine",
+  "section": "dependencies",
+  "invariants": [
+    "SEALED mode follows exact SSC deployment dependency ids and never chooses a newer provider during Deployment.",
+    "DEVELOPMENT/LEGACY_INTAKE starts from explicit entry packages so tests/examples do not become production dependencies merely by sharing an archive.",
+    "Every resolved closure is frozen before target mutation and retained as deployment evidence.",
+    "Missing, ambiguous or substituted required providers fail closed.",
+    "The semantic closure and target namespace receipt remain separately inspectable.",
+    "Hosted modules resolve their exact host/module closure before namespace materialisation, package-load, composition, activation and live probe."
+  ],
+  "topics": [
+    "dependency-closure",
+    "entry-package",
+    "dependency-lock",
+    "REXX_PATH",
+    "hosted-module"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.4.md",
+      "sha256": "4407182b556e01cafb2b15a3568084b4530f95881c3dc963d4de5bffbcf4b26e",
+      "member": "General_ooRexx_Deployment_Component_v0.4.md",
+      "line_start": 1456,
+      "line_end": 1659,
+      "claim": "Defines sealed/development closure modes and target namespace boundary."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/docs/DEPENDENCIES.md",
+      "line_start": 13,
+      "line_end": 145,
+      "claim": "Current executable documentation for both closure paths and deterministic namespace."
+    }
+  ]
+}

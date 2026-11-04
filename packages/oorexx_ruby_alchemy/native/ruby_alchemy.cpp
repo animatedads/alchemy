@@ -475,7 +475,7 @@ static VALUE rexx_proxy_missing(int argc, VALUE *argv, VALUE self) {
         request->result=Qnil; request->condition_error=0; request->done=0;
         for(int i=1;i<argc;i++) request->argv.push_back(argv[i]);
         { std::lock_guard<std::mutex> guard(async_calls_mutex); async_calls.push_back(request); }
-        rb_thread_call_without_gvl(wait_async_call_without_gvl,request.get(),RUBY_UBF_IO,NULL);
+        rb_thread_call_without_gvl(wait_async_call_without_gvl,request.get(),NULL,NULL);
         if(request->condition_error) {
             VALUE ex=rb_exc_new_cstr(cRexxCondition,request->error.empty()?"ooRexx callback condition":request->error.c_str());
             rb_iv_set(ex,"@condition",rb_utf8_str_new_cstr(request->condition.c_str()));

@@ -1,13 +1,13 @@
 # Dependencies
 
-Runtime core:
-
+Runtime:
 - Open Object Rexx 5.3.0 r13196 qualification baseline.
-- `PdfDeflate.cls` remains the native ooRexx RFC 1950/RFC 1951 content-stream compressor.
+- `oorexx_font_manager` v0.1-dev4 for managed-font/fallback mode.
 
-Managed-font path:
+Optional provider tools used by the qualified managed-font path:
+- Fontconfig (`fc-list`, `fc-match`).
+- Python fontTools helper for SFNT glyph/metrics inspection.
+- `pyftsubset` for subset creation.
 
-- `oorexx_font_manager` v0.1-dev2 is the renderer-neutral font authority used by PDF dev5 for semantic font selection, glyph plans, exact advances and subsetting.
-- Fontconfig and Python fontTools/`pyftsubset` are optional provider backends of Font Manager, not PDF-owned dependencies.
-
-The release archive carries a qualification copy under `vendor/font_manager`; the GitHub source publication deliberately omits that embedded copy and resolves the independently published sibling package through `FONT_MANAGER_ROOT`/`REXX_PATH`.
+The legacy Helvetica path remains available without FontManager.
+No font binary is bundled by this package.

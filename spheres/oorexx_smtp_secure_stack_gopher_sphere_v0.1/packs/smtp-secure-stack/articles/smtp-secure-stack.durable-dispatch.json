@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "smtp-secure-stack.durable-dispatch",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "smtp-secure-stack",
   "title": "Durable delivery, Storage Fabric and outbound dispatch",
   "summary": "Message bytes are stored once as an immutable Storage Fabric object. Mailbox, quarantine and outbound spool state are projections referencing that object. Queue Fabric carries durable work references rather than a second authoritative message body.",
@@ -13,7 +13,8 @@
     "Every dispatch attempt re-enters signature, EMAIL_SEND and egress-policy checks.",
     "Recipient state is tracked independently so partial success does not retransmit recipients already accepted.",
     "SMTP cannot provide exactly-once delivery across an ambiguous post-DATA connection loss; ambiguous outcomes must be represented explicitly rather than silently retried as certain failure.",
-    "A successful final SMTP DATA reply is remote acceptance evidence; a failed local journal commit after that point is not grounds to pretend the remote acceptance did not happen."
+    "A successful final SMTP DATA reply is remote acceptance evidence; a failed local journal commit after that point is not grounds to pretend the remote acceptance did not happen.",
+    "After a definitive final DATA reply, QUIT and close are cleanup only; cleanup exceptions must not replace the known recipient outcome or manufacture a retry."
   ],
   "procedure": [
     "Resolve the durable spool reference and reload the immutable Storage Fabric object.",

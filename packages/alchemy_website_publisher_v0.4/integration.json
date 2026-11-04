@@ -1,0 +1,23 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "alchemy_website_publisher",
+    "version": "0.3",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {"set": {}, "prepend_path": []},
+  "tests": [
+    {
+      "name": "publisher_source_provenance",
+      "argv": ["python3", "tests/verify_source_sync.py"],
+      "timeout_seconds": 30
+    },
+    {
+      "name": "publisher_js_syntax",
+      "argv": ["node", "--check", "publisher.js"],
+      "timeout_seconds": 30
+    }
+  ],
+  "publish": {"tree": {"source": ".", "path": "packages/alchemy_website_publisher_v0.3"}}
+}

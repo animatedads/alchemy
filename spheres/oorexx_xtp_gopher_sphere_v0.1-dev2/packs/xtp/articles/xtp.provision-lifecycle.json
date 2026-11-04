@@ -1,0 +1,46 @@
+{
+  "kind": "article",
+  "id": "xtp.provision-lifecycle",
+  "sphere": "xtp",
+  "version": "0.1-dev1",
+  "title": "xtp.provision: DHCP-like commissioning over authorised XTP",
+  "section": "operations",
+  "summary": "Proposed privileged named service xtp.provision distributes leased, target-specific MI route/service-point configuration after independently bootstrapped trusted XTP session. Unlike DNS it provisions a signed configuration generation with renewal, revocation and rollback.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "Bootstrap trust anchors and at least one seed route arrive out-of-band and may not be overwritten by an allocation",
+    "Node ANNOUNCE is a signed scoped offer, never a self-authorising service-class publication",
+    "Controller ALLOCATE must be signed by authorised distinct quorum and addressed to a specific MI",
+    "Downloaded allocation cannot launch local service or assert an unregistered live listener",
+    "Operations must be idempotent across reconnect and out-of-order delivery",
+    "No effectful operation until channel authentication/session binding is genuinely qualified"
+  ],
+  "procedure": [
+    "HELLO authenticate MI and report applied epoch/revision plus nonce",
+    "OFFER challenge/configuration head and policy digest",
+    "ANNOUNCE signed node-owned route and service-point offers",
+    "REQUEST/ALLOCATE quorum-certified target snapshot or valid delta",
+    "PREPARE verify, journal and preflight; ACTIVATE atomic generation; ACK_APPLIED durable not XTP CNTL",
+    "RENEW with jitter and bounded lease; WITHDRAW/REVOKE with monotone tombstone floor; SYNC after partition",
+    "ROLLBACK to last known good and preserve independent seed reachability"
+  ],
+  "provenance": [
+    {
+      "artifact": "xtp_route_publication_v0.1_candidate1.zip",
+      "sha256": "f7d244551a8c7c3372ac723b9a40e04adfafbc46d09d9498eea7c0dfab53d5df",
+      "member": "xtp_route_publication_v0.1_candidate1/docs/ARCHITECTURE.md",
+      "claim": "Detailed proposed service lifecycle"
+    },
+    {
+      "artifact": "xtp_route_publication_v0.1_candidate1.zip",
+      "sha256": "f7d244551a8c7c3372ac723b9a40e04adfafbc46d09d9498eea7c0dfab53d5df",
+      "member": "xtp_route_publication_v0.1_candidate1/reference/provision_contract.py",
+      "claim": "Independent offline Ed25519 reference verifier"
+    }
+  ],
+  "qualification_boundaries": {
+    "transport": "not implemented as secure remote XTP",
+    "persistence": "no effectful file/LDAP installer supplied",
+    "field": "no commissioned ED209 service"
+  }
+}

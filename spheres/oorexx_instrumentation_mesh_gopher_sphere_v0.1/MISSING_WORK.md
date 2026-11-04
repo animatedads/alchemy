@@ -8,28 +8,40 @@ The previous source-publication gap is closed on `main` by commit `311d31608c7ab
 
 - exact delivery: `oorexx_instrumentation_mesh_v0.1-dev8.zip`;
 - archive SHA-256: `47402459e658da6ddb17c65c98010c0acd0e35d43b3a0b01c8c13c835f65d624`;
-- archive digest verified before import;
-- every archive entry covered by `SHA256SUMS.txt` verified before import;
+- archive digest and every `SHA256SUMS.txt` entry verified before import;
 - exact runtime source, tests, package metadata and qualification evidence published under `packages/oorexx_instrumentation_mesh/`;
-- the source was imported from the qualified archive, not reconstructed from sphere prose.
+- source imported from the qualified archive, not reconstructed from sphere prose.
 
-This completes source availability/provenance only. It does **not** manufacture a new 2026-10-27 r13196/current-estate runtime qualification.
+This completes source availability/provenance only. It does **not** manufacture a new r13196/current-estate runtime qualification.
+
+## Current producer compatibility closed statically — 2026-10-29
+
+The committed compatibility gate now verifies:
+
+- Instrumentation Intentions v0.1-dev2 uses byte-identical Mesh dev8 core/analysis/correlation sources;
+- Library Storage Instrumentation v0.1-dev8 pins the exact Mesh dev8 version/hash and passes its Mesh/static boundary checks;
+- Git Storage Instrumentation v0.1-dev9 is newer than the materialized Library dev8 and still pins the exact Mesh dev8 contract;
+- HTTPS Server v0.4.8 retains the Instrumentation adapter and `instrumentationSnapshot()` source shape;
+- LDAP Identity v0.1-dev22 retains the Mesh/correlation adapter surface without credential/password/mailbox publication fields;
+- RexxOS RTO2 Grid v0.1-dev16 identity increment passes its five static contract tests and does not replace/modify the Grid Instrumentation producer path.
+
+Evidence: `qualification/CURRENT_PRODUCER_COMPATIBILITY_2026-10-29.md`.
+Reusable checker: `qualification/check_current_producers.py`.
+
+These are static/source compatibility results. They do not relabel package-owned NOT-RUN runtime gates as passes.
 
 ## Wire3D / Keynote reconciliation
 
-1. Reconcile the inspected dev29.23 Keynote/NOC correlation implementation with the later `dev29.25 collector-join` package referenced by repository design material. The 2026-10-27 Library recheck still did not resolve that exact archive.
+1. Reconcile the inspected dev29.23 Keynote/NOC correlation implementation with the later `dev29.25 collector-join` package referenced by repository design material. The 2026-10-29 Library recheck still does not resolve that exact archive.
 2. Preserve or consciously supersede the dev29.23 Keynote behavior: freshness separate from health, expected-service visibility, separate static/deployment and operational graph layers, operational timeline, explicit correlation/causation, and read-only NOC authority.
 3. Source-control the reconciled non-vendored Keynote/NOC files and tests in the current Wire3D owner tree. Do not overwrite later Wire3D work with dev29.23.
-4. Keep Wire3D work in its existing Rasen Falcon lane. Instrumentation may request read-only verification/reconciliation evidence but must not seize Wire3D ownership.
+4. Keep Wire3D work in its existing Rasen Falcon lane. Instrumentation must not seize Wire3D ownership.
 
 ## Runtime qualification still required
 
-5. Run a fresh source-level Instrumentation dev8 qualification under the current exact ooRexx 5.3.0 r13196 environment after publication. GitHub issue #60 owns this fresh execution gate. The imported package carries qualified 2026-10-11 evidence; this sphere does not relabel source publication as fresh execution.
-6. Run a live multi-node QueueRexx/XTP MANAGEMENT-route qualification for Instrumentation publication/query/command against the current QueueRexx head. Earlier packages qualified the service-route contract and underlying Queue Fabric behavior, but this sphere does not claim a new live two-node run.
-7. Requalify current producers against the published source. The 2026-10-27 Library has advanced at least:
-   - Instrumentation Intentions v0.1-dev2 — read-only events/correlation plus relationships/freshness qualification PASS;
-   - Storage Fabric Instrumentation Mesh v0.1-dev7 — current Storage observation line consuming exact Instrumentation dev8.
-   Continue with Queue Fabric, Memory Fabric, SMTP, IMAP, LDAP, HTTPS, RexxOS MU/MI, MVS Alchemy, SIP/RTP, NoSQLServer and deployment/application observers.
+5. Run a fresh source-level Instrumentation dev8 qualification under an exact ooRexx 5.3.0 r13196 environment after publication. GitHub issue #60 owns this fresh execution gate. The current 2026-10-29 container did not have a materializable r13196 runtime; that absence is evidence, not a pass/fail verdict.
+6. Run a live multi-node QueueRexx/XTP `MANAGEMENT`-route qualification for Instrumentation publication/query/command against the current QueueRexx head.
+7. Runtime-requalify remaining producer paths against the published source: Queue Fabric, Memory Fabric, SMTP, IMAP, MVS Alchemy, SIP/RTP, NoSQLServer and application/deployment observers. LDAP dev22, HTTPS 0.4.8 and the current RTO2 identity increment have only the static/source compatibility evidence recorded above; their live/runtime package gates remain owned by those components.
 8. Add a production retention/compaction policy for bounded metric, relationship and event history. Retention is observation policy, never service-state authority.
 9. Add explicit capacity/load qualification for a large estate and high-rate producers. Do not emit one Queue message per protocol frame or byte.
 

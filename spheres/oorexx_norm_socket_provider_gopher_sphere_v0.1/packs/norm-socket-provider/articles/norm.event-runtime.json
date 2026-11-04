@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "norm.event-runtime",
+  "version": "0.1",
+  "sphere": "norm-socket-provider",
+  "title": "Event Runtime integration boundary",
+  "summary": "NORM descriptor readiness projects through the common SocketProvider contract; a transport-neutral Socket/Event Runtime adapter converts known-ready provider listeners into typed SOCKET.ACCEPTED events without moving fd polling into Event Runtime.",
+  "invariants": [
+    "Event Runtime v0.1-dev1 owns typed registration and dispatch, not fd polling or provider I/O.",
+    "The adapter consumes only the common listener descriptor, waitReady and tryAccept contract; it has no NORM API dependency.",
+    "A scheduler may watch the descriptor and call drainReady after readiness; the adapter then drains nonblocking and emits SOCKET.ACCEPTED through EventSource.",
+    "The accepted socket remains the Event data object by identity and is not flattened into bytes or a map.",
+    "Removing an adapter registration does not close the provider listener or leave multicast membership.",
+    "SocketDescriptorSet can hold multiple descriptors and dispatch one known-ready descriptor independently; it does not poll/select them.",
+    "The implementation candidate is packages/oorexx_socket_event_runtime_adapter_v0.1-dev1; NORM dev3 remains the live-qualified transport baseline until this adapter is independently executed under ooRexx."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_norm_v0.1-dev3.zip",
+      "sha256": "d997007d35c7527eb40d6d62516cee036ed2d1a27fb1edbe32bdf4389abcd231",
+      "member": "src/NormSocketProvider.cls"
+    }
+  ]
+}

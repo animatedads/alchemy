@@ -1,0 +1,67 @@
+ooRexx Media Methodologies v0.1-dev9 qualification
+Date: 2026-10-29
+Runtime: Open Object Rexx 5.3.0 r13196 - Internal Test Version (2026-08-03), 64-bit
+
+DEV9 SCOPE
+PASS catalogue expanded to 183 methodologies and 183 exact work-shape identities
+  VIDEO=84 AUDIO=71 CROSS_MODAL=10 VALIDATION=18
+  EXPERIMENTAL=31 RECONSTRUCTIVE=62
+PASS three Audio Spectral Integrity v0.3 falsification/qualification methodologies added:
+  AUDIO.SPECTRAL_INTEGRITY.WINDOWED_BUCKET_VIEWS
+  QUAL.AUDIO.SPECTRAL_ORACLE_TEMPLATE_PROJECTION
+  QUAL.AUDIO.SPECTRAL_BLIND_CONTROL_TRIAL
+PASS all five prior v0.2 spectral-integrity methodology identities retained unchanged
+PASS provider dynamically imports Audio Spectral Integrity v0.3; DSP is not copied into Media Methodologies
+PASS blind control private condition key was mode 0600 during qualification and is excluded from distribution/Git
+PASS no source-separation, source-count, transcript-truth, playback-location or intent authority acquired
+
+FINAL PACKAGE RUNTIME
+PASS 28/28 ooRexx package tests under r13196
+PASS 5/5 package examples under r13196
+PASS six Python provider modules compile
+PASS methodology/work-shape exact ID coverage: 183/183
+PASS all JSON in the package tree parses
+PASS Audio Spectral Integrity v0.3 provider-result assertions
+
+UPSTREAM / TARGETED DEPENDENCY QUALIFICATION
+PASS Audio Spectral Integrity v0.3: 17 upstream unit tests + sphere JSON syntax
+PASS Audio V9 Candidate20 sequence-execution bridge regression
+PASS Memory Fabric dev10 sparse/reference backing + adaptive-horizon integration regression
+PASS RexxOS RTO2 Grid dev15 MI evidence integration regression
+PASS Job-to-Node Allocator v0.6-network4 placement projection/integration regression
+PASS Evidence Revision ooRexx v0.1-dev2 detached candidate-lifecycle bridge regression
+PASS Generalized Compute planning bridge against packaged v0.1-dev4 compatibility API
+  Media observation retains mutationAuthority=NONE and revalidationRequired=true.
+  If upstream exposes REVALIDATIONREQUIRED, false is rejected; older planning-only handoffs without the accessor acquire no authority.
+  Current Git Generalized Compute source reports v0.1-dev8 and exposes explicit revalidationRequired.
+
+AUDIO SPECTRAL INTEGRITY v0.3 CONTROL QUALIFICATION
+WOLA/local bucket view:
+  frame=1024 samples hop=256 samples sample_rate=8000 Hz
+  Nyquist reconstruction max abs error=3.3306690738754696e-16
+  source authority unchanged; source_separation_claim=false
+
+Exact-reference oracle:
+  engineered-weave maximum relative fit residual=1.9488570671505675e-07
+  ordinary A+B maximum relative fit residual=5.344281476564177e-07
+  exact A/B references are mandatory; unknown field audio is ineligible
+  PCM24 fixture quantisation explains the observed ~1e-7 residual scale
+
+Blind four-condition control:
+  condition_count=4
+  free_transcription_before_unblind=true
+  private_key_withheld=true
+  qualification private-key mode=600
+  private-key SHA-256 audit value=85fc78074244fb412e6ca88db64dbc6cc37ed7f63bed97281b57948d33c1cde5
+  private key destroyed/excluded from the distributable tree before release
+
+AUTHORITY BOUNDARIES
+Alternating spectral bucket views are complementary transforms of one captured waveform, not independent sources.
+Oracle projection is a known-reference control only, not an unknown-source classifier.
+Blind trials are qualification controls; unblinding cannot rewrite captured evidence.
+Evidence Revision may revise/quarantine candidate lifecycle but does not mutate captured source observation.
+Generalized Compute remains planning-only; Memory Fabric, RexxOS, Job-to-Node and their owning authorities remain external.
+
+RELEASE GATES
+PASS strict ooRexx standards scan: 60 Rexx files, 0 errors, 0 warnings
+PASS release-candidate fresh extraction: 439/439 manifest entries verified and 28/28 runtime tests passed. The exact final ZIP is rechecked externally after this record is sealed.

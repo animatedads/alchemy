@@ -5,23 +5,35 @@
   "sphere": "oorexx-string-template",
   "title": "Current String Template baseline",
   "authority": "project-authoritative",
-  "summary": "String Template 0.1-dev2 is the current repository continuation. It preserves the dev1 interpolation language while adding non-executing requirement inspection, streaming render output, complete JSON control-byte escaping and consistent object-context name validation.",
+  "summary": "String Template 0.1-dev3 is the current repository candidate. It preserves the dev2 interpolation language and requirement inspection while making formatter bindings deterministic through sealed registry snapshots and explicit rebinding.",
   "current_baseline": {
     "package_path": "packages/oorexx_string_template",
-    "version": "0.1-dev2",
-    "carrier": "oorexx_string_template_v0.1-dev2.zip",
-    "carrier_sha256": "ec8cf86c920cf34a989bd03336a7e08ec0cd0e034675010438c3dab0063d34fc",
-    "predecessor_delivery_sha256": "605c0d1f8fe05e912cfa11b30a2c2eb047923cdf3d8c9e5f048036c64be24c49"
+    "version": "0.1-dev3",
+    "carrier": "oorexx_string_template_v0.1-dev3.zip",
+    "carrier_sha256": "65848f8bcd63376ff947da9729d880be6ca77e49dd5eab149458456227eace1a",
+    "predecessor_carrier_sha256": "ec8cf86c920cf34a989bd03336a7e08ec0cd0e034675010438c3dab0063d34fc"
   },
   "invariants": [
     "Template source is data and is never passed to INTERPRET.",
     "The package is runtime authority; this sphere is continuity/documentation authority.",
     "Native ooRexx values remain objects until a formatter produces textual output.",
+    "Compiled requirement inspection remains available before domain formatter bindings are supplied.",
     "No runtime PASS is inferred from structural or standards checks."
   ],
-  "related": ["arch.template.language", "ref.template.api", "qual.template.current"],
+  "related": [
+    "arch.template.language",
+    "arch.template.binding",
+    "ref.template.api",
+    "qual.template.current"
+  ],
   "provenance": [
-    {"source": "repository", "path": "packages/oorexx_string_template/README.md"},
-    {"source": "repository", "path": "packages/oorexx_string_template/src/StringTemplate.cls"}
+    {
+      "source": "repository",
+      "path": "packages/oorexx_string_template/README.md"
+    },
+    {
+      "source": "repository",
+      "path": "packages/oorexx_string_template/src/StringTemplate.cls"
+    }
   ]
 }

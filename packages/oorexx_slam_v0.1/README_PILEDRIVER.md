@@ -1,0 +1,224 @@
+# Piledriver v0.1: logs, tables and sheets, with no model
+
+**Architecture:** Tom Dyer. Piledriver is the SLAM component that understands CSV files, log files and spreadsheets: functions, values, errors, rows and columns. Tom's brief keeps two questions apart: *is this an error code?* and *have I seen this pattern before in this file?*
+**Coding:** Claude (Opus 5.5), 2026-10-30.
+**This README:** Claude (Opus 5.5).
+**Reading tables:** `csvStream.cls`, shipped with ooRexx 5.3.0 (Rexx Language Association).
+**Checked against:** real files from the Alchemy estate (listed below), ooRexx 5.3.0 r13196's own error output, and hand-typed samples of syslog, log4j, Python logging and Apache access logs.
+
+Gemini's estimate was that a model needs about 0.5 billion parameters to read the header of a CSV file, work out its tables and read an error file. Piledriver does it with none. Every decision is a closed list, a shape or a count, and each record says which one decided it. `tests/test_piledriver.rex` has 101 checks, and all 101 pass.
+
+## Three questions, asked in order
+
+**1. What kind of file is this?** (`PiledriverSource`) It is asked once, before any line is judged, because an error means a different thing in each kind of file.
+
+| Kind | What an error is there | Read by |
+|---|---|---|
+| XLSX, ODS | A value *type* in a cell (`#DIV/0!`), spread by formulas | `oorexx_spreadsheet_intentions` (`SpreadsheetReader`) |
+| CSV, TSV, DELIMITED | *Data* in a column: a status column, a sheet-error literal | `PiledriverTable` |
+| LOG | An *event* | `PiledriverLog` |
+| JSON, JSONL | Structured | ooRexx's `json.cls` |
+
+The content decides, not the extension. `GWWIREUI/traffic.log` is a pipe-delimited table, and its fields are hex-encoded text: column 4 decodes to `ACK`, `ACL_ALLOW`, `CLAIM`, `CREATE_QUEUE` and `PUT`.
+
+**2. Is this an error, and is this an error code?** (`PiledriverLog`, `PiledriverWords`)
+
+- *Records.* A record is a head line plus the lines that belong to it:
+  - stack traces;
+  - indented lines;
+  - `KEY: value` lines under a head ending in `:`, e.g. `Error in open:` / `INTCODE: -24`;
+  - a Python traceback.
+
+  A heading opens a section, and errors are reported by section. A heading is `== x ==`, `--- x`, `### x`, or a line between two banners.
+- *Words.* Each word of a head line is one of these:
+  - a plain word;
+  - a **code**: `REXX/SQL-24`, `ORA-00942`, `E10`;
+  - the **value of a code key**: `rc=-1`, `exit=134`, `INTCODE: -24`, `Error 97.1`;
+  - a **value**, which is masked to `#`, `<PATH>` or `<FILE>`.
+- *Counts decide what the lists cannot.* There are three rules:
+  - A code family or code key whose values are new most of the time is an **identifier**, not a code.
+  - A short bare number that comes from a small set at one place in one pattern is a **code slot**. A slot whose values all lie between 100 and 599 is an HTTP status.
+  - A named key whose word values come from a small set that contains an OK value is a **status key**. In the IBM 4361 emulator trace, `ST` takes `OK` 101 times and `UNSUPPORTED` twice. That trace has no error word and no level, yet the two failing lines are the only errors found.
+- *Verdicts.* `ERROR`, `WARN`, `MENTION`, `OK` or `NONE`, either `STRONG` or `WEAK`, each with its reasons: `LEVEL`, `STACK`, `CODE`, `STATUS`, `HTTP`, `RARE_CODE`, `KEYWORD`.
+  - A positive level turns all other evidence into a **mention**. `PASS long unaliased expression returns an error instead of aborting (rc=-16)` mentions an error; it isn't one.
+  - A keyword with nothing else behind it is **weak**.
+  - Keywords come only from plain words, so `overflow.rex` is a file name, not the word *overflow*.
+
+**3. Have I seen this before?** Each record has these:
+- a **template**: the masked head line with its code slots put back;
+- a **signature**: the template plus the codes of the whole record;
+- a **status**:
+  - `NEW`: never seen, in this file or in the catalog;
+  - `KNOWN`: seen in the catalog, from another file;
+  - `NEW_CODES`: the template is known, but its codes are not;
+  - `REPEAT`.
+
+A **rare transition** is a known template that follows a template seen 10 or more times, by a step seen only once. That is SLAM's edge prior, applied to lines. The **catalog** is the memory between files. `compare` lists what is new and what went away.
+
+`PiledriverTable` never searches free text for error words. In the police outcomes file, "Unable to prosecute suspect" is an outcome, not a failure. A table's errors are its sheet-error values and the rows of its status columns. Both the column name and the counts are asked: `lsoa_code` is named like a code and shaped like one (`E01000001`), but 35,672 values in 35,672 rows make it an identifier, and the values decide.
+
+## Gemini's problem (2026-10-30)
+
+Gemini wrote SLAM a problem: a 29-line JVM startup log in unified-logging format (`[0.001s][info][os,thread] ...`) and four tasks (`tests/gemini_to_slam_jvm.md`). SLAM's reader refused the letter. It uses `thread`, `lock`, `safepoint` and other words it never defines; it uses `pattern` in a definition before defining it; and it defines a *line* as what a log is.
+
+**Piledriver as it stood failed the log in four ways, and each is fixed:**
+- The deadlock at line 26 was not an error. The level `[error]` sits inside the line's decorations, which Piledriver did not read. Decorations are now read: an uptime or time stamp, a level, then tags, with padding ignored (`[gc        ]` is one tag).
+- The ten `Thread attached` lines made seven patterns, one per thread name. Now they make one.
+- `java.lang.Class` was read as a file name, because `.class` is a file extension. Extensions now match as written.
+- A tag padded with spaces was split into two words.
+
+**New, for the tasks, all general:**
+- **Fields.** `key: value` fields, in a group `(id: 1024, name: main)` or at the end of a line (`source: jrt:/java.base`), are judged by Gemini's own rule. A value seen twice or more, in half the lines of its pattern or more, is a *code*. A value seen once is new, so it is a *name*. Anything else is a *repeat*. Seen twice or more is my addition: in a pattern of two lines, a value seen once is "in half the lines" but also new.
+- **Name positions.** A plain word at one place in a pattern that is new on every line, in 3 or more lines, is a name (`errors: causing error in <name>`). This is the first step of the template merging listed below.
+- **`entityPaths`.** Each thing's path through the log, by its `id` field, its id as a word, or its name. Its state comes from its `state` field or its words. The steps between states are counted as edges.
+- **`pairRule`.** Each opening line must be closed before the next opening line or the end of the log, with a proof either way.
+- **`groupBy`.** Records grouped by a field's value.
+
+**The answers** (`tests/test_piledriver_gemini_jvm.rex`, 15 checks, every answer worked out by hand from the 29 lines first):
+1. Ten threads. Two of them, 1031 and 1032, take the path attached → blocked_on_lock, so "the count of that path is one" is **false** (the count is 2). The edges are START → attached 10, attached → blocked_on_lock 2, blocked_on_lock → deadlock_risk_detected 2.
+2. The os,thread lines make two patterns: `Thread attached (id: <id>, name: <name>)` ×10 and `Thread state anomaly detected (id: <id>, state: BLOCKED_ON_LOCK)` ×2. The ids are names (12), the thread names are names (10), and BLOCKED_ON_LOCK is a code (2). The edge count drops to one at **line 24**.
+3. The safepoint rule is **true**. Proof: the pairs are lines 10–13, 22–23 and 27–28.
+4. jrt:/java.base has Object, String and Class; file:/app/bin/ has CoreEngine and PipelineWorker. Does the final error come from a jrt class or a file class? **I do not know**, as SLAM says, and the answer is neither true nor false. No error line names a class. The order of lines (file classes, then the pool threads, then the deadlock naming two of them) is a prior, not a test. The pool threads' names are made by `java.util.concurrent`, a jrt class, but the log has no class-load line for it, so the log is incomplete.
+
+## Gemini's second problem (2026-10-30)
+
+Gemini sent a second problem: an 11-line server log in log4j/logback form (`[10:00:01.001] INFO  [http-nio-8080-exec-1] c.a.s.RequestHandler - ...`) with four questions (`tests/gemini_to_slam_server.md`). This letter defines 22 words. SLAM had 2 of them already (proves, guess), can add 7, and refuses 13, whose definitions use words it does not have (`doing`, `tool`, `marks`, ...).
+
+**Piledriver as it stood got three things wrong, and each is fixed:**
+- **Stack frames.** The frames were each logged as an event with its own stamp and level (`... - <tab>at x.y(Y.java:42)`), so one failure counted as four errors. A stamped line that is a stack frame on the same thread now joins the record before it, and that record carries STACK.
+- **Paths.** `uri=/api/v1/user/101` became `<PATH>`. A path now keeps its words, and only a number segment is masked: `/api/v1/user/#`, `#.html`, `#:#:#:#`.
+- **Threads.** The thread of a line (`[http-nio-8080-exec-2]`) was not kept. It is now `context`.
+
+`record~body` is the text after a logger's ` - `, and `fieldSeries` gives a field's values in order.
+
+**The answers** (`tests/test_piledriver_gemini_server.rex`, 15 checks, every answer worked out by hand first):
+1. Two URIs, `/api/v1/user/101` and `/api/v1/user/102`, make **one** pattern, `/api/v1/user/#`, across three request patterns (START, END, FAIL). Gemini's rule says the id is a name inside the START pattern. Over all four URI lines, though, each id appears in half of them, so the rule calls it a code: four lines are too few for the rule.
+2. Gemini's premise is wrong. `active` counts the connections in use across the whole pool, not for one thread. The series is 1, 2, 1, 0 (lines 3, 4, 6, 11). A Borrow adds one and a Return takes one away (**true**), and active + idle = 10 (**true**). The 1 is at line 6, when exec-1 returns its connection, so nothing is missed. exec-2 borrows once and returns once, after the error, so no connection leaks.
+3. The premise is wrong again. Lines 9 and 10 start with a time stamp, and the tab comes after the logger's ` - `. They are stack frames on the same thread as line 8, so they **join the error record**: 11 lines, 9 records, 2 errors.
+4. The error class is `java.lang.OutOfMemoryError`. The top frame is `com.app.service.DataBuffer.allocate(DataBuffer.java:42)`, so "thrown in DataBuffer" is **true**. "DataBuffer is the cause of the memory use" is **I do not know**: the error is thrown by the allocation that fails, not by the code that used the memory, and the log has no heap data. The trace also has only 2 frames, with no thread entry frame at the bottom.
+
+## Gemini's third problem (2026-10-31)
+
+Gemini's third log is a 10-line mesh network log (`tests/gemini_to_slam_mesh.md`, `tests/fixtures/piledriver/mesh_network.log`). It contains pings and pongs, a timeout and a node drop. SLAM refuses Gemini's definition of *millisecond*, for three reasons:
+- it defines the word using itself ("milliseconds");
+- it uses `small`, which SLAM does not have;
+- its "second" is a unit of time, while in SLAM's list *second* means "the next after the first". That is a second sense, for `corpus/senses.csv` (`second-time`).
+
+The letter says the system has four nodes; the log has three START lines.
+
+**Two faults found in Piledriver, both fixed:**
+- **Line 9 is WARN, but it was ERROR because of the word "Timeout".** A WARN level with only weak keyword evidence now stays WARN.
+- **Piledriver did not read time at all.** `~seconds(record)` now reads uptimes, `HH:MM:SS.fff` and dates. `~timeGaps(threshold)` gives each gap over the threshold, with its size against the median gap. The threshold is the caller's; Piledriver builds none in.
+
+**New, all general:**
+- **`valueRoles(key)` adds a kind Gemini's rule lacks: LINK.** A link is a value that appears in two or more patterns and at most once in each, so it ties lines together. By Gemini's rule alone, `seq` is three things at once: a name in the ping pattern, a code for 101 across all the seq lines (4 of 6), and neither for 102. It is a link.
+- **`entityPaths` follows any `key=value`** (`id=3`, `seq=102`), not only fields. A writer such as `[node-3]` names the thing whose id it carries, so `id=3` written by `[node-3]` is node-3's line. The state comes from the body after the logger's ` - `, up to `stateWords` words.
+- **`valueOf(record, key)`** returns a field or a `key=value` word.
+
+**The answers** (`tests/test_piledriver_gemini_mesh.rex`, 17 checks, every answer worked out by hand first):
+1. The two Send ping lines (4, 8) are **one** pattern, `Send ping to node-# (seq=#)`, for node-2 and node-3. seq 101 links lines 4–7 (ping, receive, pong, receive) and seq 102 links lines 8–9 (ping, timeout).
+2. node-3 appears at lines 3, 8, 9 and 10, but writes only line 3. "Line 9 is about the ping at line 8" is **true**: both lines hold seq=102. "The ping causes the timeout" is **false**: the timeout comes from the pong that never arrived. "Why no pong came" is **I do not know**: no line says node-3 got the ping. The rule "each send_ping has a recv_pong with the same seq" is **false**, for 102.
+3. **False before this log**, because Piledriver read no times. Now the one gap over 1 s is line 8 → 9: 1.001 s, 334 times the median gap. That gap *is* the timeout: node-1 waits from the ping to the timeout, and no node writes in between.
+4. Three START lines and one DROP leave **2** nodes, node-1 and node-2. "Both are still running after line 10" is **I do not know**, so the log is **not enough**: node-1 wrote the last line (10), and node-2 has written nothing since line 6. node-3 was silent after line 3 as well, and it was dropped: a node that writes no lines is not shown to be running.
+
+## Workbooks (2026-11-02)
+
+**Measured, not assumed:** LibreOffice 24.2.7.2 wrote both workbook fixtures from one hand-written `tests/fixtures/piledriver/errors_book.fods`, using `soffice --headless --convert-to ods` and `--convert-to xlsx`.
+- **XLSX** stores an error cell as `t="e"`, and `SpreadsheetReader` gives valueType **ERROR**.
+- **ODS** stores it as `office:value-type="string"`, with `calcext:value-type="error"` and the text `#DIV/0!`. `SpreadsheetReader` reads only `office:value-type`, so it gives **TEXT**.
+
+So the same four errors were ERROR in one format and TEXT in the other. This settles the open question from v0.1. The reader is now fixed; see below.
+
+**`PiledriverSheet` finds error cells in two ways, and names which:**
+- **STORED:** the reader says ERROR.
+- **COMPUTED:** the cell has a formula and its value is an error literal.
+
+A literal with **no** formula was typed by someone. It is listed apart as **TYPED**, not counted as an error.
+
+**References.** It reads each error cell's formula references in both forms:
+- XLSX: `B2`, `$B$2`, `Data!B6`, `'My Sheet'!A1`, `B6:C6`;
+- ODS: `[.B2]`, `[$Data.C3]`, `[$Data.B6:.C6]`.
+
+Ranges are filled in. Text in quotes and function names such as `LOG10(` are skipped.
+
+**Roots.** An error cell whose references hold no error is a **ROOT**, where the error starts. Every other error cell is **passed on**, and is traced back to its roots. For the fixture, both formats give the same answer:
+- 4 roots: `Data!B2` to `B5`;
+- 3 passed on: `Data!C2`, then `C3`, then `Summary!A2`, all back to `Data!B2`;
+- 1 typed: `Data!B7`.
+
+Before the fix, they differed only in how each error was found: STORED in the XLSX, COMPUTED in the ODS. `tests/test_piledriver_sheet.rex` has 27 checks.
+
+**The fix in `oorexx_spreadsheet_intentions` (made 2026-11-02, at Tom's request):**
+- `OdsWorkbookReader~makeOdsCell` now gives a cell with `calcext:value-type="error"` the valueType **ERROR**, with its text as the value, the same as the XLSX path.
+- New `tests/test_ods_errors.rex` in that package uses LibreOffice-written copies of the fixture (`tests/fixtures/libreoffice_errors.ods`, `.xlsx`). It fails on the old reader (`B2` came back TEXT) and passes on the new one.
+- The package's other four tests still pass, run on fixtures rebuilt by its `make_fixtures.py`.
+- Both formats now give STORED. The three vendored copies in `notnotes_mini_approval_app` (`dev16`, `dev17`, `dev17-compat1`, under `vendor/spreadsheet`) were brought up to the fixed reader the same day. The COMPUTED rule stays for any reader that keeps the text only, and `tests/test_piledriver_sheet.rex` section 3 builds such a workbook to test it.
+
+`bin/piledriver.rex read` opens a workbook when `oorexx_spreadsheet_intentions/src` is on `REXX_PATH`. It loads `PiledriverSheet` only then, so logs and tables still read without that package.
+
+**Also fixed (2026-11-02):** in `moonsault/bsc5_j2000.csv` (9,096 stars), `ra_j2000_deg` and `dec_j2000_deg` were labelled ID because each has over 5,000 distinct values. Decimals that differ on every row are measurements, so they are now VALUE.
+
+## What it found in the estate
+
+| File | Lines | Found |
+|---|---|---|
+| `ibm_4361…/safety17_compile.log` | 1,033 | 9 patterns. The ooRexx banner appears 129 times. No error |
+| `oorexx_rexxsql_backend_v0.1/evidence/mark_tester_unpatched.log` | 197 | 91 records, 16 errors. `Error in open:` at line 191 is `NEW_CODES`: the template was seen before, but `INTCODE=-62` was not |
+| The same tester, unpatched → patched | | One pattern went away: `rm: cannot remove '<FILE>': No such file or directory` (2×, ERROR). Nothing new arrived |
+| `…/defects_unpatched.log` → `defects_patched.log` | 12 | `*** buffer overflow detected ***: terminated`, `exit=134`, `rc= -1` → `exit=0`, `rc= -16` |
+| `ibm_4361…/mvt_safety8_permanent_bal_progress.log` | 209 | 24 patterns at first, 9 once register values were treated as values. 2 errors (`ST=UNSUPPORTED`), found by counts |
+| SLAM's own `run_tests.sh` output, on a shallow clone | 391 | 4 errors. The 2 strong ones are the real failure (the provenance check, `exit=1`). The 2 weak ones are SLAM's predictions that an edge "will fail" |
+
+## Files
+
+| File | Role |
+|---|---|
+| `src/PiledriverWords.cls` | The closed lists (levels, error words, code keys, OK values, sheet errors, months) and token shapes (code shape, mask, hex text, time stamps) |
+| `src/PiledriverSource.cls` | What kind of file, with its evidence |
+| `src/PiledriverLog.cls` | Records, templates, codes, verdicts, seen-before, transitions, the catalog |
+| `src/PiledriverTable.cls` | Header, column roles (STATUS, ID, CONSTANT, CATEGORY, VALUE), status error rows, sheet-error cells by A1 address |
+| `bin/piledriver.rex` | `sniff`, `read`, `errors`, `learn`, `compare` |
+| `tests/test_piledriver.rex` | 101 checks: 88 on the files above and the standard formats, and 13 from the independent review |
+| `tests/claude_to_slam_piledriver.md`, `tests/slam_to_claude_piledriver.md` | Claude's question to SLAM, and SLAM's reply (both read with no unknown word) |
+| `tests/test_piledriver_gemini_jvm.rex`, `tests/fixtures/piledriver/jvm_startup.log` | Gemini's problem: 15 checks |
+| `tests/test_piledriver_gemini_server.rex`, `tests/fixtures/piledriver/server_crash.log`, `tests/gemini_to_slam_server.md`, `tests/slam_to_gemini_server.md` | Gemini's second problem: 15 checks, and the letters |
+| `src/PiledriverSheet.cls`, `tests/test_piledriver_sheet.rex`, `tests/fixtures/piledriver/errors_book.*` | Workbooks: error cells, references, roots; 27 checks |
+| `tests/test_piledriver_gemini_mesh.rex`, `tests/fixtures/piledriver/mesh_network.log`, `tests/gemini_to_slam_mesh.md`, `tests/slam_to_gemini_mesh.md` | Gemini's third problem: 17 checks, and the letters |
+| `tests/gemini_to_slam_jvm.md`, `tests/slam_to_gemini_jvm.md` | Gemini's letter (SLAM's reader refuses it, and its reply says why) and SLAM's reply (read with no unknown word) |
+
+```
+export REXX_PATH=packages/oorexx_slam_v0.1/src
+rexx packages/oorexx_slam_v0.1/bin/piledriver.rex sniff FILE
+rexx packages/oorexx_slam_v0.1/bin/piledriver.rex read FILE
+rexx packages/oorexx_slam_v0.1/bin/piledriver.rex learn CATALOG OLD_RUN.log
+rexx packages/oorexx_slam_v0.1/bin/piledriver.rex compare CATALOG NEW_RUN.log
+rexx packages/oorexx_slam_v0.1/tests/test_piledriver.rex "WORK|REPO"
+```
+
+## The independent review
+
+A separate agent reviewed the code: Claude (Opus 5.5), which had not seen it being written, working from the code and these rules alone. It found 8 defects and confirmed each one by running it. All 88 checks had passed, so each defect was a gap in the tests, not a test failure. Each one is now fixed, with a check that failed before the fix (section 13):
+
+- A word after a code key was taken as an error code. `STATUS: running` came out as a STRONG error. Now only a number, a code or a SQLSTATE is a code value, and word values are left to the counts: `status=done` ×11 with `failed_hard` ×1 finds the one error.
+- `WARNING:` and `ERROR:` lines joined a block opened by `Compiling module:`.
+- A UTF-8 byte order mark was not removed, in a log or in a table header.
+- A CSV with a leading blank line took the blank line as its header.
+- In a status column, level words were tested before OK values. With `OK`/`TIMEOUT`, the TIMEOUT rows were not errors; with `OK`/`TIMEOUT`/`DENIED`, they were. Now OK values come first.
+- `[0] starting` lines were sniffed as JSON.
+- A heading with ERROR or FAILED in it (`-- 3 tests FAILED`) was silenced as a heading. Now it is a record.
+- `SHA256`, `WIN32`, `X86` and `ISO8601` were taken as codes. They are now on a closed list of names.
+
+It also found four things by reading, and these are fixed too:
+- ties in a count were decided by `.Directory` order; they now go by sorted order;
+- a catalog line with CR at the end is now read correctly;
+- saving one log's catalog twice no longer counts it twice;
+- the mask comment did not match the code.
+
+Two more fixes came from the review's cases. A key name such as `error=false` is no longer read as the word "error". A key named as a status, with no OK word among its values, takes its most used value as normal.
+
+## What it does not do yet
+
+- **Template merging.** Only a word that is new on every line is merged, as a name. Drain also merges words that repeat, by similarity, and that is the next step.
+- **Workbook column roles.** `PiledriverSheet` finds error cells and their roots. It does not yet give a sheet's tables the column roles that `PiledriverTable` gives a CSV.
+- **Speed.** `csvStream.cls` reads the 35,672-row LSOA file in about 23 to 26 seconds. Logs are fast: 1,033 lines take 1.3 seconds.
+- **Into SLAM's store.** Templates are kept in ooRexx collections and the catalog file. Writing them to `SlamStore` as nodes, with transitions as edges, would let SLAM score paths through a log the way it scores paths through code.

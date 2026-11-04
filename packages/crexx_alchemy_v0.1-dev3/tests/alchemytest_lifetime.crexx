@@ -1,0 +1,13 @@
+options levelb
+namespace alchemytest_lifetime_qualification
+import alchemytest
+main: procedure = .int
+  first = .box(9)
+  identity = first.identity()
+  second = first
+  first = .box(10)
+  if second.identity() \= identity | second.value() \= 9 then return 1
+  second = .box
+  if first.value() \= 10 then return 2
+  say "PASS: lifetime smoke"
+  return 0

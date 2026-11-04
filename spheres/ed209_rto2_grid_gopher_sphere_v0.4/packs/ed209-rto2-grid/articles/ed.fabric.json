@@ -1,0 +1,25 @@
+{
+  "kind": "article",
+  "id": "ed.fabric",
+  "version": "0.1",
+  "sphere": "ed209-rto2-grid",
+  "title": "Fabric authority boundaries",
+  "summary": "Queue Fabric owns durable queue/channel and delivery receipts; Storage Fabric owns pinned input and output commits; Memory Fabric owns resident generation and epoch. XTP owns carrier/context transport only.",
+  "authority": "project-authority",
+  "invariants": [
+    "Network packet ACK != Queue Fabric delivery commit != RTO2 committed result != Storage durable output.",
+    "Service-first XTP work must not silently downgrade to another transport when service admission is denied.",
+    "Memory transfers require generation/epoch fencing and receiver authorisation.",
+    "Customer-video execution and Job-to-Node/Migratable Job leases remain separate live qualification milestones.",
+    "Do not introduce a second queue, storage or placement authority in the Grid adapter."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "ed209_rto2_20mi_candidate2_managed.zip",
+      "sha256": "940ee1835f9dd53ceea42a14e0eb7880e4dc374d6813cfbc686972debe23b4e1",
+      "member": "README.md",
+      "claim": "Scope explicitly limited to RTO2 local smoke rather than full fabrics"
+    }
+  ]
+}

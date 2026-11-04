@@ -53,6 +53,13 @@ mkdir -p "$TMP/promotion"
 "$REXX" tests/test_promotion_ssc_gate.rex
 "$REXX" tests/test_ssc_receipt.rex
 "$REXX" tests/test_notnotes_publication.rex
+"$REXX" tests/test_service_readiness.rex
+for negative in test_service_readiness_missing_verifier test_service_readiness_denied; do
+  if "$REXX" "tests/${negative}.rex" >"$TMP/${negative}.log" 2>&1; then
+    echo "FAIL readiness negative accepted: $negative" >&2; exit 1
+  fi
+  echo "PASS readiness fail-closed: $negative"
+done
 if "$REXX" tests/test_promotion.rex "$TMP/promotion" >"$TMP/promotion-overwrite.log" 2>&1; then
   echo 'FAIL promotion writer overwrote an existing record' >&2; exit 1
 else echo 'PASS promotion writer refuses overwrite'; fi

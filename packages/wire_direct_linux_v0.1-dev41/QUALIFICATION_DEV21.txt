@@ -1,0 +1,22 @@
+Wire Direct Linux v0.1-dev21
+Three-language composition qualification
+
+PASS ordinary Wire build/test suite (GTK4 compile remains environmental skip: gtk4 development package absent)
+PASS full ooRexx -> JavaScript Alchemy dev23 -> QuickJS-NG 0.17.0 filter qualification
+PASS same-process three-language composition:
+  ooRexx selected live identity: INBOX|4242|8738
+  JavaScript before mutation: false
+  ooRexx mutates subject to ACTION REQUIRED; stable identity unchanged
+  JavaScript after mutation: true
+  Prolog Alchemy dev13 receives the retained same ooRexx mail object
+  SWI-Prolog 10.0.2 needs_attention/1: true
+  stable identity after Prolog: INBOX|4242|8738
+Observed line:
+  wire-three-language-composition=PASS identity=INBOX|4242|8738 jsEngine=quickjs-ng/0.17.0 prologVersion=100002
+
+Authority assertions embodied by the test:
+- ooRexx owns application selection and mutable live mail state.
+- JavaScript receives a bounded scalar row projection only; no source/backing-store handle.
+- Prolog receives an explicitly retained live Rexx object and calls only the exposed Prolog callback methods.
+- Neither JavaScript nor Prolog receives renderer/GTK authority.
+- Engine/provider names are qualification/deployment data, not Wire application-model identity.

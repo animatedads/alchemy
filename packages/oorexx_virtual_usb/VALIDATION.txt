@@ -1,5 +1,5 @@
-ooRexx Virtual USB v0.1-dev10 validation
-Date: 2026-10-27
+ooRexx Virtual USB v0.1-dev11 validation
+Date: 2026-10-29
 
 Qualified runtime baseline retained from the target package gate:
   Open Object Rexx 5.3.0 r13196
@@ -45,6 +45,15 @@ dev8 live-result correction:
   current presenter.  The actual dev8 presenter did not acquire dummy_udc.0.
 
 
+dev11 hidraw-generation repair:
+  - independent CODEX-PC review marked dev10 stale-generation protection NOT_PROVEN because hidraw matching remained path-based;
+  - pre-existing hidraw class objects are now snapshotted by class-entry identity;
+  - a candidate hidraw must be a new/rebound class generation, not one present before presenter launch;
+  - candidate `device` ancestry must resolve under the selected HID interface;
+  - selected USB devnum must remain unchanged throughout HID and hidraw waits;
+  - tests/test_live_hidraw_generation_guard.sh preserves stale hidraw7 across path reuse devnum 2 -> 3 and proves it is rejected until class rebind;
+  - tests/test_live_generation_guard.sh and tests/test_live_binding_wait.sh continue to pass.
+
 dev10 qualification-timing repair:
   - new-device sysfs publication is no longer treated as synchronous with HID binding;
   - HID class interface publication is polled up to VUSB_LIVE_TIMEOUT;
@@ -69,10 +78,11 @@ dev9 qualification repairs:
   - tests/test_live_generation_guard.sh simulates stale 5-1/devnum 2 followed
     by a new 5-1/devnum 3 and passes only the latter.
 
-Package-side/static validation performed for dev10:
+Package-side/static validation performed for dev11:
   - bash -n passes for all shell entry points.
   - tests/test_live_generation_guard.sh passes in the qualification container.
   - tests/test_live_binding_wait.sh passes in the qualification container.
+  - tests/test_live_hidraw_generation_guard.sh passes in the qualification container.
   - all JSON package/profile/bridge documents parse successfully.
   - package source contains no result~ object-send use.
   - package manifest is regenerated and verified after archive creation.
@@ -87,7 +97,7 @@ Provider status:
   it still requires a clean presenter-owned target generation before acceptance.
 
 Pending target-host acceptance:
-  Run tests/bringup_live_raw_gadget_fido.sh from dev10.
+  Run tests/bringup_live_raw_gadget_fido.sh from dev11.
   PASS requires:
     current presenter owns dummy_udc.0
     new CAFE:F1D0 generation

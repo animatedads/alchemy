@@ -1,0 +1,31 @@
+ooRexx String Template v0.1-dev3 — native qualification
+Date: 2026-10-29
+Runtime: Open Object Rexx 5.3.0 r13196 - Internal Test Version
+Build date: Aug 3 2026
+Addressing mode: 64
+
+Source candidate: dev3 Library carrier corresponding to GitHub PR #57 branch chatgpt/string-template-dev3.
+Pre-test package manifest: PASS.
+
+Observed issue before correction:
+- tests/test_policies.rex expected JSON output with an extra backslash before quote and newline escape.
+- ooRexx string literals do not treat backslash as a Rexx escape character.
+- The implementation emitted the correct JSON string-content escapes for the actual input bytes.
+- Test expectation corrected only; src/StringTemplate.cls unchanged.
+
+Commands:
+  rexxc src/StringTemplate.cls
+  ./run_tests.sh
+
+Results after fixture correction:
+  PASS rexxc src/StringTemplate.cls
+  PASS test_basic
+  PASS test_fail_closed
+  PASS test_formatter_binding
+  PASS test_formatters
+  PASS test_nested_and_object_view
+  PASS test_policies
+  PASS test_requirements_and_stream
+  PASS 7/7 StringTemplate fixtures
+
+Fail-closed tests intentionally raise and catch SYNTAX rc=88 conditions; their EXPECTED SYNTAX lines are successful negative-path evidence, not failures.

@@ -1,0 +1,30 @@
+NoSQLServer v0.55 validation
+============================
+Federated catalog milestone.
+
+Delivered
+---------
+- One FederatedDatabaseEngine exposes FILE and OBJECT tables in one catalog view.
+- FILE JOIN OBJECT executes as ordinary SQL over table readRows ports.
+- Object tables retain live getter/setter semantics.
+- File tables retain existing persistent storage, indexes, journals, tombstones and planner behaviour.
+- Object/federated engines do not advertise TRANSACTIONS/SAVEPOINTS/PREPARED transaction capabilities.
+- db~transaction on object/federated engines returns a clean SQLUNSUPPORTED transaction object.
+- msqlshim is untouched.
+
+Isolation invariant
+-------------------
+NoSQLServerSQL contains zero references to:
+  ~storage, SysFile*, CsvStream, .Yaml, ~path, table.yaml, /tables/
+
+Acceptance
+----------
+- v0.55 FILE-object join smoke: PASS
+- v0.54 object UPDATE/event smoke: PASS
+- v0.53 object join/aggregate smoke: PASS
+- v0.52 object SELECT smoke: PASS
+- all historical file feature gates: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, WRONG_RESULT 0
+- Grok hell v2: 14/30 PASS, WRONG_RESULT 0
+- ooRexx 5.3.0 r13196 compile checks: PASS

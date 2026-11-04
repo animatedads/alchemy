@@ -1,5 +1,7 @@
 # X.25 SocketSelector Family Specification — v0.1
 
+> **2026-10-29 dev3 LAPB code (ChatGPT GPT-6):** A bounded user-space modulo-8 LAPB frame/FCS/HDLC-bit laboratory model and injected T1/N2, RR/RNR/REJ, V(S)/V(A)/V(R) transitions now exist at [`packages/oorexx_x25_v0.1-dev3`](../packages/oorexx_x25_v0.1-dev3/README.md). Six ooRexx r13196 synthetic test suites passed. This **does not** constitute a serial/ISO8881 carrier, a complete LAPB/PLP implementation, field interoperability or a functional XTP Gateway; see [NOT_CLAIMED](NOT_CLAIMED.md). Architecture: Tom Dyer. Source and update: ChatGPT.
+
 > **2026-10-25 source reconciliation (ChatGPT GPT-6):** XTP dev29 implements segmented unicast messages, selective retransmission, SYNC/ECHO and DIAG. FIRST/CNTL authentication and a persistent interactive stream context remain unresolved. Independent ooRexx lab source is in [`packages/oorexx_x25_v0.1-dev1`](../packages/oorexx_x25_v0.1-dev1/README.md), with interpreter tests only. Architecture: Tom Dyer. Coding and this correction: ChatGPT. No gateway or hardware qualification is inferred.
 
 **Architecture:** Tom Dyer. **Coding:** ChatGPT (not undertaken by this specification). **Document/update written by:** ChatGPT (GPT-6), 24 October 2026.  

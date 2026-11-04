@@ -30,3 +30,6 @@ Documentation nodes: `rpc.start`, `rpc.registry`, `rpc.boundaries`, `rpc.callbac
 ## Source and publication
 
 This sphere is a standalone package for Alchemy Autobuild, with a root `integration.json` and versioned publication target `spheres/oorexx_rpc_gopher_sphere_v0.1`. `tests/verify_sphere.py` is its self-contained structural/contract check. Gopher semantic acceptance remains an external gate. Do not claim acceptance of the earlier RPC source submission until the Autobuild receipt exists.
+
+## 2026-10-29 addendum — RPC HTTPS gateway
+Added `rpc.https-ingress` article. The new source package `packages/oorexx_rpc_https_gateway_v0.1-dev1` exposes an allowlisted JSON-RPC POST route for the owned HTTPS server and a trusted LDAP/session policy seam, but requires live qualification before activation.

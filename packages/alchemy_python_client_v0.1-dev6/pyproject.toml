@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alchemy-python-client"
+version = "0.1.dev6"
+description = "Connect Selector dev7, retained ooRexx projection, JSON-RPC TCP and optional gRPC Python SDK for published Alchemy services and optional live ooRexx objects"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "License not yet assigned; development distribution"}
+authors = [{name = "Alchemy Project"}]
+keywords = ["Alchemy", "ooRexx", "JSON-RPC", "Python", "Queue Fabric"]
+classifiers = ["Programming Language :: Python :: 3", "Development Status :: 2 - Pre-Alpha"]
+dependencies = []
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+alchemy_python = ["py.typed"]
+
+[project.optional-dependencies]
+grpc = ["grpcio>=1.50", "protobuf>=4"]

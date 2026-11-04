@@ -20,7 +20,7 @@
     return ''
   end
   ext = file~substr(file~lastPos('.') + 1)~lower
-  if wordpos(ext, 'cls rex rexx orx') > 0 then return 'REXX'
+  if wordpos(ext, 'cls rex rexx orx testgroup testunit frm') > 0 then return 'REXX'      /* ooTest's tests and framework too */
   if ext == 'nrx' then return 'NETREXX'
   if ext == 'java' then return 'JAVA'
   if wordpos(ext, 'cpp cc cxx hpp hh hxx h c inc') > 0 then return 'CPP'          /* C, too: the nearest reader */

@@ -1,0 +1,58 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.audio-first-consumer",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Audio V9 is the first heterogeneous deployment proof",
+  "summary": "Audio V9 proves the generic component against a heterogeneous Linux fleet. The deployment package stages one content-addressed release, reuses compatible native/runtime artifacts, rebuilds Foreign Runtime where target loadability fails, verifies the corpus, and deliberately keeps worker start separate.",
+  "authority": "project-doctrine",
+  "section": "integration",
+  "invariants": [
+    "Audio-specific corpus meaning and processing semantics remain outside Deployment.",
+    "Foreign Runtime ABI mismatch is repaired by host-native rebuild, not loader-path manipulation.",
+    "Compatible hosts reuse the packaged runtime; incompatible hosts rebuild from authoritative source.",
+    "The same deployment generation can be staged across heterogeneous hosts while readiness results differ by observed target state.",
+    "A corpus/hash failure blocks READY even when package staging itself succeeded."
+  ],
+  "topics": [
+    "Audio V9",
+    "first-consumer",
+    "heterogeneous",
+    "Foreign Runtime",
+    "corpus"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/docs/AUDIO_FIRST_CONSUMER.md",
+      "claim": "Defines Audio as first consumer and exact runtime/native readiness behavior.",
+      "line_start": 1,
+      "line_end": 7
+    },
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 107,
+      "line_end": 118,
+      "claim": "Shows the same generation staged and an Audio readiness/corpus gate succeeding on a host."
+    },
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 291,
+      "line_end": 326,
+      "claim": "Shows heterogeneous fleet READY/BUILDING results after common staging."
+    },
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 329,
+      "line_end": 345,
+      "claim": "Shows corpus SHA-256 verification failure/timeout blocks readiness on two hosts."
+    }
+  ]
+}

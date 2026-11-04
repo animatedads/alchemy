@@ -1,0 +1,25 @@
+NoSQLServer v0.26 validation
+
+Runtime: ooRexx 5.3.0 r13196, 64-bit
+
+New surfaces:
+- RIGHT JOIN / RIGHT OUTER JOIN
+- FULL JOIN / FULL OUTER JOIN
+- INTERSECT
+- EXCEPT
+- capabilities RIGHT_JOIN, FULL_OUTER_JOIN, INTERSECT, EXCEPT
+
+Dedicated smokes:
+NOSQLSERVER V0.26 RIGHT/FULL OUTER JOIN SMOKE: OK
+NOSQLSERVER V0.26 SET OPERATOR SMOKE: OK
+
+Regression gates:
+- historical NoSQLServer smokes through v0.24: PASS
+- SQL-92 company smoke: PASS
+- Grok feature torture: 72/72 passed, 0 failed, 0 unsupported, 3 expected parse-error probes, 0 execution errors
+- Claude torture corpus: 12/12 PASS, 0 wrong-result, all oracle-backed
+- Grok hell corpus: 18/25 PASS, 2 SQLUNSUPPORTED, 5 SQLPARSEERROR, 0 WRONG_RESULT, 0 EXECUTION_ERROR
+- rexxc: src/NoSQLServer.cls and every tests/*.rex PASS
+
+Notable oracle correction:
+Hell Query 11 (EXCEPT) originally had an incorrect expected list including employee 8. The fixture assigns employees 1 through 8 to projects; only employees 9 and 10 are unassigned. The engine result was correct and the oracle was corrected.

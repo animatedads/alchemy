@@ -1,0 +1,72 @@
+ooRexx XTP v0.1-dev30: validation record
+==========================================
+
+Architecture: Tom Dyer
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for dev26 to dev30
+Validation written and run by: Claude (Opus 5.5), 27 October 2026
+
+Baseline:  oorexx_xtp_v0.1-dev29 as committed to animatedads/alchemy main
+Planner:   oorexx_operational_degradation_planner_v0.1-dev5, built locally
+ooRexx:    Open Object Rexx 5.3.0 r13196 (/usr/local/bin/rexx, from the Library .deb)
+Host:      Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror
+Evidence class: LOCAL_PASS. FIELD_PASS is NOT claimed.
+
+Changes against dev29 (lines added / removed)
+  src/xtp_transport.cpp           +68 -5   1cfb5f7c880156cd5b8ff8a3f70c37c4418b170fdb54bba79e285c280a94b467
+  include/xtp/xtp_transport.hpp   +8  -0   (ListenOptions diag_rate_per_sec, diag_burst, diag_global_rate_per_sec)
+  Makefile                        +4  -1   (target test-diag-hardening)
+  New: tests/test_diag_hardening.cpp (139 lines), docs/DIAG_REGISTRY.md, docs/XTP_SPEC_GAPS_DEV30.md
+  Metadata: CAPABILITIES.json (dev30_diag_hardening), DEPENDENCIES.json, integration.json
+  (adds diag-hardening; interop peer is now dev29), README.md
+
+1. DIAG hardening suite (make test-diag-hardening): 8/8 PASS
+   The same test source was built with -DXTP_BASELINE_DEV29 against the dev29 source:
+     g++ -I../oorexx_xtp_v0.1-dev29/include -O2 -std=c++17 -Wall -Wextra -Werror -pthread \
+       -DXTP_BASELINE_DEV29 -DXTP_TRANSPORT_SRC='"<abs>/oorexx_xtp_v0.1-dev29/src/xtp_transport.cpp"' \
+       -o h29.bin tests/test_diag_hardening.cpp build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o
+                                                      dev29                               dev30
+   H1  refused service told only the VALUE name       FAIL: "named service not admitted:  PASS: "SERVICE_NOT_ADMITTED"
+                                                        customer.secret.service.name"
+   H2a malformed FIRST: no parser text, DIAG no        FAIL: 80 bytes for a 104-byte       PASS: 64 bytes, "MALFORMED"
+       larger than the FIRST                            FIRST, "truncated wire-filter
+                                                        envelope"
+   H2b 48-byte FIRST gets a DIAG no larger             FAIL: 80 bytes                      PASS: 48 bytes, no reason
+   H3a 300 refused FIRSTs from one peer                 FAIL: 300 DIAGs                     PASS: 20 (burst 20, rate 10/s)
+   H3b peer answered again after its bucket refills     PASS                                PASS
+   H4  global limit (rate 5/s) with high per-peer       n/a                                 PASS: 10
+   H5  diag_rate_per_sec = 0 sends nothing              n/a                                 PASS
+   H6  VALUEs 16-23 named in the sender error           n/a                                 PASS
+
+2. Interop (make test-interop, PEER_ROOT = committed dev29, separate processes,
+   lossy relay dropping every 5th forward and 7th reverse packet, 150 KB)
+   I1 dev30 sender -> dev29 receiver   delivered, 36 resends
+   I2 dev29 sender -> dev30 receiver   delivered, 35 resends
+   I3 dev30 sender -> dev30 receiver   delivered, 35 resends
+
+3. Full regression on dev30
+   make test-service, test-capacity-rate, test-auto-key       PASS
+   make test-negative 7/7, test-segmentation 9/9, test-sync-diag 5/5,
+        test-interop 3/3, test-diag-hardening 8/8              PASS
+   tests/run_tests.sh                                          35 PASS, 1 SKIP
+   24 further shell suites                                     all rc=0
+   Totals: 119 PASS, 0 FAIL, 1 SKIP (proxy binary absent)
+
+   This is the first run of libxtp's ooRexx suites on this build host, because the
+   interpreter is now installed here. They all pass:
+   test_operational_socket_rexx (the dev26 zero-throttle refusal, first written in
+   dev29), test_rexx_capacity_rate, test_rexx_named_service_binding,
+   test_socket_selector_xtp(_native), and run_tests.sh's dev17 capability and priority hooks.
+
+   test_storage_capacity_xtp.sh needs five roots. In the first pass it stopped at
+   "OP_PLANNER_ROOT required" (rc=1), not on a test failure. Rerun with:
+     OP_PLANNER_ROOT=<planner dev5>
+     SERVICE_DESCRIPTOR_ROOT=packages/ssh_over_xtp_v0.1-candidate4/vendor/oorexx_service_descriptors_v0.1-dev2
+     STORAGE_ROOT=packages/oorexx_storage_fabric_v0.1-dev23-precision1
+     SOCKET_PROVIDER_DIR=packages/oorexx_socket_provider/src
+   it passes on both dev30 and dev29 (first=0.20 s, second=0.40 s).
+
+4. Not run
+   - Real Ethernet links and the ED209 field path.
+   - L2 and raw36 DIAG paths. They share refuse(), but only UDP is exercised.
+
+Claude (Opus 5.5)

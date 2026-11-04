@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.authority",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Authority boundary: Deployment owns state reconciliation, not application meaning",
+  "summary": "Deployment owns discovery, capability assessment, artifact/runtime/configuration placement, planning, execution, verification, launch preparation, evidence and rollback information. It does not own business/application semantics, scheduling, worker allocation or result interpretation.",
+  "authority": "project-doctrine",
+  "section": "architecture",
+  "invariants": [
+    "Deployment may execute an application-declared verification command but interprets only declared deployment success/failure outputs.",
+    "Scheduling and Job-to-Node placement remain external authorities.",
+    "A consumer can add requirements/adapters without subclassing the whole engine.",
+    "Unknown application metadata remains opaque to Deployment."
+  ],
+  "topics": [
+    "authority",
+    "ownership",
+    "application-boundary"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 30,
+      "line_end": 60,
+      "claim": "Enumerates what Deployment owns and explicitly does not own."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 178,
+      "line_end": 205,
+      "claim": "Manifest is declarative and application metadata remains opaque."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 846,
+      "line_end": 859,
+      "claim": "Applications extend deployment through ordinary requirements rather than replacing the engine."
+    }
+  ]
+}

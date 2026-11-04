@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "ed.failure",
+  "version": "0.1",
+  "sphere": "ed209-rto2-grid",
+  "title": "F pilot failure and corrected commissioning inspection",
+  "summary": "A MAC was passed as a route lookup key; after symbolic-route repair, a non-QFXTP response caused XTP_FRAME_INVALID. A missing grid-controller grant reproduces plaintext PEER_NOT_TRUSTED, but this precise cause on F is not yet proven.",
+  "authority": "project-authority",
+  "invariants": [
+    "Never turn plaintext UNAUTHENTICATED into authenticated success.",
+    "Inspect the exact running guest initramfs and its grant; a staged tree is not evidence of guest code.",
+    "Keep F/H working FAST, envelope, registration and heartbeat fixes; merge RTO2 branch additively.",
+    "Do not replace working guest images without isolated qualification and rollback.",
+    "Keep failure diagnosis redacted; never print raw keys or arbitrary unauthenticated payloads."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "ed209_rto2_20mi_candidate2_managed.zip",
+      "sha256": "940ee1835f9dd53ceea42a14e0eb7880e4dc374d6813cfbc686972debe23b4e1",
+      "member": "qualification/CANDIDATE2_STATUS.md",
+      "claim": "Reproduced error mechanism, actual live cause unverified"
+    },
+    {
+      "artifact": "ed209_rto2_20mi_candidate2_managed.zip",
+      "sha256": "940ee1835f9dd53ceea42a14e0eb7880e4dc374d6813cfbc686972debe23b4e1",
+      "member": "ops/verify_guest_rto2.py",
+      "claim": "Exact image preflight"
+    }
+  ]
+}

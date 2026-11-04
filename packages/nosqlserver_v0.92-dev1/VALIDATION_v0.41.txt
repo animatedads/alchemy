@@ -1,0 +1,31 @@
+NoSQLServer v0.41 validation
+============================
+
+Focus
+-----
+Native SELECT LIMIT/OFFSET compatibility for external SQL clients.
+
+New SQL surface
+---------------
+- LIMIT count
+- LIMIT count OFFSET offset
+- MySQL-compatible LIMIT offset,count
+- LIMIT is applied after the complete SELECT/ORDER BY/set-operation result.
+- LIMIT 0 returns an empty successful result.
+- OFFSET beyond the result returns an empty successful result.
+- Negative/non-integral LIMIT/OFFSET values are rejected.
+
+Capabilities
+------------
+- LIMIT_OFFSET
+
+Regression evidence
+-------------------
+- v0.41 LIMIT/OFFSET smoke: PASS
+- v0.40 SQL whitespace smoke: PASS
+- v0.39 INSERT grammar smoke: PASS
+- prior window/CTE/adapter/SQL-92 gates: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 12/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

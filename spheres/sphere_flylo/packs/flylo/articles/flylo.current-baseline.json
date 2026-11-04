@@ -1,10 +1,10 @@
 {
   "kind": "article",
   "id": "flylo.current-baseline",
-  "version": "0.3",
+  "version": "0.4",
   "sphere": "flylo",
   "title": "Current FlyLo continuation baseline",
-  "summary": "The durable ooRexx/Wire UI application baseline remains flylo_v0.4.11.zip. A separate MVS 3.8J/TK5 backend-validation line now qualifies the airline semantics on ED209ZZ; it does not silently replace or renumber the application release.",
+  "summary": "The durable ooRexx/Wire UI application baseline remains flylo_v0.4.11.zip. A separate MVS 3.8J/TK5 backend-validation line qualifies airline semantics on ED209ZZ, while project-owned LDAP/HTTPS remain the only admitted public identity/TLS authorities.",
   "baseline": {
     "release": "flylo_v0.4.11.zip",
     "sha256": "21c2076fe74616ea72de6c13430d7f7b55d249113a2c2549d7b7955f43511160",
@@ -12,7 +12,8 @@
     "default_data_root": "~/.flylo",
     "wire_ui_server": "0.17",
     "accounting_core": "0.7",
-    "mvs_backend_validation": "examples/flylo_mvs_backend_v0.1"
+    "mvs_backend_validation": "examples/flylo_mvs_backend_v0.1",
+    "platform_integration_contract": "examples/flylo_mvs_backend_v0.1/platform_integration.json"
   },
   "invariants": [
     "Do not regress to multi-terminal or Python-sidecar startup for the website.",
@@ -20,6 +21,8 @@
     "passengerCount is numeric traveller count; passengers is the passenger-record collection.",
     "Stable passenger identities use PAX-... semantic IDs.",
     "The browser, Grok and Wire UI do not own booking/inventory/payment/accounting authority.",
+    "Authenticated public identity is resolved by project-owned LDAP Identity, not a FlyLo-local credential store.",
+    "Public TLS termination is owned by the project ooRexx HTTPS Server, not by FlyLo business code.",
     "The MVS backend must be independently testable without the browser or Terminal Machine history features.",
     "Do not conflate the ooRexx application release version with the MVS backend qualification stream."
   ],

@@ -1,44 +1,35 @@
-# Current integration baseline checked 2026-10-27
+# Current integration baseline checked 2026-10-29
 
-## Source and qualification split
+Current Git source candidate: **ooRexx WebSocket Access v0.1-dev4**.
+Immutable qualified release remains dev1 (`91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655`).
 
-Current Git source candidate: **ooRexx WebSocket Access v0.1-dev2**.
+## Authorities
 
-Immutable qualified release remains:
+- Socket Provider v0.1-dev16 — `fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2`
+- ooRexx Crypto v0.8.3 — `5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49`
+- Crypto Authentication Primitives v0.1-dev1 — `crypto.auth/0.1`
+- stable `packages/oorexx_https_server` API inspected 2026-10-29 — v0.4.6
 
-- `oorexx_websocket_access_v0.1-dev1.zip`
-- SHA-256 `91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655`
-- ooRexx 5.3.0 r13196 contract pass
-- independent Python `websockets` COTS loopback wire pass
+The Library transport grid still records WebSocket dev1's independent live COTS pass as inherited evidence only; it explicitly does not constitute a fresh dev16 rerun.
 
-dev2 repairs fragmented-message sequencing and the dev1 close-frame state bug, but is not promoted until the expanded tests execute against the current socket authority.
-
-## Current external socket authority
-
-- Socket Provider **v0.1-dev16**
-- SHA-256 `fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2`
-
-The 2026-10-13 Spiral 1 reconciliation records WebSocket as ACCESS + CONTRACT PASS with the dev1 COTS wire pass inherited into the dev16 estate. It explicitly records that WebSocket was **not freshly rerun against dev16**.
-
-Architecture remains:
+## dev4 architecture
 
 ```text
-WebSocketAccess
-  -> WebSocketConnection / WebSocketMessage
-  -> SocketProvider~streamSender[At]()
-  -> SocketStreamAdapter
-  -> selected TCP/TLS provider
+client:
+WebSocketAccess -> SocketProvider -> selected TCP/TLS stream
+
+server wss:
+ooRexx HTTPS Server
+  owns TCP + TLS + HTTP parsing + admission/lifetime
+       -> parsed Upgrade request + plaintext duplex wrapper
+       -> WebSocketServerAccess
+       -> WebSocketServerConnection
 ```
 
-## dev2 qualification gates
+No raw socket, BIO, SSL, SSL_CTX or Foreign Runtime object crosses the HTTPS handoff. See `HTTPS_UPGRADE_CONTRACT.md`.
 
-1. run the expanded RFC 6455 contract suite under ooRexx 5.3.0 r13196;
-2. run against Socket Provider dev16, not the historical dev10 fixture;
-3. exercise an independent COTS peer with fragmented TEXT/BINARY and interleaved PING;
-4. prove local and peer close frames are sent before stream close;
-5. retain exact SocketAddress object identity;
-6. preserve fail-closed behaviour for continuation/reserved opcode/RSV/control violations.
+dev4 also preserves bytes that arrive after an HTTP Upgrade head in the same underlying read. This applies to both the client 101 response and server request.
 
-## Remaining non-claims
+## Qualification gates
 
-RFC 8441, RFC 9220, permessage-deflate/extensions and a production nonce/mask entropy provider remain outside the implemented/qualified surface.
+The complete gates are recorded in `VALIDATION_DEV4.txt`. Until they execute, dev4 remains SOURCE_CANDIDATE and the only qualified release remains dev1.

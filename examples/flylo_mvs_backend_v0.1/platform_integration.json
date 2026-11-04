@@ -1,0 +1,45 @@
+{
+  "schema": "flylo.platform-integration/0.1",
+  "asOf": "2026-10-29",
+  "policy": {
+    "authenticationAuthority": "oorexx-ldap-identity",
+    "httpsAuthority": "oorexx-https-server",
+    "terminalAuthority": "oorexx-terminal-machine",
+    "browserIsBusinessAuthority": false,
+    "externalIdpMayReplaceLdapAuthority": false,
+    "ambientRexxPathAllowed": false
+  },
+  "dependencies": [
+    {
+      "id": "terminal-machine",
+      "artifact": "oorexx_terminal_machine_v0.22-candidate16.zip",
+      "sha256": "af7c0d571269c17724cc79e695f9b3523045cc7f93a76b595a86158556c60f8d",
+      "sourceStatus": "CURRENT_CANDIDATE",
+      "activationStatus": "QUALIFICATION_PENDING",
+      "openGates": ["EXACT_R13196_EXECUTION", "ED209ZZ_LIVE_TN3270_REGRESSION"]
+    },
+    {
+      "id": "ldap-identity",
+      "artifact": "oorexx_ldap_identity_v0.1-dev22.zip",
+      "sha256": "697c301c37ad1d77252a34db9028420c4c9a3e3dbe5c60de9be6fc91940341fc",
+      "sourceStatus": "CURRENT_CANDIDATE",
+      "activationStatus": "QUALIFICATION_PENDING",
+      "openGates": ["R13196_RUNTIME", "LIVE_LDAPS_INSTALL", "LDAP_BIND_REVOKE_E2E"]
+    },
+    {
+      "id": "https-server",
+      "artifact": "oorexx_https_server_v0.4.8.zip",
+      "sha256": "d38ddd049e5d8f5683e4ebf09e09a870c9c562bd3663db32950df711f7040fbe",
+      "sourceStatus": "CURRENT_CANDIDATE",
+      "activationStatus": "QUALIFICATION_PENDING",
+      "openGates": ["MODIFIED_RUNTIME_R13196", "LIVE_PRIVATE_CA_TLS"]
+    }
+  ],
+  "requirements": [
+    "FLYLO public access must terminate TLS in the project-owned HTTPS server.",
+    "Authenticated FLYLO identities must resolve through the project-owned LDAP Identity authority.",
+    "FLYLO must not copy LDAP credential truth into application-local stores.",
+    "MVS backend semantic authority remains independent of the public HTTPS/LDAP edge.",
+    "A dependency may not be marked ACTIVE while any openGates remain."
+  ]
+}

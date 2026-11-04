@@ -1,0 +1,50 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.transport-provider",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Transport is orthogonal to desired state",
+  "summary": "Local, SSH, container and cloud-agent transports are provider mechanics. Changing transport does not change the manifest or desired state. The Audio fleet run proved this operationally when the generic direct SSH path conflicted with managed SSH configuration and the existing sshnode.sh transport successfully carried the same content-addressed deployment.",
+  "authority": "project-doctrine",
+  "section": "integration",
+  "invariants": [
+    "Transport failures must not mutate application requirements to make deployment easier.",
+    "A transport/provider may be swapped while preserving the same desired state and verification contract.",
+    "Platform package-manager knowledge belongs behind providers.",
+    "Managed SSH environments are a provider compatibility concern, not a reason for Audio/MCP/Wire to fork deployment semantics.",
+    "Provider fallback must preserve hashes, target identity, plan meaning and final verification."
+  ],
+  "topics": [
+    "transport",
+    "SSH",
+    "provider",
+    "managed-config",
+    "fallback"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 888,
+      "line_end": 902,
+      "claim": "States remote transport is orthogonal and changing transport must not change desired state."
+    },
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 59,
+      "line_end": 60,
+      "claim": "Fleet deployment used sshnode.sh after generic direct SSH conflicted with managed SSH configuration."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/bin/deploy_tree.sh",
+      "claim": "Current dev2 contains both local and direct SSH staging mechanics.",
+      "line_start": 55,
+      "line_end": 106
+    }
+  ]
+}

@@ -21,3 +21,6 @@ The 2026-09-27 portfolio checkpoint inventoried Ruby but left targeted manual re
 
 ## Source provenance
 Source delivery: oorexx_ruby_alchemy_v0.1-dev19-source.zip, SHA-256 9049fc611f8fa1be34aa9c7ff8ee880258493281e6783f302a11ac1cfebeaad5.
+
+## 2026-10-29 dev21 interruption correction
+The native worker wait changed from `RUBY_UBF_IO` to a NULL UBF in `rb_thread_call_without_gvl`, avoiding premature return/unwind of a waiter while the owner still has queued work and Ruby VALUE arguments. This deliberately sacrifices interruptibility: the worker can block until the owning ooRexx activity pumps. Cancellation, shutdown, GC rooting and exactly-once pin release remain UNQUALIFIED. Local Ruby projection PASS, Ruby syntax PASS; native r13196 NOT RUN (runtime unavailable). The latest Rasen Falcon testing reply REQ-00000869 was against stale Git dev12 and stopped on missing ruby.h; it is NOT evidence for dev20/dev21.

@@ -12,7 +12,7 @@ class SphereContract(unittest.TestCase):
         self.assertEqual(manifest['id'], 'single-time-service')
         sections={v['id'] for v in manifest['sections']}
         articles=list((PACK/'articles').glob('*.json'))
-        self.assertEqual(len(articles),11)
+        self.assertEqual(len(articles),12)
         ids=set()
         for path in articles:
             item=json.loads(path.read_text())
@@ -23,9 +23,9 @@ class SphereContract(unittest.TestCase):
             ids.add(item['id'])
             self.assertTrue(item['provenance'])
             for p in item['provenance']:
-                self.assertEqual(p['artifact'],'single_time_service_v0.9.zip')
+                self.assertIn(p['artifact'], ('single_time_service_v0.9.zip','single_time_service_v0.10.zip'))
                 self.assertRegex(p['sha256'],r'^[0-9a-f]{64}$')
-                self.assertIn('single_time_service_v0.9/',p['member'])
+                self.assertIn(p['artifact'].replace('.zip','/') ,p['member'])
         self.assertTrue(set(manifest['start_here']).issubset(ids))
 
     def test_pack_links(self):

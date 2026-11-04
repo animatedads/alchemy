@@ -1,0 +1,126 @@
+[
+  {
+    "op": "definition.accept",
+    "definitionKey": "MESSAGE_LIST@3",
+    "contentAddress": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  {
+    "op": "resource.require",
+    "definitionKey": "MESSAGE_LIST@3",
+    "role": "PRIMARY_CONTENT",
+    "resourceId": "MAIL.MESSAGE.ROW",
+    "version": 2,
+    "contentAddress": "sha512:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "locale": "en-GB"
+  },
+  {
+    "op": "snapshot.commit",
+    "viewRef": "MAIL.READER",
+    "revision": 20
+  },
+  {
+    "op": "instance.create",
+    "instanceId": "messages",
+    "definitionKey": "MESSAGE_LIST@3"
+  },
+  {
+    "op": "instance.create",
+    "instanceId": "detailsPanel",
+    "definitionKey": "DETAILS_PANEL@1"
+  },
+  {
+    "op": "instance.create",
+    "instanceId": "closeButton",
+    "definitionKey": "CLOSE_ACTION@1"
+  },
+  {
+    "op": "instance.create",
+    "instanceId": "workspaceAction",
+    "definitionKey": "WORKSPACE_ACTION@1"
+  },
+  {
+    "op": "property.set",
+    "viewRef": "MAIL.READER",
+    "fromRevision": 20,
+    "toRevision": 21,
+    "instanceId": "detailsPanel",
+    "property": "visible",
+    "value": true
+  },
+  {
+    "op": "collection.range-request",
+    "instanceId": "messages",
+    "start": 8700,
+    "count": 100
+  },
+  {
+    "op": "collection.select",
+    "instanceId": "messages",
+    "identity": "INBOX|4242|8738"
+  },
+  {
+    "op": "action.emit",
+    "viewRef": "MAIL.READER",
+    "sourceId": "messages",
+    "action": "SelectionChanged",
+    "renderedRevision": 21,
+    "detail": {
+      "identity": "INBOX|4242|8738"
+    }
+  },
+  {
+    "op": "action.emit",
+    "viewRef": "MAIL.READER",
+    "sourceId": "workspaceAction",
+    "action": "WorkspaceCommand",
+    "renderedRevision": 21,
+    "detail": {
+      "workspaceContext": {
+        "workspaceRef": "MAIL.WORKSPACE",
+        "selectedIds": [
+          "INBOX|4242|8738"
+        ],
+        "resultRevision": 12,
+        "resultQueryRevision": 4,
+        "resultScopeRevision": 7,
+        "resultOrderRevision": 9,
+        "resultCurrent": true,
+        "futureEvidence": {
+          "opaque": "kept"
+        }
+      }
+    }
+  },
+  {
+    "op": "action.emit",
+    "viewRef": "MAIL.READER",
+    "sourceId": "closeButton",
+    "action": "Activate",
+    "renderedRevision": 21,
+    "detail": {}
+  },
+  {
+    "op": "observation.subscription",
+    "subscriptionId": "MAIL.SERVICE.CONTEXT",
+    "enabled": [
+      "message.opened"
+    ]
+  },
+  {
+    "op": "observation.emit",
+    "subscriptionId": "MAIL.SERVICE.CONTEXT",
+    "event": "message.opened",
+    "subjectIdentity": "INBOX|4242|8738"
+  },
+  {
+    "op": "definition.deauthorised",
+    "definitionKey": "MESSAGE_LIST@3",
+    "committedInstanceId": "messages",
+    "actionsBlocked": true
+  },
+  {
+    "op": "resync.request",
+    "viewRef": "MAIL.READER",
+    "reason": "COMMITTED_VIEW_DEAUTHORISED"
+  }
+]

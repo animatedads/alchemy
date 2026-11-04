@@ -1,0 +1,37 @@
+NoSQLServer v0.87 qualification
+
+Scope:
+- optional instrumentation.mesh/0.1 adapter
+- query accepted/completed/failed observation
+- query duration distribution
+- bulk Directory/JSON materialisation observation
+- row/value counts and JSON byte counts
+- Directory and JSON cache-hit observation
+- no mutation/authority granted by instrumentation
+
+Forcing regression:
+- 1,400 rows x 11 fields
+- Directory materialisation and cache reuse
+- typed JSON projection and one-shot serialization
+- JSON cache reuse
+- exact 10-digit INTEGER, numeric-looking VARCHAR, BOOLEAN and NULL semantics
+- real NoSQLServer CREATE/INSERT/SELECT query path observed through FileDatabaseEngine
+
+Qualified instrumentation package:
+  oorexx_instrumentation_mesh_v0.1-dev2.zip
+  SHA-256 fc1c1bb61f91a8c6b3aec6dc94f6b12052fcaeab0c90aa2312f644f79b64d6b2
+  API instrumentation.mesh/0.1
+
+The Instrumentation Mesh dependency is optional at runtime. NoSQLServer core
+continues to operate with FileDatabaseEngine~instrumentation == .nil.
+
+Qualification evidence (2026-10-08):
+- ooRexx 5.3.0 r13196 Internal Test Version
+- rexxc PASS: NoSQLServer.cls, NoSQLServerDB2Personality.cls,
+  NoSQLServerInstrumentation.cls, v0.84/v0.85/v0.86/v0.87 forcing tests,
+  runtime evidence tool
+- inherited v0.77-v0.86 selected regression suite PASS
+- Instrumentation Mesh core test PASS from package root
+- v0.87 forcing case PASS
+- runtime evidence reports VERSION/SQL_LEVEL 0.87 and retains DISTINCT,
+  BULK_RESULT_MATERIALISATION and BULK_JSON_RESULT

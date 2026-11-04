@@ -1,0 +1,10 @@
+[00:00:01.000] INFO  [node-1] net.mesh.Node - Node START id=1 ip=10.0.0.1
+[00:00:01.002] INFO  [node-2] net.mesh.Node - Node START id=2 ip=10.0.0.2
+[00:00:01.005] INFO  [node-3] net.mesh.Node - Node START id=3 ip=10.0.0.3
+[00:00:01.010] DEBUG [node-1] net.mesh.Link - Send ping to node-2 (seq=101)
+[00:00:01.012] DEBUG [node-2] net.mesh.Link - Recv ping from node-1 (seq=101)
+[00:00:01.013] DEBUG [node-2] net.mesh.Link - Send pong to node-1 (seq=101)
+[00:00:01.015] DEBUG [node-1] net.mesh.Link - Recv pong from node-2 (seq=101)
+[00:00:01.050] DEBUG [node-1] net.mesh.Link - Send ping to node-3 (seq=102)
+[00:00:02.051] WARN  [node-1] net.mesh.Link - Timeout waiting for pong from node-3 (seq=102)
+[00:00:02.055] ERROR [node-1] net.mesh.Node - Node DROP id=3 reason=TIMEOUT

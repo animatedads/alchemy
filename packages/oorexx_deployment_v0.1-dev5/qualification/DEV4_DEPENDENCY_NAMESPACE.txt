@@ -1,0 +1,22 @@
+Qualification date: 2026-10-27
+Scope: dev4 deterministic dependency namespace provider
+
+PASS sh -n bin/materialize_dependency_namespace.sh
+PASS sh -n bin/verify_dependency_namespace.sh
+PASS sh -n tests/test_dependency_namespace.sh
+PASS tests/test_dependency_namespace.sh
+
+Observed positive result:
+READY dependency-namespace ... files=2
+READY dependency-namespace verified=...
+PASS deterministic dependency namespace
+
+Negative gates exercised:
+- component root whose supplied artifact hash differs from the lock: rejected
+- package binding marked unsatisfied: rejected before namespace publication
+
+Current environment limitation:
+- the prior r13196 .deb attachment is no longer materialisable from its backing
+  store in this session, so the full ooRexx dev4 suite was not rerun here.
+- dev3's r13196 qualification remains historical evidence, not a claim that dev4
+  has already been runtime-qualified.

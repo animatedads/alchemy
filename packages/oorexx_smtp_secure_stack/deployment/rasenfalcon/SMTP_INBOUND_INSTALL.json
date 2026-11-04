@@ -1,0 +1,30 @@
+{
+  "schema": "rasenfalcon.smtp.inbound.install-contract/0.1",
+  "service": "rasenfalcon-smtp-inbound.service",
+  "component": "oorexx_smtp_secure_stack",
+  "runtime": "ooRexx 5.3.0 r13196",
+  "purpose": "MX/inbound SMTP receive and durable local-domain storage",
+  "authority": {
+    "internet_ingress": "unauthenticated SMTP is allowed only for configured local recipients",
+    "relay": "not provided by this service profile",
+    "mailbox_classification": "verified user signature -> INBOX; unsigned/invalid -> INBOX-UNSIGNED",
+    "storage": "one authoritative RFC822 object with mailbox membership projection"
+  },
+  "dependencies": [
+    "Storage Fabric",
+    "OpenSSL through Foreign Runtime secure.socket provider",
+    "Rasen Falcon TLS certificate/private key",
+    "optional S/MIME trust anchor"
+  ],
+  "activation_gate": [
+    "configured local domains",
+    "writable durable store and catalogue",
+    "TLS provider available",
+    "negative relay probe is denied",
+    "local unsigned message persists to INBOX-UNSIGNED",
+    "local verified-signed message persists to INBOX",
+    "IMAP mailbox projection sees the same stored object"
+  ],
+  "production_status": "SOURCE_READY_NOT_INSTALLED",
+  "operator_gate": "live host install, firewall/DNS/MX and production activation require owner-approved deployment action"
+}

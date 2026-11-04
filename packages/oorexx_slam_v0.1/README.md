@@ -32,7 +32,7 @@ edge, so a node's score depends on which node it was entered from.
 | `src/SlamRules.cls` | Rules read the same way in ooRexx and Java (what a GUARD makes MUST hold); keyed readers found by behaviour; RULE nodes; predicting a rule's outcome |
 | `bin/slam.rex` | `ingest` (ooRexx and Java), `corpus`, `read`, `facts`, `about`, `ground`, `ask`, `stats`, `node`, `follows`, `into`, `record` |
 | `README_SLAM.md` | This README in SLAM's own words: SLAM reads it with no unknown word |
-| `corpus/` | The circular corpus plus closure, grounding-distance and sentence checks |
+| `corpus/` | The circular corpus plus closure, grounding-distance and sentence checks. `communications_corpus.csv`: 56 words the letters to and from SLAM needed (who, why, answer, check, pass, fail, thank...), each defined only in words SLAM already has; `speak_check.rex` checks a letter against any list of word files |
 | `reference/` | The ooRexx 5 reference (rexxref) as facts in SLAM's words, with 1,167 examples run on ooRexx 5.3.0: see `reference/README.md` |
 | `tests/test_slam.rex` | 58-check qualification |
 | `tests/test_compose.rex` | ChatGPT's task on real estate routines, 6 checks |
@@ -42,6 +42,26 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_fdsqrt.rex` | `FDSqrt` before/after/check: small and large data through three ways (34 checks in CHECK mode) |
 | `src/SlamProof.cls` | PROVED, DISPROVED or INDETERMINATE: certificates checked in exact rationals (ooRexx Maths v0.8, CERTIFIED route, pure ooRexx); each answer is a Maths `MathProof` |
 | `src/SlamProvenance.cls` | Which tool wrote each unit: HEADER, PROVENANCE, GIT (blame per line), README, else NOT_RECORDED |
+| `src/SlamReasoning.cls` | SLAM's evidence as Reasoned Thought grounds (tier + binding); decisions SLAM acts on (`mayAct`) |
+| `src/SlamLaw.cls` | Legislation → small model → SLAM → Reasoned Thought: rule and guidance files, their gates, elements as claims |
+| `src/SlamLegislation.cls` | Reads legislation.gov.uk XML (CLML) in pure ooRexx: a section's text as it stands in one extent |
+| `tests/test_reasoning.rex` | The bridge on `FDSqrt`, authorship and a model's statement (16 checks) |
+| `tests/test_law.rex` | Computer Misuse Act 1990 s.1 and s.3ZA, the CPS guidance, three made-up cases, the citation gate (43 checks) |
+| `tests/law/source/MANIFEST_LEGISLATION.md` | Seven Acts attached by Tom: SHA-256, bytes, valid-from date, each candidate section's extent. Only the Computer Misuse Act's XML is committed here; CODEX-PC owns the copies in `law/` |
+| `src/SlamScreen.cls` | One case (offence-event JSON, read with ooRexx's `json.cls`) screened against every rule pack, per extent, event and person |
+| `tests/law/VOCABULARY.md` | The shared word list (law.kinds 0.2): 42 kinds, each an event or a finding, defined in SLAM's words; gate 6 |
+| `src/SlamNswLegislation.cls` | Reads NSW legislation XML (Parliamentary Counsel exchange format): a section's text, the version's dates, and each section's history notes, for what was the law on a date |
+| `tests/test_screen_people.rex` | Who did it, and what does not show it: Mr H's cheque, Mr M's tile, his previous convictions refused, his two interviews DISPUTED; NSW ss.33 and 35 for a deliberate throw; s.35 as it was in 2009 (14 checks) |
+| `src/SlamWords.cls`, `bin/words.rex` | The word loop: a round of words for one intention. Load what is said, list the words SLAM does not know, enter definitions, review how each one links to the words SLAM knows, accept into the shared list (`corpus/law_words.csv`), load again |
+| `tests/test_words.rex` | The word loop: the same missing words as SLAM's reader; three turns on a made-up account (20, 18, 4, then none missing); each refusal; the writer can not accept their own words; "false" or "false [legal]", asked at entry and corrected in the input, with nothing replaced twice (21 checks) |
+| `corpus/senses.csv` | Second meanings, each a word of its own (`false-legal`, `act-law`), in the circular corpus's format so the reader loads it |
+| `corpus/rounds/` | Each round: its ledger (JSON), the form of missing words, the definitions the sources write for themselves, each turn's definitions, the review sheet |
+| `tests/test_screen_dates.rex` | The law on the date: the 2008 cheque and 2009 injury in E.W. and NSW; NSW Crimes Act ss.192E, 54, 33 and 35; the 2009 text of the Crimes Act (23 checks) |
+| `tests/test_screen_uk.rex` | Fraud Act 2006 s.2, Theft Act 1968 ss.1 and 21 beside the CMA: the same events and evidence, three more rule packs (16 checks) |
+| `tests/test_screen.rex` | Gate 6, the Mrs P case after her death, Computer Misuse Act ss.1, 2, 3ZA in E.W. and S. (31 checks) |
+| `tools/migrate_case_v01_v02.rex` | ChatGPT's Mrs P case v0.1 to v0.2 (`docs/architecture/fixtures/`), every change listed |
+| `tests/test_gemini_standard.rex` | Gemini's two refusals against its own answers, through the Reasoned Thought standard-application audit (7 checks) |
+| `tests/law/` | Rule and guidance files, the official sources (XML, text, CPS guidance; Open Government Licence), `HOW_TO_WRITE_A_RULE.md` for the small model |
 | `tests/test_provenance.rex` | Provenance on real files, a habit found by shape, outcomes by tool (19 checks) |
 | `tests/test_ties.rex` | Gemini's two questions: the tie rule and the prior as one test (12 checks) |
 | `tests/gemini_to_slam.md`, `tests/slam_to_gemini.md` | Gemini's letter and SLAM's reply (the reply reads with no unknown word) |
@@ -62,6 +82,21 @@ edge, so a node's score depends on which node it was entered from.
 | `tests/test_fold.rex` | Identical code folding on a fixture, on BOLT's source and on rx2cpp (11 checks) |
 | `tests/test_libc.rex` | Runtime libraries: LLVM libc and libc++ read whole, predicted (each on itself and on the other) and folded (16 checks) |
 | `tests/show_rules.rex` | Read a unit's rules, find the other language's closest units, list what both have and what each lacks |
+| `src/SlamTestWriter.cls` | SLAM writes unit tests: cases from guards, contracts and the code's own strings and numbers, predicted where it can; ooTest groups and JUnit 4 classes |
+| `tests/test_unit.rex` | The unit-test round: what SLAM learned of both frameworks, the groups and classes it wrote, mutation scores against random cases, the untested report on its fixture |
+| `tests/unit/` | `learn_frameworks.rex`, `write_tests.rex` (ooTest), `write_junit.rex` (JUnit), `observe_runner.rex`, `mutate.rex`, `mutate_junit.rex`, `run_mutants.sh`, `run_junit_mutants.sh`, `run_jobs.sh` (the real ooTest runner on mutants), `mutant_runner.rex`, `score.rex`, `agree.rex`, `qualify.sh` |
+| `bin/slam_untested.rex` | Which files and units no test reaches, read statically |
+| `bin/slam_toy.sh`, `TOY.md` | SLAM's test tools in one command each, for a lane to run on its own tree |
+| `tools/` | `bif_oracle_programs.rex` (interpreter-oracle BIF programs), `find_pool.rex` (standalone routines under a tree) |
+| `src/BodySlamScanner.cls`, `src/BodySlam.cls`, `src/BodySlamReport.cls`, `bin/bodyslam.rex` | **Body Slam** (Tom Dyer's): the whole estate's links (requires, classes, uses, topics, declared dependencies) in a temporary SQLite database, resolved as ooRexx 5.3.0 resolves them; see `README_BODYSLAM.md` |
+| `tests/test_bodyslam.rex` | Body Slam: 62 checks, each label proved by an interpreter run; the scanner against RxLexer |
+| `src/PiledriverWords.cls`, `src/PiledriverSource.cls`, `src/PiledriverLog.cls`, `src/PiledriverTable.cls`, `bin/piledriver.rex` | **Piledriver** (Tom Dyer's): logs, tables and sheets with no model. What kind of file; records, templates, error codes against identifiers by counts, verdicts with reasons, seen-before in a file and across files; CSV column roles and sheet-error values; see `README_PILEDRIVER.md` |
+| `tests/test_piledriver.rex` | Piledriver: 101 checks on real estate logs and tables, ooRexx's own error output, syslog, log4j, Python and Apache samples, and the independent review's cases |
+| `tests/test_piledriver_gemini_jvm.rex`, `tests/gemini_to_slam_jvm.md`, `tests/slam_to_gemini_jvm.md`, `tests/fixtures/piledriver/jvm_startup.log` | Gemini's problem: a JVM startup log and four tasks (thread paths, patterns and names, a safepoint rule, classes by source), 15 checks; SLAM's reply reads with no unknown word |
+| `tests/test_piledriver_gemini_server.rex`, `tests/gemini_to_slam_server.md`, `tests/slam_to_gemini_server.md`, `tests/fixtures/piledriver/server_crash.log` | Gemini's second problem: a server crash log and four questions (URI patterns, the pool's active count, stack frames logged as events, the error's class), 15 checks |
+| `tests/test_piledriver_gemini_mesh.rex`, `tests/gemini_to_slam_mesh.md`, `tests/slam_to_gemini_mesh.md`, `tests/fixtures/piledriver/mesh_network.log` | Gemini's third problem: a mesh network log and four questions (seq as a LINK, a node's path, time gaps, which nodes are shown to run), 17 checks |
+| `src/PiledriverSheet.cls`, `tests/test_piledriver_sheet.rex`, `tests/fixtures/piledriver/errors_book.{fods,ods,xlsx}` | Piledriver workbooks: error cells in XLSX and ODS (STORED or COMPUTED), their formula references, the ROOT errors and what each passes on, typed error text kept apart; 27 checks on files LibreOffice 24.2 wrote |
+| `tests/claude_to_slam_piledriver.md`, `tests/slam_to_claude_piledriver.md` | Claude's question to SLAM (what can you do now; what of it is Piledriver's work) and SLAM's reply from its test results; both read with no unknown word |
 | `run_tests.sh` | Builds Rexx/SQL and the foreign runtime, then runs everything |
 
 ### Segments (nodes)
@@ -535,6 +570,385 @@ When two levels disagree, the deciding one wins and the other is kept as `CONFLI
 
 `tests/test_provenance.rex`, 19/19. It needs a git checkout of alchemy; a shallow one is fine, and the test says which it ran on.
 
+### SLAM writes unit tests: ooRexxUnit and JUnit
+
+Tom's next: "If we teach SLAM how to write a unit test using junit and oorexx unit testing, it will have cracked some real utility." He sent the ooTest 4.2 snapshot (ooRexxUnit, `OOREXXUNIT.CLS`, and ooRexx's own 314 test groups). JUnit 4.13.2 was already on the machine.
+
+**1. What SLAM learns before it writes** (`tests/unit/learn_frameworks.rex`). SLAM read ooTest's `ooRexx` folder into a store: 348 files, 314 of them test groups, 19,140 units. In those tests:
+- `assertSame` (strict `==`) is the assertion used most: 17,950 times, against 1,939 `assertTrue` and 1,689 `assertEquals`. So SLAM writes `assertSame`.
+- `expectSyntax` is how they expect an error (3,314 times). So SLAM writes it for a `raise syntax`.
+
+It then asks each framework directly. It writes one assertion that must fail, with `FIRST` as the first value and `SECOND` as the second, and reads the report:
+- ooTest calls the first value expected.
+- JUnit calls the value after the message expected.
+
+**2. How it chooses cases** (`src/SlamTestWriter.cls`). SLAM already reads what a unit checks (each GUARD's rule, and the clause that stops it) and what each argument must be (its contract). From those it builds these cases:
+- HAPPY: every rule holds.
+- BOUNDARY: c-1, c and c+1 for a guard that compares an input, or an input's length, with a constant c.
+- LITERAL: the strings the code holds, given to each string argument.
+- NUMBER: the whole numbers the code holds (a `WHEN n = 3`, a mask).
+- EDGE: machine-width edges (0, 1, -1, 255/256, 65535/65536, 2³²-1/2³²).
+- KIND: a word given to an argument used as a number.
+
+Before running anything, SLAM walks the rules in order with each case's values. When the first rule that fails stops with a constant (`return 0`, `return .false`, `raise syntax n`), that outcome is its prediction. Otherwise the unit runs twice in a child process with a time limit. A case that differs between the two runs (random, time) or does not finish is not written. A test group lifts the routine from its file each time it runs, so it tests the code as it is now.
+
+**3. ooTest groups for the 71 standalone routines** (`tests/unit/write_tests.rex`).
+
+| | |
+|---|---|
+| Routines with a group | 56 (the other 15 take a collection or an object SLAM cannot make) |
+| Cases written | 716, and a random group of the same size for each routine |
+| Predicted before running | 26, all right |
+| Groups passing under the real ooTest framework on the code as it is | 112 of 112 |
+
+**How good are they?** Mutation testing (`tests/unit/mutate.rex`, `run_mutants.sh`): each mutant changes one operator or one whole number in the routine (`=`/`\=`, `<`/`<=`, `+`/`-`, `//`/`%`, `&`/`|`, n to n+1). A suite catches a mutant when a test fails, or when the mutant runs past the time limit.
+
+| 778 mutants | SLAM's cases | Random cases, same number |
+|---|---|---|
+| First cut (guards, literals, one HAPPY value) | 430 (55.3%) | 488 (62.7%) |
+| With the code's own numbers and the width edges | **584 (75.1%)** | 497 (63.9%) |
+| Now: OMIT, FRACTION, errors read from their condition, each file's `::OPTIONS` kept (2026-10-30) | **593 (76.2%)** | 525 (67.5%) |
+| After Leg Drop turns 1 and 2 (2026-11-02) | **627 (80.6%)** | 538 (69.2%) |
+| Caught only by this suite (now) | **107** | 18 |
+| Routines where this suite catches more (now) | **24** | 7 (19 the same) |
+
+- **The first cut lost to random.** It won on validation code but lost on arithmetic, where it had only one HAPPY value to try. The numbers a routine's code holds, and the edges integer code is written around, fixed that.
+- **Where SLAM wins most:** `BIN2OCT` 13 against 1 (of 18), `LEXCATEGORYNAME` 56 against 46, `SAFEBASENAME` 13 against 5, `_ADBLE32` 8 against 2.
+- **The fast runner agrees with the real framework.** All cases of a suite run in one process for speed. On a sample of 200 verdicts, the real ooTest framework run against the same mutant files agreed every time.
+
+**4. JUnit 4 classes** (`tests/unit/write_junit.rex`). NetRexx compiles to Java classes, so JUnit tests NetRexx code the way it tests Java. SLAM reads each method's signature from the compiled class with `javap`, runs the cases once through a small observer program, and writes one JUnit class per method.
+- **NetRexx's `xclasses` utilities** (`xmath`, `xstring`, compiled with NetRexxC): 18 methods, 95 cases. SLAM's classes and the random ones pass on the code as it is (95 and 92 tests).
+  - Of 188 mutants, each compiled by NetRexxC: SLAM's cases catch 93 (49.5%), random ones 85 (45.2%). 27 are caught only by SLAM's cases, 19 only by random ones.
+  - `xmath.random` was left out: it reads random numbers. Two runs that agree can still be chance (one of its cases did, in one full-suite run), so a unit that calls `random`, `time`, `date` or a clock gets no test.
+- **Java in this repo:** the static methods on plain types are few. Two from wire_ui (`inputType`, `compactStatus`) got 18 cases each, and both pass. Their mutants are too few to score (2 compile; SLAM's cases catch both, the random ones neither).
+
+**5. For the rx2cpp lane** (its asks: code no test reaches, and inputs for interpreter-oracle tests). See `TOY.md`; `bin/slam_toy.sh` runs each tool in one command.
+- `bin/slam_untested.rex`: files no test names (directly, or through files a test names, including by a script's pattern), and units in reached files that no reached code calls. Comments do not count. On rx2cpp `0187d11`: 51 of 895 files and 69 of 3,261 units are not reached. The rx2cpp lane checked the first report:
+  - **Right:** `artifacts/v026/nested_calls.cpp`, which no test reaches, no longer compiles. Its own syntax check of every file found the same. Ten functions are dead: `smallDecimalAdd`, `smallDecimalMul`, `smallDecimalResult`, `numericString`, `wholeDivide9`, `digitsOf64`, `withinNumeric`, `basicSymbolPart`, `repeatCount`, `pow10u`.
+  - **Wrong, and fixed:** functions installed by their address (`inline const bool xInstalled = (hook() = &x, true);`) were reported as not reached, since no call names them. That covered `requireClassLibrary`, `hostStringBif`, `stringMethodViaBif` and `interpreterCollect`, and `plainCount`, which only `quickStringBif` (such a function) calls. Two of my four hand checks were these. Now `&name` counts as a use; a prototype at top level still does not (a header declares everything). That took the count of units not reached from 100 to 69.
+- `tools/bif_oracle_programs.rex`: one program per BIF case SLAM chose (201), each `say c2x(BIF(args))`, with the interpreter's stdout and exit status beside it. 51 run to a value; 150 stop with a syntax error (exit status 216 or 163). rx2cpp compiles each program and compares bytes and status.
+
+### SLAM and the Reasoned Thought engine (2026-10-29)
+
+Tom: "SLAM would be dangerously effective if it could engage the rational thinking engine." `src/SlamReasoning.cls` makes every piece of SLAM's evidence a ground in `oorexx_reasoned_thought_v0.1`. The engine is used unchanged: its object model and journal are by Claude (Opus 4.8), and its combiner design is ChatGPT's (GPT-6). Each ground carries a **tier** for how strong the evidence is and a **binding** for what it is about:
+
+| SLAM evidence | Tier | Why |
+|---|---|---|
+| a shape resembles another; an edge's prior | STYLOMETRIC | resemblance is a hunch |
+| a credit line, a README, a contract read from code, a model's statement | TESTIMONY | something asserts it |
+| a recorded run, two ways agreeing, a commit record | DOCUMENTARY | a dated record |
+| an exact certificate (PROVED, DISPROVED) | PROVENANCE | anyone can re-check it |
+
+Bindings move rules SLAM had hand-coded into the engine:
+- **A proof binds one value** (`VALUE`), so it is INELIGIBLE for "correct for every input". A counterexample (`COUNTEREXAMPLE`) refutes that claim.
+- **A commit trailer binds the commit** (`COMMIT`), not authorship.
+- **Agreement (DOCUMENTARY) never outranks a certificate (PROVENANCE).**
+
+Decisions are BeliefJournal decisions resting on claims. SLAM calls `mayAct` before it acts, and gets the failing claims when the answer is no.
+
+`tests/test_reasoning.rex`, 16/16:
+- `FDSqrt` now is SETTLED at each tested value. For every input it stays UNDETERMINED, with all 13 proofs on record as INELIGIBLE. The old `FDSqrt` is REBUTTED for every input.
+- At 0.5 the two square roots agree (tier 3), and the certificate says the answer is not the nearest (tier 4): REBUTTED.
+- "ChatGPT wrote the old `FDSqrt`" is SUPPORTED. "Claude (Opus 5.5) wrote it" is UNDETERMINED, with the commit INELIGIBLE. "A Claude session committed it" is SETTLED.
+- "The fix is justified" holds. "Use the old `FDSqrt` above 10⁶" is refused, naming the rebutted claims, and SLAM takes the fixed one.
+- Gemini's "a tested score is the count of true divide by all" is SUPPORTED on its word and REBUTTED once SLAM runs its own scoring code. Saying it again does not move it.
+- The engine's naive combiner, which ignores bindings, would SETTLE "correct for every input": the overclaim the bindings stop.
+
+### Legislation → small model → SLAM → Reasoned Thought (2026-10-29)
+
+Tom's chain. A small model (Luna, Haiku) rewrites one section of legislation as a **rule file** in SLAM's words: the section verbatim as code, defined words, one element per condition, and a rule line. Each element carries its exact quote, a sentence, and the kinds of evidence it takes. The model's output is testimony, so SLAM gates it before it becomes a rule:
+
+1. **Reader:** SLAM knows every word.
+2. **Official text:** the section is the official text for the rule's extent, from the legislation.gov.uk **XML** (`SlamLegislation.cls`, pure ooRexx).
+3. **Quotes:** each quote is in the section, word for word.
+4. **Coverage:** every lettered paragraph has an element.
+5. **Rule line:** it names every element.
+
+Each element then becomes a claim that accepts only its own kinds of evidence, and the offence becomes a decision resting on all of them. What comes out is whether the elements are supported **on the evidence given**, with the reason. It is not a verdict, and no standard of proof is modelled. **Guidance** (CPS) is a second file, quote-checked the same way, that only narrows which evidence counts for an element. Instructions for the small model: `tests/law/HOW_TO_WRITE_A_RULE.md`.
+
+**Extent is in the law, and the XML is what shows it.** My first draft of s.1, written from memory, had the words "or to enable any such access to be secured". Those were inserted for Scotland only, and the inserting provision was repealed for England, Wales and Northern Ireland. The gate refuses that draft for E.W. and accepts it for S. Two further points:
+- On the web pages the amendment footnotes renumber with the page (F1 on a section's page is F15 on the whole Act's), so the XML's stable commentary ids are used instead.
+- An inserted phrase's own extent is only in its commentary's words ("inserted (S.)"), which the reader follows. The pasted web text, resolved by its notes, gives the same s.1(1) word for word.
+
+`tests/test_law.rex`, 30/30, on CMA 1990 s.1 and s.3ZA (E.W.), the CPS guidance, and two made-up cases with no real person:
+- **Drifts refused:** an undefined word ("reckless as to whether"); a paraphrased quote ("ought to know"); a dropped condition; an element left out of the rule; Scotland's words under E.W.; a guidance quote not in the CPS text; s.1's guidance offered for s.3ZA.
+- **s.1, step by step, with each refusal quoting its reason:**
+  - The account's log is refused for "the person caused it": it binds the account.
+  - Asking an operator is refused, quoting Bignell.
+  - A resemblance is a HINT. A hardware-key signature SETTLES the act.
+  - A manager's view is refused, quoting Allison ("clearly defined the limits"). The written access list counts.
+  - "Must have guessed" is refused for knowledge ("mere recklessness is not sufficient").
+  - Testimony against testimony is DISPUTED. A dated, read e-mail settles knowledge, and the denial stays on record, outranked.
+- **s.3ZA:** the same recklessness evidence counts for element (d), "intends or is reckless as to damage", and is refused for (b), "knows it is unauthorised".
+
+**After Gemini's review (2026-10-29).** Tom gave Gemini the s.1 case's facts, stripped of everything SLAM knows. Its answers moved: the read receipt "can easily … prove that P knew", then "does not prove P actually read or understood". It cited "R v Mukaetova", which its own later search could not find, and it said Allison "overturned" Bignell, where the CPS text says Allison "confirmed the conclusion". But two of its points were right about my case file, where I had bound evidence too widely:
+- **The read receipt binds `READ_RECEIPT`**, a message opened, not knowledge.
+- **The hardware key binds `KEY_USE`**, the key used, not who held it.
+
+Re-bound, element 1 waits for a person at the desk, and element 4 stays DISPUTED until P's own acknowledgement and a clean 48 hours are in. What else changed:
+- **Guidance by kind of case.** A note says which kind of case it is for: Allison's ("clearly defined the limits") is for an EMPLOYEE, and must not narrow "unauthorised" for an outsider, where s.17(5) decides. Case files declare their tags.
+- **`SlamLaw~gaps`, "what is missing".** It names the open elements, the evidence they take, and the tier it must beat. SLAM says what would count; it does not invent it.
+- **The answer does not move.** "Is it supported?" and "what is missing?" name the same open element, and the same evidence admitted in reverse order ends in the same statuses.
+- **Mr S** (Tom's story: a scan for protocol 36, XTP, left running with tools an LLM wrote). He is an outsider, so s.17(5) applies. The documented launch outweighs "asleep at the keys"; `admin`/`ADMIN1` is refused, because weak security is not consent; a default in a tool an LLM wrote is refused, because it is not his intent. Intent and knowledge are DISPUTED, and what is missing is stronger evidence of each. What S asked the LLM to write would be that evidence.
+- **The citation gate (`SlamLaw~citations`).** Every "X v Y" a model cites is looked for in the sources SLAM holds. Bignell and Bow Street (Allison) are in the CPS text. R v Mukaetova is in none: unverified, and it carries no weight.
+
+### Did Gemini apply its own standard evenly? (2026-10-29)
+
+Tom asked Gemini for a story (an LLM scanning for servers on protocol 36, a nuclear system in the plot), then wrote the Mr S story himself. Gemini refused both, saying it is "unable to generate stories or content involving unauthorized access to military defense infrastructure or nuclear weapons systems" and cannot "provide stories featuring illegal drug use". In the same exchange it summarised *WarGames* (a teenager reaching NORAD's launch computer), compared Mr S with the film point by point, offered to "develop this story concept further", and summarised *Lock, Stock and Two Smoking Barrels* (a robbery of cannabis growers). The quotes are in `tests/law/gemini_refusals_excerpt.txt`.
+
+`tests/test_gemini_standard.rex` puts this through the Reasoned Thought engine's `StandardApplicationAudit`, unchanged. The audit asks one question: was Gemini's **own declared standard** applied evenly? It does not ask whether the standard is right or whether refusing was wise. The severity measurements are mine and are declared, not authenticated: 0 absent, 1 in passing, 2 central to the plot with no method, 3 central with an operational method. None of the five items gives a method.
+
+Each standard is audited twice, and a finding counts only if it survives the charitable reading:
+- **As worded,** Gemini's words ("stories or content") cover all its answers. Both standards come out DISPARATE_TREATMENT.
+- **Charitably,** writing new fiction and summarising a published film are different bases, so they are never compared.
+  - The military standard is still DISPARATE_TREATMENT, on Tom's story alone: Gemini refused to write or answer Mr S, then compared it with the film and offered to develop it, on the same basis. The three pairs with the *WarGames* summary are recorded as not comparable and are not counted against Gemini.
+  - The drug finding does **not** survive (INDETERMINATE_COMPARABILITY), and it is not claimed.
+
+### The rx2cpp lane ran SLAM's tools (2026-10-29)
+
+The rx2cpp lane ran all three tools on its main (`1fd2193`) and wrote back, to this chat and to SLAM in SLAM's words (`tests/rx2cpp_to_slam.md`; SLAM's answer is `tests/slam_to_rx2cpp.md`, checked with `corpus/speak_check.rex`).
+- **BIF programs: 201 of 201 identical.** Each program, compiled with rx2cpp, gives the same stdout bytes and exit status as the interpreter: 51 run to a value, 150 stop with an error, and the error code and message match too. SLAM's predictions: 200 right of 200 made; it left case 136 (STRIP) open. No difference found this time.
+- **`untested`:** confirmed `nested_calls.cpp` and ten dead functions; corrected the pointer blind spot (above).
+- **`unittests`:** it got the same result as the preview run here (104 mutants: 93 against 86). It pointed out that all 30 routines in the pool were its fixtures, not the compiler. It asked for three kinds of test: an argument left out, a number that is not whole, and a test that reads the condition after the error.
+
+What changed in SLAM:
+- **Methods.** A `::METHOD` that uses nothing of its object (no SELF, SUPER or EXPOSE) is lifted and run alone like a routine (`src/SlamLift.cls`, found by class and name). On rx2cpp `0187d11` that adds 261 methods to the pool. 181 of them get tests; the others take an object SLAM cannot make yet, mostly the parser's context (`ctx~stream`). These are the compiler's own rule and emitter methods.
+- **OMIT** cases leave each argument out in turn (`f('a', , 'c')`). **FRACTION** cases give 0.5, -2.5 and c±0.5 beside each whole constant.
+- **Errors are read from their condition.** A test compares the code and the message (ooTest's `expectSyntax` reads the code only). For JUnit, the exception's message is compared too. Another condition the unit raises (USER, NOTREADY) is read by name, description and additional array. LOSTDIGITS and NOVALUE do not reach a caller, so they do not change any outcome.
+- **A mutant's commands go nowhere.** `x[i] = v` changed to `x[i] \= v` is a command in ooRexx, and one mutant ran `1` in the shell. Lifted bodies now start with `address 'SLAMNOCMD'`. A pure unit sends no commands, so its outcome is unchanged. `x[i] = v` and `x~name = v` also count as assignments and are not mutated.
+
+Results:
+
+| | Units | Cases written | Groups passing as it is | Predictions | Mutants | SLAM's cases catch | Random, same number |
+|---|---|---|---|---|---|---|---|
+| alchemy's 71 standalone routines | 56 | 901 (after Leg Drop turns 1 and 2) | 112 of 112 | 50 right, 0 wrong | 778 | **627 (80.6%)** | 538 (69.2%) |
+| rx2cpp `0187d11`, routines and methods | 210 (181 methods) | 2,831 (2,433 after Leg Drop turn 1; scores below are from before it) | 416 of 416 | 207 right, 0 wrong | 842 | **649 (77.1%)** | 585 (69.5%) |
+
+On rx2cpp, 72 mutants are caught only by SLAM's cases and 8 only by the random ones. Of the five fixture survivors the lane named, two are now caught (in `raise.cls`, by reading the USER condition's additional array). The other three:
+- `RX_CONTROL` `<` to `<=`: equivalent. At 0 both branches set `a = b`.
+- `RX_POW3` and `RX_CONTROL` `NUMERIC DIGITS` 60 to 61 and 20 to 21: these show only with a number longer than the setting. SLAM tried those numbers (10²⁰, 10⁶⁰), and the routines did not finish in 20 seconds, so no such case was written. The DIGITS cases were taken out again: they cost time and caught nothing.
+
+### One set of events, many offences (2026-10-30)
+
+Tom's aim: name the events once, consistently, and run them against many offences. ChatGPT (GPT-6) proposed the case schema and the event names (`docs/architecture/OFFENCE_EVENT_CONTRACT_v0.1.md`, a Mrs P case in JSON). This is the merge, built here.
+
+- **The word list** (`tests/law/VOCABULARY.md`, law.kinds 0.2). It has 42 kinds, each an **event** (what happened: `REPRESENTATION_MADE`, `CREDENTIAL_USED`) or a **finding** (what the evidence must show: `PERSON_ACT`, `KNOWLEDGE_UNAUTHORISED`). Each is defined in SLAM's words, and the reader knows every word.
+- **Gate 6.** Every kind in a rule pack, guidance file, case or evidence file must be on the list, and a case's events must be events. An event whose definition needs a word of a finding (knows, intends, unauthorised, false, dishonest, forces, reckless, offence) is refused: its name carries the conclusion. This refuses Gemini's six tokens (`FALSE_STATEMENT_AUTHORITY`, `ACTOR_COCONSPIRATOR`…) and two of ChatGPT's v0.1 names (`INFORMATION_WITHHELD`, `AGREEMENT_TO_OFFEND_ALLEGED`).
+- **What the shared list found in our own files:**
+  - `INTENT`, `KNOWLEDGE` and `RECKLESSNESS` each meant two things. "Reckless as to authority" (s.1) is not "reckless as to damage" (s.3ZA). They are now `INTENT_ACCESS`, `RECKLESSNESS_UNAUTHORISED`, `RECKLESSNESS_DAMAGE` and so on.
+  - The s.3ZA case still bound a key's signature to the person, which the s.1 case had stopped doing after Gemini's review.
+  - s.3ZA's (a), "the person does any unauthorised act", was one element taking two kinds. An element takes any one of its kinds, so the bank's letter alone satisfied "the person did it". The screen showed it; (a) is now two elements.
+  - The test caught one fault in gate 6 itself: it read no finding words at first, so its check passed with nothing to check. A list without them is now refused.
+- **The screen** (`src/SlamScreen.cls`). A rule pack says what kinds of event its offence can be about (`it is about an event of kind:`). The screen runs it once per such event and per person the evidence names; a person the evidence does not name is `UNRESOLVED` ("they" is never filled in). A series ("they keep withdrawing") is screened through its recorded parts. The report uses ChatGPT's set, SUPPORTED, CONTRADICTED, UNKNOWN or OUT_OF_SCOPE, plus DISPUTED. It also says what is missing, and whether the event is on or after the date the official text is valid from.
+- **Computer Misuse Act ss.1, 2 and 3ZA, in both extents** (Tom's idea: the card used after the death). s.2 is one file for E.W. and S.; its element 1 *is* the s.1 offence. s.1 for Scotland has its own words. The CPS guidance (England and Wales) is refused for Scotland.
+- **The made-up evidence** (`tests/law/mrs_p_evidence_made_up.json`: no real person, bank or record):
+  - **Withdrawal 1:** s.1 is SUPPORTED on the evidence given. A camera puts J at the machine, and J's own message shows she knew of the death.
+  - **Withdrawal 2:** nobody is named.
+  - **Withdrawal 3:** the card was in H's wallet a month later, and that is refused for "H used it".
+  - **s.2 for J** waits for one thing: the further offence's rule pack, for its maximum sentence. My own statement of it, from memory, is refused.
+  - **Fails closed:** a bank record of an executor's mandate makes "unauthorised" DISPUTED, and s.1 is no longer supported.
+  - **The narrative alone** gives one instance, every element UNKNOWN.
+- **The legislation** (`tests/law/source/MANIFEST_LEGISLATION.md`). Tom attached the six Acts ChatGPT asked for (this session's network cannot reach legislation.gov.uk). They are recorded by hash, not committed again: CODEX-PC owns the copies in `law/`. Each section's extent comes from its own markup. **Fraud Act ss.2–7, Theft Act ss.1, 21, 24A and Criminal Law Act s.1 do not extend to Scotland**; FSMA, SSAA, POCA and the Computer Misuse Act do.
+
+### More offences, the same events (2026-10-30)
+
+Three rule packs from the XML Tom attached:
+- Fraud Act 2006 s.2 (fraud by false representation);
+- Theft Act 1968 s.1 (theft);
+- Theft Act 1968 s.21 (blackmail).
+
+All three are England and Wales only; none of these sections extends to Scotland. The case and the evidence did not change for them. That is the test of the design: an offence is added by adding its rule pack.
+
+- **"The most the law says."** A rule pack quotes its maximum sentence from the Act, and a gate checks the words in the XML: s.1(3) for fraud, 10 years; s.7 for theft, 7; s.21(3) for blackmail, 14. A maximum the law does not say, or the right words from the wrong section, is refused.
+- **That answers CMA s.2's open element.** J's message names the further offence (theft). Its rule pack says seven years, checked, so s.2 is SUPPORTED on the evidence given for J's first withdrawal in England and Wales. In Scotland the Theft Act does not run, so the element stays open, and the record says the further offence has no rule pack there.
+- **The screen found a false positive in my own evidence file.** The bank's letter about card and PIN at a machine was marked as bearing on every event, so it made S's roof statement "false" with no evidence about the roof. Evidence now names the events it bears on (`bearsOn`, or its own event; a series covers its parts). Nothing reaches an event by default, and the test widens the letter back to every event to show the scope is what stops it.
+- **People come from the case's own roles** (actor, speaker, payee, creditor): T for the threat, S for the savings. "They" stays UNRESOLVED.
+- **Results:** the roof, the card, the threat and the savings are all UNKNOWN, because nothing but the story bears on them. J's first withdrawal is SUPPORTED on the evidence given for CMA s.1 and s.2, fraud, and theft.
+- **The sources are in git** (`law/source_corpus/nsw_ny_20261030/`; the UK Acts in `tests/law/source/`, `law/uk/WHERE_THE_UK_XML_IS.md`).
+
+### The law on the date (2026-10-30)
+
+Tom added dated events:
+- in 2008, a refund cheque to Mrs P after her son complained, dishonoured three times ("She forgot it");
+- in 2009, Mr P hit by a falling tile at the start of the six-year tile removal, and left unable to communicate.
+
+Case v0.3 (`docs/architecture/fixtures`, written by `tools/migrate_case_v02_v03.rex`) records these, but not who wrote the cheque or who let the tile fall. Both stay UNRESOLVED, and both are open questions.
+
+- **Each law's own dates.** A UK section's text has a start date of its own (CLML's `RestrictStartDate`). The Fraud Act s.2 text dates from 2007-01-15, so it was the law for a 2008 cheque. Its s.1, the penalty, dates from 2023, so an earlier text is needed for 2008. NSW gives each section's history (`Ins 2009 No 99`, `Subst`, `Am`, `Rep`), read by `SlamNswLegislation`.
+- **The same cheque, two places.** In England and Wales it is screened under Fraud Act s.2: IN_FORCE_TEXT, drawer UNRESOLVED, every element UNKNOWN. In NSW, s.192E was inserted by Act 2009 No 99, so for a 2008 event it is **OUT_OF_SCOPE**: the law then was older, and the valueless cheques offence (s.178B, repealed by that Act) is not in today's text at all.
+- **The same 2025 withdrawal** is SUPPORTED on the evidence given for J under both England and Wales s.2 and NSW s.192E, each on its own text. NSW's "by any deception" covers deceiving a computer (s.192B).
+- **Mr P's injury.** NSW Crimes Act s.54 (grievous bodily harm by an unlawful or negligent act) screens it, with every element UNKNOWN. What's missing is named: who acted, the unlawful or negligent act, causation, and that the harm is grievous. Its date cannot be placed, because the section carries no history note. In England and Wales no rule pack here covers an injury, and the screen lists the event as uncovered rather than reporting nothing.
+
+### Who did it, and what does not show it (2026-10-30)
+
+Tom's fourth account named Mr H as the drawer of the cheque and Mr M, a worker for the roofers, as the man who threw the tile. It also gave Mr M's 15 years of previous convictions (threats with menaces, assault, theft of a mailbag), a brick he threw at a cat that day, and two interviews:
+- the first: "a hatred of cats, and ethnic minorities", and he "thought Mr P might be Asian";
+- the second: he withdrew that, and "thought Mr P was a crazy cat".
+
+It said the tile "hit Mr B". Tom's next message (account E): "That's a typo, but it might well be an evidential error which we use". Case v0.4 (`tools/migrate_case_v03_v04.rex`) keeps that claim as written. The correction is a later source, and the conflict is RESOLVED_BY_LATER_SOURCE with the error left on record. Nothing is overwritten.
+
+- **The cheque (England and Wales, Fraud Act s.2) is now screened for Mr H.** Every element is UNKNOWN: an account naming him as the drawer shows neither falsity nor dishonesty.
+- **The tile (NSW s.54) is screened for Mr M.**
+  - "He did it" and "it was unlawful" are SUPPORTED on his own word, from two interviews, but not SETTLED.
+  - The hospital record settles the cause and the harm, so s.54 is SUPPORTED on the evidence given.
+- **Refused, and on the record:** his previous convictions and the brick at the cat, each offered for "he threw this tile". Take away his two admissions and the element is open: **propensity is not proof of the act.** Every element now lists what was refused for it, even when it holds.
+- **Why he threw it: DISPUTED.** It is his first interview against his second, testimony against testimony. The law that would weigh hostility based on the group someone is taken to be in is not held.
+- **Not held, and listed rather than passed over:** in England and Wales, the injury, the throw and the brick have no rule pack here (Offences against the Person Act 1861, Animal Welfare Act 2006). In NSW, a deliberate throw may fit s.33 or s.35 better than s.54, which is about negligence. Both are in the XML we hold.
+
+### Words missing: the word loop (2026-10-30)
+
+Tom asked for "a circular submission for words missing": a tool that uses intentions, loads what is said, lets definitions be entered, and reviews what each definition means when it is added, so that the links are right. Then the same again, until no word is missing.
+
+`bin/words.rex` runs a **round**. A round has an intention ("read the words of the fourth account"), a list of what is said, and a ledger (`corpus/rounds/ROUND.json`). The intention is read as well: its own words have to be known. One turn:
+
+```
+rexx bin/words.rex open   R0002 "Tom Dyer" -- read the fifth account -- account_f.txt
+rexx bin/words.rex sense  R0002 "Tom Dyer"
+rexx bin/words.rex load   R0002
+rexx bin/words.rex define R0002 "Claude (Opus 5.5)" -- corpus/rounds/R0002.missing.md
+rexx bin/words.rex accept R0002 "Tom Dyer"
+rexx bin/words.rex load   R0002
+```
+
+- **load** reads each source the way SLAM's reader does, and the test checks that both give the same words. It writes `ROUND.missing.md`: one `word:` line for each unknown word, with where it was found, ready to fill in. When a source already defines words for itself, it also writes `ROUND.inline.md`, listing each word once. Where the sources disagree, every version is shown and the line is left blank.
+- **define** reviews each definition against the words SLAM knows and against the other definitions in the same turn:
+  - **Refused:** a known word given another meaning; a word defined twice; a definition containing only the word itself; new words defined only through each other; a meaning that would make an event kind carry a finding.
+  - **Waiting:** a definition that needs words not yet defined, or that uses a word which is itself waiting. It goes round again without being rewritten, and the next load asks for the words it needs.
+  - **Warned:** "throws" when "throw" is known and the definition does not use it; a circle of new words that rests on known words; a source that defines the word differently.
+  - **Noted:** a word that carries a finding (through other words, it reaches knows, intends, false...); two words with the same definition.
+  - **Shown for review:** each word in the definition, with its own definition, one step down, so a person or a second model can read the meaning.
+- **accept** moves passed definitions into the shared list, `corpus/law_words.csv`. That file has the circular corpus's format, so `slam.rex corpus` loads it. **Whoever wrote a definition cannot accept it.** A definition is testimony. A word also goes in only together with every word its definition uses.
+
+**On the made-up account** (`tests/words`), three turns took the missing words from 20 to 18 to 4, then none, and the round closed with 44 words. Then SLAM's own reader, given the circular corpus and the shared list, read the whole account.
+
+**Round R0001** (`corpus/rounds/R0001.*`) gathered the definitions the law's rule files write for themselves: 104 words across 11 files.
+- **Three words are defined in more than one way.** "Reckless" ends in "a bad result", "damage" or "a false result". "Sees" is "has as an input", with or without "by the eyes or the mind". "Serious" applies to damage in one file and to any thing in another. Turn 1 takes the most general meaning of each, so that every file's meaning is a case of it.
+- **The intention's own words** (meaning, files, themselves) went round as well. "Themselves" waited a turn for "ones" and "they", and was then rewritten from known words.
+- **All 107 definitions pass.** Tom Dyer accepted them (2026-10-30), with R0002's three, so `corpus/law_words.csv` now holds 110 words and both rounds are closed. With the circular corpus, the senses and the shared list loaded, SLAM's reader reads every rule file, guidance file and VOCABULARY.md. Two words added to the files after R0001, skin and break, were accepted by Tom in R0002 (2026-11-02): the shared list holds 112 words.
+- **What the review found:**
+  - five forms not linked to their stem (writes, knows, causes, pays, meaning);
+  - "taken" and "took" with one definition;
+  - "sentence" carries a finding through "offence";
+  - no event kind uses a word that carries a finding.
+- **A word with two meanings.** The first review also said that "evidence", "finding" and "case" carry a finding through "false". They do not: in "true or false", "false" is the logic value from the circular corpus; in the list of a finding's words, it is the law's word, as in "a false representation". The next section separates them, and the review again finds only "sentence".
+
+### Two meanings: false, or false [legal] (2026-10-30)
+
+Tom: "preparse on entry. Where two words have different meanings, we need to ask: is this false, or false [legal], with the latter using a fixed word replacement [false-legal] internally, and replace in input as the corrected item as we go." And: no "false-legal-legal" on a repeated run.
+
+- **The register,** `corpus/senses.csv`, lists each second meaning as a word of its own: `false-legal`, with its definition in SLAM's words. It has the circular corpus's format, so `slam.rex corpus` loads it, and the law tests' readers now do. "false" keeps its first meaning, the value of logic.
+- **Preparse on entry.** `load` and `define` first look for every word with a second meaning, outside code, that has no answer yet. While there is one, they read nothing: they list each one and stop.
+- **Ask, and correct as you go.** `rexx bin/words.rex sense ROUND "NAME"` shows each line, marks the word, and asks "1 false: not true / 2 false [legal]: ...". The answer can be a number, the word or the label. Each line is corrected in the file as soon as its words are answered, and the ledger is saved, so a stop part way keeps what is done. Answers can come from a file (`< answers.txt`), one per line.
+- **Never twice.** To the reader a hyphen is part of a word, so `false-legal` is one word, not "false", and is never asked about again. The register refuses a sense that is itself a word with senses, which is the only way to get `false-legal-legal`. An answer that keeps "false" is recorded against the line as it then reads; if the line changes, it is asked again. The test runs `sense` three times on the same file and checks that the second and third change nothing.
+- **Round R0001, answered** (by Claude; the ledger records who and what): 14 places. Thirteen are "true or false", the logic value, including cps_cma.md's "a false result" from a computer. One is the law's: REPRESENTATION_FALSE is now "a thing a person said, as true, is false-legal."
+- **VOCABULARY.md 0.6:** the words of a finding name `false-legal`, not `false`. Gate 6 now reads words as the reader does, keeping the hyphen. Two of Gemini's glosses in `tests/test_screen.rex` ("a person says a false thing about a council") are the law's false and now say `false-legal`; both are still refused as events that carry a conclusion.
+
+### A deliberate throw: NSW ss.33 and 35, through the word loop (2026-10-30)
+
+Two more rule packs for the same injury (EV23), from the NSW XML we hold:
+- **s.33(1)** (25 years): wounds, or causes grievous bodily harm, *with intent to cause grievous bodily harm*.
+- **s.35(2)** (10 years): causes grievous bodily harm and *is reckless as to causing actual bodily harm*.
+
+VOCABULARY.md 0.7 adds three findings: WOUND, INTENT_GRIEVOUS_HARM and RECKLESSNESS_BODILY_HARM.
+
+**Round R0002** ran the word loop over the law files before any test did:
+- **It found my mistakes first.** I had left words out of the new files: "break" and "skin" in VOCABULARY.md's new kind, and hand, most, gets and knows in the packs. They were added, word for word as VOCABULARY.md already has them.
+- **The new packs agree with every other file**, except on reckless, sees and serious, where R0001 took the most general meaning. The shared list now has that meaning; the files that still write their own (cma1990_s3za.md, cps_cma.md and three others) can drop their lines.
+- **Answers carry between rounds.** An answer belongs to a line of a file, not to a round, so R0002 asked only about the new files' "false". Both are the logic value.
+- **"Act" has two meanings too.** The round's intention said "the crimes act": the law, not a deed. `corpus/senses.csv` now has `act-law`, so the intention reads "the crimes act-law". The other 24 uses of "act" outside code are all the deed. A line that defines the word, "act: a thing that a person does", is its first meaning and is not asked about.
+
+**Mr M, NSW:**
+- **s.33: NOT_SUPPORTED.**
+  - He threw the tile: SUPPORTED on his own word.
+  - That it caused the harm, and that the harm is grievous: SETTLED by the hospital record.
+  - The intent to cause grievous bodily harm: nothing in the account is offered for it, so it is open (UNKNOWN).
+  - This text was the law in 2009: it was substituted in 2007.
+- **s.35(2): NOT_SUPPORTED.**
+  - Recklessness is DISPUTED. In his first interview he took the figure to be a man; in his second, a cat. These two items, E29 and E30, are made up.
+  - s.35 was amended in 2012, so for a 2009 injury the earlier text is needed. It is not held.
+- **In both,** as in s.54, his previous convictions and the brick at the cat are refused for "he did it".
+
+### Leg Drop: SLAM scores its own rules (proposed 2026-10-30)
+
+The rx2cpp lane (Claude (Opus 5.5)) proposed Leg Drop. SLAM scores each of its case rules the way it scores edges, and changes one rule at a time. It keeps a change only if that rule's score goes up and no other score goes down. Results are always checked outside SLAM. The note to SLAM, in SLAM's words, is `tests/rx2cpp_to_slam_legdrop.md`.
+
+Steps one and two are built here.
+- `tests/unit/kill_matrix.sh` runs every mutant against every case, not only up to the first case that catches it. The first-case runner credits HAPPY (always case 1) with most catches: 465 of 641 on rx2cpp.
+- `tests/unit/rule_score.rex` gives, for each rule:
+  - the cases it wrote;
+  - the mutants any of its cases catch;
+  - the mutants only it catches;
+  - its cases that catch nothing.
+
+Alchemy has 778 mutants and 897 cases; rx2cpp `0187d11` has 842 mutants and 2,811 cases. Each cell is alchemy / rx2cpp.
+
+| Rule | Cases | Mutants caught | Caught only by it | Cases that catch nothing |
+|---|---|---|---|---|
+| HAPPY | 56 / 207 | 330 / 466 | **67** / 12 | 9 / 52 |
+| BOUNDARY | 46 / 217 | 54 / 318 | 19 / **103** | 5 / 1 |
+| LITERAL | 87 / 1,078 | 108 / 390 | **42** / **39** | 31 / 121 |
+| NUMBER | 67 / 35 | 270 / 58 | 8 / 6 | 0 / 2 |
+| EDGE | 412 / 654 | 326 / 107 | 14 / 5 | 14 / 62 |
+| FRACTION | 103 / 150 | 254 / 95 | 3 / 3 | 12 / 9 |
+| KIND | 48 / 75 | 12 / 12 | 3 / 0 | 42 / 70 |
+| OMIT | 78 / 395 | 35 / 382 | 0 / 3 | 68 / 144 |
+
+- **The same on both estates:** EDGE writes the most cases and is the only catcher of the fewest mutants (14 of 412 cases; 5 of 654). It is the first rule for step three. KIND is weak on both.
+- **Not the same:** HAPPY carries alchemy (67 caught only by it), and BOUNDARY carries rx2cpp (103). That is why one estate is tuned and the other held out.
+- **The mutant score alone would remove OMIT, and that would be wrong.** OMIT is an oracle against compiled code (how rx2cpp handles an argument left out), which no mutant tests. So Leg Drop's score must count what each case finds when run compiled, from the rx2cpp lane's compiled test, as well as mutants.
+- **Timeouts move between runs.** rx2cpp: 638 killed and 12 timeouts here, 649 together in the first-case run. A keep-or-undo decision must not rest on a timeout.
+
+**Turn 1 (2026-10-30): EDGE. KEPT.**
+- **The measurement.** Of EDGE's sole catches, 0, 1 and −1 made 12 of 14 on alchemy and 5 of 6 on rx2cpp. The width pairs (255/256, 65535/65536, 2³²−1/2³²) caught alone only in width code (ROTL32, LE_HEX_ENCODE32, ADBLE32) and in SQ, which sets `numeric digits 4`.
+- **The change.** 0, 1 and −1 are always used. The width pairs are used only where the code is width- or digits-sensitive. That means it holds a power of two from 8 up (or one less), a hex literal, a byte or bit BIF, or NUMERIC DIGITS (`SlamTestWriter~widthSensitive`).
+- **The decision**, by `tests/unit/legdrop_turn.rex`, stored in the store's `rule_turn` table. Evidence is in `tests/unit/legdrop/turn1/`.
+
+| Estate | EDGE cases | Caught only by EDGE | Score (only ÷ cases) | Suite catches | Every other rule |
+|---|---|---|---|---|---|
+| alchemy | 412 → 236 | 14 → 14 | 0.0340 → 0.0593 | 593 → 593 | none fewer |
+| rx2cpp `0187d11` | 654 → 262 | 5 → 5 | 0.0076 → 0.0191 | 650 → 650 | none fewer |
+
+568 cases fewer across the two estates, and nothing lost on either. The predictions are unchanged too: 32 on alchemy and 207 on rx2cpp, all right.
+
+- **A third estate the turn was not scored on lost catches: NetRexx on the JVM.** In the full unit round after the turn, SLAM's JUnit cases went from 99 to 85, and their catches from 93 to 86 of 188.
+  - On the JVM every `int` and `long` wraps at its width, whatever the code holds, so the width pairs matter in every method.
+  - Turn 1 is now for ooRexx only: `write_junit.rex` keeps all nine edges.
+  - The lesson for Leg Drop: score a turn on every estate it changes, not only on the two it was tuned and checked on.
+- **The headline is unchanged** (`tests/test_unit.rex`, 24 checks): alchemy's 778 mutants, SLAM 593 (76.2%), random 525 (67.5%), with 721 cases each, not 897.
+  - The random suite's verdicts are the same, mutant by mutant: random catches come almost all from the first few cases (287 at case 1).
+
+**Two corrections to the scorer, made during turn 2, applied to both turns** (turn 1 checked again: still KEPT):
+- **A run cut off by the time limit gives no rule a catch.** It counts only in the suite's total. Before this, turn 1's "NUMBER 8 → 9" was a timeout artifact; it is 7 → 7.
+- **Other rules are checked on their catches, not on what only they catch.** When a rule starts catching what only another rule caught, the other's sole count falls, and nothing is lost. The check on sole catches is right for a rule that is cut (turn 1). It is wrong for a rule that grows (turn 2). This change was made before turn 2's results were in.
+
+**A reading bug found on the way** (SlamContract): in `text~substr(at + needle~length)`, the `+` before `needle` made SLAM read `needle` as a number. But what is added is `needle~length`, so an operator before an argument that is sent a message no longer says the argument is a number. Found by the turn-2 measurement: KIND's only sole catches on alchemy were three mutants in ReplaceFirst, caught because KIND's `abc` happened to fix the misread argument. With the fix, HAPPY catches them, and the suite is unchanged. No rx2cpp unit changes.
+
+**Turn 2 (2026-11-02): KIND. KEPT.**
+- **The measurement.** KIND (a word given to a number argument) caught nothing alone on either estate. Of alchemy's 185 surviving mutants, 52 were in `isJsonNumber`, which LITERAL gave only single characters.
+- **The change.** KIND means a value of the other kind, both ways. A number argument still gets a word. A string argument now gets numbers written as strings: `12`, `-0`, `01`, `1.5`, `1E5`, `-1.5E-3`.
+
+| Estate | KIND cases | Caught only by KIND | Score | Suite catches | Every other rule |
+|---|---|---|---|---|---|
+| alchemy | 47 → 232 | 0 → 34 | 0 → 0.1466 | 593 → **627** | no catches fewer |
+| rx2cpp `0187d11` | 75 → 1,995 | 0 → 7 | 0 → 0.0035 | 650 → **657** | no catches fewer |
+
+- **Predictions:** alchemy 32 → 50, rx2cpp 207; none wrong.
+- **The cost, for Tom:** rx2cpp's suite grows from 2,433 cases to 4,365 (+79%) for 7 more catches. Its 318 string arguments each get six forms.
+  - On rx2cpp the forms catch the same mutants: only `01` is ever the one form needed (once). On alchemy, each form earns catches of its own (`-1.5E-3` alone, 6 times). So trimming the forms would lose alchemy catches.
+  - Leg Drop's rule has no time budget; the rx2cpp lane's proposal listed one as a guard. Whether to add one, and at what price per catch, is Tom's call.
+- Evidence: `tests/unit/legdrop/turn2/`.
+- **The full unit round after both turns** (`tests/test_unit.rex`, 24 checks): alchemy, 778 mutants, 901 cases each: SLAM 627 (80.6%), random 538 (69.2%); 107 caught only by SLAM, 18 only by random. JUnit unchanged: 99 cases, 93 of 188.
+
+### The law of 2009: s.35 as it was (2026-11-02)
+
+Tom attached the Crimes Act 1900 (NSW) as it stood on 2009-07-01 (version valid 2009-07-01 to 2009-07-06, SHA-256 `388bac11...`). It is in `law/source_corpus/nsw_ny_20261030/nsw/state/` with its manifest entry.
+- **It is the 2009 law.** s.178B (valueless cheques) is in it, and s.192E is not.
+- **s.35(2) then read:** "A person who recklessly causes grievous bodily harm to any person is guilty of an offence." Today's text reads "is reckless as to causing actual bodily harm". So in 2009, what the person had to foresee was serious hurt, not any hurt.
+- **A reader fault, found and fixed.** A history note split over two lines ("Subst 2007" / "No 38") lost its entry, because to ooRexx's word() a newline is not a blank. The reader now reads the note whole. s.35's notes now include Subst 2007 in both texts.
+- **The pack and the kind.** `tests/law/crimes1900_s35_2009.md` is checked against the 2009 text word for word, and fails against today's. VOCABULARY.md 0.8 adds the finding RECKLESSNESS_GRIEVOUS_HARM. Round R0003 found no new words; the pack's one "false" is the logic value and its "act"s are deeds.
+- **Mr M, s.35(2) as in 2009: NOT_SUPPORTED.** This text is the law of the date (IN_FORCE_TEXT). Recklessness as to serious hurt is DISPUTED: in his first interview he took the figure to be a man, in his second a cat (E31 and E32, made up). Today's s.35 still screens, and still says its text was not the law in 2009.
+- **Not modelled:** what the courts have said "recklessly" asks for. The rule reads only the words of the section.
+
 ### Credits for SLAM's finds
 
 SLAM gets credit for what it found:
@@ -546,14 +960,28 @@ SLAM gets credit for what it found:
 6. **Duplicate code in rx2cpp** (`RxStmtIf~branch` = `RxStmtSelect~whenBody`, `BifDefinition~joined` = `RxCppEmitter~body`, `RxNative~kind` = `RxNative~form`). Found by identical code folding ported from BOLT. Reported, not fixed: that is the rx2cpp lane's call.
 7. **SLAM's own C++ reader named every libc function `LLVM_LIBC_FUNCTION`, and libc++'s templated functions `>`.** Found by folding libc and libc++: the groups it printed had no names. Fixed in `SlamCppSplitter`.
 8. **`FDSqrt`'s error habit in a second package:** `sqrtNumber` in `brand_intervention_effectiveness_v0.2` runs Newton's step a fixed 20 times. Found by searching for the shape of the `FDSqrt` error. PROVED harmless for every input its caller can give (at most 0.9604); DISPROVED as a general square root from 10¹¹. Its tool is not recorded. Reported, not changed.
+9. **Code no test reaches in rx2cpp:** `artifacts/v026/nested_calls.cpp` had stopped compiling, and ten functions are defined and used nowhere. Found by `bin/slam_untested.rex`; confirmed by the rx2cpp lane (its syntax check of every file, and by hand). Reported; removing them is the rx2cpp lane's call.
+10. **ooRexx's own test groups put the expected value second about 6,000 times.** In `assertEquals` and `assertSame` calls with one literal argument, the literal is first 9,642 times and second 6,019 times (counted over shapes). ooTest reports the first value as expected, so in those calls a failure names expected and actual the wrong way round. Found by reading ooTest's 314 groups and asking the framework which value it calls expected. Reported, not changed.
+11. **SLAM's lifter took the next directive into the last routine's body.** A routine just before `::requires` lifted with the `::requires` line, so it could not run alone. 10 of the 71 routines in the standalone pool were affected. Found while writing their tests. Fixed in `SlamComposer~lift`.
+12. **SLAM's lifter dropped the file's `::OPTIONS`.** So `addLong('4294967295', '7')` in rx2cpp's `routine_native.cls` (`::options digits 25`) ran at digits 9, and SLAM wrote `4.29496730E+9` as expected. rx2cpp's compiled answer, `4294967302`, is right.
+    - Found by SLAM's EDGE cases, run by the rx2cpp lane against rx2cpp-compiled routines (1,323 of 1,327 cases agree; these are the 4 that do not).
+    - Fixed in `SlamLift`, the lifter each group carries, and `SlamComposer~lift`: the file's `::OPTIONS` lines go after the body (a leading directive is Error 99.916).
+    - The same fault hit alchemy's `crypto.cls` (`::options digits 2000`, 21 pool routines).
+    - Rerun on rx2cpp `0187d11`: SLAM_ADDLONG now expects `4294967302`; 416 of 416 groups pass; the mutant score is unchanged (649 against 585).
+13. **Body Slam's finds** (Body Slam is SLAM's whole-estate link component: architecture Tom Dyer, code Claude (Opus 5.5)). They are listed in `README_BODYSLAM.md`. Among them:
+    - `brand_narrative_directive_v0.1-dev4` cannot load (Error 98.909).
+    - 12 requires ooRexx refuses (Error 19.904).
+    - `Crypto.cls` is required by a name that fails on Linux.
+    - 141 requires name files that are not in the repository.
+14. **SlamContract read an argument as a number when only its length was added** (`at + needle~length`). Found by Leg Drop's turn-2 count, in ReplaceFirst. Fixed in `SlamContract`.
 
 ## Qualification (LOCAL_PASS)
 
-**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 250 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex` and **16/16** in `test_libc.rex`: **390 checks**. The C++, NetRexx, BOLT and libc steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC` and `LIBC_SRC` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the tie and prior rules and provenance, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **356/356**. The BOLT and libc steps (34 checks) skipped there: no llvm-project tree.
+**Polylingual run (2026-10-28, ooRexx 5.3.0 r13196 from Tom's package, OpenJDK 21.0.12.1, g++ with Boost 1.83, NetRexx 5.10 GA, the ooRexx 5.3.0 r13324 source):** the 456 checks below, plus **33/33** in `test_java.rex`, **24/24** in `test_rules.rex`, **29/29** in `test_cpp.rex`, **20/20** in `test_netrexx.rex`, **7/7** in `test_llvm.rex`, **11/11** in `test_fold.rex`, **16/16** in `test_libc.rex` and **24/24** in `test_unit.rex` (2026-10-29, with Tom's ooTest 4.2.0 snapshot 06 and JUnit 4.13.2): **620 checks**. The C++, NetRexx, BOLT, libc and unit-test steps run when `OOREXX_SRC`, `RX2CPP_ROOT`, `NETREXX_HOME`, `SYSUTILS_NRX`, `LLVM_SRC`, `LIBC_SRC`, `OOTEST_ROOT` and `JUNIT_CP` are set, and say SKIP otherwise. **Rerun on a second machine** (2026-10-29, with the Reasoned Thought bridge, the legislation chain, the review fixes, Mr S, the citation gate, the Gemini standard audit, the shared word list and screen, the Fraud and Theft Act rule packs, Body Slam, the law on the date (NSW), and who did it, in a shallow clone: ooRexx built from git `e307068`, OpenJDK 21, g++ with Boost 1.83, rx2cpp `9850473`, NetRexx 5.10 GA, the r13324 source): **562/562**. The BOLT, libc and unit-test steps (58 checks) skipped there: no llvm-project tree, no ooTest.
 
 Environment: Anthropic cloud workspace; ooRexx 5.3.0 built from github.com/ooRexx/ooRexx head `e307068` (2026-10-28; reports `r0` because it was built from git); SQLite 3.45.1; Rexx/SQL 2.6B3 with the Alchemy patches (driver 52/52, backend contract 24/24, keyed select 57 µs).
 
-`sh run_tests.sh`: **58/58** in `test_slam.rex`, **6/6** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`: 250 checks. It covers:
+`sh run_tests.sh`: **60/60** in `test_slam.rex`, **10/10** in `test_compose.rex`, **13/13** in `test_needs.rex`, **16/16** in `test_modinv.rex` (CHECK), **8/8** in `test_choose.rex`, **34/34** in `test_fdsqrt.rex` (CHECK) on each door copy, **17/17** (dev8) and **15/15** (dev5) in `test_fdsqrt_door.rex` (CHECK), and **18/18** in `test_proof.rex`, and **12/12** in `test_ties.rex`, and **19/19** in `test_provenance.rex`, **16/16** in `test_reasoning.rex`, **43/43** in `test_law.rex`, **7/7** in `test_gemini_standard.rex`, and **31/31** in `test_screen.rex`, **16/16** in `test_screen_uk.rex`, **17/17** in `test_screen_dates.rex`, **8/8** in `test_screen_people.rex`, and **62/62** in `test_bodyslam.rex`: 456 checks. It covers:
 - the segmenter on unmodified `MLEvolution.cls` (54 units; shared guard nodes; collapsed setters; then/else bodies sharing a node with different bindings);
 - ingest of the GA package with duplicate units skipped on re-ingest;
 - aabb → Eeff = 0.4 and b00b → Eeff = 0.8 from recorded outcomes;

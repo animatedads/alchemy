@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "ops.oo-rexx-dbus.upstream-diff",
+  "version": "0.2",
+  "sphere": "oo-rexx-dbus",
+  "title": "Safety-gated upstream source archive comparison",
+  "summary": "Reject unsafe ZIP archives before content hashing, then report file-level added/removed/changed/unchanged entries and both complete archive SHA-256 values.",
+  "authority": "locally-tested-implementation-2026-10-29",
+  "invariants": [
+    "Run archive structural/size/ratio checks BEFORE integrity streaming or comparison.",
+    "Never extract or execute archive contents as part of comparison.",
+    "An archive member changed/unchanged classification is not proof of API, ABI or runtime compatibility.",
+    "If either source archive is unavailable the result is NOT_RUN, never an empty diff."
+  ],
+  "procedure": [
+    "Acquire the historical 2015 release and newer 2026 candidate, record provenance/license.",
+    "Run python3 tools/compare_upstream.py historical.zip candidate.zip --out comparison.json.",
+    "Review executable, source and installer deltas; follow with the static API diff and native runtime qualification."
+  ],
+  "qualification": {
+    "synthetic_unit_tests": "4_PASS_LOCAL",
+    "historical_vs_2026": "NOT_RUN",
+    "native_abi": "NOT_RUN"
+  },
+  "related": [
+    "ops.oo-rexx-dbus.api-diff",
+    "ops.oo-rexx-dbus.qualification"
+  ]
+}

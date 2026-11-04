@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "websocket.https-integration",
+  "version": "0.1",
+  "sphere": "websocket-access",
+  "title": "Owned HTTPS to WebSocket upgrade handoff",
+  "summary": "Rasen Falcon/Wire wss traffic should upgrade inside the owned ooRexx HTTPS server without exposing its TCP/TLS internals. HTTPS owns admission, TLS and HTTP parsing; WebSocket receives a parsed Upgrade request, plaintext duplex wrapper, peer/address projection and any post-header bytes.",
+  "invariants": [
+    "The HTTPS server remains sole owner of accepted TCP sockets, TLS/OpenSSL state, certificates, bounded worker admission and TLS generation lifetime.",
+    "The ordinary HTTPS route/interceptor boundary must not be widened to expose raw Socket/BIO/SSL objects.",
+    "A dedicated upgrade adapter may construct WebSocketUpgradeRequest from the already parsed HTTP head.",
+    "The plaintext duplex wrapper continues reads/writes through the established HTTPS TLS session; it is not a native socket.",
+    "Any bytes already read after the HTTP header terminator must be passed as initialReceiveBuffer so the first WebSocket frame is not lost.",
+    "A successful 101 switches that connection into upgraded mode; ordinary HTTP body/routing/pipelining must not resume.",
+    "The HTTPS worker/admission/TLS generation lease remains alive until the upgraded wrapper closes.",
+    "Rejected upgrades stay in normal HTTPS response handling.",
+    "This seam directly supports Rasen Falcon/Wire browser duplex traffic over the project's own HTTPS/TLS platform code."
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_websocket_access/HTTPS_UPGRADE_CONTRACT.md",
+      "claim": "Executable-side handoff contract."
+    },
+    {
+      "artifact": "packages/oorexx_websocket_access/tests/test_server_access.rex",
+      "claim": "Contract fixture for parsed HTTPS handoff and already-read first frame."
+    },
+    {
+      "artifact": "packages/oorexx_https_server/API.md",
+      "claim": "Stable HTTPS API documents transport hiding and bounded admission; exact counterpart revision must be reconciled by its owner before live qualification."
+    }
+  ]
+}

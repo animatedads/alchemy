@@ -2,9 +2,9 @@
 set -euo pipefail
 ROOT=$(cd "$(dirname "$0")/.." && pwd)
 : "${OOREXX_ROOT:=/usr/local}"
-: "${RTP_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_rtp_v0.1-dev6}"
-: "${SOCKET_PROVIDER_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_socket_provider_v0.1-dev10}"
-: "${INSTRUMENTATION_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_instrumentation_mesh_v0.1-dev7}"
+: "${RTP_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_rtp_v0.1-dev7}"
+: "${SOCKET_PROVIDER_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_socket_provider_v0.1-dev16}"
+: "${INSTRUMENTATION_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_instrumentation_mesh_v0.1-dev8}"
 : "${SOCKET_TELEMETRY_ROOT:=$(cd "$ROOT/.." && pwd)/oorexx_socket_isolation_telemetry_v0.1-dev2}"
 : "${PYTHON:=python3}"
 
@@ -64,6 +64,13 @@ echo "== Instrumentation Mesh adapters =="
   cd "$ROOT"
   "$OOREXX_ROOT/bin/rexx" tests/instrumentation_probe.rex
 )
+
+echo "== LDAP Identity credential provider =="
+(
+  cd "$ROOT/tests"
+  "$OOREXX_ROOT/bin/rexx" ldap_credential_provider_probe.rex
+)
+"$PYTHON" "$ROOT/tests/ldap_credential_provider_shape_probe.py"
 
 echo "== captured Twinkle REGISTER =="
 (

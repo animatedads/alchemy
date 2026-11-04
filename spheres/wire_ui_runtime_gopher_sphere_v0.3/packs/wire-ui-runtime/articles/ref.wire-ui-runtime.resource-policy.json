@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.resource-policy",
+  "version": "0.2",
+  "sphere": "wire-ui-runtime",
+  "title": "Customer-facing content is Resource Editor/contract authority, not interface copy",
+  "summary": "Wire UI carries exact published resource identity. Wire UI Resource Editor/Resource Contract own immutable publication and bytes; Builder places semantics/resource references; runtime resolvers verify/select only approved representations; renderers do not invent copy or URLs.",
+  "authority": "project-resource-policy",
+  "invariants": [
+    "Builder is not a content editor; customer-facing descriptions/copy/images are published resources.",
+    "Resource Editor/contract own immutable resource identity, bytes and publication receipts; current evidence uses SHA-512 publication.",
+    "Wire definitions carry exact ResourceRef identity/provenance and semantic role, never content URLs/paths/inline bytes.",
+    "Runtime resolvers consume exact published refs and may select only an approved representation of that same exact resource.",
+    "Renderer presentation may style approved material but must not synthesize substitute headlines, labels, terms, marketing copy or resource URLs.",
+    "Backend eligibility/assessment determines whether an offer is appropriate; renderer does not infer eligibility."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_resource_editor_v0.3.zip",
+      "sha256": "835fc9e1dcc70ef242372908c02e254c2788d47b922685ccfc5037bf664d3b0f",
+      "member": "wire_ui_resource_editor_v0.3/README.md",
+      "claim": "Separate immutable resource/byte publication authority."
+    },
+    {
+      "artifact": "wire_ui_resource_contract_v0.1.zip",
+      "sha256": "f7f077519d9113c2de29b125bdc4c143d8a088d629c9eaa2e2cd3670051dd924",
+      "member": "wire_ui_resource_contract_v0.1/README.md",
+      "claim": "ResourceRef publication/consumption contract."
+    },
+    {
+      "artifact": "wire_ui_builder_v0.12-dev1.zip",
+      "sha256": "73dea2f650dddeba862b8402b52b0a7c97d6d385b970ebaf746814174aa3b88c",
+      "member": "wire_ui_builder_v0.12-dev1/DESIGN_MODEL.md",
+      "claim": "Builder semantic authoring remains separate from content authority."
+    }
+  ]
+}

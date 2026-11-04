@@ -1,0 +1,34 @@
+Wire Direct Linux v0.1-dev20 qualification
+
+Exact runtime: ooRexx 5.3.0 r13196 (64-bit Internal Test Version)
+JavaScript bridge: ooRexx JavaScript Alchemy v0.1-dev23
+JavaScript engine: QuickJS-NG 0.17.0
+
+Full crossing result:
+  200000 backing rows
+  -> bounded source pulls of 100
+  -> ooRexx filter-window controller
+  -> JavaScript Alchemy dev23
+  -> QuickJS-NG 0.17.0
+  -> real JavaScript predicate
+  -> ooRexx boolean
+  -> filtered output window of 100
+  -> native Wire ABI4 TestRenderer
+  PASS
+
+Measured:
+  upstream pulls:       8
+  backing rows fetched: 800
+  predicate executions: 793
+  candidates consumed:  793
+  output rows:          100
+  first identity:       0
+  last identity:        792
+  TestRenderer visible: 100
+
+Reason fetched != evaluated: the eighth bounded source window contains identities 700..799;
+the 100th match is identity 792, so evaluation stops immediately and 793..799 remain
+unconsumed candidates.  No ninth pull occurs.
+
+Existing dev18 suite: PASS
+GTK4 boundary compile: SKIP (gtk4 development package absent in qualification environment)

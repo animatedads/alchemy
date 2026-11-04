@@ -1,0 +1,61 @@
+NoSQLServer v0.64 validation
+============================
+
+Focus
+-----
+Non-recursive multi-CTE dependency resolution.
+
+Architecture
+------------
+- WITH cte1 AS (...), cte2 AS (...), ... is parsed in declaration order.
+- Each CTE body is executed by an ordinary NoSQLServerSQL facade.
+- Successful CTE results are materialized into statement-local SQLMaterializedTable
+  instances.
+- SQLCTEEngineOverlay resolves CTE names before delegating to the underlying engine.
+- Later CTEs can therefore query/join earlier CTEs using the normal SQL machinery.
+- The outer query sees all prior CTEs through the same overlay.
+- CTE names do not leak into the underlying persistent/object catalog after the
+  statement completes.
+- Forward references are not invented; a CTE may only reference prior declarations.
+- Duplicate CTE names are rejected.
+- CTE column-name lists remain outside this release.
+- Recursive WITH remains on the existing dedicated WITH RECURSIVE path.
+
+Hell Corpus v2 Q25
+------------------
+per_emp billable totals after the earlier corpus mutation queries:
+  Grace (emp 2):       2.0
+  Alan (emp 3):       15.5
+  Katherine (emp 4):  6.0
+  Barbara (emp 6):    16.0
+  Linus (emp 7):      3.0
+
+Department 10 mean:
+  (2.0 + 15.5 + 6.0) / 3 = 7.833333...
+
+Only Alan exceeds his department mean, so the independently verified result is:
+  Alan Engineer | dept 10 | 15.5 | 7.833333...
+
+Result
+------
+Grok Hell Corpus v2:
+  PASS            21
+  UNSUPPORTED      3
+  PARSE_ERROR      6
+  WRONG_RESULT     0
+  EXECUTION_ERROR  0
+
+Regression evidence
+-------------------
+- 41 gates green.
+- v0.64 multi-CTE smoke: PASS
+- v0.63 SET CORRESPONDING BY: PASS
+- v0.62 journal UTC timestamp: PASS
+- v0.61 DELETE USING: PASS
+- v0.60 UPDATE FROM: PASS
+- object/federation/storage/planner/database_core gates: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 21/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly under ooRexx
+  5.3.0 r13196.

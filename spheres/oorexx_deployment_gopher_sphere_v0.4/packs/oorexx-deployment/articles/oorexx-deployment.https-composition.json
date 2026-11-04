@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.https-composition",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "HTTPS Server composition is a deployment constraint",
+  "summary": "For ooRexx HTTPS Server v0.4.4, route bindings are immutable after the server has started. Therefore the current hosted activation strategy is compose-before-start: stage and load-test the module, include it in a new host composition, start/replace that host generation, then probe the actual endpoint.",
+  "authority": "project-doctrine",
+  "section": "architecture",
+  "invariants": [
+    "Never report an HTTPS route live merely because its files exist beside a running host.",
+    "A hosted module using HttpResponse must directly require https_server.cls in the package where HttpResponse is referenced.",
+    "Sibling package imports do not automatically export package visibility into another sibling package.",
+    "The live endpoint probe occurs after the new host generation accepts the route.",
+    "If the host lifecycle changes in a future HTTPS Server version, update the adapter and this sphere rather than hard-coding MCP/Wire behavior in core Deployment."
+  ],
+  "topics": [
+    "HTTPS Server",
+    "compose-before-start",
+    "package-binding",
+    "route",
+    "MCP",
+    "Wire"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/docs/HOSTED_MODULES.md",
+      "claim": "Documents compose-before-start and direct HTTPS package-binding requirements.",
+      "line_start": 5,
+      "line_end": 11
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/qualification/TEST_TRANSCRIPT.txt",
+      "claim": "Qualified against real HTTPS Server v0.4.4, Wire UI Server v0.17 and Foreign Runtime v0.22.6.",
+      "line_start": 5,
+      "line_end": 13
+    }
+  ]
+}

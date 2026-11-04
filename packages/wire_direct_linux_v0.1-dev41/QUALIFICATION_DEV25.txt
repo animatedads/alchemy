@@ -1,0 +1,16 @@
+Wire Direct Linux v0.1-dev25 qualification
+
+Executable ooRexx 5.3.0 r13196:
+  wire-mailreader-roundtrip=PASS identity=INBOX|4242|8738 ingress=gtk4 effects=2
+  wire-ui-proxy=PASS
+
+Dependency-light ./scripts/build.sh: PASS.
+GTK4 native compile/run is not claimed in this build environment because gtk4
+development headers are absent. The previously photographed machine run is the
+native GTK execution evidence; dev25 qualifies the renderer-neutral round-trip
+contract that GTK feeds and consumes.
+
+Defect repaired while closing the round trip:
+  WireApplicationController used target~sendWith(method,event).
+  ooRexx requires a one-dimensional Array for sendWith arguments.
+  It now uses target~sendWith(method,.array~of(event)).

@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+REXX=${OOREXX_REXX:-rexx}
+
+# ooRexx's program argument is a flattened command tail.  Preserve the shell's
+# real argv exactly (one argument per line) and let the ooRexx core parse that
+# instead.  This is the recommended human/Codex entry point.
+umask 077
+ARGFILE=${TMPDIR:-/tmp}/oorexx-cloudctl-argv.$$
+: > "$ARGFILE"
+cleanup() { rm -f "$ARGFILE"; }
+trap cleanup EXIT HUP INT TERM
+for arg in "$@"; do
+  case "$arg" in
+    *'
+'*) echo 'cloudctl: newline characters in arguments are not supported' >&2; exit 2 ;;
+  esac
+  printf '%s\n' "$arg" >> "$ARGFILE"
+done
+OOREXX_CLOUDCTL_ARGFILE=$ARGFILE
+export OOREXX_CLOUDCTL_ARGFILE
+set +e
+"$REXX" "$ROOT/cloudctl.rex" ""
+rc=$?
+set -e
+exit "$rc"

@@ -1,0 +1,25 @@
+{
+  "kind": "article",
+  "id": "ed.service",
+  "version": "0.1",
+  "sphere": "ed209-rto2-grid",
+  "title": "Service-first XTP admission",
+  "summary": "XTP FIRST carries the canonical named service; after admission the context uses KEY/DATA. L2, raw36 and UDP are carriers, not service identities.",
+  "authority": "project-authority",
+  "invariants": [
+    "Canonical service identity and operational class originate in the Service Descriptor Registry, not caller assertions.",
+    "Route peer is resolved from the registry and route policy; UDP 62801 is a carrier setting only.",
+    "Admission, authentication and operational policy must occur before a context or work is accepted.",
+    "RTO2.<MI> is a Queue Fabric receiver channel, NOT the canonical XTP service descriptor.",
+    "Dev25 named-service support in the wider Grid is not field-qualified by the candidate2 smoke runner."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "ed209_rto2_20mi_candidate2_managed.zip",
+      "sha256": "940ee1835f9dd53ceea42a14e0eb7880e4dc374d6813cfbc686972debe23b4e1",
+      "member": "README.md",
+      "claim": "Explicit separation of Queue channel and native named service"
+    }
+  ]
+}

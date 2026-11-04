@@ -5,7 +5,7 @@ Core/session code has no required third-party ooRexx package dependency.
 Optional integrations:
 
 * API Client v0.4.x + Foreign Runtime v0.22.x: current OpenSSL-backed TCP/TLS compatibility seam used by `ImapApiTlsTransport.cls`.
-* Storage Fabric v0.1-dev10 or compatible API: optional direct response-literal sink for large bodies/attachments.
+* Storage Fabric v0.1-dev11 or compatible API: optional direct response-literal sink for large bodies/attachments.
 * Secret Broker v0.2 or compatible API: intended production credential acquisition seam; not yet wired into the dev2 probe.
 
 The TLS adapter is intentionally replaceable by a future general network-stream module.
@@ -65,3 +65,27 @@ optional dependency rather than making the IMAP client core depend on LDAP.
 ## Storage Fabric compatibility note — dev10
 
 The dev10 core projection is qualified with Storage Fabric dev23. It no longer requires the removed legacy `StorageSemantic.cls`. The old semantic-provider adapter is isolated in `ImapStorageFabricLegacySemantic.cls`; loading that optional file requires an installation that still supplies `StorageSemantic.cls`.
+\n\n## Dev11 current Library integration notes — 7 October 2026\n\nThe current Library contains LDAP/Identity v0.1-dev14, SMTP Secure Stack v0.1-dev7, Socket Provider v0.1-dev14, and a newer-by-date Storage Fabric v0.1-dev21 branch. Dev11 keeps LDAP and Storage as optional integrations, adds an optional Socket Provider server binding, and does not copy SMTP/LDAP/Storage semantics into IMAP. LDAP remains identity attribution only; mailbox authorization remains IMAP/mailbox-authority owned.\n\nStorage Fabric v0.1-dev21's current adapter/projection surface was requalified with dev11 and both existing IMAP Storage tests pass. Because an earlier dev10 qualification used Storage Fabric dev23, the lower dev21 module number is treated as a separately published newer-by-date baseline rather than silently asserted as a monotonic supersession of dev23.\n
+
+## Dev12 Instrumentation Mesh integration
+
+* **Instrumentation Mesh v0.1-dev3 / `instrumentation.mesh/0.1` (optional)** —
+  `ImapInstrumentationAdapter.cls` translates server endpoint facts into the
+  common estate telemetry contract. The IMAP core/server files do not require
+  Instrumentation Mesh, and IMAP creates no private telemetry history, transport
+  or management protocol.
+
+## Dev13 observation/readiness integrations
+
+* **Socket Provider v0.1-dev14 (optional)** — server listener/connection authority
+  and the readiness primitive consumed by `ImapSocketStreamTransport` for IDLE.
+* **Instrumentation Mesh v0.1-dev3 (optional)** — semantic IMAP server/session and
+  IDLE telemetry.
+* **Socket Isolation Telemetry v0.1-dev1 / `socket.telemetry/0.1` (optional)** —
+  decorator around Socket Provider for generic socket-boundary observations.  Its
+  current package uses `PACKAGE.json`, not the Preferred-Packager
+  `oorexx.package/0.1` identity contract, so dev13 does not invent an
+  `optionalRequires` identity for it.
+
+None of these observation components grants IMAP mailbox/session mutation authority.
+

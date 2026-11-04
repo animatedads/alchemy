@@ -1,0 +1,48 @@
+{
+  "kind": "article",
+  "id": "xtp.storage-fanin",
+  "sphere": "xtp",
+  "version": "0.1-dev1",
+  "title": "Storage Fabric multi-source range fetch and integrity",
+  "section": "integration",
+  "summary": "Storage search/offers are discovery hints, never durable replica proof. Storage selects independently transportable object ranges; authenticated state and cryptographic bytes verification precede replica admission.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "Object/chunk/range coordinates live above XTP context sequence coordinates",
+    "Multiple sources never share a fabricated XTP sequence space",
+    "Source failure retains verified completed bytes and reassigns only missing ranges",
+    "Multicast SEARCH/OFFER is not authentication, possession proof or trusted listing",
+    "Planner quotas control aggregate inbound share; XTP controls per-transfer pacing and retransmission"
+  ],
+  "procedure": [
+    "Search object/range across eligible Storage peer service points",
+    "Verify offers against authenticated Storage state",
+    "Allocate non-overlapping work from mu5 and mu7 within capacity tickets",
+    "Fail one supplier and preserve already verified ranges",
+    "Admit spare mu9 only for the missing range and cryptographically verify output"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev23(2).zip",
+      "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
+      "member": "oorexx_storage_fabric_v0.1-dev23/tests/test_parallel_fetch_pressure.rex",
+      "claim": "Existing storage fan-in pressure scope"
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev23(2).zip",
+      "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
+      "member": "oorexx_storage_fabric_v0.1-dev23/tests/test_capacity_domains.rex",
+      "claim": "Domain coordination tests"
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/tests/test_storage_capacity_xtp.sh",
+      "claim": "Real local UDP sender throttling test"
+    }
+  ],
+  "qualification_boundaries": {
+    "synthetic": "fan-in pressure scenario only",
+    "live_transfer": "sustained multi-source range transfer/failure recovery not claimed"
+  }
+}

@@ -1,0 +1,10 @@
+# Security / deployment obligations
+
+1. HTTPS Server performs private-CA TLS and route admission before this handler. Only its actual `.HttpExchangeContext` is passed into this adapter; no `X-Forwarded-For`, `X-User`, client `role` or JSON `principal` field is an identity source.
+2. Inject the **existing platform LDAP Identity Directory v0.1-dev22** authority and validate its signed or session-bound identity proof. The identity attestation must be tied to this exact `HttpExchangeContext~requestId`, accepted peer address and TLS generation. The gateway enforces these bindings, but the authority is responsible for proving identity, validity, revocation, and privileges. The local smoke-test authority is **not** a production LDAP adapter.
+3. The authority must fail closed. No authority, absent attestation, unknown operation, unregistered public name, stale TLS generation or authorization failure must lead to invocation. Exceptions in auth return HTTP 401; authorization exceptions return JSON-RPC `-32001`.
+4. Keep `HttpsServerConfig~maxBodyBytes` <= the gateway limit where practical. Gateway cap is independent; requests with unknown encoding are rejected.
+5. No automatic retry for mutating RPC operations and no transport fallback. Connect Selector remains the only route selection authority and handles authenticated remote route admission separately.
+6. JSON-RPC notifications do not carry delivery evidence; HTTP 204 acknowledges processing at this HTTP boundary only. Streaming callbacks belong to the gRPC binding; they cannot be published as ordinary HTTP JSON-RPC operations.
+7. Applications must explicitly register trusted local service objects and methods before publishing wire names. The registry and wire publication are separately frozen before `serve`.
+8. The current HTTPS v0.4.8 native server, LDAP dev22 identity and this route binding are not proven end-to-end in this workspace. Require a private-CA-only field test before exposing the route outside a loopback or restricted network.

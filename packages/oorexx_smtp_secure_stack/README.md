@@ -1,4 +1,4 @@
-# ooRexx SMTP Secure Stack v0.1-dev7
+# ooRexx SMTP Secure Stack v0.1-dev7.4
 
 SMTP server and reusable secure-socket/TLS layer for Open Object Rexx 5.3.0 r13196, integrated with the existing identity, access-control, cryptographic-signature, Storage Fabric, QueueRexx/Queue Fabric, policy, ML/LLM and audit boundaries.
 
@@ -79,3 +79,38 @@ Dev7 rebases the integration edge against the current Library state on 2026-10-0
 - LDAP/Identity v0.1-dev14 is the current identity-directory line; SMTP continues to consume its SASL attribution contract rather than copying LDAP identity semantics.
 
 See `MVS_PRE17_INTEGRATION.md` and `VALIDATION.txt`.
+
+
+## v0.1-dev7.1 — post-DATA cleanup hotfix
+
+Once a next-hop server has returned a definitive final DATA reply, QUIT and close are cleanup only. They now run behind a local syntax-exception boundary so cleanup failures cannot replace a known 2xx/4xx/5xx recipient result with a generic retryable transport failure. `tests/review_cleanup_exception.rex` covers both QUIT and close exceptions after final `250`.
+
+LDAP integration contract is aligned to PR #71: active attributed IdentityDirectory principal plus explicit `MAIL_READ` / `EMAIL_SEND`; Bind or signing alone never implies `EMAIL_SEND`.
+
+
+## v0.1-dev7.2 — restart-safe mail storage
+
+The local-delivery storage path is hardened for service restart and IMAP handoff:
+
+- RFC822 message bytes remain write/readback verified before commit.
+- SMTP envelope/session metadata is now written to a temporary file, read back, and atomically moved into place. A metadata failure makes the delivery fail rather than returning a false durable success.
+- Storage Catalogue persistence is checkpointed through a temporary file and committed only after a non-empty checkpoint exists.
+- Mailbox membership writes are idempotent, preventing replay/retry from duplicating a message in a mailbox projection.
+- `mailboxObjectIds()`, `mailboxCount()` and `loadMailboxMessage()` expose a bounded storage-facing mailbox projection for IMAP/mail-service consumers without duplicating message bodies.
+- `tests/test_mail_store_restart.rex` reconstructs a new Storage Catalogue and SMTP store from disk and verifies mailbox enumeration plus byte-identical message reload after restart.
+
+This is a source-level readiness increment. Autobuilder is not currently running, so no fresh live-host qualification is claimed by this commit.
+
+
+## v0.1-dev7.3 — fail-closed recovery validation
+
+Restart recovery now rejects orphaned or inconsistent storage state. `loadMessage()` requires a recovered Storage Catalogue object, checks the RFC822 file size against catalogue evidence, rejects short reads, and requires complete envelope metadata. The restart regression covers orphan-body and missing-metadata failure paths.
+
+
+## v0.1-dev7.4 — inbound MX service and shared IMAP mailbox projection
+
+This increment makes the current restart-safe store consumable as an actual inbound mail service. `bin/rasenfalcon_smtp_inbound_service.rex` and `rasenfalcon-smtp-inbound.service` compose the owned SMTP wire server, OpenSSL secure-socket provider and Storage Fabric local-delivery store for configured local domains. The inbound profile deliberately does not provide authenticated relay.
+
+Mixed local+relay transactions are rejected before any local storage side effect, preventing a later relay denial from turning an already-written local message into a retry ambiguity. `ImapSmtpDeliveredMailboxProvider` exposes `INBOX` and `INBOX-UNSIGNED` as a read-side projection over the same membership/object store; it reads the exact stored RFC822 object rather than creating a second mailbox body.
+
+Internet MX ingress does not require LDAP authentication. Authenticated submission and IMAP user access remain separate services and must use an active attributed IdentityDirectory principal plus explicit `MAIL_READ` / `EMAIL_SEND` authority; Bind or signing alone grants neither.

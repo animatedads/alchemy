@@ -1,0 +1,19 @@
+Wire UI Renderer Conformance v0.4 qualification
+Date: 2026-10-29
+
+Retained real renderer execution from v0.3:
+- Swing dev12: PASS 61/61 renderer tests; measured 8/10 shared semantic gates.
+- Direct Linux dev41: PASS native C core/loader/filter and dev41 authority/static tests available in this environment; measured 3/10 shared gates. QuickJS/GTK4 native dependency SKIPs remain explicit.
+
+New v0.4 evidence:
+- PASS exact 134-file wire_direct_linux_v0.1-dev41 Library archive synchronized to Git main at b6c08fffd2ed55be434c6524b50e579f63f9c7eb without semantic edits.
+- PASS Rasen Falcon v0.4.5 verified on Git main at ff9643b8418b971452c457e23c468d0c55e82939.
+- PASS v0.4.5 public role source slice: 16 source files + SHA-256 manifest; source-only, not install-ready.
+- PASS public/private readiness split: LDAP is not a public-apex prerequisite.
+- PASS private NOC/Office policy retains dedicated owned HTTPS + private CA/device mTLS + LDAP/Access Permissions.
+- LDAP dev23 integration is PR #71 head 725502de4aee93397e8e99bfb7c4446d07cb12c9, OPEN/NOT_MERGED at qualification time; no install/live LDAPS claim.
+- HTTPS v0.4.8 remains static-qualified only for modified package; exact runtime/live TLS gate remains open.
+- Wire Application Deployment candidate3 durable ingress remains qualified; live browser HTTPS/WSS semantic roundtrip remains open.
+
+Package self-tests: PASS.
+No production deployment or cutover is claimed.

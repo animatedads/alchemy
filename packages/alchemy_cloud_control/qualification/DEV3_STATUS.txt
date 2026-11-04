@@ -1,0 +1,23 @@
+Alchemy Cloud Control v0.1-dev3 candidate qualification status
+Date: 2026-10-28
+API: alchemy.cloud-control/0.1 RESOURCE
+
+PRESERVED PROVENANCE
+- v0.1-dev2 cloudctl.sh preserved as adapters/cloudctl-v0.1-dev2.sh.
+- Expected SHA-256: 73eac5116d4e7f93f3450d71627070e67eb876e3993605b2c00188cd936d38be
+- gcloud-account.sh expected SHA-256: 27f408d4e1105c6b4b1bea8afe9afcf4a2812b19ed61fa933cc9de6b3dbac906
+- Historical dev2 package SHA-256 remains 0a29487b499b19c164ffc6af481b6e9feebade01ba152a96b3e7ae60e6e12bf2.
+
+DEV3 OFFLINE QUALIFICATION
+- bash syntax check: PASS
+- five-provider machine list fixture: PASS
+- lifecycle start/stop/reboot/destroy fixture: PASS
+- five-provider create mapping fixture: PASS
+- five-provider firewall list/allow/revoke fixture: PASS
+- GCP explicit account fail-closed gate: PASS
+- secret-bearing option rejection: PASS
+- OCI SOFTRESET mapping excludes invalid --compartment-id: PASS
+- final line: PASS ALCHEMY CLOUD CONTROL v0.1-dev3 RESOURCE TESTS
+
+BOUNDARY
+No live cloud mutation was performed. This is provider-command mapping/contract qualification against controlled fake CLIs, not live-provider acceptance. Development Floor remains pinned to v0.1-dev2 until an explicit consumer rebase is qualified.

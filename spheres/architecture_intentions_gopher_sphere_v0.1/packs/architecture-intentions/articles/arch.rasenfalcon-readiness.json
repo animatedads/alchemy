@@ -1,0 +1,35 @@
+{
+  "kind": "article",
+  "id": "arch.rasenfalcon-readiness",
+  "title": "Rasen Falcon service-readiness architecture: evidence-only gates",
+  "section": "service-readiness",
+  "version": "0.1-dev11",
+  "sphere": "architecture-intentions",
+  "summary": "Public website, private identity/HTTPS, SMTP/IMAP mail and XTP internode proof gates, no runtime activation claims",
+  "body": "Architecture Intentions v0.1-dev11 adds a strictly read-only operational service readiness request. This is a source-level capability projection, not a live service controller.\n\nServices are separate: public_website (approved source, owned HTTPS/TLS/CNAME, independently observed live route), private_office (owned private HTTPS/WSS, LDAP active attributed principal plus HTTPS_LOGIN, live enforcement), mail (SMTP, IMAP, LDAP MAIL_READ and EMAIL_SEND grants, owned TLS, end-to-end negative/live probe), internode (MI-to-own MU XTP L2 EtherType 0x817D, per-service protected session, named service and selected route, independently qualified deployment).\n\nPublic anonymous access is NOT blocked on LDAP. Private operator roles do not inherit anonymous public website policy. The existence of an LDAP Bind or signature does not establish EMAIL_SEND. Generic IP reachability does not prove protected MU↔MI named-service communication.\n\nArchitectureServiceReadiness.cls creates explicit gate IDs. Only a separately trusted injected verifier with verifyArchitectureServiceGate(projectId, serviceId, gateId, evidenceAuthority, candidateJSON) may admit evidence. Outputs expose only proofRef/evidenceRef; each gate starts MISSING_VERIFIED_EVIDENCE. Even when all are proven, service status is EVIDENCE_COMPLETE_OPERATOR_REVIEW_REQUIRED, and project status remains DESIGN_ONLY_NO_LIVE_ACTIVATION. Neither SSC lock nor deployment receipt is invented.\n\nConnectSelector dev8 authenticated route policy remains the ConnectSelector owner's authority. Architecture does not attest routes using caller-supplied options. General Deployment owns target placement and live evidence; LDAP Identity, HTTPS Server, SMTP/IMAP, Website Publisher and XTP owners supply their own facts.\n\nQualification 2026-10-29: shell Bash syntax, JSON parse, SHA-256 manifest and ZIP integrity passed for dev11 package. Native ooRexx r13196 tests are NOT_RUN here because interpreter is unavailable; no live service probe or activation was performed.\n\nSources: packages/oorexx_architecture_intentions/src/ArchitectureServiceReadiness.cls and ArchitectureRasenFalconBaseline.cls; tests/test_service_readiness*.rex; docs/RASENFALCON_SERVICE_READINESS.md; PACKAGE.json sourceLevel 11.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Source publication is not a live deployment",
+    "Public anonymous website does not require LDAP",
+    "Private Office/NOC requires active principal and explicit HTTPS_LOGIN",
+    "LDAP Bind never grants MAIL_READ or EMAIL_SEND",
+    "XTP MI/MU readiness requires named-service/session proof, not IP ping",
+    "External verifier owns evidence admission; no planner activation"
+  ],
+  "related": [
+    "arch.authorities",
+    "arch.contracts",
+    "arch.continuation"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_architecture_intentions_v0.1-dev11.zip",
+      "sha256": "54cf01f2c9be7a8d27b14836e7b29a94a8e0ecce775442ae038aaef3805b153c",
+      "claim": "static validated packaging only; native qualification not run"
+    },
+    {
+      "artifact": "oorexx_connect_selector_v0.1-dev8.zip",
+      "claim": "read-only Library contract inspection; not a runtime route attestation"
+    }
+  ]
+}

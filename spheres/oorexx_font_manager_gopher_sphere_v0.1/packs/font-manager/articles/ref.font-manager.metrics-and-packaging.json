@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "ref.font-manager.metrics-and-packaging",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "font-manager",
   "title": "Metrics, glyph plans, transformation and packaging",
   "summary": "FontManager centralises measurement and glyph identity. FontGlyphPlan provides Unicode-to-glyph identity, advances and SFNT geometry; transformers provide subset/package output including WOFF/WOFF2 without making fontTools compulsory.",
@@ -10,7 +10,9 @@
     "If no exact metrics provider exists, approximate measurement must be labelled approximate rather than presented as authoritative.",
     "Subsetting is requested through FontPackageRequest/Result and transformer providers.",
     "Subset corpus is transported through a UTF-8 text file, not shell-quoted command-line text.",
-    "FontTools and pyftsubset are optional providers, not dependencies of the FontManager semantic API."
+    "FontTools and pyftsubset are optional providers, not dependencies of the FontManager semantic API.",
+    "Font collection face index is part of the discovered FontFace identity used for transformation.",
+    "TTC/OTC subsetting passes the discovered face index to the transformer rather than assuming member zero."
   ],
   "related": [
     "ref.font-manager.authority-boundary",
@@ -41,6 +43,12 @@
       "line_start": 107,
       "line_end": 142,
       "claim": "pyftsubset transformer, UTF-8 text-file subset corpus and WOFF/WOFF2 flavor support."
+    },
+    {
+      "artifact": "oorexx_font_manager_v0.1-dev4.zip",
+      "sha256": "d33bb1dc208528b27952ef91738e6fb81fb1a31e985f2ae84d0a76b0945a78b4",
+      "member": "oorexx_font_manager_v0.1-dev4/src/FontProviders.cls",
+      "claim": "Fontconfig index discovery, format-constrained coverage lookup, and pyftsubset --font-number support."
     }
   ]
 }

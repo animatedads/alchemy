@@ -1,0 +1,76 @@
+ooRexx XTP v0.1-dev34: validation record
+==========================================
+
+Architecture: Tom Dyer (decision D-07)
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for dev26 to dev34
+Validation written and run by: Claude (Opus 5.5), 29 October 2026
+Independent review: a third separate Claude (Opus 5.5) agent checked dev33's message and
+stream code against docs/SECURITY.md with its own probes (V1-V8), before this work.
+dev34's own fixes were not reviewed independently.
+
+Baseline:  oorexx_xtp_v0.1-dev33 as committed to animatedads/alchemy main in 4fce67f8
+Planner:   oorexx_operational_degradation_planner_v0.1-dev5, built locally
+libcrypto: OpenSSL 3.0.13; ooRexx 5.3.0 r13196 (/usr/local/bin/rexx)
+Host:      Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror, run as root
+Evidence class: LOCAL_PASS. FIELD_PASS is NOT claimed.
+
+1. Changes against dev33 (lines added / removed, sha256)
+  src/xtp_transport.cpp          +45 -5    a310b0790c73dc1f5417788a36b3369b5b5b9f0ad467fca12728e776e1fc5474
+  src/xtp_multipath.cpp          +45 -21   8c0d14807277751e425a51f37e9922e8794481c3288090f75e5b98e7f594d560
+  src/xtp_rexx_native.cpp        +26 -3    8ceb6f4bc03a0a8aa25b2bc8013455a73076d9f7cafe85dc1ffb2bb4d8550b87
+  include/xtp/xtp_multipath.hpp  +6 -0     a4460c198870587bb0b970d42381de159d3e3b28cb3869caeff141b4a857b66b
+  rexx/XtpLdapKeySource.cls      +26 -11   63f0e2849b5a76d04e45e49ba0e6e39041762f827571c12faf760026435456c0
+  rexx/XtpSocketProvider.cls     +9 -5     06008ccbd9111f85e837ae53204e4a4547d32016e2145cc39487f975d79e2c0b
+  tests/test_message_security.cpp +117 -1  (M13-M20)
+  tests/test_xtp_message_keys_{rexx.sh,client.rex,server.rex}: a multipath step added
+  docs/SECURITY.md, docs/XTP_SPEC_GAPS_DEV34.md, README.md, CAPABILITIES.json
+
+2. Third review findings and their tests (make test-message-security, final run)
+  M14 H1 a clear FIRST with the return bit to an encrypt service: not delivered,
+         not answered (dev33 delivered it: reviewer's V1, and V3 for DATA)        PASS
+  M15 H2 a clear FIRST flagged INTERACTIVE|AUTHENTICATED: not delivered (V2)      PASS
+  M16 M1 the same FIRST at two listeners: first counters 8.6e18 and 5.0e18,
+         not both 1 (V4)                                                          PASS
+  M17 M2 an empty protected message: sent and delivered (V5)                      PASS
+  M18 L2 segment_bytes 64: refused, "at least 168" (V7)                           PASS
+  M19 L1 400 KB stream with two small messages arriving during it,
+         protected_contexts=2: the stream completes (V6 lost it)                  PASS
+  M20 L3 key revoked 1.2 s into a 4 s stream: the sender stops with the reason,
+         nothing delivered                                                        PASS
+  L4  duplicate principal and set IDs: inspection only (the estate's Identity
+      Directory refuses duplicate IDs, so no fixture can contain them)
+  M13 multipath: 200 KB over two paths after a clear chunk and a chunk claiming
+      2^32-1 chunks for the same transfer: byte-exact, encrypt, key 4101, service
+      msg.multi; the bad chunk logged and dropped                                 PASS
+  M1-M12 still pass (M2: 110 ms, 405 resent; M11: 143 / 123 / 161 MB/s).
+
+3. ooRexx (tests/test_xtp_message_keys_rexx.sh): a 102,400-byte message and a multipath
+  transfer over two routes between two processes, both received with protection=encrypt and
+  key 00000000000c0de1 (multipath also reports service svc.msg); with no keys left the next
+  send is refused.
+
+4. Interoperability (PEER_ROOT = committed dev33)
+  I1 dev34 -> dev33  35 resent   I2 dev33 -> dev34  35   I3 dev34 -> dev34  35   all delivered
+  A protected message to a dev33 listener: refused there, nothing delivered.
+  S7 still passes: a session open to a message listener fails at its timeout.
+
+5. Full regression on dev34 (final run, scratch copy, suites one after another)
+  11 make targets: service 3, capacity-rate 1, auto-key 1, negative 7/7, segmentation 10/10,
+    interop 3/3 + protected 1, sync-diag 5/5, diag-hardening 8/8, session 22/22,
+    security 27/27, message-security 20/20                                      all rc=0
+  29 shell suites, run_tests.sh, the ooRexx suites and test_storage_capacity_xtp.sh
+                                                                                  all rc=0
+  Totals: 224 PASS, 0 FAIL, 1 SKIP (run_tests.sh proxy stress: proxy binary absent)
+
+6. Behaviour changes to note
+  - A message listener drops FIRST and DATA with the return bit, and interactive FIRSTs.
+  - MultipathListener no longer throws on a malformed or inconsistent chunk; it drops it.
+  - XtpMultipathListener~accept returns an XtpNamedAcceptedSocket (a subclass of
+    XtpAcceptedSocket) carrying the service and protection.
+
+7. Not run
+  - Real Ethernet between hosts; the ED209 field path.
+  - Multicast protection (no named service; needs group keys).
+  - An independent review of dev34's own changes.
+
+Claude (Opus 5.5)

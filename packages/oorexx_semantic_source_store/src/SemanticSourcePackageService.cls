@@ -26,11 +26,14 @@
 ::class SemanticSourcePackageService public
 
 ::method init
-  use strict arg sql
+  use strict arg sql, observer = .nil
   self~sql = sql
+  self~observer = observer
 
 ::attribute sql get
 ::attribute sql set private
+::attribute observer get
+::attribute observer set private
 
 /*
  * roots: Array of semantic object IDs.
@@ -126,6 +129,11 @@
 
   self~materialiseResolved(package, resolved, projectId)
   self~materialiseResources(package, resolved)
+  evidence = .directory~new
+  evidence["files"] = package~files~items
+  evidence["source_objects"] = resolved~items
+  evidence["resources"] = package~resources~items
+  self~observe("PACKAGE_MATERIALISED", evidence)
   return package
 
 ::method loadRevisionBatch private
@@ -263,40 +271,73 @@
 
 ::method materialiseResources private
   use strict arg package, resolved
-  seen = .directory~new
   objectIds = resolved~allIndexes
-  do objectId over objectIds
-    revision = resolved[objectId]
-    revisionId = revision["revision_id"]
-    statement = "SELECT resource_id, required_revision_id, relation_kind, detail FROM ssc_resource_relation WHERE from_object_id=" || self~quote(objectId) ||,
-                " AND (from_revision_id='' OR from_revision_id=" || self~quote(revisionId) || ") ORDER BY resource_id"
-    rs = self~query(statement)
-    do relation over rs~rows
+  if objectIds~items = 0 then return
+
+  relationSql = "SELECT from_object_id,from_revision_id,resource_id,required_revision_id,relation_kind,detail " ||,
+                "FROM ssc_resource_relation WHERE from_object_id IN (" || self~quotedList(objectIds) || ") " ||,
+                "ORDER BY from_object_id,resource_id"
+  relationRows = self~queryRows(relationSql)
+  active = .array~new
+  acceptedIds = .array~new; acceptedSeen = .directory~new
+  explicitRevisionIds = .array~new; explicitSeen = .directory~new
+  do relation over relationRows
+    fromId = relation["from_object_id"]
+    if \resolved~hasIndex(fromId) then iterate
+    fromRevision = self~orEmpty(relation["from_revision_id"])
+    if fromRevision \= "" then if fromRevision \= resolved[fromId]["revision_id"] then iterate
+    active~append(relation)
+    requestedRevision = self~orEmpty(relation["required_revision_id"])
+    if requestedRevision = "" then do
       resourceId = relation["resource_id"]
-      requestedRevision = self~orEmpty(relation["required_revision_id"])
-      resourceRevision = self~resolveResourceRevision(resourceId, requestedRevision)
-      key = resourceId || "@" || resourceRevision["resource_revision_id"]
-      if seen~hasIndex(key) then iterate
-      seen[key] = 1
-      path = resourceRevision["materialisation_path"]
-      if path == .nil | path = "" then raise syntax 88.900 array("resource has no materialisation path: " || resourceId)
-      content = self~orEmpty(resourceRevision["content_text"])
-      if content = "" then content = self~orEmpty(resourceRevision["content_base64"])
-      package~resources[path] = content
-      -- Resources are also conventional package files. Binary values are base64 and identified in the manifest.
-      package~files[path] = content
-      item = .directory~new
-      item["resource_id"] = resourceId
-      item["resource_revision_id"] = resourceRevision["resource_revision_id"]
-      item["content_sha256"] = resourceRevision["content_sha256"]
-      item["mime_type"] = resourceRevision["mime_type"]
-      item["materialisation_path"] = path
-      item["encoding"] = "text"
-      if self~orEmpty(resourceRevision["content_text"]) = "" then item["encoding"] = "base64"
-      item["relation_kind"] = relation["relation_kind"]
-      package~resourceManifest~append(item)
+      if \acceptedSeen~hasIndex(resourceId) then do; acceptedSeen[resourceId]=1; acceptedIds~append(resourceId); end
     end
+    else if \explicitSeen~hasIndex(requestedRevision) then do; explicitSeen[requestedRevision]=1; explicitRevisionIds~append(requestedRevision); end
   end
+  acceptedByResource = .directory~new
+  if acceptedIds~items > 0 then do
+    rows = self~queryRows("SELECT resource_id,accepted_revision_id FROM ssc_resource_object WHERE resource_id IN (" || self~quotedList(acceptedIds) || ")")
+    do row over rows; acceptedByResource[row["resource_id"]] = row["accepted_revision_id"]; end
+  end
+  wantedRevisionIds=.array~new; wantedSeen=.directory~new
+  do revisionId over explicitRevisionIds
+    if revisionId = "" | revisionId == .nil then iterate
+    wantedSeen[revisionId]=1; wantedRevisionIds~append(revisionId)
+  end
+  do resourceId over acceptedIds
+    revisionId=acceptedByResource[resourceId]
+    if revisionId == .nil | revisionId = "" then raise syntax 88.900 array("resource has no accepted revision: " || resourceId)
+    if \wantedSeen~hasIndex(revisionId) then do; wantedSeen[revisionId]=1; wantedRevisionIds~append(revisionId); end
+  end
+  revisionById=.directory~new
+  if wantedRevisionIds~items > 0 then do
+    rows=self~queryRows("SELECT resource_revision_id,resource_id,content_text,content_base64,content_sha256,mime_type,materialisation_path FROM ssc_resource_revision WHERE resource_revision_id IN (" || self~quotedList(wantedRevisionIds) || ")")
+    do row over rows; revisionById[row["resource_revision_id"]]=row; end
+  end
+  seen=.directory~new
+  do relation over active
+    resourceId=relation["resource_id"]; requestedRevision=self~orEmpty(relation["required_revision_id"])
+    if requestedRevision = "" then requestedRevision=acceptedByResource[resourceId]
+    if requestedRevision == .nil | requestedRevision = "" then raise syntax 88.900 array("resource has no selected revision: " || resourceId)
+    if \revisionById~hasIndex(requestedRevision) then raise syntax 88.900 array("resource revision not found: " || requestedRevision)
+    resourceRevision=revisionById[requestedRevision]
+    if resourceRevision["resource_id"] \= resourceId then raise syntax 88.900 array("resource revision does not belong to resource: " || requestedRevision)
+    key=resourceId || "@" || requestedRevision
+    if seen~hasIndex(key) then iterate
+    seen[key]=1
+    path=resourceRevision["materialisation_path"]
+    if path == .nil | path = "" then raise syntax 88.900 array("resource has no materialisation path: " || resourceId)
+    content=self~orEmpty(resourceRevision["content_text"]); if content="" then content=self~orEmpty(resourceRevision["content_base64"])
+    package~resources[path]=content; package~files[path]=content
+    item=.directory~new
+    item["resource_id"]=resourceId; item["resource_revision_id"]=requestedRevision; item["content_sha256"]=resourceRevision["content_sha256"]
+    item["mime_type"]=resourceRevision["mime_type"]; item["materialisation_path"]=path; item["encoding"]="text"
+    if self~orEmpty(resourceRevision["content_text"])="" then item["encoding"]="base64"
+    item["relation_kind"]=relation["relation_kind"]; package~resourceManifest~append(item)
+  end
+  evidence=.directory~new; evidence["resources"]=seen~items; evidence["relations"]=active~items
+  self~observe("PACKAGE_RESOURCES_MATERIALISED", evidence)
+  return
 
 ::method resolveResourceRevision private
   use strict arg resourceId, requestedRevision
@@ -585,17 +626,22 @@
 
 ::method queryRows private
   use strict arg statement
-  -- Prefer the provider-owned bulk relation path when available. PostgreSQL
-  -- Native Backends v0.2 implements querySet()->asArray without TSV framing or
-  -- per-row Database Core reconstruction. Other providers retain execute().
+  call time "R"
+  path = "EXECUTE"
   if self~sql~hasMethod("QUERYSET") then do
     bulk = self~sql~querySet(statement)
-    if bulk~hasMethod("OK") then if \bulk~ok then,
-      raise syntax 88.900 array("Database bulk query failed: " || statement || "; " || bulk~errorText)
-    if bulk~hasMethod("ASARRAY") then return bulk~asArray
+    if bulk~hasMethod("OK") then if \bulk~ok then raise syntax 88.900 array("Database bulk query failed; " || bulk~errorText)
+    if bulk~hasMethod("ASARRAY") then do
+      rows=bulk~asArray; path="QUERYSET_ASARRAY"
+      evidence=.directory~new; evidence["rows"]=rows~items; evidence["seconds"]=time("E"); evidence["path"]=path
+      self~observe("DATABASE_QUERY_COMPLETED", evidence)
+      return rows
+    end
   end
-  rs = self~query(statement)
-  return rs~rows
+  rs=self~query(statement); rows=rs~rows
+  evidence=.directory~new; evidence["rows"]=rows~items; evidence["seconds"]=time("E"); evidence["path"]=path
+  self~observe("DATABASE_QUERY_COMPLETED", evidence)
+  return rows
 
 ::method quotedList private
   use strict arg values
@@ -611,6 +657,14 @@
   rs = self~sql~execute(statement)
   if rs~status = "SUCCESS" then return rs
   raise syntax 88.900 array("Database query failed: " || statement || "; " || rs~message)
+
+::method observe private
+  use strict arg eventName, data
+  if self~observer == .nil then return
+  if \self~observer~hasMethod("RECORD") then return
+  event=.directory~new; event["event"]=eventName; event["data"]=data
+  self~observer~record(event)
+  return
 
 ::method quote private
   use strict arg value

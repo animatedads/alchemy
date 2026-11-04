@@ -119,10 +119,37 @@
   expose endpoint
   if endpoint<>.nil then ignore=endpoint~close
 
+::class SipCredentialProvider public
+::method source
+  return "UNCONFIGURED"
+::method provision
+  use strict arg server, username
+  return .false
+
+::class SipDigestAuthorization public
+::method username class
+  use strict arg headerValue
+  upperValue = translate(headerValue)
+  marker = "USERNAME="
+  p = pos(marker, upperValue)
+  if p = 0 then return ""
+  value = substr(headerValue, p + length(marker))
+  value = strip(value)
+  if value = "" then return ""
+  if value~left(1) = '"' then do
+    value = substr(value, 2)
+    q = pos('"', value)
+    if q = 0 then return ""
+    return left(value, q - 1)
+  end
+  comma = pos(",", value)
+  if comma > 0 then value = left(value, comma - 1)
+  return strip(value)
+
 ::class SipServer public
 ::method init
-  expose transport engine bindAddress realm algorithm calls registrations log logSink socketProvider
-  use strict arg bindAddress="0.0.0.0", port=5060, realm="oorexx-sip", algorithm="SHA-256", logSink=.nil, socketProvider=.nil
+  expose transport engine bindAddress realm algorithm calls registrations log logSink socketProvider credentialProvider
+  use strict arg bindAddress="0.0.0.0", port=5060, realm="oorexx-sip", algorithm="SHA-256", logSink=.nil, socketProvider=.nil, credentialProvider=.nil
   log=.SipLogEmitter~new(logSink,"sip.server")
   if socketProvider=.nil then socketProvider=.SipSocketFactory~defaultProvider
   transport=.SipUdpTransport~new(bindAddress,port,logSink,socketProvider)
@@ -133,6 +160,18 @@
   event = log~emit("SIP.SERVER.STARTED", fields)
 ::attribute bindAddress get
 ::attribute realm get
+::method credentialProvider
+  expose credentialProvider
+  return credentialProvider
+::method setCredentialProvider
+  expose credentialProvider log
+  use strict arg provider
+  credentialProvider = provider
+  source = ""
+  if provider <> .nil then source = provider~source
+  fields = log~fields(.array~of("source", source, "configured", provider <> .nil))
+  event = log~emit("SIP.AUTH.CREDENTIAL.PROVIDER", fields)
+  return provider
 ::method port
   expose transport
   return transport~bindPort
@@ -143,6 +182,29 @@
   fields = log~fields(.array~of("username", username, "result", rc))
   event = log~emit("SIP.AUTH.CREDENTIAL.CONFIGURED", fields)
   return rc
+::method provisionExternalCredential
+  expose credentialProvider log
+  use strict arg username
+  if credentialProvider == .nil then return .true
+  if username = "" then return .false
+  signal on syntax name providerFailure
+  provisioned = credentialProvider~provision(self, username)
+  signal off syntax
+  if \provisioned then invalidated = self~credential(username, "!DENY!" || sip_random_token())
+  fields = log~fields(.array~of("username", username, "source", credentialProvider~source, "provisioned", provisioned))
+  event = log~emit("SIP.AUTH.CREDENTIAL.PROVISION", fields)
+  return provisioned
+providerFailure:
+  say "SIP credential provider failure rc=" rc "sigl=" sigl "condition=" condition("C") "description=" condition("D")
+  description = condition("D")
+  if description = "" then description = condition("C")
+  if description = "" then description = "SYNTAX"
+  invalidated = self~credential(username, "!DENY!" || sip_random_token())
+  fields = log~fields(.array~of("username", username, "source", credentialProvider~source, "provisioned", .false, "error", description))
+  event = log~emit("SIP.AUTH.CREDENTIAL.PROVIDER.FAILED", fields)
+  signal off syntax
+  return .false
+
 ::method setAuthenticationAlgorithm
   expose engine algorithm log
   use strict arg algorithm
@@ -151,7 +213,7 @@
   event = log~emit("SIP.AUTH.ALGORITHM", fields)
   return rc
 ::method poll
-  expose transport engine calls registrations log logSink realm bindAddress socketProvider
+  expose transport engine calls registrations log logSink realm bindAddress socketProvider credentialProvider
   use strict arg timeoutSeconds = 1
   expired = self~expireRegistrations
   datagram = transport~receive(timeoutSeconds)
@@ -160,6 +222,10 @@
     return .array~of("timeout")
   end
   authHeader = sip_message_header(datagram[1], "Authorization")
+  if authHeader <> "" then if credentialProvider <> .nil then do
+    authUsername = .SipDigestAuthorization~username(authHeader)
+    provisioned = self~provisionExternalCredential(authUsername)
+  end
   callIdHeader = sip_message_header(datagram[1], "Call-ID")
   cseqHeader = sip_message_header(datagram[1], "CSeq")
   method = datagram[1]~word(1)
@@ -803,7 +869,7 @@ producerFailure:
   request||="Call-ID:" callId || crlf
   request||="CSeq:" cseq "BYE" || crlf
   request||="Contact: <" || contactUri || ">" || crlf
-  request||="User-Agent: ooRexx-SIP/0.1-dev16" || crlf
+  request||="User-Agent: ooRexx-SIP/0.1-dev17" || crlf
   request||="Content-Length: 0" || crlf || crlf
   sent=transport~sendTo(request,remoteAddress,remoteSipPort)
   response=transport~receive(timeoutSeconds)
@@ -932,69 +998,3 @@ producerFailure:
   body||="o=oorexx 1 1 IN IP4" bindAddress || crlf
   body||="s=ooRexx SIP" || crlf
   body||="c=IN IP4" bindAddress || crlf
-  body||="t=0 0" || crlf
-  body||="m=audio" localRtpPort "RTP/AVP" payloadType || crlf
-  if payloadType=0 then body||="a=rtpmap:0 PCMU/8000" || crlf
-  else if payloadType=8 then body||="a=rtpmap:8 PCMA/8000" || crlf
-  request="INVITE" requestUri "SIP/2.0" || crlf
-  request||="Via: SIP/2.0/UDP" bindAddress || ":" || transport~bindPort || ";branch=" || branch || ";rport" || crlf
-  request||="Max-Forwards: 70" || crlf
-  request||="To: <" || requestUri || ">" || crlf
-  request||="From: <" || localUri || ">;tag=" || fromTag || crlf
-  request||="Call-ID:" callId || crlf
-  request||="CSeq:" cseq "INVITE" || crlf
-  request||="Contact: <" || contactUri || ">" || crlf
-  request||="User-Agent: ooRexx-SIP/0.1-dev16" || crlf
-  request||="Content-Type: application/sdp" || crlf
-  request||="Content-Length:" length(body) || crlf || crlf || body
-  return request
-::method ackRequest
-  expose transport bindAddress
-  use strict arg requestUri,localUri,contactUri,callId,fromTag,toTag,inviteCseq
-  crlf="0d0a"x
-  branch="z9hG4bK" || sip_random_token()~left(16)
-  request="ACK" requestUri "SIP/2.0" || crlf
-  request||="Via: SIP/2.0/UDP" bindAddress || ":" || transport~bindPort || ";branch=" || branch || ";rport" || crlf
-  request||="Max-Forwards: 70" || crlf
-  request||="To: <" || requestUri || ">;tag=" || toTag || crlf
-  request||="From: <" || localUri || ">;tag=" || fromTag || crlf
-  request||="Call-ID:" callId || crlf
-  request||="CSeq:" inviteCseq "ACK" || crlf
-  request||="Contact: <" || contactUri || ">" || crlf
-  request||="Content-Length: 0" || crlf || crlf
-  return request
-::method headerParameter
-  use strict arg headerValue,name
-  marker=";" || name || "="
-  p=pos(marker,headerValue)
-  if p=0 then return ""
-  v=substr(headerValue,p+length(marker))
-  semi=pos(";",v)
-  if semi>0 then v=left(v,semi-1)
-  return strip(v)
-::method messageBody
-  use strict arg message
-  separator="0d0a0d0a"x
-  p=pos(separator,message)
-  if p=0 then return ""
-  return substr(message,p+4)
-::method sdpAudioPort
-  use strict arg message
-  body=self~messageBody(message)
-  crlf="0d0a"x
-  do while body<>""
-    p=pos(crlf,body)
-    if p=0 then do; line=body; body=""; end
-    else do; line=left(body,p-1); body=substr(body,p+2); end
-    if line~left(8)="m=audio " then return line~word(2)
-  end
-  return 0
-::method sdpConnectionAddress
-  use strict arg message,fallback=""
-  body=self~messageBody(message)
-  crlf="0d0a"x
-  do while body<>""
-    p=pos(crlf,body)
-    if p=0 then do; line=body; body=""; end
-    else do; line=left(body,p-1); body=substr(body,p+2); end
-    if line~left(9)="c=IN IP4 " then return strip(substr(line,10))

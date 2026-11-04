@@ -7,7 +7,7 @@
   expose element trigger behaviour method source
   use strict arg element, trigger, behaviour, method
   if element == '' | trigger == '' | behaviour == '' | method == '' then raise syntax 88.900 array('WIRE_DRAFT_INVALID')
-  -- Generated declarations must not permit newlines or directive injection.
+  -- A generated method declaration must not accept newline/directive injection.
   -- Restrict generated entry points to portable ASCII Rexx identifiers.
   letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_'
   chars = letters || '0123456789'
@@ -29,12 +29,18 @@
   expose source
   use strict arg newSource
   if newSource == '' then raise syntax 88.900 array('WIRE_DRAFT_EMPTY_SOURCE')
+  -- Refuse a changed or missing entry point: never silently bind a different method.
   declaration = self~methodDeclaration
+  -- Require the entire first line to be exactly the declared entry point.
+  -- No trailing tokens, alternate visibility, or prefixed method names.
   lf = pos('0a'x, newSource)
   if lf = 0 then raise syntax 88.900 array('WIRE_DRAFT_METHOD_MISMATCH')
   first = substr(newSource, 1, lf - 1)
   if right(first, 1) == '0d'x then first = left(first, length(first) - 1)
   if first \== declaration then raise syntax 88.900 array('WIRE_DRAFT_METHOD_MISMATCH')
+  -- A behaviour draft is one method body, not an arbitrary ooRexx package.
+  -- Reject a second directive at the start of any subsequent source line.
+  -- This is a structural guard, not a replacement for an ooRexx parser.
   remaining = substr(newSource, lf + 1)
   do while remaining \== ''
     nextLf = pos('0a'x, remaining)

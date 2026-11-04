@@ -1,4 +1,4 @@
-# ooRexx QUIC Socket Provider v0.1-dev4
+# ooRexx QUIC Socket Provider v0.1-dev5
 
 A real QUIC socket-family provider behind the common ooRexx `SocketProvider`
 boundary. The native transport is OpenSSL QUIC.
@@ -7,6 +7,24 @@ QUIC remains a sibling socket provider. Applications which only need an ordinary
 stream continue to use `SocketStreamAdapter`; applications which intentionally
 need QUIC multiplexing may ask the selected `QuicSocket` for child `QuicStream`
 objects. No QUIC transport selection is moved into application code.
+
+## dev5
+
+Dev5 adds explicit nonblocking child-stream I/O state without changing the generic blocking `SocketStreamAdapter` contract.
+
+A QUIC-aware caller can switch a selected child stream to application-level nonblocking mode and use:
+
+```rexx
+stream~setBlockingMode(.false)
+result = stream~trySend(bytes)
+result = stream~tryRecv(65536)
+```
+
+`QuicIoResult` reports one of `OK`, `WANT_READ`, `WANT_WRITE` or `EOF`. `WANT_READ` and `WANT_WRITE` are retryable QUIC flow-control states, not transport failures. Fatal OpenSSL errors still raise provider errors.
+
+For QUIC, `WANT_WRITE` means the stream's OpenSSL send buffer is full and `WANT_READ` means no application bytes are currently available from the receive side. When a write returns `WANT_WRITE`, retry the same logical write before performing another I/O-triggering operation. Dev5 enables `SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER` on explicitly nonblocking child streams so a Rexx retry may present the same logical bytes at a different native address.
+
+The default connection stream and `SocketStreamAdapter` remain blocking/compatibility surfaces. This state is not promoted into generic socket negotiation.
 
 ## dev4
 

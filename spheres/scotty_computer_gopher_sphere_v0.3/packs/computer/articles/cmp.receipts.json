@@ -1,0 +1,22 @@
+{
+  "kind": "article",
+  "id": "cmp.receipts",
+  "version": "0.1",
+  "sphere": "scotty-computer",
+  "title": "Output completeness and run receipts",
+  "summary": "Job receipts retain stdout, stderr, execution metadata and recorded exception observations. Dev8 drains the output backlog after process exit, including matches crossing read boundaries.",
+  "authority": "development-source-evidence",
+  "invariants": [
+    "Scan no more than 64 MiB per output rule and stream; if exhausted report measurement_unavailable.",
+    "Keep child exit code separate from Computer exception status (6 for breached/incomplete observation).",
+    "A receipt lacking legacy metadata must not be called verified success.",
+    "No monitoring daemon is created."
+  ],
+  "provenance": [
+    {
+      "artifact": "scotty_computer_v0.1-dev8.zip",
+      "sha256": "1e779ef89d938f2102c146842f2e8f8814196acf02b4dc87a3f157c06993cdd0",
+      "member": "scotty_computer_v0.1-dev8/docs/DEV8_CHANGES.md"
+    }
+  ]
+}

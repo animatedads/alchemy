@@ -1,0 +1,84 @@
+NoSQLServer v0.49 validation
+============================
+
+Focus
+-----
+Append/tombstone physical mutation storage for large delimited tables.
+
+Native ooRexx stream findings
+-----------------------------
+- CsvStream accepts x2c("FD") records without parser corruption.
+- An FD-only physical record is returned as one field containing the FD bytes.
+- LINEOUT(filler,lineNumber) was tested and rejected for tombstoning because
+  it inserted an extra line terminator in the exercised stream path.
+- Byte-positioned CHAROUT overwrites exactly the original record bytes without
+  shifting subsequent rows or creating blank lines.
+- Tombstone detection uses VERIFY(...,"N") rather than Rexx string equality;
+  direct equality is not reliable for raw FD-byte strings in this context.
+
+Storage contract
+----------------
+- Per-table storage.tombstoneHex, default FD.
+- Per-table storage.tombstoneThresholdBytes, default 65536.
+- Tombstone byte may not collide with delimiter, qualifier, CR or LF.
+- Values containing the reserved tombstone byte are rejected by the delimited
+  writer.
+- Readers skip physical records composed entirely of the configured tombstone
+  byte before schema coercion.
+- Single-row UPDATE on sufficiently large, single-physical-line records:
+    append replacement, then CHAROUT-tombstone old record.
+- Single-row DELETE on sufficiently large, single-physical-line records:
+    CHAROUT-tombstone old record.
+- Small files retain the simpler whole-file rewrite path.
+- Multiline CSV records retain the whole-file rewrite path.
+- Multi-row UPDATE/DELETE retain whole-file rewrite semantics.
+- compactTable(table) rewrites live rows only and removes tombstones.
+
+Crash/recovery posture
+----------------------
+- Append-first UPDATE uses pending-mutation.yaml before physical mutation.
+- Recovery completes an interrupted append/tombstone update rather than
+  preferring data loss.
+- DELETE recovery recognizes a completed tombstone and finalizes generation /
+  journal state.
+- Mutation target generation is recorded so reopening does not double-advance
+  generation after a crash between metadata write and intent removal.
+
+Constraint optimization
+-----------------------
+UPDATE now validates only changed candidates against the final row set rather
+than revalidating every untouched row. A single-row UPDATE therefore avoids the
+former O(n^2) constraint-validation path.
+
+Performance observations
+------------------------
+500-row table:
+- simple rewrite remains preferable; tombstone bookkeeping can dominate.
+- hence the default 64 KiB physical-size threshold.
+
+5,007-row direct-engine table after changed-row validation repair:
+- single-row UPDATE + COUNT verification: approx 0.84 sec wall
+- single-row DELETE + COUNT verification: approx 0.75 sec wall
+
+These are local direct-engine measurements, not wire-protocol claims.
+
+Capabilities
+------------
+- APPEND_ONLY_SINGLE_INSERT
+- PHYSICAL_TOMBSTONES
+- APPEND_TOMBSTONE_UPDATE
+- TOMBSTONE_DELETE
+- TABLE_COMPACTION
+
+Regression evidence
+-------------------
+- v0.49 tombstone storage smoke: PASS
+- v0.48 append INSERT smoke: PASS
+- v0.47 VALUES source: PASS
+- v0.46 ORDER BY optimizer: PASS
+- v0.45 staged mutation graph: PASS
+- FK/events/CTE/window/SQL-92/database_core gates: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 14/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

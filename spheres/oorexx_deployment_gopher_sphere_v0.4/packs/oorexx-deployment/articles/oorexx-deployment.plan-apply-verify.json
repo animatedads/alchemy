@@ -1,0 +1,57 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.plan-apply-verify",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Plan, apply and fresh verify are different authorities",
+  "summary": "A plan explains the deterministic delta and ordered actions. Only apply mutates. After apply, Deployment must freshly discover and verify the target against the manifest; successful commands are evidence of actions, not proof that desired state exists.",
+  "authority": "project-doctrine",
+  "section": "architecture",
+  "invariants": [
+    "Every action states reason, inputs, outputs, provider, destructive flag and reversibility.",
+    "The caller can inspect/serialise the plan before execution.",
+    "Post-deployment observed state satisfying the manifest is the success invariant.",
+    "Dry-run performs discover/assess/plan but no apply."
+  ],
+  "topics": [
+    "plan",
+    "apply",
+    "verify",
+    "dry-run",
+    "explain"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 531,
+      "line_end": 584,
+      "claim": "Defines DeploymentPlan and no-hidden-mutation behavior."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 739,
+      "line_end": 753,
+      "claim": "Requires fresh post-apply verification and rejects rc=0 as sufficient evidence."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 801,
+      "line_end": 842,
+      "claim": "Defines dry-run and explain operations."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev2.zip",
+      "sha256": "305b1acbf3b1b8b413dbfd088272478d7f0fd076ee531b96fa42a53ed6b64ea9",
+      "member": "oorexx_deployment_v0.1-dev2/qualification/TEST_TRANSCRIPT.txt",
+      "claim": "Qualified dev2 tests plan/apply/fresh-verify/idempotent no-op.",
+      "line_start": 1,
+      "line_end": 13
+    }
+  ]
+}

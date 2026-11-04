@@ -1,0 +1,53 @@
+{
+  "kind": "article",
+  "id": "arch.memory-fabric.protected-xtp-message",
+  "version": "0.4",
+  "sphere": "memory-fabric",
+  "title": "XTP dev34 encrypted named-service read ingress",
+  "summary": "Bind source-side Memory Fabric read admission to native XTP34 encrypted-message metadata, an active LDAP-derived service key principal and an independent current block/range ACL. This is an executable adapter with a synthetic transport fixture, not a qualified live remote read server.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "Only native XtpNamedAcceptedSocket results from a locally configured listener are admissible; request payloads cannot assert service, principal, key, route or operational class.",
+    "Require protection=encrypt and a current, non-expired, non-revoked key in the locally authoritative XtpServiceKeys registry; no missing-key or LDAP outage downgrade to clear.",
+    "Remote memory service keys must originate in the estate Identity Directory over LDAP; local key-file fallback may preserve transport but cannot authorize a memory read by itself.",
+    "The key principal is a service-key identity and must be uniquely provisioned and independently authorized by the Memory Fabric block/range ACL; XTP AEAD alone is not Memory Fabric authorization.",
+    "Frame MFXR1 rejects malformed/overlong/partial reads, and the Memory Fabric ingress gate rechecks ACL, current block generation, owning provider epoch and current key for each page before publication.",
+    "XTP dev34 one-way protected message replay across distinct listeners sharing a key is a known risk; never infer distributed exactly-once from the process-local replay cache or network ACK.",
+    "XTP dev34 multicast has no service group-key protection: never send confidential memory bytes to a multicast group without a separately qualified mechanism.",
+    "Local MI-MU Layer-2 and DMA/shared-memory paths remain separate; remote L2/raw36/UDP are XTP carrier concerns, not application service identities.",
+    "Native dev34 read callback/actual page response, live LDAP/Secret Broker, Gopher activation and ED209 field testing remain acceptance gates, not inherited passes."
+  ],
+  "procedure": [
+    "Install the dev34 XTP native library and the estate XtpServiceKeys LDAP/Secret Broker source; refresh keys before binding the named memory read service.",
+    "Construct MemoryXtp34KeyAuthenticator with the local live key registry and trusted epoch-second clock.",
+    "Create MemoryXtpReadIngress with Memory Fabric dev10 registry, Service Descriptor Registry, authenticator and actual block/range ACL.",
+    "From a trusted native named-service listener, pass the accepted XTP object and trusted epoch-millisecond clock to MemoryXtp34ReadBridge~admitReceived.",
+    "Validate the returned read permit immediately before every page access and again before publishing page bytes. Audit all denials without exposing key material."
+  ],
+  "topics": [
+    "memory-fabric",
+    "xtp",
+    "dev34",
+    "ldap",
+    "security",
+    "read-admission",
+    "key-revocation",
+    "identity",
+    "mu-mi",
+    "multicast"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_memory_fabric_xtp_candidate5",
+      "sha256": "3e1ac194777396f1c32bc22f3e2b9c6272cbd4616c5bff741854b1f6a18145c2",
+      "member": "src/MemoryXtp34ProtectedRead.cls",
+      "claim": "Implements strict protected ingress, live local service key verification, bounded wire decode and read permit handoff; local test uses a fixture."
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev34",
+      "sha256": "a310b0790c73dc1f5417788a36b3369b5b5b9f0ad467fca12728e776e1fc5474",
+      "member": "src/xtp_transport.cpp",
+      "claim": "XTP dev34 upstream native encrypted-message and replay security path (upstream file hash from VALIDATION_DEV34.txt; not separately qualified here)."
+    }
+  ]
+}

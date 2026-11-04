@@ -1,0 +1,60 @@
+ooRexx XTP v0.1-dev28: validation record
+==========================================
+
+Architecture: Tom Dyer
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for dev26, dev27 and dev28
+Validation written and run by: Claude (Opus 5.5), 25 October 2026
+
+Baseline: oorexx_xtp_v0.1-dev27 as committed to animatedads/alchemy main in edb425bb
+Planner:  oorexx_operational_degradation_planner_v0.1-dev5, built locally
+Host:     Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror
+Evidence class: LOCAL_PASS. FIELD_PASS is NOT claimed: no ED209 host was reached.
+
+Changes against dev27 (lines added / removed)
+  src/xtp_transport.cpp          +230 -70  2a6bdfa4f256ce6f91a5250f1a2f60b110cdf0d9852378395dd2e429d70f7633
+  tests/test_segmentation.cpp    +82  -8   (S6 revised to the dev28 contract; S7, S8, S9 added; S3 bound)
+  Makefile                       +3   -1   (target test-interop)
+  New: tests/tools/{stream_send,stream_recv,lossy_relay}.cpp, tests/test_interop_selective.sh
+  Metadata: CAPABILITIES.json (dev28_selective_retransmission), DEPENDENCIES.json,
+  integration.json (adds interop-dev27-lossy with PEER_ROOT=packages/oorexx_xtp_v0.1-dev27),
+  README.md, docs/XTP_SPEC_GAPS_DEV28.md
+
+1. Segmentation and selective retransmission (make test-segmentation): 9/9 PASS
+                                                       dev28            dev27 (same test source)
+   S3 200 segments, 20% fwd / 14% rev loss            49 resends PASS  8680 resends FAIL
+      (bound: 2 x fwd drops + rev drops + 20)
+   S6 identical stream resent with same KEY            PASS             FAIL
+   S7 retransmitted FIRST mid-stream keeps progress    PASS             FAIL (stream reset, never delivered)
+   S8 out-of-order segment reported as SPAN            PASS             n/a (dev27 has no SPANs)
+   S9 NSPAN encode/decode; malformed NSPAN refused     PASS             n/a
+   S1, S2, S4, S5 unchanged from dev27                 PASS
+
+2. Interoperability, separate processes through a UDP relay dropping every
+   5th forward and every 7th reverse packet; 150 KB in 1024-byte segments
+   (make test-interop, PEER_ROOT = committed dev27 tree, built in a scratch copy)
+   I1 dev28 sender -> dev27 receiver   delivered byte-exact, 5238 resends (go-back-N fallback)
+   I2 dev27 sender -> dev28 receiver   delivered byte-exact, 191 resends
+   I3 dev28 sender -> dev28 receiver   delivered byte-exact, 37 resends
+   The first I2 attempt failed because the test receiver exited straight after
+   delivery, so it could not re-send a close-ACK the relay had dropped. The tool
+   now keeps serving until the line has been quiet for 1.5 s, as a real listener does.
+
+3. Full regression on dev28
+   test-service, test-capacity-rate, test-auto-key        PASS
+   test-negative (dev26 adversarial)                      7/7 PASS
+   test-segmentation                                      9/9 PASS
+   test-interop                                           3/3 PASS
+   tests/run_tests.sh                                     35 PASS, 5 SKIP
+   15 further shell suites (all multicast suites included) all rc=0
+   Totals: 86 PASS, 0 FAIL, 5 SKIP (proxy binary absent; no ooRexx interpreter)
+
+4. Not run
+   - Real Ethernet at MTU 1500 between hosts; ED209 field path.
+   - ooRexx callers. No ooRexx file changed in dev28.
+
+5. Limits
+   Selective repeat covers unicast streams only; multicast is still go-back-N.
+   At most 64 SPANs per CNTL; a receiver with more disjoint holes reports the
+   first 64, and the rest are found on later CNTLs.
+
+Claude (Opus 5.5)

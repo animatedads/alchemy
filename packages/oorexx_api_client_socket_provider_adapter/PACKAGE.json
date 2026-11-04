@@ -1,8 +1,8 @@
 {
   "name": "oorexx_api_client_socket_provider_adapter",
-  "version": "0.1-dev2",
+  "version": "0.1-dev3",
   "api": "api.client.socket-provider/0.1",
-  "role": "API Client byte-carrier acquisition through SocketProvider with dynamic Socket Intention route resolution",
+  "role": "API Client byte-carrier acquisition through SocketProvider with dynamic Socket Intention route resolution and optional deployment admission",
   "dependencies": {
     "api_client": "api.client/0.4",
     "socket_provider": "socket.provider/0.1",
@@ -11,21 +11,21 @@
   "authority": {
     "api_client": "HTTP/TLS/redirect/ALPN semantics",
     "socket_provider": "native transport acquisition and selected SocketAddress",
-    "adapter": "carrier shape and readiness bridge only",
-    "socket_intention": "fresh per-request carrier offer discovery and selection"
+    "adapter": "carrier shape, readiness bridge and optional post-selection admission seam",
+    "socket_intention": "fresh per-request carrier offer discovery and selection",
+    "deployment_policy": "optional exact selected-route evidence admission; no transport semantics are hard-coded"
   },
   "xtp": {
     "dependency": false,
     "selection": false,
-    "live_https_claim": false
+    "live_https_claim": false,
+    "policy_note": "deployment may require lower-route attestation/protection evidence through generic SocketAddress metadata without teaching this adapter XTP semantics"
   },
   "dynamic_route_resolution": {
-    "defaultAllowedSchemes": [
-      "xtp",
-      "tcp"
-    ],
+    "defaultAllowedSchemes": ["xtp","tcp"],
     "requireStream": true,
     "requireSecure": false,
-    "reason": "API Client TLS runs above the selected raw byte carrier"
+    "reason": "API Client TLS runs above the selected raw byte carrier",
+    "postSelectionAdmission": "optional ApiSocketRouteAdmissionPolicy; failure is closed before SocketProvider acquisition"
   }
 }

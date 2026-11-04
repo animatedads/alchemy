@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "ops.oo-rexx-dbus.api-diff",
+  "version": "0.2",
+  "sphere": "oo-rexx-dbus",
+  "title": "Static ooRexx API compatibility inventory and diff",
+  "summary": "Inventory class, method, attribute, routine and ::requires directives in two independently supplied source trees, reporting removals without asserting runtime ABI.",
+  "authority": "locally-tested-implementation-2026-10-29",
+  "invariants": [
+    "The tool detects static directives only; it does not execute the interpreter, inspect native registration or prove inheritance behaviour.",
+    "Class/method names are compared case-insensitively; private/protected methods are excluded from the reported public-surface candidate.",
+    "Removed public static signatures are a strict compatibility gate; additions alone do not prove a compatible implementation.",
+    "Never infer Alchemy independence from absence of ::requires; inspect native linkage and install dependencies separately."
+  ],
+  "procedure": [
+    "Use packages/oorexx-dbus-qualification/tools/api_inventory.py on the historical source tree.",
+    "Run on the candidate source tree with --compare-to path/to/historical --strict.",
+    "Review diagnostics/duplicate entries; verify C++ registered methods and dynamic class effects manually.",
+    "Only promote after actual ooRexx interpreter, native ABI and bus roundtrip qualification."
+  ],
+  "qualification": {
+    "synthetic_unit_tests": "11_PASS_LOCAL",
+    "historical_native_source": "NOT_AVAILABLE",
+    "native_api_diff": "NOT_RUN",
+    "cpp_abi": "NOT_RUN"
+  },
+  "related": [
+    "ops.oo-rexx-dbus.qualification",
+    "ref.oo-rexx-dbus.source-authority"
+  ]
+}

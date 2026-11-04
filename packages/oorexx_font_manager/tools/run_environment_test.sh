@@ -25,4 +25,6 @@ export REXX_PATH="$ROOT/src:$INTENTION_SRC:$INTENTION_SRC/nlp${REXX_PATH:+:$REXX
 "$REXX_BIN" "$ROOT/tests/test_subset_live.rex" "${TMPDIR:-/tmp}/oorexx-font-subset-test.woff2"
 "$REXX_BIN" "$ROOT/tests/test_glyphs_live.rex" "$ROOT/tools/fonttools_service.py"
 "$REXX_BIN" "$ROOT/tests/test_fallback_runs_live.rex" "$ROOT/tools/fonttools_service.py"
+"$REXX_BIN" "$ROOT/tests/test_required_format_fallback_live.rex" "$ROOT/tools/fonttools_service.py"
+"$REXX_BIN" "$ROOT/tests/test_ttc_subset_live.rex" "$OUTDIR/ttc-subset.otf"
 "$REXX_BIN" "$ROOT/tests/test_unicode_subset_live.rex" "$ROOT/tools/fonttools_service.py" "${PYFTSUBSET:-pyftsubset}" "${TMPDIR:-/tmp}/oorexx-font-unicode-subset.ttf"

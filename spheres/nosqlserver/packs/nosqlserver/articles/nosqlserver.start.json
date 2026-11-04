@@ -1,18 +1,18 @@
 {
   "id": "nosqlserver.start",
-  "title": "Start here — v0.79 GitHub full source versus v0.91 SQLite development candidate",
+  "title": "Current GitHub NoSQLServer v0.92-dev1 and SQLite storage options",
   "section": "start",
-  "summary": "The GitHub complete versioned NoSQLServer source directory remains packages/nosqlserver_v0.79/. A separately delivered complete v0.91 ZIP adds explicit opt-in SQLite read/write, WAL-coherent SQLite backup snapshots, and v0.91 whole-table snapshot validation under BEGIN IMMEDIATE for single-table UPDATE/DELETE. PR #20 merged only a v0.90-to-v0.91 patch intake; that does NOT bring the complete executable v0.91 package into GitHub, nor establish production certification. Older FILE/Object/JSON/native SQLite read-only/GeoPackage/federated semantics remain.",
+  "summary": "GitHub main contains complete packages/nosqlserver_v0.91 and packages/nosqlserver_v0.92-dev1. v0.92-dev1 adds a narrow native ooRexx B-tree seek for exact signed INTEGER PRIMARY KEY rowid equality and lazy row-count discovery under NoSQLServer SQL/predicate authority. The independently selected patched Mark Hessling Rexx/SQL backend provides much faster SQLite indexed SQL for Semantic Source Store, but is not an automatic NoSQLServer SQL evaluator replacement. The selected writable SQLite engine still copies an entire SQLite snapshot per statement. No production website, mail, MI/MU, LDAP or private-CA HTTPS cutover is implied.",
   "invariants": [
     "Do not restart development from the old v0.13 interoperability handoff.",
     "The project name does not mean the current engine is a simple document store.",
     "Rows/scalars/parser nodes remain lightweight; only long-lived service/runtime objects use AlchemyObject.",
     "SECURE_READY is host-configured and is never implied by STANDARD adoption.",
-    "Treat v0.79 as complete checked-in GitHub source, and v0.91 as qualified local candidate; do not claim complete GitHub sync.",
-    "SQLite writable is opt-in; never silently mutate GeoPackage or legacy native-read-only engine."
+    "SQLite writable is opt-in; never silently mutate GeoPackage or legacy native-read-only engine.",
+    "Complete full v0.91 and v0.92-dev1 GitHub directories supersede historical v0.79-only source claim."
   ],
   "kind": "article",
-  "version": "0.3",
+  "version": "0.4",
   "sphere": "nosqlserver",
   "authority": "project-artifact",
   "provenance": [
@@ -27,6 +27,10 @@
       "sha256": "d4a276007029e66512611ea7e836ca7ab30209b80ac7d46ecf1fba61121f02d0",
       "member": "nosqlserver_v091_sqlite_serializable/SQLITE_READ_WRITE_v0.91.md",
       "claim": "Exact candidate design and qualification boundary."
+    },
+    {
+      "artifact": "packages/nosqlserver_v0.92-dev1/SQLITE_ROWID_SEEK_v0.92-dev1.md",
+      "claim": "Current executable source and tested local qualification."
     }
   ]
 }

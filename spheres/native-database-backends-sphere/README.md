@@ -20,3 +20,11 @@ The 2026-09-02 ooRexx API roll-up is recorded as a continuity source for newer c
 ## 2026-10-27 Library/Git reconciliation
 
 The raw Library inventory now exposes `oorexx_native_database_backends_v0.3.4.zip` and `native_database_backends_gopher_sphere_v0.2.zip`, while the Project Alchemy Package Register still records v0.3.1 and this Git sphere remains v0.1 with a v0.2 implementation baseline. This is an explicit publication/reconciliation gap, not a supersession decision. See `LIBRARY_RECONCILIATION_2026-10-27.md` before importing or relabelling any head.
+
+
+## 2026-10-29 indexed SQLite provider
+
+The shared runtime selector now has a generic provider for the existing Rexx/SQL SQLite
+backend. Consumer and migration constraints are recorded in
+`REXXSQL_PROVIDER_CONTRACT_2026-10-29.md`. This does not change the unresolved Library
+v0.3.4/Git version reconciliation recorded separately.

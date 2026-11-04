@@ -1,4 +1,4 @@
-/* Small command-line driver for the ooRexx Source Editor API. */
+/* Small command-line driver for the ooRexx Source Editor API. v0.1-dev8 */
 parse arg commandLine
 if commandLine='' then do; call usage; exit 2; end
 args=.array~new
@@ -44,6 +44,18 @@ if cmd='grep-tree' then do
   say 'MATCHES' matches~items
   exit 0
 end
+if cmd='references-tree' then do
+  if args~items<3 then do; call usage; exit 2; end
+  filespec='*'; language=''; caseMode='sensitive'
+  if args~items>=4 then filespec=args[4]
+  if args~items>=5 then language=args[5]
+  if args~items>=6 then caseMode=args[6]
+  finder=.SourceTreeFinder~new(file)
+  matches=finder~references(args[3],filespec,caseMode,language)
+  do m over matches; say m~asString; end
+  say 'REFERENCES' matches~items
+  exit 0
+end
 if cmd='complete-tree' then do
   prefix=''; filespec='*'; language=''
   if args~items>=3 then prefix=args[3]
@@ -80,21 +92,25 @@ select
   end
   when cmd='find' then do
     if args~items<3 then do; call usage; exit 2; end
-    mode='text'; caseMode='sensitive'
-    if args~items>=4 then mode=args[4]
-    if args~items>=5 then caseMode=args[5]
-    matches=doc~find(args[3],mode,caseMode)
+    parsed=.SourceEditorCliSearchArgs~parse(args,3,'text','sensitive')
+    matches=doc~find(parsed~expression,parsed~mode,parsed~caseMode)
     do m over matches; say m~asString; end
     say 'MATCHES' matches~items
   end
   when cmd='grep' then do
     if args~items<3 then do; call usage; exit 2; end
-    mode='text'; caseMode='sensitive'
-    if args~items>=4 then mode=args[4]
-    if args~items>=5 then caseMode=args[5]
-    matches=doc~grep(args[3],mode,caseMode)
+    parsed=.SourceEditorCliSearchArgs~parse(args,3,'text','sensitive')
+    matches=doc~grep(parsed~expression,parsed~mode,parsed~caseMode)
     do m over matches; say m~asString; end
     say 'MATCHES' matches~items
+  end
+  when cmd='references' then do
+    if args~items<3 then do; call usage; exit 2; end
+    caseMode='sensitive'
+    if args~items>=4 then caseMode=args[4]
+    matches=doc~references(args[3],caseMode)
+    do m over matches; say m~asString; end
+    say 'REFERENCES' matches~items
   end
   when cmd='complete' then do
     prefix=''; kind=''
@@ -121,10 +137,12 @@ usage:
   say 'code-editor replace-line FILE LINE "TEXT"'
   say 'code-editor delete FILE FIRST [LAST]'
   say 'code-editor replace-symbol FILE NAME "TEXT"'
-  say 'code-editor find FILE NEEDLE [text|code [sensitive|insensitive]]'
-  say 'code-editor grep FILE REGEX [text|code [sensitive|insensitive]]'
+  say 'code-editor find FILE WORDS... [--mode text|code] [--case sensitive|insensitive]'
+  say 'code-editor grep FILE REGEX... [--mode text|code] [--case sensitive|insensitive]'
   say 'code-editor find-file ROOT FILESPEC [LANGUAGE]'
   say 'code-editor grep-tree ROOT REGEX [FILESPEC [text|code [sensitive|insensitive [LANGUAGE]]]]'
+  say 'code-editor references FILE NAME [sensitive|insensitive]'
+  say 'code-editor references-tree ROOT NAME [FILESPEC [LANGUAGE [sensitive|insensitive]]]'
   say 'code-editor complete FILE [PREFIX [KIND]]'
   say 'code-editor complete-tree ROOT [PREFIX [FILESPEC [LANGUAGE]]]'
   say 'code-editor validate FILE'

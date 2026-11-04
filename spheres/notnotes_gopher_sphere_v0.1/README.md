@@ -1,5 +1,14 @@
 # Alchemy NotNotes — Gopher sphere v0.1
 
+## 29 October 2026 — dev17 compatibility repair and current temporal seam
+
+A Project Alchemy v0.5 dogfood reload exposed a persistence compatibility defect in the GitHub dev17 line: legacy field specifications contain a tenth empty reserved slot, while the decoder treated the residual delimiter as hexadecimal ambiguity-policy data and called `x2c(':')`. The repair checkpoint `packages/notnotes_mini_approval_app_v0.1-dev17-compat1` uses bounded slot parsing, accepts the known empty legacy tail, rejects unknown non-empty trailing data, and retains current nine-slot DATE/DATETIME metadata.
+
+Native ooRexx 5.3.0 r13196 reopened the actual v0.5 corpus with 872 documents / 8 user formats. The temporal field test also passes with exact Library Single Time Service v0.10 and ConnectSelector dev8 base selector source. ConnectSelector dev8 confirms the existing `ConnectIntent(operation, REQUEST, IMMEDIATE, AUTO, TIME)` and `selector~execute(intent, params)` contract remains unchanged. Authenticated remote routing remains ConnectSelector/platform-authority scope.
+
+Library dev18 Archive/Compress is a separate patch lineage and must be reconciled explicitly before the next full NotNotes release.
+
+
 **Status: authentic source published; NotNotes dev17 temporal-authority evidence documented; Gopher sphere registration/validation remains pending.**
 
 ## Temporal authority update — 27 October 2026

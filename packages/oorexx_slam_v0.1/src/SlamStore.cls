@@ -101,6 +101,9 @@
   self~q('CREATE TABLE IF NOT EXISTS step (id INTEGER PRIMARY KEY, task_id INTEGER NOT NULL, seq INTEGER NOT NULL, text TEXT, from_id INTEGER, to_id INTEGER, min_tier TEXT, state TEXT NOT NULL, path TEXT, value TEXT)')
   self~q('CREATE TABLE IF NOT EXISTS turn (task_id INTEGER NOT NULL, n INTEGER NOT NULL, step_seq INTEGER, action TEXT NOT NULL, node_id INTEGER, frontier INTEGER, detail TEXT, PRIMARY KEY (task_id, n))')
   self~q('CREATE TABLE IF NOT EXISTS lesson (id INTEGER PRIMARY KEY, from_id INTEGER NOT NULL, to_id INTEGER NOT NULL, passed INTEGER NOT NULL, predicted TEXT, reason TEXT, data TEXT)')
+  /* Leg Drop: one change to one case rule, scored on each estate before and after; kept or undone by rule
+     (tests/unit/legdrop_turn.rex). Kept apart from turn, which is a path search's steps. */
+  self~q('CREATE TABLE IF NOT EXISTS rule_turn (id INTEGER PRIMARY KEY, rule TEXT NOT NULL, change TEXT NOT NULL, estate TEXT NOT NULL, before TEXT NOT NULL, after TEXT NOT NULL, kept INTEGER NOT NULL, why TEXT)')
   self~q('CREATE TABLE IF NOT EXISTS contract (node_id INTEGER PRIMARY KEY, needs TEXT NOT NULL, gives TEXT NOT NULL, effects TEXT, standalone INTEGER NOT NULL, canon TEXT)')
   /* translation edges: a node in one language -> the node it becomes in another (from compiler pairs);
      freq is the prior, trials / passes the tested tier, kept apart from the edges Task searches */

@@ -1,0 +1,16 @@
+Wire Direct Linux v0.1-dev28
+
+Purpose
+- Turn the first GTK MailReader host into a useful native desktop projection without moving presentation authority into ooRexx.
+
+Changes
+- GTK virtual-list rows now project the existing WireListRow fields as native From / Subject / Date columns.
+- Subject is the flexible/ellipsized field; row stable identity remains attached to the GtkListBoxRow.
+- Per-row semantic annotations continue to target Subject via a private renderer mapping; the public ABI is unchanged.
+- scripts/build.sh now links wire_mailreader_demo whenever GTK4 development files are available, alongside wire_demo.
+- The MailReader demo remains GTK-free and requests only 100 visible message rows from its 200,000-row backing collection.
+
+Qualification in this environment
+- Static GTK MailReader projection qualification passes.
+- Dependency-light core and architecture tests pass.
+- GTK4 native compile/run remains intentionally unclaimed where GTK4 development files are absent.

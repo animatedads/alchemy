@@ -1,17 +1,21 @@
 {
   "kind": "article",
   "id": "qual.smtp-secure-stack.current",
-  "version": "0.1",
+  "version": "0.5",
   "sphere": "smtp-secure-stack",
   "title": "Current qualification baseline",
-  "summary": "SMTP Secure Stack v0.1-dev11 is the current qualified implementation baseline. It was exercised under Open Object Rexx 5.3.0 r13196 and qualified with the exact dependency inputs recorded in the package.",
+  "summary": "SMTP Secure Stack v0.1-dev11 remains the last complete qualification including optional RPC/instrumentation lanes under ooRexx 5.3.0 r13196. Current Git source is dev7.4: dev7.3 supplies restart-safe fail-closed recovery; dev7.4 adds the owned inbound MX composition, mixed-recipient atomicity and shared IMAP read projection. A separate dev12 artifact exercised the receive/store path under r13196. Autobuilder is not running and no live-host activation is claimed.",
   "authority": "qualification-evidence",
   "invariants": [
     "Complete SMTP policy, S/MIME, MAS/MAIL, wire, durable-delivery, outbound-dispatch, STARTTLS, Socket Provider, RPC-over-SMTP and instrumentation regression suite passed.",
     "Mandatory dev11 source classes compile with rexxc under ooRexx 5.3.0 r13196.",
     "Claude ooRexx standards enforcer reported 0 errors and PASS; remaining warnings are non-fatal heuristics.",
     "Live IPv6 was not claimed because the rxSock6 socket6.cls runtime dependency was not present in the qualification environment.",
-    "The package documents newer estate component heads separately when exact executable archives were unavailable; it does not falsely claim execution against those unavailable heads."
+    "The package documents newer estate component heads separately when exact executable archives were unavailable; it does not falsely claim execution against those unavailable heads.",
+    "Current Git dev7.1 adds a regression for QUIT/close syntax exceptions after final DATA 250; the fix is source-committed while dev11 remains the last full executable qualification.",
+    "Current Git dev7.2 adds atomic recovery metadata/catalogue commit and a restart mailbox reload regression; it is committed source evidence only while autobuilder is stopped.",
+    "Current Git dev7.3 rejects orphaned message bodies, catalogue size mismatches, short reads and missing/incomplete recovery metadata; this remains source evidence until autobuilder resumes.",
+    "Current Git dev7.4 composes the inbound local-domain receiver and shared IMAP read-side store; mixed local/relay transactions are rejected before local side effects."
   ],
   "provenance": [
     {
@@ -31,6 +35,12 @@
       "sha256": "95bf988357505e2ab59ec3264d702e9179c99be530cb55248647cf23ac3229bc",
       "member": "oorexx_smtp_secure_stack_v0.1-dev11/STANDARDS_ENFORCER.txt",
       "claim": "Standards-enforcer result: zero errors, PASS."
+    },
+    {
+      "artifact": "oorexx_smtp_secure_stack_v0.1-dev12.zip",
+      "sha256": "a2df7226656ea3311f2757050b63255f193225ebe0ee28642dc41a03bd031ffd",
+      "member": "oorexx_smtp_secure_stack_v0.1-dev12/VALIDATION_DEV12.txt",
+      "claim": "r13196 receive/store, Storage Fabric, STARTTLS and outbound regression evidence for the dev12 development artifact; optional RPC/instrumentation lanes were not re-qualified by this run."
     }
   ]
 }

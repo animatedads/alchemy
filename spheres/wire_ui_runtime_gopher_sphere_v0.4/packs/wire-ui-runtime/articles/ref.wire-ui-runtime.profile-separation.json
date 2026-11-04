@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.profile-separation",
+  "version": "0.4",
+  "sphere": "wire-ui-runtime",
+  "title": "Render profile and interaction profile are separate axes",
+  "summary": "Renderer capability/display profiles such as compact-touch or large-fine are separate from semantic interaction profiles such as HUMAN_VISUAL and AI_AGENT_OPTIMISED. Mixing them causes incorrect definition selection and weakens the authority model.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Render profile is selected from capability/display facts and controls concrete renderer preparation.",
+    "Interaction profile is a server-authoritative semantic presentation projection of the same application.",
+    "Selecting an AI/machine interaction profile never creates a second business API or different transaction authority.",
+    "Browser capability claims may select among server-defined render profiles but never arbitrary executable code."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_server_v0.17.1.zip",
+      "sha256": "70e4897a40abf10174574e0442cf17635574fef3ec861b6a55804b238cc4abd5",
+      "member": "wire_ui_server_v0.17.1/README.md",
+      "claim": "Server explicitly selects renderer capability profile independently of HUMAN_VISUAL/AI_AGENT_OPTIMISED.",
+      "line_start": 117,
+      "line_end": 125
+    },
+    {
+      "artifact": "wire_ui_server_v0.17.1.zip",
+      "sha256": "70e4897a40abf10174574e0442cf17635574fef3ec861b6a55804b238cc4abd5",
+      "member": "wire_ui_server_v0.17.1/README.md",
+      "claim": "Same immutable release may switch semantic interaction profile without separate bot API.",
+      "line_start": 185,
+      "line_end": 197
+    },
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev7.zip",
+      "sha256": "38bebd4783abc143b7365793d337f4682b0f80cac8478afa115befb0440cd15a",
+      "member": "alchemy_wire_ui_js_v0.4-dev7/README.md",
+      "claim": "Reconciled JS separates semantic interaction profile from renderer profile.",
+      "line_start": 10,
+      "line_end": 18
+    }
+  ]
+}

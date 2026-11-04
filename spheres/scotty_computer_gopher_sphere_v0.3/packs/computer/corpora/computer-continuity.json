@@ -1,0 +1,68 @@
+{
+  "kind": "corpus",
+  "id": "computer-continuity",
+  "sphere": "scotty-computer",
+  "title": "Durable Computer implementation decisions",
+  "records": [
+    {
+      "id": "reason.pin-interpreter-and-script",
+      "trigger": "Agent registers Python/bash/rexx job",
+      "rule": "Pin script file bytes as well as interpreter, and include any explicit known local dependency via --pin-file; the rest of the transitive dependency graph is not authenticated.",
+      "related": [
+        "cmp.script-pins"
+      ]
+    },
+    {
+      "id": "reason.no-silent-drift",
+      "trigger": "Pinned input changes between review and execution",
+      "rule": "Reject and require a new preview/new immutable job; do not automatically refresh approval to new file bytes.",
+      "related": [
+        "cmp.jobs",
+        "cmp.script-pins"
+      ]
+    },
+    {
+      "id": "reason.strict-scope",
+      "trigger": "Agent finds files or dependencies",
+      "rule": "Resolve the named machine-local search scope and fail on an unknown scope; do not scan arbitrary mounts.",
+      "related": [
+        "cmp.scopes"
+      ]
+    },
+    {
+      "id": "reason.no-token-identity",
+      "trigger": "Agent holds Computer confirmation token",
+      "rule": "Treat token as approval workflow guard, not proof of an independent human approver.",
+      "related": [
+        "cmp.jobs"
+      ]
+    },
+    {
+      "id": "reason.exception-distinct",
+      "trigger": "Child rc=0 but exception observed",
+      "rule": "Preserve child rc and exception outcome as separate evidence; no background daemon.",
+      "related": [
+        "cmp.exceptions",
+        "cmp.receipts"
+      ]
+    },
+    {
+      "id": "reason.preserve-ssh",
+      "trigger": "Git remote uses SSH host alias or ED209 remote helper",
+      "rule": "Preserve configured SSH authority; never rewrite project-specific deploy-key alias to force access.",
+      "related": [
+        "cmp.github",
+        "cmp.jobs"
+      ]
+    },
+    {
+      "id": "reason.acceptance",
+      "trigger": "Agent reports package current or accepted",
+      "rule": "Verify Autobuild receipt and native full qualification; a ready marker alone is not acceptance.",
+      "related": [
+        "cmp.publication",
+        "cmp.qualification"
+      ]
+    }
+  ]
+}

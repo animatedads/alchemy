@@ -1,0 +1,21 @@
+options levelb
+namespace alchemytest_signal_qualification
+import alchemytest
+main: procedure = .int
+  box = .box(7)
+  caught = 0
+  do
+    ignored = invoke_callback(.failing_callback(), 5)
+  on signal division_by_zero
+    caught = 1
+  end
+  if caught \= 1 | box.value() \= 7 then return 1
+  say "PASS: nested signal propagation"
+  return 0
+failing_callback: class
+  *: factory
+    return
+  on_value: method = .int
+    arg value = .int
+    divisor = 0
+    return value / divisor

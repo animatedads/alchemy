@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "workbench.semantic-base-guard",
+  "version": "0.1",
+  "sphere": "llm-coding-workbench",
+  "section": "architecture",
+  "title": "Semantic stale-base guard: a model turn cannot overwrite a method it did not inspect",
+  "summary": "Workbench dev15 records the semantic method base observed by the turn and re-reads the method immediately before WRITE_METHOD. If the revision identity moved, the Workbench raises STALE_SEMANTIC_BASE before Development Desk mutation. Revision IDs are preferred; older Desk projections fall back to exact source_text comparison. Atomic exact-base proposal/conflict-branch semantics remain Semantic Source Control authority.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "The model never supplies, edits, or overrides the semantic base token.",
+    "A WRITE_METHOD must refer to the same semantic method state that the Workbench inspected for that turn.",
+    "Revision identity is preferred over text equality when revision metadata is available.",
+    "A stale method is rejected before Development Desk mutation; the Workbench does not invent a merge or winner.",
+    "Atomic conflict branch creation remains Semantic Source Control authority; the Workbench guard is an early concurrency gate, not a replacement repository."
+  ],
+  "procedure": [
+    "Inspect the target method through Development Desk.",
+    "Retain its revision identity in the Rexx session while the live semantic object exists.",
+    "Immediately before WRITE_METHOD, re-read the method without replacing the retained base.",
+    "If the current identity differs, raise STALE_SEMANTIC_BASE and return to a fresh inspection turn.",
+    "If unchanged, allow the governed Development Desk write path to continue."
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_llm_coding_workbench",
+      "member": "src/LlmCodingWorkbench.cls",
+      "claim": "dev15 LlmCodingDeskSession records method bases and rejects stale WRITE_METHOD before desk mutation."
+    },
+    {
+      "artifact": "packages/oorexx_llm_coding_workbench",
+      "member": "tests/test_stale_semantic_base_guard.rex",
+      "claim": "Regression asserts a changed revision is rejected and Development Desk WRITE_METHOD is never called."
+    },
+    {
+      "artifact": "packages/oorexx_semantic_source_store",
+      "member": "src/SemanticSourceMutationService.cls",
+      "claim": "Current SSC exact-base mutation and conflict-branch authority that the Workbench guard aligns with but does not replace."
+    }
+  ]
+}

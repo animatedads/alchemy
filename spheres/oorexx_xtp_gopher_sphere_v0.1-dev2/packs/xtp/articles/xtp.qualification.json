@@ -1,0 +1,55 @@
+{
+  "kind": "article",
+  "id": "xtp.qualification",
+  "sphere": "xtp",
+  "version": "0.1-dev1",
+  "title": "Evidence register and next acceptance gates",
+  "section": "qualification",
+  "summary": "Qualification is recorded per layer: source validity, offline cryptographic contract, planner numeric pressure, local native UDP, persistent authenticated session, atomic durable install, ED209 raw36 and L2. Promotion requires all relevant gates with reproducible logs.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "Never substitute an offline verifier test for a live gateway security test",
+    "Do not claim a full multi-hop XTP router, complete AF_XTP kernel stack or raw36/L2 promotion",
+    "Do not equate an XTP CNTL receipt to durable application ACK_APPLIED",
+    "Controller partition writes fail closed; existing valid committed leases remain usable under explicit policy",
+    "No live ED209 routing changes without independently tested emergency access and rollback"
+  ],
+  "procedure": [
+    "Run offline candidate tests: python3 -m unittest discover -s tests -v in provisioning candidate1 (19 tests)",
+    "Run planner pressure and Storage concurrent admission suites under supplied ooRexx r13196 and Werror native build",
+    "Implement and test remote cryptographic session identity, replay and cross-context confidentiality",
+    "Implement file write-before-memory, signatures/quorum and gateway atomic stage/activate/revert",
+    "Test 2-of-2 controller partition and 2-of-3 failover with actual durable replication authority",
+    "Test persistent UDP large range transfer; then ED209 raw36 using dedicated CAP_NET_RAW; L2 later",
+    "Record exact package SHA-256, commands, node identities, observed failure and rollback outcomes"
+  ],
+  "provenance": [
+    {
+      "artifact": "xtp_route_publication_v0.1_candidate1.zip",
+      "sha256": "f7d244551a8c7c3372ac723b9a40e04adfafbc46d09d9498eea7c0dfab53d5df",
+      "member": "xtp_route_publication_v0.1_candidate1/tests/test_contract.py",
+      "claim": "Offline contract acceptance evidence"
+    },
+    {
+      "artifact": "oorexx_operational_degradation_planner_v0.1-dev5.zip",
+      "sha256": "422dd2a2f2ef03ab9376e7e3f7ed9a847eb6212cf03eeba84a909ccd133b5479",
+      "member": "oorexx_operational_degradation_planner_v0.1-dev5/tests/test_pressure_rexx.rex",
+      "claim": "ooRexx planner pressure suite"
+    },
+    {
+      "artifact": "oorexx_storage_fabric_v0.1-dev23(2).zip",
+      "sha256": "739f24089f5a73aad08dc225b774ebf7b0ab31336647b448bcfe823938a78ce0",
+      "member": "oorexx_storage_fabric_v0.1-dev23/tests/run_parallel_fetch_pressure.sh",
+      "claim": "Storage fan-in test entrypoint"
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/tests/test_storage_capacity_xtp.sh",
+      "claim": "Native XTP local capacity timing smoke"
+    }
+  ],
+  "qualification_boundaries": {
+    "2026-10-23": "offline provision contract retested 19/19 locally; sphere structural checks reported separately; no ED209 field tests"
+  }
+}

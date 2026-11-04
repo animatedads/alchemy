@@ -1,0 +1,49 @@
+NoSQLServer v0.47 validation
+============================
+
+Focus
+-----
+VALUES table constructors as relational sources, prompted by Grok Hell Corpus v2.
+
+New SQL surface
+---------------
+- (VALUES (...), (...)) AS alias(column, ...)
+- VALUES sources participate as virtual relations.
+- VALUES may act as the left/base side of LEFT JOIN.
+- Existing LEFT JOIN null-extension semantics apply unchanged.
+- Literal typing/null handling is reused from the native SQL literal path.
+- No physical storage object is invented for VALUES rows.
+
+Hell Corpus v2
+--------------
+PASS             14
+UNSUPPORTED       6
+PARSE_ERROR      10
+WRONG_RESULT      0
+EXECUTION_ERROR   0
+
+New oracle-backed PASS:
+- Q17 VALUES constructor as a table source
+
+Important non-promotion
+-----------------------
+Q13 recursive CTE expression/path work was inspected and partially generalized
+(CAST projection groundwork, recursive WHERE plumbing, projected outer CTE
+rows), but the corpus case still raises an ooRexx-level condition. It is not
+advertised as a capability and remains a PARSE_ERROR in the score until the
+condition is fully diagnosed and eliminated.
+
+Regression evidence
+-------------------
+- v0.47 VALUES source smoke: PASS
+- v0.46 ORDER BY optimizer smoke: PASS
+- v0.45 staged mutation graph: PASS
+- v0.44 FK/event: PASS
+- v0.43 database events: PASS
+- v0.42 and prior SQL/window/CTE gates: PASS
+- database_core adapter: PASS
+- SQL-92 company: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 14/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

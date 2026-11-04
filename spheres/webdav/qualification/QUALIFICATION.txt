@@ -27,3 +27,11 @@ Promotion gate:
 - exact ooRexx 5.3.0 r13196 + Foreign Runtime v0.17.1
 - full inherited HTTPS/WebDAV suites
 - live TLS large PUT/GET, disconnect-abort, bounded-memory and concurrent GET forcing cases
+
+Qualification handoff update — 2026-10-29
+- CODEX-PC reply REQ-00000865: NOT_RUN because the exact v0.4.8/dev6 deliveries were absent on its host.
+- Candidate archives are now persisted at /Alchemy/WebDAV-HTTPS-Streaming/ in ChatGPT Library.
+- Exact live gate committed at spheres/https-server/qualification/qualify_https_webdav_streaming.sh.
+- Live fixture committed at spheres/https-server/qualification/live_webdav_streaming_server.rex.
+- Gate forcing cases: 16 MiB TLS PUT with maxBodyBytes=1 MiB, byte-identical full GET, six concurrent GETs, and truncated 8 MiB PUT after 512 KiB with required 404/no-stage publication.
+- Current status remains NOT_RUN until executed on exact r13196 + Foreign Runtime v0.17.1. Website/readiness consumers must continue to treat HTTPS v0.4.8 as NOT_READY.

@@ -1,0 +1,25 @@
+{
+  "kind": "article",
+  "id": "ssc.semantic-mutation",
+  "sphere": "semantic-source-control",
+  "title": "Semantic element mutation and conflict branching",
+  "summary": "Semantic edits operate on exact semantic object revisions, not whole files. dev28 proposes immutable object revisions and uses the existing sparse branch authority when the submitted base is stale.",
+  "invariants": [
+    "source.propose_edit requires an existing semantic object and exact base revision.",
+    "SOURCE_UNIT and SOURCE_FILE are not accepted as whole-file mutation targets.",
+    "A non-conflicting edit creates a PROPOSED revision; accepted_revision_id changes only through explicit acceptance.",
+    "A stale-base edit leaves the current pointer unchanged and retains both candidates in a CONFLICT branch.",
+    "An unresolved conflict never silently changes ordinary materialisation.",
+    "Caller identity comes from the authenticated session; request-body identity is not authority.",
+    "Source Editor remains projection tooling; SSC/Development Desk remains semantic revision authority."
+  ],
+  "evidence": {
+    "dev26_repository": "LOCAL_PASS on ooRexx 5.3.0 r13196 + real NoSQLServer v0.79 path as recorded by dev2 sphere",
+    "dev28_mutation": "CANDIDATE_UNQUALIFIED; live semantic_mutation_test.rex added but not executed in this chat"
+  },
+  "missing_work": [
+    "Run dev28 real-database live suite on r13196.",
+    "Wire and qualify authenticated MCP/HTTPS source.propose_edit.",
+    "Rebase/qualify dev27 instrumentation and intention-federation work on this authority."
+  ]
+}

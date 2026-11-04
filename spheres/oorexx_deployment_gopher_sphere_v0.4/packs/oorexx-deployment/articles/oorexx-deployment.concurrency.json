@@ -1,0 +1,59 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.concurrency",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Concurrency requires per-target single-flight for state-changing readiness",
+  "summary": "Different targets may reconcile concurrently, but operations that can mutate the same target/generation/native repair state must be serialized or joined as one in-flight operation. The Audio fleet run exposed duplicate first-time Foreign Runtime rebuilds on the Oracle hosts when readiness was invoked twice.",
+  "authority": "project-doctrine",
+  "section": "operations",
+  "invariants": [
+    "Independent targets may deploy concurrently and retain distinct DeploymentResult objects.",
+    "Completion order across different targets must not alter desired state.",
+    "For the same target + generation + repair key, only one mutating readiness/rebuild operation should execute; concurrent callers should observe/join its state rather than spawn duplicate compilers.",
+    "Lock ownership and stale-lock recovery must be represented in deployment evidence.",
+    "BUILDING is not READY, and timeout/termination is not successful readiness."
+  ],
+  "topics": [
+    "concurrency",
+    "single-flight",
+    "locking",
+    "BUILDING",
+    "readiness"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 906,
+      "line_end": 916,
+      "claim": "Permits independent-target concurrency with distinct results."
+    },
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 199,
+      "line_end": 200,
+      "claim": "Operational run explicitly reports duplicate first-time native rebuilds caused by invoking readiness twice."
+    },
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 212,
+      "line_end": 240,
+      "claim": "Shows two ensure_foreign_runtime/g++ trees on each Oracle host before redundant cleanup."
+    },
+    {
+      "artifact": "Pasted markdown(20260910-173442).md",
+      "sha256": "6512962de7fa4f6c254daec78d38f409ba4a9a6db34ae18ed7691df30358f91c",
+      "member": "Pasted markdown(20260910-173442).md",
+      "line_start": 274,
+      "line_end": 301,
+      "claim": "Shows A/B remained BUILDING after cleanup while other nodes had independent states."
+    }
+  ],
+  "implementation_status": "Required next-revision doctrine; not claimed as implemented by oorexx_deployment_v0.1-dev2."
+}

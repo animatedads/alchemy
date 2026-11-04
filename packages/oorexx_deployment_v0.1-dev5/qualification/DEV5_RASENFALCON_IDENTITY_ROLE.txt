@@ -1,0 +1,27 @@
+Qualification date: 2026-10-29
+Scope: General Deployment dev5 Rasen Falcon identity-role packaging
+
+Input authority:
+- Library oorexx_ldap_identity_v0.1-dev22.zip
+- SHA-256 697c301c37ad1d77252a34db9028420c4c9a3e3dbe5c60de9be6fc91940341fc
+- corrected Git handoff commit 0495e8604c62fc780aff3c95b94c935415ffc57d (PR #71)
+
+PASS LDAP dev22 package MANIFEST.sha256 verification.
+PASS LDAP dev22 deployment contract shell test.
+PASS General Deployment dependency namespace verification before and after role relocation.
+PASS relocated launch reconstructs REXX_PATH from portable relative evidence and does not retain construction paths.
+PASS identity-role builder against the actual dev22 extraction.
+PASS generated systemd unit preserves non-root/hardening contract.
+PASS generated unit launches through exact namespace verifier and no longer uses direct ambient /usr/bin/rexx launch.
+PASS role services inventory contains rasenfalcon-ldap.service.
+PASS role test inventory contains ready:ldap_bind, e2e:ldap_revoke, e2e:sign_verify_revoke.
+PASS generated manifest hashes match every staged role file.
+PASS shell syntax for new dev5 scripts/tests.
+
+NOT RUN production LDAP install/start.
+NOT RUN live LDAPS bind against a Rasen Falcon host.
+NOT RUN live principal revoke acceptance.
+NOT RUN Crypto/PKI sign/verify/revoke acceptance.
+NOT RUN production certificate/DNS/firewall/cutover.
+
+Autobuilder was not run, per programme direction.

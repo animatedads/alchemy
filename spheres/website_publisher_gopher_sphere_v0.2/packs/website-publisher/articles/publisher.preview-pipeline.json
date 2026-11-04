@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "publisher.preview-pipeline",
+  "version": "0.2",
+  "sphere": "website-publisher",
+  "title": "Single-command offline Rasenfalcon preview with fail-closed candidate receipt",
+  "section": "handoff",
+  "summary": "Builds a private nine-page Rasenfalcon candidate preview using the independently owned Rasen Falcon v0.2 compiler; hashes and privacy checks are evidence of preview preparation only, not publication authority.",
+  "invariants": [
+    "Website Publisher owns operator-only tools/preview_pipeline.py and browser-export qualification; the independently owned Rasen Falcon builder remains external and unchanged.",
+    "Accept only local nonsymlink candidate files and a distinct unused output directory; stage and preview privately before presenting output.",
+    "Stage report must contain nine candidate pages, CANDIDATE_UNREVIEWED, NONE authority, FALSE native_revision_verified, no CMS/Wire release receipts, exact input SHA-256.",
+    "Every built page must have noindex,nofollow; robots.txt disallows /; preview page hashes are checked against the independently owned Rasen Falcon build manifest.",
+    "Publisher preview receipt is not authenticated or signed, says deployment NOT_PERFORMED and is not a release token; public HTTPS, LDAP, RexxOS and authorised approval remain separate.",
+    "Local Python CLI is build-time operator tooling, not a Python web backend, storage provider, web service or deployment mechanism.",
+    "Publisher stays pinned to runtime-qualified NoSQLServer v0.90 until newer versions pass independent native tests."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "alchemy_website_publisher_v0.4/tools/preview_pipeline.py",
+      "sha256": "4062c0f4976ba15332857c9bad8cff4dbf4e91bb1b440584a6e9a17e08953d79",
+      "claim": "Single-command candidate-preview orchestration and output verification"
+    },
+    {
+      "artifact": "alchemy_website_publisher_v0.4/tests/test_preview_pipeline.py",
+      "sha256": "ed89246b28f26f07af6e627500bc0cbeff70c55f5a32846766bfb6f3cbe9d152",
+      "claim": "19 live browser-to-builder positive and negative assertions"
+    },
+    {
+      "artifact": "rasenfalcon_site_publisher_handoff_v0.2.zip",
+      "sha256": "0d85822b4e0d0bac0795c7f09e971955d07dfe11a90cd596c197a73d6f1859c8",
+      "claim": "External owned stage and preview compiler, unchanged"
+    }
+  ],
+  "related": [
+    "publisher.rasenfalcon-handoff",
+    "publisher.authority",
+    "publisher.backlog"
+  ]
+}

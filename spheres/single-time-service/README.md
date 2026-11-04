@@ -21,3 +21,6 @@ The v0.9 manifest and Python tests were verified on 23 October 2026. The origina
 
 ## GitHub governance
 Alchemy accepts package source and spheres through its managed autobuild sender; a submission branch is not a merge to `main` nor an acceptance receipt. The full source backfill remains tracked at https://github.com/animatedads/alchemy/issues/25 .
+
+## 29 October 2026 — v0.10 source backfill
+Full project-owned v0.10 code/fixtures/tests at `packages/single_time_service_v0.10`. TimeValidityWindow adds uncertainty-aware UTC validity predicate for HTTPS/LDAP/mail consumers, **not** certificate admission. Native v0.10 suite remains unqualified; ConnectSelector v0.1-dev8 and HTTPS server v0.4.8 observed but not integrated/qualified here.

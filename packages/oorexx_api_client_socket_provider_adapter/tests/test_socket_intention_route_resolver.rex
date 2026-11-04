@@ -44,7 +44,42 @@ main:
   ignore=fallback~resolve(.ApiUrl~new(fallbackRequest~url),fallbackRequest,.nil)
   call assertEq "fallback.example",fallback~lastNegotiationRequest~logicalName,"URL host is bounded fallback logical name"
 
-  say "PASS API Client Socket Intention dynamic route resolver"
+  evidence=.directory~new
+  evidence["route.attested"]=.true
+  evidence["service.protection"]="ENCRYPT"
+  protectedXtp=.SocketAddresses~xtp("GRID.API.PROTECTED",.false,"api.service",evidence)
+  requirements=.directory~new
+  requirements["route.attested"]=.true
+  requirements["service.protection"]="ENCRYPT"
+  policy=.ApiSocketRequiredMetadataPolicy~new(requirements)
+  protectedPort=.FakeIntentionPort~new(.array~of(protectedXtp))
+  protectedResolver=.ApiSocketIntentionRouteResolver~new(protectedPort,.nil,.nil,policy)
+  admitted=protectedResolver~resolve(url,request,.nil)
+  call assertTrue admitted==protectedXtp,"attested selected address admitted"
+  call assertTrue policy~lastAddress==protectedXtp,"policy receives exact selected SocketAddress"
+  call assertTrue policy~lastRequest==request,"policy receives exact ApiRequest"
+  call assertTrue policy~lastSelection==protectedResolver~lastSelection,"policy receives exact selection evidence"
+
+  weakEvidence=.directory~new
+  weakEvidence["route.attested"]=.true
+  weakEvidence["service.protection"]="AUTHENTICATE"
+  weakXtp=.SocketAddresses~xtp("GRID.API.WEAK",.false,"api.service",weakEvidence)
+  weakPolicy=.ApiSocketRequiredMetadataPolicy~new(requirements)
+  weakResolver=.ApiSocketIntentionRouteResolver~new(.FakeIntentionPort~new(.array~of(weakXtp)),.nil,.nil,weakPolicy)
+  call assertTrue weakResolver~resolve(url,request,.nil)==.nil,"weaker selected route fails closed"
+  call assertEq "SOCKET_ROUTE_METADATA_MISMATCH",weakResolver~lastError,"mismatched route evidence retained"
+  call assertEq "service.protection",weakPolicy~mismatchedKey,"mismatched evidence key retained"
+
+  missingEvidence=.directory~new
+  missingEvidence["route.attested"]=.true
+  missingXtp=.SocketAddresses~xtp("GRID.API.MISSING",.false,"api.service",missingEvidence)
+  missingPolicy=.ApiSocketRequiredMetadataPolicy~new(requirements)
+  missingResolver=.ApiSocketIntentionRouteResolver~new(.FakeIntentionPort~new(.array~of(missingXtp)),.nil,.nil,missingPolicy)
+  call assertTrue missingResolver~resolve(url,request,.nil)==.nil,"missing selected route evidence fails closed"
+  call assertEq "SOCKET_ROUTE_METADATA_MISSING",missingResolver~lastError,"missing route evidence retained"
+  call assertEq "service.protection",missingPolicy~missingKey,"missing evidence key retained"
+
+  say "PASS API Client Socket Intention dynamic route resolver and admission policy"
   return
 
 assertEq: procedure

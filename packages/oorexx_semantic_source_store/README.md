@@ -1,9 +1,32 @@
-# ooRexx Semantic Source Store v0.1-dev28
+# ooRexx Semantic Source Store v0.1-dev29
 
 Semantic-object persistence, revision, branching and package-resolution foundation for Semantic Source Control.
 
 The semantic source object and its immutable revisions are authoritative. Conventional
 files and ZIP archives are projections. MCP is the intended mutation authority.
+
+## Added in dev29: real-authority observability and intention federation
+
+dev29 rebases the previously separate dev27 observation/federation work onto the real
+dev28 repository and semantic-mutation authority. Package resolution now emits bounded
+database/materialisation evidence through an optional Instrumentation Mesh observer, with
+QUERYSET_ASARRAY and EXECUTE kept as distinct materialisation paths. Resource materialisation
+is set-oriented, removing the residual per-object/per-resource N+1 path.
+
+The Examiner can optionally federate fresh specialist intention surfaces through Management
+Intention Discovery. Specialist discovery remains advisory; any executable semantic source
+action still re-enters SemanticSourceSecureExaminer and the normal authorization/step-up path.
+
+The browser exposes related specialist intentions and Performance & observation evidence.
+Freshness is observation evidence, never fabricated service health.
+
+Library baselines inspected for this rebase include Architecture Intentions v0.1-dev11 and
+Storage Fabric Instrumentation Mesh v0.1-dev8. Architecture remains an external design
+authority and hands SSC evidence for independent verification; SSC does not absorb its
+promotion authority.
+
+Evidence for dev29 in this commit is STATIC_CONTRACT_PASS only; host/runtime qualification
+under ooRexx r13196 and the live PostgreSQL/MCP composition remains required.
 
 ## Added in dev28: exact-base semantic edits and automatic conflict branches
 

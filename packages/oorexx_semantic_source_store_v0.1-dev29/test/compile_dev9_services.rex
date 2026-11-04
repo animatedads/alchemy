@@ -1,0 +1,8 @@
+say "DEV9 SERVICES COMPILE: PASS"
+::requires "NoSQLServer.cls"
+::requires "../src/SemanticSourceStore.cls"
+::requires "../src/SemanticSourceLanguageService.cls"
+::requires "../src/SemanticSourceModuleService.cls"
+::requires "../src/SemanticSourceBranchService.cls"
+::requires "../src/SemanticSourcePackageService.cls"
+::requires "../src/SemanticSourceCodeExaminer.cls"

@@ -1,0 +1,33 @@
+NoSQLServer v0.33 validation
+=============================
+
+Purpose
+-------
+Establish Grok Hell Corpus v2 as a permanent adversarial frontier and harden
+valid-but-unsupported SQL classification without changing native storage semantics.
+
+Hell Corpus v2 baseline
+-----------------------
+PASS            3
+UNSUPPORTED    14
+PARSE_ERROR    13
+WRONG_RESULT    0
+EXECUTION_ERROR 0
+
+Oracle-backed PASS:
+  Q01 ROW_NUMBER/RANK/DENSE_RANK in one pass
+  Q29 correlated scalar aggregate projections
+  Q30 conditional-aggregation pivot
+
+Hardening:
+  DELETE ... USING now returns SQLUNSUPPORTED instead of mis-parsing the
+  complete FROM/USING text as a physical table name and returning NOTFOUND.
+  MERGE is recognized as a valid SQL-family keyword and cleanly returns
+  SQLUNSUPPORTED rather than 'unknown keyword'.
+
+Regression gates:
+  database_core v0.22 adapter smoke: PASS
+  SQL-92 company smoke: PASS
+  Claude torture corpus: 12/12 PASS
+  Grok hell v1: 24/25 PASS, 0 wrong result
+  rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly.

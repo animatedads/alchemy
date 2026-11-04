@@ -1,17 +1,18 @@
 {
   "kind": "article",
   "id": "ref.font-manager.pdf-consumer",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "font-manager",
   "title": "PDF is a consumer, not a font authority",
-  "summary": "ooRexx PDF dev5 injects FontManager for semantic face selection, exact glyph metrics and subset creation. PDF retains only PDF-specific responsibilities: CID allocation, Type0/CIDFont construction, CIDToGIDMap, ToUnicode and document encoding.",
+  "summary": "ooRexx PDF dev6 consumes FontRunPlan through PdfManagedFontSet: the report corpus is planned once, actually used faces are subset and embedded independently, and each drawn string is segmented against the precomputed face assignment.",
   "invariants": [
     "PdfFlowReport may consume an injected FontManager but must not search the host font filesystem itself.",
     "FontManager selects PRINT_BODY/HEADING faces, creates subsets and provides glyph plans.",
     "PDF owns CID allocation, /Identity-H, /CIDToGIDMap, /ToUnicode and PDF object syntax.",
     "Unicode metadata and outline titles use Unicode PDF strings independently from font discovery.",
     "The legacy Helvetica path remains available when no FontManager is injected.",
-    "PDF dev5 currently assumes one managed face per logical role; dev3 FontRunPlan enables a future mixed-script multi-face PDF consumer."
+    "PDF dev6 may embed multiple managed faces for each semantic role and splits text into stable runs without repeating discovery during wrapping.",
+    "The current PDF emitter requires TrueType because it emits CIDFontType2/FontFile2; CFF/OpenType must remain unsupported until a correct CIDFontType0/OpenType emitter exists."
   ],
   "related": [
     "ref.font-manager.authority-boundary",
@@ -42,6 +43,12 @@
       "line_start": 73,
       "line_end": 112,
       "claim": "PDF-specific font embedding, CID map, widths and ToUnicode object construction."
+    },
+    {
+      "artifact": "oorexx_pdf_v0.1-dev6.zip",
+      "sha256": "84cd8330b731482660995c9fe1a615022682d6743ae5949b3379f5933420fa84",
+      "member": "oorexx_pdf_v0.1-dev6/src/PdfManagedFonts.cls",
+      "claim": "PdfManagedFontSet consumes FontRunPlan, embeds one subset per used face and performs preplanned run segmentation/measurement."
     }
   ]
 }

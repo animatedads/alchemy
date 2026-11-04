@@ -1,0 +1,271 @@
+{
+  "kind": "corpus",
+  "id": "ssc.interface",
+  "sphere": "semantic-source-control",
+  "title": "Semantic Source Control Gopher interface and continuity ledger",
+  "records": [
+    {
+      "topic": "current-baseline",
+      "component": "SemanticSourceControl",
+      "product_version": "0.2.3",
+      "lineage": "MAIN",
+      "source_level": "5",
+      "status": "accepted candidate baseline",
+      "note": "v0.2.4 performance/Gopher work is not sealed in this sphere."
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.identify",
+      "state": "PLANNED",
+      "class": "read",
+      "reason": "map carrier/symbol to SSC component/lineage/source-level/entity/revision"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.status",
+      "state": "PLANNED",
+      "class": "read",
+      "reason": "accepted parent plus working-candidate semantic status"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.compare",
+      "state": "PLANNED",
+      "class": "read",
+      "reason": "semantic deltas without acceptance"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.impact",
+      "state": "PLANNED",
+      "class": "read",
+      "reason": "consumer/requirement/external-operation impact"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.history",
+      "state": "PLANNED",
+      "class": "read",
+      "reason": "accepted source-level/revision history"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.accept",
+      "state": "PLANNED",
+      "class": "mutation",
+      "roles": [
+        "reviewer",
+        "admin"
+      ],
+      "reason": "explicit source-level acceptance only"
+    },
+    {
+      "topic": "gopher-gap",
+      "capability": "source.semantic.proposal.decide",
+      "state": "PLANNED",
+      "class": "mutation",
+      "roles": [
+        "reviewer",
+        "admin"
+      ],
+      "reason": "external-operation tracking decision"
+    },
+    {
+      "topic": "status-map",
+      "ssc": "no semantic change",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "UNCHANGED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "entity absent",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "NOT_FOUND",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "pending tracking proposal",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "REVIEW_REQUIRED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "requirement unsatisfied",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "REQUIREMENT_UNSATISFIED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "lineage changed",
+      "gopher_tool_status": "OK",
+      "gopher_operation_status": "SOURCE_LINEAGE_CHANGED",
+      "fallback": false
+    },
+    {
+      "topic": "status-map",
+      "ssc": "osc executable/provider unavailable",
+      "gopher_tool_status": "UNAVAILABLE",
+      "gopher_operation_status": "UNKNOWN",
+      "fallback": true
+    },
+    {
+      "topic": "status-map",
+      "ssc": "repository dependency unreadable/corrupt",
+      "gopher_tool_status": "DEPENDENCY_FAILURE",
+      "gopher_operation_status": "UNKNOWN",
+      "fallback": true
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.import_archive_begin",
+      "state": "IMPLEMENTED_LOCAL",
+      "class": "mutation",
+      "evidence": "LOCAL_PASS ooRexx r13196 + NoSQLServer v0.79; no MCP host wired",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations"
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.import_archive_member",
+      "state": "IMPLEMENTED_LOCAL",
+      "class": "mutation",
+      "evidence": "LOCAL_PASS ooRexx r13196 + NoSQLServer v0.79; no MCP host wired",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations"
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.import_archive_resource",
+      "state": "IMPLEMENTED_LOCAL",
+      "class": "mutation",
+      "evidence": "LOCAL_PASS ooRexx r13196 + NoSQLServer v0.79; no MCP host wired",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations"
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.import_archive_complete",
+      "state": "IMPLEMENTED_LOCAL",
+      "class": "mutation",
+      "evidence": "LOCAL_PASS ooRexx r13196 + NoSQLServer v0.79; no MCP host wired",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations"
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.import_archive_fail",
+      "state": "IMPLEMENTED_LOCAL",
+      "class": "mutation",
+      "evidence": "LOCAL_PASS ooRexx r13196 + NoSQLServer v0.79; no MCP host wired",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations"
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.get_package",
+      "state": "IMPLEMENTED_LOCAL",
+      "class": "read",
+      "evidence": "LOCAL_PASS ooRexx r13196 + NoSQLServer v0.79; no MCP host wired",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations"
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.accept_revision",
+      "state": "IMPLEMENTED_LOCAL",
+      "class": "mutation",
+      "evidence": "LOCAL_PASS ooRexx r13196 + NoSQLServer v0.79; no MCP host wired",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations"
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.refuse_revision",
+      "state": "IMPLEMENTED_LOCAL",
+      "class": "mutation",
+      "evidence": "LOCAL_PASS ooRexx r13196 + NoSQLServer v0.79; no MCP host wired",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations"
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.accept_import",
+      "state": "IMPLEMENTED_LOCAL",
+      "class": "mutation",
+      "evidence": "LOCAL_PASS ooRexx r13196 + NoSQLServer v0.79; no MCP host wired",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations"
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.history",
+      "state": "IMPLEMENTED_LOCAL",
+      "class": "read",
+      "evidence": "LOCAL_PASS ooRexx r13196 + NoSQLServer v0.79; no MCP host wired",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations"
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.objects_in",
+      "state": "IMPLEMENTED_LOCAL",
+      "class": "read",
+      "evidence": "LOCAL_PASS ooRexx r13196 + NoSQLServer v0.79; no MCP host wired",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations"
+    },
+    {
+      "topic": "store-baseline",
+      "component": "oorexx_semantic_source_store",
+      "status": "write authority added 2026-10-23",
+      "note": "Gopher source.semantic.* capabilities remain PLANNED: no Gopher adapter exists yet."
+    },
+    {
+      "topic": "store-operation",
+      "capability": "source.propose_edit",
+      "state": "CANDIDATE_UNQUALIFIED",
+      "class": "mutation",
+      "evidence": "implementation staged in oorexx_semantic_source_store v0.1-dev28; real r13196/database live suite not executed in this chat",
+      "component": "oorexx_semantic_source_store/SemanticSourceMcpOperations + SemanticSourceMutationService"
+    },
+    {
+      "topic": "semantic-mutation",
+      "state": "CANDIDATE_UNQUALIFIED",
+      "invariant": "whole SOURCE_UNIT/SOURCE_FILE replacement is rejected; edits target semantic elements against exact base revisions",
+      "conflict_rule": "stale exact base retains both candidates and creates/reuses sparse CONFLICT branch; ordinary package materialisation does not silently choose the stale candidate"
+    },
+    {
+      "topic": "authority-boundary",
+      "component": "oorexx_source_editor",
+      "state": "DOCUMENTED",
+      "note": "Source Editor edits conventional source projections; Semantic Source Store / Development Desk owns semantic object creation, revision identity, conflict branching, acceptance and materialisation."
+    },
+    {
+      "topic": "missing-work",
+      "state": "OPEN",
+      "note": "Wire a live authenticated MCP/HTTPS host to SemanticSourceMcpOperations and run end-to-end source.propose_edit qualification."
+    },
+    {
+      "topic": "missing-work",
+      "state": "OPEN",
+      "note": "Rebase and qualify the earlier dev27 instrumentation freshness and management-intention federation work onto the real dev26/dev28 repository authority."
+    },
+    {
+      "topic": "store-baseline",
+      "component": "oorexx_semantic_source_store",
+      "version": "0.1-dev29",
+      "state": "STATIC_CONTRACT_PASS",
+      "note": "real dev28 authority plus set-based resource materialisation, bounded Instrumentation Mesh observations and Management Intention specialist federation"
+    },
+    {
+      "topic": "performance",
+      "state": "IMPLEMENTED_STATIC",
+      "note": "package source revisions and resources resolve in sets; PostgreSQL querySet()->asArray path remains distinct from legacy execute path in instrumentation"
+    },
+    {
+      "topic": "authority-boundary",
+      "component": "oorexx_architecture_intentions",
+      "version": "0.1-dev11",
+      "state": "DOCUMENTED",
+      "note": "Architecture hands evidence to SSC for independent source/dependency closure verification; architecture promotion is not SSC authority."
+    },
+    {
+      "topic": "missing-work",
+      "state": "OPEN",
+      "note": "Run dev29 under ooRexx r13196 with live PostgreSQL provider and authenticated MCP/HTTPS Code Examiner route."
+    }
+  ]
+}

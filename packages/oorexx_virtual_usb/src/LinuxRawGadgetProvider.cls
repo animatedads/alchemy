@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------*/
-/* Linux Raw Gadget provider for ooRexx Virtual USB v0.1-dev10.                */
+/* Linux Raw Gadget provider for ooRexx Virtual USB v0.1-dev11.                */
 /* Uses /dev/raw-gadget through Foreign Runtime.                               */
 /*                                                                            */
 /* Raw Gadget control/event fetches and endpoint transfers are blocking.      */

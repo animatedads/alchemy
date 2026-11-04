@@ -1,0 +1,64 @@
+ooRexx XTP v0.1-dev27: validation record
+==========================================
+
+Architecture: Tom Dyer
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for dev26 and dev27
+Validation written and run by: Claude (Opus 5.5), 24 October 2026
+
+Baseline: oorexx_xtp_v0.1-dev26 as committed to animatedads/alchemy main in 2cd6c3cb
+Planner:  oorexx_operational_degradation_planner_v0.1-dev5, built locally
+Host:     Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror
+          Root in a container; AF_PACKET and raw sockets on lo (MTU 65536)
+Evidence class: LOCAL_PASS. FIELD_PASS is NOT claimed: no ED209 host was reached,
+          and no real 1500-byte-MTU Ethernet link was used.
+
+Changes against dev26 (lines added / removed)
+  src/xtp_transport.cpp              +225 -10  453c67c90045ba5a72214cf1ff8cd83a8bb3ab8ac340e1b01be53f362bed1113
+  include/xtp/xtp_transport.hpp      +13  -0   ea3ac24a06a261323989ee637387295fa3edba33d8cba50167cceeb5b4509b46
+  Makefile                           +4   -1   (target test-segmentation)
+  tests/test_segmentation.cpp        new, 131 lines
+  Metadata: CAPABILITIES.json (dev27_unicast_segmentation block), DEPENDENCIES.json,
+  integration.json (adds test-segmentation; publish.tree to ..._v0.1-dev27), README.md,
+  docs/XTP_SPEC_GAPS_DEV27.md
+
+1. Segmentation suite (make test-segmentation): 6 PASS, 0 FAIL, 0 SKIP
+   S1  UDP 300 KB, 1024-byte segments, named service       301 segments, 0 retransmitted, byte-exact
+   S2  L2 lo 100 KB, 1456-byte segments                    71 segments, 0 retransmitted, byte-exact
+   S3  UDP 200 KB through relay dropping every 5th forward
+       and every 7th reverse packet                        200 segments, 8867 retransmitted, byte-exact
+   S4  stream for an unadmitted service                    refused by sender timeout; nothing delivered
+   S5  100-byte message                                    exactly 1 packet, FIRST with EOM, dev26 format
+   S6  identical 30 KB stream sent twice with KEY 4242     delivered once, then replay=1
+   Whole suite: 4.8 s wall time.
+   An earlier draft failed S3: retries counted total rounds, and every round waited a
+   full timeout. The fixes (retries count rounds without progress, and a short drain
+   grace once a round's first ACK arrives) apply to unicast streams only.
+
+2. Interoperability, separate processes using the libxtp CLI (xtp-listen / xtp-connect)
+   dev27 sender -> dev26 listener   UDP  PASS     L2 lo  PASS
+   dev26 sender -> dev27 listener   UDP  PASS     L2 lo  PASS
+   (Single-segment messages. A multi-segment stream to a dev26 listener fails closed:
+   dev26 drops the first segment as an undecodable envelope and never ACKs it.)
+   Note: bin/xtp-local is a standalone implementation that does not link libxtp,
+   so it was not used as interop evidence.
+
+3. Full regression on dev27 (dev25 suite + dev26 adversarial suite + segmentation)
+   make test-service, test-capacity-rate, test-auto-key       PASS
+   make test-negative                                         7/7 PASS (N1, N1-L2, N1-RTN, N2, N8, E6, E7)
+   make test-segmentation                                     6/6 PASS
+   tests/run_tests.sh                                         35 PASS, 5 SKIP
+   15 further shell suites, including all multicast tests on the refactored
+   go-back-N engine                                           all rc=0
+   Totals: 80 PASS, 0 FAIL, 5 SKIP (proxy binary absent; no ooRexx interpreter)
+
+4. Not run
+   - A real Ethernet link at MTU 1500. lo has MTU 65536, so automatic L2 sizing was
+     exercised only with explicit segment_bytes=1456.
+   - ooRexx callers. No interpreter is available; no ooRexx file changed in dev27.
+   - The ED209 field path (dev18 qf-xtp-rpc), which is untouched.
+
+5. Known limitation
+   No selective retransmission (ECNTL/SPANS). Go-back-N under heavy loss multiplies
+   traffic (S3: about 44x). Listed first in docs/XTP_SPEC_GAPS_DEV27.md.
+
+Claude (Opus 5.5)

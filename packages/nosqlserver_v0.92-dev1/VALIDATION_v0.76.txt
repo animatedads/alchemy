@@ -1,0 +1,59 @@
+NoSQLServer v0.76 validation
+Runtime: Open Object Rexx 5.3.0 r13196, 64-bit
+
+New acceptance:
+  tests/v076_spatial_predicates_smoke.rex                         PASS
+
+The v0.76 smoke proves:
+  - real bundled GeoPackage POINT bytes decode through ST_X/ST_Y
+  - ST_GEOMETRYTYPE returns POINT from embedded WKB
+  - ST_SRID returns EPSG/SRID 27700
+  - real sample address/minor ST_WITHIN join returns 0 rows (no fabricated link)
+  - synthetic valid GPKG POINT within POLYGON is TRUE
+  - boundary POINT is not ST_WITHIN but is ST_INTERSECTS
+  - outside POINT is neither within nor intersects
+  - POINT/POINT self intersection works
+  - mismatched non-zero SRIDs fail explicitly
+  - spatial JOIN uses generic INNER_PREDICATE_CHAIN
+
+Historical/current versioned gates:
+  direct self-contained/ordinary pass                              71
+  argument-style storage/index/planner/concurrency gates            7
+  optional Unicode gate with explicit TUTOR root                    1
+  total executed PASS                                              79
+  regressions                                                        0
+
+Preserved core boundaries:
+  v0.67 GeoPackage provider                                       PASS
+  v0.68 federated facade external/legacy                          PASS
+  v0.69 DB Core geometry/SRID                                     PASS
+  v0.70 external metadata boundary                               PASS
+  v0.71 external mutation dispatch                               PASS
+  v0.72 general INNER JOIN ON                                    PASS
+  v0.73 JSON relation                                             PASS
+  v0.74 native SQLite/GeoPackage                                  PASS
+  v0.75 optional TUTOR Unicode                                    PASS
+
+SQL correctness oracles:
+  Claude torture                                                  12/12
+  Hell v1                                                         24/25
+    WRONG_RESULT                                                       0
+    EXECUTION_ERROR                                                     0
+  Hell v2                                                         25/30
+    WRONG_RESULT                                                       0
+    EXECUTION_ERROR                                                     0
+  Progressive feature torture                                     72/72
+  SQL-92 company smoke                                              PASS
+
+Compilation:
+  shipped .cls/.rex targets                                           94
+  rexxc failures                                                        0
+
+Known historical harness note:
+  v061_torture_harness_smoke.rex retains an obsolete pre-FK assertion and is
+  not used as a current correctness gate. The live GeoPackage smoke remains an
+  external-dataset probe and is not required for the bundled-fixture release.
+
+Scope intentionally not claimed in v0.76:
+  full Simple Features, LINESTRING/MULTI*, Z/M, polygon/polygon topology,
+  ST_DISTANCE, reprojection, geodesic operations, spatial indexing/pushdown.

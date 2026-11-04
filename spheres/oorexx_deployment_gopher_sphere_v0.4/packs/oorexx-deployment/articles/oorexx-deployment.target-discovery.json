@@ -1,0 +1,49 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.target-discovery",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Targets, discovery, capabilities and requirements remain distinct",
+  "summary": "DeploymentTarget identifies where work occurs; DeploymentDiscovery is a non-destructive snapshot; DeploymentCapability records what the target can do; DeploymentRequirement records what the desired state needs. The planner compares observations with requirements.",
+  "authority": "project-doctrine",
+  "section": "architecture",
+  "invariants": [
+    "targetId is opaque and is not assumed equal to hostname, IP address or application worker name.",
+    "Capabilities are observations; requirements are declarations.",
+    "A requirement must be testable or it must not masquerade as verified state.",
+    "Package-manager and platform mechanics belong behind providers, not hard-coded OS heuristics in the model."
+  ],
+  "topics": [
+    "target",
+    "discovery",
+    "capability",
+    "requirement",
+    "provider"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 128,
+      "line_end": 174,
+      "claim": "Defines DeploymentTarget identity and separation from host/IP/worker identity."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 209,
+      "line_end": 299,
+      "claim": "Separates testable requirements from observed capabilities."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 303,
+      "line_end": 385,
+      "claim": "Defines non-destructive discovery and provider ownership of platform mechanics."
+    }
+  ]
+}

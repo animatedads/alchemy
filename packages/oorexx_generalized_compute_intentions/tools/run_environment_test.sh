@@ -18,7 +18,7 @@ export LD_LIBRARY_PATH="$OOREXX_ROOT/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 echo '--- CORE SYNTAX ---'
 "$REXXC" "$ROOT/src/GeneralizedComputeIntentions.cls" >/dev/null
 echo 'PASS rexxc src/GeneralizedComputeIntentions.cls'
-for t in "$ROOT"/tests/test_dynamic_rediscovery.rex "$ROOT"/tests/test_planned_admittance.rex "$ROOT"/tests/test_structured_intention_bridge.rex "$ROOT"/tests/test_dynamic_surface_and_ready_guard.rex "$ROOT"/tests/test_handoff_revalidation_contract.rex; do
+for t in "$ROOT"/tests/test_dynamic_rediscovery.rex "$ROOT"/tests/test_planned_admittance.rex "$ROOT"/tests/test_structured_intention_bridge.rex "$ROOT"/tests/test_dynamic_surface_and_ready_guard.rex "$ROOT"/tests/test_handoff_revalidation_contract.rex "$ROOT"/tests/test_rto2_grid_projection.rex; do
   "$REXXC" "$t" >/dev/null
   echo "PASS rexxc tests/$(basename "$t")"
 done
@@ -30,6 +30,7 @@ cd "$ROOT/tests"
 "$REXX" test_structured_intention_bridge.rex
 "$REXX" test_dynamic_surface_and_ready_guard.rex
 "$REXX" test_handoff_revalidation_contract.rex
+"$REXX" test_rto2_grid_projection.rex
 
 
 if [[ -n "${INTENTION_SERVICE_ROOT:-}" ]]; then
@@ -84,4 +85,4 @@ else
   echo 'SKIP AI Model Router integration (set AI_MODEL_ROUTER_ROOT plus dependency roots)'
 fi
 
-echo 'PASS ooRexx Generalized Compute Intentions v0.1-dev7 environment qualification'
+echo 'PASS ooRexx Generalized Compute Intentions v0.1-dev8 environment qualification'

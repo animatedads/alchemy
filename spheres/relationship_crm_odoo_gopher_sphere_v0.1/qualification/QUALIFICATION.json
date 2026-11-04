@@ -1,47 +1,17 @@
 {
   "schema": "alchemy.relationship-crm-odoo-sphere.qualification/0.1",
-  "date": "2026-10-27",
+  "date": "2026-10-29",
   "status": "SPHERE_STATIC_QUALIFIED",
   "checks": [
-    {
-      "surface": "provider-package",
-      "artifact": "oorexx_odoo_crm_provider_v0.1-dev11.zip",
-      "sha256": "d27ecf896b551e1923e52be20d990423c6f79cc7093e61ab96e6c5a50d714479",
-      "result": "manifest and ZIP integrity verified; dev11 runtime qualification pending"
-    },
-    {
-      "surface": "relationship-crm-core",
-      "artifact": "relationship_crm_v0.1.zip",
-      "sha256": "cdd0bc21e2a3eb26601cb2f7e84f206c1a43c88b3c63202ccafba3d6d8211e69",
-      "result": "canonical projection contract"
-    },
-    {
-      "surface": "relationship-crm-service",
-      "artifact": "relationship_crm_service_v0.1.zip",
-      "sha256": "51f423f80090cb22c955defa981d57ebee7fffd74ab181afe69b89b4eea24ac2",
-      "result": "canonical service-envelope/idempotency contract"
-    },
-    {
-      "surface": "sip",
-      "artifact": "oorexx_sip_v0.1-dev13_delivery.zip",
-      "sha256": "740c820d66230b4f812087d6c64a9b0ba1963407486df6f64eed051d931c2601",
-      "result": "inspected; originating INVITE not qualified"
-    },
-    {
-      "surface": "package-integrity-recheck",
-      "artifact": "oorexx_odoo_crm_provider_v0.1-dev11.zip",
-      "sha256": "d27ecf896b551e1923e52be20d990423c6f79cc7093e61ab96e6c5a50d714479",
-      "result": "MANIFEST.sha256 rechecked locally on 2026-10-27; every listed file passed"
-    },
-    {
-      "surface": "rasen-falcon-coordination",
-      "artifact": "component:odoo-crm-provider",
-      "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
-      "result": "lane created/owned by CHATGPT; TEST request REQ-00000689 sent to CODEX-PC for r13196 qualification only; no runtime result claimed"
-    }
+    {"surface":"provider-package","artifact":"oorexx_odoo_crm_provider_v0.1-dev12.zip","sha256":"451d9e5a5f4d4bd361d5c91488d08e34838623b4d724f7fe30b7e0f2fe017e3a","result":"manifest and ZIP integrity verified; dev12 runtime qualification pending"},
+    {"surface":"ldap-identity","artifact":"oorexx_ldap_identity_v0.1-dev22.zip","sha256":"0000000000000000000000000000000000000000000000000000000000000000","result":"current Library package inspected; LdapSession attribution and IdentityDirectory principal/group state contract used structurally; LDAP dev22 itself records fresh r13196/live deployment acceptance as not run"},
+    {"surface":"relationship-crm-core","artifact":"relationship_crm_v0.1.zip","sha256":"cdd0bc21e2a3eb26601cb2f7e84f206c1a43c88b3c63202ccafba3d6d8211e69","result":"canonical projection contract"},
+    {"surface":"relationship-crm-service","artifact":"relationship_crm_service_v0.1.zip","sha256":"51f423f80090cb22c955defa981d57ebee7fffd74ab181afe69b89b4eea24ac2","result":"canonical service-envelope/idempotency contract"},
+    {"surface":"sip","artifact":"oorexx_sip_v0.1-dev13_delivery.zip","sha256":"740c820d66230b4f812087d6c64a9b0ba1963407486df6f64eed051d931c2601","result":"inspected; originating INVITE not qualified"},
+    {"surface":"rasen-falcon-coordination","artifact":"component:odoo-crm-provider","sha256":"0000000000000000000000000000000000000000000000000000000000000000","result":"lane owned by CHATGPT; prior dev11 request REQ-00000689 returned NOT_RUN because exact archive was unavailable on tester host"}
   ],
   "unqualified": [
-    "dev11 Relationship CRM Service integration regression on r13196",
+    "dev12 LDAP actor/service regression on r13196",
     "outbound SIP originating INVITE/UAC",
     "native Odoo Phone/RTC mutation",
     "negotiated HTTP/2 path for hosted Odoo through API Client 0.4.1"

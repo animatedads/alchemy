@@ -1,0 +1,66 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.source-map",
+  "version": "0.2",
+  "sphere": "oorexx-deployment",
+  "title": "Source map for the current Deployment implementation",
+  "summary": "Deployment.cls owns reconciliation/plan gates; DeploymentDependencies.cls owns the portable generic lock; SscDeploymentDependencies.cls is the legacy/development loose-source adapter; SscSealedDeploymentDependencies.cls consumes current SSC sealed deployment/package services; materialize_dependency_namespace.sh and verify_dependency_namespace.sh own POSIX deterministic package namespace mechanics; NativeDeployment and HostedModuleDeployment retain their lifecycle boundaries.",
+  "authority": "project-doctrine",
+  "section": "operations",
+  "invariants": [
+    "Read the owning source before modifying a behavior.",
+    "Keep generic dependency objects independent from SSC so minimal bootstrap remains non-circular.",
+    "Use SscSealedDeploymentDependencies.cls for current qualified release fixed points; keep SscDeploymentDependencies.cls explicitly loose/development.",
+    "Put target namespace filesystem mechanics in provider helpers rather than SSC semantic services.",
+    "Do not implement a native ABI special case in Audio if it belongs in NativeDeployment.",
+    "Do not implement MCP/Wire activation special cases in core when a hosted adapter declaration can express them."
+  ],
+  "topics": [
+    "source-map",
+    "code-navigation",
+    "ownership"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/README.md",
+      "line_start": 12,
+      "line_end": 48,
+      "claim": "Maps dev4 dependency namespace and current SSC authority split."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/src/SscSealedDeploymentDependencies.cls",
+      "claim": "Current sealed SSC adapter source."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/bin/materialize_dependency_namespace.sh",
+      "claim": "POSIX dependency namespace materialiser."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev4.zip",
+      "sha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+      "member": "oorexx_deployment_v0.1-dev4/bin/verify_dependency_namespace.sh",
+      "claim": "Namespace verification provider helper."
+    }
+  ],
+  "source_map": {
+    "general_model": "src/Deployment.cls",
+    "dependency_model": "src/DeploymentDependencies.cls",
+    "dependency_cli": "bin/resolve_ssc_dependencies.sh + bin/resolve_ssc_dependencies.rex",
+    "native_model": "src/NativeDeployment.cls",
+    "hosted_model": "src/HostedModuleDeployment.cls",
+    "tree_staging": "bin/deploy_tree.sh",
+    "hosted_staging": "bin/deploy_hosted_module.sh",
+    "tests": "tests/ + run_tests.sh",
+    "qualification": "qualification/DEV4_DEPENDENCY_NAMESPACE.txt + qualification/TEST_TRANSCRIPT.txt (historical dev3 r13196 baseline)",
+    "ssc_loose_dependency_bridge": "src/SscDeploymentDependencies.cls",
+    "ssc_sealed_dependency_bridge": "src/SscSealedDeploymentDependencies.cls",
+    "dependency_namespace_materializer": "bin/materialize_dependency_namespace.sh",
+    "dependency_namespace_verifier": "bin/verify_dependency_namespace.sh"
+  }
+}

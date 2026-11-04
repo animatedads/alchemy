@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.1-dev5
+
+- Add `QuicIoStatus` / `QuicIoResult` for structured child-stream I/O outcomes.
+- Add explicit child-stream `setBlockingMode()`.
+- Add `trySend()` and `tryRecv()` which preserve OpenSSL QUIC `WANT_READ` / `WANT_WRITE` as retryable flow-control states.
+- Enable `SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER` when a child stream is put into nonblocking application mode so Rexx retries can preserve logical write data without native pointer identity.
+- Keep ordinary `send/recv` and `SocketStreamAdapter` compatibility behavior unchanged.
+- Extend the multiplex qualification programs to exercise the dev5 structured I/O path.
+
+
 ## 0.1-dev4
 
 - Add nonblocking `tryOpenStream()` using OpenSSL `SSL_STREAM_FLAG_NO_BLOCK`.

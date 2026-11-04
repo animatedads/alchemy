@@ -1,0 +1,8 @@
+NoSQLServer v0.54 validation
+Object UPDATE, generation and events.
+- Explicit setters only; read-only mapped columns reject UPDATE.
+- SQL UPDATE calls setters on the original live objects.
+- Object table generation advances after successful setter application.
+- BEFORE_UPDATE may veto before setters; AFTER_UPDATE fires only after setters succeed.
+- Object engine explicitly has no mutation graph / object transaction model.
+- Historical file and hell regressions remain green; WRONG_RESULT 0.

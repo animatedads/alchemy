@@ -1,0 +1,7 @@
+Wire Direct Linux v0.1-dev29
+
+- MailReader visual host now builds the three semantic panes with renderer-neutral STACK/LABEL/SCROLL elements.
+- Window requests renderer-neutral width/height properties (1200x760); GTK privately maps them to its native default size.
+- Native messages.SelectionChanged(identity=...) immediately updates the semantic message Document through the public Wire renderer ABI.
+- The host contains no GTK header, type, function or widget reference.
+- Messages remain a bounded 100-row projection over a declared 200,000-message backing collection.

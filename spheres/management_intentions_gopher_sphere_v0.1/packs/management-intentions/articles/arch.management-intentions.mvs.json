@@ -14,7 +14,9 @@
     "s3270/c3270 remains an independent reference oracle and must never be relabelled TERMINAL_MACHINE.",
     "JES batch execution is asynchronous: submission creates/identifies work; completion and correctness are established from JES step codes, diagnostics, spool and domain output artifacts.",
     "Safe discovery may perform many read-only observations before proposing an Intention; wrong scope is more expensive than bounded discovery.",
-    "When MVS Alchemy PRE23 completion-gate evidence is present, a facility PASS marker is not success until JES_ENDED=TRUE (HASP395) and SPOOL_RETAINED=TRUE; incomplete evidence must remain INCOMPLETE."
+    "When MVS Alchemy PRE23 completion-gate evidence is present, a facility PASS marker is not success until JES_ENDED=TRUE (HASP395) and SPOOL_RETAINED=TRUE; incomplete evidence must remain INCOMPLETE.",
+    "Authenticated reference tooling must never ship a default TSO password; TSO_PASSWORD is runtime-only and required explicitly.",
+    "Candidate16 s3270 ReadBuffer evidence remains detached corroboration and never acquires Terminal Machine, MVS Alchemy or Hercules authority."
   ],
   "procedure": [
     "Resolve the requested guest first and bind the corresponding Linux host/Hercules instance before opening a terminal session.",
@@ -48,11 +50,17 @@
       "artifact": "oorexx_terminal_machine_v0.22-candidate12.zip",
       "sha256": "e57dcf302070380a6e714ab0a5e8d1adb65b8c27974c34115712dc6314b00f8a",
       "claim": "Current Terminal Machine 3270 P0 context in GitHub; supersedes dev9's historical candidate8 dependency context for future qualification."
+    },
+    {
+      "artifact": "mvs_intention_runner_v0.1-dev11.zip",
+      "sha256": "709ff4296094c5ab900f46067ba8287022da794316e9d2652eceae05fc8e906f",
+      "claim": "Current MVS Intention consumer: PRE23 JES completion/spool gates, Terminal Machine candidate16, detached authenticated s3270 ReadBuffer semantic evidence, and no packaged TSO password defaults."
     }
   ],
   "missing_work": [
-    "Qualify dev10 under exact ooRexx r13196 against Terminal Machine candidate13, then run the bounded ED209Z/ED209ZZ live terminal gates; do not promote the candidate before evidence returns.",
     "Complete same-session Terminal Machine versus s3270 differential qualification on ED209Z, then independently on ED209ZZ.",
-    "Bind structured MVS Alchemy/JES discovery for jobs/datasets so terminal observation does not carry guest semantic responsibilities."
+    "Bind structured MVS Alchemy/JES discovery for jobs/datasets so terminal observation does not carry guest semantic responsibilities.",
+    "Execute dev11 under exact ooRexx 5.3.0 r13196 with Terminal Machine candidate16 test_s3270_reference and focused 3270 suites.",
+    "Run the bounded ED209Z then ED209ZZ live qualification, retaining Terminal Machine and sequential s3270 evidence separately."
   ]
 }

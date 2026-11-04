@@ -1,0 +1,36 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "rexxos_rto2_grid",
+    "version": "0.1-dev17-identity-runtime",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "identity-contract-static",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_identity_contract_static.py",
+        "-v"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/rexxos_rto2_grid_v0.1-dev17-identity-runtime"
+    }
+  }
+}

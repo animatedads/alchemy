@@ -1,4 +1,4 @@
-/* ooRexx IMAP v0.1-dev10 transfer/move semantics.
+/* ooRexx IMAP v0.1-dev11 transfer/move semantics.
  *
  * This module deliberately separates three operations that are often blurred:
  *   1. server-native UID MOVE;

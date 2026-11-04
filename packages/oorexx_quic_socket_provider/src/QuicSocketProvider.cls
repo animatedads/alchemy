@@ -1,5 +1,5 @@
 /* QuicSocketProvider.cls
- * ooRexx QUIC Socket Provider v0.1-dev4
+ * ooRexx QUIC Socket Provider v0.1-dev5
  *
  * Real QUIC socket family behind the common SocketProvider boundary.
  * Native transport is OpenSSL QUIC; address objects contain references to
@@ -7,11 +7,37 @@
  */
 
 ::class QuicSocketProviderBuild public
-::constant VERSION "0.1-dev4"
+::constant VERSION "0.1-dev5"
 ::constant API "quic.socket.provider/0.1"
 ::constant TRANSPORT "QUIC"
 ::constant SCHEME "quic"
 ::constant ADDRESS_FAMILY "QUIC_INET"
+
+::class QuicIoStatus public
+::constant OK "OK"
+::constant WANT_READ "WANT_READ"
+::constant WANT_WRITE "WANT_WRITE"
+::constant EOF "EOF"
+
+::class QuicIoResult public
+::method init
+  expose status bytes count
+  use strict arg statusArg, bytesArg="", countArg=0
+  status=statusArg~string~upper
+  bytes=bytesArg
+  count=countArg+0
+::attribute status get
+::attribute bytes get
+::attribute count get
+::method ok
+  expose status
+  return status=.QuicIoStatus~OK
+::method retryable
+  expose status
+  return status=.QuicIoStatus~WANT_READ | status=.QuicIoStatus~WANT_WRITE
+::method eof
+  expose status
+  return status=.QuicIoStatus~EOF
 
 ::class QuicSecurityProfile public
 ::method init
@@ -131,7 +157,7 @@
   delegate=.RegisteredSocketOfferProvider~new
 ::method register
   expose delegate
-  use strict arg logicalName, offerId, address, priority=100, localityClass="REMOTE", available=.true, evidence="QUIC/TLS 1.3 stream available", providerId="quic-dev4"
+  use strict arg logicalName, offerId, address, priority=100, localityClass="REMOTE", available=.true, evidence="QUIC/TLS 1.3 stream available", providerId="quic-dev5"
   if address~transport<>.QuicSocketProviderBuild~TRANSPORT then raise syntax 88.900 array("QuicSocketOfferProvider requires QUIC address")
   caps=.SocketCapabilities~new(.QuicSocketProviderBuild~SCHEME,.QuicSocketProviderBuild~ADDRESS_FAMILY,.true,.true,.true,.true,.false)
   offer=.SocketNegotiationOffer~new(offerId,address,priority,localityClass,available,evidence,providerId,caps)
@@ -288,6 +314,23 @@
   expose handle closed
   if closed then return -1
   return quicNativeStreamType(handle)
+::method setBlockingMode
+  expose handle closed
+  use strict arg blocking=.true
+  if closed then return .false
+  return quicNativeStreamSetBlocking(handle,blocking) = 0
+::method trySend
+  expose handle closed
+  use strict arg bytes
+  if closed then return .QuicIoResult~new(.QuicIoStatus~EOF,"",0)
+  tuple=quicNativeStreamTrySend(handle,bytes)
+  return .QuicIoResult~new(tuple[1],"",tuple[2])
+::method tryRecv
+  expose handle closed
+  use strict arg maximumBytes
+  if closed then return .QuicIoResult~new(.QuicIoStatus~EOF,"",0)
+  tuple=quicNativeStreamTryRecv(handle,maximumBytes)
+  return .QuicIoResult~new(tuple[1],tuple[2],length(tuple[2]))
 ::method send
   expose handle closed
   use strict arg bytes
@@ -389,6 +432,9 @@
 ::routine quicNativeAcceptStream external "library oorexx_quic_native quicNativeAcceptStream"
 ::routine quicNativeStreamId external "library oorexx_quic_native quicNativeStreamId"
 ::routine quicNativeStreamType external "library oorexx_quic_native quicNativeStreamType"
+::routine quicNativeStreamSetBlocking external "library oorexx_quic_native quicNativeStreamSetBlocking"
+::routine quicNativeStreamTrySend external "library oorexx_quic_native quicNativeStreamTrySend"
+::routine quicNativeStreamTryRecv external "library oorexx_quic_native quicNativeStreamTryRecv"
 ::routine quicNativeStreamSend external "library oorexx_quic_native quicNativeStreamSend"
 ::routine quicNativeStreamRecv external "library oorexx_quic_native quicNativeStreamRecv"
 ::routine quicNativeStreamClose external "library oorexx_quic_native quicNativeStreamClose"

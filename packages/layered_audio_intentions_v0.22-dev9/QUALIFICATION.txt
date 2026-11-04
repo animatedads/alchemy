@@ -1,5 +1,5 @@
 Layered Audio v0.22-dev9 qualification
-Date: 2026-10-27
+Date: 2026-10-29
 
 PASS:
 - strict ooRexx coding standards: 0 errors, 0 warnings
@@ -7,6 +7,10 @@ PASS:
 - MANIFEST.sha256 verification in the complete candidate
 - ZIP integrity
 - Library upload of the complete candidate
+- exact candidate reconstructed from Git base64 chunks locally
+- reconstructed SHA-256 matches 97c74f998d2daafac3a0c68dcd8d50f883b1ce1379c4a7d09ed46262176ed6b8
+- reconstructed ZIP passes unzip -t
+- Git hydration script verifies required source/test members and package manifest
 
 NOT YET CLAIMED:
 - fresh ooRexx 5.3.0 r13196 runtime PASS for dev9
@@ -15,7 +19,10 @@ Rasen Falcon:
 - lane: layered-audio-intentions
 - owner: CHATGPT
 - linked artifacts: audio_layered, layered_audio_intentions, layered_audio_sphere
-- CODEX-PC TEST request issued; no result is assumed until a reply exists
+- original CODEX-PC test was blocked because dev9 bytes were Library-only
+- exact dev9 bytes are now reconstructable from Git without Autobuilder
+- CODEX-PC was re-issued TEST request REQ-00001657 against the exact candidate
+- no runtime result is assumed until a reply exists
 
 Full candidate SHA-256:
 97c74f998d2daafac3a0c68dcd8d50f883b1ce1379c4a7d09ed46262176ed6b8

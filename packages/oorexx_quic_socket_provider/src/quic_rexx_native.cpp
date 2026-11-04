@@ -54,6 +54,13 @@ std::unordered_map<uint64_t, std::unique_ptr<Stream>> g_streams;
 std::unordered_map<uint64_t, std::unique_ptr<Listener>> g_listeners;
 std::atomic<uint64_t> g_next{1};
 
+RexxArrayObject make_io_result(RexxCallContext *context, const char *status, RexxObjectPtr value) {
+    RexxArrayObject result = context->NewArray(2);
+    context->ArrayPut(result, context->NewStringFromAsciiz(status), 1);
+    context->ArrayPut(result, value == NULLOBJECT ? context->Nil() : value, 2);
+    return result;
+}
+
 void raise_error(RexxCallContext *context, const std::string &s) {
     std::string msg = s;
     unsigned long e;
@@ -613,6 +620,82 @@ RexxRoutine1(int, quicNativeStreamType, uint64_t, streamHandle)
     }
 }
 
+RexxRoutine2(int, quicNativeStreamSetBlocking, uint64_t, streamHandle, int, blocking)
+{
+    try {
+        Stream *st;
+        {
+            std::lock_guard<std::mutex> guard(g_lock);
+            st = stream_for(streamHandle);
+        }
+        if (!st) throw std::runtime_error("unknown QUIC stream handle");
+        if (!SSL_set_blocking_mode(st->ssl, blocking ? 1 : 0))
+            throw std::runtime_error("failed to set QUIC child stream blocking mode");
+        if (!blocking)
+            SSL_set_mode(st->ssl, SSL_MODE_ACCEPT_MOVING_WRITE_BUFFER);
+        return 0;
+    } catch (const std::exception &e) {
+        raise_error(context, std::string("QUIC stream blocking mode: ") + e.what());
+        return -1;
+    }
+}
+
+RexxRoutine2(RexxArrayObject, quicNativeStreamTrySend, uint64_t, streamHandle, RexxStringObject, bytes)
+{
+    try {
+        Stream *st;
+        {
+            std::lock_guard<std::mutex> guard(g_lock);
+            st = stream_for(streamHandle);
+        }
+        if (!st) throw std::runtime_error("unknown QUIC stream handle");
+        ERR_clear_error();
+        size_t nwritten = 0;
+        int rc = SSL_write_ex(st->ssl, context->StringData(bytes), context->StringLength(bytes), &nwritten);
+        if (rc == 1) {
+            if (nwritten > static_cast<size_t>(INT32_MAX))
+                throw std::runtime_error("QUIC child stream write too large");
+            return make_io_result(context, "OK", context->Int32(static_cast<int32_t>(nwritten)));
+        }
+        int err = SSL_get_error(st->ssl, rc);
+        if (err == SSL_ERROR_WANT_READ) return make_io_result(context, "WANT_READ", context->Int32(0));
+        if (err == SSL_ERROR_WANT_WRITE) return make_io_result(context, "WANT_WRITE", context->Int32(0));
+        if (err == SSL_ERROR_ZERO_RETURN) return make_io_result(context, "EOF", context->Int32(0));
+        throw std::runtime_error("QUIC child stream nonblocking write failed");
+    } catch (const std::exception &e) {
+        raise_error(context, std::string("QUIC stream trySend: ") + e.what());
+        return (RexxArrayObject)NULLOBJECT;
+    }
+}
+
+RexxRoutine2(RexxArrayObject, quicNativeStreamTryRecv, uint64_t, streamHandle, int, maximumBytes)
+{
+    try {
+        if (maximumBytes < 1)
+            return make_io_result(context, "OK", context->NewStringFromAsciiz(""));
+        Stream *st;
+        {
+            std::lock_guard<std::mutex> guard(g_lock);
+            st = stream_for(streamHandle);
+        }
+        if (!st) throw std::runtime_error("unknown QUIC stream handle");
+        std::vector<char> buffer(static_cast<size_t>(maximumBytes));
+        ERR_clear_error();
+        size_t nread = 0;
+        int rc = SSL_read_ex(st->ssl, buffer.data(), buffer.size(), &nread);
+        if (rc == 1)
+            return make_io_result(context, "OK", context->NewString(buffer.data(), nread));
+        int err = SSL_get_error(st->ssl, rc);
+        if (err == SSL_ERROR_WANT_READ) return make_io_result(context, "WANT_READ", context->NewStringFromAsciiz(""));
+        if (err == SSL_ERROR_WANT_WRITE) return make_io_result(context, "WANT_WRITE", context->NewStringFromAsciiz(""));
+        if (err == SSL_ERROR_ZERO_RETURN) return make_io_result(context, "EOF", context->NewStringFromAsciiz(""));
+        throw std::runtime_error("QUIC child stream nonblocking read failed");
+    } catch (const std::exception &e) {
+        raise_error(context, std::string("QUIC stream tryRecv: ") + e.what());
+        return (RexxArrayObject)NULLOBJECT;
+    }
+}
+
 RexxRoutine2(int, quicNativeStreamSend, uint64_t, streamHandle, RexxStringObject, bytes)
 {
     try {
@@ -785,6 +868,9 @@ RexxRoutineEntry quic_native_routines[] = {
     REXX_TYPED_ROUTINE(quicNativeAcceptStream, quicNativeAcceptStream),
     REXX_TYPED_ROUTINE(quicNativeStreamId, quicNativeStreamId),
     REXX_TYPED_ROUTINE(quicNativeStreamType, quicNativeStreamType),
+    REXX_TYPED_ROUTINE(quicNativeStreamSetBlocking, quicNativeStreamSetBlocking),
+    REXX_TYPED_ROUTINE(quicNativeStreamTrySend, quicNativeStreamTrySend),
+    REXX_TYPED_ROUTINE(quicNativeStreamTryRecv, quicNativeStreamTryRecv),
     REXX_TYPED_ROUTINE(quicNativeStreamSend, quicNativeStreamSend),
     REXX_TYPED_ROUTINE(quicNativeStreamRecv, quicNativeStreamRecv),
     REXX_TYPED_ROUTINE(quicNativeStreamClose, quicNativeStreamClose),
@@ -799,7 +885,7 @@ RexxPackageEntry oorexx_quic_native_package_entry = {
     STANDARD_PACKAGE_HEADER
     REXX_INTERPRETER_5_0_0,
     "oorexx_quic_native",
-    "0.1-dev4",
+    "0.1-dev5",
     nullptr,
     nullptr,
     quic_native_routines,

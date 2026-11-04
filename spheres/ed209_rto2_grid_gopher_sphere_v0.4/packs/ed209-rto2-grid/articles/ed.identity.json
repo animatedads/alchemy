@@ -1,0 +1,28 @@
+{
+  "kind":"article",
+  "id":"ed.identity",
+  "version":"0.4",
+  "sphere":"ed209-rto2-grid",
+  "title":"Owned LDAP Identity authorization at the Grid service boundary",
+  "summary":"The Grid read-only service can consume an already attributed principal and Identity Directory ACL decision without implementing LDAP protocol/authentication or absorbing directory authority.",
+  "authority":"project-authority",
+  "invariants":[
+    "LDAP Bind, SASL, TLS, Secret Broker and credential verification remain in the owned LDAP Identity service; the Grid adapter accepts only an attributed principal identifier.",
+    "Authentication attribution is not authorization. IdentityDirectory aclDecision is consulted for the exact Grid service action.",
+    "The Grid service directory resource type is REXXOS_GRID and its semantic resource reference is rexxos://<GRID_ID>/service/rexxos.grid/0.1.",
+    "GRID.ESTATE.READ and GRID.MANAGEMENT.READ are explicit actions; no wildcard administrator role is invented by the Grid.",
+    "Missing principal attribution fails UNAUTHENTICATED; an absent or denied directory ACL fails PERMISSION_DENIED.",
+    "Authorization evidence is fenced to directory, principal and resource revisions and grants only service access. It does not grant placement, WLU, Storage, Memory, XTP routing, economic or failover authority.",
+    "ConnectSelector remains connector authority and RpcServiceCore/serialization boundaries remain unchanged."
+  ],
+  "procedure":[
+    "Authenticate through an approved owned identity path and obtain the attributed principal.",
+    "Resolve the exact REXXOS_GRID service resource in Identity Directory.",
+    "Evaluate the exact ACL action and fail closed on missing, inactive or denied principal/resource state.",
+    "Only after an allowed decision invoke the existing explicit read-only Grid RpcServiceCore operation."
+  ],
+  "provenance":[
+    {"artifact":"rexxos_rto2_grid_v0.1-dev16-identity-increment.zip","sha256":"4c817b5f8d8efff7d37e1f28064235040d08fbf5f452a2bf84cd79b0300d85b2","member":"grid/RexxOSGridIdentityAuthorization.cls","claim":"Identity Directory ACL authorization evidence and revision fencing"},
+    {"artifact":"oorexx_ldap_identity_v0.1-dev22.zip","sha256":"697c301c37ad1d77252a34db9028420c4c9a3e3dbe5c60de9be6fc91940341fc","member":"src/IdentityDirectory.cls","claim":"Neutral identity, resource and ACL authority consumed by the Grid seam"}
+  ]
+}

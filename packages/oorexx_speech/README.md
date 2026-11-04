@@ -145,3 +145,12 @@ Speech now carries a regression that loads those real external packages and
 checks inbound RTP-decoded PCM -> STT, outbound TTS -> RTP frame splitting,
 payload 0/8 compatibility, lifecycle boundaries, chunk release and independent
 adapter state. See `SIP_RTP_INTEROP_DEV12.md`.
+
+
+## dev13 — authenticated RPC/HTTPS control plane
+
+Dev13 adds `SpeechRpcService.cls` as an optional binding to the existing RPC Service Core. It registers explicit unary operations for capabilities, fresh intentions, batch synthesis and batch recognition. It does not implement JSON-RPC, HTTPS, TLS, LDAP or another transport selector.
+
+`SpeechRpcInstaller~publishHttps()` maps the registered RPC Core operations to the existing HTTPS JSON-RPC gateway names `speech.capabilities`, `speech.intentions`, `speech.synthesize` and `speech.recognize`. The HTTPS/platform authority remains responsible for private-CA transport identity, LDAP-backed authentication and per-operation authorization.
+
+Remote speech material is fail-closed: TTS never returns a server-local temporary path. A caller must supply a durable `storage_identity` / `external_ref` or inject a material authority that publishes and resolves externally meaningful material references. Streaming PCM remains on the existing Speech/local/SIP media seams and is deliberately not published as ordinary unary JSON-RPC.

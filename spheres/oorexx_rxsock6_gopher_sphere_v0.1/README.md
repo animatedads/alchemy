@@ -17,6 +17,11 @@ The sphere preserves the boundaries that are easiest to lose during merges:
 - MLDv2 is host IPv6 stack behaviour below RFC 3678 and is not represented as
   an ooRexx protocol implementation;
 - repository source is currently behind the qualified estate, and missing dev3
-  source must be synchronized exactly rather than reconstructed from prose.
+  source must be synchronized exactly rather than reconstructed from prose;
+- target deployment now has an executable fail-closed preflight that separately
+  proves the checked-in TCP6 provider seam and native `socket6.cls` UDP6
+  runtime closure without mislabelling the repository source;
+- RxSock6 remains a sibling platform capability and does not replace the ED209
+  XTP carrier contract for MI↔MU or MU↔MU internode communications.
 
 Start with `gopher context rxsock6`.

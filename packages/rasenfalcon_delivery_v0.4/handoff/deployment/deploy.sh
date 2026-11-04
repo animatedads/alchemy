@@ -125,11 +125,12 @@ validate_manifest(){
 required_units(){
  case "$ROLE" in
  gateway) printf '%s\n' rasenfalcon-https.service rasenfalcon-smtp.service rasenfalcon-imap.service rasenfalcon-wire-gateway.service rasenfalcon-terminal3270.service rasenfalcon-webrelay.service;;
- office) printf '%s\n' rasenfalcon-https.service rasenfalcon-wire-office.service rasenfalcon-notnotes.service;;
- noc|public) printf '%s\n' rasenfalcon-https.service;;
+ office) printf '%s\\n' rasenfalcon-office-https.service rasenfalcon-wire-office.service rasenfalcon-notnotes.service;;
+ noc) printf '%s\\n' rasenfalcon-noc-https.service;;
+ public) printf '%s\\n' rasenfalcon-https.service;;
  mcp) printf '%s\n' rasenfalcon-https.service rasenfalcon-mcp.service;;
  identity) printf '%s\n' rasenfalcon-ldap.service;;
- all) printf '%s\n' rasenfalcon-https.service rasenfalcon-smtp.service rasenfalcon-imap.service rasenfalcon-wire-office.service rasenfalcon-wire-gateway.service rasenfalcon-notnotes.service rasenfalcon-mcp.service rasenfalcon-ldap.service rasenfalcon-terminal3270.service rasenfalcon-webrelay.service;;
+ all) printf '%s\\n' rasenfalcon-https.service rasenfalcon-noc-https.service rasenfalcon-office-https.service rasenfalcon-smtp.service rasenfalcon-imap.service rasenfalcon-wire-office.service rasenfalcon-wire-gateway.service rasenfalcon-notnotes.service rasenfalcon-mcp.service rasenfalcon-ldap.service rasenfalcon-terminal3270.service rasenfalcon-webrelay.service;;
  esac
 }
 required_test_names(){

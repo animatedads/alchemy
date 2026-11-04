@@ -1,0 +1,15 @@
+NoSQLServer Git contract review — 2026-10-29
+
+v0.91 NoSQLServer.cls blob: 223965361f10bd45d29d77a3db15faa38997241b
+v0.91 VALIDATION_v0.91.txt blob: 7f4207d7ecef2701fdf3f8f723323f2e7783a260
+
+Observed public DatabaseVersion feature registry:
+LEFT_JOIN, AGGREGATES, GROUP_BY, DISTINCT.
+DatabaseVersion~supports(feature) is case-insensitive.
+
+Observed exact INTEGER contract:
+NoSQLIntegerSupport~isInteger validates signed integer spelling without caller NUMERIC DIGITS dependence.
+
+VALIDATION_v0.91 records ooRexx 5.3.0 r13196 read/write validation PASS for its stated gates and explicitly leaves native portable ABI, Instrumentation Mesh v0.87-v0.88 and load/soak NOT CERTIFIED.
+
+Current Git sphere also records NoSQLServer v0.92-dev1 as the newer SQLite rowid/lazy-count development line. Dev30 consumes the stable version-feature/integer contracts; it does not claim local v0.91 or v0.92 E2E execution.

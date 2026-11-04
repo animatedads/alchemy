@@ -4,19 +4,21 @@
   "version": "0.1",
   "sphere": "initech-notnotes-helpdesk",
   "title": "Accepted baseline and continuation policy",
-  "summary": "Continue from Help Desk v0.1-dev5. Preserve dynamic discovery and authority separation. Management Intention Discovery dev8 is the next relevant infrastructure-specialist seam, but dev5 remains the accepted runtime-qualified baseline until a successor is requalified.",
+  "summary": "Continue from Help Desk v0.1-dev5. Preserve dynamic discovery and authority separation. Current provider evolution is Management Intention Discovery dev9 and Instrumentation Intentions dev2; dev5 remains the accepted runtime-qualified Help Desk baseline until a successor is requalified.",
   "authority": "project-continuity",
   "invariants": [
     "Do not silently advance the accepted baseline beyond dev5 without fresh ooRexx r13196 qualification.",
     "Do not replace live discovery with a static LLM tool catalogue.",
     "Do not absorb MVS/cloud/network vocabularies or execution authority into the Help Desk.",
-    "Preserve NotNotes as the business authority and specialist providers as owners of their own semantics/evidence."
+    "Preserve NotNotes as the business authority and specialist providers as owners of their own semantics/evidence.",
+    "Do not modify separately owned Mini NotNotes/RexxSQL work from the Help Desk lane."
   ],
   "procedure": [
     "Start from examples/initech_notnotes_helpdesk_v0.1-dev5 and the accepted archive hash.",
-    "Fix the duplicate success counter in the LLM READY fallback in the next qualified successor.",
-    "Inject Management Intention Discovery only as a generic read-only discovery/resolution seam first.",
-    "Run the complete Help Desk + NotNotes + specialist qualification before promoting the successor."
+    "Use tools/run_github_source_smoke.sh to verify committed-source closure without the historical customer fixture.",
+    "Adopt Management Intention Discovery dev9 only as a generic read-only discovery/resolution seam first.",
+    "Use Instrumentation Intentions dev2 through its provider contract, not copied metric vocabulary.",
+    "Run the complete Help Desk + NotNotes + specialist qualification before promoting a successor."
   ],
   "provenance": [
     {
@@ -24,6 +26,10 @@
       "sha256": "0448068f18fee165381441e2afb33dbee170f44957f6d3c704ef2948ed42f9c6",
       "member": "initech_notnotes_helpdesk_v0.1-dev5/QUALIFICATION.md",
       "claim": "Accepted r13196 qualification through dev5."
+    },
+    {
+      "repository_path": "examples/initech_notnotes_helpdesk_v0.1-dev5/GITHUB_SOURCE_CLOSURE.md",
+      "claim": "Committed-source consumer smoke and dependency-root policy added 2026-10-29."
     }
   ],
   "related": ["ref.initech-helpdesk.dynamic-discovery"]

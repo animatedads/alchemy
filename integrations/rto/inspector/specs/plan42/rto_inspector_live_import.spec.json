@@ -1,7 +1,7 @@
 {
   "spec": "1.0",
   "module": "RTOInspectorLiveImport",
-  "description": "Plan42 contract for structured, fail-closed Inspector evidence observation; not authorization or dispatch.",
+  "description": "Plan42 contract for configured-request-bound Inspector evidence, fail closed and explicitly unattested (r142).",
   "nodes": [
     {
       "name": "rto.inspector.live.import",
@@ -30,7 +30,7 @@
         "root",
         "live_dir"
       ],
-      "business_purpose": "convert Clouseau live artefacts into a bounded RTO evidence summary that can be compared with static Plan42 Inspector readiness reports (structured evidence; no keyword inference)",
+      "business_purpose": "Admit Inspector evidence only for configured project rule files, reject redirected identities, and distinguish observed objects from unattested hook receipts.",
       "inspector": {
         "authority_boundary": "RTOOperationSecurityContext",
         "evidence_only": true,
@@ -61,7 +61,10 @@
         "required_filesystem_classes": [
           "RTOCHECKBROKENSYMLINKS",
           "RTOREX86LOWFRUITOPERATIONS"
-        ]
+        ],
+        "request_binding": "configured_filename_and_valid_project_request",
+        "configured_request_sha256": "local_reference_only_not_receipt_attestation",
+        "host_attestation": "NOT_VERIFIED"
       },
       "body": [
         {

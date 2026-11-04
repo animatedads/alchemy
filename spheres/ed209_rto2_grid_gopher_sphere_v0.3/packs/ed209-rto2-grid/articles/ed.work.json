@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "ed.work",
+  "version": "0.1",
+  "sphere": "ed209-rto2-grid",
+  "title": "Authenticated bounded RTO2 small-job contract",
+  "summary": "For each of 20 distinct MIs, execute sum(1..1000)=500500 inside the guest and return a committed RTO2 capture through authenticated Queue Fabric/XTP to its owning MU.",
+  "authority": "project-authority",
+  "invariants": [
+    "The MU is controller of its local MI job; the central runner only orchestrates via sshnode.sh to owning MUs.",
+    "An MI executes real RTO2CountJob and AlchemyRTO.capture with role ACTIVE and explicit epoch; do not invent Job-to-Node lease evidence.",
+    "Returned QFXTP envelope must authenticate and bind source, destination, channel, correlation, MI, epoch and work identity.",
+    "MU must durably publish one receipt per MI; central sorter requires 20 unique commissioned routes/identities and correct result.",
+    "RTO2 local committed state does not prove remote replay, mirrored failover or distributed placement."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "ed209_rto2_20mi_candidate2_managed.zip",
+      "sha256": "940ee1835f9dd53ceea42a14e0eb7880e4dc374d6813cfbc686972debe23b4e1",
+      "member": "README.md",
+      "claim": "End-to-end smoke semantics"
+    },
+    {
+      "artifact": "ed209_rto2_20mi_candidate2_managed.zip",
+      "sha256": "940ee1835f9dd53ceea42a14e0eb7880e4dc374d6813cfbc686972debe23b4e1",
+      "member": "bin/controller_commit.py",
+      "claim": "Controller receipt and commit validation"
+    },
+    {
+      "artifact": "ed209_rto2_20mi_candidate2_managed.zip",
+      "sha256": "940ee1835f9dd53ceea42a14e0eb7880e4dc374d6813cfbc686972debe23b4e1",
+      "member": "bin/run_20mi.py",
+      "claim": "Central sorter and target list"
+    }
+  ]
+}

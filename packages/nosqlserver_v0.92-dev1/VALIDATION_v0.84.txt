@@ -1,0 +1,40 @@
+NoSQLServer v0.84 validation target
+
+Required new proof:
+- v084_distinct_runtime_capability_smoke.rex
+  * duplicate-bearing table
+  * SELECT DISTINCT returns only unique projected values
+  * version advertises DISTINCT
+  * Database Core adapter advertises DISTINCT
+  * runtime evidence contains exactly: DATABASE CAPABILITY_DISTINCT TRUE
+- tools/nosqlserver_runtime_evidence.rex emits the same authoritative evidence.
+
+Regression target:
+- v080_db2_personality_smoke.rex
+- v081_db2_catalog_schema_smoke.rex
+- v082_db2_named_constraints_index_smoke.rex
+- v083_db2_isolation_smoke.rex
+- v08_multijoin_distinct_smoke.rex
+- sql92_company_smoke.rex
+- v041_limit_offset_smoke.rex
+- v042_fetch_with_ties_smoke.rex
+- v047_values_table_source_smoke.rex
+
+The supplied Intention DB Search dev16 archive is not present in the active
+conversation/container, so its own environment stage can only be claimed after
+that package is supplied or made accessible.  This release provides and tests
+the exact evidence line reported missing by that consumer.
+
+Environment harness:
+  OOREXX_ROOT=/path/to/extracted/usr/local \
+  ALCHEMY_ROOT=/path/to/alchemy_objects_v0.8 \
+  CRYPTO_ROOT=/path/to/oorexx_crypto_v0.8.3 \
+    ./tools/run_environment_test_v084.sh
+
+Executed qualification result on supplied ooRexx 5.3.0 r13196 + supplied
+Alchemy Objects v0.8 + supplied Crypto v0.8.3: PASS.
+See VALIDATION_v0.84_ENVIRONMENT.txt.
+
+DB Search dev16 integration status: NOT RERUN. Its archive was not available in
+the active conversation/container. The exact previously reported missing line
+is emitted and executable-tested by this package.

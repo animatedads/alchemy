@@ -1,0 +1,49 @@
+{
+  "schema": "wire-ui-real-renderer-head-evidence/0.4",
+  "captured": "2026-10-29",
+  "heads": {
+    "swing": {
+      "version": "0.2-dev12",
+      "artifact_sha256": "142dbb54adb9d0c2b88a3af043166894354cdb58d600cbd6f5f506b08f03d499",
+      "executed_evidence": "61/61 renderer tests PASS in this qualification environment",
+      "gates": {
+        "exact-definition": true,
+        "exact-published-resource-ref": false,
+        "revision-ordering": true,
+        "event-time-renderedRevision": true,
+        "stable-collection-identity": true,
+        "bounded-range-request": true,
+        "opaque-workspaceContext": true,
+        "semantic-activation": true,
+        "positive-list-observation": false,
+        "deauthorisation-fail-closed": true
+      }
+    },
+    "gtk-direct-linux": {
+      "version": "wire_direct_linux v0.1-dev41",
+      "artifact_sha256": "2c93462bf5c2746eca4c3c235ae07e956680e8016a998cfe849dd3dd95461845",
+      "executed_evidence": "native C core/loader/filter tests PASS; all dev41 Python authority/static tests PASS; QuickJS and GTK4 native compilation SKIP because dev packages absent",
+      "gates": {
+        "exact-definition": false,
+        "exact-published-resource-ref": false,
+        "revision-ordering": false,
+        "event-time-renderedRevision": false,
+        "stable-collection-identity": true,
+        "bounded-range-request": true,
+        "opaque-workspaceContext": false,
+        "semantic-activation": true,
+        "positive-list-observation": false,
+        "deauthorisation-fail-closed": false
+      }
+    }
+  },
+  "rule": "Full renderer PASS requires every required semantic gate. Upstream package tests do not waive missing cross-renderer gates.",
+  "git_source_sync": {
+    "gtk-direct-linux": {
+      "full_archive_synced_to_main": true,
+      "commit": "b6c08fffd2ed55be434c6524b50e579f63f9c7eb",
+      "file_count": 134,
+      "semantic_changes": false
+    }
+  }
+}

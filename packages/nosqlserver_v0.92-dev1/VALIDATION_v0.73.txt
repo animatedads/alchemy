@@ -1,0 +1,138 @@
+NoSQLServer v0.73 validation
+============================
+
+Runtime
+-------
+ooRexx 5.3.0 r13196 (64-bit, build 3 August 2026)
+
+Scope
+-----
+v0.73 adds a native read-only JSON relation provider using the `json.cls`
+package shipped with ooRexx 5.3.0. JSON documents are not automatically
+flattened. A caller explicitly registers a relational projection consisting of:
+
+  * relation/table name
+  * JSON row path
+  * exact projected column names
+  * per-column JSON paths
+  * relational types / nullability
+
+Supported projection path surface:
+
+  $                 document/current root
+  .member           object member
+  [0]               zero-based array element
+  [*]               row expansion (row paths only)
+
+A projected nested object/array crosses the relational boundary as canonical
+JSON text. Missing projected paths become SQL NULL. Declared relational column
+types are coerced/validated by TableDefinition. The provider is read-only and
+performs a full document scan for each query; no JSON index or predicate
+pushdown is advertised.
+
+Focused regression
+------------------
+tests/v073_json_relation_smoke.rex: PASS
+
+The regression proves:
+  explicit JSON projection registration        PASS
+  no automatic document flattening             PASS
+  nested object path projection                 PASS
+  nested array index projection                 PASS
+  INTEGER / BOOLEAN relational predicates      PASS
+  ORDER BY over projected numeric value         PASS
+  nested array -> canonical JSON text           PASS
+  missing nested path -> SQL NULL               PASS
+  two projections from one JSON document        PASS
+  compound INNER JOIN ON between projections    PASS
+  federated catalog / table metadata             PASS
+  Database Core queryTable visibility            PASS
+  mutation rejected as SQLUNSUPPORTED            PASS
+  malformed JSON rejected as STORAGEERROR        PASS
+
+Provider boundary
+-----------------
+JsonDatabaseEngine is consumed through the existing external-engine relation
+contract. No JSON-specific branch was added to FederatedDatabaseEngine JOIN,
+metadata, mutation ownership, SQL parsing, or the Database Core adapter.
+
+Compatibility / historical gates
+--------------------------------
+Versioned smoke scripts v0.2..v0.73, excluding the intentionally obsolete
+v061_torture_harness_smoke assertion:
+  PASS                                           76
+  expected live-data SKIP                         1
+  regression failures                             0
+
+The live-data SKIP is tests/v067_geopackage_live_smoke.rex because the original
+large OS GeoPackage source datasets are not mounted. The bundled GeoPackage
+fixture regression passes.
+
+Focused current-boundary gates:
+  v072 general INNER JOIN ON                      PASS
+  v071 external mutation dispatch                 PASS
+  v070 external metadata boundary                 PASS
+  v069 DB Core relational/geometry                PASS
+  v068 external federation facade                 PASS
+  v057 object snapshot                            PASS
+
+Oracle / torture gates
+----------------------
+Claude torture seed-42:                           12/12 PASS
+Hell Corpus v1:                                   24/25 PASS
+                                                  1 PARSE_ERROR
+                                                  0 WRONG_RESULT
+Hell Corpus v2:                                   25/30 PASS
+                                                  2 UNSUPPORTED
+                                                  3 PARSE_ERROR
+                                                  0 WRONG_RESULT
+Progressive SQL torture:                          72/72 PASS
+SQL-92 company smoke:                             PASS
+
+Compile
+-------
+Shipped .cls/.rex compile targets:                91
+rexxc failures:                                   0
+
+msqlshim v0.10 integration
+---------------------------
+msqlshim v0.10 was rebound to the v0.73 NoSQLServer.cls without shim source
+changes.
+
+  normal MySQL text-protocol smoke                PASS
+  idle multi-client isolation                     PASS
+  JSON relation over COM_QUERY                    PASS
+
+The JSON wire query was:
+
+  SELECT order_id,buyer_id
+  FROM json_orders
+  WHERE product='ABC123'
+  ORDER BY order_id
+
+and returned exactly:
+
+  PO12345 | 123456
+  PO30000 | 123456
+
+Scope boundary
+--------------
+v0.73 does not add SQL JSON functions, implicit schema inference, recursive
+flattening, JSON mutation, JSON indexes, JSON predicate pushdown, or JSONPath
+beyond the documented small projection subset. Those are separate future
+surfaces and must not be inferred from this provider.
+
+Final packaged acceptance
+-------------------------
+A fresh extraction of the candidate ZIP verified:
+  manifest payload entries                        166/166 PASS
+  shipped .cls/.rex compile targets               91
+  rexxc failures                                  0
+  v073 native JSON relation                       PASS
+  v072 general INNER JOIN ON                      PASS
+  v071 external mutation boundary                 PASS
+  v070 external metadata boundary                 PASS
+
+msqlshim v0.10 was then rebound to the freshly extracted `NoSQLServer.cls`.
+The JSON COM_QUERY smoke, normal wire smoke, and idle multi-client smoke all
+passed. No msqlshim source changes were required.

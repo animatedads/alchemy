@@ -1,0 +1,34 @@
+{
+  "schema": "single.time.service/0.4",
+  "status": "developer-contract",
+  "semanticOperations": {
+    "time.zone.resolve": {
+      "required": ["zone", "local"],
+      "localPattern": "YYYY-MM-DDTHH:MM:SS",
+      "result": {"status": "UNIQUE|GAP|FOLD", "candidates": "[{instantPosixSeconds,offsetSeconds,abbreviation}]", "tzdbEdition": "string"}
+    },
+    "time.zone.compare": {
+      "required": ["fromZone", "toZone", "instantPosixSeconds"],
+      "result": "Date-specific offsets, local projections, abbreviations and rule editions"
+    },
+    "time.recurrence.expand": {
+      "required": ["id", "zone", "anchorLocal", "fromLocal", "throughLocal"],
+      "defaults": {"frequency": "DAILY", "interval": 1, "weekdays": "", "gapPolicy": "SKIP", "foldPolicy": "EARLIER", "maxDays": 366, "maxRecords": 2000},
+      "frequency": ["DAILY", "WEEKLY"],
+      "weekdays": "comma-separated MO,TU,WE,TH,FR,SA,SU; WEEKLY only",
+      "gapPolicy": ["SKIP", "RECORD", "REJECT"],
+      "foldPolicy": ["EARLIER", "LATER", "BOTH", "REJECT"],
+      "result": "{id,zone,anchorLocal,frequency,interval,weekdays,gapPolicy,foldPolicy,tzdbEdition,occurrences,generatedCount}",
+      "occurrence": "{recurrenceId,zone,local,status,selection,tzdbEdition,instantPosixSeconds|null,offsetSeconds|null,abbreviation}",
+      "bounds": {"maxDays": 3660, "maxRecords": 10000},
+      "note": "Read-only projection. A GAP entry is evidence only, not executable."
+    }
+  },
+  "invocation": {
+    "direct": "TimeServiceEndpoint~request(name, Directory)",
+    "rpcServiceCore": "RPC service=time, operation={zone.resolve|zone.compare|recurrence.expand}, registered receiver methods",
+    "jsonRpcFabric": "optional TimeJsonRpcHandler with explicit method registration",
+    "selector": "ConnectSelector chooses DIRECT or RPC for REQUEST; QUEUE separately for ENQUEUE"
+  },
+  "nonGuarantees": ["NO_EVENT_STORAGE", "NO_JOB_SUBMISSION", "NO_LIVE_NETWORK_AUTH", "NO_IMPLICIT_CLOCK_READ"]
+}

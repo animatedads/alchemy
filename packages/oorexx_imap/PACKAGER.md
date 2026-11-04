@@ -69,3 +69,4 @@ mailboxes.
 Dev10 updates the package manifest and required qualification list but does not
 claim a Preferred Packager COMMIT in this build session. The Preferred Packager
 remains external authority and is not modified or reimplemented here.
+\n\n## Dev11 packaging note\n\nDev11 adds server message-data source/tests and the optional Socket Provider binding. Preferred Packager is not modified and no Preferred-Packager COMMIT is claimed by this development build.\n

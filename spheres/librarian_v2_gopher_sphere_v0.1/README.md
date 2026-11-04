@@ -1,24 +1,45 @@
-# Librarian v2 engineering Gopher sphere v0.1
+# Librarian v2 engineering Gopher sphere v0.1.3
 
-Canonical Gopher sphere for the clean-room Librarian v2 evidence and comparative-media line.
+**Current experimental code checkpoint:** Librarian v2 dev11, 29 October 2026.
 
-- Sphere ID: `librarian-v2`
-- Scope: dev1–dev8 source lessons and exact dev8 delivery; not production authority.
-- Package: `librarian_v2_dev8_20261023.zip`, SHA-256 `17fd68b251e18ebe9f9c6902b6535db444bec1ce6a125ab6f2b8bd579250b742`
-- GitHub source increment: `packages/librarian_v2_dev8/` (PR #24).
-- Origin of truth: archived source + its linked claims; neither GitHub branch nor this sphere substitutes for ooRexx runtime qualification.
+Librarian is an evidence/meaning and comparative-media consumer. It ingests
+claims from media and social sources, models source occurrences and historical
+corrections/retractions, reconstructs time-scoped knowledge, and provides
+conservative source-provenance observations to Communications CMS and Brand Effect.
+It has no factual/causal authority and controls no HTTPS, LDAP, mail or XTP service.
 
-Install under a compatible LLM Gopher root using the directories `packs/librarian-v2/` and `profiles/librarian-v2.json`.
+## Exact source and native qualification
 
-Typical reads:
+Cumulative archive: `librarian_v2_dev11_20261029.zip`
+SHA-256: `72211d64de28424f8acdc51f62f0d07418a18e5db8f0619e216bf474158d27a8`
+
+- New dev11: scope uncertainty from contradictory lineage forks and provenance
+  cycles only to affected queried occurrences and their dependents.
+- Whole-snapshot contradictory evidence remains in the canonical audit record.
+- ooRexx 5.3.0 r13196 native qualification: **150 checks PASS** (137 positive,
+  13 expected-negative). `rexxc` compilation and ZIP integrity also PASS.
+- Dev8-dev11 deltas are committed to GitHub; earlier dev1-dev7 and pinned
+  Single Time Service v0.3 dependency are carried by the cumulative ZIP.
+- Single Time Service v0.9 is a separate, unqualified integration boundary.
+
+## Gopher deployment status
+
+**GitHub sphere source is not evidence of Alchemy runtime activation.** The
+source layout is `packs/librarian-v2/` and `profiles/librarian-v2.json`.
+After a supported Gopher installation/publishing action, verify:
 
 ```sh
 ./gopher --profile librarian-v2 context librarian-v2
 ./gopher --profile librarian-v2 open librarian-v2.start
-./gopher --profile librarian-v2 open librarian-v2.provenance
-./gopher --profile librarian-v2 search 'independence' --sphere librarian-v2
+./gopher --profile librarian-v2 open librarian-v2.dev11
+./gopher --profile librarian-v2 open librarian-v2.qualification
 ```
 
-No automatic network ingestion, dispatch, CMS publishing or brand intervention is provided by this sphere. Read-only knowledge surface.
+Alchemy `sphere_check(sphereId='librarian-v2')` must report
+`SPHERE_RESOLVED`, selected sphere version `0.1.3`, and source provenance.
 
-Qualification: JSON structure checks are separate from a full `gopher sphere edit validate/lint` and live profile test. ooRexx dev8 runtime tests are still pending.
+## Coordination
+
+Authenticated Rasen Falcon lane: `librarian_v2` (principal CHATGPT).
+GitHub review: PR #53 (draft; no production promotion). Autobuilder is not
+running; do not imply autobuild qualification or installation.

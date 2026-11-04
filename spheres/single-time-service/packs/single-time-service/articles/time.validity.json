@@ -1,0 +1,24 @@
+{
+  "id": "time.validity",
+  "title": "Bounded UTC clock evidence for credential time checks",
+  "section": "integration",
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "single-time-service",
+  "authority": "project-artifact",
+  "summary": "TimeClockInterval and TimeValidityWindow are pure ooRexx domain objects offering conservative POSIX UTC uncertainty interval classification for HTTPS, LDAP and mail credential validity checks. Results are DEFINITELY_TOO_EARLY, DEFINITELY_EXPIRED, INSIDE_TIME_WINDOW or INDETERMINATE; none authorises certificate use. Clock source identity and POLICY_AUTHORISED state are injected labels, not cryptographic proof. X.509 ASN.1 notAfter is inclusive and must be mapped by qualified TLS parser to exclusive bound.",
+  "invariants": [
+    "An uncertainty interval crossing either validity boundary is INDETERMINATE and must not be treated as valid.",
+    "Only local security owner may authorise clock source, validate X.509 chain/private CA/revocation and map inclusive notAfter to exclusive POSIX boundary.",
+    "No service, network or queue integration is implied by a time interval predicate.",
+    "No production TLS, LDAP, HTTPS, SMTP or IMAP validation was run against this new source."
+  ],
+  "provenance": [
+    {
+      "artifact": "single_time_service_v0.10.zip",
+      "sha256": "f89aac8c3947f794dbf96f39286936f7406d83e7550030505d7aaaf74d74e1fc",
+      "member": "single_time_service_v0.10/src/TimeValidityWindow.cls",
+      "claim": "Direct v0.10 project-owned code and contract, Python boundary tests passed; native Rexx test authored but not executed."
+    }
+  ]
+}

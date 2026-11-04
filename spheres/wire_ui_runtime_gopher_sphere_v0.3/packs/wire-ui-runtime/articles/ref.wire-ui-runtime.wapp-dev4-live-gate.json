@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.wapp-dev4-live-gate",
+  "version": "0.1",
+  "sphere": "wire-ui-runtime",
+  "title": "Signed Wire application completion uses General ooRexx Deployment dev4 live evidence",
+  "authority": "project-integration-boundary",
+  "summary": "Candidate 4 adds a native fail-closed completion gate that consumes the common HostedModuleEvidence. The candidate is locally qualified, not installed or running. The gate prevents an unprobed candidate from being marked PROBED_ACTIVE through the intended hosted workflow.",
+  "contract": "wire.deployment.command/0.1 -> WAPP_ADMIT -> HostedModuleEvidence -> separately verified HTTPS/WSS/LDAP semantic probe -> WAPP_COMPLETE(PROBED_ACTIVE)",
+  "provenance": {
+    "artifact": "wire_application_deployment_v0.1_candidate4.zip",
+    "sha256": "8b70d45d74cc3aefa91de1efa53f3dd9092e62e6842097ba74a38781d1699865",
+    "dependency": "oorexx_deployment_v0.1-dev4.zip",
+    "dependencySha256": "c6f04ddc6bcb80963161d3312b773cbc4c58fdbd2f99907662aa4a0d6ad23ce2",
+    "branch": "wire-deploy-dev4-evidence-20261029"
+  },
+  "boundaries": [
+    "Rasen Falcon site/HTTPS/LDAP deployment still requires actual host installation, independent authenticated live verification and no unapproved production cutover.",
+    "Only the common General Deployment HostedModuleEvidence is authoritative for stage/load/composition/activation/probe state; do not infer a live app from Queue Fabric ACK, a staged ZIP or an HTTP connection.",
+    "The app delivery request must match immutable admitted digest and target, application and generation, mount path, and trusted Storage Fabric evidence reference.",
+    "A separate host-injected verifier must independently attest HTTPS/TLS, WSS semantic action/observation and applicable LDAP policy. Local tests use fake authority; they do not certify production TLS or LDAP.",
+    "The underlying journal complete() remains privileged. The adapter does not remove raw journal access; host composition must prevent untrusted code from acquiring it."
+  ],
+  "qualification": {
+    "date": "2026-10-29",
+    "ooRexx": "5.3.0 r13196",
+    "nativeTests": "2/2 PASS",
+    "compile": "1/1 PASS",
+    "candidate3Rerun": "8/8 native and 7/7 compilation PASS",
+    "liveNetwork": "NOT_TESTED",
+    "installation": "SOURCE_ONLY"
+  },
+  "gates": [
+    "real signed .wapp verifier, content-addressed Storage Fabric fetch and approved target policy",
+    "native host attestation for private-CA HTTPS/WSS plus actual Wire semantic action and observation",
+    "LDAP bind, search and revocation enforcement on the same selected host",
+    "multi-writer fencing, power-loss journal durability and restart replay in production",
+    "integration retest against latest accepted General Deployment and website publishing code"
+  ]
+}

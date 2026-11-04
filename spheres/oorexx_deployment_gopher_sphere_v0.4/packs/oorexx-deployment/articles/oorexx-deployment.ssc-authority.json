@@ -1,0 +1,55 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.ssc-authority",
+  "version": "0.2",
+  "sphere": "oorexx-deployment",
+  "title": "SSC authority boundary: qualified deployments for releases, loose source levels for intake",
+  "summary": "Current Semantic Source Store is the preferred production dependency authority through immutable QUALIFIED module deployments and exact ssc_deployment_dependency rows. Deployment consumes sealedDependencies()/getDeploymentPackage() and never floats a sealed release. The earlier SSC_MANIFEST/sourceLevel/@source-requires model remains a loose development/archive intake bridge.",
+  "authority": "project-doctrine",
+  "section": "dependencies",
+  "invariants": [
+    "A QUALIFIED SSC module deployment is an immutable semantic fixed point for release deployment.",
+    "Sealed deployments retain exact dependency deployment ids; Deployment must not float them to newer qualified providers.",
+    "SemanticSourceModuleService~sealedDependencies() and SemanticSourcePackageService~getDeploymentPackage() are the current repository service boundary consumed by Deployment.",
+    "A sealed package must use resolution policy sealed-deployment-exact-closure and every returned semantic object must belong to the exact sealed closure.",
+    "SSC_MANIFEST/sourceLevel/@source-requires AT_LEAST remains development/archive evidence for components not yet represented as qualified SSC deployments.",
+    "::requires remains package-load evidence and does not itself identify an acceptable module deployment.",
+    "SSC owns semantic fixed points; Deployment owns target namespace, placement, activation and verification."
+  ],
+  "topics": [
+    "SSC",
+    "SemanticSourceStore",
+    "qualified-deployment",
+    "ssc_deployment_dependency",
+    "sealedDependencies",
+    "getDeploymentPackage",
+    "sourceLevel",
+    "AT_LEAST",
+    "::requires"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.4.md",
+      "sha256": "4407182b556e01cafb2b15a3568084b4530f95881c3dc963d4de5bffbcf4b26e",
+      "member": "General_ooRexx_Deployment_Component_v0.4.md",
+      "line_start": 1456,
+      "line_end": 1536,
+      "claim": "Defines qualified SSC deployment authority and current service boundary."
+    },
+    {
+      "artifact": "animatedads/alchemy:packages/oorexx_semantic_source_store/src/SemanticSourceModuleService.cls",
+      "git_blob_sha": "2893f0ff8b1da5281232b3705777ead67b078821",
+      "claim": "Current SSC module service exposes QUALIFIED deployments, sealedDependencies() and exact deployment dependency records."
+    },
+    {
+      "artifact": "animatedads/alchemy:packages/oorexx_semantic_source_store/src/SemanticSourcePackageService.cls",
+      "git_blob_sha": "893b0e4bf7be60da1100920c3f794d72ee19e79f",
+      "claim": "Current SSC package service reconstructs sealed deployment exact closure without floating dependencies."
+    },
+    {
+      "artifact": "animatedads/alchemy:packages/oorexx_semantic_source_store/MCP_COMMANDS.md",
+      "git_blob_sha": "112d48e92a2fe0a7192741e22f4297a14854dc28",
+      "claim": "Documents source.get_package development semantics versus source.get_deployment_package sealed semantics."
+    }
+  ]
+}

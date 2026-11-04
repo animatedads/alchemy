@@ -1,0 +1,49 @@
+{
+  "kind": "article",
+  "id": "xtp.named-services",
+  "sphere": "xtp",
+  "version": "0.1-dev1",
+  "title": "Named-service FIRST and persistent DATA",
+  "section": "operations",
+  "summary": "XTP FIRST selects service before admission; after KEY establishment DATA follows established context. The persistent named FIRST/DATA stream is experimental and not proof of mutual authentication or raw36/L2 field readiness.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "FIRST service name is not a credential",
+    "Listener allowlists and registered service classes must be checked before CNTL acceptance",
+    "Persistent KEY is a transport context, not a peer identity proof",
+    "Independent source streams have independent XTP sequence spaces",
+    "XTP SORT, DEADLINE, RATE/BURST, ALLOC and fallback are enforced only when actual code path supplies them"
+  ],
+  "procedure": [
+    "Resolve service from authoritative descriptor",
+    "Validate registered operational class at admission",
+    "Authenticate remote peer against session identity before effectful privileged requests",
+    "Verify actual live listener registration at gateway before acknowledging FIRST",
+    "Repeat DATA on a persistent context where qualified; no new FIRST for every app frame"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/src/xtp_service.cpp",
+      "claim": "Native named service implementation"
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/src/xtp_rexx_native.cpp",
+      "claim": "Native ooRexx bindings"
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/tests/test_named_service.cpp",
+      "claim": "Service admission regression"
+    }
+  ],
+  "qualification_boundaries": {
+    "local": "named-service local UDP execution in prior qualification only",
+    "raw36_l2": "not field qualified",
+    "remote_crypto": "not proven"
+  }
+}

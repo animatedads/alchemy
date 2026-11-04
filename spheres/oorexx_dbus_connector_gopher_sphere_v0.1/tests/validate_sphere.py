@@ -10,7 +10,7 @@ policy = json.loads((pack / "01-access-policy.json").read_text())
 profile = json.loads((root / "profiles/oo-rexx-dbus.json").read_text())
 articles = [json.loads(p.read_text()) for p in sorted((pack / "articles").glob("*.json"))]
 ids = {a["id"] for a in articles}
-assert len(ids) == 4
+assert len(ids) == 6
 assert meta["kind"] == "sphere" and meta["id"] == "oo-rexx-dbus"
 assert policy["kind"] == "access-policy" and policy["id"] == meta["access_policy"]
 assert profile["id"] == meta["id"] and "packs/oo-rexx-dbus" in profile["packs"]
@@ -18,4 +18,4 @@ assert set(meta["start_here"]) == ids
 for article in articles:
     assert article["kind"] == "article" and article["sphere"] == meta["id"]
     assert set(article.get("related", [])) <= ids
-print("PASS: four articles, sphere metadata, read-only access policy, profile and cross-references")
+print("PASS: six articles, sphere metadata, read-only access policy, profile and cross-references")

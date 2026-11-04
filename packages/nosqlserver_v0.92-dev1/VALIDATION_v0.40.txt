@@ -1,0 +1,35 @@
+NoSQLServer v0.40 validation
+============================
+
+Focus
+-----
+SQL grammar whitespace normalization at the native SQL façade.
+
+Behaviour
+---------
+- Runs of space, TAB, LF, and CRLF outside quoted strings are normalized to one
+  grammar space before dispatch/parsing.
+- Quoted text is preserved, including repeated spaces and doubled quote escapes.
+- Exact MariaDB client shape `SELECT *\nFROM ...\nWHERE ...` now works.
+- GROUP BY and ORDER BY may be split across lines/tabs.
+- UPDATE/SET/WHERE and DELETE/FROM/WHERE may be split across lines/tabs.
+- v0.39 positional and explicit-column INSERT forms continue to work.
+- No SQL rewriting occurs in the wire shim.
+
+Capabilities
+------------
+- SQL_FLEXIBLE_WHITESPACE
+- INSERT_FLEXIBLE_WHITESPACE
+- INSERT_POSITIONAL_VALUES
+
+Regression evidence
+-------------------
+- v0.40 SQL whitespace smoke: PASS
+- v0.39 INSERT grammar smoke: PASS
+- v0.38 and prior feature gates: PASS
+- database_core adapter smoke: PASS
+- SQL-92 company smoke: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 12/30 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly

@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "le.compiler-bridge",
+  "version": "0.1",
+  "sphere": "legal-effect",
+  "title": "Concrete Legal Interrogation to Legal Effect v0.14 compiler bridge",
+  "summary": "Legal Interrogation dev6 implements the previously abstract compile seam against the real Legal Effect v0.14 / legal.effect/0.10 compiler contract. It preserves verifier-issued source/provision evidence, maps only reviewed active propositions, and remains non-authoritative until LegalRuleCompiler certifies and seals the generation.",
+  "authority": "project-operating-doctrine",
+  "invariants": [
+    "A Legal Interrogation handoff is not source verification and cannot set LegalSourceIdentity verification state.",
+    "The bridge requires LegalSourceIdentity~cryptographicallyVerified; an asserted VERIFIED token without verifier-issued evidence is rejected.",
+    "Every LegalProvisionReference uses the exact source identity expressionId and is verified through LegalSourceVerifier before proposal admission.",
+    "Supported propositions may map to LegalNorm, but conditions and exceptions cross the bridge only as already-structured LegalPredicate objects; free-text predicate guessing is forbidden.",
+    "LegalCompileProposal carries verified provision references. The bridge does not preattach evidence to LegalNorm because Legal Effect rejects proposal evidence outside the compiler-controlled path.",
+    "LegalInterrogationLegalEffectCompilation remains non-authoritative until LegalRuleCompiler~compile succeeds.",
+    "Only LegalRuleCompiler may issue the compilation certificate that makes the sealed LegalRuleGeneration publicationEligible."
+  ],
+  "provenance": [
+    {
+      "artifact": "legal_effect_v0.14.zip",
+      "sha256": "1eb6190025d18cb08754a6224967d4bf5193c739ea98b07dd8526068535ce93d",
+      "member": "legal_effect_v0.14/src/LegalEffect.cls",
+      "claim": "Real v0.14 compiler validates verified source/provision identities, expression identity, evidence references and proposal shapes; compiler certification is the publication-eligibility boundary."
+    },
+    {
+      "artifact": "oorexx_legal_interrogation_v0.1-dev6.zip",
+      "sha256": "04b4ae1d66f50485518136cf05c86de5c62ca30b415674fdf54ccda7756d6249",
+      "member": "src/LegalInterrogationLegalEffectV014.cls",
+      "claim": "Dev6 implements the concrete adapter/mapper/non-authoritative compilation wrapper against the v0.14 public compiler classes."
+    },
+    {
+      "artifact": "oorexx_legal_interrogation_v0.1-dev6.zip",
+      "sha256": "04b4ae1d66f50485518136cf05c86de5c62ca30b415674fdf54ccda7756d6249",
+      "member": "tests/test_legal_effect_v014_live.rex",
+      "claim": "Real r13196 qualification verifies source and provision evidence, compiler certification/publication eligibility, norm mapping, and rejection of asserted-only source verification."
+    }
+  ]
+}

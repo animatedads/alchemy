@@ -1,0 +1,108 @@
+ooRexx XTP v0.1-dev33: validation record
+==========================================
+
+Architecture: Tom Dyer (decision D-07, 28 October 2026)
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for dev26 to dev33
+Validation written and run by: Claude (Opus 5.5), 28 October 2026
+Independent security review: a second separate Claude (Opus 5.5) agent reviewed the committed
+dev32 (21aa0a1f) with probes of its own (section 3).  dev33's own new code was not reviewed
+independently.
+
+Baseline:  oorexx_xtp_v0.1-dev32 as committed to animatedads/alchemy main in 21aa0a1f
+Planner:   oorexx_operational_degradation_planner_v0.1-dev5, built locally
+libcrypto: OpenSSL 3.0.13; ooRexx 5.3.0 r13196 (/usr/local/bin/rexx)
+LDAP:      the estate's own LdapWireServer and LdapWireClient, Secret Broker v0.2
+Host:      Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror, run as root
+           (so the raw36 and L2 tests ran rather than skipped)
+Evidence class: LOCAL_PASS. FIELD_PASS is NOT claimed.
+
+1. Changes against dev32 (lines added / removed, sha256)
+  src/xtp_transport.cpp          +393 -141 df4708a2e749f64f82ef7da65bf737a0dde14e0fdd925e2da8d55c54acd0787b
+      the dev32 protection primitives moved ahead of the message code, unchanged (most of
+      the removed lines); message protection (MsgSec, msg_seal, msg_unseal, the guard);
+      sender and listener integration; the second-review fixes in the session code
+  src/xtp_security.cpp           +43 -22   b90ec2eb5e5c80c1725a143f173bdc918bd24f1adc59e901ed2485159aa8e174
+  src/xtp_rexx_native.cpp        +18 -3    badb88b033943fec4e57e44d2c5f7b987591b054955fe480148c7eab382f6103
+  include/xtp/xtp_transport.hpp  +29 -0    7410f6b7941d6101c7414e5f66400443493ad04d353a5aa9492296c0d25bb7a8
+  rexx/XtpLdapKeySource.cls      +45 -20   43b37662cd0f4cfdec2056b8d2b96a4e409a743e05e735d9b9bb2a196f02345f
+  rexx/XtpServiceKeys.cls        +5 -1     b5adf5467b570143cff64514020582d6771fede02c6d998fec15f958eaa6d80d
+  rexx/XtpSocketProvider.cls     +11 -3    5ba94de38373fc351a22e210c5de8890416236df7fb7567258334a9632e3a9c1
+  tests/test_security.cpp        +115 -3   (P21-P27)
+  New: tests/test_message_security.cpp (M1-M12), tests/test_interop_protected.sh and two tools,
+       tests/test_xtp_message_keys_{rexx.sh,client.rex,server.rex},
+       tests/test_xtp_ldap_hostile_{rexx.sh,client.rex}, tests/xtp_keys_ldap_hostile_fixture.rex,
+       docs/XTP_SPEC_GAPS_DEV33.md
+
+2. Message and stream protection (make test-message-security), final run
+  M1  authenticate, one packet: delivered with protection and key id; data in clear on the wire  PASS
+  M2  encrypt, 2 MB stream through 20%/14% loss: byte-exact; plaintext never on the wire        PASS 107 ms, 405 resent
+  M3  ChaCha20-Poly1305, 300 KB                                                                PASS
+  M4  5 DATA packets changed in transit with valid checksums: dropped, data repaired           PASS
+  M5  a clear message to a service with keys: AUTH_REQUIRED, not delivered                     PASS
+  M6  a captured message replayed to the same listener: not delivered again                    PASS
+  M7  the capture replayed to another listener holding the key: delivered once there (the
+      documented limit), never twice                                                           PASS
+  M8  3 forged close-acknowledgements while the receiver had nothing: dropped (3 counted);
+      the sender returned only after real, byte-exact delivery                                 PASS
+  M9  no active key: refused before sending; "none" is only a minimum                          PASS
+  M10 the key expired: the message is refused, nothing goes on the wire                        PASS
+  M11 20 MB on loopback: unprotected 135 MB/s, authenticated 109, encrypted 123                recorded
+  M12 encrypted 300 KB messages over raw IP protocol 36 and over L2 (lo)                       PASS
+  Interop: a dev33 protected message to a dev32 and to a dev31 listener is refused there as
+  MALFORMED and nothing is delivered (tests/test_interop_protected.sh).  The first dev33 build
+  had no guard, and the dev32 listener delivered 5,064 bytes (open block, ciphertext, tail)
+  to its application; the 8-byte guard was added because of that run.
+  ooRexx (tests/test_xtp_message_keys_rexx.sh): a 102,400-byte message between two processes
+  under the profile from a key file, received with protection=encrypt and its key id; with
+  every key gone the next send is refused.
+
+3. Second independent review of dev32, and its fixes (session suite, final run)
+  The reviewer confirmed nine findings with probes.  Its report stopped after F5 (the agent
+  ended early on an API error); Q4 to Q7 come from its probe file.
+  P21 encrypted sessions over raw36 and L2 (found the dev32 full-MTU L2 defect)  PASS
+  P22 F3: a clear session ends 1,008 ms after its service gets a key            PASS
+  P23 F4: 300 clear opens of made-up names hold 32 contexts; a protected open
+      still succeeds                                                            PASS
+  P24 F5: 11,088 valid opens from 64 ports of 127.0.0.2; opens from
+      127.0.0.1: 6/6                                                            PASS
+  P25 Q4: 200 unconfirmed contexts with resends spent: 0.006 s CPU in 3 s       PASS
+  P26 Q5: two refusals of one open: two distinct counters                       PASS
+  P27 Q7/F1: 32,000 keys replaced twice in 52 ms, worst table wait 7 ms;
+      invalid service names and principals refused                              PASS
+  P1-P20 still pass.  P18 now floods from 127.0.0.2, because the limit is per host.
+  ooRexx (tests/test_xtp_ldap_hostile_rexx.sh, real LdapWireServer):
+    tenant     svc.ldap's revocation and rotation are applied (a11c1 gone, a11c2 active)
+               although the tenant's set holds a DES generation (F2)                    PASS
+    inject     a principal ID carrying a second key line plants nothing (F1)            PASS
+    placement  a generation for svc.ldap's set placed in the tenant's subtree is
+               ignored                                                                  PASS
+  Q6 (secret copies in freed heap) is fixed by construction (fields parsed as views, one
+  wiped line buffer) and checked by inspection only.
+
+4. Interoperability (make test-interop, PEER_ROOT = committed dev32, 150 KB, 20%/14% loss)
+  I1 dev33 -> dev32  35 resent   I2 dev32 -> dev33  35   I3 dev33 -> dev33  35   all delivered
+  plus the protected-message check in section 2.
+
+5. Full regression on dev33 (final run, scratch copy, suites one after another)
+  11 make targets: service 3, capacity-rate 1, auto-key 1, negative 7/7, segmentation 10/10,
+    interop 3/3 + protected 1, sync-diag 5/5, diag-hardening 8/8, session 22/22,
+    security 27/27, message-security 12/12                                      all rc=0
+  29 shell suites, run_tests.sh, the ooRexx suites and test_storage_capacity_xtp.sh
+    (with its five roots) included                                              all rc=0
+  Totals: 214 PASS, 0 FAIL, 1 SKIP (run_tests.sh proxy stress: proxy binary absent)
+
+6. Behaviour changes to note
+  - Every session open is now rate limited per sending host (200/s, burst 400, 2,000/s in
+    total, all adjustable), clear opens included.
+  - Once any service has a profile, unprotected sessions may hold at most half of a
+    listener's table and backlog.
+  - A protected service's messages always go as FIRST+DATA streams.
+  - LDAP refresh: entries are checked one by one; a bad entry is reported in WARNINGS
+    instead of failing the whole refresh.
+
+7. Not run
+  - Real Ethernet between hosts; the ED209 field path.
+  - Multipath (XMP1) and multicast are not protected.
+  - An independent review of dev33's own new code.
+
+Claude (Opus 5.5)

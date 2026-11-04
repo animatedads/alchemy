@@ -1,4 +1,4 @@
-# Known gaps — v0.1-dev7
+# Known gaps — v0.1-dev13
 
 * No typed IDLE state machine yet.
 * No SASL/OAuth provider yet; the disposable Gmail path currently uses an App Password through LOGIN over verified TLS.
@@ -69,3 +69,32 @@ presence as transitive qualification.
 ## Storage semantic compatibility
 
 Storage Fabric dev23 removed the legacy `StorageSemantic.cls` API. Dev10's normal projection no longer depends on it and is qualified against dev23. The separate `ImapStorageFabricLegacySemantic.cls` compatibility adapter remains unqualified against current dev23 by design because the required legacy package is absent.
+\n\n## Dev11 remaining server gaps\n\nDev11 is still intentionally not advertised as IMAP4rev1. Remaining gaps include SASL `AUTHENTICATE`, `IDLE`, complete SEARCH grammar, complete FETCH data-item/section grammar, MIME/body-section partials, server-side BODY[] `\\Seen` side-effect qualification, conditional STORE/UNCHANGEDSINCE, CONDSTORE/QRESYNC/VANISHED, unsolicited multi-session updates, robust LIST wildcard/reference semantics, persistent mailbox provider recovery, and live external-client interoperability qualification. The in-memory message provider is qualification-only.\n\nThe new Socket Provider binding is transport acquisition/framing only; TLS policy and certificate/key authority remain with the selected secure socket/TLS provider. IMAP does not infer that an ordinary TCP endpoint is encrypted.\n
+
+## Dev12 instrumentation gaps
+
+Instrumentation Mesh v0.1-dev3 is consumed as an optional observation plane.
+Dev12 does not yet publish per-operation streaming progress for large APPEND/FETCH
+transfers because the current server endpoint still acquires an announced APPEND
+literal through one bounded `readExact(n)` call. When the server gains a truly
+streaming literal source/sink path, progress should be emitted under stable
+operation ids rather than inventing a separate progress protocol.
+
+No remote instrumentation management command is exposed by IMAP dev12. That is
+deliberate: telemetry permission is not mailbox/session mutation authority.
+
+## Dev13 remaining server gaps
+
+* IDLE/change-feed qualification is currently dependency-free/in-process plus the
+  Socket Provider readiness adapter.  No live Thunderbird/OpenSSH-style external
+  IMAP client interoperability run is claimed for IDLE yet.
+* The reference `ImapMemoryMailboxProvider` retains only a bounded in-memory change
+  log.  Restart-safe/multi-process providers need a durable provider-owned cursor and
+  replay source; Instrumentation Mesh history must not be substituted for that
+  protocol-state authority.
+* Change kinds currently cover EXISTS, FLAGS and EXPUNGE.  Richer unsolicited state
+  (including extension-specific MODSEQ/QRESYNC evidence) remains future work.
+* Full FETCH/SEARCH grammar, BODY side effects, CONDSTORE/QRESYNC, SASL breadth and
+  complete IMAP4rev1 conformance are still open; the server therefore continues to
+  advertise the explicit ooRexx capability markers instead of `IMAP4rev1`.
+

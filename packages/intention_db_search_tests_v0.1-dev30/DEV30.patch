@@ -1,0 +1,98 @@
+diff --git a/README.md b/README.md
+index a98c949..21f4660 100644
+--- a/README.md
++++ b/README.md
+@@ -1,3 +1,32 @@
++
++## dev30 — current NoSQLServer feature authority and exact World INTEGERs
++
++Dev30 reconciles the harness with Git current `packages/nosqlserver_v0.91` while
++remaining source-compatible with the older v0.84 qualification dependency.
++
++- Runtime capability evidence now consumes `db~version~supports(...)` as the
++  first public authority for `DISTINCT`, `GROUP_BY`, `LEFT_JOIN` and general
++  `AGGREGATES` (mapped to the search-domain `CAPABILITY_SCALAR_MAX`).
++- The v0.84 database-core runtime evidence projection remains a second public
++  evidence source when present; SQL probes are now only a fallback for engines
++  without a version feature registry.
++- World `country.Population` is restored to `INTEGER`.  The old DECIMAL mapping
++  existed solely to work around v0.84 precision-sensitive INTEGER validation;
++  NoSQLServer v0.85+ validates INTEGER lexically, and Git v0.91 retains that
++  exact-integer contract.
++- Runtime evidence regression derives the database version from the active
++  engine rather than hard-coding `0.84`, and verifies feature-registry
++  provenance for GROUP_BY, LEFT_JOIN and aggregate/MAX support.
++- `build_world_fixture.py` now accepts both plain and backtick-quoted MySQL
++  table names.  The previous dev29 publication could not rebuild its own
++  packaged `world_inserts.sql` (zero rows); dev30 rebuilds 239 countries,
++  4,079 cities and 984 country-language rows, exactly 5,302 rows.
++
++Git v0.91 validation records ooRexx 5.3.0 r13196 for its read/write line.  This
++cut does not claim a v0.91 end-to-end harness run until the v0.91 dependency is
++materialised into the execution environment; it does retain a real r13196
++backward-compatibility run against the available v0.84 package.
++
+ # Intention Service × NoSQLServer search qualification v0.1-dev29
+@@ -2355,17 +2355,21 @@ return
+-  self~publishNoSQLRuntimeEvidence(service)
+-  self~publishCachedCapabilityFacts(service)
++  registryPublished = self~publishVersionFeatureEvidence(service)
++  self~publishNoSQLRuntimeEvidence(service)
++  if \registryPublished then self~publishCachedCapabilityFacts(service)
+@@
++::method publishVersionFeatureEvidence private
++  expose db
++  use arg service
++  if \db~hasMethod("VERSION") then return .false
++  version = db~version
++  if version == .nil then return .false
++  if \version~hasMethod("SUPPORTS") then return .false
++  mappings = .array~new
++  mappings~append("DISTINCT|DISTINCT")
++  mappings~append("GROUP_BY|GROUP_BY")
++  mappings~append("LEFT_JOIN|LEFT_JOIN")
++  mappings~append("SCALAR_MAX|AGGREGATES")
++  do mapping over mappings
++    parse var mapping capability "|" feature
++    value = "FALSE"
++    if version~supports(feature) then value = "TRUE"
++    service~addEvidenceFact(.IntentionEvidenceFact~new("DATABASE", "CAPABILITY_" || capability, value, 100, -
++        "NOSQLSERVER_VERSION_FEATURES", "OBSERVED", "nosqlserver:version-feature:" || feature))
++  end
++  if version~hasMethod("PRODUCT") then service~addEvidenceFact(.IntentionEvidenceFact~new("DATABASE", "PRODUCT", version~product, 100, -
++      "NOSQLSERVER_VERSION_FEATURES", "OBSERVED", "nosqlserver:version"))
++  if version~hasMethod("RELEASE") then service~addEvidenceFact(.IntentionEvidenceFact~new("DATABASE", "VERSION", version~release, 100, -
++      "NOSQLSERVER_VERSION_FEATURES", "OBSERVED", "nosqlserver:version"))
++  if version~hasMethod("SQLLEVEL") then service~addEvidenceFact(.IntentionEvidenceFact~new("DATABASE", "SQL_LEVEL", version~sqlLevel, 100, -
++      "NOSQLSERVER_VERSION_FEATURES", "OBSERVED", "nosqlserver:version"))
++  return .true
+@@
+-  adapter = .NoSQLDatabaseCoreAdapter~new(db)
+-  projection = .NoSQLDatabaseRuntimeEvidenceProjection~new(adapter)
++  adapterClass = .environment~at("NOSQLDATABASECOREADAPTER")
++  projectionClass = .environment~at("NOSQLDATABASERUNTIMEEVIDENCEPROJECTION")
++  if adapterClass == .nil | projectionClass == .nil then return
++  adapter = adapterClass~new(db)
++  projection = projectionClass~new(adapter)
+diff --git a/tests/create_world_fixture.rex b/tests/create_world_fixture.rex
+@@
+-CREATE TABLE country (... Population DECIMAL, ...)
++CREATE TABLE country (... Population INTEGER, ...)
+diff --git a/tests/test_runtime_evidence.rex b/tests/test_runtime_evidence.rex
+@@
+-call factSource service, "DATABASE", "CAPABILITY_DISTINCT", "TRUE", "NOSQLSERVER_RUNTIME_EVIDENCE", "distinct source is authoritative projection"
++call factSource service, "DATABASE", "CAPABILITY_DISTINCT", "TRUE", "NOSQLSERVER_VERSION_FEATURES", "distinct source is version feature registry"
+@@
+-call fact service, "DATABASE", "VERSION", "0.84", "database version runtime evidence"
++expectedVersion = db~version~release
++call fact service, "DATABASE", "VERSION", expectedVersion, "database version runtime evidence"
++call factSource service, "DATABASE", "CAPABILITY_GROUP_BY", "TRUE", "NOSQLSERVER_VERSION_FEATURES", "group-by source is version feature registry"
++call factSource service, "DATABASE", "CAPABILITY_LEFT_JOIN", "TRUE", "NOSQLSERVER_VERSION_FEATURES", "left-join source is version feature registry"
++call factSource service, "DATABASE", "CAPABILITY_SCALAR_MAX", "TRUE", "NOSQLSERVER_VERSION_FEATURES", "scalar max source is aggregate feature registry"
+diff --git a/tools/build_world_fixture.py b/tools/build_world_fixture.py
+@@
+-('Population','DECIMAL',True)
++('Population','INTEGER',True)
+@@
+-pat=re.compile(r"^INSERT INTO `([^`]+)` VALUES (.*)$")
++pat=re.compile(r"^INSERT INTO `?([A-Za-z0-9_]+)`? VALUES (.*)$")

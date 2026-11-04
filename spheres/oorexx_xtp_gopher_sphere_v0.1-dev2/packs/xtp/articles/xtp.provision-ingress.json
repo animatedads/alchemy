@@ -1,0 +1,51 @@
+{
+  "kind": "article",
+  "id": "xtp.provision-ingress",
+  "sphere": "xtp",
+  "version": "0.1-dev2",
+  "title": "XTP provisioning protected MI admission and bounded ingress",
+  "section": "integration",
+  "summary": "XTP dev34 now carries per-service session protection and persistent FIRST->KEY, but service key alone does not identify a unique MI. New dev2 native ooRexx XtpProvisionIngress enforces encrypted xtp.provision session metadata, an independent exclusive MI identity/fence decision, and bounded EOM framing before handing out opaque bytes. No route mutation, LDAP resolver, quorum commit or ED209 deployment claimed.",
+  "authority": "source-qualified-engineering-continuity",
+  "invariants": [
+    "Use existing dev34 protected XtpSession and sticky encrypt profile; never silently downgrade to clear or authenticate-only",
+    "A service-owned shared key authenticates a service key holder, NOT the MI: the privileged Identity Directory resolver must prove exclusive key-to-MI binding, epoch fence and current ACL",
+    "Reject if KEYID, service, protection, OPEN state, authority, principal or identity scope is missing or mismatched",
+    "Max request bytes, frame count and per-read timeout are enforced with an abort on malformed/incomplete requests",
+    "No serialized body becomes authority merely because it arrived on protected XTP; independently verify Ed25519/quorum/target/policy and durable commit before route activation",
+    "No IP under named-service descriptors; only XTP route engine may mutate route/carrier state; preserve seed and emergency access",
+    "No field readiness claims from injected-stub ooRexx tests"
+  ],
+  "procedure": [
+    "Use packages/oorexx_xtp_v0.1-dev34/docs/SECURITY.md and rexx/XtpSession.cls to locate exact session info fields; v34 is per-service protection and persistent sessions, not a provisioning authorization layer",
+    "Run REXX_BIN=/path/to/rexx tests/run.sh on provision dev2; 20 native deterministic admission/framing checks PASS locally on r13196",
+    "Read xtp_route_publication_v0.1-dev2/docs/DEV2_INTEGRATION.md for privileged LDAP resolver and frame handling gates",
+    "Consume new principal/session-binding interface only after the XTP owner specifies its exact authority; project coordination REQ-00001829",
+    "Continue controller-signed allocations and atomic gateway CONFIG_PREPARE/ACTIVATE/REVERT in a separate increment; ED209 raw36/L2 later"
+  ],
+  "provenance": [
+    {
+      "artifact": "xtp_route_publication_v0.1-dev2.zip",
+      "sha256": "2e963a517f2bc449747087ee3ad4b1b22db36be5b60bbbe7b4d3d8327800ebdb",
+      "member": "xtp_route_publication_v0.1-dev2/src/XtpProvisionIngress.cls",
+      "claim": "Native ooRexx encrypted session/identity/fence check and bounded EOM ingress"
+    },
+    {
+      "artifact": "xtp_route_publication_v0.1-dev2.zip",
+      "sha256": "2e963a517f2bc449747087ee3ad4b1b22db36be5b60bbbe7b4d3d8327800ebdb",
+      "member": "xtp_route_publication_v0.1-dev2/docs/LOCAL_TEST_OUTPUT.txt",
+      "claim": "Twenty r13196 native checks passed in local test run"
+    }
+  ],
+  "related": [
+    "xtp.provision-security",
+    "xtp.named-services",
+    "xtp.qualification",
+    "xtp.transport-security"
+  ],
+  "qualification_boundaries": {
+    "local": "native ooRexx fake-session and resolver tests PASS; independent candidate1 Ed25519 contract tests PASS",
+    "native": "real libxtp encrypted sessions with actual LDAP principal resolver NOT QUALIFIED",
+    "field": "ED209 raw36/L2/atomic route activation NOT QUALIFIED"
+  }
+}

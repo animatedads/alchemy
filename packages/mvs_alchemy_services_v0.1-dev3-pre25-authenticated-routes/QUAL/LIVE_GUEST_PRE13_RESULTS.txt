@@ -1,0 +1,22 @@
+MVS Alchemy Services dev3-pre13 HASP-safe qualification harness
+
+SOURCE BASIS
+- PRE10 live ED209Z: platform/JES PASS; guest build FAIL RC=8 before run.
+- PRE11: direct X'75' guest build repair, NOT_RUN live.
+- PRE12: bounded X'75' retry/diagnostics, NOT_RUN live.
+
+PRE13 CHANGES
+- Fixes `set -u` crash in the reader/JES PASS message caused by expanding
+  `$HASP100` as a shell variable.
+- Keeps literal-safe `\$HASP100`, `\$HASP373`, and `\$HASP395` regexes for log matching.
+- Adds scripts/check_hasp_shell_safety.py to reject executable double-quoted
+  `$HASPnnn` prose in the qualification harness.
+- Updates live archive naming/status marker to PRE13.
+
+STATUS
+PASS bash -n harness.
+PASS HASP shell-safety checker.
+NOT_RUN ED209Z assembly.
+NOT_RUN ED209Z link.
+NOT_RUN ED209Z X'75' execution.
+NOT_RUN live Queue/DB/IMAP/SMTP/PATH.

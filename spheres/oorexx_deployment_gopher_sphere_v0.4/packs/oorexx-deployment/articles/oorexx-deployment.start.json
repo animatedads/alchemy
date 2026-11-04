@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.start",
+  "version": "0.2",
+  "sphere": "oorexx-deployment",
+  "title": "Start here: General ooRexx Deployment",
+  "summary": "General Deployment is application-neutral reconciliation: desired state plus observed target state becomes an inspectable plan, dependencies are resolved before mutation, mutation occurs only during apply, and success requires fresh verification. dev5 adds the first concrete Rasen Falcon consumer by packaging LDAP Identity dev22 with an exact dependency namespace and namespace-verifying launch seam.",
+  "authority": "project-doctrine",
+  "section": "start",
+  "invariants": [
+    "Deployment changes the target or fails; it never weakens the application declaration to fit the target.",
+    "Application-specific deployment knowledge belongs in manifests/adapters, not the core Deployment classes.",
+    "Production ooRexx releases consume exact qualified SSC deployment/dependency authority where available; loose source-level resolution is a development/archive fallback.",
+    "Deployment constructs a release-local deterministic package namespace and exact REXX_PATH after semantic resolution; ambient REXX_PATH is not inherited as authority.",
+    "Copying files or receiving rc=0 is not sufficient proof of deployment success.",
+    "Keep this knowledge sphere separate from the executable Deployment package."
+  ],
+  "topics": [
+    "start",
+    "deployment",
+    "reconciliation",
+    "authority"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.5.md",
+      "sha256": "6c60627599760394133982672bee69e4f6c52fa7b6bc74ce283f484e977b6aa8",
+      "member": "General_ooRexx_Deployment_Component_v0.5.md",
+      "claim": "Defines dev5 Rasen Falcon identity-role integration on top of sealed SSC namespace authority."
+    },
+    {
+      "artifact": "oorexx_deployment_v0.1-dev5.zip",
+      "sha256": "109087c9e77d06987f0a8b4365540da76df97fe65eb8fa89952387e5e9db9802",
+      "member": "oorexx_deployment_v0.1-dev5/README.md",
+      "claim": "Current dev5 candidate adds concrete Rasen Falcon identity-role packaging."
+    }
+  ]
+}

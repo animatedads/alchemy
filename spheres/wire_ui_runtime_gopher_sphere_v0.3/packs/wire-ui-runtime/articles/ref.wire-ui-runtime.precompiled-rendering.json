@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-runtime.precompiled-rendering",
+  "version": "0.1",
+  "sphere": "wire-ui-runtime",
+  "title": "Precompiled rendering: definitions once, direct slot mutation thereafter",
+  "summary": "Wire UI avoids routine component-tree reconciliation by separating generic renderer primitives, immutable site definitions and live instance/slot state. Definitions are installed/prepared once; live queue traffic addresses exact instances and slots.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Routine rendering does not rebuild a component tree merely to discover what changed.",
+    "Definitions are immutable/versioned and may be content-addressed and cached.",
+    "The hot render path must not branch on browser brand or repeatedly interpret semantic definitions.",
+    "Generic renderer primitives may be specialised for a negotiated capability/display profile before live rendering.",
+    "Persistent browser storage may contain immutable definitions/runtime assets but not authoritative live session state."
+  ],
+  "procedure": [
+    "Receive or recover the exact definition from immutable cache.",
+    "Compile it once to concrete element factories and direct slot writers for the selected render profile.",
+    "Instantiate from an authoritative snapshot.",
+    "Apply revisioned SET_SLOT/list/structure operations directly."
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev7.zip",
+      "sha256": "38bebd4783abc143b7365793d337f4682b0f80cac8478afa115befb0440cd15a",
+      "member": "alchemy_wire_ui_js_v0.4-dev7/README.md",
+      "claim": "Definitions are prepared once, routine rendering is direct slot mutation, and cache holds only immutable definitions.",
+      "line_start": 26,
+      "line_end": 34
+    },
+    {
+      "artifact": "alchemy_wire_ui_js_v0.4-dev7.zip",
+      "sha256": "38bebd4783abc143b7365793d337f4682b0f80cac8478afa115befb0440cd15a",
+      "member": "alchemy_wire_ui_js_v0.4-dev7/README.md",
+      "claim": "One-time render profile negotiation and content-addressed definition cache.",
+      "line_start": 65,
+      "line_end": 91
+    }
+  ]
+}

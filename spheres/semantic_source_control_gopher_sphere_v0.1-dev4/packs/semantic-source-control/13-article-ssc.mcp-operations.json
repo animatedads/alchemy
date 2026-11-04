@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "ssc.mcp-operations",
+  "version": "0.1-dev2",
+  "sphere": "semantic-source-control",
+  "title": "SSC MCP operations and who the caller is",
+  "summary": "SemanticSourceMcpOperations~dispatch(operation, request, principal) is the transport-neutral surface an MCP/HTTPS host calls after authenticating the caller. Implemented: source.import_archive_begin, source.import_archive_member, source.import_archive_resource, source.import_archive_complete, source.import_archive_fail, source.get_package, source.accept_revision, source.refuse_revision, source.accept_import, source.history, source.objects_in. No MCP host is wired to it yet.",
+  "invariants": [
+    "The principal is the authenticated session's principal; any principal or imported_by claimed in the request body is replaced, never trusted.",
+    "Authentication is not authorization: acceptance is re-authorized per operation by the repository authorizer (Access Permissions in production).",
+    "Every reply is ok=1|0 with payload or error; nothing raises into the transport.",
+    "source.get_package returns files plus the exact revision manifest; with pins and project_id import:<id> it reproduces one import exactly.",
+    "Until a host registers these operations, live MCP SSC state is UNKNOWN, not available."
+  ]
+}

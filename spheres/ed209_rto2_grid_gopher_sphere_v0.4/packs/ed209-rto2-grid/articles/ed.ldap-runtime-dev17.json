@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "ed.ldap-runtime-dev17",
+  "version": "0.4",
+  "sphere": "ed209-rto2-grid",
+  "title": "RexxOS Grid LDAP Identity runtime qualification — dev17",
+  "summary": "Grid dev17 fixes an invalid ooRexx test loader and returns UNAUTHENTICATED for malformed RPC context; both native r13196 tests passed locally.",
+  "authority": "qualification-evidence",
+  "invariants": [
+    "LDAP Identity dev22 is the principal and ACL authority, not Grid; caller attribution comes from an authenticated external layer.",
+    "Only Directory/Table RPC context is admitted; malformed context denies explicitly.",
+    "Active principal with GRID.ESTATE.READ succeeds, while management capability without grant, missing principal and disabled principal are denied.",
+    "Transport packet ACK and authenticated LDAP authorization are not evidence of RTO2 committed MI work.",
+    "Neither 20/20 live work nor named-service XTP federation is accepted."
+  ],
+  "procedure": [
+    "Run tests/run_native_qualification.sh with the exact r13196 interpreter and pinned LDAP Identity dev22, RPC core dev1 and Grid dev15 dependencies."
+  ],
+  "provenance": [
+    {
+      "artifact": "rexxos_rto2_grid_v0.1-dev17-identity-runtime.zip",
+      "sha256": "807fdc75cf856fef7756be776026aeac113816bf7ce39acf494f6b3efae60691",
+      "member": "grid/RexxOSGridAuthorizedServiceEndpoint.cls",
+      "claim": "Malformed RPC context is denied before consulting principal_id."
+    },
+    {
+      "artifact": "rexxos_rto2_grid_v0.1-dev17-identity-runtime.zip",
+      "sha256": "807fdc75cf856fef7756be776026aeac113816bf7ce39acf494f6b3efae60691",
+      "member": "tests/test_grid_authorized_service_rpc.rex",
+      "claim": "Native identity-gated RPC dispatcher regression."
+    }
+  ]
+}

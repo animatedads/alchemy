@@ -1,0 +1,37 @@
+NoSQLServer v0.48 validation
+============================
+
+Focus
+-----
+Single-row INSERT publication now appends one native CsvStream record rather
+than rewriting the complete delimited table.
+
+Implementation
+--------------
+- DelimitedTableStorage~appendRow opens native .CsvStream with WRITE APPEND.
+- csvLineOut performs existing delimiter/qualifier escaping and calls LINEOUT.
+- FileDatabaseTable~insert validates first, then appends only the new row.
+- Multi-row INSERT deliberately retains whole-file publication so a single SQL
+  statement cannot become partially visible if an append fails midway.
+- UPDATE and DELETE remain rewrite-based pending an explicit fixed-record /
+  tombstone storage contract.
+
+Correctness
+-----------
+- simple append: PASS
+- embedded comma quoting: PASS
+- embedded quote escaping: PASS
+- multi-row INSERT compatibility: PASS
+- all historical SQL/FK/event/optimizer gates: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- Grok hell v2: 14/30 PASS, 0 wrong results
+
+Performance note
+----------------
+At 50-row microbenchmark scale, v0.47 and v0.48 are both around 1.1 seconds for
+50 separate SQL INSERT statements. This shows that after eliminating full data
+file rewrite, the next dominant cost is existing-row scanning for constraints
+and per-mutation journal/catalog work. The user's 5,000-row workload should be
+rerun against v0.48, but further write scaling will require indexed constraint
+validation rather than repeated table scans.

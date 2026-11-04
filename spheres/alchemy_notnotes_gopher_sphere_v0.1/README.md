@@ -1,7 +1,9 @@
 # Alchemy NotNotes — LLM Gopher sphere v0.1
 
-This is the documentary continuity sphere for the historical v0.1-dev15 core and its integration with Architecture Intentions. Source lives at `packages/alchemy_notnotes/`, and the current working document corpus belongs to a separate versioned NotNotes data line.
+This sphere is the documentary continuity surface for Alchemy NotNotes source plus the live Project Alchemy programme/stack documentation model.
 
-No live mutation is performed by this sphere. The dev15 source is now in Git; production publication, revision CAS and fresh ooRexx native qualification are not claimed.
+Source lives at `packages/alchemy_notnotes/`. The independently versioned working document corpus is currently `project_alchemy_notnotes_corpus_v0.7_working` and remains NotNotes data rather than Git source authority. The separate `alchemy_programme_notnotes_v0.2` candidate dogfoods native NotNotes forms/reports for reuse, dependency-referral and activation checks; it does not become a second database or deployment authority.
 
-Start at `packs/alchemy-notnotes/00-sphere.json` and the `notnotes.*` articles. Keep NotNotes document authority separate from Intention Service, ConnectSelector, SSC and Deployment.
+No production mutation is performed by this sphere. Git source, test receipts, installed state and running state are deliberately distinct. Use the trust ladder documented in `notnotes.programme`: `CHAT_SUMMARY`, `GIT_VERIFIED`, `EXECUTED_TEST_RECEIPT`, `INSTALLED_RUNNING`, or `UNKNOWN`.
+
+Start at `packs/alchemy-notnotes/00-sphere.json` and the `notnotes.*` articles. Keep NotNotes document authority separate from Intention Service, ConnectSelector, Semantic Source Control, Deployment, mail/LDAP, HTTPS and transport authorities.

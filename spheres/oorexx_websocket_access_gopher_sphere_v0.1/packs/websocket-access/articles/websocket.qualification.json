@@ -4,15 +4,16 @@
   "version": "0.1",
   "sphere": "websocket-access",
   "title": "Qualification evidence",
-  "summary": "WebSocket dev1 remains the qualified release: RFC 6455 contract suite under ooRexx 5.3.0 r13196 plus live loopback against independent Python websockets through SocketProvider isolation. dev2 is a source candidate awaiting fresh r13196 + Socket Provider dev16 execution.",
+  "summary": "WebSocket dev1 remains the immutable qualified release. The current dev4 source candidate adds fragmentation/close repairs, estate crypto integration, server-side RFC6455 access and an owned-HTTPS upgrade seam, but none of those later increments are promoted until fresh r13196/dev16/COTS/HTTPS execution completes.",
   "invariants": [
     "dev1 contract evidence includes the RFC 6455 example handshake accept calculation and masking vector.",
-    "dev1 live COTS evidence used an independent Python websockets server.",
-    "The dev1 live path exercised WebSocketAccess -> SocketProvider -> RxSock TCP -> independent RFC 6455 peer -> WebSocketMessage.",
+    "dev1 live COTS evidence used an independent Python websockets server through SocketProvider isolation.",
     "SocketAddress identity survives the isolation seam as an object.",
-    "dev2 adds tests for fragmented message reassembly, interleaved ping/pong, close-frame transmission and unexpected continuation fail-closed behaviour.",
-    "No dev2 PASS is claimed until those tests execute under ooRexx 5.3.0 r13196 against Socket Provider dev16.",
-    "Independent dev2 qualification/review is requested on Rasen Falcon lane websocket-access as REQ-00000381."
+    "dev4 contract fixtures cover fragmented messages, interleaved control frames, close-frame transmission, parsed HTTPS handoff, coalesced first-frame preservation, client masking, Origin admission and WebSocket version rejection.",
+    "dev4 optional crypto fixture covers RFC6455 SHA-1 accept calculation and base64 through crypto.auth/0.1 with injected deterministic entropy.",
+    "No dev4 PASS is claimed until these tests execute under ooRexx 5.3.0 r13196 against Socket Provider dev16.",
+    "No owned-HTTPS/wss PASS is claimed until the HTTPS component supplies its upgrade-stream wrapper and a live TLS upgrade is exercised.",
+    "Independent review remains requested on Rasen Falcon lane websocket-access as REQ-00000381; HTTPS counterpart work is requested as REQ-00001851."
   ],
   "provenance": [
     {
@@ -21,13 +22,17 @@
       "member": "VALIDATION.txt"
     },
     {
-      "artifact": "packages/oorexx_websocket_access/VALIDATION_DEV2.txt",
-      "claim": "Records dev2 SOURCE_CANDIDATE status and explicit qualification gates."
+      "artifact": "packages/oorexx_websocket_access/VALIDATION_DEV4.txt",
+      "claim": "Records dev4 SOURCE_CANDIDATE status and exact promotion gates."
+    },
+    {
+      "artifact": "packages/oorexx_websocket_access/tests/test_server_access.rex",
+      "claim": "Server/HTTPS handoff contract fixture; source present, not locally executed."
     },
     {
       "artifact": "SPIRAL1_TRANSPORT_COTS_INTERFACE_GRID_CURRENT_2026-10-13.md",
       "sha256": "f659adf468eac794446550defc830fcdcbf7a40a75e65e4fe9a4e782fc2c6bbd",
-      "claim": "Current inherited evidence status."
+      "claim": "Current inherited dev1 evidence status."
     }
   ]
 }

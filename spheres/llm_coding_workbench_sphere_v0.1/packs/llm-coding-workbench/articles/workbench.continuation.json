@@ -5,21 +5,22 @@
   "sphere": "llm-coding-workbench",
   "section": "operations",
   "title": "Current continuation rules and next work",
-  "summary": "Current source baseline is Workbench dev14. Continue the Workbench itself, not Coding Intentions. Preserve the full Rexx object through internal tooling and instrumentation, and challenge every new flattening/helper layer: projection belongs at an explicit external edge. GitHub package source is authoritative for admitted Workbench work; Library is checked for newer candidate deliveries before starting a new increment.",
+  "summary": "Current source baseline is Workbench dev15. Continue the Workbench itself, not Coding Intentions. Preserve the full Rexx object through internal tooling and instrumentation, flatten only at an explicit external edge, and retain the semantic method base inspected by a turn so stale model edits are rejected before source mutation.",
   "authority": "project-authoritative",
   "invariants": [
     "Target component is ooRexx LLM Coding Workbench.",
     "Avoid modifying Coding Intentions unless explicitly assigned; it is under parallel development.",
     "Do not reintroduce a Python semantic controller merely to inspect or marshal objects already available in Rexx.",
     "Before coding, check Library and current GitHub source to avoid duplicating already-admitted work.",
-    "When qualification cannot be rerun, record the limitation instead of upgrading evidence by assertion."
+    "When qualification cannot be rerun, record the limitation instead of upgrading evidence by assertion.",
+    "A model edit must not overwrite a semantic method revision newer than the one its turn inspected."
   ],
   "procedure": [
-    "Check Library for a candidate newer than the GitHub Workbench source.",
-    "Inspect the current GitHub package and sphere before changing code.",
-    "Make the smallest Workbench-owned increment that preserves authority boundaries.",
-    "Run the strongest available qualification and record exactly what was and was not executed.",
-    "Update this sphere when an architectural invariant, authority boundary or accepted baseline changes."
+    "Check Library and current GitHub Workbench source before starting a new increment.",
+    "Check the Rasen Falcon lane for parallel work or requests.",
+    "Inspect semantic objects through Development Desk and retain controller-owned revision evidence.",
+    "Make the smallest Workbench-owned change that preserves source, language, API and qualification authority boundaries.",
+    "Update this sphere and post lane progress when an architectural invariant or accepted baseline changes."
   ],
   "provenance": [
     {

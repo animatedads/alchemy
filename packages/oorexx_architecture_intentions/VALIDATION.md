@@ -1,13 +1,18 @@
-# Architecture Intentions v0.1-dev10 validation
+# Architecture Intentions v0.1-dev11 qualification ledger
 
-Date: 2026-10-24
+Date: 2026-10-29
 
-**Static qualification completed**: JSON package/catalog/examples parse, `bash -n` on qualification scripts, source newline and manifest checks, ZIP CRC/integrity, and deterministic source SHA-256 inventory.
+## Verified in this packaging session
+- Historical dev10 source recovered from the user-provided ZIP; source changes for dev11 are two independent classes, three test scripts, package manifest/runner/README and one architecture document.
+- JSON schema/catalog/examples and `PACKAGE.json` parse; Bash runner `bash -n` clean.
+- Strict ZIP CRC integrity, SHA-256 manifest consistency and no duplicate archive paths verified.
+- `ArchitectureRasenFalconBaseline` includes separate public, private, mail and internode gate requirements; public website does not inherit LDAP. Service results are evidence-only, not live activation claims.
+- ConnectSelector dev8 Library README/CHANGELOG inspected (authenticated route policy) but its runtime qualification is **NOT_RUN** in this session.
 
-**Native qualification NOT completed**: ooRexx 5.3.0 r13196 deb is not mounted in the current runtime. Prior dev9 logs remain historical evidence; they do not qualify the new dev10 class.
+## Not run / not asserted
+- Native ooRexx 5.3.0 r13196 test execution: **NOT_RUN** — interpreter binary unavailable in this container. `tests/test_service_readiness.rex`, including its injected synthetic verifier and fail-closed negative scripts, has not been executed here. Previous dev10 tests are historical only.
+- Production HTTPS/LDAP/SMTP/IMAP/XTP or deployed target tests: **NOT_RUN**. No live service inspected, started, mutated or declared active.
+- Actual SSC accepted dependency lock, NotNotes document write, human sign-off and deployment activation: **NOT_RUN**.
 
-New contract: `ArchitectureNotNotesPublication.cls` generates a non-executable, detached NotNotes architecture-review publication REQUEST. `tests/test_notnotes_publication.rex` was added to the native test runner, but this test has not been run under an interpreter in this session.
-
-NotNotes core recovery: all three dev15 source classes, original tests, demos and dependency declarations from Library `alchemy_notnotes_v0.1-dev15.zip` are committed to GitHub and its primary source classes have byte-exact Git blob verification. This is historical source recovery, not current runtime requalification. The v0.6.2 corpus is documentary, not proof of current executable source.
-
-NOT IMPLEMENTED: live NotNotes write or revision CAS, NotNotes authentication/authorization, actual SSC resolution, Deployment activation.
+## Security boundary
+The candidate evidence payload does not grant rights. `admitEvidence()` requires an external host-injected verifier with exact project, service, gate and evidence-authority claims. Output retains only public proof and evidence reference fields; the service always reports `DESIGN_ONLY_NO_LIVE_ACTIVATION`, even if every gate receives admitted proof.

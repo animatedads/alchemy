@@ -76,6 +76,63 @@ worldScoped~add(.MockGround~new("fiction","REBUT",3,"scenario","SCENARIO"))
 scoped=c~evaluate(worldScoped)
 call check scoped["stance"]="CONTRA" & scoped["status"]="REBUTTED", -
  "same evidence can defeat within the stated fictional scenario scope"
+
+/* V0.3: a stable ID is not proof of stable proposition wording. */
+renamed = .MockProposition~new("C1",2,4,.nil,"FISH ARE THE GREATEST")
+renamed~add(.MockGround~new("gbase","SUPPORT",2,"sourceA","GENERAL"))
+r = ra~compare(old,renamed)
+call check r["classification"]="INVALID_COMPARISON" & r["statementChanged"] & r["identityVerified"], -
+ "same ID and evidence but altered proposition text is NOT a warranted belief revision"
+
+/* A scope admission-policy change with unchanged ground inventory is not new evidence. */
+scopeBefore = .MockProposition~new("C1",2,4,.nil)
+scopeBefore~add(.MockGround~new("base","SUPPORT",2,"uA","GENERAL"))
+scopeBefore~add(.MockGround~new("fiction","REBUT",3,"uB","SCENARIO"))
+scopeAfter = .MockProposition~new("C1",2,4,.array~of("SCENARIO"))
+scopeAfter~add(.MockGround~new("base","SUPPORT",2,"uA","GENERAL"))
+scopeAfter~add(.MockGround~new("fiction","REBUT",3,"uB","SCENARIO"))
+r = ra~compare(scopeBefore,scopeAfter)
+call check r["classification"]="POLICY_CHANGE_REQUIRES_REVIEW" & r["changedBindings"]~items=1, -
+ "binding-policy change cannot masquerade as a new contrary ground"
+call check r["bindingPolicyCoverage"]="OBSERVED_GROUND_SCOPES_ONLY", -
+ "audit states the finite comparison coverage of accepted scopes"
+
+/* Policy thresholds require review even if the conclusion did not change. */
+floorOnly = .MockProposition~new("C1",1,4,.nil)
+floorOnly~add(.MockGround~new("gbase","SUPPORT",2,"sourceA","GENERAL"))
+r = ra~compare(old,floorOnly)
+call check r["classification"]="POLICY_CHANGE_REQUIRES_REVIEW" & \r["changed"], -
+ "changed assertion floor is a policy event even without a stance transition"
+
+/* Editing editorial/warrant context under an immutable evidence ID is mutation. */
+notedBefore = .MockProposition~new("C1",2,4,.nil)
+notedBefore~add(.MockGround~new("gbase","SUPPORT",2,"sourceA","GENERAL","","alpha note"))
+notedAfter = .MockProposition~new("C1",2,4,.nil)
+notedAfter~add(.MockGround~new("gbase","SUPPORT",2,"sourceA","GENERAL","","beta note"))
+r = ra~compare(notedBefore,notedAfter)
+call check r["classification"]="MUTATED_GROUND_ID", -
+ "changed source note under the same ground ID is quarantined"
+/* No longer permit identical derivation certificates for changed claim/note
+ * contents just because the final stance and ground IDs stayed the same. */
+notedOldDecision = c~evaluate(notedBefore)
+notedNewDecision = c~evaluate(notedAfter)
+call check notedOldDecision["derivation"] \= notedNewDecision["derivation"] & -
+ notedOldDecision["stance"] = notedNewDecision["stance"], -
+ "changed note changes derivation content even when the result is unchanged"
+renamedDecision = c~evaluate(renamed)
+baseDecision = c~evaluate(old)
+call check baseDecision["derivation"] \= renamedDecision["derivation"] & -
+ baseDecision["stance"] = renamedDecision["stance"], -
+ "changed exact claim text changes deterministic derivation content"
+call check renamedDecision["derivationVersion"]="ordinal-evidence-combiner/0.3", -
+ "derivation format version increments after changing bound transcript fields"
+
+/* Control: same proposition, same grounds and policy => no revision. */
+same = .MockProposition~new("C1",2,4,.nil)
+same~add(.MockGround~new("gbase","SUPPORT",2,"sourceA","GENERAL"))
+r = ra~compare(old,same)
+call check r["classification"]="NO_REVISION" & r["identityVerified"] & \r["statementChanged"], -
+ "unchanged proposition and inputs still produce NO_REVISION"
 say "EVIDENCE REVISION AUDIT PASS ("checks" checks)"
 exit 0
 check:
@@ -90,10 +147,11 @@ failSyntax:
 
 ::class MockProposition public
 ::method init
- expose id af sf accept list
- use strict arg id,af,sf,accept
+ expose id af sf accept list statement
+ use strict arg id,af,sf,accept,statement="BASE CLAIM"
  list=.array~new
 ::attribute id get
+::attribute statement get
 ::method grounds
  expose list
  return list
@@ -117,10 +175,11 @@ failSyntax:
 
 ::class MockGround public
 ::method init
- expose id kind tier sourceUtterance binds undercutsGroundId targetId
- use strict arg id,kind,tier,sourceUtterance,binds,undercutsGroundId=""
+ expose id kind tier sourceUtterance binds undercutsGroundId targetId note
+ use strict arg id,kind,tier,sourceUtterance,binds,undercutsGroundId="",note=""
  targetId = "P1"
 ::attribute id get
+::attribute note get
 ::attribute kind get
 ::attribute tier get
 ::attribute sourceUtterance get

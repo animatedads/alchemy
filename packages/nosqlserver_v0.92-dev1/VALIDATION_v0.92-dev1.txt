@@ -1,0 +1,10 @@
+NoSQLServer v0.92-dev1 focused regression — 2026-10-29
+Environment: user-supplied ooRexx 5.3.0 r13196 debug / C++17 / sqlite3 / Alchemy Objects v0.8 / Crypto v0.8.3.
+Commands: OOREXX_ROOT=<extracted_prefix> ALCHEMY_ROOT=<objects_root> CRYPTO_ROOT=<crypto_root> bash tools/run_sqlite_rw_v092.sh
+PASS v0.89 atomic insert/update/delete, exclusive create, BLOB, INT64, rollback
+PASS v0.74 native SQLite/GeoPackage and v0.60 UPDATE FROM
+PASS v0.90 WAL concurrent snapshot and independent SQLite integrity
+PASS v0.91 table-level phantom/zero-match guard
+PASS v0.92 10,002-row B-tree seek, MIN_INT64, negative/missing keys, binary BLOB, lazy count, scan fallback
+PASS v0.92 writable selected engine guarded UPDATE and independent integrity
+NOT TESTED: Instrumentation Mesh optional suites, large-scale contention, native library portability, distributed filesystem authority, throughput benchmark across Rexx/SQL.

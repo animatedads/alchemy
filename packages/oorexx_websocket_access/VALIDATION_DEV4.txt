@@ -1,0 +1,57 @@
+ooRexx WebSocket Access v0.1-dev4 source candidate validation status
+Date: 2026-10-29
+
+Status: SOURCE_CANDIDATE; NOT PROMOTED AS A QUALIFIED RELEASE.
+
+Immutable qualified release:
+  oorexx_websocket_access_v0.1-dev1.zip
+  SHA-256 91d244cb00216f5760bffe2e2983c1e461d89048e8fd668f4ad160636eb0a655
+
+Current authorities:
+  Socket Provider v0.1-dev16
+  SHA-256 fe2fa086bd4f1e072b8d455e6adb4475482b8db6a35118329f6b3f6e6253c8c2
+  ooRexx Crypto v0.8.3
+  SHA-256 5ebcab81493287499719f98920cb190d37afc79992cb34c7772d5392f63b9b49
+  Crypto Authentication Primitives v0.1-dev1 / crypto.auth/0.1
+
+Owned HTTPS integration authority:
+  stable packages/oorexx_https_server API inspected 2026-10-29 documents v0.4.6.
+  HTTPS owns accepted sockets, TLS/OpenSSL memory-BIO mechanics, HTTP parsing,
+  bounded admission and connection lifetime. Normal route/interceptor APIs do
+  not expose Socket/BIO/SSL objects.
+
+dev4 source increment:
+  - preserves WebSocket bytes coalesced with client HTTP 101 response;
+  - adds client/server codec directions and mandatory client masking;
+  - adds WebSocketServerAccess over an already accepted plaintext stream;
+  - adds WebSocketUpgradeRequest and acceptParsedRequest() HTTPS handoff;
+  - preserves already-read post-header bytes;
+  - adds Origin allowlist, subprotocol selection and RFC version rejection;
+  - rejects malformed/noncanonical client keys;
+  - preserves fragmentation/control/close semantics;
+  - retains optional crypto.auth SHA-1 and injected entropy adapter.
+
+Source review repair:
+  An intermediate generated server file lost ooRexx backslash negations through
+  JavaScript string escaping. The affected admission checks were detected before
+  qualification and the file was fully rewritten using explicit .false tests.
+  No PASS is inherited from that intermediate source.
+
+Execution status:
+  NOT RUN in this ChatGPT container: no usable ooRexx r13196 interpreter and
+  no materialized Socket Provider dev16 qualification closure were available.
+
+Therefore dev4 does NOT claim fresh dev16 live qualification, server-side COTS
+interoperability, live owned-HTTPS/wss integration, or production entropy binding.
+
+Promotion gates:
+  1. tests/test_websocket_contract.rex under ooRexx 5.3.0 r13196.
+  2. tests/test_server_access.rex.
+  3. tests/test_platform_crypto.rex with exact Crypto v0.8.3 + crypto.auth/0.1.
+  4. Independent COTS client and server interoperability through Socket Provider dev16.
+  5. Narrow upgrade-stream handoff implemented in the owned HTTPS server.
+  6. Live wss through that HTTPS/TLS path preserving admission/TLS lifetime.
+  7. Production WebSocketEntropySource binding.
+
+Rasen Falcon componentId: websocket-access
+Independent review request: REQ-00000381

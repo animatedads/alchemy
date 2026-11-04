@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "arch.oorexx-speech.rpc-https",
+  "version": "0.1",
+  "sphere": "oorexx-speech",
+  "title": "Authenticated RPC/HTTPS publication boundary",
+  "summary": "Speech dev13 exposes unary control-plane operations through existing RPC Core. The existing HTTPS JSON-RPC gateway owns TLS/HTTP publication and delegates actual identity proof and authorization to the platform LDAP identity authority.",
+  "invariants": [
+    "Speech does not implement HTTP, TLS, JSON-RPC, LDAP or a competing transport selector.",
+    "RPC Core registration is explicit and frozen. Public HTTPS JSON-RPC names map only to already-registered Speech RPC Core operations.",
+    "The HTTPS gateway authenticates the accepted TLS exchange and authorizes each service operation using platform identity. Speech never trusts caller-supplied headers, roles or JSON principal fields.",
+    "Ordinary JSON-RPC is control plane only. Streaming PCM, callbacks and stateful media flow are not published as unary HTTPS JSON-RPC operations.",
+    "Remote TTS must not return a server-local temporary path. Output needs an existing durable external reference or an injected material publisher.",
+    "Remote STT resolves an externally meaningful material reference through an injected material authority. Without material authority, material operations fail closed.",
+    "Connect Selector remains route-selection authority; HTTPS JSON-RPC publication is one optional binding, not a mandatory Speech dependency."
+  ],
+  "dependencies": [
+    "RPC Service Core v0.1-dev1",
+    "optional RPC HTTPS JSON-RPC gateway v0.1-dev1",
+    "optional HTTPS Server v0.4.8",
+    "platform LDAP Identity Directory authority at deployment"
+  ]
+}

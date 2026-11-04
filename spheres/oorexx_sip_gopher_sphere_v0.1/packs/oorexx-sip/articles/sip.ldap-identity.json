@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "sip.ldap-identity",
+  "version": "0.1",
+  "sphere": "oorexx-sip",
+  "title": "LDAP Identity and SIP Digest credential boundary",
+  "summary": "SIP dev17 can lazily provision Digest credentials from the platform Identity Directory and Secret Broker without making LDAP part of call/media ownership. Identity Directory supplies active principal/credential metadata; Secret Broker materializes the referenced secret; SIP immediately provisions its native Digest engine for that request.",
+  "authority": "project-authority",
+  "invariants": [
+    "LDAP Identity owns principal and credential metadata; SIP owns SIP Digest protocol verification.",
+    "Secret material is acquired only through Secret Broker and the lease is retired before the provider returns.",
+    "No raw credential value is written to Alchemy Log or Instrumentation Mesh.",
+    "Provider failure is fail-closed and invalidates a previously provisioned native credential before verification.",
+    "The adapter is optional; calls, RTP, AudioIn, AudioOut, STT and TTS do not depend on LDAP lifecycle.",
+    "SIP does not modify LDAP Identity source or emulate LDAP authentication internally."
+  ],
+  "procedure": [
+    "Use an ACTIVE Identity Directory principal and ACTIVE currently-valid SIP_DIGEST_SECRET credential.",
+    "Configure SipLdapIdentityCredentialProvider with the Identity Directory and Secret Broker objects, then inject it into SipServer.",
+    "Treat a missing/revoked/inactive identity, credential, broker lease or provider failure as authentication denial.",
+    "For production acceptance, execute a real REGISTER challenge/response against LDAP/Secret Broker and verify revoke/failure denial over the wire."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_sip_v0.1-dev17.zip",
+      "sha256": "3fd4edc6b7fddbbd1aef4490a5168cf8092cb7665d9004f6a57bd4942a0be3a6",
+      "member": "src/sip_ldap_identity.cls",
+      "claim": "Optional Identity Directory + Secret Broker credential provider implementation."
+    },
+    {
+      "artifact": "oorexx_ldap_identity_v0.1-dev22.zip",
+      "member": "src/LdapSecretBrokerAdapter.cls",
+      "claim": "Identity Directory credential metadata and Secret Broker lease/materialization model consumed by SIP dev17."
+    }
+  ]
+}

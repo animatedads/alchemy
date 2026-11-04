@@ -1,24 +1,27 @@
 {
   "kind": "article",
   "id": "sip.current",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "oorexx-sip",
-  "title": "Current SIP/RTP baseline",
+  "title": "Current SIP/RTP baseline and LDAP identity integration",
   "authority": "project-authority",
-  "summary": "SIP v0.1-dev16 is the current signalling baseline and RTP v0.1-dev7 is the current shared media baseline. SIP now covers registrar/server behavior plus outbound INVITE/ACK/BYE client control.",
+  "summary": "SIP v0.1-dev17 is the current signalling baseline; RTP v0.1-dev7 remains the shared media baseline. dev17 adds optional lazy SIP Digest credential provisioning from Identity Directory + Secret Broker while preserving independent call/media lifecycles.",
   "invariants": [
+    "SIP v0.1-dev17 is the current source baseline for this sphere.",
     "SIP and RTP are separate components.",
     "RTP remains reusable outside SIP.",
     "Outbound SIP client dialog control does not own RTP or audio worker lifecycle.",
     "Twinkle REGISTER/OPTIONS behavior remains a regression boundary.",
-    "Known estate dependency heads must not be confused with source bytes actually used for a build."
+    "Known estate dependency heads must not be confused with source bytes actually used for a build.",
+    "LDAP Identity v0.1-dev22 may supply SIP Digest principal/credential metadata through the optional adapter; SIP remains Digest protocol authority."
   ],
   "provenance": [
     {
-      "artifact": "oorexx_sip_v0.1-dev16.zip",
-      "sha256": "d70e3c53a7b4c5aef70fcd095c94952fdc3430d2d38ac1861cab1073ef18e3e2",
+      "artifact": "oorexx_sip_v0.1-dev17.zip",
+      "sha256": "3fd4edc6b7fddbbd1aef4490a5168cf8092cb7665d9004f6a57bd4942a0be3a6",
       "member": "VERSION",
-      "claim": "SIP baseline is 0.1-dev16."
+      "claim": "SIP development baseline is 0.1-dev17.",
+      "note": "Current source archive identity."
     },
     {
       "artifact": "oorexx_rtp_v0.1-dev7.zip",

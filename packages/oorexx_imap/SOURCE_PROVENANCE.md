@@ -83,3 +83,36 @@ These hashes identify review inputs only; they do not imply cross-project releas
 acceptance. Dev10-owned source changes are confined to this IMAP package.
 
 Storage Fabric dev23 compatibility was verified against the exact reviewed dev23(1) candidate above. Its removal of `StorageSemantic.cls` exposed a dev9 load-time compatibility defect. Dev10 fixes the IMAP-owned adapter boundary only; Storage Fabric itself is not modified.
+\n\n## Dev11 provenance — 7 October 2026\n\nBase: `oorexx_imap_v0.1-dev10.zip`, SHA-256 `76b96d418353e905dd8869fbe91a23794e92a876f8901ad270736a2f941d8291`. Current Library integration inputs inspected during this increment include LDAP/Identity v0.1-dev14, SMTP Secure Stack v0.1-dev7, Socket Provider v0.1-dev14 and Storage Fabric v0.1-dev21. Dev11 modifies only the IMAP package.\n
+
+## Dev12 local changes — 8 October 2026
+
+Dev12 is derived from the qualified dev11 IMAP tree. The new instrumentation
+adapter was implemented against the user Library's
+`oorexx_instrumentation_mesh_v0.1-dev3.zip`; the Mesh package itself is not
+vendored or modified. `ImapServerEndpoint` gained a dependency-neutral observer
+seam and `ImapServerResponse` gained terminal-status metadata used by that seam.
+
+## Dev13 local changes — 9 October 2026
+
+Base archive: `oorexx_imap_v0.1-dev12.zip`, SHA-256
+`740aa11acc9f6e849389effd03fa2e22f76f43855d947b7868aa5ddcbf7cebab`.
+
+Library inputs used for this increment, consumed unmodified:
+
+* Instrumentation Mesh dev3 —
+  `4639859e71c1f6178de67a04c97c0e1a507dc4eef0359f7d4cae49319f6f0114`;
+* Socket Isolation Telemetry dev1 —
+  `2c295c2e47f166b04202adf13df70ce0f0e0863dc6eeb070013d62b0ee04e412`;
+* Socket Provider dev14 —
+  `39d9f5f6851bf134acb9cc372126a1f53d19eeff4148b28d353bbe76f5451abe`;
+* LDAP/Identity dev14 —
+  `60f16d5c4cbdec0e0fde444e4adf075574740d38f42c6e1b895ae21338d35690`;
+* SMTP Secure Stack dev8 —
+  `5f7cae35c5e30e89141d4484204010c620e2ebdab76d72c0a8089545c1bf0b34`;
+* Storage Fabric dev21 branch used for current-by-date integration qualification —
+  `e070c38cc622fd2e62bf67e17bd97b74c19fc2c34c77a9452bea2ac081753105`.
+
+The dev13 source changes are confined to IMAP.  No dependency package and no
+Preferred Packager source was modified.
+

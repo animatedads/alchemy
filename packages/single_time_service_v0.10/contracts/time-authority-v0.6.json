@@ -1,0 +1,35 @@
+{
+  "schema": "single.time.service.authority.v0.6",
+  "readOperations": {
+    "time.event.resolve": {
+      "request": {
+        "institution": "string",
+        "phrase": "string",
+        "onDate": "YYYY-MM-DD",
+        "asOfRevision": "optional integer with durable ledger only"
+      },
+      "additionalResponseFields": {
+        "authoritySequence": "integer",
+        "authorityHeadChecksum": "string, non-cryptographic",
+        "integrity": "ACCIDENTAL_CORRUPTION_ONLY"
+      }
+    },
+    "time.authority.info": {
+      "request": {},
+      "response": {
+        "revision": "integer",
+        "headChecksum": "string",
+        "integrity": "ACCIDENTAL_CORRUPTION_ONLY",
+        "durability": "CLOSE_NO_FSYNC",
+        "writerModel": "SINGLE_WRITER"
+      }
+    }
+  },
+  "localWriteOnly": "TimeAuthorityLedger.addCalendar, addEvent, closeDate, cancelDate, moveDate, bindPhrase, unbindPhrase each take expectedRevision and yield new revision",
+  "warnings": [
+    "as-of institutional state is not a frozen timezone database",
+    "checksum is not a digital signature",
+    "single writer only; no fsync, lock or transactional grouping",
+    "historical records are read-only; no remote management mutations"
+  ]
+}

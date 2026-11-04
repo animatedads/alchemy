@@ -1,0 +1,58 @@
+{
+  "kind": "article",
+  "id": "arch.brand.journey-population",
+  "version": "0.1",
+  "sphere": "brand-interaction-stack",
+  "title": "Journey Population v0.3: provenance ownership and denominator integrity",
+  "summary": "Journey Population v0.3 reconciles two valid v0.2 branches by assigning upstream source/sampling/dedup provenance to BrandJourneyPopulation and local time/class/feature/outcome/selection provenance to BrandJourneyCohortDefinition. The analyzer composes both into BrandEvidenceCohortProvenance.",
+  "authority": "project-authoritative",
+  "invariants": [
+    "Unknown upstream facts remain UNSPECIFIED rather than being invented.",
+    "Population-owned provenance and cohort-owned provenance are not interchangeable.",
+    "Aggregate buckets are indivisible; partial overlap is excluded rather than prorated.",
+    "Rejected duplicate attempts are evidence but do not inflate the denominator.",
+    "Missing exposed/comparison arms produce analytical INSUFFICIENT or MATERIAL_INVESTIGATION evidence rather than an operational failure.",
+    "No path promotes journey association to causation.",
+    "SERVICE_AS_SALES_JOURNEY never creates sales authority."
+  ],
+  "procedure": [],
+  "provenance": [
+    {
+      "artifact": "brand_journey_population_v0.3.zip",
+      "sha256": "13c96cf013bf3cec1d4bfb4c37a6bba2961243ad2e8a1c3c95933fa31b52dfc3",
+      "member": "brand_journey_population_v0.3/README.md",
+      "line_start": 18,
+      "line_end": 57,
+      "claim": "v0.3 provenance ownership reconciliation and API ownership rule."
+    },
+    {
+      "artifact": "brand_journey_population_v0.3.zip",
+      "sha256": "13c96cf013bf3cec1d4bfb4c37a6bba2961243ad2e8a1c3c95933fa31b52dfc3",
+      "member": "brand_journey_population_v0.3/docs/ARCHITECTURE.md",
+      "line_start": 38,
+      "line_end": 84,
+      "claim": "Population/cohort provenance composition, denominator integrity and statistical boundary."
+    },
+    {
+      "artifact": "brand_journey_population_v0.3.zip",
+      "sha256": "13c96cf013bf3cec1d4bfb4c37a6bba2961243ad2e8a1c3c95933fa31b52dfc3",
+      "member": "brand_journey_population_v0.3/src/BrandJourneyPopulation.cls",
+      "line_start": 276,
+      "line_end": 340,
+      "claim": "Cohort-local provenance ownership, legacy cohort configureProvenance and configureSelectionProvenance."
+    },
+    {
+      "artifact": "brand_journey_population_v0.3.zip",
+      "sha256": "13c96cf013bf3cec1d4bfb4c37a6bba2961243ad2e8a1c3c95933fa31b52dfc3",
+      "member": "brand_journey_population_v0.3/src/BrandJourneyPopulation.cls",
+      "line_start": 530,
+      "line_end": 560,
+      "claim": "Population-owned source/sampling/dedup provenance and configureSourceProvenance."
+    }
+  ],
+  "v03_api_change": {
+    "population_method": "configureSourceProvenance(...)",
+    "cohort_method": "configureSelectionProvenance(...)",
+    "legacy_full_override": "BrandJourneyCohortDefinition.configureProvenance(...)"
+  }
+}

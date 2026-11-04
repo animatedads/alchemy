@@ -1,0 +1,17 @@
+Rasen Falcon LDAP deployment contribution qualification
+========================================================
+Date: 2026-10-29
+
+PASS static deployment contract.
+PASS non-root/hardened systemd policy assertions.
+PASS mandatory TLS/Secret Broker/persistent-directory composition assertions.
+PASS no third-party LDAP/mail/web runtime substitution in bootstrap/unit.
+
+NOT RUN target-host installation.
+NOT RUN live LDAPS bind/search/revoke.
+NOT RUN Crypto sign/verify/revoke.
+
+This qualification is intentionally independent of the larger Library dev21
+source synchronisation. It uses LDAP APIs already available in the current
+GitHub package line and therefore can merge without falsely version-bumping the
+older exploded source tree.

@@ -1,13 +1,15 @@
-# Pharo Alchemy sphere
+# Pharo Alchemy sphere — operational status 2026-10-29
 
-Read-only knowledge sphere for the resident ooRexx ↔ Pharo bridge. Runtime-authoritative dispatch, reversible live-object identity, generation-tagged handles, retain/release and synchronous call-thread reentry are governing contracts.
+Owner: CHATGPT; Rasen Falcon lane: pharo-alchemy (OWN-00001818).
 
-Dependency baseline: ooRexx 5.3.0 r13196, Alchemy Foreign Object 0.2, Alchemy Objects 0.8.1, Crypto 0.8.3, Foreign Runtime 0.22.6 and Pharo 12.
+Resident ooRexx ↔ Pharo object bridge, not JSON RPC. Pharo is authoritative for selectors and doesNotUnderstand:, ooRexx for UNKNOWN, retained Rexx objects and live methods. Native registry uses generation, retain/release, pin/revoke and synchronous call-thread reentry. Inspection is observational, not a dispatch cache.
 
-Qualification: dev15 and dev16 selector-shape C11 tests PASS (rerun 2026-10-23). Live selector dispatch and arbitrary-object identity through the new message ABI NOT_RUN. dev13 combined integer callback is historical evidence only, not rerun.
+Dependencies: ooRexx 5.3.0 r13196, Alchemy Foreign Object v0.2, Alchemy Objects v0.8.1, Crypto v0.8.3, Foreign Runtime v0.22.6, Pharo 12. Version upgrades require fresh closure qualification.
 
-Source ZIP SHA-256: 8b437677093e8373b54f2a5b80a5a6c4f639091ca36a932282d18832cf7a7713.
+Repository: packages/oorexx_pharo_alchemy; sphere: spheres/pharo_alchemy_sphere_v0.1. GitHub PR #23 tracks dev16 source synchronization; the canonical LLM Gopher sphere editor has not qualified this directory.
 
-Pending: native selector dispatcher integration, identity reversal, dynamic method mutation, omission/nil/empty differentiation, absent vs thrown exception, nested reentry, revoke/shutdown races and wrong-thread callback rejection.
+Evidence: dev15 and dev16 C11 selector regressions previously PASS (2026-10-23); not rerun 2026-10-29. dev13 nested integer reentry historical claim only; full arbitrary-object dispatch, reversible identity, mutation, exception distinction, shutdown races, wrong-thread rejection NOT_RUN. Do not promote to accepted without real runtime evidence.
 
-This is sphere documentation, not a claim of canonical Gopher sphere validation.
+Delivery order: reconcile package tree to dev16, compile C11 ABI/selector tests from Git, run Pharo 12 + ooRexx integration with exact dependencies, then sphere validate/lint/package. Autobuilder is stopped; do not depend on it.
+
+Critical-path relationship: this bridge is not the owner of website, SMTP/IMAP, HTTPS, LDAP, or MI↔MU XTP deployment. It must not block those services; no production deploy claim is made here.

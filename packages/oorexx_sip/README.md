@@ -1,4 +1,4 @@
-# ooRexx SIP v0.1-dev16
+# ooRexx SIP v0.1-dev17
 
 ## dev16 — outbound user-agent call origination
 
@@ -140,3 +140,7 @@ operational instrumentation to consume the same events independently.
 SIP can now build its shared SocketProvider through `SipSocketFactory~observedProvider(observer)`. The UDP binding is decorated by `socket.telemetry/0.1` before either SIP signalling or the shared RTP endpoint acquires it. The same provider therefore observes both signalling and media carrier activity without merging SIP, RTP, audio or socket lifecycle.
 
 The socket observer is intentionally a separate authority from `SipInstrumentationSink` and `RtpInstrumentationSink`. A caller may use `SocketInstrumentationObserver` to project carrier acquisition/I/O gauges into Instrumentation Mesh while Alchemy Log retains forensic protocol events. Payload and peer identity remain excluded by the Socket Telemetry default policy.
+
+## dev17 — LDAP Identity / Secret Broker authentication boundary
+
+The registrar can now consume an injected `SipCredentialProvider`. The optional `SipLdapIdentityCredentialProvider` resolves active Identity Directory principal/credential metadata and materializes `SIP_DIGEST_SECRET` only through Secret Broker long enough to provision the SIP Digest engine. Provider/identity failure is fail-closed and invalidates an earlier cached secret before verification. LDAP remains identity authority, SIP remains Digest protocol authority, and neither owns call/RTP/media lifecycle. See `docs/LDAP_IDENTITY_DEV17.md`.

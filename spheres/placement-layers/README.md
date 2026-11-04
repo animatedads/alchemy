@@ -1,4 +1,4 @@
-# Runtime Placement and Admittance Layers Knowledge Sphere v0.3
+# Runtime Placement and Admittance Layers Knowledge Sphere v0.4
 
 This sphere documents the complete seam from semantic compute intent to authoritative placement and managed execution. It extends the original placement-layers sphere without changing the ownership of any underlying subsystem.
 
@@ -32,7 +32,7 @@ current authoritative revalidation
                 Runtime Reference / provider
 ```
 
-Instrumentation Mesh sits alongside this path as observation only. Health, freshness, state and operational events may affect preference or explanation, but never manufacture capability, admission, placement, lease validity, release authority or execution success.
+Instrumentation Mesh sits alongside this path as observation only. Health, freshness, state and operational events may affect preference or explanation, but never manufacture capability, admission, placement, lease validity, release authority or execution success. Mesh dev8 correlation is also observational: GCI carries only caller-supplied correlation/causation/context references and never infers causal groups from time, host, severity or proximity.
 
 ## Core invariants
 
@@ -47,9 +47,24 @@ Instrumentation Mesh sits alongside this path as observation only. Health, fresh
 - **Replay ambiguity fails closed.** A claimed provider call with uncertain outcome remains held for reconciliation; it is not automatically replayed.
 - **LLMs are compute resources, not a special routing exception.** Local/hosted models, accelerators, CPU, GPU and ZeroGPU can share the same planned-admittance semantics while retaining provider-specific capability requirements.
 
+## RTO2 compute projection
+
+GCI dev8 consumes the RTO2 estate controller's current membership surface. MU
+objects remain control/estate membership and are never treated as worker
+capacity. MI objects are wrapped as compute candidates while preserving the
+native member object and exact incarnation.
+
+Usability semantics stay with an injected Grid-side eligibility policy. GCI
+does not invent the meaning of RTO2 membership-state strings. Before accepting
+a candidate's compute assessment it rechecks the member ID and incarnation
+against the current estate; an absent or reincarnated member fails closed.
+
+Grid membership remains evidence only. It does not grant WLU admission,
+Job-to-Node placement/lease, ACTIVE/SPARE authority or execution rights.
+
 ## LLM/model route seam
 
-For model candidates, Generalized Compute Intentions dev6 has a concrete optional
+For model candidates, Generalized Compute Intentions dev8 has a concrete optional
 adapter to AI Model Router v0.1. AI Model Router evaluates the complete declared
 model-route catalogue once per GCI planning turn, using its authenticated WLU
 route evidence and institutional policy. Only its selected route receives
@@ -64,14 +79,22 @@ acquisition and model invocation remain below this semantic boundary.
 
 ## Current evidence line
 
-- Generalized Compute Intentions `v0.1-dev6` — object-preserving planning, Intention Service bridge, Mesh dev7 freshness/events, explicit revalidation contract.
+- Generalized Compute Intentions `v0.1-dev8` — object-preserving planning, RTO2 MI projection, AI Model Router composition, Intention Service bridge, Mesh dev8 freshness/events/correlation, explicit revalidation contract.
 - AI Model Router `v0.1` — non-entitling cross-provider model-route selection over authenticated WLU evidence and institutional policy.
 - Work Load Units `v0.12` — work/capacity admission and reservation authority.
 - Job-to-Node Allocator `v0.6-network6` — authoritative placement plus fail-closed network/lifecycle recovery; network6 runtime qualification remains separately pending in its own package evidence.
 - RexxOS Managed Compute MU `v0.1-dev2` — downstream managed target binding and replay safety; production dispatch remains gated on durable replay/request infrastructure and membership-generation revalidation.
-- Instrumentation Mesh `v0.1-dev7` — observation health/freshness and operational event timeline, never mutation authority.
+- Instrumentation Mesh `v0.1-dev8` — observation health/freshness and operational event timeline, never mutation authority.
 - Runtime Reference `v0.4` — execution-location binding after admission/placement authority has been satisfied.
 
 ## Known remaining work
 
 The sphere records rather than conceals current gaps: Job-to-Node network6 still needs its package-level runtime qualification, and Managed Compute MU dev2 must gain a durable replay ledger, durable Queue Fabric request/reply, atomic claim/provider idempotency, and RTO2 membership-generation revalidation before production dispatch is enabled.
+
+
+## Operational correlation
+
+Instrumentation Mesh dev8 adds explicit correlation views. GCI dev8 propagates
+only caller-supplied correlation ID, causation ID and context references into
+its bounded planning/handoff events. Missing values remain empty; timestamps,
+resource identity, host, severity and event proximity never create causality.

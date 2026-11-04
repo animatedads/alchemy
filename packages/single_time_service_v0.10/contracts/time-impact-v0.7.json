@@ -1,0 +1,36 @@
+{
+  "schema": "single.time.impact/0.1",
+  "packageApi": "single.time.service/0.7",
+  "operation": "time.impact.analyze",
+  "rpcServiceCore": {"service": "time", "method": "impact.analyze"},
+  "request": {
+    "required": ["institution", "phrase", "fromDate", "throughDate", "fromRevision", "toRevision"],
+    "optional": {"maxDays": 31},
+    "example": {
+      "institution": "SCHOOL", "phrase": "dinner",
+      "fromDate": "2026-10-26", "throughDate": "2026-10-28",
+      "fromRevision": 3, "toRevision": 4, "maxDays": 31
+    }
+  },
+  "response": {
+    "schema": "single.time.impact/0.1",
+    "scannedDays": 3, "changedDays": 1, "unchangedDays": 2,
+    "ruleComparisonMode": "SAME_PROVIDER",
+    "integrity": "ACCIDENTAL_CORRUPTION_ONLY",
+    "effect": "ADVISORY_ONLY",
+    "changes": [{
+      "date": "2026-10-26",
+      "reasonCodes": ["LOCAL_TIME_CHANGED", "UTC_PROJECTION_CHANGED"],
+      "utcDeltaSeconds": 2700,
+      "before": "typed TimeEventCatalog historical resolution, including rule edition and revision evidence",
+      "after": "typed TimeEventCatalog current resolution, including rule edition and revision evidence"
+    }]
+  },
+  "classification": "pure read-only comparison; no publication/subscription/scheduling",
+  "limitations": [
+    "only Gregorian day windows of 1..366 days; default maximum 31",
+    "remote endpoint compares institutional revisions under the same injected timezone service",
+    "distinct rule datasets only through the trusted local TimeImpactAnalyzer constructor",
+    "checksums only detect accidental corruption and do not authenticate history"
+  ]
+}

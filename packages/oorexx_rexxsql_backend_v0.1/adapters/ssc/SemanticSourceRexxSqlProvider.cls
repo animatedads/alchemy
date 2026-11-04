@@ -25,6 +25,27 @@
   if databaseRoot = "" then raise syntax 88.900 array("databaseRoot must not be empty")
   return databaseRoot || "/ssc.sqlite"
 
+/* Generic DatabaseBackendSelector provider contract.
+ * Returns the SSC executor with the SSC index plan applied.
+ */
+::method open class
+  use arg options = .nil
+  if options == .nil then options = .directory~new
+  databaseRoot = ""
+  do key over .array~of("databaseRoot", "root")
+    if options~hasIndex(key) then do
+      valueText = options[key]
+      if valueText \== .nil & valueText~string \= "" then databaseRoot = valueText~string
+    end
+  end
+  if databaseRoot = "" then do
+    envRoot = value("SSC_DATABASE_ROOT", , "ENVIRONMENT")
+    if envRoot \== .nil then databaseRoot = envRoot~string
+  end
+  if databaseRoot = "" then
+    return .SemanticSourceRexxSqlProviderError~new("SSC Rexx/SQL provider requires databaseRoot/root or SSC_DATABASE_ROOT")
+  return self~openExecutor(databaseRoot)
+
 /* Open the executor only (index plan applied). */
 ::method openExecutor class
   use strict arg databaseRoot
@@ -43,6 +64,14 @@
   store = self~composition(databaseRoot)~newStore
   store~bootstrap
   return store
+
+::class SemanticSourceRexxSqlProviderError public
+::attribute message
+::method init
+  use strict arg message
+  self~message = message
+::method string
+  return self~message
 
 ::requires "SemanticSourceSqliteIndexPlan.cls"
 ::requires "SemanticSourceDatabaseComposition.cls"

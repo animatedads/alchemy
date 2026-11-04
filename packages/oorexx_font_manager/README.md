@@ -1,4 +1,4 @@
-# ooRexx Font Manager v0.1-dev3
+# ooRexx Font Manager v0.1-dev4
 
 Renderer-neutral font discovery, matching, purpose selection and packaging for ooRexx applications.
 
@@ -48,3 +48,10 @@ Font selection can now return a **run plan** rather than forcing one face to cov
 The live qualification uses `TPS café — 日本語 — Ω ∑`. On the qualification host it resolves Noto Serif as the primary print face and Noto Sans CJK JP as the fallback, yielding four ordered runs with zero missing glyphs.
 
 This is **coverage and run segmentation, not complex-script shaping**. Arabic/Indic shaping, bidi ordering and OpenType feature application remain a separate shaping-service boundary rather than being guessed inside Font Manager.
+
+
+## dev4 — strict consumer format and collection-font packaging
+
+- `planRunsForPurpose` accepts optional `requiredFormat`; primary and fallback faces must match it or coverage remains explicitly missing.
+- Fontconfig coverage carries the requested format, discovery preserves collection face index, and pyftsubset receives `--font-number` for TTC/OTC sources.
+- PDF dev6 uses `requiredFormat="TrueType"` because its emitter is CIDFontType2; other consumers remain free to accept OpenType/CFF.

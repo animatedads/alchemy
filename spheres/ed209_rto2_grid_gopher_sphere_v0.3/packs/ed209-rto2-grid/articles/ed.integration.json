@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "ed.integration",
+  "version": "0.2",
+  "sphere": "ed209-rto2-grid",
+  "title": "Placement, economics and managed-compute integration",
+  "summary": "RexxOS exposes current estate evidence to placement and economics while retaining separate authorities. Managed external execution is an MU control-surface extension, not a new MI or a lease authority.",
+  "authority": "project-authority",
+  "invariants": [
+    "Job-to-Node v0.6-network6 is the placement/admission/lease authority. The Grid may project current members and validate incarnation, but may not mint or reinterpret leases.",
+    "Cloud Economics dev8 is advisory. Its selected candidates and migration economics never grant dispatch, purchase, payment, allocation, checkpoint or data-movement authority.",
+    "Managed Compute MU dev2 must verify a genuine Job-to-Node lease and exact target generation. Colab, ZeroGPU and Windows targets are managed execution endpoints, not automatic MI estate members.",
+    "Managed Compute MU production dispatch remains disabled until durable replay/request infrastructure, atomic claim/provider idempotency and RTO2 membership-generation revalidation exist.",
+    "Queue Fabric owns durable request/reply transport, ConnectSelector owns connector choice, and RTO2 membership generation must be revalidated immediately before external effect."
+  ],
+  "procedure": [
+    "Use placement-layers sphere for the current semantic admittance -> WLU -> Job-to-Node authority chain.",
+    "Feed Cloud Economics only current admissible candidate objects and preserve original object identity through advisory handoff.",
+    "Bind managed compute only after the owning MU and target generation are current; fail closed on stale membership or uncertain provider execution."
+  ],
+  "provenance": [
+    {
+      "artifact": "job_node_allocator_v0.6-network6.zip",
+      "sha256": "d26153c6f5a70fb8979be34b231d4716d1eb60e8dec4292d89bedc1487b09fe2",
+      "member": "VALIDATION_NETWORK.txt",
+      "claim": "Network placement authority and runtime-qualification status"
+    },
+    {
+      "artifact": "cloud_economics_v0.1-dev8.zip",
+      "sha256": "8354043fc133ef9b6fdb593ec8d000e278e0748228224464b9ebb7feb485e735",
+      "member": "docs/AUTHORITY_BOUNDARY.md",
+      "claim": "Advisory economics authority boundary"
+    },
+    {
+      "artifact": "rexxos_managed_compute_mu_v0.1-dev2.zip",
+      "sha256": "82a02b1d0206ca6f1d05eadb47a108b2475074c6f18a9ea5a4a54af221229ecc",
+      "member": "docs/ARCHITECTURE.md",
+      "claim": "Managed execution target and replay/membership gates"
+    }
+  ]
+}

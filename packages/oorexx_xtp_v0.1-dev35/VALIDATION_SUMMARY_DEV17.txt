@@ -1,0 +1,27 @@
+oorexx_xtp_v0.1-dev17 validation summary
+
+Build:
+  PASS C++ build with -Wall -Wextra -Werror
+  PASS native ooRexx extension built against ooRexx 5.3.0 r13196 headers
+
+Regression:
+  PASS UDP/endian/replay/wire filters
+  PASS best_connect and route state
+  PASS persistent listener
+  PASS dual-path multipath and survivor replay
+  PASS path-health/requalification generation fencing
+  PASS XTP MULTI FIRST+DATA stream
+  PASS slowest-receiver ALLOC pacing
+  PASS receiver reject suppression
+  PASS native ooRexx XTP multicast binding
+  PASS SocketSelector current stream+multicast conjunction negotiation
+
+Environment:
+  ooRexx: 5.3.0 r13196 Internal Test Version from 20261007-174859 package
+  raw36: SKIP locally (EPERM / CAP_NET_RAW unavailable)
+  L2 raw: SKIP locally (EPERM / CAP_NET_RAW unavailable)
+  ooRexx SocketSelector -> XTP/UDP: PASS
+  native ooRexx sender/listener: PASS
+  native ooRexx multipath: PASS
+
+Historical ED209 qualification remains the evidence for L2 and raw36 carriers.

@@ -1,0 +1,73 @@
+#!/bin/sh
+set -eu
+name=$(basename "$0")
+args=" $* "
+if [ -n "${CLOUDCTL_PROVIDER_LOG:-}" ]; then printf "%s %s\n" "$name" "$*" >> "$CLOUDCTL_PROVIDER_LOG"; fi
+case "$name" in
+  az)
+    case "$args" in
+      *' vm list '*) cat <<'JSON'
+[{"id":"/subscriptions/s/resourceGroups/rg/providers/Microsoft.Compute/virtualMachines/az-one","name":"az-one","location":"uksouth","powerState":"VM running","publicIps":"203.0.113.10","privateIps":"10.0.0.10"}]
+JSON
+        ;;
+      *' network nsg rule list '*) cat <<'JSON'
+[{"name":"ssh","direction":"Inbound","protocol":"Tcp","destinationPortRange":"22","sourceAddressPrefix":"203.0.113.0/24","description":"ssh test"}]
+JSON
+        ;;
+      *) echo '{"fake":"az-ok"}' ;;
+    esac
+    ;;
+  gcloud)
+    case "$args" in
+      *' compute instances list '*) cat <<'JSON'
+[{"name":"gcp-one","zone":"https://www.googleapis.com/compute/v1/projects/p/zones/europe-west2-a","status":"RUNNING","networkInterfaces":[{"networkIP":"10.1.0.2","accessConfigs":[{"natIP":"203.0.113.11"}]}]}]
+JSON
+        ;;
+      *' compute firewall-rules list '*) cat <<'JSON'
+[{"name":"ssh","direction":"INGRESS","description":"ssh test","sourceRanges":["203.0.113.0/24"],"allowed":[{"IPProtocol":"tcp","ports":["22"]}]}]
+JSON
+        ;;
+      *) echo '{"fake":"gcp-ok"}' ;;
+    esac
+    ;;
+  aws)
+    case "$args" in
+      *' ec2 describe-instances '*) cat <<'JSON'
+{"Reservations":[{"Instances":[{"InstanceId":"i-123","Tags":[{"Key":"Name","Value":"aws-one"}],"Placement":{"AvailabilityZone":"eu-west-2a"},"State":{"Name":"running"},"PublicIpAddress":"203.0.113.12","PrivateIpAddress":"10.2.0.2"}]}]}
+JSON
+        ;;
+      *' ec2 describe-security-group-rules '*) cat <<'JSON'
+{"SecurityGroupRules":[{"SecurityGroupRuleId":"sgr-123","IsEgress":false,"IpProtocol":"tcp","FromPort":22,"ToPort":22,"CidrIpv4":"203.0.113.0/24","Description":"ssh test"}]}
+JSON
+        ;;
+      *) echo '{"fake":"aws-ok"}' ;;
+    esac
+    ;;
+  oci)
+    case "$args" in
+      *' compute instance list '*) cat <<'JSON'
+{"data":[{"id":"ocid1.instance.oc1.uk-london-1.fake","display-name":"oci-one","availability-domain":"UK-LONDON-1-AD-1","lifecycle-state":"RUNNING"}]}
+JSON
+        ;;
+      *' network nsg rules list '*) cat <<'JSON'
+{"data":[{"id":"oci-rule-123","direction":"INGRESS","protocol":"6","source":"203.0.113.0/24","description":"ssh test","tcp-options":{"destination-port-range":{"min":22,"max":22}}}]}
+JSON
+        ;;
+      *) echo '{"fake":"oci-ok"}' ;;
+    esac
+    ;;
+  vultr-cli)
+    case "$args" in
+      *' instance list '*) cat <<'JSON'
+{"instances":[{"id":"vultr-123","label":"vultr-one","region":"lhr","status":"active","main_ip":"203.0.113.13","internal_ip":"10.3.0.2"}]}
+JSON
+        ;;
+      *' firewall rule list '*) cat <<'JSON'
+{"firewall_rules":[{"id":"vfr-123","protocol":"tcp","port":"22","subnet":"203.0.113.0","subnet_size":24,"notes":"ssh test"}]}
+JSON
+        ;;
+      *) echo '{"fake":"vultr-ok"}' ;;
+    esac
+    ;;
+  *) echo "unknown fake provider $name" >&2; exit 2 ;;
+esac

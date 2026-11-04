@@ -37,7 +37,7 @@
   expose fcList tempDir
   use arg refresh=.false
   out=self~tempFile("list")
-  fmt="%{file}\t%{family[0]}\t%{style[0]}\t%{fullname[0]}\t%{postscriptname}\t%{weight}\t%{slant}\t%{spacing}\t%{scalable}\t%{fontformat}\n"
+  fmt="%{file}\t%{family[0]}\t%{style[0]}\t%{fullname[0]}\t%{postscriptname}\t%{weight}\t%{slant}\t%{spacing}\t%{scalable}\t%{fontformat}\t%{index}\n"
   command=fcList||" --format='"||fmt||"' > "||self~quote(out)||" 2>/dev/null"
   address system command
   if rc \== 0 then return .Array~new
@@ -52,7 +52,7 @@
   if query~monospace then do; if pattern \== "" then pattern=pattern||":"; pattern=pattern||"spacing=100"; end
   if query~weight>0 then do; if pattern \== "" then pattern=pattern||":"; pattern=pattern||"weight="||query~weight; end
   out=self~tempFile("match")
-  fmt="%{file}\t%{family[0]}\t%{style[0]}\t%{fullname[0]}\t%{postscriptname}\t%{weight}\t%{slant}\t%{spacing}\t%{scalable}\t%{fontformat}\n"
+  fmt="%{file}\t%{family[0]}\t%{style[0]}\t%{fullname[0]}\t%{postscriptname}\t%{weight}\t%{slant}\t%{spacing}\t%{scalable}\t%{fontformat}\t%{index}\n"
   command=fcMatch||" --format='"||fmt||"' "||self~quote(pattern)||" > "||self~quote(out)||" 2>/dev/null"
   address system command
   if rc \== 0 then return .nil
@@ -65,8 +65,9 @@
   pattern=":charset="||d2x(codepoint)
   if language<>"" then pattern=pattern||":lang="||language
   if query~monospace then pattern=pattern||":spacing=100"
+  if query~format<>"" then pattern=pattern||":fontformat="||query~format
   out=self~tempFile("cover")
-  fmt="%{file}\t%{family[0]}\t%{style[0]}\t%{fullname[0]}\t%{postscriptname}\t%{weight}\t%{slant}\t%{spacing}\t%{scalable}\t%{fontformat}\n"
+  fmt="%{file}\t%{family[0]}\t%{style[0]}\t%{fullname[0]}\t%{postscriptname}\t%{weight}\t%{slant}\t%{spacing}\t%{scalable}\t%{fontformat}\t%{index}\n"
   command=fcMatch||" --format='"||fmt||"' "||self~quote(pattern)||" > "||self~quote(out)||" 2>/dev/null"
   address system command
   if rc \== 0 then return .nil
@@ -83,7 +84,8 @@
       style=self~part(parts,3,"Regular"); full=self~part(parts,4,""); ps=self~part(parts,5,"")
       weight=self~number(self~part(parts,6,"80"),80); slant=self~number(self~part(parts,7,"0"),0); spacing=self~number(self~part(parts,8,"0"),0)
       scalable=translate(self~part(parts,9,"True")) \== "FALSE"; format=self~part(parts,10,"")
-      if strip(family) \== "" then a~append(.FontFace~new(family,path,style,full,ps,weight,slant,spacing,scalable,format,"FONTCONFIG"))
+      index=self~number(self~part(parts,11,"0"),0)
+      if strip(family) \== "" then a~append(.FontFace~new(family,path,style,full,ps,weight,slant,spacing,scalable,format,"FONTCONFIG",index))
     end
   end
   call lineout file
@@ -120,6 +122,8 @@
   input=request~face~path; output=request~outputPath
   if strip(output)=="" then return .FontPackageResult~new(.false,"",self~name,"Output path is required")
   command=executable||" "||self~quote(input)||" --output-file="||self~quote(output)
+  suffix=lower(right(input,4))
+  if suffix==".ttc" | suffix==".otc" then command=command||" --font-number="||request~face~index
   textFile=""
   if request~subset then do
     if request~text \== "" then do

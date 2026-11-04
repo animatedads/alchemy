@@ -1,0 +1,70 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.deployment-stage",
+  "version": "0.6",
+  "sphere": "rasenfalcon",
+  "section": "operations",
+  "title": "Public website preview staging with General ooRexx Deployment",
+  "summary": "General Deployment v0.1-dev4 local preview stage remains verified. New v0.4.5 site-only role assembler produces an install-destination manifest and independently verifies 16 actual candidate files. It stops before owned HTTPS service-unit and TLS/real readiness tests; target-host install and public listening are not observed.",
+  "invariants": [
+    "General Deployment remains sole deployment/staging primitive; Rasen Falcon owns only application-specific preview build, validation and policy gates.",
+    "Source is Rasen Falcon v0.4.4 and external General Deployment v0.1-dev4; do not vendor or silently replace the deployment provider.",
+    "Local review target is a dedicated nested directory under /tmp; remote SSH, system install, HTTPS activation and production route updates are not accessible through this adapter.",
+    "All nine HTML pages must carry noindex,nofollow, robots disallow, content SHA-256 and complete source digest lock.",
+    "Positive local stage has 15 files and General Deployment generation d2585c2cae73fe3afcea00e1e2bbf4c91517291120ce6dfedf8edcc88f685ab1.",
+    "Public role check-release refuses without reviewed roles/public/manifest.tsv, services.txt, tests.tsv and owned native HTTPS and protocol tests; no fabricated unit/port/service evidence.",
+    "Source availability, local staging, target-host installation, process running and production acceptance are separate evidence states.",
+    "Public cutover requires independent operator approval, authenticated CMS/Brand/Wire receipts, qualified native HTTPS/SNI and target-host readiness; no fallback reverse proxy is authorized.",
+    "v0.4.5 role manifest contains 15 source-locked noindex site outputs and owned ooRexx serve.rex. A source-only manifest is not an install receipt.",
+    "The role deliberately lacks services.txt and tests.tsv until a qualified native HTTPS service and actual live probes are supplied by their owners; full check-release correctly fails closed."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.4_source_candidate.zip",
+      "sha256": "15f6056fb599d4e0a77fa64040cfdad4f7f6386019bb3dd845c2ef013b30cede",
+      "member": "handoff/deployment/REVIEW_STAGE_EVIDENCE_20261029.json",
+      "claim": "Local content-addressed stage and installation readiness evidence."
+    }
+  ],
+  "general_provider": "oorexx_deployment_v0.1-dev4/bin/deploy_tree.sh",
+  "stage": {
+    "kind": "LOCAL_REVIEW_ONLY",
+    "state": "STAGED_VERIFIED",
+    "workspace": "/tmp/rasenfalcon-review-20261029/site1",
+    "generation": "d2585c2cae73fe3afcea00e1e2bbf4c91517291120ce6dfedf8edcc88f685ab1",
+    "files": 15,
+    "pages": 9
+  },
+  "installation": {
+    "state": "NOT_PERFORMED",
+    "blocker": "MISSING_ROLES_PUBLIC_MANIFEST_AND_OWNED_COMPONENT_RELEASE"
+  },
+  "running": {
+    "state": "NOT_OBSERVED",
+    "public_https": "NOT_PROBED",
+    "systemd": "NOT_PROBED",
+    "dns_sni_tls": "NOT_PROBED"
+  },
+  "qualification": {
+    "website": "18/18_PASS_LOCAL",
+    "handoff_and_deployment": "42/42_PASS_LOCAL",
+    "general_reconcile": "PASS_LOCAL",
+    "general_dependency_namespace": "PASS_LOCAL",
+    "independent_v043": "PASS_REQ-00001289",
+    "autobuild": "PENDING_RECEIPT"
+  },
+  "production": "BLOCKED",
+  "public_role_slice": {
+    "schema": "rasenfalcon.public-role.source-slice/0.1",
+    "files": 16,
+    "site_files": 15,
+    "source_sha256": "db0958a5bc8035236ffbbb8f5c7a984849af8181c8a9de60b1a657e8f6aea641",
+    "source_branch": "https://github.com/animatedads/alchemy/tree/review/rasenfalcon-v045-public-role-20261029",
+    "state": "SOURCE_SLICE_VERIFIED_NOT_INSTALL_READY",
+    "check_release": "DENIED_MISSING_OWNED_HTTPS_UNIT",
+    "installed": "NOT_OBSERVED",
+    "running": "NOT_OBSERVED",
+    "tests": "13/13_PASS_LOCAL"
+  }
+}

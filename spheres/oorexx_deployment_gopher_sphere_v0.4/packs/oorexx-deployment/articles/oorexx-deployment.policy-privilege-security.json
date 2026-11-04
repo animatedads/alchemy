@@ -1,0 +1,43 @@
+{
+  "kind": "article",
+  "id": "oorexx-deployment.policy-privilege-security",
+  "version": "0.1",
+  "sphere": "oorexx-deployment",
+  "title": "Policy, privilege and security govern strategy without weakening requirements",
+  "summary": "Deployment requirements state what must be true; policy states which strategies are permitted. Privilege is explicit rather than an implicit sudo prefix. Security includes content hashes, argument boundaries, secret redaction and provenance failure behavior.",
+  "authority": "project-doctrine",
+  "section": "architecture",
+  "invariants": [
+    "Never silently weaken a requirement because the preferred installation strategy is unavailable.",
+    "System packages, portable binaries, compilation and network download are independent policy choices.",
+    "Do not casually prepend sudo; seek a permitted user-local strategy or fail.",
+    "Do not log secrets in ordinary deployment evidence.",
+    "Do not download arbitrary replacements merely because a dependency is missing.",
+    "Fail closed when required provenance or final state cannot be established."
+  ],
+  "topics": [
+    "policy",
+    "privilege",
+    "security",
+    "fail-closed",
+    "provenance"
+  ],
+  "provenance": [
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 604,
+      "line_end": 664,
+      "claim": "Defines fail-closed behavior, strategy policy and explicit privilege."
+    },
+    {
+      "artifact": "General_ooRexx_Deployment_Component_v0.2.md",
+      "sha256": "a71de52f7e166155103e69d7240083f2b83f4899b3ca2501610f7dc87fed9d5b",
+      "member": "General_ooRexx_Deployment_Component_v0.2.md",
+      "line_start": 968,
+      "line_end": 979,
+      "claim": "Defines deployment security requirements."
+    }
+  ]
+}

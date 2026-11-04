@@ -1,0 +1,67 @@
+{
+  "kind": "article",
+  "id": "ref.photo.source-compatibility-2026-10-29",
+  "version": "0.1",
+  "sphere": "photo-survey-world",
+  "title": "Source compatibility audit: Photo World dev21 against current Maths and Physics",
+  "summary": "A static symbol-presence audit finds the Maths surface used by Photo World dev21 still present in canonical Maths v0.19; dev21 has no direct Physical* class dispatch. This is source evidence only, not runtime qualification.",
+  "authority": "project-authoritative",
+  "status": "STATIC_SYMBOL_COMPATIBLE_NOT_RUNTIME_QUALIFIED",
+  "photo_world_files_checked": 11,
+  "maths_symbols_used": [
+    ".Maths~defaultContext",
+    ".MathContext~decimal",
+    ".Maths~sqrt",
+    ".Maths~atan",
+    ".Maths~atan2",
+    ".Maths~tan",
+    ".Maths~cos",
+    ".Maths~sin",
+    ".Maths~matrix",
+    ".Maths~vector",
+    ".MathAngle~degrees",
+    ".MathVector3~new",
+    "MathVector3~normalized",
+    "MathMatrix~solve"
+  ],
+  "maths_v0_19_findings": [
+    "Canonical Maths.cls still declares MathContext, MathMatrix, MathAngle and MathVector3.",
+    "Canonical Maths.cls still declares class methods defaultContext, sqrt, atan, atan2, tan, cos, sin, matrix, vector and MathAngle~degrees.",
+    "Canonical Maths.cls still declares matrix solve and Vector3 normalized operations used by Photo World.",
+    "Symbol presence does not prove unchanged argument contracts, numeric semantics or provider behaviour; Photo World regressions must still execute against v0.19."
+  ],
+  "physics_dev50_2_findings": [
+    "No direct .Physical* class dispatch was found in the current Photo World dev21 Rexx source tree.",
+    "The dev21 compatibility lock already states Physics is a pinned peer not exercised by the dev21 regressions.",
+    "Therefore current Photo World source has no direct Physics call surface to recompile, but future coupled survey constraints still require explicit Physics integration qualification."
+  ],
+  "remaining_gates": [
+    "Execute Photo World regressions with canonical Maths v0.19 and compare numerical results/precision evidence.",
+    "Do not promote Physics dev50.2 into the Photo World compatibility lock until its relevant integration semantics are exercised.",
+    "Migrate Python-provider crossings separately through the upstream ooRexxPython adapter; this audit says nothing about that runtime boundary."
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_photo_world/rexx/*.cls",
+      "claim": "Current dev21 source symbol usage across 11 Rexx source files."
+    },
+    {
+      "artifact": "packages/oorexx_maths/rexx/Maths.cls",
+      "claim": "Canonical Maths v0.19 class and method symbol presence."
+    },
+    {
+      "artifact": "packages/oorexx_maths/README.md",
+      "claim": "Canonical Maths version v0.19 and qualification context."
+    },
+    {
+      "artifact": "packages/oorexx_physics_world/VERSION.txt",
+      "claim": "Canonical Physics World source version v0.1-dev50.2."
+    },
+    {
+      "artifact": "oorexx_photo_world_v0.1-dev21.zip",
+      "sha256": "ab63a8fcd453623cc371ccfda71f60588256260251d6f71deb338a6e85b97707",
+      "member": "compatibility-lock.json",
+      "claim": "Physics dev46 was pinned but not exercised by dev21 regressions."
+    }
+  ]
+}

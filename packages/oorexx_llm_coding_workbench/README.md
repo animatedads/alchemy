@@ -1,4 +1,4 @@
-# ooRexx LLM Coding Workbench v0.1-dev14
+# ooRexx LLM Coding Workbench v0.1-dev15
 
 This is the coding lane:
 
@@ -333,3 +333,25 @@ tests and callers.
 
 A focused regression injects a boundary spy and proves that the codec hands the
 exact live `LlmCodingTurn` object to that boundary before JSON projection.
+
+
+## dev15 — semantic stale-base guard
+
+Current Semantic Source Control uses exact-base, object-granular mutation and
+creates conflict branches for stale proposals. The Workbench now preserves the
+semantic base it actually inspected before a method edit. Before
+`WRITE_METHOD`, `LlmCodingDeskSession` re-reads the target method and compares
+its semantic revision identity. A changed revision raises
+`STALE_SEMANTIC_BASE` before the mutation reaches Development Desk.
+
+Revision identifiers are preferred when the semantic method object exposes one
+(`revision_id`, `accepted_revision_id`, `current_revision_id`, or
+`source_revision_id`). Older Desk projections fall back to exact
+`source_text` comparison, so the guard is useful without making old Desk
+implementations pretend to support SSC dev28's atomic `source.propose_edit`
+contract.
+
+The model never supplies or overrides this base. This is controller-owned
+concurrency evidence. Atomic conflict-branch creation remains SSC authority;
+the Workbench guard prevents an obviously stale model turn from reaching the
+write boundary in the first place.

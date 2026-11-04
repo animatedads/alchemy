@@ -4,13 +4,14 @@
   "version": "0.1",
   "sphere": "quic-socket-provider",
   "title": "Continuation and missing work",
-  "summary": "Continue QUIC from dev4 by live-qualifying stream-count backpressure, then strengthening stream I/O backpressure, interoperability and migration while preserving the common socket authority.",
+  "summary": "Continue from dev5 by live-qualifying structured flow-control semantics, then remove native lifetime races and add external COTS interoperability without leaking QUIC mechanics above the provider boundary.",
   "invariants": [
-    "First rerun the complete ooRexx 5.3.0 r13196/native qualification for dev4; do not promote static evidence into live status.",
-    "Add structured nonblocking stream read/write outcomes so SSL_ERROR_WANT_READ and SSL_ERROR_WANT_WRITE remain retryable QUIC flow-control states rather than generic failure.",
+    "First rerun the complete ooRexx 5.3.0 r13196/native qualification for dev5.",
+    "Harden native handle lifetime so close cannot free a connection/stream while another native operation holds a raw pointer.",
+    "Serialize or otherwise prove safe concurrent OpenSSL access to a connection and its child streams before claiming thread-safe use.",
     "Add external COTS QUIC interoperability evidence; loopback alone is not cross-implementation proof.",
-    "Add connection migration/path-change support only behind the provider boundary and preserve address/object authority.",
-    "Do not move HTTP/3 semantics into the socket provider; HTTP/3 is a separate protocol consumer of QUIC."
+    "Keep MU/MI internode carrier authority with the selected estate transport; do not silently substitute QUIC for XTP.",
+    "Do not move HTTP/3 semantics into the socket provider."
   ],
   "provenance": [
     {

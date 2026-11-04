@@ -1,3 +1,7 @@
+# 0.2 — 29 October 2026
+- Full v0.10 historical source and test package backfilled to GitHub.
+- `time.validity` article and qualification evidence added. No native v0.10 execution claimed.
+
 # Sphere changelog
 
 ## 0.1 — 23 October 2026

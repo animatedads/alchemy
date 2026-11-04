@@ -1,0 +1,43 @@
+NoSQLServer v0.37 validation
+============================
+
+Focus
+-----
+SQL aggregate FILTER (WHERE ...) for grouped projections and HAVING.
+
+New SQL surface
+---------------
+- COUNT(...) FILTER (WHERE predicate)
+- SUM(...) FILTER (WHERE predicate)
+- AVG(...) FILTER (WHERE predicate)
+- MIN(...) FILTER (WHERE predicate)
+- MAX(...) FILTER (WHERE predicate)
+- FILTER predicates use the existing predicate evaluator and SQL NULL rules.
+- FILTER may be used in SELECT aggregate projections and inside HAVING.
+
+Hell Corpus v2
+--------------
+PASS             10
+UNSUPPORTED       9
+PARSE_ERROR      11
+WRONG_RESULT      0
+EXECUTION_ERROR   0
+
+New oracle-backed PASS:
+- Q04 filtered grouped aggregates
+- Q26 filtered aggregate in HAVING
+
+Regression gates
+----------------
+- v0.37 aggregate FILTER smoke: PASS
+- v0.36 offset-window smoke: PASS
+- v0.35 partition-window smoke: PASS
+- v0.34 derived-window smoke: PASS
+- v0.30 extended-window smoke: PASS
+- v0.29 recursive CTE smoke: PASS
+- v0.32 database_core adapter smoke: PASS
+- v0.31 Gemini smoke: PASS
+- SQL-92 company smoke: PASS
+- Claude torture: 12/12 PASS
+- Grok hell v1: 24/25 PASS, 0 wrong results
+- rexxc: NoSQLServer.cls and all tests/*.rex compile cleanly
