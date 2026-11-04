@@ -1,0 +1,33 @@
+# Moonsault Sun/Moon extended independent oracle, 2026-11-04
+
+Architecture: Tom Dyer. ooRexx ephemeris implementation: ChatGPT (GPT-6).
+
+Source under test: packages/oorexx_moonsault_v0.1/src/MoonsaultEphemeris.cls.
+Runtime: ooRexx 5.3.0 r13196 extracted from user-provided .deb.
+Independent reference: Swiss Ephemeris 2.10.03 with topocentric observer at 0m,
+1010 hPa and 10 C, swe.calc_ut(SUN|MOON, FLG_EQUATORIAL|FLG_TOPOCTR),
+swe.azalt(EQU2HOR). Swiss reference is validation only, not in ooRexx runtime.
+
+Test set: 15th of each month January-December 2026 at 00,06,12,18 UTC,
+cycling among Sydney (-33.8688,151.2093), London (51.5074,-0.1278),
+Melbourne (-37.8136,144.9631).
+48 times * 2 bodies = 96 body-time cases = 192 altitude/azimuth comparisons.
+
+MAX ABSOLUTE DIFFERENCE:
+Sun altitude 0.009237 deg; Sun azimuth 0.013243 deg.
+Moon altitude 0.057653 deg; Moon azimuth 0.073233 deg.
+
+Acceptance thresholds: 0.10 deg Sun component, 0.30 deg Moon component.
+Exceedances 0. 
+Earlier six fixed reference cases, explicit test_ephemeris.rex: 24/24
+angle comparisons within thresholds; visibility and J2000 checks PASS.
+
+Boundaries: spherical/sea-level lunar parallax, low-precision orbital terms,
+standard-atmosphere refraction (poor near horizon), UTC as approximate UT1,
+no actual measured photographic bearings, no field navigation acceptance.
+This is a finite test set, not a global accuracy proof and not a claim
+of 25m geodetic position accuracy.
+
+SLAM450 interface contract: camera detection is independent, ephemeris prediction
+source tag MOONSAULT_PREDICTED is not an observation, and only the SLAM450
+camera+flight-book component can publish SUN_HEADING or MOON_HEADING.
