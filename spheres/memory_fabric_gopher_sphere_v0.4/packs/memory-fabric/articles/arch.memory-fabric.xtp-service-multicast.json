@@ -1,0 +1,44 @@
+{
+  "kind": "article",
+  "id": "arch.memory-fabric.xtp-service-multicast",
+  "version": "0.4",
+  "sphere": "memory-fabric",
+  "title": "XTP service addressing and multicast for Memory Fabric",
+  "summary": "When XTP is qualified, named service FIRST admission, KEY/ROUTE contexts and carrier selection remain below Memory Fabric. Multicast is capability-specific, not an implicit property of a named service.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "ServiceDescriptor maps memory.block.read / memory.block.locate / memory.block.invalidate canonical names to local operational classes and logical XTP peers; physical addresses remain only in XTP routing.",
+    "One-to-many XTP multicast can disseminate discovery and invalidation coordination only to an authenticated, policy-admitted, explicitly scoped receiver population. XTP quorum is not a memory lease or block commit.",
+    "XTP named-service unicast and multicast address bindings remain separate at dev25. Do not advertise verified combined service-addressed reliable multicast until exercised.",
+    "L2 EtherType 0x817D is for proven shared Ethernet domains; native IPv4 protocol 36 for qualified MU paths; XTP/UDP when policy permits. Never infer cross-cloud Layer-2 or native protocol-36 reachability.",
+    "XTP chooses a physical path; Connect Selector and Socket Selector remain independent higher-level/service choices. No compulsory XTP dependency for ordinary standalone Memory Fabric use.",
+    "Current XTP v0.1-dev34 supports encrypted named-service messages; Memory Fabric uses live active/retiring key identity, not XTP KEY or caller label, for read access.",
+    "Protected multicast group-key admission is not qualified by dev34; no confidential Memory Fabric publication via unprotected multicast."
+  ],
+  "procedure": [],
+  "topics": [
+    "memory-fabric",
+    "xtp",
+    "multicast"
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "rexx/XtpNamedServices.cls",
+      "claim": "ServiceDescriptor-based named XTP FIRST and admission mapping."
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "rexx/XtpSocketProvider.cls",
+      "claim": "Unicast native rate-capable socket and distinct multicast socket implementations."
+    },
+    {
+      "artifact": "oorexx_service_descriptors_v0.1-dev1.zip",
+      "sha256": "2a18e0a4f0e08ff2a678443c24f5273b9ac0577b6d319d97d021ac59417504f0",
+      "member": "rexx/ServiceDescriptors.cls",
+      "claim": "Canonical service name/class/route-peer registration."
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "kind": "corpus",
+  "id": "memory-fabric.glossary",
+  "sphere": "memory-fabric",
+  "title": "Memory Fabric service/authority glossary",
+  "records": [
+    {
+      "term": "MemoryFabricBlockRef",
+      "meaning": "Stable blockId and generation bound to providerId, ownerEpoch and local byte length; not a network pointer."
+    },
+    {
+      "term": "ResidentOffer",
+      "meaning": "Candidate source claim with block/window, logical peer and authority evidence requiring independent validation."
+    },
+    {
+      "term": "MemoryXtpAuthority",
+      "meaning": "Candidate2 admission validator that checks current block owner or injected independent replica verifier."
+    },
+    {
+      "term": "MemoryXtpCapacityAdmission",
+      "meaning": "Candidate2 control-message admission backed by OperationalCapacityGovernor tickets and dev25 capacityRate."
+    },
+    {
+      "term": "Service Descriptor",
+      "meaning": "Locally authoritative mapping from canonical memory service to operational class and logical XTP peer."
+    },
+    {
+      "term": "XTP FIRST named service",
+      "meaning": "First packet carries service admission name; subsequent XTP context uses KEY/ROUTE. Name alone grants no authorization."
+    },
+    {
+      "term": "Multicast interest group",
+      "meaning": "Explicit receiver set selected by policy and membership; not automatically derived from XtpNamedServiceAddress."
+    },
+    {
+      "term": "XTP transport receipt",
+      "meaning": "Transport-level acknowledgement; not a block ownership or persistence receipt."
+    },
+    {
+      "term": "Capacity ticket",
+      "meaning": "Governor-admitted named capacity-domain share with current rate, reconcilable as operational state changes."
+    },
+    {
+      "term": "Storage Fabric",
+      "meaning": "Provider-neutral durable data namespace and persistence authority distinct from volatile Memory Fabric resident block ownership."
+    },
+    {
+      "term": "MemoryXtpReadPermit",
+      "meaning": "Nontransferable in-process read admission token: per-page revalidation of authenticated identity, ACL, service, expiry, block generation and owner incarnation. Not a durable lease."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_memory_fabric_v0.1-dev10.zip",
+      "sha256": "91a05494c86ce7627f7a010af182c167701b5bf1f8ce2d93c99cda9d992644d8",
+      "member": "src/MemoryFabric.cls",
+      "claim": "Source for block authority glossary."
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "rexx/XtpNamedServices.cls",
+      "claim": "Source for XTP named-service glossary."
+    }
+  ]
+}
