@@ -15,7 +15,7 @@ resultData=.json~fromJsonFile(resultPath)
 if resultData['status']<>'NOT_APPLICABLE' then raise syntax 93.900 array('Unexpected synthetic result status')
 if resultData['methodology_id']<>methodId then raise syntax 93.900 array('Provider method mismatch')
 if resultData['reason_code']<>'SYNTHETIC_ONLY_NO_MEDIA' then raise syntax 93.900 array('Wrong synthetic fixture')
-call sysfiledelete resultPath
+if rxfuncquery('SysFileDelete')=0 then call SysFileDelete resultPath
 say 'PASS embedded Foreign Runtime video provider smoke test 4/4 (synthetic)'
 exit 0
 
