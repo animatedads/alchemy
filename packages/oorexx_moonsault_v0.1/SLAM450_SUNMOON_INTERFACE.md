@@ -4,9 +4,9 @@ Architecture: Tom Dyer. Moonsault implementation: ChatGPT (GPT-6). SLAM450 integ
 
 ### Prediction call
 
-`answer = .MoonsaultEphemeris~sunMoon(utc, estimatedLatDeg, estimatedLonDeg)`
+`answer = .MoonsaultEphemeris~sunMoon(unixSeconds, estimatedLatDeg, estimatedLonDeg)`
 
-- `utc` strict `YYYY-MM-DDTHH:MM:SSZ`; SLAM450 supplies race UTC start and increments one second per tick.
+- `unixSeconds` is an integer POSIX/Unix UTC timestamp (1970-2099), as supplied by SLAM450's race clock; the existing strict `YYYY-MM-DDTHH:MM:SSZ` UTC string is also supported. Conversion is in ooRexx and never uses local timezone. Leap seconds are not independently represented.
 - Geodetic latitude north positive, longitude east positive, degrees. No GPS needed. The position input is an *assumption* from the book, NOT a measurement.
 - `answer['sun']` and `answer['moon']` are ooRexx Directory objects.
 - Each body returns `altitudeTrueDeg` (unrefracted elevation above mathematical horizon), `azimuthTrueDeg` (clockwise from geographic north), `altitudeRefractedDeg` (standard refraction), `azimuthRefractedDeg` (same as true, simplified), `headingCandidate`, `visibilityCandidate`, `aboveHorizon`, and `modelErrorBudgetDeg`.
@@ -31,4 +31,4 @@ Haiku flight-book contribution was independently sourced `seen` targets, not aut
 
 ### Qualification
 
-Moonsault compiled/executed through the user-supplied ooRexx r13196 interpreter and passed its test_ephemeris.rex regression. An additional 96 body/time reference-case comparison against Swiss Ephemeris produced 0 angle-threshold exceedances. Neither test proves camera-identified discs or flight-book navigation improvement. No SLAM450 component has been modified by this change.
+Moonsault's prior ISO provider compiled/executed through user-supplied ooRexx r13196 and passed its test_ephemeris.rex regression. Unix clock conversion passed seven boundary checks in a standalone Rexx conversion test; the branch adds tests/test_unix_slam450.rex for provider end-to-end equivalence (not yet run as part of this branch). An additional 96 body/time reference-case comparison against Swiss Ephemeris produced 0 angle-threshold exceedances. Neither test proves camera-identified discs or flight-book navigation improvement. No SLAM450 component has been modified by this change.
