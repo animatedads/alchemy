@@ -12,7 +12,7 @@ say moon['altitudeTrueDeg'] moon['azimuthTrueDeg'] moon['illuminatedFraction'] m
 ::requires 'MoonsaultEphemeris.cls'
 ```
 
-- UTC is required, strict ISO 8601 `YYYY-MM-DDTHH:MM:SSZ` (1900–2099); latitude/longitude degrees, eastern longitude positive.
+- UTC is required: strict ISO 8601 `YYYY-MM-DDTHH:MM:SSZ` (1900–2099) **or integer Unix/POSIX UTC seconds (1970–2099)**; latitude/longitude degrees, eastern longitude positive. The Unix path uses ooRexx DATE and never the machine's local time.
 - Both bodies return `altitudeTrueDeg`, `azimuthTrueDeg`, `altitudeRefractedDeg`, `azimuthRefractedDeg`, `refractionCorrectionDeg`, `aboveHorizon`, `visibilityCandidate`, `headingCandidate`, `method`, and model error allowance.
 - Moon also returns `phase`, `elongationDeg`, `illuminatedFraction`, `distanceEarthRadii`, `horizontalParallaxDeg`, `visibilityReason`.
 - **Predictions only**: result `status=PREDICTION_ONLY`, `sourceTag=MOONSAULT_PREDICTED`, `observationIndependent=false`. No photographic heading, GPS or aircraft position are inferred.
@@ -46,11 +46,18 @@ Model allowances: Sun 0.10°, Moon 0.50° (conservative provisional engineering 
 - J2000 epoch JD 2451545.0, Sydney pre-dawn Moon visibility candidate true/Sun false, Moon-below-horizon candidate false.
 - No real camera detection tested. No navigation accuracy claim. Provider is calculation-only; no SQLite or network dependency.
 
+## SLAM450 v0.93 contract
+
+SLAM450 may call `.MoonsaultEphemeris~sunMoon(unixSeconds, lat, lon)` directly, with time advancing one second per race tick. The resulting directories retain the existing named keys, including `altitudeTrueDeg`, `azimuthTrueDeg`, `altitudeRefractedDeg`, `azimuthRefractedDeg`, `illuminatedFraction`, `horizontalParallaxDeg`, `aboveHorizon`, `visibilityCandidate`, `modelErrorBudgetDeg`, `status=PREDICTION_ONLY`, and `observationIndependent=.false`. Compare actual stand-in consumer field names before claiming that only one class-name change is needed. The sky fix remains SLAM-owned; this provider does not perform camera detection or position fixing.
+
+The new test `tests/test_unix_slam450.rex` covers seven UTC epochs and compares both bodies against the ISO invocation. The conversion primitive itself passed under user-supplied ooRexx r13196; full provider regression on this branch remains pending.
+
 ## Run
 
 ```sh
 export REXX_PATH="$PWD/src:$REXX_PATH"
 rexx tests/test_ephemeris.rex
+rexx tests/test_unix_slam450.rex
 ```
 
 The SLAM450 clock, panorama discs, camera observations, solar glare and flight-book audit are separately owned tasks.
