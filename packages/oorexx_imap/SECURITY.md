@@ -98,3 +98,30 @@ vendor behaviours such as Citadel Sent-room submission outside an accidental `mv
 * LDAP credentials are passed to the injected identity provider; the production
   IMAP server must not persist them. `ImapTestAuthenticationProvider` is marked
   qualification-only precisely because it does retain test credentials.
+\n\n## Dev11 server mutation security\n\nAll message mutations remain behind mailbox authority checks after authentication. LOGIN is still refused on an unencrypted session. Delivery-managed `INBOX` and `INBOX-UNSIGNED` cannot be targets of ordinary client APPEND/COPY/MOVE, preventing a client from minting SMTP signature-classification membership. Exact UID EXPUNGE is distinct from ordinary EXPUNGE and consumes the caller-supplied UID set. Socket Provider integration does not weaken TLS ownership or credential handling; it only acquires the selected native stream endpoint.\n
+
+## Instrumentation privacy and authority (dev12)
+
+The Instrumentation Mesh adapter is metadata-only. It never exports raw LOGIN or
+AUTHENTICATE text, usernames, credentials, mailbox names, SEARCH expressions,
+message headers/bodies, literal bytes, provider-private handles or capability
+URLs. Command names and aggregate byte/counter/state facts are sufficient for
+operational observation.
+
+Instrumentation is read-side evidence. Possession of a snapshot, collector route
+or NOC view grants no IMAP operation. Any future management command must first
+pass Instrumentation's authenticated/authorized command boundary and then a
+separate IMAP-local authority check.
+
+## Dev13 IDLE/change-feed security boundary
+
+Successful authentication and an IDLE-capable transport do not authorize IDLE.
+`ImapServerSession~processIdleStart()` performs a distinct `IMAP_IDLE` mailbox
+authority decision for the selected mailbox. Denial never enters IDLE mode.
+
+Provider change records carry protocol-state identifiers and flags needed for
+selected-session coherence. They are not a logging or telemetry channel and must not
+carry credentials or message bodies. Instrumentation records only safe lifecycle/
+count evidence. Socket Isolation Telemetry remains below IMAP and, under its default
+policy, does not expose payload, peer/host identity, logical service names, Unix
+paths, security profiles or canonical/native endpoint identity.

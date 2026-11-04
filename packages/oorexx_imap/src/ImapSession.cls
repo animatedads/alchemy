@@ -1,4 +1,4 @@
-/* ooRexx IMAP/IMAPS v0.1-dev10 session engine.
+/* ooRexx IMAP/IMAPS v0.1-dev11 session engine.
  * Sequence numbers are confined to live protocol operations. Durable callers
  * should use UID/UIDVALIDITY only.
  */

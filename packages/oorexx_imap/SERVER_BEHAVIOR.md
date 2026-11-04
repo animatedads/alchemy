@@ -86,3 +86,26 @@ classification layer; IMAP observes that classification and must not forge it.
 APPEND/FETCH/STORE/SEARCH/COPY/MOVE/EXPUNGE/UID/IDLE are explicit dev10 gaps and
 return NOTIMPLEMENTED on the server side. Existing client implementations of
 those commands are unchanged.
+\n\n## Dev11 inbound IMAP server behavior\n\nThe server now accepts a bounded message-data command subset in selected state. APPEND requires a final literal marker and exact byte count; the endpoint emits a continuation for synchronizing literals and reads exactly the announced length before processing the command. FETCH can return literal bytes without materializing a mailbox-wide message list. STORE mutations require read-write selection. UID operations preserve UID identity, COPY returns COPYUID evidence, MOVE performs copy-then-exact-source-removal, and UID EXPUNGE removes only deleted messages whose UIDs are in the supplied set.\n\nThe in-memory provider exists for protocol qualification. It is not a persistence claim. Production providers must map the same contract onto durable storage and preserve commit/recovery semantics.\n
+
+## Dev12 operational observation
+
+`ImapServerEndpoint` can now report session/command/byte lifecycle to an optional
+observer. The supplied Instrumentation Mesh adapter records aggregate operational
+facts only; it does not inspect message content or mailbox names and it never
+changes protocol behavior. Observer absence is the normal zero-integration path.
+Observer failure must not be used as an authorization decision or as evidence that
+an IMAP operation itself failed.
+
+## Dev13 selected-session / IDLE behaviour
+
+A selected session owns a provider cursor in addition to its snapshot. Provider
+mutations publish typed changes; `pollSelectedChanges()` consumes them in order,
+emits unsolicited IMAP state and then refreshes the selected snapshot. A session's
+origin id is used only for duplicate-echo policy and is not durable message identity.
+
+`IDLE` requires all of: authenticated/selected state, explicit `IMAP_IDLE` mailbox
+authority, provider change-feed capability and transport readiness. The command does
+not create a new authentication state. `DONE` returns to normal command mode while the
+session remains selected. Missing change history fails closed so the server never
+pretends a selected view is coherent after an unknown gap.

@@ -1,4 +1,4 @@
-# Qualification — dev7
+# Qualification — dev13
 
 ## Offline/core
 
@@ -157,3 +157,39 @@ The live Gmail probes remain opt-in and are not package-manager-required tests.
 Dev10 is qualified on the supplied ooRexx 5.3.0 r13196 debug runtime. The required dependency-free suite is 19/19 and includes the new review-ownership, server-core, and LDAP-adapter tests. The current Storage Fabric dev23 integration tests (`test_storage_adapter.rex` and `test_storage_projection.rex`) also pass after removing the obsolete hard dependency on `StorageSemantic.cls` from the normal projection. The legacy semantic-provider adapter is intentionally separate and is not a dev23 requirement.
 
 The 27 September standards enforcer is run against the packaged candidate in non-strict mode. ERROR findings are release blockers for this cut; WARN findings remain review prompts rather than parser-proof defects.
+\n\n## Dev11 qualification — 7 October 2026\n\nUsing the user-supplied ooRexx 5.3.0 r13196 debug package, the inherited required suite remains green and dev11 adds required `test_server_messages.rex` and `test_server_literal_endpoint.rex`. The current Library Storage Fabric v0.1-dev21 adapter/projection tests pass. The optional Socket Provider server binding test passes against the current Library Socket Provider v0.1-dev14 source boundary. The house `oorexx_standards_enforcer.py` is run on the final archive; its result is recorded in `VALIDATION.txt`.\n
+
+## Dev11 / dev12 server and instrumentation qualification
+
+Dev11's required dependency-free server/client suite passed 21/21 on ooRexx
+5.3.0 r13196, with optional Socket Provider v0.1-dev14 and Storage Fabric
+v0.1-dev21 adapter/projection qualification also passing.
+
+Dev12 retains that suite and adds `test_instrumentation_adapter.rex`, qualified
+against `oorexx_instrumentation_mesh_v0.1-dev3`. The test drives an encrypted
+server session through failed and successful LOGIN, CREATE, synchronizing APPEND,
+SELECT, UID FETCH and LOGOUT. It verifies settled active/authenticated/selected
+gauges, authentication outcomes, per-command counters, generic Mesh
+accepted/completed/inflight counters, exact literal-byte accounting, wire byte
+counters and absence of user/password/mailbox/message-content strings from the
+snapshot.
+
+The integration test is optional because Instrumentation Mesh is an optional
+package dependency; set `INSTRUMENTATION_MESH_SRC` when running `tests/run.sh`.
+
+## Dev13 qualification — 9 October 2026
+
+The required dependency-free suite adds `test_server_idle.rex`.  It uses two
+selected sessions sharing one authoritative mailbox provider and verifies that an
+APPEND, flag change and exact UID EXPUNGE performed by one session become bounded
+unsolicited EXISTS/FETCH/EXPUNGE updates in the other.  It also drives the endpoint
+IDLE continuation/DONE loop with deterministic readiness: an external mutation is
+injected during the first wait interval and must be delivered before DONE.
+
+Optional `test_instrumentation_idle.rex` verifies the Instrumentation Mesh IDLE
+lifecycle/update counters, one-command request accounting and privacy boundary.
+Optional `test_socket_isolation_telemetry.rex` runs the IMAP server through the
+Library Socket Provider plus Socket Isolation Telemetry decorator and verifies
+accept/read/write/byte/close evidence with no command payload, host identity or
+logical service-name leakage under the default policy.
+

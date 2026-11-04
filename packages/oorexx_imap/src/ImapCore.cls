@@ -1,11 +1,11 @@
-/* ooRexx IMAP/IMAPS v0.1-dev10 core
+/* ooRexx IMAP/IMAPS v0.1-dev11 core
  *
  * Protocol objects deliberately avoid any assumption that a mailbox, UID set,
  * response literal, or SEARCH result is small.
  */
 
 ::class ImapBuild public
-::constant VERSION "0.1-dev10"
+::constant VERSION "0.1-dev11"
 ::constant API "imap/0.1"
 ::constant CORE_API "imap.core/0.1"
 

@@ -1,4 +1,4 @@
-/* Optional LDAP/Identity authentication adapter for ooRexx IMAP dev10.
+/* Optional LDAP/Identity authentication adapter for ooRexx IMAP dev11.
  * LDAP attributes identity; it does not grant mailbox authority.
  */
 
