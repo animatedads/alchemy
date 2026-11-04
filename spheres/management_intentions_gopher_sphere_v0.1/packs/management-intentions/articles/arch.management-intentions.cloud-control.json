@@ -1,10 +1,10 @@
 {
   "kind": "article",
   "id": "arch.management-intentions.cloud-control",
-  "version": "0.2",
+  "version": "0.3",
   "sphere": "management-intentions",
   "title": "Cloud Control authority and ooRexx console boundary",
-  "summary": "Alchemy Cloud Control (alchemy.cloud-control/0.1) remains authority for cloud RESOURCE and NODE operations. The ooRexx Cloud Console dev3 candidate now delegates mutation through that authority when configured, while provider-native reads remain separately attributable observation evidence.",
+  "summary": "Alchemy Cloud Control remains authority for cloud RESOURCE/NODE mutation. Cloud Console dev4 is the qualified human/code/Codex facade; provider-native reads remain separately attributable observation evidence.",
   "authority": "project-doctrine",
   "invariants": [
     "ALCHEMY_CLOUD_CONTROL is the cloud RESOURCE/NODE authority already registered by Development Floor; Management does not replace it.",
@@ -13,18 +13,20 @@
     "Management discovers the current cloud specialist and composes it with other specialists; it does not dispatch az, gcloud, aws, oci or Vultr syntax directly.",
     "Provider resource handles remain action locators and must not be synthesized into Job-to-Node Allocator nodeId values.",
     "Provider credentials and IAM remain provider authority; changing --workspace or source directory never grants mutation authority.",
-    "oorexx_cloud_console_v0.1-dev2 remains the last r13196-qualified console baseline; dev3 is a candidate until its extended suite is rerun under exact r13196.",
-    "The dev3 console backend delegates machine/firewall mutation through alchemy.cloud-control/0.1 when configured; provider-cli mutation remains an explicit development/test fallback.",
-    "Legacy multi-peer XTP firewall helpers imply a reusable firewall source-set reconciliation requirement; implement it generically in Cloud Control and keep XTP as the topology/peer authority.",
-    "Alchemy Cloud Control v0.1-dev3 candidate supplies one normalized RESOURCE transport for machine list/create/start/stop/reboot/destroy and firewall list/allow/revoke across Azure, GCP, AWS, OCI and Vultr.",
-    "Cloud Control dev3 offline fixtures pass for all five providers, including explicit GCP account selection and the repaired OCI SOFTRESET mapping; no live-cloud mutation acceptance is implied."
+    "oorexx_cloud_console_v0.1-dev4 is qualified under exact ooRexx 5.3.0 r13196 and delegates mutation through alchemy.cloud-control/0.1 when configured.",
+    "Alchemy Cloud Control v0.1-dev4 supplies normalized machine list/create/start/stop/reboot/destroy and firewall list/allow/revoke/reconcile across Azure, GCP, AWS, OCI and Vultr.",
+    "Firewall reconcile replaces only the desired source CIDR set for one scoped ingress protocol/port rule, preserves unrelated rules, and rejects an empty desired set.",
+    "XTP/network/service authorities own peer or listener topology; Cloud Control executes only the bounded source-set mutation supplied by that authority.",
+    "Cloud Console provider-native read paths are observations; mutation authority does not arise from the ability to observe a provider.",
+    "No live cloud mutation, DNS/certificate change, host reconfiguration or website/mail/LDAP/HTTPS installation is implied by dev4 fixture qualification."
   ],
   "procedure": [
     "Resolve the authoritative cloud specialist for the fresh management request.",
-    "Present the operation through the common Cloud Console vocabulary when a human, program or Codex caller needs one consistent surface.",
-    "Obtain the console plan, then delegate an approved mutation to the Cloud Control RESOURCE transport while preserving exact resource identity, provider context and policy evidence.",
-    "Apply only through the normal confirmation, policy and execution-time revalidation path.",
-    "Keep provider-native command text as adapter evidence rather than Management semantics."
+    "Present the operation through Cloud Console when a human, ooRexx program or Codex caller needs the common vocabulary.",
+    "Obtain the console plan and preserve exact provider/account/resource identity.",
+    "Apply only through the normal confirmation/policy path and delegate approved mutation to Cloud Control.",
+    "For source-set reconciliation, obtain the desired sources from the owning network/service policy; never infer them from provider inventory.",
+    "Retain provider command/output as adapter evidence rather than Management semantics."
   ],
   "topics": [
     "cloud",
@@ -58,6 +60,21 @@
     {
       "artifact": "oorexx_cloud_console_v0.1-dev3 candidate",
       "claim": "Implements selectable Cloud Control mutation backend and read/mutation provenance fields; ooRexx r13196 rerun remains pending, so dev2 stays the accepted console baseline."
+    },
+    {
+      "artifact": "alchemy_cloud_control_v0.1-dev4.zip",
+      "sha256": "cd1d8ad9cf83fbf66d0bda7beb210b95902141a1d1e212117738ae7fd5543cbd",
+      "claim": "Fresh-extraction five-provider RESOURCE qualification passes, including scoped source-set reconciliation and fail-closed empty-set handling."
+    },
+    {
+      "artifact": "oorexx_cloud_console_v0.1-dev4.zip",
+      "sha256": "fa78b02731fc32476b7932fb30c6687f19dfe62fcea91643af87cc787344ef10",
+      "claim": "Fresh-extraction r13196 qualification passes, including real Console-to-Cloud-Control-to-provider-fixture integration and JSON round-trip regression."
+    },
+    {
+      "artifact": "oorexx-5.3.0-13196.ubuntu1604debug.x86_64.deb",
+      "sha256": "8add57fd2463403c9e91f3f49856e3f61b34753938abab3a617fc8063d2df4ae",
+      "claim": "Exact runtime used for dev4 console compile/execution qualification."
     }
   ]
 }
