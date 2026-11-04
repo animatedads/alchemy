@@ -67,6 +67,18 @@
   end
   return records
 
+
+::method temporalEvidenceForDocument
+  /* The document's known fields bound the temporal evidence write set. */
+  use strict arg document
+  out = .Array~new
+  if document == .nil then return out
+  do fieldName over document~fieldNames
+    evidence = self~temporalEvidenceFor(document~DocKey, fieldName)
+    if evidence \== .nil then out~append(evidence)
+  end
+  return out
+
 ::method recordTemporalEvidence
   expose temporalEvidence
   use strict arg docKey, fieldName, outcome
@@ -122,6 +134,30 @@
   end
   else ignore = self~instrumentationEvent("PERSIST_FAILED", facts)
   return saveOk
+
+
+::method persistChangedDocument
+  /* A standalone document edit does not modify saved format/report schemas.
+   * Keep metadata and multi-document batches on the full-snapshot contract.
+   * Never reinterpret legacy FileDatabaseEngine data as SQLite. */
+  expose persistence restoring batchDepth batchDirty
+  use strict arg document
+  if document == .nil then return .false
+  if restoring then return .false
+  if batchDepth > 0 then do
+    batchDirty = .true
+    return .true
+  end
+  db = persistence~database
+  if \db~hasMethod("backendId") then return self~persistNow
+  if db~backendId \= "rexxsql-sqlite" then return self~persistNow
+  facts = .Directory~new
+  facts["BATCH_DEPTH"] = 0
+  ignore = self~instrumentationEvent("PERSIST_BEGIN", facts)
+  saved = persistence~saveDocumentOnly(self, document)
+  if saved then ignore = self~instrumentationEvent("PERSIST_COMPLETED", facts)
+  else ignore = self~instrumentationEvent("PERSIST_FAILED", facts)
+  return saved
 
 ::method beginBatch
   expose batchDepth
@@ -872,7 +908,7 @@
   document~refer(reviewer, note)
   node~save(document)
   trace~record(.CliUiSemanticEvent~new("Submit", "MiniNotes", document~DocKey), document~ApprovalStatus)
-  ignore = self~autoPersist
+  ignore = self~persistChangedDocument(document)
   facts = .Directory~new
   facts["FORM"] = document~formName
   ignore = self~instrumentationEvent("SUBMIT_COMPLETED", facts)
@@ -904,7 +940,7 @@
   if decisionOutcome = "REJECT" then decisionOutcome = "REJECTED"
   node~decideReferral(document, decisionOutcome, note)
   trace~record(.CliUiSemanticEvent~new("Decision", "MiniNotes", document~DocKey, "outcome", outcome), document~ApprovalStatus)
-  ignore = self~autoPersist
+  ignore = self~persistChangedDocument(document)
   facts = .Directory~new
   facts["OUTCOME"] = decisionOutcome
   facts["FORM"] = document~formName
@@ -937,7 +973,7 @@
   else return .nil
 
   self~applyWorkflow(document)
-  ignore = self~autoPersist
+  ignore = self~persistChangedDocument(document)
   return document
 
 
@@ -1170,7 +1206,7 @@
   document~putField(spec["NAME"], value)
   if temporalOutcome \\== .nil then ignore = self~recordTemporalEvidence(document~DocKey, spec["NAME"], temporalOutcome)
   node~save(document)
-  ignore = self~autoPersist
+  ignore = self~persistChangedDocument(document)
   return .true
 
 /* Validate temporal values through the injected Single Time Service boundary.
@@ -1259,7 +1295,7 @@
     ignore = self~recordTemporalEvidence(document~DocKey, pending["FIELD_NAME"], pending["OUTCOME"])
   end
   node~save(document)
-  ignore = self~autoPersist
+  ignore = self~persistChangedDocument(document)
   return document
 
 ::method documentFormatCanonicalName
@@ -1382,7 +1418,7 @@
   else value = target~DocKey
   document~send(fieldName || "=", value)
   node~save(document)
-  ignore = self~autoPersist
+  ignore = self~persistChangedDocument(document)
   return .true
 
 ::method removeDocumentReference
@@ -1413,7 +1449,7 @@
   end
   document~send(fieldName || "=", value)
   node~save(document)
-  ignore = self~autoPersist
+  ignore = self~persistChangedDocument(document)
   return .true
 
 ::method relationshipCardinality

@@ -79,3 +79,13 @@ Acceptance evidence:
 - strict standards gate over application/test/example sources plus the modified NotNotes semantic core: 23 files, 0 errors, 0 warnings, PASS.
 
 The long YAML-backed suite continues to be run in split groups in this environment; completion claims above come from the individual passing executions, not an assumed aggregate result.
+
+
+## 29 October 2026 main/provider + temporal/persistence reconciliation
+
+- Source base: draft PR #77 head cd3c797475447a5a0be57f1d129266bbeb44ca75, transplanted onto current main so the shared database provider/selector exists in the same checkout.
+- NotNotes does not vendor or fork the RexxSQL provider.
+- Legacy field-spec compatibility regression: PASS under ooRexx 5.3.0 r13196.
+- Actual Project Alchemy v0.5 file-store corpus reload with repaired decoder: PASS, 872 documents / 8 user formats.
+- Exact Library Single Time Service v0.10 + ConnectSelector dev8 DIRECT DATE/DATETIME regression: PASS.
+- Live RexxSQL SQLite/WAL, 954/10k integrated performance, Crypto signing and authenticated remote routes remain release gates.

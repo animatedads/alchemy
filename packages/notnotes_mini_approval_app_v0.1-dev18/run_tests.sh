@@ -15,6 +15,9 @@ export LD_LIBRARY_PATH="${REXXSQL_LIB_DIR:+$REXXSQL_LIB_DIR:}$REXX_HOME/lib64:$R
 # The inherited suite exercises legacy FileDatabaseEngine behaviour explicitly.
 # The production/default selector remains rexxsql-sqlite.
 export MININOTES_DB_BACKEND=file
+# Native fail-closed guard runs BEFORE the inherited long-running corpus suite.
+# It has no external SQLite/Crypto dependency and remains a release gate.
+"$REXX_BIN" tests/test_sqlite_transaction_capability_guard.rex
 TEST_ROOT=$(mktemp -d "${TMPDIR:-/tmp}/mininotes-tests.XXXXXX")
 trap 'rm -rf "$TEST_ROOT"' EXIT
 run_rexx() {
@@ -35,6 +38,7 @@ run_rexx semantic_projection tests/test_semantic_application_projection.rex
 run_rexx instrumentation tests/test_instrumentation_mesh.rex
 run_rexx time_service tests/test_time_service_fields.rex
 run_rexx temporal_evidence tests/test_temporal_evidence.rex
+run_rexx persistence_compat tests/test_persistence_field_spec_compat.rex
 MGMT_ROOT="$TEST_ROOT/management-review"
 mkdir -p "$MGMT_ROOT"
 cp -a tests/fixtures/management_review/data/mininotes/. "$MGMT_ROOT/"
@@ -55,10 +59,19 @@ run_rexx batch tests/test_batch_persistence.rex
 # Exercise actual MiniNotesApp~sortByKey on 10,002 objects, avoiding SQL.
 "$REXX_BIN" tests/test_sort_regression.rex
 
+# Preserve SQL NULL versus empty-text updates in both full and delta saves.
+"$REXX_BIN" tests/test_sqlite_null_empty_change_detection.rex
+
 # SQL adapter contract test with a fake function package, never in product path.
 REXX_PATH="$HERE/tests/fixtures:$REXX_PATH" "$REXX_BIN" tests/test_rexxsql_adapter_mock.rex
 # Opt-in real native SQL test; requires the existing built librexxsql.so.
 if [[ "${MININOTES_TEST_SQLITE_LIVE:-0}" == "1" ]]; then
+  if [[ ! -f "$REXXSQL_SRC/RexxSqlDatabaseProvider.cls" ]] || \
+     [[ ! -f "$NATIVE_DB_SRC/DatabaseBackendSelector.cls" ]] || \
+     ! grep -q 'REXXSQL-SQLITE' "$NATIVE_DB_SRC/DatabaseBackendSelector.cls"; then
+    echo "NOTNOTES_PROVIDER_NOT_READY: native live test requires integrated shared REXXSQL-SQLITE provider" >&2
+    exit 69
+  fi
   MININOTES_DB_BACKEND=rexxsql-sqlite "$REXX_BIN" tests/test_rexxsql_adapter_live.rex
   "$HERE/tests/test_rexxsql_migration.sh"
 fi

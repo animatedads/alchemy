@@ -84,17 +84,17 @@
     {
       "path": "vendor/time/src/SingleTime.cls",
       "sha256": "609349472c2c25a6056c4ef2c7fd3b2415490ea2bbb4d11bbf36939fdcc825fa",
-      "release": "0.3"
+      "release": "0.10"
     },
     {
       "path": "vendor/time/src/TzifZoneProvider.cls",
       "sha256": "9299e19eb3c6b475e33c407f095e60a09ae8cdc32678af686e78fdcb181a04df",
-      "release": "0.3"
+      "release": "0.10"
     },
     {
       "path": "vendor/connect/ConnectSelector.cls",
       "sha256": "a11046f9ac4b63945af4813cfb6b03de961e2c271ba81287f51a37c4dcd813a4",
-      "release": "0.1-dev2"
+      "release": "0.1-dev8"
     }
   ],
   "external_archives": [
@@ -116,12 +116,12 @@
       "semantic_api": "instrumentation.mesh/0.1"
     },
     {
-      "name": "single_time_service_v0.3.zip",
-      "sha256": "ce5f01db0dfb17b92a63a1a458ef6ab38a70eccaa226a8a2257abccb1a6085d5"
+      "name": "single_time_service_v0.10.zip",
+      "sha256": "f89aac8c3947f794dbf96f39286936f7406d83e7550030505d7aaaf74d74e1fc"
     },
     {
-      "name": "oorexx_connect_selector_v0.1-dev2.zip",
-      "sha256": "b7f8178287d56721f503be1200b89e4740d76ccae1f749228a3a28a895dbe1aa"
+      "name": "oorexx_connect_selector_v0.1-dev8.zip",
+      "sha256": "1cc89a61f2b8f4f4e4ee0b32480ce1b149658bb89a67522d466db8dfb4a296fc"
     }
   ],
   "development_package": "notnotes_mini_approval_app_v0.1-dev18",
@@ -141,5 +141,40 @@
       "git_blob_sha1": "0cf49ec2f3fbf7107269096652ff26d62162dc7c",
       "status": "Git source present; reconcile Library head before source acceptance"
     }
-  ]
+  ],
+  "required_main_provider_contract": {
+    "state": "NOT_PRESENT_IN_CURRENT_PR77_ANCESTOR; MUST_MERGE_FRESH_MAIN_BEFORE_NATIVE_RELEASE",
+    "selector": {
+      "path": "packages/oorexx_native_database_backends_v0.1/src/DatabaseBackendSelector.cls",
+      "main_git_blob_sha1": "96eb8f187b902fd034196f11aa76cc0e61795805"
+    },
+    "provider": {
+      "path": "packages/oorexx_rexxsql_backend_v0.1/src/RexxSqlDatabaseProvider.cls",
+      "main_git_blob_sha1": "6239b80747c25192f307611d3ac87bb89056058e"
+    },
+    "rexxsql": {
+      "path": "packages/oorexx_rexxsql_backend_v0.1/src/RexxSqlBackend.cls",
+      "main_git_blob_sha1": "693f0dfc65e5b8e38252a48183d28fa70df480ca"
+    },
+    "requiredCapabilities": [
+      "KEYED_LOOKUP_INDEXED",
+      "TRANSACTIONS",
+      "ROLLBACK",
+      "WAL",
+      "BIND_PLACEMARKERS",
+      "BYTE_EXACT_TEXT"
+    ],
+    "unsupported": [
+      "NULL_EMPTY_DISTINCT",
+      "BLOB_WRITE"
+    ],
+    "threading": "UNQUALIFIED",
+    "notes": "Required source identities observed on Git main 2026-10-29, NOT claimed present in current stacked branch. Application tests fail-closed if dependencies are absent."
+  },
+  "reconciliation": {
+    "date": "2026-10-29",
+    "base": "PR #77 cd3c797475447a5a0be57f1d129266bbeb44ca75",
+    "main_provider_contract": "consume shared DatabaseBackendSelector/RexxSQL provider from current main; no vendored duplicate",
+    "temporal_compatibility": "vendored SingleTime.cls/TzifZoneProvider.cls and ConnectSelector.cls are byte-identical to exact Library v0.10/dev8 consumed subset"
+  }
 }

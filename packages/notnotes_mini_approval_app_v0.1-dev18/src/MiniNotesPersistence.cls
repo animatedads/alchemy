@@ -137,9 +137,29 @@
     .DatabaseColumn~new("fields_hex", "TEXT", .false))
   return db~createTable("documents", columns, .array~of("doc_key"))
 
+/* Do not collapse SQL NULL into the empty TEXT value when deciding which
+ * columns require an UPDATE. Rexx/SQL's valueFragment owns the actual bound
+ * representation; this comparison only decides whether to write it. */
+::method columnDiffers
+  use strict arg oldValue, newValue
+  if oldValue == .nil then return newValue \== .nil
+  if newValue == .nil then return .true
+  return oldValue~string \== newValue~string
+
 ::method saveFrom
   expose db
   use strict arg app
+  /* SQLite full snapshots DROP/CREATE metadata tables. A selected SQL
+   * provider without a complete transaction API must fail BEFORE any DDL.
+   * The historical FileDatabaseEngine intentionally remains compatible. */
+  if db~hasMethod("backendId") then do
+    if db~backendId = "rexxsql-sqlite" then do
+      if \db~hasMethod("beginTransaction") | -
+         \db~hasMethod("commitTransaction") | -
+         \db~hasMethod("rollbackTransaction") then -
+           raise syntax 93.900 array("Indexed SQLite requires begin, commit and rollback for full persistence")
+    end
+  end
   transactional = db~hasMethod("beginTransaction")
   inTxn = .false
   if transactional then do
@@ -266,9 +286,7 @@
       do column over .array~of("form_name", "title", "amount", "risk", "depends_on", "workflow", "status", "fields_hex")
         oldValue = oldRow[column]
         newValue = row[column]
-        if oldValue == .nil then oldValue = ""
-        if newValue == .nil then newValue = ""
-        if oldValue~string \= newValue~string then do
+        if self~columnDiffers(oldValue, newValue) then do
           changed = .true
           assignments[column] = row[column]
         end
@@ -309,6 +327,88 @@ saveRollback:
   if inTxn then ignore = db~rollbackTransaction
   signal off syntax
   raise syntax 93.900 array("Mini NotNotes persistence failure (SQLite rollback attempted):" detail)
+
+
+::method saveDocumentOnly
+  /* Fast SQL path for one ordinary document mutation. No metadata DDL, no
+   * SELECT of other documents, no re-signing or re-verification. Bulk/schema
+   * operations continue to use saveFrom. The SQL transaction includes the
+   * document and the exact temporal evidence for its live fields. */
+  expose db
+  use strict arg app, document
+  if document == .nil then raise syntax 93.900 array("Cannot save absent document")
+  if \db~hasMethod("beginTransaction") | \db~hasMethod("commitTransaction") | -
+     \db~hasMethod("rollbackTransaction") | \db~hasMethod("selectWhereEquals") | -
+     \db~hasMethod("deleteWhereEquals") then -
+       raise syntax 93.900 array("Indexed SQLite single-document transaction methods unavailable")
+  transactionResult = db~beginTransaction
+  if transactionResult~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot begin document SQLite transaction:" transactionResult~message)
+  signal on syntax name saveDocumentRollback
+  key = document~DocKey
+  resultObject = db~selectWhereEquals("documents", "doc_key", key)
+  if resultObject~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot look up document:" key)
+  if resultObject~rows~items > 1 then -
+    raise syntax 93.900 array("Multiple document keys in SQLite:" key)
+  row = .table~new
+  row["doc_key"] = key
+  row["form_name"] = document~formName
+  row["title"] = document~Title
+  row["amount"] = document~Amount
+  row["risk"] = document~Risk
+  row["depends_on"] = document~DependsOn
+  row["workflow"] = document~Workflow
+  row["status"] = document~ApprovalStatus
+  row["fields_hex"] = self~encodeCustomFields(document)
+  if resultObject~rows~items = 0 then do
+    writeResult = db~insert("documents", row)
+  end
+  else do
+    previous = resultObject~rows[1]
+    assignments = .table~new
+    do column over .array~of("form_name", "title", "amount", "risk", "depends_on", "workflow", "status", "fields_hex")
+      oldValue = previous[column]
+      newValue = row[column]
+      if self~columnDiffers(oldValue, newValue) then assignments[column] = row[column]
+    end
+    if assignments~items > 0 then writeResult = db~updateWhereEquals("documents", "doc_key", key, assignments)
+    else writeResult = .nil
+  end
+  if writeResult \== .nil then do
+    if writeResult~status \= .Error~SUCCESS then -
+      raise syntax 93.900 array("Cannot persist changed document:" key || " " || writeResult~message)
+  end
+  /* Clear old temporal rows for this one document, including removed fields.
+   * Reinsert only the records exposed by this document's current live fields. */
+  deleteResult = db~deleteWhereEquals("temporal_evidence", "doc_key", key)
+  if deleteResult~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot clear changed document temporal evidence:" key)
+  do evidence over app~temporalEvidenceForDocument(document)
+    evidenceRow = .table~new
+    evidenceRow["doc_key"] = evidence["DOC_KEY"]
+    evidenceRow["field_name"] = evidence["FIELD_NAME"]
+    evidenceRow["kind"] = self~evidenceValue(evidence, "KIND")
+    evidenceRow["canonical_value"] = self~evidenceValue(evidence, "VALUE")
+    evidenceRow["zone"] = self~evidenceValue(evidence, "ZONE")
+    evidenceRow["instant_posix_seconds"] = self~evidenceValue(evidence, "INSTANT_POSIX_SECONDS")
+    evidenceRow["tzdb_edition"] = self~evidenceValue(evidence, "TZDB_EDITION")
+    evidenceRow["resolution"] = self~evidenceValue(evidence, "RESOLUTION")
+    evidenceResult = db~insert("temporal_evidence", evidenceRow)
+    if evidenceResult~status \= .Error~SUCCESS then -
+      raise syntax 93.900 array("Cannot save changed temporal field:" key || "." || evidence["FIELD_NAME"])
+  end
+  commitResult = db~commitTransaction
+  if commitResult~status \= .Error~SUCCESS then -
+    raise syntax 93.900 array("Cannot commit document SQLite transaction:" commitResult~message)
+  signal off syntax
+  return .true
+saveDocumentRollback:
+  failure = condition("O")
+  detail = failure["MESSAGE"]
+  ignore = db~rollbackTransaction
+  signal off syntax
+  raise syntax 93.900 array("NotNotes document transaction rollback attempted:" detail)
 
 ::method evidenceValue
   use strict arg evidence, key
@@ -448,20 +548,55 @@ saveRollback:
   do while rest <> ""
     parse var rest token ";" rest
     if token = "" then iterate
-    parse var token nameHex ":" labelHex ":" typeHex ":" refHex ":" calcHex ":" resultHex ":" cardinalityHex ":" timeZoneHex ":" ambiguityHex
+    parts = self~splitFieldSpec(token)
+    if parts~items < 3 then raise syntax 93.900 array("persisted field specification has fewer than three fields")
+    if parts~items > 10 then raise syntax 93.900 array("persisted field specification has unsupported trailing fields")
+    if parts~items = 10 then do
+      if parts[10] <> "" then raise syntax 93.900 array("persisted field specification has non-empty legacy trailing field")
+    end
     spec = .Directory~new
-    spec["NAME"] = x2c(nameHex)
-    spec["LABEL"] = x2c(labelHex)
-    spec["TYPE"] = x2c(typeHex)
-    if refHex <> "" then spec["REF_TARGET"] = x2c(refHex)
-    if calcHex <> "" then spec["CALC_EXPR"] = x2c(calcHex)
-    if resultHex <> "" then spec["RESULT_TYPE"] = x2c(resultHex)
-    if cardinalityHex <> "" then spec["CARDINALITY"] = x2c(cardinalityHex)
-    if timeZoneHex <> "" then spec["TIME_ZONE"] = x2c(timeZoneHex)
-    if ambiguityHex <> "" then spec["AMBIGUITY_POLICY"] = x2c(ambiguityHex)
+    spec["NAME"] = self~decodeFieldSpecHex(parts, 1, "NAME")
+    spec["LABEL"] = self~decodeFieldSpecHex(parts, 2, "LABEL")
+    spec["TYPE"] = self~decodeFieldSpecHex(parts, 3, "TYPE")
+    fieldValue = self~decodeFieldSpecHex(parts, 4, "REF_TARGET")
+    if fieldValue <> "" then spec["REF_TARGET"] = fieldValue
+    fieldValue = self~decodeFieldSpecHex(parts, 5, "CALC_EXPR")
+    if fieldValue <> "" then spec["CALC_EXPR"] = fieldValue
+    fieldValue = self~decodeFieldSpecHex(parts, 6, "RESULT_TYPE")
+    if fieldValue <> "" then spec["RESULT_TYPE"] = fieldValue
+    fieldValue = self~decodeFieldSpecHex(parts, 7, "CARDINALITY")
+    if fieldValue <> "" then spec["CARDINALITY"] = fieldValue
+    fieldValue = self~decodeFieldSpecHex(parts, 8, "TIME_ZONE")
+    if fieldValue <> "" then spec["TIME_ZONE"] = fieldValue
+    fieldValue = self~decodeFieldSpecHex(parts, 9, "AMBIGUITY_POLICY")
+    if fieldValue <> "" then spec["AMBIGUITY_POLICY"] = fieldValue
     out~append(spec)
   end
   return out
+
+::method splitFieldSpec private
+  use strict arg token
+  parts = .Array~new
+  remaining = token
+  do forever
+    delimiter = pos(":", remaining)
+    if delimiter = 0 then do
+      parts~append(remaining)
+      leave
+    end
+    parts~append(left(remaining, delimiter - 1))
+    remaining = substr(remaining, delimiter + 1)
+  end
+  return parts
+
+::method decodeFieldSpecHex private
+  use strict arg parts, index, label
+  if parts~items < index then return ""
+  fieldValue = parts[index]~string
+  if fieldValue = "" then return ""
+  if fieldValue~length // 2 <> 0 then raise syntax 93.900 array("persisted field specification has odd-length hex for" label)
+  if verify(fieldValue, "0123456789abcdefABCDEF") <> 0 then raise syntax 93.900 array("persisted field specification has invalid hex for" label)
+  return x2c(fieldValue)
 
 ::method encodeCustomFields
   use strict arg document
