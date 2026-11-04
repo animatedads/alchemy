@@ -1,0 +1,36 @@
+--- a/src/AudioV9Multipath.cls
++++ b/src/AudioV9Multipath.cls
+@@ -192,14 +192,13 @@
+ ::method writeFromSpectralTracks
+   use strict arg inputPath, outputPath
+   pts=.AudioV9MultipathSpectralTrackReader~new~readAll(inputPath); policy=.AudioV9VirtualMicWeightPolicy~new
+-  out=.CSVStream~new(outputPath); out~open('WRITE REPLACE')
+-  out~separator='09'x
+-  out~lineout('schema' || '09'x || 'feed' || '09'x || 'frame_time_ms' || '09'x || 'delay_ms' || '09'x || 'weight' || '09'x || 'polarity' || '09'x || 'path_quality' || '09'x || 'trajectory_id')
++  header=.array~of('schema','feed','frame_time_ms','delay_ms','weight','polarity','path_quality','trajectory_id')
++  out=.AudioV9TsvWriter~new(outputPath,header)
+   n=0
+   do p over pts
+     q=policy~fromSpectralPoint(p); if q==.nil then iterate
+     row=.array~of('audio.v9.virtual-mic.plan/1',q~feed,q~frameTimeMs,q~delayMs,q~weight,q~polarity,q~pathQuality,q~trajectoryId)
+-    out~lineout(row); n=n+1
++    out~write(row); n=n+1
+   end
+   out~close
+   return n
+--- a/native/av9_virtual_mic_dynamic.c
++++ b/native/av9_virtual_mic_dynamic.c
+@@ -37,11 +37,12 @@
+ }
+ static int write_f32(const char*path,const float*x,size_t n){FILE*f=fopen(path,"wb");if(!f)return 0;int ok=fwrite(x,sizeof(float),n,f)==n;ok&=(fclose(f)==0);return ok;}
+ static int split_tabs(char*s,char**v,int max){int n=0;char*p=s;while(n<max){v[n++]=p;char*t=strchr(p,'\t');if(!t)break;*t='\0';p=t+1;}return n;}
++static void dequote_tsv_scalar(char*s){size_t n=strlen(s);if(n>=2&&s[0]==34&&s[n-1]==34){memmove(s,s+1,n-2);s[n-2]=0;}}
+ static int load_plan(const char*path,const char*feed,Row**rows_out,size_t*n_out){
+   FILE*f=fopen(path,"r"); if(!f){fprintf(stderr,"cannot open plan %s\n",path);return 0;} char line[MAX_LINE]; size_t cap=256,n=0;Row*r=(Row*)malloc(cap*sizeof(Row));if(!r){fclose(f);return 0;}
+   if(!fgets(line,sizeof line,f)){free(r);fclose(f);return 0;}
+   while(fgets(line,sizeof line,f)){
+-    line[strcspn(line,"\r\n")]=0; char*v[8];int c=split_tabs(line,v,8); if(c<8)continue;
++    line[strcspn(line,"\r\n")]=0; char*v[8];int c=split_tabs(line,v,8); if(c<8)continue; dequote_tsv_scalar(v[0]); dequote_tsv_scalar(v[1]); dequote_tsv_scalar(v[6]);
+     if(strcmp(v[0],"audio.v9.virtual-mic.plan/1")||strcmp(v[1],feed))continue;
+     if(n==cap){cap*=2;if(cap>MAX_ROWS)cap=MAX_ROWS;Row*nr=(Row*)realloc(r,cap*sizeof(Row));if(!nr){free(r);fclose(f);return 0;}r=nr;if(n==cap)break;}
+     char*e=NULL; Row q; memset(&q,0,sizeof q);
