@@ -261,13 +261,20 @@
   return a
 
 ::method loadMessage
-  expose root
+  expose root catalogue
   use strict arg objectId
   path=root||"/objects/"||objectId||".eml"
   if stream(path,"c","query exists")="" then return .SmtpResult~failure("STORAGE_OBJECT_NOT_FOUND",objectId)
+  object=catalogue~get(objectId)
+  if object==.nil then return .SmtpResult~failure("STORAGE_CATALOGUE_OBJECT_NOT_FOUND",objectId)
   size=stream(path,"c","query size")
+  if size<>object~sizeBytes then return .SmtpResult~failure("STORAGE_OBJECT_SIZE_MISMATCH",objectId)
   content=charin(path,1,size); call stream path,"c","close"
+  if content~length<>size then return .SmtpResult~failure("STORAGE_OBJECT_READ_SHORT",objectId)
+  metaPath=root||"/meta/"||objectId||".tsv"
+  if stream(metaPath,"c","query exists")="" then return .SmtpResult~failure("STORAGE_META_NOT_FOUND",objectId)
   meta=self~readMeta(objectId)
+  if \meta~hasIndex("mailFrom") | \meta~hasIndex("recipients") then return .SmtpResult~failure("STORAGE_META_INCOMPLETE",objectId)
   env=.SmtpEnvelope~new(meta["mailFrom"])
   recips=meta["recipients"]
   if recips<>.nil then if recips<>"" then do i=1 to words(changestr(",",recips," ")); env~addRecipient(word(changestr(",",recips," "),i)); end
@@ -286,18 +293,18 @@
     if i>1 then recips=recips||","; recips=recips||message~envelope~recipients[i]
   end
 
-  lines=.array~new
-  lines~append("mailFrom"||"09"x||self~enc(message~envelope~mailFrom))
-  lines~append("recipients"||"09"x||self~enc(recips))
-  lines~append("sessionId"||"09"x||self~enc(session~sessionId))
-  lines~append("principalId"||"09"x||self~enc(session~principalId))
-  lines~append("authenticated"||"09"x||session~authenticated)
-  lines~append("tlsActive"||"09"x||session~tlsActive)
+  metaLines=.array~new
+  metaLines~append("mailFrom"||"09"x||self~enc(message~envelope~mailFrom))
+  metaLines~append("recipients"||"09"x||self~enc(recips))
+  metaLines~append("sessionId"||"09"x||self~enc(session~sessionId))
+  metaLines~append("principalId"||"09"x||self~enc(session~principalId))
+  metaLines~append("authenticated"||"09"x||session~authenticated)
+  metaLines~append("tlsActive"||"09"x||session~tlsActive)
   do k over message~metadata~allIndexes
-    lines~append(self~enc(k)||"09"x||self~enc(message~metadata[k]))
+    metaLines~append(self~enc(k)||"09"x||self~enc(message~metadata[k]))
   end
 
-  do line over lines
+  do line over metaLines
     rc=lineout(tmp,line)
     if rc<>0 then do
       ignore=lineout(tmp)
@@ -316,12 +323,12 @@
     check~append(linein(tmp))
   end
   call stream tmp,"c","close"
-  if check~items<>lines~items then do
+  if check~items<>metaLines~items then do
     call SysFileDelete tmp
     return .SmtpResult~failure("STORAGE_META_READBACK_MISMATCH","line count")
   end
-  do i=1 to lines~items
-    if check[i]<>lines[i] then do
+  do i=1 to metaLines~items
+    if check[i]<>metaLines[i] then do
       call SysFileDelete tmp
       return .SmtpResult~failure("STORAGE_META_READBACK_MISMATCH","line "||i)
     end

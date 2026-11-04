@@ -23,3 +23,10 @@ Grounded in the qualified `oorexx_smtp_secure_stack_v0.1-dev11.zip` delivery and
 - Added mailbox object enumeration/count/reload APIs for IMAP and mail-service consumers.
 - Added restart regression proving catalogue reconstruction, mailbox enumeration, envelope restoration and byte-identical RFC822 reload.
 - Autobuilder remains stopped; this is committed source/readiness evidence, not a new full-runtime qualification.
+
+
+## 2026-11-04 — dev7.3 fail-closed recovery validation
+
+- `loadMessage()` now requires recovered Storage Catalogue evidence and matching body size.
+- Short reads, missing metadata and incomplete envelope metadata fail closed.
+- Restart regression covers orphan-body and missing-metadata rejection.

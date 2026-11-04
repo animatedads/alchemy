@@ -1,4 +1,4 @@
-# ooRexx SMTP Secure Stack v0.1-dev7.2
+# ooRexx SMTP Secure Stack v0.1-dev7.3
 
 SMTP server and reusable secure-socket/TLS layer for Open Object Rexx 5.3.0 r13196, integrated with the existing identity, access-control, cryptographic-signature, Storage Fabric, QueueRexx/Queue Fabric, policy, ML/LLM and audit boundaries.
 
@@ -100,3 +100,8 @@ The local-delivery storage path is hardened for service restart and IMAP handoff
 - `tests/test_mail_store_restart.rex` reconstructs a new Storage Catalogue and SMTP store from disk and verifies mailbox enumeration plus byte-identical message reload after restart.
 
 This is a source-level readiness increment. Autobuilder is not currently running, so no fresh live-host qualification is claimed by this commit.
+
+
+## v0.1-dev7.3 — fail-closed recovery validation
+
+Restart recovery now rejects orphaned or inconsistent storage state. `loadMessage()` requires a recovered Storage Catalogue object, checks the RFC822 file size against catalogue evidence, rejects short reads, and requires complete envelope metadata. The restart regression covers orphan-body and missing-metadata failure paths.

@@ -50,6 +50,19 @@ call assert loaded~value~envelope~mailFrom="alice@remote.test","mailFrom metadat
 call assert loaded~value~envelope~recipients~items=1,"recipient metadata restored"
 call assert loaded~value~envelope~recipients[1]="bob@example.test","recipient value restored"
 
+/* Recovery must fail closed if catalogue or metadata evidence is missing. */
+catMissing=.StorageCatalogue~new
+storeMissing=.StorageFabricSmtpStore~new(tmp,catMissing,"smtp-test","smtp-mail","")
+missingCatalogue=storeMissing~loadMessage(objectId)
+call assert \missingCatalogue~ok & missingCatalogue~code="STORAGE_CATALOGUE_OBJECT_NOT_FOUND","orphan body rejected without catalogue evidence"
+
+metaPath=tmp||"/meta/"||objectId||".tsv"
+metaBackup=metaPath||".bak"
+call SysFileMove metaPath,metaBackup
+missingMeta=store2~loadMessage(objectId)
+call assert \missingMeta~ok & missingMeta~code="STORAGE_META_NOT_FOUND","missing recovery metadata rejected"
+call SysFileMove metaBackup,metaPath
+
 say "test_mail_store_restart: PASS"
 exit 0
 
