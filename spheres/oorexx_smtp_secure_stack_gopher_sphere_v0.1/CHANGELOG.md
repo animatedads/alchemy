@@ -13,3 +13,13 @@ Grounded in the qualified `oorexx_smtp_secure_stack_v0.1-dev11.zip` delivery and
 - Added `tests/review_cleanup_exception.rex` covering both QUIT and close exceptions after remote `250`.
 - Recorded LDAP PR #71 consumer contract: active attributed IdentityDirectory principal plus explicit MAIL_READ/EMAIL_SEND; Bind/signature alone confer no send authority.
 - Autobuilder is not running; dev11 remains the last complete r13196 qualification baseline.
+
+
+## 2026-11-04 — dev7.2 restart-safe mail storage
+
+- Made SMTP metadata commit authoritative and atomic; a metadata failure can no longer return durable delivery success.
+- Added atomic Storage Catalogue checkpointing through a temporary file.
+- Made mailbox membership idempotent across retry/replay.
+- Added mailbox object enumeration/count/reload APIs for IMAP and mail-service consumers.
+- Added restart regression proving catalogue reconstruction, mailbox enumeration, envelope restoration and byte-identical RFC822 reload.
+- Autobuilder remains stopped; this is committed source/readiness evidence, not a new full-runtime qualification.

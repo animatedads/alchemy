@@ -29,7 +29,8 @@ rm -f "$READY" "$LOG"
 
 if [ -n "${STORAGE_FABRIC_SRC:-}" ]; then
   export REXX_PATH="$ROOT/tests/support:$ROOT/src:$STORAGE_FABRIC_SRC${REXX_PATH:+:$REXX_PATH}"
-  SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-durable-$$" "$REXX_BIN" tests/test_durable_delivery.rex
+  SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-durable-$" "$REXX_BIN" tests/test_durable_delivery.rex
+  SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-mailstore-restart-$" "$REXX_BIN" tests/test_mail_store_restart.rex
   SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-dispatch-$$" "$REXX_BIN" tests/test_outbound_dispatcher.rex
 fi
 

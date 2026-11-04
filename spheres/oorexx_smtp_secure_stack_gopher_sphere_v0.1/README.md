@@ -22,3 +22,8 @@ The implementation is published at `packages/oorexx_smtp_secure_stack/` in this 
 
 
 2026-10-29 source note: Git dev7.1 carries the post-DATA cleanup hotfix and LDAP PR #71 authority contract. The sphere retains dev11 as the last complete r13196 qualification baseline; autobuilder is not running, so the hotfix is not represented as a fresh full-runtime qualification.
+
+
+## 2026-11-04 mail-storage readiness increment
+
+Current Git source advances to SMTP Secure Stack v0.1-dev7.2 for restart-safe local mail storage. Message metadata and catalogue checkpoints are committed atomically, mailbox membership is idempotent, and the store exposes mailbox enumeration/reload APIs suitable for the IMAP handoff. A restart regression reconstructs the catalogue/store and proves the stored RFC822 body and envelope can be recovered. This source increment does not supersede dev11 as the last complete r13196 qualification baseline because autobuilder is not running.

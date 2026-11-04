@@ -79,20 +79,78 @@
     if k~left(10)="signature." | k~left(7)="policy." | k~left(6)="model." | k="delivery.mailbox" then
       obj~setEA(.StorageEA~new("smtp",k,message~metadata[k],"STRING","smtp.event/0.1","smtp"))
   end
+  metaResult=self~writeMeta(id,session,message)
+  if \metaResult~ok then do
+    call SysFileDelete path
+    return metaResult
+  end
+
   catalogue~put(obj)
+  if cataloguePath<>"" then do
+    catalogueResult=self~checkpointCatalogue(cataloguePath)
+    if \catalogueResult~ok then return catalogueResult
+  end
+
   message~metadata["storage.objectId"]=id
   message~metadata["storage.location"]=path
-  self~writeMeta(id,session,message)
-  if cataloguePath<>"" then catalogue~save(cataloguePath)
   return .SmtpResult~success(id,"STORED")
 
 ::method addMembership
   expose root
   use strict arg objectId,recipient,mailbox
+  if self~hasMembership(objectId,recipient,mailbox) then return .SmtpResult~success(objectId,"MEMBERSHIP_EXISTS")
   line=self~enc(objectId)||"09"x||self~enc(recipient)||"09"x||self~enc(mailbox)
   w=self~appendJournalLine(root||"/memberships.tsv",line,"MEMBERSHIP_WRITE_FAILED")
   if \w~ok then return w
   return .SmtpResult~success(objectId,"MEMBERSHIP_ADDED")
+
+::method hasMembership
+  expose root
+  use strict arg objectId,recipient,mailbox
+  p=root||"/memberships.tsv"
+  if stream(p,"c","query exists")="" then return .false
+  found=.false
+  do while lines(p)>0
+    l=linein(p); f=self~splitTabs(l)
+    if f~items<3 then iterate
+    if self~dec(f[1])=objectId & self~dec(f[2])=recipient & self~dec(f[3])=mailbox then do
+      found=.true
+      leave
+    end
+  end
+  call stream p,"c","close"
+  return found
+
+::method mailboxObjectIds
+  expose root
+  use strict arg recipient,mailbox="INBOX"
+  out=.array~new
+  seen=.directory~new
+  p=root||"/memberships.tsv"
+  if stream(p,"c","query exists")="" then return out
+  do while lines(p)>0
+    l=linein(p); f=self~splitTabs(l)
+    if f~items<3 then iterate
+    objectId=self~dec(f[1])
+    if self~dec(f[2])<>recipient then iterate
+    if self~dec(f[3])<>mailbox then iterate
+    if seen[objectId]==.nil then do
+      out~append(objectId)
+      seen[objectId]=.true
+    end
+  end
+  call stream p,"c","close"
+  return out
+
+::method mailboxCount
+  use strict arg recipient,mailbox="INBOX"
+  return self~mailboxObjectIds(recipient,mailbox)~items
+
+::method loadMailboxMessage
+  use strict arg recipient,index,mailbox="INBOX"
+  ids=self~mailboxObjectIds(recipient,mailbox)
+  if index<1 | index>ids~items then return .SmtpResult~failure("MAILBOX_INDEX_OUT_OF_RANGE",index)
+  return self~loadMessage(ids[index])
 
 ::method enqueue
   expose root
@@ -221,19 +279,79 @@
   expose root
   use strict arg id,session,message
   p=root||"/meta/"||id||".tsv"
+  tmp=p||".tmp"
+  call SysFileDelete tmp
   recips=""
   do i=1 to message~envelope~recipients~items
     if i>1 then recips=recips||","; recips=recips||message~envelope~recipients[i]
   end
-  call lineout p,"mailFrom"||"09"x||self~enc(message~envelope~mailFrom)
-  call lineout p,"recipients"||"09"x||self~enc(recips)
-  call lineout p,"sessionId"||"09"x||self~enc(session~sessionId)
-  call lineout p,"principalId"||"09"x||self~enc(session~principalId)
-  call lineout p,"authenticated"||"09"x||session~authenticated
-  call lineout p,"tlsActive"||"09"x||session~tlsActive
-  do k over message~metadata~allIndexes; call lineout p,self~enc(k)||"09"x||self~enc(message~metadata[k]); end
-  call lineout p
-  return .true
+
+  lines=.array~new
+  lines~append("mailFrom"||"09"x||self~enc(message~envelope~mailFrom))
+  lines~append("recipients"||"09"x||self~enc(recips))
+  lines~append("sessionId"||"09"x||self~enc(session~sessionId))
+  lines~append("principalId"||"09"x||self~enc(session~principalId))
+  lines~append("authenticated"||"09"x||session~authenticated)
+  lines~append("tlsActive"||"09"x||session~tlsActive)
+  do k over message~metadata~allIndexes
+    lines~append(self~enc(k)||"09"x||self~enc(message~metadata[k]))
+  end
+
+  do line over lines
+    rc=lineout(tmp,line)
+    if rc<>0 then do
+      ignore=lineout(tmp)
+      call SysFileDelete tmp
+      return .SmtpResult~failure("STORAGE_META_WRITE_FAILED","lineout rc="||rc)
+    end
+  end
+  rc=lineout(tmp)
+  if rc<>0 then do
+    call SysFileDelete tmp
+    return .SmtpResult~failure("STORAGE_META_WRITE_FAILED","close rc="||rc)
+  end
+
+  check=.array~new
+  do while lines(tmp)>0
+    check~append(linein(tmp))
+  end
+  call stream tmp,"c","close"
+  if check~items<>lines~items then do
+    call SysFileDelete tmp
+    return .SmtpResult~failure("STORAGE_META_READBACK_MISMATCH","line count")
+  end
+  do i=1 to lines~items
+    if check[i]<>lines[i] then do
+      call SysFileDelete tmp
+      return .SmtpResult~failure("STORAGE_META_READBACK_MISMATCH","line "||i)
+    end
+  end
+
+  call SysFileMove tmp,p
+  if result<>0 then do
+    call SysFileDelete tmp
+    return .SmtpResult~failure("STORAGE_META_COMMIT_FAILED",result)
+  end
+  return .SmtpResult~success(p,"STORAGE_META_COMMITTED")
+
+::method checkpointCatalogue private
+  expose catalogue
+  use strict arg path
+  tmp=path||".tmp"
+  call SysFileDelete tmp
+  catalogue~save(tmp)
+  if stream(tmp,"c","query exists")="" then return .SmtpResult~failure("STORAGE_CATALOGUE_CHECKPOINT_FAILED","temporary checkpoint missing")
+  size=stream(tmp,"c","query size")
+  if size<=0 then do
+    call SysFileDelete tmp
+    return .SmtpResult~failure("STORAGE_CATALOGUE_CHECKPOINT_FAILED","temporary checkpoint empty")
+  end
+  call SysFileMove tmp,path
+  if result<>0 then do
+    call SysFileDelete tmp
+    return .SmtpResult~failure("STORAGE_CATALOGUE_COMMIT_FAILED",result)
+  end
+  return .SmtpResult~success(path,"STORAGE_CATALOGUE_COMMITTED")
 
 ::method readMeta private
   expose root

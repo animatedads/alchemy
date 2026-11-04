@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "smtp-secure-stack.mail-storage-readiness",
+  "version": "0.1",
+  "sphere": "smtp-secure-stack",
+  "title": "Restart-safe mail storage readiness",
+  "summary": "SMTP local delivery stores one authoritative RFC822 object, atomically commits recovery metadata and catalogue state, and exposes idempotent mailbox projections that can be enumerated and reloaded after service restart.",
+  "authority": "implementation-contract",
+  "invariants": [
+    "A local delivery is not reported durable until the RFC822 object has passed byte-for-byte readback and its recovery metadata has been committed.",
+    "SMTP metadata is committed through a temporary file and readback check; partial metadata cannot be treated as a successful delivery.",
+    "Storage Catalogue checkpoints are written to a temporary file and moved into place only after a non-empty checkpoint exists.",
+    "Mailbox membership is an idempotent projection over one stored object; retrying membership does not duplicate the RFC822 body or mailbox entry.",
+    "Mailbox consumers enumerate object identifiers and load the authoritative stored object rather than owning a second message copy.",
+    "Restart recovery reconstructs a fresh Storage Catalogue and SMTP store from disk before mailbox enumeration/reload.",
+    "LDAP Bind, message signing and durable storage do not confer MAIL_READ or EMAIL_SEND authority; access remains separately enforced by the platform authority."
+  ],
+  "implementation": [
+    "packages/oorexx_smtp_secure_stack/src/SmtpDurableDelivery.cls",
+    "packages/oorexx_smtp_secure_stack/tests/test_mail_store_restart.rex"
+  ],
+  "qualification": {
+    "source_status": "committed",
+    "autobuilder": "not-running",
+    "full_runtime_baseline": "oorexx_smtp_secure_stack_v0.1-dev11.zip",
+    "note": "dev7.2 adds a restart regression but does not claim a fresh autobuilder/live-host pass."
+  }
+}
