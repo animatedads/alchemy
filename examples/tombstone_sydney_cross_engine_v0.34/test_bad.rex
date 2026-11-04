@@ -1,0 +1,36 @@
+/* Negative test driver. A failure MUST exit non-zero. */
+parse arg id
+r=.CrossSlamEvidence~new
+select
+ when id=='FORGED_SHA' then call r~register('M','RASTER_SEGMENTATION','zz',458,336,'SCREEN_RASTER_UNREGISTERED','CLASS_SEMANTICS_UNVERIFIED')
+ when id=='FAKE_GEOTRANSFORM' then call r~register('M','SATELLITE_TILE_MOSAIC','36712bffa18f620c2aff1513e3aa1b2641bf901f43bf6406bf4ba08ad13ff521',1200,814,'WGS84_SURVEYED','TILE_GEOTRANSFORMS_MISSING')
+ when id=='SURVEYED_PANO' then call r~register('M','MODEL_360_PANORAMA','a257e0b1784d24dade0d42c9c7e9010e5240388ec3b037db6f7adc72354de477',2048,512,'MODEL_BEARING_CANVAS','SURVEYED')
+ when id=='FAKE_V5V_TESTED' then call r~register('M','V5V_VIDEO','c3bea629be6f054bafe08d50d03e259f894a97ddeae089dd69d77da0985cae7e',80,45,'V5V_IMAGE_LATTICE_80x45','TESTED')
+ when id=='INVALID_MASK_PIXEL' then do
+  call r~register('M','RASTER_SEGMENTATION','97ff5a02e63f6a9b72b44cd3e13d4a879f60d56bd3be38f07b11162ef6008d6b',458,336,'SCREEN_RASTER_UNREGISTERED','CLASS_SEMANTICS_UNVERIFIED')
+  q=r~imagePoint('M',999,100)
+ end
+ when id=='CROSS_SOURCE_OVERLAP' then do
+  call r~register('M','RASTER_SEGMENTATION','97ff5a02e63f6a9b72b44cd3e13d4a879f60d56bd3be38f07b11162ef6008d6b',458,336,'SCREEN_RASTER_UNREGISTERED','CLASS_SEMANTICS_UNVERIFIED')
+  call r~register('S','SATELLITE_TILE_MOSAIC','36712bffa18f620c2aff1513e3aa1b2641bf901f43bf6406bf4ba08ad13ff521',1200,814,'COMPOSITE_SCREEN_UNREGISTERED','TILE_GEOTRANSFORMS_MISSING')
+  a=r~imageBox('M',0,0,20,20);b=r~imageBox('S',0,0,20,20)
+  say r~screenOverlap('M',a,b)
+ end
+ when id=='FALSE_IDENTITY' then do
+  call r~register('V','V5V_VIDEO','c3bea629be6f054bafe08d50d03e259f894a97ddeae089dd69d77da0985cae7e',80,45,'V5V_IMAGE_LATTICE_80x45','OBSERVED_UNTESTED')
+  x=r~linkCandidate('V','V','FERRY_TESTED')
+ end
+ when id=='INVALID_BEARING' then say .CrossSlamEvidence~circularSeparation(370,5)
+ when id=='WRONG_RASTER_KIND' then do
+  call r~register('M','RASTER_SEGMENTATION','97ff5a02e63f6a9b72b44cd3e13d4a879f60d56bd3be38f07b11162ef6008d6b',458,336,'SCREEN_RASTER_UNREGISTERED','CLASS_SEMANTICS_UNVERIFIED')
+  x=r~panoramaObservation('M',15)
+ end
+ when id=='REUSE_SOURCE_ID' then do
+  call r~register('M','RASTER_SEGMENTATION','97ff5a02e63f6a9b72b44cd3e13d4a879f60d56bd3be38f07b11162ef6008d6b',458,336,'SCREEN_RASTER_UNREGISTERED','CLASS_SEMANTICS_UNVERIFIED')
+  call r~register('M','RASTER_SEGMENTATION','97ff5a02e63f6a9b72b44cd3e13d4a879f60d56bd3be38f07b11162ef6008d6b',458,336,'SCREEN_RASTER_UNREGISTERED','CLASS_SEMANTICS_UNVERIFIED')
+ end
+ otherwise say 'INVALID TEST CASE'
+end
+say 'BAD INPUT INCORRECTLY ACCEPTED' id
+exit 0
+::requires 'CrossSlamEvidence.cls'

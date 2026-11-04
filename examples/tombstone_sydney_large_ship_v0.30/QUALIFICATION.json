@@ -1,0 +1,60 @@
+{
+  "schema": "sydney.harbour.v5v.ship_structure/0.30",
+  "date": "2026-11-02",
+  "state": "OBSERVED_UNTESTED",
+  "source_cameras": [
+    2,
+    3
+  ],
+  "original_source_hashes": {
+    "cam2_cruise": "6b180a1d9779a22dd770b8081a29d40c477b3b2e1f99e9b233b38be804838830",
+    "cam2_baseline": "bf0dcef14da41b17b6b1214589e2a29067b58a85d4899078ccc51f9f0b700de0",
+    "cam3_cruise": "c3bea629be6f054bafe08d50d03e259f894a97ddeae089dd69d77da0985cae7e",
+    "cam3_baseline": "58616633e8239ec1f6a0699231f1466279af794d622090086babbc4af01c100d"
+  },
+  "training": {
+    "camera": 2,
+    "source_frames": [
+      900
+    ],
+    "num_crops": 2,
+    "feature": "lower_half_bright160_fraction + lower_half_vertical_edge22_fraction",
+    "threshold": 0.14064677,
+    "abstain_margin": 0.01
+  },
+  "heldout": {
+    "num_crops": 26,
+    "temporal_same_camera": 12,
+    "independent_camera_same_periods": 14,
+    "correct": 26,
+    "incorrect": 0,
+    "abstained": 0,
+    "min_large_ship_score": 0.15543478,
+    "max_normal_score": 0.10985075,
+    "independent_recordings": false
+  },
+  "qualifications": {
+    "native_rgb_crop_hashes": "28/28 PASS",
+    "native_rgb_feature_recompute": "28/28 PASS",
+    "ooRexx_r13196": "PASS",
+    "deliberate_corruptions": "14/14 REJECTED",
+    "source_sha256": "4/4 PASS",
+    "historic_frame900_rgb_receipts": "4/4 PASS"
+  },
+  "coarse_probe": {
+    "camera2": "palette10 cruise ROI 19/110 normal ROI 0/110, control both 0/143",
+    "camera3": "palette23 cruise ROI 432/984 normal ROI 310/984, background control cruise 246/460 normal 177/460; global-background-confounded"
+  },
+  "scope_limits": [
+    "manual review-seeded fixed ROIs, not autonomous V5V tracking",
+    "two time-correlated recording periods; not independent ship classification",
+    "no new vessel identity claim",
+    "no independently calibrated camera pose",
+    "no canonical SLAM TESTED weights"
+  ],
+  "artifact": {
+    "name": "sydney_v5v_large_ship_structure_v0.30.zip",
+    "sha256": "39d751229d34fcf0c9da1f1f687ceb7a4e7ebd5b47adf83658b7b5f1e665304e",
+    "notes": "original source videos and ooRexx binary excluded; source, verified RGB crops, features, decision receipts, tests and logs included"
+  }
+}
