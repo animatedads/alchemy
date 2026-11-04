@@ -1,4 +1,4 @@
-# ooRexx IMAP/IMAPS v0.1-dev8
+# ooRexx IMAP/IMAPS v0.1-dev13
 
 `oorexx_imap_v0.1-dev8` keeps **IMAP the application protocol** and makes transport security a separate, explicit configuration axis.
 
@@ -283,3 +283,64 @@ server capability boundary.
 ### Storage Fabric dev23 compatibility
 
 The current Storage Fabric dev23 line no longer ships the legacy `StorageSemantic.cls` package that dev9's projection hard-required. Dev10 removes that obsolete hard requirement from the normal Storage projection. `ImapStorageFabricProjection.cls` now consumes the current Storage Fabric core/streaming namespace and EA contracts, while the old semantic-provider bridge is isolated in `ImapStorageFabricLegacySemantic.cls` for installations that actually provide `StorageSemantic.cls`. This prevents a current Storage installation from failing merely by loading the IMAP projection.
+\n\n## Dev11 — 7 October server message-data slice + estate Socket Provider binding\n\nDev11 continues the Rexx-space IMAP server rather than delegating the server side to an external daemon. The dependency-free in-memory qualification provider now implements durable-within-provider UID identity and the first bounded message-data slice: APPEND with literal-length verification and APPENDUID, FETCH/UID FETCH for UID/FLAGS/RFC822.SIZE/BODY[]/BODY.PEEK[], STORE/UID STORE flag replacement/add/remove including `.SILENT`, SEARCH/UID SEARCH for ALL/SEEN/UNSEEN/DELETED/UNDELETED, COPY/UID COPY with COPYUID, MOVE/UID MOVE with exact source removal, EXPUNGE and exact UID EXPUNGE, plus CHECK. The server still does not advertise IMAP4rev1; `IDLE`, richer SEARCH/FETCH grammar, SASL AUTHENTICATE and multi-session unsolicited update semantics remain explicit work.\n\nThe classified delivery boundary remains unchanged: SMTP/local-delivery authority may place verified signed mail in `INBOX` and unsigned/invalid mail in `INBOX-UNSIGNED`; ordinary IMAP APPEND/COPY/MOVE may not manufacture membership in either delivery-managed inbox.\n\nThe endpoint loop now handles synchronizing and non-synchronizing final APPEND literals through a bounded `readExact()` transport contract. A new optional `ImapSocketProviderBinding.cls` consumes the estate `socket.provider/0.1` listener/connection boundary, so IMAP can terminate directly in Rexx space behind current Socket Provider rather than inventing host/port acquisition or shelling out. It was qualified against the current Library Socket Provider v0.1-dev14 merge line.\n
+
+## Dev11 — server message-data plane
+
+Dev11 adds the first bounded Rexx-space server message-data slice: APPEND,
+FETCH/UID FETCH, STORE/UID STORE, SEARCH/UID SEARCH, COPY/UID COPY,
+MOVE/UID MOVE, EXPUNGE, UID EXPUNGE and CHECK. Socket Provider v0.1-dev14
+can terminate an accepted provider stream directly in `ImapServerEndpoint`;
+IMAP does not create a parallel socket stack. The server still does not claim
+IMAP4rev1 while IDLE, complete FETCH/SEARCH grammar and multi-session
+unsolicited state remain open.
+
+## Dev12 — Instrumentation Mesh observation
+
+Dev12 adds optional `ImapInstrumentationAdapter.cls` for
+`instrumentation.mesh/0.1` (qualified against Instrumentation Mesh v0.1-dev3).
+The server endpoint exposes a generic observer seam and the adapter translates
+authoritative IMAP facts into the estate-wide telemetry vocabulary: session
+counts/state, request admission/completion, authentication outcomes, command
+family counters, byte totals, literal byte totals and transport failures.
+
+Instrumentation remains observational. It grants no mailbox, session or
+message mutation authority and it carries no credentials, raw commands, mailbox
+names, search expressions, message headers or literal/message bytes. Queue
+Fabric/Instrumentation publication and history remain outside IMAP; this package
+only supplies the IMAP-native source adapter.
+
+## Dev13 — multi-session change feed and IDLE
+
+Dev13 adds the first bounded selected-mailbox change feed and an endpoint-owned
+`IDLE` command loop.  `IDLE` is **not** a new authentication/session state: the
+session remains `SELECTED`; the endpoint temporarily waits for transport
+readiness, polls the authoritative mailbox provider for changes, emits unsolicited
+updates, and terminates on `DONE`.
+
+The mailbox-provider seam now exposes `currentChangeCursor()` and
+`changesSince()`.  The dependency-free `ImapMemoryMailboxProvider` implements a
+bounded reference change log and emits typed `EXISTS`, `FLAGS`, and `EXPUNGE`
+records.  Each server session has a non-secret origin id so a session can suppress
+duplicate echoes for changes that were already represented synchronously while
+other selected sessions still receive the mutation.  APPEND/COPY destination
+`EXISTS` remains echoable because the synchronous tagged result does not itself
+update selected message count.
+
+`IDLE` is advertised only when **both** the provider change feed and a transport
+readiness primitive are available.  `ImapSocketStreamTransport` consumes readiness
+from the selected Socket Provider endpoint (`WAITREADY` or native `SELECT`) rather
+than choosing a socket implementation itself.  Cursor expiry/change-feed loss
+fails closed with a BYE/ALERT rather than silently missing mailbox changes.
+
+The endpoint now emits IDLE lifecycle facts through the existing optional
+Instrumentation Mesh adapter.  The new Socket Isolation Telemetry package can
+independently decorate Socket Provider below IMAP to observe acquisition/accept/
+read/write/byte/close facts without exposing payload or endpoint identity by
+default.  Protocol telemetry and generic socket telemetry remain separate layers.
+
+Dev13 still does not advertise `IMAP4rev1`: the reference provider's change log is
+in-memory, fuller FETCH/SEARCH grammar and multi-process durable change recovery are
+not yet complete, and external-client interoperability for IDLE remains a later live
+qualification step.
+

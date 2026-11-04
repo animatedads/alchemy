@@ -1,4 +1,4 @@
-# Architecture — dev8
+# Architecture — dev13
 
 ## 1. IMAP is not IMAPS
 
@@ -205,3 +205,76 @@ identity remains mailbox + UIDVALIDITY + UID.
 The dev10 metadata provider is deliberately incomplete and therefore the server
 does not advertise IMAP4rev1. Future data-command work must extend the provider
 contract rather than bypassing it with host filesystem assumptions.
+\n\n## Dev11 message-store and endpoint architecture\n\nThe server-side data path is now explicit:\n\n```text\nSocket Provider/native stream\n        |\n        v\nImapSocketStreamTransport\n        |\n        v\nImapServerEndpoint  -- line/literal framing\n        |\n        v\nImapServerSession   -- protocol state + mailbox authority\n        |\n        v\nImapMailboxProvider -- mailbox/message authority\n        |\n        +--> in-memory qualification store\n        +--> Storage Fabric adapter/provider (production direction)\n```\n\nSequence numbers are computed from the selected provider snapshot and never become durable identity. UID operations target mailbox UIDs. `UID EXPUNGE` accepts an exact UID set and cannot broaden the requested removal. `MOVE` copies first and performs exact source removal only after the destination copy succeeds in the provider.\n
+
+## 10. Instrumentation boundary (dev12)
+
+The IMAP protocol core does not depend on Instrumentation Mesh.
+`ImapServerEndpoint` exposes a small observer seam at the facts it already owns:
+connection/session lifecycle, command admission/terminal status, transport byte
+boundaries and state transitions. The optional `ImapInstrumentationSource`
+translates those facts into `instrumentation.mesh/0.1`.
+
+```text
+Socket Provider / TLS provider
+          |
+          v
+ImapServerEndpoint -------> ImapInstrumentationSource
+          |                         |
+          v                         v
+ ImapServerSession          InstrumentationEmitter
+          |                         |
+          v                         v
+ ImapMailboxProvider        mesh publisher/collector
+```
+
+The direction is deliberately one-way. Instrumentation may observe IMAP but it
+does not become authentication, mailbox authority, storage authority or a
+management shortcut. Remote management, if later enabled, must traverse the
+Instrumentation command authorizer and then an explicit IMAP-local command
+authority; changing a telemetry projection can never mutate mail.
+
+Telemetry identity is service identity, not mailbox identity. Sensitive protocol
+material is therefore excluded from dimensions and samples: usernames,
+credentials, mailbox names, raw command/search text, headers and literal bytes
+are never exported.
+
+## Dev13 selected-mailbox coherence
+
+Selected sessions no longer need to rescan a mailbox to discover every local
+mutation.  The provider owns a bounded change stream:
+
+```text
+mailbox mutation
+      |
+      v
+provider generation + change cursor
+      |
+      +--> session A selected cursor --> unsolicited EXISTS/FETCH/EXPUNGE
+      +--> session B selected cursor --> unsolicited EXISTS/FETCH/EXPUNGE
+```
+
+The change stream is protocol state, not telemetry.  Instrumentation Mesh may
+observe that an IDLE update batch occurred, but it is not the source from which
+IMAP reconstructs mailbox state.  Conversely, the change-feed cursor grants no
+mailbox mutation authority.
+
+IDLE is an endpoint sub-mode around a session that remains `SELECTED`:
+
+```text
+SELECTED
+   |
+   | IDLE
+   v
+endpoint waits/polls provider -- unsolicited changes --> client
+   |
+   | DONE
+   v
+SELECTED
+```
+
+There is deliberately no hidden background thread in dev13.  Transport readiness
+is capability-gated and bounded; provider history loss is surfaced explicitly.
+A production Storage/mailbox provider can later back the same cursor contract with
+durable journal/change evidence without changing IMAP wire semantics.
+

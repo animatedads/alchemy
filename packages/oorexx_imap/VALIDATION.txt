@@ -1,61 +1,54 @@
-oorexx-imap v0.1-dev10 validation
-==================================
-Runtime: ooRexx 5.3.0 r13196 Internal Test debug build (supplied package)
-Review basis: oorexx_portfolio_code_review_2026-09-27_checkpoint1.zip
+ooRexx IMAP v0.1-dev13 validation
+Date: 2026-10-09
+Runtime: Open Object Rexx 5.3.0 r13196 (user-supplied debug package)
 
-Required dependency-free suite:
-  PASS 19/19 from development package root
-  Includes dev10 review-contract, server-core and LDAP-adapter tests
+Base:
+  oorexx_imap_v0.1-dev12.zip
+  SHA-256 740aa11acc9f6e849389effd03fa2e22f76f43855d947b7868aa5ddcbf7cebab
 
-Review-driven checks exercised:
-  PASS defensive collection/result ownership
-  PASS large UID exactness under caller NUMERIC DIGITS 9
-  PASS literal bound validation and nil-before-dispatch guards
-  PASS authentication/mailbox-authority separation
-  PASS classified INBOX / INBOX-UNSIGNED protection in server provider
-  PASS honest partial-server capability boundary (no IMAP4rev1 claim)
+Required dependency-free qualification:
+  tests/run.sh required set: 22/22 PASS
+  New required test_server_idle.rex: PASS
 
-Current Storage Fabric integration:
-  candidate: oorexx_storage_fabric_v0.1-dev23(1).zip
-  SHA-256: 6e80e4a95717709ad715ef26ad024cfd9361ddcfe33c9da2629df302b64d1814
-  PASS test_storage_adapter.rex
-  PASS test_storage_projection.rex
-  dev10 normal projection no longer hard-requires removed StorageSemantic.cls
-  legacy semantic-provider compatibility is isolated in ImapStorageFabricLegacySemantic.cls
+Current optional integration qualification used in this cut:
+  Socket Provider v0.1-dev14 server binding: PASS
+  Storage Fabric v0.1-dev21 adapter: PASS
+  Storage Fabric v0.1-dev21 projection: PASS
+  Instrumentation Mesh v0.1-dev3 adapter: PASS
+  Instrumentation Mesh v0.1-dev3 IDLE telemetry: PASS
+  Socket Isolation Telemetry v0.1-dev1 decorator integration: PASS
 
-Server dev10 status:
-  API: imap.server/0.1
-  Implemented: CAPABILITY, NOOP, LOGOUT, LOGIN, NAMESPACE, LIST/LSUB,
-               STATUS, SELECT/EXAMINE/CLOSE, CREATE/DELETE/RENAME/
-               SUBSCRIBE/UNSUBSCRIBE.
-  Explicitly NOT IMPLEMENTED: server APPEND/FETCH/STORE/SEARCH/COPY/MOVE/
-               EXPUNGE/UID/IDLE and full IMAP4rev1 server conformance.
-  No live server listener or live LDAP-network qualification is claimed.
+Optional integrations not rerun in this cut:
+  API Client + Foreign Runtime adapter load: SKIP (not staged for this pass)
+  NoSQLServer integration: SKIP (full dependency closure not staged for this pass)
+  Logging integration: SKIP (Logging source not staged for this pass)
 
-Client safety preserved:
-  * no plain EXPUNGE fallback
-  * exact UID source-removal contract retained
-  * no source deletion after COPY failure
-  * no expunge after mark-deleted failure
-  * sequence numbers remain live-session state only
+Dev13 assertions exercised:
+  - two selected sessions share one provider change feed;
+  - external APPEND -> unsolicited EXISTS;
+  - external flag mutation -> unsolicited FETCH FLAGS/UID;
+  - exact UID EXPUNGE -> unsolicited EXPUNGE;
+  - IDLE advertised only with provider change feed + transport readiness;
+  - IDLE remains SELECTED state and ends only through DONE/terminal failure;
+  - IMAP_IDLE requires independent mailbox authority;
+  - IDLE request remains one Instrumentation Mesh request until DONE;
+  - IDLE lifecycle/update counters settle correctly;
+  - generic Socket Isolation Telemetry can decorate Socket Provider below IMAP;
+  - default socket telemetry does not expose command payload, host identity or logical service name.
 
-Optional integrations not requalified in this dev10 pass unless stated above:
-  API Client / Foreign Runtime TLS adapter
-  NoSQLServer integration
-  Logging adapter (legacy qualification was Logging v0.7)
+Standards enforcer pre-package run:
+  oorexx_standards_enforcer.py (2026-09-27 Library copy)
+  source files scanned: 56
+  errors: 0
+  warnings: 100
+  verdict: PASS (non-strict)
+  No strict-mode PASS is claimed. WARN findings remain manual-review prompts.
 
-Preferred Packager:
-  No COMMIT is claimed for dev10. Preferred Packager was not modified.
+Security / privacy:
+  No live credentials are included in the package.
+  IMAP semantic telemetry excludes username/principal, credential, mailbox name,
+  raw command/search text, headers/body and literal content.
+  Socket Isolation Telemetry is consumed with its privacy-preserving default policy.
 
-The final packaged candidate is additionally required to pass:
-  * SHA256SUMS verification after re-extraction
-  * required 19/19 suite from an unrelated /tmp extraction
-  * 27 September ooRexx standards enforcer with zero ERROR findings
-
-Final candidate verification (2026-09-27):
-  PASS 74 SHA256SUMS entries after clean re-extraction
-  PASS required 19/19 suite from unrelated /tmp extraction
-  PASS Storage Fabric dev23 adapter + projection from clean extraction
-  PASS 27 September standards enforcer, non-strict: 47 source files scanned,
-       0 ERROR findings, 65 WARN findings, verdict PASS
-  Note: WARN findings are heuristic review prompts; no strict-mode PASS is claimed.
+No live Gmail, Anduin/Dovecot, or external-client IDLE run is claimed for dev13.
+Preferred Packager was not modified and no Preferred Packager COMMIT is claimed.
