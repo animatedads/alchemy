@@ -3,6 +3,7 @@
 **Sphere identity:** \`maths\`  
 **Documentation revision:** 0.2  
 **Current executable baseline:** ooRexx Maths v0.19  
+**Current development candidate:** ooRexx Maths v0.20 candidate3 — finite ordered structures + exact/domain-aware univariate and paired statistics; native r13196 rerun pending  
 **Baseline archive SHA-256:** \`cf92eac71498450fb688569328833b33b122942de89450a4022d9d824c778f40\`
 
 This sphere is the continuity and architecture authority for ooRexx Maths. It documents the mathematical contracts and evidence boundaries that must survive implementation changes; it does not replace the executable package.
@@ -36,3 +37,18 @@ Provider acceleration remains implementation, never mathematical authority. Work
 ## Coordination note
 
 The project catalogue exposes component \`sphere:maths\`. At this documentation update it had no recorded owner. This session could inspect it but could not write a coordinator ownership lease because the coordinator requires an authenticated HTTPS principal. GitHub changes therefore use the current repository head and conflict-safe commit/ref checks instead of claiming a lease that does not exist.
+
+
+## Cross-pillar Reasoned Thought seam
+
+THOUGHT-001 assigned the evidence-combination mathematics to ChatGPT while Reasoned Thought retains proposition, ground, warrant, binding and settlement semantics. Maths v0.20 candidate1 therefore adds only a generic `MathFiniteChain`. The initial Reasoned Thought policy order `STYLOMETRIC < TESTIMONY < DOCUMENTARY < PROVENANCE` is a consumer-configured chain, not a universal truth hierarchy. Coordination continuation is recorded in Rasen Falcon request `REQ-00000635`.
+
+
+## Cross-pillar SLAM seam
+
+Library `oorexx_slam_v0.1-1.zip` (Small Language Autonomous Model) contains a private `SlamMaths` implementing general statistics and square root. Maths candidate2 adds `MathStatistics` so reusable numerical authority can move back to Maths without moving SLAM semantics. SLAM retains code segmentation, graph/node identity, edge evidence, path search, word grounding, anchor qualification and right-to-left language composition. Its current `variance` language contract is population variance; unique-mode tie refusal is preserved through `MathStatistics~uniqueMode`, while Maths also exposes all modes through `~modes`.
+
+
+## Cross-pillar ML / Vision statistics seam
+
+A current-Git sweep after candidate2 found further private generic numerics: ooRexx ML dev11 computes means/variances and covariance-like PCA quantities inside ML, while Vision 3D Reconstruction dev9 computes mean/variance/spread and owns another private square-root helper. Candidate3 adds `MathPairedStatistics` with explicit population/sample covariance and correlation. ML retains model/training/state semantics; Vision retains frame cadence, geometry and motion-evidence semantics. Migration is an adoption task, not authority transfer.
