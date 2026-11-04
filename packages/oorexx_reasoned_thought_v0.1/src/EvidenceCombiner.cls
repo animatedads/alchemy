@@ -137,14 +137,24 @@
   rebut = 0
   ambiguous = .false
   transcript = .array~new
-  transcript~append("ordinal-evidence-combiner/0.2")
-  transcript~append("claim=" || p~id)
+  transcript~append("ordinal-evidence-combiner/0.3")
+  transcript~append("claim=" || self~part(p~id))
+  transcript~append(self~claimText(p))
   do gid over allIds
     g = byId[gid]
     st = decisions[gid]
+    /* The explanatory note is a provenance-bearing part of the submitted
+     * Ground, not a reason to change its evidence tier. Preserve exact bytes
+     * in the transcript while keeping deduplication source-origin based. */
+    notePresent = 0; noteText = ""
+    if g~hasMethod("NOTE") then do
+      notePresent = 1
+      noteText = g~note
+    end
     transcript~append(self~part(gid) || self~part(g~kind) || self~part(g~tier) || -
       self~part(g~sourceUtterance) || self~part(g~targetId) || -
-      self~part(g~undercutsGroundId) || self~part(g~binds) || self~part(st))
+      self~part(g~undercutsGroundId) || self~part(g~binds) || -
+      self~part(notePresent) || self~part(noteText) || self~part(st))
     select
       when st = "LIVE" then do
         live~append(gid)
@@ -205,7 +215,7 @@
   d["disputedGrounds"] = disputedIds; d["duplicates"] = duplicates
   d["admissibility"] = "ADMITTED_EVIDENCE_ONLY"
   d["derivation"] = why; d["why"] = why
-  d["derivationVersion"] = "ordinal-evidence-combiner/0.2"
+  d["derivationVersion"] = "ordinal-evidence-combiner/0.3"
   d["validationBoundary"] = "source authenticity, evidence class and warrants are upstream obligations"
   return d
 
@@ -219,11 +229,17 @@
   d["ineligible"] = .set~new; d["disputed"] = .true
   d["disputedGrounds"] = .set~new; d["duplicates"] = .set~new
   d["admissibility"] = "FAIL_CLOSED"
-  why = "ordinal-evidence-combiner/0.2" || "0a"x || "claim=" || p~id || "0a"x || self~join(notes)
+  why = "ordinal-evidence-combiner/0.3" || "0a"x || -
+    "claim=" || self~part(p~id) || "0a"x || self~claimText(p) || "0a"x || self~join(notes)
   d["derivation"] = why; d["why"] = why
-  d["derivationVersion"] = "ordinal-evidence-combiner/0.2"
+  d["derivationVersion"] = "ordinal-evidence-combiner/0.3"
   d["validationBoundary"] = "failed structural admission"
   return d
+
+::method claimText private
+  use strict arg p
+  if p~hasMethod("STATEMENT") then return "claimText=AVAILABLE:" || self~part(p~statement)
+  return "claimText=UNAVAILABLE"
 
 ::method join private
   use strict arg arr
