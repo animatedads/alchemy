@@ -335,14 +335,15 @@ def run_job_file(job_path: str, result_path: str, expected_methodology_id: str =
     The Media method ID is checked at both boundaries to prevent accidental
     execution of a different reconstruction lineage.
     """
-    job = {}
+    # Preflight is outside the catch/write path: a rejected private-material
+    # boundary must not generate even an error artifact at an unsafe location.
+    with open(job_path, "r", encoding="utf-8") as stream:
+        job = json.load(stream)
+    _require_private_material_paths(job, result_path)
     try:
-        with open(job_path, "r", encoding="utf-8") as stream:
-            job = json.load(stream)
         actual_method = str(job.get("methodology_id", "")).upper()
         if expected_methodology_id and actual_method != expected_methodology_id.upper():
             raise RuntimeError("METHODOLOGY_MISMATCH")
-        _require_private_material_paths(job, result_path)
         result = execute(job)
     except Exception as error:
         result = {
