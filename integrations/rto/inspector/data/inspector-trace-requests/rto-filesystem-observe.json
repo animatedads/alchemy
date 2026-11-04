@@ -1,0 +1,33 @@
+{
+  "bundle_id": "rto-filesystem-observe-project-rules",
+  "enabled": true,
+  "requests": [
+    {
+      "class": "RTOCHECKBROKENSYMLINKS",
+      "enabled": true,
+      "kind": "method_trace",
+      "method": "RUN",
+      "reason": "verify broken-symlink evidence is produced by native SysStat traversal",
+      "report_prefix": "reports/inspector/rto-filesystem-broken-symlinks"
+    },
+    {
+      "class": "RTOREX86LOWFRUITOPERATIONS",
+      "enabled": true,
+      "kind": "method_trace",
+      "method": "RUN",
+      "reason": "observe the low-fruit operation dispatcher without changing filesystem state",
+      "report_prefix": "reports/inspector/rto-filesystem-low-fruit-run"
+    },
+    {
+      "class": "RTOREX86LOWFRUITOPERATIONS",
+      "enabled": true,
+      "kind": "source_trail",
+      "method": "WALK",
+      "reason": "show traversal boundaries and visitor evidence collection without shelling out",
+      "report_prefix": "reports/inspector/rto-filesystem-low-fruit-walk"
+    }
+  ],
+  "schema": "alchemy.inspector.trace-request.v1",
+  "trace_goal": "prove low-risk filesystem inspections stay read-only and avoid shell escape paths",
+  "trace_group": "rto-filesystem-observe"
+}

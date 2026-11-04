@@ -1,0 +1,30 @@
+{
+  "schema": "alchemy.inspector.trace-request.v1",
+  "enabled": true,
+  "bundle_id": "rto-filesystem-observe-corridor",
+  "trace_group": "rto-filesystem-observe",
+  "trace_goal": "capture filesystem observe operation evidence without mutating resources",
+  "requests": [
+    {
+      "kind": "method_trace",
+      "class": "RTOCHECKBROKENSYMLINKS",
+      "method": "RUN",
+      "report_prefix": "reports/inspector/rto-filesystem-broken-symlinks",
+      "reason": "prove native broken symlink scan stays in read-only evidence mode"
+    },
+    {
+      "kind": "method_trace",
+      "class": "RTOREX86LOWFRUITOPERATIONS",
+      "method": "RUN",
+      "report_prefix": "reports/inspector/rto-filesystem-low-fruit-run",
+      "reason": "observe low-fruit filesystem checks through the operation object"
+    },
+    {
+      "kind": "source_trail",
+      "class": "RTOREX86LOWFRUITOPERATIONS",
+      "method": "WALK",
+      "report_prefix": "reports/inspector/rto-filesystem-low-fruit-walk",
+      "reason": "trace traversal helper boundaries without shelling out"
+    }
+  ]
+}
