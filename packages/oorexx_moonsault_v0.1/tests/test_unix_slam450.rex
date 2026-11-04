@@ -18,7 +18,7 @@ do item over cases
     exit 2
   end
   do body over .array~of('sun','moon')
-    do key over .array~of('altitudeTrueDeg','azimuthTrueDeg','altitudeRefractedDeg',,
+    do key over .array~of('altitudeTrueDeg','azimuthTrueDeg','altitudeRefractedDeg',
       'azimuthRefractedDeg','illuminatedFraction','horizontalParallaxDeg')
       if abs(a[body][key]-b[body][key]) > 0.00000000001 then do
         say 'FAIL prediction mismatch' item[1] body key
