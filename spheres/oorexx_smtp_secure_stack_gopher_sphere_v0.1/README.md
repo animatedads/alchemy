@@ -27,3 +27,19 @@ The implementation is published at `packages/oorexx_smtp_secure_stack/` in this 
 ## 2026-11-04 mail-storage readiness increment
 
 Current Git source advances to SMTP Secure Stack v0.1-dev7.2 for restart-safe local mail storage. Message metadata and catalogue checkpoints are committed atomically, mailbox membership is idempotent, and the store exposes mailbox enumeration/reload APIs suitable for the IMAP handoff. A restart regression reconstructs the catalogue/store and proves the stored RFC822 body and envelope can be recovered. This source increment does not supersede dev11 as the last complete r13196 qualification baseline because autobuilder is not running.
+
+
+## 2026-11-04 inbound MX + shared mailbox projection
+
+Git dev7.4 layers the mission-critical receive/store service onto the existing
+dev7.3 restart-safe, fail-closed storage line. The owned inbound service accepts
+configured local-domain SMTP, stores one authoritative RFC822 object, and
+projects signed mail to `INBOX` and unsigned/invalid-signature mail to
+`INBOX-UNSIGNED`. A paired IMAP provider reads the same object/membership
+store without creating a second body copy.
+
+The dev7.4 Git source is the current operational-readiness line. The separate
+`oorexx_smtp_secure_stack_v0.1-dev12.zip` development artifact was exercised
+under ooRexx r13196 for the receive/store path; dev11 remains the last complete
+qualification baseline for optional RPC/instrumentation lanes. Autobuilder is
+not running and no live MX/DNS/firewall installation is claimed.

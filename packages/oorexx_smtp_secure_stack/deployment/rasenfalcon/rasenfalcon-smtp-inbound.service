@@ -1,0 +1,38 @@
+[Unit]
+Description=Rasen Falcon owned ooRexx inbound SMTP receiver
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/etc/rasenfalcon/smtp-inbound.env
+
+[Service]
+Type=simple
+User=rasenfalcon-mail
+Group=rasenfalcon-mail
+EnvironmentFile=/etc/rasenfalcon/smtp-inbound.env
+ExecStart=/usr/bin/rexx /opt/rasenfalcon/smtp/bin/rasenfalcon_smtp_inbound_service.rex
+Restart=on-failure
+RestartSec=3
+WorkingDirectory=/opt/rasenfalcon/smtp
+RuntimeDirectory=rasenfalcon-mail
+RuntimeDirectoryMode=0750
+StateDirectory=rasenfalcon-mail
+StateDirectoryMode=0700
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+PrivateDevices=true
+ProtectSystem=strict
+ProtectHome=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectKernelLogs=true
+ProtectControlGroups=true
+LockPersonality=true
+RestrictSUIDSGID=true
+RestrictRealtime=true
+SystemCallArchitectures=native
+ReadWritePaths=/var/lib/rasenfalcon-mail /run/rasenfalcon-mail
+ReadOnlyPaths=/etc/rasenfalcon /opt/rasenfalcon/smtp
+
+[Install]
+WantedBy=multi-user.target

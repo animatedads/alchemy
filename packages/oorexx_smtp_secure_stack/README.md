@@ -1,4 +1,4 @@
-# ooRexx SMTP Secure Stack v0.1-dev7.3
+# ooRexx SMTP Secure Stack v0.1-dev7.4
 
 SMTP server and reusable secure-socket/TLS layer for Open Object Rexx 5.3.0 r13196, integrated with the existing identity, access-control, cryptographic-signature, Storage Fabric, QueueRexx/Queue Fabric, policy, ML/LLM and audit boundaries.
 
@@ -105,3 +105,12 @@ This is a source-level readiness increment. Autobuilder is not currently running
 ## v0.1-dev7.3 — fail-closed recovery validation
 
 Restart recovery now rejects orphaned or inconsistent storage state. `loadMessage()` requires a recovered Storage Catalogue object, checks the RFC822 file size against catalogue evidence, rejects short reads, and requires complete envelope metadata. The restart regression covers orphan-body and missing-metadata failure paths.
+
+
+## v0.1-dev7.4 — inbound MX service and shared IMAP mailbox projection
+
+This increment makes the current restart-safe store consumable as an actual inbound mail service. `bin/rasenfalcon_smtp_inbound_service.rex` and `rasenfalcon-smtp-inbound.service` compose the owned SMTP wire server, OpenSSL secure-socket provider and Storage Fabric local-delivery store for configured local domains. The inbound profile deliberately does not provide authenticated relay.
+
+Mixed local+relay transactions are rejected before any local storage side effect, preventing a later relay denial from turning an already-written local message into a retry ambiguity. `ImapSmtpDeliveredMailboxProvider` exposes `INBOX` and `INBOX-UNSIGNED` as a read-side projection over the same membership/object store; it reads the exact stored RFC822 object rather than creating a second mailbox body.
+
+Internet MX ingress does not require LDAP authentication. Authenticated submission and IMAP user access remain separate services and must use an active attributed IdentityDirectory principal plus explicit `MAIL_READ` / `EMAIL_SEND` authority; Bind or signing alone grants neither.

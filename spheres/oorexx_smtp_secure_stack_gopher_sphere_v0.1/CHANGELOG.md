@@ -30,3 +30,13 @@ Grounded in the qualified `oorexx_smtp_secure_stack_v0.1-dev11.zip` delivery and
 - `loadMessage()` now requires recovered Storage Catalogue evidence and matching body size.
 - Short reads, missing metadata and incomplete envelope metadata fail closed.
 - Restart regression covers orphan-body and missing-metadata rejection.
+
+
+## 2026-11-04 — dev7.4 inbound MX and shared IMAP projection
+
+- Added owned `rasenfalcon-smtp-inbound.service` composition for local-domain receive.
+- Added mixed local/relay transaction rejection before any local storage side effect.
+- Added read-only IMAP projection over the exact SMTP mailbox membership/object store.
+- Preserved dev7.2/dev7.3 restart-safe and fail-closed storage work already on main.
+- Recorded the comprehensive dev12 r13196 receive/store qualification artifact SHA-256 `a2df7226656ea3311f2757050b63255f193225ebe0ee28642dc41a03bd031ffd`.
+- Autobuilder remains stopped; live host/MX activation is not claimed.
