@@ -298,15 +298,45 @@ def execute(job):
     elif mid=="VIDEO.RECON.LATENT_MULTI_FRAME": out,support,unc=method_latent(frames,track,cw,ch)
     return write_outputs(job,frames,pts,track,out,support,unc,METHODS[mid])
 
+def run_job_file(job_path: str, result_path: str, expected_methodology_id: str = "") -> int:
+    """Resident entrypoint: called through ooRexx Foreign Runtime, never a shell.
+
+    All provider material paths are explicitly supplied by the ooRexx caller.
+    The Media method ID is checked at both boundaries to prevent accidental
+    execution of a different reconstruction lineage.
+    """
+    job = {}
+    try:
+        with open(job_path, "r", encoding="utf-8") as stream:
+            job = json.load(stream)
+        actual_method = str(job.get("methodology_id", "")).upper()
+        if expected_methodology_id and actual_method != expected_methodology_id.upper():
+            raise RuntimeError("METHODOLOGY_MISMATCH")
+        result = execute(job)
+    except Exception as error:
+        result = {
+            "schema": SCHEMA_RESULT, "provider_id": PROVIDER_ID,
+            "methodology_id": job.get("methodology_id", ""),
+            "status": "FAILED", "reason_code": type(error).__name__,
+            "detail": str(error), "authority": {
+                "effect": "RECONSTRUCT_CANDIDATE",
+                "observation_promotion": False, "status": "FAILED"
+            },
+        }
+    ensure_dir(os.path.dirname(os.path.abspath(result_path)))
+    with open(result_path, "w", encoding="utf-8") as stream:
+        json.dump(result, stream, indent=2, sort_keys=True)
+    return 0 if result.get("status") in ("CANDIDATE", "NOT_APPLICABLE") else 2
+
+
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument("--job",required=True); ap.add_argument("--result",required=True)
-    args=ap.parse_args()
-    job=json.load(open(args.job,"r",encoding="utf-8"))
-    try: result=execute(job)
-    except Exception as e:
-        result={"schema":SCHEMA_RESULT,"provider_id":PROVIDER_ID,"methodology_id":job.get("methodology_id",""),"status":"FAILED","reason_code":type(e).__name__,"detail":str(e)}
-    ensure_dir(os.path.dirname(os.path.abspath(args.result)))
-    with open(args.result,"w",encoding="utf-8") as f: json.dump(result,f,indent=2,sort_keys=True)
-    print(result.get("status"),result.get("methodology_id"),result.get("reason_code",""))
-    return 0 if result.get("status") in ("CANDIDATE","NOT_APPLICABLE") else 2
-if __name__=="__main__": raise SystemExit(main())
+    """Standalone reference diagnostic only; ooRexx uses Foreign Runtime."""
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--job", required=True)
+    ap.add_argument("--result", required=True)
+    args = ap.parse_args()
+    return run_job_file(args.job, args.result)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
