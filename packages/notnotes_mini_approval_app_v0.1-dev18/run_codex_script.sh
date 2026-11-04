@@ -12,5 +12,16 @@ if [[ -d "$REXXSQL_SRC" && -d "$NATIVE_DB_SRC" ]]; then
   export REXX_PATH="$REXXSQL_SRC:$NATIVE_DB_SRC:$REXX_PATH"
 fi
 export LD_LIBRARY_PATH="${REXXSQL_LIB_DIR:+$REXXSQL_LIB_DIR:}$REXX_HOME/lib64:$REXX_HOME/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+# The new native SQLite composition uses the shared selector and the
+# database owner's RexxSqlDatabaseProvider, not a private NotNotes driver.
+# The dependent Git branches may predate that provider's main integration.
+if [[ "${MININOTES_DB_BACKEND:-rexxsql-sqlite}" != "file" ]]; then
+  if [[ ! -f "$REXXSQL_SRC/RexxSqlDatabaseProvider.cls" ]] || \
+     [[ ! -f "$NATIVE_DB_SRC/DatabaseBackendSelector.cls" ]] || \
+     ! grep -q 'REXXSQL-SQLITE' "$NATIVE_DB_SRC/DatabaseBackendSelector.cls"; then
+    echo "NOTNOTES_PROVIDER_NOT_READY: shared REXXSQL-SQLITE selector/provider source is absent; update the source checkout, or explicitly select MININOTES_DB_BACKEND=file for an existing legacy store" >&2
+    exit 69
+  fi
+fi
 SCRIPT=${1:-examples/codex_walkthrough.txt}
 exec "$REXX_BIN" examples/run_scripted.rex "$SCRIPT"

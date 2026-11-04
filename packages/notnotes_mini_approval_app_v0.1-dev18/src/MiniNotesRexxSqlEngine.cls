@@ -9,10 +9,28 @@
   use strict arg path
   path = path~string~strip
   if path = "" then raise syntax 93.900 array("SQLite path must not be empty")
-  /* Dynamically load the existing backend into this package, so explicit
-   * legacy file selection does not require the SQL extension to be present. */
-  ignore = .context~package~loadPackage("RexxSqlBackend.cls")
-  session = .RexxSqlSqliteSession~open(path)
+  /* Select the existing indexed native backend through the shared provider
+   * contract. Legacy file mode does not construct this adapter, so it remains
+   * independent of the native SQLite function package. No silent fallback. */
+  selectorPackage = .context~package~loadPackage("DatabaseBackendSelector.cls")
+  selectorClass = selectorPackage~findPublicClass("DatabaseBackendSelector")
+  if selectorClass == .nil then -
+    raise syntax 93.900 array("DatabaseBackendSelector public class unavailable")
+  options = .Directory~new
+  options["provider"] = "REXXSQL-SQLITE"
+  options["databaseFile"] = path
+  options["requiredCapabilities"] = .Array~of( -
+    "KEYED_LOOKUP_INDEXED", "TRANSACTIONS", "ROLLBACK", "WAL", -
+    "BIND_PLACEMARKERS", "BYTE_EXACT_TEXT")
+  selected = selectorClass~new~open(options)
+  if selected == .nil then -
+    raise syntax 93.900 array("Shared Rexx/SQL provider returned no SQLite session")
+  if \selected~hasMethod("execute") | \selected~hasMethod("executeBound") then do
+    reason = "Shared Rexx/SQL provider rejected indexed SQLite session"
+    if selected~hasMethod("message") then reason = reason || ":" selected~message
+    raise syntax 93.900 array(reason)
+  end
+  session = selected
 
 ::method path
   expose path

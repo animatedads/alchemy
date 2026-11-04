@@ -141,5 +141,34 @@
       "git_blob_sha1": "0cf49ec2f3fbf7107269096652ff26d62162dc7c",
       "status": "Git source present; reconcile Library head before source acceptance"
     }
-  ]
+  ],
+  "required_main_provider_contract": {
+    "state": "NOT_PRESENT_IN_CURRENT_PR77_ANCESTOR; MUST_MERGE_FRESH_MAIN_BEFORE_NATIVE_RELEASE",
+    "selector": {
+      "path": "packages/oorexx_native_database_backends_v0.1/src/DatabaseBackendSelector.cls",
+      "main_git_blob_sha1": "96eb8f187b902fd034196f11aa76cc0e61795805"
+    },
+    "provider": {
+      "path": "packages/oorexx_rexxsql_backend_v0.1/src/RexxSqlDatabaseProvider.cls",
+      "main_git_blob_sha1": "6239b80747c25192f307611d3ac87bb89056058e"
+    },
+    "rexxsql": {
+      "path": "packages/oorexx_rexxsql_backend_v0.1/src/RexxSqlBackend.cls",
+      "main_git_blob_sha1": "693f0dfc65e5b8e38252a48183d28fa70df480ca"
+    },
+    "requiredCapabilities": [
+      "KEYED_LOOKUP_INDEXED",
+      "TRANSACTIONS",
+      "ROLLBACK",
+      "WAL",
+      "BIND_PLACEMARKERS",
+      "BYTE_EXACT_TEXT"
+    ],
+    "unsupported": [
+      "NULL_EMPTY_DISTINCT",
+      "BLOB_WRITE"
+    ],
+    "threading": "UNQUALIFIED",
+    "notes": "Required source identities observed on Git main 2026-10-29, NOT claimed present in current stacked branch. Application tests fail-closed if dependencies are absent."
+  }
 }
