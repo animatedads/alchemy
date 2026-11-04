@@ -55,6 +55,9 @@ run_rexx batch tests/test_batch_persistence.rex
 # Exercise actual MiniNotesApp~sortByKey on 10,002 objects, avoiding SQL.
 "$REXX_BIN" tests/test_sort_regression.rex
 
+# Preserve SQL NULL versus empty-text updates in both full and delta saves.
+"$REXX_BIN" tests/test_sqlite_null_empty_change_detection.rex
+
 # SQL adapter contract test with a fake function package, never in product path.
 REXX_PATH="$HERE/tests/fixtures:$REXX_PATH" "$REXX_BIN" tests/test_rexxsql_adapter_mock.rex
 # Opt-in real native SQL test; requires the existing built librexxsql.so.

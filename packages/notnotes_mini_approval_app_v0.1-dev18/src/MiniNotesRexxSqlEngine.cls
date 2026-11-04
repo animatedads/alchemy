@@ -147,6 +147,14 @@
   return self~run("UPDATE " || self~identifier(name) || " SET " || clauses || -
                   " WHERE " || self~identifier(column) || " = " || predicate, binds)
 
+
+::method deleteWhereEquals
+  use strict arg name, column, wanted
+  binds = .Array~new
+  predicate = self~valueFragment(wanted, binds)
+  return self~run("DELETE FROM " || self~identifier(name) || -
+                  " WHERE " || self~identifier(column) || " = " || predicate, binds)
+
 ::method beginTransaction
   return self~run("BEGIN IMMEDIATE TRANSACTION")
 ::method commitTransaction
