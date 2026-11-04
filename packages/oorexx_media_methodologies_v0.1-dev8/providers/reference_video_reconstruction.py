@@ -298,6 +298,36 @@ def execute(job):
     elif mid=="VIDEO.RECON.LATENT_MULTI_FRAME": out,support,unc=method_latent(frames,track,cw,ch)
     return write_outputs(job,frames,pts,track,out,support,unc,METHODS[mid])
 
+def _require_private_material_paths(job, result_path):
+    """Fail closed before decoding if any captured or derived material leaves private storage."""
+    private_root = os.environ.get("ALCHEMY_PRIVATE_MEDIA_ROOT", "").strip()
+    if not private_root or not os.path.isabs(private_root):
+        raise RuntimeError("PRIVATE_MEDIA_ROOT_REQUIRED")
+    root = os.path.realpath(private_root)
+    if root == os.path.abspath(os.sep) or not os.path.isdir(root):
+        raise RuntimeError("PRIVATE_MEDIA_ROOT_UNSAFE")
+
+    paths = [result_path, job.get("output_dir", "")]
+    source = job.get("source", {})
+    if source.get("kind") == "VIDEO_FILE":
+        paths.append(source.get("path", ""))
+    for p in paths:
+        if not p or not os.path.isabs(p):
+            raise RuntimeError("PRIVATE_MATERIAL_PATH_REQUIRED")
+        actual = os.path.realpath(p)
+        if os.path.commonpath([root, actual]) != root:
+            raise RuntimeError("PRIVATE_MATERIAL_OUTSIDE_ROOT")
+        # No source-derived material is ever admitted inside a Git checkout.
+        cursor = actual if os.path.isdir(actual) else os.path.dirname(actual)
+        while True:
+            if os.path.exists(os.path.join(cursor, ".git")):
+                raise RuntimeError("GIT_WORKTREE_MEDIA_FORBIDDEN")
+            parent = os.path.dirname(cursor)
+            if parent == cursor:
+                break
+            cursor = parent
+
+
 def run_job_file(job_path: str, result_path: str, expected_methodology_id: str = "") -> int:
     """Resident entrypoint: called through ooRexx Foreign Runtime, never a shell.
 
@@ -312,6 +342,7 @@ def run_job_file(job_path: str, result_path: str, expected_methodology_id: str =
         actual_method = str(job.get("methodology_id", "")).upper()
         if expected_methodology_id and actual_method != expected_methodology_id.upper():
             raise RuntimeError("METHODOLOGY_MISMATCH")
+        _require_private_material_paths(job, result_path)
         result = execute(job)
     except Exception as error:
         result = {
