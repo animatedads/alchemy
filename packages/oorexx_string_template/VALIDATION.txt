@@ -1,28 +1,30 @@
-ooRexx String Template v0.1-dev2 qualification
-Date: 2026-10-23
+ooRexx String Template v0.1-dev3 qualification
+Date: 2026-10-29
 
-Inherited executable predecessor evidence
-----------------------------------------
-dev1 was executed under Open Object Rexx 5.3.0 r13196 Internal Test Version, 64-bit:
-PASS rexxc src/StringTemplate.cls
-PASS 5/5 dev1 runtime fixtures
-PASS ooRexx standards enforcer --strict --json (0 errors, 0 warnings)
+Runtime authority
+-----------------
+Open Object Rexx 5.3.0 r13196 - Internal Test Version, 64-bit
+Build date: Aug 3 2026
 
-Dev2 current-session evidence
------------------------------
-The previously supplied r13196 Debian attachment is visible in conversation history, but its binary backing file is not materializable in this current tool session. Therefore dev2 does NOT claim a fresh r13196 runtime or rexxc PASS here.
+Fresh dev3 evidence
+-------------------
+PASS package manifest before test execution.
+PASS rexxc src/StringTemplate.cls.
+PASS test_basic.rex.
+PASS test_fail_closed.rex.
+PASS test_formatter_binding.rex.
+PASS test_formatters.rex.
+PASS test_nested_and_object_view.rex.
+PASS test_policies.rex.
+PASS test_requirements_and_stream.rex.
+PASS 7/7 StringTemplate fixtures.
 
-The dev2 package is checked with:
-PASS bash syntax validation for run_tests.sh
-PASS deterministic manifest generation and verification
-PASS ZIP integrity testing
-PASS project ooRexx standards enforcer --strict --json: 0 errors, 0 warnings
+The only defect observed in the prior dev3 carrier was in tests/test_policies.rex: its expected JSON string was over-escaped for ooRexx literal semantics. CODEX-PC had independently identified this discrepancy during the earlier dev2 qualification. The fixture expectation was corrected; src/StringTemplate.cls was not changed for this repair. The corrected test confirms quote, newline and backslash JSON string-content escaping against the actual input bytes.
 
-New runtime fixtures shipped for the next r13196 execution gate:
-- complete JSON control-byte escaping;
-- blank `putObject` context-name rejection;
-- unique variable and formatter requirement inventories;
-- detached TemplateRequirements snapshots;
-- renderTo output equivalence and submitted-character count.
+Additional qualification gates
+------------------------------
+PASS deterministic package manifest regeneration and verification.
+PASS ZIP structural integrity.
+PASS project ooRexx standards enforcer --strict --json: 0 errors, 0 warnings.
 
-Do not promote these new dev2 runtime fixtures to PASS until they are actually executed by r13196.
+Detailed native evidence: qualification/r13196_2026-10-29.txt

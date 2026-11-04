@@ -5,17 +5,28 @@
   "sphere": "oorexx-string-template",
   "title": "Compiled requirement introspection",
   "authority": "project-authoritative",
-  "summary": "A compiled template can report unique variable paths and formatter names in first-use order. TemplateRequirements returns detached copies of those inventories without resolving context data, invoking object getters or running formatter code.",
+  "summary": "A compiled template can report unique variable paths and formatter names in first-use order. TemplateRequirements returns detached copies without resolving context data, invoking object getters or running formatter code; dev3 also reports which formatter names are not present in the captured registry.",
   "uses": [
     "preflight whether required data is available",
     "discover formatter dependencies before rendering",
-    "inspect report/message/prompt requirements without flattening object data"
+    "inspect report/message/prompt requirements before domain formatter authorities are supplied",
+    "inspect missing formatter bindings and explicitly create a rebound template"
   ],
   "invariants": [
     "Requirement inspection is observation, not execution.",
     "Unformatted substitutions explicitly require the identity formatter.",
-    "Requirement arrays returned to callers are detached copies."
+    "Requirement arrays returned to callers are detached copies.",
+    "An unavailable domain formatter does not prevent parsing or requirement inspection."
   ],
-  "related": ["arch.template.language", "ops.template.continuation"],
-  "provenance": [{"source": "repository", "path": "packages/oorexx_string_template/src/StringTemplate.cls"}]
+  "related": [
+    "arch.template.language",
+    "arch.template.binding",
+    "ops.template.continuation"
+  ],
+  "provenance": [
+    {
+      "source": "repository",
+      "path": "packages/oorexx_string_template/src/StringTemplate.cls"
+    }
+  ]
 }
