@@ -41,3 +41,8 @@ The target path must be selected by the Alchemy deployment owner; no remote depl
 - Parsed upstream JSON into 9,096 source objects; no invalid J2000 RA/Dec, missing visual magnitudes or duplicate HR identifiers.
 - Native ooRexx 5.3.0 r13196 executed preflight against a generated 9,096-row schema-valid fixture; PASS. This test exercises pre-validation only, **not live NoSQLServer insertion**.
 - Reference star-source and CSV source must be checked again against the stored version before operational acceptance. Do not assert a successful live import until an actual NoSQLServer insert and readback have passed.
+## SLAM450 Unix clock adapter (v0.93 candidate)
+
+The existing `.MoonsaultEphemeris~sunMoon(utc,lat,lon)` accepts strict ISO-8601 UTC text and also integer Unix/POSIX UTC seconds in 1970-2099 for the SLAM450 flight clock. Predictions retain their provenance and `PREDICTION_ONLY` status. A seven-epoch regression was added as `tests/test_unix_slam450.rex`; run it with the existing `test_ephemeris.rex` before merging. The standalone Rexx conversion primitive passed 5/5 boundary cases on user-supplied 5.3.0 r13196; provider integration testing is pending.
+
+This branch does not alter the separate 9,096-row Yale BSC5 CSV or the importer. The writable NoSQLServer import still requires a live insert/readback test on an explicitly chosen target database; passing source preflight is not a stored-database claim.
