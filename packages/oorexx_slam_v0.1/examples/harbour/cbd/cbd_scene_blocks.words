@@ -3,7 +3,14 @@
 -- LiDAR: NSW Government (DCCEEW Marine LiDAR, August 2018), CC BY 4.0. Heights AHD.
 -- base: ground (AHD); top: base + height (the 90th of 100 roof heights).
 
+-- Bridge zone (deck, arch, pylons, abutments; .HarbourCbdBlocks~bridgeZone) is the scene's own:
+--  70 LiDAR blocks touching it left out by cbd_blocks_cut_bridge.rex:
+--  ids  11 14 85 86 87 104 112 113 131 132 133 139 147 150 366 373 391 441 464 470 484 485 495 500
+--  ids  582 617 618 3099 3110 3111 3143 3152 3153 3161 3163 3168 3175 3182 3373 3395 3424 3431 3439
+--  ids  3446 3447 3621 3622 3650 3682 3691 3697 3893 3897 3898 3919 3920 3926 3927 3930 4122 4123 4124
+--  ids  4144 4145 4153 4156 4164 4172 4173 4177
 scene blocks sydney
+end
   block  1  scene 90.9 -2075.1 size  38  by  23  bearing 62.9 base  26.5  top 53.0 height  26.5  area 384
   block  2  scene 143.4 -2069.6 size  10  by  8  bearing 12.9 base  29.0  top 58.6 height  29.6  area 52
   block  3  scene 235.9 -2983.2 size  63  by  30  bearing 118.1 base  28.5  top 81.5 height  53.0  area 1516
@@ -14,10 +21,8 @@ scene blocks sydney
   block  8  scene 633.1 -2757.4 size  89  by  22  bearing 7.0 base  26.3  top 38.2 height  11.9  area 1212
   block  9  scene -178.0 -1213.2 size  65  by  25  bearing 177.0 base  7.4  top 40.5 height  33.1  area 968
   block  10  scene 359.2 -2074.3 size  14  by  8  bearing 91.0 base  26.3  top 34.1 height  7.8  area 60
-  block  11  scene 42.0 -17.4 size  460  by  11  bearing 27.9 base  1.1  top 63.2 height  62.1  area 3512
   block  12  scene 1260.2 -2116.1 size  74  by  47  bearing 29.9 base  32.5  top 48.6 height  16.1  area 1832
   block  13  scene 10.4 -2971.0 size  41  by  29  bearing 109.1 base  18.4  top 66.0 height  47.6  area 696
-  block  14  scene 166.4 168.3 size  46  by  34  bearing 92.0 base  2.4  top 82.2 height  79.8  area 1016
   block  15  scene 1348.2 -2135.7 size  98  by  75  bearing 111.1 base  37.8  top 54.1 height  16.3  area 4684
   block  16  scene -227.2 -2069.3 size  26  by  15  bearing 96.0 base  18.4  top 75.8 height  57.4  area 312
   block  17  scene 550.6 154.9 size  48  by  40  bearing 171.0 base  4.9  top 31.5 height  26.6  area 1224
@@ -88,9 +93,6 @@ scene blocks sydney
   block  82  scene -8.6 -2984.2 size  33  by  25  bearing 137.1 base  17.5  top 58.3 height  40.8  area 704
   block  83  scene -78.0 -2729.0 size  56  by  43  bearing 141.1 base  25.6  top 72.5 height  46.9  area 976
   block  84  scene 69.2 -2999.8 size  65  by  26  bearing 3.0 base  20.6  top 52.8 height  32.2  area 1136
-  block  85  scene -14.6 -155.5 size  6  by  6  bearing 91.0 base  0.9  top 56.5 height  55.6  area 28
-  block  86  scene -3.9 -156.1 size  9  by  6  bearing 118.1 base  0.9  top 58.7 height  57.8  area 36
-  block  87  scene -14.8 -175.8 size  40  by  32  bearing 125.1 base  0.9  top 104.3 height  103.4  area 864
   block  88  scene -147.3 -2399.2 size  62  by  22  bearing 92.0 base  24.0  top 44.6 height  20.6  area 920
   block  89  scene 1006.8 -2412.5 size  8  by  5  bearing 136.1 base  17.8  top 37.3 height  19.5  area 32
   block  90  scene -720.7 -2068.3 size  27  by  14  bearing 103.1 base  0.7  top 7.8 height  7.1  area 264
@@ -107,7 +109,6 @@ scene blocks sydney
   block  101  scene 300.3 -2101.5 size  41  by  18  bearing 14.9 base  29.4  top 53.3 height  23.9  area 492
   block  102  scene 307.2 -2137.1 size  113  by  44  bearing 9.0 base  29.4  top 66.5 height  37.1  area 1912
   block  103  scene 189.0 -2977.8 size  8  by  4  bearing 1.0 base  24.5  top 38.3 height  13.8  area 24
-  block  104  scene 2.2 -164.9 size  8  by  5  bearing 45.9 base  0.9  top 55.5 height  54.6  area 32
   block  105  scene 511.5 -2094.0 size  18  by  9  bearing 44.9 base  15.8  top 20.1 height  4.3  area 136
   block  106  scene 682.3 -2105.5 size  37  by  20  bearing 39.9 base  4.5  top 72.0 height  67.5  area 596
   block  107  scene -558.3 -2391.4 size  27  by  14  bearing 83.0 base  5.1  top 51.9 height  46.8  area 288
@@ -115,8 +116,6 @@ scene blocks sydney
   block  109  scene 1150.5 -2112.9 size  36  by  28  bearing 14.9 base  27.2  top 79.8 height  52.6  area 812
   block  110  scene -248.9 -2424.4 size  66  by  51  bearing 9.9 base  23.8  top 47.5 height  23.7  area 2136
   block  111  scene 1545.7 -2119.0 size  33  by  27  bearing 5.0 base  27.3  top 72.4 height  45.1  area 572
-  block  112  scene -22.9 -171.4 size  6  by  6  bearing 1.0 base  0.4  top 59.5 height  59.1  area 28
-  block  113  scene -12.1 -172.0 size  9  by  6  bearing 118.1 base  0.9  top 73.1 height  72.2  area 36
   block  114  scene -206.0 -2410.0 size  44  by  37  bearing 13.9 base  23.9  top 78.0 height  54.1  area 1212
   block  115  scene 1055.7 -2422.5 size  18  by  14  bearing 4.0 base  29.7  top 45.3 height  15.6  area 192
   block  116  scene 1533.4 -2454.2 size  54  by  42  bearing 136.1 base  18.4  top 51.6 height  33.2  area 1184
@@ -134,15 +133,11 @@ scene blocks sydney
   block  128  scene -1022.5 -2412.8 size  59  by  45  bearing 150.1 base  2.8  top 39.7 height  36.9  area 656
   block  129  scene -186.1 -2399.7 size  8  by  4  bearing 1.0 base  23.7  top 27.3 height  3.6  area 24
   block  130  scene -68.3 -2401.7 size  8  by  5  bearing 9.0 base  25.3  top 34.2 height  8.9  area 28
-  block  131  scene -27.5 -199.6 size  39  by  28  bearing 125.1 base  1.1  top 93.0 height  91.9  area 720
-  block  132  scene -31.1 -187.3 size  6  by  6  bearing 1.0 base  0.9  top 58.2 height  57.3  area 28
-  block  133  scene -20.4 -187.9 size  9  by  6  bearing 118.1 base  0.4  top 54.7 height  54.3  area 36
   block  134  scene 1358.0 -1536.5 size  67  by  55  bearing 8.0 base  13.8  top 28.9 height  15.1  area 1696
   block  135  scene 1535.5 -1535.6 size  60  by  40  bearing 138.1 base  2.5  top 11.1 height  8.6  area 1240
   block  136  scene -333.8 -1485.7 size  14  by  8  bearing 174.0 base  18.4  top 34.1 height  15.7  area 64
   block  137  scene -44.7 -1488.7 size  13  by  9  bearing 71.9 base  12.9  top 26.7 height  13.8  area 68
   block  138  scene 92.9 -1494.7 size  22  by  15  bearing 35.9 base  26.0  top 42.3 height  16.3  area 212
-  block  139  scene -15.3 -195.6 size  10  by  6  bearing 1.0 base  0.9  top 54.7 height  53.8  area 36
   block  140  scene 182.3 -1815.4 size  10  by  7  bearing 75.9 base  32.9  top 48.8 height  15.9  area 44
   block  141  scene 180.4 -1491.1 size  39  by  20  bearing 83.0 base  28.3  top 61.6 height  33.3  area 220
   block  142  scene 136.3 -1840.6 size  74  by  54  bearing 20.9 base  30.6  top 85.2 height  54.6  area 2244
@@ -150,10 +145,8 @@ scene blocks sydney
   block  144  scene -553.4 -1484.4 size  21  by  14  bearing 85.0 base  13.0  top 36.5 height  23.5  area 200
   block  145  scene 520.2 -1823.4 size  8  by  6  bearing 91.0 base  23.3  top 44.6 height  21.3  area 32
   block  146  scene -309.9 -1484.0 size  24  by  7  bearing 94.0 base  15.7  top 126.0 height  110.3  area 116
-  block  147  scene -39.7 -221.3 size  40  by  36  bearing 118.1 base  1.8  top 81.9 height  80.1  area 1044
   block  148  scene 1399.3 -1858.8 size  78  by  45  bearing 101.1 base  28.4  top 47.7 height  19.3  area 2300
   block  149  scene -531.8 -1829.6 size  55  by  51  bearing 16.9 base  16.8  top 104.1 height  87.3  area 1764
-  block  150  scene -28.4 -204.3 size  8  by  5  bearing 99.0 base  0.4  top 54.2 height  53.8  area 28
   block  151  scene -186.4 -1829.7 size  58  by  41  bearing 102.1 base  16.8  top 114.8 height  98.0  area 1732
   block  152  scene -208.6 -1490.9 size  17  by  15  bearing 104.1 base  10.3  top 36.1 height  25.8  area 164
   block  153  scene 488.2 -1825.9 size  8  by  5  bearing 45.9 base  23.6  top 43.1 height  19.5  area 32
@@ -369,14 +362,12 @@ scene blocks sydney
   block  363  scene -242.6 -2090.0 size  12  by  4  bearing 92.0 base  19.4  top 29.1 height  9.7  area 28
   block  364  scene -178.8 -2117.9 size  59  by  20  bearing 176.0 base  18.7  top 36.6 height  17.9  area 480
   block  365  scene -138.0 -2113.2 size  49  by  48  bearing 80.9 base  19.0  top 50.5 height  31.5  area 1256
-  block  366  scene -51.4 -241.3 size  33  by  20  bearing 119.1 base  2.5  top 70.8 height  68.3  area 360
   block  367  scene -779.5 -2404.4 size  16  by  15  bearing 53.8 base  3.0  top 66.5 height  63.5  area 168
   block  368  scene -188.3 -2411.7 size  8  by  4  bearing 1.0 base  24.0  top 29.1 height  5.1  area 24
   block  369  scene 736.8 -2124.8 size  44  by  9  bearing 151.1 base  2.2  top 20.7 height  18.5  area 224
   block  370  scene -147.3 -2411.9 size  43  by  10  bearing 96.0 base  24.1  top 118.1 height  94.0  area 172
   block  371  scene 995.5 -2433.4 size  11  by  8  bearing 129.2 base  15.3  top 35.0 height  19.7  area 56
   block  372  scene -616.9 -2086.9 size  22  by  4  bearing 105.1 base  2.9  top 19.1 height  16.2  area 56
-  block  373  scene -153.6 -434.5 size  425  by  59  bearing 28.9 base  17.4  top 62.1 height  44.7  area 12404
   block  374  scene 1084.4 -2433.0 size  12  by  6  bearing 95.0 base  30.4  top 43.7 height  13.3  area 60
   block  375  scene 1167.8 -2435.9 size  28  by  9  bearing 98.0 base  35.6  top 50.0 height  14.4  area 172
   block  376  scene -507.2 -2090.7 size  12  by  9  bearing 27.9 base  14.2  top 22.2 height  8.0  area 64
@@ -394,7 +385,6 @@ scene blocks sydney
   block  388  scene -805.7 -2411.0 size  26  by  17  bearing 65.9 base  3.0  top 30.9 height  27.9  area 292
   block  389  scene -560.4 -2409.1 size  31  by  7  bearing 82.0 base  4.3  top 91.6 height  87.3  area 144
   block  390  scene -470.8 -2420.6 size  42  by  28  bearing 84.0 base  10.4  top 33.1 height  22.7  area 656
-  block  391  scene -85.7 -265.4 size  29  by  21  bearing 31.9 base  11.2  top 91.2 height  80.0  area 428
   block  392  scene 282.2 -1508.4 size  8  by  6  bearing 91.0 base  32.7  top 41.0 height  8.3  area 32
   block  393  scene -197.5 -258.1 size  6  by  5  bearing 45.9 base  3.5  top 7.4 height  3.9  area 24
   block  394  scene 695.4 -1522.9 size  17  by  13  bearing 41.8 base  10.4  top 22.1 height  11.7  area 116
@@ -444,7 +434,6 @@ scene blocks sydney
   block  438  scene -741.6 -1511.6 size  43  by  31  bearing 61.9 base  2.9  top 23.2 height  20.3  area 816
   block  439  scene -517.7 -1519.5 size  34  by  16  bearing 174.0 base  13.3  top 26.1 height  12.8  area 304
   block  440  scene 865.0 172.0 size  14  by  2  bearing 91.0 base  9.6  top 18.9 height  9.3  area 28
-  block  441  scene 85.2 -32.4 size  481  by  12  bearing 27.9 base  1.1  top 61.3 height  60.2  area 3536
   block  442  scene 303.6 -3273.5 size  40  by  14  bearing 91.0 base  40.0  top 54.7 height  14.7  area 268
   block  443  scene -482.3 -1846.2 size  24  by  21  bearing 115.1 base  17.7  top 53.5 height  35.8  area 336
   block  444  scene 805.7 -3297.8 size  58  by  27  bearing 118.1 base  46.4  top 59.0 height  12.6  area 1248
@@ -467,13 +456,11 @@ scene blocks sydney
   block  461  scene 179.0 -1861.9 size  24  by  18  bearing 38.9 base  32.4  top 81.5 height  49.1  area 260
   block  462  scene 213.9 -1854.0 size  8  by  6  bearing 66.9 base  32.9  top 38.0 height  5.1  area 32
   block  463  scene -183.8 -1855.7 size  47  by  20  bearing 97.1 base  16.4  top 31.6 height  15.2  area 724
-  block  464  scene 153.5 148.0 size  39  by  30  bearing 114.1 base  1.1  top 93.6 height  92.5  area 768
   block  465  scene 804.9 140.4 size  45  by  38  bearing 66.9 base  20.7  top 33.7 height  13.0  area 944
   block  466  scene 400.0 -3291.2 size  48  by  20  bearing 110.1 base  46.7  top 58.9 height  12.2  area 604
   block  467  scene 3.5 -549.9 size  12  by  7  bearing 109.1 base  -0.2  top 4.4 height  4.6  area 48
   block  468  scene -233.2 -3273.3 size  8  by  5  bearing 136.1 base  12.8  top 30.2 height  17.4  area 32
   block  469  scene 506.5 -573.8 size  45  by  16  bearing 35.9 base  13.2  top 28.2 height  15.0  area 372
-  block  470  scene 156.3 154.3 size  8  by  5  bearing 136.1 base  1.1  top 54.3 height  53.2  area 28
   block  471  scene -276.6 -1225.9 size  6  by  6  bearing 91.0 base  13.6  top 66.9 height  53.3  area 28
   block  472  scene -194.7 -3275.7 size  16  by  11  bearing 72.9 base  13.1  top 28.8 height  15.7  area 112
   block  473  scene -32.4 -1239.4 size  22  by  17  bearing 120.1 base  6.1  top 38.9 height  32.8  area 224
@@ -487,8 +474,6 @@ scene blocks sydney
   block  481  scene -293.3 -1237.5 size  68  by  32  bearing 82.0 base  16.0  top 40.2 height  24.2  area 1224
   block  482  scene -82.6 -3279.7 size  15  by  9  bearing 133.1 base  11.9  top 18.0 height  6.1  area 84
   block  483  scene 1454.9 -3312.2 size  35  by  16  bearing 60.9 base  37.6  top 49.2 height  11.6  area 284
-  block  484  scene 145.2 141.9 size  16  by  8  bearing 146.1 base  1.1  top 56.8 height  55.7  area 64
-  block  485  scene 140.1 123.0 size  39  by  34  bearing 119.1 base  1.1  top 105.1 height  104.0  area 872
   block  486  scene 111.0 -1247.4 size  30  by  16  bearing 163.1 base  13.4  top 21.0 height  7.6  area 192
   block  487  scene -571.3 -3288.2 size  42  by  40  bearing 123.1 base  11.9  top 57.2 height  45.3  area 1200
   block  488  scene 183.4 -3290.6 size  20  by  16  bearing 4.0 base  25.0  top 53.5 height  28.5  area 228
@@ -498,12 +483,10 @@ scene blocks sydney
   block  492  scene -739.5 -556.2 size  15  by  12  bearing 162.1 base  19.1  top 31.3 height  12.2  area 116
   block  493  scene -295.5 -581.5 size  56  by  28  bearing 42.9 base  20.8  top 34.4 height  13.6  area 884
   block  494  scene -512.3 -3286.3 size  32  by  15  bearing 6.0 base  10.1  top 44.2 height  34.1  area 300
-  block  495  scene 158.6 138.7 size  6  by  5  bearing 45.9 base  1.1  top 54.7 height  53.6  area 24
   block  496  scene -50.6 -1245.1 size  26  by  20  bearing 130.1 base  6.1  top 58.8 height  52.7  area 384
   block  497  scene -137.0 -604.6 size  89  by  22  bearing 154.1 base  13.1  top 27.6 height  14.5  area 1360
   block  498  scene -586.3 -1242.1 size  57  by  41  bearing 118.1 base  24.2  top 96.8 height  72.6  area 1132
   block  499  scene -462.4 -601.3 size  85  by  49  bearing 58.9 base  13.4  top 38.9 height  25.5  area 1940
-  block  500  scene 136.7 126.5 size  18  by  8  bearing 146.1 base  1.1  top 71.3 height  70.2  area 72
   block  501  scene 49.5 -1237.6 size  8  by  6  bearing 91.0 base  8.0  top 16.0 height  8.0  area 48
   block  502  scene -171.5 -598.3 size  59  by  25  bearing 14.9 base  24.5  top 38.8 height  14.3  area 816
   block  503  scene 63.5 -1249.9 size  36  by  26  bearing 83.0 base  11.7  top 71.1 height  59.4  area 704
@@ -585,7 +568,6 @@ scene blocks sydney
   block  579  scene 69.2 -2114.4 size  10  by  6  bearing 1.0 base  25.6  top 50.8 height  25.2  area 36
   block  580  scene 869.1 -2125.3 size  10  by  4  bearing 91.0 base  2.3  top 8.6 height  6.3  area 32
   block  581  scene -306.9 -2759.6 size  54  by  34  bearing 180.0 base  15.2  top 225.2 height  210.0  area 1020
-  block  582  scene -48.5 -285.0 size  29  by  20  bearing 21.9 base  5.4  top 90.2 height  84.8  area 416
   block  583  scene -110.1 -2438.3 size  50  by  30  bearing 90.0 base  25.7  top 57.7 height  32.0  area 792
   block  584  scene 643.9 -2451.3 size  35  by  35  bearing 177.0 base  17.2  top 118.2 height  101.0  area 900
   block  585  scene 1497.1 -2808.0 size  121  by  44  bearing 68.9 base  19.3  top 32.4 height  13.1  area 2400
@@ -620,8 +602,6 @@ scene blocks sydney
   block  614  scene -377.2 -2127.8 size  38  by  38  bearing 79.9 base  21.9  top 158.6 height  136.7  area 1156
   block  615  scene -357.6 -2129.0 size  34  by  9  bearing 176.0 base  22.6  top 33.5 height  10.9  area 196
   block  616  scene 428.1 -2129.7 size  8  by  6  bearing 1.0 base  19.4  top 26.6 height  7.2  area 32
-  block  617  scene -37.3 -290.8 size  19  by  7  bearing 29.9 base  6.7  top 18.6 height  11.9  area 88
-  block  618  scene -38.3 -285.2 size  15  by  4  bearing 30.9 base  5.4  top 56.3 height  50.9  area 40
   block  619  scene -509.7 -2437.0 size  32  by  26  bearing 54.8 base  9.8  top 33.6 height  23.8  area 392
   block  620  scene -460.0 -2430.1 size  21  by  15  bearing 98.0 base  16.3  top 67.9 height  51.6  area 252
   block  621  scene -470.1 -2442.0 size  54  by  43  bearing 98.0 base  14.7  top 44.1 height  29.4  area 1184
@@ -3102,7 +3082,6 @@ scene blocks sydney
   block  3096  scene 874.6 -2921.6 size  50  by  18  bearing 10.9 base  52.3  top 75.2 height  22.9  area 692
   block  3097  scene 557.0 -2898.5 size  8  by  6  bearing 136.1 base  26.4  top 37.9 height  11.5  area 40
   block  3098  scene 566.8 106.2 size  29  by  22  bearing 154.1 base  3.1  top 24.6 height  21.5  area 408
-  block  3099  scene 149.8 122.3 size  6  by  6  bearing 1.0 base  1.1  top 55.0 height  53.9  area 28
   block  3100  scene 760.5 106.9 size  20  by  16  bearing 63.9 base  19.8  top 29.0 height  9.2  area 180
   block  3101  scene -433.1 -2590.2 size  25  by  23  bearing 98.0 base  16.1  top 34.7 height  18.6  area 336
   block  3102  scene -318.0 -2585.9 size  8  by  5  bearing 15.9 base  20.8  top 24.0 height  3.2  area 24
@@ -3113,8 +3092,6 @@ scene blocks sydney
   block  3107  scene 1075.7 -2909.6 size  27  by  20  bearing 124.1 base  40.6  top 68.2 height  27.6  area 328
   block  3108  scene 1256.2 -2912.5 size  13  by  7  bearing 150.1 base  27.0  top 32.6 height  5.6  area 68
   block  3109  scene -655.8 -2892.3 size  55  by  38  bearing 97.1 base  3.2  top 126.9 height  123.7  area 864
-  block  3110  scene 125.1 94.1 size  43  by  38  bearing 25.9 base  1.1  top 117.5 height  116.4  area 1148
-  block  3111  scene 126.1 113.9 size  9  by  7  bearing 154.1 base  1.1  top 59.8 height  58.7  area 40
   block  3112  scene -55.7 -2595.9 size  28  by  17  bearing 115.1 base  27.0  top 53.2 height  26.2  area 204
   block  3113  scene -610.6 -2283.7 size  33  by  15  bearing 166.1 base  5.4  top 123.8 height  118.4  area 320
   block  3114  scene -414.9 -2278.8 size  22  by  16  bearing 86.0 base  17.5  top 61.5 height  44.0  area 304
@@ -3146,7 +3123,6 @@ scene blocks sydney
   block  3140  scene -251.1 -2608.0 size  35  by  19  bearing 166.1 base  21.6  top 50.4 height  28.8  area 356
   block  3141  scene -485.2 -2284.0 size  56  by  39  bearing 138.1 base  11.4  top 40.3 height  28.9  area 1072
   block  3142  scene -170.8 -2596.6 size  11  by  9  bearing 76.9 base  22.4  top 67.6 height  45.2  area 52
-  block  3143  scene 132.0 105.9 size  9  by  5  bearing 146.1 base  1.1  top 76.1 height  75.0  area 32
   block  3144  scene 838.7 76.5 size  50  by  25  bearing 72.9 base  18.8  top 28.3 height  9.5  area 692
   block  3145  scene 34.5 -2604.0 size  24  by  13  bearing 110.1 base  30.4  top 57.1 height  26.7  area 176
   block  3146  scene 702.2 -2616.3 size  27  by  14  bearing 104.1 base  25.1  top 35.9 height  10.8  area 228
@@ -3155,8 +3131,6 @@ scene blocks sydney
   block  3149  scene 869.4 -2613.9 size  9  by  6  bearing 33.8 base  34.9  top 42.4 height  7.5  area 36
   block  3150  scene 1512.4 -2652.0 size  59  by  50  bearing 144.1 base  25.1  top 39.6 height  14.5  area 1748
   block  3151  scene -1068.9 -2586.9 size  17  by  7  bearing 169.0 base  6.7  top 14.5 height  7.8  area 68
-  block  3152  scene 121.0 94.5 size  16  by  6  bearing 146.1 base  1.1  top 57.6 height  56.5  area 64
-  block  3153  scene 128.5 99.8 size  8  by  5  bearing 99.0 base  1.1  top 55.8 height  54.7  area 28
   block  3154  scene 750.3 73.5 size  22  by  13  bearing 176.0 base  18.3  top 26.0 height  7.7  area 216
   block  3155  scene 355.5 -2291.8 size  10  by  6  bearing 91.0 base  19.1  top 43.7 height  24.6  area 36
   block  3156  scene 753.5 -2331.9 size  72  by  38  bearing 2.0 base  7.1  top 20.5 height  13.4  area 1564
@@ -3164,28 +3138,23 @@ scene blocks sydney
   block  3158  scene 1031.4 -2329.3 size  60  by  23  bearing 15.9 base  14.4  top 27.3 height  12.9  area 872
   block  3159  scene 1227.5 -2314.6 size  25  by  20  bearing 137.1 base  35.5  top 70.6 height  35.1  area 240
   block  3160  scene -506.3 -2292.3 size  38  by  33  bearing 156.1 base  7.6  top 28.5 height  20.9  area 800
-  block  3161  scene 134.3 90.5 size  8  by  6  bearing 91.0 base  1.1  top 55.8 height  54.7  area 32
   block  3162  scene 621.7 63.9 size  53  by  40  bearing 99.0 base  2.3  top 22.7 height  20.4  area 1260
-  block  3163  scene 109.2 82.9 size  6  by  6  bearing 1.0 base  1.1  top 58.3 height  57.2  area 28
   block  3164  scene 1435.1 -2632.5 size  20  by  14  bearing 5.0 base  28.9  top 47.9 height  19.0  area 152
   block  3165  scene -486.5 -2618.1 size  55  by  32  bearing 178.0 base  9.7  top 58.7 height  49.0  area 1244
   block  3166  scene -222.4 -2607.8 size  24  by  18  bearing 4.0 base  21.7  top 182.6 height  160.9  area 316
   block  3167  scene -125.6 -2618.6 size  50  by  46  bearing 170.1 base  24.4  top 72.6 height  48.2  area 1472
-  block  3168  scene 96.3 38.7 size  87  by  38  bearing 26.9 base  1.1  top 132.1 height  131.0  area 2544
   block  3169  scene 521.2 -1709.1 size  6  by  6  bearing 1.0 base  20.6  top 35.7 height  15.1  area 28
   block  3170  scene 663.6 57.5 size  32  by  18  bearing 23.9 base  2.9  top 19.5 height  16.6  area 452
   block  3171  scene 565.0 -1711.9 size  10  by  6  bearing 91.0 base  19.8  top 37.2 height  17.4  area 36
   block  3172  scene 495.6 -2610.1 size  18  by  4  bearing 92.0 base  15.3  top 23.6 height  8.3  area 68
   block  3173  scene 91.1 -1710.4 size  33  by  14  bearing 95.0 base  24.7  top 161.6 height  136.9  area 316
   block  3174  scene -775.3 -2593.6 size  13  by  11  bearing 110.1 base  3.2  top 15.0 height  11.8  area 88
-  block  3175  scene 115.1 74.8 size  8  by  5  bearing 136.1 base  1.1  top 56.3 height  55.2  area 28
   block  3176  scene 170.2 -1719.9 size  66  by  46  bearing 125.1 base  33.1  top 100.4 height  67.3  area 1416
   block  3177  scene -589.0 -1707.5 size  40  by  26  bearing 21.9 base  11.4  top 27.0 height  15.6  area 576
   block  3178  scene 623.8 -1716.9 size  8  by  6  bearing 91.0 base  20.7  top 31.5 height  10.8  area 32
   block  3179  scene 1022.9 -2058.0 size  40  by  25  bearing 103.1 base  1.9  top 12.4 height  10.5  area 716
   block  3180  scene 1124.4 -2058.7 size  27  by  20  bearing 179.0 base  10.4  top 22.3 height  11.9  area 292
   block  3181  scene 679.5 48.4 size  26  by  14  bearing 23.9 base  3.0  top 20.5 height  17.5  area 312
-  block  3182  scene 100.9 67.0 size  6  by  6  bearing 1.0 base  1.1  top 59.1 height  58.0  area 28
   block  3183  scene 978.6 -1726.7 size  8  by  6  bearing 110.1 base  0.9  top 5.3 height  4.4  area 32
   block  3184  scene 1191.5 -1734.1 size  13  by  9  bearing 29.9 base  2.2  top 6.2 height  4.0  area 84
   block  3185  scene -546.2 -1713.6 size  29  by  16  bearing 173.0 base  17.5  top 92.7 height  75.2  area 312
@@ -3376,7 +3345,6 @@ scene blocks sydney
   block  3370  scene -330.0 -2919.2 size  38  by  24  bearing 37.8 base  10.2  top 112.9 height  102.7  area 788
   block  3371  scene 702.8 38.4 size  38  by  36  bearing 11.9 base  4.1  top 20.9 height  16.8  area 852
   block  3372  scene 764.7 28.8 size  67  by  33  bearing 125.1 base  17.6  top 31.2 height  13.6  area 1704
-  block  3373  scene 116.8 58.8 size  6  by  6  bearing 1.0 base  1.1  top 56.7 height  55.6  area 28
   block  3374  scene -78.4 -2630.0 size  53  by  37  bearing 12.9 base  26.2  top 92.4 height  66.2  area 1436
   block  3375  scene -62.1 -2660.3 size  113  by  21  bearing 5.0 base  26.2  top 80.7 height  54.5  area 1132
   block  3376  scene -528.2 -2295.7 size  29  by  20  bearing 174.0 base  5.6  top 77.2 height  71.6  area 472
@@ -3398,7 +3366,6 @@ scene blocks sydney
   block  3392  scene 636.6 -2317.8 size  35  by  28  bearing 76.9 base  7.0  top 21.4 height  14.4  area 572
   block  3393  scene -641.5 -2903.8 size  14  by  7  bearing 67.9 base  3.2  top 202.1 height  198.9  area 64
   block  3394  scene -516.3 -2933.1 size  67  by  59  bearing 174.0 base  5.9  top 42.7 height  36.8  area 3136
-  block  3395  scene 92.8 51.8 size  8  by  6  bearing 161.1 base  1.1  top 62.4 height  61.3  area 36
   block  3396  scene 154.1 -2617.2 size  16  by  11  bearing 134.1 base  35.1  top 46.5 height  11.4  area 104
   block  3397  scene 481.3 -2626.2 size  21  by  17  bearing 168.0 base  15.5  top 32.3 height  16.8  area 220
   block  3398  scene 1102.7 -2337.5 size  48  by  17  bearing 16.9 base  26.7  top 38.3 height  11.6  area 456
@@ -3427,14 +3394,12 @@ scene blocks sydney
   block  3421  scene 596.5 -2316.1 size  15  by  11  bearing 115.1 base  7.1  top 16.5 height  9.4  area 96
   block  3422  scene 673.7 -2330.1 size  41  by  41  bearing 77.9 base  8.5  top 19.9 height  11.4  area 1008
   block  3423  scene 1056.0 -2330.7 size  24  by  15  bearing 10.9 base  14.5  top 25.7 height  11.2  area 256
-  block  3424  scene 109.0 43.3 size  8  by  6  bearing 136.1 base  1.1  top 60.1 height  59.0  area 32
   block  3425  scene 867.5 -2632.7 size  8  by  5  bearing 9.9 base  34.8  top 40.3 height  5.5  area 24
   block  3426  scene 890.7 -2640.0 size  24  by  21  bearing 128.1 base  37.0  top 49.5 height  12.5  area 204
   block  3427  scene 927.6 -2645.1 size  50  by  31  bearing 87.0 base  37.9  top 54.2 height  16.3  area 804
   block  3428  scene 469.7 -2335.3 size  67  by  34  bearing 41.8 base  8.7  top 28.2 height  19.5  area 804
   block  3429  scene 513.3 -2626.5 size  14  by  4  bearing 93.0 base  16.8  top 25.9 height  9.1  area 52
   block  3430  scene 1507.5 -2334.9 size  9  by  6  bearing 60.9 base  39.0  top 48.1 height  9.1  area 36
-  block  3431  scene 84.4 35.3 size  6  by  6  bearing 91.0 base  1.1  top 61.6 height  60.5  area 36
   block  3432  scene 693.8 -2629.7 size  8  by  4  bearing 91.0 base  24.5  top 33.1 height  8.6  area 32
   block  3433  scene 1351.9 -2652.5 size  29  by  17  bearing 127.1 base  37.3  top 67.4 height  30.1  area 316
   block  3434  scene -1048.8 -2614.6 size  32  by  17  bearing 163.1 base  3.5  top 12.2 height  8.7  area 284
@@ -3442,15 +3407,12 @@ scene blocks sydney
   block  3436  scene 202.8 -2626.6 size  13  by  10  bearing 152.1 base  34.1  top 51.3 height  17.2  area 68
   block  3437  scene 578.8 -2641.8 size  34  by  29  bearing 93.0 base  19.8  top 38.0 height  18.2  area 608
   block  3438  scene 1410.6 -2663.6 size  43  by  25  bearing 129.2 base  29.7  top 45.6 height  15.9  area 628
-  block  3439  scene 100.3 27.0 size  6  by  6  bearing 1.0 base  1.1  top 57.4 height  56.3  area 28
   block  3440  scene 1180.8 -1756.4 size  21  by  13  bearing 31.9 base  2.4  top 6.4 height  4.0  area 216
   block  3441  scene 1560.5 -1757.9 size  11  by  9  bearing 36.9 base  13.8  top 18.1 height  4.3  area 60
   block  3442  scene -384.2 -1723.0 size  7  by  6  bearing 151.1 base  20.7  top 24.0 height  3.3  area 28
   block  3443  scene -365.8 -1727.4 size  14  by  10  bearing 170.1 base  20.4  top 73.9 height  53.5  area 60
   block  3444  scene 354.4 -2635.9 size  20  by  16  bearing 3.0 base  18.6  top 28.3 height  9.7  area 220
   block  3445  scene 856.0 -2652.9 size  47  by  33  bearing 55.9 base  35.7  top 178.5 height  142.8  area 924
-  block  3446  scene 76.7 19.8 size  8  by  6  bearing 136.1 base  1.1  top 61.9 height  60.8  area 32
-  block  3447  scene 86.2 19.2 size  8  by  5  bearing 136.1 base  1.1  top 57.7 height  56.6  area 28
   block  3448  scene 956.0 -1811.4 size  150  by  10  bearing 25.9 base  2.3  top 8.0 height  5.7  area 672
   block  3449  scene 1125.2 -1781.1 size  73  by  20  bearing 28.9 base  2.2  top 13.3 height  11.1  area 1104
   block  3450  scene -375.2 -2044.3 size  30  by  24  bearing 109.1 base  21.8  top 145.5 height  123.7  area 300
@@ -3624,8 +3586,6 @@ scene blocks sydney
   block  3618  scene 193.8 -2674.8 size  42  by  23  bearing 46.8 base  35.0  top 53.3 height  18.3  area 388
   block  3619  scene 1103.4 -2942.8 size  12  by  5  bearing 80.9 base  38.1  top 43.0 height  4.9  area 36
   block  3620  scene 242.3 -2659.9 size  8  by  4  bearing 91.0 base  31.1  top 41.6 height  10.5  area 32
-  block  3621  scene 92.5 11.5 size  8  by  6  bearing 136.1 base  1.1  top 57.6 height  56.5  area 32
-  block  3622  scene 52.6 -46.6 size  117  by  42  bearing 26.9 base  0.9  top 134.9 height  134.0  area 3492
   block  3623  scene -1160.0 -2749.1 size  288  by  98  bearing 157.1 base  19.4  top 32.8 height  13.4  area 11708
   block  3624  scene 994.7 -2658.5 size  33  by  23  bearing 167.1 base  38.3  top 52.8 height  14.5  area 412
   block  3625  scene -137.3 -2327.5 size  43  by  25  bearing 115.1 base  22.1  top 33.5 height  11.4  area 600
@@ -3653,7 +3613,6 @@ scene blocks sydney
   block  3647  scene -429.1 -2317.2 size  10  by  4  bearing 91.0 base  14.3  top 28.7 height  14.4  area 32
   block  3648  scene 1398.7 -2949.1 size  12  by  6  bearing 78.9 base  14.9  top 27.0 height  12.1  area 44
   block  3649  scene -638.7 -2939.1 size  58  by  31  bearing 168.1 base  3.0  top 68.2 height  65.2  area 1280
-  block  3650  scene 78.4 3.8 size  8  by  6  bearing 136.1 base  1.1  top 57.9 height  56.8  area 32
   block  3651  scene -537.0 -2646.0 size  61  by  41  bearing 158.1 base  6.7  top 58.4 height  51.7  area 1628
   block  3652  scene -421.4 -2332.9 size  54  by  37  bearing 49.9 base  14.8  top 107.8 height  93.0  area 1028
   block  3653  scene 264.8 -2650.0 size  33  by  20  bearing 9.0 base  29.6  top 45.9 height  16.3  area 488
@@ -3685,7 +3644,6 @@ scene blocks sydney
   block  3679  scene 154.8 -2344.9 size  32  by  23  bearing 67.9 base  30.0  top 61.5 height  31.5  area 280
   block  3680  scene 379.6 -2339.4 size  8  by  5  bearing 45.9 base  16.7  top 34.4 height  17.7  area 32
   block  3681  scene -312.6 -2328.3 size  8  by  6  bearing 91.0 base  22.2  top 45.0 height  22.8  area 32
-  block  3682  scene 71.1 -12.1 size  6  by  5  bearing 136.1 base  1.1  top 58.0 height  56.9  area 24
   block  3683  scene 796.3 -2650.2 size  10  by  6  bearing 86.0 base  35.5  top 52.2 height  16.7  area 44
   block  3684  scene 1183.6 -2664.6 size  41  by  25  bearing 102.1 base  46.3  top 164.0 height  117.7  area 704
   block  3685  scene -443.8 -2639.1 size  36  by  21  bearing 106.1 base  15.9  top 55.6 height  39.7  area 504
@@ -3694,13 +3652,11 @@ scene blocks sydney
   block  3688  scene 655.0 -2654.4 size  17  by  16  bearing 131.2 base  15.0  top 50.3 height  35.3  area 128
   block  3689  scene 1227.0 -2683.8 size  60  by  56  bearing 47.9 base  46.0  top 61.7 height  15.7  area 1904
   block  3690  scene 813.1 -2653.8 size  8  by  4  bearing 91.0 base  35.7  top 43.2 height  7.5  area 32
-  block  3691  scene 75.0 -20.0 size  9  by  5  bearing 146.1 base  1.1  top 66.6 height  65.5  area 32
   block  3692  scene -79.1 -1745.8 size  8  by  4  bearing 1.0 base  18.3  top 32.0 height  13.7  area 24
   block  3693  scene 143.2 -1750.3 size  42  by  7  bearing 97.1 base  30.4  top 43.5 height  13.1  area 168
   block  3694  scene 1183.9 -2669.1 size  46  by  28  bearing 101.1 base  49.4  top 154.4 height  105.0  area 324
   block  3695  scene 1208.7 -2668.7 size  20  by  7  bearing 5.0 base  46.1  top 95.8 height  49.7  area 104
   block  3696  scene 1485.3 -1782.1 size  48  by  25  bearing 72.9 base  26.0  top 53.5 height  27.5  area 780
-  block  3697  scene 51.4 -28.3 size  8  by  5  bearing 136.1 base  0.9  top 63.3 height  62.4  area 28
   block  3698  scene -562.2 -1747.9 size  26  by  22  bearing 42.9 base  18.4  top 113.4 height  95.0  area 368
   block  3699  scene -206.5 -1743.1 size  10  by  9  bearing 114.1 base  16.5  top 96.0 height  79.5  area 52
   block  3700  scene -347.4 -1746.1 size  18  by  10  bearing 91.0 base  18.8  top 38.1 height  19.3  area 132
@@ -3896,12 +3852,9 @@ scene blocks sydney
   block  3890  scene 1067.2 -2983.4 size  55  by  33  bearing 9.0 base  40.7  top 82.4 height  41.7  area 1536
   block  3891  scene -177.2 -2686.8 size  26  by  24  bearing 175.0 base  19.2  top 48.1 height  28.9  area 284
   block  3892  scene 389.2 -2719.7 size  79  by  50  bearing 34.9 base  19.0  top 35.9 height  16.9  area 1448
-  block  3893  scene 67.7 -36.2 size  8  by  6  bearing 136.1 base  0.9  top 57.9 height  57.0  area 32
   block  3894  scene 589.4 -2371.1 size  29  by  14  bearing 172.0 base  10.9  top 45.7 height  34.8  area 196
   block  3895  scene -1019.1 -2333.7 size  9  by  7  bearing 75.9 base  3.5  top 14.3 height  10.8  area 40
   block  3896  scene -527.0 -2346.0 size  18  by  8  bearing 43.9 base  5.9  top 15.4 height  9.5  area 76
-  block  3897  scene 43.2 -44.2 size  6  by  6  bearing 1.0 base  0.9  top 63.2 height  62.3  area 28
-  block  3898  scene 56.4 -48.3 size  18  by  6  bearing 141.1 base  0.9  top 57.8 height  56.9  area 64
   block  3899  scene 149.6 -2359.0 size  14  by  10  bearing 50.8 base  30.4  top 57.0 height  26.6  area 96
   block  3900  scene 651.4 -2363.9 size  8  by  6  bearing 161.1 base  12.1  top 20.7 height  8.6  area 36
   block  3901  scene 883.4 -2369.0 size  10  by  8  bearing 16.9 base  8.4  top 20.9 height  12.5  area 48
@@ -3922,18 +3875,13 @@ scene blocks sydney
   block  3916  scene 1173.5 -2383.9 size  27  by  15  bearing 99.0 base  33.6  top 55.4 height  21.8  area 320
   block  3917  scene 626.8 -2375.5 size  32  by  17  bearing 95.0 base  12.5  top 21.9 height  9.4  area 348
   block  3918  scene 899.2 -2411.1 size  76  by  54  bearing 5.0 base  10.3  top 26.9 height  16.6  area 2764
-  block  3919  scene 35.4 -60.7 size  6  by  5  bearing 136.1 base  0.9  top 61.9 height  61.0  area 24
-  block  3920  scene 48.8 -64.4 size  13  by  6  bearing 149.1 base  0.9  top 131.9 height  131.0  area 52
   block  3921  scene -263.2 -2363.2 size  18  by  4  bearing 3.0 base  23.2  top 29.1 height  5.9  area 60
   block  3922  scene -200.6 -2372.8 size  51  by  47  bearing 57.8 base  22.9  top 49.2 height  26.3  area 1144
   block  3923  scene 320.2 -2368.4 size  10  by  6  bearing 118.1 base  21.0  top 30.1 height  9.1  area 40
   block  3924  scene 334.1 -2370.8 size  15  by  12  bearing 138.1 base  20.4  top 32.4 height  12.0  area 104
   block  3925  scene -556.8 -2368.2 size  37  by  35  bearing 94.0 base  5.8  top 19.7 height  13.9  area 764
-  block  3926  scene 27.1 -76.6 size  6  by  5  bearing 136.1 base  0.9  top 61.6 height  60.7  area 24
-  block  3927  scene 36.6 -76.2 size  8  by  5  bearing 136.1 base  0.9  top 57.5 height  56.6  area 28
   block  3928  scene -480.2 -1780.2 size  45  by  44  bearing 96.0 base  18.3  top 75.7 height  57.4  area 1268
   block  3929  scene 82.0 -1800.5 size  65  by  46  bearing 178.0 base  29.3  top 84.3 height  55.0  area 2148
-  block  3930  scene 42.1 -83.5 size  9  by  7  bearing 154.1 base  0.9  top 57.8 height  56.9  area 40
   block  3931  scene 811.6 -1786.9 size  8  by  6  bearing 45.9 base  2.7  top 11.0 height  8.3  area 32
   block  3932  scene 1559.0 -1807.5 size  22  by  10  bearing 2.0 base  7.6  top 27.7 height  20.1  area 156
   block  3933  scene -533.3 -1784.9 size  47  by  34  bearing 173.0 base  18.3  top 58.4 height  40.1  area 1332
@@ -4125,9 +4073,6 @@ scene blocks sydney
   block  4119  scene -1138.7 -2965.9 size  77  by  38  bearing 151.1 base  20.9  top 37.9 height  17.0  area 1712
   block  4120  scene 979.4 -2710.0 size  8  by  6  bearing 72.9 base  42.8  top 61.7 height  18.9  area 28
   block  4121  scene 1000.1 -2750.0 size  98  by  56  bearing 32.9 base  45.4  top 66.8 height  21.4  area 3292
-  block  4122  scene 16.0 -116.4 size  51  by  42  bearing 20.9 base  0.9  top 125.2 height  124.3  area 1260
-  block  4123  scene 18.4 -91.9 size  6  by  6  bearing 1.0 base  0.9  top 62.5 height  61.6  area 28
-  block  4124  scene 33.0 -96.6 size  15  by  8  bearing 143.1 base  0.9  top 126.8 height  125.9  area 68
   block  4125  scene -280.2 -2381.1 size  34  by  9  bearing 6.0 base  23.5  top 30.9 height  7.4  area 184
   block  4126  scene -111.9 -2371.2 size  16  by  9  bearing 85.0 base  24.0  top 37.2 height  13.2  area 104
   block  4127  scene -529.4 -2758.3 size  163  by  64  bearing 4.0 base  9.1  top 35.1 height  26.0  area 4880
@@ -4147,8 +4092,6 @@ scene blocks sydney
   block  4141  scene -568.6 -2952.9 size  25  by  21  bearing 152.1 base  4.2  top 62.7 height  58.5  area 360
   block  4142  scene 548.4 -2384.1 size  25  by  8  bearing 101.1 base  10.4  top 19.2 height  8.8  area 112
   block  4143  scene -464.6 -2956.0 size  26  by  16  bearing 10.9 base  5.4  top 18.4 height  13.0  area 272
-  block  4144  scene 10.1 -107.8 size  8  by  5  bearing 136.1 base  0.9  top 61.8 height  60.9  area 28
-  block  4145  scene 20.9 -108.4 size  9  by  6  bearing 118.1 base  0.9  top 56.8 height  55.9  area 36
   block  4146  scene 1064.0 -2410.5 size  43  by  20  bearing 4.0 base  28.4  top 40.5 height  12.1  area 464
   block  4147  scene 1299.1 -2426.0 size  109  by  65  bearing 74.9 base  40.4  top 58.5 height  18.1  area 2876
   block  4148  scene -812.1 -2942.3 size  8  by  5  bearing 72.9 base  3.6  top 7.4 height  3.8  area 24
@@ -4156,10 +4099,8 @@ scene blocks sydney
   block  4150  scene -807.0 -2946.3 size  22  by  12  bearing 92.0 base  3.6  top 84.7 height  81.1  area 160
   block  4151  scene 617.6 -2401.3 size  37  by  28  bearing 152.1 base  12.7  top 24.3 height  11.6  area 444
   block  4152  scene 629.1 -2396.5 size  24  by  23  bearing 22.9 base  14.1  top 35.6 height  21.5  area 348
-  block  4153  scene 26.9 -116.2 size  10  by  8  bearing 16.9 base  0.9  top 57.1 height  56.2  area 48
   block  4154  scene -108.9 -2384.5 size  34  by  29  bearing 143.1 base  24.4  top 149.8 height  125.4  area 412
   block  4155  scene -88.0 -2383.7 size  25  by  16  bearing 163.1 base  24.9  top 37.8 height  12.9  area 228
-  block  4156  scene 1.9 -123.7 size  6  by  6  bearing 91.0 base  0.9  top 58.3 height  57.4  area 28
   block  4157  scene 992.7 -2400.0 size  24  by  14  bearing 5.0 base  15.5  top 33.2 height  17.7  area 116
   block  4158  scene 1228.0 -2412.3 size  32  by  16  bearing 132.1 base  38.2  top 76.3 height  38.1  area 428
   block  4159  scene 1505.6 -2411.4 size  26  by  15  bearing 60.9 base  33.4  top 59.7 height  26.3  area 304
@@ -4167,7 +4108,6 @@ scene blocks sydney
   block  4161  scene 430.4 -2407.1 size  58  by  39  bearing 127.1 base  13.9  top 55.5 height  41.6  area 1232
   block  4162  scene 575.2 -2389.9 size  10  by  6  bearing 91.0 base  11.3  top 18.8 height  7.5  area 44
   block  4163  scene 1088.2 -2408.6 size  27  by  12  bearing 10.9 base  29.7  top 44.0 height  14.3  area 236
-  block  4164  scene 13.0 -124.3 size  8  by  6  bearing 110.1 base  0.9  top 56.4 height  55.5  area 32
   block  4165  scene 54.9 -1471.9 size  9  by  5  bearing 45.9 base  21.1  top 44.7 height  23.6  area 36
   block  4166  scene 79.5 -1511.6 size  101  by  58  bearing 33.8 base  25.7  top 91.0 height  65.3  area 2496
   block  4167  scene 595.1 -1487.0 size  25  by  18  bearing 58.9 base  10.3  top 33.3 height  23.0  area 224
@@ -4175,12 +4115,9 @@ scene blocks sydney
   block  4169  scene -59.3 -2389.7 size  25  by  8  bearing 10.9 base  25.8  top 34.3 height  8.5  area 104
   block  4170  scene 311.7 -2388.3 size  8  by  6  bearing 11.9 base  21.1  top 39.6 height  18.5  area 28
   block  4171  scene -469.1 -2385.2 size  37  by  26  bearing 85.0 base  15.4  top 56.7 height  41.3  area 708
-  block  4172  scene 18.3 -131.3 size  9  by  6  bearing 18.9 base  0.9  top 119.1 height  118.2  area 40
-  block  4173  scene -1.1 -149.0 size  41  by  40  bearing 124.1 base  0.9  top 114.7 height  113.8  area 984
   block  4174  scene 722.8 -1489.5 size  18  by  11  bearing 16.9 base  8.9  top 20.7 height  11.8  area 120
   block  4175  scene 1263.3 -1505.4 size  29  by  20  bearing 20.9 base  2.2  top 10.6 height  8.4  area 484
   block  4176  scene 1530.4 -1496.9 size  10  by  4  bearing 98.0 base  2.5  top 5.7 height  3.2  area 28
-  block  4177  scene -5.9 -140.2 size  6  by  5  bearing 136.1 base  0.9  top 57.4 height  56.5  area 24
   block  4178  scene 696.1 -1806.4 size  14  by  6  bearing 13.9 base  23.6  top 33.0 height  9.4  area 48
   block  4179  scene -861.1 -1459.1 size  8  by  6  bearing 20.9 base  2.5  top 6.1 height  3.6  area 36
   block  4180  scene -427.6 -1542.5 size  159  by  53  bearing 170.1 base  22.1  top 76.2 height  54.1  area 4188
@@ -4337,4 +4274,3 @@ scene blocks sydney
   block  4331  scene -380.3 -2967.4 size  40  by  30  bearing 30.9 base  6.0  top 67.6 height  61.6  area 744
   block  4332  scene -716.0 -2695.3 size  17  by  6  bearing 32.9 base  3.9  top 14.9 height  11.0  area 72
   block  4333  scene -585.2 -2741.6 size  104  by  34  bearing 2.0 base  3.2  top 56.5 height  53.3  area 2496
-end
