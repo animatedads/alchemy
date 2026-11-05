@@ -1,4 +1,4 @@
-# ooRexx IMAP/IMAPS v0.1-dev13
+# ooRexx IMAP/IMAPS v0.1-dev14
 
 `oorexx_imap_v0.1-dev8` keeps **IMAP the application protocol** and makes transport security a separate, explicit configuration axis.
 
