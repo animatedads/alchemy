@@ -90,7 +90,7 @@
   moon['visibilityCandidate'] = moon['aboveHorizon'] & illuminated >= 0.05 &,
     moon['altitudeRefractedDeg'] >= 2 & sun['altitudeRefractedDeg'] < -6
   moon['headingCandidate'] = moon['visibilityCandidate'] & moon['altitudeTrueDeg'] >= 5
-  moon['visibilityReason'] = 'geometric horizon, >=5% illumination, >2 deg elevation, Sun <-6 deg; weather unknown'
+  moon['visibilityReason'] = 'predicted geometric candidate only; >=5% lit, >2 deg, Sun <-6 deg; cloud and camera unknown'
 
   out = .directory~new
   out['utc'] = utc
@@ -102,6 +102,9 @@
   out['method'] = 'Schlyter low-precision orbital elements and lunar perturbations; Meeus/Bennett refraction approximation'
   out['coordinates'] = 'azimuth clockwise from true north; degrees; longitude east positive'
   out['status'] = 'PREDICTION_ONLY'
+  out['visibilityBasis'] = 'GEOMETRIC_EPHEMERIS_ONLY'
+  out['skyObservationStatus'] = 'NOT_OBSERVED'
+  out['cloudCoverStatus'] = 'UNKNOWN'
   out['clockModel'] = 'UTC approximated UT1; no delta-T correction'
   out['accuracyStatus'] = 'EPHEMERIS_REFERENCE_TESTED; OBSERVATION_AND_NAVIGATION_UNQUALIFIED'
   out['sourceTag'] = 'MOONSAULT_PREDICTED'
@@ -124,6 +127,11 @@
   b['illuminatedFraction'] = illum
   b['aboveHorizon'] = apparentAlt > 0
   b['visibilityCandidate'] = apparentAlt > 0
+  /* Celestial geometry is not a camera observation. No weather inference. */
+  b['visibilityBasis'] = 'GEOMETRIC_EPHEMERIS_ONLY'
+  b['observedVisibility'] = 'UNKNOWN'
+  b['cloudCoverStatus'] = 'UNKNOWN'
+  b['observationStatus'] = 'NOT_OBSERVED'
   b['refractionModelValid'] = trueAlt >= -1 & trueAlt <= 89.9
   b['headingCandidate'] = trueAlt >= 5
   b['method'] = 'geocentric orbital, local sidereal, lunar altitude parallax, standard atmosphere'
