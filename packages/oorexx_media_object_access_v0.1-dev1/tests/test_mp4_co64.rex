@@ -9,7 +9,8 @@ co64=box('co64',z||u32(1)||u64(4294967300))
 stss=box('stss',z||u32(1)||u32(1))
 metadata=box('stbl',stsd||stts||stsc||stsz||co64||stss)
 source=.Mp4LargeSource~new(metadata)
-atom=.Mp4AtomScanner~scan(source,0,source~metadataBytes)[1]
+atoms=.Mp4AtomScanner~scan(source,0,source~metadataBytes)
+atom=atoms[1]
 table=.MediaMp4SampleTable~new(atom,1,90000)
 if table~sample(1)~byteOffset<>4294967300 then do
   say 'FAIL co64 byte offset:' table~sample(1)~byteOffset
