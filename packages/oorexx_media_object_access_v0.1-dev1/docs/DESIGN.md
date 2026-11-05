@@ -14,6 +14,36 @@
   common media provider. FC/FD Camera Behaviour may adopt the same boundary.
 - `.cls` is the ooRexx class front end, **not the index file format**.
 
+## Implemented dev2 metadata path (unqualified until native tests run)
+
+The ooRexx `Mp4SampleTable.cls` metadata parser currently supports `stsd`,
+`stts`, `ctts` (including signed v1 offsets), `stsc`, `stsz`,
+`stco`/`co64`, and `stss` for non-fragmented, no-edit-list files.
+`MediaMp4Track~planTime(ticks)` produces a candidate target sample
+and preceding sync-sample anchor. It does **not** execute `seekTime`.
+
+`MediaMp4SampleTable~rangesForPlan(plan,budget,maxSamples)` returns
+coalesced, bounded byte spans of compressed samples from the nominal
+anchor to the target, preserving gaps between tracks. Codec dependency
+and decoder priming may require more packets than this initial candidate
+window; providers must qualify and request further bounded extents.
+No file-to-EOF prefetch is authorized. The `MediaRangeCacheSource` has
+a fixed LRU block budget, no read-ahead and explicit source-id fencing.
+
+The reported dev1 native ooRexx result is 32 bytes of **synthetic**
+MP4 tail-metadata reads on a logical 1 GiB source, not a physical
+Storage Fabric network measurement. The new dev2 fixtures are pending
+native ooRexx qualification, with no decoder runtime acceptance yet.
+
+**Operational limitation:** `MediaLazyReadSource` currently inherits
+a weak local path-plus-size identity from `LazyReadFile`. A durable
+cross-node sample index needs a stronger immutable generation/content
+identity from the authoritative Storage Fabric provider. Logical
+`readAt` counters alone do not prove physical remote I/O volume if
+the underlying provider silently materializes the whole object.
+Instrumentation must measure actual source-node read bytes and XTP
+bytes, as distinct from logical media-request bytes.
+
 ## MP4 table roadmap
 
 * ISO BMFF atom graph, including extended sizes, moov at head/tail,
