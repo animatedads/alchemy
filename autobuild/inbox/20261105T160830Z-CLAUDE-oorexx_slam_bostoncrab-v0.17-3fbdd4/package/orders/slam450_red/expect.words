@@ -1,0 +1,36 @@
+-- orders.words: Boston Crab order report for programs. Fields split by |.
+-- order|n|from|to|words    part|n|i|verb|action|how|words    ref|n|i|verdict|words|writer|reader    end|n|verdict
+-- verb, action and how are concept names (language neutral), - for none; action is the verb, or the act after a general verb
+-- ("conduct a search": search); writer and reader list what each can identify, split by ;
+-- how holds "not" when the part says not to do it ("не знижуйтесь", "do not descend")
+-- a grid reference has writer and reader "grid E <east> N <north>"; fail|n|reason when Boston Crab failed on an order
+order|1|control|alpha|alpha , обстежте ділянку навколо червоного маркера та будьте обережні .
+part|1|1|survey~00648195-v|survey~00648195-v|-|alpha , обстежте ділянку навколо червоного маркера
+part|1|2|be|be|-|будьте обережні .
+ref|1|1|AMBIGUOUS|червоного маркера||
+end|1|REQUIRES CLARIFICATION
+order|2|control|alpha|alpha , не знижуйтесь без інструкцій , чекайте там .
+part|2|1|descend~01974840-v|descend~01974840-v|not|alpha , не знижуйтесь без інструкцій
+part|2|2|wait~02644022-v|wait~02644022-v|-|чекайте там .
+end|2|CLEAR
+order|3|control|alpha|alpha , перевірте , чи є червоні маркери на вершині observatory hill .
+part|3|1|check~00663742-v|check~00663742-v|-|alpha , перевірте , чи є червоні маркери на вершині observatory hill .
+ref|3|1|CLEAR|червоні маркери|the red markers|the red markers
+ref|3|1|CLEAR|observatory hill|Observatory Hill|Observatory Hill
+end|3|CLEAR
+order|4|control|alpha|alpha , зупиніться на відстані 350 м від маркера та зафіксуйте результат .
+part|4|1|stop|stop|-|alpha , зупиніться на відстані 350 м від маркера
+part|4|2|log~01004526-v|log~01004526-v|-|зафіксуйте результат .
+ref|4|1|AMBIGUOUS|маркера||
+end|4|REQUIRES CLARIFICATION
+order|5|control|alpha|alpha , повертайтеся до base повільно .
+part|5|1|return~02008888-v|return~02008888-v|slowly|alpha , повертайтеся до base повільно .
+ref|5|1|NO REFERENT|base||
+end|5|REQUIRES CLARIFICATION
+order|6|control|alpha|alpha , відсканujte територію між піддонами .
+part|6|1|-|-|-|alpha , відсканujte територію між піддонами .
+ref|6|1|NO REFERENT|піддонами||
+end|6|REQUIRES CLARIFICATION
+order|7|control|alpha|alpha , do not descend .
+part|7|1|descend~01974840-v|descend~01974840-v|not|alpha , do not descend .
+end|7|CLEAR
