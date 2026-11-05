@@ -7,7 +7,7 @@ Unsupported pixels remain transparent/zero and are never promoted to captured
 source evidence.
 """
 from __future__ import annotations
-import argparse, hashlib, json, math, os, pathlib, sys
+import argparse, hashlib, json, math, os, pathlib, re, sys
 import cv2
 import numpy as np
 
@@ -242,17 +242,33 @@ def implementation_foundations(methodology_id):
     }
     return common+extra.get(methodology_id,[])
 
+def safe_candidate_stem(job):
+    """Job-controlled names must never escape a private output directory."""
+    value=job.get("candidate_id")
+    if value is None or value == "":
+        value=str(job["methodology_id"]).lower().replace(".", "_")
+    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,95}", value):
+        raise RuntimeError("UNSAFE_CANDIDATE_ID")
+    if ".." in value:
+        raise RuntimeError("UNSAFE_CANDIDATE_ID")
+    return value
+
+
 def write_outputs(job,frames,pts,track,out,support,unc,impl):
     outdir=job["output_dir"]; ensure_dir(outdir)
-    stem=job.get("candidate_id") or job["methodology_id"].lower().replace(".","_")
+    stem=safe_candidate_stem(job)
     image_path=os.path.join(outdir,stem+".candidate.png")
     support_path=os.path.join(outdir,stem+".support.png")
     uncertainty_path=os.path.join(outdir,stem+".uncertainty.png")
     alpha=np.where(support>0,255,0).astype(np.uint8)
     rgba=np.dstack([out,alpha])
-    cv2.imwrite(image_path,rgba)
+    if not cv2.imwrite(image_path,rgba):
+        raise RuntimeError("CANDIDATE_WRITE_FAILED")
     sn=np.uint8(np.clip(support.astype(np.float32)/max(1,float(support.max()))*255,0,255))
-    cv2.imwrite(support_path,sn); cv2.imwrite(uncertainty_path,unc)
+    if not cv2.imwrite(support_path,sn):
+        raise RuntimeError("SUPPORT_WRITE_FAILED")
+    if not cv2.imwrite(uncertainty_path,unc):
+        raise RuntimeError("UNCERTAINTY_WRITE_FAILED")
     result={
       "schema":SCHEMA_RESULT,"provider_id":PROVIDER_ID,"implementation_id":impl,
       "methodology_id":job["methodology_id"],"status":"CANDIDATE","candidate_kind":"DERIVED_RECONSTRUCTION",
@@ -307,6 +323,8 @@ def _require_private_material_paths(job_path, job, result_path):
     if root == os.path.abspath(os.sep) or not os.path.isdir(root):
         raise RuntimeError("PRIVATE_MEDIA_ROOT_UNSAFE")
 
+    if job.get("candidate_id") is not None:
+        safe_candidate_stem(job)
     paths = [job_path, result_path, job.get("output_dir", "")]
     source = job.get("source", {})
     if source.get("kind") == "VIDEO_FILE":
@@ -335,10 +353,15 @@ def run_job_file(job_path: str, result_path: str, expected_methodology_id: str =
     The Media method ID is checked at both boundaries to prevent accidental
     execution of a different reconstruction lineage.
     """
-    # Preflight is outside the catch/write path: a rejected private-material
-    # boundary must not generate even an error artifact at an unsafe location.
+    # First admit the job/result paths WITHOUT reading the job JSON.
+    # A caller cannot cause an arbitrary JSON read outside private storage.
+    _require_private_material_paths(job_path, {
+        "output_dir": os.path.dirname(os.path.realpath(result_path)),
+        "source": {"kind": "SYNTHETIC_ONLY"},
+    }, result_path)
     with open(job_path, "r", encoding="utf-8") as stream:
         job = json.load(stream)
+    # A second check admits the source/output paths from the private job.
     _require_private_material_paths(job_path, job, result_path)
     try:
         actual_method = str(job.get("methodology_id", "")).upper()
