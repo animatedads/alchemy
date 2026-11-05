@@ -1,0 +1,410 @@
+{
+ "schema": "alchemy.autobuild.integration/0.3",
+ "package": {
+  "name": "oorexx_slam450",
+  "version": "0.98",
+  "kind": "oorexx"
+ },
+ "working_directory": ".",
+ "environment": {
+  "set": {
+   "PHYSICS_WORLD_ROOT": "${REPO_ROOT}/packages/oorexx_physics_world_v0.1-dev51",
+   "MATHS_ROOT": "${REPO_ROOT}/packages/oorexx_maths_v0.21",
+   "COMPRESS_ROOT": "${REPO_ROOT}/packages/oorexx_compress_v0.1-dev5",
+   "ANTHROPIC_PROVIDER_ROOT": "${REPO_ROOT}/packages/oorexx_ai_provider_anthropic_v0.4",
+   "FOREIGN_RUNTIME_ROOT": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6",
+   "LD_LIBRARY_PATH": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/build:/usr/local/lib:/usr/lib",
+   "PYTHONPATH": "${REPO_ROOT}/packages/oorexx_maths_v0.21/python:${REPO_ROOT}/packages/oorexx_compress_v0.1-dev5/python",
+   "POWER_SLAM_ROOT": "${REPO_ROOT}/packages/oorexx_slam_v0.1",
+   "SLAM450_HARBOUR_WORDS": "${REPO_ROOT}/packages/oorexx_slam_toprope_v0.1/examples/harbour",
+   "MOONSAULT_SRC": "${REPO_ROOT}/packages/oorexx_moonsault_v0.1/src",
+   "TOMBSTONE_ELVIS": "${REPO_ROOT}/examples/tombstone_sydney_elvis_terrain_v0.36",
+   "LEGAL_ROOT": "${REPO_ROOT}/packages"
+  },
+  "rexx_path": {
+   "mode": "replace",
+   "entries": [
+    "${PACKAGE_ROOT}/src",
+    "${REPO_ROOT}/packages/oorexx_physics_world_v0.1-dev51/rexx",
+    "${REPO_ROOT}/packages/oorexx_maths_v0.21/rexx",
+    "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/rexx",
+    "${REPO_ROOT}/packages/oorexx_compress_v0.1-dev5/src",
+    "${REPO_ROOT}/packages/oorexx_compress_v0.1-dev5/foreign",
+    "${REPO_ROOT}/packages/oorexx_ai_provider_anthropic_v0.4/src",
+    "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+    "${REPO_ROOT}/packages/oorexx_ai_access_v0.6/src",
+    "${REPO_ROOT}/packages/oorexx_secret_broker_v0.2/src",
+    "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src",
+    "${REPO_ROOT}/packages/oorexx_slam_v0.1/src"
+   ],
+   "require_entries": true
+  },
+  "require_dirs": [
+   "PHYSICS_WORLD_ROOT",
+   "MATHS_ROOT",
+   "COMPRESS_ROOT",
+   "ANTHROPIC_PROVIDER_ROOT",
+   "POWER_SLAM_ROOT",
+   "SLAM450_HARBOUR_WORDS",
+   "MOONSAULT_SRC"
+  ],
+  "report": [
+   "PHYSICS_WORLD_ROOT",
+   "MATHS_ROOT",
+   "COMPRESS_ROOT",
+   "ANTHROPIC_PROVIDER_ROOT",
+   "POWER_SLAM_ROOT",
+   "SLAM450_HARBOUR_WORDS",
+   "MOONSAULT_SRC"
+  ]
+ },
+ "tests": [
+  {
+   "name": "aircraft_type",
+   "argv": [
+    "rexx",
+    "tests/test_aircraft_type450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "battery",
+   "argv": [
+    "rexx",
+    "tests/test_battery450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "broadphase",
+   "argv": [
+    "rexx",
+    "tests/test_broadphase450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "buddy",
+   "argv": [
+    "rexx",
+    "tests/test_buddy450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "buddy_energy",
+   "argv": [
+    "rexx",
+    "tests/test_buddy_energy450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "course",
+   "argv": [
+    "rexx",
+    "tests/test_course450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "explore",
+   "argv": [
+    "rexx",
+    "tests/test_explore450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "fixed_camera",
+   "argv": [
+    "rexx",
+    "tests/test_fixed_camera450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "fixedwing",
+   "argv": [
+    "rexx",
+    "tests/test_fixedwing450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "memory",
+   "argv": [
+    "rexx",
+    "tests/test_memory450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "obstructed",
+   "argv": [
+    "rexx",
+    "tests/test_obstructed450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "precision",
+   "argv": [
+    "rexx",
+    "tests/test_precision450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "race_referee",
+   "argv": [
+    "rexx",
+    "tests/test_race_referee450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "race_tactics",
+   "argv": [
+    "rexx",
+    "tests/test_race_tactics450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "rival_air",
+   "argv": [
+    "rexx",
+    "tests/test_rival_air450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "target_cost",
+   "argv": [
+    "rexx",
+    "tests/test_target_cost450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "planmap",
+   "argv": [
+    "rexx",
+    "tests/test_planmap450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "movers",
+   "argv": [
+    "rexx",
+    "tests/test_movers450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "quayside",
+   "argv": [
+    "rexx",
+    "tests/test_quayside450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "ground",
+   "argv": [
+    "rexx",
+    "tests/test_ground450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "structure_colours",
+   "argv": [
+    "rexx",
+    "tests/test_structure_colours450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "courses_v092",
+   "argv": [
+    "rexx",
+    "tests/test_courses_v092.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "sensors_v092",
+   "argv": [
+    "rexx",
+    "tests/test_sensors_v092.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "flightbook_v092",
+   "argv": [
+    "rexx",
+    "tests/test_flightbook_v092.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "visualfix_v092",
+   "argv": [
+    "rexx",
+    "tests/test_visualfix_v092.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "sky_vs_pyephem",
+   "argv": [
+    "python3",
+    "tests/check_sky450.py"
+   ],
+   "timeout_seconds": 900,
+   "environment": {
+    "set": {
+     "SLAM450_EPHEMERIS": "MOONSAULT"
+    }
+   }
+  },
+  {
+   "name": "sky_v093",
+   "argv": [
+    "rexx",
+    "tests/test_sky_v093.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "visual_separation",
+   "argv": [
+    "rexx",
+    "tests/test_visual_separation450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "wind",
+   "argv": [
+    "rexx",
+    "tests/test_wind450.rex"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "trio-quad-wing-race30-auditors",
+   "argv": [
+    "sh",
+    "-c",
+    "d=$(mktemp -d) && rexx bin/race450_trio.rex $d/race 45046 LEGACY 30 WIND BATTERY AUTO FIXED_WING PURE; rc=$?; test $rc -eq 0 -o $rc -eq 5 && python3 tests/audit_battery450.py $d/race >/dev/null && python3 tests/audit_aircraft_type450.py $d/race >/dev/null && python3 tests/audit_trio450.py $d/race --scene evidence/powerslam_v040_scene_ORACLE_ONLY.csv --camera-mode battery --out $d/g.json >/dev/null"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "squad-standin-race30-auditors",
+   "argv": [
+    "sh",
+    "-c",
+    "d=$(mktemp -d) && rexx bin/race450_squad.rex $d/race 45046 LEGACY 30 WIND BATTERY AUTO STANDIN EYES PURE OFF; rc=$?; test $rc -eq 0 -o $rc -eq 5 && python3 tests/audit_battery450.py $d/race >/dev/null && python3 tests/audit_aircraft_type450.py $d/race >/dev/null && python3 tests/audit_squad450.py $d/race --scene evidence/powerslam_v040_scene_ORACLE_ONLY.csv >/dev/null"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "squad-backseat-moving-race40-auditors",
+   "argv": [
+    "sh",
+    "-c",
+    "d=$(mktemp -d) && rexx bin/race450_squad.rex $d/race 45046 LEGACY 40 WIND BATTERY AUTO NONE EYES PURE OFF BACKSEAT MOVING NOMAP; rc=$?; test $rc -eq 0 -o $rc -eq 5 && python3 tests/audit_battery450.py $d/race >/dev/null && python3 tests/audit_aircraft_type450.py $d/race >/dev/null && python3 tests/audit_squad450.py $d/race --scene evidence/powerslam_v040_scene_ORACLE_ONLY.csv >/dev/null && python3 tests/audit_movers450.py $d/race --scene evidence/powerslam_v040_scene_ORACLE_ONLY.csv >/dev/null"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "squad-quayside-ground-moving-race6-auditors",
+   "argv": [
+    "sh",
+    "-c",
+    "d=$(mktemp -d) && rexx bin/race450_squad.rex $d/race 45046 QUAYSIDE 6 WIND BATTERY AUTO NONE EYES AUTO OFF BACKSEAT MOVING NOMAP GROUND; rc=$?; test $rc -eq 0 -o $rc -eq 5 && python3 tests/audit_battery450.py $d/race >/dev/null && python3 tests/audit_aircraft_type450.py $d/race >/dev/null && python3 tests/audit_squad450.py $d/race --scene evidence/powerslam_v040_scene_ORACLE_ONLY.csv --ground \"$SLAM450_HARBOUR_WORDS\" >/dev/null && python3 tests/audit_movers450.py $d/race --scene evidence/powerslam_v040_scene_ORACLE_ONLY.csv --ground \"$SLAM450_HARBOUR_WORDS\" >/dev/null"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "squad-pylons-ground-static-race6-auditors",
+   "argv": [
+    "sh",
+    "-c",
+    "d=$(mktemp -d) && rexx bin/race450_squad.rex $d/race 45046 PYLONS 6 WIND BATTERY AUTO NONE EYES AUTO OFF BACKSEAT STATIC NOMAP GROUND; rc=$?; test $rc -eq 0 -o $rc -eq 5 && python3 tests/audit_battery450.py $d/race >/dev/null && python3 tests/audit_aircraft_type450.py $d/race >/dev/null && python3 tests/audit_squad450.py $d/race --scene evidence/powerslam_v041_arch_scene_ORACLE_ONLY.csv --ground \"$SLAM450_HARBOUR_WORDS\" >/dev/null"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "squad-harbour-wing-visfix-recall-race12-auditors",
+   "argv": [
+    "sh",
+    "-c",
+    "d=$(mktemp -d) && rexx bin/race450_squad.rex $d/race 45047 HARBOUR 12 WIND BATTERY AUTO NONE EYES AUTO OFF BACKSEAT MOVING NOMAP GROUND HAIKU ON WING 500 RECALL ON; rc=$?; test $rc -eq 0 -o $rc -eq 5 && python3 tests/audit_battery450.py $d/race >/dev/null && python3 tests/audit_squad450.py $d/race --scene evidence/powerslam_v041_arch_scene_ORACLE_ONLY.csv --ground \"$SLAM450_HARBOUR_WORDS\" >/dev/null && python3 tests/audit_belief450.py $d/race >/dev/null && python3 tests/audit_movers450.py $d/race --scene evidence/powerslam_v041_arch_scene_ORACLE_ONLY.csv --ground \"$SLAM450_HARBOUR_WORDS\" >/dev/null && grep -q VISFIX $d/race_A1_belief_ORACLE_ONLY.csv"
+   ],
+   "timeout_seconds": 900
+  },
+  {
+   "name": "control-map-tombstone-elvis",
+   "argv": [
+    "sh",
+    "-c",
+    "d=$(mktemp -d) && REXX_PATH=\"$REXX_PATH:$TOMBSTONE_ELVIS\" rexx bin/control450_map.rex $d/m.svg 1 | grep -q 'water 1729 land 1471 low 0 nodata 0 outside 0'"
+   ],
+   "timeout_seconds": 300
+  },
+  {
+   "name": "orders-v094-boston-crab",
+   "argv": [
+    "sh",
+    "tests/test_orders_v094.sh"
+   ],
+   "timeout_seconds": 300
+  },
+  {
+   "name": "orders-v096-boston-crab-v015",
+   "argv": [
+    "sh",
+    "tests/test_orders_v096.sh"
+   ],
+   "timeout_seconds": 300
+  },
+  {
+   "name": "orders-v097-boston-crab-v016",
+   "argv": [
+    "sh",
+    "tests/test_orders_v097.sh"
+   ],
+   "timeout_seconds": 300
+  },
+  {
+   "name": "orders-v098-boston-crab-v018",
+   "argv": [
+    "sh",
+    "tests/test_orders_v098.sh"
+   ],
+   "timeout_seconds": 300
+  },
+  {
+   "name": "roe-v095",
+   "argv": [
+    "sh",
+    "-c",
+    "REXX_PATH=\"$REXX_PATH:$LEGAL_ROOT/legal_effect_v0.14/src:$LEGAL_ROOT/alchemy_objects_v0.8/src:$LEGAL_ROOT/oorexx_crypto_v0.1/src:$LEGAL_ROOT/oorexx_reasoned_thought_v0.1/src\" rexx tests/test_roe_v095.rex | grep -q '^PASS test_roe_v095'"
+   ],
+   "timeout_seconds": 600
+  }
+ ],
+ "publish": {
+  "tree": {
+   "source": ".",
+   "path": "packages/oorexx_slam450_v0.92"
+  }
+ }
+}
