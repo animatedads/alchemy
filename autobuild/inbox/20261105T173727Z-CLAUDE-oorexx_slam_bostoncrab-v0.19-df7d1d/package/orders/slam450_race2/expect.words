@@ -1,0 +1,30 @@
+-- orders.words: Boston Crab order report for programs. Fields split by |.
+-- order|n|from|to|words    part|n|i|verb|action|how|words    ref|n|i|verdict|words|writer|reader    end|n|verdict
+-- verb, action and how are concept names (language neutral), - for none; action is the verb, or the act after a general verb
+-- ("conduct a search": search); writer and reader list what each can identify, split by ;
+-- how holds "not" when the part says not to do it ("не знижуйтесь", "do not descend"),
+-- and "if" when it waits on a condition said in its words ("якщо ціль знайдено", "if the target is found")
+-- tone|n|frustration|count when the sender swears (twice or more: extreme frustration); it is not an order
+-- a grid reference has writer and reader "grid E <east> N <north>"; fail|n|reason when Boston Crab failed on an order
+order|1|control|bravo|bravo , кружляйте над observatory hill , зупиняючись біля червоного маркера .
+part|1|1|circle~01915332-v|circle~01915332-v|-|bravo , кружляйте над observatory hill , зупиняючись біля червоного маркера .
+ref|1|1|CLEAR|observatory hill|Observatory Hill|Observatory Hill
+ref|1|1|CLEAR|червоного маркера|Ruby|Ruby
+end|1|CLEAR
+order|2|control|bravo|bravo , перейдіть до західного сектора і продовжуйте пошук поблизу маркера .
+part|2|1|move|move|-|bravo , перейдіть до західного сектора
+part|2|2|continue~02690747-v|search|-|продовжуйте пошук поблизу маркера .
+ref|2|2|CLEAR|маркера|Ruby|Ruby
+end|2|CLEAR
+order|3|control|bravo|bravo , почніть широкий обліт , переключіться на пошук через 30 секунд .
+part|3|1|get-down|orb|-|bravo , почніть широкий обліт
+part|3|2|switch-over|switch-over|-|переключіться на пошук через 30 секунд .
+end|3|CLEAR
+order|4|control|bravo|bravo , ну , якщо ціль знайдено , підтверджено або заявлена , повертайтеся ближче до неї .
+part|4|1|return~02008888-v|return~02008888-v|if|bravo , ну , якщо ціль знайдено , підтверджено або заявлена , повертайтеся ближче до неї .
+end|4|CLEAR
+order|5|control|bravo|bravo , блять , блять , кружляйте над observatory hill .
+part|5|1|circle~01915332-v|circle~01915332-v|-|bravo , блять , блять , кружляйте над observatory hill .
+ref|5|1|CLEAR|observatory hill|Observatory Hill|Observatory Hill
+tone|5|extreme frustration|2
+end|5|CLEAR
