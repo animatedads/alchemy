@@ -1,7 +1,5 @@
 /* Synthetic 1 GiB media payload: prove metadata inspection does not walk it.
  * mp4 layout: ftyp(24), mdat(1 GiB + 8), moov(16 containing trak(8)). */
-::requires '../src/Mp4File.cls'
-::requires '../src/MediaByteSource.cls'
 
 source=.SparseMp4Source~new
 file=.MediaFile~openMp4(source)
@@ -39,3 +37,5 @@ exit 0
   if at=1073741864 & count=8 then return x2c('000000087472616B')
   if at>=32 & at<1073741856 then call fail 'attempted to read mdat payload'
   call fail 'unexpected source range '||at||'+'||count
+::requires '../src/Mp4File.cls'
+::requires '../src/MediaByteSource.cls'
