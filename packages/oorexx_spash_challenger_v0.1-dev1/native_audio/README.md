@@ -1,5 +1,10 @@
 # SPASH Challenger native bounded Ogg input — dev1
 
+## Update: v0.2 resident multistream direct seek (5 November 2026)
+
+The former v0.1 `SpashNativeOggDecoder` decodes from the beginning and is **NOT** suitable for deep repeated reads of 1 GiB originals. Use the additive `seek/SpashNativeOggSeek.cls` and `seek/spash_ogg_seek.c` for new random-access qualification. It enumerates logical streams, selects individual channels, calls libavformat native time-based byte seeking against a resident original, and enforces a 64 MiB default compressed-byte budget. The source Ogg, working PCM and derived buffers remain on the resident MU; only immutable refs and compact metadata cross Storage Fabric. A genuinely validated 1 GiB deep seek and multistream source timing still require original-host tests. See `seek/README.md` and `seek/tests/run_contract_tests.sh` (tests use a stub and do not qualify actual decoding). Never deploy the test stub as a Foreign Runtime provider.
+
+
 Architecture: Tom Dyer. Implementation: ChatGPT GPT-6. This is an additive SPASH Challenger Foreign Runtime provider; it does not change Audio V9/Claude modules or production services.
 
 ## Purpose
