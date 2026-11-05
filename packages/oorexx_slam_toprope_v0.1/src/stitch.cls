@@ -42,16 +42,37 @@
   /* tells water from other blue things. Navy from the sky, cyan on   */
   /* Google's map, pale blue on the NSW map: one rule, learned        */
   tally = .directory~new
+  exact = .directory~new
+  nBlue = 0
   do p = 1 to FW * (HH * f) * 3 by 3 * 7
     r = c2d(substr(rgb, p, 1))
     g = c2d(substr(rgb, p + 1, 1))
     b = c2d(substr(rgb, p + 2, 1))
-    if b - r >= 18 & b >= g - 8 then do
+    if b - r >= 8 & g - r >= 6 & b >= g - 8 then do
       q = (r % 16) (g % 16) (b % 16)
       if tally[q] == .nil then tally[q] = 0
       tally[q] = tally[q] + 1
+      e = r g b
+      if exact[e] == .nil then exact[e] = 0
+      exact[e] = exact[e] + 1
+      nBlue = nBlue + 1
     end
   end
+  /* a flat map (the NSW Planning Portal, Google's map) paints all its */
+  /* water one colour: when one exact colour is half the bluish places */
+  /* or more, that colour is the water, and other blues (lavender and  */
+  /* pale blue zones) are land. Pictures of the earth (satellite) have */
+  /* no such colour and keep the brightness rule                       */
+  lesson~waterRGB = .nil
+  en = 0
+  ek = ""
+  do e over exact
+    if exact[e] > en then do
+      en = exact[e]
+      ek = e
+    end
+  end
+  if nBlue > 0 then if en / nBlue >= 0.5 then lesson~waterRGB = ek
   top = ""
   tn = 0
   do q over tally
@@ -106,6 +127,7 @@
   pc~kinds = kinds
   pc~grey = grey
   pc~waterLuma = lesson~waterLuma
+  pc~waterRGB = lesson~waterRGB
   /* busy: how much the land changes from one place to the next. A    */
   /* wider picture has more things in each place, so its land is      */
   /* busier: this says which of two pictures is the wider one         */
@@ -124,17 +146,31 @@
   else pc~busy = bs / nb
   return pc
 
-/* water: blue clearly above red, and not green. Dark navy deep water */
+/* water: blue and green above red, and not greener than blue. Navy   */
 /* and teal shallows both pass; trees (green) and towns (grey) do not */
 ::routine waterRule public
   use arg r, g, b, lesson
-  if b - r < 18 | b < g - 8 then return "l"
+  /* water is above red in green as well as blue: teal harbour water  */
+  /* in the NSW aerials (42 50 53), navy and teal from satellites, the */
+  /* Planning Portal's 179 230 228. Shadows are blue-black, hardly     */
+  /* greener than red (29 32 41); the portal's lavender likewise        */
+  if b - r < 8 | g - r < 6 | b < g - 8 then return "l"
+  wc = lesson~waterRGB
+  if wc \== .nil then do
+    parse var wc wr wg wb
+    if abs(r - wr) + abs(g - wg) + abs(b - wb) <= 30 then return "w"
+    return "l"
+  end
   wl = lesson~waterLuma
   if wl == .nil then do
     if r < 130 then return "w"
     return "l"
   end
-  if abs(0.299 * r + 0.587 * g + 0.114 * b - wl) <= 60 then return "w"
+  /* dark water (aerials) gets a tighter brightness band, so blue-grey */
+  /* roofs do not pass for it                                          */
+  tol = 60
+  if wl < 90 then tol = 35
+  if abs(0.299 * r + 0.587 * g + 0.114 * b - wl) <= tol then return "w"
   return "l"
 
 /* ================================================================== */

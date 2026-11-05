@@ -65,6 +65,7 @@
     pics~append(pc)
     wl = "-"
     if pc~waterLuma \== .nil then wl = format(pc~waterLuma, , 0)
+    if pc~waterRGB \== .nil then wl = wl "(one water colour:" pc~waterRGB")"
     say "  " left(pc~name, 14) pc~W "by" pc~H "cells, water brightness" wl"," format(pc~water * 100, , 0)"% water," pc~blobs~items "islands and lakes"
     call phase "read" pc~name
   end
