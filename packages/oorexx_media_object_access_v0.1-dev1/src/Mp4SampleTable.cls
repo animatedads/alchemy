@@ -106,6 +106,34 @@
 ::method canDecodeExactly
   return .false
 
+/* Physical spans of compressed sample bytes in decode order.
+ * Merging only adjacent spans avoids pulling unrelated interleaved tracks.
+ * The plan is metadata, NOT an instruction to download from the start.
+ */
+::class MediaMp4ByteRange public
+::attribute offset get
+::attribute length get
+::attribute endOffset get
+::attribute firstSample get
+::attribute lastSample get
+::method init
+  expose offset length endOffset firstSample lastSample
+  use strict arg sample
+  offset=sample~byteOffset; length=sample~sizeBytes
+  endOffset=offset+length
+  firstSample=sample~ordinal; lastSample=sample~ordinal
+::method canExtend
+  expose endOffset lastSample
+  use strict arg sample
+  return sample~byteOffset=endOffset & sample~ordinal=lastSample+1
+::method append
+  expose length endOffset lastSample
+  use strict arg sample
+  if \self~canExtend(sample) then raise syntax 88.900 array('noncontiguous MP4 byte span')
+  length=length+sample~sizeBytes
+  endOffset=endOffset+sample~sizeBytes
+  lastSample=sample~ordinal
+
 ::class MediaMp4SampleTable public
 ::attribute sampleCount get
 ::attribute timeScale get
@@ -375,6 +403,40 @@
   end
   if found=0 then return .nil
   return samples[syncOrdinals[found]]
+::method rangesForPlan
+  expose samples sampleCount sourceIdentity
+  use strict arg plan,budget=4194304,maxSamples=512
+  self~assertSource
+  if plan==.nil | plan~sourceIdentity<>sourceIdentity then -
+    raise syntax 88.900 array('MP4 seek plan is not bound to this source')
+  if datatype(budget,'W')=0 | datatype(maxSamples,'W')=0 | -
+     budget<1 | maxSamples<1 | budget>16777216 | maxSamples>4096 then -
+    raise syntax 88.900 array('invalid MP4 byte plan budget')
+  if plan~anchor==.nil then raise syntax 88.900 array('no decoder random-access candidate')
+  first=plan~anchor~ordinal
+  last=plan~target~ordinal
+  if first<1 | last>sampleCount | last<first then -
+    raise syntax 88.900 array('MP4 plan sample interval invalid',first,last)
+  if last-first+1>maxSamples then -
+    raise syntax 88.900 array('MP4 seek exceeds bounded sample window',first,last)
+  ranges=.array~new
+  consumed=0
+  do i=first to last
+    sample=samples[i]
+    consumed=consumed+sample~sizeBytes
+    if consumed>budget then -
+      raise syntax 88.900 array('MP4 seek exceeds byte budget',consumed,budget)
+    prior=.nil
+    if ranges~items>0 then prior=ranges[ranges~items]
+    if prior<>.nil then do
+      if prior~canExtend(sample) then do
+        prior~append(sample)
+        iterate
+      end
+    end
+    ranges~append(.MediaMp4ByteRange~new(sample))
+  end
+  return ranges
 ::method planTime
   expose sourceIdentity timeScale
   use strict arg ticks
