@@ -1,0 +1,29 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": {
+    "provider": "native",
+    "path": "./libspash_ogg_decode.so",
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "functions": {
+    "decode_ogg_f32": {
+      "symbol": "spash_decode_ogg_f32",
+      "return": "i32",
+      "args": [
+        "utf8",
+        "utf8",
+        "utf8",
+        "u32",
+        "u32",
+        "u32",
+        "u32"
+      ]
+    },
+    "last_error": {
+      "symbol": "spash_decode_last_error",
+      "return": "utf8",
+      "args": []
+    }
+  }
+}
