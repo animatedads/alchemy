@@ -7,19 +7,19 @@ stts=box('stts',zero||u32(1)||u32(4)||u32(3000))
 ctts=box('ctts',x2c('01000000')||u32(4)||u32(1)||u32(0)||u32(1)||u32(3000)||u32(1)||u32(4294964296)||u32(1)||u32(0))
 stsc=box('stsc',zero||u32(1)||u32(1)||u32(2)||u32(1))
 stsz=box('stsz',zero||u32(0)||u32(4)||u32(5)||u32(6)||u32(7)||u32(8))
-stco=box('stco',zero||u32(2)||u32(128)||u32(200))
+stco=box('stco',zero||u32(2)||u32(1000000256)||u32(1000000512))
 stss=box('stss',zero||u32(2)||u32(1)||u32(4))
 metadata=box('stbl',stsd||stts||ctts||stsc||stsz||stco||stss)
-src=.Mp4FixtureSource~new(metadata,1024)
+src=.Mp4FixtureSource~new(metadata,1073741824)
 atoms=.Mp4AtomScanner~scan(src,0,src~metadataBytes)
 stbl=atoms[1]
 map=.MediaMp4SampleTable~new(stbl,7,90000)
 call eq 4,map~sampleCount,'sample count'
 call eq 'CANDIDATE_ONLY',map~indexStatus,'candidate status'
-call eq 128,map~sample(1)~byteOffset,'first offset'
-call eq 133,map~sample(2)~byteOffset,'second offset'
-call eq 200,map~sample(3)~byteOffset,'third offset'
-call eq 207,map~sample(4)~byteOffset,'fourth offset'
+call eq 1000000256,map~sample(1)~byteOffset,'first offset'
+call eq 1000000261,map~sample(2)~byteOffset,'second offset'
+call eq 1000000512,map~sample(3)~byteOffset,'third offset'
+call eq 1000000519,map~sample(4)~byteOffset,'fourth offset'
 call eq 5,map~sample(1)~sizeBytes,'variable bitrate sample size'
 call eq 8,map~sample(4)~sizeBytes,'variable bitrate final size'
 call eq 6000,map~sample(2)~presentationTicks,'positive composition shift'
@@ -33,9 +33,9 @@ call eq 1,plan~anchor~ordinal,'sync anchor in decode order'
 call eq 'UNVERIFIED_DECODER_PREROLL',plan~status,'no false exact seek'
 ranges=map~rangesForPlan(plan,64,10)
 call eq 2,ranges~items,'interleaved GOP requires two physical ranges'
-call eq 128,ranges[1]~offset,'first span starts at sync sample'
+call eq 1000000256,ranges[1]~offset,'first span starts at sync sample'
 call eq 11,ranges[1]~length,'adjacent samples merged into range'
-call eq 200,ranges[2]~offset,'second span skips interleaved data'
+call eq 1000000512,ranges[2]~offset,'second span skips interleaved data'
 call eq 7,ranges[2]~length,'second span excludes unrelated data'
 if plan~canDecodeExactly then call fail 'exact decoder proof fabricated'
 if map~planTime(10000)<>.nil then call fail 'EOF seek not rejected'
