@@ -11,7 +11,8 @@ stco=box('stco',zero||u32(2)||u32(128)||u32(200))
 stss=box('stss',zero||u32(2)||u32(1)||u32(4))
 metadata=box('stbl',stsd||stts||ctts||stsc||stsz||stco||stss)
 src=.Mp4FixtureSource~new(metadata,1024)
-stbl=.Mp4AtomScanner~scan(src,0,src~metadataBytes)[1]
+atoms=.Mp4AtomScanner~scan(src,0,src~metadataBytes)
+stbl=atoms[1]
 map=.MediaMp4SampleTable~new(stbl,7,90000)
 call eq 4,map~sampleCount,'sample count'
 call eq 'CANDIDATE_ONLY',map~indexStatus,'candidate status'
@@ -30,6 +31,12 @@ plan=map~planTime(3000)
 call eq 3,plan~target~ordinal,'target frame by presentation time'
 call eq 1,plan~anchor~ordinal,'sync anchor in decode order'
 call eq 'UNVERIFIED_DECODER_PREROLL',plan~status,'no false exact seek'
+ranges=map~rangesForPlan(plan,64,10)
+call eq 2,ranges~items,'interleaved GOP requires two physical ranges'
+call eq 128,ranges[1]~offset,'first span starts at sync sample'
+call eq 11,ranges[1]~length,'adjacent samples merged into range'
+call eq 200,ranges[2]~offset,'second span skips interleaved data'
+call eq 7,ranges[2]~length,'second span excludes unrelated data'
 if plan~canDecodeExactly then call fail 'exact decoder proof fabricated'
 if map~planTime(10000)<>.nil then call fail 'EOF seek not rejected'
 if src~bytesRequested>4096 then call fail 'metadata read budget exceeded'
