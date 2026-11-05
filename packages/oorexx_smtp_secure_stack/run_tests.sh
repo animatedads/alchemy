@@ -5,7 +5,8 @@ REXX_BIN="${REXX_BIN:-rexx}"
 export TEST_ROOT="$ROOT"
 export REXX_PATH="$ROOT/tests/support:$ROOT/src${REXX_PATH:+:$REXX_PATH}"
 cd "$ROOT"
-"$REXX_BIN" tests/test_policy.rex\n"$REXX_BIN" tests/test_mixed_recipient_atomicity.rex
+"$REXX_BIN" tests/test_policy.rex
+"$REXX_BIN" tests/test_mixed_recipient_atomicity.rex
 "$REXX_BIN" tests/test_access_permissions_adapter.rex
 "$REXX_BIN" tests/test_mas_mail_binding.rex
 REXX_BIN="$REXX_BIN" tests/smime_smoke.sh
@@ -31,7 +32,9 @@ if [ -n "${STORAGE_FABRIC_SRC:-}" ]; then
   export REXX_PATH="$ROOT/tests/support:$ROOT/src:$STORAGE_FABRIC_SRC${REXX_PATH:+:$REXX_PATH}"
   SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-durable-$" "$REXX_BIN" tests/test_durable_delivery.rex
   SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-mailstore-restart-$" "$REXX_BIN" tests/test_mail_store_restart.rex
-  SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-dispatch-$" "$REXX_BIN" tests/test_outbound_dispatcher.rex\n  IMAP_SMTP_STORE_TMP="${TMPDIR:-/tmp}/oorexx-imap-smtp-store-$" REXX_PATH="$ROOT/tests/imap_support:$ROOT/integration:$STORAGE_FABRIC_SRC${REXX_PATH:+:$REXX_PATH}" "$REXX_BIN" tests/test_smtp_delivered_store.rex\n  if [ -n "${SOCKET_PROVIDER_SRC:-}" ]; then "$REXX_BIN" tests/test_post_data_cleanup_exception.rex; fi
+  SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-dispatch-$" "$REXX_BIN" tests/test_outbound_dispatcher.rex
+  IMAP_SMTP_STORE_TMP="${TMPDIR:-/tmp}/oorexx-imap-smtp-store-$" REXX_PATH="$ROOT/tests/imap_support:$ROOT/integration:$STORAGE_FABRIC_SRC${REXX_PATH:+:$REXX_PATH}" "$REXX_BIN" tests/test_smtp_delivered_store.rex
+  if [ -n "${SOCKET_PROVIDER_SRC:-}" ]; then "$REXX_BIN" tests/test_post_data_cleanup_exception.rex; fi
 fi
 
 if [ -n "${FOREIGN_RUNTIME_ROOT:-}" ] && [ -n "${STORAGE_FABRIC_SRC:-}" ]; then
