@@ -18,16 +18,20 @@ call charout job
 invoker=.MediaForeignVideoInvoker~new(providerDir)
 call assert invoker~preflightPaths(job,result)='ADMITTED','valid synthetic job'
 call assert rejects(invoker,job,'/etc/invalid-outside-root.json'),'result path outside root'
-call charout job,changestr('"time"','"candidate_id": "../escape", "time"',raw)
-call charout job
-call assert rejects(invoker,job,result),'candidate traversal rejected'
-call charout job,changestr('"SYNTHETIC_ONLY"','"VIDEO_FILE", "path": "/etc/hosts"',raw)
-call charout job
-call assert rejects(invoker,job,result),'source path outside root rejected'
-call charout job,raw
-call charout job
-call assert invoker~preflightPaths(job,result)='ADMITTED','gate recovers after invalid job'
-if rxfuncquery('SysFileDelete')=0 then call SysFileDelete job
+badNameJob=root||'/synthetic-private-gate-traversal.json'
+call charout badNameJob,changestr('"time"','"candidate_id": "../escape", "time"',raw)
+call charout badNameJob
+call assert rejects(invoker,badNameJob,result),'candidate traversal rejected'
+badSourceJob=root||'/synthetic-private-gate-outside-source.json'
+call charout badSourceJob,changestr('"SYNTHETIC_ONLY"','"VIDEO_FILE", "path": "/etc/hosts"',raw)
+call charout badSourceJob
+call assert rejects(invoker,badSourceJob,result),'source path outside root rejected'
+call assert invoker~preflightPaths(job,result)='ADMITTED','gate remains valid after rejected jobs'
+if rxfuncquery('SysFileDelete')=0 then do
+  call SysFileDelete job
+  call SysFileDelete badNameJob
+  call SysFileDelete badSourceJob
+end
 say 'PASS private Foreign video preflight 5/5 (synthetic)'
 exit 0
 
