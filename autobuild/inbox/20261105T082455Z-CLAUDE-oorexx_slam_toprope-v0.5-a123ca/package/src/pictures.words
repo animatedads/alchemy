@@ -1,0 +1,104 @@
+-- pictures.words : the picture book for SLAM Draw
+-- Architecture: Tom Dyer.  Words written by: Claude (Opus 5.5).
+--
+-- A picture starts with "make <name>" and stops with "end".
+-- "size W by H" gives the shape of the picture in units.
+-- Every place and every thick is in those units.
+-- Places go right from the left side and down from the top.
+
+colour white is #ffffff
+colour black is #000000
+colour red is #c8102e
+colour navy is #012169
+colour blue is #0057b8
+colour sky is #8ecae6
+colour green is #009b3a
+colour yellow is #ffcd00
+colour gold is #ffb81c
+colour orange is #ff8200
+colour grey is #8a8d8f
+colour gray is #8a8d8f
+colour cream is #fdf6e3
+colour shade is #00000030
+
+
+-- ------------------------------------------------------------------
+make nice boxes
+  size 3 by 2
+  paint all cream
+  -- three boxes on top, each with a shade under it
+  box shade from 0.24 0.24 to 0.99 0.99 round 0.06
+  box navy  from 0.2 0.2 to 0.95 0.95 round 0.06
+  box shade from 1.165 0.24 to 1.915 0.99 round 0.06
+  box gold  from 1.125 0.2 to 1.875 0.95 round 0.06
+  box shade from 2.09 0.24 to 2.84 0.99 round 0.06
+  box red   from 2.05 0.2 to 2.8 0.95 round 0.06
+  -- one long open box, with three small boxes in it
+  box none from 0.2 1.15 to 2.8 1.8 round 0.06 edge navy thick 0.025
+  mark row at middle down 0.475
+  box sky    size 0.5 by 0.35 at row left 0.7 round 0.04
+  box green  size 0.5 by 0.35 at row round 0.04
+  box orange size 0.5 by 0.35 at row right 0.7 round 0.04
+end
+
+
+-- ------------------------------------------------------------------
+-- The Union Flag (Union Jack), 1 by 2, in parts of 30 high:
+--   white saltire 6 wide, red saltire 2 wide, put to one side so the
+--   broad white is uppermost at the hoist (the pinwheel),
+--   white cross 10 wide, red cross 6 wide.
+-- Each red arm goes out from the middle and is shifted to its left.
+make union flag
+  size 2 by 1
+  paint all navy
+  band white from top left to bottom right thick 1/5
+  band white from bottom left to top right thick 1/5
+  band red from middle to top left thick 1/15 shift 1/30 left
+  band red from middle to top right thick 1/15 shift 1/30 left
+  band red from middle to bottom right thick 1/15 shift 1/30 left
+  band red from middle to bottom left thick 1/15 shift 1/30 left
+  band white across at 1/2 thick 1/3
+  band white down at 1 thick 1/3
+  band red across at 1/2 thick 1/5
+  band red down at 1 thick 1/5
+end
+
+
+-- ------------------------------------------------------------------
+-- The Blue Ensign: navy, with the Union Flag in the canton.
+make blue ensign
+  size 2 by 1
+  paint all navy
+  draw union flag in canton
+end
+
+
+-- ------------------------------------------------------------------
+-- The Southern Cross, as Flags Act 1953 Table B gives it.
+-- It is drawn in the fly half, which is a square 1 by 1, so one unit
+-- is the width of the flag, the unit the Act uses.
+make southern cross
+  size 1 by 1
+  -- Alpha: on middle line, one-sixth from bottom edge
+  star 7 points white size 1/7 inner 4/9 at bottom up 1/6
+  -- Beta: one-quarter from middle line on left, one-sixteenth above centre of fly
+  star 7 points white size 1/7 inner 4/9 at middle left 1/4 up 1/16
+  -- Gamma: on middle line, one-sixth from top edge
+  star 7 points white size 1/7 inner 4/9 at top down 1/6
+  -- Delta: two-ninths on right, one-fifteenth above a point one-sixteenth above centre of fly
+  star 7 points white size 1/7 inner 4/9 at middle right 2/9 up 1/16 up 1/15
+  -- Epsilon: one-tenth on right, one twenty-fourth below centre of fly
+  star 5 points white size 1/12 inner 4/9 at middle right 1/10 down 1/24
+end
+
+
+-- ------------------------------------------------------------------
+-- The Australian National Flag, Flags Act 1953 Schedule 1.
+make australian flag
+  size 2 by 1
+  draw blue ensign
+  -- Commonwealth Star (Table A): on the middle line of the Union Jack,
+  -- one-quarter of the width from the bottom edge, outer 3/10 of width
+  star 7 points white size 3/10 inner 4/9 at bottom left right 1/2 up 1/4
+  draw southern cross in fly half
+end

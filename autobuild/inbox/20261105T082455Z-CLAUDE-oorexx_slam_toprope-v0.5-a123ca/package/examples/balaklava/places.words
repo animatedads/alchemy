@@ -1,0 +1,39 @@
+-- Balaklava, 25 October 1854: who could see what.
+-- Grid: north_valley.asc, cut from Copernicus GLO-30 tile N44 E033 with GDAL 3.8.4
+-- (33.565-33.665 E, 44.518-44.552 N, 1 arc second, values to 0.1 m).
+-- Produced using Copernicus WorldDEM-30 (c) DLR e.V. 2010-2014 and (c) Airbus Defence
+-- and Space GmbH 2014-2018 provided under COPERNICUS by the European Union and ESA;
+-- all rights reserved. The organisations in charge of the Copernicus programme by
+-- law or by delegation do not incur any liability for any use of the Copernicus WorldDEM-30.
+--
+-- Positions: Claude (Opus 5.5) read them from the relief against the written accounts,
+-- which give them in words only, so every look is made "within" a distance:
+--   Raglan "on an elevated spur of the Sapoune Heights"
+--   Lucan "on rising ground at the near end of the Causeway Heights"
+--   the Light Brigade at the west end of the North Valley
+--   the Russian battery at the east end, about 2 km on
+--   the captured British guns in redoubts on the Causeway Heights crest, and their
+--   reverse (south) slope, where the Russians were taking them off
+-- Eyes: a man on horseback 2.5 m; guns and gunners 1.5 m.
+source Copernicus GLO-30 surface model (today's trees and buildings count as ground), 30 m grid
+place raglan 44.5370 33.5760 eye 2.5
+place lucan 44.5340 33.6050 eye 2.5
+place light-brigade 44.5400 33.6070 eye 2.5
+place russian-battery 44.5400 33.6320 eye 1.5
+place redoubt-crest-west 44.5340 33.6150 eye 1.5
+place redoubt-crest-mid 44.5310 33.6250 eye 1.5
+place redoubt-crest-east 44.5280 33.6350 eye 1.5
+place reverse-slope-west 44.5325 33.6150 eye 1.5
+place reverse-slope-mid 44.5295 33.6250 eye 1.5
+place reverse-slope-east 44.5265 33.6350 eye 1.5
+look raglan russian-battery within 300 150
+look raglan redoubt-crest-mid within 300 150
+look raglan reverse-slope-mid within 300 150
+look raglan reverse-slope-east within 300 150
+look lucan russian-battery within 300 150
+look lucan redoubt-crest-mid within 300 150
+look lucan reverse-slope-mid within 300 150
+look lucan reverse-slope-east within 300 150
+look light-brigade russian-battery within 300 150
+look light-brigade reverse-slope-mid within 300 150
+look light-brigade reverse-slope-east within 300 150
