@@ -1,0 +1,43 @@
+# rules.src - what events need and what they change, in concepts only.
+#   ^event | precondition | effects
+# A rule applies to the event and to everything that isa it.
+# Fields on an entity: loc, holder, home.
+#   role.field<-a/b/c   set from the first of roles a, b, c that is present
+#   role.field?=a       check against what is known; set only if unknown
+#   role.field~^c       precondition: the field's entity isa c
+#   role.field~^r@^c    ... and the place's relation is r; !~ negates (not buried)
+#   ^event|remains-if|cond   a count statement ("Six acorns remained") counts things meeting cond
+#   role.within=r       precondition: the entity is in or on (a part of) role r
+#   role.on-same=r      precondition: the entity is on the same thing as role r (or a part of it)
+#   role.field=r        precondition: the field holds role r (you set down what you hold)
+#   ^rel@role / ^rel@^concept   a place built from a relation and a target
+# Preconditions are open-world: unknown passes; only a known contradiction fails.
+# Effects are separated by ";".
+#   hiding<-role!^c     something unseen may be in role (a bush that shakes by itself);
+#                       not when role isa c. Kept for the scene.
+#   ^rel@hidden         the place last marked hiding. A location set this way is an
+#                       inference: it carries the props it came from (locInfer).
+^move||agent.loc<-to/at/path
+^sit||agent.loc<-at
+^live||agent.home<-at;agent.loc<-at
+^hold||patient.holder<-agent;patient.loc<-^rel-held@agent
+^drop|patient.holder=agent|patient.holder<-none;patient.loc<-^rel-in@^air
+^hit|agent.loc~^air|agent.loc<-^rel-on@patient
+^set|patient.holder=agent|patient.holder<-none;patient.loc<-at
+^throw|patient.holder=agent|patient.holder<-none;patient.loc<-at/to
+^land|agent.loc~^air|agent.loc<-at/to
+^push||patient.loc<-to
+^shake|patient.within=from|patient.loc<-^rel-on@^ground;hiding<-agent!^living
+^emerge||agent.loc<-source/from/^rel-in@hidden
+^leave|agent.within=from|agent.loc<-^rel-near@from
+^see||patient.loc?=at
+^be||holder.loc<-at
+^posture||agent.loc<-at
+^descend|agent.on-same=path|agent.loc<-^rel-on@^ground
+^stick||agent.loc<-to
+^put||patient.holder<-none;patient.loc<-to/at
+^bury||patient.holder<-none;patient.loc<-^rel-in@^soil
+^lift|patient.loc!~^rel-in@^soil|patient.holder<-agent;patient.loc<-^rel-held@agent
+^pick|patient.loc!~^rel-in@^soil|patient.holder<-agent;patient.loc<-^rel-held@agent
+^remain|remains-if|loc!~^rel-in@^soil
+^dig||patient.loc<-at
