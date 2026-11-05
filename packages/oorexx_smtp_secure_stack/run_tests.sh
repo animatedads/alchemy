@@ -2,6 +2,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")" && pwd)"
 REXX_BIN="${REXX_BIN:-rexx}"
+bash "$ROOT/tests/test_runner_structure.sh" "$ROOT/run_tests.sh"
 export TEST_ROOT="$ROOT"
 export REXX_PATH="$ROOT/tests/support:$ROOT/src${REXX_PATH:+:$REXX_PATH}"
 cd "$ROOT"
