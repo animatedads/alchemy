@@ -407,7 +407,8 @@
   expose samples sampleCount sourceIdentity
   use strict arg plan,budget=4194304,maxSamples=512
   self~assertSource
-  if plan==.nil | plan~sourceIdentity<>sourceIdentity then -
+  if plan==.nil then raise syntax 88.900 array('MP4 seek plan must not be nil')
+  if plan~sourceIdentity<>sourceIdentity then -
     raise syntax 88.900 array('MP4 seek plan is not bound to this source')
   if datatype(budget,'W')=0 | datatype(maxSamples,'W')=0 | -
      budget<1 | maxSamples<1 | budget>16777216 | maxSamples>4096 then -
