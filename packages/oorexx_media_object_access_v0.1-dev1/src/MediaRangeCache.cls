@@ -101,3 +101,4 @@
   entries=.directory~new
   blocksRetained=0
   return self
+::requires 'MediaByteSource.cls'
