@@ -28,6 +28,10 @@
   resultPath=strip(resultPathArg)
   if jobPath='' | resultPath='' then raise syntax 93.900 array('PRIVATE_MATERIAL_PATH_REQUIRED')
 
+  /* The privacy boundary belongs to ooRexx, not just one reference provider.
+   * Fail BEFORE loading any replaceable Python implementation. */
+  self~preflightPaths(jobPath,resultPath)
+
   /* Use the real interpreter's resident import bridge, not a Python process.
    * Resolve the exact provider file inside its trusted installed directory.
    * No arbitrary module search path or caller-supplied Python source strings. */
@@ -57,5 +61,66 @@
   if \datatype(providerRc,'W') then raise syntax 93.900 array('INVALID_FOREIGN_PROVIDER_RETURN')
   return providerRc
 
+
+/* Check job + output + source paths in ooRexx before foreign implementation.
+ * Provider-side repetition is defence in depth, not the principal authority.
+ * All paths are canonicalised through the resident Foreign Runtime os.path.
+ * Paths cannot equal the root of the filesystem or resolve into a Git tree.
+ */
+::method preflightPaths
+  use strict arg jobPath,resultPath
+  env=.ForeignPython~import('os')
+  environ=env~get('environ')
+  privateRoot=environ~get('ALCHEMY_PRIVATE_MEDIA_ROOT','')
+  if privateRoot=.nil then privateRoot=''
+  privateRoot=strip(privateRoot)
+  if privateRoot='' then raise syntax 93.900 array('PRIVATE_MEDIA_ROOT_REQUIRED')
+  paths=.ForeignPython~import('os.path')
+  if \paths~isabs(privateRoot) then raise syntax 93.900 array('PRIVATE_MEDIA_ROOT_NOT_ABSOLUTE')
+  root=paths~realpath(privateRoot)
+  if root='/' then raise syntax 93.900 array('PRIVATE_MEDIA_ROOT_UNSAFE')
+  if \paths~isdir(root) then raise syntax 93.900 array('PRIVATE_MEDIA_ROOT_MISSING')
+  /* Validate caller paths before reading the job JSON. */
+  self~checkPrivatePath(paths,root,jobPath)
+  self~checkPrivatePath(paths,root,resultPath)
+  job=.json~fromJsonFile(jobPath)
+  if job=.nil then raise syntax 93.900 array('PRIVATE_JOB_UNREADABLE')
+  if \job~isA(.Directory) then raise syntax 93.900 array('PRIVATE_JOB_INVALID')
+  outDir=job['output_dir']
+  if outDir=.nil then raise syntax 93.900 array('PRIVATE_OUTPUT_DIR_REQUIRED')
+  self~checkPrivatePath(paths,root,outDir)
+  source=job['source']
+  if source<>.nil then do
+    if \source~isA(.Directory) then raise syntax 93.900 array('PRIVATE_SOURCE_INVALID')
+    if source['kind']='VIDEO_FILE' then do
+      sourcePath=source['path']
+      if sourcePath=.nil then raise syntax 93.900 array('PRIVATE_SOURCE_PATH_REQUIRED')
+      self~checkPrivatePath(paths,root,sourcePath)
+    end
+  end
+  paths~close
+  environ~close
+  env~close
+  return 'ADMITTED'
+
+::method checkPrivatePath private
+  use strict arg paths,root,path
+  if path=.nil then raise syntax 93.900 array('PRIVATE_MATERIAL_PATH_REQUIRED')
+  if \paths~isabs(path) then raise syntax 93.900 array('PRIVATE_MATERIAL_PATH_NOT_ABSOLUTE')
+  actual=paths~realpath(path)
+  if actual<>root then do
+    if left(actual,length(root)+1)<>root||'/' then raise syntax 93.900 array('PRIVATE_MATERIAL_OUTSIDE_ROOT')
+  end
+  cursor=actual
+  if \paths~isdir(cursor) then cursor=paths~dirname(cursor)
+  do forever
+    if paths~exists(paths~join(cursor,'.git')) then raise syntax 93.900 array('GIT_WORKTREE_MEDIA_FORBIDDEN')
+    parent=paths~dirname(cursor)
+    if parent=cursor then leave
+    cursor=parent
+  end
+  return actual
+
 ::requires 'MediaReferenceVideoProviders.cls'
+::requires 'json.cls'
 ::requires 'python_foreign.cls'
