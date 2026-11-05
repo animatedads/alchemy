@@ -14,26 +14,26 @@ cases~append(.array~of('2026-11-02T12:16:00Z',-33.8688,151.2093,'MOON_DOWN'))
 checks = 0
 do sample over cases
   result = .MoonsaultEphemeris~sunMoon(sample[1],sample[2],sample[3])
-  call require result['status'] == 'PREDICTION_ONLY', 'provider status'
-  call require result['observationIndependent'] == .false, 'not an observation'
-  call require result['skyObservationStatus'] == 'NOT_OBSERVED', 'no observed sky'
-  call require result['visibilityBasis'] == 'GEOMETRIC_EPHEMERIS_ONLY', 'geometry only'
-  call require result['cloudCoverStatus'] == 'UNKNOWN', 'no cloud observation'
+  call assert result['status'] == 'PREDICTION_ONLY', 'provider status'
+  call assert result['observationIndependent'] == .false, 'not an observation'
+  call assert result['skyObservationStatus'] == 'NOT_OBSERVED', 'no observed sky'
+  call assert result['visibilityBasis'] == 'GEOMETRIC_EPHEMERIS_ONLY', 'geometry only'
+  call assert result['cloudCoverStatus'] == 'UNKNOWN', 'no cloud observation'
   do bodyName over .array~of('sun','moon')
     body = result[bodyName]
-    call require body['observationStatus'] == 'NOT_OBSERVED', bodyName 'no observation'
-    call require body['observedVisibility'] == 'UNKNOWN', bodyName 'not camera visible'
-    call require body['visibilityBasis'] == 'GEOMETRIC_EPHEMERIS_ONLY', bodyName 'geometry'
-    call require body['cloudCoverStatus'] == 'UNKNOWN', bodyName 'cloud unknown'
+    call assert body['observationStatus'] == 'NOT_OBSERVED', bodyName 'no observation'
+    call assert body['observedVisibility'] == 'UNKNOWN', bodyName 'not camera visible'
+    call assert body['visibilityBasis'] == 'GEOMETRIC_EPHEMERIS_ONLY', bodyName 'geometry'
+    call assert body['cloudCoverStatus'] == 'UNKNOWN', bodyName 'cloud unknown'
     checks += 4
   end
   select
     when sample[4] == 'DAY' then
-      call require result['sun']['aboveHorizon'], 'daytime Sun above horizon'
+      call assert result['sun']['aboveHorizon'], 'daytime Sun above horizon'
     when sample[4] == 'MOON_NIGHT' then
-      call require result['moon']['visibilityCandidate'], 'night Moon geometric candidate'
+      call assert result['moon']['visibilityCandidate'], 'night Moon geometric candidate'
     when sample[4] == 'MOON_DOWN' then
-      call require \result['moon']['visibilityCandidate'], 'Moon under horizon'
+      call assert \result['moon']['visibilityCandidate'], 'Moon under horizon'
     otherwise
       say 'FAIL unknown case' sample[4]
       exit 2
@@ -42,7 +42,7 @@ do sample over cases
 end
 say 'MOONSAULT VISIBILITY AUTHORITY PASS:' cases~items 'time cases,' checks 'checks; zero observed claims'
 exit 0
-require: procedure
+assert: procedure
   use arg ok, reason
   if \ok then do
     say 'FAIL' reason
