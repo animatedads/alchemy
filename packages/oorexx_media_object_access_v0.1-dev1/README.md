@@ -58,6 +58,7 @@ rexx test_seek_index.rex
 rexx test_mp4_sample_table.rex
 rexx test_mp4_co64.rex
 rexx test_mp4_elst.rex
+rexx test_mp4_track_elst.rex
 rexx test_media_cache_1gb.rex
 ```
 
@@ -92,9 +93,13 @@ and fractional track-tick boundaries remain explicitly unsupported.
 `tests/test_mp4_elst.rex` covers +89 ms, trimmed media start and signed64
 empty edit on a synthetic logical 1 GiB MP4. The new implementation has
 **not yet been qualified against the resident TP08**; the review predates
-these changes. Run the six-test runner and then verify on the actual file.
+these changes. Run the seven-test runner and then verify on the actual file.
 
 A real 256 MiB camera MP4 reported 1,753,168 bytes of metadata reads to
 construct the index, with approximately 22 seconds of ooRexx CPU time.
 Persisting a source-version-fenced sample index remains essential for true
 repeated hot jumps.
+
+`tests/test_mp4_track_elst.rex` exercises the full native MP4 class route from
+`moov/mvhd` through `trak/edts/elst` to a 1 GiB sparse sample mapping with
+an unchanged byte address, rather than calling the table parser directly.
