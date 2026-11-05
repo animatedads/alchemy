@@ -57,3 +57,22 @@ candidate/support/uncertainty outputs, and independent held-out verification.
 Unavailable detail remains UNKNOWN; no generative fill may establish factual
 visual detail. Occupant reconstruction and identity inference are outside the
 initial vehicle-exterior trial.
+
+## Provider execution correction
+
+The initial Media Methodologies reference-video runner has been migrated from
+`ADDRESS SYSTEM python3 ...` to the existing **Foreign Runtime** resident
+Python bridge. The SLAM stage must not execute Python or call shell commands;
+it selects five published methodology IDs and scores verified Media candidates.
+Media Methodologies owns the Foreign execution adapter and result authority;
+Vision and Camera Behaviour own their underlying observation contracts.
+
+The approved alternative for a future provider is the existing ooRexx Python
+Macrospace boundary (including its replacement backend), but this increment
+implements the already-qualified Foreign Runtime API rather than inventing a
+new integration mechanism.
+
+**Private media remain outside GitHub, including negative-result artifacts.**
+A native vs reference-method comparison is not scored as TESTED solely because
+its provider completed; an independent checker and substantive forward-model
+qualification are still required.
