@@ -43,10 +43,20 @@
   if n<>1 & n<>2 & n<>4 & n<>8 then -
     raise syntax 88.900 array('unsupported MP4 integer width',n)
   return x2d(c2x(self~bytes(offset,n)))
+::method signed16
+  use strict arg offset
+  n=self~unsigned(offset,2)
+  if n>=32768 then n=n-65536
+  return n
 ::method signed32
   use strict arg offset
   n=self~unsigned(offset,4)
   if n>=2147483648 then n=n-4294967296
+  return n
+::method signed64
+  use strict arg offset
+  n=self~unsigned(offset,8)
+  if n>=9223372036854775808 then n=n-18446744073709551616
   return n
 ::method version
   return self~unsigned(0,1)
@@ -64,24 +74,37 @@
 ::attribute descriptionIndex get
 ::attribute decodeTicks get
 ::attribute presentationTicks get
+::attribute mediaPresentationTicks get
+::attribute presentationVisible get
 ::attribute durationTicks get
 ::attribute syncCandidate get
 ::method init
-  expose ordinal byteOffset sizeBytes chunkOrdinal descriptionIndex decodeTicks presentationTicks durationTicks syncCandidate
+  expose ordinal byteOffset sizeBytes chunkOrdinal descriptionIndex decodeTicks presentationTicks mediaPresentationTicks presentationVisible durationTicks syncCandidate
   use strict arg ord,offset,bytes,chunk,description
   ordinal=ord; byteOffset=offset; sizeBytes=bytes
   chunkOrdinal=chunk; descriptionIndex=description
-  decodeTicks=0; presentationTicks=0; durationTicks=0
-  syncCandidate=.false
+  decodeTicks=0; presentationTicks=0; mediaPresentationTicks=0; durationTicks=0
+  presentationVisible=.true; syncCandidate=.false
 ::method assignClock
-  expose decodeTicks presentationTicks durationTicks
+  expose decodeTicks presentationTicks mediaPresentationTicks durationTicks
   use strict arg dts,duration
-  decodeTicks=dts; presentationTicks=dts; durationTicks=duration
+  decodeTicks=dts; mediaPresentationTicks=dts
+  presentationTicks=dts; durationTicks=duration
   return self
 ::method addCompositionOffset
-  expose presentationTicks
+  expose presentationTicks mediaPresentationTicks
   use strict arg offset
-  presentationTicks=presentationTicks+offset
+  mediaPresentationTicks=mediaPresentationTicks+offset
+  presentationTicks=mediaPresentationTicks
+  return self
+::method hideFromPresentation
+  expose presentationVisible
+  presentationVisible=.false
+  return self
+::method setMoviePresentation
+  expose presentationTicks presentationVisible
+  use strict arg movieTicks
+  presentationTicks=movieTicks; presentationVisible=.true
   return self
 ::method markSyncCandidate
   expose syncCandidate
@@ -136,6 +159,7 @@
 
 ::class MediaMp4SampleTable public
 ::attribute sampleCount get
+::attribute presentationCount get
 ::attribute timeScale get
 ::attribute trackId get
 ::attribute sourceIdentity get
@@ -143,15 +167,15 @@
 ::attribute hasCompositionOffsets get
 ::attribute hasSyncTable get
 ::method init
-  expose source sourceIdentity trackId timeScale samples presented syncOrdinals sampleCount -
+  expose source sourceIdentity trackId timeScale samples presented syncOrdinals sampleCount presentationCount -
          indexStatus hasCompositionOffsets hasSyncTable
-  use strict arg stblAtom,id,scale
+  use strict arg stblAtom,id,scale,editAtom=.nil,movieScale=0
   if stblAtom~kind<>'stbl' then raise syntax 88.900 array('MP4 sample table expected stbl')
   if datatype(scale,'W')=0 | scale<1 then raise syntax 88.900 array('invalid MP4 media timescale')
   source=stblAtom~source; sourceIdentity=source~sourceIdentity
   trackId=id; timeScale=scale
   samples=.array~new; presented=.array~new; syncOrdinals=.array~new
-  sampleCount=0; indexStatus='BUILDING'
+  sampleCount=0; presentationCount=0; indexStatus='BUILDING'
   hasCompositionOffsets=.false; hasSyncTable=.false
   boxes=.directory~new
   children=stblAtom~children
@@ -177,6 +201,10 @@
   self~mapDecodeTime(boxes['stts'])
   if boxes~hasIndex('ctts') then self~mapComposition(boxes['ctts'])
   if boxes~hasIndex('stss') then self~mapSyncCandidates(boxes['stss'])
+  if editAtom<>.nil then do
+    timeline=.MediaMp4EditTimeline~new(editAtom,movieScale,timeScale)
+    ignored=timeline~applyToSamples(samples)
+  end
   self~sortPresentation
   if source~sourceIdentity<>sourceIdentity then -
     raise syntax 88.900 array('MP4 source changed during metadata index construction')
@@ -328,18 +356,19 @@
   end
   hasSyncTable=.true
 ::method sortPresentation private
-  expose samples sampleCount presented
+  expose samples sampleCount presented presentationCount
   presented=.array~new
   do i=1 to sampleCount
-    presented~append(samples[i])
+    if samples[i]~presentationVisible then presented~append(samples[i])
   end
+  presentationCount=presented~items
   width=1
-  do while width<sampleCount
+  do while width<presentationCount
     merged=.array~new
     start=1
-    do while start<=sampleCount
-      mid=min(start+width,sampleCount+1)
-      stop=min(start+2*width,sampleCount+1)
+    do while start<=presentationCount
+      mid=min(start+width,presentationCount+1)
+      stop=min(start+2*width,presentationCount+1)
       a=start; b=mid
       do while a<mid | b<stop
         if b>=stop then do
@@ -376,11 +405,11 @@
     raise syntax 88.900 array('MP4 sample index outside table',ordinal)
   return samples[ordinal]
 ::method atOrAfter
-  expose presented sampleCount
+  expose presented presentationCount
   use strict arg pts
   self~assertSource
   if datatype(pts,'W')=0 then raise syntax 88.900 array('presentation time must be integer ticks')
-  lo=1; hi=sampleCount; found=0
+  lo=1; hi=presentationCount; found=0
   do while lo<=hi
     mid=(lo+hi)%2
     if presented[mid]~presentationTicks>=pts then do
@@ -446,3 +475,5 @@
   if target==.nil then return .nil
   anchor=self~priorSyncCandidate(target~ordinal)
   return .MediaMp4SeekPlan~new(target,anchor,sourceIdentity,timeScale,ticks)
+
+::requires 'Mp4EditList.cls'
