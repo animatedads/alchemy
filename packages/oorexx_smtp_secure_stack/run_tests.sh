@@ -30,10 +30,10 @@ rm -f "$READY" "$LOG"
 
 if [ -n "${STORAGE_FABRIC_SRC:-}" ]; then
   export REXX_PATH="$ROOT/tests/support:$ROOT/src:$STORAGE_FABRIC_SRC${REXX_PATH:+:$REXX_PATH}"
-  SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-durable-$" "$REXX_BIN" tests/test_durable_delivery.rex
-  SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-mailstore-restart-$" "$REXX_BIN" tests/test_mail_store_restart.rex
-  SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-dispatch-$" "$REXX_BIN" tests/test_outbound_dispatcher.rex
-  IMAP_SMTP_STORE_TMP="${TMPDIR:-/tmp}/oorexx-imap-smtp-store-$" REXX_PATH="$ROOT/tests/imap_support:$ROOT/integration:$STORAGE_FABRIC_SRC${REXX_PATH:+:$REXX_PATH}" "$REXX_BIN" tests/test_smtp_delivered_store.rex
+  SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-durable-$$" "$REXX_BIN" tests/test_durable_delivery.rex
+  SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-mailstore-restart-$$" "$REXX_BIN" tests/test_mail_store_restart.rex
+  SMTP_TEST_TMP="${TMPDIR:-/tmp}/oorexx-smtp-dispatch-$$" "$REXX_BIN" tests/test_outbound_dispatcher.rex
+  IMAP_SMTP_STORE_TMP="${TMPDIR:-/tmp}/oorexx-imap-smtp-store-$$" REXX_PATH="$ROOT/tests/imap_support:$ROOT/integration:$STORAGE_FABRIC_SRC${REXX_PATH:+:$REXX_PATH}" "$REXX_BIN" tests/test_smtp_delivered_store.rex
   if [ -n "${SOCKET_PROVIDER_SRC:-}" ]; then "$REXX_BIN" tests/test_post_data_cleanup_exception.rex; fi
 fi
 
