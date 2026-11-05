@@ -3,7 +3,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REXX_BIN="${REXX_BIN:-rexx}"
 BASE_REXX_PATH="$ROOT/src:$ROOT/tests${REXX_PATH:+:$REXX_PATH}"
-for t in test_security_modes.rex test_core.rex test_wire_reader.rex test_session.rex test_append_literal.rex test_append_result.rex test_mailbox_mutation.rex test_peek_guard.rex test_line_bound.rex test_diagnostics.rex test_semantics.rex test_append_intent.rex test_index_core.rex test_uid_mapping.rex test_move_semantics.rex test_transfer_commit.rex test_review_contracts.rex test_server_core.rex test_server_messages.rex test_server_idle.rex test_server_literal_endpoint.rex test_ldap_adapter.rex; do
+for t in test_security_modes.rex test_core.rex test_wire_reader.rex test_session.rex test_append_literal.rex test_append_result.rex test_mailbox_mutation.rex test_peek_guard.rex test_line_bound.rex test_diagnostics.rex test_semantics.rex test_append_intent.rex test_index_core.rex test_uid_mapping.rex test_move_semantics.rex test_transfer_commit.rex test_review_contracts.rex test_server_core.rex test_server_messages.rex test_revocation_feed.rex test_server_idle.rex test_server_literal_endpoint.rex test_ldap_adapter.rex; do
   echo "== $t =="
   REXX_PATH="$BASE_REXX_PATH" "$REXX_BIN" "$ROOT/tests/$t"
 done
