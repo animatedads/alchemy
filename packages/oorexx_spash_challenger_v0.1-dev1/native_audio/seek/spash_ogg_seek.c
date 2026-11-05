@@ -183,6 +183,7 @@ typedef struct {
     int first_frame;
     uint64_t samples_written,packet_count,frames_decoded;
     double peak;
+    int64_t jitter_max;
 } Extract;
 static int admit(Extract *e,AVFrame *frame){
     if(frame->nb_samples<=0)return 0;
@@ -212,26 +213,47 @@ static int admit(Extract *e,AVFrame *frame){
               e->input_format!=frame->format)
         return err("source sample format changed within logical stream",AVERROR_INVALIDDATA);
     int64_t relative_pts=frame->best_effort_timestamp-e->start_pts;
-    /* Frame PTS is in the selected AVStream time base, not file byte position. */
-    int64_t frame_sample=av_rescale_q(relative_pts,e->st->time_base,(AVRational){1,(int)e->rate});
-    int64_t delay=swr_get_delay(e->swr,(int)e->rate);
-    if(delay<0 || delay>e->rate)return err("unexpected resampler delay",AVERROR_INVALIDDATA);
-    int64_t origin=frame_sample-delay;
+    /* Preserve the whole-file resampling grid. At 44100 -> 8000 Hz, the
+     * exact common grid has input period 441 and output period 80 samples.
+     * Frame PTS near Vorbis block changes can jitter due to overlap. The
+     * sample count, not each frame's PTS, advances the continuous grid.
+     * Credit: Claude Opus 5.5, independent tp07 real-file qualification. */
+    int skip=0;
+    int64_t in_idx=av_rescale_q(relative_pts,e->st->time_base,(AVRational){1,e->input_rate});
     if(!e->first_frame){
-        e->first_frame=1;e->next_output=origin;
+        int64_t g=e->input_rate,h=e->rate;
+        while(h){int64_t t=g%h;g=h;h=t;}
+        int64_t P=e->input_rate/g,Q=e->rate/g;
+        int64_t aligned=((in_idx+P-1)/P)*P;
+        if(in_idx<0)aligned=((in_idx)/P)*P;
+        skip=(int)(aligned-in_idx);
+        if(skip>=frame->nb_samples)return 0;
+        e->first_frame=1;e->next_output=(aligned/P)*Q;
         int64_t early=e->first_output-((int64_t)MAX_FIRST_FRAME_LEAD_MS*e->rate/1000);
-        if(origin>e->first_output || origin<early)
+        if(e->next_output>e->first_output || e->next_output<early)
             return err("random seek failed to land inside bounded pre-roll",AVERROR_INVALIDDATA);
-    } else if(llabs(origin-e->next_output)>3) {
-        /* Independent discontinuities/chains must not be silently concatenated. */
-        return err("audio PTS discontinuity/chained stream requires new segment",AVERROR_INVALIDDATA);
+    }else{
+        int64_t frame_sample=av_rescale_q(relative_pts,e->st->time_base,(AVRational){1,(int)e->rate});
+        int64_t delay=swr_get_delay(e->swr,(int)e->rate);
+        int64_t jit=llabs(frame_sample-delay-e->next_output);
+        if(jit>e->jitter_max)e->jitter_max=jit;
+        if(jit>(int64_t)e->rate/20)
+            return err("audio PTS discontinuity/chained stream requires new segment",AVERROR_INVALIDDATA);
     }
-    int maxout=swr_get_out_samples(e->swr,frame->nb_samples);
+    const uint8_t *in[AV_NUM_DATA_POINTERS]={0};
+    int bps=av_get_bytes_per_sample((enum AVSampleFormat)frame->format);
+    if(bps<1)return err("invalid input sample format",AVERROR_INVALIDDATA);
+    if(av_sample_fmt_is_planar((enum AVSampleFormat)frame->format)){
+        for(int c=0;c<frame->ch_layout.nb_channels && c<AV_NUM_DATA_POINTERS;c++)
+            in[c]=frame->extended_data[c]+(size_t)skip*bps;
+    }else in[0]=frame->extended_data[0]+(size_t)skip*bps*frame->ch_layout.nb_channels;
+    int in_n=frame->nb_samples-skip;
+    int maxout=swr_get_out_samples(e->swr,in_n);
     if(maxout<1 || maxout>2000000)return err("invalid native resample bound",AVERROR(EINVAL));
     float *values=malloc((size_t)maxout*sizeof *values);
     if(!values)return err("resample buffer allocation",AVERROR(ENOMEM));
     uint8_t *dst[1]={(uint8_t*)values};
-    int n=swr_convert(e->swr,dst,maxout,(const uint8_t**)frame->extended_data,frame->nb_samples);
+    int n=swr_convert(e->swr,dst,maxout,in,in_n);
     if(n<0){free(values);return err("swr_convert",n);}
     int64_t from=e->next_output,until=from+n;
     int64_t low=from>e->first_output?from:e->first_output;
@@ -286,7 +308,6 @@ int32_t spash_seek_decode_f32(const char *path,const char *out,const char *repor
     rc=avcodec_open2(decoder,dec,NULL);
     if(rc<0){err("codec open",rc);goto done;}
     int64_t stream_start=st->start_time==AV_NOPTS_VALUE?0:st->start_time;
-    int64_t requested_ts=av_rescale_q((int64_t)start_ms,(AVRational){1,1000},st->time_base)+stream_start;
     int64_t seek_ms=(int64_t)start_ms>PREROLL_MS?(int64_t)start_ms-PREROLL_MS:0;
     int64_t seek_ts=av_rescale_q(seek_ms,(AVRational){1,1000},st->time_base)+stream_start;
     /* This is actual byte-seeking via the Ogg demuxer's page/granule search,
@@ -375,6 +396,7 @@ int32_t spash_seek_decode_f32(const char *path,const char *out,const char *repor
            s.local.read_calls,s.local.seek_calls,byte_after_seek);
     fprintf(r,"selected_packets_decoded\t%"PRIu64"\nselected_frames_decoded\t%"PRIu64"\n",
            e.packet_count,e.frames_decoded);
+    fprintf(r,"pts_jitter_max_output_samples\t%lld\n",(long long)e.jitter_max);
     fprintf(r,"source_io\tLOCAL_PREAD_ONLY\nclock_authority\tAUDIO_STREAM_PTS_ONLY\nchained_segment_qualified\tNO\n");
     if(fflush(r)!=0){err("flush private report",-errno);goto done;}
     status=0;
