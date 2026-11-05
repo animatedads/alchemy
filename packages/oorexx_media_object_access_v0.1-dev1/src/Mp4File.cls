@@ -21,8 +21,9 @@
 ::attribute movie get
 ::attribute tracks get
 ::attribute layout get
+::attribute movieTimeScale get
 ::method init
-  expose source identity sizeBytes atoms movie tracks layout
+  expose source identity sizeBytes atoms movie tracks layout movieTimeScale
   use strict arg byteSource
   source=byteSource
   identity=source~sourceIdentity
@@ -30,7 +31,7 @@
   if datatype(sizeBytes,'W')=0 | sizeBytes<8 then -
     raise syntax 88.900 array('invalid MP4 size',sizeBytes)
   atoms=.Mp4AtomScanner~scan(source,0,sizeBytes)
-  movie=.nil
+  movie=.nil; movieTimeScale=0
   tracks=.array~new
   fragment=.false
   do i=1 to atoms~items
@@ -48,9 +49,21 @@
     layout='MOVIE'
     if fragment then layout='FRAGMENTED'
     children=movie~children
+    /* mvhd supplies the common movie timescale for each track's edit list. */
+    do i=1 to children~items
+      if children[i]~kind='mvhd' then do
+        version=x2d(c2x(children[i]~exactBytes(0,1)))
+        select
+          when version=0 then movieTimeScale=x2d(c2x(children[i]~exactBytes(12,4)))
+          when version=1 then movieTimeScale=x2d(c2x(children[i]~exactBytes(20,4)))
+          otherwise raise syntax 88.900 array('unsupported mvhd version',version)
+        end
+        if movieTimeScale<1 then raise syntax 88.900 array('invalid mvhd movie timescale')
+      end
+    end
     do i=1 to children~items
       if children[i]~kind='trak' then -
-        tracks~append(.MediaMp4Track~new(source,children[i],tracks~items+1,fragment))
+        tracks~append(.MediaMp4Track~new(source,children[i],tracks~items+1,fragment,movieTimeScale))
     end
   end
   else do
@@ -141,13 +154,16 @@
 ::attribute indexStatus get
 ::attribute hasEdits get
 ::attribute fragmented get
+::attribute movieTimeScale get
 ::method init
-  expose ordinal trackId kind codecTag timeScale durationTicks sampleTable indexStatus hasEdits fragmented sampleMapCache
-  use strict arg source,atom,position,isFragmented=.false
+  expose ordinal trackId kind codecTag timeScale durationTicks sampleTable indexStatus hasEdits fragmented sampleMapCache editAtom movieTimeScale
+  use strict arg source,atom,position,isFragmented=.false,movieScale=0
   ordinal=position
   trackId=-1; kind='unknown'; codecTag='unknown'; timeScale=0; durationTicks=-1
-  sampleTable=.nil; indexStatus='NOT_INDEXED'; hasEdits=.false
+  sampleTable=.nil; editAtom=.nil
+  indexStatus='NOT_INDEXED'; hasEdits=.false
   fragmented=(isFragmented==.true); sampleMapCache=.nil
+  movieTimeScale=movieScale
   elements=atom~children
   do i=1 to elements~items
     child=elements[i]
@@ -159,7 +175,16 @@
         else raise syntax 88.900 array('unsupported tkhd version',version)
       end
       when child~kind='mdia' then self~inspectMedia(child)
-      when child~kind='edts' then hasEdits=.true
+      when child~kind='edts' then do
+        hasEdits=.true
+        editChildren=child~children
+        do j=1 to editChildren~items
+          if editChildren[j]~kind='elst' then do
+            if editAtom<>.nil then raise syntax 88.900 array('multiple elst boxes in track')
+            editAtom=editChildren[j]
+          end
+        end
+      end
       otherwise nop
     end
   end
@@ -206,13 +231,16 @@
 /* Index sample metadata without invoking a decoder. Requires the separate
  * Mp4SampleTable.cls module in the calling ooRexx package. */
 ::method mapSamples
-  expose sampleTable trackId timeScale hasEdits fragmented sampleMapCache indexStatus
+  expose sampleTable trackId timeScale hasEdits fragmented sampleMapCache indexStatus editAtom movieTimeScale
   if fragmented then raise syntax 88.900 array('fragmented MP4 sample mapping not implemented')
-  if hasEdits then raise syntax 88.900 array('edit-list MP4 timeline not implemented')
+  if hasEdits & editAtom==.nil then -
+    raise syntax 88.900 array('edts track is missing an elst edit list')
+  if hasEdits & movieTimeScale<1 then -
+    raise syntax 88.900 array('MP4 edit list missing mvhd timescale')
   if sampleTable==.nil then raise syntax 88.900 array('MP4 track has no flat sample table')
   if timeScale<1 then raise syntax 88.900 array('MP4 track timescale is unavailable')
   if sampleMapCache==.nil then do
-    sampleMapCache=.MediaMp4SampleTable~new(sampleTable,trackId,timeScale)
+    sampleMapCache=.MediaMp4SampleTable~new(sampleTable,trackId,timeScale,editAtom,movieTimeScale)
     indexStatus=sampleMapCache~indexStatus
   end
   return sampleMapCache
