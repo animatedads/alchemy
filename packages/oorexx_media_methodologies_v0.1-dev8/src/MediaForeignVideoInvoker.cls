@@ -30,7 +30,7 @@
 
   /* The privacy boundary belongs to ooRexx, not just one reference provider.
    * Fail BEFORE loading any replaceable Python implementation. */
-  self~preflightPaths(jobPath,resultPath)
+  self~preflightPaths(jobPath,resultPath,methodologyId)
 
   /* Use the real interpreter's resident import bridge, not a Python process.
    * Resolve the exact provider file inside its trusted installed directory.
@@ -68,7 +68,7 @@
  * Paths cannot equal the root of the filesystem or resolve into a Git tree.
  */
 ::method preflightPaths
-  use strict arg jobPath,resultPath
+  use strict arg jobPath,resultPath,expectedMethodologyId=''
   env=.ForeignPython~import('os')
   environ=env~get('environ')
   privateRoot=environ~get('ALCHEMY_PRIVATE_MEDIA_ROOT','')
@@ -86,6 +86,11 @@
   job=.json~fromJsonFile(jobPath)
   if job=.nil then raise syntax 93.900 array('PRIVATE_JOB_UNREADABLE')
   if \job~isA(.Directory) then raise syntax 93.900 array('PRIVATE_JOB_INVALID')
+  if job['schema']<>'media-methodology.provider-job/0.1' then raise syntax 93.900 array('PRIVATE_JOB_SCHEMA_INVALID')
+  if expectedMethodologyId<>'' then do
+    if job['methodology_id']=.nil then raise syntax 93.900 array('METHODOLOGY_MISSING')
+    if translate(strip(job['methodology_id']))<>translate(strip(expectedMethodologyId)) then raise syntax 93.900 array('METHODOLOGY_MISMATCH')
+  end
   outDir=job['output_dir']
   if outDir=.nil then raise syntax 93.900 array('PRIVATE_OUTPUT_DIR_REQUIRED')
   self~checkPrivatePath(paths,root,outDir)
@@ -99,13 +104,18 @@
     if pos('..',candidateId)>0 then raise syntax 93.900 array('UNSAFE_CANDIDATE_ID')
   end
   source=job['source']
-  if source<>.nil then do
-    if \source~isA(.Directory) then raise syntax 93.900 array('PRIVATE_SOURCE_INVALID')
-    if source['kind']='VIDEO_FILE' then do
-      sourcePath=source['path']
-      if sourcePath=.nil then raise syntax 93.900 array('PRIVATE_SOURCE_PATH_REQUIRED')
-      self~checkPrivatePath(paths,root,sourcePath)
-    end
+  if source=.nil then raise syntax 93.900 array('PRIVATE_SOURCE_REQUIRED')
+  if \source~isA(.Directory) then raise syntax 93.900 array('PRIVATE_SOURCE_INVALID')
+  kind=source['kind']
+  if kind='VIDEO_FILE' then do
+    sourcePath=source['path']
+    if sourcePath=.nil then raise syntax 93.900 array('PRIVATE_SOURCE_PATH_REQUIRED')
+    self~checkPrivatePath(paths,root,sourcePath)
+  end
+  else do
+    if kind<>'SYNTHETIC_ONLY' then raise syntax 93.900 array('PRIVATE_SOURCE_KIND_UNSUPPORTED')
+    /* A synthetic-only test job must never smuggle a source file path. */
+    if source~hasIndex('path') then raise syntax 93.900 array('PRIVATE_SOURCE_PATH_UNEXPECTED')
   end
   paths~close
   environ~close
