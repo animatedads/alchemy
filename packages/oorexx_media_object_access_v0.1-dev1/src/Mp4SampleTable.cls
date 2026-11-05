@@ -150,6 +150,8 @@
   if boxes~hasIndex('ctts') then self~mapComposition(boxes['ctts'])
   if boxes~hasIndex('stss') then self~mapSyncCandidates(boxes['stss'])
   self~sortPresentation
+  if source~sourceIdentity<>sourceIdentity then -
+    raise syntax 88.900 array('MP4 source changed during metadata index construction')
   indexStatus='CANDIDATE_ONLY'
 ::method readSampleSizes private
   expose samples sampleCount
@@ -208,7 +210,8 @@
   if chunks~version<>0 then raise syntax 88.900 array('unsupported chunk-offset version')
   chunkCount=chunks~unsigned(4,4)
   chunks~requireBytes(8+width*chunkCount)
-  if chunkCount<1 | runEntries[entryCount][1]>chunkCount then -
+  lastRun=runEntries[entryCount]
+  if chunkCount<1 | lastRun[1]>chunkCount then -
     raise syntax 88.900 array('invalid MP4 chunk table count')
   sampleOrdinal=1
   run=1
@@ -332,15 +335,22 @@
     presented=merged
     width=width*2
   end
+::method assertSource
+  expose source sourceIdentity
+  if source~sourceIdentity<>sourceIdentity then -
+    raise syntax 88.900 array('MP4 source identity changed after indexing')
+  return self
 ::method sample
   expose samples sampleCount
   use strict arg ordinal
+  self~assertSource
   if datatype(ordinal,'W')=0 | ordinal<1 | ordinal>sampleCount then -
     raise syntax 88.900 array('MP4 sample index outside table',ordinal)
   return samples[ordinal]
 ::method atOrAfter
   expose presented sampleCount
   use strict arg pts
+  self~assertSource
   if datatype(pts,'W')=0 then raise syntax 88.900 array('presentation time must be integer ticks')
   lo=1; hi=sampleCount; found=0
   do while lo<=hi
@@ -368,6 +378,7 @@
 ::method planTime
   expose sourceIdentity timeScale
   use strict arg ticks
+  self~assertSource
   target=self~atOrAfter(ticks)
   if target==.nil then return .nil
   anchor=self~priorSyncCandidate(target~ordinal)
