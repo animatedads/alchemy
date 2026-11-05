@@ -89,6 +89,15 @@
   outDir=job['output_dir']
   if outDir=.nil then raise syntax 93.900 array('PRIVATE_OUTPUT_DIR_REQUIRED')
   self~checkPrivatePath(paths,root,outDir)
+  /* Output filenames are provider-controlled ONLY after this name gate. */
+  candidateId=job['candidate_id']
+  if candidateId<>.nil then do
+    allowed='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789._-'
+    if length(candidateId)<1 | length(candidateId)>96 then raise syntax 93.900 array('UNSAFE_CANDIDATE_ID')
+    if verify(candidateId,allowed)<>0 then raise syntax 93.900 array('UNSAFE_CANDIDATE_ID')
+    if verify(left(candidateId,1),'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789')<>0 then raise syntax 93.900 array('UNSAFE_CANDIDATE_ID')
+    if pos('..',candidateId)>0 then raise syntax 93.900 array('UNSAFE_CANDIDATE_ID')
+  end
   source=job['source']
   if source<>.nil then do
     if \source~isA(.Directory) then raise syntax 93.900 array('PRIVATE_SOURCE_INVALID')
