@@ -50,7 +50,7 @@
     children=movie~children
     do i=1 to children~items
       if children[i]~kind='trak' then -
-        tracks~append(.MediaMp4Track~new(source,children[i],tracks~items+1))
+        tracks~append(.MediaMp4Track~new(source,children[i],tracks~items+1,fragment))
     end
   end
   else do
@@ -139,12 +139,15 @@
 ::attribute durationTicks get
 ::attribute sampleTable get
 ::attribute indexStatus get
+::attribute hasEdits get
+::attribute fragmented get
 ::method init
-  expose ordinal trackId kind codecTag timeScale durationTicks sampleTable indexStatus
-  use strict arg source,atom,position
+  expose ordinal trackId kind codecTag timeScale durationTicks sampleTable indexStatus hasEdits fragmented sampleMapCache
+  use strict arg source,atom,position,isFragmented=.false
   ordinal=position
   trackId=-1; kind='unknown'; codecTag='unknown'; timeScale=0; durationTicks=-1
-  sampleTable=.nil; indexStatus='NOT_INDEXED'
+  sampleTable=.nil; indexStatus='NOT_INDEXED'; hasEdits=.false
+  fragmented=(isFragmented==.true); sampleMapCache=.nil
   elements=atom~children
   do i=1 to elements~items
     child=elements[i]
@@ -156,6 +159,7 @@
         else raise syntax 88.900 array('unsupported tkhd version',version)
       end
       when child~kind='mdia' then self~inspectMedia(child)
+      when child~kind='edts' then hasEdits=.true
       otherwise nop
     end
   end
@@ -199,6 +203,22 @@
       otherwise nop
     end
   end
+/* Index sample metadata without invoking a decoder. Requires the separate
+ * Mp4SampleTable.cls module in the calling ooRexx package. */
+::method mapSamples
+  expose sampleTable trackId timeScale hasEdits fragmented sampleMapCache indexStatus
+  if fragmented then raise syntax 88.900 array('fragmented MP4 sample mapping not implemented')
+  if hasEdits then raise syntax 88.900 array('edit-list MP4 timeline not implemented')
+  if sampleTable==.nil then raise syntax 88.900 array('MP4 track has no flat sample table')
+  if timeScale<1 then raise syntax 88.900 array('MP4 track timescale is unavailable')
+  if sampleMapCache==.nil then do
+    sampleMapCache=.MediaMp4SampleTable~new(sampleTable,trackId,timeScale)
+    indexStatus=sampleMapCache~indexStatus
+  end
+  return sampleMapCache
+::method planTime
+  use strict arg ticks
+  return self~mapSamples~planTime(ticks)
 ::method seekTime
   use strict arg pts,mode='EXACT'
   raise syntax 88.900 array('MP4 sample-index implementation is not yet qualified',pts,mode)
