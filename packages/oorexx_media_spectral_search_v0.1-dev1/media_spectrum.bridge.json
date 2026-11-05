@@ -1,0 +1,11 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": { "provider": "native", "path": "./libmedia_spectrum.so", "threading": "serialized", "affinity": "none" },
+  "functions": {
+    "last_error": { "symbol": "media_spectrum_last_error", "return": "utf8", "args": [] },
+    "map_f32": { "symbol": "media_spectrum_map_f32", "return": "i32", "args": ["utf8", "utf8", "u32", "u32", "u32", "u32"] },
+    "dense_f32": { "symbol": "media_spectrum_dense_f32", "return": "i32", "args": ["utf8", "utf8", "utf8", "u32", "u32", "u32"] },
+    "bucket_db": { "symbol": "media_spectrum_bucket_db", "return": "f64", "args": ["utf8", "u32", "u32", "u32"] },
+    "band_profile_f32": { "symbol": "media_spectrum_band_profile_f32", "return": "i32", "args": ["utf8", "utf8", "u32", "u32", "u32"] }
+  }
+}
