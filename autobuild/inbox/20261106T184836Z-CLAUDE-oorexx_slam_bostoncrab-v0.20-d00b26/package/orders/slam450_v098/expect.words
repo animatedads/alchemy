@@ -1,0 +1,41 @@
+-- orders.words: Boston Crab order report for programs. Fields split by |.
+-- order|n|from|to|words    part|n|i|verb|action|how|words    ref|n|i|verdict|words|writer|reader    end|n|verdict
+-- verb, action and how are concept names (language neutral), - for none; action is the verb, or the act after a general verb
+-- ("conduct a search": search); writer and reader list what each can identify, split by ;
+-- how holds "not" when the part says not to do it ("не знижуйтесь", "do not descend"),
+-- and "if" when it waits on a condition said in its words ("якщо ціль знайдено", "if the target is found")
+-- tone|n|frustration|count when the sender swears (twice or more: extreme frustration); it is not an order
+-- say|n|i|uk|writer|reader follows a ref of a Ukrainian order: the same things said in Ukrainian, nominative
+-- ("північно-східний пілон"; names as written), - where a thing has no Ukrainian words yet
+-- a grid reference has writer and reader "grid E <east> N <north>"; fail|n|reason when Boston Crab failed on an order
+order|1|control|bravo|bravo , кружляйте над ним , не зупиняючись .
+part|1|1|circle~01915332-v|circle~01915332-v|without stop|bravo , кружляйте над ним , не зупиняючись .
+end|1|CLEAR
+order|2|control|bravo|bravo , не кружляйте над ним .
+part|2|1|circle~01915332-v|circle~01915332-v|not|bravo , не кружляйте над ним .
+end|2|CLEAR
+order|3|control|bravo|bravo , уникайте ворожих дронів .
+part|3|1|avoid|avoid|-|bravo , уникайте ворожих дронів .
+ref|3|1|CLEAR|ворожих дронів|Crimson;Scarlet|Crimson;Scarlet
+say|3|1|uk|Crimson;Scarlet|Crimson;Scarlet
+end|3|CLEAR
+order|4|control|bravo|bravo , avoid the hostile drones .
+part|4|1|avoid|avoid|-|bravo , avoid the hostile drones .
+ref|4|1|CLEAR|the hostile drones|Crimson;Scarlet|Crimson;Scarlet
+end|4|CLEAR
+order|5|control|bravo|bravo , уникайте ворожого дрона .
+part|5|1|avoid|avoid|-|bravo , уникайте ворожого дрона .
+ref|5|1|AMBIGUOUS|ворожого дрона|Crimson;Scarlet|Crimson;Scarlet
+say|5|1|uk|Crimson;Scarlet|Crimson;Scarlet
+end|5|REQUIRES CLARIFICATION
+order|6|control|bravo|bravo , шукайте ворожі дрони .
+part|6|1|search~01318273-v|search~01318273-v|-|bravo , шукайте ворожі дрони .
+end|6|CLEAR
+order|7|control|bravo|bravo , уникайте піддонів .
+part|7|1|avoid|avoid|-|bravo , уникайте піддонів .
+ref|7|1|NO REFERENT|піддонів||
+say|7|1|uk||
+end|7|REQUIRES CLARIFICATION
+order|8|control|bravo|bravo , do not descend .
+part|8|1|descend~01974840-v|descend~01974840-v|not|bravo , do not descend .
+end|8|CLEAR
