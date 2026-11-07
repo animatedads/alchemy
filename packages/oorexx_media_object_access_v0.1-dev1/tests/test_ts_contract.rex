@@ -13,6 +13,7 @@ if filename='' then do
   say 'Usage: rexx test_ts_contract.rex /resident/file/stream1_*.mkv'
   exit 2
 end
+if .MediaTsWire~pts(x2c("210007D861"))<>126000 then call fail "90kHz integer PTS decode"
 source=.TestLocalSource~new(filename,'test|resident|immutable-v1')
 if .MediaFileProbe~detect(source)<>'MPEG_TS_188' then call fail 'extension-independent sniff'
 file=.MediaFileProbe~open(source)
