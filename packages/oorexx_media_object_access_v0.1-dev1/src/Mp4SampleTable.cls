@@ -397,6 +397,34 @@
   if source~sourceIdentity<>sourceIdentity then -
     raise syntax 88.900 array('MP4 source identity changed after indexing')
   return self
+/* Publish only at resident MU after a complete metadata-map build.
+ * The sidecar stores edited presentation order and exact byte/sample clocks.
+ * Storage Fabric supplies the immutable identity and atomic publication. */
+::method exportIndexText
+  expose sourceIdentity source sampleCount presentationCount trackId timeScale -
+         samples presented indexStatus
+  self~assertSource
+  if indexStatus<>'CANDIDATE_ONLY' then -
+    raise syntax 88.900 array('MP4 sample map not complete')
+  eol='0a'x
+  result='M4SIDX|1'||eol||'IDENTITY|'||c2x(sourceIdentity)||eol|| -
+         'SIZE|'||source~sizeBytes||eol||'TRACK|'||trackId||eol|| -
+         'TIMESCALE|'||timeScale||eol||'SAMPLES|'||sampleCount||eol|| -
+         'VISIBLE|'||presentationCount||eol
+  do sample over samples
+    visible=0; sync=0
+    if sample~presentationVisible then visible=1
+    if sample~syncCandidate then sync=1
+    result=result||'S|'||sample~ordinal||'|'||sample~byteOffset||'|'|| -
+      sample~sizeBytes||'|'||sample~chunkOrdinal||'|'|| -
+      sample~descriptionIndex||'|'||sample~decodeTicks||'|'|| -
+      sample~durationTicks||'|'||sample~mediaPresentationTicks||'|'|| -
+      sample~presentationTicks||'|'||visible||'|'||sync||eol
+  end
+  do sample over presented
+    result=result||'V|'||sample~ordinal||eol
+  end
+  return result||'END'||eol
 ::method sample
   expose samples sampleCount
   use strict arg ordinal
