@@ -6,7 +6,8 @@
  * 1. Kit check: ooRexx version, the API Client bridge and CA bundle, the
  *    route file, a writable out/ folder. Any failure stops the job before
  *    anything is fetched, and the kit lines go in the result file.
- * 2. ERA5 wind and weather, 24-31 Oct 2026, every route point
+ * 2. ERA5 wind and weather, 23-31 Oct 2026 UTC (the fetch is in UTC days;
+ *    06:00 AEDT on 24 Oct is 19:00 UTC on 23 Oct), every route point
  *    (fp_get_wind.rex, through Alchemy's API Client).
  * 3. The glide and energy study, flown through the 7 days before 31 Oct and
  *    the day itself, 120 m above ground, leaving at 06:00 and at civil dawn
@@ -26,10 +27,10 @@ exit .FpFleetJob~new~run
   log = .FpLog~for(self)
   report = 'out/FLEET_RESULT.txt'
   route = 'data/coast_route.words'
-  wind = 'out/wind_coast_20261024_20261031.words'
+  wind = 'out/wind_coast_20261023_20261031.words'
   call SysMkDir 'out'
   if stream(report, 'c', 'query exists') \== '' then call SysFileDelete report
-  call lineout report, 'SLAM 450 Flight Planner fleet job - glide and energy study, 24-31 Oct 2026'
+  call lineout report, 'SLAM 450 Flight Planner fleet job - glide and energy study, 24-31 Oct 2026 AEDT (wind 23-31 Oct UTC)'
   call lineout report, 'node:' value('FP_NODE',, 'ENVIRONMENT') 'started' .DateTime~new~toTimeZone(0)~isoDate~left(19)'Z'
   /* 1. kit */
   parse version v
@@ -64,8 +65,8 @@ exit .FpFleetJob~new~run
     return 3
   end
   /* 2. wind */
-  log~log(.Log~INFO, 'step 2: ERA5 wind 2026-10-24 to 2026-10-31')
-  rc2 = 'fp_get_wind.rex'(route '2026-10-24 2026-10-31' wind)
+  log~log(.Log~INFO, 'step 2: ERA5 wind 2026-10-23 to 2026-10-31 UTC')
+  rc2 = 'fp_get_wind.rex'(route '2026-10-23 2026-10-31' wind)
   call lineout report, 'step fp_get_wind rc' rc2
   if rc2 \= 0 then do
     call stream report, 'c', 'close'

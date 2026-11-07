@@ -26,7 +26,7 @@ From the package folder, after `. bin/fp_env.sh`:
 
 ```
 rexx tools/fp_sky_day.rex sydney_heads -33.83 151.29 2026-10-31 11
-rexx tools/fp_get_wind.rex data/coast_route.words 2026-10-24 2026-10-31 out/wind_coast.words
+rexx tools/fp_get_wind.rex data/coast_route.words 2026-10-23 2026-10-31 out/wind_coast.words
 rexx tools/fp_glide.rex data/coast_route.words out/wind_coast.words 2026-10-31 06:00 11 120
 rexx tools/fp_fleet_job.rex
 ```

@@ -6,7 +6,7 @@ Run the steps in order. Do not change any file in this package. If a step fails,
 
 ## What it does
 
-Fetches ERA5 hourly wind and weather for 33 points between Sydney and Melbourne (Open-Meteo archive, through Alchemy's API Client), then flies the planned fixed-wing schedule through each day of 24-31 Oct 2026. It writes `out/FLEET_RESULT.txt`. About 4 HTTPS requests, under 2 MB, a few minutes.
+Fetches ERA5 hourly wind and weather for 33 points between Sydney and Melbourne (Open-Meteo archive, through Alchemy's API Client), then flies the planned fixed-wing schedule through each day of 24-31 Oct 2026 (AEDT). The fetch runs from 23 Oct UTC, because 06:00 AEDT on 24 Oct is 19:00 UTC on 23 Oct. It writes `out/FLEET_RESULT.txt`. About 4 HTTPS requests, under 2 MB, a few minutes.
 
 ## Steps
 
