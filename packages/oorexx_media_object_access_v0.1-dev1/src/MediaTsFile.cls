@@ -146,7 +146,6 @@
 ::attribute videoCodec get
 ::attribute timeScale get
 ::attribute indexStatus get
-::attribute accessPointCount get
 ::method init
   expose source identity sizeBytes packetCount videoPid audioPids videoCodec -
          timeScale indexStatus seekIndex accessPoints
