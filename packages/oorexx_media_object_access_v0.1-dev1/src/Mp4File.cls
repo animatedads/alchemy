@@ -9,6 +9,9 @@
 ::constant API 'media.file/0.1'
 
 ::class MediaFile public
+::method open class
+  use strict arg byteSource
+  return .MediaFileProbe~open(byteSource)
 ::method openMp4 class
   use strict arg byteSource
   return .MediaMp4File~new(byteSource)
@@ -156,8 +159,9 @@
 ::attribute fragmented get
 ::attribute movieTimeScale get
 ::method init
-  expose ordinal trackId kind codecTag timeScale durationTicks sampleTable indexStatus hasEdits fragmented sampleMapCache editAtom movieTimeScale
+  expose ordinal trackId kind codecTag timeScale durationTicks sampleTable indexStatus hasEdits fragmented sampleMapCache editAtom movieTimeScale sourceRef
   use strict arg source,atom,position,isFragmented=.false,movieScale=0
+  sourceRef=source
   ordinal=position
   trackId=-1; kind='unknown'; codecTag='unknown'; timeScale=0; durationTicks=-1
   sampleTable=.nil; editAtom=.nil
@@ -244,9 +248,24 @@
     indexStatus=sampleMapCache~indexStatus
   end
   return sampleMapCache
+/* Restore an immutable-version-bound flat sample map without rescanning
+ * stsz/stco/stts/ctts/elst; decoder qualification remains separate. */
+::method installIndexText
+  expose sourceRef trackId timeScale fragmented sampleMapCache indexStatus
+  use strict arg manifest
+  if fragmented then raise syntax 88.900 array('fragmented MP4 snapshot unsupported')
+  if timeScale<1 then raise syntax 88.900 array('missing MP4 media timescale')
+  sampleMapCache=.MediaMp4IndexSnapshot~new(manifest,sourceRef,trackId,timeScale)
+  indexStatus=sampleMapCache~indexStatus
+  return sampleMapCache
+::method exportIndexText
+  return self~mapSamples~exportIndexText
 ::method planTime
   use strict arg ticks
   return self~mapSamples~planTime(ticks)
 ::method seekTime
   use strict arg pts,mode='EXACT'
   raise syntax 88.900 array('MP4 sample-index implementation is not yet qualified',pts,mode)
+
+::requires 'MediaFileProbe.cls'
+::requires 'Mp4IndexSnapshot.cls'
