@@ -132,7 +132,8 @@
   expose samples sampleCount sourceIdentity
   use strict arg plan,budget=4194304,maxSamples=512
   self~assertSource
-  if plan==.nil | plan~sourceIdentity<>sourceIdentity then -
+  if plan==.nil then raise syntax 88.900 array('MP4 snapshot plan missing')
+  if plan~sourceIdentity<>sourceIdentity then -
     raise syntax 88.900 array('MP4 snapshot plan identity mismatch')
   if \datatype(budget,'W') | \datatype(maxSamples,'W') | -
       budget<1 | maxSamples<1 | budget>16777216 | maxSamples>4096 then -
@@ -146,9 +147,15 @@
     s=samples[i]
     total=total+s~sizeBytes
     if total>budget then raise syntax 88.900 array('MP4 snapshot seek would exceed byte budget')
-    if ranges~items>0 & ranges[ranges~items]~canExtend(s) then -
-      ranges[ranges~items]~append(s)
-    else ranges~append(.MediaMp4ByteRange~new(s))
+    prior=.nil
+    if ranges~items>0 then prior=ranges[ranges~items]
+    if prior<>.nil then do
+      if prior~canExtend(s) then do
+        prior~append(s)
+        iterate
+      end
+    end
+    ranges~append(.MediaMp4ByteRange~new(s))
   end
   return ranges
 ::requires 'Mp4SampleTable.cls'
