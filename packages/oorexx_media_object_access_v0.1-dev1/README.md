@@ -1,3 +1,28 @@
+## 7 November dev3 — shared MPEG-TS / MP4 indexed access
+
+The native ooRexx Media Object Access component has been extended on this branch with
+**content sniffing**, MediaTsFile.cls and MediaTsWire for 188-byte MPEG-TS, and
+a MediaMp4IndexSnapshot for source-bound MP4 sample-map reuse. The three Sydney
+recordings end in .mkv but are **MPEG-TS** (H.264/AAC); extensions are not truth.
+
+- MediaFile~open(source) dispatches from byte signatures; openMp4 remains supported.
+- TS PAT/PMT discovery is bounded. buildIndexLocal(.true, localSizeBudget) is
+  explicit and resident-node-only, never an implicit remote full scan.
+- TS sidecars are source-version and size fenced; persistence is owned by
+  Storage Fabric. Resumed planning is a binary search over IDR candidates.
+- MP4 exportIndexText / installIndexText persist exact sample byte offsets,
+  sizes, native DTS, composition PTS, elst-edited movie PTS and presentation
+  lookup order. Repeated hot seeks need not rebuild 1.7 MiB of sample metadata.
+- Both formats retain fail-closed decoded seekTime(EXACT) until native codec
+  dependency/preroll and B-frame presentation reordering are qualified.
+
+Run run_tests.sh under ooRexx 5.3, with MEDIA_TS_TEST_FILE set to a resident
+file to include the actual MPEG-TS/sidecar regression. New tests are not yet
+executed in this authoring environment (no rexx installed).
+See docs/NATIVE_MPEGTS_MP4_SEEK_DEV3.md.
+
+---
+
 # ooRexx Media Object Access — v0.1-dev2 edit-list qualification candidate
 
 The source remains in the `oorexx_media_object_access_v0.1-dev1` package
