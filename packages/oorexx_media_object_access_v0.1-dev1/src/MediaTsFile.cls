@@ -16,6 +16,7 @@
   b1=c2d(substr(raw,2,1)); b2=c2d(substr(raw,3,1))
   b3=c2d(substr(raw,4,1))
   if (b1 % 128) // 2 then raise syntax 88.900 array('TS transport error bit')
+  if b3 % 64<>0 then raise syntax 88.900 array("scrambled MPEG-TS packet requires decryption")
   afc=(b3 % 16) // 4
   if afc=0 then raise syntax 88.900 array('TS reserved adaptation control')
   pid=(b1 // 32)*256+b2
