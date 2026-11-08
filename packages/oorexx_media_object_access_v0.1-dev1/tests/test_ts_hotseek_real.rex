@@ -32,12 +32,28 @@ base=lastpos('/',filename)
 if base=0 then base=0
 name=substr(filename,base+1)
 out=outputDir||'/'||name||'.mtsidx'
-call lineout out,manifest
-call lineout out
+opened=stream(out,'C','OPEN WRITE REPLACE')
+if left(opened,5)<>'READY' then do
+ say 'FAIL unable to replace sidecar' opened
+ exit 5
+end
+call charout out,manifest,1
+call stream out,'C','CLOSE'
 local2=.EvidenceByteSource~new(filename)
 restored=.MediaFileProbe~open(local2)
 readHead=local2~readBytes
-if restored~loadIndexText(manifest)<>found then do
+sidecarBytes=stream(out,'C','QUERY SIZE')
+if sidecarBytes<>manifest~length then do
+ say 'FAIL sidecar is not exact expected length' sidecarBytes manifest~length
+ exit 5
+end
+readBack=charin(out,1,sidecarBytes)
+call stream out,'C','CLOSE'
+if readBack<>manifest then do
+ say 'FAIL sidecar disk round trip'
+ exit 5
+end
+if restored~loadIndexText(readBack)<>found then do
  say 'FAIL restore count'
  exit 5
 end
@@ -81,8 +97,18 @@ if local2~readBytes<>readHead then do
  say 'FAIL seek performed source reads' local2~readBytes-readHead
  exit 5
 end
+do testNo=0 to checks-1
+  target=lastTicks-testNo*450000
+  plan=restored~planTime(target)
+  if plan==.nil then iterate
+  part=local2~readAt(plan~byteOffset,188)
+  if substr(part,1,1)<>x2c('47') then do
+    say 'FAIL seek packet sync'
+    exit 5
+  end
+end
 say 'PASS native TS persisted hot-seek checks='checks 'hot-path source bytes=0' -
-    'reopen metadata bytes='readHead
+    'reopen metadata bytes='readHead 'bounded physical probes=188 bytes each'
 exit 0
 
 ::class EvidenceByteSource subclass MediaByteSource public
