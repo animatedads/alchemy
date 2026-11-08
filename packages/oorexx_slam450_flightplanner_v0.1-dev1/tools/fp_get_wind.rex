@@ -8,8 +8,9 @@
  *   windset|<startDate>|<endDate>|era5|open-meteo archive
  *   credit|Contains modified Copernicus Climate Change Service information 2026; weather data by Open-Meteo.com (CC BY 4.0)
  *   evidence|<batch>|<url>|<status>|<bytes>|<sha512>|<retrievedUtc>
+ *   elev|<point>|<ground height m AMSL, Open-Meteo's 90 m DEM>
  *   wind|<point>|<utc>|<ws10>|<wd10>|<ws100>|<wd100>|<gust10>|<cloudLow%>|<precip mm>
- * Speeds m/s; directions are where the wind blows FROM, degrees true; a
+ * The 100 m wind is 100 m above that ground. Speeds m/s; directions are where the wind blows FROM, degrees true; a
  * missing value is "-". ERA5 is published with about 5 days' delay.
  *
  * Usage:
@@ -93,6 +94,11 @@ exit .FpGetWind~new(routeFile, startDate, endDate, outFile)~run
       return 5
     end
     do i = 1 to batch~items
+      /* the ground height Open-Meteo used for this point (its 90 m DEM) */
+      elev = '-'
+      if parsed[i]~hasIndex('elevation') then elev = parsed[i]['elevation']
+      if elev == .nil then elev = '-'
+      call lineout outFile, 'elev|'batch[i]['NAME']'|'elev
       h = parsed[i]['hourly']
       times = h['time']
       do k = 1 to times~items

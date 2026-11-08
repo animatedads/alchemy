@@ -22,11 +22,15 @@
   return .FpRoute~load(file)
 
 ::method init
-  expose cells rows hours
+  expose cells rows hours elevs
   use strict arg file
-  cells = .directory~new; rows = 0; hours = .set~new
+  cells = .directory~new; rows = 0; hours = .set~new; elevs = .directory~new
   do while lines(file) > 0
     parse value linein(file) with kind '|' name '|' utc '|' ws10 '|' wd10 '|' ws100 '|' wd100 '|' gust '|' low '|' rain .
+    if kind == 'elev' then do
+      if datatype(utc, 'N') then elevs[name] = utc
+      iterate
+    end
     if kind \== 'wind' then iterate
     w = ws100; d = wd100
     if \datatype(w, 'N') | \datatype(d, 'N') then do; w = ws10; d = wd10; end
@@ -40,6 +44,14 @@
     rows += 1
   end
   call stream file, 'c', 'close'
+
+/* ground height of a point, m AMSL, from the file's elev| lines; '' if the
+   file has none for it (files fetched before 8 Nov 2026) */
+::method elevation
+  expose elevs
+  use strict arg name
+  if elevs~hasIndex(name) then return elevs[name]
+  return ''
 
 /* is there wind for the hour of t (any point)? */
 ::method covers

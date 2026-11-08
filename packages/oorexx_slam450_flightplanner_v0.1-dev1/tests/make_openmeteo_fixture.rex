@@ -10,7 +10,7 @@ do i = 1 to n
   h['wind_speed_100m'] = .array~of(6.2, .nil); h['wind_direction_100m'] = .array~of(252, 258)
   h['wind_gusts_10m'] = .array~of(9.0, 9.5); h['cloud_cover_low'] = .array~of(10, 20)
   h['precipitation'] = .array~of(0, 0.4)
-  o = .directory~new; o['latitude'] = -33.75; o['longitude'] = 151.25; o['hourly'] = h
+  o = .directory~new; o['latitude'] = -33.75; o['longitude'] = 151.25; o['elevation'] = 10 * i; o['hourly'] = h
   locs~append(o)
 end
 call charout outFile, .json~toJson(locs), 1

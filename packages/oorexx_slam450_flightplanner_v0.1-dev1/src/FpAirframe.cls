@@ -21,6 +21,16 @@
  * (Holding best-glide speed into a headwind is conservative: speeding up
  * gains a little; this plans on the smaller figure.)
  *
+ * Height (added for the alpine route, 8 Nov). The speeds above are
+ * indicated (sea-level) airspeeds. At height z m AMSL the air is thinner by
+ * the ISA density ratio sigma = (1 - 2.25577e-5 z)^4.2559, so at the same
+ * indicated speed the true airspeed is V/sqrt(sigma): faster over the ground,
+ * shorter in the air when gliding (R = h*LD is unchanged, T shrinks). Drag
+ * is unchanged at the same indicated speed, so power, and the budget used
+ * per hour, rise by the same 1/sqrt(sigma). Climbing dz metres costs the
+ * energy of flying dz*LD metres at cruise (potential energy over the glide
+ * ratio; descents are given no credit, which is conservative).
+ *
  * Architecture: Tom Dyer. Written by: Claude (Opus 5.5), 2026-11-07.
  */
 ::requires 'MathsBootstrap.cls'
@@ -50,9 +60,9 @@
    INTO, DOWN, ACROSS (m) and SECONDS airborne */
 ::method glide
   expose glideSpeed glideRatio
-  use strict arg h, w
+  use strict arg h, w, sigma = 1
   r = h * glideRatio
-  t = r / glideSpeed
+  t = r / (glideSpeed / .Maths~sqrt(sigma))
   d = w * t
   g = .directory~new
   g['SECONDS'] = t
@@ -68,8 +78,9 @@
    at w (m/s): Directory of TAIL (m/s, + behind), CROSS (m/s, + from the
    left), GROUND (m/s, 0 if it cannot be flown), OK (1/0), WHY */
 ::method triangle
-  expose cruise maxCrosswind
-  use strict arg track, w, windFrom
+  expose maxCrosswind
+  use strict arg track, w, windFrom, sigma = 1
+  cruise = self~trueCruise(sigma)
   rel = windFrom - track
   tail = -w * cosd(rel)
   cross = w * sind(rel)
@@ -81,6 +92,30 @@
   t['GROUND'] = along + tail
   if t['GROUND'] <= 0 then do; t['GROUND'] = 0; t['OK'] = 0; t['WHY'] = 'headwind at or above airspeed'; end
   return t
+
+/* ISA density ratio at z m above sea level (troposphere) */
+::method densityRatio class
+  use strict arg z
+  if z <= 0 then return 1
+  return .Maths~exp(4.2559 * .Maths~ln(1 - 2.25577e-5 * z))
+
+/* cruise true airspeed at density ratio sigma */
+::method trueCruise
+  expose cruise
+  use strict arg sigma = 1
+  return cruise / .Maths~sqrt(sigma)
+
+/* budget seconds used by flying s seconds at density ratio sigma */
+::method budgetSeconds
+  use strict arg s, sigma = 1
+  return s / .Maths~sqrt(sigma)
+
+/* budget seconds used by climbing dz metres (0 for a descent) */
+::method climbSeconds
+  expose cruise glideRatio
+  use strict arg dz
+  if dz <= 0 then return 0
+  return dz * glideRatio / cruise
 
 ::routine env
   use strict arg name, default
