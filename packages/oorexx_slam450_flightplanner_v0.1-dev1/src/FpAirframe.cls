@@ -99,6 +99,22 @@
   if z <= 0 then return 1
   return .Maths~exp(4.2559 * .Maths~ln(1 - 2.25577e-5 * z))
 
+/* density ratio from the day's weather (8 Nov): flying at z m AMSL above
+   ground at gz m AMSL where the 2 m temperature is tC (C) and the mean
+   sea-level pressure is pmsl (hPa). The air cools 6.5 C per km above the
+   ground; the pressure at z is pmsl reduced through that column. With ISA
+   values (15 C at sea level, 1013.25 hPa) this gives densityRatio(z). */
+::method densityRatioMet class
+  use strict arg z, gz, tC, pmsl
+  tK = tC + 273.15 - 0.0065 * (z - gz)
+  p = pmsl * .Maths~exp(5.2559 * .Maths~ln(1 - 0.0065 * z / (tK + 0.0065 * z)))
+  return (p / 1013.25) * (288.15 / tK)
+
+/* the ISA height with the same density (density altitude), m */
+::method densityAltitude class
+  use strict arg sigma
+  return (1 - .Maths~exp(.Maths~ln(sigma) / 4.2559)) / 2.25577e-5
+
 /* cruise true airspeed at density ratio sigma */
 ::method trueCruise
   expose cruise

@@ -6,7 +6,9 @@
  * components, so a wind backing through north is not averaged through
  * south. Rain and low cloud are taken from the hour before.
  * Directory: W (m/s), FROM (deg true, where it blows from), RAIN (mm/h),
- * LOWCLOUD (%).
+ * LOWCLOUD (%); from 8 Nov also TEMP (2 m, C, interpolated), SNOW (snow depth,
+ * m) and PMSL (mean sea-level pressure, hPa, interpolated), each '' when the file
+ * has none.
  *
  * Architecture: Tom Dyer. Written by: Claude (Opus 5.5), 2026-11-07.
  */
@@ -26,7 +28,7 @@
   use strict arg file
   cells = .directory~new; rows = 0; hours = .set~new; elevs = .directory~new
   do while lines(file) > 0
-    parse value linein(file) with kind '|' name '|' utc '|' ws10 '|' wd10 '|' ws100 '|' wd100 '|' gust '|' low '|' rain .
+    parse value linein(file) with kind '|' name '|' utc '|' ws10 '|' wd10 '|' ws100 '|' wd100 '|' gust '|' low '|' rain '|' temp '|' snow '|' pmsl .
     if kind == 'elev' then do
       if datatype(utc, 'N') then elevs[name] = utc
       iterate
@@ -39,6 +41,10 @@
     c['U'] = -w * sind(d); c['V'] = -w * cosd(d)
     c['RAIN'] = 0; if datatype(rain, 'N') then c['RAIN'] = rain
     c['LOWCLOUD'] = 0; if datatype(low, 'N') then c['LOWCLOUD'] = low
+    /* 8 Nov: 2 m temperature (C), snow depth (m), mean sea-level pressure (hPa); '' when the file predates them */
+    c['TEMP'] = ''; if datatype(temp, 'N') then c['TEMP'] = temp
+    c['SNOW'] = ''; if datatype(snow, 'N') then c['SNOW'] = snow
+    c['PMSL'] = ''; if datatype(pmsl, 'N') then c['PMSL'] = pmsl
     cells[name'|'utc~left(13)] = c
     hours~put(utc~left(13))
     rows += 1
@@ -78,4 +84,8 @@
   if dir < 0 then dir = dir + 360
   r['FROM'] = dir
   r['RAIN'] = c0['RAIN']; r['LOWCLOUD'] = c0['LOWCLOUD']
+  r['SNOW'] = c0['SNOW']
+  r['TEMP'] = c0['TEMP']; r['PMSL'] = c0['PMSL']
+  if datatype(c0['TEMP'], 'N') & datatype(c1['TEMP'], 'N') then r['TEMP'] = c0['TEMP'] + f * (c1['TEMP'] - c0['TEMP'])
+  if datatype(c0['PMSL'], 'N') & datatype(c1['PMSL'], 'N') then r['PMSL'] = c0['PMSL'] + f * (c1['PMSL'] - c0['PMSL'])
   return r

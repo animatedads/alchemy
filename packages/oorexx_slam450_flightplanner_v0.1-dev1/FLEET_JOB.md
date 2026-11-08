@@ -6,7 +6,7 @@ Run the steps in order. Do not change any file in this package. If a step fails,
 
 ## What it does
 
-For two routes from Sydney to Melbourne, the coast and the alpine route over Mt Kosciuszko, it fetches ERA5 hourly wind, weather and ground height for every waypoint (Open-Meteo archive, through Alchemy's API Client). It then flies the planned fixed-wing schedule through each day of 24-31 Oct 2026 (AEDT) on both routes. The fetch runs from 23 Oct UTC, because 06:00 AEDT on 24 Oct is 19:00 UTC on 23 Oct. It writes `out/FLEET_RESULT.txt`. About 6 HTTPS requests, under 2 MB, a few minutes.
+For two routes from Sydney to Melbourne, the coast and the alpine route over Mt Kosciuszko, it fetches ERA5 hourly wind, weather (including temperature and sea-level pressure), ERA5-Land snow depth and ground height for every waypoint (Open-Meteo archive, through Alchemy's API Client). It then flies the planned fixed-wing schedule through each day of 24-31 Oct 2026 (AEDT) on both routes. The fetch runs from 23 Oct UTC, because 06:00 AEDT on 24 Oct is 19:00 UTC on 23 Oct. It writes `out/FLEET_RESULT.txt`. About 12 HTTPS requests (wind and weather, then snow depth, per batch of 11 points), under 3 MB, a few minutes. If only the snow-depth requests fail, the job still finishes; the log shows a WARN and the snow column is -.
 
 ## Steps
 

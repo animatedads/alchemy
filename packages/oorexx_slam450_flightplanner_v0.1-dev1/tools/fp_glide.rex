@@ -19,14 +19,17 @@
  * Airframe: FpAirframe (planning defaults, FP_* environment overrides).
  * Output: progress log (FpLog), and outFile (default out/glide_<date>.words):
  *   airframe|<description>
- *   day|<date>|<role prior|flight>|<depart>|<arrive local>|<hours>|<energy %>|<min reach into wind m>|<max crosswind>|<legs over limit>|<legs with rain>|<legs low cloud>|<highest ground m AMSL>|<total climb m>
+ *   day|<date>|<role prior|flight>|<depart>|<arrive local>|<hours>|<energy %>|<min reach into wind m>|<max crosswind>|<legs over limit>|<legs with rain>|<legs low cloud>|<highest ground m AMSL>|<total climb m>|<legs over snow>|<min 2 m temp C>|<max 2 m temp C>|<max density altitude m>|<legs on the day's own air>
  *   leg|<n>|<from>|<to>|<km>|<track>|<median wind>|<max wind>|<min reach into wind m>|<max crosswind>|<mean ground speed>|<higher end's ground m AMSL>
+ *   reach|<height m>|<wind m/s>|<into m>|<across m>|<down m>|<seconds>
  * Ground heights come from the wind file's elev| lines (sea level if none).
  * Each leg is flown at heightAGL above the mean of its ends' ground, at
- * true airspeed for that density; energy counts the thinner air and every
+ * true airspeed for that density - the day's own (ERA5 2 m temperature and
+ * sea-level pressure at the leg's start, 8 Nov) when the wind file has
+ * them, else the standard atmosphere; energy counts the thinner air and every
  * climb between waypoints (FpAirframe). Ground between waypoints is not
- * seen yet: that is the Copernicus DEM's job.
- *   reach|<height m>|<wind m/s>|<into m>|<across m>|<down m>|<seconds>
+ * seen yet: that is the Copernicus DEM's job. The reach lines are for
+ * sea-level air.
  *
  * Architecture: Tom Dyer. Written by: Claude (Opus 5.5), 2026-11-07.
  */
@@ -71,7 +74,8 @@ exit .FpGlide~new(routeFile, windFile, flightDate, departLocal, off, height, out
     if ea == '' then do; ea = 0; noElev += 1; end
     if eb == '' then eb = 0
     leg['ELEV'] = max(ea, eb)
-    leg['SIGMA'] = .FpAirframe~densityRatio((ea + eb) / 2 + height)
+    leg['EFROM'] = ea; leg['Z'] = (ea + eb) / 2 + height
+    leg['SIGMA'] = .FpAirframe~densityRatio(leg['Z'])
     leg['CLIMB'] = max(0, eb - ea)
     legs~append(leg)
   end
@@ -99,11 +103,26 @@ exit .FpGlide~new(routeFile, windFile, flightDate, departLocal, off, height, out
       iterate
     end
     secs = 0; budget = 0; minInto = 1e9; maxCross = 0; over = 0; rainy = 0; lowCloud = 0
+    snowy = 0; tMin = ''; tMax = ''; daMax = 0; metLegs = 0
     do leg over legs
       p = leg['FROM']['NAME']
       w = field~at(p, t + .TimeSpan~fromSeconds(trunc(secs)))
-      tri = craft~triangle(leg['TRACK'], w['W'], w['FROM'], leg['SIGMA'])
-      g = craft~glide(height, w['W'], leg['SIGMA'])
+      /* the day's own air when the file has it, else the standard atmosphere */
+      sigma = leg['SIGMA']
+      if datatype(w['TEMP'], 'N') then do
+        if datatype(w['PMSL'], 'N') then do
+          sigma = .FpAirframe~densityRatioMet(leg['Z'], leg['EFROM'], w['TEMP'], w['PMSL'])
+          metLegs += 1
+        end
+        if tMin == '' then do; tMin = w['TEMP']; tMax = w['TEMP']; end
+        tMin = min(tMin, w['TEMP']); tMax = max(tMax, w['TEMP'])
+      end
+      daMax = max(daMax, .FpAirframe~densityAltitude(sigma))
+      if datatype(w['SNOW'], 'N') then do
+        if w['SNOW'] > 0.01 then snowy += 1
+      end
+      tri = craft~triangle(leg['TRACK'], w['W'], w['FROM'], sigma)
+      g = craft~glide(height, w['W'], sigma)
       if role == 'prior' then do
         leg['WINDS']~append(w['W']); leg['INTO']~append(g['INTO'])
         leg['CROSS']~append(abs(tri['CROSS'])); leg['GS']~append(tri['GROUND'])
@@ -116,12 +135,12 @@ exit .FpGlide~new(routeFile, windFile, flightDate, departLocal, off, height, out
       gs = tri['GROUND']; if gs < 1 then gs = 1
       legSecs = leg['M'] / gs
       secs = secs + legSecs
-      budget = budget + craft~budgetSeconds(legSecs, leg['SIGMA']) + craft~climbSeconds(leg['CLIMB'])
+      budget = budget + craft~budgetSeconds(legSecs, sigma) + craft~climbSeconds(leg['CLIMB'])
     end
     hours = secs / 3600
     arrive = (t + .TimeSpan~fromSeconds(trunc(secs)) + .TimeSpan~fromHours(off))~isoDate~substr(12, 5)
     used = 100 * budget / 3600 / craft~enduranceHours
-    call lineout outFile, 'day|'localDay'|'role'|'departLocal'|'arrive'|'format(hours,,2)'|'format(used,,0)'|'format(minInto,,0)'|'format(maxCross,,1)'|'over'|'rainy'|'lowCloud'|'format(top,,0)'|'format(climb,,0)
+    call lineout outFile, 'day|'localDay'|'role'|'departLocal'|'arrive'|'format(hours,,2)'|'format(used,,0)'|'format(minInto,,0)'|'format(maxCross,,1)'|'over'|'rainy'|'lowCloud'|'format(top,,0)'|'format(climb,,0)'|'snowy'|'fmt1(tMin)'|'fmt1(tMax)'|'format(daMax,,0)'|'metLegs
     log~log(.Log~INFO, localDay left(role, 6) 'arrive' arrive', flying' format(hours,,1) 'h,' format(used,,0)'% of budget; shortest glide into wind' format(minInto,,0) 'm; max crosswind' format(maxCross,,1) 'm/s;' over 'legs over limit,' rainy 'with rain,' lowCloud 'low cloud')
   end
   /* per leg, over the prior week */
@@ -146,6 +165,10 @@ exit .FpGlide~new(routeFile, windFile, flightDate, departLocal, off, height, out
   log~log(.Log~INFO, 'written' outFile)
   return 0
 
+::routine fmt1
+  use strict arg x
+  if x == '' then return '-'
+  return format(x,,1)
 ::routine sorted
   use strict arg a
   s = a~copy; s~sortWith(.NumericComparator~new)

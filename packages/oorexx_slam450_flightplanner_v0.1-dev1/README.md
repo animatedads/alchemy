@@ -51,6 +51,12 @@ rexx tools/fp_fleet_job.rex
 - Coast regression on the 6469555e wind: trips 5-8 minutes shorter (120 m air is 0.6% thinner), budget percentages within 1 point.
 - `fp_fleet_job.rex` with both routes: kit passes in the repo layout; the fetch stops here only because this workspace has no direct outbound route.
 
+8 Nov 2026, later (the day's own air, and snow):
+
+- `fp_get_wind.rex` also takes ERA5 `temperature_2m` and `pressure_msl`, and ERA5-Land `snow_depth` from a second, optional request per batch (ERA5 0.25 deg has no snow depth). Tested with saved responses, with and without the snow file. Lesson: every line of the output file is now written from one method, because a `lineout` to the same file name from a second method lost its line.
+- `FpAirframe~densityRatioMet`: pressure reduced from sea level through a 6.5 C/km column above the ground, then density. With standard values it gives the standard atmosphere exactly (0.79326 at 2,348 m). Hand check, summit at 10 C and 1015 hPa: 769.7 hPa, sigma 0.7751, density altitude 2,575 m.
+- `fp_glide.rex` on a synthetic mild day (10 C everywhere at the ground, 1015 hPa, 0.3 m of snow at the summit and Charlotte Pass): leg 9 density altitude 2,270 m by hand and by tool; trip 5 minutes longer than in the standard atmosphere because 10 C at sea level is denser than 15 C; 2 legs counted over snow. Wind files from before 8 Nov still read, in the standard atmosphere.
+
 ## Credits
 
 ERA5: Contains modified Copernicus Climate Change Service information 2026. Weather data by Open-Meteo.com (CC BY 4.0). Sun and Moon: Moonsault (implementation ChatGPT, GPT-6).
