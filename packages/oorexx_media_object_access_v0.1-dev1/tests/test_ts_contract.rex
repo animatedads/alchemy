@@ -2,11 +2,6 @@
  * Execute against supplied resident MKV-named MPEG-TS recording.
  * The scan is explicitly local; never run it across Storage Fabric.
  */
-::requires '../src/MediaByteSource.cls'
-::requires '../src/Mp4File.cls'
-::requires '../src/MediaSeekIndex.cls'
-::requires '../src/MediaTsFile.cls'
-::requires '../src/MediaFileProbe.cls'
 
 parse arg filename
 if filename='' then do
@@ -63,3 +58,9 @@ fail: procedure
   data=charin(path,offset+1,count)
   if data~length<>count then raise syntax 88.900 array('short read',offset,count)
   return data
+
+::requires '../src/MediaByteSource.cls'
+::requires '../src/Mp4File.cls'
+::requires '../src/MediaSeekIndex.cls'
+::requires '../src/MediaTsFile.cls'
+::requires '../src/MediaFileProbe.cls'
