@@ -1,3 +1,31 @@
+## 8 November dev4 — native H.264 decoded RGB pixels (ooRexx-owned)
+
+The Media Object Access component now includes `MediaTsVideoFrames.cls` and
+`MediaH264Frames.cls`. On MPEG-TS recordings, ooRexx owns the 188-byte TS
+packet/PES parsing, camera-local 90 kHz presentation timestamps, source-bound
+IDR sidecar index, 1 MiB range budgets and per-pixel RGB24 frame objects.
+A replaceable **in-process H.264 codec provider** under `native/` returns
+compressed-video pixels using libavcodec/libswscale; it performs **no file IO,
+MPEG-TS/MP4 demuxing, networking, Python calls or FFmpeg executable calls**.
+
+The native ooRexx 5.3.0 r13196 qualification executed all **9 random-access
+frame requests** (55, 5 and 30 seconds, 3 Sydney H264 cameras). Each result
+matched the requested PTS and returned 1280x720 or 640x360 RGB24 frame bytes,
+with bounded compressed source reads of 288,768 / 481,280 / 192,512 bytes
+respectively; no full-stream rescan on restored sidecar seeks. Code, native
+build instructions and the exact log are in
+`docs/NATIVE_H264_PIXELS_2026-11-08.md` and
+`docs/NATIVE_H264_PIXELS_2026-11-08.log`.
+
+**Not yet qualified:** arbitrary open-GOP/fragmented MP4 H.264 decoded exact
+seeking; the existing MP4 sample map still needs an access-unit codec adapter.
+The native provider is compiled and ABI-pinned to libavcodec 61, libavutil 59,
+libswscale 8, and must be rebuilt/retested on a different codec ABI. Source
+recordings/screenshots are not public Git artifacts. Keep this PR draft while
+these remaining cases are addressed.
+
+---
+
 ## 7 November dev3 — shared MPEG-TS / MP4 indexed access
 
 The native ooRexx Media Object Access component has been extended on this branch with
