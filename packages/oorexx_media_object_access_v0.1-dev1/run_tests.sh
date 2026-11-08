@@ -11,6 +11,8 @@ done
 if [ "${MEDIA_TS_TEST_FILE:-}" != "" ]; then
   printf '%s\n' '=== test_ts_contract.rex (resident MPEG-TS file) ==='
   "$runner" test_ts_contract.rex "$MEDIA_TS_TEST_FILE"
+  printf '%s\n' '=== test_ts_hotseek_real.rex (persisted sidecar and bounded jumps) ==='
+  "$runner" test_ts_hotseek_real.rex "$MEDIA_TS_TEST_FILE" "${MEDIA_TS_INDEX_DIR:-.}"
 else
   printf '%s\n' 'TS resident-file regression SKIPPED (set MEDIA_TS_TEST_FILE)'
 fi
