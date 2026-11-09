@@ -1,0 +1,10 @@
+OOREXX_ROOT ?= /usr/local
+CXX ?= g++
+CXXFLAGS ?= -std=c++17 -O2 -fPIC -Wall -Wextra -Werror
+CPPFLAGS += -I$(OOREXX_ROOT)/include
+all: libmoa_jpeg.so
+libmoa_jpeg.so: moa_jpeg_codec.cpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -shared -o $@ $< -L$(OOREXX_ROOT)/lib -Wl,--no-as-needed -lrexxapi -Wl,--as-needed -ljpeg
+clean:
+	rm -f libmoa_jpeg.so
+.PHONY: all clean
