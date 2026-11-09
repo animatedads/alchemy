@@ -1,0 +1,14 @@
+# Separate native codec-only PNG and codec-independent raster providers.
+OOREXX_ROOT ?= /usr/local
+CXX ?= g++
+CXXFLAGS ?= -std=c++17 -O2 -fPIC -Wall -Wextra -Werror
+CPPFLAGS += -I$(OOREXX_ROOT)/include
+RPATHLD = -L$(OOREXX_ROOT)/lib -Wl,--no-as-needed -lrexxapi -Wl,--as-needed
+all: libmoa_png.so libmoa_raster.so
+libmoa_png.so: moa_png_codec.cpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) $(shell pkg-config --cflags libpng) -shared -o $@ $< $(RPATHLD) $(shell pkg-config --libs libpng)
+libmoa_raster.so: moa_raster_planes.cpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -shared -o $@ $< $(RPATHLD)
+clean:
+	rm -f libmoa_png.so libmoa_raster.so
+.PHONY: all clean
