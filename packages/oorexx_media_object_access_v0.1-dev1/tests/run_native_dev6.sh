@@ -18,3 +18,7 @@ if [ "${SYDNEY_JPEG_ROOT:-}" != "" ]; then
   echo '=== test_sydney_five_jpeg_temporal.rex ==='
   "$runner" test_sydney_five_jpeg_temporal.rex "$SYDNEY_JPEG_ROOT" "$root/outputs"
 fi
+if [ "${SYDNEY_PNG_SAMPLE:-}" != "" ]; then
+  echo '=== test_png_new_raster.rex ==='
+  "$runner" test_png_new_raster.rex "$SYDNEY_PNG_SAMPLE"
+fi
