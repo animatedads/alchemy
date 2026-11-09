@@ -213,5 +213,79 @@
   answer['PIXELS']=pixels
   return answer
 
+/* Uniform-scale plus subpixel-translation registration. This is a similarity
+ * transform only; not parallax, skew, rotation, rolling shutter or 3-D.
+ * Two independent, nonoverlapping stable-landmark ROIs must agree before a
+ * fit can be applied to time-series / astronomical evidence. */
+::method estimateSimilarity class
+  use strict arg reference,frame,x,y,w,h,maxShift=8,maxScalePermille=40,stepPermille=5
+  a=self~asImage(reference);b=self~asImage(frame)
+  if a~width<>b~width | a~height<>b~height then -
+    raise syntax 88.900 array('similarity registration requires equal geometry')
+  packet=MOARasterOpEstimateSimilarity(a~pixels,a~width,a~height,a~channels, -
+     b~pixels,b~width,b~height,b~channels,x,y,w,h,maxShift,maxScalePermille,stepPermille)
+  if words(packet)<>6 then raise syntax 88.900 array('similarity fit failed',left(packet,150))
+  fit=.directory~new
+  fit['DX_MILLI']=word(packet,1)
+  fit['DY_MILLI']=word(packet,2)
+  fit['SCALE_PPM']=word(packet,3)
+  fit['SCORE_PPM']=word(packet,4)
+  fit['LANDMARK_SAMPLES']=word(packet,5)
+  fit['NEXT_BEST_PPM']=word(packet,6)
+  fit['HELDOUT_PPM']=-1
+  fit['HELDOUT_SAMPLES']=0
+  fit['QUALIFIED']=0
+  return fit
+::method scoreSimilarity class
+  use strict arg reference,frame,fit,x,y,w,h
+  a=self~asImage(reference);b=self~asImage(frame)
+  if a~width<>b~width | a~height<>b~height then -
+    raise syntax 88.900 array('independent similarity landmark geometry mismatch')
+  packet=MOARasterOpScoreSimilarity(a~pixels,a~width,a~height,a~channels, -
+    b~pixels,b~width,b~height,b~channels,x,y,w,h, -
+    fit['DX_MILLI'],fit['DY_MILLI'],fit['SCALE_PPM'])
+  if words(packet)<>2 then raise syntax 88.900 array('independent registration failed',left(packet,140))
+  heldout=.directory~new
+  heldout['SCORE_PPM']=word(packet,1)
+  heldout['LANDMARK_SAMPLES']=word(packet,2)
+  return heldout
+::method estimateSimilarityValidated class
+  use strict arg reference,frame, -
+      fitX,fitY,fitW,fitH,checkX,checkY,checkW,checkH, -
+      maxShift=8,maxScalePermille=40,stepPermille=5, -
+      maxFitPpm=100000,maxCheckPpm=100000,minMarginPpm=2000
+  /* Caller chooses mutually disjoint stable city/bridge landmarks.
+   * A fit to a single ROI cannot authorize subtraction on its own. */
+  if fitX<checkX+checkW & checkX<fitX+fitW & -
+     fitY<checkY+checkH & checkY<fitY+fitH then -
+    raise syntax 88.900 array('registration fit/check landmark regions overlap')
+  fit=self~estimateSimilarity(reference,frame,fitX,fitY,fitW,fitH, -
+    maxShift,maxScalePermille,stepPermille)
+  held=self~scoreSimilarity(reference,frame,fit,checkX,checkY,checkW,checkH)
+  fit['HELDOUT_PPM']=held['SCORE_PPM']
+  fit['HELDOUT_SAMPLES']=held['LANDMARK_SAMPLES']
+  if fit['SCORE_PPM']<=maxFitPpm & fit['HELDOUT_PPM']<=maxCheckPpm & -
+     fit['LANDMARK_SAMPLES']>=36 & fit['HELDOUT_SAMPLES']>=25 & -
+     fit['NEXT_BEST_PPM']-fit['SCORE_PPM']>=minMarginPpm then -
+    fit['QUALIFIED']=1
+  return fit
+::method warpSimilarity class
+  use strict arg frame,fit,allowUnqualified=.false
+  if fit['QUALIFIED']<>1 & \allowUnqualified then -
+    raise syntax 88.900 array('similarity warp requires validated disjoint landmark evidence')
+  a=self~asImage(frame)
+  raw=MOARasterOpWarpSimilarity(a~pixels,a~width,a~height,a~channels, -
+      fit['DX_MILLI'],fit['DY_MILLI'],fit['SCALE_PPM'])
+  if raw~length<>a~pixels~length then -
+    raise syntax 88.900 array('similarity warp native result invalid',left(raw,120))
+  return .MediaRasterImage~new(raw,a~width,a~height,a~channels,'SIMILARITY_ALIGNED')
+::method similarityValidity class
+  use strict arg width,height,fit
+  raw=MOARasterOpValiditySimilarity(width,height, -
+       fit['DX_MILLI'],fit['DY_MILLI'],fit['SCALE_PPM'])
+  if raw~length<>width*height then -
+    raise syntax 88.900 array('invalid similarity overlap envelope',left(raw,120))
+  return raw
+
 ::requires 'MediaRasterPlanes.cls'
 ::requires 'moa_raster_ops' LIBRARY
