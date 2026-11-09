@@ -19,3 +19,13 @@ Known limitations:
   2D projected kinematics only; no physical depth or stride length
   Temporal periodicity is a candidate; no verified foot strikes/steps
   Provider packet authority must be validated by caller against pinned Storage Fabric source and model digests
+
+Face SLAM mask audit v0.1-dev3 qualification (2026-11-09)
+  Local runtime: user-supplied ooRexx 5.3.0 r13196, isolated Debian extraction
+  Native mask continuity regression: 22 PASS
+  Native synthetic RGB24 mosaic probe: 6 PASS
+  Prior gait/temporal/packet regression rerun: 22 + 17 + 19 PASS
+  Aggregate: 86 PASS
+  Local source-derived ROI measurements: 8 sample frames, mosaic scores 6.60..18.48 pre-occlusion vs 2.14..4.94 after, descriptive only
+  No source video, screenshots, or derived face crops committed
+  Not qualified: real MP4 H264 random-access decoder, MediaPipe, actual face reconstruction, identity recognition, production Maths linkage
