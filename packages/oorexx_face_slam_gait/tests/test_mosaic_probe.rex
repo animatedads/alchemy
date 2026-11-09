@@ -39,4 +39,4 @@ exit 0
  use strict arg msg
  say 'FAIL:'msg
  exit 1
-::requires '../src/FaceSlamMosaicProbe.cls'
+::requires 'FaceSlamMosaicProbe.cls'
