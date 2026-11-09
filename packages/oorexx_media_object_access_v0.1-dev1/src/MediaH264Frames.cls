@@ -62,6 +62,19 @@
   use strict arg path
   return .MediaRasterPlanes~saveRgbaPam(pixels,width,height,3,path)
 
+::method crop
+  use strict arg x,y,w,h
+  return .MediaRasterOps~crop(self,x,y,w,h)
+::method resizeToProcessing
+  use strict arg w,h,method='AREA'
+  return .MediaRasterOps~resizeToProcessing(self,w,h,method)
+::method subtractFrame
+  use strict arg other,includeAlpha=.false
+  return .MediaRasterOps~subtractFrame(self,other,includeAlpha)
+::method subtractLayer
+  use strict arg layer,x=0,y=0,channel='X',includeAlpha=.false
+  return .MediaRasterOps~subtractLayer(self,layer,x,y,channel,includeAlpha)
+
 ::class MediaH264Decoder public
 ::attribute handle get
 ::attribute backend get
@@ -107,3 +120,5 @@
   return self
 ::requires 'moa_h264' LIBRARY
 ::requires 'MediaRasterPlanes.cls'
+
+::requires 'MediaRasterOps.cls'
