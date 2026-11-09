@@ -16,4 +16,19 @@ if [ "${MEDIA_TS_TEST_FILE:-}" != "" ]; then
 else
   printf '%s\n' 'TS resident-file regression SKIPPED (set MEDIA_TS_TEST_FILE)'
 fi
+if [ "${MEDIA_PNG_TESTS:-0}" = "1" ]; then
+  mkdir -p out
+  printf '%s\n' '=== test_png_channels.rex (native libpng plus exact alpha) ==='
+  "$runner" test_png_channels.rex
+fi
+if [ "${MEDIA_H264_CHANNEL_TESTS:-0}" = "1" ]; then
+  mkdir -p out
+  printf '%s\n' '=== test_h264_rgb_planes.rex (shared planar raster output) ==='
+  "$runner" test_h264_rgb_planes.rex
+fi
+if [ "${MEDIA_SCREENSHOT_ROOT:-}" != "" ]; then
+  mkdir -p out
+  printf '%s\n' '=== test_sydney_png_rgba.rex (local user screenshots) ==='
+  "$runner" test_sydney_png_rgba.rex "$MEDIA_SCREENSHOT_ROOT" out
+fi
 printf '%s\n' 'Completed ooRexx metadata/range tests'
