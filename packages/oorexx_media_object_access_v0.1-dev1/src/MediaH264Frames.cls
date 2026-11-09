@@ -45,6 +45,23 @@
   ignore=stream(path,'C','CLOSE')
   return self
 
+::method channelPlane
+  expose pixels width height
+  use strict arg channel
+  return .MediaRasterPlanes~plane(pixels,width,height,3,channel)
+::method saveChannelPgm
+  expose pixels width height
+  use strict arg channel,path
+  return .MediaRasterPlanes~saveChannelPgm(pixels,width,height,3,channel,path)
+::method saveSplit
+  expose pixels width height
+  use strict arg prefix
+  return .MediaRasterPlanes~saveSplit(pixels,width,height,3,prefix)
+::method savePam
+  expose pixels width height
+  use strict arg path
+  return .MediaRasterPlanes~saveRgbaPam(pixels,width,height,3,path)
+
 ::class MediaH264Decoder public
 ::attribute handle get
 ::attribute backend get
@@ -89,3 +106,4 @@
   end
   return self
 ::requires 'moa_h264' LIBRARY
+::requires 'MediaRasterPlanes.cls'
