@@ -8689,10 +8689,18 @@ predicateFailure:
   relation = .SQLRelationDefinition~new(t~definition, alias)
   if predicate \== .nil then do
     if \self~normalizeSinglePredicate(predicate, relation) then return self~sqlFailure("Unknown or ambiguous WHERE column")
-    queryResult = self~engine~selectWhere(tableName, predicate)
+  end
+  queryResult = .nil
+  -- Optional top-level column projection, independent of physical provider.
+  if self~engine~hasMethod("selectColumnar") then ,
+    queryResult = self~engine~selectColumnar(tableName, predicate, projection, orderBy)
+  if queryResult == .nil then do
+    if predicate \== .nil then queryResult = self~engine~selectWhere(tableName, predicate)
+    else queryResult = self~engine~selectAll(tableName)
+  end
+  if predicate \== .nil then do
     if queryResult~status = .Error~SUCCESS then self~engine~queryPatternLog~record(tableName, predicate, queryResult~rowsScanned, queryResult~rows~items)
   end
-  else queryResult = self~engine~selectAll(tableName)
   if queryResult~status \= .Error~SUCCESS then return queryResult
   preOrder = self~resolvedOrderBy(orderBy, relation)
   if preOrder \== .nil then do
