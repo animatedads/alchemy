@@ -1,0 +1,31 @@
+NoSQLServer v0.93-dev0 columnar candidate — qualification status (2026-11-09)
+
+LOCAL COMPILE
+  ooRexx 5.3.0 r13196 Internal Test Version, supplied Ubuntu debug build
+  rexxc NoSQLServerColumnar.cls: PASS
+
+LOCAL ISOLATED SMOKE
+  Lightweight NoSQLServer class stand-ins, real ooRexx interpreter:
+  column round-trip: PASS
+  NULL and binary string round-trip: PASS
+  column-only projection: PASS
+  simple predicate fast-path: PASS
+  RLE selection and decoding: PASS
+  generation publication: PASS
+  injected segment failure leaves published generation unchanged: PASS
+
+NOT YET QUALIFIED
+  Real NoSQLServer.cls and Alchemy dependencies were not available for local execution.
+  tests/v093_columnar_smoke.rex was added for host qualification, not claimed PASS.
+  NoSQLColumnarSQLPort has not been exercised against real File/SQLiteWritable/other providers.
+  Existing SQL torture corpus and source-side compiling of modified NoSQLServer.cls
+  were not run in this isolated execution environment.
+  No concurrent-writer WAL/recovery or performance benchmark was run.
+  No autobuilder or production deployment was triggered.
+
+REVIEW GATES
+  1. Compile NoSQLServer.cls + NoSQLServerColumnar.cls with real dependency path.
+  2. Run tests/v093_columnar_smoke.rex and legacy SELECT/SQL corpus.
+  3. Check SQLPort with persistent selected provider and crash/restart.
+  4. Compare row/column/hybrid costs, including indexed PK and selective aggregates.
+  5. Harden snapshot tokens, atomic publication, orphan cleanup and direct writes.
