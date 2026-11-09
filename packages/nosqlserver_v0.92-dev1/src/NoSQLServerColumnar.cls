@@ -329,6 +329,8 @@ conversionFailed:
   self~queryLog = .NullQueryPatternLog~new
 ::method register
   use strict arg name, definition, sourceRows, blockSize = 1024
+  if self~rowEngine \== .nil then ,
+    raise syntax 93.900 additional("Use PROMOTE to capture row-source revision")
   t = .NoSQLColumnarTable~new(name,definition,self~port,blockSize)
   version = t~publishRows(sourceRows)
   self~tables[name~translate] = t
@@ -543,6 +545,8 @@ conversionFailed:
   rs~rowsScanned = t~rowCount
   rs~accessPath = 'COLUMNAR_PROJECT_LATE'
   return rs
+::method queryPatternLog
+  return self~queryLog
 ::method readCatalog
   catalog = .table~new
   catalog["tables"] = self~tableNames
