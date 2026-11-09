@@ -1,3 +1,41 @@
+## 9 November dev6 — bounded geometry and an evolving 50% absolute subtraction mask
+
+ooRexx now owns `MediaRasterOps` and `MediaTemporalDifferenceMask` as
+shared Media Object Access classes. The native stateless `moa_raster_ops`
+provider handles only caller-owned byte-plane arithmetic; no IO, demuxing,
+Python or executable FFmpeg.
+
+- PNG, JPEG and H264 frame objects expose `crop`, `resizeToProcessing`,
+  `subtractFrame` (signed 16-bit RGB/optional A) and `subtractLayer` (offset
+  ROI, per-channel/mono). `MediaRasterImage` supports all four directly.
+- `MediaTemporalDifferenceMask` accepts aligned processing-resolution
+  images and explicitly identified times; global median photometric gain
+  compensates for ambient changes; per-pixel lower-median background and
+  robust temporal-noise envelope establish the **local** threshold:
+  `max(minAbsolute, ceil(50% * max(referenceLuma, floor)), noiseFactor * MAD)`.
+- Each new image rebuilds the model and **rescans every earlier image**:
+  positive/negative and absolute difference masks retain retrospective
+  discoveries. Changed model generations cannot reuse stale frame scores.
+- `estimateTranslation` registers explicitly chosen stable landmark ROI
+  with normalized gradients and rejects ambiguous/no-texture results.
+  Validity envelopes prevent shifted black borders becoming false motion.
+- Physical camera movement toward a subject can introduce scale/parallax:
+  integer translation **does not** solve it. Use qualified geometry/warp
+  before model comparison. Clouds remain candidates, not proven stars.
+- Bounded at 16 images and 2M processing pixels; MP4/TS hot-seek contracts
+  and separation of webcam time from scrubbed media timestamps are retained.
+
+**Executed native r13196 tests:** synthetic four-frame +20% brightness and
+50% mask PASS with frame-1 retrospective recovery; landmark +1 pixel shift
+and +20% photometric change PASS; real JPEG skyline 0-shift registration
+PASS; 5 actual Sydney JPEG exposures (03:45:21–04:46:43 AEDT) decoded,
+cropped, AREA-resized and retrospectively scored PASS; real PNG RGBA
+crop/resize and signed alpha difference PASS. No original images committed.
+See `docs/ADAPTIVE_ABSOLUTE_SUBTRACTION_DEV6.md` and
+`docs/ooRexx_r13196_qualification_20261109.log`.
+
+---
+
 ## 9 November dev5 — PNG to RGB/RGBA and split-channel exports
 
 In-process PNG decoding is now implemented in `MediaPngFile.cls`, with
