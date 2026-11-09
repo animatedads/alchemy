@@ -1,0 +1,38 @@
+ooRexx: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Media raster dev7, 2026-11-09
+=== test_temporal_mask.rex ===
+PASS: native crop, AREA resize, signed subtractFrame, subtractLayer, RGB delta magnitude
+PASS: four-frame absolute 50 percent mask, +20 percent illumination normalisation
+PASS: building suppression and retrospective detection of original-frame star
+PASS: explicit translational registration; native model generation=2
+=== test_registration.rex ===
+PASS: native landmark registration dx=-1 dy=0 scorePPM=0 samples=143
+=== test_similarity_registration.rex ===
+FIT dxMilli=2000 dyMilli=-1000 scalePPM=1026000 scorePPM=179200 next=199793 samples=391
+HELDOUT scorePPM=177089 samples=328
+PASS: native independent similarity ROI, subpixel warp, validity and time-model provenance
+=== Six real frame similarity fit ===
+REGISTER 20:17:25 scale=999000 shift_milli=-250 0 downtown=76746 bridge=130071 margin=21803 qualified=0
+REGISTER 20:24:30 scale=1000000 shift_milli=0 0 downtown=54750 bridge=54198 margin=68499 qualified=1
+REGISTER 20:32:05 scale=1000000 shift_milli=0 0 downtown=32523 bridge=31686 margin=80867 qualified=1
+REGISTER 20:32:17 scale=1000000 shift_milli=0 0 downtown=31823 bridge=30809 margin=81037 qualified=1
+REGISTER 20:37:11 scale=1000000 shift_milli=0 0 downtown=0 bridge=0 margin=999999 qualified=1
+REGISTER 22:08:42 scale=1002000 shift_milli=-2250 -2750 downtown=119196 bridge=141338 margin=30568 qualified=0
+QUALIFIED_IMAGES 4 OF 6 (reference included)
+PASS: independently checked per-frame scale fits recorded; failing frames not promoted
+NCLUSTERS 2
+CANDIDATE coarse=17 6 px=70 26 area=25 contrast=-1 status=DIFFUSE_COARSE
+CANDIDATE coarse=5 5 px=22 22 area=1 contrast=205 status=POINT_LIKE_UNIDENTIFIED
+PASS: full-resolution point retained; diffuse cloud rejected
+FRAME 1316 742 TEMPORAL_CLUSTER_COUNT 7
+POINT_LIKE_UNIDENTIFIED 0 DIFFUSE_OR_OTHER 7
+PASS: full-resolution candidate revisit computed from native PNG; no star identity promoted
+AIRCRAFT_STREAK_EVIDENCE before=3.5833333333333333333333333333 after=182.716666666666666666666666667 status=TRANSIENT_REJECTED
+SKY 20:24:30 changed_pixels=0 clusters=0 pointlike=0 other=0
+SKY 20:32:05 changed_pixels=0 clusters=0 pointlike=0 other=0
+  POINTLIKE_UNIDENTIFIED 218 178 contrast=182.716666666666666666666666667
+SKY 20:32:17 changed_pixels=1 clusters=1 pointlike=1 other=0
+SKY 20:37:11 changed_pixels=22 clusters=2 pointlike=0 other=2
+PASS: real four-image registered cohort, 50% mask and original-resolution point morphology
+PASS: unqualified similarity fit is refused
