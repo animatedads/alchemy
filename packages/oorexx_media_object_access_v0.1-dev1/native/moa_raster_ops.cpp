@@ -24,7 +24,8 @@ bool emit(PRXSTRING r,const void *v,size_t count) {
 }
 size_t fail(PRXSTRING r,const std::string&cause){
   const auto text="ERROR "+cause;
-  emit(r,text.data(),text.size());return 0;
+  emit(r,text.data(),text.size());
+  return 0;
 }
 bool number(const CONSTRXSTRING&a,int64_t&n,bool allowNegative=false){
   if(!a.strptr||a.strlength<1||a.strlength>14)return false;
@@ -213,6 +214,10 @@ extern "C" size_t REXXENTRY MOARasterOpNormalizeLuma(const char*,size_t,PCONSTRX
 extern "C" size_t REXXENTRY MOARasterOpBuildTemporal(const char*,size_t,PCONSTRXSTRING,const char*,PRXSTRING);
 extern "C" size_t REXXENTRY MOARasterOpScoreTemporal(const char*,size_t,PCONSTRXSTRING,const char*,PRXSTRING);
 extern "C" size_t REXXENTRY MOARasterOpTranslate(const char*,size_t,PCONSTRXSTRING,const char*,PRXSTRING);
+extern "C" size_t REXXENTRY MOARasterOpEstimateSimilarity(const char*,size_t,PCONSTRXSTRING,const char*,PRXSTRING);
+extern "C" size_t REXXENTRY MOARasterOpScoreSimilarity(const char*,size_t,PCONSTRXSTRING,const char*,PRXSTRING);
+extern "C" size_t REXXENTRY MOARasterOpWarpSimilarity(const char*,size_t,PCONSTRXSTRING,const char*,PRXSTRING);
+extern "C" size_t REXXENTRY MOARasterOpValiditySimilarity(const char*,size_t,PCONSTRXSTRING,const char*,PRXSTRING);
 static RexxRoutineEntry routines[]={
   REXX_CLASSIC_ROUTINE(MOARasterOpCrop,MOARasterOpCrop),
   REXX_CLASSIC_ROUTINE(MOARasterOpResize,MOARasterOpResize),
@@ -225,6 +230,10 @@ static RexxRoutineEntry routines[]={
   REXX_CLASSIC_ROUTINE(MOARasterOpBuildTemporal,MOARasterOpBuildTemporal),
   REXX_CLASSIC_ROUTINE(MOARasterOpScoreTemporal,MOARasterOpScoreTemporal),
   REXX_CLASSIC_ROUTINE(MOARasterOpTranslate,MOARasterOpTranslate),
+  REXX_CLASSIC_ROUTINE(MOARasterOpEstimateSimilarity,MOARasterOpEstimateSimilarity),
+  REXX_CLASSIC_ROUTINE(MOARasterOpScoreSimilarity,MOARasterOpScoreSimilarity),
+  REXX_CLASSIC_ROUTINE(MOARasterOpWarpSimilarity,MOARasterOpWarpSimilarity),
+  REXX_CLASSIC_ROUTINE(MOARasterOpValiditySimilarity,MOARasterOpValiditySimilarity),
   REXX_LAST_ROUTINE()
 };
 static RexxPackageEntry moa_raster_ops_package_entry={
@@ -413,5 +422,193 @@ extern "C" size_t REXXENTRY MOARasterOpValidity(const char*,size_t n,PCONSTRXSTR
     if(sx>=0&&sx<w&&sy>=0&&sy<h)out[size_t(y*w+x)]=255;
   }
   if(!emit(r,out.data(),out.size()))return fail(r,"invalid registration validity allocation");
+  return 0;
+}
+
+/* Dev7: similarity registration is a bounded pixel-space primitive.
+ * ooRexx owns landmark selection, provenance, thresholds, and approval.
+ * Scale is positive and uniform; this is NOT projective/parallax alignment.
+ * Reference-domain x,y maps to target-domain:
+ *   source = centre + (reference - centre - shift) / scale.
+ */
+namespace {
+struct Similarity {
+  double shiftX = 0, shiftY = 0, scale = 1;
+};
+struct SimilarityScore { double error = std::numeric_limits<double>::infinity(); int count = 0; };
+struct LandmarkPoint { int x=0,y=0; double gx=0,gy=0; };
+static std::vector<uint8_t> grayPlane(const uint8_t*rgb,int64_t w,int64_t h,int64_t depth) {
+  std::vector<uint8_t> gray(size_t(w*h));
+  for(int64_t i=0;i<w*h;i++){
+    const auto* p=rgb+size_t(i*depth);
+    gray[size_t(i)]=uint8_t((54*int(p[0])+183*int(p[1])+19*int(p[2])+128)>>8);
+  }
+  return gray;
+}
+static inline bool mapped(double x,double y,int64_t w,int64_t h,const Similarity&s,double&sx,double&sy) {
+  const double cx=(w-1)*0.5,cy=(h-1)*0.5;
+  sx=cx+(x-cx-s.shiftX)/s.scale;
+  sy=cy+(y-cy-s.shiftY)/s.scale;
+  return sx>=0&&sy>=0&&sx<=double(w-1)&&sy<=double(h-1);
+}
+static double bilinearGray(const uint8_t*img,int64_t w,int64_t h,double x,double y) {
+  if(x<0||y<0||x>double(w-1)||y>double(h-1))return -1.;
+  const auto xa=int64_t(x),ya=int64_t(y),xb=std::min<int64_t>(xa+1,w-1),yb=std::min<int64_t>(ya+1,h-1);
+  const double a=x-double(xa),b=y-double(ya);
+  const double top=(1-a)*double(img[size_t(ya*w+xa)])+a*double(img[size_t(ya*w+xb)]);
+  const double bottom=(1-a)*double(img[size_t(yb*w+xa)])+a*double(img[size_t(yb*w+xb)]);
+  return (1-b)*top+b*bottom;
+}
+static std::vector<LandmarkPoint> selectLandmark(const uint8_t*ref,int64_t w,int64_t h,
+                                                int64_t left,int64_t top,int64_t rw,int64_t rh,int step=3){
+  std::vector<LandmarkPoint> obs;
+  for(int64_t y=std::max<int64_t>(top+2,2);y<top+rh-2;y+=step)
+    for(int64_t x=std::max<int64_t>(left+2,2);x<left+rw-2;x+=step){
+      if(x>=w-2||y>=h-2)continue;
+      const double L=ref[size_t(y*w+x-1)],R=ref[size_t(y*w+x+1)];
+      const double U=ref[size_t((y-1)*w+x)],D=ref[size_t((y+1)*w+x)];
+      const double gx=(R-L)/(R+L+32.),gy=(D-U)/(D+U+32.);
+      if(std::abs(gx)+std::abs(gy)<0.044)continue;
+      obs.push_back(LandmarkPoint{int(x),int(y),gx,gy});
+    }
+  return obs;
+}
+static SimilarityScore scoreLandmark(const uint8_t*target,int64_t w,int64_t h,
+                                   const std::vector<LandmarkPoint>&obs,const Similarity&s){
+  double total=0.;int used=0;
+  for(const auto&p:obs){
+    double sx,sy;
+    if(!mapped(double(p.x),double(p.y),w,h,s,sx,sy) ||
+       sx<1.001||sy<1.001||sx>double(w-2.001)||sy>double(h-2.001))continue;
+    const double L=bilinearGray(target,w,h,sx-1.,sy);
+    const double R=bilinearGray(target,w,h,sx+1.,sy);
+    const double U=bilinearGray(target,w,h,sx,sy-1.);
+    const double D=bilinearGray(target,w,h,sx,sy+1.);
+    const double gx=(R-L)/(R+L+32.),gy=(D-U)/(D+U+32.);
+    /* Clamp cost of transient lights, not their geometry, to retain stable buildings. */
+    total+=std::min(0.7,std::abs(p.gx-gx)+std::abs(p.gy-gy));used++;
+  }
+  return SimilarityScore{used>=18?total/double(used):std::numeric_limits<double>::infinity(),used};
+}
+static bool parseGeometry(PCONSTRXSTRING a,size_t n,int64_t&w,int64_t&h,int64_t&d,
+                         int64_t&l,int64_t&t,int64_t&rw,int64_t&rh){
+  uint64_t uw,uh,ud,tw,th,td;
+  if(n<12||!raster(a,0,uw,uh,ud)||!raster(a,4,tw,th,td)||uw!=tw||uh!=th||
+     !number(a[8],l)||!number(a[9],t)||!number(a[10],rw)||!number(a[11],rh))return false;
+  w=int64_t(uw);h=int64_t(uh);d=int64_t(ud);
+  return rw>=18&&rh>=18&&l>=0&&t>=0&&l+rw<=w&&t+rh<=h;
+}
+static bool parseSimilarity(const CONSTRXSTRING&dx,const CONSTRXSTRING&dy,const CONSTRXSTRING&scale,
+                            Similarity&s){
+  int64_t x,y,z;
+  if(!number(dx,x,true)||!number(dy,y,true)||!number(scale,z)||
+     z<800000||z>1200000)return false;
+  s.shiftX=double(x)/1000.;s.shiftY=double(y)/1000.;s.scale=double(z)/1000000.;
+  return std::isfinite(s.scale)&&s.scale>0.;
+}
+}
+extern "C" size_t REXXENTRY MOARasterOpEstimateSimilarity(const char*,size_t n,PCONSTRXSTRING a,const char*,PRXSTRING r){
+  int64_t w,h,d,l,t,rw,rh,maxShift,maxScalePerMille,stepPerMille;
+  if(n!=15||!parseGeometry(a,n,w,h,d,l,t,rw,rh)||
+     !number(a[12],maxShift)||!number(a[13],maxScalePerMille)||
+     !number(a[14],stepPerMille)||maxShift>12||maxScalePerMille>100||
+     maxScalePerMille<0||stepPerMille<1||stepPerMille>20)
+    return fail(r,"similarity registration invalid geometry or bounds");
+  const auto* ref=reinterpret_cast<const uint8_t*>(a[0].strptr);
+  const auto* trg=reinterpret_cast<const uint8_t*>(a[4].strptr);
+  const auto rg=grayPlane(ref,w,h,d);
+  const auto tg=grayPlane(trg,w,h,int64_t(a[4].strlength/(w*h)));
+  const auto obs=selectLandmark(rg.data(),w,h,l,t,rw,rh,3);
+  if(obs.size()<36)return fail(r,"similarity landmark has insufficient texture");
+  Similarity best,second;SimilarityScore bscore,sscore;
+  for(int64_t per=-maxScalePerMille;per<=maxScalePerMille;per+=stepPerMille){
+    Similarity trial;trial.scale=1.+double(per)/1000.;
+    for(int64_t dy=-maxShift;dy<=maxShift;dy++)for(int64_t dx=-maxShift;dx<=maxShift;dx++){
+      trial.shiftX=double(dx);trial.shiftY=double(dy);
+      const auto score=scoreLandmark(tg.data(),w,h,obs,trial);
+      if(score.error<bscore.error){second=best;sscore=bscore;best=trial;bscore=score;}
+      else if(score.error<sscore.error){second=trial;sscore=score;}
+    }
+  }
+  if(!std::isfinite(bscore.error)||bscore.count<36)return fail(r,"similarity landmark fit was not measurable");
+  // Refine subpixel translation and 0.1 percent scale locally; deterministic bounds.
+  const Similarity first=best;
+  for(int zi=-3;zi<=3;zi++)for(int yi=-4;yi<=4;yi++)for(int xi=-4;xi<=4;xi++){
+    Similarity s=first;
+    s.scale+=double(zi)*0.001;
+    s.shiftX+=double(xi)*0.25;s.shiftY+=double(yi)*0.25;
+    if(std::abs(s.scale-1.)>double(maxScalePerMille)/1000.+0.00001||
+       std::abs(s.shiftX)>double(maxShift)+0.00001||std::abs(s.shiftY)>double(maxShift)+0.00001)continue;
+    const auto score=scoreLandmark(tg.data(),w,h,obs,s);
+    if(score.error<bscore.error){best=s;bscore=score;}
+  }
+  /* Runner-up must be genuinely independent, not an adjacent subpixel fit. */
+  double runner=std::numeric_limits<double>::infinity();
+  for(int64_t per=-maxScalePerMille;per<=maxScalePerMille;per+=stepPerMille){
+    Similarity trial;trial.scale=1.+double(per)/1000.;
+    for(int64_t dy=-maxShift;dy<=maxShift;dy++)for(int64_t dx=-maxShift;dx<=maxShift;dx++){
+      trial.shiftX=double(dx);trial.shiftY=double(dy);
+      if(std::abs(trial.shiftX-best.shiftX)<1.1&&std::abs(trial.shiftY-best.shiftY)<1.1&&
+         std::abs(trial.scale-best.scale)<0.006)continue;
+      const auto score=scoreLandmark(tg.data(),w,h,obs,trial);
+      runner=std::min(runner,score.error);
+    }
+  }
+  if(!std::isfinite(runner))runner=1.;
+  const std::string answer=std::to_string(std::llround(best.shiftX*1000.))+" "+
+     std::to_string(std::llround(best.shiftY*1000.))+" "+
+     std::to_string(std::llround(best.scale*1000000.))+" "+
+     std::to_string(std::llround(bscore.error*1000000.))+" "+
+     std::to_string(bscore.count)+" "+std::to_string(std::llround(runner*1000000.));
+  if(!emit(r,answer.data(),answer.size()))return fail(r,"similarity output allocation");
+  return 0;
+}
+extern "C" size_t REXXENTRY MOARasterOpScoreSimilarity(const char*,size_t n,PCONSTRXSTRING a,const char*,PRXSTRING r){
+  int64_t w,h,d,l,t,rw,rh;
+  if(n!=15||!parseGeometry(a,n,w,h,d,l,t,rw,rh))return fail(r,"invalid independent registration ROI");
+  Similarity s;
+  if(!parseSimilarity(a[12],a[13],a[14],s))return fail(r,"invalid independent registration transform");
+  const auto ref=grayPlane(reinterpret_cast<const uint8_t*>(a[0].strptr),w,h,d);
+  const auto trg=grayPlane(reinterpret_cast<const uint8_t*>(a[4].strptr),w,h,int64_t(a[4].strlength/(w*h)));
+  const auto obs=selectLandmark(ref.data(),w,h,l,t,rw,rh,3);
+  const auto score=scoreLandmark(trg.data(),w,h,obs,s);
+  if(!std::isfinite(score.error)||score.count<25)return fail(r,"independent landmark area has insufficient evidence");
+  const std::string answer=std::to_string(std::llround(score.error*1000000.))+" "+std::to_string(score.count);
+  if(!emit(r,answer.data(),answer.size()))return fail(r,"independent score allocation");
+  return 0;
+}
+extern "C" size_t REXXENTRY MOARasterOpWarpSimilarity(const char*,size_t n,PCONSTRXSTRING a,const char*,PRXSTRING r){
+  uint64_t w,h,d;if(n!=7||!raster(a,0,w,h,d))return fail(r,"invalid similarity source");
+  Similarity s;if(!parseSimilarity(a[4],a[5],a[6],s))return fail(r,"invalid similarity transform");
+  if(std::abs(s.shiftX)>128||std::abs(s.shiftY)>128)return fail(r,"similarity shift outside bound");
+  const auto*src=reinterpret_cast<const uint8_t*>(a[0].strptr);
+  std::vector<uint8_t>out(size_t(w*h*d),0);
+  for(int64_t y=0;y<int64_t(h);y++)for(int64_t x=0;x<int64_t(w);x++){
+    double sx,sy;if(!mapped(double(x),double(y),int64_t(w),int64_t(h),s,sx,sy))continue;
+    const auto x0=int64_t(sx),y0=int64_t(sy),x1=std::min<int64_t>(x0+1,int64_t(w)-1),y1=std::min<int64_t>(y0+1,int64_t(h)-1);
+    const double u=sx-double(x0),v=sy-double(y0);
+    for(uint64_t c=0;c<d;c++){
+      const auto a0=src[size_t((y0*int64_t(w)+x0)*int64_t(d)+int64_t(c))];
+      const auto b0=src[size_t((y0*int64_t(w)+x1)*int64_t(d)+int64_t(c))];
+      const auto c0=src[size_t((y1*int64_t(w)+x0)*int64_t(d)+int64_t(c))];
+      const auto d0=src[size_t((y1*int64_t(w)+x1)*int64_t(d)+int64_t(c))];
+      out[size_t((y*int64_t(w)+x)*int64_t(d)+int64_t(c))]=uint8_t(std::clamp(std::llround(
+             (1-v)*((1-u)*a0+u*b0)+v*((1-u)*c0+u*d0)),0LL,255LL));
+    }
+  }
+  if(!emit(r,out.data(),out.size()))return fail(r,"warp output allocation");
+  return 0;
+}
+extern "C" size_t REXXENTRY MOARasterOpValiditySimilarity(const char*,size_t n,PCONSTRXSTRING a,const char*,PRXSTRING r){
+  int64_t w,h;
+  if(n!=5||!number(a[0],w)||!number(a[1],h)||w<1||h<1||w*h>2000000)
+    return fail(r,"invalid similarity validity dimensions");
+  Similarity s;if(!parseSimilarity(a[2],a[3],a[4],s))return fail(r,"invalid similarity validity transform");
+  if(std::abs(s.shiftX)>128||std::abs(s.shiftY)>128)return fail(r,"similarity shift outside bound");
+  std::vector<uint8_t>out(size_t(w*h),0);
+  for(int64_t y=0;y<h;y++)for(int64_t x=0;x<w;x++){
+    double sx,sy;if(mapped(double(x),double(y),w,h,s,sx,sy))out[size_t(y*w+x)]=255;
+  }
+  if(!emit(r,out.data(),out.size()))return fail(r,"similarity validity allocation");
   return 0;
 }
