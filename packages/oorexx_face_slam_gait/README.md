@@ -36,3 +36,11 @@ The 22 geometry-contract tests contain a **test-only Maths shim**, because the f
 3. Validate exact PTS/time-base conversion in Video/Vision integration, frame correspondence, person-track continuity, occlusion and camera motion; no false extrapolation through absent frames.
 4. Verify side-on/front-on viewpoint effects using consented, independently annotated data; measure false periodicity and missed periodicity before any candidate review integration.
 5. Keep later ML neighbour retrieval on anonymized, authorised samples. It may propose observations for human review but must not assert biometric identity without a separately authorized and validated decision process.
+
+## dev3 — anonymisation-mask continuity experiment (2026-11-09)
+
+- `FaceSlamMaskContinuity.cls` accepts source-bound, track-bound manual or validated automated masking observations. It refuses non-monotonic PTS, incompatible provenance, and mask state on fully occluded faces; a post-occlusion mask loss is a *review hypothesis*, never identity proof.
+- `FaceSlamMosaicProbe.cls` measures RGB24 face-ROI block regularity and reports mosaic/unknown evidence without new pixel synthesis or Python subprocesses. It consumes decoded pixels from Media Object Access; MP4 sample planning is not equivalent to qualified exact H264 frame decoding.
+- Synthetic native regression: **22** continuity and **6** mosaic checks PASS. Full suite on ooRexx 5.3.0 r13196: **86 PASS** including the previous 58.
+- A user-provided 1920×1080 MP4 shows a visually verified occlusion interval (3.80–3.96s) followed by unmasked face pixels by 4.00s. Source-derived pixels remain **out of public Git**; see `docs/MASK_OCCLUSION_2026-11-09.md` for diagnostic scores and limitations.
+- Reconstructed facial details are **not** qualified. Canonical Maths, local MediaPipe inference and MP4 decoded exact seek remain pending. This increment does not change gait numerical ownership or create a new media decoder.
