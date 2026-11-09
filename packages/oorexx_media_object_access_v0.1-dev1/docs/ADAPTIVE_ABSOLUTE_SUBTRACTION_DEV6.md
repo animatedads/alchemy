@@ -68,6 +68,6 @@ rexx test_sydney_jpeg_registration.rex
 rexx test_sydney_five_jpeg_temporal.rex /mnt/data /path/to/output
 ```
 
-All five passed on the supplied r13196 runtime. In the five *real* Sydney screenshots, sky-region bright-change counts are 556, 66, 65, 2, 2; lower-scene bright-change counts are 22, 0, 2, 14, 22 (processing 315x150, upper/lower split y=72). The first frame's large sky count includes moving clouds; it is **not** 556 stars. Reported gain was 1.000000 for the five real JPEG samples, whose overall measured illumination did not require a global change; the separate synthetic test explicitly exercises the +20% gain case.
+All five initial tests passed on the supplied r13196 runtime. A separate real PNG RGBA crop/AREA-resize/self-subtraction regression also passed. In the five *real* Sydney screenshots, sky-region bright-change counts are 556, 66, 65, 2, 2; lower-scene bright-change counts are 22, 0, 2, 14, 22 (processing 315x150, upper/lower split y=72). The first frame's large sky count includes moving clouds; it is **not** 556 stars. Reported gain was 1.000000 for the five real JPEG samples, whose overall measured illumination did not require a global change; the separate synthetic test explicitly exercises the +20% gain case.
 
 Remaining qualification: scale/parallax and subpixel image registration, local nonuniform illumination adaptation, Moonsault cloud rejection and astrometric identification. Do not promote this absolute mask to a celestial heading on its own.
