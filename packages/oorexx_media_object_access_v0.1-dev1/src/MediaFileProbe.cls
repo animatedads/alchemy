@@ -6,6 +6,9 @@
 ::method detect class
   use strict arg source
   length=source~sizeBytes
+  if length>=3 then do
+    if source~readAt(0,3)=x2c('FFD8FF') then return 'JPEG'
+  end
   if length>=8 then do
     if source~readAt(0,8)=x2c('89504E470D0A1A0A') then return 'PNG'
   end
@@ -28,7 +31,10 @@
     when kind='PNG' then return .MediaPngFile~new(source)
     when kind='MPEG_TS_188' then return .MediaTsFile~new(source)
     when kind='ISO_BMFF_MP4' then return .MediaMp4File~new(source)
+    when kind='JPEG' then return .MediaJpegFile~new(source)
     otherwise raise syntax 88.900 array('unsupported media container signature',kind)
   end
 ::requires 'MediaPngFile.cls'
 ::requires 'MediaTsFile.cls'
+
+::requires 'MediaJpegFile.cls'
