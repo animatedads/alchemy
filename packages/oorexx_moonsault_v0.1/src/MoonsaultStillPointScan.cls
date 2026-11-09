@@ -174,3 +174,73 @@
     guess=(guess+n/guess)/2
   end
   return guess
+
+/* Generic temporal track window: n >= 3, all frames compulsory. Reuses
+ * endpoint kinematics; bounding window prevents drifting-cloud tracks.
+ * This is a candidate detector, never a catalogue identification. */
+::method trackWindow class
+  use strict arg positions,times,alignment,maxResidual=2.5,minSpeed=0.006,maxSpeed=0.12
+  frames=positions~items
+  if frames<3 | frames<>times~items | frames<>alignment~items then -
+    raise syntax 88.900 array('temporal window arrays mismatch',frames)
+  span=times[frames]-times[1]
+  if span<=0 then raise syntax 88.900 array('temporal window needs increasing clock')
+  tracks=.array~new
+  do first over positions[1]
+    a=alignment[1]
+    x0=first['X']-a[1];y0=first['Y']-a[2]
+    do last over positions[frames]
+      b=alignment[frames]
+      x1=last['X']-b[1];y1=last['Y']-b[2]
+      vx=(x1-x0)/span;vy=(y1-y0)/span
+      speed2=vx*vx+vy*vy
+      if speed2<minSpeed*minSpeed | speed2>maxSpeed*maxSpeed then iterate
+      residual=0;match=.array~new;match~append(first);ok=.true
+      do k=2 to frames-1
+        predictedX=x0+vx*(times[k]-times[1])
+        predictedY=y0+vy*(times[k]-times[1]);align=alignment[k]
+        best=maxResidual*maxResidual;winner=.nil
+        do point over positions[k]
+          dx=(point['X']-align[1])-predictedX
+          dy=(point['Y']-align[2])-predictedY
+          error=dx*dx+dy*dy
+          if error<best then do
+            best=error;winner=point
+          end
+        end
+        if winner==.nil then do
+          ok=.false;leave
+        end
+        residual=residual+best;match~append(winner)
+      end
+      if \ok then iterate
+      match~append(last)
+      t=.directory~new
+      t['START_X']=x0;t['START_Y']=y0;t['END_X']=x1;t['END_Y']=y1
+      t['VX']=vx;t['VY']=vy;t['RMS']=self~sqrt(residual/(frames-2))
+      t['POINTS']=match;t['FRAME_COUNT']=frames
+      tracks~append(t)
+    end
+  end
+  return tracks
+
+/* A point can yield two endpoint candidates on an adjacent 2x2 peak.
+ * Keep the lowest RMS explanation to avoid double-counting one star. */
+::method uniqueTracks class
+  use strict arg tracks,tolerance=2
+  unique=.array~new
+  do track over tracks
+    duplicate=0
+    do i=1 to unique~items
+      other=unique[i]
+      if abs(track['START_X']-other['START_X'])<=tolerance & -
+         abs(track['START_Y']-other['START_Y'])<=tolerance & -
+         abs(track['END_X']-other['END_X'])<=tolerance & -
+         abs(track['END_Y']-other['END_Y'])<=tolerance then do
+        duplicate=i;leave
+      end
+    end
+    if duplicate=0 then unique~append(track)
+    else if track['RMS']<unique[duplicate]['RMS'] then unique[duplicate]=track
+  end
+  return unique
