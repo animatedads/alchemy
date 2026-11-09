@@ -6,7 +6,8 @@
  * components, so a wind backing through north is not averaged through
  * south. Rain and low cloud are taken from the hour before.
  * Directory: W (m/s), FROM (deg true, where it blows from), RAIN (mm/h),
- * LOWCLOUD (%); from 8 Nov also TEMP (2 m, C, interpolated), SNOW (snow depth,
+ * LOWCLOUD (%); GUST (10 m gust, m/s, the larger of the two hours; 9 Nov);
+ * from 8 Nov also TEMP (2 m, C, interpolated), SNOW (snow depth,
  * m) and PMSL (mean sea-level pressure, hPa, interpolated), each '' when the file
  * has none.
  *
@@ -44,6 +45,7 @@
     /* 8 Nov: 2 m temperature (C), snow depth (m), mean sea-level pressure (hPa); '' when the file predates them */
     c['TEMP'] = ''; if datatype(temp, 'N') then c['TEMP'] = temp
     c['SNOW'] = ''; if datatype(snow, 'N') then c['SNOW'] = snow
+    c['GUST'] = ''; if datatype(gust, 'N') then c['GUST'] = gust
     c['PMSL'] = ''; if datatype(pmsl, 'N') then c['PMSL'] = pmsl
     cells[name'|'utc~left(13)] = c
     hours~put(utc~left(13))
@@ -85,6 +87,8 @@
   r['FROM'] = dir
   r['RAIN'] = c0['RAIN']; r['LOWCLOUD'] = c0['LOWCLOUD']
   r['SNOW'] = c0['SNOW']
+  r['GUST'] = c0['GUST']
+  if datatype(c0['GUST'], 'N') & datatype(c1['GUST'], 'N') then r['GUST'] = max(c0['GUST'], c1['GUST'])
   r['TEMP'] = c0['TEMP']; r['PMSL'] = c0['PMSL']
   if datatype(c0['TEMP'], 'N') & datatype(c1['TEMP'], 'N') then r['TEMP'] = c0['TEMP'] + f * (c1['TEMP'] - c0['TEMP'])
   if datatype(c0['PMSL'], 'N') & datatype(c1['PMSL'], 'N') then r['PMSL'] = c0['PMSL'] + f * (c1['PMSL'] - c0['PMSL'])

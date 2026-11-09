@@ -57,6 +57,10 @@ rexx tools/fp_fleet_job.rex
 - `FpAirframe~densityRatioMet`: pressure reduced from sea level through a 6.5 C/km column above the ground, then density. With standard values it gives the standard atmosphere exactly (0.79326 at 2,348 m). Hand check, summit at 10 C and 1015 hPa: 769.7 hPa, sigma 0.7751, density altitude 2,575 m.
 - `fp_glide.rex` on a synthetic mild day (10 C everywhere at the ground, 1015 hPa, 0.3 m of snow at the summit and Charlotte Pass): leg 9 density altitude 2,270 m by hand and by tool; trip 5 minutes longer than in the standard atmosphere because 10 C at sea level is denser than 15 C; 2 legs counted over snow. Wind files from before 8 Nov still read, in the standard atmosphere.
 
+9 Nov 2026 (gusts):
+
+- `FpWindField` carries the 10 m gust (the larger of the two hours either side); `fp_glide.rex` adds the highest gust at passage and the legs whose gust exceeds the crosswind limit to each day line, and the highest gust to each leg line. Re-flown on the fleet's 70f37385 wind files: every earlier field identical; 31 Oct alpine gust 24.5 m/s, 12 of 19 legs over 12 m/s.
+
 ## Credits
 
 ERA5: Contains modified Copernicus Climate Change Service information 2026. Weather data by Open-Meteo.com (CC BY 4.0). Sun and Moon: Moonsault (implementation ChatGPT, GPT-6).

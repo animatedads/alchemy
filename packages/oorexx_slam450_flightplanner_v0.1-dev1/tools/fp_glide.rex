@@ -19,8 +19,8 @@
  * Airframe: FpAirframe (planning defaults, FP_* environment overrides).
  * Output: progress log (FpLog), and outFile (default out/glide_<date>.words):
  *   airframe|<description>
- *   day|<date>|<role prior|flight>|<depart>|<arrive local>|<hours>|<energy %>|<min reach into wind m>|<max crosswind>|<legs over limit>|<legs with rain>|<legs low cloud>|<highest ground m AMSL>|<total climb m>|<legs over snow>|<min 2 m temp C>|<max 2 m temp C>|<max density altitude m>|<legs on the day's own air>
- *   leg|<n>|<from>|<to>|<km>|<track>|<median wind>|<max wind>|<min reach into wind m>|<max crosswind>|<mean ground speed>|<higher end's ground m AMSL>
+ *   day|<date>|<role prior|flight>|<depart>|<arrive local>|<hours>|<energy %>|<min reach into wind m>|<max crosswind>|<legs over limit>|<legs with rain>|<legs low cloud>|<highest ground m AMSL>|<total climb m>|<legs over snow>|<min 2 m temp C>|<max 2 m temp C>|<max density altitude m>|<legs on the day's own air>|<max 10 m gust at passage m/s>|<legs with a gust over the crosswind limit>
+ *   leg|<n>|<from>|<to>|<km>|<track>|<median wind>|<max wind>|<min reach into wind m>|<max crosswind>|<mean ground speed>|<higher end's ground m AMSL>|<max 10 m gust at passage>
  *   reach|<height m>|<wind m/s>|<into m>|<across m>|<down m>|<seconds>
  * Ground heights come from the wind file's elev| lines (sea level if none).
  * Each leg is flown at heightAGL above the mean of its ends' ground, at
@@ -66,7 +66,7 @@ exit .FpGlide~new(routeFile, windFile, flightDate, departLocal, off, height, out
     leg['N'] = i; leg['FROM'] = a; leg['TO'] = b
     leg['M'] = .FpGeo~distance(a['LAT'], a['LON'], b['LAT'], b['LON'])
     leg['TRACK'] = .FpGeo~bearing(a['LAT'], a['LON'], b['LAT'], b['LON'])
-    leg['WINDS'] = .array~new; leg['INTO'] = .array~new; leg['CROSS'] = .array~new; leg['GS'] = .array~new
+    leg['WINDS'] = .array~new; leg['INTO'] = .array~new; leg['CROSS'] = .array~new; leg['GS'] = .array~new; leg['GUSTS'] = .array~new
     /* ground height at each end (sea level when the wind file has none);
        the leg is flown at height above the mean of the two, and climbs
        when the far end is higher */
@@ -104,6 +104,7 @@ exit .FpGlide~new(routeFile, windFile, flightDate, departLocal, off, height, out
     end
     secs = 0; budget = 0; minInto = 1e9; maxCross = 0; over = 0; rainy = 0; lowCloud = 0
     snowy = 0; tMin = ''; tMax = ''; daMax = 0; metLegs = 0
+    gustMax = 0; gustyLegs = 0
     do leg over legs
       p = leg['FROM']['NAME']
       w = field~at(p, t + .TimeSpan~fromSeconds(trunc(secs)))
@@ -118,6 +119,11 @@ exit .FpGlide~new(routeFile, windFile, flightDate, departLocal, off, height, out
         tMin = min(tMin, w['TEMP']); tMax = max(tMax, w['TEMP'])
       end
       daMax = max(daMax, .FpAirframe~densityAltitude(sigma))
+      if datatype(w['GUST'], 'N') then do
+        gustMax = max(gustMax, w['GUST'])
+        if w['GUST'] > craft~maxCrosswind then gustyLegs += 1
+        leg['GUSTS']~append(w['GUST'])
+      end
       if datatype(w['SNOW'], 'N') then do
         if w['SNOW'] > 0.01 then snowy += 1
       end
@@ -140,13 +146,13 @@ exit .FpGlide~new(routeFile, windFile, flightDate, departLocal, off, height, out
     hours = secs / 3600
     arrive = (t + .TimeSpan~fromSeconds(trunc(secs)) + .TimeSpan~fromHours(off))~isoDate~substr(12, 5)
     used = 100 * budget / 3600 / craft~enduranceHours
-    call lineout outFile, 'day|'localDay'|'role'|'departLocal'|'arrive'|'format(hours,,2)'|'format(used,,0)'|'format(minInto,,0)'|'format(maxCross,,1)'|'over'|'rainy'|'lowCloud'|'format(top,,0)'|'format(climb,,0)'|'snowy'|'fmt1(tMin)'|'fmt1(tMax)'|'format(daMax,,0)'|'metLegs
+    call lineout outFile, 'day|'localDay'|'role'|'departLocal'|'arrive'|'format(hours,,2)'|'format(used,,0)'|'format(minInto,,0)'|'format(maxCross,,1)'|'over'|'rainy'|'lowCloud'|'format(top,,0)'|'format(climb,,0)'|'snowy'|'fmt1(tMin)'|'fmt1(tMax)'|'format(daMax,,0)'|'metLegs'|'format(gustMax,,1)'|'gustyLegs
     log~log(.Log~INFO, localDay left(role, 6) 'arrive' arrive', flying' format(hours,,1) 'h,' format(used,,0)'% of budget; shortest glide into wind' format(minInto,,0) 'm; max crosswind' format(maxCross,,1) 'm/s;' over 'legs over limit,' rainy 'with rain,' lowCloud 'low cloud')
   end
   /* per leg, over the prior week */
   do leg over legs
     if leg['WINDS']~items == 0 then iterate
-    call lineout outFile, 'leg|'leg['N']'|'leg['FROM']['NAME']'|'leg['TO']['NAME']'|'format(leg['M']/1000,,1)'|'format(leg['TRACK'],,0)'|'format(median(leg['WINDS']),,1)'|'format(maxOf(leg['WINDS']),,1)'|'format(minOf(leg['INTO']),,0)'|'format(maxOf(leg['CROSS']),,1)'|'format(meanOf(leg['GS']),,1)'|'format(leg['ELEV'],,0)
+    call lineout outFile, 'leg|'leg['N']'|'leg['FROM']['NAME']'|'leg['TO']['NAME']'|'format(leg['M']/1000,,1)'|'format(leg['TRACK'],,0)'|'format(median(leg['WINDS']),,1)'|'format(maxOf(leg['WINDS']),,1)'|'format(minOf(leg['INTO']),,0)'|'format(maxOf(leg['CROSS']),,1)'|'format(meanOf(leg['GS']),,1)'|'format(leg['ELEV'],,0)'|'maxOrDash(leg['GUSTS'])
   end
   /* reach against height for the week's median and 90th-percentile wind */
   if allPriorW~items > 0 then do
@@ -181,6 +187,10 @@ exit .FpGlide~new(routeFile, windFile, flightDate, departLocal, off, height, out
   s = sorted(a); n = s~items
   k = max(1, min(n, trunc(p / 100 * n + 0.5)))
   return s[k]
+::routine maxOrDash
+  use strict arg a
+  if a~items == 0 then return '-'
+  return format(maxOf(a),,1)
 ::routine maxOf
   use strict arg a
   m = a[1]; do x over a; m = max(m, x); end
