@@ -1,3 +1,33 @@
+## 9 November dev5 — PNG to RGB/RGBA and split-channel exports
+
+In-process PNG decoding is now implemented in `MediaPngFile.cls`, with
+separate `moa_png` (libpng decode only) and `moa_raster` (codec-independent
+RGB/RGBA planes) native providers. ooRexx owns bounded file/range reads,
+image frame objects and PGM/PPM/PAM output.
+
+`MediaFile~open` now identifies PNG from its file signature. Both PNG RGBA32
+frames and H.264 RGB24 frames expose `channelPlane('R'|'G'|'B'|'A')`,
+`saveSplit(prefix)`, and `savePam(path)`, with PPM RGB available.
+The four split files are binary PGM (P5), the RGB image is binary PPM (P6)
+and RGBA is PAM (P7). Real PNG alpha values survive; H.264 RGB24 alpha is
+synthesized as 255 (opaque).
+
+**Native ooRexx 5.3.0 r13196 execution:** exact 2x2 fixture alpha
+255/128/0/64 and R/G/B values PASS; shared H264 RGB/A planes PASS;
+five user-provided 1920x1080 PNG screenshots decoded PASS; full RGBA/PPM/PGM
+exports for the 20:32:17 image PASS; nine prior H264 timestamped video
+seeks still PASS, including one real 1280x720 frame's R/G/B/A planes.
+User images are not committed; only numerical Moonsault measurements are.
+See `docs/PNG_RGBA_CHANNELS_DEV5.md`.
+
+The image classes and two providers are source increments on this draft PR.
+Use `make -f Makefile.png` in `native/`; enable `MEDIA_PNG_TESTS=1`,
+`MEDIA_H264_CHANNEL_TESTS=1` or `MEDIA_SCREENSHOT_ROOT=/local/path`
+when those native providers and files are available. Existing MP4/TS
+metadata tests remain independent of PNG.
+
+---
+
 ## 8 November dev4 — native H.264 decoded RGB pixels (ooRexx-owned)
 
 The Media Object Access component now includes `MediaTsVideoFrames.cls` and
