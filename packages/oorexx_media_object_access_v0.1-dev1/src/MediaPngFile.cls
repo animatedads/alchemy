@@ -95,5 +95,20 @@
   expose pixels width height
   use strict arg prefix
   return .MediaRasterPlanes~saveSplit(pixels,width,height,4,prefix)
+::method crop
+  use strict arg x,y,w,h
+  return .MediaRasterOps~crop(self,x,y,w,h)
+::method resizeToProcessing
+  use strict arg w,h,method='AREA'
+  return .MediaRasterOps~resizeToProcessing(self,w,h,method)
+::method subtractFrame
+  use strict arg other,includeAlpha=.false
+  return .MediaRasterOps~subtractFrame(self,other,includeAlpha)
+::method subtractLayer
+  use strict arg layer,x=0,y=0,channel='X',includeAlpha=.false
+  return .MediaRasterOps~subtractLayer(self,layer,x,y,channel,includeAlpha)
+
 ::requires 'MediaRasterPlanes.cls'
 ::requires 'moa_png' LIBRARY
+
+::requires 'MediaRasterOps.cls'
