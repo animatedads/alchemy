@@ -27,13 +27,24 @@
   cachedScores=.array~new;background='';noise='';threshold='';dirty=.true
 ::method addFrame
   expose width height count samples referenceLuma dirty
-  use strict arg frame,identity,dx=0,dy=0
+  use strict arg frame,identity,dx=0,dy=0,similarity=.nil
   if identity='' then raise syntax 88.900 array('temporal sample must have an identity')
   if count>=16 then raise syntax 88.900 array('temporal mask samples exceed 16; checkpoint first')
   image=.MediaRasterOps~asImage(frame)
   if image~width<>width | image~height<>height then -
     raise syntax 88.900 array('register and resize before temporal subtraction')
-  if dx<>0 | dy<>0 then image=.MediaRasterOps~translateBy(image,dx,dy)
+  if similarity==.nil then do
+    if dx<>0 | dy<>0 then image=.MediaRasterOps~translateBy(image,dx,dy)
+    valid=.MediaRasterOps~validityPlane(width,height,dx,dy)
+  end
+  else do
+    if dx<>0 | dy<>0 then -
+      raise syntax 88.900 array('cannot combine manual translation and similarity transform')
+    if similarity['QUALIFIED']<>1 then -
+      raise syntax 88.900 array('temporal subtraction refused unqualified camera scale/shift')
+    image=.MediaRasterOps~warpSimilarity(image,similarity)
+    valid=.MediaRasterOps~similarityValidity(width,height,similarity)
+  end
   luma=image~luma
   gain=1000000
   if count=0 then referenceLuma=luma
@@ -44,7 +55,19 @@
   s=.directory~new
   s['ID']=identity;s['LUMA']=luma;s['GAIN_PPM']=gain
   s['SHIFT_X']=dx;s['SHIFT_Y']=dy
-  s['VALID']=.MediaRasterOps~validityPlane(width,height,dx,dy)
+  if similarity<>.nil then do
+    s['SHIFT_X_MILLI']=similarity['DX_MILLI']
+    s['SHIFT_Y_MILLI']=similarity['DY_MILLI']
+    s['SCALE_PPM']=similarity['SCALE_PPM']
+    s['FIT_PPM']=similarity['SCORE_PPM']
+    s['HELDOUT_PPM']=similarity['HELDOUT_PPM']
+  end
+  else do
+    s['SHIFT_X_MILLI']=dx*1000;s['SHIFT_Y_MILLI']=dy*1000
+    s['SCALE_PPM']=1000000
+    s['FIT_PPM']=-1;s['HELDOUT_PPM']=-1
+  end
+  s['VALID']=valid
   samples~append(s)
   count=count+1;dirty=.true
   return count
@@ -56,6 +79,24 @@
   use strict arg frame,identity,referenceFrame,x,y,w,h,maxShift=8
   fit=.MediaRasterOps~estimateTranslation(referenceFrame,frame,x,y,w,h,maxShift)
   ignored=self~addFrame(frame,identity,fit['DX'],fit['DY'])
+  return fit
+/* Approved, disjoint-ROI similarity evidence is mandatory. */
+::method addSimilarityFrame
+  use strict arg frame,identity,fit
+  if fit['QUALIFIED']<>1 then -
+    raise syntax 88.900 array('refusing unverified camera zoom as astronomical observation',identity)
+  return self~addFrame(frame,identity,0,0,fit)
+::method addRegisteredSimilarityFrame
+  use strict arg frame,identity,referenceFrame, -
+    fitX,fitY,fitW,fitH,checkX,checkY,checkW,checkH, -
+    maxShift=8,maxScalePermille=40,stepPermille=5
+  fit=.MediaRasterOps~estimateSimilarityValidated(referenceFrame,frame, -
+      fitX,fitY,fitW,fitH,checkX,checkY,checkW,checkH, -
+      maxShift,maxScalePermille,stepPermille)
+  if fit['QUALIFIED']<>1 then -
+    raise syntax 88.900 array('unqualified independently checked camera registration', -
+      fit['SCORE_PPM'],fit['HELDOUT_PPM'],fit['SCALE_PPM'])
+  ignored=self~addSimilarityFrame(frame,identity,fit)
   return fit
 ::method sample
   expose samples count
