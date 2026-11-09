@@ -1,3 +1,31 @@
+## 9 November dev7 — independently checked similarity registration
+
+`MediaRasterOps~estimateSimilarityValidated` now fits a bounded uniform zoom
+and subpixel translation using one stable-landmark ROI, **then checks the
+same transformation on a disjoint second ROI**. Its `QUALIFIED` flag is
+required by `warpSimilarity` and `MediaTemporalDifferenceMask~addSimilarityFrame`.
+Unregistered or uncertain images fail closed. `similarityValidity` preserves
+source-overlap and blocks interpolated missing borders from the 50% temporal
+mask. Existing PNG RGBA, JPEG RGB and H264 RGB media access remains unchanged.
+
+Native ooRexx r13196: synthetic 2.5% zoom / +2,-1 pixel shift / +20%
+lighting recovered at 2.6% / +2,-1 with independent heldout checks PASS.
+Real Sydney 9 November six-frame comparison: four of six qualify (20:24,
+20:32:05, 20:32:17 and 20:37); twilight 20:17 and later 22:08 do not.
+Independent heldout bridge score for 22:08 is 141338 ppm, above 125000 gate.
+These are landmark-gradient residuals, NOT astrometric subpixel errors.
+
+Moonsault `MoonsaultFullResolutionRevisit.cls` takes coarse 50%-mask
+proposals back to native image resolution and tests point morphology and
+short-time persistence. The only pointlike bright-change candidate in the
+four qualified frames is the visible 20:32:17 aircraft streak; 12 seconds
+earlier its local contrast was 3.58 versus 182.72 in the streak frame, so
+it is rejected. No star identity, 3-D/parallax warp or celestial heading
+is claimed. See `docs/SCALE_AWARE_REGISTRATION_DEV7_20261109.md`,
+`docs/native_qualification_dev7_20261109.log`, and Moonsault PR #131.
+
+---
+
 ## 9 November dev6 — bounded geometry and an evolving 50% absolute subtraction mask
 
 ooRexx now owns `MediaRasterOps` and `MediaTemporalDifferenceMask` as
