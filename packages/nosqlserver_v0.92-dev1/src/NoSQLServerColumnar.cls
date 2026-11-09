@@ -326,11 +326,13 @@ conversionFailed:
   self~port = port
   self~tables = .table~new
   self~sourceGenerations = .table~new
-  self~queryLog = .NullQueryPatternLog~new
+  if rowEngine \== .nil then do
+    if rowEngine~hasMethod("queryPatternLog") then self~queryLog = rowEngine~queryPatternLog
+    else self~queryLog = .NullQueryPatternLog~new
+  end
+  else self~queryLog = .NullQueryPatternLog~new
 ::method register
   use strict arg name, definition, sourceRows, blockSize = 1024
-  if self~rowEngine \== .nil then ,
-    raise syntax 93.900 additional("Use PROMOTE to capture row-source revision")
   t = .NoSQLColumnarTable~new(name,definition,self~port,blockSize)
   version = t~publishRows(sourceRows)
   self~tables[name~translate] = t
@@ -387,6 +389,7 @@ conversionFailed:
   return self~selectWhere(name,.nil)
 ::method selectWhere
   use strict arg name, predicate
+  if self~rowEngine \== .nil then return self~rowEngine~selectWhere(name,predicate)
   r = .DatabaseResult~new(.DatabaseOperationType~SELECT)
   t = self~table(name)
   if t == .nil then return r~fail(.Error~NOTFOUND, "No columnar relation:" name)
@@ -413,6 +416,24 @@ conversionFailed:
 ::method transaction
   if self~rowEngine == .nil then return .ObjectUnsupportedTransaction~new
   return self~rowEngine~transaction
+::method selectJoin
+  if self~rowEngine == .nil then return self~immutableError
+  forward to (self~rowEngine)
+::method selectJoinWithSidePredicate
+  if self~rowEngine == .nil then return self~immutableError
+  forward to (self~rowEngine)
+::method selectCrossJoin
+  if self~rowEngine == .nil then return self~immutableError
+  forward to (self~rowEngine)
+::method selectCrossJoinWithSidePredicate
+  if self~rowEngine == .nil then return self~immutableError
+  forward to (self~rowEngine)
+::method currentIndexCandidateCount
+  if self~rowEngine == .nil then return .nil
+  forward to (self~rowEngine)
+::method joinMapSnapshot
+  if self~rowEngine == .nil then return .nil
+  forward to (self~rowEngine)
 ::method immutableError
   rs = .DatabaseResult~new(.DatabaseOperationType~SELECT)
   return rs~fail(.Error~SQLUNSUPPORTED, 'Columnar snapshot is read-only without source engine')
@@ -545,11 +566,31 @@ conversionFailed:
   rs~rowsScanned = t~rowCount
   rs~accessPath = 'COLUMNAR_PROJECT_LATE'
   return rs
-::method queryPatternLog
-  return self~queryLog
 ::method readCatalog
-  catalog = .table~new
-  catalog["tables"] = self~tableNames
+  if self~rowEngine \== .nil then do
+    if self~rowEngine~hasMethod("readCatalog") then do
+      catalog = self~rowEngine~readCatalog~copy
+      names = catalog["tables"]
+      if names == .nil then names = .array~new
+      else names = names~copy
+    end
+    else do
+      catalog = .table~new
+      names = .array~new
+    end
+  end
+  else do
+    catalog = .table~new
+    names = .array~new
+  end
+  do name over self~tableNames
+    found = .false
+    do prior over names
+      if name~caselessEquals(prior) then found = .true
+    end
+    if \found then names~append(name)
+  end
+  catalog["tables"] = names
   return catalog
 
 /* SQL-backed physical port. It stores independent immutable tables per column
