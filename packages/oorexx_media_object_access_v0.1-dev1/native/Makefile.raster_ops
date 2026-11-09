@@ -1,0 +1,10 @@
+OOREXX_ROOT ?= /mnt/data/moonsault_plate_work/runtime/usr/local
+CXX ?= g++
+CPPFLAGS += -I$(OOREXX_ROOT)/include
+CXXFLAGS ?= -std=c++17 -O2 -fPIC -Wall -Wextra -Werror
+all: libmoa_raster_ops.so
+libmoa_raster_ops.so: moa_raster_ops.cpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -shared -o $@ $< -L$(OOREXX_ROOT)/lib -Wl,--no-as-needed -lrexxapi -Wl,--as-needed
+clean:
+	rm -f libmoa_raster_ops.so
+.PHONY: all clean
