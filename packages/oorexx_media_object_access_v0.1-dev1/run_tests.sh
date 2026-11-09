@@ -31,4 +31,8 @@ if [ "${MEDIA_SCREENSHOT_ROOT:-}" != "" ]; then
   printf '%s\n' '=== test_sydney_png_rgba.rex (local user screenshots) ==='
   "$runner" test_sydney_png_rgba.rex "$MEDIA_SCREENSHOT_ROOT" out
 fi
+if [ "${MEDIA_RASTER_DEV6_TESTS:-0}" = "1" ]; then
+  echo "=== adaptive absolute subtraction dev6 tests ==="
+  ./run_native_dev6.sh
+fi
 printf '%s\n' 'Completed ooRexx metadata/range tests'
