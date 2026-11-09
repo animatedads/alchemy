@@ -74,4 +74,4 @@ addFrame: procedure expose a source track model
  use strict arg message
  say 'FAIL:'message
  exit 1
-::requires '../src/FaceSlamMaskContinuity.cls'
+::requires 'FaceSlamMaskContinuity.cls'
