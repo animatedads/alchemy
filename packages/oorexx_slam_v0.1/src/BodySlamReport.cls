@@ -11,6 +11,7 @@
  */
 
 ::requires 'RexxSqlBackend.cls'
+::requires 'BodySlam.cls'
 
 ::class BodySlamReport public
 ::attribute session
@@ -348,5 +349,88 @@
         "AND NOT EXISTS (SELECT 1 FROM decl d WHERE d.project_id = ps.id AND d.family = pt.family) ORDER BY ps.path LIMIT ?"
   do r over self~q(sql, limit)
     out~append('  ' r['PROJ'] '|' r['FAM'])
+  end
+  return out
+
+/* ---------- the estate catalogue (v0.2, 10 Nov 2026) ----------
+   One line per family: its newest version (BodySlam~versionKey), how many versions are here, the
+   newest one's ooRexx files and lines, its public classes, and what its README says it is. The
+   map of what is in the estate, so a model can look things up instead of reading the estate. */
+
+::method familyRows
+  /* every project with its counts and README facts, grouped by family; newest first */
+  sql = "SELECT p.id AS id, p.path AS path, p.family AS fam, p.version AS ver," ,
+        "(SELECT COUNT(*) FROM file f WHERE f.project_id = p.id AND f.rexx = 1) AS rx," ,
+        "(SELECT COALESCE(SUM(lines), 0) FROM file f WHERE f.project_id = p.id AND f.rexx = 1) AS ln," ,
+        "(SELECT COUNT(*) FROM cls c JOIN file f ON f.id = c.file_id WHERE f.project_id = p.id AND c.public = 1) AS pub," ,
+        "COALESCE(a.title, '') AS title, COALESCE(a.summary, '') AS summary, COALESCE(a.file, '') AS readme, COALESCE(a.line, 0) AS rline, COALESCE(a.tline, 0) AS tline" ,
+        "FROM project p LEFT JOIN about a ON a.project_id = p.id"
+  fams = .directory~new
+  do r over self~q(sql)
+    if \fams~hasIndex(r['FAM']) then fams[r['FAM']] = .array~new
+    fams[r['FAM']]~append(r)
+  end
+  out = .directory~new
+  do fam over fams~allIndexes
+    rows = fams[fam]
+    best = rows[1]
+    do r over rows
+      if .BodySlam~versionKey(r['VER']) >> .BodySlam~versionKey(best['VER']) then best = r
+    end
+    vers = .array~new
+    do r over rows
+      if r['VER'] == '' then vers~append('(unversioned)')
+      else vers~append(r['VER'])
+    end
+    out[fam] = .directory~of(('BEST', best), ('VERSIONS', vers), ('ROWS', rows))
+  end
+  return out
+
+::method catalogue
+  use strict arg limit = 100000, area = ''
+  out = .array~new
+  out~append('family | newest | versions here | ooRexx files / lines (newest) | public classes (newest) | README title: first line')
+  fams = self~familyRows
+  names = fams~allIndexes~sort
+  shown = 0
+  do fam over names
+    best = fams[fam]['BEST']
+    if area \== '' & best['PATH']~left(area~length) \== area then iterate
+    shown += 1
+    if shown > limit then leave
+    classes = ''
+    do c over self~q('SELECT DISTINCT c.display AS d FROM cls c JOIN file f ON f.id = c.file_id WHERE f.project_id = ? AND c.public = 1 ORDER BY c.display LIMIT 6', best['ID'])
+      classes = classes c['D']
+    end
+    if best['PUB'] > 6 then classes = classes '...'
+    what = best['TITLE']
+    s = best['SUMMARY']
+    if s~length > 160 then s = s~left(157) || '...'
+    if s \== '' then what = what || ': ' || s
+    if what == '' then what = '(no README)'
+    out~append(fam '|' best['PATH'] '|' fams[fam]['VERSIONS']~items '|' best['RX'] '/' best['LN'] '|' best['PUB'] classes~strip('L') ,
+               '|' what)
+  end
+  return out
+
+/* families whose path, README, or public class names contain a word (case ignored) */
+::method find
+  use strict arg word, limit = 25
+  out = .array~new
+  out~append('family | newest | matched in | README title')
+  w = word~lower
+  fams = self~familyRows
+  hits = 0
+  do fam over fams~allIndexes~sort
+    best = fams[fam]['BEST']
+    where = ''
+    if fam~lower~pos(w) > 0 | best['PATH']~lower~pos(w) > 0 then where = where 'name'
+    if (best['TITLE'] best['SUMMARY'])~lower~pos(w) > 0 then where = where 'readme'
+    n = self~one("SELECT COUNT(*) AS v FROM cls c JOIN file f ON f.id = c.file_id WHERE f.project_id = ? AND c.public = 1 AND LOWER(c.name) LIKE ?", best['ID'], '%' || w || '%')
+    if n > 0 then where = where 'classes(' || n || ')'
+    if where == '' then iterate
+    hits += 1
+    if hits > limit then leave
+    out~append(fam '|' best['PATH'] '|' where~strip '|' best['TITLE'])
   end
   return out

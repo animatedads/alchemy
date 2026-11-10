@@ -471,6 +471,75 @@
   end
   return out
 
+/* ---------- what each project says it is (v0.2, 10 Nov 2026) ----------
+   For each project, its README at the project's root (README.md first, then any README*): the first
+   heading, and the first line of plain text after it. Read only from the file: nothing is guessed. */
+
+::method about
+  expose files root
+  out = .directory~new
+  do f over files
+    if f['DIR'] \== f['PROJECT'] then iterate
+    up = f['BASE']~upper
+    if up~left(6) \== 'README' then iterate
+    if out~hasIndex(f['PROJECT']) then do
+      if out[f['PROJECT']]['FILE']~upper~right(9) == 'README.MD' then iterate
+      if up \== 'README.MD' then iterate
+    end
+    s = .stream~new(root || '/' || f['PATH'])
+    if s~open('read shareread') \= 'READY:' then iterate
+    title = ''; summary = ''; fence = .false; at = 0; tl = 0
+    do n = 1 to 80 while s~lines > 0
+      line = s~linein~strip
+      if line~left(3) == '```' then do; fence = \fence; iterate; end
+      if fence | line == '' then iterate
+      if title == '' then do
+        if line~left(1) == '#' then do; title = line~strip('L', '#')~strip; tl = n; end
+        else if line~verify('=-') > 0 then do; title = line; tl = n; end
+        iterate
+      end
+      if line~left(1) == '#' | line~left(1) == '|' | line~left(1) == '!' | line~left(1) == '<' then iterate
+      if line~verify('=-') = 0 then iterate
+      summary = line; at = n
+      leave
+    end
+    s~close
+    if title~length > 200 then title = title~left(200)
+    if summary~length > 300 then summary = summary~left(300)
+    out[f['PROJECT']] = .directory~of(('FILE', f['PATH']), ('TITLE', title), ('SUMMARY', summary), ('LINE', at), ('TLINE', tl))
+  end
+  return out
+
+/* A key that sorts versions as releases do: 0.10 after 0.9, a release after its own -dev builds,
+   dev29 after dev3. Unversioned sorts first. Each number is padded to six digits. */
+::method versionKey class
+  use strict arg v
+  if v == '' then return ''
+  main = v; pre = ''
+  dash = v~pos('-')
+  if dash > 0 then do
+    main = v~left(dash - 1); pre = v~substr(dash + 1)
+  end
+  key = ''
+  do part over main~makeArray('.')
+    if datatype(part, 'W') then key = key || part~right(6, '0')
+    else key = key || part~left(6)~right(6, ' ')
+  end
+  key = key~left(24, '0')
+  if pre == '' then return key || '~'
+  /* the pre-release: letters as they are, each number padded */
+  tail = ''; num = ''
+  do i = 1 to pre~length
+    ch = pre~subchar(i)
+    if datatype(ch, 'W') then num = num || ch
+    else do
+      if num \== '' then do; tail = tail || num~right(6, '0'); num = ''; end
+      tail = tail || ch~lower
+    end
+  end
+  if num \== '' then tail = tail || num~right(6, '0')
+  return key || '-' || tail
+
 /* ---------- the database ---------- */
 
 ::method q
@@ -504,7 +573,7 @@
 
 ::method store
   expose session files projects
-  use strict arg dbPath, decl
+  use strict arg dbPath, decl, about = (.directory~new)
   if dbPath \== ':memory:' then call SysFileDelete dbPath
   session = .RexxSqlSqliteSession~open(dbPath)
   self~q('CREATE TABLE project (id INTEGER PRIMARY KEY, path TEXT NOT NULL UNIQUE, family TEXT NOT NULL, version TEXT NOT NULL)')
@@ -516,6 +585,7 @@
   self~q('CREATE TABLE use (file_id INTEGER NOT NULL, line INTEGER NOT NULL, name TEXT NOT NULL, display TEXT NOT NULL, count INTEGER NOT NULL, role TEXT NOT NULL, how TEXT NOT NULL, target_id INTEGER)')
   self~q('CREATE TABLE topic (file_id INTEGER NOT NULL, line INTEGER NOT NULL, topic TEXT NOT NULL, role TEXT NOT NULL)')
   self~q('CREATE TABLE decl (project_id INTEGER NOT NULL, file TEXT NOT NULL, line INTEGER NOT NULL, declared TEXT NOT NULL, family TEXT NOT NULL, version TEXT NOT NULL)')
+  self~q('CREATE TABLE about (project_id INTEGER NOT NULL, file TEXT NOT NULL, title TEXT NOT NULL, summary TEXT NOT NULL, line INTEGER NOT NULL, tline INTEGER NOT NULL)')
   self~q('BEGIN IMMEDIATE')
   do p over projects~allItems
     self~row('INSERT INTO project (id, path, family, version) VALUES (?, ?, ?, ?)', p['ID'], p['NAME'], p['FAMILY'], p['VERSION'])
@@ -550,6 +620,10 @@
   do d over decl
     self~row('INSERT INTO decl (project_id, file, line, declared, family, version) VALUES (?, ?, ?, ?, ?, ?)', projects[d['PROJECT']]['ID'], d['FILE'], d['LINE'], d['DECLARED'], d['FAMILY'], d['VERSION'])
   end
+  do p over about~allIndexes
+    a = about[p]
+    self~row('INSERT INTO about (project_id, file, title, summary, line, tline) VALUES (?, ?, ?, ?, ?, ?)', projects[p]['ID'], a['FILE'], a['TITLE'], a['SUMMARY'], a['LINE'], a['TLINE'])
+  end
   self~q('COMMIT')
   self~q('CREATE INDEX ix_req_file ON req (file_id)')
   self~q('CREATE INDEX ix_rt_target ON req_target (target_id)')
@@ -573,8 +647,10 @@
   out['USES'] = self~classifyUses
   decl = self~declared
   out['DECLARED'] = decl~items
+  about = self~about
+  out['ABOUT'] = about~items
   t1 = time('E')
-  self~store(dbPath, decl)
+  self~store(dbPath, decl, about)
   out['READ_SECONDS'] = format(t1 - t0, , 1)
   out['STORE_SECONDS'] = format(time('E') - t1, , 1)
   return out

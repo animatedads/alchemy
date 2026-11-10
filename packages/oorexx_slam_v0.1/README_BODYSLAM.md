@@ -19,7 +19,8 @@ The work is done in ooRexx collections and then written to one SQLite file, wher
 | `src/BodySlamScanner.cls` | One file in, link facts out. It removes comments (block comments nest, as in Rexx) and strings, then cuts each line into clauses at `;` |
 | `src/BodySlam.cls` | Walks the estate, assigns projects and families, resolves requires as the interpreter does, labels each use, writes the database |
 | `src/BodySlamReport.cls` | The questions, in SQL. Recursive SQL for blast radius, Tarjan's algorithm for cycles |
-| `bin/bodyslam.rex` | `ingest DB ROOT`, `report DB NAME... [N]`, `blast DB TARGET [N]` |
+| `bin/bodyslam.rex` | `ingest DB ROOT`, `report DB NAME... [N]`, `blast DB TARGET [N]`, `catalogue DB [AREA]`, `find DB WORD [N]`, `sphere DB OUT COMMIT ROOT` |
+| `src/BodySlamSphere.cls` | The catalogue as an LLM Gopher sphere (v0.2) |
 | `tests/test_bodyslam.rex` | 62 checks: each label, then the interpreter run that proves it; the scanner against RxLexer on real files |
 
 ## The rules, measured on ooRexx 5.3.0 r13196 (not taken from memory)
@@ -141,6 +142,18 @@ A project is the first two path parts (`packages/alchemy_objects_v0.8`). Its fam
 | `institutional_policy` | 15 | 29 |
 
 **Blast radius of class `AlchemyObject`:** 324 files in 34 projects DEFINITE, 3,211 files in 179 projects POSSIBLE. The gap is the ambiguous names: `REXX_PATH` order decides which copy each program loads.
+
+## v0.2 (10 Nov 2026): the estate map
+
+Architecture: Tom Dyer. Coding: Claude (Opus 5.5).
+
+- Ingest also reads each project's README at its root (README.md first): the first heading and the first line of text, with their line numbers (table `about`).
+- `BodySlam~versionKey` sorts versions as releases do: 0.10 after 0.9, a release after its own -dev builds, dev29 after dev3, a -compat build after its dev.
+- `catalogue DB [AREA]`: one line per family: newest version, versions here, ooRexx files and lines, public classes, README title and first line.
+- `find DB WORD [N]`: families whose name, README or public class names contain WORD.
+- `sphere DB OUT COMMIT ROOT`: the same as an LLM Gopher sphere, `alchemy-estate`, one article per family with SHA-256 provenance for the README lines it quotes (crypto v0.8.3 through the Foreign Runtime). Valid by the Sphere Editor; see `spheres/alchemy_estate_gopher_sphere_v0.1`.
+- Current main (`dd562a52`): 757 projects, 515 families, 36,532 files (11,198 ooRexx, 1,705,807 lines); ingest 232 s; catalogue 2 s; sphere 5 s.
+- Tests: 77 checks (14 new for v0.2).
 
 ## Run
 
