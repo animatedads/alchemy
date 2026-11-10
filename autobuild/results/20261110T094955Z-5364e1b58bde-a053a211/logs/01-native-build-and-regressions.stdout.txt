@@ -1,0 +1,39 @@
+rm -f bin/ssh-xtp cli-test
+make -C vendor/oorexx_xtp_v0.1-dev24 clean
+make[1]: Entering directory '/home/hc3/alchemy-autobuild/staging/run-tqe8e2rm/vendor/oorexx_xtp_v0.1-dev24'
+rm -rf build lib/libxtp.a lib/libxtp.so lib/liboorexx_xtp_native.so bin/xtp-admin bin/xtp-connect bin/xtp-listen bin/xtp-multipath bin/xtp-multicast bin/xtp-local
+make[1]: Leaving directory '/home/hc3/alchemy-autobuild/staging/run-tqe8e2rm/vendor/oorexx_xtp_v0.1-dev24'
+make -C vendor/oorexx_operational_degradation_planner_v0.1-dev3 clean
+make[1]: Entering directory '/home/hc3/alchemy-autobuild/staging/run-tqe8e2rm/vendor/oorexx_operational_degradation_planner_v0.1-dev3'
+rm -rf build lib/*.a lib/*.so bin/opctl tests/test_planner.bin
+make[1]: Leaving directory '/home/hc3/alchemy-autobuild/staging/run-tqe8e2rm/vendor/oorexx_operational_degradation_planner_v0.1-dev3'
+make -C vendor/oorexx_operational_degradation_planner_v0.1-dev3 lib/liboperational_planner.a
+make[1]: Entering directory '/home/hc3/alchemy-autobuild/staging/run-tqe8e2rm/vendor/oorexx_operational_degradation_planner_v0.1-dev3'
+mkdir -p lib build
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c src/operational_planner.cpp -o build/operational_planner.o
+ar rcs lib/liboperational_planner.a build/operational_planner.o
+make[1]: Leaving directory '/home/hc3/alchemy-autobuild/staging/run-tqe8e2rm/vendor/oorexx_operational_degradation_planner_v0.1-dev3'
+make -C vendor/oorexx_xtp_v0.1-dev24 OPERATIONAL_PLANNER_DIR=../oorexx_operational_degradation_planner_v0.1-dev3 lib/libxtp.a
+make[1]: Entering directory '/home/hc3/alchemy-autobuild/staging/run-tqe8e2rm/vendor/oorexx_xtp_v0.1-dev24'
+mkdir -p build
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_service.o src/xtp_service.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_priority.o src/xtp_priority.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_wire.o src/xtp_wire.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_route.o src/xtp_route.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_transport.o src/xtp_transport.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_multipath.o src/xtp_multipath.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_socket.o src/xtp_socket.cpp
+g++ -Iinclude -I../oorexx_operational_degradation_planner_v0.1-dev3/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_operational.o src/xtp_operational.cpp
+mkdir -p lib
+ar rcs lib/libxtp.a build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o build/xtp_transport.o build/xtp_multipath.o build/xtp_socket.o build/xtp_operational.o
+make[1]: Leaving directory '/home/hc3/alchemy-autobuild/staging/run-tqe8e2rm/vendor/oorexx_xtp_v0.1-dev24'
+mkdir -p bin
+g++ -Ivendor/oorexx_xtp_v0.1-dev24/include -Ivendor/oorexx_operational_degradation_planner_v0.1-dev3/include -O2 -std=c++17 -Wall -Wextra -Werror -pthread -o bin/ssh-xtp src/ssh_xtp.cpp vendor/oorexx_xtp_v0.1-dev24/lib/libxtp.a vendor/oorexx_operational_degradation_planner_v0.1-dev3/lib/liboperational_planner.a -lcrypto
+PASS authorized binary duplex: client_rc=0
+PASS LOCKED refuses new session: client_rc=3
+PASS SEALED refuses new session: client_rc=3
+PASS bad HMAC key cannot access local sshd: client_rc=3
+PASS LOCKED preserves authenticated active session
+PASS SEALED terminates authenticated active session
+PASS root-owned fail-closed policy status
+PASS registered service creates native XTP listener
