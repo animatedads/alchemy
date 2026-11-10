@@ -1,0 +1,26 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_slam_toprope",
+    "version": "0.2",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {"TOPROPE_SRC": "${PACKAGE_ROOT}/src"},
+    "prepend_path": [],
+    "rexx_path": {"mode": "replace", "entries": ["${PACKAGE_ROOT}/src"], "require_entries": true},
+    "require_dirs": ["TOPROPE_SRC"],
+    "report": ["TOPROPE_SRC"]
+  },
+  "tests": [
+    {"name": "manifest", "argv": ["sha256sum", "-c", "--quiet", "MANIFEST.sha256"], "timeout_seconds": 60},
+    {"name": "sight-line", "argv": ["rexx", "tests/test_sight_line.rex"], "timeout_seconds": 600}
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_slam_toprope_v0.2"
+    }
+  }
+}
