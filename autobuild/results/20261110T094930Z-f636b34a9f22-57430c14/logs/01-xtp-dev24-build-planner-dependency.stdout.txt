@@ -1,0 +1,9 @@
+make: Entering directory '/home/hc3/alchemy-autobuild/staging/run-l9aysr6q/deps/oorexx_operational_degradation_planner_v0.1-dev3'
+mkdir -p lib build
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c src/operational_planner.cpp -o build/operational_planner.o
+ar rcs lib/liboperational_planner.a build/operational_planner.o
+mkdir -p lib
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -shared src/operational_planner.cpp -o lib/liboperational_planner.so
+mkdir -p bin
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC src/opctl.cpp lib/liboperational_planner.a -o bin/opctl
+make: Leaving directory '/home/hc3/alchemy-autobuild/staging/run-l9aysr6q/deps/oorexx_operational_degradation_planner_v0.1-dev3'
