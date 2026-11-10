@@ -1,0 +1,210 @@
+{
+  "artifact_path": "autobuild/artifacts/wire_ui_builder/0.6-ergonomics9-http-front-qualification/d9fb6b557a54271007d3c8d90d4878a370f8a48e1a7580539d5e4531d8d1109b.zip",
+  "package": {
+    "kind": "oorexx",
+    "name": "wire_ui_builder",
+    "version": "0.6-ergonomics9-http-front-qualification"
+  },
+  "run": {
+    "elapsed_ms": 63.513,
+    "ended_at": "2026-11-10T09:51:17.640Z",
+    "started_at": "2026-11-10T09:51:17.576Z"
+  },
+  "run_id": "20261110T095117Z-d9fb6b557a54-f4ced289",
+  "runner": {
+    "started_at": "2026-11-10T09:49:12.396Z",
+    "started_ns": 1794304152396467124
+  },
+  "schema": "alchemy.autobuild.result/0.5",
+  "source": {
+    "arrival_ns": null,
+    "ctime_ns": null,
+    "filename": null,
+    "kind": "git-folder",
+    "mtime_ns": null,
+    "sha256": "d9fb6b557a54271007d3c8d90d4878a370f8a48e1a7580539d5e4531d8d1109b",
+    "size": 135420,
+    "source_commit": "c89c13e592b66c4f143a4d02b27c3553d36c4fa4",
+    "source_path": "autobuild/inbox/20261023T150200Z-CHATGPT-wire-ui-builder-e9-a8ca94/package",
+    "submission_id": "20261023T150200Z-CHATGPT-wire-ui-builder-e9-a8ca94",
+    "tree_sha256": "d9fb6b557a54271007d3c8d90d4878a370f8a48e1a7580539d5e4531d8d1109b"
+  },
+  "status": "FAIL",
+  "tests": [
+    {
+      "argv": [
+        "bash",
+        "prepare_package.sh"
+      ],
+      "elapsed_ms": 8.129,
+      "ended_at": "2026-11-10T09:51:17.587Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-rrrier8m",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "prepare",
+      "returncode": 1,
+      "started_at": "2026-11-10T09:51:17.579Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/01-prepare.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/01-prepare.stdout.txt",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "bash",
+        "-lc",
+        "cd prepared/wire_ui_builder_v0.6 && sha256sum -c MANIFEST.sha256"
+      ],
+      "elapsed_ms": 8.395,
+      "ended_at": "2026-11-10T09:51:17.596Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-rrrier8m",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "manifest",
+      "returncode": 1,
+      "started_at": "2026-11-10T09:51:17.588Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/02-manifest.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/02-manifest.stdout.txt",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "bash",
+        "-lc",
+        "cd prepared/wire_ui_builder_v0.6 && bash tests/test_builder_web_shell.sh"
+      ],
+      "elapsed_ms": 8.311,
+      "ended_at": "2026-11-10T09:51:17.604Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-rrrier8m",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "builder-web-shell",
+      "returncode": 1,
+      "started_at": "2026-11-10T09:51:17.596Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/03-builder-web-shell.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/03-builder-web-shell.stdout.txt",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "bash",
+        "-lc",
+        "cd prepared/wire_ui_builder_v0.6 && node tests/test_session_readiness.mjs"
+      ],
+      "elapsed_ms": 7.16,
+      "ended_at": "2026-11-10T09:51:17.612Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-rrrier8m",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "session-readiness",
+      "returncode": 1,
+      "started_at": "2026-11-10T09:51:17.605Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/04-session-readiness.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/04-session-readiness.stdout.txt",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "bash",
+        "-lc",
+        "cd prepared/wire_ui_builder_v0.6 && node tests/test_composition_controller.mjs"
+      ],
+      "elapsed_ms": 6.681,
+      "ended_at": "2026-11-10T09:51:17.619Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-rrrier8m",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "composition-controller",
+      "returncode": 1,
+      "started_at": "2026-11-10T09:51:17.612Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/05-composition-controller.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/05-composition-controller.stdout.txt",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "bash",
+        "-lc",
+        "cd prepared/wire_ui_builder_v0.6 && node tests/test_notnotes_web_preview.mjs"
+      ],
+      "elapsed_ms": 6.089,
+      "ended_at": "2026-11-10T09:51:17.625Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-rrrier8m",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "notnotes-web-preview",
+      "returncode": 1,
+      "started_at": "2026-11-10T09:51:17.619Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/06-notnotes-web-preview.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/06-notnotes-web-preview.stdout.txt",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "bash",
+        "-lc",
+        "cd prepared/wire_ui_builder_v0.6 && node tests/test_notnotes_live_web_bootstrap.mjs"
+      ],
+      "elapsed_ms": 6.613,
+      "ended_at": "2026-11-10T09:51:17.632Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-rrrier8m",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "notnotes-live-bootstrap",
+      "returncode": 1,
+      "started_at": "2026-11-10T09:51:17.626Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/07-notnotes-live-bootstrap.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/07-notnotes-live-bootstrap.stdout.txt",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "bash",
+        "-lc",
+        "cd prepared/wire_ui_builder_v0.6 && bash -n tools/capture_http_front_contract.sh tools/compare_http_front_contract.sh"
+      ],
+      "elapsed_ms": 6.578,
+      "ended_at": "2026-11-10T09:51:17.639Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-rrrier8m",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "http-front-tools-syntax",
+      "returncode": 1,
+      "started_at": "2026-11-10T09:51:17.632Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/08-http-front-tools-syntax.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095117Z-d9fb6b557a54-f4ced289/logs/08-http-front-tools-syntax.stdout.txt",
+      "timed_out": false
+    }
+  ]
+}
