@@ -1,0 +1,53 @@
+test_all_link_targets_exist (test_site.TestSite.test_all_link_targets_exist) ... ok
+test_approved_source_still_noindexed_in_preview (test_site.TestSite.test_approved_source_still_noindexed_in_preview) ... ok
+test_artifact_digest (test_site.TestSite.test_artifact_digest) ... ok
+test_candidate_production_denied (test_site.TestSite.test_candidate_production_denied) ... ok
+test_escaped_copy (test_site.TestSite.test_escaped_copy) ... ok
+test_forged_editorial_approval_cannot_authorise_release (test_site.TestSite.test_forged_editorial_approval_cannot_authorise_release) ... ok
+test_header_and_preview_noindex (test_site.TestSite.test_header_and_preview_noindex) ... ok
+test_local_files_only (test_site.TestSite.test_local_files_only) ... ok
+test_native_record_candidate_handoff (test_site.TestSite.test_native_record_candidate_handoff) ... ok
+test_no_cdn_or_remote_assets (test_site.TestSite.test_no_cdn_or_remote_assets) ... ok
+test_page_count (test_site.TestSite.test_page_count) ... ok
+test_publisher_handoff_and_isolated_preview (test_site.TestSite.test_publisher_handoff_and_isolated_preview) ... ok
+test_publisher_stage_refuses_size_and_revision_spoof (test_site.TestSite.test_publisher_stage_refuses_size_and_revision_spoof) ... ok
+test_publisher_stage_refuses_wrong_site_and_page_set (test_site.TestSite.test_publisher_stage_refuses_wrong_site_and_page_set) ... ok
+test_publisher_stage_strips_claimed_approval_and_rejects_bad_fields (test_site.TestSite.test_publisher_stage_strips_claimed_approval_and_rejects_bad_fields) ... ok
+test_schema (test_site.TestSite.test_schema) ... ok
+test_unknown_explicit_preview_target_does_not_destroy_source (test_site.TestSite.test_unknown_explicit_preview_target_does_not_destroy_source) ... ok
+test_unsupported_build_mode_denied (test_site.TestSite.test_unsupported_build_mode_denied) ... ok
+
+----------------------------------------------------------------------
+Ran 18 tests in 0.051s
+
+OK
+test_all_job_files_present (test_handoff.HandoffTests.test_all_job_files_present) ... ok
+test_deployment_script_syntax (test_handoff.HandoffTests.test_deployment_script_syntax) ... ok
+test_no_external_service_installation (test_handoff.HandoffTests.test_no_external_service_installation) ... ok
+test_no_retired_target (test_handoff.HandoffTests.test_no_retired_target) ... ok
+test_release_not_claimed_operational (test_handoff.HandoffTests.test_release_not_claimed_operational) ... ok
+test_required_targets (test_handoff.HandoffTests.test_required_targets) ... ok
+test_bashqueues_not_crond (test_v04_integration.NewRequirements.test_bashqueues_not_crond) ... ok
+test_exact_website_source_lock (test_v04_integration.NewRequirements.test_exact_website_source_lock) ... FAIL
+test_host_contracts (test_v04_integration.NewRequirements.test_host_contracts) ... ok
+test_no_client_certificate_is_denied (test_v04_integration.NewRequirements.test_no_client_certificate_is_denied) ... ok
+test_no_unsupported_operational_claim (test_v04_integration.NewRequirements.test_no_unsupported_operational_claim) ... ok
+test_private_instances (test_v04_integration.NewRequirements.test_private_instances) ... ok
+test_public_is_not_privately_gated (test_v04_integration.NewRequirements.test_public_is_not_privately_gated) ... ok
+
+======================================================================
+FAIL: test_exact_website_source_lock (test_v04_integration.NewRequirements.test_exact_website_source_lock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hc3/alchemy-autobuild/staging/run-nhgki35m/handoff/tests/test_v04_integration.py", line 37, in test_exact_website_source_lock
+    self.assertEqual(hashlib.sha256(f.read_bytes()).hexdigest(),expected,relative)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: '20825d34f3e6fa0618ac8f2e7a1003b2caf9e39819d08748cc8b5c4b37655d83' != '064c74dcda17293e39a9e38327e3c10138e3e89dda711c508f379d95660cee9e'
+- 20825d34f3e6fa0618ac8f2e7a1003b2caf9e39819d08748cc8b5c4b37655d83
++ 064c74dcda17293e39a9e38327e3c10138e3e89dda711c508f379d95660cee9e
+ : docs/QUALIFICATION.md
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.005s
+
+FAILED (failures=1)
