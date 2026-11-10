@@ -136,6 +136,66 @@ fd = r~find('second')~makeString('L', '0a'x)
 call check fd~pos('gamma | packages/gamma_v0.2 | readme') > 0, 'find "second": gamma, matched in its README'
 fd = r~find('lonely')~makeString('L', '0a'x)
 call check fd~pos('delta | packages/delta_v0.1 | classes(1)') > 0, 'find "lonely": delta, matched in its public class Lonely'
+
+say '== 6. the kit check (v0.2): what a package loads, against the newest version of its family'
+/* a package outside the estate, as a tool under development would be */
+tool = work || '/bs_tool/packages/mytool_v0.1'
+call SysFileTree work || '/bs_tool', 'gone.', 'DO'
+if gone.0 > 0 then address system 'rm -rf "' || work || '/bs_tool"'
+call put tool'/src/Main.cls', '::requires "Amb.cls"|::requires "Own.cls"|::class Main public'
+call put tool'/src/Own.cls', '::class Own public'
+call put tool'/src/Gone.rex', '::requires "NoSuchThing.cls"'
+call put tool'/src/Bad.rex', '::requires (lib)'
+g1 = est || '/packages/gamma_v0.1/src'
+g2 = est || '/packages/gamma_v0.2/src'
+kit = .BodySlamKit~new(r)
+k = kit~kit(tool, g1)~makeString('L', '0a'x)
+call check k~pos('OLDER   Amb.cls') > 0 & k~pos('newest in the estate is packages/gamma_v0.2') > 0, 'kit: Amb.cls from gamma_v0.1 is OLDER, naming gamma_v0.2'
+call check k~pos('OK      Own.cls') > 0 & k~pos('the package''s own file') > 0, 'kit: the package''s own file is OK'
+call check k~pos('MISSING NoSuchThing.cls') > 0, 'kit: a require found nowhere is MISSING'
+call check k~pos('INVALID ::requires (lib)') > 0, 'kit: ::requires (lib) is INVALID'
+call check k~word(2) == 'FAIL', 'kit verdict FAIL with a MISSING and an INVALID (' || k~word(2) || ')'
+call SysFileDelete tool'/src/Gone.rex'
+call SysFileDelete tool'/src/Bad.rex'
+k = kit~kit(tool, g2)~makeString('L', '0a'x)
+call check k~word(2) == 'PASS' & k~pos('gamma 0.2 (newest)') > 0, 'kit: with gamma_v0.2 on REXX_PATH, PASS (' || k~word(2) || ')'
+call put tool'/sub/Other.rex', '::requires "Amb.cls"'
+k = kit~kit(tool, g2)~makeString('L', '0a'x)
+call put tool'/sub/Amb.cls', '::routine where public|return "local"'
+k = kit~kit(tool, g1)~makeString('L', '0a'x)
+call check k~pos('OK      Amb.cls (sub/Other.rex:1) -> ' || tool || '/sub/Amb.cls') > 0, 'kit: the requiring file''s own directory comes before REXX_PATH (measured order)'
+call check k~pos('OLDER   Amb.cls (src/Main.cls:1)') > 0, 'kit: the same name from src/ still resolves on REXX_PATH to gamma_v0.1'
+call SysFileDelete tool'/sub/Amb.cls'
+call put tool'/sub/Two.rex', '::requires "Dup.cls"'
+call put est'/packages/gamma_v0.1/lib/Dup.cls', '::class Dup public'
+k = kit~kit(tool, g2 || ':' || est || '/packages/gamma_v0.1/lib')~makeString('L', '0a'x)
+call check k~pos('TWO     gamma') > 0 & k~word(2) == 'WARN', 'kit: gamma loaded at 0.1 and 0.2 is TWO, verdict WARN'
+call SysFileDelete est'/packages/gamma_v0.1/lib/Dup.cls'
+
+say '== 7. drift (v0.2): sphere citations against the estate'
+sph = work || '/bs_spheres'
+call SysFileTree sph, 'gone.', 'DO'
+if gone.0 > 0 then address system 'rm -rf "' || sph || '"'
+readme = est || '/packages/gamma_v0.2/README.md'
+address system 'sha256sum "' || readme || '"' with output stem shaOut.
+good = shaOut.1~word(1)
+bad = copies('0', 64)
+arts = '{"kind":"article","id":"t.a","provenance":[' ,
+  || '{"artifact":"animatedads/alchemy@x:packages/gamma_v0.2/README.md","sha256":"' || good || '","member":"packages/gamma_v0.2/README.md"},' ,
+  || '{"artifact":"animatedads/alchemy@x:packages/gamma_v0.2/README.md","sha256":"' || bad || '","member":"packages/gamma_v0.2/README.md"},' ,
+  || '{"artifact":"animatedads/alchemy@main","sha256":"' || good || '","member":"packages/gamma_v0.2/README.md"},' ,
+  || '{"artifact":"animatedads/alchemy@x:packages/gamma_v0.9/README.md","sha256":"' || good || '","member":"packages/gamma_v0.9/README.md"},' ,
+  || '{"artifact":"gamma_v0.2.zip","sha256":"' || bad || '","member":"gamma_v0.2/src/Amb.cls"},' ,
+  || '{"artifact":"nowhere.zip","sha256":"' || bad || '","member":"nowhere_v9/x.cls"},' ,
+  || '{"artifact":"notes.txt","sha256":"' || bad || '"}]}'
+call SysMkDir sph
+call SysMkDir sph'/test_sphere'
+s = .stream~new(sph'/test_sphere/a.json'); s~open('write replace'); s~charOut(arts); s~close
+s = .stream~new(sph'/test_sphere/broken.json'); s~open('write replace'); s~charOut('{"kind": '); s~close
+dr = .BodySlamSphere~new(r, est, 'x')~drift(sph, est)~makeString('L', '0a'x)
+call check dr~pos('2 json files, 1 unreadable') > 0, 'drift: a broken JSON file is counted, not fatal'
+call check dr~pos('MATCH 2 CHANGED 1 GONE 1 MEMBER_HERE 1 MEMBER_GONE 1 UNCHECKED 1') > 0, 'drift: 2 MATCH (sha256sum agrees; path in artifact or in member), 1 CHANGED, 1 GONE, 1 MEMBER_HERE, 1 MEMBER_GONE, 1 UNCHECKED'
+call check dr~pos('CHANGED test_sphere/a.json') > 0 & dr~pos('GONE test_sphere/a.json') > 0, 'drift: the changed and gone citations are listed with their file'
 r~close
 
 say '== 4. the scanner against RxLexer on real files (every' sample || 'th ooRexx file)'
@@ -413,4 +473,6 @@ unquote: procedure
 
 ::requires 'BodySlam.cls'
 ::requires 'BodySlamReport.cls'
+::requires 'BodySlamKit.cls'
+::requires 'BodySlamSphere.cls'
 ::requires 'core/RxLexer.cls'
