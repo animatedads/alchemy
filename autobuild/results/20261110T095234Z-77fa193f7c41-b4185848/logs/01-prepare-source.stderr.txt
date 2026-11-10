@@ -1,0 +1,15 @@
+Traceback (most recent call last):
+  File "/home/hc3/alchemy-autobuild/staging/run-gsfitb96/prepare_source.py", line 16, in <module>
+    z.extractall(out)
+    ~~~~~~~~~~~~^^^^^
+  File "/usr/lib64/python3.13/zipfile/__init__.py", line 1807, in extractall
+    self._extract_member(zipinfo, path, pwd)
+    ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.13/zipfile/__init__.py", line 1877, in _extract_member
+    with self.open(member, pwd=pwd) as source, \
+         ~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/usr/lib64/python3.13/zipfile/__init__.py", line 1700, in open
+    raise BadZipFile(
+        'File name in directory %r and header %r differ.'
+        % (zinfo.orig_filename, fname))
+zipfile.BadZipFile: File name in directory 'tests/test_database_evidence.rex' and header b'src/DatabaseSearchIntention.cls' differ.

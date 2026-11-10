@@ -1,0 +1,101 @@
+{
+  "artifact_path": "autobuild/artifacts/intention_db_search_tests/0.1-dev29/77fa193f7c412ff629e27fd557a0dea8950b361638f0ba30bc3abb22fea46492.zip",
+  "package": {
+    "kind": "oorexx",
+    "name": "intention_db_search_tests",
+    "version": "0.1-dev29"
+  },
+  "run": {
+    "elapsed_ms": 66.407,
+    "ended_at": "2026-11-10T09:52:34.985Z",
+    "started_at": "2026-11-10T09:52:34.919Z"
+  },
+  "run_id": "20261110T095234Z-77fa193f7c41-b4185848",
+  "runner": {
+    "started_at": "2026-11-10T09:49:12.396Z",
+    "started_ns": 1794304152396467124
+  },
+  "schema": "alchemy.autobuild.result/0.5",
+  "source": {
+    "arrival_ns": null,
+    "ctime_ns": null,
+    "filename": null,
+    "kind": "git-branch",
+    "mtime_ns": null,
+    "sha256": "77fa193f7c412ff629e27fd557a0dea8950b361638f0ba30bc3abb22fea46492",
+    "size": 73263,
+    "source_branch": "autobuild-submit/20261023T164800Z-CHATGPT-intention-db-search-dev29-a0798b",
+    "source_commit": "8dc805c8f03697405388b5dc8a9ce811c195ee60",
+    "source_path": "autobuild/inbox/20261023T164800Z-CHATGPT-intention-db-search-dev29-a0798b/package",
+    "source_ref": "refs/remotes/origin/autobuild-submit/20261023T164800Z-CHATGPT-intention-db-search-dev29-a0798b",
+    "submission_id": "20261023T164800Z-CHATGPT-intention-db-search-dev29-a0798b",
+    "tree_sha256": "77fa193f7c412ff629e27fd557a0dea8950b361638f0ba30bc3abb22fea46492"
+  },
+  "status": "FAIL",
+  "tests": [
+    {
+      "argv": [
+        "python3",
+        "prepare_source.py"
+      ],
+      "elapsed_ms": 38.452,
+      "ended_at": "2026-11-10T09:52:34.960Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-gsfitb96",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "prepare-source",
+      "returncode": 1,
+      "started_at": "2026-11-10T09:52:34.921Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095234Z-77fa193f7c41-b4185848/logs/01-prepare-source.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095234Z-77fa193f7c41-b4185848/logs/01-prepare-source.stdout.txt",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "bash",
+        "-lc",
+        "for f in prepared/tools/*.sh; do bash -n \\\"$f\\\"; done"
+      ],
+      "elapsed_ms": 12.208,
+      "ended_at": "2026-11-10T09:52:34.972Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-gsfitb96",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "shell-syntax",
+      "returncode": 127,
+      "started_at": "2026-11-10T09:52:34.960Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095234Z-77fa193f7c41-b4185848/logs/02-shell-syntax.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095234Z-77fa193f7c41-b4185848/logs/02-shell-syntax.stdout.txt",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "python3",
+        "prepared/tools/autobuild_static_check.py"
+      ],
+      "elapsed_ms": 12.011,
+      "ended_at": "2026-11-10T09:52:34.984Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-gsfitb96",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "source-contract",
+      "returncode": 2,
+      "started_at": "2026-11-10T09:52:34.972Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095234Z-77fa193f7c41-b4185848/logs/03-source-contract.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095234Z-77fa193f7c41-b4185848/logs/03-source-contract.stdout.txt",
+      "timed_out": false
+    }
+  ]
+}
