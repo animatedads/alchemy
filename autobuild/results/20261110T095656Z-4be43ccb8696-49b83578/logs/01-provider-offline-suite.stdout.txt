@@ -1,0 +1,27 @@
+=== test_capability_selector.rex ===
+PASS low-tier workload ->  claude-haiku-5-5 ( ANTHROPIC_DIRECT ,  ) batch= 0 est= 60000 micro-USD
+PASS research-tier workload ->  claude-fable-5 est= 12000000 micro-USD
+PASS EU-sovereign workload ->  claude-sonnet-5 on BEDROCK_EU-CENTRAL-1 (region= eu-central-1)
+PASS FRONTIER+EU workload ->  claude-opus-4-8 on BEDROCK_EU-CENTRAL-1
+PASS RESEARCH+EU workload correctly and honestly unsatisfiable (Fable has no EU channel yet)
+PASS over-ceiling workload correctly unsatisfiable
+PASS rankCandidates returned 13 candidates, sorted ascending
+PASS queryJobCost round-trips a recorded job
+PASS batch pricing is half of real-time ( 18000000 -> 9000000 )
+ALL PASS test_capability_selector
+=== test_transport_loads.rex ===
+PASS AnthropicProvider constructs and satisfies the AI Access adapter contract
+NOTE non-transport failure code (may be credential-missing, which is also correct): AI_ANTHROPIC_CREDENTIAL_MISSING
+PASS AnthropicProvider~complete fails closed without live credentials/network: AI_ANTHROPIC_CREDENTIAL_MISSING
+PASS AnthropicBatchRequestItem builds a correct params directory
+ALL PASS test_transport_loads
+=== test_secret_broker_transport.rex ===
+ANTHROPIC V0.2 SECRET BROKER TRANSPORT START
+ANTHROPIC V0.2 SECRET BROKER TRANSPORT: OK
+=== test_alchemy_v08_adoption.rex ===
+ANTHROPIC V0.2 ALCHEMY V0.8 ADOPTION START
+  verified_objects= 3
+ANTHROPIC V0.2 ALCHEMY V0.8 ADOPTION: OK
+=== test_message_client.rex ===
+ANTHROPIC V0.3 MESSAGE CLIENT: OK
+ANTHROPIC_API_KEY not set -- skipping live-network wire tests
