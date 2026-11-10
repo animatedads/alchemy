@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "id": "arch.memory-fabric.read-ingress",
+  "version": "0.2",
+  "sphere": "memory-fabric",
+  "title": "Read ingress: authenticated principal, service admission and per-page fencing",
+  "summary": "A locally authoritative server must resolve the XTP-delivered service and authenticated caller, check a distinct ACL provider, limit incoming windows, and revalidate owner incarnation before every page. XTP FIRST/KEY/ACK and service names do not convey memory permissions.",
+  "authority": "project-doctrine",
+  "invariants": [
+    "The service name accepted from native XTP ingress must resolve to the registered local route peer and normal.memory class; a caller-supplied class or peer name has no admission authority.",
+    "Transport evidence is resolved by an injected real authenticator to a nonempty principal, not by treating the incoming string as a credential. ACL decisions are local and exact-true only.",
+    "The current block generation, owning provider ID, owner epoch, server-side block length and requested aligned bytes must be verified against MemoryFabricRegistry~resolveBlock before admission.",
+    "The permit checks identity, service, authorization, expiry and current provider generation/epoch for EACH page and again before publishing bytes; read permits do not authorize writes or ownership transfers.",
+    "An in-process duplicate-request guard is bounded to 4096 entries and expires entries; it does not provide durable replay resistance across service restarts. It cannot be used for non-idempotent mutations.",
+    "Source-side operational-capacity tickets, native ingress wiring, real cryptographic authentication, complete page payload integrity, receiver merge and XTP group multicast remain unqualified; do not present this gate as a complete remote-memory transfer."
+  ],
+  "procedure": [
+    "Bind XTP named listener service to local ServiceRegistry.",
+    "Resolve transport proof through the authenticated-identity adapter and confirm ACL to the current block/window.",
+    "Reject noncurrent providers, blocked/revoked principals, nonaligned/out-of-window pages and expired requests.",
+    "Validate permit immediately before each bounded page read and before any publish.",
+    "Hold per-context capacity admission and remote integrity/commit out of scope until proven."
+  ],
+  "topics": [
+    "memory-fabric",
+    "xtp",
+    "ingress",
+    "acl",
+    "fencing",
+    "page",
+    "replay"
+  ],
+  "provenance": [
+    {
+      "artifact": "MemoryXtpReadIngress.cls",
+      "sha256": "5226aeab80cf6d9df6be5b3ac7b0052e03d99f18d1d634d2672640ea27f8d568",
+      "member": "src/MemoryXtpReadIngress.cls",
+      "claim": "Source implements fail-closed service/identity/ACL admission, 60s TTL, <=16MiB window, 4096 request IDs and page-level epoch/ACL recheck. Source-file hash, not package-archive hash."
+    },
+    {
+      "artifact": "oorexx_memory_fabric_v0.1-dev10.zip",
+      "sha256": "91a05494c86ce7627f7a010af182c167701b5bf1f8ce2d93c99cda9d992644d8",
+      "member": "src/MemoryFabric.cls",
+      "claim": "Registry resolveBlock and provider reincarnation are authoritative for current block and owner epoch."
+    }
+  ]
+}
