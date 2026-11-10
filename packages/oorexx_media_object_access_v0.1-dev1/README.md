@@ -1,3 +1,35 @@
+## 10 November dev8 — first native MP4 H.264 pixel/seek qualification on new Sydney clips
+
+The existing Media Object Access `MediaMp4Track~mapSamples` remains the
+**production authority** for MP4 atom/sample/edit-list indexing. New
+`src/MediaMp4H264Frames.cls` is a codec-access adapter that consumes
+its `MediaMp4SampleTable` for exact bytes/DTS/edited presentation ticks,
+converts avc1 length-prefixed NAL units to Annex B, and passes bounded
+compressed GOPs to the existing in-process `MediaH264Decoder`. It has
+passed ooRexx r13196 **source translation**, but production adapter
+integration has **not yet been executed** with the latest connected dev2
+sample-map files in the local runtime workspace.
+
+For qualification on the uploaded videos, the self-contained
+`tests/support/MediaMp4AvcAccess.cls` contains a deliberately test-only
+flat MP4 map and AVCC reader (not to become another permanent backend).
+It **did execute**, under ooRexx r13196, 1920x1080 RGB24 samples from
+two genuine MP4 H.264/avc1 clips: 70 s, 2100 samples, 14 sync frames
+and 65 s, 1950 samples, 13 sync frames; 90kHz clock. All six tested
+5/30/60-second timestamp seeks returned requested PTS using only
+515–523 KiB compressed sample reads each. No Python, libavformat,
+FFmpeg executable or linear media-file scans. The codec-only library
+and its ABI requirements are unchanged from dev4.
+
+Moonsault PR #131 used these pixels to confirm nine complete 6-epoch
+star-like tracks and 33 of 36 *independent* held-out measurements
+(0.742px RMS on matches). Annotated-arrow pixels were not used as
+star source evidence. The exact numeric report and test source are
+in `packages/oorexx_moonsault_v0.1/docs/SYDNEY_STAR_TRACKS_20261110.md`.
+No Yale star identity or astronomical pointing fix is yet qualified.
+
+---
+
 ## 9 November dev7 — independently checked similarity registration
 
 `MediaRasterOps~estimateSimilarityValidated` now fits a bounded uniform zoom
