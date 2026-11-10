@@ -1,0 +1,187 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_physics_world",
+    "version": "0.1-dev51",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "MATHS_ROOT": "${REPO_ROOT}/packages/oorexx_maths_v0.20",
+      "UNITS_ROOT": "${REPO_ROOT}/packages/oorexx_units_v0.1-dev4",
+      "LD_LIBRARY_PATH": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/build:/usr/local/lib:/usr/lib",
+      "PYTHONPATH": "${REPO_ROOT}/packages/oorexx_maths_v0.20/python"
+    },
+    "rexx_path": {
+      "mode": "replace",
+      "entries": [
+        "${PACKAGE_ROOT}/rexx",
+        "${REPO_ROOT}/packages/oorexx_units_v0.1-dev4/rexx",
+        "${REPO_ROOT}/packages/oorexx_maths_v0.20/rexx",
+        "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/rexx"
+      ],
+      "require_entries": true
+    },
+    "require_dirs": [
+      "MATHS_ROOT",
+      "UNITS_ROOT"
+    ],
+    "report": [
+      "MATHS_ROOT",
+      "UNITS_ROOT"
+    ]
+  },
+  "tests": [
+    {
+      "name": "multirotor-momentum-power",
+      "argv": [
+        "rexx",
+        "tests/test_multirotor_momentum_power.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "electric-propeller-map",
+      "argv": [
+        "rexx",
+        "tests/test_electric_propeller_map.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "aero-table-inverse",
+      "argv": [
+        "rexx",
+        "tests/test_aero_table_inverse.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "fixed-wing-flight",
+      "argv": [
+        "rexx",
+        "tests/test_fixed_wing_flight.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "aero-coefficient-table",
+      "argv": [
+        "rexx",
+        "tests/test_aero_coefficient_table.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "aero-flight-vacuum",
+      "argv": [
+        "rexx",
+        "tests/test_aero_flight_vacuum.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "aero-orientation-drag",
+      "argv": [
+        "rexx",
+        "tests/test_aero_orientation_drag.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "aero-spin-lift-direction",
+      "argv": [
+        "rexx",
+        "tests/test_aero_spin_lift_direction.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "aero-surface-bilinear",
+      "argv": [
+        "rexx",
+        "tests/test_aero_surface_bilinear.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "aero-surface-domain-failclosed",
+      "argv": [
+        "rexx",
+        "tests/test_aero_surface_domain_failclosed.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "aero-table-domain-failclosed",
+      "argv": [
+        "rexx",
+        "tests/test_aero_table_domain_failclosed.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "aero-table-forces",
+      "argv": [
+        "rexx",
+        "tests/test_aero_table_forces.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "aero-zero-velocity",
+      "argv": [
+        "rexx",
+        "tests/test_aero_zero_velocity.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "propulsion-density-response",
+      "argv": [
+        "rexx",
+        "tests/test_propulsion_density_response.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "propulsion-fuel-accounting",
+      "argv": [
+        "rexx",
+        "tests/test_propulsion_fuel_accounting.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "ground-aero-liftoff-failclosed",
+      "argv": [
+        "rexx",
+        "tests/test_ground_aero_liftoff_failclosed.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "ground-aero-pitch-moment",
+      "argv": [
+        "rexx",
+        "tests/test_ground_aero_pitch_moment.rex"
+      ],
+      "timeout_seconds": 180
+    },
+    {
+      "name": "ground-aero-unloading",
+      "argv": [
+        "rexx",
+        "tests/test_ground_aero_unloading.rex"
+      ],
+      "timeout_seconds": 180
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_physics_world_v0.1-dev51"
+    }
+  }
+}

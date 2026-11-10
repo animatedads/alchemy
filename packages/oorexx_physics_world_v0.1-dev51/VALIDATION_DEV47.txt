@@ -1,0 +1,27 @@
+Physics World dev47 portfolio refresh qualification — 2026-09-27
+
+Source baseline:
+- oorexx_physics_world_v0.1-dev46.8-acoustic-block-feedback.zip
+  SHA-256 f2553fb886cedb9535306c2dc8f40566833f65fe82d498a5df2c6a4ebd30ab8c
+- F11 warbler/moving-reflector slice rebased from Physics dev38.
+- ooRexx Maths v0.16 used as qualification dependency.
+- ooRexx Units v0.1-dev4 retained.
+
+Portfolio checkpoint-1 repairs:
+- PHYS-001 PASS: cross-world checkpoint restore rejected with both worlds unchanged.
+- PHYS-001 PASS: changed same-world body inventory rejected before mutation.
+- PHYS-002 PASS: rejecting later participant rolls back earlier participant state and world time.
+- Restore participant order is explicitly captured in the checkpoint.
+
+F11 continuity:
+- PASS AcousticCalibrationSignal subtraction/overlap test under Maths v0.16.
+- PASS bounded F11 warbler moving-reflector experiment with F11_WARBLER_DT=0.54.
+- Probe produced 20 receiver observations plus CSV header.
+- PASS rexxc: PhysicsFreeze.cls, AcousticMovingVehicle.cls, AcousticCalibrationSignal.cls, AcousticImpulseResponse.cls.
+
+Runtime:
+- ooRexx 5.3.0 r13196 internal test build, 64-bit.
+
+Boundary:
+- The 2026-09-27 portfolio review checkpoint explicitly says the full review remains open.
+- f11_physics_acoustic_model and oorexx_ml_graph had no confirmed defects at checkpoint 1 because manual review is pending; that is not a clean bill of health.
