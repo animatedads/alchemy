@@ -198,6 +198,31 @@ call check dr~pos('MATCH 2 CHANGED 1 GONE 1 MEMBER_HERE 1 MEMBER_GONE 1 UNCHECKE
 call check dr~pos('CHANGED test_sphere/a.json') > 0 & dr~pos('GONE test_sphere/a.json') > 0, 'drift: the changed and gone citations are listed with their file'
 r~close
 
+say '== 8. kitrun (v0.2): each test run as Autobuild runs it, rexx replaced by a recorder'
+pk = work || '/bs_kitrun/mypkg_v0.1'
+call SysFileTree work || '/bs_kitrun', 'gone.', 'DO'
+if gone.0 > 0 then address system 'rm -rf "' || work || '/bs_kitrun"'
+call put pk'/tests/t_direct.rex', '::requires "Amb.cls"'
+call put pk'/run.sh', 'export REXX_PATH="$ALCHEMY_REPO_ROOT/packages/gamma_v0.1/src"|rexx tests/t_direct.rex|exit 0'
+manifest = '{"schema":"alchemy.autobuild.integration/0.3","package":{"name":"mypkg","version":"0.1"},' ,
+  || '"environment":{"set":{"REXX_PATH":"${REPO_ROOT}/packages/gamma_v0.2/src"}},' ,
+  || '"tests":[{"name":"direct","argv":["rexx","tests/t_direct.rex"]},' ,
+  || '{"name":"wrapped","argv":["sh","run.sh"]},' ,
+  || '{"name":"wrongcwd","argv":["rexx","tests/t_direct.rex"],"cwd":"tests"},' ,
+  || '{"name":"pinned","argv":["rexx","tests/t_direct.rex"],"environment":{"rexx_path":{"mode":"replace","entries":["${REPO_ROOT}/packages/gamma_v0.1/src"]}}},' ,
+  || '{"name":"contract","argv":["rexx","tests/t_direct.rex"],"environment":{"set":{"NOPE":"${PACKAGE_ROOT}/nope"},"require_dirs":["NOPE"]}}]}'
+s = .stream~new(pk'/integration.json'); s~open('write replace'); s~charOut(manifest); s~close
+kit = .BodySlamKit~new(.BodySlamReport~new(db))
+kr = kit~run(pk, est, work || '/bs_kitrun_work')~makeString('L', '0a'x)
+call check kr~pos('== test direct') > 0 & kr~pos('t_direct.rex | PASS') > 0, 'kitrun: environment.set REXX_PATH with ${REPO_ROOT} gives gamma_v0.2: PASS'
+call check kr~pos('== test wrapped') > 0 & kr~pos('newest in the estate is packages/gamma_v0.2') > 0, 'kitrun: the REXX_PATH a shell wrapper builds (gamma_v0.1) is the one checked: OLDER'
+call check kr~pos('ooRexx would not find the program') > 0, 'kitrun: rexx tests/x.rex from cwd tests is not found (measured: cwd, REXX_PATH, PATH)'
+p1 = kr~pos('== test pinned'); p2 = kr~pos('== test contract')
+call check p1 > 0 & kr~substr(p1, p2 - p1)~pos('newest in the estate is packages/gamma_v0.2') > 0, 'kitrun: a test''s own rexx_path (replace, gamma_v0.1) is applied over the package''s: OLDER'
+call check kr~pos('== test contract | argv rexx tests/t_direct.rex | AUTOBUILD_ENV_CONTRACT') > 0 & kr~pos('required directory export is not a directory: NOPE=') > 0, 'kitrun: require_dirs naming a missing directory: Autobuild refuses the test (exit 125)'
+call check kr~pos('kitrun FAIL') > 0, 'kitrun verdict FAIL'
+call check \SysIsFileDirectory(work || '/bs_kitrun_work/kitrun_mypkg_v0.1'), 'kitrun: the scratch copy is removed'
+
 say '== 4. the scanner against RxLexer on real files (every' sample || 'th ooRexx file)'
 if repo == '' then do
   say 'SKIP: no REPO given'
