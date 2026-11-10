@@ -1,0 +1,30 @@
+Scotty Computer v0.1-dev9 — qualification record, 2026-10-24
+
+Baseline: exact v0.1-dev8 delivery SHA-256 1e779ef89d938f2102c146842f2e8f8814196acf02b4dc87a3f157c06993cdd0.
+Current Intention Service (GitHub packages/oorexx_intention_service): v0.1-dev11; no core replacement.
+Runtime: ooRexx 5.3.0 r13196 extracted from the supplied Debian package.
+
+PASS: 86 Python backend regressions (5 new local script/input authority tests).
+PASS independently: native test_oorexx_dev9 (changing script after preview refuses execution).
+PASS independently: native test_oorexx_integration.
+PASS independently: native test_oorexx_scopes_github_learn.
+PASS independently: native test_oorexx_jobs_documents.
+NOT CONFIRMED: a clean aggregate qualification run of all six native suites; a serial wrapper timed out in the execution environment. Native dev6/dev7 were not freshly certified here.
+
+All tests are offline; GitHub local-repository fixtures, SSH stubs, no live ED209 nodes, no firewall changes, no live cloud.
+
+The new pins cover explicit local interpreter script arguments and declared additional files; transitive imports, nested commands, inline shell command sources, remote script bytes, mutable environment state, and TOCTOU races remain outside the guarantee. Neither tokens nor a hook prove operator identity.
+
+Source candidate is qualified to the limits above, not declared production-ready or Autobuild-accepted.
+
+DEV10 acceptance (2026-10-27): full serial wrapper bash tools/qualify.sh exit 0.
+Python unittest discovery: 88 tests OK. Native suites PASS individually in
+single wrapper: test_oorexx_integration, test_oorexx_scopes_github_learn,
+test_oorexx_jobs_documents, test_oorexx_dev6, test_oorexx_dev7,
+test_oorexx_dev9. Tested with extracted ooRexx 5.3.0 r13196.
+Two dev10 Python tests verify POSIX process-group timeout with and without
+registered exception rules, including a live same-group grandchild.
+No actual remote ED209, XTP, cloud or GitHub network operation was qualified;
+independent CODEX-PC review is requested, not yet accepted. Deadlines and
+process-group kill attempts do not guarantee termination of detached or
+remote descendants. Local process-group control is POSIX-specific.
