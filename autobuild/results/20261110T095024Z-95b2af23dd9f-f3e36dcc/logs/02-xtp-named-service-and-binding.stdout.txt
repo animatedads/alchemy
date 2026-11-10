@@ -1,0 +1,27 @@
+mkdir -p build
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_service.o src/xtp_service.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_priority.o src/xtp_priority.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_wire.o src/xtp_wire.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_route.o src/xtp_route.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_transport.o src/xtp_transport.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_multipath.o src/xtp_multipath.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_socket.o src/xtp_socket.cpp
+g++ -Iinclude -Ideps/oorexx_operational_degradation_planner_v0.1-dev3/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_operational.o src/xtp_operational.cpp
+mkdir -p lib
+ar rcs lib/libxtp.a build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o build/xtp_transport.o build/xtp_multipath.o build/xtp_socket.o build/xtp_operational.o
+g++ -shared -o lib/libxtp.so build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o build/xtp_transport.o build/xtp_multipath.o build/xtp_socket.o build/xtp_operational.o deps/oorexx_operational_degradation_planner_v0.1-dev3/lib/liboperational_planner.a
+g++ -Iinclude -I/usr/local/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -shared -o lib/liboorexx_xtp_native.so src/xtp_rexx_native.cpp lib/libxtp.a deps/oorexx_operational_degradation_planner_v0.1-dev3/lib/liboperational_planner.a
+mkdir -p bin
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -o bin/xtp-admin src/xtp_admin.cpp lib/libxtp.a
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -o bin/xtp-connect src/xtp_connect.cpp lib/libxtp.a
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -o bin/xtp-listen src/xtp_listen.cpp lib/libxtp.a
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -o bin/xtp-multipath src/xtp_multipath_cli.cpp lib/libxtp.a
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -o bin/xtp-multicast src/xtp_multicast_cli.cpp lib/libxtp.a
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -o bin/xtp-local src/xtp_local.cpp src/xtp_wire.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -o tests/test_named_service.bin tests/test_named_service.cpp lib/libxtp.a
+./tests/test_named_service.bin
+PASS XTP named-service address segment and IP rejection
+bash ./tests/test_named_service.sh
+PASS named XTP service FIRST admission and delivery
+bash ./tests/test_rexx_named_service_binding.sh
+PASS ooRexx named-service routine registration and manager scope
