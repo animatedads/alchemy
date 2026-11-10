@@ -1,0 +1,66 @@
+{
+  "schema": "oorexx.foreign/0.14",
+  "library": {
+    "provider": "native",
+    "path": "libzstd.so.1",
+    "threading": "thread-safe",
+    "affinity": "none"
+  },
+  "functions": {
+    "compressBound": {
+      "symbol": "ZSTD_compressBound",
+      "return": "size_t",
+      "args": ["size_t"]
+    },
+    "createCCtx": {
+      "symbol": "ZSTD_createCCtx",
+      "return": {
+        "type": "pointer",
+        "object": "ZSTD_CCtx",
+        "ownership": "owned",
+        "destructor": "ZSTD_freeCCtx"
+      },
+      "args": []
+    },
+    "freeCCtx": {
+      "symbol": "ZSTD_freeCCtx",
+      "return": "size_t",
+      "args": ["pointer"]
+    },
+    "setParameter": {
+      "symbol": "ZSTD_CCtx_setParameter",
+      "return": "size_t",
+      "args": ["pointer", "i32", "i32"]
+    },
+    "compress2": {
+      "symbol": "ZSTD_compress2",
+      "return": "size_t",
+      "args": ["pointer", {"type":"pointer","direction":"out"}, "size_t", "bytes", "size_t"]
+    },
+    "decompress": {
+      "symbol": "ZSTD_decompress",
+      "return": "size_t",
+      "args": [{"type":"pointer","direction":"out"}, "size_t", "bytes", "size_t"]
+    },
+    "decompressBound": {
+      "symbol": "ZSTD_decompressBound",
+      "return": "u64",
+      "args": ["bytes", "size_t"]
+    },
+    "getFrameContentSize": {
+      "symbol": "ZSTD_getFrameContentSize",
+      "return": "u64",
+      "args": ["bytes", "size_t"]
+    },
+    "isError": {
+      "symbol": "ZSTD_isError",
+      "return": "u32",
+      "args": ["size_t"]
+    },
+    "getErrorName": {
+      "symbol": "ZSTD_getErrorName",
+      "return": "utf8",
+      "args": ["size_t"]
+    }
+  }
+}
