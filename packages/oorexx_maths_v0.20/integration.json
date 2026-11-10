@@ -1,0 +1,17 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {"name": "oorexx_maths", "version": "0.20", "kind": "oorexx"},
+  "working_directory": ".",
+  "environment": {
+    "set": {"MATHS_TEST_NUMPY": "0", "MATHS_TEST_PROOF_PROVIDERS": "0", "PYTHONPATH": "${PACKAGE_ROOT}/python"},
+    "rexx_path": {"mode": "replace", "entries": ["${PACKAGE_ROOT}/rexx", "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/rexx"], "require_entries": true},
+    "report": ["MATHS_TEST_NUMPY", "PYTHONPATH"]
+  },
+  "tests": [
+    {"name": "maths-core-v0.20", "argv": ["sh", "run_tests.sh"], "timeout_seconds": 1200},
+    {"name": "fast-lanes-pure", "argv": ["sh", "-c", "cd tests && rexx test_fast_lanes.rex"], "timeout_seconds": 300},
+    {"name": "fast-lanes-numpy-or-skip", "argv": ["sh", "-c", "cd tests && rexx test_fast_lanes_native.rex"], "timeout_seconds": 600,
+     "environment": {"set": {"LD_LIBRARY_PATH": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/build:/usr/local/lib:/usr/lib"}}}
+  ],
+  "publish": {"tree": {"source": ".", "path": "packages/oorexx_maths_v0.20"}}
+}
