@@ -1,0 +1,50 @@
+-- orders.words: Boston Crab order report for programs. Fields split by |.
+-- order|n|from|to|words    part|n|i|verb|action|how|words    ref|n|i|verdict|words|writer|reader    end|n|verdict
+-- verb, action and how are concept names (language neutral), - for none; action is the verb, or the act after a general verb
+-- ("conduct a search": search); writer and reader list what each can identify, split by ;
+-- how holds "not" when the part says not to do it ("не знижуйтесь", "do not descend"),
+-- and "if" when it waits on a condition said in its words ("якщо ціль знайдено", "if the target is found")
+-- tone|n|frustration|count when the sender swears (twice or more: extreme frustration); it is not an order
+-- say|n|i|uk|writer|reader follows a ref of a Ukrainian order: the same things said in Ukrainian, nominative
+-- ("північно-східний пілон"; names as written), - where a thing has no Ukrainian words yet
+-- a URL has writer and reader "url <the URL as written>"
+-- a grid reference has writer and reader "grid E <east> N <north>"; fail|n|reason when Boston Crab failed on an order
+order|1|claude|alchemyfetch|fetch https://sourceforge.net/projects/oorexx/files/ .
+part|1|1|bring~01435927-v|bring~01435927-v|-|fetch https://sourceforge.net/projects/oorexx/files/ .
+ref|1|1|CLEAR|https://sourceforge.net/projects/oorexx/files/|url https://sourceforge.net/projects/oorexx/files/|url https://sourceforge.net/projects/oorexx/files/
+end|1|CLEAR
+order|2|claude|alchemyfetch|download the readme .
+part|2|1|download|download|-|download the readme .
+ref|2|1|CLEAR|readme|README|README
+end|2|CLEAR
+order|3|claude|alchemyfetch|read the release notes .
+part|3|1|read~00626756-v|read~00626756-v|-|read the release notes .
+ref|3|1|AMBIGUOUS|the release notes|the ooRexx release notes;the latest ooRexx 5.1 release notes|the ooRexx release notes;the latest ooRexx 5.1 release notes
+end|3|REQUIRES CLARIFICATION
+order|4|claude|alchemyfetch|fetch the archive from sourceforge .
+part|4|1|bring~01435927-v|bring~01435927-v|-|fetch the archive from sourceforge .
+ref|4|1|CLEAR|the archive|the archive|the archive
+ref|4|1|CLEAR|sourceforge|SourceForge|SourceForge
+end|4|CLEAR
+order|5|claude|alchemyfetch|get the manual .
+part|5|1|get|get|-|get the manual .
+ref|5|1|NO REFERENT|the manual||
+end|5|REQUIRES CLARIFICATION
+order|6|claude|alchemyfetch|download the file at https://github.com/animatedads/alchemy/blob/main/README.md and read it .
+part|6|1|download|download|-|download the file at https://github.com/animatedads/alchemy/blob/main/README.md
+part|6|2|read~00626756-v|read~00626756-v|-|read it .
+ref|6|1|CLEAR|https://github.com/animatedads/alchemy/blob/main/README.md|url https://github.com/animatedads/alchemy/blob/main/README.md|url https://github.com/animatedads/alchemy/blob/main/README.md
+end|6|CLEAR
+order|7|claude|alchemyfetch|fetch the latest release notes .
+part|7|1|bring~01435927-v|bring~01435927-v|-|fetch the latest release notes .
+ref|7|1|CLEAR|the latest release notes|the latest ooRexx 5.1 release notes|the latest ooRexx 5.1 release notes
+end|7|CLEAR
+order|8|claude|alchemyfetch|fetch the latest oorexx release notes from sourceforge .
+part|8|1|bring~01435927-v|bring~01435927-v|-|fetch the latest oorexx release notes from sourceforge .
+ref|8|1|CLEAR|the latest oorexx release notes|the latest ooRexx 5.1 release notes|the latest ooRexx 5.1 release notes
+ref|8|1|CLEAR|sourceforge|SourceForge|SourceForge
+end|8|CLEAR
+order|9|claude|alchemyfetch|read the oorexx release notes .
+part|9|1|read~00626756-v|read~00626756-v|-|read the oorexx release notes .
+ref|9|1|AMBIGUOUS|the oorexx release notes|the ooRexx release notes;the latest ooRexx 5.1 release notes|the ooRexx release notes;the latest ooRexx 5.1 release notes
+end|9|REQUIRES CLARIFICATION
