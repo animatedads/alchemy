@@ -1,0 +1,38 @@
+-- orders.words: Boston Crab order report for programs. Fields split by |.
+-- order|n|from|to|words    part|n|i|verb|action|how|words    ref|n|i|verdict|words|writer|reader    end|n|verdict
+-- verb, action and how are concept names (language neutral), - for none; action is the verb, or the act after a general verb
+-- ("conduct a search": search); writer and reader list what each can identify, split by ;
+-- how holds "not" when the part says not to do it ("не знижуйтесь", "do not descend")
+-- a grid reference has writer and reader "grid E <east> N <north>"; fail|n|reason when Boston Crab failed on an order
+order|1|control|delta|delta , обшукуйте західну частину поля , починаючи з walsh bay wharves , потім observatory hill .
+part|1|1|search~01318273-v|search~01318273-v|-|delta , обшукуйте західну частину поля , починаючи з walsh bay wharves , потім observatory hill .
+ref|1|1|CLEAR|walsh bay wharves|the finger wharves|the finger wharves
+ref|1|1|CLEAR|observatory hill|Observatory Hill|Observatory Hill
+end|1|CLEAR
+order|2|control|delta|delta , fly to e -423 n -402 .
+part|2|1|fly~01944262-v|fly~01944262-v|-|delta , fly to e -423 n -402 .
+ref|2|1|CLEAR|E -423 N -402|grid E -423 N -402|grid E -423 N -402
+end|2|CLEAR
+order|3|control|delta|delta , уникайте пілонів і мостів .
+part|3|1|avoid|avoid|-|delta , уникайте пілонів і мостів .
+ref|3|1|CLEAR|пілонів|the northeast pylon;the northwest pylon|the northeast pylon;the northwest pylon
+end|3|CLEAR
+order|4|control|delta|delta , летіть до e -423 n -402 та утримуйтесь від контакту з ворожими дронами .
+part|4|1|fly~01944262-v|fly~01944262-v|-|delta , летіть до e -423 n -402
+part|4|2|refrain~02731589-v|refrain~02731589-v|-|утримуйтесь від контакту з ворожими дронами .
+ref|4|1|CLEAR|E -423 N -402|grid E -423 N -402|grid E -423 N -402
+ref|4|2|NO REFERENT|ворожими дронами||
+end|4|REQUIRES CLARIFICATION
+order|5|control|delta|delta , відведіть дрон до північних пілонів і повідомте .
+part|5|1|withdraw|withdraw|-|delta , відведіть дрон до північних пілонів
+part|5|2|report~00967067-v|report~00967067-v|-|повідомте .
+ref|5|1|CLEAR|північних пілонів|the northeast pylon;the northwest pylon|the northeast pylon;the northwest pylon
+end|5|CLEAR
+order|6|control|delta|delta , search the west part of the field .
+part|6|1|search~01318273-v|search~01318273-v|-|delta , search the west part of the field .
+ref|6|1|NO REFERENT|the field||
+end|6|REQUIRES CLARIFICATION
+order|7|control|delta|delta , orbit the northeast pylon clockwise .
+part|7|1|orb|orb|clockwise~00255849-r|delta , orbit the northeast pylon clockwise .
+ref|7|1|CLEAR|the northeast pylon|the northeast pylon|the northeast pylon
+end|7|CLEAR
