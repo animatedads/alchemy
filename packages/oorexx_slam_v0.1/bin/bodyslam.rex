@@ -13,6 +13,8 @@
  *   rexx bin/bodyslam.rex kit DB DIR [REXX_PATH|- [CWD]]  what DIR's package will load, each against the newest
  *                                             version of its family (exit 0 PASS, 1 WARN, 3 FAIL)
  *   rexx bin/bodyslam.rex drift DB SPHERES ROOT [N]  every sphere citation checked against the estate at ROOT
+ *   rexx bin/bodyslam.rex kitrun DB PKGDIR REPO [WORK]  each test of PKGDIR run as Autobuild runs it, with a
+ *                                             stand-in rexx that records each program; kit on each (exit 0, 1, 3)
  *   rexx bin/bodyslam.rex sphere DB OUT COMMIT ROOT  the catalogue as an LLM Gopher sphere (alchemy-estate) in the
  *                                             Sphere Editor work tree OUT; ROOT is the checkout DB was read from
  *
@@ -95,6 +97,19 @@ select
     end
     r~close
   end
+  when cmd == 'kitrun' then do
+    parse var rest db pkg repo work .
+    if repo == '' then call usage
+    if work == '' then work = '/tmp/bodyslam_kitrun'
+    r = .BodySlamReport~new(db)
+    out = .BodySlamKit~new(r)~run(pkg, repo, work)
+    do line over out
+      say line
+    end
+    r~close
+    if out[out~items]~word(2) == 'FAIL' then exit 3
+    if out[out~items]~word(2) == 'WARN' then exit 1
+  end
   when cmd == 'find' then do
     parse var rest db word n .
     if word == '' then call usage
@@ -142,7 +157,7 @@ report: procedure
   end
 
 usage:
-  say 'rexx bin/bodyslam.rex ingest DB ROOT | report DB [NAME [N]] | blast DB TARGET [N] | catalogue DB [AREA] | find DB WORD [N] | sphere DB OUT COMMIT ROOT | kit DB DIR [REXX_PATH [CWD]] | drift DB SPHERES ROOT [N]'
+  say 'rexx bin/bodyslam.rex ingest DB ROOT | report DB [NAME [N]] | blast DB TARGET [N] | catalogue DB [AREA] | find DB WORD [N] | sphere DB OUT COMMIT ROOT | kit DB DIR [REXX_PATH [CWD]] | drift DB SPHERES ROOT [N] | kitrun DB PKGDIR REPO [WORK]'
   exit 2
 
 failed:
