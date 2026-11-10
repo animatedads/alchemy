@@ -1,0 +1,29 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "oorexx_community_correspondence",
+    "version": "0.1-dev1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "community-draft-gate-rexx",
+      "argv": [
+        "bash",
+        "tests/run.sh"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_community_correspondence_v0.1-dev1"
+    }
+  }
+}
