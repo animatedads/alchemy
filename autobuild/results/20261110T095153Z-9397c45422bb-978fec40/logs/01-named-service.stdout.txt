@@ -1,0 +1,12 @@
+mkdir -p build
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_service.o src/xtp_service.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_priority.o src/xtp_priority.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_wire.o src/xtp_wire.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_route.o src/xtp_route.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_transport.o src/xtp_transport.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_multipath.o src/xtp_multipath.cpp
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_socket.o src/xtp_socket.cpp
+g++ -Iinclude -I/home/hc3/alchemy-autobuild/repo/packages/oorexx_operational_degradation_planner_v0.1-dev5/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c -o build/xtp_operational.o src/xtp_operational.cpp
+mkdir -p lib
+ar rcs lib/libxtp.a build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o build/xtp_transport.o build/xtp_multipath.o build/xtp_socket.o build/xtp_operational.o
+g++ -shared -o lib/libxtp.so build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o build/xtp_transport.o build/xtp_multipath.o build/xtp_socket.o build/xtp_operational.o /home/hc3/alchemy-autobuild/repo/packages/oorexx_operational_degradation_planner_v0.1-dev5/lib/liboperational_planner.a
