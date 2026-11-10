@@ -1,0 +1,36 @@
+{
+  "id": "queue-fabric.xtp-capacity",
+  "kind": "article",
+  "sphere": "queue-fabric",
+  "version": "0.2",
+  "authority": "project-artifact",
+  "title": "Planner dev5 capacity-domain tickets and XTP pacing",
+  "section": "integration",
+  "summary": "Planner dev5 names shared capacity domains and can suspend/refresh live tickets; XTP dev25 supports rate-limited named-service unicast. Queue Fabric needs its own admission accounting before CLAIM.",
+  "invariants": [
+    "Acquire allowed ticket before side effects; WLU admission remains pre-CLAIM.",
+    "XTP capacityRate per context is not aggregate accounting; Planner governor enforces domain parallelism and aggregate caps.",
+    "Under operating-state pressure, reconcile and suspend zero-rate contexts without losing durable transfer identity.",
+    "No unapproved fallback or deadline bypass under congestion; obey both ticket rate and receiver RATE/BURST."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev6.zip",
+      "sha256": "4477733b121dc540b3325a834cd99a2665b07dc468e09181dd7aa8f01b728d40",
+      "member": "oorexx_queue_fabric_v0.9-dev6/README.md",
+      "claim": "Inspected Library source; does not establish Queue Fabric-over-XTP qualification."
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/README.md",
+      "claim": "Inspected Library source; does not establish Queue Fabric-over-XTP qualification."
+    },
+    {
+      "artifact": "oorexx_operational_degradation_planner_v0.1-dev5.zip",
+      "sha256": "422dd2a2f2ef03ab9376e7e3f7ed9a847eb6212cf03eeba84a909ccd133b5479",
+      "member": "oorexx_operational_degradation_planner_v0.1-dev5/README.md",
+      "claim": "Inspected Library source; does not establish Queue Fabric-over-XTP qualification."
+    }
+  ]
+}

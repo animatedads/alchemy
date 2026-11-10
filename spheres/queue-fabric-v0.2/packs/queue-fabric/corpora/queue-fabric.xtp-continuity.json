@@ -1,0 +1,52 @@
+{
+  "id": "queue-fabric.xtp-continuity",
+  "kind": "corpus",
+  "sphere": "queue-fabric",
+  "title": "Queue Fabric XTP integration continuity",
+  "records": [
+    {
+      "topic": "scope",
+      "rule": "Queue Fabric remains transport independent."
+    },
+    {
+      "topic": "transport",
+      "rule": "XTP named FIRST and context ACK are transport gates, not authenticated manager or durable queue receipts."
+    },
+    {
+      "topic": "multicast",
+      "rule": "Manager interest maps to explicit qualified groups; sender retires only by durable per-manager receipts."
+    },
+    {
+      "topic": "governance",
+      "rule": "Planner dev5 capacity domain governs aggregate contexts, XTP dev25 paces one context."
+    },
+    {
+      "topic": "provisioning",
+      "rule": "xtp.provision route publication remains proposed/offline candidate, not production field trust."
+    },
+    {
+      "topic": "continuation",
+      "rule": "No Queue Fabric XTP runtime or ED209 cross-MU acceptance claimed."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev6.zip",
+      "sha256": "4477733b121dc540b3325a834cd99a2665b07dc468e09181dd7aa8f01b728d40",
+      "member": "oorexx_queue_fabric_v0.9-dev6/README.md",
+      "claim": "Inspected Library source; does not establish Queue Fabric-over-XTP qualification."
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/README.md",
+      "claim": "Inspected Library source; does not establish Queue Fabric-over-XTP qualification."
+    },
+    {
+      "artifact": "oorexx_operational_degradation_planner_v0.1-dev5.zip",
+      "sha256": "422dd2a2f2ef03ab9376e7e3f7ed9a847eb6212cf03eeba84a909ccd133b5479",
+      "member": "oorexx_operational_degradation_planner_v0.1-dev5/README.md",
+      "claim": "Inspected Library source; does not establish Queue Fabric-over-XTP qualification."
+    }
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "kind": "corpus",
+  "id": "queue-fabric.continuity",
+  "sphere": "queue-fabric",
+  "title": "Object Queue Fabric engineering sphere continuity records",
+  "records": [
+    {
+      "topic": "baseline",
+      "value": "Queue Fabric v0.9-dev5",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262"
+    },
+    {
+      "topic": "design",
+      "rule": "MQ-like wiring interface over first-class ooRexx objects, not a bag of FIFOs."
+    },
+    {
+      "topic": "projection",
+      "rule": "NoSQL/SQL is read/query projection boundary, not internal truth."
+    },
+    {
+      "topic": "claim",
+      "rule": "Recoverable consumption uses CLAIM/ACK/NACK/RELEASE with distinct semantics."
+    },
+    {
+      "topic": "uow",
+      "rule": "Durable consume+produce commits as one replayable UOWCOMMIT."
+    },
+    {
+      "topic": "recovery",
+      "rule": "Persistent INFLIGHT recovers to READY retaining delivery count."
+    },
+    {
+      "topic": "channel retry",
+      "rule": "Remote retry uses RELEASE; application backoutCount is unchanged."
+    },
+    {
+      "topic": "topic",
+      "rule": "Topic publish fan-out is atomic through one queue-manager UOW."
+    },
+    {
+      "topic": "distributed interest",
+      "rule": "Brokers exchange aggregated interest; one remote manager gets one publication regardless of local subscriber count."
+    },
+    {
+      "topic": "WLU",
+      "rule": "WLU denial occurs before CLAIM and queue/transport side effects."
+    },
+    {
+      "topic": "release",
+      "rule": "queue.fabric/0.9 aggregate API and queue.transport/2 wire identity are separate version axes."
+    }
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev5.zip",
+      "sha256": "05b3cbc92aff353dc3a44eb0373d7efb1e49a5e81071892b410a8b8f63fa2262",
+      "member": "oorexx_queue_fabric_v0.9-dev5/src/ObjectQueueFabric.cls",
+      "claim": "Current source/package identity for continuity records."
+    }
+  ]
+}

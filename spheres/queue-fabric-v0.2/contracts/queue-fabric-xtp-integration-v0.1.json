@@ -1,0 +1,35 @@
+{
+  "schema": "queue.fabric.xtp.integration/0.1",
+  "status": "DESIGN_NOT_RUNTIME",
+  "queue_api": "queue.fabric/0.9",
+  "channel_wire": "queue.transport/2",
+  "optional_transport": "xtp/0.1",
+  "required": [
+    "legacy_tcp_compatibility",
+    "registered_service_admission",
+    "authenticated_manager_channel",
+    "stable_transferId",
+    "durable_uow_receipts",
+    "per_manager_interest_mapping",
+    "membership_epoch",
+    "idempotent_multicast_repair",
+    "planner_capacity_ticket",
+    "wlu_preclaim",
+    "approved_fallback"
+  ],
+  "forbidden": [
+    "replace_socket_selector",
+    "unauthenticated_fallback",
+    "multicast_quorum_as_durable_commit",
+    "NOERR_for_durable_publication",
+    "distributed_XA_claim",
+    "cross_cloud_multicast_assumption"
+  ],
+  "source_sha256": {
+    "queue_fabric": "4477733b121dc540b3325a834cd99a2665b07dc468e09181dd7aa8f01b728d40",
+    "xtp": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+    "planner": "422dd2a2f2ef03ab9376e7e3f7ed9a847eb6212cf03eeba84a909ccd133b5479",
+    "memory_xtp_candidate2": "8ff6370826c29929292559899adf8222c5ed2a0f86d67a139dc01d312693d57d",
+    "xtp_sphere": "cef809f47e97a246c38ef00ec37befdb5ca844ff995b42fbe07282778d0c8195"
+  }
+}

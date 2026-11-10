@@ -1,0 +1,38 @@
+{
+  "id": "queue-fabric.xtp-receipts",
+  "kind": "article",
+  "sphere": "queue-fabric",
+  "version": "0.2",
+  "authority": "project-artifact",
+  "title": "Named-service admission, multicast and durable receipts",
+  "section": "integration",
+  "summary": "Service registration and FIRST admission are transport filters. Queue Fabric must still authenticate channel/manager/ACL; XTP reliable multicast ACK is not a committed Queue Fabric receiver UOW.",
+  "invariants": [
+    "Queue Fabric transferId remains stable on retries, even when XTP context KEY changes.",
+    "Sender retries use RELEASE rather than application NACK/backoutCount.",
+    "Distributed topic subscriptions aggregate per interested manager; multicast groups are an explicit independent mapping.",
+    "Retirement of a durable distributed publication requires each interested manager's durable receiver receipt, not XTP quorum.",
+    "Unknown membership epoch, partial quorum, crash or expiry must retain intents and use idempotent per-manager repair.",
+    "Local subscriber fan-out, retained state and distribution receipt share a local UOW; there is no distributed XA."
+  ],
+  "provenance": [
+    {
+      "artifact": "oorexx_queue_fabric_v0.9-dev6.zip",
+      "sha256": "4477733b121dc540b3325a834cd99a2665b07dc468e09181dd7aa8f01b728d40",
+      "member": "oorexx_queue_fabric_v0.9-dev6/README.md",
+      "claim": "Inspected Library source; does not establish Queue Fabric-over-XTP qualification."
+    },
+    {
+      "artifact": "oorexx_xtp_v0.1-dev25.zip",
+      "sha256": "7f6ab3d1167d5fd3131c7e6d6e9ea8d8c6115106ea9df89d41357ef56773b80b",
+      "member": "oorexx_xtp_v0.1-dev25/README.md",
+      "claim": "Inspected Library source; does not establish Queue Fabric-over-XTP qualification."
+    },
+    {
+      "artifact": "oorexx_operational_degradation_planner_v0.1-dev5.zip",
+      "sha256": "422dd2a2f2ef03ab9376e7e3f7ed9a847eb6212cf03eeba84a909ccd133b5479",
+      "member": "oorexx_operational_degradation_planner_v0.1-dev5/README.md",
+      "claim": "Inspected Library source; does not establish Queue Fabric-over-XTP qualification."
+    }
+  ]
+}
