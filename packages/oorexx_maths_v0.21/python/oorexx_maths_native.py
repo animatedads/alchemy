@@ -1,0 +1,405 @@
+"""Native/vectorized helper kernels for ooRexx Maths.
+
+Public mathematical meaning remains in the ooRexx classes.  This module only
+executes provider-specific numerical kernels and returns diagnostics/evidence.
+"""
+from __future__ import annotations
+
+
+def integrate_second_order(mass, damping, stiffness, x0, v0, dt, steps,
+                           forces=None, method="NEWMARK_AVERAGE_ACCELERATION",
+                           beta=0.25, gamma=0.5, return_history=True):
+    """Integrate M x'' + C x' + K x = f with constant matrices.
+
+    Uses Newmark average acceleration (beta=1/4, gamma=1/2).  SciPy LU
+    factorizations are computed once for M and the constant effective matrix,
+    then reused for every step.  The returned residuals are diagnostics over
+    the represented binary64 trajectory; ooRexx Maths can independently replay
+    the trajectory through its REFERENCE provider.
+    """
+    import numpy as np
+    import scipy
+    from scipy.linalg import lu_factor, lu_solve
+
+    M = np.asarray(mass, dtype=np.float64)
+    C = np.asarray(damping, dtype=np.float64)
+    K = np.asarray(stiffness, dtype=np.float64)
+    x0 = np.asarray(x0, dtype=np.float64).reshape(-1)
+    v0 = np.asarray(v0, dtype=np.float64).reshape(-1)
+    dt = float(dt)
+    steps = int(steps)
+    beta = float(beta)
+    gamma = float(gamma)
+
+    if M.ndim != 2 or M.shape[0] != M.shape[1]:
+        raise ValueError("mass matrix must be square")
+    n = M.shape[0]
+    if C.shape != (n, n) or K.shape != (n, n):
+        raise ValueError("damping/stiffness matrices must match mass matrix")
+    if x0.shape != (n,) or v0.shape != (n,):
+        raise ValueError("initial displacement/velocity must match system dimension")
+    if dt <= 0 or steps < 1:
+        raise ValueError("dt must be positive and steps must be >= 1")
+    if beta <= 0 or gamma <= 0:
+        raise ValueError("Newmark beta/gamma must be positive")
+    if not (np.all(np.isfinite(M)) and np.all(np.isfinite(C)) and
+            np.all(np.isfinite(K)) and np.all(np.isfinite(x0)) and
+            np.all(np.isfinite(v0))):
+        raise ValueError("non-finite dynamics input")
+
+    if forces is None:
+        F = np.zeros((steps + 1, n), dtype=np.float64)
+    else:
+        F = np.asarray(forces, dtype=np.float64)
+        if F.ndim == 1:
+            if F.shape != (n,):
+                raise ValueError("constant force vector must match system dimension")
+            F = np.repeat(F.reshape(1, n), steps + 1, axis=0)
+        elif F.shape != (steps + 1, n):
+            raise ValueError("force history must have shape (steps+1, dimension)")
+    if not np.all(np.isfinite(F)):
+        raise ValueError("non-finite force history")
+
+    method = str(method).upper()
+    if method == "NEWMARK":
+        method = "NEWMARK_AVERAGE_ACCELERATION"
+    if method not in {"NEWMARK_AVERAGE_ACCELERATION", "SYMPLECTIC_EULER"}:
+        raise ValueError("unsupported second-order integration method")
+
+    M_lu = lu_factor(M, check_finite=False)
+
+    if method == "SYMPLECTIC_EULER":
+        x = np.empty((steps + 1, n), dtype=np.float64)
+        v = np.empty((steps + 1, n), dtype=np.float64)
+        a = np.empty((steps + 1, n), dtype=np.float64)
+        x[0] = x0
+        v[0] = v0
+        a[0] = lu_solve(M_lu, F[0] - C @ v0 - K @ x0, check_finite=False)
+        max_equilibrium = float(np.max(np.abs(M @ a[0] + C @ v[0] + K @ x[0] - F[0])))
+        max_x_consistency = 0.0
+        max_v_consistency = 0.0
+        for i in range(steps):
+            ai = lu_solve(M_lu, F[i] - C @ v[i] - K @ x[i], check_finite=False)
+            v[i + 1] = v[i] + dt * ai
+            x[i + 1] = x[i] + dt * v[i + 1]
+            a[i + 1] = lu_solve(M_lu, F[i + 1] - C @ v[i + 1] - K @ x[i + 1], check_finite=False)
+            eq = M @ a[i + 1] + C @ v[i + 1] + K @ x[i + 1] - F[i + 1]
+            max_equilibrium = max(max_equilibrium, float(np.max(np.abs(eq))))
+            xr = x[i + 1] - x[i] - dt * v[i + 1]
+            vr = v[i + 1] - v[i] - dt * ai
+            max_x_consistency = max(max_x_consistency, float(np.max(np.abs(xr))))
+            max_v_consistency = max(max_v_consistency, float(np.max(np.abs(vr))))
+        times = np.arange(steps + 1, dtype=np.float64) * dt
+        payload = {
+            "equilibrium_residual_inf": format(max_equilibrium, ".17g"),
+            "kinematic_displacement_residual_inf": format(max_x_consistency, ".17g"),
+            "kinematic_velocity_residual_inf": format(max_v_consistency, ".17g"),
+            "condition_mass": format(float(np.linalg.cond(M)), ".17g"),
+            "condition_effective": "not-applicable",
+            "numpy_version": np.__version__, "scipy_version": scipy.__version__,
+            "algorithm": "symplectic-euler + scipy-lu-factor-reuse-mass",
+            "solver": "scipy.linalg.lu_factor/lu_solve",
+        }
+        if return_history:
+            payload.update(times=times.tolist(), displacement=x.tolist(), velocity=v.tolist(), acceleration=a.tolist())
+        else:
+            payload.update(time=format(float(times[-1]), ".17g"), displacement=x[-1].tolist(), velocity=v[-1].tolist(), acceleration=a[-1].tolist())
+        return payload
+
+    a0c = 1.0 / (beta * dt * dt)
+    a1c = gamma / (beta * dt)
+    a2c = 1.0 / (beta * dt)
+    a3c = 1.0 / (2.0 * beta) - 1.0
+    a4c = gamma / beta - 1.0
+    a5c = dt * (gamma / (2.0 * beta) - 1.0)
+
+    Keff = K + a0c * M + a1c * C
+    K_lu = lu_factor(Keff, check_finite=False)
+
+    x = np.empty((steps + 1, n), dtype=np.float64)
+    v = np.empty((steps + 1, n), dtype=np.float64)
+    a = np.empty((steps + 1, n), dtype=np.float64)
+    x[0] = x0
+    v[0] = v0
+    a[0] = lu_solve(M_lu, F[0] - C @ v0 - K @ x0, check_finite=False)
+
+    max_equilibrium = float(np.max(np.abs(M @ a[0] + C @ v[0] + K @ x[0] - F[0])))
+    max_x_consistency = 0.0
+    max_v_consistency = 0.0
+
+    for i in range(steps):
+        rhs = (F[i + 1]
+               + M @ (a0c * x[i] + a2c * v[i] + a3c * a[i])
+               + C @ (a1c * x[i] + a4c * v[i] + a5c * a[i]))
+        x[i + 1] = lu_solve(K_lu, rhs, check_finite=False)
+        a[i + 1] = a0c * (x[i + 1] - x[i]) - a2c * v[i] - a3c * a[i]
+        v[i + 1] = v[i] + dt * ((1.0 - gamma) * a[i] + gamma * a[i + 1])
+
+        eq = M @ a[i + 1] + C @ v[i + 1] + K @ x[i + 1] - F[i + 1]
+        max_equilibrium = max(max_equilibrium, float(np.max(np.abs(eq))))
+        xr = (x[i + 1] - x[i]
+              - dt * v[i]
+              - dt * dt * ((0.5 - beta) * a[i] + beta * a[i + 1]))
+        vr = (v[i + 1] - v[i]
+              - dt * ((1.0 - gamma) * a[i] + gamma * a[i + 1]))
+        max_x_consistency = max(max_x_consistency, float(np.max(np.abs(xr))))
+        max_v_consistency = max(max_v_consistency, float(np.max(np.abs(vr))))
+
+    times = np.arange(steps + 1, dtype=np.float64) * dt
+    payload = {
+        "equilibrium_residual_inf": format(max_equilibrium, ".17g"),
+        "kinematic_displacement_residual_inf": format(max_x_consistency, ".17g"),
+        "kinematic_velocity_residual_inf": format(max_v_consistency, ".17g"),
+        "condition_mass": format(float(np.linalg.cond(M)), ".17g"),
+        "condition_effective": format(float(np.linalg.cond(Keff)), ".17g"),
+        "numpy_version": np.__version__,
+        "scipy_version": scipy.__version__,
+        "algorithm": "newmark-average-acceleration-beta1/4-gamma1/2 + scipy-lu-factor-reuse",
+        "solver": "scipy.linalg.lu_factor/lu_solve",
+    }
+    if return_history:
+        payload.update(times=times.tolist(), displacement=x.tolist(), velocity=v.tolist(), acceleration=a.tolist())
+    else:
+        payload.update(time=format(float(times[-1]), ".17g"), displacement=x[-1].tolist(), velocity=v[-1].tolist(), acceleration=a[-1].tolist())
+    return payload
+
+
+def integrate_second_order_projected(mass, damping, stiffness, input_matrix,
+                                     displacement_output, velocity_output,
+                                     x0, v0, dt, steps, inputs=None,
+                                     method="SYMPLECTIC_EULER",
+                                     beta=0.25, gamma=0.5):
+    """Integrate second-order dynamics and return selected linear outputs.
+
+    Solves M x'' + C x' + K x = B u and returns
+    y = Hx x + Hv v, plus the final full state.  The channel matrices carry no
+    domain meaning here; callers define what each input/output represents.
+    """
+    import numpy as np
+
+    M = np.asarray(mass, dtype=np.float64)
+    B = np.asarray(input_matrix, dtype=np.float64)
+    Hx = np.asarray(displacement_output, dtype=np.float64)
+    Hv = np.asarray(velocity_output, dtype=np.float64)
+    n = M.shape[0]
+    if B.ndim != 2 or B.shape[0] != n:
+        raise ValueError("input matrix must have shape (dimension, input_count)")
+    if Hx.ndim != 2 or Hv.ndim != 2 or Hx.shape != Hv.shape or Hx.shape[1] != n:
+        raise ValueError("output matrices must have matching shape (output_count, dimension)")
+    m = B.shape[1]
+    if inputs is None:
+        U = np.zeros((int(steps) + 1, m), dtype=np.float64)
+    else:
+        U = np.asarray(inputs, dtype=np.float64)
+        if U.ndim == 1 and m == 1:
+            U = U.reshape(-1, 1)
+        if U.shape != (int(steps) + 1, m):
+            raise ValueError("input history must have shape (steps+1, input_count)")
+    F = U @ B.T
+    raw = integrate_second_order(mass, damping, stiffness, x0, v0, dt, steps,
+                                 F, method, beta, gamma, True)
+    X = np.asarray(raw["displacement"], dtype=np.float64)
+    V = np.asarray(raw["velocity"], dtype=np.float64)
+    Y = X @ Hx.T + V @ Hv.T
+    raw["outputs"] = Y.tolist()
+    raw["final_displacement"] = X[-1].tolist()
+    raw["final_velocity"] = V[-1].tolist()
+    raw["final_acceleration"] = np.asarray(raw["acceleration"], dtype=np.float64)[-1].tolist()
+    raw["input_count"] = str(m)
+    raw["output_count"] = str(Hx.shape[0])
+    raw["algorithm"] = raw["algorithm"] + " + native-B/H-projection"
+    return raw
+
+
+def run_discrete_state_space(state_matrix, input_matrix, output_matrix,
+                             feedthrough_matrix, initial_state, inputs):
+    """Run a discrete LTI state-space block.
+
+    Convention is y[k] = C x[k] + D u[k], followed by
+    x[k+1] = A x[k] + B u[k].  All values are binary64; domain meaning of
+    state/input/output channels remains with the ooRexx caller.
+    """
+    import numpy as np
+
+    A = np.asarray(state_matrix, dtype=np.float64)
+    B = np.asarray(input_matrix, dtype=np.float64)
+    C = np.asarray(output_matrix, dtype=np.float64)
+    D = np.asarray(feedthrough_matrix, dtype=np.float64)
+    x = np.asarray(initial_state, dtype=np.float64).reshape(-1)
+    U = np.asarray(inputs, dtype=np.float64)
+
+    if A.ndim != 2 or A.shape[0] != A.shape[1] or A.shape[0] < 1:
+        raise ValueError("A must be a non-empty square matrix")
+    n = A.shape[0]
+    if B.ndim != 2 or B.shape[0] != n or B.shape[1] < 1:
+        raise ValueError("B must have shape (state_count, input_count)")
+    m = B.shape[1]
+    if C.ndim != 2 or C.shape[1] != n or C.shape[0] < 1:
+        raise ValueError("C must have shape (output_count, state_count)")
+    q = C.shape[0]
+    if D.shape != (q, m):
+        raise ValueError("D must have shape (output_count, input_count)")
+    if x.shape != (n,):
+        raise ValueError("initial state must match state count")
+    if U.ndim == 1 and m == 1:
+        U = U.reshape(-1, 1)
+    if U.ndim != 2 or U.shape[1] != m:
+        raise ValueError("inputs must have shape (sample_count, input_count)")
+    if not all(np.all(np.isfinite(z)) for z in (A, B, C, D, x, U)):
+        raise ValueError("non-finite discrete state-space input")
+
+    Y = np.empty((U.shape[0], q), dtype=np.float64)
+    for k in range(U.shape[0]):
+        u = U[k]
+        Y[k] = C @ x + D @ u
+        x = A @ x + B @ u
+
+    return {
+        "outputs": Y.tolist(),
+        "final_state": x.tolist(),
+        "samples": str(U.shape[0]),
+        "algorithm": "numpy-discrete-state-space-block",
+    }
+
+
+# --------------------------------------------------------------------------
+# v0.20 MathPanoramaProjector NUMPY lane (Claude Opus 5.5, 2026-11-03).
+# The grouped static point set is uploaded once and stays resident; each
+# frame marshals only the camera pose in and one packed string out.  The
+# convention is defined by MathFastLanes.cls; PURE is the reference lane.
+class PanoramaScene:
+    def __init__(self, flat, sizes):
+        import numpy as np
+        pts = np.asarray(flat, dtype=np.float64).reshape(-1, 3)
+        sizes = np.asarray(sizes, dtype=np.int64).reshape(-1)
+        if sizes.sum() != pts.shape[0] or (sizes <= 0).any():
+            raise ValueError("group sizes must be positive and cover every point")
+        self.pts = pts
+        self.sizes = sizes
+        self.starts = np.concatenate(([0], np.cumsum(sizes)[:-1]))
+        self.group = np.repeat(np.arange(sizes.size), sizes)
+        self.groups = int(sizes.size)
+
+    def extents(self, cx, cy, cz, yaw, width, height):
+        import numpy as np
+        width = int(width); height = int(height)
+        d = self.pts - np.array([float(cx), float(cy), float(cz)])
+        dx, dy, dz = d[:, 0], d[:, 1], d[:, 2]
+        dist = np.maximum(np.hypot(dx, dy), 0.1)
+        small = np.abs(dy) < 1e-7
+        safe_dy = np.where(small, 1.0, dy)
+        bearing = np.degrees(np.arctan(dx / safe_dy))
+        bearing = np.where(dy > 0, bearing, bearing + 180.0)
+        bearing = np.where(bearing < 0, bearing + 360.0, bearing)
+        bearing = np.where(small, np.where(dx >= 0, 90.0, 270.0), bearing)
+        a = np.mod(bearing - float(yaw) + 180.0, 360.0)
+        el = np.degrees(np.arctan(dz / dist))
+        xx = np.trunc(a * width / 360.0) + 1
+        yy = np.trunc((90.0 - el) * height / 180.0) + 1
+        base = xx[self.starts][self.group]
+        delta = xx - base
+        half = width / 2.0
+        delta = np.where(delta > half, delta - width, delta)
+        delta = np.where(delta < -half, delta + width, delta)
+        col = base + delta
+        lo = np.minimum.reduceat(col, self.starts)
+        hi = np.maximum.reduceat(col, self.starts)
+        top = np.minimum.reduceat(yy, self.starts)
+        bottom = np.maximum.reduceat(yy, self.starts)
+        x0 = np.maximum(1, np.trunc(lo)).astype(np.int64)
+        x1 = np.minimum(width, np.trunc(hi)).astype(np.int64)
+        y0 = np.maximum(1, np.trunc(top)).astype(np.int64)
+        y1 = np.minimum(height, np.trunc(bottom)).astype(np.int64)
+        packed = np.stack([x0, x1, y0, y1], axis=1).reshape(-1)
+        return " ".join(map(str, packed.tolist()))
+
+
+def panorama_scene(flat, sizes):
+    return PanoramaScene(flat, sizes)
+
+
+# --------------------------------------------------------------------------
+# v0.21 MathTerrainPanorama NUMPY lane (Claude Opus 5.5, 2026-11-03).
+# The height field, kinds and distance schedule are uploaded once; each frame
+# marshals the camera pose in and one packed string out.  Semantics are
+# defined by MathFastLanes.cls (PURE is the reference lane).
+class TerrainField:
+    def __init__(self, heights, kinds, columns, rows, ox, oy, i11, i12, i21, i22, schedule):
+        import numpy as np
+        self.columns = int(columns); self.rows = int(rows)
+        self.h = np.asarray(heights, dtype=np.float64).reshape(-1)
+        self.k = np.asarray(kinds, dtype=np.int64).reshape(-1)
+        if self.h.size != self.columns * self.rows or self.k.size != self.h.size:
+            raise ValueError("heights and kinds must hold columns*rows values")
+        self.ox = float(ox); self.oy = float(oy)
+        self.i11 = float(i11); self.i12 = float(i12); self.i21 = float(i21); self.i22 = float(i22)
+        self.d = np.asarray(schedule, dtype=np.float64).reshape(-1)
+
+    def runs(self, cx, cy, cz, yaw, width, height):
+        import numpy as np
+        width = int(width); height = int(height)
+        cx = float(cx); cy = float(cy); cz = float(cz); yaw = float(yaw)
+        kcol = np.arange(1, width + 1, dtype=np.float64)
+        b = np.radians((kcol - 0.5) * 360.0 / width + yaw - 180.0)
+        sb = np.sin(b)[:, None]; cb = np.cos(b)[:, None]
+        D = self.d[None, :]
+        dx = cx + D * sb - self.ox; dy = cy + D * cb - self.oy
+        col = np.floor(self.i11 * dx + self.i12 * dy + 0.5).astype(np.int64) + 1
+        row = np.floor(self.i21 * dx + self.i22 * dy + 0.5).astype(np.int64) + 1
+        inside = (col >= 1) & (col <= self.columns) & (row >= 1) & (row <= self.rows)
+        idx = np.where(inside, (row - 1) * self.columns + (col - 1), 0)
+        kind = np.where(inside, self.k[idx], -1)
+        h = np.where(kind == 1, self.h[idx], 0.0)
+        el = np.degrees(np.arctan((h - cz) / D))
+        rr = np.trunc((90.0 - el) * height / 180.0).astype(np.int64) + 1
+        rr = np.where(kind >= 0, rr, height + 1)
+        start = np.full((width, 1), height + 1, dtype=np.int64)
+        prev = np.minimum.accumulate(np.concatenate([start, rr], axis=1), axis=1)[:, :-1]
+        paint = (kind == 1) & (rr < prev)
+        y0 = np.maximum(1, rr); y1 = np.minimum(height, prev - 1)
+        paint &= (y0 <= y1)
+        out = []
+        cols_hit, steps = np.nonzero(paint)
+        current = -1; runs = []
+        for c, s in zip(cols_hit.tolist(), steps.tolist()):
+            if c != current:
+                if runs:
+                    out.append(f"{current + 1} {len(runs)} " + " ".join(f"{a} {z}" for a, z in runs))
+                current = c; runs = []
+            a, z = int(y0[c, s]), int(y1[c, s])
+            if runs and runs[-1][0] == z + 1:
+                runs[-1] = (a, runs[-1][1])
+            else:
+                runs.append((a, z))
+        if runs:
+            out.append(f"{current + 1} {len(runs)} " + " ".join(f"{a} {z}" for a, z in runs))
+        return " ".join(out)
+
+
+def _terrain_row_runs(self, cx, cy, cz, yaw, width, height):
+    import numpy as np
+    width = int(width); height = int(height)
+    mask = np.zeros((height, width), dtype=bool)
+    packed = self.runs(cx, cy, cz, yaw, width, height).split()
+    i = 0
+    while i < len(packed):
+        k = int(packed[i]); n = int(packed[i + 1]); i += 2
+        for _ in range(n):
+            a = int(packed[i]); z = int(packed[i + 1]); i += 2
+            mask[a - 1:z, k - 1] = True
+    pad = np.zeros((height, 1), dtype=bool)
+    edges = np.diff(np.concatenate([pad, mask, pad], axis=1).astype(np.int8), axis=1)
+    out = []
+    for y in range(height):
+        starts = np.nonzero(edges[y] == 1)[0] + 1
+        ends = np.nonzero(edges[y] == -1)[0]
+        if starts.size:
+            out.append(f"{y + 1} {starts.size} " + " ".join(f"{a} {z}" for a, z in zip(starts.tolist(), ends.tolist())))
+    return " ".join(out)
+
+
+TerrainField.row_runs = _terrain_row_runs
+
+
+def terrain_field(heights, kinds, columns, rows, ox, oy, i11, i12, i21, i22, schedule):
+    return TerrainField(heights, kinds, columns, rows, ox, oy, i11, i12, i21, i22, schedule)
