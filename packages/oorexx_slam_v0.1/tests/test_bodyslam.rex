@@ -113,6 +113,31 @@ end
 call check bl[2]~word(2) = 2 & bl[pos2]~word(2) = 3, 'blast radius of file src/Amb.cls: DEFINITE its 2 copies, POSSIBLE also p_amb.rex (' || bl[pos2] || ')'
 r~close
 
+say '== 5. the catalogue (v0.2): newest version, README facts, find'
+call check .BodySlam~versionKey('0.10') >> .BodySlam~versionKey('0.9'), 'version 0.10 sorts after 0.9'
+call check .BodySlam~versionKey('0.1') >> .BodySlam~versionKey('0.1-dev29'), 'release 0.1 sorts after its own 0.1-dev29'
+call check .BodySlam~versionKey('0.1-dev29') >> .BodySlam~versionKey('0.1-dev3'), 'dev29 sorts after dev3'
+call check .BodySlam~versionKey('0.1-dev17-compat1') >> .BodySlam~versionKey('0.1-dev17'), '0.1-dev17-compat1 sorts after 0.1-dev17'
+call check .BodySlam~versionKey('0.1') >> .BodySlam~versionKey(''), 'any version sorts after unversioned'
+r = .BodySlamReport~new(db)
+ab = r~q("SELECT a.file AS f, a.title AS t, a.summary AS s FROM about a JOIN project p ON p.id = a.project_id WHERE p.path = 'packages/gamma_v0.2'")
+call check ab~items = 1, 'one README row for gamma_v0.2 (the one at the project root)'
+if ab~items = 1 then do
+  call check ab[1]['F'] == 'packages/gamma_v0.2/README.md', 'README.md is preferred to README.txt (' || ab[1]['F'] || ')'
+  call check ab[1]['T'] == 'Gamma two', 'title: the first heading (' || ab[1]['T'] || ')'
+  call check ab[1]['S'] == 'The second gamma.', 'first line: skips the code block, sub-heading and badge (' || ab[1]['S'] || ')'
+end
+cat = r~catalogue~makeString('L', '0a'x)
+call check cat~pos('gamma | packages/gamma_v0.2 | 2 |') > 0, 'catalogue: gamma newest is gamma_v0.2, 2 versions here'
+call check cat~pos('Gamma two: The second gamma.') > 0, 'catalogue: gamma line carries its README title and first line'
+call check cat~pos('eta | packages/eta_v0.1-dev29 |') > 0, 'catalogue: eta newest is dev29, not dev3 (plain text order would pick dev3)'
+call check cat~pos('zeta | packages/zeta_v0.3 | 1 | 1 / ') > 0 & cat~pos('(no README)') > 0, 'catalogue: zeta counted, no README said as such'
+fd = r~find('second')~makeString('L', '0a'x)
+call check fd~pos('gamma | packages/gamma_v0.2 | readme') > 0, 'find "second": gamma, matched in its README'
+fd = r~find('lonely')~makeString('L', '0a'x)
+call check fd~pos('delta | packages/delta_v0.1 | classes(1)') > 0, 'find "lonely": delta, matched in its public class Lonely'
+r~close
+
 say '== 4. the scanner against RxLexer on real files (every' sample || 'th ooRexx file)'
 if repo == '' then do
   say 'SKIP: no REPO given'
@@ -248,6 +273,13 @@ build: procedure
   call put est'/packages/zeta_v0.3/src/Zet.cls', '::requires "Eps.cls"|::class Zet public|::method go|.bus~subscribe("T.SHARED", self)|.bus~subscribe(''T.DEAF'', self)'
   call put est'/'a'/src/z_user.rex', 'say .Zet~new|::requires "Zet.cls"'
   call put est'/'a'/DEPENDENCIES.txt', 'Dependencies:|- beta_v0.2|- gamma_v0.9 (optional)|- delta_v0.1'
+  /* v0.2 catalogue: READMEs at project roots, and versions that sort wrongly as plain text */
+  call put est'/packages/gamma_v0.1/README.md', '# Gamma one||The first gamma.'
+  call put est'/packages/gamma_v0.2/README.md', '# Gamma two|```|not this: in a code block|```|## A sub-heading|![badge](x.svg)|The second gamma.'
+  call put est'/packages/gamma_v0.2/README.txt', 'Not this one|The txt readme.'
+  call put est'/packages/gamma_v0.2/src/README.md', '# Nested, not at the project root'
+  call put est'/packages/eta_v0.1-dev3/README.md', '# Eta dev3|Old.'
+  call put est'/packages/eta_v0.1-dev29/README.md', '# Eta dev29|New.'
   return
 
 /* ---------- part 4 ---------- */

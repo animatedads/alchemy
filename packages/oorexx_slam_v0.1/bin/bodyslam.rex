@@ -7,6 +7,11 @@
  *   rexx bin/bodyslam.rex report DB [NAME [N]]  NAME: summary ambiguous clashes missing shadows caseonly duplicates
  *                                               undeclared notpublic edges hubs cycles topics declared all
  *   rexx bin/bodyslam.rex blast DB TARGET [N]   what can break if TARGET (a class, or a file path end) changes
+ *   rexx bin/bodyslam.rex catalogue DB [AREA]  one line per family: newest version, size, public classes, README
+ *                                             (AREA: a path start such as packages/ or examples/)
+ *   rexx bin/bodyslam.rex find DB WORD [N]      families whose name, README or public classes contain WORD
+ *   rexx bin/bodyslam.rex sphere DB OUT COMMIT ROOT  the catalogue as an LLM Gopher sphere (alchemy-estate) in the
+ *                                             Sphere Editor work tree OUT; ROOT is the checkout DB was read from
  *
  * Needs librexxsql.so on LD_LIBRARY_PATH and REXX_PATH holding src and the Rexx/SQL backend src.
  */
@@ -19,7 +24,7 @@ select
     if root == '' then call usage
     b = .BodySlam~new(root)
     counts = b~ingest(db)
-    do k over .array~of('FILES', 'SCANNED', 'REQUIRES', 'USES', 'DECLARED', 'READ_SECONDS', 'STORE_SECONDS')
+    do k over .array~of('FILES', 'SCANNED', 'REQUIRES', 'USES', 'DECLARED', 'ABOUT', 'READ_SECONDS', 'STORE_SECONDS')
       say k~lower~left(14) counts[k]
     end
     b~session~close
@@ -42,6 +47,33 @@ select
       do line over lines
         say line
       end
+    end
+    r~close
+  end
+  when cmd == 'catalogue' then do
+    parse var rest db area .
+    if db == '' then call usage
+    r = .BodySlamReport~new(db)
+    do line over r~catalogue(100000, area)
+      say line
+    end
+    r~close
+  end
+  when cmd == 'sphere' then do
+    parse var rest db out commit root .
+    if root == '' then call usage
+    r = .BodySlamReport~new(db)
+    n = .BodySlamSphere~new(r, root, commit)~write(out)
+    say 'sphere alchemy-estate:' n 'family articles written to' out
+    r~close
+  end
+  when cmd == 'find' then do
+    parse var rest db word n .
+    if word == '' then call usage
+    if n == '' then n = 25
+    r = .BodySlamReport~new(db)
+    do line over r~find(word, n)
+      say line
     end
     r~close
   end
@@ -77,11 +109,12 @@ report: procedure
     when one == 'cycles' then return r~cycles
     when one == 'topics' then return r~topics(n)
     when one == 'declared' then return r~declared(n)
+    when one == 'catalogue' then return r~catalogue(n)
     otherwise return .array~of('no report named' one)
   end
 
 usage:
-  say 'rexx bin/bodyslam.rex ingest DB ROOT | report DB [NAME [N]] | blast DB TARGET [N]'
+  say 'rexx bin/bodyslam.rex ingest DB ROOT | report DB [NAME [N]] | blast DB TARGET [N] | catalogue DB [AREA] | find DB WORD [N] | sphere DB OUT COMMIT ROOT'
   exit 2
 
 failed:
@@ -95,3 +128,4 @@ failed:
 
 ::requires 'BodySlam.cls'
 ::requires 'BodySlamReport.cls'
+::requires 'BodySlamSphere.cls'
