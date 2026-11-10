@@ -1,0 +1,47 @@
+{
+  "kind": "article",
+  "version": "0.2",
+  "sphere": "rasenfalcon",
+  "authority": "project-continuity",
+  "id": "rasenfalcon.publisher-handoff",
+  "section": "publication",
+  "title": "Website Publisher v0.4 → RasenFalcon v0.4.2 offline candidate staging",
+  "summary": "Website Publisher v0.4 is a Library candidate with browser editor, export and native NoSQLServer v0.90 append-only snapshots. A separate RasenFalcon v0.4.2 GitHub submission adds stage-publisher for export/0.1 or candidate native-record/0.2. The imported editorial snapshot is a separate unreviewed candidate; it cannot authorize CMS or Wire release.",
+  "invariants": [
+    "The browser editor does not own authentication, device identity, public site publication, Wire release or privileged NoSQLServer authority.",
+    "stage-publisher accepts only site rasenfalcon.com, authority CANDIDATE_ONLY, exact configured nine page slugs, valid JSON with unique keys, bounded size and owned editorial fields.",
+    "Native-record/0.2 revision from NoSQLServer is recorded as unverified: native_revision_verified is false; no signature, identity, review or publication authority follows from storage.",
+    "Stage is created separately and atomically in an unused target; never overwrite the source checkout, the user's destination or an existing site preview.",
+    "Every staged page is candidate, even if the publisher claimed approved; stage manifest has authority NONE, state CANDIDATE_UNREVIEWED, no CMS/Wire receipts and production_build_allowed false.",
+    "All rendered previews remain noindex,nofollow; publication stays denied even for forged local approval records.",
+    "The v0.4 Publisher browser-to-native handoff is explicitly offline; a native NoSQLServer v0.90 test is not a live multi-writer CMS service or production RexxOS qualification.",
+    "Do not conflate the Publisher's v0.4 distribution, the site builder's v0.4.2 source branch and publisher Gopher sphere v0.2; they are separately owned artifacts.",
+    "RasenFalcon v0.4.2 branch declares 18 website tests; no independent execution was recorded here. Rasen Falcon MCP test request REQ-00000943 awaits named operator approval."
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_website_publisher_v0.4.zip",
+      "sha256": "db878df230884e71900dfcdb483d09eab15414d34de8898638de7120cdc9663d",
+      "member": "alchemy_website_publisher_v0.4/README.md",
+      "claim": "Library v0.4 editorial publisher implementation and declared native qualification limits."
+    },
+    {
+      "artifact": "website_publisher_gopher_sphere_v0.2.zip",
+      "sha256": "0ead0662ff955e757d71d2c5bfbd724136d17c2f78e8c5ed156cf7e08e5cda11",
+      "member": "packs/website-publisher/articles/publisher.rasenfalcon-handoff.json",
+      "claim": "Independent Publisher continuity documenting offline RasenFalcon v0.2 staging."
+    }
+  ],
+  "source_branch": "https://github.com/animatedads/alchemy/tree/autobuild-submit/20261027T163400Z-CHATGPT-rasen-v042-publisher-stage-b12ce4",
+  "source_git_commit": "0718e920eb91b47d608e1754d288eda20fe9e0ff",
+  "import_schema": "alchemy.website.publisher.export/0.1",
+  "native_schema": "alchemy.website.publisher.native-record/0.2",
+  "stage_schema": "rasenfalcon.publisher-stage/0.1",
+  "site": "rasenfalcon.com",
+  "native_revision_verified": false,
+  "publisher_storage_backend": "NoSQLServer v0.90 development candidate",
+  "tests_declared": 18,
+  "tests_independently_executed": "NOT_RUN",
+  "cms_live": "NOT_QUALIFIED",
+  "production": "DENIED"
+}

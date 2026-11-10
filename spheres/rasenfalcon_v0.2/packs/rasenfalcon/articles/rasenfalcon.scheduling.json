@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.scheduling",
+  "version": "0.1",
+  "sphere": "rasenfalcon",
+  "section": "operations",
+  "title": "BashQueues cron is application scheduling authority",
+  "summary": "Systemd supervises long-running services and wakes the existing BashQueues cron ticker every minute. The ticker submits governed jobs; workers, not cron or timer units, perform scheduled maintenance.",
+  "invariants": [
+    "No system crond or application crontab dependency.",
+    "systemd minute timer is an allowed ticker wakeup, not an independent business scheduler.",
+    "Backups, audits, certificate renewal workflows and housekeeping run as policy-admitted BashQueues job classes.",
+    "Deduplicate minute firings and prevent concurrency, prove authorisation denial and reboot recovery.",
+    "Private CA issuance must not silently downgrade to ACME/public CA."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.zip",
+      "sha256": "60bf049a436c9f653b60cbf315331a85872ab4f6724f7ef685fec322de96bc5c",
+      "member": "rasenfalcon_delivery_v0.4/contracts/PRIVATE_HTTPS_AUTHORITY.md",
+      "claim": "Schedules use owned BashQueues with systemd minute ticker."
+    }
+  ],
+  "bashqueues": "https://github.com/animatedads/bashqueues",
+  "timer": "systemd/bashqueues-cron.timer",
+  "ticker": "bin/bashqueues-cron-ticker.py"
+}

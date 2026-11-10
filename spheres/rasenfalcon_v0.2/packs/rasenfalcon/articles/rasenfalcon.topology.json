@@ -1,0 +1,37 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.topology",
+  "version": "0.1",
+  "sphere": "rasenfalcon",
+  "section": "architecture",
+  "title": "RexxOS-isolated service topology",
+  "summary": "Narrow native modules and RexxOS isolation establish independently owned capability/service boundaries. The public site, NOC, Office, mail/gateway and MCP services are not one shared listener or authority.",
+  "invariants": [
+    "Public rasenfalcon.com never dispatches Office or NOC private capabilities.",
+    "NOC and Office each run separate non-root native ooRexx HTTPS servers with distinct identities, process, TLS context, certificates, service unit and failure domain.",
+    "gateway.rasenfalcon.com owns native SMTP/IMAP plus Wire operations access.",
+    "office.rasenfalcon.com uses /mail and /notes; MCP uses a separately controlled endpoint.",
+    "Do not invent unknown host IPs, ports, keys or certificates."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_delivery_v0.4.zip",
+      "sha256": "60bf049a436c9f653b60cbf315331a85872ab4f6724f7ef685fec322de96bc5c",
+      "member": "rasenfalcon_delivery_v0.4/deployment/HOSTS.json",
+      "claim": "Logical host ownership and known DNS records."
+    }
+  ],
+  "hosts": {
+    "rasenfalcon.com": "public_website",
+    "noc.rasenfalcon.com": "private_NOC",
+    "office.rasenfalcon.com": "private_Wire_mail_and_notes",
+    "gateway.rasenfalcon.com": "native_mail_and_operations_portal",
+    "mcp.rasenfalcon.com": "scoped_tools"
+  },
+  "dns": {
+    "noc_CNAME": "london1.rasenfalcon.com",
+    "london1_A": "213.255.246.44",
+    "mcp": "owner_managed"
+  }
+}

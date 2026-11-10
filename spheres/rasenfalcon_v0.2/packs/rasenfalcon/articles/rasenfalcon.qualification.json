@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "rasenfalcon.qualification",
+  "version": "0.2",
+  "sphere": "rasenfalcon",
+  "section": "qualification",
+  "title": "Current evidence and remaining commissioning requirements",
+  "summary": "Source v0.4 and sphere v0.1 are present on GitHub main as of 27 October, without matching Autobuild receipts in the inspected receipt paths. The new v0.4.2 stage-publisher branch contains 18 declared website tests, but independent tests requested over Rasen Falcon MCP have NOT_RUN pending owner approval.",
+  "invariants": [
+    "Reported website preview tests 9/9 and delivery security-contract tests 13/13 are not TLS handshake evidence.",
+    "Receiver acceptance must be verified from its receipt; a ready.json marker is only submission.",
+    "CMS/Wire publisher, live HTTPS SNI, mTLS negative tests, LDAP, SMTP/IMAP, terminal and MCP integration all require real service tests.",
+    "No production cutover without distinct operator approval; source submission does not install keys or change hosts.",
+    "Never mark fixture-only results LIVE_PASS; missing credentials and deployment facts are NOT_RUN.",
+    "Do not label the 18 declared v0.4.2 website tests PASS until a tester returns command output and return codes; latest MCP reply was NOT_RUN.",
+    "The native NoSQLServer v0.90 candidate in Publisher v0.4 remains separate from its offline HTML/editor tests and is not a multi-writer approved CMS."
+  ],
+  "authority": "project-continuity",
+  "provenance": [
+    {
+      "artifact": "rasenfalcon_alchemy_autobuild_v0.4.zip",
+      "sha256": "fb4ce5bdecf0c9c312e21459f5ea74dc7d0eeb73fa37682cada06a5835028189",
+      "member": "README.md",
+      "claim": "Submitted candidate explicitly disclaims deployment and acceptance."
+    }
+  ],
+  "reported_local_tests": {
+    "website": "9/9",
+    "handoff": "13/13"
+  },
+  "github_submission": "V04_ON_MAIN_V042_CANDIDATE",
+  "acceptance": "MAIN_TREE_PRESENT_RECEIPT_NOT_OBSERVED",
+  "native_services": "NOT_RUN",
+  "publisher_tests": "DECLARED_18_NOT_INDEPENDENTLY_RUN",
+  "mcp_test_request": "REQ-00000943"
+}
