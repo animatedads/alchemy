@@ -1,0 +1,752 @@
+{
+  "project": "rasenfalcon.com",
+  "version": "0.2",
+  "status": "PLANNED_NOT_DEPLOYED",
+  "scope": "Full-stack dogfood; use owned ooRexx/Alchemy components",
+  "architecture_rules": [
+    "No Postfix, Dovecot, slapd, Nginx, commercial webmail, third-party MCP authority",
+    "Own IMAP/SMTP/LDAP servers must be used; verify inbound listeners instead of assuming from client library description",
+    "Wire renderer presentation only; ooRexx owns behavior; NotNotes authority remains original",
+    "CNAME is DNS indirection; HTTPS routes based on requested Host/SNI and explicit aliases",
+    "Gateway Wire portal LDAP-gated; backend 3270 and web target auth remains independently enforced",
+    "No invented endpoint addresses, backend ports, target capabilities or successful tests",
+    "Signing key roles separately scoped; no private key in repo",
+    "Do not publish unapproved mcp.rasenfalcon.com DNS",
+    "No release is operational until real end-to-end protocol tests pass"
+  ],
+  "tasks": [
+    {
+      "id": "RF-001",
+      "title": "Source/acceptance inventory of OUR components",
+      "lane": "Architecture",
+      "kind": "VERIFY",
+      "phase": 0,
+      "depends_on": [],
+      "deliverable": "Locate accepted source, manifests and exact revision for ooRexx HTTPS Server, SMTP Secure Stack/server, IMAP server/client, LDAP Identity Directory, Wire UI Server/Builder, NotNotes, Crypto/PKI, MCP Service, Connect Selector, Deployment and 3270 or terminal modules. Produce capability matrix: implemented/tested/missing.",
+      "acceptance": "Each dependency has package SHA, tested API, service entry point, owner and evidence; unverified interfaces labeled UNKNOWN rather than assumed.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-002",
+      "title": "RasenFalcon architecture and hard dependency contract",
+      "lane": "Architecture",
+      "kind": "REVIEW",
+      "phase": 0,
+      "depends_on": [
+        "RF-001"
+      ],
+      "deliverable": "Author one authority diagram and service/transport mapping. All mail, LDAP, web and MCP application semantics implemented with owned ooRexx/Alchemy modules. Systemd/OpenSSL/standard network protocols are platform support, not product substitutes.",
+      "acceptance": "No Postfix, Dovecot, slapd, Nginx, third-party webmail, third-party MCP server or duplicated Wire/NotNotes authority in dependency closure.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-003",
+      "title": "Physical host and service placement",
+      "lane": "Infrastructure",
+      "kind": "REVIEW",
+      "phase": 0,
+      "depends_on": [
+        "RF-001"
+      ],
+      "deliverable": "Confirm actual OS, architecture, listener conflicts, resources and role placement for gateway, office, NOC, london1 and MCP; map 213.255.246.44 only to london1; no assumption gateway/office resolve to same IP.",
+      "acceptance": "Authenticated server facts, listening ports, existing services and approved separation/backups recorded before mutations.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-004",
+      "title": "DNS and hostname authority",
+      "lane": "Infrastructure",
+      "kind": "INTEGRATE",
+      "phase": 0,
+      "depends_on": [
+        "RF-003"
+      ],
+      "deliverable": "Configure or document authoritative DNS: noc CNAME london1; london1 A 213.255.246.44; gateway mail/HTTPS; office Wire apps; MCP DNS user-managed; MX points at gateway; public apex/www. Track TTL and PTR separately.",
+      "acceptance": "Independent DNS checks prove requested records. Deployment never rewrites user-managed mcp DNS; no invented IP for gateway/office.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-005",
+      "title": "Build and pinned-component release pipeline",
+      "lane": "Codex",
+      "kind": "BUILD",
+      "phase": 0,
+      "depends_on": [
+        "RF-001",
+        "RF-002"
+      ],
+      "deliverable": "Create source builds, immutable signed/hash-pinned release manifest, dependency closure, build logs, unit tests and reproducible qualification on target OS.",
+      "acceptance": "Clean build only uses pinned owned components; missing package or failing module test blocks release.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-006",
+      "title": "Installer and systemd lifecycle controller",
+      "lane": "Codex",
+      "kind": "BUILD",
+      "phase": 0,
+      "depends_on": [
+        "RF-003",
+        "RF-005"
+      ],
+      "deliverable": "Implement preflight/install/apply/activate/verify/status/rollback service deployment using owned component archives. Generate units and environment files from accepted service entry points, not placeholders.",
+      "acceptance": "Idempotence, reboot autorestart, explicit human activation approval and rollback; no green status without protocol end-to-end acceptance.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-007",
+      "title": "Service contract/health-test harness",
+      "lane": "QA",
+      "kind": "BUILD",
+      "phase": 0,
+      "depends_on": [
+        "RF-005"
+      ],
+      "deliverable": "Implement machine-verifiable contract tests, fixture accounts, signed acceptance evidence, timeouts, and negative tests for mail, Wire, LDAP, MCP, terminal and browser proxy.",
+      "acceptance": "Every release includes non-stub tests for all mandatory capabilities, with explicit failure propagation and no synthetic PASS.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-008",
+      "title": "HTTPS virtual hosts, aliases and SNI",
+      "lane": "HTTPS",
+      "kind": "BUILD_GAP",
+      "phase": 1,
+      "depends_on": [
+        "RF-001",
+        "RF-004"
+      ],
+      "deliverable": "Enhance existing ooRexx HTTPS Server with multi-host TLS certificate selection, normalized Host/:authority handling, virtual-host map, explicit aliases, and fail-closed unknown/mismatched authority. DNS CNAME not resolved per request.",
+      "acceptance": "http request to noc.rasenfalcon.com (CNAME london1) retains noc host, has valid cert and correct vhost. SNI/Host mismatch and unknown host refused with proper HTTP response such as 421.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-009",
+      "title": "Native TLS certificate provisioning and renewal",
+      "lane": "Security",
+      "kind": "INTEGRATE_GAP",
+      "phase": 1,
+      "depends_on": [
+        "RF-008"
+      ],
+      "deliverable": "Integrate ACME/certificate renewal (or accepted owned implementation) into HTTPS lifecycle; distinct identities for gateway, office, noc and mcp. TLS remains in native HTTPS server, no proxy substitution.",
+      "acceptance": "Hostname validation, renewal staging, rotation without dropping sessions where supported, expired/untrusted-key negative tests.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-010",
+      "title": "HTTPS request routing and application isolation",
+      "lane": "HTTPS",
+      "kind": "BUILD_GAP",
+      "phase": 1,
+      "depends_on": [
+        "RF-008"
+      ],
+      "deliverable": "Host routing: public site on apex/www; gateway Wire portal; office /mail and /notes; mcp only separately governed routes; NOC host explicit. Prevent Host injection/open reverse proxy and cross-vhost auth/session leakage.",
+      "acceptance": "Correct vhost and independent cookies/headers for each hostname and route; wrong vhost cannot access private handler.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-011",
+      "title": "LDAP server deployment, identity schema and availability",
+      "lane": "LDAP",
+      "kind": "INTEGRATE_GAP",
+      "phase": 1,
+      "depends_on": [
+        "RF-001",
+        "RF-003"
+      ],
+      "deliverable": "Deploy the accepted ooRexx LDAP Identity Directory authoritative service, accounts/groups/mail addresses, LDAPS or StartTLS, local/replica topology and recovery according to accepted contracts.",
+      "acceptance": "Own LDAP server binds, search, password/revoke, group tests and restart; no slapd installed; failure denies authentication.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-012",
+      "title": "LDAP authenticator and per-service permissions",
+      "lane": "Identity",
+      "kind": "BUILD_GAP",
+      "phase": 1,
+      "depends_on": [
+        "RF-010",
+        "RF-011"
+      ],
+      "deliverable": "Implement reusable LDAP-backed authentication/session boundary for gateway Wire, office Wire, mail submission/IMAP and MCP bearer/OAuth mapping; local role checks independent of renderer.",
+      "acceptance": "Allowed/denied accounts, lockout/revocation, cookie CSRF protection, anti-fixation, session logout, group changes reflected across all consumers.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-013",
+      "title": "Owned cryptographic key issuance and signing lifecycle",
+      "lane": "Crypto",
+      "kind": "BUILD_GAP",
+      "phase": 1,
+      "depends_on": [
+        "RF-001",
+        "RF-011"
+      ],
+      "deliverable": "Pin ooRexx Crypto/PKI, implement key issuance and lifecycle for TLS, SMTP DKIM, person/service message signatures and signed NotNotes, with separate keys/ACLs, HSM/provider where available.",
+      "acceptance": "Issue, verify, rotate, revoke and audit work. Private keys never enter source release/MCP output; no silent authority to sign on behalf of people.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-014",
+      "title": "Native mail gateway SMTP listener and spool",
+      "lane": "SMTP",
+      "kind": "VERIFY_THEN_BUILD",
+      "phase": 1,
+      "depends_on": [
+        "RF-001",
+        "RF-011",
+        "RF-013"
+      ],
+      "deliverable": "Prove existing owned SMTP server implements inbound SMTP port 25, EHLO, STARTTLS policy, RCPT recipient validation, durable spool and local delivery hooks. Implement any missing listener/queue/DSN/retry adapters in ooRexx SMTP component.",
+      "acceptance": "External unauthenticated mail to existing rasenfalcon recipient accepted and delivered; invalid RCPT and unauthorized relay rejected; crashes do not lose accepted mail.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-015",
+      "title": "Native SMTP authenticated submission",
+      "lane": "SMTP",
+      "kind": "VERIFY_THEN_BUILD",
+      "phase": 2,
+      "depends_on": [
+        "RF-012",
+        "RF-014"
+      ],
+      "deliverable": "Add/qualify port 587 submission AUTH with LDAP identity, TLS, MAIL FROM ownership, quotas, spool state and retry semantics in our SMTP service.",
+      "acceptance": "Authorized per-user send works; mismatched sender, invalid bind and unauthenticated relay denied; delivery receipt/evidence recorded.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-016",
+      "title": "Native IMAP listener and mailbox semantics",
+      "lane": "IMAP",
+      "kind": "VERIFY_THEN_BUILD",
+      "phase": 1,
+      "depends_on": [
+        "RF-001",
+        "RF-011",
+        "RF-014"
+      ],
+      "deliverable": "Prove our IMAP package actually contains the server-side TCP listener and RFC IMAP4rev1/2 subset required (not merely IMAP client/service adapter); implement missing server bridge. Mailbox UIDVALIDITY, UID and persistent flags are authoritative.",
+      "acceptance": "External IMAPS 993 authenticated connect/list/select/fetch/store/move works; UID identity survives restart; no Dovecot replacement.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-017",
+      "title": "Native mailbox storage & SMTP-to-IMAP delivery",
+      "lane": "MailStore",
+      "kind": "BUILD_GAP",
+      "phase": 2,
+      "depends_on": [
+        "RF-014",
+        "RF-016"
+      ],
+      "deliverable": "Connect owned SMTP delivery to owned mailbox store through accepted Storage Fabric/NoSQL contracts; enforce quotas, retention, indexes, MIME streaming and UIDVALIDITY rules.",
+      "acceptance": "Accepted SMTP transaction appears in intended IMAP mailbox and not in another; transactional durability, quotas and UID proof pass.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-018",
+      "title": "Native mail authentication, TLS and abuse controls",
+      "lane": "MailSec",
+      "kind": "BUILD_GAP",
+      "phase": 2,
+      "depends_on": [
+        "RF-012",
+        "RF-015",
+        "RF-016"
+      ],
+      "deliverable": "Enforce LDAP-backed IMAP and SMTP identities, rate limits, abuse suppression, size limits, malformed MIME defenses, SPF/DKIM/DMARC integration points and delivery audit in our stack.",
+      "acceptance": "Reject open relay, credential brute-force, forgery and oversized attack cases; no plaintext auth without protected transport.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-019",
+      "title": "Mail DNS and outbound authenticity",
+      "lane": "MailDNS",
+      "kind": "INTEGRATE",
+      "phase": 2,
+      "depends_on": [
+        "RF-004",
+        "RF-013",
+        "RF-015"
+      ],
+      "deliverable": "Publish validated MX gateway, SPF, DKIM selectors, DMARC and PTR coordination for gateway; TLS cert valid for mail use; key rollover policy.",
+      "acceptance": "Independent inbound/outbound test identifies authenticated domain and no false DNS/PTR claims; receiver verifies DKIM.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-020",
+      "title": "Separate ChatGPT and Claude mailbox principals",
+      "lane": "Identity",
+      "kind": "INTEGRATE",
+      "phase": 2,
+      "depends_on": [
+        "RF-011",
+        "RF-015",
+        "RF-016"
+      ],
+      "deliverable": "Provision separately-scoped accounts (proposed chatgpt@ and claude@rasenfalcon.com) with isolated mailboxes, distinct credentials, rate limits and audit; client-side access only through scoped connectors.",
+      "acceptance": "Each account reads/sends as itself only. Cross-principal read/send denied; disable/revoke severs access.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-021",
+      "title": "Mail MCP service implementation",
+      "lane": "MCP",
+      "kind": "BUILD_GAP",
+      "phase": 2,
+      "depends_on": [
+        "RF-012",
+        "RF-015",
+        "RF-016",
+        "RF-020"
+      ],
+      "deliverable": "Build MCP tool adapter on OUR MCP service and IMAP/SMTP APIs: inbox/folders/search/get/draft/submit, attachments with limits, status and per-account OAuth/scopes; not a separate mailbox service.",
+      "acceptance": "MCP read/send test passes with each own principal; denied scope cannot send or read another mailbox; messages treated as untrusted content.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-022",
+      "title": "ChatGPT/Claude MCP connector compatibility",
+      "lane": "MCP",
+      "kind": "QUALIFY",
+      "phase": 3,
+      "depends_on": [
+        "RF-021",
+        "RF-009"
+      ],
+      "deliverable": "Validate real MCP transport/auth/tool description compatibility with currently supported ChatGPT and Claude connection flows; browser/user approval where required.",
+      "acceptance": "Both clients can independently connect to own account and read/send a controlled challenge; unsupported connector features documented truthfully.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-023",
+      "title": "Wire MailReader semantic core and IMAP source window",
+      "lane": "WireMail",
+      "kind": "BUILD_GAP",
+      "phase": 2,
+      "depends_on": [
+        "RF-016",
+        "RF-017"
+      ],
+      "deliverable": "Promote MailReader fixture to real ooRexx mail application behaviour while reusing accepted Wire/Builder source/filtered windows and stable mailbox|UIDVALIDITY|UID key.",
+      "acceptance": "200k message fixture only projects bounded visible rows; actions and semantic traces identical headless and browser.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-024",
+      "title": "office Wire webmail application",
+      "lane": "WireMail",
+      "kind": "BUILD",
+      "phase": 3,
+      "depends_on": [
+        "RF-010",
+        "RF-012",
+        "RF-015",
+        "RF-023"
+      ],
+      "deliverable": "Build office.rasenfalcon.com/mail: authenticated folders, search, thread/detail, compose/reply/forward, attachments, draft, sent, accessibility/responsive; no browser-owned business truth.",
+      "acceptance": "Browser receives test email, reads, replies, marks, searches and attaches; authorization checks are server-side and hostile HTML inert.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-025",
+      "title": "NotNotes semantic service and persistence contract",
+      "lane": "NotNotes",
+      "kind": "INTEGRATE_GAP",
+      "phase": 2,
+      "depends_on": [
+        "RF-001",
+        "RF-011",
+        "RF-012"
+      ],
+      "deliverable": "Qualify our NotNotes document authority, Mini App, revisioning, links, permissions, intentions, persistence and time semantics; implement any missing web-safe service adapter.",
+      "acceptance": "Create/read/edit/link/unlink/revision-conflict/ACL success and denial; no second document store.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-026",
+      "title": "office Wire NotNotes application",
+      "lane": "WireNotes",
+      "kind": "BUILD",
+      "phase": 3,
+      "depends_on": [
+        "RF-010",
+        "RF-012",
+        "RF-025"
+      ],
+      "deliverable": "Build office.rasenfalcon.com/notes Wire semantic UI: document explorer, edit, links, search, permissions, versions, intentions and accessibility.",
+      "acceptance": "Same semantic trace through TestRenderer and Web; editing and concurrent revision conflicts behave correctly.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-027",
+      "title": "NotNotes MCP service",
+      "lane": "MCP",
+      "kind": "BUILD",
+      "phase": 3,
+      "depends_on": [
+        "RF-012",
+        "RF-025"
+      ],
+      "deliverable": "Build on owned MCP service: list/search/read/create/update/link/unlink, intentions with per-doc ACL and optimistic concurrency preconditions.",
+      "acceptance": "Denied doc access, stale revision and prompt injection cannot cause effects; auditable creation and edits succeed.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-028",
+      "title": "Mail + NotNotes signing operations",
+      "lane": "Crypto",
+      "kind": "BUILD_GAP",
+      "phase": 3,
+      "depends_on": [
+        "RF-013",
+        "RF-021",
+        "RF-025",
+        "RF-027"
+      ],
+      "deliverable": "Expose signing/verification in owned services; canonical signed content and person/service authority separation. Do not conflate DKIM with user document signing.",
+      "acceptance": "Tamper, revoked key, bad signer and successful verification test matrix passes; user signature requires explicit proper authority.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-029",
+      "title": "Gateway authenticated Wire portal",
+      "lane": "WireGateway",
+      "kind": "BUILD",
+      "phase": 2,
+      "depends_on": [
+        "RF-010",
+        "RF-011",
+        "RF-012"
+      ],
+      "deliverable": "Build gateway.rasenfalcon.com as Wire ops portal listing only approved terminals and web destinations; LDAP login and group-based session grants before showing/connecting.",
+      "acceptance": "Unauthenticated GET/actions deny; authenticated but unauthorized account cannot see or connect targets; logout terminates sessions.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-030",
+      "title": "Browser 3270 protocol/session adapter",
+      "lane": "Terminal3270",
+      "kind": "BUILD_GAP",
+      "phase": 2,
+      "depends_on": [
+        "RF-001",
+        "RF-029"
+      ],
+      "deliverable": "Implement or reuse an owned TN3270/TN3270E client/session library, 3270 data stream screen model, keyboard AID keys, protected fields, EBCDIC code pages, disconnect/reconnect; transport scoped, no raw browser sockets.",
+      "acceptance": "Recorded fixtures and host-backed session tests prove 3270 data/keyboard fidelity; unsupported host mode is explicit error, not silent terminal emulation.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-031",
+      "title": "Wire 3270 screen renderer and browser interaction",
+      "lane": "Wire3270",
+      "kind": "BUILD",
+      "phase": 3,
+      "depends_on": [
+        "RF-029",
+        "RF-030"
+      ],
+      "deliverable": "Implement Wire semantic terminal surface with screen coordinate/grid, cursor, protected-input state, PF/PA/Enter/Clear and accessibility for web browser.",
+      "acceptance": "3270 fixture golden traces and live session have correct screen render, key events and session teardown.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-032",
+      "title": "ed209zz TN3270 session binding",
+      "lane": "Terminal3270",
+      "kind": "INTEGRATE_GAP",
+      "phase": 3,
+      "depends_on": [
+        "RF-030",
+        "RF-031"
+      ],
+      "deliverable": "Configure approved network and port for ed209zz, endpoint certificate/host authentication where supported, LDAP portal authorization and backend host sign-on distinct from portal auth.",
+      "acceptance": "Authorized user can open real ed209zz session; denied users cannot; target errors and session reset handled.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-033",
+      "title": "ed209z TN3270 session binding",
+      "lane": "Terminal3270",
+      "kind": "INTEGRATE_GAP",
+      "phase": 3,
+      "depends_on": [
+        "RF-030",
+        "RF-031"
+      ],
+      "deliverable": "Configure approved network and port for ed209z, same policy, separate host target identity and protected sign-on.",
+      "acceptance": "Authorized session reaches ed209z with correct terminal identity; all negative cases pass.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-034",
+      "title": "Approved web access relay (non-open proxy)",
+      "lane": "GatewayProxy",
+      "kind": "BUILD_GAP",
+      "phase": 2,
+      "depends_on": [
+        "RF-010",
+        "RF-012",
+        "RF-029"
+      ],
+      "deliverable": "Build owned HTTPS/WebSocket tunnel/reverse access facade with fixed allowlisted targets, upstream origin/header/auth isolation, WebSocket support where needed, no arbitrary URL fetch or SSRF.",
+      "acceptance": "Unauthenticated, unlisted and cross-origin destinations rejected; sessions are audited and browser content isolated.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-035",
+      "title": "ed209cray web access binding",
+      "lane": "GatewayProxy",
+      "kind": "INTEGRATE_GAP",
+      "phase": 3,
+      "depends_on": [
+        "RF-034"
+      ],
+      "deliverable": "Map approved upstream URL/port and TLS trust for ed209cray through gateway authenticated Wire entry, without exposing raw target to unauthenticated internet.",
+      "acceptance": "Authorized user reaches expected web UI and gets correct target; blocked group and unknown URLs denied.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-036",
+      "title": "ed209tops web access binding",
+      "lane": "GatewayProxy",
+      "kind": "INTEGRATE_GAP",
+      "phase": 3,
+      "depends_on": [
+        "RF-034"
+      ],
+      "deliverable": "Map approved upstream URL/port and TLS trust for ed209tops through gateway authenticated Wire entry.",
+      "acceptance": "Authorized user reaches expected web UI; isolation, audit, logout and denied group verified.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-037",
+      "title": "NOC HTTPS alias and operations access",
+      "lane": "NOC",
+      "kind": "INTEGRATE_GAP",
+      "phase": 3,
+      "depends_on": [
+        "RF-008",
+        "RF-010",
+        "RF-012"
+      ],
+      "deliverable": "Configure noc.rasenfalcon.com CNAME london1 and decide NOC app/path mapping only from existing approved NOC design; ensure correct TLS SNI and HTTP host routing, independent of any speculative target.",
+      "acceptance": "Alias and canonical addresses resolve, valid cert for requested noc hostname, correct route and denied unknown/mismatched host.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-038",
+      "title": "Public rasenfalcon.com website",
+      "lane": "Website",
+      "kind": "BUILD",
+      "phase": 3,
+      "depends_on": [
+        "RF-008",
+        "RF-010"
+      ],
+      "deliverable": "Build minimal owned HTTPS-hosted public website, branding/content approval, legal/contact route, accessibility; no external CMS or user tracking by default.",
+      "acceptance": "Public site works via TLS with approved content; private service paths not accessible from apex virtual host.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-039",
+      "title": "Hosted service startup units and dependency readiness",
+      "lane": "Deployment",
+      "kind": "BUILD",
+      "phase": 3,
+      "depends_on": [
+        "RF-006",
+        "RF-009",
+        "RF-011",
+        "RF-014",
+        "RF-016",
+        "RF-024",
+        "RF-026",
+        "RF-027",
+        "RF-029",
+        "RF-030",
+        "RF-034"
+      ],
+      "deliverable": "Codex creates executable exact service entry points, systemd units, ordering, secrets files, restarts, readiness checks and operational permissions for accepted owned components.",
+      "acceptance": "After reboot each service is active only when its real protocol endpoint is ready; no placeholder binary, fake healthz or blind start.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-040",
+      "title": "Full-stack secure configuration and firewall plan",
+      "lane": "Security",
+      "kind": "INTEGRATE",
+      "phase": 3,
+      "depends_on": [
+        "RF-003",
+        "RF-004",
+        "RF-010",
+        "RF-012",
+        "RF-018",
+        "RF-029",
+        "RF-034"
+      ],
+      "deliverable": "Define public 443,25,587,993 as applicable; keep LDAP/private RPC and internal 3270 access restricted; disallow unsolicited lateral access; SNI ACL, CSP, CSRF, MFA plan and audits.",
+      "acceptance": "Port and route matrix is enforced; unauthenticated portal access, arbitrary proxying and LDAP exposure tests fail closed.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-041",
+      "title": "Instrumentation and cross-service trace evidence",
+      "lane": "Observability",
+      "kind": "BUILD_GAP",
+      "phase": 3,
+      "depends_on": [
+        "RF-017",
+        "RF-021",
+        "RF-024",
+        "RF-027",
+        "RF-029",
+        "RF-034"
+      ],
+      "deliverable": "Use owned Instrumentation Mesh/Log components for lifecycle, mail, session, HTTP routing, key and MCP audit with opaque correlators and no secret/message body leakage.",
+      "acceptance": "Fault-injected cases observable with bounded logs; cross-system event lineage preserved and private content not emitted.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-042",
+      "title": "Backup and disaster recovery of owned stores",
+      "lane": "Recovery",
+      "kind": "INTEGRATE_GAP",
+      "phase": 3,
+      "depends_on": [
+        "RF-011",
+        "RF-013",
+        "RF-017",
+        "RF-025"
+      ],
+      "deliverable": "Own Storage Fabric snapshots for mailbox, NotNotes, LDAP and signing metadata/keys as appropriate; encrypt and perform restore exercise with identity and UID semantics.",
+      "acceptance": "Restore reconstructs accepted messages/documents/accounts and revocation state; measured RPO/RTO, key isolation, audit.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-043",
+      "title": "Mail/Office/MCP complete end-to-end trial",
+      "lane": "QA",
+      "kind": "QUALIFY",
+      "phase": 4,
+      "depends_on": [
+        "RF-019",
+        "RF-020",
+        "RF-022",
+        "RF-024",
+        "RF-026",
+        "RF-027",
+        "RF-028",
+        "RF-039",
+        "RF-040"
+      ],
+      "deliverable": "Test inbound internet SMTP \u2192 our store \u2192 our IMAP \u2192 office Wire read \u2192 reply via own SMTP \u2192 agent MCP read/send \u2192 NotNotes MCP edit/sign.",
+      "acceptance": "Controlled live fixtures, expected message IDs and authenticated actors; every hop traced and negative cases proved.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-044",
+      "title": "Gateway operations real end-to-end trial",
+      "lane": "QA",
+      "kind": "QUALIFY",
+      "phase": 4,
+      "depends_on": [
+        "RF-031",
+        "RF-032",
+        "RF-033",
+        "RF-035",
+        "RF-036",
+        "RF-037",
+        "RF-039",
+        "RF-040"
+      ],
+      "deliverable": "LDAP portal login \u2192 Wire target selection \u2192 real 3270 ed209zz/z \u2192 real web ed209cray/ed209tops; 403/deny, invalid session, logout and target outage tests.",
+      "acceptance": "All four targets accessible only to authorized accounts and reliable disconnect/restart. No success based solely on mock fixtures.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-045",
+      "title": "Independent reboot/upgrade/rollback qualification",
+      "lane": "QA",
+      "kind": "QUALIFY",
+      "phase": 4,
+      "depends_on": [
+        "RF-039",
+        "RF-041",
+        "RF-042",
+        "RF-043",
+        "RF-044"
+      ],
+      "deliverable": "Reboot actual host, confirm auto-start/dependencies, negative tests and E2E operations; exercise failed release apply, rollback and restoration.",
+      "acceptance": "Equivalent tests still pass after reboot and rollback, without permissions widening or data loss.",
+      "priority": "P0",
+      "status": "TODO"
+    },
+    {
+      "id": "RF-046",
+      "title": "Publication, commissioning and sign-off",
+      "lane": "Operations",
+      "kind": "REVIEW",
+      "phase": 5,
+      "depends_on": [
+        "RF-038",
+        "RF-043",
+        "RF-044",
+        "RF-045"
+      ],
+      "deliverable": "Package results, exact source/version hashes, DNS/TLS/cert records, server configuration, ACLs, runbooks, on-call and human acceptance.",
+      "acceptance": "One explicit ACCEPT/REJECT decision and live evidence. Never claim operational before user-approved cutover.",
+      "priority": "P0",
+      "status": "TODO"
+    }
+  ]
+}
