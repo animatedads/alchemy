@@ -1,0 +1,22 @@
+test_sphere (unittest.loader._FailedTest.test_sphere) ... ERROR
+
+======================================================================
+ERROR: test_sphere (unittest.loader._FailedTest.test_sphere)
+----------------------------------------------------------------------
+ImportError: Failed to import test module: test_sphere
+Traceback (most recent call last):
+  File "/usr/lib64/python3.13/unittest/loader.py", line 403, in _find_test_path
+    module = self._get_module_from_name(name)
+  File "/usr/lib64/python3.13/unittest/loader.py", line 346, in _get_module_from_name
+    __import__(name)
+    ~~~~~~~~~~^^^^^^
+  File "/home/hc3/alchemy-autobuild/staging/run-n8ca3pgh/tests/test_sphere.py", line 80
+    def test_public_https_integrity_evidence(self):\n        q=self.a["rasenfalcon.live-https-integrity"]\n        self.assertEqual(q["path_count"],13)\n        self.assertEqual(q["local_tls_tests"],"9_PASS")\n        self.assertEqual(q["public_https_live"],"NOT_RUN")\n        self.assertEqual(q["native_server_installed"],"NOT_OBSERVED")\n        self.assertEqual(q["production_release"],"BLOCKED")\n    def test_independent_v043_retest(self):\n        q=self.a["rasenfalcon.qualification"]["independent_v043_retest"]\n        self.assertEqual(q["website"],"18/18 PASS")\n        self.assertEqual(q["handoff"],"21/21 PASS")\n        self.assertEqual(q["production_gate"],"DENIED_AS_DESIGNED")\n    def test_source_hashes(self):
+                                                    ^
+SyntaxError: unexpected character after line continuation character
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.000s
+
+FAILED (errors=1)
