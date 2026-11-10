@@ -43,7 +43,7 @@
   expose why
   return why
 
-::method install class private
+::method install class
   expose provider why
   signal on syntax name failed
   .CryptoForeignRuntimeInstaller~install
