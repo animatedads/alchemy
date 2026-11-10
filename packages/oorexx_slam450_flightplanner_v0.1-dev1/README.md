@@ -16,7 +16,9 @@ Architecture: Tom Dyer. Coding: Claude (Opus 5.5). Design document: "SLAM 450 Fl
 | `tools/fp_sky_day.rex` | Sunrise, sunset, civil twilight, moonrise and moonset at a place, from Moonsault. |
 | `tools/fp_get_wind.rex` | ERA5 hourly wind (10 m, 100 m above ground), gusts, low cloud and rain along a route, and each point's ground height, from Open-Meteo's archive. |
 | `tools/fp_glide.rex` | Flies the planned schedule through each of the 7 days before the flight (and the day itself): glide reach, crosswind, ground speed, trip time, energy used (thinner air and climbs counted), rain and low cloud at passage. |
-| `tools/fp_fleet_job.rex` | The fleet job: kit check, then for each route a fetch and two glide runs, `out/FLEET_RESULT.txt`. |
+| `tools/fp_get_landmarks.rex` | Lighthouses, named capes and named summits within a distance of a route, from OpenStreetMap (one Overpass request), with evidence. |
+| `tools/fp_fixes.rex` | Where along the flight-day schedule two landmarks give a visual position fix within 1 NM (the Moonsault camera-fix method), the gaps between fixes, and the Sun and Moon on each leg. |
+| `tools/fp_fleet_job.rex` | The fleet job: kit check, then for each route a fetch, two glide runs, landmarks and the fix study, `out/FLEET_RESULT.txt`. |
 | `data/coast_route.words` | The coast route: 33 waypoints, Sydney Heads to Port Melbourne round the east of Port Phillip. |
 | `data/alpine_route.words` | The alpine route (Tom Dyer's "quick deviation around Mt Kosciuszko"): 20 waypoints, Hume to Goulburn, the Monaro to Cooma, Jindabyne, Perisher, Charlotte Pass, the summit, Thredbo, the Alpine Way to Khancoban, Albury and the Hume to Melbourne. |
 | `tests/` | Synthetic wind and a saved Open-Meteo response, for runs without the network. |
@@ -31,6 +33,8 @@ rexx tools/fp_get_wind.rex data/coast_route.words 2026-10-23 2026-10-31 out/wind
 rexx tools/fp_glide.rex data/coast_route.words out/wind_coast.words 2026-10-31 06:00 11 120
 rexx tools/fp_get_wind.rex data/alpine_route.words 2026-10-23 2026-10-31 out/wind_alpine.words
 rexx tools/fp_glide.rex data/alpine_route.words out/wind_alpine.words 2026-10-31 06:00 11 120
+rexx tools/fp_get_landmarks.rex data/alpine_route.words 60 out/landmarks_alpine.words
+rexx tools/fp_fixes.rex data/alpine_route.words out/glide_alpine.words out/landmarks_alpine.words out/wind_alpine.words 11 120 out/fixes_alpine.words
 rexx tools/fp_fleet_job.rex
 ```
 
@@ -60,6 +64,14 @@ rexx tools/fp_fleet_job.rex
 9 Nov 2026 (gusts):
 
 - `FpWindField` carries the 10 m gust (the larger of the two hours either side); `fp_glide.rex` adds the highest gust at passage and the legs whose gust exceeds the crosswind limit to each day line, and the highest gust to each leg line. Re-flown on the fleet's 70f37385 wind files: every earlier field identical; 31 Oct alpine gust 24.5 m/s, 12 of 19 legs over 12 m/s.
+
+10 Nov 2026 (visual fixes):
+
+- `fp_get_landmarks.rex` on a saved Overpass-style response (14 lighthouses, 1 cape, 10 summits, a `way` with a centre, a `|` in a name, an unnamed lighthouse kept, an unnamed summit dropped).
+- `fp_glide.rex` writes the flight day's `pass|` schedule; alpine leg 19 ends at 03:37:40Z (14:37 AEDT), as in the fleet run.
+- `fp_fixes.rex` on both routes with the fleet's wind and that test set. Off Sydney Heads, Hornby (910 m at 247.7 deg) and Macquarie (2,751 m at 187.0 deg) cross at 60.7 deg: 0.0262 x 2,751 / 0.872 = 83 m, by hand and by tool. Sun 0.9 deg up at 06:00; Moon setting at the summit at 09:55. Coverage figures from the test set are not real coverage.
+- Lesson repeated from 7 Nov: `'|'b[...]` is read as a binary string; leg ends are now `pa`/`pb`.
+- Hashing: the estate's pure-ooRexx SHA-512 runs at about 1.2 KB/s here (96,600 bytes in 81.6 s), so the fleet job spends most of its time hashing outputs.
 
 ## Credits
 

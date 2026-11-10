@@ -13,12 +13,17 @@
  * 3. For each route: the glide and energy study, flown through the 7 days
  *    before 31 Oct and the day itself, 120 m above ground, leaving at 06:00
  *    and at civil dawn 05:29 AEDT (fp_glide.rex).
- * 4. out/FLEET_RESULT.txt: the kit, each output with its bytes and SHA-512,
- *    and the day, reach and airframe lines of every glide run - the part to
+ * 4. For each route (10 Nov, optional): OSM landmarks within 60 km
+ *    (fp_get_landmarks.rex) and the visual-fix study along the 06:00
+ *    schedule (fp_fixes.rex). A failed landmark fetch is logged and the job
+ *    carries on without the fix study for that route.
+ * 5. out/FLEET_RESULT.txt: the kit, each output with its bytes and SHA-512,
+ *    the day, reach and airframe lines of every glide run, and the fixset,
+ *    fixleg, gap and fixsummary lines of every fix study - the part to
  *    send back.
  *
  * Architecture: Tom Dyer. Written by: Claude (Opus 5.5), 2026-11-07;
- * two routes 2026-11-08.
+ * two routes 2026-11-08; landmarks and fixes 2026-11-10.
  */
 exit .FpFleetJob~new~run
 
@@ -72,7 +77,7 @@ exit .FpFleetJob~new~run
     return 3
   end
   /* 2 and 3, per route */
-  winds = .array~new; glides = .array~new
+  winds = .array~new; glides = .array~new; lms = .array~new; fixes = .array~new
   do r over routes
     name = r[1]; route = r[2]
     wind = 'out/wind_'name'_20261023_20261031.words'
@@ -92,9 +97,26 @@ exit .FpFleetJob~new~run
       call lineout report, 'step' name 'fp_glide' dep 'rc' rc3
       glides~append(g)
     end
+    /* landmarks and visual fixes (10 Nov); optional: a failed landmark
+       fetch is reported and the job carries on */
+    lm = 'out/landmarks_'name'.words'
+    log~log(.Log~INFO, name': OSM landmarks within 60 km')
+    rc5 = 'fp_get_landmarks.rex'(route '60' lm)
+    call lineout report, 'step' name 'fp_get_landmarks rc' rc5
+    if rc5 = 0 then do
+      lms~append(lm)
+      fx = 'out/fixes_'name'_20261031_dep0600.words'
+      log~log(.Log~INFO, name': visual fixes along the 06:00 schedule')
+      rc6 = 'fp_fixes.rex'(route 'out/glide_'name'_20261031_dep0600.words' lm wind '11 120' fx)
+      call lineout report, 'step' name 'fp_fixes rc' rc6
+      fixes~append(fx)
+    end
+    else log~log(.Log~WARN, name': no landmarks (rc' rc5'), so no fix study; the rest stands')
   end
   /* 4. outputs, evidence and the summary lines */
   outs = winds~copy; do g over glides; outs~append(g); end
+  do f over lms; outs~append(f); end
+  do f over fixes; outs~append(f); end
   do f over outs
     if stream(f, 'c', 'query exists') == '' then do; call lineout report, 'output' f 'MISSING'; iterate; end
     body = charin(f, 1, chars(f)); call stream f, 'c', 'close'
@@ -106,6 +128,15 @@ exit .FpFleetJob~new~run
     do while lines(f) > 0
       l = linein(f)
       if l~left(4) == 'day|' | l~left(6) == 'reach|' | l~left(9) == 'airframe|' then call lineout report, l
+    end
+    call stream f, 'c', 'close'
+  end
+  do f over fixes
+    if stream(f, 'c', 'query exists') == '' then iterate
+    call lineout report, '--' f
+    do while lines(f) > 0
+      l = linein(f)
+      if l~left(7) == 'fixset|' | l~left(7) == 'fixleg|' | l~left(4) == 'gap|' | l~left(11) == 'fixsummary|' then call lineout report, l
     end
     call stream f, 'c', 'close'
   end

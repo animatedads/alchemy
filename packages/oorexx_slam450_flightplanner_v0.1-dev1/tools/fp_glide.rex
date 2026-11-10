@@ -22,6 +22,7 @@
  *   day|<date>|<role prior|flight>|<depart>|<arrive local>|<hours>|<energy %>|<min reach into wind m>|<max crosswind>|<legs over limit>|<legs with rain>|<legs low cloud>|<highest ground m AMSL>|<total climb m>|<legs over snow>|<min 2 m temp C>|<max 2 m temp C>|<max density altitude m>|<legs on the day's own air>|<max 10 m gust at passage m/s>|<legs with a gust over the crosswind limit>
  *   leg|<n>|<from>|<to>|<km>|<track>|<median wind>|<max wind>|<min reach into wind m>|<max crosswind>|<mean ground speed>|<higher end's ground m AMSL>|<max 10 m gust at passage>
  *   reach|<height m>|<wind m/s>|<into m>|<across m>|<down m>|<seconds>
+ *   pass|<n>|<from>|<to>|<start utc>|<end utc>   (the flight day's schedule, for fp_fixes.rex)
  * Ground heights come from the wind file's elev| lines (sea level if none).
  * Each leg is flown at heightAGL above the mean of its ends' ground, at
  * true airspeed for that density - the day's own (ERA5 2 m temperature and
@@ -140,6 +141,9 @@ exit .FpGlide~new(routeFile, windFile, flightDate, departLocal, off, height, out
       if w['LOWCLOUD'] > 60 then lowCloud += 1
       gs = tri['GROUND']; if gs < 1 then gs = 1
       legSecs = leg['M'] / gs
+      if role == 'flight' then
+        call lineout outFile, 'pass|'leg['N']'|'leg['FROM']['NAME']'|'leg['TO']['NAME']'|' ,
+          || utcText(t + .TimeSpan~fromSeconds(trunc(secs)))'|'utcText(t + .TimeSpan~fromSeconds(trunc(secs + legSecs)))
       secs = secs + legSecs
       budget = budget + craft~budgetSeconds(legSecs, sigma) + craft~climbSeconds(leg['CLIMB'])
     end
@@ -170,6 +174,10 @@ exit .FpGlide~new(routeFile, windFile, flightDate, departLocal, off, height, out
   call stream outFile, 'c', 'close'
   log~log(.Log~INFO, 'written' outFile)
   return 0
+
+::routine utcText
+  use strict arg t
+  return t~isoDate~left(19)'Z'
 
 ::routine fmt1
   use strict arg x
