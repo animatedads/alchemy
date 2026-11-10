@@ -6,17 +6,17 @@
  *   FP_API_BRIDGE   the API Client's built bridge directory (native/build.sh)
  *   FP_CA_FILE      CA bundle (default /etc/ssl/certs/ca-certificates.crt)
  * and on REXX_PATH: oorexx_api_client_v0.4.1/src, the Foreign Runtime's rexx
- * directory, oorexx_crypto_v0.1/src; LD_LIBRARY_PATH: the Foreign Runtime's
+ * directory, FpHash.cls (crypto v0.8.3); LD_LIBRARY_PATH: the Foreign Runtime's
  * build directory and the bridge.
  *
  * FpHttp~kitCheck answers before anything is fetched; each fetch returns the
  * response with its evidence: URL, status, bytes, SHA-512 (the estate's own
- * crypto.cls), retrieval time.
+ * FpHash: crypto v0.8.3 through the Foreign Runtime), retrieval time.
  *
  * Architecture: Tom Dyer. Written by: Claude (Opus 5.5), 2026-11-07.
  */
 ::requires 'ApiHttpTransport.cls'
-::requires 'crypto.cls'
+::requires 'FpHash.cls'
 
 ::class FpHttp public
 ::attribute transport get
@@ -32,6 +32,11 @@
   else out~append('ok   bridge' bridge)
   if stream(ca, 'c', 'query exists') == '' then out~append('fail ca' ca 'not found')
   else out~append('ok   ca' ca)
+  /* hashing: crypto v0.8.3 through the Foreign Runtime; native works but is
+     about 2,000 times slower, so it is a warning, not a failure */
+  p = .FpHash~provider
+  if p == 'native' then out~append('warn hash native pure-ooRexx SHA-512 (' || .FpHash~why || '); evidence will be slow')
+  else out~append('ok   hash' p)
   return out
 
 ::method init
@@ -56,6 +61,6 @@
   ev['STATUS'] = resp~status
   ev['ERROR'] = resp~errorCode
   ev['BYTES'] = resp~body~length
-  ev['SHA512'] = .CryptoHash~hashString(resp~body, 'SHA512')
+  ev['SHA512'] = .FpHash~sha512(resp~body)
   ev['RETRIEVED'] = .DateTime~new~toTimeZone(0)~isoDate~left(19)'Z'
   return .array~of(resp, ev)

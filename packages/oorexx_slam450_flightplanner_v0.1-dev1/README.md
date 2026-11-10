@@ -9,7 +9,8 @@ Architecture: Tom Dyer. Coding: Claude (Opus 5.5). Design document: "SLAM 450 Fl
 | File | What it does |
 | --- | --- |
 | `src/FpLog.cls` | Progress log for every tool through oorexx_logging v0.7: one line per event on the console as it happens. |
-| `src/FpHttp.cls` | Every fetch goes through Alchemy's API Client v0.4.1 (HTTP/1.1, OpenSSL through Foreign Runtime v0.22.6), never curl. Kit check first; each response comes with its evidence (URL, status, bytes, SHA-512 from crypto.cls, time). |
+| `src/FpHash.cls` | SHA-512 for evidence through crypto v0.8.3 and the Foreign Runtime (OpenSSL), falling back to pure ooRexx. |
+| `src/FpHttp.cls` | Every fetch goes through Alchemy's API Client v0.4.1 (HTTP/1.1, OpenSSL through Foreign Runtime v0.22.6), never curl. Kit check first; each response comes with its evidence (URL, status, bytes, SHA-512 through FpHash, time). |
 | `src/FpRoute.cls` | Route files: `point\|name\|lat\|lon` in flying order. |
 | `src/FpAirframe.cls` | The planning fixed wing (cruise 27 m/s, best glide 22 m/s at L/D 16, crosswind 12 m/s, 24 h budget, 30% reserve; `FP_*` overrides), its glide reach and wind triangle; `FpGeo` distances and bearings. All trigonometry through the Maths package. |
 | `src/FpWindField.cls` | The fetched wind read back as a field over route points and time, interpolated as east/north components; each point's ground height. |
@@ -71,7 +72,12 @@ rexx tools/fp_fleet_job.rex
 - `fp_glide.rex` writes the flight day's `pass|` schedule; alpine leg 19 ends at 03:37:40Z (14:37 AEDT), as in the fleet run.
 - `fp_fixes.rex` on both routes with the fleet's wind and that test set. Off Sydney Heads, Hornby (910 m at 247.7 deg) and Macquarie (2,751 m at 187.0 deg) cross at 60.7 deg: 0.0262 x 2,751 / 0.872 = 83 m, by hand and by tool. Sun 0.9 deg up at 06:00; Moon setting at the summit at 09:55. Coverage figures from the test set are not real coverage.
 - Lesson repeated from 7 Nov: `'|'b[...]` is read as a binary string; leg ends are now `pa`/`pb`.
-- Hashing: the estate's pure-ooRexx SHA-512 runs at about 1.2 KB/s here (96,600 bytes in 81.6 s), so the fleet job spends most of its time hashing outputs.
+- Hashing: crypto v0.1's pure-ooRexx SHA-512 ran at about 1.2 KB/s here (96,600 bytes in 81.6 s); replaced the same day by FpHash (below).
+
+10 Nov 2026, later (hashing):
+
+- `FpHash.cls`: SHA-512 through crypto v0.8.3's Foreign Runtime / OpenSSL provider, installed once per process and proven on the `abc` known answer before use (Tom Dyer: "you can hash using foreign runtime and crypto. it already does it"). 96,600 bytes: 34.8 ms against 81.6 s in pure ooRexx; digest equal to `sha512sum`. The kit check reports the provider; with libcrypto hidden (scratch copy of crypto with the library names changed) it reports `warn hash native` and the digests are still right.
+- The offline fleet job: 3.5 minutes against 19, every output digest identical to the pure-ooRexx run.
 
 ## Credits
 

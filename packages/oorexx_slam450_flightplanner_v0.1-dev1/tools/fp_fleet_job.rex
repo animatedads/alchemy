@@ -28,7 +28,7 @@
 exit .FpFleetJob~new~run
 
 ::requires 'FpLog.cls'
-::requires 'crypto.cls'
+::requires 'FpHash.cls'
 
 ::class FpFleetJob public
 ::method run
@@ -120,7 +120,7 @@ exit .FpFleetJob~new~run
   do f over outs
     if stream(f, 'c', 'query exists') == '' then do; call lineout report, 'output' f 'MISSING'; iterate; end
     body = charin(f, 1, chars(f)); call stream f, 'c', 'close'
-    call lineout report, 'output' f body~length 'bytes sha512' .CryptoHash~hashString(body, 'SHA512')
+    call lineout report, 'output' f body~length 'bytes sha512' .FpHash~sha512(body)
   end
   do f over glides
     if stream(f, 'c', 'query exists') == '' then iterate
