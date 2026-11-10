@@ -85,7 +85,7 @@ FB="$E/federationbank_engine_v0.9.1/src:$P/security_effect_v0.14/src:$P/security
 (cd "$WORK" && REXX_PATH="$FB" rexx "$ROOT/tests/rules/offline_rule_probe.rex" > "$WORK/probe_rexx.txt")
 rexx tests/test_rules.rex "$WORK|$E/federationbank_engine_v0.9.1/src/FederationBankAtmGateway.cls|$ATM/src|$WORK/probe_rexx.txt|$WORK/probe_java.txt"
 echo "== Body Slam: how the estate hangs together (each label proved by an interpreter run; the scanner against RxLexer on real files)"
-rexx tests/test_bodyslam.rex "$WORK|$REPO|25"
+REXX_PATH="$REXX_PATH:$P/oorexx_crypto_v0.8.3/src:$P/runtime_reference_v0.4/src:$FOREIGN/rexx" LD_LIBRARY_PATH="$FOREIGN/build:$P/oorexx_crypto_v0.8.3/native:$LD_LIBRARY_PATH" rexx tests/test_bodyslam.rex "$WORK|$REPO|25"
 echo "== Piledriver: logs, tables and sheets with no model (real estate logs and tables; ooRexx error output; standard formats)"
 rexx tests/test_piledriver.rex "$WORK|$REPO"
 echo "== Piledriver on Gemini's problem: JVM unified logging, thread paths, the safepoint rule, classes by source"

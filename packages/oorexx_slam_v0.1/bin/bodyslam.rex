@@ -10,6 +10,9 @@
  *   rexx bin/bodyslam.rex catalogue DB [AREA]  one line per family: newest version, size, public classes, README
  *                                             (AREA: a path start such as packages/ or examples/)
  *   rexx bin/bodyslam.rex find DB WORD [N]      families whose name, README or public classes contain WORD
+ *   rexx bin/bodyslam.rex kit DB DIR [REXX_PATH|- [CWD]]  what DIR's package will load, each against the newest
+ *                                             version of its family (exit 0 PASS, 1 WARN, 3 FAIL)
+ *   rexx bin/bodyslam.rex drift DB SPHERES ROOT [N]  every sphere citation checked against the estate at ROOT
  *   rexx bin/bodyslam.rex sphere DB OUT COMMIT ROOT  the catalogue as an LLM Gopher sphere (alchemy-estate) in the
  *                                             Sphere Editor work tree OUT; ROOT is the checkout DB was read from
  *
@@ -67,6 +70,31 @@ select
     say 'sphere alchemy-estate:' n 'family articles written to' out
     r~close
   end
+  when cmd == 'kit' then do
+    parse var rest db dir rp cwd .
+    if dir == '' then call usage
+    if rp == '' then rp = value('REXX_PATH',, 'ENVIRONMENT')
+    if rp == '-' then rp = ''
+    if cwd == '' then cwd = dir
+    r = .BodySlamReport~new(db)
+    out = .BodySlamKit~new(r)~kit(dir, rp, cwd)
+    do line over out
+      say line
+    end
+    r~close
+    if out[1]~word(2) == 'FAIL' then exit 3
+    if out[1]~word(2) == 'WARN' then exit 1
+  end
+  when cmd == 'drift' then do
+    parse var rest db spheres root n .
+    if root == '' then call usage
+    if n == '' then n = 25
+    r = .BodySlamReport~new(db)
+    do line over .BodySlamSphere~new(r, root, '')~drift(spheres, root, n)
+      say line
+    end
+    r~close
+  end
   when cmd == 'find' then do
     parse var rest db word n .
     if word == '' then call usage
@@ -114,7 +142,7 @@ report: procedure
   end
 
 usage:
-  say 'rexx bin/bodyslam.rex ingest DB ROOT | report DB [NAME [N]] | blast DB TARGET [N] | catalogue DB [AREA] | find DB WORD [N] | sphere DB OUT COMMIT ROOT'
+  say 'rexx bin/bodyslam.rex ingest DB ROOT | report DB [NAME [N]] | blast DB TARGET [N] | catalogue DB [AREA] | find DB WORD [N] | sphere DB OUT COMMIT ROOT | kit DB DIR [REXX_PATH [CWD]] | drift DB SPHERES ROOT [N]'
   exit 2
 
 failed:
@@ -129,3 +157,4 @@ failed:
 ::requires 'BodySlam.cls'
 ::requires 'BodySlamReport.cls'
 ::requires 'BodySlamSphere.cls'
+::requires 'BodySlamKit.cls'

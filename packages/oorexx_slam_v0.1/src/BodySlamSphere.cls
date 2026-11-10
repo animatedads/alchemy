@@ -18,6 +18,7 @@
 
 ::requires 'BodySlamReport.cls'
 ::requires 'json.cls'
+::requires 'BodySlamKit.cls'
 
 ::class BodySlamSphere public
 
@@ -215,3 +216,130 @@
   end
   if key == 'line_start' | key == 'line_end' then return x
   return .JsonString~new(x)
+
+/* ---------- drift: do the spheres' citations still match the estate? (v0.2, 10 Nov 2026) ----------
+   Every provenance entry in every *.json under spheresDir is checked against the estate at estateRoot:
+     MATCH        a citation of an estate file (artifact animatedads/alchemy@...:path): same SHA-256 today
+     CHANGED      the cited estate file is still there with a different SHA-256: the article may be stale
+     GONE         the cited estate file is not there any more
+     MEMBER_HERE  a citation inside an archive (a Library zip) whose member path exists in the estate today
+     MEMBER_GONE  a citation inside an archive whose member path is not in the estate
+     UNCHECKED    no member path to check
+   Archive citations cannot be hashed here (the archives are not in git), so they are only placed. */
+::method drift
+  expose report
+  use strict arg spheresDir, estateRoot, limit = 25
+  self~hashStart
+  kit = .BodySlamKit~new(report)
+  call SysFileTree spheresDir || '/*.json', 'js.', 'FSO'
+  per = .directory~new
+  total = .directory~new
+  states = .array~of('MATCH', 'CHANGED', 'GONE', 'MEMBER_HERE', 'MEMBER_GONE', 'UNCHECKED')
+  do s over states; total[s] = 0; end
+  bad = .array~new
+  unreadable = 0
+  shaCache = .directory~new
+  do i = 1 to js.0
+    f = js.i
+    rel = f~substr(spheresDir~length + 2)
+    sphere = rel~left(max(rel~pos('/') - 1, 0))
+    obj = self~readJson(f)
+    if obj == .nil then do
+      unreadable += 1
+      iterate
+    end
+    provs = .array~new
+    call collectProvenance obj, provs
+    do p over provs
+      art = text(p, 'artifact'); mem = text(p, 'member'); sha = text(p, 'sha256')
+      state = 'UNCHECKED'
+      if art~left(20) == 'animatedads/alchemy@' then do
+        /* animatedads/alchemy@REV:path, or animatedads/alchemy@REV with the path in member */
+        if art~pos(':') > 0 then path = art~substr(art~pos(':') + 1)
+        else path = mem
+        full = estateRoot || '/' || path
+        if \SysFileExists(full) then state = 'GONE'
+        else do
+          if \shaCache~hasIndex(full) then shaCache[full] = self~sha256(full)
+          if shaCache[full] == sha~lower then state = 'MATCH'
+          else state = 'CHANGED'
+        end
+      end
+      else if mem \== '' then do
+        /* where the member could sit in the estate: under its own area path (a/packages/p/...), at the
+           root as written, or under each area (archives often start at the package directory) */
+        state = 'MEMBER_GONE'
+        cands = .array~of(mem)
+        proj = kit~projectOfPath('/' || mem)
+        if proj \== '' then cands~append(mem~substr(('/' || mem)~lastPos('/' || proj || '/')))
+        do a over kit~areas
+          cands~append(a || '/' || mem)
+        end
+        do c over cands
+          if SysFileExists(estateRoot || '/' || c) then do
+            state = 'MEMBER_HERE'
+            leave
+          end
+        end
+      end
+      if \per~hasIndex(sphere) then do
+        per[sphere] = .directory~new
+        do s over states; per[sphere][s] = 0; end
+      end
+      per[sphere][state] = per[sphere][state] + 1
+      total[state] = total[state] + 1
+      if state == 'CHANGED' | state == 'GONE' then bad~append(state rel '->' art)
+    end
+  end
+  out = .array~new
+  line = 'drift |' js.0 'json files,' unreadable 'unreadable |'
+  do s over states; line = line s total[s]; end
+  out~append(line)
+  out~append('sphere | MATCH CHANGED GONE MEMBER_HERE MEMBER_GONE UNCHECKED')
+  do sp over per~allIndexes~sort
+    d = per[sp]
+    out~append('  ' sp '|' d['MATCH'] d['CHANGED'] d['GONE'] d['MEMBER_HERE'] d['MEMBER_GONE'] d['UNCHECKED'])
+  end
+  out~append('estate files cited and changed or gone (first' limit || '):')
+  do k = 1 to min(limit, bad~items)
+    out~append('  ' bad[k])
+  end
+  return out
+
+::routine collectProvenance
+  use strict arg x, provs
+  if x~isA(.Directory) then do
+    do k over x~allIndexes
+      v = x[k]
+      if k == 'provenance' & v~isA(.Array) then do
+        do p over v
+          if p~isA(.Directory) then provs~append(p)
+        end
+      end
+      else call collectProvenance v, provs
+    end
+  end
+  else if x~isA(.Array) then do
+    do v over x
+      call collectProvenance v, provs
+    end
+  end
+  return
+
+::routine text
+  use strict arg d, k
+  v = d[k]
+  if v == .nil then return ''
+  return v~string
+
+/* one JSON file as objects, or .nil if it cannot be read or parsed */
+::method readJson
+  use strict arg f
+  signal on syntax name bad
+  s = .stream~new(f)
+  s~open('read shareread')
+  body = s~charIn(1, s~chars)
+  s~close
+  return .json~fromJson(body)
+bad:
+  return .nil

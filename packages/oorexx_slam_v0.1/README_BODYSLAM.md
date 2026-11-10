@@ -20,7 +20,8 @@ The work is done in ooRexx collections and then written to one SQLite file, wher
 | `src/BodySlam.cls` | Walks the estate, assigns projects and families, resolves requires as the interpreter does, labels each use, writes the database |
 | `src/BodySlamReport.cls` | The questions, in SQL. Recursive SQL for blast radius, Tarjan's algorithm for cycles |
 | `bin/bodyslam.rex` | `ingest DB ROOT`, `report DB NAME... [N]`, `blast DB TARGET [N]`, `catalogue DB [AREA]`, `find DB WORD [N]`, `sphere DB OUT COMMIT ROOT` |
-| `src/BodySlamSphere.cls` | The catalogue as an LLM Gopher sphere (v0.2) |
+| `src/BodySlamSphere.cls` | The catalogue as an LLM Gopher sphere, and the drift check of every sphere's citations (v0.2) |
+| `src/BodySlamKit.cls` | The kit check: what a package will load, against the newest version of each family (v0.2) |
 | `tests/test_bodyslam.rex` | 62 checks: each label, then the interpreter run that proves it; the scanner against RxLexer on real files |
 
 ## The rules, measured on ooRexx 5.3.0 r13196 (not taken from memory)
@@ -153,7 +154,9 @@ Architecture: Tom Dyer. Coding: Claude (Opus 5.5).
 - `find DB WORD [N]`: families whose name, README or public class names contain WORD.
 - `sphere DB OUT COMMIT ROOT`: the same as an LLM Gopher sphere, `alchemy-estate`, one article per family with SHA-256 provenance for the README lines it quotes (crypto v0.8.3 through the Foreign Runtime). Valid by the Sphere Editor; see `spheres/alchemy_estate_gopher_sphere_v0.1`.
 - Current main (`dd562a52`): 757 projects, 515 families, 36,532 files (11,198 ooRexx, 1,705,807 lines); ingest 232 s; catalogue 2 s; sphere 5 s.
-- Tests: 77 checks (14 new for v0.2).
+- `kit DB DIR [REXX_PATH [CWD]]`: what a package will load (each `::requires` resolved in the measured order: the file's directory, the current directory, REXX_PATH, PATH), each against the newest version of its family. OK, OLDER, TWO (one family at two versions), SYSTEM, MISSING, INVALID, LIBRARY; verdict PASS, WARN (exit 1) or FAIL (exit 3). On the flight planner with its 10 Nov REXX_PATH it reports `OLDER crypto.cls -> oorexx_crypto_v0.1 ... newest in the estate is packages/oorexx_crypto_v0.8.3`, the mistake Tom found by hand, and today it also reports `MathsBootstrap.cls` loading from the unversioned `oorexx_maths` while `oorexx_maths_v0.21` is on main. Limit: one REXX_PATH for the whole package; a package whose tests each have their own (SLAM itself) needs the per-test environments from `integration.json`, which is the next step.
+- `drift DB SPHERES ROOT [N]`: every provenance entry in every sphere checked against the estate: MATCH or CHANGED (SHA-256 of an estate file now, through crypto v0.8.3 and the Foreign Runtime), GONE, MEMBER_HERE or MEMBER_GONE (a member of a Library archive, placed but not hashable), UNCHECKED. Main `dd562a52`: 2,539 sphere files in 8 s; 479 MATCH, 7 CHANGED (rexxsql-backend 6, alchemy-notnotes 1), 1,115 MEMBER_HERE, 1,038 MEMBER_GONE, 248 UNCHECKED. One CHANGED checked by hand: the rexxsql pitfalls article cites `RexxSqlBackend.cls` at 8987fcbb..., the file is now 03dcc005....
+- Tests: 89 checks (26 new for v0.2: catalogue 14, kit 9, drift 3).
 
 ## Run
 
