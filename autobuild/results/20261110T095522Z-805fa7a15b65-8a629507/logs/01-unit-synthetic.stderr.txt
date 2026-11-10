@@ -1,0 +1,54 @@
+test_blinded_export_and_key_is_private (test_blind_trial.Trial.test_blinded_export_and_key_is_private) ... ERROR
+test_no_overwrite_of_unblinding_key (test_blind_trial.Trial.test_no_overwrite_of_unblinding_key) ... ERROR
+test_zero_and_bad_rms_rejected (test_blind_trial.Trial.test_zero_and_bad_rms_rejected) ... ERROR
+test_known_two_source_synthesis_exact_components (test_spectral_integrity.PhaseSensitivityTest.test_known_two_source_synthesis_exact_components) ... ok
+test_phase_and_geometry_errors (test_spectral_integrity.PhaseSensitivityTest.test_phase_and_geometry_errors) ... ok
+test_phase_shift_changes_energy_but_not_origin (test_spectral_integrity.PhaseSensitivityTest.test_phase_shift_changes_energy_but_not_origin) ... ok
+test_bucket_assignment_and_recombination (test_spectral_integrity.SpectralIntegrityTest.test_bucket_assignment_and_recombination) ... ok
+test_envelope_sweep_quiet_pass (test_spectral_integrity.SpectralIntegrityTest.test_envelope_sweep_quiet_pass) ... ok
+test_harmonic_peak_no_attribution (test_spectral_integrity.SpectralIntegrityTest.test_harmonic_peak_no_attribution) ... ok
+test_preference_does_not_clip_or_invent_components (test_spectral_integrity.SpectralIntegrityTest.test_preference_does_not_clip_or_invent_components) ... ok
+test_reject_invalid (test_spectral_integrity.SpectralIntegrityTest.test_reject_invalid) ... ok
+test_blinded_codes_repeatable (test_v03.WindowedAndOracle.test_blinded_codes_repeatable) ... ok
+test_mono_quiet_gain_stays_mono (test_v03.WindowedAndOracle.test_mono_quiet_gain_stays_mono) ... ok
+test_oracle_rejects_bad_shapes (test_v03.WindowedAndOracle.test_oracle_rejects_bad_shapes) ... ok
+test_reference_oracle_known_mixtures (test_v03.WindowedAndOracle.test_reference_oracle_known_mixtures) ... ok
+test_stft_different_from_global_fft (test_v03.WindowedAndOracle.test_stft_different_from_global_fft) ... ok
+test_stft_local_complementarity (test_v03.WindowedAndOracle.test_stft_local_complementarity) ... ok
+
+======================================================================
+ERROR: test_blinded_export_and_key_is_private (test_blind_trial.Trial.test_blinded_export_and_key_is_private)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hc3/alchemy-autobuild/staging/run-91ch5chf/tests/test_blind_trial.py", line 18, in test_blinded_export_and_key_is_private
+    x=create_trial(self.a,self.b,self.fs,d,ceiling_hz=3000)
+  File "/home/hc3/alchemy-autobuild/staging/run-91ch5chf/src/blind_trial.py", line 25, in create_trial
+    import soundfile as sf
+ModuleNotFoundError: No module named 'soundfile'
+
+======================================================================
+ERROR: test_no_overwrite_of_unblinding_key (test_blind_trial.Trial.test_no_overwrite_of_unblinding_key)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hc3/alchemy-autobuild/staging/run-91ch5chf/tests/test_blind_trial.py", line 28, in test_no_overwrite_of_unblinding_key
+    create_trial(self.a,self.b,self.fs,d,ceiling_hz=3000)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hc3/alchemy-autobuild/staging/run-91ch5chf/src/blind_trial.py", line 25, in create_trial
+    import soundfile as sf
+ModuleNotFoundError: No module named 'soundfile'
+
+======================================================================
+ERROR: test_zero_and_bad_rms_rejected (test_blind_trial.Trial.test_zero_and_bad_rms_rejected)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/hc3/alchemy-autobuild/staging/run-91ch5chf/tests/test_blind_trial.py", line 32, in test_zero_and_bad_rms_rejected
+    with self.assertRaises(ValueError):create_trial(self.a,self.b,self.fs,d,reference_rms=0)
+                                       ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/hc3/alchemy-autobuild/staging/run-91ch5chf/src/blind_trial.py", line 25, in create_trial
+    import soundfile as sf
+ModuleNotFoundError: No module named 'soundfile'
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.069s
+
+FAILED (errors=3)
