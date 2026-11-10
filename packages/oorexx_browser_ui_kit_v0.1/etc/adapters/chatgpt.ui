@@ -1,0 +1,33 @@
+# chatgpt.ui -- landmarks of the ChatGPT web page for the browser UI kit.
+# Architecture: Tom Dyer.  Captured by Claude (Opus 5.5), 8 Nov 2026 17:3x, read-only, from chatgpt.com in the
+# built-in browser (signed in), conversation /c/6af09d83...  Re-capture when an adapter test starts failing.
+name=chatgpt
+class=UiAdapter
+# Cloudflare's check page.  Seen 8 Nov 2026 20:23 on claude.ai from HEADLESS Chrome ("Just a moment...",
+# "Performing security verification"); a visible window passed straight through.  The kit reports BOT_CHECK,
+# waits, and never answers it.
+bot_check_title=Just a moment...
+bot_check_selector=#challenge-form,#challenge-running,[name="cf-turnstile-response"],iframe[src*="challenges.cloudflare.com"]
+# chatgpt.com refuses headless Chrome too (9 Nov 16:29, after Tom's hand-over: "Just a moment..."), so the kit
+# drives it in a visible window
+browser_mode=headed
+base_url=https://chatgpt.com/
+# signed out: chatgpt.com still serves a page, with a log-in button instead of the conversation list
+signed_out_path=/auth/login
+signed_out_selector=[data-testid="login-button"]
+signed_on_selector=a[href^="/c/"]
+# composer: a ProseMirror contenteditable; #prompt-textarea no longer exists (seen 8 Nov)
+composer_selector=div[contenteditable="true"][role="textbox"]
+send_selector=button[aria-label="Send"]
+conversation_link_selector=a[href^="/c/"]
+conversation_title_attribute=aria-label
+user_turn_selector=[data-conversation-role="user"]
+assistant_turn_selector=[data-conversation-role="assistant"]
+# the role marker is a heading ("ChatGPT said:"); the reply text is read from the turn-state wrapper around it,
+# less the heading (confirmed 9 Nov 16:31: 5 turns, 5 wrappers; send "pong" returned "pong")
+assistant_text_container=[data-talvt-turn-state]
+# a reply is finished when no turn is in any state but complete
+busy_selector=[data-talvt-turn-state]:not([data-talvt-turn-state="complete"])
+# the page windows its turns: only some are in the DOM at once (seen 8 Nov: 1 of many)
+windowed=yes
+captured=2026-11-09 chatgpt.com signed-in home and a conversation (capture + send verified); signed-out landmarks NOT yet captured

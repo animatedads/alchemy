@@ -1,0 +1,77 @@
+run_tests: packages from /home/hc3/alchemy-autobuild/repo/packages, ooRexx /usr/local/bin/rexx, working copy /tmp/browser-ui-kit-test.2jVwpl
+== test_fetch
+PASS host sourceforge.net allowed
+PASS mirror subdomain allowed
+PASS look-alike host refused
+PASS suffix trick refused
+PASS fxHost strips user@, port, query
+PASS fxHost on a userinfo trick
+PASS text file fetched
+PASS stored under the query-free name
+PASS SHA256SUMS written
+PASS excerpt holds the text
+PASS the report names the content type
+PASS reply names the asker and the hash
+PASS reply marks the excerpt as data
+PASS store directory is mode 700
+PASS ledger row written
+PASS two allowed redirects followed
+PASS redirects recorded as INFO
+PASS binary file gets no text excerpt
+PASS redirect to unlisted host refused
+PASS unlisted host refused before any fetch
+PASS plain http refused
+PASS path-like request id refused
+PASS shell metacharacters refused
+PASS 404 is a STOP
+PASS a request id is used once
+PASS unknown kind refused
+fetch tests: 26 passed, 0 failed
+== test_order_gate
+PASS gate      issuers come from etc/fetch.conf
+PASS gate      lawful order from CLAUDE: CLEAR
+PASS gate      lawful order: ADMISSIBLE with a decision trace id
+PASS gate      lawful order: executed and reported with its hash
+PASS gate      lawful order: the trace is kept on disk
+PASS gate      unlisted host: BLOCKED by ROE-HOST, not executed
+PASS gate      issuer not in the chain of command: BLOCKED by ROE-ISSUER
+PASS gate      plain http: BLOCKED by ROE-HTTPS
+PASS gate      not an order: says what an order looks like, nothing assessed
+PASS gate      free text: REQUIRES CLARIFICATION (no guessing)
+PASS gate      no scheme: facts unknown -> REVIEW_REQUIRED, referred to TOM
+PASS gate      redirect to an unlisted host: re-assessed and BLOCKED mid-task, with its own trace
+PASS gate      redirects through allowed mirrors: each re-assessed ADMISSIBLE, fetched
+PASS gate      issuer and verb are case-insensitive
+PASS gate      the same order and facts give the same decision trace id
+order gate tests: 15 passed, 0 failed
+== test_alchemyfetch
+PASS token mode 644: STOP, exit 2, no mailbox call
+PASS one pass exits 0
+PASS the list asks for everything (unreadOnly also hides answered requests)
+PASS REQ-T1 (CLAUDE, lawful) answered with an executed report
+PASS the reply carries the attribution line
+PASS REQ-T2 (unlisted host) answered BLOCKED, not executed
+PASS REQ-T3 (addressed to CLAUDE) untouched
+PASS answers longer than the 500-character summary are read from structuredContent
+PASS REQ-T5 (already marked read) untouched
+PASS REQ-T6 (its own reply to CLAUDE) untouched
+PASS REQ-T4 (already answered) marked read, not answered again
+PASS REQ-T4 (already answered) still nudged
+PASS REQ-T1 and REQ-T2 marked read
+PASS REQ-T1 nudged into the mapped conversation
+PASS REQ-T2 (lane not mapped) not nudged
+PASS the token never reaches the store or the log
+PASS no header or body left in the temp dir
+PASS text-only answer with raw control characters: reply taken, REQ-T1 marked read
+PASS unreadable reply answer: error logged, the answer kept
+PASS unreadable reply answer: REQ-T1 left unread and not nudged
+PASS mbJsonClean escapes a raw tab inside a string
+PASS mbJsonClean leaves an escaped quote and the text after it
+PASS mbJsonClean leaves a line feed between tokens
+PASS mbParse reads JSON with a raw CR in a string
+PASS refused token: listing failure logged, nothing handled
+25 passed, 0 failed
+== test_crab_reader
+SKIP crab reader tests: BOSTON_CRAB_DIR does not name a Boston Crab copy
+== browser matrix: not run (set KIT_BROWSER_TESTS=1, CHROME and KIT_FIXTURES_CONF to run it)
+run_tests: OK
