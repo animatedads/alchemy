@@ -1,0 +1,80 @@
+{
+  "artifact_path": "autobuild/artifacts/queue_fabric_gopher_sphere/0.3/b914964c408033ee8e513cdc0a42ae61ac703eefdda463d1ba91ef26645b285a.zip",
+  "package": {
+    "kind": "documentation",
+    "name": "queue_fabric_gopher_sphere",
+    "version": "0.3"
+  },
+  "run": {
+    "elapsed_ms": 21.764,
+    "ended_at": "2026-11-10T09:54:54.092Z",
+    "started_at": "2026-11-10T09:54:54.070Z"
+  },
+  "run_id": "20261110T095454Z-b914964c4080-d42d8842",
+  "runner": {
+    "started_at": "2026-11-10T09:49:12.396Z",
+    "started_ns": 1794304152396467124
+  },
+  "schema": "alchemy.autobuild.result/0.5",
+  "source": {
+    "arrival_ns": null,
+    "ctime_ns": null,
+    "filename": null,
+    "kind": "git-branch",
+    "mtime_ns": null,
+    "sha256": "b914964c408033ee8e513cdc0a42ae61ac703eefdda463d1ba91ef26645b285a",
+    "size": 24843,
+    "source_branch": "autobuild-submit/20261027T165000Z-CHATGPT-queue-fabric-xtp-sphere-v03-6c27aa",
+    "source_commit": "3030a63bcbf82981b20225723f37e99e03f0f605",
+    "source_path": "autobuild/inbox/20261027T165000Z-CHATGPT-queue-fabric-xtp-sphere-v03-6c27aa/package",
+    "source_ref": "refs/remotes/origin/autobuild-submit/20261027T165000Z-CHATGPT-queue-fabric-xtp-sphere-v03-6c27aa",
+    "submission_id": "20261027T165000Z-CHATGPT-queue-fabric-xtp-sphere-v03-6c27aa",
+    "tree_sha256": "b914964c408033ee8e513cdc0a42ae61ac703eefdda463d1ba91ef26645b285a"
+  },
+  "status": "FAIL",
+  "tests": [
+    {
+      "argv": [
+        "sha256sum",
+        "-c",
+        "qualification/MANIFEST.sha256"
+      ],
+      "elapsed_ms": 2.492,
+      "ended_at": "2026-11-10T09:54:54.079Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-ktipke1f",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "manifest",
+      "returncode": 0,
+      "started_at": "2026-11-10T09:54:54.076Z",
+      "status": "PASS",
+      "stderr_path": "autobuild/results/20261110T095454Z-b914964c4080-d42d8842/logs/01-manifest.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095454Z-b914964c4080-d42d8842/logs/01-manifest.stdout.txt",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "bash",
+        "tests/check_xtp_contract.sh"
+      ],
+      "elapsed_ms": 12.161,
+      "ended_at": "2026-11-10T09:54:54.091Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-ktipke1f",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "xtp-static",
+      "returncode": 1,
+      "started_at": "2026-11-10T09:54:54.079Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095454Z-b914964c4080-d42d8842/logs/02-xtp-static.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095454Z-b914964c4080-d42d8842/logs/02-xtp-static.stdout.txt",
+      "timed_out": false
+    }
+  ]
+}
