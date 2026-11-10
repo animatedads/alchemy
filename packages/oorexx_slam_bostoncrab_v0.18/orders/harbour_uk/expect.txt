@@ -1,0 +1,100 @@
+Orders and messages: 25
+
+Ground -> all: усім бортам в районі — alpha , bravo , charlie , delta , говорить наземний контроль .
+  CLEAR
+
+Ground -> all: розпочинаємо пошукову операцію в зоні сіднейської гавані .
+  CLEAR  "Sydney Harbour" (сіднейської гавані): a named place
+  CLEAR
+
+Ground -> Alpha: alpha , ваше завдання — вести пошук у районі sydney opera house .
+  CLEAR  "Opera House" (sydney opera house): a named place
+  CLEAR
+
+Ground -> Alpha: виконайте обліт за годинниковою стрілкою та огляньте прилеглу акваторію .
+  CLEAR
+
+Ground -> Bravo: bravo , прямуйте до blues tower .
+  UNKNOWN NAME  "blues tower": the situation has no place or person of that name; nearest: Blues Point Tower
+  REQUIRES CLARIFICATION
+
+Ground -> Bravo: проведіть візуальний огляд верхньої секції та навколишніх територій .
+  CLEAR
+
+Ground -> Charlie: charlie , ваша зона — circular quay .
+  CLEAR  "Circular Quay" (circular quay): a named place
+  CLEAR
+
+Ground -> Charlie: працюйте від східного причалу до західного , стежте за рухом на воді та береговій лінії .
+  CLEAR  "the east wharf" (східного причалу): both mean the east wharf
+  CLEAR  "the west wharf" (західного): both mean the west wharf
+  CLEAR  "the water" (воді): always there (water, sky, ground), nothing to choose between
+  CLEAR
+
+Ground -> Delta: delta , здійснюйте пошук у районі observatory hill .
+  CLEAR  "Observatory Hill" (observatory hill): a named place
+  CLEAR
+
+Ground -> Delta: після цього прямуйте до harbour bridge .
+  CLEAR  "Harbour Bridge" (harbour bridge): a named place
+  CLEAR
+
+Ground -> Delta: окремо огляньте північний пілон ( north pylon ) та південний пілон ( south pylon ) .
+  AMBIGUOUS  "the north pylon" (північний пілон): Delta can see 2 things it could mean: the northeast pylon and the northwest pylon
+  AMBIGUOUS  "the south pylon" (південний пілон): Delta can see 2 things it could mean: the southeast pylon and the southwest pylon
+  REQUIRES CLARIFICATION
+
+Ground -> all: усім бортам : тримайте постійний візуальний контакт , доповідайте про будь-які знахідки на цій частоті .
+  CLEAR
+
+Ground -> all: підтвердіть отримання завдань .
+  CLEAR
+
+Alpha -> Ground: alpha , зрозумів .
+  CLEAR
+
+Alpha -> Ground: пошук у районі sydney opera house , обліт за годинниковою стрілкою .
+  CLEAR  "Opera House" (sydney opera house): a named place
+  CLEAR
+
+Alpha -> Ground: виконую .
+  CLEAR
+
+Bravo -> Ground: bravo , завдання прийняв .
+  ACK DOES NOT RESOLVE  "bravo , завдання прийняв ." answers a message with an open question ("blues tower"); it does not say which reading was taken
+  REQUIRES CLARIFICATION
+
+Bravo -> Ground: прямую до blues tower для візуального огляду .
+  UNKNOWN NAME  "blues tower": the situation has no place or person of that name; nearest: Blues Point Tower
+  REQUIRES CLARIFICATION
+
+Charlie -> Ground: charlie , зрозумів .
+  CLEAR
+
+Charlie -> Ground: пошук над circular quay від східного до західного причалу .
+  CLEAR  "Circular Quay" (circular quay): a named place
+  CLEAR  "the east wharf" (східного): both mean the east wharf
+  CLEAR  "the west wharf" (західного причалу): both mean the west wharf
+  CLEAR
+
+Delta -> Ground: delta , завдання зрозумів .
+  ACK DOES NOT RESOLVE  "delta , завдання зрозумів ." answers a message with an open question ("північний пілон" "південний пілон"); it does not say which reading was taken
+  REQUIRES CLARIFICATION
+
+Delta -> Ground: observatory hill , далі harbour bridge , включаючи північний та південний пілони .
+  CLEAR  "Observatory Hill" (observatory hill): a named place
+  CLEAR  "Harbour Bridge" (harbour bridge): a named place
+  AMBIGUOUS  "the north pylon" (північний та південний пілони): Ground can see 2 things it could mean: the northeast pylon and the northwest pylon
+  AMBIGUOUS  "the south pylon" (північний та південний пілони): Ground can see 2 things it could mean: the southeast pylon and the southwest pylon
+  REQUIRES CLARIFICATION
+
+Delta -> Ground: працюємо .
+  CLEAR
+
+Ground -> Delta: delta , огляньте північні пілони .
+  CLEAR  "the north pylons" (північні пілони): all of the northeast pylon and the northwest pylon
+  CLEAR
+
+Ground -> Delta: delta , inspect the north pylons .
+  CLEAR  "the north pylons": all of the northeast pylon and the northwest pylon
+  CLEAR
