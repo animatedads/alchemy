@@ -1,0 +1,111 @@
+-- orders.words: Boston Crab order report for programs. Fields split by |.
+-- order|n|from|to|words    part|n|i|verb|action|how|words    ref|n|i|verdict|words|writer|reader    end|n|verdict
+-- verb, action and how are concept names (language neutral), - for none; action is the verb, or the act after a general verb
+-- ("conduct a search": search); writer and reader list what each can identify, split by ;
+-- how holds "not" when the part says not to do it ("не знижуйтесь", "do not descend"),
+-- and "if" when it waits on a condition said in its words ("якщо ціль знайдено", "if the target is found")
+-- tone|n|frustration|count when the sender swears (twice or more: extreme frustration); it is not an order
+-- a grid reference has writer and reader "grid E <east> N <north>"; fail|n|reason when Boston Crab failed on an order
+order|1|ground|all|усім бортам в районі — alpha , bravo , charlie , delta , говорить наземний контроль .
+part|1|1|-|-|-|усім бортам в районі — alpha , bravo , charlie , delta , говорить наземний контроль .
+end|1|CLEAR
+order|2|ground|all|розпочинаємо пошукову операцію в зоні сіднейської гавані .
+part|2|1|get-down|search|-|розпочинаємо пошукову операцію в зоні сіднейської гавані .
+ref|2|1|CLEAR|сіднейської гавані|Sydney Harbour|Sydney Harbour
+end|2|CLEAR
+order|3|ground|alpha|alpha , ваше завдання — вести пошук у районі sydney opera house .
+part|3|1|conduct|search|-|alpha , ваше завдання — вести пошук у районі sydney opera house .
+ref|3|1|CLEAR|sydney opera house|Opera House|Opera House
+end|3|CLEAR
+order|4|ground|alpha|виконайте обліт за годинниковою стрілкою та огляньте прилеглу акваторію .
+part|4|1|perform|orb|clockwise~00255849-r|виконайте обліт за годинниковою стрілкою
+part|4|2|inspect|inspect|-|огляньте прилеглу акваторію .
+ref|4|2|CLEAR|прилеглу акваторію||
+end|4|CLEAR
+order|5|ground|bravo|bravo , прямуйте до blues tower .
+part|5|1|head~01939092-v|head~01939092-v|-|bravo , прямуйте до blues tower .
+ref|5|1|UNKNOWN NAME|blues tower||
+end|5|REQUIRES CLARIFICATION
+order|6|ground|bravo|проведіть візуальний огляд верхньої секції та навколишніх територій .
+part|6|1|conduct|inspection|-|проведіть візуальний огляд верхньої секції та навколишніх територій .
+end|6|CLEAR
+order|7|ground|charlie|charlie , ваша зона — circular quay .
+part|7|1|-|-|-|charlie , ваша зона — circular quay .
+ref|7|1|CLEAR|circular quay|Circular Quay|Circular Quay
+end|7|CLEAR
+order|8|ground|charlie|працюйте від східного причалу до західного , стежте за рухом на воді та береговій лінії .
+part|8|1|work|work|-|працюйте від східного причалу до західного
+part|8|2|watch|watch|-|стежте за рухом на воді та береговій лінії .
+ref|8|1|CLEAR|східного причалу|the east wharf|the east wharf
+ref|8|1|CLEAR|західного|the west wharf|the west wharf
+ref|8|2|CLEAR|воді||
+end|8|CLEAR
+order|9|ground|delta|delta , здійснюйте пошук у районі observatory hill .
+part|9|1|conduct|search|-|delta , здійснюйте пошук у районі observatory hill .
+ref|9|1|CLEAR|observatory hill|Observatory Hill|Observatory Hill
+end|9|CLEAR
+order|10|ground|delta|після цього прямуйте до harbour bridge .
+part|10|1|head~01939092-v|head~01939092-v|-|після цього прямуйте до harbour bridge .
+ref|10|1|CLEAR|harbour bridge|Harbour Bridge|Harbour Bridge
+end|10|CLEAR
+order|11|ground|delta|окремо огляньте північний пілон ( north pylon ) та південний пілон ( south pylon ) .
+part|11|1|inspect|inspect|individually|окремо огляньте північний пілон ( north pylon ) та південний пілон ( south pylon ) .
+ref|11|1|AMBIGUOUS|північний пілон|the northeast pylon;the northwest pylon|the northeast pylon;the northwest pylon
+ref|11|1|AMBIGUOUS|південний пілон|the southeast pylon;the southwest pylon|the southeast pylon;the southwest pylon
+end|11|REQUIRES CLARIFICATION
+order|12|ground|all|усім бортам : тримайте постійний візуальний контакт , доповідайте про будь-які знахідки на цій частоті .
+part|12|1|keep|keep|-|усім бортам : тримайте постійний візуальний контакт
+part|12|2|report~00967067-v|report~00967067-v|-|доповідайте про будь-які знахідки на цій частоті .
+end|12|CLEAR
+order|13|ground|all|підтвердіть отримання завдань .
+part|13|1|confirm|confirm|-|підтвердіть отримання завдань .
+end|13|CLEAR
+order|14|alpha|ground|alpha , зрозумів .
+part|14|1|-|acknowledgement|-|alpha , зрозумів .
+end|14|CLEAR
+order|15|alpha|ground|пошук у районі sydney opera house , обліт за годинниковою стрілкою .
+part|15|1|-|search|clockwise~00255849-r|пошук у районі sydney opera house , обліт за годинниковою стрілкою .
+ref|15|1|CLEAR|sydney opera house|Opera House|Opera House
+end|15|CLEAR
+order|16|alpha|ground|виконую .
+part|16|1|perform|perform|-|виконую .
+end|16|CLEAR
+order|17|bravo|ground|bravo , завдання прийняв .
+part|17|1|-|acknowledgement|-|bravo , завдання прийняв .
+ref|17|1|ACK DOES NOT RESOLVE|bravo , завдання прийняв .||
+end|17|REQUIRES CLARIFICATION
+order|18|bravo|ground|прямую до blues tower для візуального огляду .
+part|18|1|head~01939092-v|head~01939092-v|-|прямую до blues tower для візуального огляду .
+ref|18|1|UNKNOWN NAME|blues tower||
+end|18|REQUIRES CLARIFICATION
+order|19|charlie|ground|charlie , зрозумів .
+part|19|1|-|acknowledgement|-|charlie , зрозумів .
+end|19|CLEAR
+order|20|charlie|ground|пошук над circular quay від східного до західного причалу .
+part|20|1|-|search|-|пошук над circular quay від східного до західного причалу .
+ref|20|1|CLEAR|circular quay|Circular Quay|Circular Quay
+ref|20|1|CLEAR|східного|the east wharf|the east wharf
+ref|20|1|CLEAR|західного причалу|the west wharf|the west wharf
+end|20|CLEAR
+order|21|delta|ground|delta , завдання зрозумів .
+part|21|1|-|acknowledgement|-|delta , завдання зрозумів .
+ref|21|1|ACK DOES NOT RESOLVE|delta , завдання зрозумів .||
+end|21|REQUIRES CLARIFICATION
+order|22|delta|ground|observatory hill , далі harbour bridge , включаючи північний та південний пілони .
+part|22|1|include|include|-|observatory hill , далі harbour bridge , включаючи північний та південний пілони .
+ref|22|1|CLEAR|observatory hill|Observatory Hill|Observatory Hill
+ref|22|1|CLEAR|harbour bridge|Harbour Bridge|Harbour Bridge
+ref|22|1|AMBIGUOUS|північний та південний пілони|the northeast pylon;the northwest pylon|the northeast pylon;the northwest pylon
+ref|22|1|AMBIGUOUS|північний та південний пілони|the southeast pylon;the southwest pylon|the southeast pylon;the southwest pylon
+end|22|REQUIRES CLARIFICATION
+order|23|delta|ground|працюємо .
+part|23|1|work|work|-|працюємо .
+end|23|CLEAR
+order|24|ground|delta|delta , огляньте північні пілони .
+part|24|1|inspect|inspect|-|delta , огляньте північні пілони .
+ref|24|1|CLEAR|північні пілони|the northeast pylon;the northwest pylon|the northeast pylon;the northwest pylon
+end|24|CLEAR
+order|25|ground|delta|delta , inspect the north pylons .
+part|25|1|inspect|inspect|-|delta , inspect the north pylons .
+ref|25|1|CLEAR|the north pylons|the northeast pylon;the northwest pylon|the northeast pylon;the northwest pylon
+end|25|CLEAR
