@@ -1,0 +1,51 @@
+{
+  "kind": "article",
+  "id": "arch.audio-spectral-integrity.method",
+  "version": "0.2",
+  "sphere": "audio-spectral-integrity",
+  "title": "Controlled odd/even frequency bucketing and harmonic anomaly testing",
+  "summary": "Two recorded or synthetic voices can be spectrally interleaved across 100 Hz bins as a positive synthetic example; applying the same masks to a field recording changes listening views and is not evidence of provenance or deliberate composition.",
+  "authority": "research-method",
+  "invariants": [
+    "Preserve immutable original recordings and transformations with parameters and SHA-256 authority; do not publish minors or private recordings.",
+    "Source, channel, spectral view, apparent speech and speaker attribution are separate concepts.",
+    "Odd/even complementary masks recombine the original passband; this is an identity, not a proof of two sources.",
+    "A missing harmonic is neither necessary nor sufficient to demonstrate multiple digitally interleaved speech streams.",
+    "f0 must be estimated on voiced broadband control material, not inferred independently for each narrow band.",
+    "Fixed-gain spectral views and nonlinear quiet-pass reinforcement are separate transformations.",
+    "Comparative human transcriptions are hypotheses; blind listening, natural overlap and codec/traffic controls are mandatory before escalation.",
+    "Audio V9 source/family and Job-to-Node/Storage Fabric authority boundaries remain unchanged.",
+    "Shifted bucket-origin measurements are part of a null/robustness test; preference variation alone cannot determine source multiplicity."
+  ],
+  "procedure": [
+    "Create a synthetic positive control Y(f)=M_even(f)A(f)+M_odd(f)B(f), alongside original A, B and A+B.",
+    "Record exact bucket widths, sampling rate, input hashes, channel geometry, bit depth and playback level.",
+    "For unknown X(f), emit separate odd/even listening views and fixed relative-preference variants; retain original stereo.",
+    "Compare against close-speech, natural overlap, wind, impacts, codec and playback negative controls.",
+    "Score voiced harmonic predictions with external f0 and local spectral evidence; do not infer number of sources from missing peaks.",
+    "Hold transcription, origin, motive and attribution separately, recording alternatives and uncertainty.",
+    "Sweep frequency-bucket origins (0/25/50/75 Hz), preserve complementary passband identity and track sensitivity of candidate listening features."
+  ],
+  "provenance": [
+    {
+      "artifact": "audio_spectral_integrity_v0.1",
+      "member": "docs/METHOD.md",
+      "claim": "Versioned method, falsification and evidential limits"
+    },
+    {
+      "artifact": "audio_spectral_integrity_v0.1",
+      "member": "tests/test_spectral_integrity.py",
+      "claim": "Synthetic numerical regression controls"
+    },
+    {
+      "artifact": "layered_audio_gopher_sphere_v0.2",
+      "member": "packs/layered-audio/articles/arch.layered-audio.methods.json",
+      "claim": "Existing Layered Audio method taxonomy, not modified"
+    },
+    {
+      "artifact": "audio_spectral_integrity_v0.2",
+      "member": "docs/METHOD.md",
+      "claim": "Phase origin falsification and caution against inference from shifted bands"
+    }
+  ]
+}
