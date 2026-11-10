@@ -1,0 +1,12 @@
+mkdir -p lib build
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -c src/operational_planner.cpp -o build/operational_planner.o
+ar rcs lib/liboperational_planner.a build/operational_planner.o
+mkdir -p lib
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -shared src/operational_planner.cpp -o lib/liboperational_planner.so
+mkdir -p bin
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC src/opctl.cpp lib/liboperational_planner.a -o bin/opctl
+g++ -Iinclude -O2 -std=c++17 -Wall -Wextra -Werror -fPIC tests/test_planner.cpp lib/liboperational_planner.a -o tests/test_planner.bin
+./tests/test_planner.bin
+PASS operational class decisions
+bash ./tests/test_registry.sh
+PASS persistent operational registry and decisions
