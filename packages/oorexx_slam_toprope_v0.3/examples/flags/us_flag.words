@@ -1,0 +1,53 @@
+-- The flag of the United States, Executive Order 10834.
+-- Architecture: Tom Dyer.  Words written by: Claude (Opus 5.5).
+-- Hoist (A) is 1 unit. Fly B = 1.9, canton C = 7/13 by D = 0.76,
+-- stripe L = 1/13, star rows E = F = 0.054, star columns G = H = 0.063,
+-- star width K = 0.0616. A true five point star has inner 0.382.
+
+colour gloryred is #b31942
+colour gloryblue is #0a3161
+
+-- one row of stars is 2F high, and its stars sit on its middle line
+make row of six
+  size 0.76 by 0.108
+  star 5 points white size 0.0616 inner 0.382 at 0.063 0.054
+  star 5 points white size 0.0616 inner 0.382 at 0.189 0.054
+  star 5 points white size 0.0616 inner 0.382 at 0.315 0.054
+  star 5 points white size 0.0616 inner 0.382 at 0.441 0.054
+  star 5 points white size 0.0616 inner 0.382 at 0.567 0.054
+  star 5 points white size 0.0616 inner 0.382 at 0.693 0.054
+end
+
+make row of five
+  size 0.76 by 0.108
+  star 5 points white size 0.0616 inner 0.382 at 0.126 0.054
+  star 5 points white size 0.0616 inner 0.382 at 0.252 0.054
+  star 5 points white size 0.0616 inner 0.382 at 0.378 0.054
+  star 5 points white size 0.0616 inner 0.382 at 0.504 0.054
+  star 5 points white size 0.0616 inner 0.382 at 0.630 0.054
+end
+
+make us flag
+  size 1.9 by 1
+  paint all gloryred
+  band white across at 3/26 thick 1/13
+  band white across at 7/26 thick 1/13
+  band white across at 11/26 thick 1/13
+  band white across at 15/26 thick 1/13
+  band white across at 19/26 thick 1/13
+  band white across at 23/26 thick 1/13
+  box gloryblue from 0 0 to 0.76 7/13
+  -- nine rows: row n has its middle line n times 0.054 down
+  draw row of six  in from 0 0     to 0.76 0.108
+  draw row of five in from 0 0.054 to 0.76 0.162
+  draw row of six  in from 0 0.108 to 0.76 0.216
+  draw row of five in from 0 0.162 to 0.76 0.270
+  draw row of six  in from 0 0.216 to 0.76 0.324
+  draw row of five in from 0 0.270 to 0.76 0.378
+  draw row of six  in from 0 0.324 to 0.76 0.432
+  draw row of five in from 0 0.378 to 0.76 0.486
+  draw row of six  in from 0 0.432 to 0.76 0.540
+end
+
+page 1140 wide
+draw us flag
