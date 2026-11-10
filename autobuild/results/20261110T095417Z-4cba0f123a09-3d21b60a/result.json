@@ -1,0 +1,92 @@
+{
+  "artifact_path": "autobuild/artifacts/plan42_alchemy_bridge/0.1-dev5/4cba0f123a09a3d9b93dba9bc8a6a4f28d88ef9c6c200e4b07a5a62ced4d91bc.zip",
+  "package": {
+    "kind": "python-oorexx",
+    "name": "plan42_alchemy_bridge",
+    "version": "0.1-dev5"
+  },
+  "run": {
+    "elapsed_ms": 1918.141,
+    "ended_at": "2026-11-10T09:54:19.863Z",
+    "started_at": "2026-11-10T09:54:17.945Z"
+  },
+  "run_id": "20261110T095417Z-4cba0f123a09-3d21b60a",
+  "runner": {
+    "started_at": "2026-11-10T09:49:12.396Z",
+    "started_ns": 1794304152396467124
+  },
+  "schema": "alchemy.autobuild.result/0.5",
+  "source": {
+    "arrival_ns": null,
+    "ctime_ns": null,
+    "filename": null,
+    "kind": "git-branch",
+    "mtime_ns": null,
+    "sha256": "4cba0f123a09a3d9b93dba9bc8a6a4f28d88ef9c6c200e4b07a5a62ced4d91bc",
+    "size": 192333,
+    "source_branch": "autobuild-submit/20261027T163900Z-CHATGPT-plan42-alchemy-dev5-381eb0",
+    "source_commit": "c14c5af8396adb69402ba715ec66e61193d95cab",
+    "source_path": "autobuild/inbox/20261027T163900Z-CHATGPT-plan42-alchemy-dev5-381eb0/package",
+    "source_ref": "refs/remotes/origin/autobuild-submit/20261027T163900Z-CHATGPT-plan42-alchemy-dev5-381eb0",
+    "submission_id": "20261027T163900Z-CHATGPT-plan42-alchemy-dev5-381eb0",
+    "tree_sha256": "4cba0f123a09a3d9b93dba9bc8a6a4f28d88ef9c6c200e4b07a5a62ced4d91bc"
+  },
+  "status": "FAIL",
+  "tests": [
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_plan42*.py",
+        "-v"
+      ],
+      "elapsed_ms": 1833.507,
+      "ended_at": "2026-11-10T09:54:19.791Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-nqu7jgf4",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "plan42-alchemy-regressions",
+      "returncode": 1,
+      "started_at": "2026-11-10T09:54:17.958Z",
+      "status": "FAIL",
+      "stderr_path": "autobuild/results/20261110T095417Z-4cba0f123a09-3d21b60a/logs/01-plan42-alchemy-regressions.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095417Z-4cba0f123a09-3d21b60a/logs/01-plan42-alchemy-regressions.stdout.txt",
+      "timed_out": false
+    },
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "py_compile",
+        "tools/plan42_bridge.py",
+        "tools/plan42c.py",
+        "tools/plan42_rx2cpp_plan.py",
+        "tools/plan42_rx2cpp_inventory.py",
+        "tools/plan42_rx2cpp_upstream_audit.py"
+      ],
+      "elapsed_ms": 71.425,
+      "ended_at": "2026-11-10T09:54:19.863Z",
+      "environment": {
+        "ALCHEMY_PACKAGE_ROOT": "/home/hc3/alchemy-autobuild/staging/run-nqu7jgf4",
+        "ALCHEMY_REPO_ROOT": "/home/hc3/alchemy-autobuild/repo",
+        "PATH": "/home/hc3/.local/bin:/home/hc3/.local/share/../bin:/home/hc3/.local/bin:/usr/local/bin:/usr/bin:/bin",
+        "REXX_PATH": null
+      },
+      "name": "plan42-python-compile",
+      "returncode": 0,
+      "started_at": "2026-11-10T09:54:19.791Z",
+      "status": "PASS",
+      "stderr_path": "autobuild/results/20261110T095417Z-4cba0f123a09-3d21b60a/logs/02-plan42-python-compile.stderr.txt",
+      "stdout_path": "autobuild/results/20261110T095417Z-4cba0f123a09-3d21b60a/logs/02-plan42-python-compile.stdout.txt",
+      "timed_out": false
+    }
+  ]
+}
