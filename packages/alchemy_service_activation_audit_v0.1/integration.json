@@ -1,0 +1,27 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "alchemy_service_activation_audit",
+    "version": "0.1",
+    "kind": "python"
+  },
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "read-only-activation-audit-fixtures",
+      "argv": ["python3", "-m", "unittest", "discover", "-s", "tests", "-p", "test_*.py", "-v"],
+      "timeout_seconds": 120
+    },
+    {
+      "name": "audit-ledger-structure",
+      "argv": ["python3", "tools/check_activation.py", "--audit-only", "--json"],
+      "timeout_seconds": 30
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/alchemy_service_activation_audit_v0.1"
+    }
+  }
+}
