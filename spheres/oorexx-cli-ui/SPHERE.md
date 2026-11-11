@@ -84,3 +84,7 @@ GitHub commits `456a5bf3` and `1f69bd72` add identity-preserving completion refr
 ## dev12 evidence (2026-10-29)
 
 Source archive `oorexx_cli_ui_v0.1-dev12.zip`, SHA-256 `700488b02dad2b6ee844a6b3c8a8734664ad04e0961ce9d5f587f302120c16ca`. Composite screen now divides available rows into disjoint table, detail and form regions, enforced by `CliUiBoundedRenderer~region(first,last)`. Regression fixture `tests/test_region_isolation.rex` added. C and Python contract checks passed; actual ooRexx r13196 execution is **not qualified**. GitHub source synchronization is still in progress until the full archive is imported.
+
+## GitHub synchronization checkpoint (2026-11-11)
+
+Imported the dev12 `CliUiScreen.cls` composite screen projection to `packages/oorexx-cli-ui/rexx/`. This joins the previously imported bounded renderer, region isolation fixture, VERSION and changelog. The remainder of the archive (semantic models, other projections, native C/C++ bridge, headers, scripts, examples, and tests) is still absent from this branch. The GitHub branch is **not buildable from these files alone**. No interpreter qualification or ANSI/headless equivalence is asserted. Next gate: import all source and manifests, validate dependency closure, then run ooRexx r13196 tests.
