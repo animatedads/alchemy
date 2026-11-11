@@ -1,17 +1,18 @@
 {
   "kind": "article",
   "id": "native-db.qualification",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "native-database-backends",
-  "title": "Qualification state: distinguish executed v0.2 evidence from inherited and current-rollup evidence",
-  "summary": "v0.2 was executed under ooRexx 5.3.0 r13196 for the capability model, structured result model, planner, deterministic fake-libpq PostgreSQL result adapter and compile gates. Live external dependency roots were not available for that v0.2 run, so live PostgreSQL/GeoPackage evidence is inherited from v0.1 rather than re-claimed. The 2026-09-02 API roll-up contains newer Foreign Runtime v0.22.6 plus current DB Core v0.46, NoSQLServer v0.79 and msqlshim v0.21.2; those available versions are continuity references, not claims that v0.2 has been requalified against every newer companion.",
+  "title": "Qualification state: separate executed evidence from v0.3.2 Autobuild-pending source",
+  "summary": "Executed historical evidence remains scoped to the exact releases that produced it. Native Database Backends v0.3.2 is a canonical Git source increment over v0.3.1: it adds provider-package selection and targets current Git Foreign Runtime v0.22.6 because the v0.22.2 source directory referenced by v0.3.1 integration is absent. That change is not itself qualification. v0.3.2 is SOURCE_READY_FOR_AUTOBUILD until a receipt identifies the exact submitted tree and test result.",
   "authority": "qualification-evidence",
   "invariants": [
     "Never turn retained inherited tests into newly executed evidence when dependency roots were unavailable.",
     "Deterministic fake-provider tests qualify projection and planner logic, not a live remote database connection.",
     "Current roll-up availability does not equal compatibility qualification.",
     "Non-claims remain first-class evidence until the implementation and tests exist.",
-    "Qualification must name runtime and exact companion versions/digests where material."
+    "Qualification must name runtime and exact companion versions/digests where material.",
+    "A Git source increment marked ready for Autobuild is not runtime-qualified until the exact submission receipt is recorded."
   ],
   "provenance": [
     {
@@ -46,5 +47,13 @@
       "member": "current/msqlshim_v0.21.2.zip",
       "claim": "Current roll-up contains msqlshim v0.21.2 as the inbound MySQL wire compatibility reference."
     }
-  ]
+  ],
+  "current_git_increment": {
+    "package": "oorexx_native_database_backends",
+    "version": "0.3.2",
+    "foreign_runtime_test_target": "packages/oorexx_foreign_runtime_v0.22.6",
+    "selector_test": "tests/test_database_backend_selector.rex",
+    "status": "SOURCE_READY_FOR_AUTOBUILD; RECEIPT_PENDING",
+    "note": "The prior v0.3.1 integration target packages/oorexx_foreign_runtime_v0.22.2 is absent from current Git; v0.3.2 deliberately tests against the present v0.22.6 source instead of fabricating an old dependency."
+  }
 }
