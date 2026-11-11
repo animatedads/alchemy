@@ -112,6 +112,8 @@
    readBytesLast+=sample~sizeBytes
    nal=self~annexB(compressed)
    if i=first then nal=config||nal
+   if nal~length>4194304 then -
+     raise syntax 88.900 array('MP4 AVC access unit plus SPS/PPS exceeds codec feed budget',i,nal~length)
    numerator=sample~presentationTicks*90000
    if numerator//scale<>0 then -
      raise syntax 88.900 array('MP4 PTS cannot be represented exactly at 90 kHz',i)
