@@ -1,0 +1,2037 @@
+index 0000000000000000000000000000000000000000..280bb08111a341b72982edd8f5574a6dae01e8b3
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_preview_evidence.rex
+@@ -0,0 +1,20 @@
++call test
++say "PASS test_preview_evidence"
++exit 0
++
++test:
++  b=.WireUIBuilderNeutralFixture~build
++  c=.WireUICompiler~new; cr=c~compile(b["workspace"],b["release"]); call assert cr~ok,"compile"
++  s=.WireUIPreviewScenario~new("member","1","u7",.true,"HUMAN_VISUAL","QUERY",b["release"]~ref)
++  pm=c~previewManifest(b["workspace"],cr~value,s); call assert pm~ok,"preview"
++  viewport=.table~new; viewport["width"]=1440; viewport["height"]=900
++  geometry=.table~new; geometry["search"]="120,80,800,360"
++  materials=.table~new; materials["search.form"]="observed"
++  ev=.WireUIPreviewEvidence~new("capture-1","1",b["release"]~ref,s~ref,pm~value["manifestContentAddress"],"sha256-screenshot-example","sha256-accessibility-example",viewport,geometry,materials)
++  vr=ev~verifyBinding(cr~value,s,pm~value)
++  call assert vr~ok,"evidence binds exact release/scenario/manifest"
++  s2=.WireUIPreviewScenario~new("guest","1","u8",.false,"HUMAN_VISUAL","QUERY",b["release"]~ref)
++  call assert \ev~verifyBinding(cr~value,s2,pm~value)~ok,"evidence cannot be reused for another user scenario"
++  return
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderNeutralFixture.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_preview_matrix.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_preview_matrix.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..2e410deaf81525cda090f620a22cfd9f272e7c37
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_preview_matrix.rex
+@@ -0,0 +1,21 @@
++call test
++say "PASS test_preview_matrix"
++exit 0
++
++test:
++  b=.WireUIBuilderNeutralFixture~build; w=b["workspace"]
++  c=.WireUICompiler~new; cr=c~compile(w,b["release"]); call assert cr~ok,"compile"
++  guest=.WireUIPreviewScenario~new("GUEST_DESKTOP","1","guest-1",.false,"HUMAN_VISUAL","QUERY",b["release"]~ref)
++  member=.WireUIPreviewScenario~new("MEMBER_DESKTOP","1","member-1",.true,"HUMAN_VISUAL","QUERY",b["release"]~ref)
++  matrix=.WireUIPreviewMatrix~new("BUILDER_PREVIEW_MATRIX","1",b["release"]~ref)
++  call must matrix~addScenario(guest); call must matrix~addScenario(member); call must matrix~seal
++  rr=matrix~execute(c,w,cr~value); call assert rr~ok,"matrix executes"
++  gm=rr~value["GUEST_DESKTOP"]; mm=rr~value["MEMBER_DESKTOP"]
++  call assert gm["ACTIVEDefinitions"]~items=1,"guest sees public active UI only"
++  call assert mm["ACTIVEDefinitions"]~items=2,"authenticated scenario sees account section"
++  call assert gm["releaseRef"]["contentAddress"]=mm["releaseRef"]["contentAddress"],"same exact release under both users"
++  call assert matrix~ref~contentAddress<>"","matrix sealed/addressed"
++  return
++must: use arg r; if \r~ok then raise syntax 88.900 array(r~code,r~detail); return
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderNeutralFixture.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_audit_publish.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_audit_publish.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..ac7f95d69f5bdeb984230abe637c86d675ad3e0e
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_audit_publish.rex
+@@ -0,0 +1,25 @@
++call test
++say "PASS test_project_audit_publish"
++exit 0
++
++test:
++  p=.WireUIBuilderProject~new("AUDIT.TEST","Audit Test")
++  spec=.table~new; spec["publishVersion"]="1"; spec["primitive"]="PANEL"
++  payload=.table~new; payload["artifactId"]="AUDIT_PANEL"; payload["spec"]=spec
++  evidence=.array~of("source:src/WireUIBuilderProject.cls")
++  op=.WireUIDesignOperation~new("audit-op-1","DESIGN.COMPONENT.DRAFT",0,.nil,payload,"AI:SELF_TEST","audit boundary regression",evidence)
++  call assert op~contentAddress~left(7)="wuid01-","draft operation uses fast deterministic address"
++  call assert op~auditDigest~left(7)="sha512-","operation audit evidence strongly sealed on demand"
++  r=p~applyOperation(op); call assert r~ok,"draft operation accepted"
++  pw=p~asWire
++  call assert pw["operations"]~items=1,"project persists operation ledger"
++  call assert \pw["operations"][1]~hasIndex("auditDigest"),"autosave/project wire does not force expensive audit digest"
++  pr=p~publish("AUDIT_SITE","1"); call assert pr~ok,"project published"
++  release=pr~value["release"]
++  call assert release~ref~contentAddress~left(7)="sha512-","published release graph strongly sealed"
++  rw=release~asWire; md=rw["metadata"]
++  call assert md["builderOperationLedgerFingerprint"]~left(7)="ledger-","release records deterministic operation ledger fingerprint"
++  aw=op~asWire; call assert aw["auditDigest"]=op~auditDigest,"explicit operation wire carries strong audit digest"
++  return
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderAll.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_drafts.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_drafts.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..1f00e585e3afe73b0841dbba9404cdd991167e93
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_drafts.rex
+@@ -0,0 +1,23 @@
++call test
++say "PASS test_project_drafts"
++exit 0
++
++test:
++  p=.WireUIBuilderProject~new("SELF.TEST","Self Test")
++  s=.table~new; s["publishVersion"]="1"; s["primitive"]="FORM"
++  payload=.table~new; payload["artifactId"]="EDITOR"; payload["spec"]=s
++  op1=.WireUIDesignOperation~new("draft-1","DESIGN.COMPONENT.DRAFT",0,.nil,payload,"TEST")
++  r=p~applyOperation(op1); call assert r~ok,"initial draft accepted"
++  call assert p~revision=1,"project revision 1"
++  call assert p~workspace~allArtifacts~items=0,"draft edit does not create immutable artifact"
++
++  s2=.table~new; s2["publishVersion"]="1"; s2["primitive"]="TOKEN_FORM"
++  payload2=.table~new; payload2["artifactId"]="EDITOR"; payload2["spec"]=s2
++  op2=.WireUIDesignOperation~new("draft-2","DESIGN.COMPONENT.DRAFT",1,.nil,payload2,"TEST")
++  r=p~applyOperation(op2); call assert r~ok,"second draft accepted"
++  call assert p~revision=2,"project revision 2"
++  call assert p~workspace~allArtifacts~items=0,"many edits still no public version"
++  call assert p~draft("COMPONENT","EDITOR")~spec["primitive"]="TOKEN_FORM","latest draft exact"
++  return
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderAll.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_experiment_publish.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_experiment_publish.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..18d9bede4e4d66355fd354e910249f09ff4db43b
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_experiment_publish.rex
+@@ -0,0 +1,49 @@
++call test
++say "PASS test_project_experiment_publish"
++exit 0
++
++test:
++  p=.WireUIBuilderProject~new("AB.TEST","Independent A/B Test")
++  call draft p,"DESIGN.COMPONENT.DRAFT","CARD",componentSpec()
++  call draft p,"DESIGN.ELEMENT.DRAFT","THING",elementSpec()
++  call draft p,"DESIGN.PROJECTION.DRAFT","THING_CONTROL",projectionSpec("THING_CONTROL_DEF","control")
++  call draft p,"DESIGN.PROJECTION.DRAFT","THING_COMPACT",projectionSpec("THING_COMPACT_DEF","compact")
++  call draft p,"DESIGN.JOURNEY.DRAFT","MAIN",journeySpec()
++  call draft p,"DESIGN.EXPERIMENT.DRAFT","THING_LAYOUT",experimentSpec()
++  call assert p~workspace~allArtifacts~items=0,"A/B project remains draft before publish"
++  pr=p~publish("AB_SITE","1"); call assert pr~ok,"A/B project published"
++  out=pr~value; pkg=out["package"]; release=out["release"]
++  call assert pkg~experiments~items=1,"experiment compiled"
++  call assert pkg~definitions~items=2,"both exact variant projections compiled"
++  sA=.WireUIPreviewScenario~new("A","1","user-a",.false,"HUMAN_VISUAL","HOME",release~ref); sA~assignExperiment("THING_LAYOUT","A"); sA~seal
++  sB=.WireUIPreviewScenario~new("B","1","user-b",.false,"HUMAN_VISUAL","HOME",release~ref); sB~assignExperiment("THING_LAYOUT","B"); sB~seal
++  c=.WireUICompiler~new
++  a=c~previewManifest(p~workspace,pkg,sA); call assert a~ok,"variant A preview resolves"
++  b=c~previewManifest(p~workspace,pkg,sB); call assert b~ok,"variant B preview resolves"
++  da=a~value["ACTIVEDefinitions"][1]; db=b~value["ACTIVEDefinitions"][1]
++  call assert da["projectionRef"]["id"]="THING_CONTROL","A picks control projection"
++  call assert db["projectionRef"]["id"]="THING_COMPACT","B picks compact projection"
++  call assert da["contentAddress"]<>db["contentAddress"],"variants remain exact distinct compiled definitions"
++  return
++
++draft:
++  use arg p,verb,id,spec
++  payload=.table~new; payload["artifactId"]=id; payload["spec"]=spec
++  op=.WireUIDesignOperation~new("op-"p~revision"-"id,verb,p~revision,.nil,payload,"TEST")
++  r=p~applyOperation(op); if \r~ok then raise syntax 88.900 array(r~code,r~detail); return
++componentSpec: s=.table~new; s["publishVersion"]="1"; s["primitive"]="PANEL"; return s
++elementSpec: s=.table~new; s["publishVersion"]="1"; s["semanticType"]="THING"; s["fields"]=.array~of("label"); s["actions"]=.array~new; s["audiencePolicyRef"]="PUBLIC"; return s
++projectionSpec:
++  use arg def,role
++  s=.table~new; s["publishVersion"]="1"; s["profile"]="HUMAN_VISUAL"; s["elementId"]="THING"; s["componentId"]="CARD"; s["definitionId"]=def; s["styleRole"]=role; s["materialRole"]=role; return s
++journeySpec:
++  s=.table~new; s["publishVersion"]="1"; s["initialState"]="HOME"
++  row=.table~new; row["stateId"]="HOME"; row["ACTIVE"]=.array~of("THING"); row["PREFETCH"]=.array~new; row["ON_DEMAND"]=.array~new
++  s["states"]=.array~of(row); return s
++experimentSpec:
++  s=.table~new; s["publishVersion"]="1"; s["targetElementId"]="THING"; s["assignmentUnit"]="USER"
++  a=.table~new; a["variantId"]="A"; a["weight"]=50; a["projectionId"]="THING_CONTROL"
++  b=.table~new; b["variantId"]="B"; b["weight"]=50; b["projectionId"]="THING_COMPACT"
++  s["variants"]=.array~of(a,b); return s
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderAll.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_roundtrip.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_roundtrip.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..5cc513114c5ee209339627c900ddde59bcb11891
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_project_roundtrip.rex
+@@ -0,0 +1,24 @@
++call test
++say "PASS test_project_roundtrip"
++exit 0
++
++test:
++  p=.WireUIBuilderStudioFixture~build
++  path="/tmp/wire_ui_builder_project_v06.json"
++  r=p~save(path); call assert r~ok,"project saved"
++  lr=.WireUIBuilderProject~load(path); call assert lr~ok,"project loaded"
++  p2=lr~value
++  call assert p2~projectId=p~projectId,"project identity roundtrip"
++  call assert p2~revision=p~revision,"project revision roundtrip"
++  call assert p2~drafts~items=p~drafts~items,"draft count roundtrip"
++  call assert p2~operations~items=p~operations~items,"operation ledger roundtrip"
++  call assert p2~asWire["contentAddress"]=p~asWire["contentAddress"],"project content address roundtrip"
++  do d over p~drafts
++    d2=p2~draft(d~kind,d~artifactId)
++    call assert d2<>.nil,"draft restored "d~key
++    call assert d2~contentAddress=d~contentAddress,"draft content preserved "d~key
++  end
++  call sysFileDelete path
++  return
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderStudioFixture.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_render_observation.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_render_observation.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..b787a82265b3be3f3e1237978da1daa3d29ee0c3
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_render_observation.rex
+@@ -0,0 +1,37 @@
++call test
++say "PASS test_render_observation"
++exit 0
++
++test:
++  b=.WireUIBuilderNeutralFixture~build; w=b["workspace"]
++  c=.WireUICompiler~new; cr=c~compile(w,b["release"]); call assert cr~ok,"compile"
++  scenario=.WireUIPreviewScenario~new("MEMBER_DESKTOP_B","1","member-b",.true,"HUMAN_VISUAL","QUERY",b["release"]~ref)
++  pm=c~previewManifest(w,cr~value,scenario); call assert pm~ok,"preview manifest"
++  renderer=.WireUIArtifactRef~new("RENDERER","ALCHEMY_WIRE_UI_JS","0.4-dev1","sha512-renderer-build")
++  vp=.table~new; vp["width"]=1440; vp["height"]=900; vp["devicePixelRatio"]=1
++  ro=.WireUIRenderObservation~new("render-member-b","1",b["release"]~ref,scenario~ref,renderer,pm~value["manifestContentAddress"],vp)
++  search=w~artifact("ELEMENT","SOURCE_QUERY","1"); form=w~artifact("COMPONENT","FORM","1")
++  bounds=.table~new; bounds["x"]=118; bounds["y"]=174; bounds["width"]=905; bounds["height"]=398
++  eo=.WireUIRenderElementObservation~new("instance-search-1",search~ref,"source-query/current",b["humanSearch"]~ref,form~ref,b["material"]~ref,bounds,.true,.false,.true,.false,"form","Source query")
++  call must ro~addElement(eo); call must ro~seal
++  rw=ro~asWire
++  call assert rw["rendererRef"]["version"]="0.4-dev1","renderer version bound"
++  call assert rw["elements"]~items=1,"one observed render instance"
++  call assert rw["elements"][1]["semanticRef"]["id"]="SOURCE_QUERY","semantic identity correlated"
++  call assert rw["elements"][1]["bounds"]["width"]=905,"measured geometry retained"
++
++  facts=.table~new; facts["primaryActionVisible"]=.true; facts["primaryActionWidth"]=206
++  affected=.array~of(search~ref,b["humanSearch"]~ref)
++  assessment=.WireUIDesignAssessment~new("assessment-1","1","VISUAL_HIERARCHY","MEDIUM",0.91,"Primary action may be visually weak",ro~ref,facts,affected,.array~of("DESIGN.PROJECTION.SET_MATERIAL"))
++  aw=assessment~asWire
++  call assert aw["facts"]["primaryActionVisible"]=.true,"measured fact separate"
++  call assert aw["finding"]="Primary action may be visually weak","assessment retained separately"
++
++  pp=.table~new; pp["newVersion"]="2"; pp["styleRole"]="search.form.primary"; pp["materialRole"]="search.form.primary"
++  op=.WireUIDesignOperation~new("proposal-op","DESIGN.PROJECTION.SET_MATERIAL",0,b["humanSearch"]~ref,pp,"AI:designer","assessment recommendation",.array~of(ro~ref))
++  proposal=.WireUIDesignProposal~new("proposal-1","1",assessment~ref,.array~of(op~ref))
++  call assert proposal~operationRefs[1]~contentAddress=op~contentAddress,"proposal binds exact operation"
++  return
++must: use arg r; if \r~ok then raise syntax 88.900 array(r~code,r~detail); return
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderNeutralFixture.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_row_collection_contract.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_row_collection_contract.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..e62585092e88a8c37d9aa1a620e1bbc08a1abd50
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_row_collection_contract.rex
+@@ -0,0 +1,36 @@
++call test
++say "PASS test_row_collection_contract"
++exit 0
++
++test:
++  ws=.WireUIDesignWorkspace~new("ROW.TEST")
++  e=.WireUISemanticElement~new("PAX_LIST","1","PASSENGER_COLLECTION",.array~of("rows","rowCount","selectedIds","workspaceContext"),.array~of("PASSENGER.OPEN","PASSENGER.SELECT","PASSENGER.FILTER","PASSENGER.SORT"))
++  c=.WireUIVisualComponent~new("ROW_LIST","1","ROW_COLLECTION")
++  rc=.WireUIRowCollectionContract~new("rows","passengerId",.array~of("givenName","familyName","checkedBagCount"),"rowCount","MULTI","selectedIds","workspaceContext","FAIL_CLOSED",.array~of("familyName"),.array~of("familyName","givenName"),"PASSENGER.OPEN","PASSENGER.SELECT","PASSENGER.FILTER","PASSENGER.SORT")
++  p=.WireUIProjectionDesign~new("PAX_LIST.HV","1","HUMAN_VISUAL",e~ref,c~ref,"PAX_ROWS","PASSENGER.OPEN","passenger.list","passenger.list",.nil,.nil,.nil,rc)
++  call assert ws~register(e)~ok,"register element"
++  call assert ws~register(c)~ok,"register component"
++  call assert ws~register(p)~ok,"register projection"
++  release=.WireUISiteRelease~new("ROW_CONTRACT_TEST","1")
++  call assert release~pin(e~ref)~ok,"pin element"
++  call assert release~pin(c~ref)~ok,"pin component"
++  call assert release~pin(p~ref)~ok,"pin projection"
++  call assert release~seal~ok,"seal"
++  r=.WireUICompiler~new~compile(ws,release)
++  call assert r~ok,"compile"
++  defs=r~value~definitions
++  call assert defs~items=1,"one definition"
++  d=defs[1]
++  call assert d~hasIndex("rowContract"),"compiled row contract present"
++  w=d["rowContract"]
++  call assert w["collectionSlot"]="rows","collection slot"
++  call assert w["countSlot"]="rowCount","count slot separate"
++  call assert w["identityField"]="passengerId","stable identity"
++  call assert w["selectionMode"]="MULTI","selection mode"
++  call assert w["emptyPolicy"]="FAIL_CLOSED","fail closed policy"
++  call assert w["filterFields"]~items=1 & w["filterFields"][1]="familyName","filter field"
++  call assert w["sortFields"]~items=2,"sort fields"
++  call assert w["rowAction"]="PASSENGER.OPEN" & w["selectionAction"]="PASSENGER.SELECT","actions"
++  return
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderAll.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_row_collection_project_draft.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_row_collection_project_draft.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..26a5ad1073468f8aae9ee4d6572d494d3b2c80af
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_row_collection_project_draft.rex
+@@ -0,0 +1,36 @@
++call test
++say "PASS test_row_collection_project_draft"
++exit 0
++
++test:
++  ws=.WireUIDesignWorkspace~new("ROW.PROJECT")
++  p=.WireUIBuilderProject~new("ROW.PROJECT",ws)
++  call draft p,"DESIGN.COMPONENT.DRAFT","ROW_COMPONENT",componentSpec()
++  call draft p,"DESIGN.ELEMENT.DRAFT","PAX",elementSpec()
++  call draft p,"DESIGN.PROJECTION.DRAFT","PAX_VIEW",projectionSpec()
++  r=p~publish("ROW_SITE","1")
++  call assert r~ok,"publish"
++  defs=r~value["package"]~definitions
++  call assert defs~items=1,"definition count"
++  d=defs[1]; call assert d~hasIndex("rowContract"),"row contract compiled"
++  rc=d["rowContract"]
++  call assert rc["collectionSlot"]="rows" & rc["countSlot"]="rowCount","explicit collection/count"
++  call assert rc["identityField"]="passengerId","identity"
++  call assert rc["filterFields"][1]="familyName" & rc["sortFields"][1]="familyName","filter/sort"
++  return
++
++draft: procedure
++  use arg p,verb,id,spec
++  payload=.table~new; payload["artifactId"]=id; payload["spec"]=spec
++  op=.WireUIDesignOperation~new("op-"p~revision"-"id,verb,p~revision,.nil,payload,"TEST","row authoring")
++  r=p~applyOperation(op); call assert r~ok,"draft "id
++  return
++componentSpec: procedure
++  s=.table~new; s["publishVersion"]="1"; s["primitive"]="ROW_COLLECTION"; return s
++elementSpec: procedure
++  s=.table~new; s["publishVersion"]="1"; s["semanticType"]="PASSENGER_COLLECTION"; s["fields"]=.array~of("rows","rowCount","selectedIds","workspaceContext"); s["actions"]=.array~of("PASSENGER.OPEN","PASSENGER.SELECT","PASSENGER.FILTER","PASSENGER.SORT"); return s
++projectionSpec: procedure
++  s=.table~new; s["publishVersion"]="1"; s["profile"]="HUMAN_VISUAL"; s["elementId"]="PAX"; s["componentId"]="ROW_COMPONENT"; s["definitionId"]="PAX_ROWS"; s["action"]="PASSENGER.OPEN"; s["bindings"]=.table~new
++  rc=.table~new; rc["collectionSlot"]="rows"; rc["countSlot"]="rowCount"; rc["identityField"]="passengerId"; rc["rowFields"]=.array~of("givenName","familyName","bags"); rc["selectionMode"]="MULTI"; rc["selectedIdsSlot"]="selectedIds"; rc["workspaceContextSlot"]="workspaceContext"; rc["emptyPolicy"]="FAIL_CLOSED"; rc["filterFields"]=.array~of("familyName"); rc["sortFields"]=.array~of("familyName"); rc["rowAction"]="PASSENGER.OPEN"; rc["selectionAction"]="PASSENGER.SELECT"; rc["filterAction"]="PASSENGER.FILTER"; rc["sortAction"]="PASSENGER.SORT"; s["rowContract"]=rc; return s
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderAll.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_semantic_source_control.sh b/wire_ui_builder_v0.12-dev2-readiness/tests/test_semantic_source_control.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..16aeb6f690823729fe1a25c4fc1c2848e1ab3c26
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_semantic_source_control.sh
+@@ -0,0 +1,18 @@
++#!/usr/bin/env bash
++set -euo pipefail
++ROOT="$(cd "$(dirname "$0")/.." && pwd)"
++: "${SSC_ROOT:?set SSC_ROOT to oorexx_semantic_source_control_v0.2.3 or compatible}"
++TMP="$(mktemp -d)"; trap 'rm -rf "$TMP"' EXIT
++OUT="$TMP/scan.txt"
++"$SSC_ROOT/bin/osc" scan "$ROOT" --repo "$TMP/repo" --component WireUIBuilder >"$OUT"
++grep -q '^SCAN COMPLETE$' "$OUT"
++expected="$(find "$ROOT" -type f | wc -l | tr -d ' ')"
++actual="$(sed -n 's/^files= *\([0-9][0-9]*\).*/\1/p' "$OUT")"
++methods="$(sed -n 's/.*methods= *\([0-9][0-9]*\).*/\1/p' "$OUT")"
++attributes="$(sed -n 's/.*attributes= *\([0-9][0-9]*\).*/\1/p' "$OUT")"
++constants="$(sed -n 's/.*constants= *\([0-9][0-9]*\).*/\1/p' "$OUT")"
++[[ "$actual" == "$expected" ]]
++[[ "$methods" -ge 180 ]]
++[[ "$attributes" -ge 120 ]]
++[[ "$constants" -ge 2 ]]
++echo "PASS test_semantic_source_control releaseFiles=$actual methods=$methods attributes=$attributes constants=$constants"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_session_readiness.mjs b/wire_ui_builder_v0.12-dev2-readiness/tests/test_session_readiness.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..6a024f398f035c76e20cdecacdc565e99494eaab
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_session_readiness.mjs
+@@ -0,0 +1,16 @@
++import assert from 'node:assert/strict';
++import {BuilderSessionReadiness} from '../web/session-readiness.js';
++const seen=[];
++class FakeObserver { constructor(cb){this.cb=cb;} observe(){} disconnect(){this.disconnected=true;} }
++const mount={childNodes:[]};
++const r=new BuilderSessionReadiness({status:(text,state)=>seen.push([text,state]),mount,MutationObserverImpl:FakeObserver});
++r.start();
++r.noteTransportConnected();
++assert.deepEqual(seen.at(-1),['Transport connected','transport']);
++mount.childNodes.push({});
++r.noteRenderedView();
++assert.deepEqual(seen.at(-1),['View ready','ready']);
++r.noteSynchronising(); assert.deepEqual(seen.at(-1),['Synchronising…','sync']);
++r.noteError(); assert.deepEqual(seen.at(-1),['Resynchronising…','error']);
++r.noteClosed(); assert.deepEqual(seen.at(-1),['Disconnected','closed']);
++console.log('PASS builder session readiness');
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_source_catalogue_self.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_source_catalogue_self.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..d7cd0d4f3f9d062d31c09017a0f085bfb11fc1bc
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_source_catalogue_self.rex
+@@ -0,0 +1,33 @@
++call test
++say "PASS test_source_catalogue_self"
++exit 0
++
++test:
++  parse source . . script
++  sourceRoot=filespec("P",script); if sourceRoot~right(6)="tests/" then sourceRoot=sourceRoot~left(sourceRoot~length-6)
++  c=.WireUISourceCatalogue~new("BUILDER_SELF_SOURCE")
++  r=c~addTree(sourceRoot,"*.cls",.true,"builder"); call assert r~ok,"source tree scanned"
++  r=c~seal; call assert r~ok,"source catalogue sealed"
++  call assert c~fileCount>=28,"whole Builder src tree scanned"
++  call assert c~classCount>=20,"classes discovered"
++  call assert c~methodCount>=200,"methods discovered"
++  call assert c~attributeCount>=120,"attributes discovered"
++  call assert c~constantCount>=2,"constants discovered"
++  call assert c~contentAddress~left(10)="sourcecat-","source catalogue fingerprint"
++  found=.false
++  do f over c~files
++    call assert f~path~left(1)<>"/","catalogue path is relocation-stable"
++    if f~path="builder/src/WireUISourceCatalogue.cls" then do
++      found=.true
++      call assert f~constants~items>=0,"source file constants surface available"
++      call assert f~packageOptions~items>=0,"source file package-options surface available"
++    end
++  end
++  call assert found,"source catalogue includes itself"
++  p=.WireUIBuilderStudioFixture~build(c)
++  call assert p~drafts~items>=20,"studio authored from neutral drafts"
++  call assert p~workspace~allArtifacts~items=0,"source-driven authoring still unpublished"
++  return
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderStudioFixture.cls"
++::requires "WireUISourceCatalogue.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_source_catalogue_v031.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_source_catalogue_v031.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..d82e43a2efd5bd02621bd8bc89d55c569ca939f6
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_source_catalogue_v031.rex
+@@ -0,0 +1,36 @@
++call test
++say "PASS test_source_catalogue_v031"
++exit 0
++
++test:
++  path="/tmp/wuib-source-v031-"random(100000,999999)".cls"
++  s=.stream~new(path); r=s~open("WRITE REPLACE"); call assert r="READY:" | r="READY","temp source opened"
++  s~lineOut("::options digits 30")
++  s~lineOut("::class Sample public")
++  s~lineOut('::constant API_VERSION "1"')
++  s~lineOut("::attribute value get")
++  s~lineOut("::method ping")
++  s~lineOut('  return "pong"')
++  s~lineOut('::requires "Other.cls"')
++  s~close
++  c=.WireUISourceCatalogue~new("TEST")
++  r=c~addFile(path,"builder/Sample.cls"); call assert r~ok,"source added"
++  f=r~value
++  call assert f~constants~items=1,"constant surface captured"
++  call assert f~constants[1]["name"]="API_VERSION","constant identity"
++  call assert f~packageOptions~items=1,"package options captured"
++  call assert f~packageOptions[1]="digits 30","package option value"
++  call assert f~attributes~items=1,"attribute still captured"
++  call assert f~requires~items=1,"requires still captured"
++  w=f~asWire
++  call assert w["id"]="builder/Sample.cls","wire identity uses relocation-stable logical path"
++  call assert w["sourceId"]="Sample.cls","display sourceId retained separately"
++  call assert w["constants"]~items=1,"constant surface on wire"
++  call assert w["packageOptions"]~items=1,"package options on wire"
++  call assert c~constantCount=1,"catalogue constant count"
++  call assert c~attributeCount=1,"catalogue attribute count"
++  call assert c~packageOptionCount=1,"catalogue option count"
++  call SysFileDelete path
++  return
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUISourceCatalogue.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_source_workspace_v016.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_source_workspace_v016.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..91e943eab62450314c6e9c70bd4faff2fb082960
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_source_workspace_v016.rex
+@@ -0,0 +1,63 @@
++call test
++say "PASS test_source_workspace_v016"
++exit 0
++
++test:
++  parse source . . script
++  root=filespec("P",script); if root~right(6)="tests/" then root=root~left(root~length-6)
++  sources=.WireUISourceCatalogue~new("BUILDER_V010_SOURCE_WORKSPACE")
++  call assert sources~addTree(root,"*.cls",.true,"builder")~ok,"scan Builder source"
++  call assert sources~seal~ok,"seal source catalogue"
++  target=.WireUIBuilderProject~new("SOURCE_WORKSPACE_TARGET","Source workspace target")
++  br=.WireUIBuilderRuntimeFactory~build(target,sources,"BUILDER-APP","SOURCE-WORKSPACE","BUILDER-WEB",root"/studio/wire_ui_builder_studio_v0.11.json")
++  call assert br~ok,"Builder application factory"
++  app=br~value
++
++  q=app~workspaceQuery("BUILDER_SOURCE"); s=app~workspaceSelection("BUILDER_SOURCE")
++  call assert q<>.nil & s<>.nil,"Server v0.16 source workspace registered"
++  initialQuery=q~queryRevision; initialScope=q~scopeRevision; initialOrder=q~orderRevision
++  parent=app~view~instance("source-files")
++  call assert parent<>.nil,"source window parent exists"
++  call assert parent["slots"]["windowTotalCount"]=sources~fileCount,"window total count is authoritative"
++  call assert parent["children"]~items<=25,"browser receives bounded source window"
++  call assert parent["children"]~items>0,"source window has visible rows"
++
++  firstId=parent["children"][1]; first=app~view~instance(firstId); firstPath=first["slots"]["label"]
++  r=send(app,firstId,"SOURCE.OPEN",.directory~new); call assert r~ok,"row semantic action selects source"
++  s=app~workspaceSelection("BUILDER_SOURCE")
++  call assert s~selectedIds~items=1 & s~contains(firstPath),"source selection is semantic identity"
++  selectedRevision=s~selectionRevision
++  detail=app~view~instance("source-detail")
++  call assert detail["slots"]["visible"],"selected source detail visible"
++  call assert detail["slots"]["selectionRevision"]=selectedRevision,"detail exposes authoritative selection revision"
++
++  d=.directory~new; d["filter"]=""; d["sortRef"]="PATH"; d["direction"]="DESC"; d["offset"]=0; d["limit"]=10
++  r=send(app,"source-window-control","SOURCE.WINDOW",d); call assert r~ok,"source order changed through semantic action"
++  q2=app~workspaceQuery("BUILDER_SOURCE"); s2=app~workspaceSelection("BUILDER_SOURCE")
++  call assert q2~scopeRevision=initialScope,"sorting does not change membership scope"
++  call assert q2~orderRevision>initialOrder & q2~queryRevision>initialQuery,"sorting advances order/query revisions"
++  call assert s2~selectionRevision=selectedRevision & s2~contains(firstPath),"sorting preserves semantic selection"
++  sortedScope=q2~scopeRevision
++  parent=app~view~instance("source-files")
++  call assert parent["slots"]["windowLimit"]=10 & parent["children"]~items<=10,"requested source window limit applied"
++
++  d=.directory~new; d["filter"]="WireUIBuilderApplication.cls"; d["sortRef"]="PATH"; d["direction"]="DESC"; d["offset"]=50; d["limit"]=10
++  r=send(app,"source-window-control","SOURCE.WINDOW",d); call assert r~ok,"source membership filter changed through semantic action"
++  q3=app~workspaceQuery("BUILDER_SOURCE"); s3=app~workspaceSelection("BUILDER_SOURCE")
++  call assert q3~scopeRevision=sortedScope+1,"filter advances membership scope revision"
++  call assert s3~scopeRevision=q3~scopeRevision & s3~selectedIds~items=0,"filter invalidates old semantic selection"
++  detail=app~view~instance("source-detail"); call assert \detail["slots"]["visible"],"scope change hides stale source detail"
++  parent=app~view~instance("source-files")
++  call assert parent["slots"]["windowOffset"]=0,"scope change resets stale requested offset"
++  call assert parent["slots"]["filterRef"]="WireUIBuilderApplication.cls","window carries current filter identity"
++  call assert parent["children"]~items=1,"narrow filter materialises only matching row"
++  only=app~view~instance(parent["children"][1]); call assert only["slots"]["label"]="builder/integration/WireUIBuilderApplication.cls","filtered row has stable source path"
++  return
++
++send:
++  use arg app,instanceId,action,detail
++  f=.directory~new; f["applicationId"]=app~applicationId; f["sessionId"]=app~sessionId; f["accessPointId"]=app~accessPointId; f["viewRef"]=app~view~viewRef; f["elementInstance"]=instanceId; f["action"]=action; f["renderedRevision"]=app~view~revision; f["detail"]=detail
++  return app~receive(.WireUIProtocol~message(.WireUIProtocol~UI_ACTION,f))
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderApplication.cls"
++::requires "WireUISourceCatalogue.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_studio_js.mjs b/wire_ui_builder_v0.12-dev2-readiness/tests/test_studio_js.mjs
+new file mode 100644
+index 0000000000000000000000000000000000000000..c0d6a1f5326a27898c40f47623a7693daf428c56
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_studio_js.mjs
+@@ -0,0 +1,35 @@
++import fs from 'node:fs';
++import path from 'node:path';
++import {pathToFileURL} from 'node:url';
++const jsSrc=process.env.WIRE_UI_JS_SRC;
++if(!jsSrc) throw new Error('WIRE_UI_JS_SRC required');
++const studioPath=process.env.WIRE_UI_BUILDER_STUDIO_JSON ?? path.resolve('../studio/wire_ui_builder_studio_v0.11.json');
++const {adaptServerDefinition}=await import(pathToFileURL(path.join(jsSrc,'server-semantic-adapter.js')).href);
++const pkg=JSON.parse(fs.readFileSync(studioPath,'utf8'));
++if(!pkg.releaseRef?.contentAddress) throw new Error('Studio release is not sealed');
++if(pkg.definitions.length!==23) throw new Error(`expected 23 Studio definitions, got ${pkg.definitions.length}`);
++const defs=new Map(pkg.definitions.map(d=>[d.definitionKey,adaptServerDefinition(d)]));
++for(const key of ['WUIB_COMPONENT_EDITOR@1','WUIB_ELEMENT_EDITOR@1','WUIB_PROJECTION_EDITOR@1','WUIB_MATERIAL_EDITOR@1','WUIB_JOURNEY_EDITOR@1','WUIB_EXPERIMENT_EDITOR@1','WUIB_PUBLISH@1']){
++  if(!defs.has(key)) throw new Error(`missing ${key}`);
++  const def=defs.get(key);
++  if(!def.nodes.some(n=>n.primitive==='form')) throw new Error(`${key} is not renderable as a form`);
++  if(def.actions.length!==1) throw new Error(`${key} missing semantic action`);
++}
++if(defs.get('WUIB_COMPONENT_EDITOR@1').actions[0].action!=='DESIGN.COMPONENT.DRAFT') throw new Error('component editor action mismatch');
++for(const key of ['WUIB_SOURCE_FILES@1','WUIB_SOURCE_WINDOW_CONTROL@1','WUIB_SOURCE_ROW@1']) if(!defs.has(key)) throw new Error(`source workspace definition missing ${key}`);
++if(defs.get('WUIB_SOURCE_WINDOW_CONTROL@1').actions[0]?.action!=='SOURCE.WINDOW') throw new Error('source window action mismatch');
++if(defs.get('WUIB_SOURCE_ROW@1').actions[0]?.action!=='SOURCE.OPEN') throw new Error('source row action mismatch');
++const sourceDetailRaw=pkg.definitions.find(d=>d.definitionKey==='WUIB_SOURCE_DETAIL@1');
++for(const field of ['attributes','constants','requires','packageOptions','queryRevision','scopeRevision','selectionRevision']){
++  if(sourceDetailRaw?.bindings?.[field]!==field) throw new Error(`source detail missing ${field} binding`);
++}
++if((pkg.compositions??[]).length!==6) throw new Error('expected six Studio compositions');
++for(const key of ['WUIB_COMPOSITION_EDITOR@1','WUIB_PREVIEW_CONTROL@1']){ const def=defs.get(key); if(!def?.nodes.some(n=>n.primitive==='form')) throw new Error(`${key} is not a form`); }
++const canvas=defs.get('WUIB_COMPOSITION_CANVAS@1'); if(!canvas) throw new Error('composition canvas definition missing');
++if(canvas.actions[0]?.action!=='COMPOSITION.SELECT') throw new Error('composition canvas action mismatch');
++const rawCanvas=pkg.definitions.find(d=>d.definitionKey==='WUIB_COMPOSITION_CANVAS@1');
++if(!Array.isArray(rawCanvas?.metadata?.compositionHints)||rawCanvas.metadata.compositionHints.length!==1) throw new Error('canvas lacks compiled composition hint');
++for(const key of ['WUIB_TOOL_NAV@1','WUIB_ARTIFACT_LIBRARY@1','WUIB_SELECTION_INSPECTOR@1','WUIB_FLOW_MAP@1']) if(!defs.has(key)) throw new Error(`Studio visual definition missing ${key}`);
++if(!defs.has('WUIB_TOOL_NAV@1')) throw new Error('tool navigation definition missing');
++if(defs.get('WUIB_TOOL_NAV@1').actions[0]?.action!=='STUDIO.NAVIGATE') throw new Error('tool navigation action mismatch');
++console.log('PASS test_studio_js 23/23 definitions renderable + 6 contextual compositions');
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_v02_alchemy_adoption.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_v02_alchemy_adoption.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..749f0c520022215cd2ef33fb0e25baf0c44750a8
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_v02_alchemy_adoption.rex
+@@ -0,0 +1,29 @@
++b=.WireUIBuilderNeutralFixture~build
++w=b["workspace"]
++p=.table~new; p["newVersion"]="2"; p["componentRef"]=w~artifact("COMPONENT","COLLECTION","1")~ref
++op=.WireUIDesignOperation~new("adopt-op","DESIGN.PROJECTION.SET_COMPONENT",0,b["humanSearch"]~ref,p,"AI")
++r=w~applyOperation(op); if \r~ok then do; say "FAIL operation" r~code; exit 1; end
++lin=w~lineageFor(r~value~ref)
++scenario=.WireUIPreviewScenario~new("s","1","u",.false,"HUMAN_VISUAL","QUERY",b["release"]~ref)
++matrix=.WireUIPreviewMatrix~new("m","1",b["release"]~ref); matrix~addScenario(scenario); matrix~seal
++renderer=.WireUIArtifactRef~new("RENDERER","ALCHEMY_WIRE_UI_JS","0.4-dev1","sha512-build")
++ro=.WireUIRenderObservation~new("ro","1",b["release"]~ref,scenario~ref,renderer,"manifest",.table~new)
++search=w~artifact("ELEMENT","SOURCE_QUERY","1"); form=w~artifact("COMPONENT","FORM","1")
++eo=.WireUIRenderElementObservation~new("ri",search~ref,"semantic/ri",b["humanSearch"]~ref,form~ref)
++ro~addElement(eo); ro~seal
++assessment=.WireUIDesignAssessment~new("a","1","VISUAL","LOW",0.5,"review",ro~ref)
++proposal=.WireUIDesignProposal~new("p","1",assessment~ref,.array~of(op~ref))
++adapter=.WireUIBuilderActionAdapter~new(w)
++objects=.array~of(op,lin,matrix,ro,eo,assessment,proposal,adapter)
++do o over objects
++  vr=.AlchemyAdoptionVerifier~verify(o,"STANDARD")
++  if \vr~ok then do
++    say "FAIL adoption" o~class~id vr~failures~items
++    do f over vr~failures; say f["code"] f["message"]; end
++    exit 1
++  end
++end
++say "PASS v0.2 AlchemyObject STANDARD adoption" objects~items
++exit 0
++::requires "WireUIBuilderNeutralFixture.cls"
++::requires "AlchemyAdoption.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_v03_alchemy_adoption.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_v03_alchemy_adoption.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..4c5ea20a8196e2010e2b0c35ef259054f040ca5a
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_v03_alchemy_adoption.rex
+@@ -0,0 +1,28 @@
++call test
++say "PASS v0.3 AlchemyObject STANDARD adoption 5"
++exit 0
++
++test:
++  parse source . . script
++  root=filespec("P",script)"../src"
++  p=.WireUIBuilderProject~new("ADOPT.V03","Adoption v0.3")
++  s=.table~new; s["publishVersion"]="1"; s["primitive"]="PANEL"
++  payload=.table~new; payload["artifactId"]="PANEL"; payload["spec"]=s
++  op=.WireUIDesignOperation~new("v03-adopt-op","DESIGN.COMPONENT.DRAFT",0,.nil,payload,"TEST")
++  r=p~applyOperation(op); if \r~ok then do; say "FAIL draft" r~code; exit 1; end
++  draft=p~draft("COMPONENT","PANEL")
++  cat=.WireUISourceCatalogue~new("ADOPTION_SOURCE"); r=cat~addTree(root,"WireUIBuilderProject.cls",.false,"src"); if \r~ok then do; say "FAIL source" r~code; exit 1; end; cat~seal
++  sourceFile=cat~files[1]
++  adapter=.WireUIBuilderProjectActionAdapter~new(p)
++  objects=.array~of(p,draft,cat,sourceFile,adapter)
++  do o over objects
++    vr=.AlchemyAdoptionVerifier~verify(o,"STANDARD")
++    if \vr~ok then do
++      say "FAIL adoption" o~class~id vr~failures~items
++      do f over vr~failures; say f["code"] f["message"]; end
++      exit 1
++    end
++  end
++  return
++::requires "WireUIBuilderAll.cls"
++::requires "AlchemyAdoption.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_v04_alchemy_adoption.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_v04_alchemy_adoption.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..41f7833610fa668c94a4a9ae593726edbb8a7018
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_v04_alchemy_adoption.rex
+@@ -0,0 +1,26 @@
++call test
++say "PASS v0.4 AlchemyObject STANDARD adoption 4"
++exit 0
++
++test:
++  jr=.WireUIArtifactRef~new("JOURNEY","J","1","sealed")
++  row=.table~new; row["elementId"]="E"; row["span"]=12
++  composition=.WireUICompositionDesign~new("LAYOUT","1",jr,"HUMAN_VISUAL","HOME","GRID12",.array~of(row))
++  project=.WireUIBuilderProject~new("ADOPT.V04","Adoption v0.4")
++  spec=.table~new; spec["publishVersion"]="1"; spec["journeyId"]="J"; spec["profile"]="HUMAN_VISUAL"; spec["stateId"]="HOME"; spec["layoutModel"]="GRID12"; spec["placements"]=.array~of(row)
++  payload=.table~new; payload["artifactId"]="LAYOUT"; payload["spec"]=spec
++  op=.WireUIDesignOperation~new("v04-adopt-op","DESIGN.COMPOSITION.DRAFT",0,.nil,payload,"TEST")
++  r=project~applyOperation(op); call assert r~ok,"composition draft"
++  draft=project~draft("COMPOSITION","LAYOUT")
++  do o over .array~of(composition,project,draft,op)
++    vr=.AlchemyAdoptionVerifier~verify(o,"STANDARD")
++    if \vr~ok then do
++      say "FAIL adoption" o~class~id vr~failures~items
++      do f over vr~failures; say f["code"] f["message"]; end
++      exit 1
++    end
++  end
++  return
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderAll.cls"
++::requires "AlchemyAdoption.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_versioning.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_versioning.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..0ab4af108c526ec5f0875f4bf90cecc855b69838
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_versioning.rex
+@@ -0,0 +1,19 @@
++call test
++say "PASS test_versioning"
++exit 0
++
++test:
++  w=.WireUIDesignWorkspace~new("vtest")
++  e1=.WireUISemanticElement~new("SEARCH","1","SEARCH")
++  e2=.WireUISemanticElement~new("SEARCH","2","SEARCH",.array~of("origin"))
++  call must w~register(e1)
++  call must w~register(e2)
++  call assert e1~ref~key="ELEMENT:SEARCH@1","v1 exact key"
++  call assert e2~ref~key="ELEMENT:SEARCH@2","v2 exact key"
++  call assert e1~contentAddress \= e2~contentAddress,"version content differs"
++  call assert w~artifact("ELEMENT","SEARCH","1") == e1,"v1 coexists"
++  call assert w~artifact("ELEMENT","SEARCH","2") == e2,"v2 coexists"
++  return
++must: use arg r; if \r~ok then raise syntax 88.900 array(r~code,r~detail); return
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderAll.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tests/test_workspace_operations.rex b/wire_ui_builder_v0.12-dev2-readiness/tests/test_workspace_operations.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..dbc56e3179557d632b7f1e240108d4869a309c87
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tests/test_workspace_operations.rex
+@@ -0,0 +1,54 @@
++call test
++say "PASS test_workspace_operations"
++exit 0
++
++test:
++  b=.WireUIBuilderNeutralFixture~build
++  w=b["workspace"]
++  call assert w~revision=0,"imports do not manufacture authoring revisions"
++
++  offerList=w~artifact("COMPONENT","COLLECTION","1")
++  p=.table~new; p["newVersion"]="2"; p["componentRef"]=offerList~ref
++  op=.WireUIDesignOperation~new("op-projection-component","DESIGN.PROJECTION.SET_COMPONENT",0,b["humanSearch"]~ref,p,"AI:builder","try card/list presentation")
++  r=w~applyOperation(op); call assert r~ok,"projection operation accepted"
++  p2=r~value
++  call assert w~revision=1,"revision advances once"
++  call assert p2~version="2","new projection version derived"
++  call assert p2~componentRef~key=offerList~ref~key,"component changed exactly"
++  call assert w~artifact("PROJECTION","SOURCE_QUERY_FORM","1")==b["humanSearch"],"predecessor remains immutable/addressable"
++  call assert w~artifact("PROJECTION","SOURCE_QUERY_FORM","2")==p2,"derived version registered"
++  lin=w~lineageFor(p2~ref); call assert lin<>.nil,"lineage recorded"
++  call assert lin~predecessorRef~key=b["humanSearch"]~ref~key,"lineage predecessor exact"
++  call assert lin~operationRef~contentAddress=op~ref~contentAddress,"lineage operation exact"
++
++  dup=w~applyOperation(op); call assert dup~ok & dup~code="OPERATION_ALREADY_APPLIED","identical operation idempotent"
++  call assert w~revision=1,"duplicate does not advance revision"
++
++  stalePayload=.table~new; stalePayload["newVersion"]="2"; stalePayload["tokenName"]="space.unit"; stalePayload["tokenValue"]="10"
++  stale=.WireUIDesignOperation~new("op-stale","DESIGN.MATERIAL.SET_TOKEN",0,b["material"]~ref,stalePayload,"HUMAN:designer")
++  sr=w~applyOperation(stale); call assert \sr~ok & sr~code="DESIGN_REVISION_CONFLICT","stale CAS rejected"
++  call assert w~revision=1,"stale operation leaves revision unchanged"
++
++  good=.WireUIDesignOperation~new("op-material-token","DESIGN.MATERIAL.SET_TOKEN",1,b["material"]~ref,stalePayload,"HUMAN:designer","increase spacing")
++  gr=w~applyOperation(good); call assert gr~ok,"material operation accepted"
++  call assert w~revision=2,"second accepted operation advances once"
++  mw=gr~value~asWire; call assert mw["tokens"]["space.unit"]="10","material token changed"
++  call assert b["material"]~asWire["tokens"]["space.unit"]="8","old material unchanged"
++
++  jpayload=.table~new; jpayload["newVersion"]="2"; jpayload["stateId"]="QUERY"; jpayload["elements"]=.array~of("SOURCE_RESULTS","PRIVATE_PANEL")
++  jop=.WireUIDesignOperation~new("op-prefetch","DESIGN.JOURNEY.SET_PREFETCH",2,b["journey"]~ref,jpayload,"AI:builder","prefetch account for authenticated path")
++  jr=w~applyOperation(jop); call assert jr~ok,"journey prefetch operation accepted"
++  call assert jr~value~state("QUERY")["PREFETCH"]~items=2,"new prefetch list exact"
++  call assert b["journey"]~state("QUERY")["PREFETCH"]~items=1,"old journey unchanged"
++
++  account=w~artifact("ELEMENT","PRIVATE_PANEL","1")
++  ep=.table~new; ep["newVersion"]="2"; ep["audiencePolicyRef"]="PUBLIC"
++  eop=.WireUIDesignOperation~new("op-audience","DESIGN.ELEMENT.SET_AUDIENCE",3,account~ref,ep,"HUMAN:designer","preview policy variant")
++  er=w~applyOperation(eop); call assert er~ok,"audience operation accepted"
++  call assert er~value~audiencePolicyRef="PUBLIC","new audience exact"
++  call assert account~audiencePolicyRef="AUTHENTICATED","old audience unchanged"
++  call assert w~revision=4,"four accepted semantic edits"
++  return
++
++assert: use arg ok,msg; if \ok then raise syntax 88.900 array("ASSERT",msg); return
++::requires "WireUIBuilderNeutralFixture.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tools/build_studio_package.rex b/wire_ui_builder_v0.12-dev2-readiness/tools/build_studio_package.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..92ab885c8a77eabdf1633856db4df66af18bebb4
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tools/build_studio_package.rex
+@@ -0,0 +1,14 @@
++parse arg output sourceRoot
++if output="" | sourceRoot="" then do; say "usage: build_studio_package.rex OUTPUT_JSON SOURCE_ROOT"; exit 2; end
++catalogue=.WireUISourceCatalogue~new("WIRE_UI_BUILDER_V012_DEV1_SOURCE")
++r=catalogue~addTree(sourceRoot,"*.cls",.true,"builder"); if \r~ok then do; say r~code r~detail; exit 4; end
++r=catalogue~seal; if \r~ok then do; say r~code; exit 5; end
++project=.WireUIBuilderStudioFixture~build(catalogue)
++r=project~publish("WIRE_UI_BUILDER_STUDIO","0.12-dev1"); if \r~ok then do; say r~code r~detail; exit 6; end
++pkg=r~value["package"]
++.json~toJsonFile(output,pkg~asWire,.true)
++say "BUILDER_STUDIO_PACKAGE" pkg~contentAddress catalogue~contentAddress project~revision catalogue~fileCount
++exit 0
++::requires "json.cls"
++::requires "WireUIBuilderStudioFixture.cls"
++::requires "WireUISourceCatalogue.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tools/build_studio_package.sh b/wire_ui_builder_v0.12-dev2-readiness/tools/build_studio_package.sh
+new file mode 100755
+index 0000000000000000000000000000000000000000..dd51b2c0ceaf6806b710ec52a926fb481770bcf8
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tools/build_studio_package.sh
+@@ -0,0 +1,9 @@
++#!/usr/bin/env bash
++set -euo pipefail
++ROOT="$(cd "$(dirname "$0")/.." && pwd)"
++: "${OOREXX_HOME:=/usr/local}"
++: "${ALCHEMY_OBJECTS_SRC:?set ALCHEMY_OBJECTS_SRC}"
++: "${OOREXX_CRYPTO_SRC:?set OOREXX_CRYPTO_SRC}"
++export PATH="$ROOT/src:$ROOT/examples:$ALCHEMY_OBJECTS_SRC:$OOREXX_CRYPTO_SRC:$OOREXX_HOME/bin:$PATH"
++export LD_LIBRARY_PATH="$OOREXX_HOME/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
++rexx "$ROOT/tools/build_studio_package.rex" "$ROOT/studio/wire_ui_builder_studio_v0.12-dev1.json" "$ROOT"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tools/build_visual_checkpoint.rex b/wire_ui_builder_v0.12-dev2-readiness/tools/build_visual_checkpoint.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..cc468d00951f42f43f3b6e92db61536afbc19a1d
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tools/build_visual_checkpoint.rex
+@@ -0,0 +1,85 @@
++parse arg outPath root
++if outPath="" then outPath="visual_snapshot.json"
++if root="" then do; parse source . . script; root=filespec("P",script)".."; end
++p=.WireUIBuilderProject~new("VISUAL_WORKSPACE","Neutral multi-screen workspace")
++call put p,"DESIGN.COMPONENT.DRAFT","CARD",component("PANEL")
++call put p,"DESIGN.COMPONENT.DRAFT","FORM",component("FORM")
++call put p,"DESIGN.COMPONENT.DRAFT","LIST",component("OFFER_LIST")
++do id over .array~of("APP_HEADER","NAVIGATION","SEARCH_PANEL","DETAIL_PANEL","ACTION_PANEL","HISTORY_PANEL","NOTICES")
++  call put p,"DESIGN.ELEMENT.DRAFT",id,element(id)
++end
++call put p,"DESIGN.PROJECTION.DRAFT","APP_HEADER_VIEW",projection("APP_HEADER","CARD","PREVIEW_HEADER")
++call put p,"DESIGN.PROJECTION.DRAFT","NAVIGATION_VIEW",projection("NAVIGATION","LIST","PREVIEW_NAV")
++call put p,"DESIGN.PROJECTION.DRAFT","SEARCH_PANEL_VIEW",projection("SEARCH_PANEL","FORM","PREVIEW_SEARCH")
++call put p,"DESIGN.PROJECTION.DRAFT","DETAIL_PANEL_VIEW",projection("DETAIL_PANEL","CARD","PREVIEW_DETAIL")
++call put p,"DESIGN.PROJECTION.DRAFT","ACTION_PANEL_VIEW",projection("ACTION_PANEL","FORM","PREVIEW_ACTION")
++call put p,"DESIGN.PROJECTION.DRAFT","HISTORY_PANEL_VIEW",projection("HISTORY_PANEL","LIST","PREVIEW_HISTORY")
++call put p,"DESIGN.PROJECTION.DRAFT","NOTICES_VIEW",projection("NOTICES","CARD","PREVIEW_NOTICES")
++call put p,"DESIGN.JOURNEY.DRAFT","MAIN_FLOW",journey()
++do sid over .array~of("SEARCH","SUMMARY","TRANSACTION","OPEN","CONFIRM","AUDIT")
++  call put p,"DESIGN.COMPOSITION.DRAFT",sid"_LAYOUT",composition(sid)
++end
++
++catalog=.WireUISourceCatalogue~new("builder")
++ignore=catalog~addTree(root,"*.cls",.true)
++ignore=catalog~seal
++br=.WireUIBuilderRuntimeFactory~build(p,catalog,"WIRE-UI-BUILDER","VISUAL-CHECKPOINT","BUILDER-WEB",root"/studio/wire_ui_builder_studio_v0.12-dev1.json")
++if \br~ok then do; say br~code br~detail; exit 6; end
++app=br~value
++.json~toJsonFile(outPath,app~snapshot,.true)
++say "VISUAL_SNAPSHOT" outPath "revision" p~revision "drafts" p~drafts~items
++exit 0
++
++component: use arg primitive; s=.table~new; s["publishVersion"]="1"; s["primitive"]=primitive; return s
++element:
++  use arg id
++  s=.table~new; s["publishVersion"]="1"; s["semanticType"]="WORKSPACE_"id; s["fields"]=.array~of("title","summary"); s["actions"]=.array~new; s["audiencePolicyRef"]="PUBLIC"; return s
++projection:
++  use arg elementId,componentId,definitionId
++  s=.table~new; s["publishVersion"]="1"; s["profile"]="HUMAN_VISUAL"; s["elementId"]=elementId; s["componentId"]=componentId; s["definitionId"]=definitionId; s["action"]=""; s["styleRole"]="workspace.card"; s["materialRole"]="workspace.card"; s["bindings"]=.table~new; return s
++journey:
++  s=.table~new; s["publishVersion"]="1"; s["initialState"]="SEARCH"; states=.array~new
++  do sid over .array~of("SEARCH","SUMMARY","TRANSACTION","OPEN","CONFIRM","AUDIT")
++    row=.table~new; row["stateId"]=sid; row["ACTIVE"]=.array~of("APP_HEADER","NAVIGATION","SEARCH_PANEL","DETAIL_PANEL","ACTION_PANEL","HISTORY_PANEL","NOTICES"); row["PREFETCH"]=.array~new; row["ON_DEMAND"]=.array~new; states~append(row)
++  end
++  s["states"]=states; ts=.array~new; prior="SEARCH"
++  do next over .array~of("SUMMARY","TRANSACTION","OPEN","CONFIRM","AUDIT")
++    t=.table~new; t["fromState"]=prior; t["toState"]=next; t["trigger"]="NEXT"; t["purpose"]="visual checkpoint"; ts~append(t); prior=next
++  end
++  s["transitions"]=ts; return s
++composition:
++  use arg stateId
++  s=.table~new; s["publishVersion"]="1"; s["journeyId"]="MAIN_FLOW"; s["profile"]="HUMAN_VISUAL"; s["stateId"]=stateId; s["layoutModel"]="GRID12"; rows=.array~new
++  call add rows,"APP_HEADER","header",0,12
++  select
++    when stateId="SEARCH" then do
++      call add rows,"NAVIGATION","sidebar",10,3; call add rows,"SEARCH_PANEL","main",20,5; call add rows,"DETAIL_PANEL","main",30,4
++    end
++    when stateId="SUMMARY" then do
++      call add rows,"NAVIGATION","sidebar",10,3; call add rows,"DETAIL_PANEL","main",20,6; call add rows,"NOTICES","secondary",30,3
++    end
++    when stateId="TRANSACTION" then do
++      call add rows,"NAVIGATION","sidebar",10,3; call add rows,"ACTION_PANEL","main",20,6; call add rows,"HISTORY_PANEL","secondary",30,3
++    end
++    when stateId="OPEN" then do
++      call add rows,"NAVIGATION","sidebar",10,3; call add rows,"SEARCH_PANEL","main",20,4; call add rows,"ACTION_PANEL","main",30,5
++    end
++    when stateId="CONFIRM" then do
++      call add rows,"DETAIL_PANEL","main",10,8; call add rows,"NOTICES","secondary",20,4
++    end
++    otherwise do
++      call add rows,"NAVIGATION","sidebar",10,3; call add rows,"HISTORY_PANEL","main",20,9
++    end
++  end
++  call add rows,"NOTICES","footer",90,12
++  s["placements"]=rows; return s
++add:
++  use arg rows,id,region,order,span
++  r=.table~new; r["elementId"]=id; r["projectionId"]=""; r["region"]=region; r["order"]=order; r["span"]=span; r["rowSpan"]=1; r["align"]="STRETCH"; r["viewportClass"]="DEFAULT"; rows~append(r); return
++put:
++  use arg p,verb,id,spec
++  payload=.table~new; payload["artifactId"]=id; payload["spec"]=spec
++  op=.WireUIDesignOperation~new("visual-"p~revision"-"id,verb,p~revision,.nil,payload,"BUILDER:SELF","visual checkpoint")
++  r=p~applyOperation(op); if \r~ok then raise syntax 88.900 array(r~code,r~detail); return
++::requires "json.cls"
++::requires "WireUIBuilderApplication.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tools/builder-live-host.mjs b/wire_ui_builder_v0.12-dev2-readiness/tools/builder-live-host.mjs
+new file mode 100755
+index 0000000000000000000000000000000000000000..b9278046d31127af7a2121e7d88b37e6ca2b6a11
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tools/builder-live-host.mjs
+@@ -0,0 +1,155 @@
++#!/usr/bin/env node
++import http from 'node:http';
++import fs from 'node:fs';
++import path from 'node:path';
++import crypto from 'node:crypto';
++import {spawn} from 'node:child_process';
++import {fileURLToPath} from 'node:url';
++
++const HERE=path.dirname(fileURLToPath(import.meta.url));
++const BUILDER_ROOT=path.resolve(process.env.WUIB_BUILDER_ROOT??path.join(HERE,'..'));
++const GATEWAY_ROOT=needPath('WUIB_GATEWAY_ROOT');
++const JS_ROOT=needPath('WUIB_JS_ROOT');
++const REXX=process.env.WUIB_REXX||process.env.REXX||'rexx';
++const args=parseArgs(process.argv.slice(2));
++const bridgeToken=crypto.randomBytes(32).toString('hex');
++const pathToken=crypto.randomBytes(24).toString('hex');
++let backend=null, gateway=null, web=null, stopping=false, gatewayInfo=null, backendInfo=null;
++
++function needPath(name){
++  const value=process.env[name];
++  if(!value) throw new Error(`${name} is required; use run_builder_studio.sh so exact runtime dependencies are resolved for you`);
++  return path.resolve(value);
++}
++function parseArgs(argv){
++  const out={host:'127.0.0.1',port:8765,open:false,json:false};
++  for(let i=0;i<argv.length;i++){
++    const a=argv[i];
++    if(a==='--host') out.host=argv[++i];
++    else if(a==='--port') out.port=Number(argv[++i]);
++    else if(a==='--open') out.open=true;
++    else if(a==='--json') out.json=true;
++    else if(a==='--help'){ console.log('usage: run_builder_studio.sh [--port PORT] [--host HOST] [--open] [--json]'); process.exit(0); }
++    else throw new Error(`unknown option ${a}`);
++  }
++  if(!Number.isSafeInteger(out.port)||out.port<0||out.port>65535) throw new Error('port must be 0..65535');
++  return out;
++}
++function token(){return pathToken;}
++function splitLines(stream,onLine){
++  let buf=''; stream.setEncoding('utf8'); stream.on('data',(chunk)=>{buf+=chunk; for(;;){const n=buf.indexOf('\n'); if(n<0)break; const line=buf.slice(0,n).replace(/\r$/,''); buf=buf.slice(n+1); onLine(line);}}); stream.on('end',()=>{if(buf)onLine(buf);});
++}
++function childReady(child, eventName, timeoutMs, label, echoAfter=true){
++  return new Promise((resolve,reject)=>{
++    let done=false; const timer=setTimeout(()=>{if(done)return; done=true; reject(new Error(`${label} did not become ready within ${timeoutMs}ms`));},timeoutMs);
++    splitLines(child.stdout,(line)=>{
++      let value=null; try{value=JSON.parse(line);}catch{}
++      if(!done&&value?.event===eventName){done=true; clearTimeout(timer); resolve(value); return;}
++      if(echoAfter&&line) process.stdout.write(`[${label}] ${line}\n`);
++    });
++    child.once('exit',(code,signal)=>{if(done)return; done=true; clearTimeout(timer); reject(new Error(`${label} exited before ready (code=${code}, signal=${signal})`));});
++    child.once('error',(error)=>{if(done)return; done=true; clearTimeout(timer); reject(error);});
++  });
++}
++function pipeErrors(child,label){splitLines(child.stderr,(line)=>{if(line)process.stderr.write(`[${label}] ${line}\n`);});}
++
++async function startBackend(){
++  const env={...process.env,WUIB_BUILDER_ROOT:BUILDER_ROOT,WUIB_BRIDGE_TOKEN:bridgeToken,WUIB_PATH_TOKEN:pathToken,WUIB_STUDIO_PACKAGE:path.join(BUILDER_ROOT,'studio','wire_ui_builder_studio_v0.12-dev1.json')};
++  backend=spawn(REXX,[path.join(BUILDER_ROOT,'tools','builder_live_backend.rex')],{cwd:BUILDER_ROOT,env,stdio:['ignore','pipe','pipe']});
++  pipeErrors(backend,'ooRexx');
++  backendInfo=await childReady(backend,'builder-backend-ready',15000,'ooRexx',true);
++  return backendInfo;
++}
++async function startGateway(info){
++  const gatewayScript=path.join(GATEWAY_ROOT,'node','gateway.mjs');
++  const env={...process.env,
++    QF_BRIDGE_HOST:'127.0.0.1',QF_BRIDGE_PORT:String(info.bridgePort),QF_BRIDGE_TOKEN:bridgeToken,
++    WIRE_UI_INBOUND_QUEUE:info.inQueue,WIRE_UI_GATEWAY_HOST:'127.0.0.1',WIRE_UI_GATEWAY_PORT:'0',WIRE_UI_GATEWAY_PATH:'/wire-ui',WIRE_UI_GATEWAY_PATH_TOKEN:pathToken,
++    WIRE_UI_BOOTSTRAP_PATH:'/wire-ui/bootstrap',WIRE_UI_APPLICATION_ID:info.applicationId,WIRE_UI_SESSION_ID:info.sessionId,WIRE_UI_ACCESS_POINT_ID:info.accessPointId,
++    WIRE_UI_MODULE_URL:info.moduleUrl,WIRE_UI_SITE_ID:info.siteId
++  };
++  gateway=spawn(process.execPath,[gatewayScript],{cwd:GATEWAY_ROOT,env,stdio:['ignore','pipe','pipe']});
++  pipeErrors(gateway,'gateway');
++  gatewayInfo=await childReady(gateway,'wire-ui-gateway-listening',10000,'gateway',true);
++  return gatewayInfo;
++}
++function contentType(file){
++  if(file.endsWith('.html'))return 'text/html; charset=utf-8';
++  if(file.endsWith('.css'))return 'text/css; charset=utf-8';
++  if(file.endsWith('.js')||file.endsWith('.mjs'))return 'text/javascript; charset=utf-8';
++  if(file.endsWith('.json'))return 'application/json; charset=utf-8';
++  return 'application/octet-stream';
++}
++function serveFile(res,root,relative){
++  const base=path.resolve(root); const target=path.resolve(base,relative);
++  if(target!==base&&!target.startsWith(base+path.sep)){res.writeHead(403);res.end('Forbidden');return;}
++  if(!fs.existsSync(target)||!fs.statSync(target).isFile()){res.writeHead(404);res.end('Not found');return;}
++  res.writeHead(200,{'content-type':contentType(target),'cache-control':'no-store'}); fs.createReadStream(target).pipe(res);
++}
++async function fetchGatewayBootstrap(){
++  return new Promise((resolve,reject)=>{
++    const req=http.get({host:'127.0.0.1',port:gatewayInfo.port,path:`/wire-ui/bootstrap?token=${encodeURIComponent(token())}`,headers:{accept:'application/json'}},(res)=>{
++      let text=''; res.setEncoding('utf8'); res.on('data',(c)=>text+=c); res.on('end',()=>{if(res.statusCode!==200)return reject(new Error(`gateway bootstrap returned ${res.statusCode}`)); try{resolve(JSON.parse(text));}catch(e){reject(e);}});
++    }); req.on('error',reject);
++  });
++}
++async function startWeb(){
++  web=http.createServer(async(req,res)=>{
++    try{
++      const url=new URL(req.url,'http://builder.local');
++      if(req.method!=='GET'){res.writeHead(405);res.end('Method not allowed');return;}
++      if(url.pathname==='/healthz'){
++        const body=JSON.stringify({ok:true,runtime:'ooRexx/WireUIServer/QueueFabric',backend:backendInfo?.event??null,gateway:gatewayInfo?.event??null,targetProjectId:backendInfo?.targetProjectId??null});
++        res.writeHead(200,{'content-type':'application/json; charset=utf-8','cache-control':'no-store'});res.end(body);return;
++      }
++      if(url.pathname==='/wire-ui/bootstrap'){
++        const bootstrap=await fetchGatewayBootstrap();
++        bootstrap.gatewayUrl=`ws://127.0.0.1:${gatewayInfo.port}/wire-ui?token=${encodeURIComponent(token())}`;
++        res.writeHead(200,{'content-type':'application/json; charset=utf-8','cache-control':'no-store, private','x-content-type-options':'nosniff'});res.end(JSON.stringify(bootstrap));return;
++      }
++      if(url.pathname.startsWith('/wire-ui-js/')){serveFile(res,JS_ROOT,url.pathname.slice('/wire-ui-js/'.length));return;}
++      const rel=url.pathname==='/'?'index.html':url.pathname.slice(1);
++      serveFile(res,path.join(BUILDER_ROOT,'web'),rel);
++    }catch(error){res.writeHead(500,{'content-type':'text/plain; charset=utf-8','cache-control':'no-store'});res.end(`Builder live host error: ${error.message}`);}
++  });
++  await new Promise((resolve,reject)=>{web.once('error',reject);web.listen(args.port,args.host,resolve);});
++  return web.address();
++}
++async function maybeOpen(url){
++  if(!args.open)return;
++  const opener=process.platform==='darwin'?'open':process.platform==='win32'?'cmd':'xdg-open';
++  const openArgs=process.platform==='win32'?['/c','start','',url]:[url];
++  const child=spawn(opener,openArgs,{stdio:'ignore',detached:true}); child.unref();+}
++async function stop(code=0){
++  if(stopping)return; stopping=true;
++  if(web) await new Promise((resolve)=>web.close(()=>resolve()));
++  if(gateway&&!gateway.killed) gateway.kill('SIGTERM');
++  if(backend&&!backend.killed) backend.kill('SIGTERM');
++  setTimeout(()=>{if(gateway&&!gateway.killed)gateway.kill('SIGKILL');if(backend&&!backend.killed)backend.kill('SIGKILL');process.exit(code);},750).unref();
++  await Promise.all([gateway,backend].filter(Boolean).map((c)=>new Promise((resolve)=>{if(c.exitCode!==null)return resolve(); c.once('exit',resolve); setTimeout(resolve,650);}))); process.exit(code);
++}
++
++process.on('SIGINT',()=>void stop(0)); process.on('SIGTERM',()=>void stop(0));
++try{
++  const info=await startBackend();
++  const gw=await startGateway(info);
++  const addr=await startWeb();
++  const publicHost=args.host==='0.0.0.0'?'127.0.0.1':args.host;
++  const url=`http://${publicHost}:${addr.port}/`;
++  const ready={event:'builder-live-ready',url,healthUrl:`http://${publicHost}:${addr.port}/healthz`,runtime:'ooRexx -> WireUIServer v0.16 -> Queue Fabric -> Web Gateway v0.2 -> Alchemy Wire UI JS v0.4-dev4',targetProjectId:info.targetProjectId,targetRevision:info.targetRevision,targetDraftCount:info.targetDraftCount,gatewayPort:gw.port};
++  if(!args.json){
++    console.log('Wire UI Builder Studio v0.11 is live.');
++    console.log(`Runtime: ${ready.runtime}`);
++    console.log(`Target: ${ready.targetProjectId} revision ${ready.targetRevision} (${ready.targetDraftCount} drafts)`);
++    console.log(`Open: ${url}`);
++    console.log('Stop: Ctrl-C');
++  }
++  console.log(JSON.stringify(ready));
++  await maybeOpen(url);
++  backend.once('exit',(code,signal)=>{if(!stopping){console.error(`ooRexx backend exited unexpectedly (code=${code}, signal=${signal})`);void stop(1);}});
++  gateway.once('exit',(code,signal)=>{if(!stopping){console.error(`gateway exited unexpectedly (code=${code}, signal=${signal})`);void stop(1);}});
++}catch(error){
++  console.error(`Wire UI Builder live launch failed: ${error.stack||error}`);
++  await stop(1);
++}
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/tools/builder_live_backend.rex b/wire_ui_builder_v0.12-dev2-readiness/tools/builder_live_backend.rex
+new file mode 100644
+index 0000000000000000000000000000000000000000..79c66e94369ea6781af54971577f6c9d2b614997
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/tools/builder_live_backend.rex
+@@ -0,0 +1,92 @@
++/*
++ * First-party live Builder backend.
++ * Owns one ObjectQueueManager shared by WireUIServer and the private browser
++ * bridge.  It never launches a second queue manager and never delegates the
++ * application runtime to Python or another HTTP server.
++ */
++parse source . . script
++builderRoot=value("WUIB_BUILDER_ROOT",,"ENVIRONMENT")
++if builderRoot="" then builderRoot=filespec("P",script)".."
++studioPackage=value("WUIB_STUDIO_PACKAGE",,"ENVIRONMENT")
++if studioPackage="" then studioPackage=builderRoot"/studio/wire_ui_builder_studio_v0.12-dev1.json"
++bridgeToken=value("WUIB_BRIDGE_TOKEN",,"ENVIRONMENT")
++pathToken=value("WUIB_PATH_TOKEN",,"ENVIRONMENT")
++if bridgeToken="" | pathToken="" then do
++  say "BUILDER_LIVE_ERROR missing launcher tokens"
++  exit 2
++end
++
++gatewayPrincipal="wire-ui-builder-gateway"
++applicationId="WIRE-UI-BUILDER"
++sessionId="BUILDER-LIVE"
++accessPointId="BUILDER-WEB"
++moduleUrl="/wire-ui-js/src/index.js"
++siteId="WIRE_UI_BUILDER_STUDIO"
++
++signal on halt name shutdown
++
++target=.WireUIBuilderLiveWorkspaceFixture~build
++sources=.WireUISourceCatalogue~new("WIRE_UI_BUILDER_V082_LIVE_SOURCE")
++r=sources~addTree(builderRoot,"*.cls",.true,"builder")
++if \r~ok then do; say "BUILDER_LIVE_ERROR" r~code r~detail; exit 3; end
++r=sources~seal
++if \r~ok then do; say "BUILDER_LIVE_ERROR" r~code r~detail; exit 4; end
++
++built=.WireUIBuilderRuntimeFactory~build(target,sources,applicationId,sessionId,accessPointId,studioPackage)
++if \built~ok then do; say "BUILDER_LIVE_ERROR" built~code built~detail; exit 5; end
++app=built~value
++
++manager=.ObjectQueueManager~new("",.QueueGraphPayloadCodec~new,"admin")
++topics=.QueueTopicFabric~new(manager)
++server=.WireUIServer~new(manager,topics,"admin")
++server~registerApplication(app)
++binding=.WireUIWebAccessPointBinding~new(manager,server,app,gatewayPrincipal,bridgeToken,pathToken,moduleUrl,siteId,"127.0.0.1",0,"/wire-ui")
++if \binding~startBridge then do; say "BUILDER_LIVE_ERROR bridge-start-failed"; exit 6; end
++
++ready=.directory~new
++ready["event"]="builder-backend-ready"
++ready["bridgePort"]=binding~bridgeListener~port
++ready["inQueue"]=binding~inQueue
++ready["outQueue"]=binding~outQueue
++ready["applicationId"]=app~applicationId
++ready["sessionId"]=app~sessionId
++ready["accessPointId"]=app~accessPointId
++ready["moduleUrl"]=moduleUrl
++ready["siteId"]=siteId
++ready["targetProjectId"]=target~projectId
++ready["targetRevision"]=target~revision
++ready["targetDraftCount"]=target~drafts~items
++say .JSON~toJSON(ready)
++
++call rxfuncadd "SysLoadFuncs","rxunixsys","SysLoadFuncs"
++call SysLoadFuncs
++
++do forever
++  depth=manager~depth(binding~inQueue,"admin")
++  if depth~ok & depth~value["ready"]>0 then do
++    result=server~receiveFromAccessPoint(accessPointId,gatewayPrincipal)
++    if \result~ok then say "BUILDER_LIVE_ERROR receive" result~code result~detail
++    outbound=app~drainOutbound
++    do message over outbound
++      enqueued=server~enqueueToAccessPoint(accessPointId,message)
++      if \enqueued~ok then do
++        say "BUILDER_LIVE_ERROR outbound" enqueued~code enqueued~detail
++        signal shutdown
++      end
++    end
++  end
++  else call SysSleep 0.01
++end
++
++shutdown:
++  signal off halt
++  if symbol("binding")="VAR" then ignore=binding~stopBridge
++  exit 0
++
++::requires "json.cls"
++::requires "WireUIBuilderApplication.cls"
++::requires "WireUIBuilderLiveWorkspaceFixture.cls"
++::requires "WireUIServer.cls"
++::requires "WireUIWebAccessPointBinding.cls"
++::requires "ObjectQueueFabric.cls"
++::requires "ObjectQueueTopics.cls"
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/web/bootstrap-config.js b/wire_ui_builder_v0.12-dev2-readiness/web/bootstrap-config.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..e8e1574f0133d5335d7cca74659ff32071857b22
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/web/bootstrap-config.js
+@@ -0,0 +1,15 @@
++export function parseBootstrapSeed(text) {
++  const value=JSON.parse(text||'{}');
++  if(!value||typeof value!=='object'||Array.isArray(value)) throw new TypeError('Wire UI Builder bootstrap seed must be an object');
++  return value;
++}
++export async function loadWireUIBootstrap(seed,fetchImpl=globalThis.fetch){
++  if(!seed||typeof seed!=='object'||Array.isArray(seed)) throw new TypeError('Wire UI Builder bootstrap seed must be an object');
++  if(!seed.bootstrapUrl) return Object.freeze({...seed});
++  if(typeof fetchImpl!=='function') throw new Error('fetch is required for Builder bootstrap URL');
++  const response=await fetchImpl(String(seed.bootstrapUrl),{method:'GET',credentials:'same-origin',cache:'no-store',headers:{accept:'application/json'}});
++  if(!response?.ok) throw new Error(`Wire UI Builder bootstrap request failed (${response?.status??'network'})`);
++  const value=await response.json();
++  if(!value||typeof value!=='object'||Array.isArray(value)) throw new Error('Wire UI Builder bootstrap response must be an object');
++  return Object.freeze({...value});
++}
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/web/builder-wire-ui.js b/wire_ui_builder_v0.12-dev2-readiness/web/builder-wire-ui.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..2bc2059f4991050e8186df1a638ff95b9a14d699
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/web/builder-wire-ui.js
+@@ -0,0 +1,34 @@
++import {BuilderCompositionController} from './composition-controller.js';
++import {parseBootstrapSeed,loadWireUIBootstrap} from './bootstrap-config.js';
++import {BuilderSessionReadiness} from './session-readiness.js';
++const statusNode=document.getElementById('wire-ui-connection');
++const mount=document.getElementById('wire-ui-root');
++const configNode=document.getElementById('wire-ui-builder-config');
++function status(text,state=''){statusNode.textContent=text;statusNode.dataset.state=state;}
++function requireConfig(config){
++  for(const name of ['moduleUrl','gatewayUrl','outboundQueue']) if(!config?.[name]) throw new Error(`Wire UI Builder bootstrap requires ${name}`);
++  for(const name of ['applicationId','sessionId','accessPointId']) if(!config?.ownership?.[name]) throw new Error(`Wire UI Builder bootstrap requires ownership.${name}`);
++  return config;
++}
++async function boot(){
++  const readiness=new BuilderSessionReadiness({status,mount}); readiness.start();
++  const seed=parseBootstrapSeed(configNode?.textContent||'{}');
++  const config=requireConfig(await loadWireUIBootstrap(seed));
++  const api=await import(config.moduleUrl);
++  const {QueueFabricGatewayTransport,Comms,DefinitionRegistry,BrowserRenderer,WireUIRuntime,RenderProfileController,WireUIJourneyController,ObservationPlan,LocalStorageDefinitionCache,MaterialController}=api;
++  const transport=new QueueFabricGatewayTransport({url:config.gatewayUrl,outboundQueue:config.outboundQueue,ownership:config.ownership,putResultMode:'required'});
++  const comms=new Comms({transport,source:config.ownership.accessPointId,destination:config.outboundQueue});
++  const definitions=new DefinitionRegistry();
++  const material=new MaterialController({comms,document});
++  const renderer=new BrowserRenderer({definitions,mount,document});
++  const definitionCache=new LocalStorageDefinitionCache({storage:globalThis.localStorage});
++  const profile=new RenderProfileController({comms,definitions,definitionCache,renderer,siteId:config.siteId??'WIRE_UI_BUILDER_STUDIO'});
++  const runtime=new WireUIRuntime({comms,definitions,renderer,serverSemantic:true,renderProfile:profile,ownership:config.ownership});
++  const journey=new WireUIJourneyController({comms,runtime}); new ObservationPlan({comms});
++  const composition=new BuilderCompositionController({comms,runtime,renderer,definitions,mount,journeyController:journey,ownership:config.ownership}); composition.start();
++  comms.onState((event)=>{if(event.type==='connected')readiness.noteTransportConnected();else if(event.type==='closed')readiness.noteClosed();else if(event.type==='sequence-gap')readiness.noteSynchronising();else if(event.type==='inbound-handler-error')readiness.noteError();});
++  await comms.connect(profile.helloPayload({accessPointId:config.ownership.accessPointId}));
++  readiness.noteRenderedView();
++  globalThis.__wireUIBuilder=Object.freeze({comms,runtime,renderer,definitions,profile,material,journey,composition,readiness});
++}
++boot().catch((error)=>{console.error('Wire UI Builder bootstrap failed',error);status('Unable to connect','error');mount.replaceChildren();const panel=document.createElement('section');panel.className='builder-bootstrap-error';panel.textContent='The Builder could not establish this authoring session.';mount.appendChild(panel);});
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/web/builder.css b/wire_ui_builder_v0.12-dev2-readiness/web/builder.css
+new file mode 100644
+index 0000000000000000000000000000000000000000..f2332f83023495bb91056b22dcb1d0edd1c0bb9e
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/web/builder.css
+@@ -0,0 +1,238 @@
++:root{--builder-ink:var(--wui-brand-ink,#172033);--builder-accent:var(--wui-brand-accent,#4f46e5);--builder-surface:var(--wui-surface,#fff);--builder-radius:calc(var(--wui-radius-control,8)*1px);font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:var(--builder-ink);background:#f4f6fb}*{box-sizing:border-box}body{margin:0}.builder-topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;background:#111827;color:#fff}.builder-topbar strong{font-size:20px}.builder-topbar span{margin-left:12px;color:#a5b4fc;font-size:12px}.builder-stage{display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:22px;padding:22px}.builder-intro{position:sticky;top:22px;align-self:start;background:#111827;color:#fff;border-radius:16px;padding:24px}.builder-intro h1{margin-top:0;font-size:30px;line-height:1}.builder-intro p{color:#cbd5e1;line-height:1.55}.wire-ui-root{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}.wire-ui-root>*{background:var(--builder-surface);border:1px solid #dde3ef;border-radius:16px;padding:20px;box-shadow:0 10px 30px rgba(23,32,51,.06)}.wui-field{display:grid;gap:6px;margin-bottom:12px;font-size:12px;font-weight:700;color:#536078}.wui-field input,.wui-record-input{width:100%;padding:11px 12px;border:1px solid #c7d0e0;border-radius:var(--builder-radius);font:inherit}.wui-primary-action{border:0;border-radius:var(--builder-radius);padding:11px 16px;background:var(--builder-accent);color:#fff;font-weight:800;cursor:pointer}.wui-collection-item{width:100%;text-align:left;border:1px solid #dce2ed;background:#fff;border-radius:var(--builder-radius);padding:12px;margin:0 0 8px;cursor:pointer}.wui-record-field{display:grid;grid-template-columns:120px 1fr;gap:12px;padding:8px 0;border-bottom:1px solid #eef1f6}.wui-record-label{font-weight:700;color:#667085}.builder-bootstrap-error{padding:24px;background:#fff1f2;border:1px solid #fecdd3;border-radius:16px;color:#9f1239}@media(max-width:900px){.builder-stage{grid-template-columns:1fr}.builder-intro{position:static}.wire-ui-root{grid-template-columns:1fr}}
++
++/* Semantic composition rendering. Values are interpreted from Builder-compiled
++   composition hints; these rules are not the authoring source of truth. */
++.wui-builder-composition-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr));gap:18px;align-items:start;grid-column:1/-1;background:transparent!important;border:0!important;padding:0!important;box-shadow:none!important}
++.wui-builder-composition-grid>[data-wire-region]{min-width:0}
++.wui-builder-canvas{min-height:260px;border:2px dashed color-mix(in srgb,var(--builder-accent) 35%,#dce2ed)!important;background:linear-gradient(180deg,#fff,#f8f9ff)!important}
++.wui-builder-canvas .wui-collection-item{cursor:grab;touch-action:none}
++.wui-builder-canvas .wui-collection-item:active{cursor:grabbing}
++.wui-builder-preview-summary{background:#f8f9ff!important}
++@media(max-width:639px){.wui-builder-composition-grid>[data-wire-region]{grid-column:span 12!important}}
++
++.wui-composition-inactive{display:none!important}
++.wui-builder-tool-nav{grid-column:1/-1!important;display:flex!important;align-items:center;gap:8px;overflow:auto;padding:10px 12px!important;background:#fff!important;border:1px solid #dde3ef!important;border-radius:14px!important;box-shadow:0 6px 20px rgba(23,32,51,.04)!important}
++.wui-builder-tool-nav .wui-collection-item{width:auto;min-width:max-content;margin:0;padding:8px 12px;border-radius:999px;background:#f7f8fc;border-color:#e1e5ef;font-size:12px;font-weight:800;color:#475467}
++.wui-builder-tool-nav .wui-collection-item:hover{border-color:var(--builder-accent);color:var(--builder-accent);background:#f5f3ff}
++
++/* v0.6 visual-workspace presentation. The semantic composition remains
++   authoritative; these rules render its regions as a design tool. */
++body{background:#eef2f7;color:#152238}
++.builder-topbar{height:58px;padding:0 20px;background:#0c1b33;border-bottom:1px solid #243752;box-shadow:0 2px 12px rgba(12,27,51,.18)}
++.builder-topbar strong{font-size:18px;letter-spacing:-.02em}.builder-topbar span{color:#8fb4ff}
++.builder-stage{grid-template-columns:210px minmax(0,1fr);gap:14px;padding:14px;max-width:1800px;margin:0 auto}
++.builder-intro{top:14px;border-radius:12px;padding:18px;background:linear-gradient(180deg,#142846,#0d1d34);box-shadow:0 12px 28px rgba(12,27,51,.16)}
++.builder-intro h1{font-size:22px;line-height:1.08;margin-bottom:12px}.builder-intro p{font-size:12px;line-height:1.5}
++.wire-ui-root{gap:10px}.wire-ui-root>*{border-radius:10px;padding:14px;border-color:#d7dfeb;box-shadow:0 2px 8px rgba(28,45,74,.05)}
++.wui-builder-composition-grid{gap:10px!important}
++.wui-builder-composition-grid>[data-wire-region="header"]{background:#fff!important}
++[data-wire-definition="WUIB_PROJECT@1"]{padding:10px 14px!important}
++[data-wire-definition="WUIB_PROJECT@1"] .wui-record-field{display:inline-grid;grid-template-columns:auto auto;border:0;padding:2px 18px 2px 0;font-size:11px}
++[data-wire-definition="WUIB_PROJECT@1"] .wui-record-label{color:#8190a7}
++.wui-builder-tool-nav{padding:7px 9px!important;border-radius:10px!important;gap:4px!important}
++.wui-builder-tool-nav .wui-collection-item{padding:7px 11px;font-size:11px;border-radius:7px;background:transparent;border-color:transparent}
++.wui-builder-tool-nav .wui-collection-item:hover{background:#eef4ff;border-color:#c9d8f5}.wui-builder-tool-nav .wui-builder-tool-active{background:#e4edff!important;border-color:#a9c1ef!important;color:#123b7a!important}
++
++[data-wire-definition]{position:relative}
++[data-wire-definition]::before{display:block;font-size:10px;line-height:1.2;font-weight:900;letter-spacing:.09em;text-transform:uppercase;color:#6d7b91;margin-bottom:10px}
++[data-wire-definition="WUIB_ARTIFACT_LIBRARY@1"]::before{content:"Library"}
++[data-wire-definition="WUIB_COMPOSITION_CANVAS@1"]::before{content:"Composition canvas · drag / resize / relocate"}
++[data-wire-definition="WUIB_SELECTION_INSPECTOR@1"]::before{content:"Selection"}
++[data-wire-definition="WUIB_COMPOSITION_EDITOR@1"]::before{content:"Placement properties"}
++[data-wire-definition="WUIB_PREVIEW_CONTROL@1"]::before{content:"Preview context"}
++[data-wire-definition="WUIB_PREVIEW_SUMMARY@1"]::before{content:"Compiled preview"}
++[data-wire-definition="WUIB_FLOW_MAP@1"]::before{content:"Screen flow"}
++[data-wire-definition="WUIB_SOURCE_FILES@1"]::before{content:"Source tree"}
++[data-wire-definition="WUIB_SOURCE_DETAIL@1"]::before{content:"Source detail"}
++
++.wui-builder-library{background:#f8fafc!important;min-height:480px}.wui-builder-library .wui-collection-item{margin-bottom:6px}
++.wui-builder-library-item{display:grid!important;grid-template-columns:auto 1fr!important;gap:3px 8px!important;align-items:center!important;padding:9px 10px!important;border-radius:8px!important;background:#fff!important}
++.wui-builder-library-kind{font-size:8px;font-weight:900;letter-spacing:.07em;color:#335b9b;background:#e8f0ff;padding:3px 5px;border-radius:4px}.wui-builder-library-item strong{font-size:11px;overflow:hidden;text-overflow:ellipsis}.wui-builder-library-rev{grid-column:2;font-size:9px;color:#8a96a8}
++
++.wui-builder-canvas{min-height:520px!important;padding:18px!important;border:1px solid #cfd9e8!important;background-color:#f7f9fd!important;background-image:linear-gradient(#e7edf6 1px,transparent 1px),linear-gradient(90deg,#e7edf6 1px,transparent 1px),linear-gradient(180deg,#fafcff,#f4f7fb)!important;background-size:20px 20px,20px 20px,100% 100%!important;box-shadow:inset 0 0 0 6px #fff!important}
++.wui-builder-canvas::after{content:"12-column semantic composition";display:block;text-align:center;color:#a1adbd;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding-top:8px}
++.wui-builder-placement-card{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:10px!important;min-height:58px!important;border:1px solid #cbd8eb!important;border-left:4px solid #3568b8!important;border-radius:8px!important;background:#fff!important;padding:10px 10px 10px 12px!important;box-shadow:0 4px 10px rgba(38,65,105,.07)!important;transition:border-color .12s,box-shadow .12s,transform .12s}
++.wui-builder-placement-card:hover{border-color:#8eb1e8!important;box-shadow:0 7px 16px rgba(38,65,105,.12)!important;transform:translateY(-1px)}
++.wui-builder-placement-selected{outline:2px solid #3a73c9!important;outline-offset:2px;background:#f7fbff!important}
++.wui-builder-placement-main{display:grid;gap:4px;min-width:0}.wui-builder-placement-title{font-size:12px;color:#17365f;overflow:hidden;text-overflow:ellipsis}.wui-builder-placement-meta{font-size:9px;color:#7a8799;text-transform:uppercase;letter-spacing:.04em}
++.wui-builder-placement-tools{display:flex;gap:3px;align-items:center}.wui-builder-placement-handle{display:grid;place-items:center;width:24px;height:24px;border:1px solid #d7e0ed;border-radius:5px;background:#f8fafc;color:#50627b;font-size:12px;font-weight:900;cursor:pointer}.wui-builder-placement-handle:hover{background:#e8f1ff;color:#154a91;border-color:#a8c2e9}
++
++.wui-builder-inspector,.wui-builder-preview-control{background:#fff!important}.wui-builder-inspector .wui-record-field{grid-template-columns:90px 1fr;font-size:10px}.wui-builder-preview-summary{background:#f6f9fe!important;border-color:#cad8ec!important}.wui-builder-preview-summary .wui-record-field{font-size:10px}
++.wui-field{font-size:10px;margin-bottom:8px}.wui-field input,.wui-record-input{padding:8px 9px;font-size:11px;border-radius:6px}.wui-primary-action{padding:8px 11px;border-radius:6px;font-size:11px;background:#245ea9}.wui-record-field{padding:5px 0;grid-template-columns:100px 1fr;font-size:10px}.wui-record-label{color:#718096}
++
++.wui-builder-flow-map{background:#f7f9fd!important;overflow:auto}.wui-builder-flow-map>div{display:flex;gap:10px;align-items:stretch;min-width:max-content}.wui-builder-flow-card{display:grid!important;grid-template-rows:auto auto 1fr!important;gap:5px!important;width:190px!important;min-height:105px!important;margin:0!important;padding:12px!important;border-radius:9px!important;border:1px solid #cdd8e8!important;border-top:4px solid #2f65ad!important;background:#fff!important;position:relative}.wui-builder-flow-card:not(:last-child)::after{content:"→";position:absolute;right:-18px;top:40%;color:#7790b2;font-size:18px;font-weight:900}.wui-builder-flow-state{font-size:13px;color:#14345e}.wui-builder-flow-counts{font-size:9px;color:#738198}.wui-builder-flow-next{font-size:9px;color:#295f9f;align-self:end}
++
++@media(max-width:1100px){.builder-stage{grid-template-columns:1fr}.builder-intro{display:none}.wui-builder-composition-grid>[data-wire-region]{grid-column:span 12!important}.wui-builder-canvas{min-height:360px!important}}
++
++/* v0.6 visual fidelity: render the target composition as a real 12-column
++   semantic canvas, with derived region/ruler guides and journey thumbnails. */
++.wui-builder-canvas-grid{display:grid!important;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px!important;align-items:stretch}
++.wui-builder-canvas-grid>.wui-collection-item{width:auto!important;margin:0!important;min-width:0}
++.wui-builder-region-guides{grid-column:1/-1;display:grid;gap:7px;margin:-2px 0 4px;padding-bottom:8px;border-bottom:1px solid #dce5f1}
++.wui-builder-grid-ruler{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:3px}
++.wui-builder-grid-ruler i{font-style:normal;text-align:center;font-size:8px;font-weight:800;color:#9ba9bb;border-top:2px solid #d8e1ed;padding-top:3px}
++.wui-builder-region-row{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.wui-builder-region-row::before{content:"regions";font-size:8px;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:#9aa7b9;margin-right:3px}
++.wui-builder-region-row b{font-size:8px;text-transform:uppercase;letter-spacing:.05em;color:#365f94;background:#edf4fd;border:1px solid #cfddf0;border-radius:999px;padding:3px 7px}
++.wui-builder-placement-type{font-size:8px;line-height:1;text-transform:uppercase;letter-spacing:.08em;font-weight:900;color:#7890ad}
++.wui-builder-placement-card[data-wire-placement-region="sidebar"]{border-left-color:#7159ad!important}.wui-builder-placement-card[data-wire-placement-region="footer"]{border-left-color:#4f8b79!important}.wui-builder-placement-card[data-wire-placement-region="secondary"]{border-left-color:#ad794a!important}
++.wui-builder-placement-card[data-wire-placement-align="START"]{align-self:start}.wui-builder-placement-card[data-wire-placement-align="CENTER"]{align-self:center}.wui-builder-placement-card[data-wire-placement-align="END"]{align-self:end}
++.wui-builder-flow-card{width:210px!important;min-height:155px!important}.wui-builder-flow-thumb{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));grid-auto-rows:12px;gap:2px;align-content:start;min-height:42px;padding:5px;border:1px solid #d9e2ef;border-radius:5px;background-color:#f8fbff;background-image:linear-gradient(90deg,rgba(122,145,177,.08) 1px,transparent 1px);background-size:8.333% 100%}
++.wui-builder-flow-thumb-tile{display:block;border-radius:2px;background:#aac3e6;border:1px solid #88a8d5}.wui-builder-flow-thumb-tile[data-region="sidebar"]{background:#c8bae5;border-color:#aa96d5}.wui-builder-flow-thumb-tile[data-region="footer"]{background:#b8d8cf;border-color:#91c1b3}.wui-builder-flow-thumb-tile[data-region="secondary"]{background:#dfc4a8;border-color:#cca47a}.wui-builder-flow-thumb-empty{grid-column:1/-1;display:grid;place-items:center}.wui-builder-flow-thumb-empty::after{content:"no composition";font-style:normal;font-size:8px;color:#a2adbc}
++.wui-builder-inspector{border-top:3px solid #376eb8!important}.wui-builder-placement-selected{outline:3px solid rgba(47,103,184,.32)!important;box-shadow:0 0 0 2px #fff,0 8px 20px rgba(36,94,169,.18)!important}.wui-builder-placement-selected .wui-builder-placement-title{color:#0a468e}
++.wui-builder-preview-summary{position:relative;overflow:hidden}.wui-builder-preview-summary::after{content:"compiled semantic preview";position:absolute;right:8px;top:8px;padding:3px 6px;border-radius:999px;background:#e4edff;color:#35619a;font-size:7px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
++@media(max-width:900px){.wui-builder-canvas-grid>.wui-collection-item{grid-column:1/-1!important}.wui-builder-grid-ruler{display:none}}
++
++/* v0.6 Studio region stacks. These wrappers are presentation-only: live Wire UI
++   instance roots are merely re-parented beneath a semantic region container. */
++.wui-builder-studio-region{display:flex;flex-direction:column;gap:10px;align-self:start;min-width:0;background:transparent;border:0;padding:0;box-shadow:none}
++.wui-builder-studio-region>[data-wire-definition]{grid-column:auto!important;grid-row:auto!important;order:initial!important;width:100%}
++.wui-builder-studio-region[data-wire-studio-region="header"],.wui-builder-studio-region[data-wire-studio-region="nav"],.wui-builder-studio-region[data-wire-studio-region="flow"]{grid-column:1 / 13!important}
++.wui-builder-studio-region[data-wire-studio-region="library"]{grid-column:1 / 4!important}.wui-builder-studio-region[data-wire-studio-region="canvas"]{grid-column:4 / 10!important}.wui-builder-studio-region[data-wire-studio-region="inspector"]{grid-column:10 / 13!important}
++.wui-builder-flow-map{display:flex!important;position:relative;gap:10px!important;align-items:stretch!important;overflow-x:auto!important;padding-top:38px!important;scroll-snap-type:x proximity}
++.wui-builder-flow-map::before{position:absolute!important;left:14px;top:14px;margin:0!important}.wui-builder-flow-map>.wui-builder-flow-card{flex:0 0 210px;width:210px!important;scroll-snap-align:start}
++@media(max-width:1100px){.wui-builder-studio-region[data-wire-studio-region]{grid-column:1/-1!important}}
++
++/* v0.9 designer ergonomics. These controls only emit typed Builder operations;
++   the DOM remains a view of the semantic project. */
++.wui-builder-placement-card{position:relative!important;padding-right:18px!important;overflow:visible}
++.wui-builder-drag-grip{display:grid;place-items:center;width:24px;height:24px;border:1px solid #d7e0ed;border-radius:5px;background:#f8fafc;color:#50627b;font-size:12px;font-weight:900;cursor:grab;user-select:none}.wui-builder-drag-grip:active{cursor:grabbing}.wui-builder-drag-source{opacity:.52!important;transform:scale(.99)!important}
++.wui-builder-resize-handle{position:absolute;top:8px;right:-6px;bottom:8px;width:11px;border-radius:7px;cursor:ew-resize;background:linear-gradient(90deg,transparent 3px,#84a4cf 3px,#84a4cf 5px,transparent 5px);opacity:.35;transition:opacity .12s,background .12s}.wui-builder-placement-card:hover .wui-builder-resize-handle,.wui-builder-placement-selected .wui-builder-resize-handle,.wui-builder-resizing .wui-builder-resize-handle{opacity:1}.wui-builder-resizing{z-index:4!important;box-shadow:0 0 0 2px #fff,0 0 0 4px rgba(36,94,169,.24),0 10px 24px rgba(36,94,169,.18)!important}
++.wui-builder-region-row{gap:6px}.wui-builder-region-row b{cursor:default;transition:background .12s,border-color .12s,box-shadow .12s,transform .12s}.wui-builder-region-row b::before{content:"↳";margin-right:4px;color:#7896bd}.wui-builder-region-row b[role="button"]{cursor:copy}.wui-builder-region-row b[role="button"]:hover{background:#e1edff;border-color:#a8c2e9}.wui-builder-region-drop-active{background:#d8e9ff!important;border-color:#5384c5!important;box-shadow:0 0 0 3px rgba(83,132,197,.16)!important;transform:translateY(-1px)}
++.wui-builder-library-selected{border-color:#5f8dcc!important;background:#edf5ff!important;box-shadow:inset 3px 0 0 #3568b8}.wui-builder-library-related:not(.wui-builder-library-selected){border-color:#a7bddc!important;background:#f7fbff!important}.wui-builder-library-related:not(.wui-builder-library-selected)::after{content:"linked";grid-column:2;justify-self:end;font-size:7px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#4c719f;background:#e8f1fc;border-radius:999px;padding:2px 5px}
++.wui-builder-flow-card{cursor:pointer!important;transition:border-color .12s,box-shadow .12s,transform .12s,background .12s}.wui-builder-flow-card:hover{border-color:#8eacd4!important;transform:translateY(-1px)}.wui-builder-flow-active{border-color:#4b7fbe!important;border-top-color:#164f97!important;background:#f7fbff!important;box-shadow:0 0 0 2px rgba(47,103,184,.12),0 8px 18px rgba(36,94,169,.10)!important}.wui-builder-flow-active .wui-builder-flow-state{color:#0a468e}.wui-builder-flow-active::before{content:"editing";position:absolute;right:9px;top:8px;padding:2px 5px;border-radius:999px;background:#dfeeff;color:#205997;font-size:7px;font-weight:900;letter-spacing:.06em;text-transform:uppercase}
++.wui-builder-inspector{padding-bottom:10px!important}.wui-builder-inspector .wui-record-field{border:0!important;padding:3px 0!important}.wui-builder-inspector [data-wire-inspector-field="kind"]{display:block!important;margin-bottom:2px}.wui-builder-inspector [data-wire-inspector-field="kind"] .wui-record-label{display:none}.wui-builder-inspector [data-wire-inspector-field="kind"] .wui-record-value{display:inline-block;padding:3px 6px;border-radius:999px;background:#e6effc;color:#35619a;font-size:8px;font-weight:900;letter-spacing:.06em}.wui-builder-inspector [data-wire-inspector-field="artifact-id"]{display:block!important}.wui-builder-inspector [data-wire-inspector-field="artifact-id"] .wui-record-label{display:none}.wui-builder-inspector [data-wire-inspector-field="artifact-id"] .wui-record-value{font-size:14px;font-weight:800;color:#183d6b}.wui-builder-inspector [data-wire-inspector-field="detail"]{display:block!important;padding:5px 0!important}.wui-builder-inspector [data-wire-inspector-field="detail"] .wui-record-label{display:none}.wui-builder-inspector [data-wire-inspector-field="detail"] .wui-record-value{font-size:9px;color:#6c7c92}.wui-builder-inspector [data-wire-inspector-field="draft-revision"],.wui-builder-inspector [data-wire-inspector-field="publish-version"]{display:inline-grid!important;grid-template-columns:auto auto!important;gap:4px!important;margin-right:10px}.wui-builder-inspector [data-wire-inspector-field="draft-revision"] .wui-record-label,.wui-builder-inspector [data-wire-inspector-field="publish-version"] .wui-record-label{font-size:8px;text-transform:uppercase;letter-spacing:.05em}.wui-builder-inspector [data-wire-inspector-field="draft-revision"] .wui-record-value,.wui-builder-inspector [data-wire-inspector-field="publish-version"] .wui-record-value{font-size:9px;font-weight:800}
++[data-wire-definition="WUIB_COMPOSITION_EDITOR@1"]::before{content:"Layout properties"}.wui-builder-context-card{display:grid;gap:10px;margin-bottom:9px}.wui-builder-context-placeholder{display:grid;gap:4px;padding:12px;border:1px dashed #cbd7e7;border-radius:8px;background:#f8fbff}.wui-builder-context-placeholder strong{font-size:11px;color:#315a8f}.wui-builder-context-placeholder span{font-size:9px;line-height:1.45;color:#7b899c}.wui-builder-context-hero{display:grid;gap:3px;padding-bottom:9px;border-bottom:1px solid #e4eaf3}.wui-builder-context-hero>span{font-size:8px;font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#7189a7}.wui-builder-context-hero>strong{font-size:14px;color:#173f72}.wui-builder-context-hero>small{font-size:8px;color:#8491a3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wui-builder-property-group{display:grid;gap:5px}.wui-builder-property-label{font-size:8px;font-weight:900;letter-spacing:.07em;text-transform:uppercase;color:#7c899b}.wui-builder-property-values{display:flex;gap:4px;align-items:center;flex-wrap:wrap}.wui-builder-property-chip{appearance:none;border:1px solid #d2dce9;background:#f8fafc;color:#51647e;border-radius:6px;padding:5px 7px;font-size:8px;font-weight:800;cursor:pointer}.wui-builder-property-chip:hover{border-color:#94b2db;background:#edf5ff;color:#245a9f}.wui-builder-property-chip.is-active,.wui-builder-property-chip[aria-pressed="true"]{background:#dfeeff;border-color:#7ca3d5;color:#174d8f}.wui-builder-span-range{flex:1 1 100px;min-width:80px;accent-color:#3568b8}.wui-builder-span-value{min-width:32px;text-align:right;font-size:9px;font-weight:900;color:#315a8f}.wui-builder-context-advanced{margin-top:8px;border-top:1px solid #e2e8f1;padding-top:8px}.wui-builder-context-advanced>summary{cursor:pointer;list-style:none;font-size:8px;font-weight:900;letter-spacing:.06em;text-transform:uppercase;color:#77869a}.wui-builder-context-advanced>summary::before{content:"＋";margin-right:5px}.wui-builder-context-advanced[open]>summary::before{content:"−"}.wui-builder-context-advanced:not([open])>.wui-field,.wui-builder-context-advanced:not([open])>.wui-primary-action{display:none!important}.wui-builder-context-empty .wui-builder-context-advanced{display:none}.wui-builder-context-advanced .wui-field{margin-top:7px}
++@media(max-width:900px){.wui-builder-resize-handle{display:none}.wui-builder-property-values{gap:6px}.wui-builder-property-chip{padding:7px 9px}}
++
++/* v0.9 live-browser layout stabilisation.
++   The Studio shell is the one semantic workspace; region stacks must stretch
++   across that workspace and hidden parked stacks must not participate in grid
++   sizing. This is presentation only -- authored GRID12 spans remain semantic. */
++.wire-ui-root{display:block!important;width:100%!important;min-width:0!important}
++.wire-ui-root>.wui-builder-composition-grid{display:grid!important;width:100%!important;min-width:0!important;max-width:none!important;justify-self:stretch!important}
++.wui-builder-composition-grid{width:100%!important;min-width:0!important;max-width:100%;grid-template-columns:repeat(12,minmax(0,1fr))!important;grid-auto-flow:row}
++.wui-builder-studio-region{width:100%;min-width:0!important;max-width:100%}
++.wui-builder-studio-region[hidden]{display:none!important}
++.wui-builder-studio-region>[data-wire-definition]{min-width:0!important;max-width:100%}
++.wui-builder-canvas,.wui-builder-flow-map,.wui-builder-library,.wui-builder-inspector,.wui-builder-preview-summary,.wui-builder-preview-control{width:100%!important;min-width:0}
++.wui-builder-placement-main{flex:1 1 auto;min-width:0}.wui-builder-placement-tools{flex:0 0 auto}
++
++/* v0.9 DESIGN chrome topology.
++   The outer Studio workspace is not the target application's 12-column canvas.
++   Named areas give the browser a deterministic four-row Studio topology while
++   the target canvas keeps its own semantic GRID12 internally. */
++.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]{
++  grid-template-columns:minmax(180px,3fr) minmax(0,6fr) minmax(220px,3fr)!important;
++  grid-template-areas:
++    "header header header"
++    "nav nav nav"
++    "library canvas inspector"
++    "flow flow flow" !important;
++  grid-auto-flow:row!important;
++  align-items:start!important;
++}
++.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="header"]{grid-area:header!important}
++.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="nav"]{grid-area:nav!important}
++.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="library"]{grid-area:library!important}
++.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="canvas"]{grid-area:canvas!important}
++.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="inspector"]{grid-area:inspector!important}
++.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region[data-wire-studio-region="flow"]{grid-area:flow!important}
++.wui-builder-composition-grid[data-wire-composition-state="DESIGN"]>.wui-builder-studio-region{justify-self:stretch!important;align-self:start!important;width:auto!important;max-width:none!important}
++@media(max-width:1100px){
++  .wui-builder-composition-grid[data-wire-composition-state="DESIGN"]{
++    grid-template-columns:minmax(0,1fr)!important;
++    grid-template-areas:"header" "nav" "library" "canvas" "inspector" "flow" !important;
++  }
++}
++
++/* v0.9 conditional/fact-flow authoring cues. These are Builder chrome only;
++   customer-visible copy remains resource-owned outside Builder. */
++.wui-builder-placement-conditional{box-shadow:inset 3px 0 0 currentColor}
++.wui-builder-placement-conditional .wui-builder-placement-meta{font-weight:600}
++.wui-builder-flow-id{display:inline-flex;align-self:flex-start;padding:2px 5px;border:1px solid #cbd5e1;border-radius:999px;font-size:9px;font-weight:800;letter-spacing:.04em;text-transform:uppercase}
++
++/* v0.11 non-DESIGN Studio topology.
++   These are editor-chrome areas only. A single semantic region wrapper must
++   never collapse two sibling authoring perspectives into a vertical stack;
++   SOURCE in particular is a 4/8 catalogue/detail workbench. */
++.wui-builder-composition-grid[data-wire-composition-state="SOURCE"]{
++  grid-template-columns:minmax(260px,4fr) minmax(0,8fr)!important;
++  grid-template-areas:"header header" "nav nav" "source-list source-detail"!important;
++  grid-auto-flow:row!important;align-items:start!important;
++}
++.wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]{
++  grid-template-columns:repeat(4,minmax(0,1fr))!important;
++  grid-template-areas:"header header header header" "nav nav nav nav" "catalogue component-editor element-editor projection-editor"!important;
++  grid-auto-flow:row!important;align-items:start!important;
++}
++.wui-builder-composition-grid[data-wire-composition-state="MATERIALS"]{
++  grid-template-columns:repeat(3,minmax(0,1fr))!important;
++  grid-template-areas:"header header header" "nav nav nav" "catalogue material-editor preview"!important;
++  grid-auto-flow:row!important;align-items:start!important;
++}
++.wui-builder-composition-grid[data-wire-composition-state="FLOW"]{
++  grid-template-columns:repeat(12,minmax(0,1fr))!important;
++  grid-template-areas:
++    "header header header header header header header header header header header header"
++    "nav nav nav nav nav nav nav nav nav nav nav nav"
++    "catalogue catalogue catalogue flow flow flow flow flow flow flow flow flow"
++    "journey-editor journey-editor journey-editor journey-editor condition-editor condition-editor condition-editor condition-editor policy-editor policy-editor policy-editor policy-editor"
++    "experiment-editor experiment-editor experiment-editor experiment-editor experiment-editor experiment-editor preview preview preview preview preview preview"!important;
++  grid-auto-flow:row!important;align-items:start!important;
++}
++.wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]{
++  grid-template-columns:minmax(240px,4fr) minmax(0,5fr) minmax(220px,3fr)!important;
++  grid-template-areas:"header header header" "nav nav nav" "catalogue preview publish"!important;
++  grid-auto-flow:row!important;align-items:start!important;
++}
++.wui-builder-composition-grid[data-wire-composition-state="SOURCE"]>.wui-builder-studio-region[data-wire-studio-region="source-list"]{grid-area:source-list!important}
++.wui-builder-composition-grid[data-wire-composition-state="SOURCE"]>.wui-builder-studio-region[data-wire-studio-region="source-detail"]{grid-area:source-detail!important}
++.wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]>.wui-builder-studio-region[data-wire-studio-region="catalogue"],.wui-builder-composition-grid[data-wire-composition-state="MATERIALS"]>.wui-builder-studio-region[data-wire-studio-region="catalogue"],.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="catalogue"],.wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]>.wui-builder-studio-region[data-wire-studio-region="catalogue"]{grid-area:catalogue!important}
++.wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]>.wui-builder-studio-region[data-wire-studio-region="component-editor"]{grid-area:component-editor!important}
++.wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]>.wui-builder-studio-region[data-wire-studio-region="element-editor"]{grid-area:element-editor!important}
++.wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]>.wui-builder-studio-region[data-wire-studio-region="projection-editor"]{grid-area:projection-editor!important}
++.wui-builder-composition-grid[data-wire-composition-state="MATERIALS"]>.wui-builder-studio-region[data-wire-studio-region="material-editor"]{grid-area:material-editor!important}
++.wui-builder-composition-grid[data-wire-composition-state="MATERIALS"]>.wui-builder-studio-region[data-wire-studio-region="preview"]{grid-area:preview!important}
++.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="flow"]{grid-area:flow!important}
++.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="journey-editor"]{grid-area:journey-editor!important}
++.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="condition-editor"]{grid-area:condition-editor!important}
++.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="policy-editor"]{grid-area:policy-editor!important}
++.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="experiment-editor"]{grid-area:experiment-editor!important}
++.wui-builder-composition-grid[data-wire-composition-state="FLOW"]>.wui-builder-studio-region[data-wire-studio-region="preview"]{grid-area:preview!important}
++.wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]>.wui-builder-studio-region[data-wire-studio-region="preview"]{grid-area:preview!important}
++.wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]>.wui-builder-studio-region[data-wire-studio-region="publish"]{grid-area:publish!important}
++
++/* v0.11 SOURCE is an authoritative window over source facts, not a raw object dump. */
++[data-wire-definition="WUIB_SOURCE_WINDOW_CONTROL@1"]{display:grid;grid-template-columns:minmax(160px,2fr) repeat(4,minmax(70px,1fr));gap:8px;align-items:end}
++[data-wire-definition="WUIB_SOURCE_WINDOW_CONTROL@1"] .wui-field{margin:0}
++[data-wire-definition="WUIB_SOURCE_FILES@1"]{padding:10px!important}
++[data-wire-definition="WUIB_SOURCE_FILES@1"]>.wui-record-field{display:inline-grid!important;grid-template-columns:auto auto!important;gap:4px!important;margin:0 10px 8px 0;padding:2px 0!important;border:0!important;font-size:9px}
++[data-wire-definition="WUIB_SOURCE_FILES@1"]>.wui-record-field .wui-record-label{font-size:8px;text-transform:uppercase;letter-spacing:.04em;color:#7b8798}
++[data-wire-definition="WUIB_SOURCE_ROW@1"]{display:block;width:100%;text-align:left;border:1px solid #dce2ed;background:#fff;border-radius:var(--builder-radius);padding:9px 10px;margin:0 0 6px;cursor:pointer;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;line-height:1.35;overflow-wrap:anywhere;word-break:break-word;color:inherit}
++[data-wire-definition="WUIB_SOURCE_ROW@1"]:hover{border-color:#9bb8dd;background:#f7fbff}
++[data-wire-definition="WUIB_SOURCE_DETAIL@1"] .wui-record-value{overflow-wrap:anywhere;word-break:break-word;white-space:pre-wrap}
++[data-wire-definition="WUIB_SOURCE_DETAIL@1"] .wui-record-field{grid-template-columns:minmax(90px,140px) minmax(0,1fr)}
++@media(max-width:900px){[data-wire-definition="WUIB_SOURCE_WINDOW_CONTROL@1"]{grid-template-columns:minmax(0,1fr)}}
++
++@media(max-width:1100px){
++  .wui-builder-composition-grid[data-wire-composition-state="SOURCE"],
++  .wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"],
++  .wui-builder-composition-grid[data-wire-composition-state="MATERIALS"],
++  .wui-builder-composition-grid[data-wire-composition-state="FLOW"],
++  .wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]{
++    grid-template-columns:minmax(0,1fr)!important;
++  }
++  .wui-builder-composition-grid[data-wire-composition-state="SOURCE"]{grid-template-areas:"header" "nav" "source-list" "source-detail"!important}
++  .wui-builder-composition-grid[data-wire-composition-state="COMPONENTS"]{grid-template-areas:"header" "nav" "catalogue" "component-editor" "element-editor" "projection-editor"!important}
++  .wui-builder-composition-grid[data-wire-composition-state="MATERIALS"]{grid-template-areas:"header" "nav" "catalogue" "material-editor" "preview"!important}
++  .wui-builder-composition-grid[data-wire-composition-state="FLOW"]{grid-template-areas:"header" "nav" "catalogue" "flow" "journey-editor" "condition-editor" "policy-editor" "experiment-editor" "preview"!important}
++  .wui-builder-composition-grid[data-wire-composition-state="PUBLISH"]{grid-template-areas:"header" "nav" "catalogue" "preview" "publish"!important}
++}
++
++/* v0.11 fact-flow cues: conditional participation and conditional journey
++   edges are visible semantic facts, not browser predicates. */
++.wui-builder-flow-signals{display:flex;gap:4px;flex-wrap:wrap;min-height:0}
++.wui-builder-flow-signal{display:inline-flex;padding:2px 5px;border-radius:999px;border:1px solid #d8c7f0;background:#f7f1ff;color:#69449d;font-size:7px;font-weight:900;letter-spacing:.04em;text-transform:uppercase}
++.wui-builder-flow-branches{display:grid;gap:3px;align-self:end;min-width:0}
++.wui-builder-flow-branch{display:block;padding:3px 5px;border-left:2px solid #b9c8dc;background:#f7f9fc;color:#335b86;font-size:8px;line-height:1.25;white-space:normal;overflow-wrap:anywhere}
++.wui-builder-flow-branch.is-conditional{border-left-color:#8a5bc4;background:#faf6ff;color:#643b96}
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/web/composition-controller.js b/wire_ui_builder_v0.12-dev2-readiness/web/composition-controller.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..bdb9960b1aed55b9a6edb8394a165ec62cf2be27
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/web/composition-controller.js
+@@ -0,0 +1,537 @@
++function parseDefinitionKey(value='') {
++  const at=String(value).lastIndexOf('@');
++  if(at<=0) return null;
++  const version=Number(String(value).slice(at+1));
++  if(!Number.isSafeInteger(version)||version<1) return null;
++  return {id:String(value).slice(0,at),version};
++}
++
++export function viewportClassForWidth(width) {
++  const n=Number(width);
++  if(!Number.isFinite(n)) return 'DEFAULT';
++  if(n<640) return 'SMALL';
++  if(n<1024) return 'MEDIUM';
++  return 'LARGE';
++}
++
++export function stateFromJourneyPlan(plan={},applicationId='') {
++  const explicit=String(plan.stateId??plan.state??'').trim();
++  if(explicit) return explicit;
++  const planId=String(plan.planId??'').trim();
++  if(!planId) return null;
++  const prefix=applicationId ? `${applicationId}:` : '';
++  let rest=prefix && planId.startsWith(prefix) ? planId.slice(prefix.length) : planId;
++  const parts=rest.split(':').filter(Boolean);
++  if(parts.length>1 && /^\d+$/.test(parts.at(-1))) parts.pop();
++  return parts.at(-1) ?? null;
++}
++
++export function selectCompositionHint(definition,{stateId=null,viewportClass='DEFAULT'}={}) {
++  const hints=definition?.semantic?.metadata?.compositionHints;
++  if(!Array.isArray(hints)) return null;
++  const state=hints.filter((hint)=>!stateId || hint?.stateId===stateId);
++  if(!state.length) return null;
++  const exact=state.find((hint)=>String(hint?.placement?.viewportClass??'DEFAULT').toUpperCase()===String(viewportClass).toUpperCase());
++  return exact ?? state.find((hint)=>String(hint?.placement?.viewportClass??'DEFAULT').toUpperCase()==='DEFAULT') ?? state[0];
++}
++
++export function placementPresentation(hint) {
++  const p=hint?.placement??{};
++  const span=Math.max(1,Math.min(12,Number(p.span??12)||12));
++  const rowSpan=Math.max(1,Number(p.rowSpan??1)||1);
++  const align=String(p.align??'STRETCH').toUpperCase();
++  return Object.freeze({
++    layoutModel:String(hint?.layoutModel??'GRID12').toUpperCase(),
++    region:String(p.region??'main'),
++    order:Number(p.order??0)||0,
++    span,
++    rowSpan,
++    alignSelf:({START:'start',CENTER:'center',END:'end',STRETCH:'stretch'})[align]??'stretch'
++  });
++}
++
++export function parseCollectionItemText(text='') {
++  const out=Object.create(null);
++  for(const part of String(text).split(' · ')) {
++    const at=part.indexOf(':');
++    if(at<=0) continue;
++    out[part.slice(0,at).trim()]=part.slice(at+1).trim();
++  }
++  return out;
++}
++
++export function nextAlignment(current='STRETCH') {
++  const values=['STRETCH','START','CENTER','END'];
++  const value=String(current??'STRETCH').toUpperCase();
++  const at=values.indexOf(value);
++  return values[(at+1+values.length)%values.length];
++}
++
++export function parseFlowLayoutSignature(value='') {
++  if(!value) return [];
++  return String(value).split('|').filter(Boolean).map((part)=>{
++    const [region='main',span='12',elementId='',align='STRETCH']=part.split('~');
++    return Object.freeze({region,span:Math.max(1,Math.min(12,Number(span)||12)),elementId,align:String(align).toUpperCase()});
++  });
++}
++
++export function semanticRegionList(observed=[]) {
++  return [...new Set([...observed,'header','sidebar','main','secondary','footer'].map((v)=>String(v??'').trim()).filter(Boolean))];
++}
++
++export function nextRegion(current, observed=[]) {
++  const values=semanticRegionList(observed);
++  if(!values.length) return 'main';
++  const at=values.indexOf(String(current??''));
++  return values[(at+1+values.length)%values.length];
++}
++
++export function resizedSpan(startSpan,deltaPx,totalWidth) {
++  const initial=Math.max(1,Math.min(12,Number(startSpan)||1));
++  const width=Number(totalWidth);
++  const delta=Number(deltaPx);
++  if(!Number.isFinite(width)||width<=0||!Number.isFinite(delta)) return initial;
++  const columns=Math.round(delta/(width/12));
++  return Math.max(1,Math.min(12,initial+columns));
++}
++
++// Stable browser placement for the Studio's structural regions.  These line
++// numbers are only a presentation of the authored GRID12 composition: the
++// semantic region/span values remain the source of truth.  Using explicit
++// grid lines avoids relying on auto-placement for the three-column DESIGN
++// workspace and also makes Firefox/Chromium agree when live roots are
++// re-parented into presentation-only region stacks.
++export function studioRegionGridColumn(region,span=12) {
++  const name=String(region??'').trim().toLowerCase();
++  const fixed={header:'1 / 13',nav:'1 / 13',library:'1 / 4',canvas:'4 / 10',inspector:'10 / 13',flow:'1 / 13'};
++  if(fixed[name]) return fixed[name];
++  const width=Math.max(1,Math.min(12,Number(span)||12));
++  return `auto / span ${width}`;
++}
++
++// DESIGN is Studio chrome, not the target composition. Give those chrome
++// regions explicit rows as well as columns so browser grid auto-placement can
++// never move FLOW beside CANVAS or compress the workbench into early tracks.
++// Other Studio states retain authored-span auto placement.
++export function studioRegionGridRow(region,stateId='') {
++  const state=String(stateId??'').toUpperCase();
++  const name=String(region??'').trim().toLowerCase();
++  const fixed={
++    DESIGN:{header:'1',nav:'2',library:'3',canvas:'3',inspector:'3',flow:'4'},
++    SOURCE:{header:'1',nav:'2','source-list':'3','source-detail':'3'},
++    COMPONENTS:{header:'1',nav:'2',catalogue:'3','component-editor':'3','element-editor':'3','projection-editor':'3'},
++    MATERIALS:{header:'1',nav:'2',catalogue:'3','material-editor':'3',preview:'3'},
++    FLOW:{header:'1',nav:'2',catalogue:'3',flow:'3','journey-editor':'4','condition-editor':'4','policy-editor':'4','experiment-editor':'5',preview:'5'},
++    PUBLISH:{header:'1',nav:'2',catalogue:'3',preview:'3',publish:'3'}
++  };
++  return fixed[state]?.[name]??'auto';
++}
++
++export function studioRegionGridArea(region,stateId='') {
++  const state=String(stateId??'').toUpperCase();
++  const name=String(region??'').trim().toLowerCase();
++  const allowed={
++    DESIGN:['header','nav','library','canvas','inspector','flow'],
++    SOURCE:['header','nav','source-list','source-detail'],
++    COMPONENTS:['header','nav','catalogue','component-editor','element-editor','projection-editor'],
++    MATERIALS:['header','nav','catalogue','material-editor','preview'],
++    FLOW:['header','nav','catalogue','flow','journey-editor','condition-editor','policy-editor','experiment-editor','preview'],
++    PUBLISH:['header','nav','catalogue','preview','publish']
++  };
++  return allowed[state]?.includes(name)?name:'';
++}
++
++function safeStop(event) { event?.preventDefault?.(); event?.stopPropagation?.(); }
++
++export class BuilderCompositionController {
++  constructor({comms,runtime,renderer,definitions,mount,journeyController,ownership={},window=globalThis.window,MutationObserverImpl=globalThis.MutationObserver}) {
++    this.comms=comms; this.runtime=runtime; this.renderer=renderer; this.definitions=definitions; this.mount=mount; this.journeyController=journeyController; this.ownership=ownership;
++    this.window=window; this.MutationObserverImpl=MutationObserverImpl; this.stateId=null;
++    this.dragSourceId=null; this.dragSourceInfo=null; this.selectedPlacementId=null; this.selectedPlacementInfo=null; this.selectedLibraryId=null; this.selectedFlowId=null; this.targetStateId=null;
++    this.disposers=[]; this.observer=null; this.resizeSession=null;
++  }
++
++  start() {
++    if(this.journeyController?.onState) this.disposers.push(this.journeyController.onState((event)=>{
++      if(event?.type!=='journey-plan-installed') return;
++      this.stateId=stateFromJourneyPlan(event.plan,this.ownership.applicationId??''); this.apply();
++    }));
++    if(this.MutationObserverImpl && this.mount) {
++      this.observer=new this.MutationObserverImpl(()=>this.apply());
++      this.observer.observe(this.mount,{childList:true,subtree:true});
++    }
++    if(this.window?.addEventListener) {
++      const resize=()=>this.apply(); this.window.addEventListener('resize',resize); this.disposers.push(()=>this.window.removeEventListener('resize',resize));
++    }
++    this.apply(); return this;
++  }
++
++  stop() {
++    this.#endResize(null,false);
++    this.observer?.disconnect?.();
++    for(const dispose of this.disposers.splice(0)) dispose?.();
++  }
++
++  apply() {
++    if(!this.mount?.querySelectorAll) return;
++    const viewportClass=viewportClassForWidth(this.window?.innerWidth);
++    const roots=[...this.mount.querySelectorAll('[data-wire-definition]')];
++    let shell=null; let matched=0;
++    for(const node of roots) {
++      const parsed=parseDefinitionKey(node.getAttribute('data-wire-definition')); if(!parsed) continue;
++      const definition=this.definitions?.get?.(parsed.id,parsed.version); if(!definition) continue;
++      if(parsed.id==='WUIB_SHELL') { shell=node; node.classList?.remove?.('wui-composition-inactive'); continue; }
++      const hint=selectCompositionHint(definition,{stateId:this.stateId,viewportClass});
++      if(!hint) { this.#clearPlacement(node); if(this.stateId) node.classList?.add?.('wui-composition-inactive'); else node.classList?.remove?.('wui-composition-inactive'); continue; }
++      node.classList?.remove?.('wui-composition-inactive'); matched+=1;
++      const view=placementPresentation(hint); this.#applyPlacement(node,view);
++    }
++    if(shell) { shell.classList?.add?.('wui-builder-composition-grid'); shell.dataset.wireCompositionState=this.stateId??''; shell.dataset.wireCompositionMatchCount=String(matched); shell.dataset.wireViewportClass=viewportClass; this.#arrangeStudioRegions(shell); }
++    this.#enhanceCanvas(); this.#enhanceArtifactLibrary(); this.#enhanceFlowMap(); this.#enhanceToolNav(); this.#enhanceInspector();
++  }
++
++  #applyPlacement(node,view) {
++    node.dataset.wireRegion=view.region; node.dataset.wireLayoutModel=view.layoutModel; node.dataset.wireSpan=String(view.span); node.dataset.wireOrder=String(view.order);
++    node.style.order=String(view.order); node.style.gridColumn=`span ${view.span}`; node.style.gridRow=`span ${view.rowSpan}`; node.style.alignSelf=view.alignSelf;
++  }
++  #clearPlacement(node) {
++    if(node?.dataset){ delete node.dataset.wireRegion; delete node.dataset.wireLayoutModel; delete node.dataset.wireSpan; delete node.dataset.wireOrder; }
++    if(node?.style){ node.style.order=''; node.style.gridColumn=''; node.style.gridRow=''; node.style.alignSelf=''; }
++  }
++
++  #arrangeStudioRegions(shell) {
++    if(!shell?.ownerDocument) return;
++    const d=shell.ownerDocument;
++    const roots=[...shell.querySelectorAll?.('[data-wire-definition]')??[]].filter((node)=>node!==shell);
++    const byRegion=new Map();
++    for(const node of roots) {
++      const region=String(node.dataset?.wireRegion??'').trim();
++      if(!region || node.classList?.contains?.('wui-composition-inactive')) continue;
++      if(!byRegion.has(region)) byRegion.set(region,[]);
++      byRegion.get(region).push(node);
++    }
++
++    // Region wrappers are presentation-only. Never delete a wrapper that still
++    // owns live Wire UI definition roots: inactive roots must survive a Studio
++    // state change so the renderer can reactivate the exact same instances.
++    // Also avoid re-appending a node to its current wrapper; doing so creates a
++    // MutationObserver feedback loop in real browsers even though the DOM looks
++    // superficially unchanged.
++    const existing=new Map([...(shell.querySelectorAll?.(':scope > .wui-builder-studio-region')??[])].map((node)=>[node.dataset.wireStudioRegion,node]));
++    for(const [region,nodes] of byRegion) {
++      let stack=existing.get(region);
++      if(!stack){
++        stack=d.createElement('section');
++        stack.className='wui-builder-studio-region';
++        stack.dataset.wireStudioRegion=region;
++        shell.append(stack);
++      }
++      let span=1,order=Number.POSITIVE_INFINITY;
++      for(const node of nodes) {
++        span=Math.max(span,Math.max(1,Math.min(12,Number(node.dataset?.wireSpan??12)||12)));
++        order=Math.min(order,Number(node.dataset?.wireOrder??0)||0);
++        if(node.parentElement!==stack) stack.append(node);
++      }
++      const gridColumn=studioRegionGridColumn(region,span);
++      const gridRow=studioRegionGridRow(region,this.stateId);
++      const gridArea=studioRegionGridArea(region,this.stateId);
++      stack.style.gridColumn=gridColumn;
++      stack.style.gridRow=gridRow;
++      stack.style.gridArea=gridArea;
++      stack.style.order=String(Number.isFinite(order)?order:0);
++      stack.dataset.wireStudioGridColumn=gridColumn;
++      stack.dataset.wireStudioGridRow=gridRow;
++      if(gridArea) stack.dataset.wireStudioGridArea=gridArea; else delete stack.dataset.wireStudioGridArea;
++      stack.dataset.wireStudioSpan=String(span);
++      stack.hidden=false;
++      existing.delete(region);
++    }
++
++    for(const stack of existing.values()) {
++      const definitions=[...(stack.querySelectorAll?.('[data-wire-definition]')??[])];
++      // Empty wrappers can be discarded. Wrappers containing inactive live
++      // definitions are parked, hidden, rather than destroying those roots.
++      if(!definitions.length) { stack.remove?.(); continue; }
++      stack.hidden=true;
++    }
++  }
++
++  #enhanceCanvas() {
++    const canvas=this.mount.querySelector?.('[data-wire-definition^="WUIB_COMPOSITION_CANVAS@"]'); if(!canvas) return;
++    const instanceId=this.#instanceIdForRoot(canvas);
++    const items=[...(canvas.querySelectorAll?.('.wui-collection-item')??[])];
++    const parsed=items.map((item)=>parseCollectionItemText(item.textContent??''));
++    const observed=parsed.map((v)=>v.region).filter(Boolean);
++    const regions=semanticRegionList(observed);
++    const collection=items[0]?.parentElement??canvas;
++    collection?.classList?.add?.('wui-builder-canvas-grid');
++    this.#ensureCanvasGuides(canvas,collection,regions,instanceId);
++    if(parsed[0]?.stateId) this.targetStateId=parsed[0].stateId;
++    let selectedStillPresent=false;
++    for(let index=0; index<items.length; index+=1) {
++      const item=items[index]; const info=parsed[index]; const itemId=item.__wireActionDetail?.id??null;
++      if(itemId && itemId===this.selectedPlacementId){this.selectedPlacementInfo=info;selectedStillPresent=true;}
++      if(item.dataset?.wireCompositionSelect!=='1') {
++        if(item.dataset) item.dataset.wireCompositionSelect='1';
++        item.draggable=false;
++        item.addEventListener?.('click',(event)=>{
++          if(event?.defaultPrevented) return;
++          safeStop(event);
++          this.selectedPlacementId=itemId; this.selectedPlacementInfo=info;
++          if(info?.stateId) this.targetStateId=info.stateId;
++          this.#syncSelection(items); this.#syncRelatedLibrary(); this.#syncFlowSelection(); this.#enhanceInspector();
++          if(itemId&&instanceId) void this.runtime?.sendSemanticAction?.('COMPOSITION.SELECT',{instanceId,detail:{id:itemId}});
++        });
++        item.addEventListener?.('dragover',(event)=>{if(this.dragSourceId)event.preventDefault?.();});
++        item.addEventListener?.('drop',(event)=>{
++          event.preventDefault?.(); const sourceId=this.dragSourceId; const targetId=item.__wireActionDetail?.id??null;
++          this.#clearDragTargets();
++          if(!sourceId||!targetId||sourceId===targetId||!instanceId) return;
++          void this.runtime?.sendSemanticAction?.('DESIGN.COMPOSITION.MOVE',{instanceId,detail:{sourceId,targetId}});
++        });
++      }
++      this.#decoratePlacement(item,info,instanceId,regions,collection);
++    }
++    if(this.selectedPlacementId && !selectedStillPresent){this.selectedPlacementId=null;this.selectedPlacementInfo=null;}
++    this.#syncSelection(items);
++  }
++
++  #syncSelection(items=null) {
++    const canvasItems=items??[...(this.mount.querySelector?.('[data-wire-definition^="WUIB_COMPOSITION_CANVAS@"]')?.querySelectorAll?.('.wui-collection-item')??[])];
++    for(const item of canvasItems) {
++      const selected=Boolean(this.selectedPlacementId && item.__wireActionDetail?.id===this.selectedPlacementId);
++      item.classList?.toggle?.('wui-builder-placement-selected',selected);
++      if(!item.classList?.toggle){if(selected)item.classList?.add?.('wui-builder-placement-selected');else item.classList?.remove?.('wui-builder-placement-selected');}
++      item.setAttribute?.('aria-selected',selected?'true':'false');
++    }
++  }
++
++  #decoratePlacement(item,info,instanceId,regions,collection) {
++    if(!item?.ownerDocument || item.dataset?.wirePlacementDecorated==='1') return;
++    item.dataset.wirePlacementDecorated='1'; item.classList?.add?.('wui-builder-placement-card');
++    const d=item.ownerDocument;
++    const span=Math.max(1,Math.min(12,Number(info.span??12)||12));
++    item.dataset.wirePlacementRegion=info.region??'main'; item.dataset.wirePlacementSpan=String(span); item.dataset.wirePlacementAlign=String(info.align??'STRETCH').toUpperCase();
++    item.style.gridColumn=`span ${span}`;
++    const main=d.createElement('span'); main.className='wui-builder-placement-main';
++    const eyebrow=d.createElement('span'); eyebrow.className='wui-builder-placement-type'; eyebrow.textContent=info.semanticType||'SEMANTIC ELEMENT';
++    const title=d.createElement('strong'); title.className='wui-builder-placement-title'; title.textContent=info.elementId??'Placement';
++    const meta=d.createElement('span'); meta.className='wui-builder-placement-meta';
++    const conditions=String(info.whenConditionIds??'').trim(); const suppressions=String(info.suppressConditionIds??'').trim();
++    const conditionText=conditions?` · when ${String(info.whenMode??'ALL').toUpperCase()}(${conditions})`:'';
++    const suppressionText=suppressions?` · suppress ${suppressions}`:'';
++    meta.textContent=`${info.region??'main'} · ${span}/12 · ${String(info.align??'STRETCH').toUpperCase()} · ${info.stateId??''}${conditionText}${suppressionText}`;
++    if(conditions||suppressions){item.classList?.add?.('wui-builder-placement-conditional'); item.dataset.wirePresentationClass=String(info.presentationClass??'STANDARD').toUpperCase();}
++    main.append(eyebrow,title,meta);
++    const tools=d.createElement('span'); tools.className='wui-builder-placement-tools';
++    const action=(label,titleText,fn)=>{const el=d.createElement('span');el.className='wui-builder-placement-handle';el.textContent=label;el.title=titleText;el.setAttribute('role','button');el.setAttribute('tabindex','0');el.addEventListener('click',(event)=>{safeStop(event);fn();});el.addEventListener('keydown',(event)=>{if(event.key==='Enter'||event.key===' '){safeStop(event);fn();}});return el;};
++    const id=item.__wireActionDetail?.id;
++    const align=action('↔','Cycle placement alignment',()=>{if(id&&instanceId)void this.runtime?.sendSemanticAction?.('DESIGN.COMPOSITION.ALIGN',{instanceId,detail:{id,align:nextAlignment(info.align)}});});
++    const grip=d.createElement('span'); grip.className='wui-builder-drag-grip'; grip.textContent='⋮⋮'; grip.title='Drag to reorder'; grip.setAttribute('role','button'); grip.setAttribute('tabindex','0'); grip.draggable=true;
++    grip.addEventListener('click',(event)=>safeStop(event));
++    grip.addEventListener('dragstart',(event)=>{this.dragSourceId=id;this.dragSourceInfo=info;item.classList?.add?.('wui-builder-drag-source');if(event?.dataTransfer){event.dataTransfer.effectAllowed='move';try{event.dataTransfer.setData('text/plain',String(id??''));}catch{}}});
++    grip.addEventListener('dragend',()=>{this.#clearDragTargets();});
++    const resize=d.createElement('span'); resize.className='wui-builder-resize-handle'; resize.title='Drag to resize by semantic columns'; resize.setAttribute('role','separator'); resize.setAttribute('aria-orientation','vertical'); resize.setAttribute('tabindex','0');
++    resize.addEventListener('click',(event)=>safeStop(event));
++    resize.addEventListener('pointerdown',(event)=>{safeStop(event);this.#beginResize({event,item,info,id,instanceId,collection,meta});});
++    resize.addEventListener('keydown',(event)=>{
++      if(!id||!instanceId) return;
++      const key=event?.key; if(key!=='ArrowLeft'&&key!=='ArrowRight') return; safeStop(event);
++      const next=Math.max(1,Math.min(12,span+(key==='ArrowRight'?1:-1)));
++      if(next!==span) void this.runtime?.sendSemanticAction?.('DESIGN.COMPOSITION.RESIZE',{instanceId,detail:{id,span:next}});
++    });
++    tools.append(align,grip);
++    item.replaceChildren(main,tools,resize);
++  }
++
++  #beginResize({event,item,info,id,instanceId,collection,meta}) {
++    if(!id||!instanceId||!this.window?.addEventListener) return;
++    this.#endResize(null,false);
++    const rect=collection?.getBoundingClientRect?.();
++    const totalWidth=Number(rect?.width)||Number(collection?.clientWidth)||Number(item?.parentElement?.clientWidth)||0;
++    const startX=Number(event?.clientX)||0; const startSpan=Math.max(1,Math.min(12,Number(info?.span)||12));
++    this.resizeSession={item,id,instanceId,startX,startSpan,totalWidth,currentSpan:startSpan,meta,info};
++    item.classList?.add?.('wui-builder-resizing');
++    const move=(e)=>this.#moveResize(e); const up=(e)=>this.#endResize(e,true);
++    this.resizeSession.move=move; this.resizeSession.up=up;
++    this.window.addEventListener('pointermove',move); this.window.addEventListener('pointerup',up);
++  }
++
++  #moveResize(event) {
++    const s=this.resizeSession; if(!s) return;
++    const next=resizedSpan(s.startSpan,(Number(event?.clientX)||0)-s.startX,s.totalWidth);
++    if(next===s.currentSpan) return; s.currentSpan=next;
++    s.item.style.gridColumn=`span ${next}`; if(s.item.dataset)s.item.dataset.wirePlacementPreviewSpan=String(next);
++    if(s.meta) s.meta.textContent=`${s.info.region??'main'} · ${next}/12 · ${String(s.info.align??'STRETCH').toUpperCase()} · ${s.info.stateId??''}`;
++  }
++
++  #endResize(event,commit) {
++    const s=this.resizeSession; if(!s) return;
++    this.resizeSession=null;
++    this.window?.removeEventListener?.('pointermove',s.move); this.window?.removeEventListener?.('pointerup',s.up);
++    s.item.classList?.remove?.('wui-builder-resizing'); if(s.item.dataset)delete s.item.dataset.wirePlacementPreviewSpan;
++    if(commit&&s.currentSpan!==s.startSpan) void this.runtime?.sendSemanticAction?.('DESIGN.COMPOSITION.RESIZE',{instanceId:s.instanceId,detail:{id:s.id,span:s.currentSpan}});
++    else if(!commit) s.item.style.gridColumn=`span ${s.startSpan}`;
++    event?.preventDefault?.();
++  }
++
++  #ensureCanvasGuides(canvas,collection,regions,instanceId) {
++    if(!canvas?.ownerDocument || !collection || collection.querySelector?.('.wui-builder-region-guides')) return;
++    const d=canvas.ownerDocument; const guides=d.createElement('div'); guides.className='wui-builder-region-guides';
++    const ruler=d.createElement('span'); ruler.className='wui-builder-grid-ruler';
++    for(let i=1;i<=12;i+=1){const cell=d.createElement('i');cell.textContent=String(i);ruler.append(cell);}
++    const regionRow=d.createElement('span'); regionRow.className='wui-builder-region-row';
++    for(const region of regions){
++      const chip=d.createElement('b');chip.textContent=region;chip.dataset.region=region;chip.setAttribute('role','button');chip.setAttribute('tabindex','0');chip.title=`Drop a placement into ${region}`;
++      chip.addEventListener('dragenter',(event)=>{if(this.dragSourceId){event.preventDefault?.();chip.classList?.add?.('wui-builder-region-drop-active');}});
++      chip.addEventListener('dragover',(event)=>{if(this.dragSourceId){event.preventDefault?.();if(event?.dataTransfer)event.dataTransfer.dropEffect='move';}});
++      chip.addEventListener('dragleave',()=>chip.classList?.remove?.('wui-builder-region-drop-active'));
++      chip.addEventListener('drop',(event)=>{
++        event.preventDefault?.(); const id=this.dragSourceId; this.#clearDragTargets();
++        if(!id||!instanceId) return;
++        void this.runtime?.sendSemanticAction?.('DESIGN.COMPOSITION.RELOCATE',{instanceId,detail:{id,region}});
++      });
++      regionRow.append(chip);
++    }
++    guides.append(ruler,regionRow); collection.prepend?.(guides);
++  }
++
++  #clearDragTargets() {
++    this.dragSourceId=null; this.dragSourceInfo=null;
++    for(const node of [...(this.mount?.querySelectorAll?.('.wui-builder-region-drop-active,.wui-builder-drag-source')??[])]){
++      node.classList?.remove?.('wui-builder-region-drop-active'); node.classList?.remove?.('wui-builder-drag-source');
++    }
++  }
++
++  #enhanceInspector() {
++    const root=this.mount.querySelector?.('[data-wire-definition^="WUIB_SELECTION_INSPECTOR@"]');
++    if(root) {
++      root.classList?.add?.('wui-builder-inspector');
++      for(const row of [...(root.querySelectorAll?.('.wui-record-field')??[])]) {
++        const label=String(row.querySelector?.('.wui-record-label')?.textContent??'').trim().toLowerCase().replaceAll(' ','-');
++        if(label) row.dataset.wireInspectorField=label;
++      }
++    }
++    this.#enhanceContextEditor();
++  }
++
++  #enhanceContextEditor() {
++    const root=this.mount.querySelector?.('[data-wire-definition^="WUIB_COMPOSITION_EDITOR@"]'); if(!root?.ownerDocument) return;
++    const d=root.ownerDocument;
++    let card=root.querySelector?.('.wui-builder-context-card');
++    if(!card) {
++      card=d.createElement('section'); card.className='wui-builder-context-card'; root.prepend?.(card);
++      const details=d.createElement('details'); details.className='wui-builder-context-advanced';
++      const summary=d.createElement('summary'); summary.textContent='Advanced semantic fields'; details.append(summary);
++      const fields=[...(root.querySelectorAll?.('.wui-field')??[])].filter((node)=>node.parentElement===root);
++      const submit=[...(root.querySelectorAll?.('.wui-primary-action')??[])].find((node)=>node.parentElement===root);
++      for(const field of fields) details.append(field); if(submit) details.append(submit); root.append(details);
++    }
++    const info=this.selectedPlacementInfo;
++    root.classList?.toggle?.('wui-builder-context-empty',!info);
++    if(!root.classList?.toggle){if(info)root.classList?.remove?.('wui-builder-context-empty');else root.classList?.add?.('wui-builder-context-empty');}
++    const signature=info ? [this.selectedPlacementId,info.elementId,info.semanticType,info.stateId,info.region,info.span,info.align,info.viewportClass].join('|') : 'EMPTY';
++    if(card.dataset?.wireContextSignature===signature) return; if(card.dataset)card.dataset.wireContextSignature=signature;
++    card.replaceChildren();
++    if(!info) {
++      const empty=d.createElement('div'); empty.className='wui-builder-context-placeholder';
++      const strong=d.createElement('strong'); strong.textContent='Select a placement'; const text=d.createElement('span'); text.textContent='Click a canvas card to edit its semantic layout properties.'; empty.append(strong,text); card.append(empty); return;
++    }
++    const hero=d.createElement('div');hero.className='wui-builder-context-hero';
++    const eyebrow=d.createElement('span');eyebrow.textContent=info.semanticType||'SEMANTIC ELEMENT';
++    const title=d.createElement('strong');title.textContent=info.elementId||'Placement';
++    const meta=d.createElement('small');meta.textContent=`${info.stateId||'STATE'} · ${info.viewportClass||'DEFAULT'} · ${info.artifactId||''}`; hero.append(eyebrow,title,meta); card.append(hero);
++    const canvas=this.mount.querySelector?.('[data-wire-definition^="WUIB_COMPOSITION_CANVAS@"]'); const instanceId=this.#instanceIdForRoot(canvas); const id=this.selectedPlacementId;
++    const group=(label)=>{const g=d.createElement('div');g.className='wui-builder-property-group';const l=d.createElement('span');l.className='wui-builder-property-label';l.textContent=label;const values=d.createElement('span');values.className='wui-builder-property-values';g.append(l,values);card.append(g);return values;};
++    const button=(label,active,fn)=>{const b=d.createElement('button');b.type='button';b.className='wui-builder-property-chip';b.textContent=label;b.setAttribute('aria-pressed',active?'true':'false');if(active)b.classList?.add?.('is-active');b.addEventListener('click',(event)=>{safeStop(event);fn();});return b;};
++    const regions=group('Region');
++    for(const region of semanticRegionList([info.region])) regions.append(button(region,region===info.region,()=>{if(id&&instanceId&&region!==info.region)void this.runtime?.sendSemanticAction?.('DESIGN.COMPOSITION.RELOCATE',{instanceId,detail:{id,region}});}));
++    const spanGroup=group('Span'); const range=d.createElement('input');range.type='range';range.min='1';range.max='12';range.step='1';range.value=String(Math.max(1,Math.min(12,Number(info.span)||12)));range.className='wui-builder-span-range';range.setAttribute('aria-label','Placement span in semantic columns');
++    const value=d.createElement('output');value.className='wui-builder-span-value';value.textContent=`${range.value}/12`;range.addEventListener('input',()=>{value.textContent=`${range.value}/12`;});range.addEventListener('change',(event)=>{safeStop(event);if(id&&instanceId)void this.runtime?.sendSemanticAction?.('DESIGN.COMPOSITION.RESIZE',{instanceId,detail:{id,span:Number(range.value)}});});spanGroup.append(range,value);
++    const aligns=group('Align'); for(const align of ['START','CENTER','END','STRETCH']) aligns.append(button(align,align===String(info.align??'STRETCH').toUpperCase(),()=>{if(id&&instanceId&&align!==String(info.align??'STRETCH').toUpperCase())void this.runtime?.sendSemanticAction?.('DESIGN.COMPOSITION.ALIGN',{instanceId,detail:{id,align}});}));
++  }
++
++  #enhanceArtifactLibrary() {
++    const root=this.mount.querySelector?.('[data-wire-definition^="WUIB_ARTIFACT_LIBRARY@"]'); if(!root) return;
++    const instanceId=this.#instanceIdForRoot(root); const items=[...(root.querySelectorAll?.('.wui-collection-item')??[])];
++    for(const item of items) {
++      if(!item?.ownerDocument) continue;
++      const rawText=item.dataset?.wireLibraryRaw??String(item.textContent??''); if(item.dataset)item.dataset.wireLibraryRaw=rawText;
++      const info=parseCollectionItemText(rawText); const id=item.__wireActionDetail?.id??null;
++      if(item.dataset?.wireLibraryDecorated!=='1') {
++        item.dataset.wireLibraryDecorated='1'; item.classList?.add?.('wui-builder-library-item'); const d=item.ownerDocument;
++        const kind=d.createElement('span');kind.className='wui-builder-library-kind';kind.textContent=info.kind??'ARTIFACT';
++        const name=d.createElement('strong');name.textContent=info.artifactId??info.id??'Untitled';
++        const rev=d.createElement('span');rev.className='wui-builder-library-rev';rev.textContent=`r${info.draftRevision??'?'} · v${info.publishVersion??'?'}`;
++        item.replaceChildren(kind,name,rev);
++        item.addEventListener?.('click',(event)=>{safeStop(event);this.selectedLibraryId=id;this.selectedPlacementId=null;this.selectedPlacementInfo=null;this.#syncLibrarySelection(items);this.#syncSelection();this.#enhanceInspector();if(id&&instanceId)void this.runtime?.sendSemanticAction?.('ARTIFACT.SELECT',{instanceId,detail:{id}});});
++      }
++    }
++    this.#syncLibrarySelection(items);
++  }
++
++  #syncLibrarySelection(items=null) {
++    const root=this.mount.querySelector?.('[data-wire-definition^="WUIB_ARTIFACT_LIBRARY@"]'); const rows=items??[...(root?.querySelectorAll?.('.wui-collection-item')??[])];
++    for(const item of rows) {
++      const raw=item.dataset?.wireLibraryRaw??''; const info=parseCollectionItemText(raw); const selected=Boolean(this.selectedLibraryId&&item.__wireActionDetail?.id===this.selectedLibraryId);
++      const related=Boolean(this.selectedPlacementInfo?.elementId && info.kind==='ELEMENT' && info.artifactId===this.selectedPlacementInfo.elementId);
++      item.classList?.toggle?.('wui-builder-library-selected',selected); item.classList?.toggle?.('wui-builder-library-related',related);
++      if(!item.classList?.toggle){if(selected)item.classList?.add?.('wui-builder-library-selected');else item.classList?.remove?.('wui-builder-library-selected');if(related)item.classList?.add?.('wui-builder-library-related');else item.classList?.remove?.('wui-builder-library-related');}
++    }
++  }
++  #syncRelatedLibrary(){this.#syncLibrarySelection();}
++
++  #enhanceFlowMap() {
++    const root=this.mount.querySelector?.('[data-wire-definition^="WUIB_FLOW_MAP@"]'); if(!root) return;
++    const instanceId=this.#instanceIdForRoot(root); const items=[...(root.querySelectorAll?.('.wui-collection-item')??[])];
++    for(const item of items) {
++      if(!item?.ownerDocument) continue;
++      const rawText=item.dataset?.wireFlowRaw??String(item.textContent??''); if(item.dataset)item.dataset.wireFlowRaw=rawText;
++      const info=parseCollectionItemText(rawText); const id=item.__wireActionDetail?.id??null;
++      if(item.dataset?.wireFlowDecorated!=='1') {
++        item.dataset.wireFlowDecorated='1'; item.classList?.add?.('wui-builder-flow-card'); const d=item.ownerDocument;
++        const state=d.createElement('strong');state.className='wui-builder-flow-state';state.textContent=info.stateId??'STATE';
++        const flow=info.flowId?d.createElement('span'):null; if(flow){flow.className='wui-builder-flow-id';flow.textContent=String(info.flowId);}
++        const counts=d.createElement('span');counts.className='wui-builder-flow-counts';counts.textContent=`${info.activeCount??0} active · ${info.prefetchCount??0} prefetched`;
++        const signals=d.createElement('span');signals.className='wui-builder-flow-signals';
++        const cb=Number(info.conditionalBranchCount??0)||0, cp=Number(info.conditionalPlacementCount??0)||0;
++        if(cb){const chip=d.createElement('b');chip.className='wui-builder-flow-signal';chip.textContent=`${cb} conditional ${cb===1?'branch':'branches'}`;signals.append(chip);}
++        if(cp){const chip=d.createElement('b');chip.className='wui-builder-flow-signal';chip.textContent=`${cp} conditional ${cp===1?'placement':'placements'}`;signals.append(chip);}
++        const thumb=d.createElement('span'); thumb.className='wui-builder-flow-thumb'; thumb.setAttribute('aria-hidden','true');
++        const placements=parseFlowLayoutSignature(info.layoutSignature??'');
++        if(!placements.length){const empty=d.createElement('i'); empty.className='wui-builder-flow-thumb-empty'; thumb.append(empty);}
++        for(const placement of placements.slice(0,12)){const tile=d.createElement('i'); tile.className='wui-builder-flow-thumb-tile'; tile.style.gridColumn=`span ${placement.span}`; tile.dataset.region=placement.region; tile.title=placement.elementId; thumb.append(tile);}
++        const branches=d.createElement('span');branches.className='wui-builder-flow-branches';
++        const branchText=String(info.branches??'').trim();
++        if(branchText){for(const text of branchText.split(' | ').filter(Boolean)){const branch=d.createElement('span');branch.className='wui-builder-flow-branch';if(text.includes(' ? '))branch.classList.add('is-conditional');branch.textContent=text;branches.append(branch);}}
++        else {const next=d.createElement('span');next.className='wui-builder-flow-next';next.textContent=`→ ${info.nextStates??'END'}`;branches.append(next);}
++        const children=flow?[flow,state,counts]:[state,counts]; if(signals.childNodes?.length)children.push(signals); children.push(thumb,branches); item.replaceChildren(...children);
++        item.addEventListener?.('click',(event)=>{safeStop(event);this.selectedFlowId=id;this.targetStateId=info.stateId??this.targetStateId;this.selectedPlacementId=null;this.selectedPlacementInfo=null;this.#syncFlowSelection(items);this.#syncSelection();this.#syncRelatedLibrary();this.#enhanceInspector();if(id&&instanceId)void this.runtime?.sendSemanticAction?.('FLOW.SELECT',{instanceId,detail:{id}});});
++      }
++    }
++    this.#syncFlowSelection(items);
++  }
++
++  #syncFlowSelection(items=null) {
++    const root=this.mount.querySelector?.('[data-wire-definition^="WUIB_FLOW_MAP@"]'); const rows=items??[...(root?.querySelectorAll?.('.wui-collection-item')??[])];
++    for(const item of rows) {
++      const info=parseCollectionItemText(item.dataset?.wireFlowRaw??'');
++      const active=Boolean((this.selectedFlowId&&item.__wireActionDetail?.id===this.selectedFlowId)||(!this.selectedFlowId&&this.targetStateId&&info.stateId===this.targetStateId));
++      item.classList?.toggle?.('wui-builder-flow-active',active); if(!item.classList?.toggle){if(active)item.classList?.add?.('wui-builder-flow-active');else item.classList?.remove?.('wui-builder-flow-active');}
++      item.setAttribute?.('aria-current',active?'step':'false');
++    }
++  }
++
++  #enhanceToolNav() {
++    const root=this.mount.querySelector?.('[data-wire-definition^="WUIB_TOOL_NAV@"]'); if(!root) return;
++    for(const item of [...(root.querySelectorAll?.('.wui-collection-item')??[])]) {
++      const label=String(item.textContent??'').trim().toUpperCase();
++      if(this.stateId && label===String(this.stateId).toUpperCase()) item.classList?.add?.('wui-builder-tool-active'); else item.classList?.remove?.('wui-builder-tool-active');
++    }
++  }
++
++  #instanceIdForRoot(root) {
++    for(const [instanceId,live] of this.renderer?.instances??[]) if(live?.root===root) return instanceId;
++    return null;
++  }
++}
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/web/config.example.json b/wire_ui_builder_v0.12-dev2-readiness/web/config.example.json
+new file mode 100644
+index 0000000000000000000000000000000000000000..c1e743caead9aa7aef36f54ee602722e9ebb39ef
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/web/config.example.json
+@@ -0,0 +1 @@
++{"bootstrapUrl":"/wire-ui/bootstrap"}
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/web/index.html b/wire_ui_builder_v0.12-dev2-readiness/web/index.html
+new file mode 100644
+index 0000000000000000000000000000000000000000..02c05eba6a5064c9b17c05e50320348bf1f49f81
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/web/index.html
+@@ -0,0 +1,9 @@
++<!doctype html>
++<html lang="en">
++<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Wire UI Builder Studio</title><link rel="stylesheet" href="builder.css"></head>
++<body>
++<header class="builder-topbar"><div><strong>Wire UI Builder</strong><span>Studio v0.11 · visual workspace</span></div><div id="wire-ui-connection" role="status" aria-live="polite">Connecting…</div></header>
++<main class="builder-stage"><aside class="builder-intro"><h1>Design the system, not the DOM.</h1><p>The panels are projected from the Builder’s own versioned Wire UI release. Target projects remain drafts until explicitly published.</p></aside><section id="wire-ui-root" class="wire-ui-root" aria-label="Wire UI Builder authoring workspace"></section></main>
++<script id="wire-ui-builder-config" type="application/json">{"bootstrapUrl":"/wire-ui/bootstrap"}</script>
++<script type="module" src="builder-wire-ui.js"></script>+</body></html>
+diff --git a/wire_ui_builder_v0.12-dev2-readiness/web/session-readiness.js b/wire_ui_builder_v0.12-dev2-readiness/web/session-readiness.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..cbb98287616f6e33827e8f0baefa8f89c740a00d
+--- /dev/null
++++ b/wire_ui_builder_v0.12-dev2-readiness/web/session-readiness.js
+@@ -0,0 +1,32 @@
++export class BuilderSessionReadiness {
++  constructor({status, mount, MutationObserverImpl=globalThis.MutationObserver}={}) {
++    if(typeof status!=='function') throw new TypeError('status callback is required');
++    this.status=status;
++    this.mount=mount??null;
++    this.MutationObserverImpl=MutationObserverImpl;
++    this.connected=false;
++    this.viewSeen=false;
++    this.observer=null;
++  }
++  start(){
++    this.status('Connecting…','connecting');
++    if(!this.mount||typeof this.MutationObserverImpl!=='function') return;
++    this.observer=new this.MutationObserverImpl(()=>this.noteRenderedView());
++    this.observer.observe(this.mount,{childList:true,subtree:true});
++  }
++  noteTransportConnected(){
++    this.connected=true;
++    if(this.viewSeen) this.status('View ready','ready');
++    else this.status('Transport connected','transport');
++  }
++  noteRenderedView(){
++    if(!this.mount?.childNodes?.length) return;
++    this.viewSeen=true;
++    if(this.connected) this.status('View ready','ready');
++    else this.status('Receiving view…','view');
++  }
++  noteSynchronising(){this.status('Synchronising…','sync');}
++  noteError(){this.status('Resynchronising…','error');}
++  noteClosed(){this.status('Disconnected','closed');}
++  stop(){this.observer?.disconnect?.();this.observer=null;}
++}
