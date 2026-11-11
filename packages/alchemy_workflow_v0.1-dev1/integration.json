@@ -1,0 +1,39 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "alchemy_workflow",
+    "version": "0.1-dev1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "LD_LIBRARY_PATH": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/build:${REPO_ROOT}/packages/oorexx_crypto_v0.8.3/native:/usr/local/lib:/usr/lib"
+    },
+    "rexx_path": {
+      "mode": "replace",
+      "entries": [
+        "src",
+        "src/steps",
+        "${REPO_ROOT}/packages/oorexx_logging_v0.7/src",
+        "${REPO_ROOT}/packages/oorexx_crypto_v0.8.3/src",
+        "${REPO_ROOT}/packages/runtime_reference_v0.4/src",
+        "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6/rexx"
+      ],
+      "require_entries": true
+    }
+  },
+  "tests": [
+    {
+      "name": "workflow-qualification",
+      "argv": ["rexx", "tests/test_workflow.rex"],
+      "timeout_seconds": 300
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/alchemy_workflow_v0.1-dev1"
+    }
+  }
+}
