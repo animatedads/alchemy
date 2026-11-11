@@ -84,3 +84,4 @@
     end
   end
   return active
+::requires 'Mp4BoxReader.cls'
