@@ -1,0 +1,68 @@
+{
+  "schema": "alchemy.source-edit-plan/0.1",
+  "base_path": "packages/notnotes_mini_approval_app_v0.1-dev18/src/MiniNotesCliUi.cls",
+  "base_git_blob_sha": "29a3ed15ea49ae062a3ae51052f7f3f1eb1fa2c0",
+  "base_readme_commit": "09ce28dfbbcdeb2081f89ac3ad88b2ea2afb8f1c",
+  "edits": [
+    {
+      "before": "reportDesignName reportSource reportColumns reportTotals\n  use strict arg app",
+      "after": "reportDesignName reportSource reportColumns reportTotals listOffset listPageSize listTotal listSource\n  use strict arg app"
+    },
+    {
+      "before": "  status = \"Five documents loaded. Select a document or type a command.\"\n  self~showDocuments",
+      "after": "  listOffset = 0\n  listPageSize = 50\n  listTotal = 0\n  listSource = \"documents\"\n  status = \"Documents ready. Select a document or type a command.\"\n  self~showDocuments"
+    },
+    {
+      "before": "::method semanticCommand\n  expose app table detail mode running status screen",
+      "after": "::method semanticCommand\n  expose app table detail mode running status screen listOffset listPageSize listTotal listSource"
+    },
+    {
+      "before": "      if mode = \"LIST\" then do\n        table~move(-1)\n        self~selectTableIdentity\n        status = self~selectionStatus\n      end\n",
+      "after": "      if mode = \"LIST\" then do\n        if table~selected = 1 & listOffset > 0 & listSource = \"documents\" then do\n          listOffset = listOffset - listPageSize\n          self~showDocuments\n          table~select(table~count)\n        end\n        else table~move(-1)\n        self~selectTableIdentity\n        status = self~selectionStatus\n      end\n"
+    },
+    {
+      "before": "      if mode = \"LIST\" then do\n        table~move(1)\n        self~selectTableIdentity\n        status = self~selectionStatus\n      end\n",
+      "after": "      if mode = \"LIST\" then do\n        if table~count > 0 & table~selected = table~count & listOffset + listPageSize < listTotal & listSource = \"documents\" then do\n          listOffset = listOffset + listPageSize\n          self~showDocuments\n        end\n        else table~move(1)\n        self~selectTableIdentity\n        status = self~selectionStatus\n      end\n"
+    },
+    {
+      "before": "::method executeCommand\n  expose app status running mode table screen",
+      "after": "::method executeCommand\n  expose app status running mode table screen listOffset listPageSize listTotal listSource"
+    },
+    {
+      "before": "    when command = \"DOCUMENTS\" | command = \"LIST\" then self~showDocuments\n",
+      "after": "    when command = \"DOCUMENTS\" | command = \"LIST\" then do\n      listOffset = 0\n      self~showDocuments\n    end\n    when command = \"PAGE\" then do\n      if listSource \\= \"documents\" then do\n        status = \"PAGE applies to DOCUMENTS. Type DOCUMENTS first.\"\n        return self\n      end\n      pageDirection = rest~upper~strip\n      select\n        when pageDirection = \"NEXT\" then do\n          if listOffset + listPageSize < listTotal then listOffset = listOffset + listPageSize\n          self~showDocuments\n        end\n        when pageDirection = \"PREVIOUS\" | pageDirection = \"PREV\" then do\n          if listOffset > 0 then listOffset = listOffset - listPageSize\n          self~showDocuments\n        end\n        otherwise status = \"Use PAGE NEXT or PAGE PREVIOUS.\"\n      end\n    end\n"
+    },
+    {
+      "before": "        self~showDocuments\n        self~selectByKey(document~DocKey)\n      end\n    end\n    when command = \"READ\"",
+      "after": "        if self~selectByKey(document~DocKey) == .nil then self~openSelected\n      end\n    end\n    when command = \"READ\""
+    },
+    {
+      "before": "        self~showDocuments\n        self~selectByKey(document~DocKey)\n      end\n    end\n    when command = \"ALTER\"",
+      "after": "        if self~selectByKey(document~DocKey) == .nil then self~openSelected\n      end\n    end\n    when command = \"ALTER\""
+    },
+    {
+      "before": "when command = \"HELP\" then status = \"Commands: documents, query, view, select, read, set",
+      "after": "when command = \"HELP\" then status = \"Commands: documents, page next|previous, query, view, select, read, set"
+    },
+    {
+      "before": "::method showDocuments\n  expose app screen table detail mode status\n  docs = app~allDocuments\n  table = self~tableFromDocuments(docs)\n  screen~table = table\n  screen~detail = .nil\n  screen~form = .nil\n  detail = .nil\n  mode = \"LIST\"\n  if table~count > 0 then do\n    table~select(1)\n    self~selectTableIdentity\n  end\n  status = \"Documents: \" || docs~items\n  return self\n",
+      "after": "::method showDocuments\n  expose app screen table detail mode status listOffset listPageSize listTotal listSource\n  /* Consume the existing renderer-neutral bounded semantic window. The\n   * application still owns sorting and documents; the CLI never constructs\n   * thousands of rows when only a visible page is required. */\n  listSource = \"documents\"\n  range = app~semanticCollectionRange(\"documents\", listOffset, listPageSize)\n  listTotal = range[\"TOTAL\"]\n  if listTotal > 0 & listOffset >= listTotal then do\n    listOffset = 0\n    range = app~semanticCollectionRange(\"documents\", 0, listPageSize)\n  end\n  table = self~tableFromSemanticRows(range[\"ROWS\"])\n  screen~table = table\n  screen~detail = .nil\n  screen~form = .nil\n  detail = .nil\n  mode = \"LIST\"\n  if table~count > 0 then do\n    table~select(1)\n    self~selectTableIdentity\n  end\n  first = 0\n  last = 0\n  if table~count > 0 then do\n    first = listOffset + 1\n    last = listOffset + table~count\n  end\n  status = \"Documents \" || first || \"-\" || last || \" of \" || listTotal || \". PAGE NEXT/PREVIOUS.\"\n  return self\n\n::method tableFromSemanticRows\n  expose app\n  use strict arg semanticRows\n  columns = .array~of(\"KEY\", \"TYPE\", \"TITLE\", \"STATUS\", \"DEPS\")\n  model = .CliUiTableModel~new(columns)\n  do item over semanticRows\n    /* DependsOn is not a scalar in the collection contract. Resolve only\n     * visible rows; do not expand the contract or duplicate domain truth. */\n    document = app~node~document(item[\"IDENTITY\"])\n    if document == .nil then raise syntax 93.900 array(\"Missing NotNotes document for semantic collection identity\")\n    cells = .array~of(item[\"KEY\"], item[\"FORM\"], item[\"TITLE\"], item[\"STATUS\"], document~DependsOn)\n    model~append(item[\"IDENTITY\"], cells)\n  end\n  return model\n"
+    },
+    {
+      "before": "::method showQuery\n  expose app screen table detail mode status",
+      "after": "::method showQuery\n  expose app screen table detail mode status listSource"
+    },
+    {
+      "before": "::method showView\n  expose app screen table detail mode status",
+      "after": "::method showView\n  expose app screen table detail mode status listSource"
+    },
+    {
+      "before": "  docs = app~query(text)\n  table",
+      "after": "  docs = app~query(text)\n  listSource = \"query\"\n  table"
+    },
+    {
+      "before": "  docs = app~viewDocuments(text)\n  table",
+      "after": "  docs = app~viewDocuments(text)\n  listSource = \"view\"\n  table"
+    }
+  ]
+}
