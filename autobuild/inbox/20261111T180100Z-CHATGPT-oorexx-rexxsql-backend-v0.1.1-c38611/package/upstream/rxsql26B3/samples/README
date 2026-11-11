@@ -1,0 +1,42 @@
+This directory contains sample programs demonstrating the use of REXX/SQL.
+
+All programs assume that specific database/owners/tables exist or have
+been created.
+
+Under Oracle, all sample programs assume that the demo user, SCOTT with
+password TIGER owns the table EMP.
+
+Under mSQL, a database with the name REXXSQL has been created, and a table;
+EMP, has been created and populated.
+A REXX/SQL program msqlsetup.rex, has been provided to create and populate
+the EMP table.
+
+Invocation of Sample Programs
+-----------------------------
+
+All sample program have been supplied as *.rex files.  Under all platforms,
+the sample programs can be executed by executing the rexxsql exectable and
+passing the name of the sample program as the first argument to the rexxsql
+executable. eg. rexxsql sample.rex
+
+Under Unix it is possible to execute the sample programs directly from the
+shell prompt.  This is possible with most shell's "magic number" behaviour.
+
+If the first line of a text file, which has its executable bit set, starts
+with #! , then the shell will invoke the program following these two
+characters and pass the remainder of the file to that program. eg. If the
+REXX/SQL executable has been installed in /usr/local/bin, then add the line:
+
+#!/usr/local/bin/rexxsql
+
+to the top of the sample program.  The program can then be invoked simply
+with the filename; sample.rex.
+
+NB.  Most Unix shells have a bug that permits only about 15 characters
+     to follow the #!.  Any more chanracters than this limit will be
+     truncated, and the shell will not find the program to execute.
+
+Under OS/2, the sample programs can be invoked directly from the command
+line.  Simply rename the file, making the extension .CMD instead of .REX.
+You must have moved the REXXSQL.DLL file to a directory specified in your
+LIBPATH.

@@ -1,0 +1,194 @@
+                             Contents
+                             --------
+              1. Installation of Rexx/SQL on Unix
+              2. Installation of Rexx/SQL on OS/2 and Windows NT/95/98
+              3. Testing the installation
+
+
+1. Installation of Rexx/SQL on Unix
+===================================
+To install Rexx/SQL, unpack the archive (you have probably already done
+that), run the configure script supplying the necessary command line
+parameters.  To see what parameters the configure script recognises,
+type ./configure --help
+
+Because Rexx/SQL can be configured to run with different Rexx interpreters,
+you must specify the Rexx interpreter you plan on using.
+To see the options available, run:
+
+configure --help
+
+If you are interested in building different versions of Rexx/SQL on
+the one platform; like a Regina version and a REXX/imc version
+you can do something like this.
+
+To build a version of Rexx/SQL with Regina and DB2:
+
+mkdir regina
+cd regina
+../configure --with-rexx=regina --with-db=db2
+make
+
+To build a version of Rexx/SQL with REXX/imc and Oracle:
+
+mkdir rexximc
+cd rexximc
+../configure --with-rexx=rexximc --with-db=oracle
+make
+
+The configure script looks in some common places for the Rexx libraries
+and header files. These are defined in the configure script. Some of the
+common directories are $HOME/include, /usr/local/include for header files
+and $HOME/lib and /usr/local/lib for libraries.  There are several others;
+see configure for the full list.
+
+If you have installed your Rexx interpreter in a location that the
+configure script cannot find, there are two ways in which you can tell
+the configure script where to look.
+1) Set environment variables:
+   This is useful if you only ever build Rexx extensions with the one
+   Rexx interpreter and the interpreter is not in one of the common locations.
+   REXXINCDIR -> directory where the Rexx interpreter header files are
+   REXXLIBDIR -> directory where the Rexx interpreter library files are
+2) Specify the directories on the configure command line
+   This is useful if you wnat to build with different interpreters.
+   and the interpreters are not in one of the common locations.
+   --with-rexxincdir=dir -> where dir is the location of the header files
+   --with-rexxlibdir=dir -> where dir is the location of the library files
+
+The directory search order is as follows:
+- configure command line options
+- environment variables
+- builtin, common directories
+
+You must supply a database vendor when configuring Rexx/SQL.  This is
+done with the --with-db=database switch, where "database" is one of:
+   oracle         Oracle 7.x OCI (support for Oracle > 10.x unknown)
+   oracle8        Oracle 8.x OCI (support for Oracle > 10.x assured) - incomplete
+   db2            DB2
+   mysql          MySQL
+   msql           mSQL 2.x and above
+   unixodbc       unixODBC project
+   openlink       OpenLink ODBC
+   udbc           OpenLink UDBC
+   easysoft-oob   EasySoft ODBC-ODBC Bridge
+   solid          Solid Server
+   velocis        Raima Velocis
+   intersolv      Intersolv ODBC
+   pgsqlodbc      PostgreSQL ODBC
+   sqlanywhere    Sybase SQLAynwhere
+   sybase         Sybase 10/11
+   sqlite         SQLite version 2
+   sqlite3        SQLite version 3
+
+While the location of some database vendor header files and libraries are
+able to be automatically found, most are not, so you will need to
+specify the location of these files using the following switches.
+   --with-dbincdir=dir -> where dir is the location of the header files
+   --with-dblibdir=dir -> where dir is the location of the library files
+
+Once Rexx/SQL has been configured, simply run "make".
+
+Once you have Rexx/SQL built, it can then be installed.  By default, the
+Rexx/SQL executable will be installed into /usr/local/bin, while the
+dynamically loadable external function package will be installed into
+/usr/local/lib.  The base path "/usr/local" can be changed by adding the
+--prefix=path (where path is the base path) to the configure command.
+eg. to install Rexx/SQL into /opt/bin and /opt/lib,
+configure --prefix=/opt ...
+
+If the platform you are installing Rexx/SQL on does not support dynamically
+loadable libraries, you may get some errors during the "make install";
+these can be ignored.
+
+Where the platform does support dynamically loadable libraries, you may
+need to tell your operating system where these shared libraries are. The
+method of doing this varies between operating systems, but generally
+involves adding the installed directory to an environment variable such
+as LD_LIBRARY_PATH, LIBPATH, etc.
+
+64bit machines
+--------------
+On 64bit machines, some database vendors provide both 32 and 64 bit
+libraries. The default is different on different databases and platforms.
+In an attempt to address this, two configure switches have been provided:
+
+--enable-32bit and --enable-64bit.
+
+These switches should be used in conjunction with other configure settings
+so that the correct database libraries are linked in with the correct
+Rexx interpreter libraries.
+
+As an example, the IBM compiler xlc on AIX 5.3 defaults to 32bit, even
+though the default libraries for Oracle are 64bit. Assuming a 32bit build
+of the Rexx interpreter is installed, you would need to do the following:
+
+% ./configure --enable-32bit --with-rexx=regina --with-db=oracle
+
+If you had a 64bit build of your Rexx interpreter and wanted a 64bit
+build of Rexx/SQL you would run the following:
+
+% ./configure --enable-64bit --with-rexx=regina --with-db=oracle
+
+Other combinations are left to the user to experiment with. Unfortunately
+32bit support on 64bit machines is difficult to handles.
+
+Using Oracle...
+---------------
+If you run "make" and get an error along the lines of "don't know how
+to make cdemo1.c", run make with the "all" target. ie "make all"
+
+Using Solid Server 2.2 ...
+--------------------------
+
+*** Note: versions of Solid Server >= 2.3 the following does NOT apply ***
+
+SolidTech have made life VERY difficult for automatic configuration
+scripts as used by Rexx/SQL.  As a result, Rexx/SQL will only link
+with the static library supplied with the Solid Server development kit.
+
+The reason for this is that the name of the client library does not
+conform to normal Un*x naming conventions for libraries. Add to this
+the fact that the client library name also includes the version number
+in the name, then it is impossible to link with the shared client library.
+
+I urge you then to contact SolidTech and request that in future releases
+that they provide a symbolic link to both the static and shared libraries
+that is prefixed with "lib" AND does not have a version number in it.
+eg. the Linux static client library for version 2.2 is called scllux22.a
+the suggested symbolic library name would be "libscllux.a"
+
+I have attempted to get SolidTech to provide this symbolic link, but
+to no avail :-(
+
+PS. As of 2.3, they have listened!!
+
+2. Installation of Rexx/SQL on OS/2 and Windows NT/95/98
+========================================================
+Unpack the archive. You've probably already done this.
+Copy all executables and DLLs into a directory already in the systems
+PATH, or to a new directory, but remember to include this directory
+in the PATH. On Windows 95/98, you will need to reboot before the
+new PATH is effective.
+
+3. Testing the installation
+===========================
+Once you have the Rexx/SQL executables and DLLs (or shared libraries)
+installed, run the sample program; simple.cmd. simple.cmd takes 3
+optional parameters:
+user: the username to connect to the database
+pass: the password of the username to connect to the database
+data: the name of the database to connect to
+First run simple.cmd with the supplied Rexx/SQL executable:
+
+Unix>  ./rexxsql simple.cmd user=username pass=password data=database
+OS/2>  rexxsql simple.cmd user=username pass=password data=database
+Win32> rexxsql simple.cmd user=username pass=password data=database
+
+Next run simple.cmd directly with your Rexx interpreter: (using regina
+as the example)
+
+Unix>  regina simple.cmd user=username pass=password data=database
+OS/2>  regina simple.cmd user=username pass=password data=database
+Win32> regina simple.cmd user=username pass=password data=database
+

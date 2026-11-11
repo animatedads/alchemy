@@ -1,0 +1,100 @@
+From 7f83f3393709141bfd7b37adb31dbbaba159342b Mon Sep 17 00:00:00 2001
+From: "Claude (Opus 5.5)" <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 17:05:02 +0100
+Subject: [PATCH 4/4] SQLite3 driver: any statement that returns columns is a
+ query
+
+SelectStatement() recognises only a leading SELECT. WITH ... SELECT, PRAGMA,
+EXPLAIN, VALUES and INSERT/UPDATE/DELETE ... RETURNING return rows too: through
+SQLCOMMAND they failed with 'another row available' or returned nothing (so
+EXPLAIN QUERY PLAN was unusable). After sqlite3_prepare,
+sqlite3_column_count() > 0 marks the statement as a query for fetching.
+
+The original classification is kept as leading_select, and everything except
+fetching still uses it:
+- SQLEXECUTE runs any statement that is not a leading SELECT; a PRAGMA or
+  ... RETURNING statement is stepped to completion and its rows discarded.
+  (Before, it reported 'another row available' after the INSERT had already
+  happened.) A SELECT through SQLEXECUTE is unchanged (not executed, rc 0).
+- AUTOCOMMIT after SQLCOMMAND applies to the same statements as before.
+---
+ sqlite3/sqlite3.c | 32 +++++++++++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 5 deletions(-)
+
+diff --git a/sqlite3/sqlite3.c b/sqlite3/sqlite3.c
+index bc64743..e1ad820 100644
+--- a/sqlite3/sqlite3.c
++++ b/sqlite3/sqlite3.c
+@@ -72,7 +72,8 @@ typedef struct
+ {
+    sqlite3_stmt *cstmt;                /* compiled sqlite3 statement */
+    SAVEDSQLSTMT saved_stmt; /* structure to hold SQL statement */
+-   int      select_stmt;   /* 1 if the statement is a SELECT */
++   int      select_stmt;   /* 1 if the statement returns rows (fetch results) */
++   int      leading_select;/* 1 if SelectStatement() saw a leading SELECT (original classification) */
+    int      bind_cnt;      /* number of bind values bound */
+    int      ncol;          /* number of columns in result */
+    int      nrow;          /* number of rows in result */
+@@ -1894,6 +1895,15 @@ rxfunc( SQLCOMMAND )
+       CTX(swa) = NULL;
+       return RxReturnNumber( RxPackageGlobalData, retstr, DB_ERROR);
+    }
++   /*
++    * A statement that returns columns is a query whatever its first keyword:
++    * WITH ... SELECT, PRAGMA, EXPLAIN, VALUES and INSERT/UPDATE/DELETE ... RETURNING.
++    * SelectStatement() only recognises a leading SELECT, so these failed with
++    * "another row available" or returned no rows.
++    */
++   swa->leading_select = swa->select_stmt;
++   if ( sqlite3_column_count( CTX(swa) ) > 0 )
++      swa->select_stmt = 1;
+    /*
+     * Reset the count of bind variables
+     */
+@@ -1991,7 +2001,7 @@ rxfunc( SQLCOMMAND )
+     * If the statement is NOT a SELECT, and we have AUTOCOMMIT
+     * ON, then commit the statement.
+     */
+-   if ( swa->select_stmt == 0 )
++   if ( !swa->leading_select )
+    {
+       if ( RexxSQLData->AutoCommit )
+       {
+@@ -2135,6 +2145,15 @@ rxfunc( SQLPREPARE )
+       CTX(swa) = NULL;
+       return RxReturnNumber( RxPackageGlobalData, retstr, DB_ERROR);
+    }
++   /*
++    * A statement that returns columns is a query whatever its first keyword:
++    * WITH ... SELECT, PRAGMA, EXPLAIN, VALUES and INSERT/UPDATE/DELETE ... RETURNING.
++    * SelectStatement() only recognises a leading SELECT, so these failed with
++    * "another row available" or returned no rows.
++    */
++   swa->leading_select = swa->select_stmt;
++   if ( sqlite3_column_count( CTX(swa) ) > 0 )
++      swa->select_stmt = 1;
+ 
+    swa->ncol = sqlite3_column_count( CTX(swa) );
+    /*
+@@ -2330,12 +2349,15 @@ RFH_RETURN SQLEXEC( RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv,
+     * a DML statement it will be the number of rows affected by the INSERT/
+     * UPDATE/DELETE statement.
+     */
+-   if ( swa->select_stmt == 0 )
++   if ( swa->select_stmt == 0 || ( !open && !swa->leading_select ) )
+    {
+       /*
+-       * Execute the statement...
++       * Execute the statement. From SQLEXECUTE(), a statement that returns rows but is not
++       * a SELECT (PRAGMA, INSERT ... RETURNING) is stepped to completion; its rows are discarded.
+        */
+-      if ( ( rc = sqlite3_step( cstmt ) ) != SQLITE_DONE )
++      while ( ( rc = sqlite3_step( cstmt ) ) == SQLITE_ROW )
++         ;
++      if ( rc != SQLITE_DONE )
+       {
+          SetDBError( RxPackageGlobalData, __FILE__, __LINE__, SWA(stmt), (char *)sqlite3_errmsg( db->sqlite ) );
+          sqlite3_finalize( cstmt );
+-- 
+2.43.0
+
