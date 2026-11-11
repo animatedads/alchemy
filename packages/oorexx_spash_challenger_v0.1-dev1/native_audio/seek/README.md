@@ -1,4 +1,4 @@
-# SPASH Ogg native seek + multitrack v0.2 (host qualification pending)
+# SPASH Ogg native seek + multitrack v0.2 (TP07 native qualification; full multistream pending)
 
 Architecture: Tom Dyer. Implementation increment: ChatGPT GPT-6. Additive to PR #135 and the SPASH Challenger lane. All source selection, processing, scoring, and execution authority stays with ooRexx. Native C/libav is exclusively a Foreign Runtime codec/IO implementation provider.
 
@@ -30,4 +30,8 @@ Deploy source once through existing permitted resident-MU placement. The durable
 
 ## Qualification status
 
-This source was authored without the original media or libav development headers. It needs compilation, Foreign Runtime ABI testing, real Ogg seek correctness and exact compressed-byte budget measurements by CODEX-PC on the actual host. **Do not claim that a 1 GiB deep seek, multitrack A/V alignment or source-audio enhancement has passed.** Do not copy private recordings or media-derived rows to Git.
+CODEX-PC qualified the **pre-source-fence** PR135 native decoder on 7 November 2026 (REQ-00003345): ooRexx 5.3.0 r13196, Foreign Runtime v0.22.6 and libav 7.1.5 built with -Werror; real TP07 162,805,582-byte Ogg, one logical stream, two physical channels. The 85%-deep six-second seek read 1,035,389 compressed bytes (0.636%) with 18 local seeks. Six- and 60-second excerpts were byte-identical against longer start-origin native output. Independent deep-seek reference equality, chained logical streams, genuine 1 GiB source and source-audio enhancement remain **unqualified**. No private recording or derived PCM is in Git.
+
+On 11 November, a native **local source-mutation fence** was added to catalogue and decode acceptance. It records local file-descriptor device/inode/size/mode/mtime/ctime, rejects changed originals and deletes partial outputs. The standalone synthetic C test passed locally and through an **Autobuilder PASS receipt** for immutable package `packages/oorexx_ogg_source_fence_v0.1`, submission `20261111T175659Z-CHATGPT-oorexx-ogg-source-fence-v0.1-25942a`. That receipt does **not** qualify the integrated libav seek provider after the fence modification. It is not a replacement for Storage Fabric source SHA/durable lease.
+
+A reusable Gopher sphere has also been **Autobuilder accepted and confirmed readable through Rasen Falcon**: `spash-ogg-seek`, articles `ogg.seek.start` and `ogg.seek.storage`, submission `20261111T180117Z-CHATGPT-spash-ogg-seek-sphere-v0.1-9197ed`. Consult it before modifying hot seeking or Storage Fabric traffic. This draft PR135 remains unmerged; require a new source-host compile + negative concurrent-mutation test before marking the integrated provider qualified.
