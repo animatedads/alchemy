@@ -1,7 +1,6 @@
 /* Real NoSQLServer integration smoke for selected columnar top-level path.
  * Run under ooRexx 5.3 r13196 with Alchemy dependencies in include path.
  */
-::requires "../src/NoSQLServerColumnar.cls"
 
 raw=.table~new
 raw['name']='observations'
@@ -71,3 +70,5 @@ require: procedure
     exit 1
   end
   return
+
+::requires "../src/NoSQLServerColumnar.cls"
