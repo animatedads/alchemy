@@ -1,4 +1,4 @@
-# ooRexx Native Database Backends Gopher Sphere v0.1
+# ooRexx Native Database Backends Gopher Sphere v0.2
 
 Authoritative continuity sphere for the provider-neutral Native Database Backends family.
 
@@ -28,3 +28,18 @@ The shared runtime selector now has a generic provider for the existing Rexx/SQL
 backend. Consumer and migration constraints are recorded in
 `REXXSQL_PROVIDER_CONTRACT_2026-10-29.md`. This does not change the unresolved Library
 v0.3.4/Git version reconciliation recorded separately.
+
+
+## 2026-11-11 canonical v0.3.2 Autobuild line
+
+The structured sphere now records the canonical Git source increment
+`oorexx_native_database_backends v0.3.2`: provider-package selection is present in the
+canonical package, the selector regression is package-owned, Rexx/SQL points at the
+canonical Native Database Backends source, and Autobuild targets the current Git
+Foreign Runtime v0.22.6 dependency.
+
+This does **not** supersede the separate Library artifact
+`oorexx_native_database_backends_v0.3.4.zip`. That Library head remains an unreconciled
+parallel line until its exact bytes are available for source/ABI comparison. The v0.3.2
+Git line is therefore a test/publication candidate from the known v0.3.1 parent, not a
+claim that Library v0.3.4 has been incorporated.
