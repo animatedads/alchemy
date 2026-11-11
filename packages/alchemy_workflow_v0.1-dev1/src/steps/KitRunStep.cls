@@ -11,6 +11,8 @@
  *   KR-NOT-FOUND  FAIL  ooRexx would not find a program a test starts (Error 3.901)
  *   KR-MISSING    FAIL  a ::requires found nowhere: the program cannot start
  *   KR-INVALID    FAIL  a ::requires ooRexx refuses (Error 19.904)
+ *   KR-GONE       WARN  the program existed when the test started it, in a directory the test removed
+ *                       before kitrun looked: its requires were not followed (not the package's fault)
  *   KR-ENV        FAIL  Autobuild refuses to start the test (exit 125: its environment contract)
  *   KR-OLDER      WARN  loads an older version of a family than the newest in the estate
  *   KR-TWO        WARN  loads one family at two versions
@@ -68,6 +70,7 @@
     w = t~word(1)
     select
       when t~pos('Error 3.901') > 0 then self~add(res, ctx, 'KR-NOT-FOUND', 'FAIL', test, t, 'name the program relative to the test''s cwd, or put its directory on the test''s rexx_path')
+      when t~pos('the test removed that directory') > 0 then self~add(res, ctx, 'KR-GONE', 'WARN', test, t, 'nothing to fix in the package: kitrun could not follow this program''s requires; check them by hand, or keep the directory until the test has finished')
       when t~pos('AUTOBUILD_ENV_CONTRACT') > 0 then self~add(res, ctx, 'KR-ENV', 'FAIL', test, t, 'satisfy the require, require_dirs and require_entries of the test''s environment')
       when w == 'MISSING' then self~add(res, ctx, 'KR-MISSING', 'FAIL', test, t, 'put the directory that holds it on the test''s rexx_path, or correct the ::requires')
       when w == 'INVALID' then self~add(res, ctx, 'KR-INVALID', 'FAIL', test, t, 'give ::requires a literal file name')
