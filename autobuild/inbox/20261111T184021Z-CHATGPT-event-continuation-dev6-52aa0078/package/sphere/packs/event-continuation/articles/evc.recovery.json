@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "evc.recovery",
+  "version": "0.1",
+  "sphere": "event-continuation",
+  "title": "Recovery, delivery leases and journal model",
+  "summary": "W2 and E2 store hex-encoded field bytes, preserving pipes. S re-arms, K leases/increments attempts, R receives, D dead-letters exhausted events, C records completed mailbox read (mock in demo). Historic dev4 W/E replay is supported. A later watch must not be blocked by an undeliverable event.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Result payload never enters the nudge; W2/E2 journal fields are hex-encoded.",
+    "A dead-lettered event stays dead on replay and cannot block later events.",
+    "Atomic/crash-consistent storage requires qualified production backend."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "autobuild/receipts/20261111T182200Z-CHATGPT-event-continuation-dev4-84fb4937.json",
+      "claim": "dev4 accepted native core tests only"
+    },
+    {
+      "artifact": "alchemy_event_continuation_v0.1-dev6",
+      "member": "README.md",
+      "claim": "Dev5 candidate and explicit qualification boundary"
+    }
+  ]
+}
