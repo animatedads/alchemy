@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "sphere": "location-service",
+  "id": "location-service.start",
+  "title": "Location Service: objects, layers and data authority",
+  "section": "start",
+  "version": "0.1",
+  "summary": "Persistent Place identity and PlaceVersion geometry, typed SpatialReference (OS grid, lat/long, postcode, local scene), Event/TimeRef and provenance-bound observations. Jurisdictions are independent, temporal overlays; a postcode district or grid cell is an extent, never an exact physical position.",
+  "invariants": [
+    "Architecture is Tom Dyer's; code by ChatGPT GPT-6; original brief Claude Opus 5.5.",
+    "Location is not a positioning estimator. SLAM and SPASH consume world knowledge and create observations.",
+    "Place identity must not be replaced by its coordinates; multiple references and versions coexist.",
+    "Country and jurisdiction coverage: all countries intersecting approximately -14..40 longitude, 34..71 latitude; Egypt and Georgia added; Portugal excluded. Enumerate roster from sourced polygon intersections.",
+    "Cyprus Republic areas and UK SBAs require jurisdiction coverage and historically valid overlays; synthetic overlap tests do not prove territorial authority.",
+    "Licence/credit, source hash, provider version, operator, uncertainty and validity must accompany every authoritative answer."
+  ],
+  "provenance": [
+    {
+      "artifact": "Rasen Falcon REQ-00003291",
+      "claim": "Original Location Service requirements"
+    },
+    {
+      "artifact": "Rasen Falcon REQ-00003293",
+      "claim": "Geographic coverage and jurisdiction along addendum"
+    },
+    {
+      "artifact": "Rasen Falcon REQ-00003305",
+      "claim": "OO world specification"
+    }
+  ]
+}
