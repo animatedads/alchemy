@@ -269,3 +269,4 @@
 
 ::requires 'MediaFileProbe.cls'
 ::requires 'Mp4IndexSnapshot.cls'
+::requires 'Mp4SampleTable.cls'
