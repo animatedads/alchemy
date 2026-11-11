@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "arch.docy.shared-mutations",
+  "sphere": "oorexx-docy",
+  "version": "0.1",
+  "title": "Shared placements and planned events",
+  "authority": "project-authoritative",
+  "summary": "Changes are proposed with affected-output plans before applying one shared mutation.",
+  "semantics": [
+    "planPlacementAdd and planOverrideChange complement planNodeChange and planFactChange and are non-mutating until accepted.",
+    "Template placement changes reach every inheriting document even when a node was previously absent.",
+    "Template-layer override changes reach inherited consumers; local document/project/variant changes affect only that document.",
+    "Lower-layer changes that are shadowed by deliberate local overrides report OVERRIDE.SHADOWS WARN without overwriting.",
+    "Apply uses a revision fence and records a logical predecessor event; it is not a durable cryptographic hash chain.",
+    "Direct mutators remain exposed and must be sealed before event-only enforcement can be claimed."
+  ],
+  "related": [
+    "arch.docy.authority",
+    "qual.docy.current",
+    "ops.docy.continuation"
+  ],
+  "provenance": [
+    {
+      "source": "repository",
+      "path": "packages/oorexx_docy/docs/SHARED_MUTATIONS.md"
+    },
+    {
+      "source": "repository",
+      "path": "packages/oorexx_docy/tests/test_shared_mutation_plans.rex"
+    }
+  ]
+}
