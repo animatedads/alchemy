@@ -4,23 +4,23 @@
   "version": "0.1",
   "sphere": "event-continuation",
   "title": "Current source and authority",
-  "summary": "v0.1-dev4 accepted on Autobuilder main with native core suite PASS (receipt 20261111T182200Z-CHATGPT-event-continuation-dev4-84fb4937). Dev5 adds hex journal, registered predicate providers, DLQ, real HTTPS config and asynchronous browser callbacks; dev5 is a candidate until its own receipt and browser run.",
+  "summary": "Dev6 is ACCEPTED on Alchemy Autobuilder main at packages/alchemy_event_continuation_v0.1-dev6; immutable receipt autobuild/receipts/20261111T184021Z-CHATGPT-event-continuation-dev6-52aa0078.json status PASS. Both static and native ooRexx suites completed, including predicate registry, hex journal, fixed nudge, retry budget, dead-letter replay and core lifecycle. HTTPS/WASM and real Rasen message sink remain unqualified.",
   "authority": "project-artifact",
   "invariants": [
-    "Dev4 is the last native Autobuilder PASS, with exact receipt; dev5 must pass independently.",
-    "Dev5 browser/Rasen integration NOT_RUN/NOT_IMPLEMENTED until separately proven.",
-    "Intention detection never authorizes side effects."
+    "Use dev6 PASS receipt, not candidate branch, as current native core authority.",
+    "Browser/WASM E2E, Rasen message posting/read, policy admission and production activation are NOT QUALIFIED.",
+    "Results go to sender's Rasen mailbox; browser only receives the fixed watch-ID nudge."
   ],
   "provenance": [
     {
       "artifact": "animatedads/alchemy",
-      "member": "autobuild/receipts/20261111T182200Z-CHATGPT-event-continuation-dev4-84fb4937.json",
-      "claim": "dev4 accepted native core tests only"
+      "member": "autobuild/receipts/20261111T184021Z-CHATGPT-event-continuation-dev6-52aa0078.json",
+      "claim": "Immutable Autobuilder dev6 PASS receipt"
     },
     {
-      "artifact": "alchemy_event_continuation_v0.1-dev5",
-      "member": "README.md",
-      "claim": "Dev5 candidate and explicit qualification boundary"
+      "artifact": "animatedads/alchemy",
+      "member": "packages/alchemy_event_continuation_v0.1-dev6/src/ContinuationCore.cls",
+      "claim": "Current accepted native ooRexx source"
     }
   ]
 }

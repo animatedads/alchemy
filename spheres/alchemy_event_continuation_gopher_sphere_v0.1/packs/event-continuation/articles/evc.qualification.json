@@ -4,23 +4,23 @@
   "version": "0.1",
   "sphere": "event-continuation",
   "title": "Qualification evidence and autobuilder boundary",
-  "summary": "Autobuilder accepted dev4 native test on 2026-11-11: receipt autobuild/receipts/20261111T182200Z-CHATGPT-event-continuation-dev4-84fb4937.json, status PASS, tests run_tests.sh code 0. Dev5 source must independently pass native qualification. Neither receipt proves WASM/HTTPS end-to-end or Rasen Falcon MCP delivery.",
+  "summary": "ACCEPTED dev6: autobuild/receipts/20261111T184021Z-CHATGPT-event-continuation-dev6-52aa0078.json status PASS; test command sh run_tests.sh exit 0, stderr empty. Static contract checks and both native suites PASS: test_core (rearm, leases, receipt, completion, restart, three file predicates) and test_delivery (provider, escaped journal, fixed nudge, retry budget, DLQ, restart). Dev5 had FAIL due displaced ::method sample (Error 97.1), corrected and guarded in dev6. No HTTPS/browser or Rasen MCP service integration qualification.",
   "authority": "project-artifact",
   "invariants": [
-    "Accepted dev4 receipt is real, scoped to its declared native tests.",
-    "No browser or real Rasen message delivery is implied by PASS.",
-    "Dev5 requires separate immutable Git submission and PASS receipt."
+    "Native core accepted: exact immutable dev6 PASS receipt and result logs.",
+    "The accepted test contract does not run browser, HTTPS listener, WASM assets or live Rasen messaging; these remain NOT_RUN.",
+    "All later modifications need a new immutable Git submission and acceptance receipt."
   ],
   "provenance": [
     {
       "artifact": "animatedads/alchemy",
-      "member": "autobuild/receipts/20261111T182200Z-CHATGPT-event-continuation-dev4-84fb4937.json",
-      "claim": "dev4 accepted native core tests only"
+      "member": "autobuild/receipts/20261111T184021Z-CHATGPT-event-continuation-dev6-52aa0078.json",
+      "claim": "Autobuilder status PASS"
     },
     {
-      "artifact": "alchemy_event_continuation_v0.1-dev5",
-      "member": "README.md",
-      "claim": "Dev5 candidate and explicit qualification boundary"
+      "artifact": "animatedads/alchemy",
+      "member": "autobuild/results/20261111T183419Z-a873d6dd80b7-e6b888f7/logs/01-continuation-core-and-package.stdout.txt",
+      "claim": "Executed ooRexx suites and static checks PASS; stderr empty"
     }
   ]
 }
