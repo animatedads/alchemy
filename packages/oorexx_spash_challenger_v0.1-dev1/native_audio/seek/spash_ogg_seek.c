@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/stat.h>
+#include "spash_ogg_source_fence.h"
 #include <unistd.h>
 #include <libavformat/avformat.h>
 #include <libavformat/avio.h>
@@ -52,6 +53,7 @@ typedef struct {
     uint64_t read_calls,seek_calls;
     int64_t first_read_byte,max_read_byte;
     int over_budget;
+    SpashOggSourceFence identity;
 } LocalIO;
 static int local_read(void *opaque,uint8_t *buf,int size) {
     LocalIO *f=opaque;
@@ -111,6 +113,8 @@ static int open_source(Source *s,const char *path,uint64_t budget) {
     if(fstat(fd,&st)<0 || !S_ISREG(st.st_mode) || st.st_size<1)
         return err("source must be a local nonempty regular file",AVERROR(EINVAL));
     s->local.size=st.st_size;
+    if(spash_ogg_fence_capture_stat(&s->local.identity,&st)!=0)
+        return err("source identity capture failed",AVERROR(EINVAL));
     uint8_t *buffer=av_malloc(IO_BUFFER);
     if(!buffer)return err("allocate AVIO buffer",AVERROR(ENOMEM));
     s->avio=avio_alloc_context(buffer,IO_BUFFER,0,&s->local,local_read,NULL,local_seek);
@@ -164,6 +168,9 @@ int32_t spash_seek_catalogue(const char *path,const char *tsv,uint32_t read_budg
     fprintf(f,"local_bytes_total\t%"PRId64"\ncompressed_bytes_read\t%"PRIu64"\nsource_residency\tLOCAL_ONLY\n",
            s.local.size,s.local.compressed_read);
     if(fflush(f)!=0){err("flush catalogue",-errno);goto done;}
+    if(!spash_ogg_fence_unchanged(s.local.fd,&s.local.identity)){
+        err("local original changed during catalogue",AVERROR_INVALIDDATA);goto done;
+    }
     ok=0;
 done:
     if(f)fclose(f);
@@ -399,6 +406,9 @@ int32_t spash_seek_decode_f32(const char *path,const char *out,const char *repor
     fprintf(r,"pts_jitter_max_output_samples\t%lld\n",(long long)e.jitter_max);
     fprintf(r,"source_io\tLOCAL_PREAD_ONLY\nclock_authority\tAUDIO_STREAM_PTS_ONLY\nchained_segment_qualified\tNO\n");
     if(fflush(r)!=0){err("flush private report",-errno);goto done;}
+    if(!spash_ogg_fence_unchanged(s.local.fd,&s.local.identity)){
+        err("local original changed during seek/decode",AVERROR_INVALIDDATA);goto done;
+    }
     status=0;
 done:
     if(r)fclose(r);
