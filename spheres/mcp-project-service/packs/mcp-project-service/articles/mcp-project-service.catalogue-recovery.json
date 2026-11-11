@@ -1,0 +1,96 @@
+{
+  "kind": "article",
+  "id": "mcp-project-service.catalogue-recovery",
+  "version": "0.1",
+  "sphere": "mcp-project-service",
+  "section": "qualification",
+  "title": "2026-11-11 live catalogue reconciliation: Gopher resolver versus MCP ownership",
+  "summary": "A standalone LLM Gopher sphere resolution does not register its sphere as a first-class project component. The 2026-11-11 Rasen Falcon live MCP catalogue listed 137 runtime components, zero sphere components, and older/missing source-provenance metadata, while direct sphere resolution succeeded. Do not deploy the older MCP dev8 82-runtime/53-sphere snapshot over the live 137 runtime components.",
+  "status": "SOURCE_CANDIDATE_NOT_LOADED",
+  "observed_at": "2026-11-11T17:38:00Z",
+  "facts": [
+    {
+      "operation": "project.components.list",
+      "result": "137 runtime; 0 sphere; catalogSourceArtifact agent_mailbox_mcp_v0.1-dev1; blank catalogSourceSha256 and catalogSources"
+    },
+    {
+      "operation": "project.components.list(componentKind=sphere)",
+      "result": "count=0, sphereEntryCount=0"
+    },
+    {
+      "operation": "sphere.check(rasenfalcon)",
+      "result": "SPHERE_RESOLVED from separate direct Gopher surface; version 0.6; archive 2acc045d1d4e50b921d4cf012eb9930d2c116267cf8387f6ed3d14462c327d3d"
+    },
+    {
+      "operation": "sphere.check(rasenfalcon, sphere:rasenfalcon)",
+      "result": "COMPONENT_NOT_FOUND"
+    },
+    {
+      "operation": "Git source catalog/components.json",
+      "result": "MCP dev8 fixture: 82 runtime artifact entries and 53 sphere entries, 129 distinct IDs; not current live deployment"
+    }
+  ],
+  "invariants": [
+    "The MCP runtime catalog is a sealed, accepted source snapshot. Do not rebuild project authority dynamically from arbitrary Gopher files during live MCP calls.",
+    "The live 137 runtime component IDs and their aliases must be preserved before adding sphere: identities; older 82-runtime fixture must fail closed.",
+    "Runtime component and sphere component ownership are independent. An unbound sphere.check result grants no project ownership or mailbox access.",
+    "McpProjectNullSphereChecker is the default when the service does not inject its own Gopher checker; a separate sphere transport can still work.",
+    "Do not expose the Operator Desk /spheres as an empty world when catalogue read is unconfigured; signal unavailability, preserve signed-in principal and source provenance.",
+    "Source candidate and simulated checks are not native r13196 MCP acceptance, host installation, operator admission or service restart."
+  ],
+  "repair_contract": {
+    "build_tool": "packages/alchemy_mcp_catalog_reconcile_v0.1-dev1/reconcile_catalog.py",
+    "inputs": [
+      "exact authenticated live component-list export",
+      "current independently accepted runtime-only catalogue (with source hash)",
+      "approved sphere-rollup catalogue (with source hash)"
+    ],
+    "checks": [
+      "runtime ID and alias no-loss",
+      "source and archive SHA-256 presence",
+      "sphere:<sphereId> canonical identity",
+      "no sphere duplicate",
+      "no volatile ownership/receipt state in static source"
+    ],
+    "outputs": [
+      "candidate-components.json",
+      "candidate-report.json with CANDIDATE_UNINSTALLED"
+    ],
+    "runtime_acceptance": [
+      "operator-approved backup and rollback",
+      "single writer MCP journal",
+      "verified identity and HTTPS MCP context",
+      "bound McpGopherSphereChecker",
+      "r13196 component/ownership/mismatch and restart tests",
+      "first real Operator Desk /spheres and /sphere probe"
+    ]
+  },
+  "cross_lanes": {
+    "authority": "agent-mailbox",
+    "gopher": "llm_gopher",
+    "operator_desk": "rasenfalcon-operator-console",
+    "issue": "https://github.com/animatedads/alchemy/issues/143",
+    "requests": [
+      "REQ-00003483",
+      "REQ-00003485",
+      "REQ-00003487"
+    ]
+  },
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_mcp_service_v0.2-dev8/catalog/components.json",
+      "gitBlobSha": "38af8841f8871a7eff6c56d9cf42ada58ba2b708",
+      "claim": "historical compiled source fixture, not deployed catalogue"
+    },
+    {
+      "artifact": "packages/oorexx_mcp_service_v0.2-dev8/tests/test_sphere_components.rex",
+      "gitBlobSha": "bd3e12661b672d30fcb27f499ec6004828892eb1",
+      "claim": "53 sphere component and authority regression contract"
+    }
+  ],
+  "credits": {
+    "architecture": "Tom Dyer",
+    "analysis_and_engineering": "ChatGPT GPT-6",
+    "date": "2026-11-11"
+  }
+}
