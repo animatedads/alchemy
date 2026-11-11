@@ -43,3 +43,20 @@ This does **not** supersede the separate Library artifact
 parallel line until its exact bytes are available for source/ABI comparison. The v0.3.2
 Git line is therefore a test/publication candidate from the known v0.3.1 parent, not a
 claim that Library v0.3.4 has been incorporated.
+
+
+## 2026-11-11 Autobuild receipts
+
+Two exact provider-composition lines are now receipt-backed:
+
+- Native Database Backends v0.3.2 — Autobuild **PASS**, tree
+  `363991d9f9959362100936d4755ee9a6c9ee57bab2c4dc85e9ef4ebb20c73dcf`.
+  Selector/capability/bulk/fallback/wire-boundary gates executed. The two tests that
+  require real libpq were explicitly environment-skipped because the Autobuild host
+  has no `libpq.so.5` or `libpq.so`; this is not a fresh live-libpq qualification.
+- Rexx/SQL SQLite v0.1.1 — Autobuild **PASS**, tree
+  `754559f1c302136edc3dc20bc3f0637d8fd33fd542e12dbe65e70b6850999553`.
+  Driver/backend/provider gates and SSC provider/live suites passed.
+
+The Library `oorexx_native_database_backends_v0.3.4.zip` remains a separate,
+unreconciled head and is not superseded by these Git/Autobuild receipts.
