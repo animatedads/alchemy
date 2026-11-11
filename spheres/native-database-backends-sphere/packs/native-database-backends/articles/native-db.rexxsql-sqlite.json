@@ -1,0 +1,45 @@
+{
+  "kind": "article",
+  "id": "native-db.rexxsql-sqlite",
+  "version": "0.2",
+  "sphere": "native-database-backends",
+  "title": "Rexx/SQL SQLite: indexed provider composition and migration gates",
+  "summary": "Native Database Backends v0.3.2 brings configuration-time provider-package selection into the canonical publication source and recognizes REXXSQL-SQLITE/REXXSQL/SQLITE as the existing indexed Rexx/SQL SQLite provider. The provider is external to Native Database Backends and remains owned by oorexx_rexxsql_backend_v0.1. Consumers may require capabilities before acquisition; unsupported NULL-vs-empty distinction and BLOB writes must fail closed. Semantic Source Store uses its specialized Rexx/SQL provider override to retain the SSC index plan. The v0.3.2 Git increment is source-complete for Autobuild but is not newly runtime-qualified until an exact receipt exists.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Rexx/SQL SQLite execution remains owned by oorexx_rexxsql_backend_v0.1; Native Database Backends must not duplicate or vendor its driver.",
+    "DatabaseBackendSelector chooses a provider package before implementation classes are imported; NativeDatabaseBackendSelector remains the capability selector among already-loaded implementations.",
+    "REXXSQL-SQLITE, REXXSQL and SQLITE normalize to the same provider identity.",
+    "A consumer requiring an unsupported capability must fail before session acquisition rather than silently weaken persistence semantics.",
+    "NULL_EMPTY_DISTINCT and BLOB_WRITE are currently unsupported by the Rexx/SQL provider; THREAD_SAFE_CONNECTIONS remains unqualified.",
+    "SSC uses SemanticSourceRexxSqlProvider through an explicit package/class override so its index plan is preserved.",
+    "Changing provider is deployment configuration; applications must not rewrite ::requires statements to switch databases.",
+    "No v0.3.2 runtime qualification may be claimed until an Autobuild receipt names the exact submitted source and result."
+  ],
+  "procedure": [
+    "Set OOREXX_DATABASE_PROVIDER to REXXSQL-SQLITE, REXXSQL or SQLITE.",
+    "Ensure RexxSqlDatabaseProvider.cls and the canonical Native Database Backends src directory are on REXX_PATH and librexxsql.so is loadable.",
+    "Pass requiredCapabilities for every persistence semantic the application depends on.",
+    "Refuse acquisition if a required capability is not SUPPORTED.",
+    "For SSC, override OOREXX_DATABASE_PROVIDER_PACKAGE to SemanticSourceRexxSqlProvider.cls and OOREXX_DATABASE_PROVIDER_CLASS to SemanticSourceRexxSqlProvider.",
+    "Treat the acquired session as pinned; do not replay failed work through NoSQLServer or another provider."
+  ],
+  "current_git_evidence": {
+    "canonical_parent": "oorexx_native_database_backends v0.3.1",
+    "canonical_increment": "v0.3.2",
+    "selector_commit": "8767200a3c0b90d8bc4805d30fb58e78bec66043",
+    "postgres_provider_commit": "87cfdf5a205250753e9931adcdfb7cf96cab4caf",
+    "selector_test_commit": "3df7b1576a9bedf6917ad600e3055bd32cd35a1a",
+    "autobuild_descriptor_commit": "37914d2a4f33401d1dba3415647640d9b088e656",
+    "rexxsql_canonical_runner_commit": "180abc7bf5c1359939b1a26f354663b3ef593547",
+    "status": "SOURCE_READY_FOR_AUTOBUILD; RECEIPT_PENDING"
+  },
+  "provenance": [
+    {
+      "artifact": "oorexx_native_database_backends_v0.3.1.zip",
+      "sha256": "bb2eea71b6ce4c4d9d8604876df1146a12e5baeeec741c91d7091ba3596d213f",
+      "member": "oorexx_native_database_backends_v0.3.1/README.md",
+      "claim": "v0.3.1 is the immutable canonical parent for the v0.3.2 Git increment; v0.3.2 adds provider-package selection without replacing the parent provenance."
+    }
+  ]
+}
