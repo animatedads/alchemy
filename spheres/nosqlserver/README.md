@@ -1,9 +1,9 @@
-# NoSQLServer engineering sphere v0.5 — 2026-10-29
+# NoSQLServer engineering sphere v0.6 - 2026-11-11
 
-Current Git source includes `packages/nosqlserver_v0.91` and the newer `packages/nosqlserver_v0.92-dev1`. v0.92-dev1 adds native SQLite INTEGER-primary-key rowid seeks and lazy row counts; NoSQLServer SQL predicates remain authoritative.
+Baseline: packages/nosqlserver_v0.92-dev1. NoSQLServer remains SQL/query authority; native Rexx/SQL SQLite is a separately selected backend.
 
-The Intention Service database-search integration is refreshed to dev30. Capability evidence now consumes the public DatabaseVersion feature registry before compatibility probes, and World population returns to exact INTEGER semantics. The source rebuild also fixes plain MySQL `INSERT INTO country` parsing and proves all 5,302 World rows can be rebuilt.
+The v0.93-dev1 columnar virtual-relations work is a SOURCE-ONLY DRAFT at https://github.com/animatedads/alchemy/pull/141. It allows logical tables to use a columnar shadow with ROW, COLUMN or AUTO presentation. The dev1 tests cover segment-selective materialisation and memory generation guarding, not persistent-backend qualification.
 
-The separately selected Rexx/SQL SQLite backend remains independent. NoSQLServer writable SQLite still has the documented large-scale/performance limitations.
+See the packed article nosqlserver.columnar-v093. Existing v0.5 Intention Service dev30/World INTEGER and MySQL import evidence remains historical.
 
-Autobuilder is OFF. No website, mail, XTP MI/MU, LDAP or private-CA HTTPS deployment is claimed from this sphere update.
+Autobuilder OFF. No release, migration, SQLite WAL certification, production website, mail, XTP MI/MU, LDAP or HTTPS service deployment.
