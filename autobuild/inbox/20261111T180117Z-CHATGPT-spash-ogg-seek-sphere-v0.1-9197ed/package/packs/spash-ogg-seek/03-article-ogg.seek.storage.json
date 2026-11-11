@@ -1,0 +1,41 @@
+{
+  "kind": "article",
+  "id": "ogg.seek.storage",
+  "version": "0.1",
+  "sphere": "spash-ogg-seek",
+  "title": "Storage Fabric locality and source-identity acceptance fence",
+  "summary": "A resident-MU seek request carries an immutable StorageRef, stream/channel, sample extent, target rate, and method identity. C local source guard records device/inode/extent/mode plus nanosecond mtime/ctime on open and rejects catalogue/decode success if changed. This guard is only metadata mutation detection; durable source digest/lease validation remains a Storage Fabric responsibility.",
+  "invariants": [
+    "Do not transfer original 1 GiB Ogg or unbounded PCM across Storage Fabric on repeated seek calls.",
+    "Source file mutations observed during a seek must reject and delete partially created private output and report.",
+    "Metadata equality is not cryptographic identity and does not prevent same-size invisible modifications; StorageRef digest and immutable revision must be independently enforced.",
+    "Do not assume that file size/local path alone binds identity across MUs or replicas.",
+    "A 64 MiB per-request compressed-read default is a cap, not a performance certification; record bytes per seek and reject overruns.",
+    "Source-fence C fixture passing does not qualify Ogg seeking, multitrack, chained segments or audio enhancement.",
+    "Autobuilder publishes a new immutable package path only on successful receipt; do not claim acceptance from an unmerged PR or a ready Git marker."
+  ],
+  "procedure": [
+    "Use source residency resolution to bind the original StorageRef to a local read-only regular file FD on its owning MU.",
+    "Check a durable source digest/version through Storage Fabric policy before and after the job where required.",
+    "At native provider start capture fstat device/inode/size/mode/mtime/ctime; at completion compare before declaring success.",
+    "Record compressed bytes fetched, seek calls, sample count and PTS/jitter in private receipts; publish only compact source-linked derivative references.",
+    "Test fixture with sh tests/run_source_fence.sh under GCC -Werror; additionally qualify real Ogg provider end to end on the source host."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy PR #135",
+      "member": "packages/oorexx_spash_challenger_v0.1-dev1/native_audio/seek/spash_ogg_source_fence.h",
+      "claim": "Native POSIX source-identity guard."
+    },
+    {
+      "artifact": "animatedads/alchemy PR #135",
+      "member": "packages/oorexx_spash_challenger_v0.1-dev1/native_audio/seek/tests/test_source_fence.c",
+      "claim": "Local mutation/identity regression; no media data."
+    },
+    {
+      "artifact": "Alchemy Autobuild sphere",
+      "member": "autobuild.submit-git",
+      "claim": "Git submission branch ready marker and immutable publication contract."
+    }
+  ]
+}
