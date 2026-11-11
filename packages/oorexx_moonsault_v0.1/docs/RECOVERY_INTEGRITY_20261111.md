@@ -27,7 +27,7 @@ Executed with user-provided ooRexx 5.3.0 r13196 (internal test, 64-bit), extract
 
 ## Gates and limits
 
-1. `BOUNDED_WITHIN_ONE_NM_MODEL_ONLY` is a **conditional mathematical model result** with user-chosen angular budgets; it cannot certify ±1 NM ground accuracy.
+1. `GRID_SAMPLES_WITHIN_ONE_NM_MODEL_ONLY` is a **conditional mathematical model result** with user-chosen angular budgets; it cannot certify ±1 NM ground accuracy.
 2. 3D pylon positions, chart provenance, lens calibration, timestamp offset, refractive/astrometric corrections, camera installation location and independent camera survey remain insufficiently validated to claim a real-world accuracy bound.
 3. Production 5 m SLAM450 fixes require separate surveyed 3-D tie points and image reprojection plus independent held-out checks; do not use the 5 m figure as a Moonsault measurement.
 4. Moonsault remains the celestial prediction/catalogue provider. SLAM450 owns flight observations and resulting authoritative navigation decisions. Experimental webcam verification is evidence, not an automatic SLAM adapter approval.
