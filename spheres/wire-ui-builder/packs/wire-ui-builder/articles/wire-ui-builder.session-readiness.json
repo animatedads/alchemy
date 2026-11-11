@@ -2,23 +2,30 @@
   "id": "wire-ui-builder.session-readiness",
   "title": "Transport connection versus synchronized Wire view",
   "section": "integration",
-  "summary": "Browser readiness is staged. The recovery line replaces the misleading rule that a connected WebSocket is immediately 'Live' with explicit Connecting, Transport connected, Receiving view and View ready states, plus synchronization/resynchronization/disconnected states.",
+  "summary": "Builder Web readiness is staged. v0.12-dev2-readiness rebases this rule onto v0.12-dev1 and fixes journey-qualified plan decoding so APP:BUILDER_STUDIO:DESIGN:<revision> resolves to DESIGN rather than an impossible composite state.",
   "invariants": [
     "HTTP 101/WebSocket open means transport connected only.",
-    "View ready requires authoritative Wire state to have been received and applied.",
-    "Empty/failed semantic projection must not be hidden behind a green Live indicator.",
-    "Readiness display is diagnostic presentation; server revisions and authoritative state remain the truth."
+    "Explicit stateId/state wins when the server supplies it; planId parsing is fallback compatibility.",
+    "For qualified plan IDs the terminal semantic state before an optional numeric revision is the Builder state.",
+    "View ready requires authoritative Wire state received and rendered.",
+    "Composition-match count is diagnostic evidence and must expose zero-match state/definition mismatches rather than hiding them behind Live."
   ],
   "kind": "article",
-  "version": "0.2",
+  "version": "0.3",
   "sphere": "wire-ui-builder",
   "authority": "project-continuity",
   "provenance": [
     {
-      "artifact": "wire_ui_builder_v0.6-ergonomics9-http-front-qualification.zip",
-      "sha256": "a8ca9460297bab286cadf42193d5058779468c49faf3b88caf2351422632f1cf",
-      "member": "wire_ui_builder_v0.6/HTTP_FRONT_QUALIFICATION.md",
-      "claim": "Development/recovery evidence; does not supersede the accepted v0.11 executable baseline."
+      "artifact": "wire_ui_builder_v0.12-dev2-readiness.zip",
+      "sha256": "1660178dc73674de9968f3372c2d3a7ead1cfb1a325c7a22e0f5af0651738623",
+      "member": "wire_ui_builder_v0.12-dev2-readiness/web/composition-controller.js",
+      "claim": "Qualified journey-state decoding and composition-match diagnostics."
+    },
+    {
+      "artifact": "wire_ui_builder_v0.12-dev2-readiness.zip",
+      "sha256": "1660178dc73674de9968f3372c2d3a7ead1cfb1a325c7a22e0f5af0651738623",
+      "member": "wire_ui_builder_v0.12-dev2-readiness/web/session-readiness.js",
+      "claim": "Staged browser readiness presentation."
     }
   ]
 }
