@@ -2,11 +2,12 @@
 
 ::class PostgreSQLNativeBackend public subclass NativeDatabaseBackend
 ::method init
-  expose bridgePath library
+  expose bridgePath library availabilityError
   use strict arg bridgePath=""
   self~init:super("POSTGRESQL","libpq-foreign-runtime","0.2",.NativeDatabaseImplementationKind~FOREIGN_RUNTIME,10)
   if bridgePath="" then bridgePath="libpq.bridge.json"
   library=.nil
+  availabilityError=""
   self~addRequirement("OOREXX_FOREIGN_RUNTIME",.true,"ooRexx Foreign Runtime v0.22.2-compatible package")
   self~addRequirement("LIBPQ",.true,"libpq shared library visible to the native loader")
   self~addCapability("TRANSACTIONS","SUPPORTED","TESTED","Database Core transaction stream over one libpq connection","tests/test_postgres_native_offline.rex")
@@ -28,23 +29,54 @@
   expose bridgePath
   return bridgePath
 ::method library
-  expose bridgePath library
-  if library==.nil then library=.foreign~load(bridgePath)
+  expose bridgePath library availabilityError
+  if library==.nil then do
+    signal on syntax name loadFailed
+    library=.foreign~load(bridgePath)
+    signal off syntax
+    availabilityError=""
+  end
   return library
+loadFailed:
+  conditionObj=condition("O")
+  availabilityError="Foreign Runtime could not load libpq bridge"
+  if conditionObj\==.nil then do
+    description=conditionObj["DESCRIPTION"]
+    if description\==.nil & description\="" then availabilityError ||= ": " || description
+    additional=conditionObj["ADDITIONAL"]
+    if additional\==.nil then do item over additional
+      if item\==.nil & item~string\="" then availabilityError ||= " | " || item~string
+    end
+  end
+  library=.nil
+  return .nil
 ::method available
-  signal on syntax name unavailable
   l=self~library
+  if l==.nil then return .false
+  signal on syntax name unavailable
   v=l~lib_version
   return v>0
 unavailable:
+  expose availabilityError
+  conditionObj=condition("O")
+  availabilityError="libpq provider loaded but PQlibVersion failed"
+  if conditionObj\==.nil then do
+    description=conditionObj["DESCRIPTION"]
+    if description\==.nil & description\="" then availabilityError ||= ": " || description
+  end
   return .false
+::method availabilityError
+  expose availabilityError
+  return availabilityError
 ::method availabilityEvidence
+  expose availabilityError
   d=self~availabilityEvidence:super
   if d["available"] then do
     d["libpq_version_number"]=self~library~lib_version
     d["foreign_runtime_version"]=.foreign~runtimeInfo~runtimeVersion
     d["provider_path"]=self~library~providerPath
   end
+  else d["availability_error"]=availabilityError
   return d
 ::method acquire
   use strict arg connection
