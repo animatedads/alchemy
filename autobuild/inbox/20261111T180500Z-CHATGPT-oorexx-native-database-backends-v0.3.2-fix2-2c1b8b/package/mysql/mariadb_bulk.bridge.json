@@ -1,0 +1,33 @@
+{
+  "schema": "oorexx.foreign/0.9",
+  "library": {
+    "provider": "native",
+    "names": ["liboorexx_mariadb_bulk.so", "oorexx_mariadb_bulk.dll", "liboorexx_mariadb_bulk.dylib"]
+  },
+  "functions": {
+    "client_version": {"symbol":"orx_mariadb_client_version","return":"u64","args":[]},
+    "connect": {
+      "symbol":"orx_mariadb_connect",
+      "return":{"type":"pointer","object":"MYSQL","ownership":"owned","destructor":"orx_mariadb_close"},
+      "args":["utf8","utf8","utf8","utf8","u32"]
+    },
+    "connection_error": {"symbol":"orx_mariadb_error","return":"utf8","args":[{"type":"pointer","object":"MYSQL"}]},
+    "connection_sqlstate": {"symbol":"orx_mariadb_sqlstate","return":"utf8","args":[{"type":"pointer","object":"MYSQL"}]},
+    "server_version": {"symbol":"orx_mariadb_server_version","return":"utf8","args":[{"type":"pointer","object":"MYSQL"}]},
+    "query_set": {
+      "symbol":"orx_mariadb_query_set",
+      "return":{"type":"pointer","object":"ORX_MARIADB_RESULT","ownership":"owned","destructor":"orx_mariadb_result_free"},
+      "args":[{"type":"pointer","object":"MYSQL"},"utf8"]
+    },
+    "result_row_count": {"symbol":"orx_mariadb_result_row_count","return":"u64","args":[{"type":"pointer","object":"ORX_MARIADB_RESULT"}]},
+    "result_field_count": {"symbol":"orx_mariadb_result_field_count","return":"u32","args":[{"type":"pointer","object":"ORX_MARIADB_RESULT"}]},
+    "result_field_name": {"symbol":"orx_mariadb_result_field_name","return":"utf8","args":[{"type":"pointer","object":"ORX_MARIADB_RESULT"},"u32"]},
+    "result_field_native_type": {"symbol":"orx_mariadb_result_field_native_type","return":"u32","args":[{"type":"pointer","object":"ORX_MARIADB_RESULT"},"u32"]},
+    "result_field_flags": {"symbol":"orx_mariadb_result_field_flags","return":"u64","args":[{"type":"pointer","object":"ORX_MARIADB_RESULT"},"u32"]},
+    "result_field_common_type": {"symbol":"orx_mariadb_result_field_common_type","return":"utf8","args":[{"type":"pointer","object":"ORX_MARIADB_RESULT"},"u32"]},
+    "result_rewind": {"symbol":"orx_mariadb_result_rewind","return":"i32","args":[{"type":"pointer","object":"ORX_MARIADB_RESULT"}]},
+    "result_next": {"symbol":"orx_mariadb_result_next","return":"i32","args":[{"type":"pointer","object":"ORX_MARIADB_RESULT"}]},
+    "result_current_is_null": {"symbol":"orx_mariadb_result_current_is_null","return":"i32","args":[{"type":"pointer","object":"ORX_MARIADB_RESULT"},"u32"]},
+    "result_current_value": {"symbol":"orx_mariadb_result_current_value","return":"utf8","args":[{"type":"pointer","object":"ORX_MARIADB_RESULT"},"u32"]}
+  }
+}
