@@ -53,7 +53,7 @@
     "version": "0.3.2",
     "foreign_runtime_test_target": "packages/oorexx_foreign_runtime_v0.22.6",
     "selector_test": "tests/test_database_backend_selector.rex",
-    "status": "SOURCE_READY_FOR_AUTOBUILD; RECEIPT_PENDING",
+    "status": "AUTOBUILD_PASS_WITH_LIBPQ_ENVIRONMENT_SKIPS",
     "note": "The prior v0.3.1 integration target packages/oorexx_foreign_runtime_v0.22.2 is absent from current Git; v0.3.2 deliberately tests against the present v0.22.6 source instead of fabricating an old dependency.",
     "failed_receipts": [
       {
@@ -77,8 +77,30 @@
         "boundary": "selector and capability model PASS; Foreign Runtime v0.22.6 bridge load reached native loader; every libpq candidate failed only because the host has no libpq shared library"
       }
     ],
-    "active_submission": "20261111T181000Z-CHATGPT-oorexx-native-database-backends-v0.3.2-fix4-6d94cf",
-    "environment_rule": "Only the exact native-loader condition where all libpq candidates are absent is ENVIRONMENT_SKIPPED. Bridge schema/runtime/metadata failures remain hard FAIL."
+    "environment_rule": "Only the exact native-loader condition where all libpq candidates are absent is ENVIRONMENT_SKIPPED. Bridge schema/runtime/metadata failures remain hard FAIL.",
+    "submission_id": "20261111T181300Z-CHATGPT-oorexx-native-database-backends-v0.3.2-fix5-705ab1",
+    "source_commit": "3b3c8453ea65b477447239ecb659a8c59e3ae5f1",
+    "tree_sha256": "363991d9f9959362100936d4755ee9a6c9ee57bab2c4dc85e9ef4ebb20c73dcf",
+    "result_path": "autobuild/results/20261111T180812Z-363991d9f995-f6a09125/result.json",
+    "artifact_path": "autobuild/artifacts/oorexx_native_database_backends/0.3.2/363991d9f9959362100936d4755ee9a6c9ee57bab2c4dc85e9ef4ebb20c73dcf.zip",
+    "published_tree": "packages/oorexx_native_database_backends_v0.3.2",
+    "executed_evidence": [
+      "DatabaseBackendSelector regression PASS",
+      "Native database capability model PASS",
+      "PostgreSQL bulk materialisation PASS at 1,400 rows x 12 fields",
+      "MySQL/MariaDB bulk materialisation PASS at 1,400 rows x 12 fields",
+      "PostgreSQL process fallback contract PASS",
+      "MySQL Wire Bridge boundary PASS"
+    ],
+    "environment_skips": [
+      "PostgreSQL native offline libpq test: Autobuild host has no libpq.so.5/libpq.so",
+      "PostgreSQL Database Core native adapter test: same exact missing-libpq host condition"
+    ],
+    "non_claims": [
+      "No fresh live libpq compatibility qualification on this Autobuild host",
+      "No PostgreSQL server round-trip qualification from this receipt",
+      "Library oorexx_native_database_backends_v0.3.4.zip remains unreconciled and is not superseded"
+    ]
   },
   "library_parallel_head": {
     "artifact": "oorexx_native_database_backends_v0.3.4.zip",
