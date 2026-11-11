@@ -1,4 +1,4 @@
-# ooRexx Rexx/SQL backend v0.1 (SQLite)
+# ooRexx Rexx/SQL backend v0.1.1 (SQLite)
 
 **Architecture:** Tom Dyer (NativeDatabaseBackend contract; backend-neutral Semantic Source Store).
 **Rexx/SQL:** Mark Hessling (LGPL), version 2.6B3, plus five patches.
@@ -143,3 +143,21 @@ Current migration-critical capability publication is explicit:
 The package-owned `tests/test_database_provider.rex` verifies normal open, WAL, and
 fail-closed capability requirements. No consumer should silently weaken those requirements
 to make a migration pass.
+
+
+## v0.1.1 Autobuild increment
+
+v0.1.1 formalises the generic `DatabaseBackendSelector` provider work that was added
+after the original v0.1 release. The package now qualifies against the canonical
+`packages/oorexx_native_database_backends/src` selector rather than the historical
+v0.1 source tree.
+
+The package-owned suite includes:
+
+- the original Rexx/SQL driver and backend contract tests;
+- `tests/test_database_provider.rex` for generic provider open, WAL and capability gates;
+- SSC provider-selection tests, including the specialized SSC `open(options)` seam;
+- the existing SSC live suites when their source/dependencies are available.
+
+This is a new source candidate, not a retroactive change to the immutable v0.1 evidence.
+Fresh v0.1.1 qualification depends on the exact Autobuild receipt.
