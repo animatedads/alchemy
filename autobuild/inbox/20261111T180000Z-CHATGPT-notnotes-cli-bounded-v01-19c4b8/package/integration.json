@@ -1,0 +1,25 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "notnotes_cli_bounded_patch",
+    "version": "0.1-dev1",
+    "kind": "python"
+  },
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "source-edit-plan-contract",
+      "argv": [
+        "python3",
+        "tests/test_contract.py"
+      ],
+      "timeout_seconds": 60
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/notnotes_cli_bounded_patch_v0.1-dev1"
+    }
+  }
+}
