@@ -115,3 +115,6 @@ exposure, angle, depth and compression.
    all 36 inverse candidates with uncertainty, per-glyph ambiguity and abstain.
 5. Multi-frame character track fusion: account for correlations and preserve
    every source frame and model digest.
+## 11 November 2026 — dev4 road calibration and Gopher sphere candidate
+
+`ApronRoadCalibration.cls` scores ephemeral source-time box observations against candidate camera/vehicle models and optional independently surveyed road-edge anchors. It reports `INSUFFICIENT`, `HIGH_RESIDUAL`, `AMBIGUOUS`, `UNANCHORED`, or `MODEL_CONSISTENT`, none of which is a plate match probability. `ApronPlateSamplingGate` reports geometric undersampling, unknown exposure, and motion domination; frame rate is not shutter duration. The source-time integer clock is monotonic, track buffers are cleared on close and no real footage/plate/font enters Git. Tests: 147/147 synthetic ooRexx r13196, plus six static checks for `spheres/apron_slam_gopher_sphere_v0.1/`. See `docs/ROAD_CALIBRATION_DEV4.md`. The Gopher pack is a candidate, not a registered sphere. Canonical MathsBootstrap integration and measured real-camera calibration remain unqualified.
