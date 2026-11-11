@@ -27,3 +27,6 @@ The Windows UI is a consumer of, not a substitute for, native HTTPS, LDAP identi
 
 ## Coordination
 Rasen Falcon mailbox lane `wire-ui-windows`; request `REQ-00001073` notified COORDINATOR of dev7 qualification and deployment gate.
+
+## 2026-11-11 implementation increment
+The Git baseline's `wide()` helper allocated `n-1` UTF-16 code units then passed `n` to `MultiByteToWideChar`, allowing a one-code-unit write past the buffer end. Commit `0d5ee6e` now allocates the complete converted size including the terminating NUL, validates conversion and then removes the terminator. Commit `9b0b323` adds a regression source check. This is a concrete renderer memory-safety repair, not Win64 runtime qualification. The dev7 archive is present in the conversation workspace but has not been imported into Git as a complete package; direct Git from this runtime cannot resolve github.com, and the connected Git provider accepts individual file writes.
