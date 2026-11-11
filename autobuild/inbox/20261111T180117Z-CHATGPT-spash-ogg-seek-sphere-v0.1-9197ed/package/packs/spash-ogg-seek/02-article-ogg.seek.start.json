@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "ogg.seek.start",
+  "version": "0.1",
+  "sphere": "spash-ogg-seek",
+  "title": "Resident Ogg seek: existing implementation, authority and evidence",
+  "summary": "PR #135 contains an ooRexx Foreign Runtime binding to native libavformat/libavcodec/libswresample for direct seek on a local regular Ogg file. It separates logical stream index and physical channel, produces bounded f32 windows, and reports compressed bytes fetched. No ffmpeg CLI or Python DSP. Human speech detection and enhancement quality have not been proved by this seek provider.",
+  "invariants": [
+    "ooRexx owns source selection, processing and evidence labels. Native libav is a codec/IO provider only.",
+    "Use local AVIO/pread against a resident immutable source; Storage Fabric carries source and result references, not 1 GiB recording bytes.",
+    "The local Ogg track index is an FFmpeg demuxer stream index, not a cross-file stable identifier. Chained streams require a separate mapping.",
+    "Direct seek must measure actual compressed bytes fetched and show output sample alignment, not merely return successful timestamps.",
+    "The original audio stream PTS is not an FD/FC wall clock or a verified video time.",
+    "Two physical channels of one Vorbis logical stream are not proof of multiple independent logical Ogg tracks.",
+    "Independent Codex PR135 native run on 7 Nov (REQ-00003345) compiled with -Werror at ooRexx 5.3.0 r13196 and fetched 1,035,389 bytes for six seconds at 85% into a 162,805,582-byte TP07 file (0.636%; 18 local seeks), with shallow-time byte-identical reference comparisons. Deep reference equality and chained Ogg were not qualified."
+  ],
+  "procedure": [
+    "Check current Git SHA of spash-challenger/native-ogg-decode-v01-20261105 before use; do not rely on old stale PR commit IDs.",
+    "Run sh native_audio/seek/tests/run_contract_tests.sh and sh native_audio/seek/build_seek_linux.sh on the native host; compile -Werror.",
+    "Verify real local original/authorized file digest, chosen logical stream, selected physical channel, clock geometry and exact sample count.",
+    "Seek near start and beyond 80% duration; compare samples to independently trusted whole-file timeline and log compressed bytes and timebase.",
+    "Do not mark real audio detection/enhancement PASS until separate human-labelled controls and native rendering succeed."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy PR #135",
+      "member": "packages/oorexx_spash_challenger_v0.1-dev1/native_audio/seek/spash_ogg_seek.c",
+      "claim": "Resident custom AVIO/pread with compressed budget, stream index and exact bounded output."
+    },
+    {
+      "artifact": "Rasen Falcon REQ-00003345",
+      "claim": "Independent Codex r13196/libav7 original TP07 native qualification, with explicit deep reference limitation."
+    },
+    {
+      "artifact": "animatedads/alchemy PR #135",
+      "member": "packages/oorexx_spash_challenger_v0.1-dev1/native_audio/seek/QUALIFICATION_TP07_20261105.md",
+      "claim": "Claude review, whole-file rational resample grid correction, host measurements."
+    }
+  ]
+}
