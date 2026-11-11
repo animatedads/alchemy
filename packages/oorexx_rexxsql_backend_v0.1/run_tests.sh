@@ -19,13 +19,13 @@ LD_LIBRARY_PATH="$WORK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" rexx "$ROOT/tes
 echo "== backend contract"
 mkdir "$WORK/backend"
 LD_LIBRARY_PATH="$WORK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
-REXX_PATH="$ROOT/src:$P/oorexx_native_database_backends_v0.1/src" \
+REXX_PATH="$ROOT/src:$P/oorexx_native_database_backends/src" \
   rexx "$ROOT/tests/test_rexxsql_backend.rex" "$WORK/backend"
 
 echo "== generic DatabaseBackendSelector provider"
 mkdir "$WORK/provider"
 LD_LIBRARY_PATH="$WORK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
-REXX_PATH="$ROOT/src:$P/oorexx_native_database_backends_v0.1/src" \
+REXX_PATH="$ROOT/src:$P/oorexx_native_database_backends/src" \
   rexx "$ROOT/tests/test_database_provider.rex" "$WORK/provider"
 
 SSC="$P/oorexx_semantic_source_store_v0.1-dev28"
@@ -33,7 +33,7 @@ if [ -d "$SSC/src" ]; then
   echo "== SSC provider selection (store chosen by provider id)"
   mkdir "$WORK/provsel"
   LD_LIBRARY_PATH="$WORK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" \
-  REXX_PATH="$ROOT/src:$ROOT/adapters/ssc:$P/oorexx_native_database_backends_v0.1/src:$SSC/src" \
+  REXX_PATH="$ROOT/src:$ROOT/adapters/ssc:$P/oorexx_native_database_backends/src:$SSC/src" \
     rexx "$ROOT/tests/test_ssc_provider_selection.rex" "$WORK/provsel"
 fi
 
