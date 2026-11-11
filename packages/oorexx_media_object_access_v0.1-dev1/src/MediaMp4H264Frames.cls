@@ -104,12 +104,12 @@
      raise syntax 88.900 array('MP4 video sample hidden by edit-list preroll: decoder PTS concealment is not qualified',i)
    if sample~sizeBytes>4194304 then -
      raise syntax 88.900 array('MP4 access unit exceeds native decoder feed cap',i)
-   readBytesLast+=sample~sizeBytes
-   if readBytesLast>budgetBytes then do
+   if readBytesLast+sample~sizeBytes>budgetBytes then do
      exhausted=.true
      leave
    end
    compressed=self~readExact(sample~byteOffset,sample~sizeBytes)
+   readBytesLast+=sample~sizeBytes
    nal=self~annexB(compressed)
    if i=first then nal=config||nal
    numerator=sample~presentationTicks*90000
