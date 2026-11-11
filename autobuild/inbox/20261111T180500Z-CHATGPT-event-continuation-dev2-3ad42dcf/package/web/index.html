@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Alchemy Event Continuation · ooRexx demo</title>
+<style>
+:root { color-scheme:dark; --bg:#0e1521; --panel:#172233; --line:#304257; --text:#eaf0f7; --muted:#9fb0c3; --blue:#72b9ed; --green:#72d3a3; }
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,sans-serif}header{padding:16px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}h1{font-size:18px;margin:0}small,.muted{color:var(--muted)}.shell{max-width:1180px;margin:24px auto;padding:0 18px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:16px}.panel{background:var(--panel);border:1px solid var(--line);border-radius:13px;overflow:hidden}.nav{padding:16px}.nav h2{font-size:12px;letter-spacing:1.4px;color:var(--muted);text-transform:uppercase}.chat{display:block;width:100%;background:transparent;color:var(--text);border:0;text-align:left;padding:12px 13px;border-radius:8px;font-size:14px;cursor:pointer}.chat[aria-current=true]{background:#27445f;color:#fff}.main{min-height:440px;display:flex;flex-direction:column}.title{padding:17px 20px;border-bottom:1px solid var(--line);font-weight:600}[hidden]{display:none!important}.messages{flex:1;min-height:235px;padding:24px;display:flex;align-items:flex-end;gap:12px;flex-direction:column}.message{max-width:92%;background:#294b6d;border:1px solid #3c6c97;border-radius:13px 13px 3px 13px;padding:12px 15px;white-space:pre-wrap;overflow-wrap:anywhere}.composer{padding:16px;display:flex;gap:12px;border-top:1px solid var(--line)}input{flex:1;min-width:0;background:#111c2b;border:1px solid #3a5169;color:var(--text);border-radius:8px;padding:12px;font:inherit}button.action{background:var(--blue);color:#0a1825;border:0;padding:10px 16px;border-radius:8px;font-weight:700;cursor:pointer}.test{grid-column:1/-1;padding:16px 20px;display:flex;flex-wrap:wrap;align-items:center;gap:15px}.test button{color:var(--text);background:#263d53;border:1px solid #48627a;border-radius:7px;padding:9px 12px;cursor:pointer}.test button:hover{background:#35546f}.status{color:var(--green);font-size:13px}footer{max-width:1150px;padding:12px 18px;margin:auto;color:var(--muted);font-size:12px}@media(max-width:650px){.shell{grid-template-columns:1fr}.nav{padding:10px}.chat{display:inline-block;width:auto}.test{grid-column:1}.main{min-height:340px}}
+</style>
+</head><body>
+<header><h1>Alchemy / Event Continuation</h1><small>Native ooRexx watcher · Browser ooRexx/WASM</small></header>
+<div class="shell">
+  <aside class="panel nav"><h2>Dummy chats</h2>
+    <button id="chat-ops" class="chat" data-chat-id="operations">Operations</button>
+    <button id="chat-rf" class="chat" data-chat-id="rasen-falcon">Rasen Falcon</button>
+    <button id="chat-general" class="chat" data-chat-id="general">General</button>
+    <p class="muted" style="font-size:12px;margin-top:25px">These are local test conversations. No real ChatGPT account or application is accessed.</p>
+  </aside>
+  <main class="panel main">
+    <div class="title" id="conversation-title">Loading ooRexx…</div>
+    <div class="messages" id="messages-operations" data-conversation hidden></div><div class="messages" id="messages-rasen-falcon" data-conversation></div><div class="messages" id="messages-general" data-conversation hidden></div>
+    <div class="composer"><input id="composer" autocomplete="off" placeholder="Type a message…"><button class="action" id="send">Send</button></div>
+  </main>
+  <section class="panel test"><strong>File trigger test</strong>
+    <button id="register-watch">Register watch</button><button id="trigger-create">Create ready.flag</button>
+    <button id="trigger-remove">Remove ready.flag</button>
+    <span class="status" id="source-status">No file action yet</span>
+    <span class="muted" id="runtime">ooRexx/WASM loading…</span>
+    <span class="muted" id="last-action"></span>
+  </section>
+</div>
+<footer>Event detection, journaling, receipt tracking, chat selection and DOM actions are performed by ooRexx. The JavaScript file below is Josep Maria Blasco's ooRexx/WASM host runtime.</footer>
+<script src="/ooRexx.js"></script>
+<script type="text/rexx" src="/browser.rex"></script>
+</body></html>

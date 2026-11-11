@@ -1,0 +1,22 @@
+{
+  "kind": "article",
+  "id": "evc.recovery",
+  "version": "0.1",
+  "sphere": "event-continuation",
+  "title": "Recovery, delivery leases and journal model",
+  "summary": "W registers a watch, E commits a rising edge, S commits its falling-edge rearm, K grants a bounded owner lease, R confirms receipt, C confirms completion. Replay restores the latest per-watch edge and per-event delivery state; a claimed event becomes available when its lease expires.",
+  "authority": "project-artifact",
+  "invariants": [
+    "A plain seenWatch flag cannot support durable re-arming; the S record is required.",
+    "Never mark completion before a valid claim and receipt.",
+    "One browser session at a time holds a lease, but crash-after-side-effect does not provide exactly-once delivery.",
+    "This development journal does not guarantee fsync or torn-write repair; production storage must use a qualified durable store with transaction/checksum controls."
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_event_continuation_v0.1-dev2",
+      "member": "src/ContinuationCore.cls",
+      "claim": "Development source candidate; qualification state explicitly bounded."
+    }
+  ]
+}
