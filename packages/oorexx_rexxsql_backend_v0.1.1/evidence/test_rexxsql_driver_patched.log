@@ -1,0 +1,54 @@
+PASS  SQLLoadFuncs
+PASS  version rexxsql 2.6B3 23 May 2011 UNIX SQLite3
+PASS  connect file database
+PASS  create table
+PASS  bound insert 1
+PASS  select 1
+PASS  round trip byte-exact case 1 length 5
+PASS  bound insert 2
+PASS  select 2
+PASS  round trip byte-exact case 2 length 7
+PASS  bound insert 3
+PASS  select 3
+PASS  round trip byte-exact case 3 length 10
+PASS  bound insert 4
+PASS  select 4
+PASS  round trip byte-exact case 4 length 12
+PASS  bound insert 5
+PASS  select 5
+PASS  round trip byte-exact case 5 length 0
+PASS  bound insert 6
+PASS  select 6
+PASS  round trip byte-exact case 6 length 104000
+PASS  bound insert 7
+PASS  select 7
+PASS  round trip byte-exact case 7 length 3
+PASS  bound insert 8
+PASS  select 8
+PASS  round trip byte-exact case 8 length 5
+PASS  bound insert 9
+PASS  select 9
+PASS  round trip byte-exact case 9 length 4
+PASS  literal insert
+PASS  quoted literal stored as written
+PASS  NULL returned as NULLSTRINGOUT (empty)
+PASS  create blob table
+PASS  BLOB bytes returned
+PASS  long unaliased expression returns an error instead of aborting (rc=-16)
+PASS  aliased expression works
+PASS  rollback discards
+      keyed select at 20,009 rows: 90 us per call
+PASS  keyed lookup is indexed (< 5 ms per call)
+PASS  IN list
+PASS  WITH ... SELECT returns rows
+PASS  PRAGMA returns rows (journal_mode=wal)
+PASS  EXPLAIN QUERY PLAN returns rows; keyed lookup is a SEARCH
+PASS  INSERT ... RETURNING returns rows
+PASS  SQLEXECUTE runs INSERT ... RETURNING
+PASS  ... and the row exists exactly once
+PASS  SQLEXECUTE runs a PRAGMA
+PASS  ... and it took effect
+PASS  disconnect
+PASS  reconnect
+PASS  data persisted across connections
+REXXSQL DRIVER TEST: PASS (52 checks)

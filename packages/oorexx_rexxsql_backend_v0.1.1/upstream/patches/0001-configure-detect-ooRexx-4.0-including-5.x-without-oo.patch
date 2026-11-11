@@ -1,0 +1,267 @@
+From 0b442885cc7564475fd3b77207ceb6c30dc41efb Mon Sep 17 00:00:00 2001
+From: "Claude (Opus 5.5)" <noreply@anthropic.com>
+Date: Sat, 24 Oct 2026 16:53:46 +0100
+Subject: [PATCH 1/4] configure: detect ooRexx 4.0+ (including 5.x) without
+ oorexx-config; search multiarch library dirs; fix fallback library search
+ guard
+
+- ooRexx 5 ships no oorexx-config, and the check accepted only major version 4,
+  so ooRexx 5 fell into the pre-4.0 Object REXX branch and failed to compile
+  (unknown ULONG/PSZ/PUCHAR). OOREXX_40 is now defined for major >= 4, and
+  without oorexx-config when rexx.h declares RexxReturnCode (ooRexx 4.0+ API).
+- Debian/Ubuntu install libraries in /usr/lib/<multiarch>; added via cc -print-multiarch.
+- The second library search tested mh_db_inc_dir instead of mh_db_lib_dir, so it never ran.
+---
+ aclocal.m4         |  3 ++-
+ common/accommon.m4 |  9 ++++++++-
+ configure          | 39 ++++++++++++++++++++++++++++-----------
+ 3 files changed, 38 insertions(+), 13 deletions(-)
+
+diff --git a/aclocal.m4 b/aclocal.m4
+index 5ea0f5d..46b8fdf 100644
+--- a/aclocal.m4
++++ b/aclocal.m4
+@@ -61,6 +61,7 @@ db_lib_dirs="${db_lib_dirs}   \
+     /opt/lib                  \
+     /opt/sfw/lib              \
+     /usr/lib64                \
++    /usr/lib/`${CC-cc} -print-multiarch 2>/dev/null` \
+     /usr/lib                  \
+     /usr/unsupported/lib"
+ if test "$with_dblibdir" = no; then
+@@ -74,7 +75,7 @@ dnl look for lib$2.*
+     done
+   done
+ dnl look for $2.*
+-  if test "x$mh_db_inc_dir" = "x"; then
++  if test "x$mh_db_lib_dir" = "x"; then
+      for ac_dir in $db_lib_dirs ; do
+        for mh_ext in so a sl lib dylib; do
+          if test -r $ac_dir/$lib.$mh_ext; then
+diff --git a/common/accommon.m4 b/common/accommon.m4
+index 6a38d6c..c898223 100644
+--- a/common/accommon.m4
++++ b/common/accommon.m4
+@@ -150,7 +150,7 @@ case "$with_rexx" in
+          REXX_VER=`oorexx-config --version`
+          dnl if we are using ooRexx 4.0 treat it as another interpreter :-(
+          REXX_MAJOR=`echo $REXX_VER | cut -d. -f1`
+-         if test "x$REXX_MAJOR" = "x4"; then
++         if test "$REXX_MAJOR" -ge 4 2>/dev/null; then
+             AC_DEFINE(OOREXX_40)
+          fi
+       else
+@@ -158,6 +158,13 @@ case "$with_rexx" in
+          extra_incdirs="/usr/local/include/ooRexx /usr/include/ooRexx /opt/ooRexx/include"
+          extra_libdirs="/usr/local/lib/ooRexx /usr/lib/ooRexx /opt/ooRexx/lib/ooRexx"
+          extra_rexx_defines="-DLINUX"
++         dnl ooRexx 5 ships no oorexx-config: rexx.h declaring RexxReturnCode means the ooRexx 4.0+ API
++         for mh_orx_dir in $with_rexxincdir $REXXINCDIR /usr/local/include /usr/include $extra_incdirs; do
++            if test -r "$mh_orx_dir/rexx.h" && grep RexxReturnCode "$mh_orx_dir/rexx.h" >/dev/null 2>&1; then
++               AC_DEFINE(OOREXX_40)
++               break
++            fi
++         done
+       fi
+    AC_SEARCH_LIBS(pthread_create,pthread pthreads thread)
+    ;;
+diff --git a/configure b/configure
+index 3db9817..8641b8a 100755
+--- a/configure
++++ b/configure
+@@ -4410,7 +4410,7 @@ fi
+          REXX_INT="ooRexx (using oorexx-config)"
+          REXX_VER=`oorexx-config --version`
+                   REXX_MAJOR=`echo $REXX_VER | cut -d. -f1`
+-         if test "x$REXX_MAJOR" = "x4"; then
++         if test "$REXX_MAJOR" -ge 4 2>/dev/null; then
+             $as_echo "#define OOREXX_40 1" >>confdefs.h
+ 
+          fi
+@@ -4419,6 +4419,13 @@ fi
+          extra_incdirs="/usr/local/include/ooRexx /usr/include/ooRexx /opt/ooRexx/include"
+          extra_libdirs="/usr/local/lib/ooRexx /usr/lib/ooRexx /opt/ooRexx/lib/ooRexx"
+          extra_rexx_defines="-DLINUX"
++         # ooRexx 5 ships no oorexx-config: rexx.h declaring RexxReturnCode means the ooRexx 4.0+ API
++         for mh_orx_dir in $with_rexxincdir $REXXINCDIR /usr/local/include /usr/include $extra_incdirs; do
++            if test -r "$mh_orx_dir/rexx.h" && grep RexxReturnCode "$mh_orx_dir/rexx.h" >/dev/null 2>&1; then
++               $as_echo "#define OOREXX_40 1" >>confdefs.h
++               break
++            fi
++         done
+       fi
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing pthread_create" >&5
+ $as_echo_n "checking for library containing pthread_create... " >&6; }
+@@ -5127,6 +5134,7 @@ db_lib_dirs="${db_lib_dirs}   \
+     /opt/lib                  \
+     /opt/sfw/lib              \
+     /usr/lib64                \
++    /usr/lib/`${CC-cc} -print-multiarch 2>/dev/null` \
+     /usr/lib                  \
+     /usr/unsupported/lib"
+ if test "$with_dblibdir" = no; then
+@@ -5138,7 +5146,7 @@ if test "$with_dblibdir" = no; then
+       fi
+     done
+   done
+-  if test "x$mh_db_inc_dir" = "x"; then
++  if test "x$mh_db_lib_dir" = "x"; then
+      for ac_dir in $db_lib_dirs ; do
+        for mh_ext in so a sl lib dylib; do
+          if test -r $ac_dir/$lib.$mh_ext; then
+@@ -5233,6 +5241,7 @@ db_lib_dirs="${db_lib_dirs}   \
+     /opt/lib                  \
+     /opt/sfw/lib              \
+     /usr/lib64                \
++    /usr/lib/`${CC-cc} -print-multiarch 2>/dev/null` \
+     /usr/lib                  \
+     /usr/unsupported/lib"
+ if test "$with_dblibdir" = no; then
+@@ -5244,7 +5253,7 @@ if test "$with_dblibdir" = no; then
+       fi
+     done
+   done
+-  if test "x$mh_db_inc_dir" = "x"; then
++  if test "x$mh_db_lib_dir" = "x"; then
+      for ac_dir in $db_lib_dirs ; do
+        for mh_ext in so a sl lib dylib; do
+          if test -r $ac_dir/$lib.$mh_ext; then
+@@ -5340,6 +5349,7 @@ db_lib_dirs="${db_lib_dirs}   \
+     /opt/lib                  \
+     /opt/sfw/lib              \
+     /usr/lib64                \
++    /usr/lib/`${CC-cc} -print-multiarch 2>/dev/null` \
+     /usr/lib                  \
+     /usr/unsupported/lib"
+ if test "$with_dblibdir" = no; then
+@@ -5351,7 +5361,7 @@ if test "$with_dblibdir" = no; then
+       fi
+     done
+   done
+-  if test "x$mh_db_inc_dir" = "x"; then
++  if test "x$mh_db_lib_dir" = "x"; then
+      for ac_dir in $db_lib_dirs ; do
+        for mh_ext in so a sl lib dylib; do
+          if test -r $ac_dir/$lib.$mh_ext; then
+@@ -5598,6 +5608,7 @@ db_lib_dirs="${db_lib_dirs}   \
+     /opt/lib                  \
+     /opt/sfw/lib              \
+     /usr/lib64                \
++    /usr/lib/`${CC-cc} -print-multiarch 2>/dev/null` \
+     /usr/lib                  \
+     /usr/unsupported/lib"
+ if test "$with_dblibdir" = no; then
+@@ -5609,7 +5620,7 @@ if test "$with_dblibdir" = no; then
+       fi
+     done
+   done
+-  if test "x$mh_db_inc_dir" = "x"; then
++  if test "x$mh_db_lib_dir" = "x"; then
+      for ac_dir in $db_lib_dirs ; do
+        for mh_ext in so a sl lib dylib; do
+          if test -r $ac_dir/$lib.$mh_ext; then
+@@ -5704,6 +5715,7 @@ db_lib_dirs="${db_lib_dirs}   \
+     /opt/lib                  \
+     /opt/sfw/lib              \
+     /usr/lib64                \
++    /usr/lib/`${CC-cc} -print-multiarch 2>/dev/null` \
+     /usr/lib                  \
+     /usr/unsupported/lib"
+ if test "$with_dblibdir" = no; then
+@@ -5715,7 +5727,7 @@ if test "$with_dblibdir" = no; then
+       fi
+     done
+   done
+-  if test "x$mh_db_inc_dir" = "x"; then
++  if test "x$mh_db_lib_dir" = "x"; then
+      for ac_dir in $db_lib_dirs ; do
+        for mh_ext in so a sl lib dylib; do
+          if test -r $ac_dir/$lib.$mh_ext; then
+@@ -5810,6 +5822,7 @@ db_lib_dirs="${db_lib_dirs}   \
+     /opt/lib                  \
+     /opt/sfw/lib              \
+     /usr/lib64                \
++    /usr/lib/`${CC-cc} -print-multiarch 2>/dev/null` \
+     /usr/lib                  \
+     /usr/unsupported/lib"
+ if test "$with_dblibdir" = no; then
+@@ -5821,7 +5834,7 @@ if test "$with_dblibdir" = no; then
+       fi
+     done
+   done
+-  if test "x$mh_db_inc_dir" = "x"; then
++  if test "x$mh_db_lib_dir" = "x"; then
+      for ac_dir in $db_lib_dirs ; do
+        for mh_ext in so a sl lib dylib; do
+          if test -r $ac_dir/$lib.$mh_ext; then
+@@ -5948,6 +5961,7 @@ db_lib_dirs="${db_lib_dirs}   \
+     /opt/lib                  \
+     /opt/sfw/lib              \
+     /usr/lib64                \
++    /usr/lib/`${CC-cc} -print-multiarch 2>/dev/null` \
+     /usr/lib                  \
+     /usr/unsupported/lib"
+ if test "$with_dblibdir" = no; then
+@@ -5959,7 +5973,7 @@ if test "$with_dblibdir" = no; then
+       fi
+     done
+   done
+-  if test "x$mh_db_inc_dir" = "x"; then
++  if test "x$mh_db_lib_dir" = "x"; then
+      for ac_dir in $db_lib_dirs ; do
+        for mh_ext in so a sl lib dylib; do
+          if test -r $ac_dir/$lib.$mh_ext; then
+@@ -6054,6 +6068,7 @@ db_lib_dirs="${db_lib_dirs}   \
+     /opt/lib                  \
+     /opt/sfw/lib              \
+     /usr/lib64                \
++    /usr/lib/`${CC-cc} -print-multiarch 2>/dev/null` \
+     /usr/lib                  \
+     /usr/unsupported/lib"
+ if test "$with_dblibdir" = no; then
+@@ -6065,7 +6080,7 @@ if test "$with_dblibdir" = no; then
+       fi
+     done
+   done
+-  if test "x$mh_db_inc_dir" = "x"; then
++  if test "x$mh_db_lib_dir" = "x"; then
+      for ac_dir in $db_lib_dirs ; do
+        for mh_ext in so a sl lib dylib; do
+          if test -r $ac_dir/$lib.$mh_ext; then
+@@ -6160,6 +6175,7 @@ db_lib_dirs="${db_lib_dirs}   \
+     /opt/lib                  \
+     /opt/sfw/lib              \
+     /usr/lib64                \
++    /usr/lib/`${CC-cc} -print-multiarch 2>/dev/null` \
+     /usr/lib                  \
+     /usr/unsupported/lib"
+ if test "$with_dblibdir" = no; then
+@@ -6171,7 +6187,7 @@ if test "$with_dblibdir" = no; then
+       fi
+     done
+   done
+-  if test "x$mh_db_inc_dir" = "x"; then
++  if test "x$mh_db_lib_dir" = "x"; then
+      for ac_dir in $db_lib_dirs ; do
+        for mh_ext in so a sl lib dylib; do
+          if test -r $ac_dir/$lib.$mh_ext; then
+@@ -6266,6 +6282,7 @@ db_lib_dirs="${db_lib_dirs}   \
+     /opt/lib                  \
+     /opt/sfw/lib              \
+     /usr/lib64                \
++    /usr/lib/`${CC-cc} -print-multiarch 2>/dev/null` \
+     /usr/lib                  \
+     /usr/unsupported/lib"
+ if test "$with_dblibdir" = no; then
+@@ -6277,7 +6294,7 @@ if test "$with_dblibdir" = no; then
+       fi
+     done
+   done
+-  if test "x$mh_db_inc_dir" = "x"; then
++  if test "x$mh_db_lib_dir" = "x"; then
+      for ac_dir in $db_lib_dirs ; do
+        for mh_ext in so a sl lib dylib; do
+          if test -r $ac_dir/$lib.$mh_ext; then
+-- 
+2.43.0
+

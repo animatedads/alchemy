@@ -1,0 +1,12 @@
+### unpatched
+execute RETURNING rc= -1 another row available
+execute PRAGMA rc= -1 another row available
+rows in t: 1 (expect 1)
+journal mode: Q.JOURNAL_MODE.1 (expect wal)
+execute SELECT rc= 0 (unchanged behaviour: not executed, rc 0)
+### patched
+execute RETURNING rc= 0 
+execute PRAGMA rc= 0 
+rows in t: 1 (expect 1)
+journal mode: wal (expect wal)
+execute SELECT rc= 0 (unchanged behaviour: not executed, rc 0)

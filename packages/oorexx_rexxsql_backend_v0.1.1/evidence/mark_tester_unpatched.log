@@ -1,0 +1,197 @@
+rexxsql 2.6B3 23 May 2011 UNIX SQLite3 with: REXX-ooRexx_5.3.0(MT)_64-bit 6.06 3 Aug 2026
+***** Running tests: connections describe fetch command placemarker transaction extra info errors *****
+********************
+Testing multiple connections/disconnections...
+********************
+connect: succeeded for <c1> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+connect: succeeded for <c2> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+connect: succeeded for <c3> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+disconnect: succeeded for <c1>
+disconnect: succeeded for <c2>
+disconnect: succeeded for <c3>
+********************
+Testing statement descriptions...
+********************
+connect: succeeded for <c1> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+describe: Describing <RX_EMP>
+ CID NAME    TYPE          NOTNULL DFLT_VALUE PK
+------------------------------------------------
+ 0   empid   INT           1                  0 
+ 1   deptno  INT           1                  0 
+ 2   mgrid   INT           1                  0 
+ 3   empname VARCHAR(30)   1                  0 
+ 4   startdt DATETIME      0                  0 
+ 5   enddt   DATETIME      0                  0 
+ 6   salary  NUMERIC(10,2) 1                  0 
+ 7   dbname  VARCHAR(30)   0                  0 
+disconnect: succeeded for <c1>
+********************
+Testing sqlprepare/sqlopen/sqlfetch...
+********************
+connect: succeeded for <c1> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+fetch: Single row Fetching for <select * from RX_EMP>
+ 1 10 0 Joe Bloggs 1999-01-26 <null> 556.22 SQLite3
+ 2 10 1 Mary Jones 1991-02-26 1996-01-26 202.04 SQLite3
+ 3 30 1 Steve Brown 1995-05-04 <null> 345 SQLite3
+fetch: Multiple row Fetching for <select * from RX_EMP>
+ 1 10 0 Joe Bloggs 1999-01-26 <null> 556.22 SQLite3
+ 2 10 1 Mary Jones 1991-02-26 1996-01-26 202.04 SQLite3
+ 3 30 1 Steve Brown 1995-05-04 <null> 345 SQLite3
+disconnect: succeeded for <c1>
+********************
+Testing sqlcommand...
+********************
+connect: succeeded for <c1> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+command: <select * from RX_EMP>
+command: 3 row(s) retrieved successfully
+ 1 10 0 Joe Bloggs 1999-01-26 <null> 556.22 SQLite3
+ 2 10 1 Mary Jones 1991-02-26 1996-01-26 202.04 SQLite3
+ 3 30 1 Steve Brown 1995-05-04 <null> 345 SQLite3
+disconnect: succeeded for <c1>
+********************
+Testing sqlcommand with placemarkers...
+********************
+connect: succeeded for <c1> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+disconnect: succeeded for <c1>
+connect: succeeded for <c1> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+placemarker: (normal): <select * from RX_EMP where empid = ? and deptno = ?>
+ 1 10 0 Joe Bloggs 1999-01-26 <null> 556.22 SQLite3
+placemarker:  (array): <select * from RX_EMP where empid = ? and deptno = ?>
+ 1 10 0 Joe Bloggs 1999-01-26 <null> 556.22 SQLite3
+placemarker:   (file): <select * from RX_EMP where empid = ? and deptno = ?>
+rm: cannot remove 'empid.tmp': No such file or directory
+rm: cannot remove 'deptno.tmp': No such file or directory
+ 1 10 0 Joe Bloggs 1999-01-26 <null> 556.22 SQLite3
+placemarker:   (updating): <update rx_emp set salary = ? where empid = ?>
+Empid: 1 had original salary of 556.22
+Empid: 2 had original salary of 202.04
+Empid: 3 had original salary of 345
+Empid: 1 now has salary of 656.22
+Empid: 2 now has salary of 402.04
+Empid: 3 now has salary of 645
+disconnect: succeeded for <c1>
+********************
+Testing transactions and sqlexecute...
+********************
+connect: succeeded for <c1> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+transaction: Contents of RX_DEPT before INSERTs
+ 10 Department 10 SQLite3
+ 20 Department 20 SQLite3
+transaction: Setting explicit transaction for SQLITE3
+transaction: Inserting 2 rows into RX_DEPT
+transaction: 1 row(s) inserted successfully via sqlcommand()
+transaction: 1 row(s) inserted successfully via sqlexecute()
+transaction: Contents of RX_DEPT after INSERTs
+ 10 Department 10 SQLite3
+ 20 Department 20 SQLite3
+ 100 Department 100 - new dummy
+ 200 Department 200 - new dummy
+transaction: Rolling back transaction
+transaction: Contents of RX_DEPT after ROLLBACK
+ 10 Department 10 SQLite3
+ 20 Department 20 SQLite3
+disconnect: succeeded for <c1>
+connect: succeeded for <c1> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+********************
+Testing sqldatasources()...
+********************
+********************
+Testing sqltables()...
+********************
+       Catalog              Owner                Table Name                     Type                 Description
+Table:                                           RX_DEPT                        table                CREATE TABLE RX_DEPT ( deptno INT not null, deptname VARCHAR(30) not null, dbname VARCHAR(30) )
+Table:                                           RX_EMP                         table                CREATE TABLE RX_EMP ( empid INT not null, deptno INT not null, mgrid INT not null, empname VARCHAR(30) not null, startdt DATETIME , enddt DATETIME , salary NUMERIC(10,2) not null, dbname VARCHAR(30) )
+********************
+Testing sqlcolumns() for RX_EMP...
+********************
+        Catalog              Owner                Table Name                     Column Name                    Type                 Precision  Size       Scale      Nulla Description
+Column:                                           RX_EMP                         empid                          INT                  0          0          0          1     0
+Column:                                           RX_EMP                         deptno                         INT                  0          0          0          1     1
+Column:                                           RX_EMP                         mgrid                          INT                  0          0          0          1     2
+Column:                                           RX_EMP                         empname                        VARCHAR(30)          0          0          0          1     3
+Column:                                           RX_EMP                         startdt                        DATETIME             0          0          0          0     4
+Column:                                           RX_EMP                         enddt                          DATETIME             0          0          0          0     5
+Column:                                           RX_EMP                         salary                         NUMERIC(10,2)        0          0          0          1     6
+Column:                                           RX_EMP                         dbname                         VARCHAR(30)          0          0          0          0     7
+disconnect: succeeded for <c1>
+********************
+Testing sqlvariable and sqlgetinfo...
+********************
+info: Valid values for sqlvariable()... SUPPORTSDMLROWCOUNT SUPPORTSPLACEMARKERS LONGLIMIT AUTOCOMMIT IGNORETRUNCATE NULLSTRINGIN NULLSTRINGOUT STANDARDPLACEMARKERS DEBUG VERSION ROWLIMIT SAVESQL
+      Current value for SUPPORTSDMLROWCOUNT        '1'
+      Current value for SUPPORTSPLACEMARKERS       '1'
+      Current value for LONGLIMIT                  '32768'
+      Current value for AUTOCOMMIT                 '0'
+      Current value for IGNORETRUNCATE             '0'
+      Current value for NULLSTRINGIN               ''
+      Current value for NULLSTRINGOUT              ''
+      Current value for STANDARDPLACEMARKERS       '1'
+      Current value for DEBUG                      '0'
+      Current value for VERSION                    'rexxsql 2.6B3 23 May 2011 UNIX SQLite3'
+      Current value for ROWLIMIT                   '0'
+      Current value for SAVESQL                    '1'
+connect: succeeded for <c1> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+info: Valid values for sqlgetinfo()... SUPPORTSTRANSACTIONS SUPPORTSSQLGETDATA SUPPORTSTHREADS DBMSNAME DBMSVERSION DESCRIBECOLUMNS DATATYPES
+      Current value for SUPPORTSTRANSACTIONS       '1'
+      Current value for SUPPORTSSQLGETDATA         '0'
+      Current value for SUPPORTSTHREADS            '1'
+      Current value for DBMSNAME                   'SQLite3'
+      Current value for DBMSVERSION                '3.45.1'
+      Current value for DESCRIBECOLUMNS            'CID'
+                                                   'NAME'
+                                                   'TYPE'
+                                                   'NOTNULL'
+                                                   'DFLT_VALUE'
+                                                   'PK'
+      Current value for DATATYPES                  'INTEGER PRIMARY KEY'
+                                                   'INTEGER'
+                                                   'INT'
+                                                   'FLOAT'
+                                                   'NUMERIC'
+                                                   'CHARACTER'
+                                                   'CHAR'
+                                                   'TEXT'
+                                                   'VARCHAR'
+                                                   'BOOLEAN'
+                                                   'BLOB'
+                                                   'CLOB'
+                                                   'TIMESTAMP'
+                                                   'DATETIME'
+disconnect: succeeded for <c1>
+********************
+Testing error conditions...
+********************
+errors: causing error in sqlconnect()... (may take a while to fail!)
+Error in connect:
+INTCODE: -99
+INTERRM: REXX/SQL-99: username argument not used.
+errors: causing errors in sqlcommand()...
+Error in command:
+INTCODE: -25
+INTERRM: REXX/SQL-25: no connection is current
+connect: succeeded for <c1> <> <> <<scratch>/rxsql/t/tester.sqlite> <>
+Error in command:
+SQLCODE: -1
+SQLERRM: no such table: junk
+SQLTEXT: select abc from junk
+SQLSTATE: ZZZZZ
+errors: causing error in sqlexecute()...
+Error in execute:
+INTCODE: -24
+INTERRM: REXX/SQL-24: statement "Q1" does not exist
+errors: causing error in sqlopen()...
+Error in open:
+INTCODE: -24
+INTERRM: REXX/SQL-24: statement "Q1" does not exist
+errors: causing error in sqlfetch()...
+Error in fetch:
+INTCODE: -24
+INTERRM: REXX/SQL-24: statement "Q1" does not exist
+errors: causing error with placemarkers...
+Error in open:
+INTCODE: -62
+INTERRM: REXX/SQL-62: bind values must be paired
+Error in open:
+INTCODE: -64
+INTERRM: REXX/SQL-64: invalid datatype <junk> specified.
+disconnect: succeeded for <c1>

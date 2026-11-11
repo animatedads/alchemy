@@ -1,0 +1,2191 @@
+/*
+ * min.c - Rexx/SQL for mSQL
+ *
+ *
+ * Rexx/SQL. A Rexx interface to SQL databases.
+ * Copyright Mark Hessling 1995-2002.
+ *
+ *  This library is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU Library General Public
+ *  License as published by the Free Software Foundation; either
+ *  version 2 of the License, or (at your option) any later version.
+ *
+ *  This library is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ *  Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU Library General Public
+ *  License along with this library; if not, write to the Free
+ *  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+ *
+ *  This software is going to be maintained and enhanced as deemed
+ *  necessary by the community.
+ *
+ * Mark Hessling  M.Hessling@qut.edu.au  http://www.lightlink.com/hessling/
+ *
+ * Author:  Mark Hessling
+ *
+ *    Purpose: This module provides an mSQL SQL interface for Rexx. It
+ *    allows Rexx programs to connect to mSQL servers, issue SQL
+ *    queries, DDL, DCL & DML statements. Multiple concurrent
+ *    connections are supported. Additionally, multiple statements
+ *    may be active concurrently against any or all of these
+ *    connections. This interface is called "Rexx/SQL".
+ *
+ */
+
+static char RCSid[] = "$Id: min.c,v 1.6 2006/08/04 06:37:08 mark Exp $";
+
+#include "rxpack.h"
+
+#define INCL_RXSHV   /* Shared variable support */
+#define INCL_RXFUNC  /* External functions support */
+
+#include "dbdefine.h"
+#include "rexxsql.h"
+#include "dbheader.h"
+#include "dbtypes.h"
+
+#define FLDDSCR m_field
+
+/*
+ * Definition of SQL Work Area (SQLWA).  This contains the mSQL user
+ * context area plus additional information required by this interface to
+ * control the processing of SQL statements.
+ */
+
+typedef struct
+{
+ m_result *result;            /* mSQL result handle */
+ char     *sql_stmt;     /* ptr to buffer to hold SQL statement */
+ int      sql_stmt_sz;    /* size of allocated statement buffer */
+ int      expr_cnt;     /* number of expressions in select list */
+ int      rowcount;     /* number of rows affected by statement */
+ FLDDSCR  *fa[MAX_COLS];   /* array of pointers to column dscr's */
+} SQLWA;
+
+
+/*
+ * Connection structure. Each connection requires one of these!
+ * NB! The field; name, MUST be the first entry in the structure.
+ */
+typedef struct
+{
+ char      name[MAX_IDENTIFIER+1];  /* Connection name */
+ int       sock;        /* Socket descriptor for connection */
+ char      dbName[MAX_PATH_LENGTH];    /* Database name */
+ void      *dflt_stmt;     /* Pointer to implicit statement */
+ int       num_statements;    /* Number of explicit statements */
+ SQLVAL    *db_opt;  /* SqlGetInfo hash table */
+} DBCON;
+
+
+/*
+ * Statement structure. Each statement requires one of these!
+ * NB! The field; name, MUST be the first entry in the structure.
+ */
+typedef struct
+{
+ char      name[MAX_IDENTIFIER+1];  /* Statement name */
+ DBCON     *db;         /* Pointer to connection structure */
+ SQLWA     sqlwa;       /* m_result etc. for statement */
+} STMT;
+
+
+/*
+ * Basic REXXSQL environment structure - allocated when 1st connection made!
+ */
+typedef struct
+{
+ int       num_connections;      /* Number of active connections */
+ DBCON     *current_connection;  /* Pointer to current connection */
+ BUCKET    *db_tbl[TBL_CONNECTIONS];   /* Connection hash table */
+ BUCKET    *stmt_tbl[TBL_STATEMENTS];/* Statement hash table */
+} DBENV;
+
+static char *col_attribute[] =
+{
+ "NAME", "TYPE", "SIZE", "PRECISION", "SCALE", "NULLABLE", (char*)NULL
+};
+
+#ifdef WIN32
+# define DYNAMIC_LOADABLE
+static HMODULE mSQLDll;
+typedef struct
+{
+ char    *name;
+ FARPROC func;
+} DBFUNC;
+#endif
+
+#ifdef OS2
+# define DYNAMIC_LOADABLE
+static PHMODULE mSQLDll;
+typedef struct
+{
+ char    *name;
+ PFN     *func;
+} DBFUNC;
+#endif
+
+#if defined(DYNAMIC_LOADABLE)
+static DBFUNC dbfunc[] =
+{
+ {"msqlUserConnect"  ,NULL},
+ {"msqlSelectDB"     ,NULL},
+ {"msqlGetServerInfo",NULL},
+ {"msqlFetchField"   ,NULL},
+ {"msqlFetchRow"     ,NULL},
+ {"msqlFieldSeek"    ,NULL},
+ {"msqlStoreResult"  ,NULL},
+ {"msqlFreeResult"   ,NULL},
+ {"msqlQuery"        ,NULL},
+ {"msqlGetErrMsg"    ,NULL},
+ {"msqlClose"        ,NULL},
+ {NULL               ,NULL},
+};
+#endif
+
+/*
+ * ReadOnly variables
+ *
+ * ---------------------------------------------------------------------
+ * Current version/platform
+ */
+static RXSTRING RexxSqlVersion;
+static char RexxSqlVersionString[100];
+
+/*
+ * ---------------------------------------------------------------------
+ * Database Name and Version
+ */
+static RXSTRING RXSDBMSName;
+static char DBMSName[100];
+
+static RXSTRING RXSDBMSVer;
+static char DBMSVer[50+1];
+
+/* ---------------------------------------------------------------------
+ * Error value returned for errors returned by mSQL as opposed to
+ * those generated by the interface.
+ */
+#define DB_ERROR  (-1L)
+
+static void *SetDescribeColumns Args((DBCON *));
+static void *SetDatatypes Args((DBCON *));
+static void *SetVersion Args((void *));
+static void *SetDebugFile Args((void *));
+static void *SetNullStringIn Args((void *));
+static void *SetNullStringOut Args((void *));
+static void *SetDBMSName Args((DBCON *));
+static void *SetDBMSVer Args((DBCON *));
+static void *SetSupportsSqlGetData Args((DBCON *));
+static void *SetSupportsTransactions Args((DBCON *));
+
+#include "rxsqlinc1.h"
+
+/* ---------------------------------------------------------------------
+ * The following table defines those values that can be used with the
+ * SQLGetInfo() and SQLSetInfo() functions.
+ */
+/* name            settable  type         dyn/conn reqd                     maxlen  value func */
+static SQLVAL sqlvariable_vars[] =
+{
+ {NULL,NULL,"DEBUG",                1, TYPE_INT,     OPT_STATIC ,0, NULL,   SQLVAL_DEBUG},
+ {NULL,NULL,"DEBUGFILE",            1, TYPE_STRING,  OPT_STATIC ,0, NULL,   SQLVAL_DEBUGFILE},
+ {NULL,NULL,"ROWLIMIT",             1, TYPE_INT,     OPT_STATIC ,0, (void*)&RexxSQLData.RowLimit,0},
+ {NULL,NULL,"LONGLIMIT",            1, TYPE_INT,     OPT_STATIC ,0, (void*)&RexxSQLData.LongLimit,0},
+ {NULL,NULL,"SAVESQL",              1, TYPE_BOOL,    OPT_STATIC ,0, (void*)&RexxSQLData.SaveSQL,0},
+ {NULL,NULL,"AUTOCOMMIT",           1, TYPE_BOOL,    OPT_STATIC ,0, (void*)&RexxSQLData.AutoCommit,0},
+ {NULL,NULL,"IGNORETRUNCATE",       1, TYPE_BOOL,    OPT_STATIC ,0, (void*)&RexxSQLData.IgnoreTruncate,0},
+ {NULL,NULL,"NULLSTRINGIN",         1, TYPE_STRING,  OPT_STATIC ,0, NULL,   SQLVAL_NULLSTRINGIN},
+ {NULL,NULL,"NULLSTRINGOUT",        1, TYPE_STRING,  OPT_STATIC ,0, NULL,   SQLVAL_NULLSTRINGOUT},
+ {NULL,NULL,"STANDARDPLACEMARKERS", 1, TYPE_BOOL,    OPT_STATIC ,0, (void*)&RexxSQLData.StandardPlacemarkers,0},
+ {NULL,NULL,"SUPPORTSDMLROWCOUNT",  0, TYPE_BOOL,    OPT_STATIC ,0, (void*)&RexxSQLData.SupportsDMLRowcount,0},
+ {NULL,NULL,"SUPPORTSPLACEMARKERS", 0, TYPE_BOOL,    OPT_STATIC ,0, (void*)&RexxSQLData.SupportsPlacemarkers,0},
+ {NULL,NULL,"VERSION",              0, TYPE_STRING,  OPT_STATIC ,0, NULL,   SQLVAL_VERSION},
+ {NULL,NULL,"",                     0, 0,            0          ,0, NULL,0},
+};
+
+static SQLVAL sqlgetinfo_vars[] =
+{
+ {NULL,NULL,"SUPPORTSTRANSACTIONS", 0, TYPE_BOOL,                OPT_STATIC ,0, NULL,   SQLVAL_SUPPORTSTRANSACTIONS},
+ {NULL,NULL,"SUPPORTSSQLGETDATA",   0, TYPE_BOOL,                OPT_STATIC ,0, NULL,   SQLVAL_SUPPORTSSQLGETDATA},
+ {NULL,NULL,"DESCRIBECOLUMNS",      0, TYPE_ARRAY,               OPT_DYNAMIC,0, NULL,   SQLVAL_DESCRIBECOLUMNS},
+ {NULL,NULL,"DATATYPES",            0, TYPE_DATATYPE,            OPT_DYNAMIC,0, NULL,   SQLVAL_DATATYPES},
+ {NULL,NULL,"DBMSNAME",             0, TYPE_STRING,              OPT_STATIC ,0, NULL,   SQLVAL_DBMSNAME},
+ {NULL,NULL,"DBMSVERSION",          0, TYPE_STRING,              OPT_STATIC ,0, NULL,   SQLVAL_DBMSVERSION},
+ {NULL,NULL,"",                     0, 0,            0          ,0, NULL,0},
+};
+
+/* ---------------------------------------------------------------------
+ * Pointer to REXXSQL environment - initially unallocated!
+ * Only one object of this type is required and this object is created
+ * the first time a connection is made. This object is released whenever
+ * the last connection is released or upon exit.
+ */
+/*static DBENV *DbEnv = (DBENV*)NULL;*/
+
+/* ---------------------------------------------------------------------
+ * These global variables hold the result of the last function call.
+ */
+RXSQL_SQLCODE_TYPE  SQLCA_SqlCode  = -1L; /* Force a clear on startup */
+RXSQL_ROWCOUNT_TYPE SQLCA_RowCount = -1L; /* Force a clear on startup */
+long SQLCA_IntCode                 = -1L; /* Force a clear on startup */
+RXSQL_SQLSTATE_TYPE SQLCA_SqlState[SQL_SQLSTATE_SIZE+1]; /* UNUSED */
+
+/*-----------------------------------------------------------------------------
+ * Fetch the DB error and put into REXX "SQLCA." compound variable.
+ *----------------------------------------------------------------------------*/
+static void SetDBError
+
+#ifdef HAVE_PROTO
+    (char *fn, int lineno, SQLWA *swa)
+#else
+    (fn, fileno, swa)
+    char      *fn;
+    int       lineno;
+    SQLWA     *swa;
+#endif
+
+{
+   char    *txt=NULL;
+   char    *err=NULL;
+
+   InternalTrace( RexxSQLData.RxPackageGlobalData, "SetDBError", "%s,%d,%x", fn, lineno, swa );
+
+   /* Get the statement text */
+   txt = (swa == (SQLWA*)NULL) ? "" : (swa->sql_stmt) ? swa->sql_stmt : "";
+
+ /* Set SQLCA. variable */
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+   err = (char*)(*dbfunc[DBFUNC_MSQLGETERRMSG].func)(NULL);
+#else
+# ifdef UNIX
+   err = msqlErrMsg;
+# else
+   err = msqlGetErrMsg(NULL);
+# endif
+#endif
+   SetSQLCA((-1), "ZZZZZ", err, txt);
+
+   return;
+}
+
+/*-----------------------------------------------------------------------------
+ * Allocate a DBENV object. Only one database environment is allocated.
+ * This structure is allocated when the first connection is made and deallocated
+ * when the last connection is released.
+ * Note that statement names are global and hence are defined in this structure
+ * and not in the connection structure as would be the case if they were unique
+ * to a connection!
+ *----------------------------------------------------------------------------*/
+static DBENV *AllocDbEnvironment
+
+#ifdef HAVE_PROTO
+    (void)
+#else
+    ()
+#endif
+
+{
+   DBENV  *dbenv=NULL;
+   int    i=0;
+
+   InternalTrace( RexxSQLData.RxPackageGlobalData, "AllocDBEnvironment", NULL );
+
+   if ((dbenv = (DBENV*)malloc(sizeof(DBENV))) == (DBENV*)NULL)
+      return (DBENV*)NULL;
+   dbenv->num_connections = 0;
+   dbenv->current_connection = (DBCON*)NULL;
+   for (i = 0; i < TBL_CONNECTIONS; i++)
+      dbenv->db_tbl[i] = (BUCKET*)NULL;
+   for (i = 0; i < TBL_STATEMENTS; i++)
+      dbenv->stmt_tbl[i] = (BUCKET*)NULL;
+   return dbenv;
+}
+
+/*-----------------------------------------------------------------------------
+ * Allocate a DBCON object. One of these is required for each database
+ * connection. This structure is allocated when the connection is made and
+ * deallocated when the connection is released.
+ *----------------------------------------------------------------------------*/
+static DBCON *AllocConnection
+
+#ifdef HAVE_PROTO
+    (char *name)
+#else
+    (name)
+    char *name;
+#endif
+
+{
+   DBCON  *db=NULL;
+
+   InternalTrace( RexxSQLData.RxPackageGlobalData, "AllocConnection", "%s", name );
+
+   if ((db = (DBCON*)NewObject(sizeof(DBCON))) == (DBCON*)NULL)
+      return (DBCON*)NULL;
+   (void)strncpy(db->name, name, MAX_IDENTIFIER);
+   db->dflt_stmt = (void*)NULL;
+   db->db_opt = (SQLVAL*)NULL;
+   db->num_statements = 0;
+   return db;
+}
+
+/*-----------------------------------------------------------------------------
+ * Open a database connection. This requires allocating a connection object
+ * and making the connection to mSQL.
+ *----------------------------------------------------------------------------*/
+static int OpenConnection
+
+#ifdef HAVE_PROTO
+    (PSZ cnctname, PSZ host, PSZ dbName, PSZ username, DBCON **new_db)
+#else
+    (cnctname,host,dbName,username,new_db)
+    PSZ     cnctname;
+    PSZ     host;
+    PSZ     dbName;
+    PSZ     username;
+    DBCON   **new_db;
+#endif
+
+{
+   DBCON   *db=NULL;
+   int     rc=0,sock=0,i=0;
+   void    *result=NULL;
+   SQLVAL  *curr=NULL;
+
+   InternalTrace( RexxSQLData.RxPackageGlobalData, "OpenConnection", "%s,%s,%s,%s,%x", cnctname,host,dbName,username,new_db );
+
+   if ((db = AllocConnection(cnctname)) == (DBCON*)NULL)
+      return(SetIntError( __FILE__, __LINE__, 10, "out of memory" ));
+
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+   sock = (*dbfunc[DBFUNC_MSQLUSERCONNECT].func)(host,username);
+#else
+# ifdef UNIX
+   sock = msqlConnect(host);
+# else
+   sock = msqlUserConnect(host,username);
+# endif
+#endif
+   if (sock == DB_ERROR)
+   {
+      SetDBError( __FILE__, __LINE__, (SQLWA*)NULL);
+      FreeObject(db);
+      return DB_ERROR;
+   }
+
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+   rc = (*dbfunc[DBFUNC_MSQLSELECTDB].func)(sock,dbName);
+#else
+   rc = msqlSelectDB(sock,dbName);
+#endif
+   if (rc == DB_ERROR)
+   {
+      SetDBError( __FILE__, __LINE__, (SQLWA*)NULL);
+      FreeObject(db);
+      return DB_ERROR;
+   }
+
+   /*
+    * Setup any connection-specific variable information
+    */
+   for (i=0;strlen(sqlgetinfo_vars[i].name)!=0;i++)
+   {
+      if (sqlgetinfo_vars[i].value)
+         result = sqlgetinfo_vars[i].value;
+      else
+         result = GetSqlVariableValue(sqlgetinfo_vars[i].valtype,(void*)db);
+      if ((curr = InstallSQLVariable(
+                &rc,
+                sqlgetinfo_vars[i].name,
+                db->db_opt,
+                sqlgetinfo_vars[i].user_update,
+                sqlgetinfo_vars[i].dtype,
+                0,
+                sqlgetinfo_vars[i].option,
+                result,
+                sqlgetinfo_vars[i].valtype)) == NULL)
+      {
+         return(rc);
+      }
+      if (db->db_opt == NULL)
+         db->db_opt = curr;
+   }
+   db->sock = sock;
+   strcpy(db->dbName,dbName);
+   *new_db = db;
+   return 0;
+}
+
+/*-----------------------------------------------------------------------------
+ * Allocate a STMT object. One of these is required for each statement
+ * including the default statement for a connection. An instance of this object
+ * is allocated when (i) a statement is prepared & (ii) the first time
+ * SQLCOMMAND() is called for a connection (ie. the default statement is used).
+ *----------------------------------------------------------------------------*/
+static STMT *AllocStatement
+
+#ifdef HAVE_PROTO
+    (char *name, DBCON *db)
+#else
+    (name, db)
+    char  *name;
+    DBCON *db;
+#endif
+
+{
+   STMT    *stmt=NULL;
+   SQLWA   *swa=NULL;
+   int      i=0;
+
+   InternalTrace( RexxSQLData.RxPackageGlobalData, "AllocStatement", "%s,%x", name, db );
+
+   if ((stmt = (STMT*)NewObject(sizeof(STMT))) == (STMT*)NULL)
+      return (STMT*)NULL;
+   stmt->db = db;
+   (void)strncpy(stmt->name, name, MAX_IDENTIFIER);
+
+   /* Initialise SQL Work Area */
+   swa = SWA(stmt);
+   swa->expr_cnt = 0;
+   swa->sql_stmt = (char*)NULL;
+   swa->sql_stmt_sz = 0;
+
+   /* Set pointer for each column descriptor to NULL (unused) */
+   for (i = 0; i < MAX_COLS; i++)
+      swa->fa[i] = (FLDDSCR*)NULL;
+
+   return stmt;
+}
+
+/*-----------------------------------------------------------------------------
+ * Open a statement. This allocates a statement.
+ *----------------------------------------------------------------------------*/
+static int OpenStatement
+
+#ifdef HAVE_PROTO
+    (char *name, DBCON *db, STMT **new_stmt)
+#else
+    (name, db, new_stmt)
+    char  *name;
+    DBCON *db;
+    STMT  **new_stmt;
+#endif
+
+{
+   int      rc=0;
+   STMT    *stmt=NULL;
+
+   InternalTrace( RexxSQLData.RxPackageGlobalData, "OpenStatement", "%s,%x,%x", name, db, new_stmt );
+
+   if ((stmt = AllocStatement(name, db)) == (STMT*)NULL)
+      return(SetIntError( __FILE__, __LINE__, 10, "out of memory" ));
+
+   *new_stmt = stmt;
+   return (rc==0) ? 0 : DB_ERROR;
+}
+
+/*-----------------------------------------------------------------------------
+ * Disposes a SQL statement. This closes the mSQL cursor and frees the
+ * statement structure and all resources associated with it.
+ *----------------------------------------------------------------------------*/
+static int ReleaseStatement
+
+#ifdef HAVE_PROTO
+    (STMT *stmt)
+#else
+    (stmt)
+    STMT *stmt;
+#endif
+
+{
+   SQLWA    *swa = SWA(stmt);
+   int       rc=0;
+
+   InternalTrace( RexxSQLData.RxPackageGlobalData, "ReleaseStatement", "%x", stmt );
+
+   /* Close mSQL cursor */
+   if (CTX(swa))
+   {
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+      (*dbfunc[DBFUNC_MSQLFREERESULT].func)(CTX(swa));
+#else
+      msqlFreeResult(CTX(swa));
+#endif
+      CTX(swa) = NULL;
+   }
+
+   /* Free sql statement buffer (if any) */
+   if (swa->sql_stmt)
+   {
+      free(swa->sql_stmt);
+      swa->sql_stmt = NULL;
+   }
+
+   FreeObject(stmt);
+
+   return (rc==0) ? 0 : DB_ERROR;
+}
+
+/*-----------------------------------------------------------------------------
+ * Release an mSQL connection. This closes any open statements associated
+ * with the connection, closes the connection and frees all resources
+ * associated with it.
+ *----------------------------------------------------------------------------*/
+static int ReleaseConnection
+
+#ifdef HAVE_PROTO
+    (DBCON *db)
+#else
+    (db)
+    DBCON *db;
+#endif
+
+{
+   int    i=0, rc=0, last_error=0;
+   STMT   *stmt=NULL, *t=NULL;
+
+   InternalTrace( RexxSQLData.RxPackageGlobalData, "ReleaseConnection", "%x", db );
+
+   /*
+    * Remove the Connection structure from the hash structures etc.
+    */
+   (void)RemoveObject(db);
+
+   /*
+    * Decrement the count of active connections.
+    */
+   RexxSQLData.DbEnv->num_connections--;
+
+   /*
+    * Dispose all active statements for this connection.
+    */
+   for (i = 0; db->num_statements && i < TBL_STATEMENTS; i++)
+   {
+      stmt = (STMT*)FirstObject(i, RexxSQLData.DbEnv->stmt_tbl);
+      while (stmt && db->num_statements)
+      {
+         t = (STMT*)NextObject(stmt);
+         if (stmt->db == db)
+         {
+            RemoveObject(stmt);
+            last_error = (rc = ReleaseStatement(stmt)) ? rc : last_error;
+            db->num_statements--;
+         }
+         stmt = t;
+      }
+   }
+
+   /*
+    * Dispose all informational data for this connection.
+    */
+   ll_free(db->db_opt);
+
+   /*
+    * Dispose the default statement (if any).
+    */
+   if (db->dflt_stmt)
+       last_error = (rc = ReleaseStatement((STMT*)(db->dflt_stmt))) ? rc : last_error;
+
+   /*
+    * Disconnect from mSQL
+    */
+  #if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+   (*dbfunc[DBFUNC_MSQLCLOSE].func)(db->sock);
+  #else
+   msqlClose(db->sock);
+  #endif
+
+   /*
+    * Free the connection structure
+    */
+   FreeObject(db);
+
+   return (last_error);
+}
+
+/*-----------------------------------------------------------------------------
+ * Release the mSQL environment. This releases all active connections
+ * (if any).
+ *----------------------------------------------------------------------------*/
+int ReleaseDbEnvironment
+
+#ifdef HAVE_PROTO
+    (void)
+#else
+    ()
+#endif
+
+{
+   int    i=0, rc=0, last_error=0;
+   DBCON  *db=NULL, *t=NULL;
+
+   InternalTrace( RexxSQLData.RxPackageGlobalData, "ReleaseDBEnvironment", NULL );
+
+   /* Ensure there is an environment to release! */
+   if (RexxSQLData.DbEnv == (DBENV*)NULL)
+      return 0;
+
+ /* Release all connections. */
+   for (i = 0; RexxSQLData.DbEnv->num_connections && i < TBL_CONNECTIONS; i++)
+   {
+      db = (DBCON*)FirstObject(i, RexxSQLData.DbEnv->db_tbl);
+      while (db && RexxSQLData.DbEnv->num_connections)
+      {
+         t = (DBCON*)NextObject(db);
+         last_error = (rc = ReleaseConnection(db)) ? rc : last_error;
+         db = t;
+      }
+   }
+
+   /* Free the DB environment */
+   free(RexxSQLData.DbEnv);
+   RexxSQLData.DbEnv = (DBENV*)NULL;
+
+   return (last_error);
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS : SQLCONNECT( [connection-name] , [username], [password], database name [,host name])
+ *
+ * ARGUMENTS:
+ *            0 - connection_name (optional)
+ *            1 - username (optional)
+ *            2 - password (ignored under mSQL)
+ *            3 - database name (mandatory)
+ *            4 - host name (optional)
+ *
+ * RETURNS  : 0-success, <0-error.
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLCONNECT
+
+#ifdef HAVE_PROTO
+   (RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr)
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+#endif
+{
+   char *host=NULL;
+   char *dbName=NULL;
+   char *username=NULL;
+   char cnctname[MAX_IDENTIFIER+1];
+   int  rc=0;
+   char        tmp[128];
+   DBCON       *db=NULL;
+
+   RexxSQLData.RxPackageGlobalData = FunctionPrologue( RexxSQLData.RxPackageGlobalData, RexxSQLInitialiser, (char *)name, argc, argv);
+
+   if (SQLCA_SqlCode) ClearDBError();
+   if (SQLCA_IntCode) ClearIntError();
+
+   if (argc > 5 || argc < 4) return 1;
+   if (RXSTRLEN(argv[3])==0)               /* dbName MUST be supplied */
+      return ReturnError(retstr, 75, "no database name supplied");
+
+   /* Allocate a DB environment if none exists! */
+   if (RexxSQLData.DbEnv == (DBENV*)NULL)
+   {
+      if ((RexxSQLData.DbEnv = AllocDbEnvironment()) == (DBENV*)NULL)
+         return ReturnError(retstr, 10, "out of memory.");
+   }
+
+   if ((dbName = AllocString(RXSTRPTR(argv[3]),RXSTRLEN(argv[3]))) == NULL)
+      return ReturnError(retstr, 10, "out of memory.");
+   MkAsciz(dbName, RXSTRLEN(argv[3])+1, RXSTRPTR(argv[3]), RXSTRLEN(argv[3]));
+
+   /*
+    * If a username is specified, use it.
+    */
+   if (RXSTRLEN(argv[1]))
+   {
+      if ((username = AllocString(RXSTRPTR(argv[1]),RXSTRLEN(argv[1]))) == NULL)
+         return ReturnError(retstr, 10, "out of memory.");
+      MkAsciz(username, RXSTRLEN(argv[1])+1, RXSTRPTR(argv[1]), RXSTRLEN(argv[1]));
+   }
+
+   /*
+    * If a host name is specified, use it.
+    */
+   if (argc == 5
+   &&  RXSTRLEN(argv[4]))
+   {
+      if ((host = AllocString(RXSTRPTR(argv[4]),RXSTRLEN(argv[4]))) == NULL)
+         return ReturnError(retstr, 10, "out of memory.");
+      MkAsciz(host, RXSTRLEN(argv[4])+1, RXSTRPTR(argv[4]), RXSTRLEN(argv[4]));
+   }
+
+   /*
+    * If a name is given it is the first argument!/
+    * Get the name of the connection (default if not specified).
+    */
+   if (RXSTRLEN(argv[0]))
+   {
+      if ((rc = MkIdentifier(argv[0], cnctname, sizeof(cnctname))))
+         return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, rc);
+   }
+   else
+   {
+      (void)strcpy(cnctname, DEFAULT_CONNECTION);
+   }
+
+   /* Make sure there is no existing connection with the same name */
+   if (FindObject(cnctname, RexxSQLData.DbEnv->db_tbl, TBL_CONNECTIONS))
+   {
+      (void)sprintf(tmp, "connection already open with name \"%s\".", cnctname);
+      return ReturnError(retstr, 20, tmp);
+   }
+
+   /* Open a new connection for the given connect string. */
+   if ((rc = OpenConnection(cnctname, host, dbName, username, &db)))
+   {
+      if (dbName) free(dbName);
+      if (host) free(host);
+      if (username) free(username);
+      return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+   }
+   if (dbName) free(dbName);
+   if (host) free(host);
+   if (username) free(username);
+
+   RexxSQLData.DbEnv->num_connections++;
+   RexxSQLData.DbEnv->current_connection = db;
+   (void)InsertObject(db, RexxSQLData.DbEnv->db_tbl, TBL_CONNECTIONS);
+
+   return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, 0L);
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS:  SQLDISCONNECT( [connection-name ] )
+ *
+ * RETURNS :  0-success, <0-error.
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLDISCONNECT
+
+#ifdef HAVE_PROTO
+   (RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr)
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+#endif
+{
+   int     rc = 0;
+   char        dbname[MAX_IDENTIFIER+1];
+   DBCON       *db=NULL;
+   char        tmp[128];
+
+
+   RexxSQLData.RxPackageGlobalData = FunctionPrologue( RexxSQLData.RxPackageGlobalData, RexxSQLInitialiser, (char *)name, argc, argv);
+
+   if (SQLCA_SqlCode) ClearDBError();
+   if (SQLCA_IntCode) ClearIntError();
+
+   if (argc > 1) return 1;
+
+   if (RexxSQLData.DbEnv == (DBENV*)NULL)
+       return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, 0L);
+
+   if (argc && RXSTRLEN(argv[0]))
+   {
+      /* A connection has been named */
+      if ((rc = MkIdentifier(argv[0], dbname, sizeof(dbname))))
+         return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, rc);
+
+      /* Make sure the named connection exists. */
+      if ((db = FindObject(dbname, RexxSQLData.DbEnv->db_tbl, TBL_CONNECTIONS))  == (DBCON*)NULL)
+      {
+         (void)sprintf(tmp,"connection \"%s\" is not open.",dbname);
+         return ReturnError(retstr, 21, tmp);
+      }
+   }
+   else
+   {
+      if (RexxSQLData.DbEnv->current_connection)
+         db = RexxSQLData.DbEnv->current_connection;
+      else
+         return ReturnError(retstr, 25, "no connection is current");
+   }
+
+   /*
+    * If terminating the current connection then make it so there is
+    * no current connection!
+    */
+   if (db == RexxSQLData.DbEnv->current_connection)
+       RexxSQLData.DbEnv->current_connection = (DBCON*)NULL;
+
+   /* Do the disconnection */
+   rc = ReleaseConnection(db);
+
+   /* Free the environment if zero connections remaining */
+   if (RexxSQLData.DbEnv->num_connections == 0)
+   {
+      free(RexxSQLData.DbEnv);
+      RexxSQLData.DbEnv = (DBENV*)NULL;
+   }
+
+   return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS:  SQLDEFAULT( [connection-name ] )
+ *
+ * RETURNS :  When called with 0 args : 0-success, <0-error.
+ *         :  When called with 1 arg  : Name of current connection else "".
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLDEFAULT
+
+#ifdef HAVE_PROTO
+   (RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr)
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+#endif
+{
+   char        dbname[MAX_IDENTIFIER+1];
+   DBCON       *db=NULL;
+   char        tmp[128];
+   int rc=0;
+
+   RexxSQLData.RxPackageGlobalData = FunctionPrologue( RexxSQLData.RxPackageGlobalData, RexxSQLInitialiser, (char *)name, argc, argv);
+
+   if (SQLCA_SqlCode) ClearDBError();
+   if (SQLCA_IntCode) ClearIntError();
+
+   if (argc > 1) return 1;
+
+   if (argc && RXSTRLEN(argv[0]))
+   {
+      /* Get the normalised name of the connection. */
+      if ((rc = MkIdentifier(argv[0], dbname, sizeof(dbname))))
+         return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, rc);
+
+      /* Make sure we have an environment! */
+      if (RexxSQLData.DbEnv == (DBENV*)NULL)
+         return ReturnError(retstr, 22, "no connections open.");
+
+      /* Make sure the Connection Name is a valid one! */
+      if ((db = FindObject(dbname, RexxSQLData.DbEnv->db_tbl, TBL_CONNECTIONS)) == (DBCON*)NULL)
+      {
+         (void)sprintf(tmp,"connection \"%s\" is not open.", dbname);
+         return ReturnError(retstr, 21, tmp);
+      }
+
+      /* Make connection the default one! */
+      RexxSQLData.DbEnv->current_connection = db;
+  #if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+      rc = (*dbfunc[DBFUNC_MSQLSELECTDB].func)(db->sock,db->dbName);
+  #else
+      rc = msqlSelectDB(db->sock,db->dbName);
+  #endif
+      if (rc == DB_ERROR)
+         SetDBError( __FILE__, __LINE__, db->dflt_stmt);
+
+      return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (rc==0)?0:DB_ERROR);
+   }
+   else
+   {
+      if (RexxSQLData.DbEnv && RexxSQLData.DbEnv->current_connection)
+      {
+         return RxReturnString( RexxSQLData.RxPackageGlobalData, retstr, RexxSQLData.DbEnv->current_connection->name);
+      }
+      else
+      {
+         return RxReturnString( RexxSQLData.RxPackageGlobalData, retstr, "");
+      }
+   }
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS:  Called by SQLCOMMIT( ) &  SQLROLLBACK( )
+ *
+ * RETURNS :  0-success, <0-error.
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLTRANSACT
+
+#ifdef HAVE_PROTO
+    (RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr, int commit )
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+   int commit;
+#endif
+{
+ int     rc = 0;
+ DBCON       *db=NULL;
+
+   RexxSQLData.RxPackageGlobalData = FunctionPrologue( RexxSQLData.RxPackageGlobalData, RexxSQLInitialiser, (char *)name, argc, argv);
+
+ if (SQLCA_SqlCode) ClearDBError();
+ if (SQLCA_IntCode) ClearIntError();
+
+ if (argc > 1) return 1;
+
+ if (RexxSQLData.DbEnv == (DBENV*)NULL)
+     return ReturnError(retstr, 22, "no connections open.");
+
+ if (RexxSQLData.DbEnv->current_connection)
+    db = RexxSQLData.DbEnv->current_connection;
+ else
+    return ReturnError(retstr, 25, "no connection is current");
+
+/**** no transaction processing for mSQL...yet ****/
+
+ return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (rc==0)?0:DB_ERROR);
+}
+
+/*-----------------------------------------------------------------------------
+ * Describes columns (expressions) and defines the output buffers for each
+ * column for the select statement in nominated cursor.
+ * Returns the number of expressions in the select statement.
+ *----------------------------------------------------------------------------*/
+static int DefineExpressions
+
+#ifdef HAVE_PROTO
+    (STMT *stmt)
+#else
+    (stmt)
+    STMT     *stmt;
+#endif
+{
+ SQLWA    *swa= SWA(stmt);
+ FLDDSCR  *fd=NULL;
+ int      i=0;
+ char     tmp[128];
+
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "DefineExpressions", "x", stmt );
+
+ if (!CTX(swa))
+   {
+    (void)sprintf(tmp,"statement \"%s\" has not been OPENed or EXECUTEd", stmt->name);
+    return(SetIntError( __FILE__, __LINE__, 26, tmp ));
+   }
+
+ swa->expr_cnt = msqlNumFields(CTX(swa));
+
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+ (*dbfunc[DBFUNC_MSQLFIELDSEEK].func)(CTX(swa),0);
+#else
+ msqlFieldSeek(CTX(swa),0);
+#endif
+ /* Describe & define buffer for each expression in the SELECT statement */
+ for (i = 0; i < swa->expr_cnt ; i++)
+   {
+    /*
+     * Get a new field descriptor
+     */
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+    swa->fa[i] = fd = (FLDDSCR*)(*dbfunc[DBFUNC_MSQLFETCHFIELD].func)(CTX(swa));
+#else
+    swa->fa[i] = fd = (FLDDSCR*)msqlFetchField(CTX(swa));
+#endif
+    (void)make_upper(fd->name);
+   }
+
+ return (swa->expr_cnt);
+}
+
+/*-----------------------------------------------------------------------------
+ * Fetches the next row from the nominated cursor and returns the values
+ * of the expressions for the fetched row into the compound variable with
+ * name constructed as follows:
+ *
+ * For single fetches. eg. SQLFETCH('s1')
+ *                     or  SQLFETCH('s1','') :
+ *  <statement-name>.<column-name>
+ *
+ * For bulk fetches. eg. SQLCOMMAND(stmt1)
+ *                   or  SQLFETCH('s1',0)
+ *                   or  SQLFETCH('s1',1)
+ *                   or  SQLFETCH('s1',20) :
+ *  <statement-name>.<column-name>.<row-number>
+ *
+ * Note that the row-number always starts at 1!
+ *
+ * Returns:
+ * success:  0
+ * failure: MSQL return code
+ *----------------------------------------------------------------------------*/
+static int FetchRow
+
+#ifdef HAVE_PROTO
+    (STMT *stmt,char *stem,ULONG rowcount)
+#else
+    (stmt, stem, rowcount)
+    STMT    *stmt;
+    char    *stem;
+    ULONG   rowcount;
+#endif
+{
+ SQLWA   *swa=NULL;
+ FLDDSCR  *fd=NULL;
+ int      rc=0, i=0;
+ int     varlen=0;
+ char    varname[MAX_IDENTIFIER+1+10];
+ char    tmp[128];
+ m_row   row;
+
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "FetchRow", "%x,%x,%d", stmt, stem, rowcount );
+
+ swa = SWA(stmt);
+ if (!CTX(swa))
+   {
+    (void)sprintf(tmp,"statement \"%s\" has not been OPENed or EXECUTEd", stmt->name);
+    return(SetIntError( __FILE__, __LINE__, 26, tmp ));
+   }
+
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+ row = (m_row)(*dbfunc[DBFUNC_MSQLFETCHROW].func)(CTX(swa));
+#else
+ row = (m_row)msqlFetchRow(CTX(swa));
+#endif
+ if (row == NULL)
+    return (1);
+
+ /* Get each expr value in turn */
+ for (i = 0; rc == 0 && i < swa->expr_cnt; i++)
+   {
+    fd = swa->fa[i];
+
+    /* Add each column value to the stem's values */
+    (void)sprintf(varname, rowcount ? "%s.%s.%lu" : "%s.%s",
+                   stem, fd->name, rowcount);
+    varlen = strlen(varname);
+
+    if (row[i])  /* returned value is not NULL */
+      {
+       rc = SetRexxVariable( RexxSQLData.RxPackageGlobalData, varname, varlen, row[i], strlen(row[i]) );
+      }
+    else
+      {
+       rc = SetRexxVariable( RexxSQLData.RxPackageGlobalData, varname, varlen, RexxSQLData.RXSNullStringOut.strptr, RexxSQLData.RXSNullStringOut.strlength );
+      }
+   }
+ if (rc)
+    return(SetIntError( __FILE__, __LINE__, 16, "unable to set REXX variable" ));
+ return rc;
+}
+
+/*-----------------------------------------------------------------------------
+ *
+ *----------------------------------------------------------------------------*/
+static int SetRowCountVar
+
+#ifdef HAVE_PROTO
+    (SQLWA *swa,char *stem_name,long rowcount)
+#else
+    (swa, stem_name, rowcount)
+    SQLWA *swa;
+    char *stem_name;
+    long rowcount;
+#endif
+{
+ int     i=0;
+ char    varname[MAX_IDENTIFIER*2+4], buf[11];
+
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "SetRowCountVar", "%x,%s,%d", swa, stem_name, rowcount );
+
+ for (i = 0; i < swa->expr_cnt; i++)
+   {
+    sprintf(varname, "%s.%s.0", stem_name,swa->fa[i]->name);
+    sprintf(buf, "%lu", rowcount);
+    if (SetRexxVariable( RexxSQLData.RxPackageGlobalData, varname,strlen(varname),buf,strlen(buf) ) )
+       return(-16);
+   }
+ return 0;
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS: SQLCOMMAND(stem-name, sql-statement-text)
+ *
+ * RETURNS :  0-success < 0-error.
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLCOMMAND
+
+#ifdef HAVE_PROTO
+   (RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr)
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+#endif
+{
+ int         rc = 0, i=0;
+ ULONG       rowcount=0L;
+ DBCON       *db=NULL;
+ STMT        *stmt=NULL;
+ SQLWA   *swa=NULL;
+ char        stem_name[MAX_IDENTIFIER+1];
+
+   RexxSQLData.RxPackageGlobalData = FunctionPrologue( RexxSQLData.RxPackageGlobalData, RexxSQLInitialiser, (char *)name, argc, argv);
+
+ if (SQLCA_SqlCode) ClearDBError();
+ if (SQLCA_IntCode) ClearIntError();
+
+ if (argc == 0) return 1;
+
+ /*
+  * Get pointer to current connection
+  */
+ if (RexxSQLData.DbEnv && RexxSQLData.DbEnv->current_connection)
+     db = RexxSQLData.DbEnv->current_connection;
+ else
+     return ReturnError(retstr, 25, "no connection is current");
+
+ if (argc == 1 || RXSTRLEN(argv[0]) == 0) /* No stem name specified! */
+     (void)strcpy(stem_name, DEFAULT_STEM);
+ else
+   {
+    if ((rc = MkIdentifier(argv[0], stem_name, sizeof(stem_name))))
+       return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, rc);
+   }
+
+ /*
+  * If no default statement then create it!
+  */
+ if ((stmt = (STMT*)(db->dflt_stmt)) == (STMT*)NULL)
+   {
+    /*
+     * Open a statement for the default statement.
+     */
+    if ((rc = OpenStatement(DEFAULT_STATEMENT, db, &stmt)))
+       return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+    db->dflt_stmt = (void*)stmt;
+   }
+
+ swa = SWA(stmt);
+
+ /*
+  * If only 1 arg then it is the SQL-statement-text. If more than 1 args
+  * then arg#1 is stem-name, arg#2 is text.
+  * 'i' is index (base zero) to sql-statement-text arg.
+  */
+ i = (argc == 1) ? 0 : 1;
+
+ /*
+  * Save the SQL statement if required
+  * This MUST always be done for mSQL, because it is the saved
+  * SQL statement that gets passed to msqlQuery().
+  */
+ if (SaveSqlStatement(&(swa->sql_stmt), &(swa->sql_stmt_sz), RXSTRPTR(argv[i]),(int)RXSTRLEN(argv[i])))
+     return ReturnError(retstr, 10, "out of memory");
+
+ /*
+  * Execute the SQL statement
+  */
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+ rc = (*dbfunc[DBFUNC_MSQLQUERY].func)(db->sock,SQL(swa));
+#else
+ rc = msqlQuery(db->sock,SQL(swa));
+#endif
+ if (rc < 0)
+   {
+    SetDBError( __FILE__, __LINE__, SWA(stmt));
+    return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, DB_ERROR);
+   }
+
+ /*
+  * Save results
+  */
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+ CTX(swa) = (m_result *)(*dbfunc[DBFUNC_MSQLSTORERESULT].func)();
+#else
+ CTX(swa) = (m_result *)msqlStoreResult();
+#endif
+
+ /*
+  * If NOT a query, statement has been executed, leave...
+  */
+ if (CTX(swa) == (m_result *)NULL)
+   {
+    /*
+     * mSQL 1.x does not return number of rows affected by DELETE, UPDATE etc
+     * so SQLCA.ROWCOUNT will alwats be 0 for non-SELECT statements
+     * mSQL 2.x does return the number of rows affected, so to be
+     * portable, setting rowcount = rc from msqlQuery() will work for
+     * both 1.x and 2.x
+     */
+    rowcount = rc;
+    SetRowCount(rowcount);
+    return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, 0L);
+   }
+
+ /*
+  * Get field definitions
+  */
+ rc = DefineExpressions(stmt);
+ if (rc < 0)
+    return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+
+ /*
+  * Fetch each row in turn
+  */
+ for (rowcount = 1; RexxSQLData.RowLimit == 0 || rowcount <= RexxSQLData.RowLimit; rowcount++)
+   {
+    if ((rc = FetchRow(stmt, stem_name, rowcount)))
+       break;
+   }
+ rowcount--;
+
+ if (rc && rc != NO_DATA_FOUND)
+   {
+    return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+   }
+
+ if ((rc = SetRowCountVar(swa, stem_name, rowcount)))
+    return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+
+ /*
+  * Inform MSQL that operation is complete
+  */
+ if (CTX(swa))
+   {
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+    (*dbfunc[DBFUNC_MSQLFREERESULT].func)(CTX(swa));
+#else
+    msqlFreeResult(CTX(swa));
+#endif
+    CTX(swa) = NULL;
+   }
+ SetRowCount(rowcount);
+
+ /*
+  * Release the statement and associated storage.
+  */
+ if ((rc = ReleaseStatement(stmt)))
+    return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+ db->dflt_stmt = (STMT*)NULL;
+
+ return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, 0L);
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS:  SQLPREPARE(statement-name, sql-statement-text)
+ *
+ * RETURNS :  0-success, <0-error.
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLPREPARE
+
+#ifdef HAVE_PROTO
+   (RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr)
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+#endif
+{
+ int         rc=0;
+ DBCON       *db=NULL;
+ STMT        *stmt=NULL;
+ SQLWA   *swa=NULL;
+ char        stmt_name[MAX_IDENTIFIER+1];
+
+   RexxSQLData.RxPackageGlobalData = FunctionPrologue( RexxSQLData.RxPackageGlobalData, RexxSQLInitialiser, (char *)name, argc, argv);
+
+ if (SQLCA_SqlCode) ClearDBError();
+ if (SQLCA_IntCode) ClearIntError();
+
+ if (argc != 2) return 1;
+
+ /*
+  * Get pointer to current connection
+  */
+ if (RexxSQLData.DbEnv && RexxSQLData.DbEnv->current_connection)
+     db = RexxSQLData.DbEnv->current_connection;
+ else
+     return ReturnError(retstr, 25, "no connection is current");
+
+ if (RXSTRLEN(argv[0]) == 0)     /* No statement name specified! */
+     return ReturnError(retstr, 18, "statement name omitted or null");
+ else if ((rc = MkIdentifier(argv[0], stmt_name, sizeof(stmt_name))))
+     return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, rc);
+
+ /*
+  * Find the named statement or create if necessary. We have to be a
+  * bit careful here because the statement may exist but point to a
+  * different database connection!
+  */
+ stmt = FindObject(stmt_name, RexxSQLData.DbEnv->stmt_tbl, TBL_STATEMENTS);
+
+ if (stmt == (STMT*)NULL || stmt->db != db)
+   {
+    if (stmt)
+      {
+       /*
+        * Statement is not for the same db, therefore we must dispose
+        * & re-alloc it!
+        */
+       RemoveObject(stmt);
+       ((DBCON*)stmt->db)->num_statements--;
+       if ((rc = ReleaseStatement(stmt)))
+          return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+      }
+
+    /*
+     * Open a statement for this statement.
+     */
+    if ((rc = OpenStatement(stmt_name, db, &stmt)))
+       return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+
+    /*
+     * Insert this statement into the connection hash table.
+     */
+    (void)InsertObject(stmt, RexxSQLData.DbEnv->stmt_tbl, TBL_STATEMENTS);
+
+    db->num_statements++;
+   }
+
+ swa = SWA(stmt);
+
+ /*
+  * Save the SQL statement if required
+  * This MUST always be done for mSQL, because it is the saved
+  * SQL ststement that gets passed to msqlQuery().
+  */
+
+ if (SaveSqlStatement(&(swa->sql_stmt), &(swa->sql_stmt_sz), RXSTRPTR(argv[1]),(int)RXSTRLEN(argv[1])))
+     return ReturnError(retstr, 10, "out of memory");
+
+ swa->expr_cnt = 0;
+
+ /*
+  * Execute the SQL statement
+  */
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+ rc = (*dbfunc[DBFUNC_MSQLQUERY].func)(db->sock,SQL(swa));
+#else
+ rc = msqlQuery(db->sock,SQL(swa));
+#endif
+ if (rc < 0)
+   {
+    SetDBError( __FILE__, __LINE__, SWA(stmt));
+    return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, DB_ERROR);
+   }
+ swa->rowcount = rc;
+
+ return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, rc<0 ? DB_ERROR : 0);
+}
+
+/*-----------------------------------------------------------------------------
+ * Get a pointer to the nominated statement. Returns NULL on error.
+ *----------------------------------------------------------------------------*/
+static STMT *GetStatement
+
+#ifdef HAVE_PROTO
+    (RXSTRING  var,PSZ     buf)
+#else
+    (var, buf)
+    RXSTRING   var;
+    PSZ     buf;
+#endif
+{
+ STMT        *stmt=NULL;
+ char        tmp[128];
+
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "GetStatement", "%x,%s", var, buf );
+
+ if (RexxSQLData.DbEnv == (DBENV*)NULL)
+   {
+    SetIntError( __FILE__, __LINE__, 22, "no connections open." );
+    return (STMT*)NULL;
+   }
+
+ if (RXSTRLEN(var) == 0)
+   {
+    /*
+     * No statement name specified!
+     */
+    SetIntError( __FILE__, __LINE__, 23, "statement name omitted or null" );
+    return (STMT*)NULL;
+   }
+
+ /*
+  * Get the normalised form of the name
+  */
+ if (MkIdentifier(var, buf, MAX_IDENTIFIER+1))
+    return (STMT*)NULL;
+
+ /*
+  * Find the named statement or create if necessary
+  */
+ if ((stmt = FindObject(buf, RexxSQLData.DbEnv->stmt_tbl, TBL_STATEMENTS)) == (STMT*)NULL)
+   {
+    /*
+     * Statement not an existing one!
+     */
+    (void)sprintf(tmp,"statement \"%s\" does not exist", buf);
+    SetIntError( __FILE__, __LINE__, 24, tmp );
+    return (STMT*)NULL;
+   }
+ return stmt;
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS:  SQLDISPOSE(statement-name)
+ *
+ * RETURNS :  0-success, <0-error.
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLDISPOSE
+
+#ifdef HAVE_PROTO
+   (RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr)
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+#endif
+{
+ int         rc=0;
+ STMT        *stmt=NULL;
+ DBCON       *db=NULL;
+ char        stmt_name[MAX_IDENTIFIER+1];
+
+   RexxSQLData.RxPackageGlobalData = FunctionPrologue( RexxSQLData.RxPackageGlobalData, RexxSQLInitialiser, (char *)name, argc, argv);
+
+ if (SQLCA_SqlCode) ClearDBError();
+ if (SQLCA_IntCode) ClearIntError();
+
+ if (argc != 1) return 1;
+
+ if ((stmt = GetStatement(argv[0], stmt_name)) == (STMT*)NULL)
+     return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, SQLCA_IntCode);
+
+ /* Get pointer to statement's connection structure */
+ db = stmt->db;
+
+ /* Dispose the statement */
+ RemoveObject(stmt);
+ rc = ReleaseStatement(stmt);
+
+ db->num_statements--;
+
+ return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS:  SQLEXEC (called by SQLEXECUTE() and SQLOPEN()
+ *
+ * RETURNS :  0-success,
+ *           >0-number of rows affected for SQLEXECUTE(),
+ *           <0-error.
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLEXEC
+
+#ifdef HAVE_PROTO
+    ( RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr, int open )
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+   int open;
+#endif
+{
+ STMT        *stmt=NULL;
+ SQLWA   *swa=NULL;
+ DBCON       *db=NULL;
+ char        stmt_name[MAX_IDENTIFIER+1];
+ char        tmp[128];
+
+   RexxSQLData.RxPackageGlobalData = FunctionPrologue( RexxSQLData.RxPackageGlobalData, RexxSQLInitialiser, (char *)name, argc, argv);
+
+ if (SQLCA_SqlCode) ClearDBError();
+ if (SQLCA_IntCode) ClearIntError();
+
+ if (argc == 0) return 1;
+
+ if ((stmt = GetStatement(argv[0], stmt_name)) == (STMT*)NULL)
+     return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, SQLCA_IntCode);
+
+ swa = SWA(stmt);
+
+ /*
+  * Make sure we have a current connection
+  */
+ if (RexxSQLData.DbEnv == (DBENV*)NULL)
+    return ReturnError(retstr, 22, "no connections open.");
+
+ /*
+  * Get pointer to current connection
+  */
+ if (RexxSQLData.DbEnv && RexxSQLData.DbEnv->current_connection)
+    db = RexxSQLData.DbEnv->current_connection;
+ else
+    return ReturnError(retstr, 25, "no connection is current");
+
+ /*
+  * This function can be called as SQLOPEN() or SQLEXECUTE(). These
+  * operations are similar except for the describe. Use the function
+  * name to determine what operation we are performing.
+  */
+
+ /*
+  * Save results if we haven't already done it for this statement
+  */
+ if (!CTX(swa))
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+    CTX(swa) = (m_result*)(*dbfunc[DBFUNC_MSQLSTORERESULT].func)();
+#else
+    CTX(swa) = (m_result*)msqlStoreResult();
+#endif
+
+ /*
+  * If called from SQLOPEN() the statement must be a query!
+  */
+ if (open
+ &&  CTX(swa) == NULL)
+   {
+    (void)sprintf(tmp,"statement \"%s\" is not a query.", stmt_name);
+    return ReturnError(retstr, 13, tmp);
+   }
+
+ /*
+  * Return the ROWCOUNT.  For a query it will be zero at this stage.  For
+  * a DML statement it will be the number of rows affected by the INSERT/
+  * UPDATE/DELETE statement.
+  * This value is set by mSQLQuery() and is stored in swa->rowcount to
+  * be set here.
+  */
+ SetRowCount(swa->rowcount);
+ return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)0L);
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS: SQLCLOSE(statement-name)
+ *
+ * RETURNS :  0-success, <0-error.
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLCLOSE
+
+#ifdef HAVE_PROTO
+   (RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr)
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+#endif
+{
+ int         rc=0;
+ STMT        *stmt=NULL;
+ SQLWA   *swa=NULL;
+ char        stmt_name[MAX_IDENTIFIER+1];
+
+   RexxSQLData.RxPackageGlobalData = FunctionPrologue( RexxSQLData.RxPackageGlobalData, RexxSQLInitialiser, (char *)name, argc, argv);
+
+ if (SQLCA_SqlCode) ClearDBError();
+ if (SQLCA_IntCode) ClearIntError();
+
+ if (argc != 1) return 1;
+
+ if ((stmt = GetStatement(argv[0], stmt_name)) == (STMT*)NULL)
+     return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, SQLCA_IntCode);
+
+ swa = SWA(stmt);
+
+ /* Inform MSQL that operation is complete. This should never fail! */
+ if (CTX(swa))
+   {
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+    (*dbfunc[DBFUNC_MSQLFREERESULT].func)(CTX(swa));
+#else
+    msqlFreeResult(CTX(swa));
+#endif
+    CTX(swa) = NULL;
+   }
+
+ return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, rc ? DB_ERROR : 0);
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS:  SQLFETCH(statement-name [, number-of-rows])
+ *
+ * RETURNS :  0-end-of-data,
+ *           >0- single fetch: row number of last row fetched
+ *           >0- group fetch : number of rows fetched if < number-of-rows then
+ *                             end--of-data is indicated.
+ *           <0-error.
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLFETCH
+
+#ifdef HAVE_PROTO
+   (RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr)
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+#endif
+{
+   long        rc=0;
+   int         single_fetch=0;
+   ULONG       num_rows=0L;
+   ULONG       rowcount=0L;
+   STMT        *stmt=NULL;
+   SQLWA   *swa=NULL;
+   char        stmt_name[MAX_IDENTIFIER+1];
+   char        tmp[128];
+
+   RexxSQLData.RxPackageGlobalData = FunctionPrologue( RexxSQLData.RxPackageGlobalData, RexxSQLInitialiser, (char *)name, argc, argv);
+
+   if (SQLCA_SqlCode) ClearDBError();
+   if (SQLCA_IntCode) ClearIntError();
+
+   if (argc == 0 || argc > 2) return 1;
+
+   if ((stmt = GetStatement(argv[0], stmt_name)) == (STMT*)NULL)
+     return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, SQLCA_IntCode);
+
+   swa = SWA(stmt);
+
+   if (!CTX(swa))
+   {
+      (void)sprintf(tmp,"statement \"%s\" has not been OPENed or EXECUTEd", stmt->name);
+      return ReturnError(retstr, 26, tmp);
+   }
+
+   /*
+    * Determine # of rows to fetch
+    */
+   if (argc > 1 && RXSTRLEN(argv[1]))
+   {
+      if (StrToInt(&argv[1], &num_rows))
+      {
+         return ReturnError(retstr, 14,"<num-rows> is not a valid integer.");
+      }
+      single_fetch = FALSE;
+   }
+   else
+      single_fetch = TRUE;
+
+   /*
+    * Get field definitions
+    */
+   rc = DefineExpressions(stmt);
+   if (rc < 0)
+   {
+      (void)sprintf(tmp,"statement \"%s\" has not been OPENed or EXECUTEd", stmt->name);
+      return ReturnError(retstr, 26, tmp);
+   }
+
+   if (single_fetch)
+   {
+      /*
+       * Fetch a single row
+       */
+      if ((rc = FetchRow(stmt, stmt_name, 0L)))
+         rc = (rc == NO_DATA_FOUND) ? 0 : rc;
+      else
+         rc = 1; /* single row fetch, must return 1 */
+   }
+   else
+   {
+      /*
+       * Fetch each row in turn
+       */
+      for (rowcount = 1; num_rows == 0 || rowcount <= num_rows; rowcount++)
+      {
+         if ((rc = FetchRow(stmt, stmt_name, rowcount)))
+            break;
+      }
+
+      rowcount--;
+
+      if (rc && rc != NO_DATA_FOUND)
+      {
+         return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+      }
+
+      if ((rc = SetRowCountVar(swa, stmt_name, rowcount)))
+         return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+
+      rc = rowcount;
+   }
+
+   SetRowCount( rc );
+   return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, rc);
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS:  SQLGETDATA(statement-name, column-name, start-byte, length [, file-name])
+ *
+ * RETURNS :  0-end-of-data,
+ *           >0- bytes obtained - <= length
+ *           <0-error.
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLGETDATA
+
+#ifdef HAVE_PROTO
+   (RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr)
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+#endif
+{
+ return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, 0L);
+}
+
+/*-----------------------------------------------------------------------------
+ * Fetch the description for the column expression. Used by SQLDESCRIBE().
+ *----------------------------------------------------------------------------*/
+static int GetColumn
+
+#ifdef HAVE_PROTO
+    (SQLWA *swa,int i,char *stem_name)
+#else
+    (swa, i, stem_name)
+    SQLWA   *swa;
+    int      i;
+    char    *stem_name;
+#endif
+{
+ FLDDSCR *fd=NULL;
+ int     idx=0, rc=0, j=0;
+ char    column_size[15], column_scale[15], column_precision[15], column_nullok[15];
+ char    *column_type=NULL;
+ char    name[MAX_IDENTIFIER+32];
+ char    *value[NUM_DESCRIBE_COLUMNS];
+ int     value_len[NUM_DESCRIBE_COLUMNS];
+
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "GetColumn", "%x,%d,%s", swa, i, stem_name );
+
+ if (i >= swa->expr_cnt)
+    return 1;
+
+ fd = swa->fa[i];
+
+ for (j=0;datatype_conversion[j].ext_datatype;j++)
+   {
+    if (datatype_conversion[j].int_datatype == fd->type)
+      {
+       column_type = datatype_conversion[j].ext_datatype;
+       break;
+      }
+   }
+ if (column_type == NULL)
+    column_type = "UNKNOWN";
+
+ /*
+  * Set up the array
+  */
+ value[0] = fd->name;
+ value_len[0] = strlen(fd->name);
+ value[1] = column_type;
+ value_len[1] = strlen(column_type);
+ value[2] = column_size;
+ value_len[2] = sprintf(column_size, "%d", fd->length);
+ value[3] = column_precision;
+ value_len[3] = sprintf(column_precision, "%d", fd->length);
+ value[4] = column_scale;
+ value_len[4] = sprintf(column_scale, "%ld",0L);
+ value[5] = column_nullok;
+ value_len[5] = sprintf(column_nullok, "%d", (IS_NOT_NULL(fd->flags)) ? 0 : 1);
+
+ /*
+  * Output into Rexx variable
+  */
+ i++;
+ for (idx = 0; idx < NUM_DESCRIBE_COLUMNS; idx++)
+   {
+    sprintf(name, "%s.COLUMN.%s.%d", stem_name,RexxSQLData.column_attribute[idx], i);
+    if (SetRexxVariable( RexxSQLData.RxPackageGlobalData, name, strlen(name), value[idx], value_len[idx] ) )
+      {
+       rc = -16;
+       break;
+      }
+   }
+
+ return rc;
+}
+
+/*-----------------------------------------------------------------------------
+ * SYNOPSIS:  SQLDESCRIBE(statement-name [, stem-name])
+ *
+ * RETURNS : >0-number of columns in the prepared SELECT statement.
+ *            0-prepared statement is not a SELECT statement.
+ *           <0-error.
+ *----------------------------------------------------------------------------*/
+RFH_RETURN_TYPE SQLDESCRIBE
+
+#ifdef HAVE_PROTO
+   (RFH_ARG0_TYPE name, RFH_ARG1_TYPE argc, RFH_ARG2_TYPE argv, RFH_ARG3_TYPE stck, RFH_ARG4_TYPE retstr)
+#else
+   (name, argc, argv, stck, retstr)
+   RFH_ARG0_TYPE name;
+   RFH_ARG1_TYPE argc;
+   RFH_ARG2_TYPE argv;
+   RFH_ARG3_TYPE stck;
+   RFH_ARG4_TYPE retstr;
+#endif
+{
+ int         i=0, len1=0, len2=0, rc=0;
+ STMT        *stmt=NULL;
+ SQLWA   *swa=NULL;
+ DBCON       *db=NULL;
+ char        **p=NULL, buf1[MAX_IDENTIFIER+32], buf2[16];
+ char        stmt_name[MAX_IDENTIFIER+1];
+ char        tmp[128];
+ char        stem_name[MAX_IDENTIFIER+1];
+
+
+   RexxSQLData.RxPackageGlobalData = FunctionPrologue( RexxSQLData.RxPackageGlobalData, RexxSQLInitialiser, (char *)name, argc, argv);
+
+ if (SQLCA_SqlCode) ClearDBError();
+ if (SQLCA_IntCode) ClearIntError();
+
+ if (argc < 1 || argc > 2) return 1;
+
+ /* Get pointer to current connection */
+ if (RexxSQLData.DbEnv && RexxSQLData.DbEnv->current_connection)
+     db = RexxSQLData.DbEnv->current_connection;
+ else
+     return ReturnError(retstr, 25, "no connection is current");
+
+ if ((stmt = GetStatement(argv[0], stmt_name)) == (STMT*)NULL)
+     return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, SQLCA_IntCode);
+
+ swa = SWA(stmt);
+
+ /* Get the name of the stem into which to put output */
+ if (argc < 2 || RXSTRLEN(argv[1]) == 0) /* No stem name specified! */
+    (void)strcpy(stem_name, stmt_name);
+ else
+    if ((rc = MkIdentifier(argv[1], stem_name, sizeof(stem_name))))
+       return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+
+ /* Save results if we haven't already done it for this statement */
+ if (!CTX(swa))
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+    CTX(swa) = (m_result*)(*dbfunc[DBFUNC_MSQLSTORERESULT].func)();
+#else
+    CTX(swa) = (m_result*)msqlStoreResult();
+#endif
+
+ if (CTX(swa) == NULL)  /* not SELECT */
+   {
+    (void)sprintf(tmp,"statement \"%s\" is not a query.", stmt_name);
+    return ReturnError(retstr, 13, tmp);
+   }
+
+ swa->expr_cnt = msqlNumFields(CTX(swa));
+
+ /* Get each expr value in turn */
+ for (i = 0; rc == 0 && i < swa->expr_cnt; i++)
+   {
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+    swa->fa[i] = (FLDDSCR*)(*dbfunc[DBFUNC_MSQLFETCHFIELD].func)(CTX(swa));
+#else
+    swa->fa[i] = (FLDDSCR*)msqlFetchField(CTX(swa));
+#endif
+    /* should check here for NULL fd !! */
+    rc = GetColumn(swa, i, stem_name);
+   }
+
+ if (rc >= 0)
+   {
+    len2 = sprintf(buf2,"%d", i);
+    for (p = RexxSQLData.column_attribute; *p && rc >= 0; p++)
+      {
+       len1 = sprintf(buf1, "%s.COLUMN.%s.0", stem_name, *p);
+       if (SetRexxVariable( RexxSQLData.RxPackageGlobalData, buf1, len1, buf2, len2 ) )
+          rc = -16;
+       else
+          rc = 0;
+      }
+    rc = rc < 0 ? rc : i;
+   }
+
+ return RxReturnNumber( RexxSQLData.RxPackageGlobalData, retstr, (long)rc);
+}
+
+int DBInitialise
+#ifdef HAVE_PROTO
+    (void)
+#else
+    ()
+#endif
+{
+
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "DBInitialise", NULL );
+
+#if defined(WIN32) && defined(DYNAMIC_LOAD)
+ int i=0;
+
+ fprintf(stderr,"In DBInitialise\n");
+
+ mSQLDll = (HMODULE)LoadLibrary("msql");
+ if (mSQLDll == NULL)
+   {
+    fprintf(stderr,"Unable to load mSQL.dll\n");
+    return(1);
+   }
+ for (i=0;dbfunc[i].name!=NULL;i++)
+   {
+    dbfunc[i].func = GetProcAddress(mSQLDll,dbfunc[i].name);
+    if (dbfunc[i].func == NULL)
+      {
+       fprintf(stderr,"Unable to get address of %s in mSQL.dll\n",dbfunc[i].name);
+       FreeLibrary(mSQLDll);
+       return(1);
+      }
+   }
+ return(0);
+
+#endif
+
+#if defined(OS2) && defined(DYNAMIC_LOAD)
+ int i=0;
+ char LoadError[100];
+ APIRET rc=0;
+ PFN *addr;
+
+ fprintf(stderr,"In DBInitialise\n");
+
+ rc = DosLoadModule(LoadError,sizeof(LoadError),"msql",&mSQLDll);
+ if (rc)
+   {
+    fprintf(stderr,"Unable to load mSQL.dll: %d\n",rc);
+    return(1);
+   }
+ for (i=0;dbfunc[i].name!=NULL;i++)
+   {
+    rc = DosQueryProcAddr(mSQLDll,0L,dbfunc[i].name,addr);
+    if (rc)
+      {
+       fprintf(stderr,"Unable to get address of %s in mSQL.dll: %d\n",dbfunc[i].name,rc);
+       DosFreeModule(mSQLDll);
+       return(1);
+      }
+    dbfunc[i].func = addr;
+   }
+ return(0);
+
+#endif
+ return(0);
+}
+
+/*-----------------------------------------------------------------------------
+ * Set up the string containing database name
+ *----------------------------------------------------------------------------*/
+static void *SetDBMSName
+
+#ifdef HAVE_PROTO
+    (DBCON *db)
+#else
+    (db)
+    DBCON *db;
+#endif
+
+{
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "SetDBMSName", "%x", db );
+ strcpy(DBMSName,"mSQL");
+ MAKERXSTRING(RXSDBMSName,DBMSName,(ULONG)strlen(DBMSName));
+ return((void*)&RXSDBMSName);
+}
+
+/*-----------------------------------------------------------------------------
+ * Set up the DBMSVer variable
+ *----------------------------------------------------------------------------*/
+static void *SetDBMSVer
+
+#ifdef HAVE_PROTO
+    (DBCON *db)
+#else
+    (db)
+    DBCON *db;
+#endif
+
+{
+#if defined(DYNAMIC_LOADABLE) && defined(DYNAMIC_LOAD)
+ char *ver = (char*)(*dbfunc[DBFUNC_MSQLGETSERVERINFO].func)();
+#else
+ char *ver=(char*)msqlGetServerInfo();
+#endif
+
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "SetDBMSVer", "%x", db );
+ strcpy(DBMSVer,ver);
+ MAKERXSTRING(RXSDBMSVer,DBMSVer,(ULONG)strlen(DBMSVer));
+ return((void*)&RXSDBMSVer);
+}
+
+/*-----------------------------------------------------------------------------
+ * Set up the Datatypes supported
+ *----------------------------------------------------------------------------*/
+static void *SetDatatypes
+
+#ifdef HAVE_PROTO
+    (DBCON *db)
+#else
+    (db)
+    DBCON *db;
+#endif
+
+{
+ int i=0;
+ RXSTRING_DT *dt=NULL;
+
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "SetDatatypes", "%x", db );
+
+ dt = (RXSTRING_DT *)malloc(sizeof(RXSTRING_DT)*(MAX_DATATYPES+1));
+ for (i=0;i<MAX_DATATYPES;i++)
+   {
+    dt[i].strptr = (char*)malloc(strlen(datatype_conversion[i].ext_datatype)+1);
+    strcpy(dt[i].strptr, datatype_conversion[i].ext_datatype);
+    dt[i].strlength = strlen(datatype_conversion[i].ext_datatype);
+    dt[i].internal = datatype_conversion[i].int_datatype;
+   }
+ dt[i].strptr = NULL;
+ dt[i].strlength = 0;
+ dt[i].internal = 0;
+ return((void*)dt);
+}
+
+/*-----------------------------------------------------------------------------
+ * Set up the Describe Columns supported
+ *----------------------------------------------------------------------------*/
+static void *SetDescribeColumns
+
+#ifdef HAVE_PROTO
+    (DBCON *db)
+#else
+    (db)
+    DBCON *db;
+#endif
+
+{
+ int i=0;
+ RXSTRING *dc=NULL;
+
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "SetDescribeColumns", "%x", db );
+
+ dc = (RXSTRING *)malloc(sizeof(RXSTRING)*(NUM_DESCRIBE_COLUMNS+1));
+ for (i=0;i<NUM_DESCRIBE_COLUMNS;i++)
+   {
+    dc[i].strptr = (char*)malloc(strlen(RexxSQLData.column_attribute[i])+1);
+    strcpy(dc[i].strptr, RexxSQLData.column_attribute[i]);
+    dc[i].strlength = strlen(RexxSQLData.column_attribute[i]);
+   }
+ dc[i].strptr = NULL;
+ dc[i].strlength = 0;
+ return((void*)dc);
+}
+
+/*-----------------------------------------------------------------------------
+ * Set up the SupportsTransactions variable
+ *----------------------------------------------------------------------------*/
+static void *SetSupportsTransactions
+
+#ifdef HAVE_PROTO
+    (DBCON *db)
+#else
+    (db)
+    DBCON *db;
+#endif
+
+{
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "SetSupportsTransactions", "%x", db );
+ return((void*)&RexxSQLData.SupportsTransactions);
+}
+
+/*-----------------------------------------------------------------------------
+ * Set up the SupportsSqlGetData variable
+ *----------------------------------------------------------------------------*/
+static void *SetSupportsSqlGetData
+
+#ifdef HAVE_PROTO
+    (DBCON *db)
+#else
+    (db)
+    DBCON *db;
+#endif
+
+{
+ InternalTrace( RexxSQLData.RxPackageGlobalData, "SetSqlGetData", "%x", db );
+ return((void*)&RexxSQLData.SupportsSqlGetData);
+}
+
+#include "rxsqlinc2.h"
+
+#if defined(WIN32) && defined(DYNAMIC) && defined(DYNAMIC_LOAD)
+BOOL APIENTRY DllMain ( HANDLE hModule, DWORD reason, LPVOID rsrvd)
+{
+ BOOL rc=TRUE;
+ fprintf(stderr,"In DllMain\n");
+ switch(reason)
+   {
+    case DLL_THREAD_ATTACH:
+         if (DBInitialise())
+            rc = FALSE;
+         break;
+    case DLL_THREAD_DETACH:
+         FreeLibrary(mSQLDll);
+         break;
+    default:
+         break;
+   }
+ fprintf(stderr,"In DllMain <%d>\n",rc);
+ return(rc);
+}
+#endif
+
+#if defined(OS2) && defined(DYNAMIC) && defined(DYNAMIC_LOAD)
+unsigned long _System _DLL_InitTerm( unsigned long hModule, unsigned long flag)
+{
+ unsigned long rc=1L;
+ fprintf(stderr,"In DllMain\n");
+ if (flag) /* termination */
+   {
+    DosFreeModule(mSQLDll);
+   }
+ else
+   {
+    if (_CRT_init() == -1)
+       rc = 0UL;
+    else
+      {
+       if (DBInitialise())
+          rc = 0UL;
+      }
+   }
+ fprintf(stderr,"In _DLL_InitTerm <%d>\n",rc);
+ return(rc);
+}
+#endif
