@@ -2,7 +2,16 @@ root=value("NATIVE_DB_ROOT",,"ENVIRONMENT")
 backend=.PostgreSQLNativeBackend~new(root || "/postgres/libpq.bridge.json")
 if \backend~available then do
   ev=backend~availabilityEvidence
-  say "POSTGRESQL NATIVE AVAILABILITY ERROR:" ev["availability_error"]
+  availabilityError=ev["availability_error"]
+  say "POSTGRESQL NATIVE AVAILABILITY ERROR:" availabilityError
+  -- External libpq is a host requirement, not vendored package source.  Only the
+  -- exact native-loader "all candidates absent" condition is an environment skip.
+  -- Metadata/schema/runtime errors remain hard failures.
+  if availabilityError~pos("no library candidate could be loaded")>0 & -
+     availabilityError~pos("cannot open shared object file: No such file or directory")>0 then do
+    say "SKIP POSTGRESQL NATIVE OFFLINE: libpq shared library is absent on this qualification host"
+    exit 0
+  end
   call assert .false, "libpq load"
 end
 ev=backend~availabilityEvidence
