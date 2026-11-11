@@ -1,0 +1,18 @@
+{
+  "kind":"article", "id":"aircraft-acoustic.index", "version":"0.1", "sphere":"aircraft-acoustic-geolocation",
+  "title":"2023-10-10 historical archive and reuse of prior index",
+  "summary":"A previous read-only local run of the fully extracted ADSB.lol daily archive reported 53,575 per-aircraft gzip JSON traces in 256 directories and 48 heatmap gzip tiles; 23 aircraft within 120 km of a public Paphos reference across the union UTC windows, with 17,815 retained full-day points. These are an external handoff, not independently reproduced in the current cloud workspace.",
+  "invariants":[
+    "The 07:00–11:00 UTC primary window yielded 12 aircraft and 94 nearby points; 10:00–14:00 UTC fallback yielded 13 aircraft and 96 nearby points.",
+    "Nearest reported point was about 65 km from the public Paphos reference; no point was within 50 km. Sparse ADS-B points are not an absence-of-aircraft proof.",
+    "Existing local outputs: paphos_aircraft.sqlite, candidate_summary.csv, source inventories, README in the 2026-11-05 Codex index run output folder.",
+    "Do not propagate private apartment receiver coordinates, filenames from source recordings, or aircraft lists from private file inventories into public repository artifacts.",
+    "Coordinate systems must be explicit: WGS84 lon/lat, altitude datum, relative frame and UTC time basis. No invented trajectory interpolation over evidence gaps."
+  ],
+  "procedure":[
+    "Inspect the existing indexed output in place if accessible; establish source hashes and record counts.",
+    "Query using indexed UTC and spatial cells; fetch exact source trace samples only for ranked candidate aircraft.",
+    "Record PTS authority and instrument clock correction separately from ADS-B UTC.",
+    "Keep source coverage, airspace observer coverage and sampled proximity distinct."
+  ]
+}
