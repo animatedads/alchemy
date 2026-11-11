@@ -1,6 +1,10 @@
 root=value("NATIVE_DB_ROOT",,"ENVIRONMENT")
 backend=.PostgreSQLNativeBackend~new(root || "/postgres/libpq.bridge.json")
-call assert backend~available, "libpq load"
+if \backend~available then do
+  ev=backend~availabilityEvidence
+  say "POSTGRESQL NATIVE AVAILABILITY ERROR:" ev["availability_error"]
+  call assert .false, "libpq load"
+end
 ev=backend~availabilityEvidence
 call assert ev["libpq_version_number"]>0, "libpq version"
 call assert ev["foreign_runtime_version"]<>"", "foreign runtime version"
