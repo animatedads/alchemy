@@ -17,6 +17,10 @@ class WireWindowsLifecycle(unittest.TestCase):
         cls.renderer = RENDERER.read_text(encoding="utf-8")
         cls.bootstrap = BOOTSTRAP.read_text(encoding="utf-8")
 
+    def test_utf8_conversion_reserves_nul_terminator(self):
+        self.assertIn("std::wstring w(static_cast<size_t>(n),L'\\0')", self.renderer)
+        self.assertIn("w.resize(static_cast<size_t>(n-1))", self.renderer)
+
     def test_f5_intercepted_at_thread_message_loop(self):
         if "msg.message==WM_KEYDOWN&&msg.wParam==VK_F5" not in self.renderer:
             self.skipTest("Git dev5 predates F5 lifecycle fix")
