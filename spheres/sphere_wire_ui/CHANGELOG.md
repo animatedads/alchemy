@@ -1,5 +1,10 @@
 # Changelog
 
+## Android APK layout defect isolated (2026-11-11)
+- Inspected the existing dev23 and dev24 APK ZIP member names. dev24 has `../dex/classes.dex` and no root `classes.dex`; dev23 has root `classes.dex`.
+- Added `packages/oorexx_android_native/audit_apk_layout.py` to reject traversal entries, absent root DEX/manifest, invalid native library placement and CRC errors before handset installation.
+- Local archive checks: dev23 PASS for ZIP layout only; dev24 FAIL with traversal DEX and missing root DEX. No install or runtime qualification implied.
+
 ## Android native host source sync (2026-10-29)
 - Import dev18 JNI C++ host and Termux build script under packages/oorexx_android_native on PR #19.
 - Keep the Wire UI Android sphere qualification boundary: source import and native dependency checks do not imply APK installation, interpreter execution on handset or production service activation.
