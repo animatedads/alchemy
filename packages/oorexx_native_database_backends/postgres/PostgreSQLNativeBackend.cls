@@ -51,13 +51,13 @@ loadFailed:
   library=.nil
   return .nil
 ::method available
+  expose availabilityError
   l=self~library
   if l==.nil then return .false
   signal on syntax name unavailable
   v=l~lib_version
   return v>0
 unavailable:
-  expose availabilityError
   conditionObj=condition("O")
   availabilityError="libpq provider loaded but PQlibVersion failed"
   if conditionObj\==.nil then do
