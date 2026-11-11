@@ -127,3 +127,4 @@
  ignore=codec~close
  return found
 ::requires 'MediaH264Frames.cls'
+::requires 'Mp4File.cls'
