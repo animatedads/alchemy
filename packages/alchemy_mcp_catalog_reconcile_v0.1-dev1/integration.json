@@ -1,0 +1,19 @@
+{
+  "schema": "alchemy.autobuild.integration/0.2",
+  "package": {
+    "name": "alchemy_mcp_catalog_reconcile",
+    "version": "0.1-dev1",
+    "kind": "build-tool"
+  },
+  "working_directory": ".",
+  "environment": {"set": {}, "prepend_path": []},
+  "tests": [
+    {"name": "catalogue-safe-reconcile", "argv": ["python3", "tests/test_reconcile.py"], "timeout_seconds": 90}
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/alchemy_mcp_catalog_reconcile_v0.1-dev1"
+    }
+  }
+}
