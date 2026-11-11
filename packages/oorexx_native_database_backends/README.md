@@ -1,6 +1,6 @@
-# ooRexx Native Database Backends v0.3.1
+# ooRexx Native Database Backends v0.3.2
 
-Provider-neutral database backend contracts plus the first primary native route: PostgreSQL through Foreign Runtime v0.22.2 and libpq.
+Provider-neutral database backend contracts plus native PostgreSQL/MySQL execution and configuration-time provider selection. The v0.3.2 Autobuild target uses Foreign Runtime v0.22.6; earlier PostgreSQL qualification against v0.22.2 remains historical evidence until the v0.3.2 receipt exists.
 
 ## Architecture
 
@@ -80,3 +80,42 @@ The two directions are intentionally distinct:
 Neither implementation is a fallback for the other and neither may be silently substituted mid-session or mid-transaction.
 
 The packaged `liboorexx_mariadb_bulk.so` is qualification evidence for the build host, not a portable binary contract. Source plus `native/build_mariadb_bulk.sh` is authoritative for rebuilding the small ABI adapter on another supported platform. A missing/incompatible native adapter makes this backend unavailable; it does not authorize a hidden process or wire-bridge fallback.
+
+
+## v0.3.2 - configuration-time provider package selection
+
+v0.3.2 brings the runtime `DatabaseBackendSelector` into the canonical Native Database
+Backends publication source. Earlier selector development existed only in the historical
+`packages/oorexx_native_database_backends_v0.1` tree and therefore was not part of the
+current v0.3.1 Autobuild publication source.
+
+This selector is deliberately separate from `NativeDatabaseBackendSelector`:
+
+- `DatabaseBackendSelector` chooses which provider **package** enters the ooRexx process.
+  It dynamically loads only the configured package and resolves the provider class inside
+  that package, preserving package namespace isolation.
+- `NativeDatabaseBackendSelector` chooses among already-loaded backend implementations by
+  capability and priority, then pins the acquired implementation.
+
+Built-in provider identities are:
+
+- `POSTGRESQL` -> `PostgreSQLDatabaseProvider.cls`
+- `NOSQLSERVER` -> external `NoSQLDatabaseCoreProvider.cls`
+- `REXXSQL-SQLITE` (aliases `REXXSQL`, `SQLITE`) -> external
+  `RexxSqlDatabaseProvider.cls`
+
+Unknown providers require explicit package/class configuration and fail closed. A backend
+change is deployment configuration, not an instruction to edit application `::requires`
+statements.
+
+The selector regression deliberately loads two packages that both export a public
+`.DatabaseRow` with incompatible semantics and verifies that neither class leaks into the
+neutral caller package.
+
+### Autobuild dependency target
+
+The v0.3.1 integration descriptor referred to
+`packages/oorexx_foreign_runtime_v0.22.2`, which is no longer present in current Git.
+v0.3.2 therefore targets the current canonical
+`packages/oorexx_foreign_runtime_v0.22.6` for Autobuild. This is a test target, not a
+retroactive claim of compatibility: acceptance depends on the resulting Autobuild receipt.
