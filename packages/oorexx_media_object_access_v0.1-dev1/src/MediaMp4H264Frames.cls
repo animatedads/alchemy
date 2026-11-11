@@ -100,6 +100,10 @@
    sample=sampleMap~sample(i)
    if sample~descriptionIndex<>1 then -
      raise syntax 88.900 array('AVC sample description switched without decoder reinitialization',i)
+   if \sample~presentationVisible then -
+     raise syntax 88.900 array('MP4 video sample hidden by edit-list preroll: decoder PTS concealment is not qualified',i)
+   if sample~sizeBytes>4194304 then -
+     raise syntax 88.900 array('MP4 access unit exceeds native decoder feed cap',i)
    readBytesLast+=sample~sizeBytes
    if readBytesLast>budgetBytes then do
      exhausted=.true
@@ -108,13 +112,10 @@
    compressed=self~readExact(sample~byteOffset,sample~sizeBytes)
    nal=self~annexB(compressed)
    if i=first then nal=config||nal
-   pts=-1
-   if sample~presentationVisible then do
-     numerator=sample~presentationTicks*90000
-     if numerator//scale<>0 then -
-       raise syntax 88.900 array('MP4 PTS cannot be represented exactly at 90 kHz',i)
-     pts=numerator%scale
-   end
+   numerator=sample~presentationTicks*90000
+   if numerator//scale<>0 then -
+     raise syntax 88.900 array('MP4 PTS cannot be represented exactly at 90 kHz',i)
+   pts=numerator%scale
    decoded=codec~feed(nal,pts)
    do frame over decoded
      if frame~presentationTicks>=requested90k then do
