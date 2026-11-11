@@ -31,10 +31,10 @@ say 'EDGE_TOUCHES' a['BOUNDARY_TOUCH_COUNT']
 if a['POINTS_FEASIBLE']<1 | a['BOUNDARY_TOUCH_COUNT']<>0 then do
  say 'FAIL no closed feasible region';exit 11
 end
-if a['INDEPENDENT_GROUND_TRUTH'] | a['SURVEY_5M_QUALIFIED'] then do
+if a['INDEPENDENT_GROUND_TRUTH'] | a['SURVEY_5M_QUALIFIED'] | a['ONE_NM_CERTIFIED'] then do
  say 'FAIL false survey qualification';exit 12
 end
-if a['MODEL_WITHIN_ONE_NM']<>(a['GRID_PADDED_RADIUS_METRES']<=1852) then do
+if a['SAMPLED_WITHIN_ONE_NM']<>(a['GRID_PADDED_RADIUS_METRES']<=1852) then do
  say 'FAIL one-nautical-mile classification';exit 13
 end
 b=e~evaluate(plate,JD,lms,fix,0.1,1000,50)
