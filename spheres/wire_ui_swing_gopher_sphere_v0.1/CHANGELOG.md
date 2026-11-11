@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1 update — 2026-11-11
+- Advanced continuity to Wire UI Swing v0.2-dev13 (SHA-256 265137085793259c6442e5560eb771df5880a04bc8dd0f45559453eaea954b97); public/runtime API unchanged from dev12.
+- Recorded generic semantic-record detail hierarchy: renderer-owned section heading, projected status chip and explicit empty-value placeholder.
+- Added Git/autobuilder source-publication article: reviewed source/tests/evidence in Git, no stale compiled JAR promoted as source.
+- Recorded coordination requirement with wire-ui-runtime before semantic/runtime API movement.
+
 ## 0.1 update — 2026-10-28
 - Advanced current implementation continuity to Wire UI Swing v0.2-dev12; dev10 remains the full semantic/runtime baseline.
 - Recorded projected secondary document metadata and navigation selection as renderer-only presentation with action-detail narrowing.

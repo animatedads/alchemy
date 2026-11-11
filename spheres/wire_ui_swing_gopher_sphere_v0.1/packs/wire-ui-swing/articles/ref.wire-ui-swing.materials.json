@@ -4,7 +4,7 @@
   "version": "0.1",
   "sphere": "wire-ui-swing",
   "title": "Semantic material delivery and safe Swing interpretation",
-  "summary": "UI_MATERIAL_SET and style roles are versioned presentation inputs, not application authority. Current Swing dev11 also has a renderer-owned modern neutral desktop material: quiet canvas, elevated surfaces, hierarchy, dense rows, modern controls and compact projected status chips. Status classification affects presentation only.",
+  "summary": "UI_MATERIAL_SET and style roles are versioned presentation inputs, not application authority. Swing dev13 extends the modern desktop treatment to generic semantic-record detail surfaces with section headings, compact projected status and explicit empty-value placeholders, without changing semantic revision or action authority.",
   "authority": "renderer-presentation-contract",
   "invariants": [
     "Exact material identity is materialId@version plus immutable contentAddress/tokens/recipes.",
@@ -13,7 +13,9 @@
     "Material refresh does not change view revision, recreate semantic instances, widen actions or discard unsent local edits.",
     "Unsupported/malformed material values are ignored or contained rather than executed.",
     "A projected lifecycle/status value may select renderer colours or compact display text, but must not grant, infer, suppress or rewrite application action feasibility.",
-    "For document-style rows, the renderer may separately expose projected display label, stable projected identity and projected status while keeping outbound action detail narrow."
+    "For document-style rows, the renderer may separately expose projected display label, stable projected identity and projected status while keeping outbound action detail narrow.",
+    "A semantic-record definition label may drive renderer-only section hierarchy without changing the semantic model.",
+    "Empty projected read-only values may render an explicit placeholder; the placeholder is not written back to application state."
   ],
   "procedure": [
     "Validate exact material identity/content.",
@@ -32,6 +34,12 @@
       "sha256": "294be3939be9ff0fc32c057c1d7e0287ba7d3f074fdda9663c6da48fe9bd8ad7",
       "member": "wire_ui_swing_v0.2-dev11/src/main/java/org/alchemy/wireui/swing/WireSwingPresentation.java",
       "claim": "Current renderer-owned desktop material and status-chip presentation."
+    },
+    {
+      "artifact": "wire_ui_swing_v0.2-dev13.zip",
+      "sha256": "265137085793259c6442e5560eb771df5880a04bc8dd0f45559453eaea954b97",
+      "member": "wire_ui_swing_v0.2-dev13/src/main/java/org/alchemy/wireui/swing/WireSwingPresentation.java",
+      "claim": "Current semantic-record hierarchy and status/empty-value presentation helpers."
     }
   ]
 }

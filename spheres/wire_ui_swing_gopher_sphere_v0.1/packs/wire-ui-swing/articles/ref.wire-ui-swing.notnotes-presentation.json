@@ -4,7 +4,7 @@
   "version": "0.1",
   "sphere": "wire-ui-swing",
   "title": "NotNotes Java presentation fixture and web-quality visual doctrine",
-  "summary": "The NotNotes Java surface is a renderer/conformance fixture used to drive Swing toward web-client visual quality while preserving the common semantic authority boundary. Dev12 adds a secondary projected metadata line (such as type/owner), clearer navigation selection and the repaired interactive NotNotes launcher. Swing may own layout, typography, row hierarchy, chips and local selection presentation; NotNotes owns documents, relationships, lifecycle, reports, intentions and action feasibility.",
+  "summary": "The NotNotes Java surface remains a renderer/conformance fixture used to drive Swing toward web-client visual quality while preserving the semantic authority boundary. Dev13 extends generic detail-card hierarchy: projected definition labels become section headings, projected status receives compact renderer-owned chip presentation, and empty projected read-only values show an explicit muted placeholder.",
   "authority": "renderer-presentation-contract",
   "invariants": [
     "NotNotes domain vocabulary must not become a required generic Wire Swing protocol dependency.",
@@ -12,7 +12,10 @@
     "Projected label/status/type/owner/meta/subtitle may affect pixels only; extra display metadata must not be returned as semantic authority.",
     "Navigation highlighting is local renderer state and does not itself navigate or grant action authority.",
     "The web client is a visual-quality benchmark, not a source of browser-owned business truth.",
-    "Actual desktop capture is required for meaningful presentation changes; semantic traces remain the cross-renderer authority test."
+    "Actual desktop capture is required for meaningful presentation changes; semantic traces remain the cross-renderer authority test.",
+    "A SEMANTIC_RECORD definition label may become a renderer-owned section heading without creating a business/document concept in Swing.",
+    "Projected record status may be compacted visually while the full status remains available to tooltip/accessibility; it must not decide lifecycle feasibility.",
+    "An explicit empty-value placeholder is renderer presentation and is never written back to application state."
   ],
   "provenance": [
     {
@@ -32,6 +35,12 @@
       "sha256": "142dbb54adb9d0c2b88a3af043166894354cdb58d600cbd6f5f506b08f03d499",
       "member": "wire_ui_swing_v0.2-dev12/VALIDATION_DEV12.txt",
       "claim": "61/61 renderer tests, secondary metadata authority-narrowing, navigation presentation, launcher routing and real Xvfb capture."
+    },
+    {
+      "artifact": "wire_ui_swing_v0.2-dev13.zip",
+      "sha256": "265137085793259c6442e5560eb771df5880a04bc8dd0f45559453eaea954b97",
+      "member": "wire_ui_swing_v0.2-dev13/VALIDATION_DEV13.txt",
+      "claim": "63/63 renderer qualification for generic semantic-record heading/status/empty-value presentation plus real NotNotes Xvfb capture."
     }
   ]
 }

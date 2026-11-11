@@ -1,0 +1,25 @@
+{
+  "kind": "article",
+  "id": "ref.wire-ui-swing.source-publication",
+  "version": "0.1",
+  "sphere": "wire-ui-swing",
+  "title": "Git source publication and autobuilder discipline",
+  "summary": "The maintainable Wire UI Swing source authority is the reviewed Git tree on main. Autobuilder consumes Git source/tests/scripts; sealed ZIPs are reproducibility evidence. Do not carry stale compiled JARs forward as source or use a feature branch as the continuation point after it is merged.",
+  "authority": "project-continuity",
+  "invariants": [
+    "Continue from the newest qualified packages/wire_ui_swing_v0.2-devN tree on main.",
+    "Autobuilder input is Git source, tests, scripts and qualification evidence; a sealed ZIP is evidence/distribution, not the edit path.",
+    "Do not copy inherited dist/build binaries into a new source package unless that binary is explicitly owned and qualified as a deliverable.",
+    "Feature branches are staging points; after merge, main is the continuation source.",
+    "Use lease-protected Git operations or PR merge so concurrent project/autobuilder commits are preserved.",
+    "Fresh-unpack validation must reconstruct the executable from source and rerun the package gates."
+  ],
+  "provenance": [
+    {
+      "artifact": "wire_ui_swing_v0.2-dev13.zip",
+      "sha256": "265137085793259c6442e5560eb771df5880a04bc8dd0f45559453eaea954b97",
+      "member": "wire_ui_swing_v0.2-dev13/SOURCE_PROVENANCE.md",
+      "claim": "dev13 removed inherited stale binary packaging and qualified the Git-first source publication path."
+    }
+  ]
+}

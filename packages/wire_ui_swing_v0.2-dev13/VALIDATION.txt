@@ -1,0 +1,32 @@
+Wire UI Swing v0.2-dev13 validation
+===================================
+Date: 2026-11-11
+
+Scope
+-----
+API-stable renderer-presentation refinement over the accepted dev12 source/runtime head.
+No business, lifecycle, permission, source, workspace, definition, material, or NotNotes authority moved into Swing.
+
+Strict Java
+-----------
+PASS javac --release 21 -Xlint:all -Werror
+PASS 63/63 renderer tests
+
+New dev13 evidence
+------------------
+PASS semantic-record projected definition label renders as renderer-owned section heading
+PASS projected record status renders as compact presentation chip with full tooltip/accessibility value
+PASS empty projected read-only record value renders as explicit muted em dash
+PASS heading/status/placeholder presentation creates no semantic action
+
+Executable / desktop
+--------------------
+PASS executable JAR manifest/version
+PASS java -jar --smoke-window under Xvfb
+PASS java -jar --notnotes-smoke under Xvfb
+PASS exact no-argument java -jar launch under Xvfb
+PASS WireSwingDesktopWindow visible/capture/resize/focus/editor/onClosed acceptance
+
+Authority statement
+-------------------
+Dev13 changes only renderer presentation. Public/runtime contracts remain the dev12 contract; dev10 remains the deep Server v0.17 / RangeRequested / workspaceContext / ooRexx-BSF semantic qualification anchor.

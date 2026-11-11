@@ -1,0 +1,41 @@
+Wire UI Swing v0.2-dev12 validation
+===================================
+Date: 2026-10-28
+
+Scope
+-----
+Renderer-owned presentation refinement over the accepted dev11/dev10 authority boundary.
+No business, lifecycle, permission, source, or NotNotes authority moved into Swing.
+
+Strict Java
+-----------
+PASS javac --release 21 -Xlint:all -Werror
+PASS 61/61 renderer tests
+
+New dev12 evidence
+------------------
+PASS document-style rows render projected type/owner secondary metadata
+PASS secondary display metadata does not widen semantic action detail
+PASS hidden/unrelated row fields are not echoed as authority
+PASS selected navigation receives renderer-only accent/hierarchy treatment
+PASS inactive navigation remains visually quiet
+PASS navigation rendering creates no semantic action
+PASS --notnotes-demo routes to the NotNotes fixture (launcher defect repaired)
+PASS --notnotes-smoke READY view=NOTNOTES.HOME revision=1
+
+Retained authority baseline
+---------------------------
+Dev10 remains the full Server v0.17 / RangeRequested / BSF / Builder semantic qualification baseline.
+Dev11 remains the first qualified semantic document/status-chip presentation cut.
+Dev12 changes only renderer presentation and adds targeted authority-regression coverage.
+
+
+Executable / visual
+-------------------
+PASS java -jar build/wire-ui-swing-v0.2-dev12.jar --version
+PASS executable --smoke-window under Xvfb
+PASS executable --notnotes-smoke READY view=NOTNOTES.HOME revision=1
+PASS interactive --notnotes-demo routes to NOTNOTES.HOME after launcher repair
+PASS actual Xvfb desktop capture: NOTNOTES_PREVIEW_DEV12.png
+
+PASS exact no-argument java -jar launch opens NOTNOTES.HOME revision=1

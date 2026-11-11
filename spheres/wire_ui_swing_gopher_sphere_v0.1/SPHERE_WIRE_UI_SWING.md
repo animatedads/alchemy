@@ -48,10 +48,14 @@ Searchable corpus aliases include `workspaceContext`, `resultRevision`, `GRID12`
 The separate `java` sphere owns general Java/Swing language doctrine such as EDT discipline and transactional Swing rendering. This sphere intentionally specializes those principles for Wire UI protocol, Builder, Server, ooRexx/BSF and qualification continuity.
 
 
-## Current implementation head — dev12
+## Current implementation head — dev13
 
-`packages/wire_ui_swing_v0.2-dev12` is the current source-qualified implementation baseline. Dev12 is a renderer-presentation successor over dev10's complete semantic/runtime qualification and dev11's semantic document/status-chip cut. It adds projected secondary document metadata, clearer renderer-local navigation selection and repairs the interactive NotNotes launcher.
+`packages/wire_ui_swing_v0.2-dev13` is the current source-qualified implementation baseline after merge to `main`. Dev13 is API-stable over dev12: it adds renderer-owned semantic-record section headings, projected status-chip treatment in detail cards and explicit empty-value placeholders. It does not change UI_ACTION detail, RangeRequested, workspaceContext, definitions/materials, deauthorisation or application authority.
 
-The authority boundary remains unchanged: extra display metadata never widens action detail, navigation highlighting does not itself navigate, projected status never decides lifecycle feasibility, and bounded `RangeRequested` plus opaque `workspaceContext` remain server/application-owned contracts.
+Any future semantic/runtime API movement must be coordinated with the `wire-ui-runtime` lane before implementation.
 
-For presentation work, the web client remains the visual-quality benchmark. Swing owns pixels and local presentation mechanics only.
+Sealed dev13 SHA-256: `265137085793259c6442e5560eb771df5880a04bc8dd0f45559453eaea954b97`. Qualification: 63/63 strict renderer tests plus executable/JAR/Xvfb/desktop acceptance, fresh-unpack manifest verification and real NotNotes visual inspection.
+
+## Source publication / autobuilder
+
+Publish maintainable source, tests, scripts and qualification evidence through Git on `main`; autobuilder consumes that reviewed Git tree. Feature branches are staging only. Do not treat stale compiled JARs copied from older packages as source authority. Sealed ZIPs remain reproducibility/evidence artifacts, not the source-edit path.
