@@ -1,0 +1,23 @@
+{
+  "kind": "article",
+  "id": "evc.nudge",
+  "version": "0.1",
+  "sphere": "event-continuation",
+  "title": "Nudge contract from Tom Dyer / Rasen Falcon review",
+  "summary": "The sender registers a watched condition against its principal, platform and conversation. Publish the full result with watch/event identities and evidence hash to the sender's Rasen Falcon lane. The platform nudge is exactly: The event you registered a request for WATCH_ID has occurred, check Rasen Falcon MCP. A real mailbox read receipt is completion; nudge delivered or DOM click alone is not. The demo mock mailbox is explicitly not live Rasen Falcon.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Notify-only is the default action; side effects need explicit prior approval.",
+    "Do not send result facts inside the browser nudge, and do not accept nudge text as result truth.",
+    "Durable result published before a nudge; retry and expiry are independent of action policy.",
+    "Mailbox read and mark-read, not a browser click, complete the event.",
+    "Dev5 has only a mock result mailbox; native Rasen delivery, principal routing, evidence hash and escalation remain NOT_IMPLEMENTED."
+  ],
+  "provenance": [
+    {
+      "artifact": "Rasen Falcon event-continuation lane",
+      "claim": "Claude review and Tom nudge contract",
+      "note": "REQ-00003371 and REQ-00003373, 2026-11-08; development qualification caveat remains."
+    }
+  ]
+}
