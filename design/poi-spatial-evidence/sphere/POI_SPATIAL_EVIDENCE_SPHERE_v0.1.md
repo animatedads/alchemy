@@ -94,3 +94,12 @@ A POI-centred, case-scoped spatial and temporal investigation application using 
 - Inspected the GitHub `wire3d-live.js` contract: transport accepts `WIRE3D_SNAPSHOT` carrying `WIRE-3D/0.1` or `WIRE3D_DELTA` carrying `WIRE-3D-DELTA/0.1`; snapshots are scene resynchronisation boundaries, deltas must preserve scene ID, and inbound deliveries are acknowledged/rejected.
 - Inspected `Wire3DRenderer.setScene`: requires `rendererContract.mathAuthority = OOREXX_MATHS_V0.8`, authoritative 16-element `camera.viewMatrix`, and 16-element model matrices for nodes. **The current POI `sceneState` is not a valid Wire3D snapshot**; an ooRexx Maths-authored adapter must supply the matrices. Do not fabricate identity matrices and call them authoritative.
 - Local environment has Node.js but no `rexx` executable. Regression file is committed, **not run**. Do not mark PASS.
+
+
+## 2026-11-11 — Rasen Falcon reconciliation and evidence inspector
+
+- Authenticated Rasen Falcon `project_lanes_search('poi')` confirms existing `poi-spatial-evidence` lane, aliases `poi-workbench` and `poi-wire3d`.
+- Rasen Falcon `sphere_list('poi')` and `sphere_list('wire3d')` did not expose a dedicated registered POI or Wire3D sphere. This GitHub document remains source-controlled documentation, not Gopher registration.
+- Rasen Falcon status request `REQ-00003475` posted to the POI lane.
+- Committed `src/PoiEvidenceInspector.cls` at `cace3cc2f0f800de65349aa8e8de5381e2c707c8`. Inspector projects independent source integrity, spatial precision, temporal precision, identity, method and contradiction qualifications; never asserts contact proof.
+- Still pending: real interpreter test run, authoritative Maths matrices, Wire3D snapshot adapter, source-media authorization and proper Gopher sphere packaging.
