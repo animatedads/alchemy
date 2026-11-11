@@ -4,7 +4,7 @@
   "version": "0.2",
   "sphere": "native-database-backends",
   "title": "Rexx/SQL SQLite: indexed provider composition and migration gates",
-  "summary": "Rexx/SQL SQLite v0.1.1 is Autobuild PASS as the indexed provider used by configuration-time DatabaseBackendSelector. The provider qualification covers driver/backend contracts, WAL, capability fail-closed gates, the SSC specialized provider seam, and SSC live suites. Native Database Backends v0.3.2 brings the selector itself into the canonical publication source; its PostgreSQL/Foreign Runtime v0.22.6 qualification is tracked separately until its own PASS receipt exists.",
+  "summary": "Rexx/SQL SQLite v0.1.1 and the canonical Native Database Backends v0.3.2 selector line both have Autobuild PASS receipts. Rexx/SQL qualification covers driver/backend contracts, WAL, fail-closed capability gates, the SSC specialized provider seam, and SSC live suites. Native Database Backends qualification covers the configuration-time selector, capability model, PostgreSQL/MySQL bulk materialisation, process fallback and wire-boundary gates; live libpq-dependent tests were explicitly environment-skipped because the Autobuild host has no libpq shared library, so no fresh live libpq compatibility claim is made.",
   "authority": "project-architecture",
   "invariants": [
     "Rexx/SQL SQLite execution remains owned by oorexx_rexxsql_backend_v0.1; Native Database Backends must not duplicate or vendor its driver.",
@@ -32,13 +32,18 @@
     "selector_test_commit": "3df7b1576a9bedf6917ad600e3055bd32cd35a1a",
     "autobuild_descriptor_commit": "37914d2a4f33401d1dba3415647640d9b088e656",
     "rexxsql_canonical_runner_commit": "180abc7bf5c1359939b1a26f354663b3ef593547",
-    "status": "REXXSQL_PROVIDER_AUTOBUILD_PASS; NATIVE_DB_V0.3.2_RECEIPT_PENDING",
+    "status": "REXXSQL_PROVIDER_AUTOBUILD_PASS; NATIVE_DB_SELECTOR_AUTOBUILD_PASS; LIVE_LIBPQ_NOT_REQUALIFIED",
     "rexxsql_release": "0.1.1",
     "rexxsql_submission": "20261111T180100Z-CHATGPT-oorexx-rexxsql-backend-v0.1.1-c38611",
     "rexxsql_source_commit": "5622d1bb9781abd6a4bf4e61f8753c5b7891e72d",
     "rexxsql_tree_sha256": "754559f1c302136edc3dc20bc3f0637d8fd33fd542e12dbe65e70b6850999553",
     "rexxsql_receipt_status": "PASS",
-    "rexxsql_artifact": "autobuild/artifacts/oorexx_rexxsql_backend/0.1.1/754559f1c302136edc3dc20bc3f0637d8fd33fd542e12dbe65e70b6850999553.zip"
+    "rexxsql_artifact": "autobuild/artifacts/oorexx_rexxsql_backend/0.1.1/754559f1c302136edc3dc20bc3f0637d8fd33fd542e12dbe65e70b6850999553.zip",
+    "native_db_release": "0.3.2",
+    "native_db_submission": "20261111T181300Z-CHATGPT-oorexx-native-database-backends-v0.3.2-fix5-705ab1",
+    "native_db_tree_sha256": "363991d9f9959362100936d4755ee9a6c9ee57bab2c4dc85e9ef4ebb20c73dcf",
+    "native_db_receipt_status": "PASS",
+    "native_db_libpq_boundary": "ENVIRONMENT_SKIPPED: libpq shared library absent on Autobuild host; selector/capability/bulk/fallback/wire-boundary gates executed and passed"
   },
   "provenance": [
     {
