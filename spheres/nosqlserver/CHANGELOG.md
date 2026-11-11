@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.6 - 2026-11-11
+- Reconcile the packed sphere's 0.4 version with documentation already labeled 0.5.
+- Add draft columnar v0.93-dev1 article, ROW/COLUMN/AUTO and sparse segment-read evidence.
+- Record isolated r13196 qualification and incomplete SQLPort, WAL, crash, performance and full SQL gates. Do not merge or deploy as qualified.
+
+# Changelog
+
 ## 0.5 — 2026-10-29
 - Refreshed Intention Service × NoSQLServer integration to database-search dev30.
 - Capability evidence now prefers the database public version-feature registry; SQL probes are fallback only.
