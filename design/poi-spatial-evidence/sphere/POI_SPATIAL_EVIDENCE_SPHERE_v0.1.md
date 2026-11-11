@@ -86,3 +86,11 @@ A POI-centred, case-scoped spatial and temporal investigation application using 
 - The projection deliberately performs no time conversion, identity inference or evidence mutation.
 - Remaining: connect to Wire3D's actual semantic scene contract, verify ooRexx interpreter compatibility, add explicit method lineage inspector, media permission checks and tests.
 - **Qualification:** source committed; no runtime PASS asserted.
+
+
+## 2026-11-11 — regression and Wire3D contract inspection
+
+- Committed `tests/test_poi_scene.rex` (commit `6d37bb5fee3726ceedc20100fe71fb331ccc378e`), covering observation selection, hidden-library evidence retention and date-only semantics.
+- Inspected the GitHub `wire3d-live.js` contract: transport accepts `WIRE3D_SNAPSHOT` carrying `WIRE-3D/0.1` or `WIRE3D_DELTA` carrying `WIRE-3D-DELTA/0.1`; snapshots are scene resynchronisation boundaries, deltas must preserve scene ID, and inbound deliveries are acknowledged/rejected.
+- Inspected `Wire3DRenderer.setScene`: requires `rendererContract.mathAuthority = OOREXX_MATHS_V0.8`, authoritative 16-element `camera.viewMatrix`, and 16-element model matrices for nodes. **The current POI `sceneState` is not a valid Wire3D snapshot**; an ooRexx Maths-authored adapter must supply the matrices. Do not fabricate identity matrices and call them authoritative.
+- Local environment has Node.js but no `rexx` executable. Regression file is committed, **not run**. Do not mark PASS.
