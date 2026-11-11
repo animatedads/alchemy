@@ -1,0 +1,27 @@
+{
+  "kind": "article",
+  "id": "nosqlserver.columnar-v093",
+  "version": "0.1",
+  "sphere": "nosqlserver",
+  "authority": "project-artifact",
+  "section": "architecture",
+  "title": "NoSQLServer columnar virtual table candidate v0.93",
+  "summary": "Draft PR #141 adds an opt-in columnar shadow over existing storage backends; dev1 introduces sparse segment reads and ROW/COLUMN/AUTO selection while keeping row authority for DML. This is a development candidate, not a release.",
+  "invariants": [
+    "Logical SQL relation, schema, and typed row semantics stay independent of physical storage layout.",
+    "Memory-port ooRexx r13196 isolated test passes: 9 segment reads versus 16 dev0 in a one-row/128-row narrow query; this is not a latency benchmark.",
+    "ROW mode requires a row source; COLUMN requires a published shadow; AUTO favors indexed PK row lookups and wide row projections.",
+    "Memory generation CAS and failed write retention are tested; real SQLPort durability, WAL, multi-writer publication and orphan cleanup are unqualified.",
+    "No prod migration, full SQL regression, crash recovery, timed benchmark or deployment is claimed."
+  ],
+  "provenance": [
+    {
+      "artifact": "https://github.com/animatedads/alchemy/pull/141",
+      "claim": "Source-only draft and tests."
+    },
+    {
+      "artifact": "packages/nosqlserver_v0.92-dev1/VALIDATION_COLUMNAR_v0.93-dev1.txt",
+      "claim": "Isolated PASS with explicit unrun gates."
+    }
+  ]
+}
