@@ -2,8 +2,8 @@
   "schema": "oorexx.package/0.1",
   "name": "oorexx-imap",
   "lineage": "MAIN",
-  "moduleLevel": 13,
-  "displayVersion": "0.1-dev13",
+  "moduleLevel": 14,
+  "displayVersion": "0.1-dev14",
   "files": [
     {
       "path": "API.md",
@@ -41,8 +41,13 @@
       "role": "documentation"
     },
     {
+      "path": "QUALIFICATION_DEV14.md",
+      "sha256": "ebc92b9ba96e860aeb08da64b00251210d4c488fe4c262492e21cde379504927",
+      "role": "documentation"
+    },
+    {
       "path": "README.md",
-      "sha256": "1ac76fd2671c1f893251d4c809cde888874cdc7e2a33b42aeaaa988a83bb3708",
+      "sha256": "0956dbdbf8014fa68ccc21edc520481cbd2fc7c0d8e1dd97490bce68787a6d81",
       "role": "documentation"
     },
     {
@@ -77,7 +82,7 @@
     },
     {
       "path": "VERSION",
-      "sha256": "a2084a71baa5138b192f6991493833607d59273723923fb94f30949c8a9641f7",
+      "sha256": "37d3ea6ebb2ec9bc4d808bae84a9cf3b8a1c157b59196a2acfa3632fa598fd30",
       "role": "data"
     },
     {
@@ -167,7 +172,7 @@
     },
     {
       "path": "src/ImapServer.cls",
-      "sha256": "b2d0309f51f050b7a93a6ff23f7895f306f62a928a58b2cc59d368f543930a51",
+      "sha256": "fec7fa337ad3b302c31a4413d7b03554dec09d7b50ad465d1c9de205aa56493f",
       "role": "data"
     },
     {
@@ -207,7 +212,7 @@
     },
     {
       "path": "tests/run.sh",
-      "sha256": "a045a83a28b7a6c0aaef419bbc63c566fedfbbce597e191362b56e5a3f13e1fa",
+      "sha256": "51f3a78780052f6afd2e00f1653fca2781b8fc8cba6b6e7ab2b5fee424755ad9",
       "role": "data"
     },
     {
@@ -318,6 +323,11 @@
     {
       "path": "tests/test_review_contracts.rex",
       "sha256": "18890e9d02a44bb7815e715a14e0c0ae71868c6788e2afe9823844f131291e58",
+      "role": "data"
+    },
+    {
+      "path": "tests/test_revocation_feed.rex",
+      "sha256": "d4c20d211447a7270723065e16216f9fd8930f9db378ef12d9baa95a2c098e27",
       "role": "data"
     },
     {
@@ -655,6 +665,16 @@
       "argv": [
         "rexx",
         "test_server_messages.rex"
+      ],
+      "cwd": "tests",
+      "timeoutMs": 30000,
+      "required": true
+    },
+    {
+      "id": "revocation-feed",
+      "argv": [
+        "rexx",
+        "test_revocation_feed.rex"
       ],
       "cwd": "tests",
       "timeoutMs": 30000,

@@ -1,4 +1,4 @@
-/* ooRexx IMAP server core v0.1-dev13
+/* ooRexx IMAP server core v0.1-dev14
  *
  * Rexx-space endpoint architecture.  Authentication, mailbox authority,
  * mailbox state/storage, and transport are independent injected contracts.
@@ -9,7 +9,7 @@
 
 ::class ImapServerBuild public
 ::constant API "imap.server/0.1"
-::constant RELEASE "0.1-dev13"
+::constant RELEASE "0.1-dev14"
 
 ::class ImapServerResult public
 ::attribute ok get
@@ -1090,6 +1090,11 @@
   if state <> "SELECTED" then return .ImapServerResult~success(.array~new)
   if selectedState == .nil then return .ImapServerResult~success(.array~new)
   if \self~changeFeedAvailable then return .ImapServerResult~success(.array~new)
+  /* Revalidate mailbox authority on each unsolicited update read. A session
+   * selected before LDAP revocation must not retain read access via NOOP or
+   * IDLE merely because its IMAP state is still SELECTED. */
+  decision = self~authorize("IMAP_SELECT", selectedState~mailbox)
+  if \decision~ok then return .ImapServerResult~failure("IMAP_AUTHORIZATION_REVOKED")
   r = mailboxProvider~changesSince(selectedState~mailbox, selectedState~changeCursor, 256)
   if r == .nil then return .ImapServerResult~failure("CHANGE_FEED_INVALID")
   if \r~hasMethod("OK") then return .ImapServerResult~failure("CHANGE_FEED_INVALID")
@@ -1650,6 +1655,7 @@
         changes = session~pollSelectedChanges
         if \changes~ok then do
           bye = "* BYE [ALERT] selected mailbox change history unavailable" || '0d0a'x
+          if changes~code = "IMAP_AUTHORIZATION_REVOKED" then bye = "* BYE [ALERT] selected mailbox access revoked" || '0d0a'x
           ignoreWrite = transport~writeAll(bye)
           if ignoreWrite then return self~failObservation("IMAP_SERVER_RESPONSE_WRITE_FAILED", "idle-change-feed")
           self~observerCall("BYTESOUT", bye~length)
