@@ -23,6 +23,7 @@ grep -q '"sphere": "native-database-backends"' "$TMP/load.json"
 grep -q '"class": "OPENED"' "$TMP/context.json"
 grep -q 'native-db.start-here' "$TMP/context.json"
 grep -q 'native-db.geopackage' "$TMP/context.json"
+grep -q 'native-db.rexxsql-sqlite' "$TMP/context.json"
 
 "$GOPHER" --profile native-database-backends lookup topic=current-baseline --sphere native-database-backends > "$TMP/baseline.json"
 grep -q 'oorexx_native_database_backends' "$TMP/baseline.json"
@@ -31,4 +32,4 @@ grep -q '"version": "0.2"' "$TMP/baseline.json"
 "$GOPHER" --profile native-database-backends lookup term=pinning --sphere native-database-backends > "$TMP/pinning.json"
 grep -q 'Binding an acquired session/transaction' "$TMP/pinning.json"
 
-echo 'PASS NATIVE DATABASE BACKENDS GOPHER SPHERE v0.1'
+echo 'PASS NATIVE DATABASE BACKENDS GOPHER SPHERE v0.2'
