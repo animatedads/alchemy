@@ -10,7 +10,7 @@ Artifact: `notnotes_wire_web_v0.3_20261111.zip`
 SHA-256: `0187ea35a47f8055bdf4ff046aeb5afce28b29ec620dec9fe0235a1794af66ed`
 Release type: **local development qualification**, not accepted production product or live deployment.
 
-The artifact is held in the originating ChatGPT delivery, not (yet) an accepted GitHub source closure. Its executable entry is `notnotes_wire_web_v0.3/notnotes_wire_demo/run-demo.sh`. It includes a pinned ooRexx 5.3.0 r13196 installer and the dependency sources needed for isolated local qualification.
+The complete runnable artifact is held in the originating ChatGPT delivery. The 18-file consumer-only source tree and exact dependency provenance are published on GitHub draft PR #144 (branch `notnotes-wire-web-v0.3-20261111`, head `462edcf458026f3e2e9ecee9644e830ccc1709ca`). This is **not yet merged or an accepted product source closure**. Its executable entry is `notnotes_wire_web_v0.3/notnotes_wire_demo/run-demo.sh`. It includes a pinned ooRexx 5.3.0 r13196 installer and the dependency sources needed for isolated local qualification.
 
 ## Actual native qualification
 
@@ -42,4 +42,4 @@ No implementation or qualification of LDAP/mTLS multiuser admission, production 
 - `wire-ui-runtime` v0.4: readiness / runtime conformance. Production HTTPS/WSS remains NOT_QUALIFIED.
 - `wire-ui` v0.1: renderer-neutral authoritative presentation semantics.
 
-**Status:** local executable v0.3 PASS; GitHub source closure still pending; production adoption NOT_QUALIFIED.
+**Status:** local executable v0.3 PASS; GitHub source published as draft PR #144 and NOT MERGED; dev18 compatibility and production adoption NOT_QUALIFIED.
