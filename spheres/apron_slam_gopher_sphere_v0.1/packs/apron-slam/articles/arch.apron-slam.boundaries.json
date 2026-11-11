@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "arch.apron-slam.boundaries",
+  "version": "0.1",
+  "sphere": "apron-slam",
+  "title": "Apron SLAM authority, 3D road model and privacy",
+  "summary": "A measured or assumed road-plane and camera project a cuboid vehicle and blank plate plane. Source-time observations are fit against multiple hypotheses; scores are not registration probabilities.",
+  "authority": "project-architecture",
+  "invariants": [
+    "Use actual source-global integer PTS and an explicit shutter exposure separate from frame cadence.",
+    "Camera height, focal length, radial distortion, road width, lane position and vehicle dimensions are explicit hypotheses, not settled facts.",
+    "A visually estimated road edge cannot silently become an independently surveyed world-image calibration anchor.",
+    "Report geometric undersampling, model ambiguity and high residuals; abstain from plate character or registration claims when data are inadequate.",
+    "Do not retain or commit real footage, source frames, plate crops, number plates, plate text or derived identifying observations; synthetic only in Git.",
+    "Do not redistribute the user-supplied Attrill typeface without appropriate terms; third-party inference belongs behind the existing ooRexx Foreign Runtime or Macrospace boundary.",
+    "Re-use Alchemy Maths, Vision, Motion Control, Media Object Access and SLAM rather than duplicating their component authority."
+  ],
+  "procedure": [
+    "Admit bounded anonymous vehicle-box samples on a monotonic source-PTS track and discard on close.",
+    "Generate a finite family of physically constrained ApronRoadScene camera/road/vehicle hypotheses.",
+    "Score box reprojection and optional estimated or surveyed road anchors independently, then rank candidates without interpreting residuals as likelihoods.",
+    "Apply explicit projected pixel sampling and shutter-motion gates to plate visibility.",
+    "Request new independent road/camera anchors if candidates are ambiguous or unanchored; retain no identifiable source data."
+  ],
+  "provenance": [{"artifact": "packages/oorexx_apron_slam_v0.1", "claim": "v0.1-dev4 synthetic ooRexx geometry, ephemeral track, candidate residuals and pixel sampling gates; real ANPR unqualified"}]
+}
