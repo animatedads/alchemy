@@ -6,7 +6,13 @@ do id over ids
   call assert registry~supports(id), "registry supports" id
   p=registry~profile(id)
   call assert p<>.nil, "profile exists" id
-  call assert p~runtime="PYTHON3", "runtime is python3" id
+  call assert p~runtime="OOREXX_FOREIGN_PYTHON", "resident Foreign Runtime is execution authority" id
+  abilities=p~requiredAbilities
+  foreignAllowed=.false
+  do ability over abilities
+    if ability="OOREXX.FOREIGN.PYTHON" then foreignAllowed=.true
+  end
+  call assert foreignAllowed, "Foreign Python ability required" id
   call assert p~recoveryClass="RECONSTRUCTABLE", "reconstructable" id
 end
 say "PASS reference video provider registry"

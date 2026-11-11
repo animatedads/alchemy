@@ -22,9 +22,11 @@
 ::method add
   expose profiles
   use strict arg implementationId, methodologyId
-  abilities=.Array~of("MEDIA.VIDEO.DECODE","MEDIA.PYTHON.OPENCV")
-  tags=.Array~of("REFERENCE_PROVIDER","DERIVED_CANDIDATE_ONLY")
-  profile=.MediaImplementationExecutionProfile~new(implementationId,methodologyId,"PYTHON3",abilities,tags,"",256,64,1,128,32,1,0,0,.true,"RECONSTRUCTABLE")
+  /* OpenCV is the Python implementation dependency, not execution authority.
+   * The application launches it IN PROCESS through Foreign Runtime. */
+  abilities=.Array~of("MEDIA.VIDEO.DECODE","MEDIA.PYTHON.OPENCV","OOREXX.FOREIGN.PYTHON")
+  tags=.Array~of("REFERENCE_PROVIDER","DERIVED_CANDIDATE_ONLY","NO_SUBPROCESS")
+  profile=.MediaImplementationExecutionProfile~new(implementationId,methodologyId,"OOREXX_FOREIGN_PYTHON",abilities,tags,"",256,64,1,128,32,1,0,0,.true,"RECONSTRUCTABLE")
   profiles[translate(methodologyId)]=profile
 
 ::method profiles
@@ -45,24 +47,15 @@
   use strict arg methodologyIdArg
   return profiles~hasIndex(translate(strip(methodologyIdArg)))
 
+/* Disallow the legacy runner from constructing shell commands.  Every ooRexx
+ * execution must use MediaForeignVideoInvoker and a registered runtime. */
 ::method command
-  expose providerRoot profiles
-  use strict arg methodologyIdArg, jobPath, resultPath
-  methodologyId=translate(strip(methodologyIdArg))
-  if \profiles~hasIndex(methodologyId) then raise syntax 93.900 array("Unsupported reference methodology",methodologyId)
-  script=providerRoot
-  if script<>"" then do
-    if right(script,1)<>"/" then script=script||"/"
-  end
-  script=script||"reference_video_reconstruction.py"
-  return "python3 "||self~shellQuote(script)||" --job "||self~shellQuote(jobPath)||" --result "||self~shellQuote(resultPath)
+  use strict arg methodologyId, jobPath, resultPath
+  raise syntax 93.900 array("SUBPROCESS_PROVIDER_FORBIDDEN","Use MediaForeignVideoInvoker")
 
-::method shellQuote
-  use strict arg value
-  /* Paths used by the packaged qualification fixture contain no apostrophes.
-   * Fail closed rather than pretending this is a general shell encoder. */
-  if pos("'",value)>0 then raise syntax 93.900 array("Provider path contains unsupported apostrophe",value)
-  return "'"||value||"'"
+::method providerRoot
+  expose providerRoot
+  return providerRoot
 
 ::class MediaReferenceProviderResultAdapter public
 ::method candidate

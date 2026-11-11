@@ -7,7 +7,7 @@ Unsupported pixels remain transparent/zero and are never promoted to captured
 source evidence.
 """
 from __future__ import annotations
-import argparse, hashlib, json, math, os, pathlib, sys
+import argparse, hashlib, json, math, os, pathlib, re, sys
 import cv2
 import numpy as np
 
@@ -242,17 +242,33 @@ def implementation_foundations(methodology_id):
     }
     return common+extra.get(methodology_id,[])
 
+def safe_candidate_stem(job):
+    """Job-controlled names must never escape a private output directory."""
+    value=job.get("candidate_id")
+    if value is None or value == "":
+        value=str(job["methodology_id"]).lower().replace(".", "_")
+    if not isinstance(value, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_.-]{0,95}", value):
+        raise RuntimeError("UNSAFE_CANDIDATE_ID")
+    if ".." in value:
+        raise RuntimeError("UNSAFE_CANDIDATE_ID")
+    return value
+
+
 def write_outputs(job,frames,pts,track,out,support,unc,impl):
     outdir=job["output_dir"]; ensure_dir(outdir)
-    stem=job.get("candidate_id") or job["methodology_id"].lower().replace(".","_")
+    stem=safe_candidate_stem(job)
     image_path=os.path.join(outdir,stem+".candidate.png")
     support_path=os.path.join(outdir,stem+".support.png")
     uncertainty_path=os.path.join(outdir,stem+".uncertainty.png")
     alpha=np.where(support>0,255,0).astype(np.uint8)
     rgba=np.dstack([out,alpha])
-    cv2.imwrite(image_path,rgba)
+    if not cv2.imwrite(image_path,rgba):
+        raise RuntimeError("CANDIDATE_WRITE_FAILED")
     sn=np.uint8(np.clip(support.astype(np.float32)/max(1,float(support.max()))*255,0,255))
-    cv2.imwrite(support_path,sn); cv2.imwrite(uncertainty_path,unc)
+    if not cv2.imwrite(support_path,sn):
+        raise RuntimeError("SUPPORT_WRITE_FAILED")
+    if not cv2.imwrite(uncertainty_path,unc):
+        raise RuntimeError("UNCERTAINTY_WRITE_FAILED")
     result={
       "schema":SCHEMA_RESULT,"provider_id":PROVIDER_ID,"implementation_id":impl,
       "methodology_id":job["methodology_id"],"status":"CANDIDATE","candidate_kind":"DERIVED_RECONSTRUCTION",
@@ -298,15 +314,84 @@ def execute(job):
     elif mid=="VIDEO.RECON.LATENT_MULTI_FRAME": out,support,unc=method_latent(frames,track,cw,ch)
     return write_outputs(job,frames,pts,track,out,support,unc,METHODS[mid])
 
+def _require_private_material_paths(job_path, job, result_path):
+    """Fail closed before decoding if any captured or derived material leaves private storage."""
+    private_root = os.environ.get("ALCHEMY_PRIVATE_MEDIA_ROOT", "").strip()
+    if not private_root or not os.path.isabs(private_root):
+        raise RuntimeError("PRIVATE_MEDIA_ROOT_REQUIRED")
+    root = os.path.realpath(private_root)
+    if root == os.path.abspath(os.sep) or not os.path.isdir(root):
+        raise RuntimeError("PRIVATE_MEDIA_ROOT_UNSAFE")
+
+    if job.get("candidate_id") is not None:
+        safe_candidate_stem(job)
+    paths = [job_path, result_path, job.get("output_dir", "")]
+    source = job.get("source", {})
+    if source.get("kind") == "VIDEO_FILE":
+        paths.append(source.get("path", ""))
+    for p in paths:
+        if not p or not os.path.isabs(p):
+            raise RuntimeError("PRIVATE_MATERIAL_PATH_REQUIRED")
+        actual = os.path.realpath(p)
+        if os.path.commonpath([root, actual]) != root:
+            raise RuntimeError("PRIVATE_MATERIAL_OUTSIDE_ROOT")
+        # No source-derived material is ever admitted inside a Git checkout.
+        cursor = actual if os.path.isdir(actual) else os.path.dirname(actual)
+        while True:
+            if os.path.exists(os.path.join(cursor, ".git")):
+                raise RuntimeError("GIT_WORKTREE_MEDIA_FORBIDDEN")
+            parent = os.path.dirname(cursor)
+            if parent == cursor:
+                break
+            cursor = parent
+
+
+def run_job_file(job_path: str, result_path: str, expected_methodology_id: str = "") -> int:
+    """Resident entrypoint: called through ooRexx Foreign Runtime, never a shell.
+
+    All provider material paths are explicitly supplied by the ooRexx caller.
+    The Media method ID is checked at both boundaries to prevent accidental
+    execution of a different reconstruction lineage.
+    """
+    # First admit the job/result paths WITHOUT reading the job JSON.
+    # A caller cannot cause an arbitrary JSON read outside private storage.
+    _require_private_material_paths(job_path, {
+        "output_dir": os.path.dirname(os.path.realpath(result_path)),
+        "source": {"kind": "SYNTHETIC_ONLY"},
+    }, result_path)
+    with open(job_path, "r", encoding="utf-8") as stream:
+        job = json.load(stream)
+    # A second check admits the source/output paths from the private job.
+    _require_private_material_paths(job_path, job, result_path)
+    try:
+        actual_method = str(job.get("methodology_id", "")).upper()
+        if expected_methodology_id and actual_method != expected_methodology_id.upper():
+            raise RuntimeError("METHODOLOGY_MISMATCH")
+        result = execute(job)
+    except Exception as error:
+        result = {
+            "schema": SCHEMA_RESULT, "provider_id": PROVIDER_ID,
+            "methodology_id": job.get("methodology_id", ""),
+            "status": "FAILED", "reason_code": type(error).__name__,
+            "detail": str(error), "authority": {
+                "effect": "RECONSTRUCT_CANDIDATE",
+                "observation_promotion": False, "status": "FAILED"
+            },
+        }
+    ensure_dir(os.path.dirname(os.path.abspath(result_path)))
+    with open(result_path, "w", encoding="utf-8") as stream:
+        json.dump(result, stream, indent=2, sort_keys=True)
+    return 0 if result.get("status") in ("CANDIDATE", "NOT_APPLICABLE") else 2
+
+
 def main():
-    ap=argparse.ArgumentParser(); ap.add_argument("--job",required=True); ap.add_argument("--result",required=True)
-    args=ap.parse_args()
-    job=json.load(open(args.job,"r",encoding="utf-8"))
-    try: result=execute(job)
-    except Exception as e:
-        result={"schema":SCHEMA_RESULT,"provider_id":PROVIDER_ID,"methodology_id":job.get("methodology_id",""),"status":"FAILED","reason_code":type(e).__name__,"detail":str(e)}
-    ensure_dir(os.path.dirname(os.path.abspath(args.result)))
-    with open(args.result,"w",encoding="utf-8") as f: json.dump(result,f,indent=2,sort_keys=True)
-    print(result.get("status"),result.get("methodology_id"),result.get("reason_code",""))
-    return 0 if result.get("status") in ("CANDIDATE","NOT_APPLICABLE") else 2
-if __name__=="__main__": raise SystemExit(main())
+    """Standalone reference diagnostic only; ooRexx uses Foreign Runtime."""
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--job", required=True)
+    ap.add_argument("--result", required=True)
+    args = ap.parse_args()
+    return run_job_file(args.job, args.result)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
