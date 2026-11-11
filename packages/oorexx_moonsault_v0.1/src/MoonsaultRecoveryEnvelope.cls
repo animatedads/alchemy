@@ -74,15 +74,16 @@
   output['INDEPENDENT_GROUND_TRUTH']=.false
   output['SURVEY_5M_QUALIFIED']=.false
   output['ONE_NM_TARGET_METRES']=self~ONE_NAUTICAL_MILE
-  output['MODEL_WITHIN_ONE_NM']=.false
+  output['SAMPLED_WITHIN_ONE_NM']=.false
+  output['ONE_NM_CERTIFIED']=.false
   select
     when accepted=0 then output['STATUS']='NO_FEASIBLE_POSITION'
     when edge>0 then output['STATUS']='OPEN_AT_SEARCH_BOUNDARY'
     when far+stepMetres*o~sqrt(2)<=self~ONE_NAUTICAL_MILE then do
-      output['STATUS']='BOUNDED_WITHIN_ONE_NM_MODEL_ONLY'
-      output['MODEL_WITHIN_ONE_NM']=.true
+      output['STATUS']='GRID_SAMPLES_WITHIN_ONE_NM_MODEL_ONLY'
+      output['SAMPLED_WITHIN_ONE_NM']=.true
     end
-    otherwise output['STATUS']='MODEL_ENVELOPE_EXCEEDS_ONE_NM'
+    otherwise output['STATUS']='GRID_SAMPLES_EXCEED_ONE_NM'
   end
   return output
 /* Deterministic robustness exercise, NOT a probability bound.
