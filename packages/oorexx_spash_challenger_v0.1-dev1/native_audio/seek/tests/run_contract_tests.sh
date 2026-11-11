@@ -3,6 +3,7 @@
 set -eu
 cd "$(dirname "$0")/.."
 export REXX_PATH="$PWD/tests/stubs:$PWD${REXX_PATH:+:$REXX_PATH}"
+sh tests/run_source_fence.sh
 rexx tests/test_contract.rex
 for c in ZERO_DURATION TOO_LONG BAD_CHANNEL BAD_RATE BAD_BUDGET SOURCE_COLLISION BAD_CATALOGUE; do
   log=$(mktemp)
