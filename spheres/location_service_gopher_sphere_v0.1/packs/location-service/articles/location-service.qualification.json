@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "sphere": "location-service",
+  "id": "location-service.qualification",
+  "title": "Location native qualification and blockers",
+  "section": "qualification",
+  "version": "0.1",
+  "summary": "Prototype: dev1 WorldModel 17/17 synthetic native checks from prior handoff; dev2 local WorldResolver 13/13 synthetic checks and independent compact spatial slice 6/6 on ooRexx r13196. Only compact spatial slice submitted to Git autobuilder. No PASS receipt yet, nor integration with genuine source datasets.",
+  "invariants": [
+    "Status is LOCAL_PASS or FIXTURE_PASS, never FIELD_PASS without a deployed acceptance receipt.",
+    "Autobuilder stopped historically; a ready marker is only submission, not qualification.",
+    "Do not claim 40-country provider coverage, physically overlapping sovereign territory, real-world height observations, spatial index or production persistence.",
+    "Regression gates: grid cell precision; unknown/rough time; historical jurisdiction; three-country journey order; Cyprus synthetic simultaneous overlays; ambiguous names; provenance; unsupported CRS; no fabricated exact border entry time.",
+    "Plan next: compile and include full dev1+dev2 object graph in versioned autobuild package; adapter qualification against IntentionService, SLAM and selected database; independently validate boundaries and historical datasets."
+  ],
+  "provenance": [
+    {
+      "artifact": "autobuild/inbox/20261111T174500Z-CHATGPT-oorexx-location-service-v0.1-dev2-7d31a2/ready.json",
+      "claim": "Git Autobuilder submitted candidate"
+    },
+    {
+      "artifact": "Rasen Falcon REQ-00003315",
+      "claim": "Earlier local WorldModel evidence"
+    }
+  ]
+}
