@@ -3,9 +3,23 @@ set -eu
 : "${DB_CORE_ROOT:?set DB_CORE_ROOT to oorexx_db_skeleton_v0_46 root}"
 : "${FOREIGN_RUNTIME_ROOT:?set FOREIGN_RUNTIME_ROOT to oorexx_foreign_runtime_v0.22.2 root}"
 ROOT=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+WORK=""
+cleanup() {
+  if [ -n "$WORK" ] && [ -d "$WORK" ]; then rm -rf "$WORK"; fi
+}
+trap cleanup EXIT HUP INT TERM
+
+FOREIGN_RUNTIME_BUILD_ROOT="$FOREIGN_RUNTIME_ROOT"
+if [ ! -f "$FOREIGN_RUNTIME_BUILD_ROOT/build/libforeign_runtime.so" ]; then
+  WORK=$(mktemp -d)
+  cp -r "$FOREIGN_RUNTIME_ROOT" "$WORK/foreign-runtime"
+  make -s -C "$WORK/foreign-runtime" build/libforeign_runtime.so >/dev/null
+  FOREIGN_RUNTIME_BUILD_ROOT="$WORK/foreign-runtime"
+fi
+
 export NATIVE_DB_ROOT="$ROOT"
-export REXX_PATH="$ROOT/src:$ROOT/postgres:$ROOT/mysql:$DB_CORE_ROOT:$FOREIGN_RUNTIME_ROOT/rexx${REXX_PATH:+:$REXX_PATH}"
-export LD_LIBRARY_PATH="$FOREIGN_RUNTIME_ROOT/build${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+export REXX_PATH="$ROOT/src:$ROOT/postgres:$ROOT/mysql:$DB_CORE_ROOT:$FOREIGN_RUNTIME_BUILD_ROOT/rexx${REXX_PATH:+:$REXX_PATH}"
+export LD_LIBRARY_PATH="$FOREIGN_RUNTIME_BUILD_ROOT/build${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 rexx "$ROOT/tests/test_database_backend_selector.rex"
 rexx "$ROOT/tests/test_capability_model.rex"
 rexx "$ROOT/tests/test_postgres_native_offline.rex"
