@@ -1,6 +1,8 @@
 # Changelog
 
 ## 0.2
+
+- Receipt-backed qualification: Native Database Backends v0.3.2 PASS with exact missing-libpq environment skips; Rexx/SQL SQLite v0.1.1 PASS including SSC live suites.
 - Add structured Rexx/SQL SQLite provider-composition article and explicit capability/migration gates.
 - Record canonical Native Database Backends v0.3.2 Git/Autobuild source line and pending qualification boundary.
 - Preserve the separate Library v0.3.4 head as unreconciled parallel provenance; no supersession claim.
