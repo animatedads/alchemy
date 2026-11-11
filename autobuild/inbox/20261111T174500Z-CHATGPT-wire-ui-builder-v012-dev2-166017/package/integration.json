@@ -1,0 +1,23 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "wire_ui_builder",
+    "version": "0.12-dev2-readiness",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "tests": [
+    {"name":"prepare","argv":["bash","prepare_package.sh"],"timeout_seconds":60},
+    {"name":"manifest","argv":["bash","-lc","cd prepared/wire_ui_builder_v0.12-dev2-readiness && sha256sum -c MANIFEST.sha256"],"timeout_seconds":60},
+    {"name":"composition-controller","argv":["bash","-lc","cd prepared/wire_ui_builder_v0.12-dev2-readiness && node tests/test_composition_controller.mjs"],"timeout_seconds":60},
+    {"name":"session-readiness","argv":["bash","-lc","cd prepared/wire_ui_builder_v0.12-dev2-readiness && node tests/test_session_readiness.mjs"],"timeout_seconds":60},
+    {"name":"builder-web-shell","argv":["bash","-lc","cd prepared/wire_ui_builder_v0.12-dev2-readiness && bash tests/test_builder_web_shell.sh"],"timeout_seconds":60},
+    {"name":"web-js-syntax","argv":["bash","-lc","cd prepared/wire_ui_builder_v0.12-dev2-readiness && node --check web/composition-controller.js && node --check web/builder-wire-ui.js && node --check web/session-readiness.js"],"timeout_seconds":60}
+  ],
+  "publish": {
+    "tree": {
+      "source": "prepared/wire_ui_builder_v0.12-dev2-readiness",
+      "path": "packages/wire_ui_builder_v0.12-dev2-readiness"
+    }
+  }
+}
