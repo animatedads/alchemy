@@ -1,7 +1,7 @@
 {
   "kind": "article",
   "id": "mcp-project-service.catalogue-recovery",
-  "version": "0.1",
+  "version": "0.2",
   "sphere": "mcp-project-service",
   "section": "qualification",
   "title": "2026-11-11 live catalogue reconciliation: Gopher resolver versus MCP ownership",
@@ -28,6 +28,10 @@
     {
       "operation": "Git source catalog/components.json",
       "result": "MCP dev8 fixture: 82 runtime artifact entries and 53 sphere entries, 129 distinct IDs; not current live deployment"
+    },
+    {
+      "operation": "2026-11-11 second read: live component namespace compared with historical source",
+      "result": "Live 138 distinct logical project components. Historical MCP dev8 runtime source has 82 artifact entries representing 77 distinct artifact component IDs. Only three canonical IDs match: oorexx_native_database_backends, llm_gopher, nosqlserver. The 135 new logical IDs and 74 historical-only artifact IDs are different identity models; concatenation is not a safe migration."
     }
   ],
   "invariants": [
@@ -92,5 +96,6 @@
     "architecture": "Tom Dyer",
     "analysis_and_engineering": "ChatGPT GPT-6",
     "date": "2026-11-11"
-  }
+  },
+  "migration_rule": "Reconcile current, explicitly accepted logical project component IDs and aliases before projecting Gopher sphere components. Do not treat historical package artifact component IDs as a substitute for current project lanes. Do not bypass the no-loss gate simply because the input arrays have different schema versions. The runtime authority owner must attest the canonical live source."
 }
