@@ -1,0 +1,27 @@
+=== test_temporal_mask.rex ===
+PASS: native crop, AREA resize, signed subtractFrame, subtractLayer, RGB delta magnitude
+PASS: four-frame absolute 50 percent mask, +20 percent illumination normalisation
+PASS: building suppression and retrospective detection of original-frame star
+PASS: explicit translational registration; native model generation=2
+=== test_registration.rex ===
+PASS: native landmark registration dx=-1 dy=0 scorePPM=0 samples=143
+=== test_real_jpeg_geometry.rex ===
+PASS: 1536x709 JPEG crop, AREA resize, signed RGBA self-subtraction including opaque alpha
+=== test_sydney_jpeg_registration.rex ===
+SYDNEY JPEG skyline register 0 0 scorePPM 52020 samples 13954
+PASS landmark-only registration; no sky points used
+=== test_sydney_five_jpeg_temporal.rex ===
+READ 1000069592.jpg webcamSydney=03:45:21 processing=315x150
+READ 1000069593.jpg webcamSydney=04:05:09 processing=315x150
+READ 1000069594.jpg webcamSydney=04:05:41 processing=315x150
+READ 1000069595.jpg webcamSydney=04:41:17 processing=315x150
+READ 1000069596.jpg webcamSydney=04:46:43 processing=315x150
+MODEL frames=5 generation=1 threshold=50%
+SCORE 03:45:21 gainPPM=1000000 upperSkyBright=556 lowerSceneBright=22
+SCORE 04:05:09 gainPPM=1000000 upperSkyBright=66 lowerSceneBright=0
+SCORE 04:05:41 gainPPM=1000000 upperSkyBright=65 lowerSceneBright=2
+SCORE 04:41:17 gainPPM=1000000 upperSkyBright=2 lowerSceneBright=14
+SCORE 04:46:43 gainPPM=1000000 upperSkyBright=2 lowerSceneBright=22
+PASS: five real native JPEGs scored against rebuilt temporal mask, with first frame rescored
+=== test_png_new_raster.rex ===
+PASS: real PNG RGBA crop/AREA resize/signed RGBA subtraction (alpha preserved)
