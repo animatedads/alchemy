@@ -3,8 +3,8 @@
   "id": "native-db.qualification",
   "version": "0.2",
   "sphere": "native-database-backends",
-  "title": "Qualification state: separate executed evidence from v0.3.2 Autobuild-pending source",
-  "summary": "Executed historical evidence remains scoped to the exact releases that produced it. Native Database Backends v0.3.2 is a canonical Git source increment over v0.3.1: it adds provider-package selection and targets current Git Foreign Runtime v0.22.6 because the v0.22.2 source directory referenced by v0.3.1 integration is absent. That change is not itself qualification. v0.3.2 is SOURCE_READY_FOR_AUTOBUILD until a receipt identifies the exact submitted tree and test result.",
+  "title": "Qualification state: exact receipt-backed evidence and explicit external-library skips",
+  "summary": "Native Database Backends v0.3.2 has an Autobuild PASS receipt for the canonical selector/capability/bulk/fallback/wire-boundary suite. The Autobuild host lacks libpq.so.5/libpq.so, so the two live-libpq-dependent tests are explicitly ENVIRONMENT_SKIPPED and no fresh live libpq or PostgreSQL server qualification is claimed. Rexx/SQL SQLite v0.1.1 separately has an Autobuild PASS receipt covering driver/backend/provider gates and SSC live suites. Historical evidence, current receipts, and the unreconciled Library v0.3.4 head remain distinct.",
   "authority": "qualification-evidence",
   "invariants": [
     "Never turn retained inherited tests into newly executed evidence when dependency roots were unavailable.",
