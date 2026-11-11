@@ -252,13 +252,27 @@
   scratch = work || '/kitrun_' || pkgName
   shimDir = work || '/kitrun_shim'
   address system 'rm -rf' q(scratch) '&& mkdir -p' q(work) q(shimDir) '&& cp -a' q(pkgDir) q(scratch)
-  /* the stand-in: records cwd, REXX_PATH and arguments; starts nothing */
+  /* the stand-in: records cwd, REXX_PATH, arguments, and where the program was at the moment it was
+     started (the cwd, then REXX_PATH). Some tests write a program into a temporary directory, run it
+     there, and remove the directory on exit; kitrun looks after the test has finished, so without
+     this record such a program reads as "not found" (oorexx_rexxsql_backend_v0.1's SSC live suites,
+     11 Nov). Starts nothing. */
   shim = shimDir || '/rexx'
   call SysFileDelete shim
   s = .stream~new(shim); s~open('write replace')
   s~lineOut('#!/bin/sh')
   s~lineOut('# Body Slam kitrun stand-in for rexx: records each ooRexx program a test would start, runs none.')
-  s~lineOut('printf ''%s\t%s\t%s\t%s\n'' "$PWD" "$REXX_PATH" "$PATH" "$*" >> "$BODYSLAM_KIT_LOG"')
+  s~lineOut('p=""')
+  s~lineOut('for a in "$@"; do case "$a" in -e) p=""; break;; -*) ;; *) p="$a"; break;; esac; done')
+  s~lineOut('found=""')
+  s~lineOut('case "$p" in')
+  s~lineOut('  "") ;;')
+  s~lineOut('  /*) [ -f "$p" ] && found="$p" ;;')
+  s~lineOut('  *) if [ -f "$PWD/$p" ]; then found="$PWD/$p"; else')
+  s~lineOut('       IFS=:; for d in $REXX_PATH; do if [ -z "$found" ] && [ -f "$d/$p" ]; then found="$d/$p"; fi; done; unset IFS')
+  s~lineOut('     fi ;;')
+  s~lineOut('esac')
+  s~lineOut('printf ''%s\t%s\t%s\t%s\t%s\n'' "$PWD" "$REXX_PATH" "$PATH" "$found" "$*" >> "$BODYSLAM_KIT_LOG"')
   s~lineOut('exit 0')
   s~close
   address system 'chmod 755' q(shim)
@@ -322,6 +336,11 @@
       key = prog || '|' || script || '|' || c['REXX_PATH'] || '|' || c['CWD']
       if done~hasIndex(key) then iterate
       done~put(key)
+      if script == '' then if c['FOUND'] \== '' then do
+        out~append('   -- rexx' prog ': the program was at' c['FOUND'] 'when the test started it; the test removed that directory before kitrun could follow its requires (WARN)')
+        if worst == 'PASS' then worst = 'WARN'
+        iterate
+      end
       if script == '' then do
         out~append('   -- rexx' prog ': ooRexx would not find the program (cwd' c['CWD']~changeStr(scratch, pkgDir) || ', then REXX_PATH, then PATH): Error 3.901 (FAIL)')
         worst = 'FAIL'
@@ -350,8 +369,8 @@
   if \SysFileExists(log) then return out
   s = .stream~new(log); s~open('read')
   do while s~lines > 0
-    parse value s~lineIn with cwd '09'x rp '09'x path '09'x args
-    out~append(.directory~of(('CWD', cwd), ('REXX_PATH', rp), ('PATH', path), ('ARGS', args)))
+    parse value s~lineIn with cwd '09'x rp '09'x path '09'x found '09'x args
+    out~append(.directory~of(('CWD', cwd), ('REXX_PATH', rp), ('PATH', path), ('FOUND', found), ('ARGS', args)))
   end
   s~close
   return out

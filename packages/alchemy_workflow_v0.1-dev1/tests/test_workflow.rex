@@ -87,6 +87,10 @@ expect = .array~of('Manifest MF-SCHEMA WARN integration.json:1', 'Manifest MF-NA
   'HouseRules HR-LITERAL-CALL FAIL src/Bad.cls:20', 'HouseRules HR-COMMENT FAIL src/Unclosed.cls:1', -
   'HouseRules HR-CREDITS WARN README.md', -
   'ModuleStamp MS-VERSION FAIL src/Bad.cls:3', 'ModuleStamp MS-MISSING FAIL src/Bad.cls:23')
+/* MS-DATE needs git to know when Bad.cls last changed: in a checkout it does, in a bare copy it does not */
+dated = cb~lastChanged('src/Bad.cls') \== ''
+if dated then expect~append('ModuleStamp MS-DATE WARN src/Bad.cls:4')
+say '   (git dates the fixture:' dated || ')'
 got = .array~new
 do r over rec~results
   do f over r~findings
@@ -161,7 +165,7 @@ do l over lines
   end
 end
 call check cmdLines = got~items, 'one command line per finding (' || cmdLines || ')'
-call check rpt~subject~pos('FAIL for bad_pkg_v0.4: 13 to fix, 5 warning(s)') > 0, 'subject:' rpt~subject
+call check rpt~subject~pos('FAIL for bad_pkg_v0.4: 13 to fix,' 5 + dated 'warning(s)') > 0, 'subject:' rpt~subject
 path = rpt~write(work || '/outbox')
 s = .stream~new(path)
 s~open('read')
