@@ -11,9 +11,10 @@
 ::attribute sampleMap get
 ::attribute readBytesLast get
 ::method init
- expose movie track sampleMap source config nalLength readBytesLast
+ expose movie track sampleMap source config nalLength readBytesLast sourceIdentity sourceSize
  use strict arg mp4Movie
  movie=mp4Movie;source=movie~source
+ sourceIdentity=source~sourceIdentity;sourceSize=source~sizeBytes
  track=.nil
  do i=1 to movie~trackCount
    candidate=movie~track(i)
@@ -27,35 +28,18 @@
  sampleMap=track~mapSamples
  if sampleMap~indexStatus<>'CANDIDATE_ONLY' then -
    raise syntax 88.900 array('sample table not fully mapped')
- /* Existing stbl atom owns the raw sample description. */
+ /* The single avc1 sample entry is parsed as structured child boxes;
+  * never search arbitrary stsd bytes for the letters avcC. */
  descriptions=track~sampleTable~children
  stsd=.nil
  do entry over descriptions
    if entry~kind='stsd' then stsd=entry
  end
  if stsd==.nil then raise syntax 88.900 array('avc1 sample entry absent')
- raw=stsd~exactBytes(0,stsd~length-stsd~headerBytes)
- posAvc=pos('avcC',raw)
- if posAvc<5 then raise syntax 88.900 array('avcC extradata missing')
- config=substr(raw,posAvc+4)
- nalLength=(c2d(substr(config,5,1))//4)+1
- if nalLength<>4 then raise syntax 88.900 array('AVC NAL-size width unsupported')
- spsNum=c2d(substr(config,6,1))//32
- if spsNum<1 | spsNum>8 then raise syntax 88.900 array('invalid SPS count')
- at=7;header=''
- do i=1 to spsNum
-   size=self~u16(config,at);at+=2
-   if size<2 | at+size-1>config~length then raise syntax 88.900 array('invalid SPS')
-   header=header||x2c('00000001')||substr(config,at,size);at+=size
- end
- ppsNum=c2d(substr(config,at,1));at+=1
- if ppsNum<1 | ppsNum>8 then raise syntax 88.900 array('invalid PPS count')
- do i=1 to ppsNum
-   size=self~u16(config,at);at+=2
-   if size<1 | at+size-1>config~length then raise syntax 88.900 array('invalid PPS')
-   header=header||x2c('00000001')||substr(config,at,size);at+=size
- end
- config=header;readBytesLast=0
+ header=.MediaMp4AvcConfig~new(stsd)
+ config=header~annexBPrefix
+ nalLength=header~nalLengthBytes
+ readBytesLast=0
 ::method u16
  use strict arg b,i
  if i<1 | i+1>b~length then raise syntax 88.900 array('truncated AVC16')
@@ -64,17 +48,27 @@
  use strict arg b,i
  if i<1 | i+3>b~length then raise syntax 88.900 array('truncated AVC32')
  return x2d(c2x(substr(b,i,4)))
+::method assertSource
+ expose source sourceIdentity sourceSize
+ if source~sourceIdentity<>sourceIdentity | source~sizeBytes<>sourceSize then -
+   raise syntax 88.900 array('MP4 video source identity or size changed')
+ return self
 ::method readExact
- expose source
+ expose source sourceSize
  use strict arg start,count
- if start<0 | count<0 | count>16777216 | start+count>source~sizeBytes then -
+ self~assertSource
+ if \datatype(start,'W') | \datatype(count,'W') | -
+    start<0 | count<0 | count>16777216 | start+count>sourceSize then -
    raise syntax 88.900 array('invalid bounded MP4 sample')
  out=''
  do while count>0
    n=min(65536,count)
-   out=out||source~readAt(start,n)
+   part=source~readAt(start,n)
+   if part~length<>n then raise syntax 88.900 array('short MP4 media source range',start,n)
+   out=out||part
    start+=n;count-=n
  end
+ self~assertSource
  return out
 ::method annexB
  use strict arg encoded
@@ -92,22 +86,35 @@
  if \datatype(requested90k,'W') | requested90k<0 | budgetBytes<4096 | -
     budgetBytes>16777216 | maxSamples<1 | maxSamples>1000 then -
     raise syntax 88.900 array('seek request outside budget')
+ self~assertSource
  scale=sampleMap~timeScale
- wanted=trunc(requested90k*scale/90000)
+ wanted=(requested90k*scale+89999)%90000
  plan=sampleMap~planTime(wanted)
- if plan==.nil | plan~anchor==.nil then return .nil
+ if plan==.nil then return .nil
+ if plan~anchor==.nil then return .nil
  codec=.MediaH264Decoder~new;found=.nil;readBytesLast=0
  first=plan~anchor~ordinal
  last=min(sampleMap~sampleCount,first+maxSamples-1)
+ exhausted=.false
  do i=first to last
    sample=sampleMap~sample(i)
+   if sample~descriptionIndex<>1 then -
+     raise syntax 88.900 array('AVC sample description switched without decoder reinitialization',i)
    readBytesLast+=sample~sizeBytes
-   if readBytesLast>budgetBytes then leave
+   if readBytesLast>budgetBytes then do
+     exhausted=.true
+     leave
+   end
    compressed=self~readExact(sample~byteOffset,sample~sizeBytes)
    nal=self~annexB(compressed)
    if i=first then nal=config||nal
-   pts=trunc(sample~presentationTicks*90000/scale)
-   if \sample~presentationVisible then pts=-1
+   pts=-1
+   if sample~presentationVisible then do
+     numerator=sample~presentationTicks*90000
+     if numerator//scale<>0 then -
+       raise syntax 88.900 array('MP4 PTS cannot be represented exactly at 90 kHz',i)
+     pts=numerator%scale
+   end
    decoded=codec~feed(nal,pts)
    do frame over decoded
      if frame~presentationTicks>=requested90k then do
@@ -125,6 +132,12 @@
    end
  end
  ignore=codec~close
+ if found==.nil then do
+   if exhausted then raise syntax 88.900 array('MP4 hot seek compressed-byte budget exhausted',readBytesLast,budgetBytes)
+   if last<sampleMap~sampleCount then -
+     raise syntax 88.900 array('MP4 hot seek sample budget exhausted',maxSamples)
+ end
  return found
 ::requires 'MediaH264Frames.cls'
 ::requires 'Mp4File.cls'
+::requires 'MediaMp4AvcConfig.cls'
