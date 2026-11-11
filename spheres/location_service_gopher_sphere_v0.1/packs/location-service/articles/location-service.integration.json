@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "sphere": "location-service",
+  "id": "location-service.integration",
+  "title": "Integration: SLAM 450, Intention, resources and storage",
+  "section": "integration",
+  "version": "0.1",
+  "summary": "SLAM 450 should use a persistent Building object for Blues Point Tower, with typed, verified architectural height and geometry, rather than owning a separate world fact. Do not treat the illustrative 72 m as verified. IntentionService v0.1-dev11 owns recognition/confirmation/dispatch. Location providers supply specific geography and should not replicate that framework.",
+  "invariants": [
+    "Register JURISDICTIONS_AT, JURISDICTIONS_ALONG, WHAT_IS_AT, HEIGHT, NEAREST, VISIBLE_FROM, LINE_OF_SIGHT and STREETS_ALONG through IntentionService's actual registration contract when integrated.",
+    "Use capability-identified providers, no hard-coded sources or ad hoc coordinate conversions.",
+    "Spatial data must use explicit CRS/datum/vertical datum and declared transform providers, fail closed when missing.",
+    "Layer high-resolution partial site coverage over coarse country coverage with bounded Storage Fabric reads; site DEM and mesh are lazy-loaded.",
+    "Use RexxOS two MI per job (rto2) when execution is promoted to operational service.",
+    "NoSQLServer v0.92-dev1 has native rowid seek but writable snapshot-per-statement cost; Rexx/SQL indexed benchmark is separate and may be faster. Backend must be evidence-selected and capability-injected.",
+    "Do not import F11, Power SLAM, Wire3D or existing SLAM classes into a duplicate source tree; adapt their published interfaces."
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_intention_service/README.md",
+      "claim": "v0.1-dev11 registration and confirmation boundary"
+    },
+    {
+      "artifact": "nosqlserver sphere nosqlserver.sqlite-rowid-v092",
+      "claim": "NoSQLServer and Rexx/SQL performance and limits"
+    },
+    {
+      "artifact": "Rasen Falcon REQ-00003307",
+      "claim": "Spatial-reference contract"
+    }
+  ]
+}
