@@ -1,0 +1,22 @@
+{
+  "kind": "article",
+  "id": "evc.browser",
+  "version": "0.1",
+  "sphere": "event-continuation",
+  "title": "In-browser ooRexx/WASM controlled dummy application",
+  "summary": "The browser demo uses upstream ooRexx WASM .js~fetch and .js~page~document, .js~handler DOM event links, a 3-chat dummy app, a lease token, and localStorage-projected dummy transcript. It does not access the real ChatGPT UI.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Use Josef Maria Blasco upstream matching WASM assets and cross-origin isolation headers.",
+    "No arbitrary DOM executor or selector from event payloads; only predefined target ID in toy app.",
+    "Native ooRexx process owns the watch independently of browser lifetime.",
+    "Multi-tab lease expiry and localStorage alone do not establish durable external side-effect idempotence."
+  ],
+  "provenance": [
+    {
+      "artifact": "alchemy_event_continuation_v0.1-dev2",
+      "member": "README.md",
+      "claim": "Development source candidate; qualification state explicitly bounded."
+    }
+  ]
+}
