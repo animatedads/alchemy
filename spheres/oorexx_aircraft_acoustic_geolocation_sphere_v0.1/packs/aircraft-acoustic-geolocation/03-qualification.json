@@ -1,0 +1,18 @@
+{
+  "kind":"article", "id":"aircraft-acoustic.qualification", "version":"0.1", "sphere":"aircraft-acoustic-geolocation",
+  "title":"Qualification, tests and known blockers",
+  "summary":"LOCAL_PASS of native ooRexx 5.3.0 r13196 synthetic model and admission checks does not imply a Paphos field localisation. The 2023 index was a separate read-only run. No original media plus ADS-B paired ridge matches have yet been observed by this prototype.",
+  "invariants":[
+    "Physics tests: 3D range, radial speed, retarded arrival and approach/recession frequency shift.",
+    "Geometric track tests: 7 synthetic trajectory predictions, positive/negative Doppler and monotone received times.",
+    "Negative tests reject duplicate sample time, non-causal radial velocity and nonpositive speed of sound.",
+    "Synthetic nearest-point CPA from sampled paths is not sub-sample CPA or resolved flight-source identity.",
+    "Versioned Git submission without Autobuilder PASS receipt is SOURCE_PRESENT/LOCAL_PASS, not autobuild or field acceptance."
+  ],
+  "procedure":[
+    "Run sh run_tests.sh from the source package on ooRexx r13196.",
+    "On a field dataset, align sample-exact original Ogg/MP4 PTS clocks before acoustic scoring.",
+    "Use held-out audio intervals and competing hypotheses; preserve null and rejected matches.",
+    "Only promote to FIELD_PASS with source-pinned observations, uncertainty and independent held-out validation."
+  ]
+}

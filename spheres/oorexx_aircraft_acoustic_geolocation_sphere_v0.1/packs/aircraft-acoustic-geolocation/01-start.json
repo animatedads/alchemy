@@ -1,0 +1,18 @@
+{
+  "kind":"article", "id":"aircraft-acoustic.start", "version":"0.1", "sphere":"aircraft-acoustic-geolocation",
+  "title":"Model ownership and validation workflow",
+  "summary":"A separated aircraft-acoustic predictor consumes source-bound receiver-relative vectors and produces predicted sound-arrival UTC and Doppler ratios. SPASH owns acoustic path hypotheses; Audio V9/Media Methodologies own captured STFT/ridges and PTS; Physics World owns advanced propagation and reflectors; Alchemy SQLite/RexxSQL owns indexes. Neither source equality nor a virtual-mic prediction creates independent evidence.",
+  "invariants":[
+    "Use original media samples and their immutable source/method-clock provenance; converted audio and virtual microphones are derived, not independent observations.",
+    "Keep the known true receiver location private and withheld from blind localisation evaluation; never publish home coordinates or original media in git.",
+    "Source clock timezone and capture PTS must be resolved explicitly; 2023-10-10 Cyprus local civil time was UTC+3, but filename conventions must be verified.",
+    "Retarded time is emission UTC plus slant distance/sound speed; project full 3D aircraft motion relative to stationary microphone for Doppler.",
+    "Unknown emitted engine harmonics must be fitted, not fabricated; keep alternatives and independent withheld intervals."
+  ],
+  "procedure":[
+    "Use existing 2023-10-10 Paphos read-only SQLite index, not a new 1.7GB ingest, where accessible.",
+    "Derive aircraft/receiver vectors with a documented Earth frame, height datum and velocity provenance.",
+    "Predict per-sample sound-arrival UTC and Doppler ratio; fit observed ridges with bounded clock/frequency nuisance terms.",
+    "Score multiple candidate aircraft and withheld windows; report coverage gaps as unknown, not as proof of absence."
+  ]
+}
