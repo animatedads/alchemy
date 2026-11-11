@@ -77,11 +77,13 @@
 ::class NoSQLColumnarMemoryPort public
 ::attribute failWriteAt
 ::attribute writeCount
+::attribute readCount
 ::method init
   expose segments manifests
   segments = .table~new
   manifests = .table~new
   self~writeCount = 0
+  self~readCount = 0
   self~failWriteAt = 0
 ::method manifest
   expose manifests
@@ -102,11 +104,19 @@
 ::method read
   expose segments
   use strict arg name, version, col, chunk
+  self~readCount += 1
   key = name~translate || "|" || version || "|" || col~translate || "|" || chunk
   return segments[key]
 ::method publish
   expose manifests
   use strict arg name, generation, rowCount, blockSize, definition
+  current = manifests[name~translate]
+  if current == .nil then do
+    if generation \= 1 then ,
+      raise syntax 93.900 additional("Concurrent initial column generation")
+  end
+  else if generation \= current["generation"] + 1 then ,
+    raise syntax 93.900 additional("Concurrent column generation publication")
   manifest = .directory~new
   manifest["generation"] = generation
   manifest["rowCount"] = rowCount
@@ -125,6 +135,7 @@
 ::attribute name
 ::attribute generation
 ::attribute lastColumnsRead
+::attribute lastSegmentsRead
 
 ::method init
   use strict arg name, definition, port, blockSize = 1024
@@ -135,6 +146,7 @@
   self~port = port
   self~blockSize = blockSize
   self~lastColumnsRead = .array~new
+  self~lastSegmentsRead = 0
   self~generation = 0
   manifest = port~manifest(name)
   if manifest \== .nil then do
@@ -200,6 +212,7 @@ conversionFailed:
   out = .table~new
   seen = .table~new
   self~lastColumnsRead = .array~new
+  self~lastSegmentsRead = 0
   do requested over wanted
     col = self~definition~column(requested)
     if col == .nil then raise syntax 93.900 additional("Unknown column:" requested)
@@ -212,6 +225,7 @@ conversionFailed:
     chunk = 1
     do while count < n
       payload = self~port~read(self~name,version,name,chunk)
+      self~lastSegmentsRead += 1
       if payload == .nil then raise syntax 93.900 additional("Missing column segment:" name || "/" || chunk)
       decoded = .NoSQLColumnarCodec~decode(payload)
       expected = min(block, n - count)
@@ -221,6 +235,53 @@ conversionFailed:
       end
       count += decoded~items
       chunk += 1
+    end
+    out[name] = values
+  end
+  return out
+
+/* Fetch projected values only from physical chunks containing accepted
+ * row ordinals. The output arrays retain the order (and duplicates) of
+ * requested positions, without decoding unrelated segment blocks.
+ */
+::method readPositions
+  use strict arg wanted, positions, manifest = .nil
+  if manifest == .nil then manifest = self~port~manifest(self~name)
+  if manifest == .nil then raise syntax 93.900 additional("No published columnar generation")
+  n = manifest["rowCount"]
+  block = manifest["blockSize"]
+  version = manifest["generation"]
+  out = .table~new
+  seen = .table~new
+  self~lastColumnsRead = .array~new
+  self~lastSegmentsRead = 0
+  do requested over wanted
+    col = self~definition~column(requested)
+    if col == .nil then raise syntax 93.900 additional("Unknown column:" requested)
+    name = col~name
+    if seen~hasIndex(name~translate) then iterate
+    seen[name~translate] = .true
+    self~lastColumnsRead~append(name)
+    values = .array~new
+    decodedChunks = .table~new
+    do ordinal over positions
+      if \datatype(ordinal, "W") | ordinal < 1 | ordinal > n then ,
+        raise syntax 93.900 additional("Column row ordinal outside published bounds")
+      chunk = (ordinal - 1) % block + 1
+      within = (ordinal - 1) // block + 1
+      decoded = decodedChunks[chunk]
+      if decoded == .nil then do
+        payload = self~port~read(self~name,version,name,chunk)
+        self~lastSegmentsRead += 1
+        if payload == .nil then ,
+          raise syntax 93.900 additional("Missing projected column segment:" name || "/" || chunk)
+        decoded = .NoSQLColumnarCodec~decode(payload)
+        expected = min(block, n - (chunk - 1) * block)
+        if decoded~items \= expected then ,
+          raise syntax 93.900 additional("Projected column segment cardinality mismatch")
+        decodedChunks[chunk] = decoded
+      end
+      values~append(decoded[within])
     end
     out[name] = values
   end
@@ -287,16 +348,18 @@ conversionFailed:
   do c over orderColumns
     wanted~append(c)
   end
-  data = self~readColumns(wanted,manifest)
+  data = self~readPositions(wanted,accepted,manifest)
   rows = .array~new
+  selectedIndex = 0
   do i over accepted
+    selectedIndex += 1
     values = .table~new
     raw = .table~new
     types = .table~new
     do c over wanted
       col = self~definition~column(c)
-      values[col~name] = data[col~name][i]
-      raw[col~name] = data[col~name][i]
+      values[col~name] = data[col~name][selectedIndex]
+      raw[col~name] = data[col~name][selectedIndex]
       types[col~name] = col~type
     end
     rows~append(.DatabaseRow~new(values,raw,types))
@@ -320,12 +383,16 @@ conversionFailed:
 ::attribute queryLog
 ::attribute rowEngine
 ::attribute sourceGenerations
+::attribute layoutModes
+::attribute lastPlan
 ::method init
   use strict arg port, rowEngine = .nil
   self~rowEngine = rowEngine
   self~port = port
   self~tables = .table~new
   self~sourceGenerations = .table~new
+  self~layoutModes = .table~new
+  self~lastPlan = .directory~new
   if rowEngine \== .nil then do
     if rowEngine~hasMethod("queryPatternLog") then self~queryLog = rowEngine~queryPatternLog
     else self~queryLog = .NullQueryPatternLog~new
@@ -355,8 +422,25 @@ conversionFailed:
   self~tables[name~translate] = t
   self~sourceGenerations[name~translate] = before
   return version
+::method setLayout
+  use strict arg name, requested
+  mode = requested~string~translate
+  if mode \= "ROW" & mode \= "COLUMN" & mode \= "AUTO" then ,
+    raise syntax 93.900 additional("Layout must be ROW, COLUMN or AUTO")
+  if mode = "ROW" & self~rowEngine == .nil then ,
+    raise syntax 93.900 additional("ROW layout requires a row engine")
+  if mode = "COLUMN" & self~tables[name~translate] == .nil then ,
+    raise syntax 93.900 additional("COLUMN layout requires a published projection")
+  self~layoutModes[name~translate] = mode
+  return mode
+::method layout
+  use strict arg name
+  mode = self~layoutModes[name~translate]
+  if mode == .nil then return "AUTO"
+  return mode
 ::method table
   use strict arg name
+  if self~layout(name) = "ROW" then return self~rowEngine~table(name)
   t = self~tables[name~translate]
   if t \== .nil then do
     if self~rowEngine \== .nil then do
@@ -441,6 +525,7 @@ conversionFailed:
   use strict arg name
   self~tables~remove(name~translate)
   self~sourceGenerations~remove(name~translate)
+  self~layoutModes~remove(name~translate)
   return .true
 ::method createTable
   if self~rowEngine == .nil then return self~immutableError
@@ -544,8 +629,11 @@ conversionFailed:
       ordering~append(w[1])
     end
   end
-  -- Exact PK equality usually belongs on the indexed row path.
-  if self~rowEngine \== .nil then do
+  -- AUTO is conservative: avoid unnecessary column scans for wide row
+  -- projections and indexed primary-key equality. COLUMN explicitly forces
+  -- column access when the requested SQL shape is otherwise supported.
+  mode = self~layout(name)
+  if self~rowEngine \== .nil & mode = "AUTO" then do
     if predicate \== .nil then do
       if predicate~isA(.SQLComparisonPredicate) then do
         if predicate~operator = '=' then do
@@ -556,9 +644,25 @@ conversionFailed:
         end
       end
     end
-    requested = wanted~items + predicateNames~items + ordering~items
-    if requested >= t~definition~columns~items then return .nil
+    distinct = .table~new
+    do col over wanted
+      distinct[t~definition~column(col)~name~translate] = .true
+    end
+    do col over predicateNames
+      distinct[t~definition~column(col)~name~translate] = .true
+    end
+    do col over ordering
+      distinct[t~definition~column(col)~name~translate] = .true
+    end
+    -- A conservative default; provider statistics can replace it later.
+    readFraction = distinct~items / t~definition~columns~items
+    if readFraction >= 0.75 then do
+      self~lastPlan["reason"] = "ROW_WIDE_PROJECTION"
+      self~lastPlan["readFraction"] = readFraction
+      return .nil
+    end
   end
+  self~lastPlan["reason"] = "COLUMN_PROJECTED_SEGMENTS"
   selected = t~selectProject(wanted,predicate,predicateNames,ordering)
   rs = .DatabaseResult~new(.DatabaseOperationType~SELECT)
   rs~rows = selected
