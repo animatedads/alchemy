@@ -1,0 +1,379 @@
+{
+   "documents": [
+      {
+         "key": "doc.cloudctl-readme",
+         "outputs": [
+            "README.md"
+         ],
+         "overrides": {
+            "document|machines.ed209f.address|value": {
+               "kind": "literal",
+               "type": "string",
+               "value": "legacy address (intentional override)"
+            },
+            "variant|install.prereqs|title": {
+               "kind": "literal",
+               "type": "string",
+               "value": "Operator handbook"
+            }
+         },
+         "placements": [
+            {
+               "key": "tests",
+               "node": "cloudctl.tests",
+               "order": 40,
+               "parent": ""
+            },
+            {
+               "key": "cmd",
+               "node": "install.command",
+               "order": 50,
+               "parent": ""
+            }
+         ],
+         "template": "template.project-docs",
+         "title": "Cloudctl README"
+      },
+      {
+         "key": "template.as-built",
+         "outputs": [],
+         "overrides": {
+            "template|machines.ed209f.address|label": {
+               "kind": "literal",
+               "type": "string",
+               "value": "Operations IPv4"
+            }
+         },
+         "placements": [],
+         "template": "template.project-docs",
+         "title": "As-built template"
+      },
+      {
+         "key": "doc.grid-plan",
+         "outputs": [
+            "docs\/grid-plan.md",
+            "site\/grid-plan.html"
+         ],
+         "overrides": {},
+         "placements": [
+            {
+               "key": "machine-table",
+               "node": "machines.table",
+               "order": 35,
+               "parent": ""
+            },
+            {
+               "key": "network-diagram",
+               "node": "diagram.network",
+               "order": 36,
+               "parent": ""
+            }
+         ],
+         "template": "template.project-docs",
+         "title": "Grid Plan"
+      },
+      {
+         "key": "doc.as-built",
+         "outputs": [
+            "docs\/as-built.md"
+         ],
+         "overrides": {},
+         "placements": [
+            {
+               "key": "extra-tests",
+               "node": "cloudctl.tests",
+               "order": 40,
+               "parent": ""
+            },
+            {
+               "key": "address-repeat",
+               "node": "machines.ed209f.address",
+               "order": 41,
+               "parent": ""
+            }
+         ],
+         "template": "template.as-built",
+         "title": "As-built"
+      },
+      {
+         "key": "template.project-docs",
+         "outputs": [],
+         "overrides": {},
+         "placements": [
+            {
+               "key": "toc",
+               "node": "toc.main",
+               "order": 10,
+               "parent": ""
+            },
+            {
+               "key": "prereqs",
+               "node": "install.prereqs",
+               "order": 20,
+               "parent": ""
+            },
+            {
+               "key": "address",
+               "node": "machines.ed209f.address",
+               "order": 30,
+               "parent": ""
+            },
+            {
+               "key": "credits",
+               "node": "project.credits",
+               "order": 99,
+               "parent": ""
+            }
+         ],
+         "template": "",
+         "title": "Project Template"
+      }
+   ],
+   "events": [
+      {
+         "attribute": "value",
+         "author": "source:machines",
+         "id": "ev-00000001",
+         "kind": "fact",
+         "layer": "source",
+         "previousEvent": "GENESIS",
+         "reason": "change from machines file revision r52",
+         "sequence": 1,
+         "target": "grid.ed209f.address"
+      },
+      {
+         "attribute": "title",
+         "author": "writer:LLM",
+         "id": "ev-00000002",
+         "kind": "node",
+         "layer": "project",
+         "previousEvent": "ev-00000001",
+         "reason": "clearer title",
+         "sequence": 2,
+         "target": "install.prereqs"
+      },
+      {
+         "attribute": "value",
+         "author": "runner",
+         "id": "ev-00000003",
+         "kind": "fact",
+         "layer": "source",
+         "previousEvent": "ev-00000002",
+         "reason": "run-B",
+         "sequence": 3,
+         "target": "cloudctl.tests.passed"
+      },
+      {
+         "attribute": "value",
+         "author": "runner",
+         "id": "ev-00000004",
+         "kind": "fact",
+         "layer": "source",
+         "previousEvent": "ev-00000003",
+         "reason": "newer proposal",
+         "sequence": 4,
+         "target": "cloudctl.tests.passed"
+      }
+   ],
+   "facts": [
+      {
+         "author": "source:test-runner",
+         "key": "cloudctl.tests.passed",
+         "source": "cloudctl\/test-results",
+         "sourceRevision": "run-A",
+         "type": "integer",
+         "value": 65
+      },
+      {
+         "author": "source:cloudctl",
+         "key": "grid.ed209f.address",
+         "source": "etc\/machines",
+         "sourceRevision": "r51",
+         "type": "ip-address",
+         "value": "213.255.246.45"
+      }
+   ],
+   "format": "DOCY",
+   "nodes": [
+      {
+         "authoredBy": "writer:LLM",
+         "extra": {},
+         "key": "install.prereqs",
+         "layers": {
+            "house": {
+               "title": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "Prerequisites"
+               }
+            },
+            "project": {
+               "title": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "Before you install"
+               }
+            }
+         },
+         "type": "section"
+      },
+      {
+         "authoredBy": "tool:demo_test.rex",
+         "extra": {},
+         "key": "install.command",
+         "layers": {
+            "house": {
+               "command": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "rexx test.rex"
+               }
+            },
+            "project": {
+               "command": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "rexx test.rex"
+               }
+            }
+         },
+         "type": "command"
+      },
+      {
+         "authoredBy": "tool:demo_test.rex",
+         "extra": {},
+         "key": "toc.main",
+         "layers": {},
+         "type": "toc"
+      },
+      {
+         "authoredBy": "tool:demo_test.rex",
+         "extra": {},
+         "key": "project.credits",
+         "layers": {
+            "house": {
+               "architecture": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "Tom Dyer"
+               },
+               "coding": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "ChatGPT (DOCY prototype)"
+               },
+               "writer": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "ChatGPT (DOCY prototype)"
+               }
+            },
+            "project": {
+               "writer": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "ChatGPT (DOCY prototype)"
+               }
+            }
+         },
+         "type": "credits"
+      },
+      {
+         "authoredBy": "tool:demo_test.rex",
+         "extra": {
+            "headers": [
+               "Host",
+               "IPv4 address"
+            ],
+            "rows": [
+               [
+                  {
+                     "kind": "literal",
+                     "type": "string",
+                     "value": "ed209f"
+                  },
+                  {
+                     "kind": "reference",
+                     "target": "grid.ed209f.address"
+                  }
+               ]
+            ]
+         },
+         "key": "machines.table",
+         "layers": {},
+         "type": "table"
+      },
+      {
+         "authoredBy": "tool:demo_test.rex",
+         "extra": {},
+         "key": "machines.ed209f.address",
+         "layers": {
+            "house": {
+               "label": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "ed209f IPv4"
+               }
+            },
+            "project": {
+               "value": {
+                  "kind": "reference",
+                  "target": "grid.ed209f.address"
+               }
+            },
+            "template": {
+               "value": {
+                  "kind": "reference",
+                  "target": "grid.ed209f.address"
+               }
+            }
+         },
+         "type": "factfield"
+      },
+      {
+         "authoredBy": "tool:demo_test.rex",
+         "extra": {},
+         "key": "diagram.network",
+         "layers": {
+            "house": {
+               "title": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "Shared network topology"
+               }
+            },
+            "template": {
+               "source": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "<svg xmlns=\"http:\/\/www.w3.org\/2000\/svg\" viewBox=\"0 0 80 30\"><rect x=\"2\" y=\"2\" width=\"76\" height=\"26\" rx=\"4\" fill=\"#d9eafe\"\/><text x=\"40\" y=\"20\" text-anchor=\"middle\" font-size=\"10\">DOCY<\/text><\/svg>"
+               }
+            }
+         },
+         "type": "svg"
+      },
+      {
+         "authoredBy": "tool:demo_test.rex",
+         "extra": {},
+         "key": "cloudctl.tests",
+         "layers": {
+            "house": {
+               "label": {
+                  "kind": "literal",
+                  "type": "string",
+                  "value": "Passing tests"
+               }
+            },
+            "template": {
+               "value": {
+                  "kind": "reference",
+                  "target": "cloudctl.tests.passed"
+               }
+            }
+         },
+         "type": "factfield"
+      }
+   ],
+   "revision": 4,
+   "schema": 2
+}
