@@ -30,3 +30,10 @@ Rasen Falcon mailbox lane `wire-ui-windows`; request `REQ-00001073` notified COO
 
 ## 2026-11-11 implementation increment
 The Git baseline's `wide()` helper allocated `n-1` UTF-16 code units then passed `n` to `MultiByteToWideChar`, allowing a one-code-unit write past the buffer end. Commit `0d5ee6e` now allocates the complete converted size including the terminating NUL, validates conversion and then removes the terminator. Commit `9b0b323` adds a regression source check. This is a concrete renderer memory-safety repair, not Win64 runtime qualification. The dev7 archive is present in the conversation workspace but has not been imported into Git as a complete package; direct Git from this runtime cannot resolve github.com, and the connected Git provider accepts individual file writes.
+
+## 2026-11-11 Rasen Falcon sphere reconciliation
+Checked Rasen Falcon sphere.list: no discoverable sphere for Windows; the closest published shared contract is `wire-ui-runtime` v0.4. Its `ref.wire-ui-runtime.renderer-conformance` article requires ten canonical transcript gates: exact definitions, approved ResourceRef, revision commitment, stable collection identity, bounded RangeRequested, UI_ACTION with event-time renderedRevision/workspaceContext, semantic activation, positive-list observation, and fail-closed deauthorisation/resync. The Windows source is **not** qualified against this transcript; do not count these gates as PASS.
+
+The shared sphere also requires exact source/hash reconciliation before promotion and warns against confusing an independently delivered package with a Git-accepted version. This branch is not part of the live Rasen Falcon sphere index until published/accepted by the catalogue pipeline.
+
+Lane verified via Rasen Falcon `project.lanes.search wire_ui_windows`: `wire-ui-windows`, linked artifacts `wire_ui_windows` and `notnotes_windows_client`. Rasen Falcon unread mailbox has no incoming coordinator replies as of this check.
