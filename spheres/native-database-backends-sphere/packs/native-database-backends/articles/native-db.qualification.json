@@ -54,12 +54,35 @@
     "foreign_runtime_test_target": "packages/oorexx_foreign_runtime_v0.22.6",
     "selector_test": "tests/test_database_backend_selector.rex",
     "status": "SOURCE_READY_FOR_AUTOBUILD; RECEIPT_PENDING",
-    "note": "The prior v0.3.1 integration target packages/oorexx_foreign_runtime_v0.22.2 is absent from current Git; v0.3.2 deliberately tests against the present v0.22.6 source instead of fabricating an old dependency."
+    "note": "The prior v0.3.1 integration target packages/oorexx_foreign_runtime_v0.22.2 is absent from current Git; v0.3.2 deliberately tests against the present v0.22.6 source instead of fabricating an old dependency.",
+    "failed_receipts": [
+      {
+        "submission_id": "20261111T180000Z-CHATGPT-oorexx-native-database-backends-v0.3.2-b231e4",
+        "status": "FAIL",
+        "boundary": "selector and capability model PASS; PostgreSQL native offline failed at libpq load"
+      },
+      {
+        "submission_id": "20261111T180300Z-CHATGPT-oorexx-native-database-backends-v0.3.2-fix1-0b9772",
+        "status": "FAIL",
+        "boundary": "Foreign Runtime build preparation added; PostgreSQL native offline still failed at libpq load"
+      }
+    ],
+    "active_submission": "20261111T180500Z-CHATGPT-oorexx-native-database-backends-v0.3.2-fix2-2c1b8b"
   },
   "library_parallel_head": {
     "artifact": "oorexx_native_database_backends_v0.3.4.zip",
     "observed": "2026-10-23",
     "status": "UNRECONCILED_LIBRARY_HEAD",
     "rule": "Do not call the v0.3.2 Git increment a successor to v0.3.4 until exact v0.3.4 bytes are compared and merged deliberately."
+  },
+  "rexxsql_provider_qualification": {
+    "package": "oorexx_rexxsql_backend",
+    "version": "0.1.1",
+    "submission_id": "20261111T180100Z-CHATGPT-oorexx-rexxsql-backend-v0.1.1-c38611",
+    "source_commit": "5622d1bb9781abd6a4bf4e61f8753c5b7891e72d",
+    "tree_sha256": "754559f1c302136edc3dc20bc3f0637d8fd33fd542e12dbe65e70b6850999553",
+    "status": "PASS",
+    "result_path": "autobuild/results/20261111T180017Z-754559f1c302-8186f76a/result.json",
+    "evidence": "52 driver checks, 24 backend checks, 10 generic provider checks, 12 SSC provider-selection checks, SSC round-trip/MCP/mutation live suites PASS."
   }
 }
