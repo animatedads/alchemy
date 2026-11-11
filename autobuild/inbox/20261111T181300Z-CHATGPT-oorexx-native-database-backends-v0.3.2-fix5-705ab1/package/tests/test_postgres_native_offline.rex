@@ -1,0 +1,33 @@
+root=value("NATIVE_DB_ROOT",,"ENVIRONMENT")
+backend=.PostgreSQLNativeBackend~new(root || "/postgres/libpq.bridge.json")
+if \backend~available then do
+  ev=backend~availabilityEvidence
+  availabilityError=ev["availability_error"]
+  say "POSTGRESQL NATIVE AVAILABILITY ERROR:" availabilityError
+  -- External libpq is a host requirement, not vendored package source.  Only the
+  -- exact native-loader "all candidates absent" condition is an environment skip.
+  -- Metadata/schema/runtime errors remain hard failures.
+  if availabilityError~pos("no library candidate could be loaded")>0 & -
+     availabilityError~pos("cannot open shared object file: No such file or directory")>0 then do
+    say "SKIP POSTGRESQL NATIVE OFFLINE: libpq shared library is absent on this qualification host"
+    exit 0
+  end
+  call assert .false, "libpq load"
+end
+ev=backend~availabilityEvidence
+call assert ev["libpq_version_number"]>0, "libpq version"
+call assert ev["foreign_runtime_version"]<>"", "foreign runtime version"
+call assert backend~supports("TRANSACTIONS"), "transactions published"
+call assert \backend~supports("COPY_STREAMING"), "COPY unsupported is explicit"
+conn=.DatabaseConnection~new("127.0.0.1",1,"definitely_missing","nobody",.nil,"postgresql")
+s=.PostgreSQLNativeSession~new(backend,backend~library,conn)
+call assert \s~connected, "connection failure remains failure"
+call assert s~lastError<>"", "connection failure evidence"
+s~close
+say "POSTGRESQL NATIVE OFFLINE: PASS libpq=" ev["libpq_version_number"] "foreign=" ev["foreign_runtime_version"]
+exit 0
+assert: procedure
+ use arg condition,label
+ if \condition then do; say "FAIL" label; exit 1; end
+ return
+::requires "PostgreSQLNativeBackend.cls"
