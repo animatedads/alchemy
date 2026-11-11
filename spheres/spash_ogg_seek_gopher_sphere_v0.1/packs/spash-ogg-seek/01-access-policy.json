@@ -1,0 +1,33 @@
+{
+  "kind": "access-policy",
+  "id": "spash-ogg-seek-access",
+  "version": "0.1",
+  "rules": [
+    {
+      "effect": "allow",
+      "roles": [
+        "llm",
+        "developer",
+        "operator",
+        "reviewer",
+        "admin"
+      ],
+      "actions": [
+        "read"
+      ],
+      "resource": "*"
+    },
+    {
+      "effect": "deny",
+      "roles": [
+        "llm",
+        "developer",
+        "operator"
+      ],
+      "actions": [
+        "exec"
+      ],
+      "resource": "capability:spash.original-media.upload"
+    }
+  ]
+}
