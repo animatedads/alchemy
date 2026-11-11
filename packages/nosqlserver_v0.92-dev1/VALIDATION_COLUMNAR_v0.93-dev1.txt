@@ -1,0 +1,20 @@
+NoSQLServer v0.93-dev1 COLUMNAR candidate — 2026-11-11
+Interpreter: user supplied ooRexx 5.3.0 r13196 debug x86_64 (extracted from .deb locally)
+PASS: rexxc NoSQLServerColumnar.cls
+PASS: isolated ooRexx runtime test with test-only lightweight stand-ins:
+  128 x 5-column rows, 16-row chunks
+  sparse 1-row predicate result exact vs row engine
+  eight filter chunks plus ONE projected chunk = 9 physical reads
+  projected selected positions repeated & noncontiguous, 3 distinct chunks loaded
+  NULL and binary NUL octets round-trip
+  stale memory generation CAS rejected
+  injected write failure retains active manifest; next successful generation published
+  ROW/COLUMN/AUTO layouts; 75% wide AUTO row fallback; indexed PK row fallback
+  external source generation change invalidates column shadow
+FIXED: original v093_columnar_smoke.rex illegal early ::requires directive placement.
+NOT RUN: real NoSQLServer.cls & Alchemy dependency closure; real NoSQLServerSQL
+  feature and torture tests, persistent SQLPort, WAL/SQLite snapshots, concurrent
+  authors, orphan cleanup, backfill/restart/crash, wall-clock benchmarks.
+NOT CERTIFIED: deployment, thread safety, atomic SQLPort, full SQL compatibility,
+  alternative backend equivalence.
+Autobuilder OFF. Draft PR only; no production cutover.
