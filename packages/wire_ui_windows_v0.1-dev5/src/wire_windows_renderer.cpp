@@ -11,7 +11,7 @@ struct PendingEvent { std::string source; std::string trigger; };
 static constexpr UINT WIRE_WM_SEMANTIC_EVENT=WM_APP+42;
 static HFONT wireFont(){static HFONT f=CreateFontW(-18,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,DEFAULT_CHARSET,OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,CLEARTYPE_QUALITY,DEFAULT_PITCH|FF_DONTCARE,L"Segoe UI");return f;}
 static void applyFont(HWND h){SendMessageW(h,WM_SETFONT,reinterpret_cast<WPARAM>(wireFont()),TRUE);}
-static std::wstring wide(const char *s){ if(!s)return {}; int n=MultiByteToWideChar(CP_UTF8,0,s,-1,nullptr,0); std::wstring w(n? n-1:0,L'\0'); if(n>1) MultiByteToWideChar(CP_UTF8,0,s,-1,w.data(),n); return w; }
+static std::wstring wide(const char *s){ if(!s)return {}; int n=MultiByteToWideChar(CP_UTF8,0,s,-1,nullptr,0); if(n<=1)return {}; std::wstring w(static_cast<size_t>(n),L'\0'); if(!MultiByteToWideChar(CP_UTF8,0,s,-1,w.data(),n))return {}; w.resize(static_cast<size_t>(n-1)); return w; }
 static Impl *implOf(HWND h){return reinterpret_cast<Impl*>(GetWindowLongPtrW(h,GWLP_USERDATA));}
 static LRESULT CALLBACK wndproc(HWND h,UINT m,WPARAM w,LPARAM l){
  if(m==WM_NCCREATE){auto cs=reinterpret_cast<CREATESTRUCTW*>(l);SetWindowLongPtrW(h,GWLP_USERDATA,reinterpret_cast<LONG_PTR>(cs->lpCreateParams));}
