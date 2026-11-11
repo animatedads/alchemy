@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "evc.qualification",
+  "version": "0.1",
+  "sphere": "event-continuation",
+  "title": "Qualification evidence and autobuilder boundary",
+  "summary": "Autobuilder accepted dev4 native test on 2026-11-11: receipt autobuild/receipts/20261111T182200Z-CHATGPT-event-continuation-dev4-84fb4937.json, status PASS, tests run_tests.sh code 0. Dev6 source must independently pass native qualification. Neither receipt proves WASM/HTTPS end-to-end or Rasen Falcon MCP delivery. Dev5 native suite failed because an ooRexx ::class declaration displaced ContinuationWatch.sample (Error 97.1). Dev6 restores method ownership and adds a static membership test; qualification pending.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Accepted dev4 receipt is real, scoped to its declared native tests.",
+    "No browser or real Rasen message delivery is implied by PASS.",
+    "Dev5 requires separate immutable Git submission and PASS receipt."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "autobuild/receipts/20261111T182200Z-CHATGPT-event-continuation-dev4-84fb4937.json",
+      "claim": "dev4 accepted native core tests only"
+    },
+    {
+      "artifact": "alchemy_event_continuation_v0.1-dev6",
+      "member": "README.md",
+      "claim": "Dev5 candidate and explicit qualification boundary"
+    }
+  ]
+}

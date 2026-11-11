@@ -1,0 +1,21 @@
+{
+  "kind": "article",
+  "id": "evc.review",
+  "version": "0.1",
+  "sphere": "event-continuation",
+  "title": "Independent dev1 review: documented regressions",
+  "summary": "Claude independently ran dev1 under ooRexx r13196 and real WASM/Chromium in REQ-00003371/REQ-00003373. F1 server config has no transportMode: use HTTPS certificate/key/bridge. F2 one undeliverable target can block endlessly: dead-letter with attempt budgets. F3 pipe characters corrupted plain journal: hex-encode fields with W2/E2. F4 immediate click completion check caused ~55 request/s hot loop: callback must acknowledge after handler; completion must follow mailbox read.",
+  "authority": "project-artifact",
+  "invariants": [
+    "Core native PASS from dev4 cannot substitute for HTTPS/WASM live end-to-end tests.",
+    "An old review is evidence of dev1 behaviour, not proof that dev5 fixes ran on a real browser.",
+    "Differentiate LLM/mailbox completion, delivery receipt, and app action from one another."
+  ],
+  "provenance": [
+    {
+      "artifact": "Rasen Falcon event-continuation lane",
+      "claim": "Claude review and Tom nudge contract",
+      "note": "REQ-00003371 and REQ-00003373, 2026-11-08; development qualification caveat remains."
+    }
+  ]
+}
