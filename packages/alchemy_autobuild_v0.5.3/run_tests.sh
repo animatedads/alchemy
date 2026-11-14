@@ -7,6 +7,7 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 REPO=${ALCHEMY_REPO_ROOT:-$(cd "$HERE/../.." && pwd)}
 export ALCHEMY_REPO_ROOT="$REPO"
 rexx "$REPO/packages/oorexx_python_gate_v0.1/tests/test_python_gate.rex"
+rexx "$HERE/tests/test_autobuild_config.rex"
 cd "$HERE"
 python3 -m unittest -v tests.test_python_gate
 sh "$REPO/packages/alchemy_autobuild_v0.5.2/run_tests.sh"

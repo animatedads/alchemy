@@ -57,6 +57,8 @@ sh ~/alchemy-autobuild/repo/packages/alchemy_autobuild_v0.5.3/bootstrap.sh
 
 `bootstrap.sh` rewrites the user unit to start v0.5.3. It refuses to install unless the gate and `rexx` are present, starts nothing, and never touches `config.json`.
 
+The install procedure, written so that any model including Haiku can follow it, is `docs/autobuild/INSTALL_V053_WITH_CLAUDE_CODE.md`. It installs in advisory mode first, because a FAIL receipt is final. Config changes go through `tools/autobuild_config.rex`, written in ooRexx, which replaces the `python3 -c` one-liners of the v0.5.1 procedure. It refuses unknown keys and bad modes, and `set rexx auto` stores the absolute path of `rexx` for systemd.
+
 ## Still on record
 
 This package is itself Python; see `PYTHON_JUSTIFICATION`. The chain is now eight layers. The case for one flattened v0.6, in ooRexx, is stronger with every layer.
