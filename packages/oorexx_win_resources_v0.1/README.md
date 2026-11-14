@@ -58,6 +58,20 @@ There are 46 checks against `tests/fixtures/app.rc`, compiled by **llvm-rc 18** 
 - named resources;
 - absent ids, missing files, and truncated or non-PE input, which raise errors instead of looping.
 
+### The upstream ooDialog samples
+
+```
+rexx packages/oorexx_win_resources_v0.1/tools/res_corpus_check.rex --dir packages/oorexx_win_resources_v0.1/tests/corpus/res
+```
+
+The 26 official ooDialog sample `.rc` files (ooRexx GitHub `c12e988`) were compiled with llvm-rc using `tests/corpus/build_upstream_corpus.sh`, and the stand-in SDK headers in `tests/sdk` were enough. 24 compile. The other 2 fail on upstream defects: a missing header, and an icon whose name is misspelt. The 24 `.res` files are committed, and `tests/corpus/PROVENANCE.md` records their source and licence.
+
+The reader decodes all 50 resources, 44 dialogs with 534 controls and 3 menus, with no errors. With `--readobj`, every resource's type, name, language and size also matches `llvm-cvtres` + `llvm-readobj`. The only controls outside the contract are 2 `ToolbarWindow32`.
+
+### In the browser
+
+On 14 Nov 2026 the ooDialog/WASM session ran `integration/oodialog_wasm/t07` unmodified in its headless-browser harness on ooRexx/WASM. All 7 steps passed and the output equalled the expected file: `ResDialog` and `BinaryMenuBar` built from the real `app.dll`. The harness change that made it possible sends `.dll`, `.exe` and `.res` files as bytes. That run is in `animatedads/oorexx`, branch `oodialog-wasm`, at `05e1fb8`, under `oodialog-wasm/tests/res/`, and is recorded as Rasen Falcon REQ-00003581. Run and harness change: Claude (Fable 5.2).
+
 Not covered: a resource compiled by Microsoft `rc.exe` (no Windows here), 16-bit NE files, and `DLGINIT` data.
 
 ## Handoff to ooDialog/WASM: `integration/oodialog_wasm/`
