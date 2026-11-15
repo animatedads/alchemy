@@ -1,0 +1,33 @@
+{
+   "id": "winres.integration",
+   "invariants": [
+      "The reader is the consumer's choice: oodWeb never loads it on its own; a program or a renderer sets it."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "The provider contract.",
+         "line_end": 34,
+         "line_start": 29,
+         "member": "packages\/oorexx_win_resources_v0.1\/README.md",
+         "sha256": "dfdb5bffc80a7e87b4be2d34ad970fd252bb918d825076b506985e4dc3308a08"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "t07 passes in the browser.",
+         "line_end": 73,
+         "line_start": 73,
+         "member": "packages\/oorexx_win_resources_v0.1\/README.md",
+         "sha256": "dfdb5bffc80a7e87b4be2d34ad970fd252bb918d825076b506985e4dc3308a08"
+      }
+   ],
+   "related": [
+      "winres.start-here",
+      "winres.formats"
+   ],
+   "sphere": "oorexx-win-resources",
+   "summary": "The contract is the comment above resourceProvider in oodialog-wasm's oodWeb.cls. dialogTemplate(library, id) returns 'x y cx cy title opts fontName fontSize controls', and each control is 'kind id x y cx cy text opts'. menuTemplate(library, id) returns records of 'depth id text flags'. In the browser, on 14 Nov 2026, the ooDialog\/WASM chat ran integration\/oodialog_wasm\/t07 unmodified on ooRexx\/WASM (oodialog-wasm 05e1fb8, REQ-00003581). All 7 steps passed, and the output equalled the expected file. On Linux, the Qt6 renderer's .JS~resourceProvider offers this reader when WinResources.cls is on REXX_PATH. oodWeb.cls asks for it only with the change proposed in proposals\/oodWeb-v0.13.1-linux.patch (see sphere oodialog-linux-qt6, article qt6.oodweb-proposals). With that change, upstream samples that read .dll resources come up on Linux: oowalk2, both TabDemos, and Exercise04's ASimpleDialog2.",
+   "title": "Plugging the reader into ooDialog: in the browser and on Linux",
+   "version": "0.1"
+}

@@ -1,0 +1,53 @@
+{
+   "id": "qt6.continuation",
+   "invariants": [
+      "Read the Programme Coordinator's missives and the lane's mail before starting.",
+      "Never force-push; never push to an existing release branch; never change oodialog-wasm's files.",
+      "Instructions handed to another model must be clear enough for a small model to follow.",
+      "Commands for Tom go on their own lines, with no trailing period."
+   ],
+   "kind": "article",
+   "procedure": [
+      "git -C <oorexx clone> fetch origin; git log --oneline origin\/oodialog-wasm",
+      "git diff <last tested> <new> -- oodialog-wasm\/src\/oodialog-web.js oodialog-wasm\/src\/oodWeb.cls oodialog-wasm\/tools\/oodtest.py",
+      "Implement, then run tools\/oodqt_suite.rex offscreen and with --platform xcb under xvfb-run, with --shots.",
+      "Run tools\/oodqt_sweep.rex --platform xcb --report; compare with the last report in sweep\/.",
+      "git checkout -b oodialog-qt6-v0.N origin\/oodialog-wasm, copy oodialog-qt6\/ in, commit with attribution, push the new branch.",
+      "Rebuild this sphere with its tools\/build_sphere.rex against the new commit, and publish it."
+   ],
+   "provenance": [
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "Open work.",
+         "line_end": 161,
+         "line_start": 158,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "019cc374cdb67fb974d456cd6c2f409dd0116b6a3e3c93bfb9a0f6dbfa940636"
+      },
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "Each contract section names the commit it was read from.",
+         "line_end": 114,
+         "line_start": 114,
+         "member": "oodialog-qt6\/RENDERER_CONTRACT.md",
+         "sha256": "77aab820e530e01a8fe53a2998e06c22d157ba64ba1dbe461b7d08289dc23375"
+      },
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "The suite command.",
+         "line_end": 5,
+         "line_start": 5,
+         "member": "oodialog-qt6\/tools\/oodqt_suite.rex",
+         "sha256": "704964c95e5ec98fc02a63fbd702b82f58f0b1a8804899866a6aa479fbfc3344"
+      }
+   ],
+   "related": [
+      "qt6.current-state",
+      "qt6.testing",
+      "qt6.oodweb-proposals"
+   ],
+   "sphere": "oodialog-linux-qt6",
+   "summary": "The Qt renderer follows oodialog-wasm, which adds a part of ooDialog in each release (GDI v0.12, bitmaps v0.13, mouse v0.14, in-place editing v0.15). To catch up with a new release: fetch origin\/oodialog-wasm and read its commit message; diff oodialog-web.js and oodWeb.cls against the last commit you tested, and list every new op, message, event and harness step; implement each in native\/oodqt.cpp (and js.cls if the wire changes), following the page's behaviour; translate the new tests' JavaScript checks in the player or write NAME.qt.steps; run the suite offscreen and on xcb, and look at the screenshots; run the sweep; check that proposals\/oodWeb-*.patch still applies; update README (state, lessons) and RENDERER_CONTRACT.md (a section naming the commit it was read from); and update this sphere. Then commit to a new branch oodialog-qt6-v0.N, based on that oodialog-wasm commit, and report to TOM in lane python-gate-win-resources, with the attribution lines and a self-score. Open work: a run on a physical desktop (KDE, GNOME) with a window manager; upstream's winsystm.cls and the native functions oodWeb does not have yet belong to the ooDialog\/WASM chat.",
+   "title": "Continuing: one oodialog-wasm release at a time",
+   "version": "0.1"
+}

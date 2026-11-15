@@ -1,0 +1,42 @@
+{
+   "id": "winres.formats",
+   "invariants": [
+      "Absent ids, missing files, and truncated or non-PE input raise errors; the reader never loops on bad input.",
+      "Not covered: resources compiled by Microsoft rc.exe (never tested here), 16-bit NE files, DLGINIT data."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "Containers and templates decoded.",
+         "line_end": 27,
+         "line_start": 13,
+         "member": "packages\/oorexx_win_resources_v0.1\/README.md",
+         "sha256": "dfdb5bffc80a7e87b4be2d34ad970fd252bb918d825076b506985e4dc3308a08"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "Kind and style mapping.",
+         "line_end": 36,
+         "line_start": 36,
+         "member": "packages\/oorexx_win_resources_v0.1\/README.md",
+         "sha256": "dfdb5bffc80a7e87b4be2d34ad970fd252bb918d825076b506985e4dc3308a08"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "What is not covered.",
+         "line_end": 75,
+         "line_start": 75,
+         "member": "packages\/oorexx_win_resources_v0.1\/README.md",
+         "sha256": "dfdb5bffc80a7e87b4be2d34ad970fd252bb918d825076b506985e4dc3308a08"
+      }
+   ],
+   "related": [
+      "winres.testing",
+      "winres.integration"
+   ],
+   "sphere": "oorexx-win-resources",
+   "summary": "A .res file is a series of RESOURCEHEADER records, DWORD-aligned, after an empty first record that is skipped. A .dll or .exe is followed from MZ to the PE header, then data directory 2, then the .rsrc tree (Type, Name, Language), with RVAs turned into file offsets. DIALOG and DIALOGEX give geometry in dialog units, title, font (size, weight, italic, face) and every item: class, id (IDC_STATIC is -1), styles, text or ordinal, creation data. MENU and MENUEX are flattened depth first into depth, id, text, flags, including nested popups, separators, MFT_RADIOCHECK, MFS_DEFAULT and MF_HELP. Window classes map to the ooDialog\/WASM contract's 16 kinds: BUTTON splits by BS_ type into BUTTON, CHECK, RADIO and GROUP, and STATIC frames and rectangles become FRAME. Styles become the words the page runtime reads. Raw style and exStyle (hex), windowClass and resource ordinals are kept for provenance.",
+   "title": "What the reader decodes, and how",
+   "version": "0.1"
+}

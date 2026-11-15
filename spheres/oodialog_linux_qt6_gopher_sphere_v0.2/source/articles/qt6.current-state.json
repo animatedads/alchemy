@@ -1,0 +1,16 @@
+{
+  "kind": "article", "id": "qt6.current-state", "version": "0.2",
+  "title": "Where the Qt6 renderer stands (v0.8.0, 15 Nov 2026)",
+  "summary": "The latest branch is oodialog-qt6-v0.8, renderer v0.8.0, based on and tested against oodialog-wasm 2423db8 (v0.17.0). All 45 of the suite's tests pass, both offscreen and on an X server (Xvfb with Qt's xcb platform, as a desktop runs it). New in v0.8.0: the month calendar (v0.16.0: SimpleMonthCalendar, PaidHolidays), ResizingAdmin (v0.17.0: basicResize, augmentedResize, gbStationary) and the editable combo's edit (v0.17.0: dropDownComboBox). Since v0.8.0 a program that ends before its steps are done fails; dropDownComboBox had passed that way once before the check existed. The suite is the browser harness's tests, with their .steps and .expect files, plus the three programs the ooDialog Designer generates (Calculator, Contacts, Gadgets; see sphere oodialog-designer), used unchanged as a contract test. Every one of upstream's sample programs was also started with nothing clicked: against v0.17.0, 81 of 122 programs showed their dialog (77 against v0.15.0, 75 against v0.14.0, 73 against v0.13.1). All 37 errors were in oodWeb.cls's scope; none was in the renderer: winsystm.cls 19, resource reader not set 8, ooDialog native functions oodWeb does not have yet 7, other 3. Earlier branches and their oodialog-wasm bases: v0.2 2c861d8, v0.3 23d57b2, v0.4 155e1b0, v0.5 1d89981, v0.6 0e0e744, v0.7 fc16dfb.",
+  "invariants": [
+    "A pass count is only quoted with the oodialog-wasm commit it was run against and the platform (offscreen or xcb).",
+    "The sweep is a coverage check, not a test: a program that shows its dialog may still draw wrongly.",
+    "Not done yet: a run on a physical desktop with a window manager (KDE, GNOME); every X run so far was on Xvfb."
+  ],
+  "related": ["qt6.testing", "qt6.oodweb-proposals", "qt6.continuation"],
+  "provenance": [
+    {"member": "oodialog-qt6/README.md", "find": "## State on 15 Nov 2026 (v0.8.0)", "lines": 3, "claim": "45 of 45 offscreen and on xcb against 2423db8 (v0.17.0)."},
+    {"member": "oodialog-qt6/README.md", "find": "**81 of 122 programs show their dialog with no Rexx error**", "lines": 8, "claim": "Sweep result and the causes of the 37 errors."},
+    {"member": "oodialog-qt6/README.md", "find": "## Not yet", "lines": 4, "claim": "What is not done."}
+  ]
+}

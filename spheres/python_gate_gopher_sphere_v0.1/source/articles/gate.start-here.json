@@ -1,0 +1,20 @@
+{
+  "kind": "article", "id": "gate.start-here", "version": "0.1",
+  "title": "Write ooRexx; if Python is truly needed, say why in PYTHON_JUSTIFICATION",
+  "summary": "packages/oorexx_python_gate_v0.1 (Claude (Opus 5.5); architecture Tom Dyer) fails any estate package that carries Python, or calls Python, without saying why ooRexx can't do the job. It is written in ooRexx and logs through oorexx_logging. Autobuild v0.5.3 runs it first on every package, as test 01 (python-justification-gate). The reason for it: asked to read a file, a model reaches for Python, wraps it in two lines of Rexx, and calls the result ooRexx. Arguing about it chat by chat has not stopped that; a build gate does.",
+  "invariants": [
+    "Every Python file, and every file that calls Python, needs a line in PYTHON_JUSTIFICATION at the package root: 'path | reason', with at least 10 words of reason.",
+    "The gate cannot judge a reason; it prints every reason in the build log, so the VERIFIER and the Architect can.",
+    "'Reading a file is complex' is not a reason: the estate has ooRexx libraries for formats, archives and cryptography."
+  ],
+  "procedure": [
+    "Before you submit: rexx packages/oorexx_python_gate_v0.1/bin/python_gate.rex YOUR_PACKAGE",
+    "If it fails, rewrite the Python in ooRexx, or add a justification a reviewer would accept."
+  ],
+  "related": ["gate.rule", "gate.current-state"],
+  "provenance": [
+    {"member": "packages/oorexx_python_gate_v0.1/README.md", "find": "This gate fails any estate package that carries Python", "lines": 1, "claim": "What the gate does; written in ooRexx; Autobuild v0.5.3 runs it first."},
+    {"member": "packages/alchemy_autobuild_v0.5.3/README.md", "find": "Asked to read a file, a model reaches for Python", "lines": 1, "claim": "Why the gate exists."},
+    {"member": "packages/oorexx_python_gate_v0.1/README.md", "find": "A reason needs at least 10 words.", "lines": 1, "claim": "Ten words; reasons printed for review."}
+  ]
+}

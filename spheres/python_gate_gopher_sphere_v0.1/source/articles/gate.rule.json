@@ -1,0 +1,16 @@
+{
+  "kind": "article", "id": "gate.rule", "version": "0.1",
+  "title": "What counts as Python, and how the gate decides",
+  "summary": "Python means .py, .pyw and .pyi files; files whose #! line names python (a rename does not hide one); and .rex, .rexx, .cls, .orx and .sh files with a line that runs python on a script, -m, -c or -u. Words, comments and 'echo python' are not calls. Anything under vendor/, upstream/ or third_party/ is exempt (third-party code carried unchanged) but is listed in the report. .git/ is never scanned. Exit codes: 0 PASS, 1 FAIL, 2 usage error; with --advisory it always exits 0. The JSON report (alchemy.python-gate.report/1) goes to stdout and the progress log to stderr. In Autobuild v0.5.3, config key python_gate is 'enforce' by default or 'advisory'. If the gate cannot run (no rexx, script missing), the test fails: an unavailable check is NOT RUN, never PASS.",
+  "invariants": [
+    "The check is lexical: a string that spells out a Python command line counts as a call (the gate's own tests carry such fixtures, and justify them).",
+    "A gate that cannot run fails closed."
+  ],
+  "related": ["gate.start-here", "gate.current-state"],
+  "provenance": [
+    {"member": "packages/oorexx_python_gate_v0.1/README.md", "find": "## What counts as Python", "lines": 7, "claim": "What counts; exemptions."},
+    {"member": "packages/oorexx_python_gate_v0.1/README.md", "find": "Exit codes: 0 PASS, 1 FAIL, 2 usage error.", "lines": 1, "claim": "Exit codes and report."},
+    {"member": "packages/alchemy_autobuild_v0.5.3/README.md", "find": "If the gate cannot run (no", "lines": 1, "claim": "Fails closed."},
+    {"member": "packages/oorexx_python_gate_v0.1/README.md", "find": "The check is lexical.", "lines": 1, "claim": "Lexical limit."}
+  ]
+}

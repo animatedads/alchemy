@@ -1,0 +1,43 @@
+{
+   "id": "qt6.oodweb-proposals",
+   "invariants": [
+      "A proposal names the samples it fixes and says it was tested on a staged copy only.",
+      "The renderer never works round an oodWeb defect silently: any work-round is written down where the defect is. The runner stages ooDialog.cls, oodWeb.cls and ooShapes.cls beside the program; that began as a srcDir work-round and stays because it is how the page lays out \/home\/rexx.",
+      "Messages for the ooDialog\/WASM chat go to TOM, marked for relay."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/oorexx@4aedf18",
+         "claim": "The four open changes and the samples each fixes.",
+         "line_end": 14,
+         "line_start": 9,
+         "member": "oodialog-qt6\/proposals\/README.md",
+         "sha256": "e9c8f1a02b604002266460ffb51745e1f4b7289de085652e6f0005ce3d8c66c4"
+      },
+      {
+         "artifact": "animatedads\/oorexx@4aedf18",
+         "claim": "msSleep proposal taken in v0.13.1.",
+         "line_end": 112,
+         "line_start": 112,
+         "member": "oodialog-qt6\/RENDERER_CONTRACT.md",
+         "sha256": "b72ee2f36feebacc0eca80b0e09de4668483f3c4af07461da32d6c9557cd2bce"
+      },
+      {
+         "artifact": "animatedads\/oorexx@4aedf18",
+         "claim": "The srcDir defect and the proposed fix.",
+         "line_end": 77,
+         "line_start": 75,
+         "member": "oodialog-qt6\/RENDERER_CONTRACT.md",
+         "sha256": "b72ee2f36feebacc0eca80b0e09de4668483f3c4af07461da32d6c9557cd2bce"
+      }
+   ],
+   "related": [
+      "qt6.renderer-contract",
+      "qt6.current-state"
+   ],
+   "sphere": "oodialog-linux-qt6",
+   "summary": "The Qt chat does not change oodWeb.cls. It proposes changes to the ooDialog\/WASM chat through Tom, each one tested on a staged copy against named samples. Taken: .application~srcDir is the program's directory, not oodWeb.cls's (proposed in v0.3.0, taken in oodialog-wasm v0.13.0); msSleep takes events only on the thread that runs pumpUntilFinished (proposed in v0.4.0 after up\/oowalker hung about one run in six; taken in v0.13.1). Open, as proposals\/oodWeb-v0.13.1-linux.patch, which applies unchanged to v0.13.1, v0.14.0 and v0.15.0: (1) needProvider asks .js~resourceProvider when no reader was set, so the renderer can offer alchemy's oorexx_win_resources; (2) tab_calcRect keeps the coordinates it is given (calcDisplayRect is TCM_ADJUSTRECT), because answering in client coordinates put the TabDemo pages up and to the left of the tab; (3) BinaryMenuBar~new(.nil, id) makes an empty menu bar, as upstream does; (4) il_handle uses numeric digits 20, because identityHash is 64-bit on a 64-bit interpreter. With the patch, 6 more upstream samples come up: oowalk2, both TabDemos, BinaryMenuBar, employe9menuDyn and Exercise04's ASimpleDialog2. It was tested on the Qt renderer only, not in the browser.",
+   "title": "Changes proposed to oodWeb.cls, and what became of them",
+   "version": "0.1"
+}

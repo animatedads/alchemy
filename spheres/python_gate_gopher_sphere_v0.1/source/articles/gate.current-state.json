@@ -1,0 +1,13 @@
+{
+  "kind": "article", "id": "gate.current-state", "version": "0.1",
+  "title": "Where the gate stands (15 Nov 2026): built and tested, not installed",
+  "summary": "The gate (23 tests) and Autobuild v0.5.3 (9 runner tests, plus v0.5.2's acceptance tests) are on animatedads/alchemy PR #146, which is not yet merged. Run over all 497 package directories on main on 14 Nov 2026, the gate passes 317 and fails 180: 1,109 Python files have no justification, and 148 files call Python. docs/autobuild/INSTALL_V053_WITH_CLAUDE_CODE.md is a procedure Claude Code (Haiku is enough) runs on the build host. It installs v0.5.3 with the gate in advisory mode. Switching to enforce is a separate step that only Tom Dyer takes. Until then, nothing is gated: write ooRexx anyway, and run the gate yourself before submitting.",
+  "invariants": ["Only Tom Dyer switches the gate from advisory to enforce."],
+  "related": ["gate.start-here"],
+  "provenance": [
+    {"member": "packages/alchemy_autobuild_v0.5.3/README.md", "find": "The gate was run over all 497 directories", "lines": 1, "claim": "317 pass, 180 fail."},
+    {"member": "docs/autobuild/INSTALL_V053_WITH_CLAUDE_CODE.md", "find": "3. installs v0.5.3 with the gate in **advisory** mode;", "lines": 1, "claim": "The install starts in advisory mode."},
+    {"member": "docs/autobuild/INSTALL_V053_WITH_CLAUDE_CODE.md", "find": "## Step 9. Tom only: enforce the gate", "lines": 4, "claim": "Only Tom switches the gate to enforce."},
+    {"member": "packages/oorexx_python_gate_v0.1/README.md", "find": "There are 23 checks", "lines": 1, "claim": "23 gate tests."}
+  ]
+}
