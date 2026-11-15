@@ -1,0 +1,83 @@
+{
+   "id": "qt6.failure-modes",
+   "invariants": [
+      "Blame goes to the decision, not the person: each lesson in the README names the decision that caused it.",
+      "Where Qt and the page differ in geometry or event order, follow the page, and write the rule into RENDERER_CONTRACT.md.",
+      "Look at the screenshots after every run; several defects passed every check."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/oorexx@cebff2e",
+         "claim": "A mouse event seen twice through propagation; a Leave from the tip window on X.",
+         "line_end": 145,
+         "line_start": 143,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "9961e03007fe6a813a864f39640235a19ab733caac31b06f9ceff7cd69690077"
+      },
+      {
+         "artifact": "animatedads\/oorexx@cebff2e",
+         "claim": "Unfinished steps passed; editable combo; QCalendarWidget's first row.",
+         "line_end": 150,
+         "line_start": 147,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "9961e03007fe6a813a864f39640235a19ab733caac31b06f9ceff7cd69690077"
+      },
+      {
+         "artifact": "animatedads\/oorexx@cebff2e",
+         "claim": "Rebuild between press and release; double click's second click.",
+         "line_end": 154,
+         "line_start": 152,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "9961e03007fe6a813a864f39640235a19ab733caac31b06f9ceff7cd69690077"
+      },
+      {
+         "artifact": "animatedads\/oorexx@cebff2e",
+         "claim": "Row heights, drag selection, the 30 ms rule.",
+         "line_end": 159,
+         "line_start": 156,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "9961e03007fe6a813a864f39640235a19ab733caac31b06f9ceff7cd69690077"
+      },
+      {
+         "artifact": "animatedads\/oorexx@cebff2e",
+         "claim": "A check box click selected a row; sweep classification.",
+         "line_end": 163,
+         "line_start": 161,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "9961e03007fe6a813a864f39640235a19ab733caac31b06f9ceff7cd69690077"
+      },
+      {
+         "artifact": "animatedads\/oorexx@cebff2e",
+         "claim": "Tests wrote into the checkout and inflated a count; pixmap cache; combo height; ENDTRACK twice.",
+         "line_end": 169,
+         "line_start": 165,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "9961e03007fe6a813a864f39640235a19ab733caac31b06f9ceff7cd69690077"
+      },
+      {
+         "artifact": "animatedads\/oorexx@cebff2e",
+         "claim": "Separators; current row on focus; tab strip; srcDir.",
+         "line_end": 175,
+         "line_start": 171,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "9961e03007fe6a813a864f39640235a19ab733caac31b06f9ceff7cd69690077"
+      },
+      {
+         "artifact": "animatedads\/oorexx@cebff2e",
+         "claim": "Thread lessons.",
+         "line_end": 24,
+         "line_start": 21,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "9961e03007fe6a813a864f39640235a19ab733caac31b06f9ceff7cd69690077"
+      }
+   ],
+   "related": [
+      "qt6.renderer-contract",
+      "qt6.testing"
+   ],
+   "sphere": "oodialog-linux-qt6",
+   "summary": "Most defects so far came from the renderer's own design decisions. Few were in Qt or in oodWeb. Wire: a flat string lost the separators inside arguments, so tree nodes lost EXPANDED and rows kept only their first cell, with no error (fixed with 1D). Threads: the first Rexx caller as Qt's GUI thread hung t11 and crashed t02; a global QObject took Qt's main thread; Qt's pixmap cache was destroyed on the wrong thread at exit. Geometry: a tab strip vanished under a Qt layout when the control was only strip-high; combo boxes were as tall as their lists; list-view rows and header were taller than the page's, so a program that hit-tests by pixel (dragNdrop) dragged the wrong row. Event order and meaning, where Qt differs from Windows and the page: focus made row 0 current and reported it; a drag with the button held selected rows (on Windows it is LVN_BEGINDRAG, for the program); dragging a track bar sent ENDTRACK twice; the 30 ms move rule dropped the last move of a burst; a full rebuild of the list between a press and its release lost the click; Qt reports a double click's second click only as a double click; Qt makes the first item added to a combo its current one and adds an item on Enter in an editable combo's edit; QCalendarWidget starts a month that begins a week one row down; Qt passes an untaken mouse event on to the parents, so a watcher saw each move twice; on X, showing the tip window sent the dialog a Leave with the pointer still inside (offscreen runs passed, xcb runs caught it). Process: up to v0.7.0 the runner passed a test whose program ended before its steps were done (dropDownComboBox, in v0.8.0's first run: Enter closed the dialog early); it now fails with STEPS NOT FINISHED. the test runner ran tests in their source directories, so tests wrote into the checkout, and a file one test wrote was counted as a passing test; one release's reported count was too high and was corrected. The first sample sweep counted modules and its own stop signal (HALT) as failures. In the cases the screenshots caught, the tests had passed.",
+   "title": "What has gone wrong, and the decision behind each",
+   "version": "0.3"
+}
