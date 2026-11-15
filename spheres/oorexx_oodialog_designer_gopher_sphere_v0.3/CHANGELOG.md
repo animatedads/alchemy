@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3 - 2026-11-15
+- Designer v0.11 (Autobuild PASS 20261115T154919Z) and Object Editor v0.3.
+- New articles: overview-and-docs (closed tree, code marks, All code, ooRexxDoc), object-editor.
+- Program format: trace probes are messages that keep SIGL and RESULT.
+- Pitfalls: CALL sets SIGL and drops RESULT; .Package~new line numbering in tests.
+
 ## 0.2 - 2026-11-15
 - Designer v0.10: reference picker, list Add/Remove, row fields (bound-dialogs, start, qualification).
 - Pitfalls: DO LABEL; long property labels scroll the page.

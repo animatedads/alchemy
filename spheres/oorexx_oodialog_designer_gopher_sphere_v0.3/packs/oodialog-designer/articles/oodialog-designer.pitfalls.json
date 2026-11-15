@@ -2,7 +2,7 @@
   "kind": "article",
   "id": "oodialog-designer.pitfalls",
   "sphere": "oodialog-designer",
-  "version": "0.2",
+  "version": "0.3",
   "section": "operations",
   "title": "ooRexx pitfalls met while building it",
   "authority": "project-artifact",
@@ -19,7 +19,9 @@
     "A relative database path fails in the browser: oodBeside resolves it beside the program.",
     "Values for SQL go through NoSQLServer's DatabasePreparedStatement and DatabaseParameterBinder typed from the catalogue: an untyped 1 became '1'.",
     "Never name a DO OVER control variable label: DO LABEL names a loop, so do label over x parses as a loop named OVER and fails with Error 26.2 at run time.",
-    "A long property label makes the properties panel taller and scrolls the page; browser tests that drag between panels then miss. Keep labels short and put a format in the input's placeholder."
+    "A long property label makes the properties panel taller and scrolls the page; browser tests that drag between panels then miss. Keep labels short and put a format in the input's placeholder.",
+    "CALL sets SIGL to the CALL's line and drops RESULT when the routine returns nothing; a message instruction leaves SIGL alone. Code injected into user code (probes, hooks) must be a message, and must answer RESULT as it was.",
+    ".Package~new(name, source) in a test numbers its lines from the package start: compare two runs only when both are built the same way."
   ],
   "topics": [
     "pitfalls",

@@ -2,7 +2,7 @@
   "kind": "article",
   "id": "oodialog-designer.program-format",
   "sphere": "oodialog-designer",
-  "version": "0.1",
+  "version": "0.2",
   "section": "architecture",
   "title": "The program it writes, and the design at its end",
   "authority": "project-artifact",
@@ -12,9 +12,28 @@
     "Whatever lies between the last event method and the next directive is read back as that method's code: a generated ::routine keeps its comment inside the routine, never before it.",
     "Generated code uses only documented upstream ooDialog API so it runs on Windows ooDialog unchanged.",
     "Every generated method is UNGUARDED, as the ooDialog guide asks of event handlers.",
-    "Background events reply at once (after EXPOSE, which must come first)."
+    "Background events reply at once (after EXPOSE, which must come first).",
+    "A trace probe is a message on its statement's own line: .OodTraceProbe~step(where, node, thread, .context~variables); the step answers RESULT as it was. Never a CALL: a CALL sets SIGL and drops RESULT, so a traced run would see other values than an untraced one. t02 runs the same code both ways and compares."
   ],
-  "topics": ["generator", "::RESOURCE oodDesign", "event methods", "round trip"],
-  "related": ["oodialog-designer.pitfalls"],
-  "provenance": [{"artifact": "packages/oorexx_oodialog_designer_v0.9/README.md", "sha256": "cdba58500b8abd60e3e0d85129b1066cec940d2324be27e46b8e65d62d38fe48", "claim": "Package README of the published v0.9 designer."}, {"artifact": "packages/oorexx_oodialog_designer_v0.9/src/OodDesigner.cls", "sha256": "12c9da682f2c69824721588668bf616ff41f91504cb6d3ccb76dbb7ce3190867", "claim": "The model, catalogue, generator and reader."}]
+  "topics": [
+    "generator",
+    "::RESOURCE oodDesign",
+    "event methods",
+    "round trip"
+  ],
+  "related": [
+    "oodialog-designer.pitfalls"
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.9/src/OodDesigner.cls",
+      "sha256": "12c9da682f2c69824721588668bf616ff41f91504cb6d3ccb76dbb7ce3190867",
+      "claim": "The model, catalogue, generator and reader."
+    },
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.11/README.md",
+      "sha256": "842b4ae4b11e1fee82582c84f2b2212f42e3f1af863e759e54c7fab984662175",
+      "claim": "Package README of v0.11."
+    }
+  ]
 }
