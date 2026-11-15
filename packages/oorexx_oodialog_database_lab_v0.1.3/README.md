@@ -1,0 +1,131 @@
+# ooDialog Database Lab v0.1.3 — Alchemy NoSQLServer test component
+
+Architecture: Tom Dyer. Code: ChatGPT (GPT-6).
+
+Current qualification version: 0.1.3 (graphical foreign-key creation).
+
+This is an ooRexx **model** for a user-facing database test bench in the
+ooDialog Designer and ooRexx Object Editor. The HTML/JavaScript editor only
+projects its results and sends intentions. All database creation, table
+definitions, SQL execution, validation and data access go through **Alchemy
+NoSQLServer**.
+
+The browser creates a *separate* ooRexx/WASM session for the lab. It does not
+load `NoSQLServer.cls` into the editor's reflection/compilation session: that
+would collide with any classes that the user's code happens to load.
+Refusals use this package's own language resources in English and German,
+through the shared OodNls mixin. The page selects the designer's language
+when opened and displays the refusal, without the ooRexx 93.900 wrapper.
+
+## Backend selection and limitations
+
+- This v0.1 lab uses `FileDatabaseEngine` (Alchemy NoSQLServer v0.92-dev1):
+  YAML catalog and typed delimited table storage under an isolated root.
+- No native SQLite backend is silently selected. `SQLiteWritableDatabaseEngine`
+  needs the native `nosqlsqlitewriter` library, unavailable in the browser's
+  WASM runtime. It remains an independent, explicit native-only option.
+- SQL has NoSQLServer semantics: `CREATE TABLE`, `DROP TABLE`, `SELECT`,
+  `INSERT`, `UPDATE`, `DELETE`, and supported queries. `ALTER TABLE` is **not**
+  supported by the underlying SQL executor. In this lab, `replaceEmptyTable`
+  validates a replacement definition, refuses all populated tables, refuses
+  declared foreign-key relations and uses DROP/CREATE only for an empty table.
+  A create failure attempts to restore its old empty definition; this is not
+  a transactional migration API. Never use it to remodel valuable data.
+- Table/drop operations are confined to the chosen root; user-supplied database,
+  table and column identifiers are restricted to ASCII alphanumeric/underscore
+  names starting with a letter or underscore (max 64 characters).
+- `executeJSON` projects the first 200 result rows. The underlying query runs
+  with its own NoSQLServer access path. Use `LIMIT` on exploratory large queries.
+- No multi-user claims, production credentials, MI/MU, network database or
+  secure transaction certification are implied. Browser data lives only for
+  that runtime session and is discarded when the editor reloads.
+
+## Model API
+
+```rexx
+::requires "OodDatabaseLab.cls"
+lab = .OodDatabaseLab~new("/tmp/disposable-db-lab")
+lab~createDatabase("test_contacts")
+lab~createTable("people", "id" || "09"x || "INTEGER" || "09"x || "0" || "09"x || "1" || "09"x || "0")
+say lab~executeJSON("INSERT INTO people (id) VALUES (1)")
+say lab~previewJSON("people")
+```
+
+| Method | Purpose |
+| --- | --- |
+| `graphLines(extraLines = "")` | Catalogue tables, columns, FK relations and optional ObjectStore records. |
+| `addRelationship(parentTable, parentColumn, childTable, childColumn, onDelete = "RESTRICT")` | Create a validated FK from a key to an empty child's existing column; used by Graph drag-and-drop. |
+| `language(lang)` | Choose refusal strings from the lab's own resources (English or German). |
+| `databaseNames`, `createDatabase(name)`, `openDatabase(name)` | Create/select a named database within the lab root. |
+| `tableNames`, `schema(name)` | Inspect Alchemy's catalog and typed columns. |
+| `createTable(name, tabSeparatedColumns)` | Validate a table definition, then issue NoSQLServer DDL. |
+| `replaceEmptyTable(name, tabSeparatedColumns)` | Redefine only a genuinely empty, unreferenced table. |
+| `dropTable(name)` | Explicitly drop a selected test table. |
+| `executeJSON(statement)`, `previewJSON(name)` | Execute one SQL statement and project diagnostics and up to 200 rows as JSON. |
+
+`tabSeparatedColumns` contains one row per column, with five tab-separated
+fields: `name`, `type`, `nullable` (`0`/`1`), `primary` (`0`/`1`), `unique`
+(`0`/`1`). The editor's table grid presents these fields; validation belongs
+to the ooRexx model.
+
+## Database graph
+
+Drag a source PRIMARY KEY or UNIQUE column onto a target column in another
+table to add a real NoSQLServer foreign key. For example,
+`customers.id` → `customers_sales.customers_id` and then `sales.id` →
+`customers_sales.sales_id`. The Graph tab offers ON DELETE RESTRICT (default),
+CASCADE, NO ACTION and SET NULL. Creation is routed to the ooRexx
+`addRelationship` method; JavaScript does not change catalogue files or
+generate SQL. Source must be a key, types must match, and the target column
+must not already have a relationship. SET NULL needs a nullable target.
+
+Because the FileDatabaseEngine has no in-place FK ALTER operation, this
+qualified test-only method rebuilds **only an empty child table** using the
+engine's public table API, retaining columns, keys and existing relationships.
+It refuses a populated child, a child referenced by another table, self-links
+and non-default storage modes. A failed CREATE attempts to restore the
+original empty definition; this is not a production migration API.
+
+The Graph tab draws an SVG without a third-party layout library. The same
+schema always yields the same positions; selecting a table box loads it into
+the schema editor. Tables containing only two foreign keys and at most one
+additional primary key display as small junctions between their parents.
+
+The model answers tab-separated TABLE (name, row count), COLUMN (table, name,
+type, nullable, primary, unique) and FK (child table/column, parent table/column,
+ON DELETE) records. Only live NoSQLServer definitions and catalogue counts
+are read; SQL statements are never reverse-parsed in JavaScript.
+
+For mapped objects, paste ObjectStore~graphLines into the optional textarea.
+The model passes OBJECT (class, primary table) and PART (class, attribute,
+ONE/MANY/LINK/EXT, target table, link table or -, OWNED/SHARED) records through.
+The SVG highlights object-owned/extension tables and draws typed object-part
+edges. Schema-qualified names such as ENT.person match local tables by the
+part after the dot, without case sensitivity. Unknown future line types are
+ignored for forward compatibility.
+
+## Qualification
+
+The smoke test creates an isolated directory supplied by the caller. It covers
+database creation and reopening, catalogue listing, table definition,
+insert/update/delete/query, an empty-table schema change, and refusal of
+unsafe names, duplicate databases, unknown types and populated-table changes.
+
+For the Node edition of ooRexx/WASM 0.2.4 (`npm i oorexxwasm@0.2.4`), from
+this package's directory:
+
+```sh
+temp_root=$(mktemp -d /tmp/ood-dblab.XXXXXX)
+export REXX_PATH="$PWD/src:/path/to/alchemy/packages/nosqlserver_v0.92-dev1/src:/path/to/alchemy/packages/alchemy_objects_v0.8/src:/path/to/alchemy/packages/oorexx_crypto_v0.1/src:/path/to/alchemy/packages/oorexx_oodialog_designer_v0.8/src"
+rexx tests/database_lab_smoke.rex "$temp_root"
+```
+
+The test only creates new data beneath its exact temporary root. Do not pass
+a directory holding existing data.
+The Autobuild schema 0.3 manifest invokes tests/autobuild_gate.sh, which
+creates and removes its own private test root.
+
+The consuming editor source/build lives on `animatedads/oorexx`, branch
+`oodialog-designer`, under `oodialog-designer/site/database-lab.*` and
+`oodialog-designer/tools/database.rex`. This package is canonical; the build
+copies exact source files rather than inventing a second database implementation.
