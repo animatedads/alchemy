@@ -1,0 +1,44 @@
+{
+   "id": "winres.testing",
+   "invariants": [
+      "A claim that the reader handles a form is backed by a fixture compiled by a real resource compiler, not by a hand-made byte string."
+   ],
+   "kind": "article",
+   "procedure": [
+      "rexx packages\/oorexx_win_resources_v0.1\/tests\/test_win_resources.rex",
+      "rexx packages\/oorexx_win_resources_v0.1\/tools\/res_corpus_check.rex --dir packages\/oorexx_win_resources_v0.1\/tests\/corpus\/res"
+   ],
+   "provenance": [
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "46 checks, llvm-rc and lld-link fixtures.",
+         "line_end": 51,
+         "line_start": 51,
+         "member": "packages\/oorexx_win_resources_v0.1\/README.md",
+         "sha256": "dfdb5bffc80a7e87b4be2d34ad970fd252bb918d825076b506985e4dc3308a08"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "24 of 26 compile.",
+         "line_end": 67,
+         "line_start": 67,
+         "member": "packages\/oorexx_win_resources_v0.1\/README.md",
+         "sha256": "dfdb5bffc80a7e87b4be2d34ad970fd252bb918d825076b506985e4dc3308a08"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "50 resources decoded; agreement with llvm-readobj.",
+         "line_end": 69,
+         "line_start": 69,
+         "member": "packages\/oorexx_win_resources_v0.1\/README.md",
+         "sha256": "dfdb5bffc80a7e87b4be2d34ad970fd252bb918d825076b506985e4dc3308a08"
+      }
+   ],
+   "related": [
+      "winres.formats"
+   ],
+   "sphere": "oorexx-win-resources",
+   "summary": "tests\/test_win_resources.rex makes 46 checks against tests\/fixtures\/app.rc, compiled by llvm-rc 18 into app.res and linked by lld-link into app.dll. llvm-readobj independently lists the same 7 resources, and .res and .dll give identical answers for every template. Upstream's corpus: the 26 official ooDialog sample .rc files (ooRexx GitHub c12e988) were compiled with llvm-rc. 24 compile; 2 fail on upstream defects (customDrawListView.rc includes a customDraw.h that does not exist; oodStandardDialogs.rc names oodStandardDialog.ico, but the file is oodStandardDialogs.ico). The reader decodes all 50 resources from the 24: 44 dialogs with 534 controls, and 3 menus. With --readobj, every resource's type, name, language and size matches llvm-cvtres plus llvm-readobj.",
+   "title": "Tests: a built fixture, and upstream's own ooDialog samples",
+   "version": "0.1"
+}

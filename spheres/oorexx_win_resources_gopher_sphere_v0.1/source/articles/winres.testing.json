@@ -1,0 +1,16 @@
+{
+  "kind": "article", "id": "winres.testing", "version": "0.1",
+  "title": "Tests: a built fixture, and upstream's own ooDialog samples",
+  "summary": "tests/test_win_resources.rex makes 46 checks against tests/fixtures/app.rc, compiled by llvm-rc 18 into app.res and linked by lld-link into app.dll. llvm-readobj independently lists the same 7 resources, and .res and .dll give identical answers for every template. Upstream's corpus: the 26 official ooDialog sample .rc files (ooRexx GitHub c12e988) were compiled with llvm-rc. 24 compile; 2 fail on upstream defects (customDrawListView.rc includes a customDraw.h that does not exist; oodStandardDialogs.rc names oodStandardDialog.ico, but the file is oodStandardDialogs.ico). The reader decodes all 50 resources from the 24: 44 dialogs with 534 controls, and 3 menus. With --readobj, every resource's type, name, language and size matches llvm-cvtres plus llvm-readobj.",
+  "invariants": ["A claim that the reader handles a form is backed by a fixture compiled by a real resource compiler, not by a hand-made byte string."],
+  "procedure": [
+    "rexx packages/oorexx_win_resources_v0.1/tests/test_win_resources.rex",
+    "rexx packages/oorexx_win_resources_v0.1/tools/res_corpus_check.rex --dir packages/oorexx_win_resources_v0.1/tests/corpus/res"
+  ],
+  "related": ["winres.formats"],
+  "provenance": [
+    {"member": "packages/oorexx_win_resources_v0.1/README.md", "find": "There are 46 checks against", "lines": 1, "claim": "46 checks, llvm-rc and lld-link fixtures."},
+    {"member": "packages/oorexx_win_resources_v0.1/README.md", "find": "The 26 official ooDialog sample", "lines": 1, "claim": "24 of 26 compile."},
+    {"member": "packages/oorexx_win_resources_v0.1/README.md", "find": "The reader decodes all 50 resources", "lines": 1, "claim": "50 resources decoded; agreement with llvm-readobj."}
+  ]
+}

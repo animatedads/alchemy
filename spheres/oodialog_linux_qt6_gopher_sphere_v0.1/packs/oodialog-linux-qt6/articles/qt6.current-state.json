@@ -1,0 +1,44 @@
+{
+   "id": "qt6.current-state",
+   "invariants": [
+      "A pass count is only quoted with the oodialog-wasm commit it was run against and the platform (offscreen or xcb).",
+      "The sweep is a coverage check, not a test: a program that shows its dialog may still draw wrongly.",
+      "Not done yet: a run on a physical desktop with a window manager (KDE, GNOME); every X run so far was on Xvfb."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "39 of 39 offscreen and on xcb against fc16dfb (v0.15.0).",
+         "line_end": 94,
+         "line_start": 92,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "019cc374cdb67fb974d456cd6c2f409dd0116b6a3e3c93bfb9a0f6dbfa940636"
+      },
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "Sweep result and the causes of the 43 errors.",
+         "line_end": 118,
+         "line_start": 111,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "019cc374cdb67fb974d456cd6c2f409dd0116b6a3e3c93bfb9a0f6dbfa940636"
+      },
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "What is not done.",
+         "line_end": 161,
+         "line_start": 158,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "019cc374cdb67fb974d456cd6c2f409dd0116b6a3e3c93bfb9a0f6dbfa940636"
+      }
+   ],
+   "related": [
+      "qt6.testing",
+      "qt6.oodweb-proposals",
+      "qt6.continuation"
+   ],
+   "sphere": "oodialog-linux-qt6",
+   "summary": "The latest branch is oodialog-qt6-v0.7, renderer v0.7.0, tested against oodialog-wasm fc16dfb (v0.15.0). All 39 of the suite's tests pass, both offscreen and on an X server (Xvfb with Qt's xcb platform, as a desktop runs it). The suite is the browser harness's tests, with their .steps and .expect files, plus the three programs the ooDialog Designer generates (Calculator, Contacts, Gadgets; see sphere oodialog-designer), used unchanged as a contract test. Every one of upstream's sample programs was also started with nothing clicked: against v0.15.0, 77 of 122 programs showed their dialog (75 against v0.14.0, 73 against v0.13.1). All 41 errors were in oodWeb.cls's scope; none was in the renderer: winsystm.cls 19, ooDialog native functions oodWeb does not have yet 11, no resource reader set 8, other 3. Earlier branches and their oodialog-wasm bases: v0.2 2c861d8, v0.3 23d57b2, v0.4 155e1b0, v0.5 1d89981, v0.6 0e0e744.",
+   "title": "Where the Qt6 renderer stands (v0.7.0, 15 Nov 2026)",
+   "version": "0.1"
+}

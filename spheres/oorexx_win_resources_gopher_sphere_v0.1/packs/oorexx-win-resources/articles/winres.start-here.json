@@ -1,0 +1,37 @@
+{
+   "id": "winres.start-here",
+   "invariants": [
+      "Pure ooRexx: no native code, no Python, no external tool at run time.",
+      "The format is detected from the content, not from the file name.",
+      "Text comes back as UTF-8 (surrogate pairs included); names compare without regard to case.",
+      "Language choice: the one asked for, then neutral, then en-US, then the first found.",
+      "Controls the contract has no kind for are listed under 'unsupported', never dropped silently."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "One file, no native code; the provider line for ooDialog\/WASM.",
+         "line_end": 11,
+         "line_start": 7,
+         "member": "packages\/oorexx_win_resources_v0.1\/README.md",
+         "sha256": "dfdb5bffc80a7e87b4be2d34ad970fd252bb918d825076b506985e4dc3308a08"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "UTF-8, case, language choice.",
+         "line_end": 27,
+         "line_start": 27,
+         "member": "packages\/oorexx_win_resources_v0.1\/README.md",
+         "sha256": "dfdb5bffc80a7e87b4be2d34ad970fd252bb918d825076b506985e4dc3308a08"
+      }
+   ],
+   "related": [
+      "winres.formats",
+      "winres.integration"
+   ],
+   "sphere": "oorexx-win-resources",
+   "summary": "packages\/oorexx_win_resources_v0.1 (Claude (Opus 5.5), architecture Tom Dyer) reads binary Windows resources in pure ooRexx. src\/WinResources.cls is a single file with no native code, so it runs unchanged on ooRexx\/WASM and on Linux. It reads .res files (rc.exe, windres, llvm-rc) and the .rsrc section of .dll and .exe files (PE32 and PE32+), and decodes DIALOG\/DIALOGEX and MENU\/MENUEX templates. Its WinResourceProvider is the reader ooDialog\/WASM plugs in for ResDialog and BinaryMenuBar: .oodn~resourceProvider = .WinResourceProvider~new. The package is on animatedads\/alchemy PR #146 (branch claude\/python-gate-rc-tools-win-resources-20261114), not yet merged to main.",
+   "title": "oorexx_win_resources: one ooRexx class file that reads compiled Windows resources",
+   "version": "0.1"
+}

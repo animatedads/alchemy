@@ -1,0 +1,67 @@
+{
+   "id": "qt6.failure-modes",
+   "invariants": [
+      "Blame goes to the decision, not the person: each lesson in the README names the decision that caused it.",
+      "Where Qt and the page differ in geometry or event order, follow the page, and write the rule into RENDERER_CONTRACT.md.",
+      "Look at the screenshots after every run; several defects passed every check."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "Rebuild between press and release; double click's second click.",
+         "line_end": 135,
+         "line_start": 133,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "019cc374cdb67fb974d456cd6c2f409dd0116b6a3e3c93bfb9a0f6dbfa940636"
+      },
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "Row heights, drag selection, the 30 ms rule.",
+         "line_end": 140,
+         "line_start": 137,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "019cc374cdb67fb974d456cd6c2f409dd0116b6a3e3c93bfb9a0f6dbfa940636"
+      },
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "A check box click selected a row; sweep classification.",
+         "line_end": 144,
+         "line_start": 142,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "019cc374cdb67fb974d456cd6c2f409dd0116b6a3e3c93bfb9a0f6dbfa940636"
+      },
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "Tests wrote into the checkout and inflated a count; pixmap cache; combo height; ENDTRACK twice.",
+         "line_end": 150,
+         "line_start": 146,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "019cc374cdb67fb974d456cd6c2f409dd0116b6a3e3c93bfb9a0f6dbfa940636"
+      },
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "Separators; current row on focus; tab strip; srcDir.",
+         "line_end": 156,
+         "line_start": 152,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "019cc374cdb67fb974d456cd6c2f409dd0116b6a3e3c93bfb9a0f6dbfa940636"
+      },
+      {
+         "artifact": "animatedads\/oorexx@58eae3982122a4f8d0b3dd7dfe169deaf2a41f95",
+         "claim": "Thread lessons.",
+         "line_end": 24,
+         "line_start": 21,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "019cc374cdb67fb974d456cd6c2f409dd0116b6a3e3c93bfb9a0f6dbfa940636"
+      }
+   ],
+   "related": [
+      "qt6.renderer-contract",
+      "qt6.testing"
+   ],
+   "sphere": "oodialog-linux-qt6",
+   "summary": "Most defects so far came from the renderer's own design decisions. Few were in Qt or in oodWeb. Wire: a flat string lost the separators inside arguments, so tree nodes lost EXPANDED and rows kept only their first cell, with no error (fixed with 1D). Threads: the first Rexx caller as Qt's GUI thread hung t11 and crashed t02; a global QObject took Qt's main thread; Qt's pixmap cache was destroyed on the wrong thread at exit. Geometry: a tab strip vanished under a Qt layout when the control was only strip-high; combo boxes were as tall as their lists; list-view rows and header were taller than the page's, so a program that hit-tests by pixel (dragNdrop) dragged the wrong row. Event order and meaning, where Qt differs from Windows and the page: focus made row 0 current and reported it; a drag with the button held selected rows (on Windows it is LVN_BEGINDRAG, for the program); dragging a track bar sent ENDTRACK twice; the 30 ms move rule dropped the last move of a burst; a full rebuild of the list between a press and its release lost the click; Qt reports a double click's second click only as a double click. Process: the test runner ran tests in their source directories, so tests wrote into the checkout, and a file one test wrote was counted as a passing test; one release's reported count was too high and was corrected. The first sample sweep counted modules and its own stop signal (HALT) as failures. In the cases the screenshots caught, the tests had passed.",
+   "title": "What has gone wrong, and the decision behind each",
+   "version": "0.1"
+}

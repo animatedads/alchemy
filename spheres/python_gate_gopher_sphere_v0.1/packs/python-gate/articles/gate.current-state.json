@@ -1,0 +1,48 @@
+{
+   "id": "gate.current-state",
+   "invariants": [
+      "Only Tom Dyer switches the gate from advisory to enforce."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "317 pass, 180 fail.",
+         "line_end": 31,
+         "line_start": 31,
+         "member": "packages\/alchemy_autobuild_v0.5.3\/README.md",
+         "sha256": "8d39edb3d7f813ca6787986b60643a62d821f3eab961de2b752964740c519f8d"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "The install starts in advisory mode.",
+         "line_end": 12,
+         "line_start": 12,
+         "member": "docs\/autobuild\/INSTALL_V053_WITH_CLAUDE_CODE.md",
+         "sha256": "300205d1eb7dc1ee2fa95626c74e4461adae996cfa966bda465e585172cdc6df"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "Only Tom switches the gate to enforce.",
+         "line_end": 160,
+         "line_start": 157,
+         "member": "docs\/autobuild\/INSTALL_V053_WITH_CLAUDE_CODE.md",
+         "sha256": "300205d1eb7dc1ee2fa95626c74e4461adae996cfa966bda465e585172cdc6df"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "23 gate tests.",
+         "line_end": 48,
+         "line_start": 48,
+         "member": "packages\/oorexx_python_gate_v0.1\/README.md",
+         "sha256": "57620545a77dbea02f4700346707c3619f38254ff86ee8dacd45152f5004a08f"
+      }
+   ],
+   "related": [
+      "gate.start-here"
+   ],
+   "sphere": "python-gate",
+   "summary": "The gate (23 tests) and Autobuild v0.5.3 (9 runner tests, plus v0.5.2's acceptance tests) are on animatedads\/alchemy PR #146, which is not yet merged. Run over all 497 package directories on main on 14 Nov 2026, the gate passes 317 and fails 180: 1,109 Python files have no justification, and 148 files call Python. docs\/autobuild\/INSTALL_V053_WITH_CLAUDE_CODE.md is a procedure Claude Code (Haiku is enough) runs on the build host. It installs v0.5.3 with the gate in advisory mode. Switching to enforce is a separate step that only Tom Dyer takes. Until then, nothing is gated: write ooRexx anyway, and run the gate yourself before submitting.",
+   "title": "Where the gate stands (15 Nov 2026): built and tested, not installed",
+   "version": "0.1"
+}

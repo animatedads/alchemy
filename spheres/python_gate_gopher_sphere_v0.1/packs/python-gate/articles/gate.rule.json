@@ -1,0 +1,50 @@
+{
+   "id": "gate.rule",
+   "invariants": [
+      "The check is lexical: a string that spells out a Python command line counts as a call (the gate's own tests carry such fixtures, and justify them).",
+      "A gate that cannot run fails closed."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "What counts; exemptions.",
+         "line_end": 25,
+         "line_start": 19,
+         "member": "packages\/oorexx_python_gate_v0.1\/README.md",
+         "sha256": "57620545a77dbea02f4700346707c3619f38254ff86ee8dacd45152f5004a08f"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "Exit codes and report.",
+         "line_end": 36,
+         "line_start": 36,
+         "member": "packages\/oorexx_python_gate_v0.1\/README.md",
+         "sha256": "57620545a77dbea02f4700346707c3619f38254ff86ee8dacd45152f5004a08f"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "Fails closed.",
+         "line_end": 27,
+         "line_start": 27,
+         "member": "packages\/alchemy_autobuild_v0.5.3\/README.md",
+         "sha256": "8d39edb3d7f813ca6787986b60643a62d821f3eab961de2b752964740c519f8d"
+      },
+      {
+         "artifact": "animatedads\/alchemy@6d2d307f8b69e4c2195932a3056f9e42e705ad3c",
+         "claim": "Lexical limit.",
+         "line_end": 40,
+         "line_start": 40,
+         "member": "packages\/oorexx_python_gate_v0.1\/README.md",
+         "sha256": "57620545a77dbea02f4700346707c3619f38254ff86ee8dacd45152f5004a08f"
+      }
+   ],
+   "related": [
+      "gate.start-here",
+      "gate.current-state"
+   ],
+   "sphere": "python-gate",
+   "summary": "Python means .py, .pyw and .pyi files; files whose #! line names python (a rename does not hide one); and .rex, .rexx, .cls, .orx and .sh files with a line that runs python on a script, -m, -c or -u. Words, comments and 'echo python' are not calls. Anything under vendor\/, upstream\/ or third_party\/ is exempt (third-party code carried unchanged) but is listed in the report. .git\/ is never scanned. Exit codes: 0 PASS, 1 FAIL, 2 usage error; with --advisory it always exits 0. The JSON report (alchemy.python-gate.report\/1) goes to stdout and the progress log to stderr. In Autobuild v0.5.3, config key python_gate is 'enforce' by default or 'advisory'. If the gate cannot run (no rexx, script missing), the test fails: an unavailable check is NOT RUN, never PASS.",
+   "title": "What counts as Python, and how the gate decides",
+   "version": "0.1"
+}
