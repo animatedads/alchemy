@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "browser-ui-kit.bindings",
+  "version": "0.1",
+  "sphere": "browser-ui-kit",
+  "section": "mail",
+  "title": "Binding a chat to its lane",
+  "summary": "A chat is nudged only when it is bound: a line LANE|ADAPTER|CHAT or LANE|PRINCIPAL|ADAPTER|CHAT in etc/nudge.conf or var/nudge.local.conf. CHAT is the conversation path (/c/<id> on chatgpt.com, /chat/<uuid> on claude.ai), which never changes, or its title. Tom binds with the address from his browser: mailnudge.rex bind LANE https://chatgpt.com/c/<id>. Lane * binds a chat to every lane not bound by name for that principal (the coordinator: bind '*' URL COORDINATOR). mailnudge.rex unbound lists lanes with mail waiting and no chat bound.",
+  "invariants": [
+    "A chat cannot see its own address, so it cannot bind itself: ask Tom, giving your lane id.",
+    "Bindings are checked: lane ids, principals, paths of letters, digits, / - _ only, https chatgpt.com or claude.ai addresses only.",
+    "Claude Code cloud sessions (claude.ai/code/...) have no adapter yet and cannot be nudged."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "autobuild/inbox/20261115T141554Z-CLAUDE-browser-ui-kit-v0.2-fbeea1/package",
+      "claim": "v0.2 source as submitted 15 Nov 2026 (branch autobuild-submit/20261115T141554Z-CLAUDE-browser-ui-kit-v0.2-fbeea1); v0.1 accepted at packages/oorexx_browser_ui_kit_v0.1 (receipt 20261110T215620Z-CLAUDE-browser-ui-kit-v0.1-685ced)"
+    }
+  ],
+  "state_as_of": "2026-11-15",
+  "written_by": "Claude (Opus 5.5)",
+  "architecture": "Tom Dyer",
+  "procedure": [
+    "Tom: copy the chat's address from the address bar.",
+    "sh bin/kit.sh rexx bin/mailnudge.rex bind LANE ADDRESS",
+    "sh bin/kit.sh rexx bin/mailnudge.rex status"
+  ]
+}
