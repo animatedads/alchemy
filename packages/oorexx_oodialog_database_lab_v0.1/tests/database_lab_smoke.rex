@@ -1,4 +1,5 @@
 /* Run with a freshly-created temporary BASE directory as the first argument.
+ * Architecture: Tom Dyer. Code: ChatGPT (GPT-6).
  * No default path: never operate on a real user's database by accident.
  */
 parse arg base
@@ -8,6 +9,13 @@ if base = "" then do
 end
 
 lab = .OodDatabaseLab~new(base)
+call check lab~module_version = "0.1.1", "instance version"
+call check .OodDatabaseLab~module_version = "0.1.1", "class version"
+call check lab~module_lastChanged = "2026-11-15", "instance last changed"
+call check .OodDatabaseLab~module_lastChanged = "2026-11-15", "class last changed"
+call check lab~language("de") = "de", "choose German for refusals"
+call refusesText lab, "CREATEDATABASE", .array~of("bad name"), "Ungültiger Datenbank-", "localized German refusal"
+call check lab~language("en") = "en", "return to English"
 call check lab~databaseNames = "", "clean start"
 call check lab~createDatabase("TestLab"), "create database"
 call check lab~databaseNames = "TestLab", "database is listed"
@@ -62,7 +70,7 @@ call check other~openDatabase("TestLab"), "reopen persistent backend"
 call check other~tableNames = "", "reopen reads catalog"
 call check lab~createDatabase("OtherLab"), "create second database"
 call check lab~databaseNames~pos("TestLab") > 0 & lab~databaseNames~pos("OtherLab") > 0, "list multiple databases"
-say "OODIALOG DATABASE LAB: 33 checks PASS"
+say "OODIALOG DATABASE LAB: 40 checks PASS"
 exit 0
 
 check: procedure
@@ -81,5 +89,19 @@ refuses: procedure
 expected:
   signal off syntax
   return
+
+refusesText: procedure
+  use arg receiver, name, args, expectedText, message
+  signal on syntax name expectedLocalized
+  receiver~sendWith(name, args)
+  signal off syntax
+  say "FAIL:" message "(no refusal)"
+  exit 1
+expectedLocalized:
+  got = condition("O")~at("ADDITIONAL")[1]
+  signal off syntax
+  if got~pos(expectedText) = 1 then return
+  say "FAIL:" message "(got" got")"
+  exit 1
 
 ::requires "OodDatabaseLab.cls"

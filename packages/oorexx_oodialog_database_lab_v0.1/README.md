@@ -1,5 +1,7 @@
 # ooDialog Database Lab v0.1 — Alchemy NoSQLServer test component
 
+Architecture: Tom Dyer. Code: ChatGPT (GPT-6).
+
 This is an ooRexx **model** for a user-facing database test bench in the
 ooDialog Designer and ooRexx Object Editor. The HTML/JavaScript editor only
 projects its results and sends intentions. All database creation, table
@@ -9,6 +11,9 @@ NoSQLServer**.
 The browser creates a *separate* ooRexx/WASM session for the lab. It does not
 load `NoSQLServer.cls` into the editor's reflection/compilation session: that
 would collide with any classes that the user's code happens to load.
+Refusals use this package's own language resources in English and German,
+through the shared OodNls mixin. The page selects the designer's language
+when opened and displays the refusal, without the ooRexx 93.900 wrapper.
 
 ## Backend selection and limitations
 
@@ -46,6 +51,7 @@ say lab~previewJSON("people")
 
 | Method | Purpose |
 | --- | --- |
+| `language(lang)` | Choose refusal strings from the lab's own resources (English or German). |
 | `databaseNames`, `createDatabase(name)`, `openDatabase(name)` | Create/select a named database within the lab root. |
 | `tableNames`, `schema(name)` | Inspect Alchemy's catalog and typed columns. |
 | `createTable(name, tabSeparatedColumns)` | Validate a table definition, then issue NoSQLServer DDL. |
@@ -70,12 +76,14 @@ this package's directory:
 
 ```sh
 temp_root=$(mktemp -d /tmp/ood-dblab.XXXXXX)
-export REXX_PATH="$PWD/src:/path/to/alchemy/packages/nosqlserver_v0.92-dev1/src:/path/to/alchemy/packages/alchemy_objects_v0.8/src:/path/to/alchemy/packages/oorexx_crypto_v0.1/src"
+export REXX_PATH="$PWD/src:/path/to/alchemy/packages/nosqlserver_v0.92-dev1/src:/path/to/alchemy/packages/alchemy_objects_v0.8/src:/path/to/alchemy/packages/oorexx_crypto_v0.1/src:/path/to/alchemy/packages/oorexx_oodialog_designer_v0.8/src"
 rexx tests/database_lab_smoke.rex "$temp_root"
 ```
 
 The test only creates new data beneath its exact temporary root. Do not pass
 a directory holding existing data.
+The Autobuild schema 0.3 manifest invokes tests/autobuild_gate.sh, which
+creates and removes its own private test root.
 
 The consuming editor source/build lives on `animatedads/oorexx`, branch
 `oodialog-designer`, under `oodialog-designer/site/database-lab.*` and
