@@ -1,0 +1,44 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_oodialog_database_lab",
+    "version": "0.1.1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": [],
+    "require_dirs": [],
+    "report": []
+  },
+  "tests": [
+    {
+      "name": "database-lab-disposable-file-backend",
+      "argv": [
+        "bash",
+        "tests/autobuild_gate.sh"
+      ],
+      "timeout_seconds": 300,
+      "environment": {
+        "rexx_path": {
+          "mode": "replace",
+          "entries": [
+            "${PACKAGE_ROOT}/src",
+            "${REPO_ROOT}/packages/nosqlserver_v0.92-dev1/src",
+            "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+            "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src",
+            "${REPO_ROOT}/packages/oorexx_oodialog_designer_v0.8/src"
+          ],
+          "require_entries": true
+        }
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_oodialog_database_lab_v0.1"
+    }
+  }
+}
