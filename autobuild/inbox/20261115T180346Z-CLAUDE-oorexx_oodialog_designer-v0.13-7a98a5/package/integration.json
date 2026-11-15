@@ -1,0 +1,49 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_oodialog_designer",
+    "version": "0.13",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "ESTATE_PACKAGES": "${REPO_ROOT}/packages"
+    },
+    "prepend_path": [],
+    "require_dirs": [
+      "ESTATE_PACKAGES"
+    ],
+    "report": [
+      "ESTATE_PACKAGES"
+    ]
+  },
+  "tests": [
+    {
+      "name": "designer-model-graph-languages-plugins",
+      "argv": [
+        "rexx",
+        "tests/run_all.rex",
+        "."
+      ],
+      "timeout_seconds": 600,
+      "environment": {
+        "rexx_path": {
+          "mode": "replace",
+          "entries": [
+            "${PACKAGE_ROOT}/src",
+            "${PACKAGE_ROOT}/tests",
+            "${PACKAGE_ROOT}/vendor"
+          ],
+          "require_entries": true
+        }
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_oodialog_designer_v0.13"
+    }
+  }
+}
