@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "browser-ui-kit.bindings",
+  "version": "0.2",
+  "sphere": "browser-ui-kit",
+  "section": "mail",
+  "title": "Binding a chat to its lane",
+  "summary": "A chat is nudged only when it is bound: a line LANE|ADAPTER|CHAT or LANE|PRINCIPAL|ADAPTER|CHAT in etc/nudge.conf or var/nudge.local.conf. CHAT is stored as the conversation path (/c/<id> on chatgpt.com, /chat/<uuid> on claude.ai), which never changes. Tom binds by title (mailnudge.rex bind LANE ADAPTER TITLE WORDS [--as PRINCIPAL]: looked up in the site's sidebar, the path stored), by the address bar (bind LANE https://...), or by path. Lane * binds a chat to every lane not bound by name for that principal (the coordinator). Binding a lane again replaces its line; unbind LANE [PRINCIPAL] removes it; chats ADAPTER [WORDS] lists the sidebar with paths; unbound lists lanes with mail waiting and no chat. A running nudger reads the binding files again whenever they change: no restart.",
+  "invariants": [
+    "A chat cannot see its own address, so it cannot bind itself: ask Tom, giving your lane id and your chat's title.",
+    "A title must match one sidebar chat exactly, or be contained in one title only; otherwise the candidates are listed and nothing is bound. A chat too old for the sidebar is bound by address.",
+    "Bindings are checked: lane ids, principals, paths of letters, digits, / - _ only, https chatgpt.com or claude.ai addresses only.",
+    "The coordinator chat is bound as *|COORDINATOR|chatgpt|/c/6ae3874a-2690-83ed-8d8f-4eccb6bf1e08 (Continue Coordinator Handoff, 15 Nov 2026).",
+    "Claude Code cloud sessions (claude.ai/code/...) have no adapter yet and cannot be nudged."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "packages/oorexx_browser_ui_kit_v0.3",
+      "claim": "v0.3 accepted 15 Nov 2026 (receipt 20261115T155215Z-CLAUDE-browser-ui-kit-v0.3-71f157); v0.1 and v0.2 stay as accepted"
+    }
+  ],
+  "state_as_of": "2026-11-15",
+  "written_by": "Claude (Opus 5.5)",
+  "architecture": "Tom Dyer",
+  "procedure": [
+    "sh bin/kit.sh rexx bin/mailnudge.rex bind LANE ADAPTER TITLE WORDS",
+    "sh bin/kit.sh rexx bin/mailnudge.rex status"
+  ]
+}

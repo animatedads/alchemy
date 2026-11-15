@@ -1,0 +1,25 @@
+{
+  "kind": "article",
+  "id": "browser-ui-kit.safety",
+  "version": "0.2",
+  "sphere": "browser-ui-kit",
+  "section": "safety",
+  "title": "Safety rules the kit keeps",
+  "summary": "Declared automation: every page the kit opens appends AlchemyAgent/0.1 (LLM-driven request; requested-by=AGENT; +https://rasenfalcon.com) to the browser's user agent; it never hides automation, answers a bot check, or mimics a person's typing. Tom signs in himself (hand-over); the kit never types credentials into a real site. One browser-ui page run at a time on the machine (var/browser-ui.lock; a lock held 15 minutes is taken over).",
+  "invariants": [
+    "Both sites refuse headless Chrome, so the kit runs in a visible window on Tom's desktop.",
+    "Text typed into a chat comes from fixed templates checked word by word, never from mailbox content.",
+    "Profiles hold session cookies: mode 700, treated like a password."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "packages/oorexx_browser_ui_kit_v0.3",
+      "claim": "v0.3 accepted 15 Nov 2026 (receipt 20261115T155215Z-CLAUDE-browser-ui-kit-v0.3-71f157); v0.1 and v0.2 stay as accepted"
+    }
+  ],
+  "state_as_of": "2026-11-15",
+  "written_by": "Claude (Opus 5.5)",
+  "architecture": "Tom Dyer"
+}
