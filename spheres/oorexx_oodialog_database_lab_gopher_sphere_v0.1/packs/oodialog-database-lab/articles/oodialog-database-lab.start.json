@@ -1,0 +1,20 @@
+{
+  "kind": "article",
+  "id": "oodialog-database-lab.start",
+  "sphere": "oodialog-database-lab",
+  "version": "0.1",
+  "section": "start",
+  "title": "Where Database Lab lives and what it may change",
+  "authority": "project-artifact",
+  "summary": "Architecture: Tom Dyer; code: ChatGPT (GPT-6). The Database Lab is an ooRexx OodDatabaseLab model on Alchemy NoSQLServer (immutable package packages/oorexx_oodialog_database_lab_v0.1.2 in animatedads/alchemy). It creates disposable databases, creates and drops tables, replaces only genuinely empty unreferenced tables and executes SQL; unsupported ALTER TABLE is not emulated for populated data. Its separate ooRexx/WASM session avoids loading NoSQLServer classes into the Designer's code/reflection session. Page files live under oodialog-designer/site/database-lab.js and .css in animatedads/oorexx, with db.* English and German resources in src/OodUi.cls and dependency staging in tools/database.rex. The SVG Graph tab was pushed on feature/oodialog-database-graph-v3-20261115 at commit a001470dfcabe82859cb84732e5cc406ed6615c7, based on Designer v0.11 b6a6287. Avoid production databases and credentials: this is a disposable test facility.",
+  "invariants": [
+    "ooRexx/NoSQLServer owns schema, database and data decisions; JavaScript does not implement SQL or parse SQL into a schema.",
+    "The Database Lab runs in a separate WASM session from Designer.",
+    "Never replace a populated table; empty-table replacement is not a transactional migration.",
+    "Use an immutable Alchemy package version and an Autobuild integration manifest for model changes.",
+    "Each class has module_version and module_lastChanged on class and instance sides; attribute Architecture: Tom Dyer and Code: ChatGPT (GPT-6)."
+  ],
+  "topics": ["ooDialog Designer", "Database Lab", "NoSQLServer", "WASM", "Autobuild"],
+  "related": ["oodialog-database-lab.graph-tab", "oodialog-designer.database-lab", "mapped-objects.graph-lines"],
+  "provenance": [{"artifact": "packages/oorexx_oodialog_database_lab_v0.1.2/README.md", "sha256": "dcd097243bfc01cf6da329e048bc179a23e1b3a16d5f4bd00de75f4b0e4ea51f", "claim": "Canonical model README on alchemy main."}]
+}
