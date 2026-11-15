@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>notNotes Web Wire</title>
+  <link rel="stylesheet" href="notnotes.css">
+  <style>
+    html,body{min-height:100%;margin:0}
+    body{background:var(--nn-page,#f4f6f9)}
+    .nn-live-frame{min-height:100vh;display:grid;grid-template-rows:auto 1fr}
+    .nn-live-status{display:flex;align-items:center;gap:.65rem;padding:.65rem 1rem;background:#fff;border-bottom:1px solid rgba(15,23,42,.1);font:500 14px/1.2 system-ui,sans-serif}
+    .nn-live-status strong{margin-right:auto}.nn-live-status [data-state="live"]{font-weight:700}.nn-live-status [data-state="error"]{font-weight:700}
+    #notnotes-wire-root{min-width:0;min-height:0}
+    .nn-bootstrap-error{max-width:48rem;margin:4rem auto;padding:1.25rem 1.5rem;background:#fff;border:1px solid rgba(15,23,42,.12);border-radius:16px;font:500 15px/1.5 system-ui,sans-serif}
+  </style>
+</head>
+<body>
+  <div class="nn-live-frame">
+    <header class="nn-live-status" aria-live="polite">
+      <strong>notNotes</strong>
+      <span id="notnotes-wire-connection" data-state="starting">Connecting…</span>
+    </header>
+    <main id="notnotes-wire-root" aria-label="notNotes workspace"></main>
+  </div>
+  <script id="notnotes-wire-config" type="application/json">{}</script>
+  <script type="module" src="notnotes-wire-live.js"></script>
+</body>
+</html>

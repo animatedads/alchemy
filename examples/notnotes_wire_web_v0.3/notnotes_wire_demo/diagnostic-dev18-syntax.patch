@@ -1,0 +1,40 @@
+--- a/src/MiniNotesApp.cls
++++ b/src/MiniNotesApp.cls
+@@ -56,7 +56,7 @@
+   expose temporalEvidence
+   use strict arg docKey, fieldName
+   evidenceKey = docKey~string~upper || "1f"x || fieldName~string~upper
+-  if \\temporalEvidence~hasIndex(evidenceKey) then return .nil
++  if \temporalEvidence~hasIndex(evidenceKey) then return .nil
+   return temporalEvidence[evidenceKey]~copy
+ 
+ ::method temporalEvidenceRecords
+@@ -796,7 +796,7 @@
+     end
+     descriptor["VALUE"] = document~field(fieldName)
+     temporal = self~temporalEvidenceFor(document~DocKey, fieldName)
+-    if temporal \\== .nil then descriptor["TEMPORAL_EVIDENCE"] = temporal
++    if temporal \== .nil then descriptor["TEMPORAL_EVIDENCE"] = temporal
+     target = self~relationshipTarget(document~formName, fieldName)
+     descriptor["REFERENCE_TARGET"] = target
+     if target <> "" then descriptor["CARDINALITY"] = self~relationshipCardinality(document~formName, fieldName)
+@@ -1204,7 +1204,7 @@
+   end
+ 
+   document~putField(spec["NAME"], value)
+-  if temporalOutcome \\== .nil then ignore = self~recordTemporalEvidence(document~DocKey, spec["NAME"], temporalOutcome)
++  if temporalOutcome \== .nil then ignore = self~recordTemporalEvidence(document~DocKey, spec["NAME"], temporalOutcome)
+   node~save(document)
+   ignore = self~persistChangedDocument(document)
+   return .true
+--- a/src/MiniNotesPersistence.cls
++++ b/src/MiniNotesPersistence.cls
+@@ -491,7 +491,7 @@
+       record["STATUS"] = row["status"]
+       record["FIELDS"] = self~decodeCustomFields(row["fields_hex"])
+       restoredDocument = app~restoreDocumentRecord(record)
+-      if restoredDocument = \== .nil then restoredIndex[record["DOC_KEY"]~string~upper] = restoredDocument
++      if restoredDocument \== .nil then restoredIndex[record["DOC_KEY"]~string~upper] = restoredDocument
+       records~append(record)
+     end
+     if \paged then leave
