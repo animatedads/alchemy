@@ -1,0 +1,20 @@
+{
+  "kind": "article",
+  "id": "oodialog-designer.program-format",
+  "sphere": "oodialog-designer",
+  "version": "0.1",
+  "section": "architecture",
+  "title": "The program it writes, and the design at its end",
+  "authority": "project-artifact",
+  "summary": "One .rex file is both the program and the design. It holds: a UserDialog subclass whose defineDialog makes the controls with createXxx and connects events with connectXxxEvent; one UNGUARDED accessor per control (self~lcd~setText(x)); one method per event named on_<control>_<event> holding the user's code (the form's OK and CANCEL override ok and cancel); the form's variables as ::attribute; the form's own methods; generated helpers (<tab>_pageChanged, <tab>_show, timer_<t>, and for bound dialogs <ctl>_bound, <list>_load/_save/_add/_remove); ::routines; ::RESOURCE strings.<language> when translatable; and last ::RESOURCE oodDesign, the design as lines (form, control, prop, event, binding ...). Open... reads the design back from the resource and the event code from the methods.",
+  "invariants": [
+    "Round trip is byte-identical: generate, read back, generate again gives the same file (t01, t03, t10 check it).",
+    "Whatever lies between the last event method and the next directive is read back as that method's code: a generated ::routine keeps its comment inside the routine, never before it.",
+    "Generated code uses only documented upstream ooDialog API so it runs on Windows ooDialog unchanged.",
+    "Every generated method is UNGUARDED, as the ooDialog guide asks of event handlers.",
+    "Background events reply at once (after EXPOSE, which must come first)."
+  ],
+  "topics": ["generator", "::RESOURCE oodDesign", "event methods", "round trip"],
+  "related": ["oodialog-designer.pitfalls"],
+  "provenance": [{"artifact": "packages/oorexx_oodialog_designer_v0.9/README.md", "sha256": "cdba58500b8abd60e3e0d85129b1066cec940d2324be27e46b8e65d62d38fe48", "claim": "Package README of the published v0.9 designer."}, {"artifact": "packages/oorexx_oodialog_designer_v0.9/src/OodDesigner.cls", "sha256": "12c9da682f2c69824721588668bf616ff41f91504cb6d3ccb76dbb7ce3190867", "claim": "The model, catalogue, generator and reader."}]
+}

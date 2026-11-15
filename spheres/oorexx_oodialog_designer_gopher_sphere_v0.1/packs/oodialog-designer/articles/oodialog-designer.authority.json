@@ -1,0 +1,19 @@
+{
+  "kind": "article",
+  "id": "oodialog-designer.authority",
+  "sphere": "oodialog-designer",
+  "version": "0.1",
+  "section": "architecture",
+  "title": "ooRexx owns every decision; the page only displays",
+  "authority": "project-artifact",
+  "summary": "src/OodDesigner.cls owns the design: the model, the control catalogue (::RESOURCE oodKinds, one kind line per control, one action line per code-insertion action), the generator and the reader. site/designer.js displays the design and reports what the user did (a drop, a move, a property typed, a line of code) as a message to an OodDesign object in an ooRexx/WASM session. The object refuses what would break the program and says why (a control named execute, a style the control does not take, an event it does not have, a line starting ::, a bad binding). src/OodGraph.cls owns graph edits; src/OodUi.cls holds every text the designer shows (strings.en, strings.de) read by OodNls. JavaScript is used for pointer and drag events, and for T(key) because a page text is needed at once.",
+  "invariants": [
+    "Never decide a design rule in JavaScript: add it to OodDesign and let the page show the refusal.",
+    "A refusal is raise syntax 93.900 array(oodT(key, ...)): a translated message, keyed in OodUi en and de; tests/t04_ui.rex checks de has every en key with the same %n.",
+    "The code is the truth: a graph edit answers new code that goes through setEventCode/setMethod like typing.",
+    "A new control kind is one catalogue line; props= lists the properties it takes, and setProp refuses others."
+  ],
+  "topics": ["OodDesign", "catalogue", "refusals", "OodUi", "OodGraph"],
+  "related": ["oodialog-designer.program-format"],
+  "provenance": [{"artifact": "packages/oorexx_oodialog_designer_v0.9/README.md", "sha256": "cdba58500b8abd60e3e0d85129b1066cec940d2324be27e46b8e65d62d38fe48", "claim": "Package README of the published v0.9 designer."}, {"artifact": "packages/oorexx_oodialog_designer_v0.9/src/OodDesigner.cls", "sha256": "12c9da682f2c69824721588668bf616ff41f91504cb6d3ccb76dbb7ce3190867", "claim": "The model, catalogue, generator and reader."}]
+}

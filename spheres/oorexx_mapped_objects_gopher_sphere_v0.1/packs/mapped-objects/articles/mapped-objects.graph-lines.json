@@ -1,0 +1,31 @@
+{
+  "kind": "article",
+  "id": "mapped-objects.graph-lines",
+  "sphere": "mapped-objects",
+  "version": "0.1",
+  "section": "integration",
+  "title": "graphLines: the contract for a database graph",
+  "authority": "project-artifact",
+  "summary": "store~graphLines answers tab-separated lines, one OBJECT line per mapped class and one PART line per extension table and part: OBJECT <CLASS> <schema.table>; PART <CLASS> <attribute or -> <EXT|ONE|MANY|LINK> <target schema.table> <link table or -> <OWNED|SHARED>. Example: OBJECT PERSON ENT.per / PART PERSON - EXT ENT.per_ext - OWNED / PART PERSON addresses LINK ENT.addr ENT.per_addr SHARED / PART PERSON employer ONE ENT.com - SHARED / PART PERSON notes MANY ENT.note - OWNED. A graph draws the logical object around its tables: its own table, extension tables inside it, owned parts inside or attached, shared parts and link tables outside with the link drawn through the link table.",
+  "invariants": [
+    "The graph reads these lines and does not parse annotations itself.",
+    "Columns are tab-separated; - means none; class names are upper case as ooRexx gives them.",
+    "It lists the classes the store has mapped so far (store~map(cls), directly or through a session; a part's target class is mapped with it): call store~map for each class to draw before asking.",
+    "Lines are joined with a line feed; classes are ordered by ObjectStoreClassOrder."
+  ],
+  "topics": [
+    "graphLines",
+    "database graph",
+    "Database Lab"
+  ],
+  "related": [
+    "oodialog-designer.database-lab"
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_mapped_objects_v0.1/README.md",
+      "sha256": "40f0c641c9eef9664008b2ad86a9d2041964dc3382e8d2f471f49622a73e0bca",
+      "claim": "Package README."
+    }
+  ]
+}

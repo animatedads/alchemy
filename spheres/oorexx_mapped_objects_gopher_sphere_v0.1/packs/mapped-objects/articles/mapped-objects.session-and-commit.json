@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "mapped-objects.session-and-commit",
+  "sphere": "mapped-objects",
+  "version": "0.1",
+  "section": "architecture",
+  "title": "Store, session, identity and the commit",
+  "authority": "project-artifact",
+  "summary": "store = .ObjectStore~new([language]); store~attach(name, engineOrFolder); s = store~session. s~find(cls, key) loads the object with all its parts (one object per key per session: a shared address is the same object for Tom and Rony); s~where(cls, attr, value); s~all(cls); s~new(cls) (unset values nil, many-parts empty arrays); s~delete(obj) (a NEW object becomes DROPPED); s~stateOf(obj) answers NEW, CLEAN, DELETED, DROPPED or \"\"; s~plan answers the statements a commit would run; s~commit runs them in one NoSQLServer transaction; s~rollback puts objects back as the database has them. store~map(cls) gives the ObjectMap (parts: ObjectPart with attribute, kind ONE|MANY|LINK, target, column, link, from, to, owned, targetClass).",
+  "procedure": [
+    "A changed value is an UPDATE of that one column in its own table.",
+    "Keys first: new objects inserted after what they refer to, a child after its parent, link rows after both ends.",
+    "A delete: owned parts, link rows, extension rows, then the row itself; shared things stay.",
+    "Any refusal by the database rolls back the whole commit and says why."
+  ],
+  "invariants": [
+    "Every object reached through a part must be in the session; a part holding a deleted object is refused.",
+    "Values are bound with DatabasePreparedStatement and DatabaseParameterBinder, typed from the catalogue (store~value): a phone stays text, a key a number, a quote is a quote.",
+    "Change a many-part by changing the array the object holds (append, delete); the session compares it with what it loaded."
+  ],
+  "topics": ["ObjectStore", "ObjectSession", "identity map", "commit", "plan", "rollback"],
+  "related": ["mapped-objects.limits"],
+  "provenance": [{"artifact": "packages/oorexx_mapped_objects_v0.1/README.md", "sha256": "40f0c641c9eef9664008b2ad86a9d2041964dc3382e8d2f471f49622a73e0bca", "claim": "Package README."}, {"artifact": "packages/oorexx_mapped_objects_v0.1/src/MappedObjects.cls", "sha256": "e72c60ed4ccf942b82913359c1f271f6eb031d577797ada683eb5f85d7e35ba4", "claim": "ObjectStore, ObjectMap, ObjectPart, ObjectSession."}]
+}

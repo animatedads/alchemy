@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "mapped-objects.start",
+  "sphere": "mapped-objects",
+  "version": "0.1",
+  "section": "start",
+  "title": "Why: the object, not the table",
+  "authority": "project-artifact",
+  "summary": "Architecture: Tom Dyer; code: Claude (Opus 5.5). A business object is seldom one table: Tom Dyer's Person comes from ent.per, its phone from ent.per_ext, its addresses from ent.addr through the link table ent.per_addr, its employer from ent.com. Delphi and Access bound forms to a table or a query (multi-table queries mostly read-only), kept the object nowhere (row placement and insert order in event handlers), had no identity (two copies of one person disagree), saved per table not per object (orphans), never wrote down ownership, and found schema drift at run time. Bold/ECO modelled the object but demanded their own base class, modeller and persistence. Here the map is ooRexx's own ::ANNOTATE on an ordinary class, read by reflection; no base class, no SQL in the class. Runs on ooRexx 5.3 native or ooRexx/WASM, over NoSQLServer v0.92-dev1 (FILE engine, its SQL, transactions and parameter binder).",
+  "invariants": [
+    "A mapped class needs no base class; its init takes no arguments.",
+    "The map is checked against the catalogue when the class is first used, reporting every problem at once."
+  ],
+  "related": ["mapped-objects.annotations", "oodialog-designer.bound-dialogs"],
+  "provenance": [{"artifact": "packages/oorexx_mapped_objects_v0.1/README.md", "sha256": "40f0c641c9eef9664008b2ad86a9d2041964dc3382e8d2f471f49622a73e0bca", "claim": "Package README."}]
+}

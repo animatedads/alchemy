@@ -1,0 +1,18 @@
+{
+  "kind": "article",
+  "id": "mapped-objects.annotations",
+  "sphere": "mapped-objects",
+  "version": "0.1",
+  "section": "architecture",
+  "title": "How a class says where it lives",
+  "authority": "project-artifact",
+  "summary": "Class: ::annotate class K table \"schema.table\" key \"col\" [generate \"max\"]. Attribute annotations: column C (a value in the class's table); column C table T (a value in extension table T sharing the class's key: a one-to-one split); one K column C (a reference to one K whose key column C here holds); many K column C (the K objects whose column C holds this one's key); many K link L from F to T (the K objects through link table L, F holding this key and T the K's); owned \"yes\"/\"no\" on a many (default: a column many is owned, a link many is shared; a one cannot be owned). schema is the name the store attached a database under. Example in packages/oorexx_oodialog_designer_v0.9/data/People.cls (Person, Address, Note, Company).",
+  "invariants": [
+    "Owned parts are deleted with the object and when taken out of the collection; shared parts lose only their link row or their reference (which must then allow NULL).",
+    "The target class of a part is found beside the mapped class (its package), else in the caller's package.",
+    "Annotations are read by reflection (cls~annotation(k), method~annotations); an attribute's annotations sit on its getter and setter."
+  ],
+  "topics": ["::ANNOTATE", "column", "one", "many", "link", "owned", "generate"],
+  "related": ["mapped-objects.session-and-commit"],
+  "provenance": [{"artifact": "packages/oorexx_mapped_objects_v0.1/README.md", "sha256": "40f0c641c9eef9664008b2ad86a9d2041964dc3382e8d2f471f49622a73e0bca", "claim": "Package README."}, {"artifact": "packages/oorexx_mapped_objects_v0.1/src/MappedObjects.cls", "sha256": "e72c60ed4ccf942b82913359c1f271f6eb031d577797ada683eb5f85d7e35ba4", "claim": "ObjectStore, ObjectMap, ObjectPart, ObjectSession."}]
+}

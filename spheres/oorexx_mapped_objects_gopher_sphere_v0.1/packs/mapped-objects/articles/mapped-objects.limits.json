@@ -1,0 +1,16 @@
+{
+  "kind": "article",
+  "id": "mapped-objects.limits",
+  "sphere": "mapped-objects",
+  "version": "0.1",
+  "section": "qualification",
+  "title": "Limits of v0.1 and qualification",
+  "authority": "project-artifact",
+  "summary": "Limits: a commit covers one database (a NoSQLServer transaction is one database's; two are refused); parts load eagerly with the object, one query per part per object; generate max is MAX+1 within the unit of work, unsafe for writers in several processes; a mapped class's init takes no arguments; tables and columns are made by the Database Lab or a DBA, the map only checks. NoSQLServer has no IN (...) lists; JOIN and OR work; a foreign-key violation rolls the commit back. Qualification: tests/t_mapped.rex SCRATCH_DIR, 42 of 42 under ooRexx/WASM 0.2.4 in Node (REXX_PATH: this src, nosqlserver_v0.92-dev1, alchemy_objects_v0.8, oorexx_crypto_v0.1 src); Autobuild PASS 2026-11-15T04:07:26Z; Boston Crab v0.24 lint clean. Not run: concurrency, large graphs, native SQLite engine.",
+  "invariants": [
+    "Do not claim multi-process key generation or cross-database commits.",
+    "SCRATCH_DIR must be a new, empty folder."
+  ],
+  "related": ["mapped-objects.session-and-commit"],
+  "provenance": [{"artifact": "packages/oorexx_mapped_objects_v0.1/README.md", "sha256": "40f0c641c9eef9664008b2ad86a9d2041964dc3382e8d2f471f49622a73e0bca", "claim": "Package README."}]
+}
