@@ -1,0 +1,33 @@
+# claude.ui -- landmarks of the claude.ai web page for the browser UI kit.
+# Architecture: Tom Dyer.  Map by Claude (Opus 5.5), 8 Nov 2026.
+# Signed-out landmarks CAPTURED 8 Nov 17:3x, read-only, from claude.ai in the built-in browser (it was signed out):
+#   path /login, data-testid email / continue / login-with-google / login-with-apple, consent banner.
+# Signed-in page /new CAPTURED 9 Nov 10:05 (capture claude, Tom's profile, visible window): user-menu-button,
+#   chat-input, chat-input-send ("Send message"), the editor div role=textbox aria-label "Write your prompt to
+#   Claude" (tiptap ProseMirror).
+# Conversation page CAPTURED 9 Nov 10:11: data-testid user-message, assistant-message; [data-is-streaming] on
+#   the assistant turns (2 of 2); 20 links a[href^="/chat/"]; transcript-list / transcript-row containers.
+name=claude
+class=UiAdapter
+# Cloudflare's check page.  Seen 8 Nov 2026 20:23 on claude.ai from HEADLESS Chrome ("Just a moment...",
+# "Performing security verification"); a visible window passed straight through.  The kit reports BOT_CHECK,
+# waits, and never answers it.  9 Nov 17:11: claude.ai asked "are you human?" in a VISIBLE window mid-send
+# (declared agent token on); Tom answered it; the next run passed.  With a person at the window the kit asks
+# them to answer and waits; headless it stops.
+bot_check_title=Just a moment...
+bot_check_selector=#challenge-form,#challenge-running,[name="cf-turnstile-response"],iframe[src*="challenges.cloudflare.com"]
+# claude.ai refuses headless Chrome (above), so the kit drives it in a visible window
+browser_mode=headed
+base_url=https://claude.ai/new
+signed_out_path=/login
+signed_out_selector=[data-testid="email"]
+signed_on_selector=[data-testid="user-menu-button"]
+composer_selector=div[contenteditable="true"][role="textbox"]
+send_selector=button[data-testid="chat-input-send"],button[aria-label="Send message"]
+conversation_link_selector=a[href^="/chat/"]
+conversation_title_attribute=text
+user_turn_selector=[data-testid="user-message"]
+assistant_turn_selector=[data-testid="assistant-message"]
+busy_selector=[data-is-streaming="true"]
+windowed=no
+captured=2026-11-09 claude.ai signed-out, /new and a conversation page; busy marker seen idle only (not mid-reply)
