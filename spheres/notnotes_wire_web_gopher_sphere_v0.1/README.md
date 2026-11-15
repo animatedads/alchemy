@@ -10,7 +10,7 @@ Artifact: `notnotes_wire_web_v0.3_20261111.zip`
 SHA-256: `0187ea35a47f8055bdf4ff046aeb5afce28b29ec620dec9fe0235a1794af66ed`
 Release type: **local development qualification**, not accepted production product or live deployment.
 
-The complete runnable artifact is held in the originating ChatGPT delivery. The 18-file consumer-only source tree and exact dependency provenance are published on GitHub draft PR #144 (branch `notnotes-wire-web-v0.3-20261111`, head `8a71be4a03c2bb621315c0c14b9f81ce7c382cd8`). This is **not yet merged or an accepted product source closure**. Its executable entry is `notnotes_wire_web_v0.3/notnotes_wire_demo/run-demo.sh`. It includes a pinned ooRexx 5.3.0 r13196 installer and the dependency sources needed for isolated local qualification.
+The complete runnable artifact is held in the originating ChatGPT delivery. The 18-file consumer-only source tree and exact dependency provenance are published on GitHub draft PR #144 (branch `notnotes-wire-web-v0.3-20261111`, head `d2b1056846083e02354fb49c6b66d6896b1346aa`). This is **not yet merged or an accepted product source closure**. Its executable entry is `notnotes_wire_web_v0.3/notnotes_wire_demo/run-demo.sh`. It includes a pinned ooRexx 5.3.0 r13196 installer and the dependency sources needed for isolated local qualification.
 
 ## Actual native qualification
 
@@ -50,4 +50,12 @@ A *disposable test-only four-expression repair* plus the exact dev18 ConnectSele
 
 The reproducible exact-source vs diagnostic-overlay harness and full matrix are on draft PR #144 at `examples/notnotes_wire_web_v0.3/notnotes_wire_demo/test-core-dev18-compat.sh` and `CORE_DEV18_COMPAT_20261115.md`, commit `8a71be4a03c2bb621315c0c14b9f81ce7c382cd8`. Core owner notified in Rasen Falcon `REQ-00003609`; await its accepted source fix, then rerun without test-only modifications. No core files or production stores were changed by this consumer lane.
 
-**Status:** v0.3 dev13 native PASS; dev18 raw source BLOCKED; diagnostic-only dev18 legacy-file journey PASS; SQL/migration/security/production NOT_QUALIFIED. GitHub PR #144 stays draft and unmerged.
+## 2026-11-15 — real Chromium action/restart acceptance and identity regression
+
+A local Xfce Chromium 156 GUI was connected to the actual loopback-only v0.3 Wire host with a disposable database. The browser reached **View ready** after authoritative definitions and snapshot, then successfully selected SEC-2001; approved PR-1002 (revision 3→4); created PR-1003 (amount 42, document count 5→6); completed a `show views` intention; refused an unknown phrasing without editing; and required explicit `CONFIRM` then `yes` to change PR-1003 title to `CHROME-CONFIRMED`. A fresh ooRexx interpreter restart, new Wire session and browser reload retained six documents, PR-1002 approval, PR-1003 amount and confirmed title. This is genuine Chromium renderer **LOCAL_PASS for the observed subset**, not an instrumented DOM simulation, full human UAT or production approval.
+
+**New blocker:** persisted `DocKey` data survives restart, but several authoritative `documentId` values do not. PR-1001 `MININOTES/DOC/2→/1`, PR-1002 `/3→/2`, REL-3001 `/5→/3`, SUP-001 `/1→/5`; SEC-2001 remains `/4`. Two separate native ooRexx processes reproduce `IDENTITY_CAPTURE=5`, `DRIFT=4`, `MISSING=0`, exit 1, on dev13 and on the dev18 syntax-corrected diagnostic file backend. The persistence record stores DocKey but not documentId and restore composes a new document. This is a **core-owned identity persistence/revision contract issue**; the browser must not invent its own ID to conceal it. Core request `REQ-00003639` records the exact keys and source paths.
+
+The consumer source, actual-browser acceptance matrix and expected-RED identity regression are committed to draft [PR #144](https://github.com/animatedads/alchemy/pull/144) at `d2b1056846083e02354fb49c6b66d6896b1346aa`, notably `REAL_CHROMIUM_QUALIFICATION_20261115.md` and `notnotes_wire_demo/test-identity-restart.sh`. Previous dev18 raw syntax blockers remain in `REQ-00003609`; SQL, full format/report GUI, mobile, HTTPS/LDAP and multiuser tests are still open. Local testing stopped its services; no live deployment or estate store was changed.
+
+**Status:** real Chromium selected workflow LOCAL_PASS, native identity stability FAIL (4/5 drift), raw dev18 startup BLOCKED, SQL/migration/security/production NOT_QUALIFIED. PR #144 draft/unmerged. GitHub PR #144 stays draft and unmerged.
