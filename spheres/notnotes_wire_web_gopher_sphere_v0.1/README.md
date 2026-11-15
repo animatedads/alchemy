@@ -10,7 +10,7 @@ Artifact: `notnotes_wire_web_v0.3_20261111.zip`
 SHA-256: `0187ea35a47f8055bdf4ff046aeb5afce28b29ec620dec9fe0235a1794af66ed`
 Release type: **local development qualification**, not accepted production product or live deployment.
 
-The complete runnable artifact is held in the originating ChatGPT delivery. The 18-file consumer-only source tree and exact dependency provenance are published on GitHub draft PR #144 (branch `notnotes-wire-web-v0.3-20261111`, head `462edcf458026f3e2e9ecee9644e830ccc1709ca`). This is **not yet merged or an accepted product source closure**. Its executable entry is `notnotes_wire_web_v0.3/notnotes_wire_demo/run-demo.sh`. It includes a pinned ooRexx 5.3.0 r13196 installer and the dependency sources needed for isolated local qualification.
+The complete runnable artifact is held in the originating ChatGPT delivery. The 18-file consumer-only source tree and exact dependency provenance are published on GitHub draft PR #144 (branch `notnotes-wire-web-v0.3-20261111`, head `8a71be4a03c2bb621315c0c14b9f81ce7c382cd8`). This is **not yet merged or an accepted product source closure**. Its executable entry is `notnotes_wire_web_v0.3/notnotes_wire_demo/run-demo.sh`. It includes a pinned ooRexx 5.3.0 r13196 installer and the dependency sources needed for isolated local qualification.
 
 ## Actual native qualification
 
@@ -38,8 +38,16 @@ No implementation or qualification of LDAP/mTLS multiuser admission, production 
 ## Relevant existing spheres
 
 - `alchemy-notnotes` v0.1: domain / approval authority.
-- `wire-ui-builder` v0.2: builder / source reference; includes a NotNotes Web article.
+- `wire-ui-builder` v0.3: builder / source reference; includes a NotNotes Web article.
 - `wire-ui-runtime` v0.4: readiness / runtime conformance. Production HTTPS/WSS remains NOT_QUALIFIED.
 - `wire-ui` v0.1: renderer-neutral authoritative presentation semantics.
 
-**Status:** local executable v0.3 PASS; GitHub source published as draft PR #144 and NOT MERGED; dev18 compatibility and production adoption NOT_QUALIFIED.
+## 2026-11-15 — dev18 native boundary investigation
+
+The v0.3 acceptance harness was rerun under exact ooRexx r13196: baseline dev13 PASS. Against published Mini NotNotes `dev18` Git source, the **unmodified** source FAILS before Wire startup at `src/MiniNotesApp.cls:799` (invalid `\\==`). The same Git tree has three additional invalid expressions: `MiniNotesApp.cls:59`, `:1207`, and `MiniNotesPersistence.cls:494`. Source identities: MiniNotesApp Git blob `41ce8e206f8bd7f2a623c2564dfbedebf6ac4cbb`; persistence blob `9082b0838a18accb27c98a52f82e9328ea9bc569`.
+
+A *disposable test-only four-expression repair* plus the exact dev18 ConnectSelector/SingleTime/TzifZoneProvider sources completed the live Wire/Queue/NotNotes journey in explicit `MININOTES_DB_BACKEND=file` mode: **19 accepted, six expected refusals, zero server errors, persisted formats/fields/references/report and intention confirmation/restart PASS**. That is conditional evidence only, **not** a raw dev18 qualification. The separate SQLite startup probe failed closed because `DatabaseBackendSelector.cls` was unavailable: native indexed SQL, 954/10k corpus, signing, migration and production admission remain **NOT_QUALIFIED**.
+
+The reproducible exact-source vs diagnostic-overlay harness and full matrix are on draft PR #144 at `examples/notnotes_wire_web_v0.3/notnotes_wire_demo/test-core-dev18-compat.sh` and `CORE_DEV18_COMPAT_20261115.md`, commit `8a71be4a03c2bb621315c0c14b9f81ce7c382cd8`. Core owner notified in Rasen Falcon `REQ-00003609`; await its accepted source fix, then rerun without test-only modifications. No core files or production stores were changed by this consumer lane.
+
+**Status:** v0.3 dev13 native PASS; dev18 raw source BLOCKED; diagnostic-only dev18 legacy-file journey PASS; SQL/migration/security/production NOT_QUALIFIED. GitHub PR #144 stays draft and unmerged.
