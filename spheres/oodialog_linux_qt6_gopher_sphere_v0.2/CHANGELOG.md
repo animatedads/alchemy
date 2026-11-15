@@ -2,6 +2,8 @@
 
 ## 0.2 — 2026-11-15
 
+- Added `profiles/oodialog-linux-qt6.json`, which the Gopher index needs: without it the sphere was merged (PR #147) but never listed.
+
 - Renderer v0.8.0 (animatedads/oorexx branch `oodialog-qt6-v0.8`, commit `4aedf18`), on and tested against oodialog-wasm `2423db8` (v0.17.0): 45 of 45 offscreen and on xcb; sweep 81 of 122.
 - Updated: current state, renderer contract (month calendar, ResizingAdmin, editable combo), testing (STEPS NOT FINISHED, the new Qt dialect), failure modes (v0.8.0 lessons), continuation (the Fluent controls lane).
 
