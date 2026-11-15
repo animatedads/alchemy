@@ -2,11 +2,11 @@
   "kind": "article",
   "id": "oodialog-designer.database-lab",
   "sphere": "oodialog-designer",
-  "version": "0.2",
+  "version": "0.3",
   "section": "integration",
   "title": "Database Lab (ChatGPT) and the database graph",
   "authority": "project-artifact",
-  "summary": "The Database Lab (packages/oorexx_oodialog_database_lab_v0.1.2, code: ChatGPT; architecture: Tom Dyer) adds a database panel to the designer and the Object Editor (site/database-lab.js, database-lab.css, tools/database.rex, db.* keys in OodUi), in an ooRexx/WASM session of its own. Its Database graph tab (ChatGPT, branch feature/oodialog-database-graph-v2-20261115 at 183d8ac, merged into oodialog-designer as 47c1700 for designer v0.12) draws the open database from OodDatabaseLab~graphLines: TABLE, COLUMN and FK lines from the NoSQLServer catalogue, plus any OBJECT and PART lines in the textarea #dbObjectLines. Tables are boxes (PK, UNIQUE marked), foreign keys arrows with their ON DELETE action, a table of two foreign keys a junction, mapped objects outlines around their tables; a box selects its table. For a bound design the designer fills #dbObjectLines itself when the lab opens (Claude, src/OodBoundGraph.cls: the form's object class mapped over the form's databases in a session of its own with the design's data files); text the user typed there is kept.",
+  "summary": "The Database Lab (packages/oorexx_oodialog_database_lab_v0.1.2, code: ChatGPT; architecture: Tom Dyer) adds a database panel to the designer and the Object Editor (site/database-lab.js, database-lab.css, tools/database.rex, db.* keys in OodUi), in an ooRexx/WASM session of its own. Its Database graph tab (ChatGPT, branch feature/oodialog-database-graph-v2-20261115 at 183d8ac, merged into oodialog-designer as 47c1700 for designer v0.12) draws the open database from OodDatabaseLab~graphLines: TABLE, COLUMN and FK lines from the NoSQLServer catalogue, plus any OBJECT and PART lines in the textarea #dbObjectLines. Tables are boxes (PK, UNIQUE marked), foreign keys arrows with their ON DELETE action, a table of two foreign keys a junction, mapped objects outlines around their tables; a box selects its table. For a bound design the designer fills #dbObjectLines itself when the lab opens (Claude, src/OodBoundGraph.cls: the form's object class mapped over the form's databases in a session of its own with the design's data files); text the user typed there is kept. ChatGPT's own sphere, oodialog-database-lab (merged as PR #148), documents the lab's model and the graph contract.",
   "invariants": [
     "The graph reads graphLines; it does not parse annotations or SQL itself (sphere mapped-objects, article mapped-objects.graph-lines, is the contract).",
     "The Lab makes tables and columns; the mapped-object map only checks against them.",
@@ -19,7 +19,9 @@
     "ChatGPT lane"
   ],
   "related": [
-    "mapped-objects.graph-lines"
+    "mapped-objects.graph-lines",
+    "oodialog-database-lab.graph-tab",
+    "oodialog-database-lab.start"
   ],
   "provenance": [
     {
