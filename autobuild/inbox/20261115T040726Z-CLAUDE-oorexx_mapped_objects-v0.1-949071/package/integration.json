@@ -1,0 +1,42 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_mapped_objects",
+    "version": "0.1",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "environment": {
+    "set": {},
+    "prepend_path": []
+  },
+  "tests": [
+    {
+      "name": "mapped-objects",
+      "argv": [
+        "rexx",
+        "tests/run_tests.rex"
+      ],
+      "timeout_seconds": 600,
+      "environment": {
+        "rexx_path": {
+          "mode": "replace",
+          "entries": [
+            "${PACKAGE_ROOT}/src",
+            "${PACKAGE_ROOT}/tests",
+            "${REPO_ROOT}/packages/nosqlserver_v0.92-dev1/src",
+            "${REPO_ROOT}/packages/alchemy_objects_v0.8/src",
+            "${REPO_ROOT}/packages/oorexx_crypto_v0.1/src"
+          ],
+          "require_entries": true
+        }
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_mapped_objects_v0.1"
+    }
+  }
+}
