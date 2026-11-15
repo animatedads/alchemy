@@ -1,0 +1,22 @@
+#!/bin/sh
+# Fake "browser-ui.rex mailbatch ADAPTER --for AGENT --jobs FILE" for tests/test_mailnudge.rex: no browser.
+# Records one BATCH line per run (one browser run per site) and one nudge line per job; the result of a job comes
+# from MAILNUDGE_FAKE_DIR/rc.<chat with / as _> (0 sent, 3 busy, else failed).  Claude (Opus 5.5), 15 Nov 2026.
+adapter="$1"; jobs=""; prev=""
+for a in "$@"; do [ "$prev" = "--jobs" ] && jobs="$a"; prev="$a"; done
+echo "BATCH $adapter" >> "$MAILNUDGE_FAKE_DIR/batches.log"
+tab=$(printf '\t')
+while IFS="$tab" read -r key chat lane ids; do
+  [ -z "$key" ] && continue
+  echo "$adapter --for MAILNUDGE --in $chat -- $lane $ids" >> "$MAILNUDGE_FAKE_DIR/nudges.log"
+  f="$MAILNUDGE_FAKE_DIR/rc.$(echo "$chat" | tr / _)"
+  r=0
+  [ -f "$f" ] && r=$(cat "$f")
+  case "$r" in
+    0) w=sent ;;
+    3) w=busy ;;
+    *) w="failed: fake rc $r" ;;
+  esac
+  printf 'RESULT\t%s\t%s\n' "$key" "$w"
+done < "$jobs"
+exit 0
