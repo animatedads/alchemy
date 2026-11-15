@@ -1,0 +1,39 @@
+Orders and messages: 9
+
+Claude -> Alchemyfetch: fetch https://sourceforge.net/projects/oorexx/files/ .
+  CLEAR  "https://sourceforge.net/projects/oorexx/files/": a URL, the same document for everyone
+  CLEAR
+
+Claude -> Alchemyfetch: download the readme .
+  CLEAR  "README": a named place
+  CLEAR
+
+Claude -> Alchemyfetch: read the release notes .
+  AMBIGUOUS  "the release notes": Alchemyfetch can see 2 things it could mean: the ooRexx release notes and the latest ooRexx 5.1 release notes
+  REQUIRES CLARIFICATION
+
+Claude -> Alchemyfetch: fetch the archive from sourceforge .
+  CLEAR  "the archive": both mean the archive
+  CLEAR  "SourceForge": a named place
+  CLEAR
+
+Claude -> Alchemyfetch: get the manual .
+  NO REFERENT  "the manual": neither Claude nor Alchemyfetch can see anything it could mean
+  REQUIRES CLARIFICATION
+
+Claude -> Alchemyfetch: download the file at https://github.com/animatedads/alchemy/blob/main/README.md and read it .
+  CLEAR  "https://github.com/animatedads/alchemy/blob/main/README.md": a URL, the same document for everyone
+  CLEAR
+
+Claude -> Alchemyfetch: fetch the latest release notes .
+  CLEAR  "the latest release notes": both mean the latest ooRexx 5.1 release notes
+  CLEAR
+
+Claude -> Alchemyfetch: fetch the latest oorexx release notes from sourceforge .
+  CLEAR  "the latest ooRexx release notes": both mean the latest ooRexx 5.1 release notes
+  CLEAR  "SourceForge": a named place
+  CLEAR
+
+Claude -> Alchemyfetch: read the oorexx release notes .
+  AMBIGUOUS  "the ooRexx release notes": Alchemyfetch can see 2 things it could mean: the ooRexx release notes and the latest ooRexx 5.1 release notes
+  REQUIRES CLARIFICATION

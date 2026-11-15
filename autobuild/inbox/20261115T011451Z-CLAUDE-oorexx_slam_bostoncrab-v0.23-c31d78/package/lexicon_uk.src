@@ -1,0 +1,263 @@
+# lexicon_uk.src - Ukrainian words pointing at the same concepts as English.
+#   label | pos | =english-word or ^concept or - | feats
+# "=pylon" means: the concept the English word "pylon" has. The concepts are
+# language neutral; this file only says which Ukrainian forms name them.
+# Every form is listed (no endings are guessed). case: nom gen dat acc ins loc.
+# compile.rex adds lang=uk, so the realiser never says these words.
+# Architecture: Tom Dyer. This file: Claude (Opus 5.5).
+#
+# --- radio procedure ---
+усім бортам|addrall|-|
+говорить|formula|-|
+зрозумів|formula|-|ack=yes
+прийняв|formula|-|ack=yes
+наземний контроль|nameform|-|name=ground
+наземного контролю|nameform|-|name=ground
+наземному контролю|nameform|-|name=ground
+сіднейська гавань|nameform|-|name=sydney harbour
+сіднейської гавані|nameform|-|name=sydney harbour
+сіднейській гавані|nameform|-|name=sydney harbour
+сіднейську гавань|nameform|-|name=sydney harbour
+# --- nouns: stems, declined by compile.rex (nm nf nfi nn nne); irregular ones listed below ---
+пілон|nm|=pylon|g=а
+маркер|nm|=marker|g=а
+дрон|nm|=drone|g=а
+сектор|nm|=sector|g=а
+причал|nm|=wharf|g=у
+контакт|nm|=contact|g=у
+центр|nm|=centre|g=у
+піддон|nm|=pallet|g=а
+результат|nm|=result|g=у
+пошук|nm|=search|g=у
+огляд|nm|=inspection|g=у
+дотик|nm|=touch|g=у
+район|nm|=area|g=у
+борт|nm|=aircraft|g=у
+зон|nf|=zone|
+вершин|nf|=summit|
+частин|nf|=part|
+ділянк|nf|=area|gpl=ділянок
+баз|nf|=base|
+безпек|nf|=safety|
+мет|nf|=goal|
+розвідк|nf|=reconnaissance|gpl=розвідок
+зупинк|nf|=stop|gpl=зупинок
+назв|nf|=name|
+знахідк|nf|=find|gpl=знахідок
+вод|nf|=water|
+частот|nf|=frequency|
+половин|nf|=half|
+секунд|nf|=seconds|
+висот|nf|=altitude|
+позиц|nfi|=position|
+територ|nfi|=territory|
+операц|nfi|=operation|
+секц|nfi|=section|
+акватор|nfi|=waters|
+інструкц|nfi|=instruction|
+завданн|nn|=task|gpl=завдань
+скануванн|nn|=scan|gpl=сканувань
+отриманн|nn|=receipt|
+прибутт|nn|=arrival|
+пол|nne|=field|gpl=полів
+місц|nne|=place|gpl=місць
+# --- nouns listed form by form ---
+пошукова операція|noun|=search|num=sg;case=nom
+пошукову операцію|noun|=search|num=sg;case=acc
+обліт|noun|=orbit:verb|num=sg;case=acc
+обльоту|noun|=orbit:verb|num=sg;case=gen
+рух|noun|=movement|num=sg;case=acc
+рухом|noun|=movement|num=sg;case=ins
+берегова лінія|noun|=shoreline|num=sg;case=nom
+береговій лінії|noun|=shoreline|num=sg;case=loc
+берегову лінію|noun|=shoreline|num=sg;case=acc
+міст|noun|=bridge|num=sg;case=acc
+мосту|noun|=bridge|num=sg;case=gen
+# --- adjectives: stems, declined by compile.rex (adjhard -ий, adjsoft -ій) ---
+прилегл|adjhard|=adjacent|
+візуальн|adjhard|=visual|
+постійн|adjhard|=constant|
+північн|adjhard|=north|
+південн|adjhard|=south|
+східн|adjhard|=east|
+західн|adjhard|=west|
+верхн|adjsoft|=upper|
+навколишн|adjsoft|=surrounding|
+лів|adjhard|=left|
+прав|adjhard|=right|
+ворож|adjhard|=hostile|
+дружн|adjhard|=friendly|
+# --- verbs (imperative, infinitive, first person) ---
+розпочинаємо|verb|=begin|form=1pl
+вести|verb|=conduct|form=inf
+виконайте|verb|=perform|form=imp
+виконую|verb|=perform|form=1sg
+огляньте|verb|=inspect|form=imp
+прямуйте|verb|=head|form=imp
+прямую|verb|=head|form=1sg
+проведіть|verb|=conduct|form=imp
+працюйте|verb|=work|form=imp
+працюємо|verb|=work|form=1pl
+стежте|verb|=watch|form=imp
+здійснюйте|verb|=conduct|form=imp
+тримайте|verb|=keep|form=imp
+доповідайте|verb|=report|form=imp
+підтвердіть|verb|=confirm|form=imp
+включаючи|verb|=include|form=ger
+# --- small words ---
+в|ukprep|=in|place=yes
+у|ukprep|=in|place=yes
+до|ukprep|=to|place=yes
+від|ukprep|=from|place=yes
+за|ukprep|-|
+на|ukprep|=on|place=yes
+над|ukprep|=over|place=yes
+про|ukprep|-|
+для|ukprep|-|
+після|ukprep|=after|
+та|ukconj|-|
+і|ukconj|-|
+й|ukconj|-|
+ваше|ukfunc|-|
+ваша|ukfunc|-|
+ваш|ukfunc|-|
+цього|ukfunc|-|
+цій|ukfunc|-|
+будь-які|ukfunc|-|
+окремо|ukadv|=separately:adv|
+далі|ukadv|-|
+за годинниковою стрілкою|ukadv|=clockwise:adv|
+завдання прийняв|formula|-|ack=yes
+завдання зрозумів|formula|-|ack=yes
+проти годинникової стрілки|ukadv|=anticlockwise:adv|
+# --- words SLAM 450's Ukrainian commander used (race, seed 1) ---
+обшукуйте|verb|=search:verb|form=imp
+обшукайте|verb|=search:verb|form=imp
+шукайте|verb|=search:verb|form=imp
+уникайте|verb|=avoid|form=imp
+утримуйтесь|verb|=refrain|form=imp
+утримуйтеся|verb|=refrain|form=imp
+відведіть|verb|=withdraw|form=imp
+повідомте|verb|=report|form=imp
+починаючи|verb|=begin|form=ger
+летіть|verb|=fly|form=imp
+тримайтесь|verb|=keep|form=imp
+спостерігайте|verb|=watch|form=imp
+патрулюйте|verb|=patrol|form=imp
+мостів|noun|=bridge|num=pl;case=gen
+мости|noun|=bridge|num=pl;case=acc
+з|ukprep|=from|place=yes
+із|ukprep|=from|place=yes
+біля|ukprep|=near|place=yes
+потім|ukadv|-|
+бік|noun|=side|num=sg;case=acc
+боку|noun|=side|num=sg;case=gen
+край|noun|=edge|num=sg;case=acc
+краю|noun|=edge|num=sg;case=gen
+ціль|noun|=target|num=sg;case=acc
+цілі|noun|=target|num=pl;case=acc
+# --- words from Red's 52 orders in SLAM 450's race (its unread list) ---
+не|ukneg|-|
+ні|ukneg|-|
+чи|ukconj|-|
+а|ukconj|-|
+тож|ukconj|-|
+там|ukadv|-|
+тут|ukadv|-|
+є|ukfunc|-|
+немає|ukfunc|-|
+її|ukfunc|-|
+його|ukfunc|-|
+вона|ukfunc|-|
+воно|ukfunc|-|
+ній|ukfunc|-|
+ньому|ukfunc|-|
+вас|ukfunc|-|
+вами|ukfunc|-|
+вам|ukfunc|-|
+це|ukfunc|-|
+як|ukfunc|-|
+де|ukfunc|-|
+тому|ukfunc|-|
+уже|ukadv|-|
+вже|ukadv|-|
+зараз|ukadv|-|
+повільно|ukadv|=slowly:adv|
+обережно|ukadv|-|
+навколо|ukprep|=around|place=yes
+між|ukprep|=between|place=yes
+без|ukprep|-|
+близько|ukprep|=near|place=yes
+м|noun|=metre|num=pl
+метрів|noun|=metre|num=pl;case=gen
+відстань|noun|=distance|num=sg;case=acc
+відстані|noun|=distance|num=sg;case=loc
+червон|adjhard|=red|
+обережн|adjhard|=careful|
+закріплен|adjhard|=fixed|
+відкрит|adjhard|=open|
+безпечн|adjhard|=safe|
+інш|adjhard|=other|
+чекайте|verb|=wait|form=imp
+будьте|verb|=be|form=imp
+обстежте|verb|=survey:verb|form=imp
+обстежуйте|verb|=survey:verb|form=imp
+перевірте|verb|=check:verb|form=imp
+перевіряйте|verb|=check:verb|form=imp
+оглядайте|verb|=inspect|form=imp
+оглядаючи|verb|=inspect|form=ger
+зупиніться|verb|=stop:verb|form=imp
+зупиняйтеся|verb|=stop:verb|form=imp
+зупиняйтесь|verb|=stop:verb|form=imp
+знижуйтесь|verb|=descend|form=imp
+знижуйтеся|verb|=descend|form=imp
+тримайтеся|verb|=keep|form=imp
+пролітайте|verb|=fly|form=imp
+повертайтеся|verb|=return:verb|form=imp
+повертайтесь|verb|=return:verb|form=imp
+поверніться|verb|=return:verb|form=imp
+лежить|verb|=lie|form=3sg
+зафіксуйте|verb|=log:verb|form=imp
+зафіксовано|verb|=log:verb|form=pass
+відскануйте|verb|=scan:verb|form=imp
+скануйте|verb|=scan:verb|form=imp
+відповідайте|verb|=answer:verb|form=imp
+під|ukprep|=under|place=yes
+# --- second race: Red's unread list ---
+зупиняючись|verb|=stop:verb|form=ger
+кружляйте|verb|=circle:verb|form=imp
+кружляти|verb|=circle:verb|form=inf
+перейдіть|verb|=move:verb|form=imp
+переходьте|verb|=move:verb|form=imp
+продовжуйте|verb|=continue|form=imp
+почніть|verb|=begin|form=imp
+починайте|verb|=begin|form=imp
+переключіться|verb|=switch:verb|form=imp
+летить|verb|=fly|form=3sg
+підтверджено|verb|=confirm|form=pass
+знайдено|verb|=find:verb|form=pass
+заявлена|verb|=claim:verb|form=pass
+заявлено|verb|=claim:verb|form=pass
+заявлений|verb|=claim:verb|form=pass
+широк|adjhard|=wide|
+поблизу|ukprep|=near|place=yes
+поруч|ukadv|-|
+ближче|ukadv|-|
+досі|ukadv|-|
+якщо|ukconj|-|
+ним|ukfunc|-|
+неї|ukfunc|-|
+нею|ukfunc|-|
+цьому|ukfunc|-|
+цей|ukfunc|-|
+ця|ukfunc|-|
+# --- filler: said on the radio, carries no order (read, then ignored) ---
+ну|filler|-|
+ось|filler|-|
+ага|filler|-|
+блін|filler|-|tone=frustration
+так|filler|-|
+блять|filler|-|tone=frustration
+або|ukconj|-|
+через|ukprep|-|
+коли|ukconj|-|
