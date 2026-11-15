@@ -9,8 +9,8 @@ if base = "" then do
 end
 
 lab = .OodDatabaseLab~new(base)
-call check lab~module_version = "0.1.1", "instance version"
-call check .OodDatabaseLab~module_version = "0.1.1", "class version"
+call check lab~module_version = "0.1.2", "instance version"
+call check .OodDatabaseLab~module_version = "0.1.2", "class version"
 call check lab~module_lastChanged = "2026-11-15", "instance last changed"
 call check .OodDatabaseLab~module_lastChanged = "2026-11-15", "class last changed"
 call check lab~language("de") = "de", "choose German for refusals"
@@ -70,7 +70,26 @@ call check other~openDatabase("TestLab"), "reopen persistent backend"
 call check other~tableNames = "", "reopen reads catalog"
 call check lab~createDatabase("OtherLab"), "create second database"
 call check lab~databaseNames~pos("TestLab") > 0 & lab~databaseNames~pos("OtherLab") > 0, "list multiple databases"
-say "OODIALOG DATABASE LAB: 40 checks PASS"
+view = .json~fromJSON(lab~executeJSON("CREATE TABLE person (id INTEGER PRIMARY KEY, name TEXT)"))
+call check view["status"] = "SUCCESS", "graph parent table created"
+view = .json~fromJSON(lab~executeJSON("CREATE TABLE address (id INTEGER PRIMARY KEY, city TEXT)"))
+call check view["status"] = "SUCCESS", "graph second parent table created"
+view = .json~fromJSON(lab~executeJSON("CREATE TABLE person_address (id INTEGER PRIMARY KEY, person_id INTEGER REFERENCES person(id) ON DELETE CASCADE, address_id INTEGER REFERENCES address(id) ON DELETE RESTRICT)"))
+call check view["status"] = "SUCCESS", "graph junction with foreign keys created"
+view = .json~fromJSON(lab~executeJSON("INSERT INTO person (id,name) VALUES (7,'Ada')"))
+call check view["status"] = "SUCCESS", "graph row count test insert"
+graph = lab~graphLines
+call check graph~pos("TABLE" || "09"x || "person" || "09"x || "1") > 0, "graph table and live row count from catalog"
+call check graph~pos("COLUMN" || "09"x || "person" || "09"x || "id" || "09"x || "INTEGER" || "09"x || "0" || "09"x || "1") > 0, "graph column flags"
+call check graph~pos("FK" || "09"x || "person_address" || "09"x || "person_id" || "09"x || "person" || "09"x || "id" || "09"x || "CASCADE") > 0, "graph cascade foreign key"
+call check graph~pos("FK" || "09"x || "person_address" || "09"x || "address_id" || "09"x || "address" || "09"x || "id" || "09"x || "RESTRICT") > 0, "graph restrict foreign key"
+extras = "OBJECT" || "09"x || "PERSON" || "09"x || "ENT.person" || "0a"x || -
+  "PART" || "09"x || "PERSON" || "09"x || "addresses" || "09"x || "LINK" || "09"x || "ENT.address" || "09"x || "ENT.person_address" || "09"x || "SHARED" || "0a"x || -
+  "FUTURE" || "09"x || "ignored"
+graph = lab~graphLines(extras)
+call check graph~pos("OBJECT" || "09"x || "PERSON" || "09"x || "ENT.person") > 0 & graph~pos("PART" || "09"x || "PERSON") > 0, "mapped-object graph lines preserved"
+call check graph~pos("FUTURE") = 0, "unknown graph line ignored"
+say "OODIALOG DATABASE LAB: 50 checks PASS"
 exit 0
 
 check: procedure

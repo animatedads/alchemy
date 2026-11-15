@@ -2,6 +2,8 @@
 
 Architecture: Tom Dyer. Code: ChatGPT (GPT-6).
 
+Current qualification version: 0.1.2 (database graph).
+
 This is an ooRexx **model** for a user-facing database test bench in the
 ooDialog Designer and ooRexx Object Editor. The HTML/JavaScript editor only
 projects its results and sends intentions. All database creation, table
@@ -51,6 +53,7 @@ say lab~previewJSON("people")
 
 | Method | Purpose |
 | --- | --- |
+| `graphLines(extraLines = "")` | Catalogue tables, columns, FK relations and optional ObjectStore records. |
 | `language(lang)` | Choose refusal strings from the lab's own resources (English or German). |
 | `databaseNames`, `createDatabase(name)`, `openDatabase(name)` | Create/select a named database within the lab root. |
 | `tableNames`, `schema(name)` | Inspect Alchemy's catalog and typed columns. |
@@ -63,6 +66,26 @@ say lab~previewJSON("people")
 fields: `name`, `type`, `nullable` (`0`/`1`), `primary` (`0`/`1`), `unique`
 (`0`/`1`). The editor's table grid presents these fields; validation belongs
 to the ooRexx model.
+
+## Database graph
+
+The Graph tab draws an SVG without a third-party layout library. The same
+schema always yields the same positions; selecting a table box loads it into
+the schema editor. Tables containing only two foreign keys and at most one
+additional primary key display as small junctions between their parents.
+
+The model answers tab-separated TABLE (name, row count), COLUMN (table, name,
+type, nullable, primary, unique) and FK (child table/column, parent table/column,
+ON DELETE) records. Only live NoSQLServer definitions and catalogue counts
+are read; SQL statements are never reverse-parsed in JavaScript.
+
+For mapped objects, paste ObjectStore~graphLines into the optional textarea.
+The model passes OBJECT (class, primary table) and PART (class, attribute,
+ONE/MANY/LINK/EXT, target table, link table or -, OWNED/SHARED) records through.
+The SVG highlights object-owned/extension tables and draws typed object-part
+edges. Schema-qualified names such as ENT.person match local tables by the
+part after the dot, without case sensitivity. Unknown future line types are
+ignored for forward compatibility.
 
 ## Qualification
 

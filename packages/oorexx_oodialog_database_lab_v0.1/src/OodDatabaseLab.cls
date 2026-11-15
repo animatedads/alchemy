@@ -10,11 +10,11 @@
 
 ::class OodDatabaseLab public inherit OodNls
 ::method module_version class
-  return "0.1.1"
+  return "0.1.2"
 ::method module_lastChanged class
   return "2026-11-15"
 ::method module_version
-  return "0.1.1"
+  return "0.1.2"
 ::method module_lastChanged
   return "2026-11-15"
 
@@ -92,6 +92,38 @@
   names = engine~readCatalog["tables"]
   if names == .nil | names~items = 0 then return ""
   return names~makeString("L", "0a"x)
+
+/* Typed, stable graph projection of the live NoSQLServer catalogue.
+ * The optional OBJECT/PART lines are supplied by the mapped-object store;
+ * unknown future line kinds are ignored. No SQL text is parsed here.
+ */
+::method graphLines
+  expose engine
+  use strict arg extraLines = ""
+  self~requireOpen
+  lines = .array~new
+  names = engine~readCatalog["tables"]
+  if names \== .nil then do tableName over names~sort
+    table = engine~table(tableName)
+    if table == .nil then iterate
+    definition = table~definition
+    lines~append("TABLE" || "09"x || tableName || "09"x || table~rowCount)
+    do col over definition~columns
+      lines~append("COLUMN" || "09"x || tableName || "09"x || col~name || "09"x || col~type || "09"x || -
+        col~nullable || "09"x || col~primaryKey || "09"x || col~unique)
+    end
+    do fk over definition~foreignKeys
+      lines~append("FK" || "09"x || tableName || "09"x || fk~column || "09"x || -
+        fk~referencesTable || "09"x || fk~referencesColumn || "09"x || fk~onDelete)
+    end
+  end
+  if extraLines \== "" then do line over extraLines~string~changeStr("0d"x, "")~makeArray("0a"x)
+    fields = line~makeArray("09"x)
+    kind = fields[1]~upper
+    if kind = "OBJECT" & fields~items >= 3 then lines~append(line)
+    if kind = "PART" & fields~items >= 7 then lines~append(line)
+  end
+  return lines~makeString("L", "0a"x)
 
 ::method schema
   expose engine
