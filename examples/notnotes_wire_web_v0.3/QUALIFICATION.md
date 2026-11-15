@@ -1,5 +1,10 @@
 # NotNotes Web / Wire v0.3 qualification — 2026-11-11
 
+2026-11-15 continuation: see [CORE_DEV18_COMPAT_20261115.md](CORE_DEV18_COMPAT_20261115.md)
+for an independent native dev18 compatibility gate. Raw Git dev18 source
+fails startup; four syntax-only test workarounds produce a full explicit-file
+consumer PASS. SQLite and release admission are still NOT_QUALIFIED.
+
 ## Runtime
 
 - Interpreter: ooRexx 5.3.0 r13196, Linux x86-64, recovered installer.
