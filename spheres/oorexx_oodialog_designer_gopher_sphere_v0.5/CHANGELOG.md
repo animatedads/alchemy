@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5 - 2026-11-15
+- Designer v0.13 (Autobuild PASS 20261115T180408Z): Rexx Parser 20261115, CATCH and FINALLY in the graph, the runtime guard and refusals.
+- Pitfalls: the parser uses CATCH itself; its CPL file; the doc-comment closing quirk.
+- Windows brief REQ-00004977 (wincheck, catchcheck).
+
 ## 0.4 - 2026-11-15
 - Designer v0.12 (Autobuild PASS 20261115T162951Z): ChatGPT's Database Lab graph merged (47c1700); object lines filled for bound designs (OodBoundGraph.cls).
 - database-lab article rewritten for the graph; open label-overlap defects (REQ-00003757).

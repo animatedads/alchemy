@@ -2,7 +2,7 @@
   "kind": "article",
   "id": "oodialog-designer.program-format",
   "sphere": "oodialog-designer",
-  "version": "0.2",
+  "version": "0.3",
   "section": "architecture",
   "title": "The program it writes, and the design at its end",
   "authority": "project-artifact",
@@ -13,7 +13,9 @@
     "Generated code uses only documented upstream ooDialog API so it runs on Windows ooDialog unchanged.",
     "Every generated method is UNGUARDED, as the ooDialog guide asks of event handlers.",
     "Background events reply at once (after EXPOSE, which must come first).",
-    "A trace probe is a message on its statement's own line: .OodTraceProbe~step(where, node, thread, .context~variables); the step answers RESULT as it was. Never a CALL: a CALL sets SIGL and drops RESULT, so a traced run would see other values than an untraced one. t02 runs the same code both ways and compares."
+    "A trace probe is a message on its statement's own line: .OodTraceProbe~step(where, node, thread, .context~variables); the step answers RESULT as it was. Never a CALL: a CALL sets SIGL and drops RESULT, so a traced run would see other values than an untraced one. t02 runs the same code both ways and compares.",
+    "CATCH needs ooRexx r13514 or later; FINALLY is in no ooRexx yet (2026-11-15). An older ooRexx reads both words as commands and runs every clause, so: a program whose code has a CATCH clause starts with a guard (if .RexxInfo~revision < 13514 then errorDialog and return 1), and the designer refuses Run and Trace for CATCH before r13514 and for FINALLY on any ooRexx (OodDesign~catchWords, catchRefusal; found from the text). When FINALLY lands, catchRefusal and the guard need its revision.",
+    "A DO, LOOP or SELECT's CATCH and FINALLY clauses are graph nodes of kind catch/finally in the block's \"catch\" slot, each with a body; an empty DO body takes inserts before its first CATCH. Inserted blocks keep their shape: END, CATCH, FINALLY at the first line's level."
   ],
   "topics": [
     "generator",
@@ -34,6 +36,11 @@
       "artifact": "packages/oorexx_oodialog_designer_v0.11/README.md",
       "sha256": "842b4ae4b11e1fee82582c84f2b2212f42e3f1af863e759e54c7fab984662175",
       "claim": "Package README of v0.11."
+    },
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.13/README.md",
+      "sha256": "21e200415d5e5efecb848de29b54b34422a14e8f52b6dfca8c31123fb5a2938e",
+      "claim": "Package README of v0.13."
     }
   ]
 }
