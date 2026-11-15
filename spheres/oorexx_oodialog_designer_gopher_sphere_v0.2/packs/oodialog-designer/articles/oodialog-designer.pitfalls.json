@@ -2,7 +2,7 @@
   "kind": "article",
   "id": "oodialog-designer.pitfalls",
   "sphere": "oodialog-designer",
-  "version": "0.1",
+  "version": "0.2",
   "section": "operations",
   "title": "ooRexx pitfalls met while building it",
   "authority": "project-artifact",
@@ -17,9 +17,27 @@
     "A JSON boolean from ADDRESS FETCH JSON is a JSONBoolean: read its ~value.",
     "SysFileTree answers absolute names: compare with an absolute destination (.File~new(d)~absolutePath).",
     "A relative database path fails in the browser: oodBeside resolves it beside the program.",
-    "Values for SQL go through NoSQLServer's DatabasePreparedStatement and DatabaseParameterBinder typed from the catalogue: an untyped 1 became '1'."
+    "Values for SQL go through NoSQLServer's DatabasePreparedStatement and DatabaseParameterBinder typed from the catalogue: an untyped 1 became '1'.",
+    "Never name a DO OVER control variable label: DO LABEL names a loop, so do label over x parses as a loop named OVER and fails with Error 26.2 at run time.",
+    "A long property label makes the properties panel taller and scrolls the page; browser tests that drag between panels then miss. Keep labels short and put a format in the input's placeholder."
   ],
-  "topics": ["pitfalls", "lint"],
-  "related": ["oodialog-designer.build-and-test"],
-  "provenance": [{"artifact": "packages/oorexx_oodialog_designer_v0.9/src/OodDesigner.cls", "sha256": "12c9da682f2c69824721588668bf616ff41f91504cb6d3ccb76dbb7ce3190867", "claim": "The model, catalogue, generator and reader."}]
+  "topics": [
+    "pitfalls",
+    "lint"
+  ],
+  "related": [
+    "oodialog-designer.build-and-test"
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.9/src/OodDesigner.cls",
+      "sha256": "12c9da682f2c69824721588668bf616ff41f91504cb6d3ccb76dbb7ce3190867",
+      "claim": "The model, catalogue, generator and reader."
+    },
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.10/README.md",
+      "sha256": "57ef3ef6eac0aa51a5712989e97d01d2e29a094e856351c763735b617c51baca",
+      "claim": "Package README of v0.10 (as submitted)."
+    }
+  ]
 }

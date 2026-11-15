@@ -2,16 +2,28 @@
   "kind": "article",
   "id": "oodialog-designer.qualification",
   "sphere": "oodialog-designer",
-  "version": "0.1",
+  "version": "0.2",
   "section": "qualification",
   "title": "Qualification and what is open",
   "authority": "project-artifact",
-  "summary": "v0.9 (2026-11-15): run_all t01-t10 pass under ooRexx/WASM in Node (t01 69, t02 37, t03 55, t04 16, t06 20, t10 25 checks among them); dztest 16/16; oxtest 10/10; Database Lab DOM test 11 checks; mapped objects 42/42; pitfall lint clean; Autobuild PASS for v0.8 and v0.9. Not run on Windows ooDialog: test briefs REQ-00003589 and REQ-00003595 wait for CODEX-PC, testing work only, with Tom Dyer's approval. Open: v0.10 (reference picker, Add/Remove, row fields); ChatGPT's database graph (part B); SSC defect REQ-00003605; ooDialog/WASM v0.15.0 (in-place list-view editing) exists but the designer still builds against the local dist.",
+  "summary": "v0.10 (2026-11-15): run_all t01-t10 pass under ooRexx/WASM in Node (t10 44 checks); dztest 16/16 in headless Chromium; Object Editor oxtest 10/10; pitfall lint clean on 40 source files and the 6 generated examples; Autobuild PASS on native ooRexx (result 20261115T130641Z-ea7ab6a2ade5-230a4f88; t07-t09 network checks SKIP there, as designed). v0.9: Autobuild PASS. Not run on Windows ooDialog: briefs REQ-00003589 and REQ-00003595 wait for CODEX-PC (testing only, Tom Dyer's approval); the v0.10 bound list relies on SELECTCHANGED giving (id, item, state) with state SELECTED/UNSELECTED and on ListView~modify(item, subitem, text), both documented upstream but unconfirmed there. Open: ChatGPT's database graph (part B, REQ-00003619/3625/3637, pointed at the mapped-objects sphere by REQ-00003643); SSC defect REQ-00003605; a picker loads every object of its class (no filter); ooDialog/WASM v0.15.0 in-place list editing not yet used.",
   "invariants": [
     "Do not call a test PASS that was not run; a stand-in server is not a live store.",
     "Windows behaviour (Windows-1252 text, executeAsync timing) is unconfirmed until CODEX-PC reports."
   ],
-  "topics": ["qualification", "open work", "Windows"],
-  "related": ["oodialog-designer.start"],
-  "provenance": [{"artifact": "packages/oorexx_oodialog_designer_v0.9/README.md", "sha256": "cdba58500b8abd60e3e0d85129b1066cec940d2324be27e46b8e65d62d38fe48", "claim": "Package README of the published v0.9 designer."}]
+  "topics": [
+    "qualification",
+    "open work",
+    "Windows"
+  ],
+  "related": [
+    "oodialog-designer.start"
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.10/README.md",
+      "sha256": "57ef3ef6eac0aa51a5712989e97d01d2e29a094e856351c763735b617c51baca",
+      "claim": "Package README of v0.10 (as submitted)."
+    }
+  ]
 }

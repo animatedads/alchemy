@@ -2,19 +2,35 @@
   "kind": "article",
   "id": "oodialog-designer.start",
   "sphere": "oodialog-designer",
-  "version": "0.1",
+  "version": "0.2",
   "section": "start",
   "title": "Current baseline, where the code is, who did what",
   "authority": "project-artifact",
-  "summary": "The ooDialog Designer writes ooDialog programs in ooRexx from a drag-and-drop form, in the manner of VisPro/REXX, VX-REXX and DrDialog. Architecture: Tom Dyer. Code: Claude (Opus 5.5); the Database Lab: ChatGPT. It runs in a browser on ooDialog/WASM and Josep Maria Blasco's ooRexx/WASM 0.2.4; the programs it writes are plain upstream ooDialog for Windows. Published: packages/oorexx_oodialog_designer_v0.7, v0.8 (plugins) and v0.9 (bound dialogs) in animatedads/alchemy; working branch oodialog-designer in animatedads/oorexx (folder oodialog-designer/, mirror of the Object Editor in object-editor/). In progress 2026-11-15: v0.10, the reference picker (combo box bound to a one-part) and Add/Remove of a bound list's parts with row detail fields.",
+  "summary": "The ooDialog Designer writes ooDialog programs in ooRexx from a drag-and-drop form, in the manner of VisPro/REXX, VX-REXX and DrDialog. Architecture: Tom Dyer. Code: Claude (Opus 5.5); the Database Lab: ChatGPT. It runs in a browser on ooDialog/WASM and Josep Maria Blasco's ooRexx/WASM 0.2.4; the programs it writes are plain upstream ooDialog for Windows. Published: packages/oorexx_oodialog_designer_v0.7, v0.8 (plugins), v0.9 (bound dialogs) and v0.10 (reference picker, list Add/Remove, row fields; Autobuild PASS 2026-11-15) in animatedads/alchemy; working branch oodialog-designer in animatedads/oorexx (folder oodialog-designer/, mirror of the Object Editor in object-editor/). Branch head after v0.10: 0768f51.",
   "invariants": [
     "Check packages/ on a fresh pull of alchemy main before choosing a version number: a version that exists is never reused.",
     "Every class has module_version and module_lastChanged.",
     "Every update names the architect (Tom Dyer), the coder (Claude (Opus 5.5) or ChatGPT) and the model writing it.",
     "Do not work in Autobuild's checkout; submit with tools/alchemy_submit.py.",
-    "The Database Lab is ChatGPT's lane (oorexx_oodialog_database_lab); the designer, plugins and bound dialogs are Claude's. Changes across lanes go by Falcon request."
+    "The Database Lab is ChatGPT's lane (oorexx_oodialog_database_lab); the designer, plugins and bound dialogs are Claude's. Changes across lanes go by Falcon request.",
+    "A package and its sphere go together: change this sphere in the same piece of work as the package, so other chats are not left to guess."
   ],
-  "topics": ["versions", "branches", "lanes", "credits"],
-  "related": ["oodialog-designer.authority", "oodialog-designer.qualification", "mapped-objects.start"],
-  "provenance": [{"artifact": "packages/oorexx_oodialog_designer_v0.9/README.md", "sha256": "cdba58500b8abd60e3e0d85129b1066cec940d2324be27e46b8e65d62d38fe48", "claim": "Package README of the published v0.9 designer."}]
+  "topics": [
+    "versions",
+    "branches",
+    "lanes",
+    "credits"
+  ],
+  "related": [
+    "oodialog-designer.authority",
+    "oodialog-designer.qualification",
+    "mapped-objects.start"
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.10/README.md",
+      "sha256": "57ef3ef6eac0aa51a5712989e97d01d2e29a094e856351c763735b617c51baca",
+      "claim": "Package README of v0.10 (as submitted)."
+    }
+  ]
 }
