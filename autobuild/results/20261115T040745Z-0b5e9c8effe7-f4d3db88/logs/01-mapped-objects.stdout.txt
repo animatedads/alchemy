@@ -1,0 +1,46 @@
+run_tests: scratch /tmp/mapped-objects-35547
+t_mapped: MappedObjects 0.1.0
+  ok   the map: ent.per, key per_id, the id attribute
+  ok     its columns, with phone in the extension table
+  ok     its parts: addresses:LINK:0 employer:ONE:0 notes:MANY:1
+  ok   graph lines: the object over its tables
+  ok   refuses a map that does not fit the database: every problem at once -- The map of DRIFTED does not fit the database: ENT.per has no column per_nickname; there is no table ENT.nowhere
+  ok   find: the name, from per
+  ok     the phone, from per_ext
+  ok     the employer, a Company
+  ok     the addresses, through per_addr
+  ok     the notes, owned
+  ok   one object per key: the address Tom and Rony share is one object
+  ok     Rony has no phone row: nil
+  ok   find of a key that is not there: nil
+  ok   nothing changed, nothing to do
+  ok   a name changed: one UPDATE of per: UPDATE per SET per_name = 'Tom Dyer' WHERE per_id = 1
+  ok   a phone changed: an UPDATE of per_ext as well
+  ok   commit: 2 statements
+  ok     in the database
+  ok     and nothing left to do
+  ok   a new address: INSERT addr, then INSERT per_addr
+  ok     its key, generated: max + 1
+  ok   a shared address taken out: only its link deleted
+  ok   commit
+  ok     Wien is still Rony's
+  ok   an owned note taken out: deleted
+  ok   commit
+  ok   a new Person: per, per_ext, note, per_addr: per per_ext note per_addr
+  ok     its key generated (3), the note holds it
+  ok   commit
+  ok     ada~id is its key
+  ok   a fresh session: Ada, her phone, note, address, employer
+  ok     Tom has two addresses now
+  ok   refuses a commit the database refuses: refused -- The commit was refused and nothing was changed (TRANSACTIONFAILED NOT NULL constraint failed: per_name.). 
+  ok     nothing changed in the database
+  ok   rollback: the objects as the database has them
+  ok   delete Ada: her note, her link, her phone row, her row: note per_addr per_ext per
+  ok   commit
+  ok     Ada gone, the address and company stay
+  ok     find answers nil now
+  ok   refuses one commit over two databases: refused -- A commit is one database's: it holds ENT and HR.
+  ok   refuses refusals in German -- NOTMAPPED nennt keine Tabelle (::annotate class ... table "schema.tabelle").
+  ok   module_version
+t_mapped: 42 of 42 checks passed
+run_tests: PASS t_mapped
