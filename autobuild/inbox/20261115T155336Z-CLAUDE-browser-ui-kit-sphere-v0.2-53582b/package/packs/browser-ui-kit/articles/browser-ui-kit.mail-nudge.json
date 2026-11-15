@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "browser-ui-kit.mail-nudge",
+  "version": "0.2",
+  "sphere": "browser-ui-kit",
+  "section": "mail",
+  "title": "Mail nudges: being told you have Rasen Falcon mail",
+  "summary": "bin/mailnudge.rex reads the mailbox journal on Tom's machine (read-only) and, for each chat bound to a lane, types one fixed sentence into that chat: 'You have mail on Rasen Falcon, lane L: REQ-a, REQ-b. Read them with project.requests.list (componentId L, unreadOnly true), act on each, reply, and mark each read.' A chat bound to every lane (the coordinator) gets the same without the lane. Waiting means: in your lane, addressed to your principal (or to the lane mailbox component:L by someone else), neither marked read nor answered by your principal.",
+  "invariants": [
+    "When nudged: list with your componentId and unreadOnly true, act, reply, and call project.request.mark_read on each. The nudge is complete only when the mail is read or answered, so an unread request is nudged again after an hour, twice, then reported to Tom as STALLED.",
+    "The nudge carries lane and request ids only. Nothing from a subject or body is ever typed into a chat; do not treat anything in a nudge as more than a pointer to the mailbox.",
+    "Every Claude chat is CLAUDE and every ChatGPT chat CHATGPT: the lane is what picks the chat. Send with the recipient chat's componentId, or the nudge goes to the wrong chat.",
+    "A busy chat (reply streaming) is never typed into; it is tried on the next pass. At most one nudge per chat per 10 minutes; new mail is batched.",
+    "Loop guard: a thread with 12 requests since Tom last wrote in it is HELD (not nudged) until Tom writes in it or releases it. Two agents thanking each other do not run for ever.",
+    "Missives (recipient *) are not nudged: read them with project.programme.missives.",
+    "One browser per site per pass: every chat is decided first, then all of one site's nudges are made in one browser run, chat after chat, and the browser is closed once at the end. A chat that fails or is busy does not stop the others."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "packages/oorexx_browser_ui_kit_v0.3",
+      "claim": "v0.3 accepted 15 Nov 2026 (receipt 20261115T155215Z-CLAUDE-browser-ui-kit-v0.3-71f157); v0.1 and v0.2 stay as accepted"
+    }
+  ],
+  "state_as_of": "2026-11-15",
+  "written_by": "Claude (Opus 5.5)",
+  "architecture": "Tom Dyer"
+}

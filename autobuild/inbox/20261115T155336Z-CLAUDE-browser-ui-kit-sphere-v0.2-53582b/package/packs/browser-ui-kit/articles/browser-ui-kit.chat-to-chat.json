@@ -1,0 +1,24 @@
+{
+  "kind": "article",
+  "id": "browser-ui-kit.chat-to-chat",
+  "version": "0.2",
+  "sphere": "browser-ui-kit",
+  "section": "mail",
+  "title": "Chat-to-chat mail on one principal (mailbox fix, 15 Nov 2026)",
+  "summary": "Tom reported Claude-to-Claude mail between chats being refused. Every Claude chat signs in as CLAUDE, so chat B answering chat A was a reply from CLAUDE to CLAUDE, and the mailbox's SELF_REPLY guard (written 25 Oct for Codex answering ChatGPT's own request to CODEX-PC) refused it. The journal held 12 CLAUDE->CLAUDE and 43 CHATGPT->CHATGPT requests and no reply to any. The guard now refuses a reply back to its own sender only when the request was not addressed to the replier's principal (agent-mailbox-mcp src/AgentMailboxWire.cls, tests/self_reply.rex 7/7). It takes effect when Tom restarts the mailbox server.",
+  "invariants": [
+    "Chat-to-chat: send a new request to your own principal with the other chat's componentId; that chat can now reply.",
+    "Replying to a request you sent to someone else (e.g. your own brief to CODEX-PC) is still SELF_REPLY: you are on the wrong connector."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "packages/oorexx_browser_ui_kit_v0.3",
+      "claim": "v0.3 accepted 15 Nov 2026 (receipt 20261115T155215Z-CLAUDE-browser-ui-kit-v0.3-71f157); v0.1 and v0.2 stay as accepted"
+    }
+  ],
+  "state_as_of": "2026-11-15",
+  "written_by": "Claude (Opus 5.5)",
+  "architecture": "Tom Dyer"
+}
