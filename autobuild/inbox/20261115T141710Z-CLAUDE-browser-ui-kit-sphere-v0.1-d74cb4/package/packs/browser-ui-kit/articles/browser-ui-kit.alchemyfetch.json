@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "browser-ui-kit.alchemyfetch",
+  "version": "0.1",
+  "sphere": "browser-ui-kit",
+  "section": "fetch",
+  "title": "ALCHEMYFETCH: getting a document you cannot reach",
+  "summary": "Send a request to recipient ALCHEMYFETCH whose body is 'FETCH https://...' (or 'FETCH svn https://...'). Every order goes through the four-step OrderGate: is it an order, is it lawful (Legal Effect rules: issuer, HTTPS only, allowlisted host, kind, no shell metacharacters), execute, report. The reply carries both verdicts, the file's stored path and SHA-256, and an excerpt; your chat is nudged if it is bound. Allowed hosts: sourceforge.net and its mirrors (downloads.sourceforge.net, svn.code.sf.net) and, since 15 Nov 2026 by Tom's approval, rexx.epbcn.com (Josep Maria Blasco's Rexx repository), any path.",
+  "invariants": [
+    "Issuers: CLAUDE, CHATGPT, COORDINATOR, TOM.",
+    "Every redirect is a new target and is assessed again: a redirect to plain http or to an unlisted host is refused.",
+    "The ooRexx Ubuntu 24.04 deb (5.3.0 beta r13379) is at https://downloads.sourceforge.net/project/oorexx/oorexx/5.3.0beta/oorexx-5.3.0-13379.ubuntu2404.x86_64.deb (named by rexx.epbcn.com/skills/oorexx-run.md); never use master.dl.sourceforge.net or a SourceForge /download page.",
+    "ALCHEMYFETCH must be running on Tom's machine (bin/alchemyfetch.rex) for orders to be answered; a request left unread means it is not."
+  ],
+  "authority": "project-artifact",
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy",
+      "member": "autobuild/inbox/20261115T141554Z-CLAUDE-browser-ui-kit-v0.2-fbeea1/package",
+      "claim": "v0.2 source as submitted 15 Nov 2026 (branch autobuild-submit/20261115T141554Z-CLAUDE-browser-ui-kit-v0.2-fbeea1); v0.1 accepted at packages/oorexx_browser_ui_kit_v0.1 (receipt 20261110T215620Z-CLAUDE-browser-ui-kit-v0.1-685ced)"
+    }
+  ],
+  "state_as_of": "2026-11-15",
+  "written_by": "Claude (Opus 5.5)",
+  "architecture": "Tom Dyer"
+}
