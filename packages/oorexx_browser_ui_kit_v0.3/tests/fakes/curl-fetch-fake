@@ -1,0 +1,31 @@
+#!/bin/sh
+# curl stand-in for the fetch-for-me tests: answers by URL; honours -D, -o, -w; refuses -L.
+D=; O=; URL=
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -L) echo "fake curl: -L must never be used" >&2; exit 99 ;;
+    -D) D=$2; shift ;;
+    -o) O=$2; shift ;;
+    -w|--proto|--max-redirs|--max-filesize) shift ;;
+    -*) ;;
+    *) URL=$1 ;;
+  esac
+  shift
+done
+case "$URL" in
+  https://sourceforge.net/p/oorexx/code-0/HEAD/tree/README.txt?format=raw)
+    printf 'HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\n' > "$D"
+    printf 'ooRexx README (fake)\nline two\n' > "$O"; printf 200 ;;
+  https://sourceforge.net/projects/oorexx/files/x.zip/download)
+    printf 'HTTP/1.1 302 Found\r\nLocation: https://downloads.sourceforge.net/oorexx/x.zip\r\n\r\n' > "$D"; : > "$O"; printf 302 ;;
+  https://downloads.sourceforge.net/oorexx/x.zip)
+    printf 'HTTP/1.1 301 Moved\r\nLocation: https://netix.dl.sourceforge.net/oorexx/x.zip\r\n\r\n' > "$D"; : > "$O"; printf 301 ;;
+  https://netix.dl.sourceforge.net/oorexx/x.zip)
+    printf 'HTTP/1.1 200 OK\r\nContent-Type: application/zip\r\n\r\n' > "$D"
+    printf 'PK\003\004binarybinary' > "$O"; printf 200 ;;
+  https://sourceforge.net/evil)
+    printf 'HTTP/1.1 302 Found\r\nLocation: https://evil.example.com/x\r\n\r\n' > "$D"; : > "$O"; printf 302 ;;
+  https://sourceforge.net/missing)
+    printf 'HTTP/1.1 404 Not Found\r\n\r\n' > "$D"; : > "$O"; printf 404 ;;
+  *) echo "fake curl: unexpected URL $URL" >&2; exit 6 ;;
+esac

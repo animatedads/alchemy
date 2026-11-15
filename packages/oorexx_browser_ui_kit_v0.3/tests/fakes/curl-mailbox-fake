@@ -1,0 +1,28 @@
+#!/bin/sh
+# curl stand-in for the mailbox: checks the bearer header arrives on stdin (never argv), answers by tool name,
+# and appends "TOOL<tab>body file contents" to $MAILBOX_FAKE_LOG.  Architecture: Tom Dyer.  Coding: Claude (Opus 5.5).
+D=$(dirname "$0")/mailbox; O=; BODY=; URL=
+for a in "$@"; do case "$a" in *Bearer*) echo "fake curl: token on the command line" >&2; exit 98 ;; esac; done
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -o) O=$2; shift ;;
+    --data-binary) BODY=${2#@}; shift ;;
+    -H|-w|-X|--max-time) shift ;;
+    -*) ;;
+    *) URL=$1 ;;
+  esac
+  shift
+done
+HDR=$(cat)
+case "$HDR" in "Authorization: Bearer faketoken") ;; *) cp "$D/denied.json" "$O"; printf 200; exit 0 ;; esac
+B=$(cat "$BODY")
+case "$B" in
+  *project.requests.list*) T=list ;;
+  *project.request.reply*) T=reply ;;
+  *project.request.mark_read*) T=read ;;
+  *) echo "fake curl: unknown tool" >&2; exit 6 ;;
+esac
+[ -n "$MAILBOX_FAKE_LOG" ] && printf '%s\t%s\n' "$T" "$B" >> "$MAILBOX_FAKE_LOG"
+# MAILBOX_FAKE_REPLY names another canned answer for the reply call (e.g. garbage)
+[ "$T" = reply ] && [ -n "$MAILBOX_FAKE_REPLY" ] && T=$MAILBOX_FAKE_REPLY
+cp "$D/$T.json" "$O"; printf 200
