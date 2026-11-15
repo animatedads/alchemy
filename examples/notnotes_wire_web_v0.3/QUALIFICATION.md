@@ -1,5 +1,14 @@
 # NotNotes Web / Wire v0.3 qualification — 2026-11-11
 
+2026-11-15 actual Chromium continuation: see
+[REAL_CHROMIUM_QUALIFICATION_20261115.md](REAL_CHROMIUM_QUALIFICATION_20261115.md).
+Real desktop Chromium selection, approval, creation, intention read,
+confirmed intention write and restart/reopen **LOCAL_PASS**. Fresh-process
+`documentId` stability **FAIL (four of five IDs drift)**; the independent
+consumer-owned regression is `notnotes_wire_demo/test-identity-restart.sh`.
+This replaces only the earlier browser-launch blocker, not the pending
+production/identity/SQL/multiuser qualification gates.
+
 2026-11-15 continuation: see [CORE_DEV18_COMPAT_20261115.md](CORE_DEV18_COMPAT_20261115.md)
 for an independent native dev18 compatibility gate. Raw Git dev18 source
 fails startup; four syntax-only test workarounds produce a full explicit-file
