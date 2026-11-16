@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6 - 2026-11-16
+- Designer v0.14 (Autobuild PASS 20261116T193840Z): ChatGPT's drag-to-connect merged (PR #3, Database Lab v0.1.3).
+- build-and-test: CODEX-PC is Linux; Windows checks need Tom's machine.
+
 ## 0.5 - 2026-11-15
 - Designer v0.13 (Autobuild PASS 20261115T180408Z): Rexx Parser 20261115, CATCH and FINALLY in the graph, the runtime guard and refusals.
 - Pitfalls: the parser uses CATCH itself; its CPL file; the doc-comment closing quirk.
