@@ -1,0 +1,17 @@
+{
+  "kind": "article", "id": "qt6.current-state", "version": "0.4",
+  "title": "Where the Qt6 renderer stands (v0.10.0, 16 Nov 2026)",
+  "summary": "The latest branch is oodialog-qt6-v0.10, renderer v0.10.0, based on and tested against oodialog-wasm ee4b515 (v0.19.0). All 50 of the suite's tests pass, both offscreen and on an X server (Xvfb with Qt's xcb platform, as a desktop runs it). New in v0.10.0: ResizingAdmin's pagedTab (t18_pagedtab), the tab's minimum width and pushed buttons (up9/oodListViews). In v0.9.0: tool tips (v0.18.0: toolTip, customPositionToolTip, manageControlTool, and t12_tips, which now checks the tip box). In v0.8.0: the month calendar (v0.16.0), ResizingAdmin and the editable combo's edit (v0.17.0). A program that ends before its steps are done fails. The suite is the browser harness's tests, with their .steps and .expect files, plus the three programs the ooDialog Designer generates (Calculator, Contacts, Gadgets; see sphere oodialog-designer), used unchanged as a contract test. Every one of upstream's sample programs was also started with nothing clicked: against v0.19.0, 84 of 122 programs showed their dialog (83 against v0.18.0, 81 against v0.17.0). All 34 errors were in oodWeb.cls's scope; none was in the renderer: winsystm.cls 19, resource reader not set 8, ooDialog native functions oodWeb does not have yet 5, other 2. Since 15 Nov 2026 this chat owns Linux ooDialog (Tom's rule). Earlier branches and their oodialog-wasm bases: v0.2 2c861d8, v0.3 23d57b2, v0.4 155e1b0, v0.5 1d89981, v0.6 0e0e744, v0.7 fc16dfb, v0.8 2423db8, v0.9 71f3590.",
+  "invariants": [
+    "A pass count is only quoted with the oodialog-wasm commit it was run against and the platform (offscreen or xcb).",
+    "The sweep is a coverage check, not a test: a program that shows its dialog may still draw wrongly.",
+    "Not done yet: a run on a physical desktop with a window manager (KDE, GNOME); every X run so far was on Xvfb. The brief for one is oodialog-qt6/briefs/DESKTOP_RUN_BRIEF_20261115.md."
+  ],
+  "related": ["qt6.testing", "qt6.oodweb-proposals", "qt6.continuation"],
+  "provenance": [
+    {"member": "oodialog-qt6/README.md", "find": "## State on 16 Nov 2026 (v0.10.0)", "lines": 3, "claim": "50 of 50 offscreen and on xcb against ee4b515 (v0.19.0)."},
+    {"member": "oodialog-qt6/README.md", "find": "**84 of 122 programs show their dialog with no Rexx error**", "lines": 8, "claim": "Sweep result and the causes of the 34 errors."},
+    {"member": "oodialog-qt6/briefs/DESKTOP_RUN_BRIEF_20261115.md", "find": "# Brief: run the ooDialog Qt6 suite", "lines": 1, "claim": "The desktop-run brief."},
+    {"member": "oodialog-qt6/README.md", "find": "## Not yet", "lines": 4, "claim": "What is not done."}
+  ]
+}
