@@ -3,6 +3,7 @@
 ## 0.6 - 2026-11-16
 - Designer v0.14 (Autobuild PASS 20261116T193840Z): ChatGPT's drag-to-connect merged (PR #3, Database Lab v0.1.3).
 - build-and-test: CODEX-PC is Linux; Windows checks need Tom's machine.
+- authority: Tom's decision on Fluent/WinUI controls without their host: a plain ooDialog stand-in.
 
 ## 0.5 - 2026-11-15
 - Designer v0.13 (Autobuild PASS 20261115T180408Z): Rexx Parser 20261115, CATCH and FINALLY in the graph, the runtime guard and refusals.
