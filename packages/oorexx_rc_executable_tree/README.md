@@ -38,7 +38,16 @@ The historical standalone v14 archive is **not** represented as fully merged sou
 
 ## Corpus
 
-`corpus/official_oodialog.txt` contains the first wave of 26 official upstream paths. Use `tools/corpus_inventory.py` to inventory a local checkout before treating a parsed excerpt as a full upstream pass.
+`corpus/official_oodialog.txt` contains the first wave of 26 official upstream paths. Use `tools/corpus_inventory.rex` to inventory a local checkout before treating a parsed excerpt as a full upstream pass:
+
+```
+rexx packages/oorexx_rc_executable_tree/tools/corpus_inventory.rex --checkout /path/to/ooRexx
+```
+```
+rexx packages/oorexx_rc_executable_tree/tests/test_rc_tools.rex
+```
+
+The tools are ooRexx (Claude (Opus 5.5), 14 Nov 2026), ported from the earlier Python `corpus_inventory.py` and `verify_release_archives.py` (ChatGPT). On the real corpus, the inventory port gives a report identical to the Python original, field for field. `verify_release_archives.rex` also checks each archive against the SHA-256 the sphere records, which the Python tool computed but never compared. Its report schema is therefore `/2`. Both log progress through `oorexx_logging_stream_target`.
 
 Upstream: https://github.com/ooRexx/ooRexx/tree/master/samples/windows/oodialog
 

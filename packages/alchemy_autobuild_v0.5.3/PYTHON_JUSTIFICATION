@@ -1,0 +1,7 @@
+# Why this package is Python.  Written by Claude (Opus 5.5), 2026-11-14.
+# The gate logic itself is ooRexx (packages/oorexx_python_gate_v0.1); only the
+# layer that connects it to the running service is Python.
+alchemy_autobuild.py | the installed Autobuild service is a Python process whose seven earlier layers load each other by file path and patch module globals; a layer that changes its behaviour has to be Python until the chain is flattened into a v0.6, which the v0.5.1 README recommends and whose language is the Architect's decision
+tests/test_python_gate.py | drives the real Python runner through its module API and a real local Git remote, exactly as the v0.5.2 tests do; the code under test is a Python module so its acceptance imports it
+tests/__init__.py | makes tests a package so python3 -m unittest tests.test_python_gate can import the test module from run_tests.sh
+run_tests.sh | runs the Python acceptance of this layer and of v0.5.2 with python3 -m unittest, after the ooRexx gate tests; it only calls Python to test the Python service described above

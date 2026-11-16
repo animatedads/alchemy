@@ -1,0 +1,107 @@
+// Fixture for oorexx_win_resources v0.1.  Built by tests/fixtures/build.sh
+// with llvm-rc (and lld-link for the .dll).  Architecture: Tom Dyer.
+// Coding: Claude (Opus 5.5), 2026-11-14.
+#pragma code_page(65001)
+#include "win_styles.h"
+#define IDC_STATIC -1
+
+// 100 and 300 are what ooDialog/WASM tests/t06_resdialog.rex's stand-in
+// reader returns, so a real binary can be checked against the same answers.
+100 DIALOGEX 20, 20, 180, 80
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "From app.dll"
+FONT 8, "MS Shell Dlg", 400, 0, 1
+BEGIN
+    LTEXT           "&Name", IDC_STATIC, 10, 12, 30, 10
+    EDITTEXT        11, 44, 10, 120, 12, ES_AUTOHSCROLL
+    AUTOCHECKBOX    "I &agree", 12, 10, 30, 100, 10
+    DEFPUSHBUTTON   "OK", 1, 120, 58, 50, 14
+END
+
+300 MENU
+BEGIN
+    POPUP "&Demo"
+    BEGIN
+        MENUITEM "&Hello", 301
+        MENUITEM "&Other", 302, GRAYED
+    END
+END
+
+// Every control kind of the contract, a classic DIALOG template, and text
+// outside ASCII.
+200 DIALOG 0, 0, 300, 220
+STYLE DS_SETFONT | WS_POPUP | WS_CAPTION | WS_MINIMIZEBOX | WS_THICKFRAME
+CAPTION "Größe € 𝄞"
+FONT 9, "Segoe UI"
+BEGIN
+    GROUPBOX        "Options", IDC_STATIC, 5, 5, 140, 60
+    AUTORADIOBUTTON "One", 21, 10, 15, 50, 10, WS_GROUP | WS_TABSTOP
+    AUTORADIOBUTTON "Two", 22, 10, 27, 50, 10
+    AUTO3STATE      "Maybe", 23, 10, 39, 50, 10, BS_LEFTTEXT | WS_TABSTOP
+    PUSHBUTTON      "Later", 24, 70, 15, 50, 14, WS_DISABLED | WS_TABSTOP
+    CTEXT           "centred", 25, 70, 35, 60, 8, SS_NOTIFY
+    RTEXT           "right", 26, 70, 45, 60, 8, WS_BORDER
+    CONTROL         "", 27, "Static", SS_GRAYFRAME, 150, 5, 40, 20
+    CONTROL         "", 28, "Static", SS_WHITERECT, 195, 5, 40, 20
+    CONTROL         "", 29, "Static", SS_ETCHEDHORZ, 150, 30, 85, 2
+    EDITTEXT        30, 5, 70, 140, 40, ES_MULTILINE | ES_WANTRETURN | ES_READONLY | WS_VSCROLL
+    EDITTEXT        31, 150, 70, 60, 12, ES_PASSWORD | ES_NUMBER | NOT WS_BORDER
+    LISTBOX         32, 5, 115, 70, 40, LBS_SORT | LBS_EXTENDEDSEL | LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        33, 80, 115, 65, 60, CBS_DROPDOWNLIST | CBS_SORT | WS_TABSTOP
+    COMBOBOX        34, 150, 115, 65, 60, CBS_SIMPLE | WS_TABSTOP
+    CONTROL         "", 35, "msctls_progress32", PBS_VERTICAL | PBS_SMOOTH, 220, 5, 10, 60
+    CONTROL         "", 36, "SysListView32", LVS_REPORT | LVS_SINGLESEL | WS_BORDER | WS_TABSTOP, 5, 160, 140, 50
+    CONTROL         "", 37, "SysTreeView32", TVS_HASBUTTONS | TVS_HASLINES | TVS_LINESATROOT | WS_TABSTOP, 150, 160, 70, 50
+    CONTROL         "", 38, "SysTabControl32", TCS_MULTILINE, 225, 160, 70, 50
+    CONTROL         "", 39, "msctls_updown32", UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS, 210, 70, 10, 12
+    CONTROL         "", 40, "msctls_trackbar32", TBS_AUTOTICKS | TBS_VERT | WS_TABSTOP, 240, 70, 20, 80
+    CONTROL         "", 41, "SysDateTimePick32", DTS_TIMEFORMAT | WS_TABSTOP, 150, 135, 70, 14
+    CONTROL         "", 42, "SysMonthCal32", 0, 265, 70, 30, 30
+    SCROLLBAR       43, 5, 212, 140, 6
+    ICON            7, 44, 270, 5, 20, 20
+    LTEXT           "hidden", 45, 230, 135, 30, 8, NOT WS_VISIBLE
+END
+
+400 MENUEX
+BEGIN
+    POPUP "&File", 410
+    BEGIN
+        MENUITEM "&Open\tCtrl+O", 401
+        MENUITEM "", 0, MFT_SEPARATOR
+        POPUP "&Recent", 411
+        BEGIN
+            MENUITEM "one.txt", 402, MFT_RADIOCHECK, MFS_CHECKED
+            MENUITEM "two.txt", 403, MFT_RADIOCHECK
+        END
+        MENUITEM "E&xit", 404, , MFS_DEFAULT
+    END
+    MENUITEM "&Help", 405, MFT_RIGHTJUSTIFY, MFS_GRAYED
+END
+
+500 MENU
+BEGIN
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Copy", 501, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "&Paste", 502, INACTIVE
+    END
+    MENUITEM "&Go", 503
+END
+
+NAMEDDLG DIALOGEX 0, 0, 100, 40
+STYLE WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Named"
+BEGIN
+    PUSHBUTTON "Close", 2, 25, 15, 50, 14
+END
+
+// The same dialog in German, for the language choice.
+LANGUAGE 7, 1
+100 DIALOGEX 20, 20, 180, 80
+STYLE DS_SETFONT | DS_MODALFRAME | DS_CENTER | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Aus app.dll"
+FONT 8, "MS Shell Dlg", 400, 0, 1
+BEGIN
+    DEFPUSHBUTTON   "OK", 1, 120, 58, 50, 14
+END

@@ -43,15 +43,17 @@ Last explicitly preserved evidence:
 - No Windows resource compiler differential qualification or native runtime event/focus parity proven.
 - A v9 local proof reportedly established per-object method binding, retained duplicate-ID separation, handler-returned declarative mutations, and JSON reconstruction. This is prior local evidence, not GitHub qualification.
 
-Direct GitHub sources of truth are `packages/oorexx_rc_executable_tree/README.md`, `docs/INTEGRATION.md`, `corpus/official_oodialog.txt`, `tools/corpus_inventory.py`, and `tests/test_corpus_inventory.py`.
+Direct GitHub sources of truth are `packages/oorexx_rc_executable_tree/README.md`, `docs/INTEGRATION.md`, `corpus/official_oodialog.txt`, `tools/corpus_inventory.rex`, `tools/verify_release_archives.rex`, and `tests/test_rc_tools.rex`.
 
 ## Testing and non-negotiable acceptance
 
 **Stage A — acquisition:** obtain original pinned official ooRexx .rc, companion .h, and .rex source files with hashes; no excerpts substituted for originals. Test corpus availability with:
 
-```bash
-python3 packages/oorexx_rc_executable_tree/tools/corpus_inventory.py --checkout /path/to/ooRexx
-python3 -m unittest discover -s packages/oorexx_rc_executable_tree/tests -v
+```
+rexx packages/oorexx_rc_executable_tree/tools/corpus_inventory.rex --checkout /path/to/ooRexx
+```
+```
+rexx packages/oorexx_rc_executable_tree/tests/test_rc_tools.rex
 ```
 
 **Stage B — lexical/preprocessor:** expand supported includes and directives with explicit unresolved diagnostics, conditional branch semantics, source provenance, syntax errors, delimiters and literal escaping.
@@ -89,3 +91,39 @@ A completed parse that leaves unresolved identifiers is a **semantic failure**. 
 - Turning a native renderer or Qt-based ooDialog implementation into the application's authoritative object model.
 - Generating ooRexx executable source from untrusted .rc/JSON event fields.
 - Merging OS/2 PM grammar into the Windows parser to accelerate the eventual legacy-port story.
+
+
+## 2026-10-29 recovery and direct-publication update
+
+*Carried over unchanged from draft PR #15, except that the reproduction tool is now the ooRexx port.*
+
+Rasen Falcon component lane **windows-rc-tree** created and linked to package/sphere artifacts. The coordinator was informed by immutable Rasen Falcon request **REQ-00001877**. Automated builder is currently stopped; use direct audited GitHub commits instead of claiming autobuild results.
+
+Recovered historical ZIP packages from the Library and checked that each is a valid ZIP, passes CRC, and contains the required filenames:
+
+| Version | SHA-256 |
+|---|---|
+| v9 | `9843d0b6b5c77b9cecf586315a21e426602bb542603d7ef2e80d8bb1de0275d8` |
+| v10 | `4c987a9dbf646bca074b22862d4abb2e9d5572fcca7475e2d3be25b50d7de7b9` |
+| v11 | `b3019b6142cd65e631efa5ca6fbe38865358f96a1b770e8dd7f197f7c06c31c9` |
+| v12 | `ce14d03a1afb976a71b4dc72fb8620142bf2f19f42e4471776f9f0b4a40e7ea1` |
+| v13 | `0f91f97161f320bdc902ccad8c81cd77db05bb41fff583a730804d57b83d1e01` |
+| v14 | `69d2d1ff4c4f530b5d1b08dd19758e090b97d64c205ecdbba30511478dfb08ac` |
+
+Reproduction tool: `rexx packages/oorexx_rc_executable_tree/tools/verify_release_archives.rex --directory /path/to/archive-directory`. Since 2026-11-14 it also fails an archive whose SHA-256 differs from this table.
+
+**Qualification boundary:** this proves archive integrity, not verified ooRexx execution, full Windows semantic compatibility, or upstream corpus coverage. The recovered actual source archives are locally available, but the historical parser and class source remain to be individually imported and verified on GitHub.
+
+Critical deployment priorities (Rasen Falcon website, native HTTPS, SMTP/IMAP, LDAP and XTP MI↔MU) belong to their own lanes. This Windows resource-tree lane does not deploy or modify those services; keep its progress scoped and report blockers without hijacking their ownership.
+
+## 2026-11-14 update (Claude (Opus 5.5); architecture Tom Dyer)
+
+**Stage A result: all 26 original files are present** in the ooRexx GitHub mirror at `c12e988` (13 Nov 2026), with SHA-256s recorded by `corpus_inventory.rex`. 25 are complete. One is `incomplete_includes`: `controls/ListView/rc/customDrawListView.rc` includes `"customDraw.h"`, but upstream ships only `customDrawListView.h`. That is an upstream defect: the sample cannot compile as shipped. Heuristic kind counts over the 26 files: DIALOGEX 43, DIALOG 4, MENUEX 2, MENU 1, BITMAP 3, ICON 2.
+
+**Stage D input data:** the 26 files were compiled with llvm-rc 18, using the stand-in SDK headers in `packages/oorexx_win_resources_v0.1/tests/sdk`; the script is `tests/corpus/build_upstream_corpus.sh`. 24 compile. Compiling found a second upstream defect: `rc/oodStandardDialogs.rc` uses the icon `oodStandardDialog.ico`, but upstream ships `oodStandardDialogs.ico`. The 24 `.res` files are committed under `packages/oorexx_win_resources_v0.1/tests/corpus/res`. They decode to 44 dialogs, 534 controls and 3 menus, and agree with `llvm-readobj` on every resource. This is the binary side of the Stage D comparison, waiting for this lane's parser to provide the `.rc` side.
+
+**The tools are ooRexx now.** The Python originals have been removed. The inventory port matches the Python report field for field on all 26 files. The archive tool now checks the SHA-256 table above.
+
+**Binary resources (Stage D input):** `packages/oorexx_win_resources_v0.1` reads `.res` and PE `.rsrc` in pure ooRexx and decodes `DIALOG(EX)` and `MENU(EX)`. A Stage D differential is now possible: `.rc` → this lane's JSON, set against `.rc` → `llvm-rc` → `.res` → `oorexx_win_resources`. It also serves ooDialog/WASM's `ResDialog`.
+
+**Still first:** import and review the v11–v14 parser and the v9/v10 classes. Every later stage depends on it.
