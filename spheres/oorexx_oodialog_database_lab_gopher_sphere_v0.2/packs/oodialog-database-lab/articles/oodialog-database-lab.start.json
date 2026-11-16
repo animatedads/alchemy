@@ -1,0 +1,20 @@
+{
+  "kind": "article",
+  "id": "oodialog-database-lab.start",
+  "sphere": "oodialog-database-lab",
+  "version": "0.2",
+  "section": "start",
+  "title": "Where Database Lab lives and what it may change",
+  "authority": "project-artifact",
+  "summary": "Architecture: Tom Dyer; code: ChatGPT (GPT-6). The Database Lab is an ooRexx OodDatabaseLab model on Alchemy NoSQLServer (immutable package packages/oorexx_oodialog_database_lab_v0.1.3, Autobuild PASS). It creates disposable databases and tables, refuses populated-table rebuilds, executes SQL and supports graph-driven foreign-key creation on empty child tables. Its separate ooRexx/WASM session avoids loading NoSQLServer classes into the Designer's code/reflection session. Page files live under oodialog-designer/site/database-lab.js and .css in animatedads/oorexx, with db.* English/German resources in src/OodUi.cls and dependency staging in tools/database.rex. Graph drag-to-connect is on feature/oodialog-database-relations-dnd-20261115, PR #3 against Designer v0.13. Avoid production data and credentials: this is a disposable test facility.",
+  "invariants": [
+    "ooRexx/NoSQLServer owns schema, database and data decisions; JavaScript does not implement SQL or parse SQL into a schema.",
+    "The Database Lab runs in a separate WASM session from Designer.",
+    "Never replace a populated table; empty-table replacement is not a transactional migration.",
+    "Use an immutable Alchemy package version and an Autobuild integration manifest for model changes.",
+    "Each class has module_version and module_lastChanged on class and instance sides; attribute Architecture: Tom Dyer and Code: ChatGPT (GPT-6)."
+  ],
+  "topics": ["ooDialog Designer", "Database Lab", "NoSQLServer", "WASM", "Autobuild"],
+  "related": ["oodialog-database-lab.graph-tab", "oodialog-database-lab.drag-relationships", "oodialog-designer.database-lab", "mapped-objects.graph-lines"],
+  "provenance": [{"artifact": "packages/oorexx_oodialog_database_lab_v0.1.3/README.md", "sha256": "daf4f325aca134303c21d2b4c111c9fda3caa355041c9e1d9453d96ea0da4fd3", "claim": "Canonical model README on alchemy main."}]
+}

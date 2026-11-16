@@ -1,0 +1,20 @@
+{
+  "kind": "article",
+  "id": "oodialog-database-lab.drag-relationships",
+  "sphere": "oodialog-database-lab",
+  "version": "0.1",
+  "section": "integration",
+  "title": "Drag a parent key onto a child column to create a real foreign key",
+  "authority": "project-artifact",
+  "summary": "In the Designer Database Lab Graph tab, drag from a PRIMARY KEY or UNIQUE column to an existing column of another table. Example: customers.id -> customers_sales.customers_id and sales.id -> customers_sales.sales_id. After the second link the child is drawn as a junction. Pointer dragging, selecting two columns with clicks, and Enter/Space on focused column groups are supported; Escape cancels. The ON DELETE selector offers RESTRICT (default), CASCADE, NO ACTION and SET NULL. The page calls OodDatabaseLab~addRelationship(parentTable,parentColumn,childTable,childColumn,onDelete) in its isolated ooRexx/WASM session and then redraws OodDatabaseLab~graphLines; there is no JavaScript SQL generation or YAML editing. The model validates both names and columns, parent PK/UNIQUE, equal types, duplicate child relationships, SET NULL nullability and ON DELETE actions. NoSQLServer FileDatabaseEngine persists and enforces the constraints. Since no in-place FK ALTER exists, the model only rebuilds a genuinely EMPTY child using the backend public DROP/CREATE table API, preserving existing columns, primary/unique keys, storage options and other FKs, with a best-effort restore if CREATE fails. It refuses populated children, child tables referenced by others, self-links, and non-default storage options; this is test-only, not a production migration. Model is Alchemy immutable package v0.1.3 (managed Autobuild PASS); page branch feature/oodialog-database-relations-dnd-20261115 on animatedads/oorexx, PR #3 against Designer v0.13. Qualification: 70/70 ooRexx/WASM model checks, 30/30 DOM interactions, Designer run_all 10/10.",
+  "invariants": [
+    "A gesture from parent key to child column changes the actual NoSQLServer FK catalogue, not just the SVG.",
+    "No SQL string is produced in the browser; the ooRexx model validates and sends typed definitions to FileDatabaseEngine.",
+    "Never discard rows or existing relationships to create a link: only empty, unreferenced child tables are eligible.",
+    "Keep the graph deterministic and redraw from graphLines after successful mutation.",
+    "A refusal is localised in the model, and a failed gesture cannot silently change schema."
+  ],
+  "topics": ["Database Lab", "drag and drop", "foreign key", "relationships", "NoSQLServer", "ON DELETE", "junction"],
+  "related": ["oodialog-database-lab.graph-tab", "oodialog-database-lab.start", "mapped-objects.graph-lines"],
+  "provenance": [{"artifact": "packages/oorexx_oodialog_database_lab_v0.1.3/README.md", "sha256": "daf4f325aca134303c21d2b4c111c9fda3caa355041c9e1d9453d96ea0da4fd3", "claim": "Managed Autobuild PASS package README including relationship API."}]
+}
