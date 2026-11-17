@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.7 - 2026-11-17
+- Designer v0.15 (Autobuild: submitted 20261117T084611Z-CLAUDE-oorexx_oodialog_designer-v0.15-711768, result pending (the package lands on main only on PASS)): code assistance writes ooRexxDoc (kind DOC, AssistPlugin 0.9.0), after Rony G. Flatscher's suggestion.
+- Object Editor v0.4 (branch 372715c): Document... (getDoc, setDoc, memberText) and ooRexxDoc in the Libraries panel.
+- plugins, object-editor, overview-and-docs, build-and-test, qualification articles updated.
+
 ## 0.6 - 2026-11-16
 - Designer v0.14 (Autobuild PASS 20261116T193840Z): ChatGPT's drag-to-connect merged (PR #3, Database Lab v0.1.3).
 - build-and-test: CODEX-PC is Linux; Windows checks need Tom's machine.
