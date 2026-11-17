@@ -1,0 +1,20 @@
+{
+  "kind": "article", "id": "qt6.architecture", "version": "0.1",
+  "title": "Layers and threads: Qt runs on a thread of its own, Rexx only waits on a queue",
+  "summary": "oodWeb.cls asks .js~page[\"__ood\"] for its renderer. On Linux, src/js.cls answers with OodQtRenderer, which serialises each of the contract's 15 messages into one string and calls the native routine oodqt_call(name, payload). Rexx takes the renderer's events with oodqt_next(ms). The library starts Qt on a thread it owns, at the first call, and runs QApplication's event loop there for the life of the process. Every call from any Rexx thread is run on that thread with QMetaObject::invokeMethod and Qt::BlockingQueuedConnection. Qt signals never call into Rexx: they put records on a queue (key, kind, id, code, extra), and oodqt_next takes them. An application-level event filter turns keys into KEY events and mouse input into MOUSE events. Each dialog is an OodDialog window with a client widget; each control is a Qt widget (list-views and tree-views are QTreeWidget, tabs a QTabBar placed by hand over a frame, GDI device contexts are transparent QImage layers). The steps player runs inside the Qt loop on a timer, so a test drives real widgets the way a user would.",
+  "invariants": [
+    "No QObject is created before the Qt thread exists. A global QFile once made the Rexx thread Qt's main thread, which silently disabled the key filter.",
+    "Qt never waits on Rexx: a Rexx thread blocked on a guard cannot stop the renderer, and a second Rexx thread (TimedMessage) may end a dialog.",
+    "The package's unloader (oodqt_unload) stops the Qt thread before ooRexx unloads the library.",
+    "Widgets are not deleted at exit: deleting them freed some twice. Qt's pixmap cache is emptied on the Qt thread before the loop ends, or its timer is stopped from the wrong thread at exit.",
+    "Events go to Rexx in the order they happen. A list-view is redrawn from the Rexx-side model in place (rows updated, never rebuilt), so a press and its release always land on the same row."
+  ],
+  "related": ["qt6.renderer-contract", "qt6.failure-modes"],
+  "provenance": [
+    {"member": "oodialog-qt6/README.md", "find": "**Threads.** Qt runs on a thread the library owns", "lines": 1, "claim": "Qt on its own thread; calls run there; Rexx only waits on the queue."},
+    {"member": "oodialog-qt6/native/oodqt.cpp", "find": "QMetaObject::invokeMethod(app, [&] { result = call(n, p); }, Qt::BlockingQueuedConnection);", "lines": 1, "claim": "Every call runs on the Qt thread and blocks until done."},
+    {"member": "oodialog-qt6/native/oodqt.cpp", "find": "RexxRoutine1(RexxStringObject, oodqt_next, int, ms)", "lines": 1, "claim": "Rexx takes events with oodqt_next."},
+    {"member": "oodialog-qt6/native/oodqt.cpp", "find": "void lvRender(Lv &L, double fx) {", "lines": 5, "claim": "List-views are updated in place."},
+    {"member": "oodialog-qt6/README.md", "find": "Qt's \"main thread\" is the thread that creates the first", "lines": 1, "claim": "No global QObject."}
+  ]
+}
