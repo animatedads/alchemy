@@ -1,0 +1,68 @@
+{
+   "id": "qt6.current-state",
+   "invariants": [
+      "A pass count is only quoted with the oodialog-wasm commit it was run against and the platform (offscreen or xcb).",
+      "The sweep is a coverage check, not a test: a program that shows its dialog may still draw wrongly.",
+      "Not done yet: a run on a physical desktop with a window manager (KDE, GNOME); every X run so far was on Xvfb. The brief for one is oodialog-qt6\/briefs\/DESKTOP_RUN_BRIEF_20261119.md (branch oodialog-qt6-v0.13); it waits on Tom's approval."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/oorexx@33c784f",
+         "claim": "58 of 58 offscreen and on xcb against d15b927 (v0.22.0); what is new.",
+         "line_end": 100,
+         "line_start": 93,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "a1de84d313c3f735fe190419781cb690effc08b25a59989e638caebedc5c3f18"
+      },
+      {
+         "artifact": "animatedads\/oorexx@33c784f",
+         "claim": "Three demo samples driven by real X input.",
+         "line_end": 124,
+         "line_start": 120,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "a1de84d313c3f735fe190419781cb690effc08b25a59989e638caebedc5c3f18"
+      },
+      {
+         "artifact": "animatedads\/oorexx@33c784f",
+         "claim": "Sweep result and the causes of the 34 errors.",
+         "line_end": 159,
+         "line_start": 152,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "a1de84d313c3f735fe190419781cb690effc08b25a59989e638caebedc5c3f18"
+      },
+      {
+         "artifact": "animatedads\/oorexx@33c784f",
+         "claim": "The v0.22.0 sweep.",
+         "line_end": 3,
+         "line_start": 3,
+         "member": "oodialog-qt6\/sweep\/sweep-2026-11-19-v0.22-offscreen.md",
+         "sha256": "5ac6b8773c7c1c28f4a15aed9c2c4303f8f0e5c273958e8c85c5801902ec3e8f"
+      },
+      {
+         "artifact": "animatedads\/oorexx@33c784f",
+         "claim": "The desktop-run brief for v0.12.",
+         "line_end": 1,
+         "line_start": 1,
+         "member": "oodialog-qt6\/briefs\/DESKTOP_RUN_BRIEF_20261119.md",
+         "sha256": "8f72bac77870edf8f63d2151d8763632e2938abf4a76d9e5d37b2948b9d6ffa5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@33c784f",
+         "claim": "What is not done.",
+         "line_end": 227,
+         "line_start": 224,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "a1de84d313c3f735fe190419781cb690effc08b25a59989e638caebedc5c3f18"
+      }
+   ],
+   "related": [
+      "qt6.testing",
+      "qt6.oodweb-proposals",
+      "qt6.continuation"
+   ],
+   "sphere": "oodialog-linux-qt6",
+   "summary": "The latest branch is oodialog-qt6-v0.13 (commit 33c784f), renderer v0.13.0, based on and tested against oodialog-wasm d15b927 (v0.22.0). All 58 of the suite's tests pass, offscreen and on an X server (Xvfb with Qt's xcb platform), with the designer's programs and the print kit. New in v0.13.0: the tool bar (TOOLBAR, tb.* ops; t23_toolbar), custom draw of list-views and tree-views (cd.on, CD ROWS events, cd.paint; upstream customDrawListview.rex with 1,000 rows and treeViewCustomDraw.rex, unchanged, as up10), tv.kids and tv.order (sortChildrenCB), lv.insRow answering the uid, and data file names in strings for the runner's Windows names (oodfiles.js 0.2.0). In v0.12.0: the standby printer of v0.20.0 (deliver: the file is written to a folder and shown in a window with Print through CUPS lp, Open through xdg-open, Save and Close; a PDF shows as pages through pdftoppm; test print\/t19_print, run with --pdfkit, the PDF classes oodialog-wasm's tools\/oodpdfkit.rex collects); and v0.21.0's natives: the status bar (STATUSBAR, sb.* ops; t22_statusbar), windowAt, list-view rows by uid (t20_lvrows), edit lines, cue banners, tab sizes, padding, tab stops, item uids and row heights (t21_natives), the dialog's own colour, and the focused control's id in a KEY event. The build now needs Qt6 PrintSupport. In v0.11.0: KEY events with Windows virtual-key codes (demo\/calckeys), and three demo samples checked with real X input through xdotool. In v0.10.0: pagedTab. In v0.9.0: tool tips. In v0.8.0: the month calendar, ResizingAdmin. The suite is the browser harness's tests, with their .steps and .expect files, plus the three programs the ooDialog Designer generates (Calculator, Contacts, Gadgets), used unchanged as a contract test. Every one of upstream's sample programs was also started with nothing clicked: against v0.22.0 (offscreen) 86 of 122 programs showed their dialog (84 against v0.19.0 to v0.21.0); the two custom-draw samples now come up. 33 errors remain, all in oodWeb.cls's scope; none is in the renderer: winsystm.cls 19, resource reader not set 9, ooDialog native functions oodWeb does not have yet 3, other 2. Since 15 Nov 2026 this chat owns Linux ooDialog (Tom's rule). Earlier branches and their oodialog-wasm bases: v0.12 be78d99, v0.2 2c861d8, v0.3 23d57b2, v0.4 155e1b0, v0.5 1d89981, v0.6 0e0e744, v0.7 fc16dfb, v0.8 2423db8, v0.9 71f3590, v0.10 ee4b515, v0.11 aad1631.",
+   "title": "Where the Qt6 renderer stands (v0.13.0, 19 Nov 2026)",
+   "version": "0.7"
+}
