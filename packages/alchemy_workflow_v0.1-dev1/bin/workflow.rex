@@ -123,7 +123,8 @@ select
           seen~put(f~rule)
         end
       end
-      say receipt~verdict~left(5) ctx~relDir '| FAIL' fails 'WARN' warns '|' seen~makeArray~sort~makeString('L', ' ')
+      if receipt~isA(.WorkflowLedgerReceipt) then say receipt~verdict~left(5) ctx~relDir '| judged before: receipt' receipt~path
+      else say receipt~verdict~left(5) ctx~relDir '| FAIL' fails 'WARN' warns '|' seen~makeArray~sort~makeString('L', ' ')
     end
     say '--' list~items 'package(s):' verdicts~allIndexes~sort~makeString('L', ' ') '=' countsOf(verdicts)
     do k over totals~allIndexes~sort
@@ -167,7 +168,9 @@ judge: procedure
   end
   else why = 'unhashed:' .WorkflowHash~why '(the ledger cannot recognise a resubmission)'
   ledger = .WorkflowLedger~new(out || '/ledger.words')
-  key = .WorkflowLedger~key(tree, wf~module_version || '+' || ctx~setting('ONLY')~space(1, '+'), rules)
+  /* the directory is part of the key: two packages with identical files are still judged apart, because
+     Manifest's rules (MF-NAME, MF-PUBLISH) depend on where a package is (two such copies on main, 19 Nov) */
+  key = .WorkflowLedger~key(tree || '@' || ctx~relDir, wf~module_version || '+' || ctx~setting('ONLY')~space(1, '+'), rules)
   if tree \== '' then if opts['again'] == .nil then do
     before = ledger~find(key)
     if before \== .nil then do
