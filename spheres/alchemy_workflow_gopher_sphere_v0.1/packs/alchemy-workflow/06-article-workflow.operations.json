@@ -1,0 +1,46 @@
+{
+  "kind": "article",
+  "id": "workflow.operations",
+  "version": "0.1",
+  "sphere": "alchemy-workflow",
+  "title": "Running the Workflow: commands, environment, the fleet job and posting",
+  "summary": "Source bin/workflow_env.sh from the repository root; it sets REXX_PATH (the Workflow, ooRexx Logging v0.7, crypto v0.8.3, runtime reference v0.4, the Foreign Runtime, Body Slam, the Rexx/SQL backend and the browser UI kit's MailboxClient) and LD_LIBRARY_PATH. KitRun also needs REXXSQL_LIBDIR (a directory with librexxsql.so) set before sourcing, and a Body Slam database (--db). Commands: steps, plan PKGDIR, run PKGDIR, survey LIST, post. Output goes under --work (default /tmp/alchemy_workflow): out/workflow.log, out/receipts, out/ledger.words, out/outbox. tools/wf_fleet_job.rex runs the whole shadow survey on a build host with no setup by hand: it checks and builds the kit, reads the checkout into a fresh Body Slam database and writes FLEET_RESULT.txt. tools/wf_sphere_seal.rex fills a sphere's provenance hashes and manifest. post sends every report waiting in out/outbox through MailboxClient with a mode-600 token file; the token never appears on a command line or in a log.",
+  "invariants": [
+    "Exit codes: 0 PASS or FIXED, 1 WARN, 3 FAIL, 4 a step broke (ERROR), 2 usage.",
+    "post refuses to run without a URL, a principal and a token file of mode 600 or 400 holding one word.",
+    "A report that posts moves to out/outbox/sent with a .posted file (request id, time, principal, nudge); one that does not stays with a .error file and is tried again next time. Nothing is posted twice.",
+    "The fleet job changes nothing in the checkout except building libforeign_runtime.so when it is missing."
+  ],
+  "procedure": [
+    ". packages/alchemy_workflow_v0.1-dev1/bin/workflow_env.sh",
+    "rexx packages/alchemy_workflow_v0.1-dev1/bin/workflow.rex run packages/<package> --db <estate.db> --lane <lane> --to <principal>",
+    "rexx packages/alchemy_workflow_v0.1-dev1/bin/workflow.rex post --url <mailbox url> --token <token file> --principal <principal>",
+    "rexx packages/alchemy_workflow_v0.1-dev1/tools/wf_fleet_job.rex"
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "a49cc7f13b8f48cc04b9364c2e3b49ea3dc76e782585b1a6cd635d4150d28b27",
+      "member": "packages/alchemy_workflow_v0.1-dev1/bin/workflow.rex",
+      "line_start": 1,
+      "line_end": 28,
+      "claim": "Commands, options and exit codes."
+    },
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "68136437acf457689b4d68ebf7e96e085c071df0ba0f9fefed7e4601e9f0bfec",
+      "member": "packages/alchemy_workflow_v0.1-dev1/bin/workflow_env.sh",
+      "line_start": 1,
+      "line_end": 11,
+      "claim": "The environment the Workflow needs."
+    },
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "83b9592f732f5b6be4f05c96dba1aeee2656d369453411fcc2c427f83dbe85ab",
+      "member": "packages/alchemy_workflow_v0.1-dev1/tools/wf_fleet_job.rex",
+      "line_start": 1,
+      "line_end": 17,
+      "claim": "What the fleet job does."
+    }
+  ]
+}

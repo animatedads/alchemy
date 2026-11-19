@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "workflow.rules",
+  "version": "0.1",
+  "sphere": "alchemy-workflow",
+  "title": "The rule book: five layers, and the highest that matches decides",
+  "summary": "etc/house.rules holds lines 'layer | match | key | mode'. The layers, lowest to highest, are house (every package), area (the first path element, e.g. packages), family (the directory name without its _v<version>), package (the exact directory) and submission (--rule on the command line). For any key, the highest layer whose match fits the package decides; inside one layer the last line decides. Keys are a step id (modes enforce, report, off), STEP.RULE for one rule of a step (modes off, warn), or FILES.EXCLUDE (path prefixes no step reads). The receipt and the failure report name the rule line that decided, so every relaxation leads back to a written reason. Shadow mode is four house lines saying report; turning a step on for real is one line.",
+  "invariants": [
+    "report makes each FAIL of a step a WARN; warn does the same for one rule; off drops a step or a rule and leaves a note in the receipt saying which line did it.",
+    "A relaxation goes in the narrowest layer it applies to, with a # comment giving the reason.",
+    "The Workflow judges its own package at full strength (package layer lines), and passes.",
+    "The rule book's SHA-256 is part of the ledger key: a changed rule book judges a package again."
+  ],
+  "procedure": [
+    "To see which rule decides for a package: rexx packages/alchemy_workflow_v0.1-dev1/bin/workflow.rex plan packages/<package>",
+    "To try a stricter or looser setting without editing the file: add --rule ModuleStamp=enforce,HouseRules.HR-INDEX-LOOP=off to run or plan."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "4ff8d701e9f4935ab73c62194636f64605e4d8030bd306ec7959aa5046ac3576",
+      "member": "packages/alchemy_workflow_v0.1-dev1/src/AlchemyWorkflow.cls",
+      "line_start": 193,
+      "line_end": 227,
+      "claim": "decide: the highest matching layer wins; inside a layer, the last line."
+    },
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "a1cb9d63b96b8a49dcb8914fb939016fd1726d4c6551399a167d4e10579b708d",
+      "member": "packages/alchemy_workflow_v0.1-dev1/etc/house.rules",
+      "line_start": 1,
+      "line_end": 33,
+      "claim": "The house rule book: shadow mode, the module-stamp warning, the exclusions, and the Workflow at full strength on itself."
+    }
+  ]
+}

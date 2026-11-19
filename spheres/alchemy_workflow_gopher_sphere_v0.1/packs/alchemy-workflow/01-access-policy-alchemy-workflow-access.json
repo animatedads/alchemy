@@ -1,0 +1,34 @@
+{
+  "kind": "access-policy",
+  "id": "alchemy-workflow-access",
+  "version": "0.1",
+  "rules": [
+    {
+      "effect": "deny",
+      "roles": [
+        "llm",
+        "developer",
+        "operator"
+      ],
+      "actions": [
+        "exec"
+      ],
+      "resource": "capability:workflow.house_rules.edit"
+    },
+    {
+      "effect": "allow",
+      "roles": [
+        "llm",
+        "developer",
+        "operator",
+        "reviewer",
+        "admin"
+      ],
+      "actions": [
+        "read",
+        "exec"
+      ],
+      "resource": "*"
+    }
+  ]
+}

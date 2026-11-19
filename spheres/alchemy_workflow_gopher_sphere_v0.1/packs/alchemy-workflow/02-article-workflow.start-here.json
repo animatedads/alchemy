@@ -1,0 +1,49 @@
+{
+  "kind": "article",
+  "id": "workflow.start-here",
+  "version": "0.1",
+  "sphere": "alchemy-workflow",
+  "title": "The Workflow judges a package step by step, by written rules, and tells the submitter what to fix",
+  "summary": "Alchemy Workflow (package alchemy_workflow) is an ooRexx workflow planner. A workflow is a list of stages: intake, inspect, normalise, stamp, qualify, publish, report. Steps are registered into it, each a small class in its own file (src/steps) listed in etc/steps.list. A rule book (etc/house.rules) decides which steps apply to a package and how strictly. `plan` shows what would run and which rule decided it, and runs nothing. `run` executes that plan and writes a receipt (each step's verdict and findings, the package's tree SHA-256 and the rule book's SHA-256). When the verdict is WARN or FAIL, a failure report goes to the mailbox lane of whoever submitted the package, saying what to fix, where, and the command that shows it again. It was designed by Tom Dyer (11 Nov 2026) to replace the Python Autobuild, whose layers patch each other at load time and cannot be asked what their rules are.",
+  "invariants": [
+    "Every finding has a rule id, a file and line, what was found, a fix, and the command that reproduces it.",
+    "Verdicts rank PASS < FIXED < WARN < FAIL < ERROR. ERROR means a step itself broke: it is a defect in the tooling, never charged to the package.",
+    "`plan` runs nothing. `run` runs exactly what `plan` shows.",
+    "An identical resubmission (same tree, same workflow version, same rule book) gets the earlier receipt back and is not run again.",
+    "Every class of the Workflow answers ~module_version and ~module_lastChanged.",
+    "Hashing goes through crypto v0.8.3 and the Foreign Runtime; progress goes through ooRexx Logging v0.7.",
+    "Every update states who did the architecture (Tom Dyer), who did the coding, and who wrote it."
+  ],
+  "procedure": [
+    "Read workflow.current-state: it says what is running and in which mode.",
+    "If a workflow failure report reached you, read workflow.failure-reports and do what it says.",
+    "To see what the Workflow would do to a package, from the repository root: . packages/alchemy_workflow_v0.1-dev1/bin/workflow_env.sh then rexx packages/alchemy_workflow_v0.1-dev1/bin/workflow.rex plan packages/<your package>",
+    "To add a rule or a step, read workflow.steps and workflow.rules first."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "4ff8d701e9f4935ab73c62194636f64605e4d8030bd306ec7959aa5046ac3576",
+      "member": "packages/alchemy_workflow_v0.1-dev1/src/AlchemyWorkflow.cls",
+      "line_start": 1,
+      "line_end": 30,
+      "claim": "The objects of the Workflow, and that ERROR is charged to the tooling."
+    },
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "4ff8d701e9f4935ab73c62194636f64605e4d8030bd306ec7959aa5046ac3576",
+      "member": "packages/alchemy_workflow_v0.1-dev1/src/AlchemyWorkflow.cls",
+      "line_start": 532,
+      "line_end": 543,
+      "claim": "A step that raises a condition gets ERROR."
+    },
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "5419ccc2c6a6a12e68af283d31d59c2092ef68a04d1ba3e1ad5c81c1d6c45aef",
+      "member": "packages/alchemy_workflow_v0.1-dev1/src/WorkflowReport.cls",
+      "line_start": 135,
+      "line_end": 173,
+      "claim": "The ledger answers an identical resubmission from the earlier judgement."
+    }
+  ]
+}

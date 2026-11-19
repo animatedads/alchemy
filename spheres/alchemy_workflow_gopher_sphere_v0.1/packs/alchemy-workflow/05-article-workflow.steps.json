@@ -1,0 +1,46 @@
+{
+  "kind": "article",
+  "id": "workflow.steps",
+  "version": "0.1",
+  "sphere": "alchemy-workflow",
+  "title": "The steps and their rules, and how to add a step",
+  "summary": "Five steps are registered in v0.1-dev1. Manifest (intake): MF-MISSING, MF-PARSE, MF-SCHEMA, MF-PACKAGE, MF-NAME (package.name and version must give the directory name), MF-PUBLISH (publish.tree.path must be the package's own directory), MF-TESTS, MF-CWD, MF-PROGRAM, MF-PYTHON. HouseRules (inspect), read on code with comments, strings and ::resource text blanked: HR-PRIVATE (no private methods), HR-EXPOSE-FIRST, HR-RESULT (result as a variable), HR-PLUS-ZERO, HR-COMMENT (a slash-asterisk inside a comment that leaves it unclosed), HR-INDEX-LOOP (WARN: loop over the collection), HR-CREDITS (WARN). Pitfalls (inspect) asks Boston Crab's RexxPitfallChecker (oorexx_slam_bostoncrab_v0.24) rather than checking the same traps a second way: PF-P1 (a string followed at once by an opening parenthesis is a routine call), PF-P2 (a string followed at once by x or b that is not hex or binary), PF-P3 (two spellings of one name; a WARN for now, because the checker also counts message and directive names), PF-P4 (a loop variable that overwrites a use arg name). ModuleStamp (stamp): MS-MISSING (a class does not answer ~module_version and ~module_lastChanged), MS-VERSION (a stale stamp), MS-DATE (WARN: older than the file's last change, by git author date). KitRun (qualify), through Body Slam v0.2: each test run with a stand-in rexx, every program followed through its ::requires: KR-NOT-FOUND, KR-MISSING, KR-INVALID, KR-ENV, KR-GONE (WARN: the test deleted the program's directory before it could be followed), KR-OLDER and KR-TWO (WARN). A step's file header explains each of its rules.",
+  "invariants": [
+    "A step is a subclass of WorkflowStep with id, stage, describe, skipReason(ctx), intends(ctx) and run(ctx, result). It returns findings through result~add; it never prints a verdict of its own.",
+    "A step reads files through ctx~source(rel), which reads each file once; it never scans raw text for code rules.",
+    "Adding a step is a new file in src/steps and one line in etc/steps.list. Nothing else changes.",
+    "A step that cannot load (a missing dependency) is listed as unavailable with the reason, and the others still run.",
+    "Every step class carries its own ::constant MODULE_VERSION and MODULE_LASTCHANGED."
+  ],
+  "procedure": [
+    "Copy the shape of src/steps/ManifestStep.cls: header comment listing the rules, then the class.",
+    "Add tests with a fixture that breaks each new rule on a known line (tests/fixtures/bad_pkg_v0.4) and one that keeps them all (good_pkg_v0.2).",
+    "Run rexx tests/test_workflow.rex from the package directory, then run the Workflow on its own package: it must PASS."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "4ff8d701e9f4935ab73c62194636f64605e4d8030bd306ec7959aa5046ac3576",
+      "member": "packages/alchemy_workflow_v0.1-dev1/src/AlchemyWorkflow.cls",
+      "line_start": 359,
+      "line_end": 390,
+      "claim": "The WorkflowStep protocol."
+    },
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "96f4d1c18e74da9617268dbd77f4bf5bdadf483bb583d3f14e924c19ef362946",
+      "member": "packages/alchemy_workflow_v0.1-dev1/etc/steps.list",
+      "line_start": 1,
+      "line_end": 8,
+      "claim": "The registered steps."
+    },
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "ebca200aceb53b2971e66d3e99ccc0df46764fb19042d1b92ee5d3a9feeef40f",
+      "member": "packages/alchemy_workflow_v0.1-dev1/src/steps/HouseRulesStep.cls",
+      "line_start": 1,
+      "line_end": 30,
+      "claim": "The house rules HouseRules checks."
+    }
+  ]
+}

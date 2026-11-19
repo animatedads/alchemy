@@ -1,0 +1,48 @@
+{
+  "kind": "article",
+  "id": "workflow.failure-reports",
+  "version": "0.1",
+  "sphere": "alchemy-workflow",
+  "title": "A workflow failure report reached you: what it says and what to do",
+  "summary": "When a package's verdict is WARN, FAIL or ERROR, the Workflow writes one message for the lane that submitted it and posts it to the Rasen Falcon mailbox: a reply when it knows the request that submitted the package, otherwise a new request on the lane. The subject reads 'Workflow <verdict> for <package>: <n> to fix, <m> warning(s)'. The body starts with the credits and the command that sets up the environment, then lists every FAIL as a numbered entry: the step and its version, the rule id, the layer of the rule book that set its severity, where (file:line), what was found, the fix, and the command that shows that one finding again (with --only <step> --again). The WARNs follow; they do not stop the build. A chat is told by a one-sentence nudge that carries no content, only that the report is in its mailbox. In shadow mode (now) every FAIL is reported as a WARN whose severity line says it is a FAIL when enforced.",
+  "invariants": [
+    "Fix exactly what the report names. Do not rewrite unrelated code in the same submission.",
+    "An ERROR section means the Workflow itself broke on that step. That is not your package's fault: report it on the lane the message came from and carry on.",
+    "A resubmission with an identical tree is not run again; it gets the same receipt. Change the package before resubmitting.",
+    "A rule can be relaxed only by a written line in the rule book, in the layer it applies to, with a comment giving the reason. Ask Tom; do not edit etc/house.rules yourself.",
+    "The command lines in the report are meant to be run as they are, from the repository root, after sourcing workflow_env.sh. They end without a period."
+  ],
+  "procedure": [
+    "Read the whole report in the mailbox, not just the nudge.",
+    "For each numbered FAIL: open file:line, apply the fix, run its 'check it yourself' command and see the finding gone.",
+    "Run the package's own tests.",
+    "Resubmit, and reply on the report's thread with what you changed, credits included.",
+    "If you think a finding is wrong, reply with the evidence (the line, and why the rule should not apply). A false finding is a defect in the step and is fixed there."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "5419ccc2c6a6a12e68af283d31d59c2092ef68a04d1ba3e1ad5c81c1d6c45aef",
+      "member": "packages/alchemy_workflow_v0.1-dev1/src/WorkflowReport.cls",
+      "line_start": 45,
+      "line_end": 111,
+      "claim": "The body of the report: credits, environment command, numbered FAILs, then WARNs, each with where, found, fix and the command."
+    },
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "4678046ff904cf5dfea1bdfbb5f1e735b09e0ed0bdcfb0c12e4bfb6a19345392",
+      "member": "packages/alchemy_workflow_v0.1-dev1/src/WorkflowMailbox.cls",
+      "line_start": 76,
+      "line_end": 148,
+      "claim": "A report with a parent request is posted as a reply, otherwise as a new request on its lane; a posted report moves to sent, a refused one stays with its error."
+    },
+    {
+      "artifact": "animatedads/alchemy@e1dad44f",
+      "sha256": "4ff8d701e9f4935ab73c62194636f64605e4d8030bd306ec7959aa5046ac3576",
+      "member": "packages/alchemy_workflow_v0.1-dev1/src/AlchemyWorkflow.cls",
+      "line_start": 544,
+      "line_end": 568,
+      "claim": "Report mode makes a FAIL a WARN and says so; the reproduce command is --only <step> --again."
+    }
+  ]
+}
