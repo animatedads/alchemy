@@ -18,7 +18,7 @@
 
 ::class WorkflowSource public
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 ::attribute path get
 ::attribute raw get
 ::attribute code get
@@ -39,15 +39,31 @@
   code = self~clean(raw)
   directives = self~findDirectives
 
-/* comments and string contents blanked; quotes kept; same length as the raw line */
+/* comments and string contents blanked; quotes kept; same length as the raw line. The text of a ::resource
+   (up to its ::END, or the end marker it names) is data, not code: it is blanked whole (a false finding on
+   Boston Crab's pitfall cases, 19 Nov) */
 ::method clean
   expose traps
   use strict arg lines
   out = .array~new
   opened = .array~new
+  resEnd = ''
   n = 0
   do line over lines
     n += 1
+    if resEnd \== '' then do
+      if line~strip~caselessEquals(resEnd) then resEnd = ''
+      out~append(' '~copies(line~length))
+      iterate
+    end
+    if opened~items = 0 then if line~strip~left(10)~caselessEquals('::resource') then do
+      resEnd = '::END'
+      parse value line~strip with . . rest
+      p = wordpos('END', rest~upper)
+      if p > 0 then resEnd = word(rest, p + 1)~strip('B', '"')~strip('B', "'")
+      out~append(line)
+      iterate
+    end
     s = ''
     q = ''
     body = ''

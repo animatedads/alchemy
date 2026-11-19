@@ -15,6 +15,7 @@
 # shadow mode: the workflow runs beside the Python Autobuild and stops nothing yet
 house   | *  | Manifest     | report
 house   | *  | HouseRules   | report
+house   | *  | Pitfalls     | report
 house   | *  | ModuleStamp  | report
 house   | *  | KitRun       | report
 
@@ -22,12 +23,21 @@ house   | *  | KitRun       | report
 # announces the rule; a wrong stamp is still a defect
 house   | *  | ModuleStamp.MS-MISSING | warn
 
+# Pitfalls P3 counts message names (after ~) and directive names as variables, so ::constant MODULE_VERSION
+# and ~module_version read as one variable spelt two ways; neither ever mattered to ooRexx. A WARN until
+# RexxPitfallChecker leaves those names out (reported to Boston Crab's lane, 19 Nov 2026)
+house   | *  | Pitfalls.PF-P3 | warn
+
 # test helpers are not components
 house   | *  | FILES.EXCLUDE | tests/fixtures/
+
+# Boston Crab's pitfall cases break the pitfall rules on purpose: they are the checker's own test input
+family  | oorexx_slam_bostoncrab | FILES.EXCLUDE | tests/fixtures/ tests/pitfall_cases/
 
 # the workflow judges itself at full strength
 package | alchemy_workflow_v0.1-dev1 | Manifest    | enforce
 package | alchemy_workflow_v0.1-dev1 | HouseRules  | enforce
+package | alchemy_workflow_v0.1-dev1 | Pitfalls    | enforce
 package | alchemy_workflow_v0.1-dev1 | ModuleStamp | enforce
 package | alchemy_workflow_v0.1-dev1 | ModuleStamp.MS-MISSING | enforce
 package | alchemy_workflow_v0.1-dev1 | FILES.EXCLUDE | tests/

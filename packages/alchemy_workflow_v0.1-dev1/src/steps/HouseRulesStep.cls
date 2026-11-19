@@ -10,8 +10,6 @@
  *   HR-RESULT        FAIL  result used as a variable (assigned, or a loop control variable); ~result, the
  *                          Message method, is not this
  *   HR-PLUS-ZERO     FAIL  "+ 0" used to coerce a number
- *   HR-LITERAL-CALL  FAIL  a string followed at once by "(": a call of the routine named by the string
- *   HR-LITERAL-HEX   FAIL  a string followed at once by x or b that is not a hex or binary string
  *   HR-COMMENT       FAIL  a comment never closed, nearly always a slash-asterisk inside a comment (a path
  *                          or glob) opening a nested one (hit twice by Claude, 10 and 11 Nov)
  *   HR-INDEX-LOOP    WARN  do i = 1 to coll~items: loop over the collection instead
@@ -19,12 +17,16 @@
  *
  * Each rule can be switched per layer in the rule book (HouseRules.HR-INDEX-LOOP | off, say), and the
  * receipt shows which layer did it.
+ *
+ * The literal traps (a string followed at once by "(", or by x or b) and the two other pitfalls that have
+ * cost runs belong to the Pitfalls step, which asks Boston Crab's RexxPitfallChecker: the estate has one
+ * checker for them, not two (19 Nov 2026; HR-LITERAL-CALL and HR-LITERAL-HEX were here until then).
  */
 ::requires 'AlchemyWorkflow.cls'
 
 ::class HouseRulesStep public subclass WorkflowStep
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 
 ::method id
   return 'HouseRules'
@@ -33,7 +35,7 @@
   return 'inspect'
 
 ::method describe
-  return 'check the ooRexx house rules: no private methods, expose first, no result variable, no + 0, no literal traps, collections over index loops, credits'
+  return 'check the ooRexx house rules: no private methods, expose first, no result variable, no + 0, no unclosed comment, collections over index loops, credits'
 
 ::method skipReason
   use strict arg ctx
@@ -144,12 +146,10 @@
 
 ::method traps
   use strict arg res, rel, src
+  /* only the unclosed comment: the literal traps are the Pitfalls step's (RexxPitfallChecker) */
   do t over src~traps
-    select
-      when t['KIND'] == 'COMMENT' then res~add(self~finding('HR-COMMENT', 'FAIL', rel, t['LINE'], t['TEXT'] || ': the opener on line' t['LINE'] 'is inside a comment and opens a nested one; ooRexx refuses the file (Error 6.1)', 'reword the comment so no slash is followed by an asterisk (a path or glob such as dir/*.json)'))
-      when t['KIND'] == 'CALL' then res~add(self~finding('HR-LITERAL-CALL', 'FAIL', rel, t['LINE'], 'the string ''' || t['TEXT'] || ''' is followed at once by "(", which calls a routine named by the string', 'join with ||, or put a blank before the ('))
-      otherwise res~add(self~finding('HR-LITERAL-HEX', 'FAIL', rel, t['LINE'], 'the string ''' || t['TEXT'] || ''' is followed at once by' t['KIND']~left(1)~lower || ', which makes it a' t['KIND']~lower 'literal it is not', 'join with ||, or rename the variable that starts with' t['KIND']~left(1)~lower))
-    end
+    if t['KIND'] \== 'COMMENT' then iterate
+    res~add(self~finding('HR-COMMENT', 'FAIL', rel, t['LINE'], t['TEXT'] || ': the opener on line' t['LINE'] 'is inside a comment and opens a nested one; ooRexx refuses the file (Error 6.1)', 'reword the comment so no slash is followed by an asterisk (a path or glob such as dir/*.json)'))
   end
 
 /* who did the architecture, said in a README (house rule: every update credits the architect) */

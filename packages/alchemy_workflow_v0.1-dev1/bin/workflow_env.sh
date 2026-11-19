@@ -6,6 +6,6 @@
 _wf_here=$(CDPATH= cd -- "$(dirname -- "${BASH_SOURCE:-$0}")/.." && pwd)
 export ALCHEMY_ROOT="${ALCHEMY_ROOT:-$(CDPATH= cd -- "$_wf_here/../.." && pwd)}"
 _p="$ALCHEMY_ROOT/packages"
-export REXX_PATH="$_wf_here/src:$_wf_here/src/steps:$_p/oorexx_logging_v0.7/src:$_p/oorexx_crypto_v0.8.3/src:$_p/runtime_reference_v0.4/src:$_p/oorexx_foreign_runtime_v0.22.6/rexx:$_p/oorexx_slam_v0.1/src:$_p/oorexx_slam_v0.1/vendor/rx2cpp:$_p/oorexx_rexxsql_backend_v0.1/src:$_p/oorexx_native_database_backends_v0.1/src"
+export REXX_PATH="$_wf_here/src:$_wf_here/src/steps:$_p/oorexx_browser_ui_kit_v0.4/src:$_p/oorexx_slam_bostoncrab_v0.24/tests:$_p/oorexx_logging_v0.7/src:$_p/oorexx_crypto_v0.8.3/src:$_p/runtime_reference_v0.4/src:$_p/oorexx_foreign_runtime_v0.22.6/rexx:$_p/oorexx_slam_v0.1/src:$_p/oorexx_slam_v0.1/vendor/rx2cpp:$_p/oorexx_rexxsql_backend_v0.1/src:$_p/oorexx_native_database_backends_v0.1/src"
 export LD_LIBRARY_PATH="$_p/oorexx_foreign_runtime_v0.22.6/build:$_p/oorexx_crypto_v0.8.3/native${REXXSQL_LIBDIR:+:$REXXSQL_LIBDIR}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 unset _wf_here _p

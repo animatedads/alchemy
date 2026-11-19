@@ -36,7 +36,7 @@
 /* ------------------------------------------------------------------------------------------------ */
 ::class WorkflowFinding public
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 ::attribute rule get
 ::attribute severity
 ::attribute file get
@@ -66,7 +66,7 @@
 /* ------------------------------------------------------------------------------------------------ */
 ::class WorkflowStepResult public
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 ::attribute stepId get
 ::attribute stepVersion get
 ::attribute verdict
@@ -129,7 +129,7 @@
 /* ------------------------------------------------------------------------------------------------ */
 ::class WorkflowRuleBook public
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 ::attribute rules get
 
 ::method layers class
@@ -227,7 +227,7 @@
 /* ------------------------------------------------------------------------------------------------ */
 ::class WorkflowContext public
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 ::attribute pkgDir get
 ::attribute repoRoot get
 ::attribute work get
@@ -344,11 +344,13 @@ bad:
   end
   return s
 
-/* the date (YYYY-MM-DD) of the last commit that changed rel; '' when git does not know it */
+/* the date (YYYY-MM-DD) rel was last changed: the author date of the last commit that changed it, because
+   a rebase or cherry-pick gives every commit a new committer date without changing a line (found 19 Nov,
+   when rebasing this package made every file look changed that day); '' when git does not know it */
 ::method lastChanged
   expose repoRoot relDir
   use strict arg rel
-  cmd = 'git -C' wfq(repoRoot) 'log -1 --format=%cs --' wfq(relDir || '/' || rel) '2>/dev/null'
+  cmd = 'git -C' wfq(repoRoot) 'log -1 --format=%as --' wfq(relDir || '/' || rel) '2>/dev/null'
   address system cmd with output stem o.
   if o.0 = 0 then return ''
   return o.1~strip
@@ -356,7 +358,7 @@ bad:
 /* ------------------------------------------------------------------------------------------------ */
 ::class WorkflowStep public
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 
 ::method id
   return self~class~id
@@ -388,7 +390,7 @@ bad:
 /* ------------------------------------------------------------------------------------------------ */
 ::class WorkflowRegistry public
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 ::attribute steps get
 ::attribute unavailable get
 
@@ -446,7 +448,7 @@ broken:
 /* ------------------------------------------------------------------------------------------------ */
 ::class Workflow public
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 ::attribute name get
 ::attribute stages get
 ::attribute registry get
@@ -477,7 +479,7 @@ broken:
 ::method plan
   expose rulebook
   use strict arg ctx
-  only = ctx~setting('ONLY')~upper
+  only = ctx~setting('ONLY')~upper~translate(' ', ',')
   rows = .array~new
   do s over self~ordered
     d = rulebook~decide(s~id, ctx, 'enforce')
@@ -566,7 +568,7 @@ broken:
 /* ------------------------------------------------------------------------------------------------ */
 ::class WorkflowPlan public
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 ::attribute workflow get
 ::attribute ctx get
 ::attribute rows get
@@ -597,7 +599,7 @@ broken:
 /* ------------------------------------------------------------------------------------------------ */
 ::class WorkflowReceipt public
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 ::attribute workflow get
 ::attribute ctx get
 ::attribute plan get

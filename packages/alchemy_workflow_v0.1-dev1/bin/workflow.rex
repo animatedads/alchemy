@@ -9,10 +9,15 @@
  *   rexx bin/workflow.rex run PKGDIR [options]      run it: receipt, ledger, and the failure report
  *   rexx bin/workflow.rex survey LIST [options]     run over every package directory named in LIST
  *                                                   (one per line): one line each, then rule totals
+ *   rexx bin/workflow.rex post [options]            post every failure report waiting in WORK/out/outbox
+ *                                                   to the Rasen Falcon mailbox; a posted one moves to
+ *                                                   outbox/sent, a failed one stays for the next run
  * Options:
+ *   --url URL --token FILE --principal P [--curl PATH]   for post (default RASENFALCON_URL,
+ *                  RASENFALCON_TOKEN_FILE, RASENFALCON_PRINCIPAL); the token file is mode 600, the token only
  *   --repo DIR     the checkout (default ALCHEMY_ROOT, else two directories above this package)
  *   --db FILE      Body Slam's database of the estate (for KitRun; default BODYSLAM_DB)
- *   --only "A B"   run only these steps
+ *   --only A,B     run only these steps (a comma between step ids, no blanks)
  *   --rule K=M,... submission-layer rules, e.g. ModuleStamp=enforce,HouseRules.HR-INDEX-LOOP=off
  *   --lane L --to P --parent REQ   where the failure report goes (default lane workflow, to TOM)
  *   --work DIR     scratch and output (default /tmp/alchemy_workflow)
@@ -125,6 +130,12 @@ select
       say '  ' k~left(40) totals[k]
     end
   end
+  when cmd == 'post' then do
+    counts = postOutbox(opts, out, log)
+    log~close
+    if counts[2] > 0 then exit 3
+    exit 0
+  end
   otherwise call usage
 end
 log~close
@@ -194,6 +205,33 @@ exitFor: procedure
     otherwise return 0
   end
 
+/* post every message in the outbox: (posted, failed). The kit is checked first; nothing is sent when it fails */
+postOutbox: procedure
+  use strict arg opts, out, log
+  url = opt(opts, 'url', value('RASENFALCON_URL',, 'ENVIRONMENT'))
+  token = opt(opts, 'token', value('RASENFALCON_TOKEN_FILE',, 'ENVIRONMENT'))
+  principal = opt(opts, 'principal', value('RASENFALCON_PRINCIPAL',, 'ENVIRONMENT'))
+  curl = opt(opts, 'curl', 'curl')
+  check = .WorkflowMailboxCheck~new
+  if url == '' then check~add('STOP', 'url', 'no mailbox URL (--url or RASENFALCON_URL)')
+  if principal == '' then check~add('STOP', 'principal', 'no principal to post as (--principal or RASENFALCON_PRINCIPAL)')
+  if token == '' then check~add('STOP', 'token', 'no token file (--token or RASENFALCON_TOKEN_FILE)')
+  client = .nil
+  if \check~stopped then do
+    client = .MailboxClient~new(url, token, curl, principal, out || '/mailbox-tmp')
+    client~ready(check)
+  end
+  do t over check~items
+    log~info('mailbox kit' t)
+  end
+  if check~stopped then do
+    log~error('mailbox kit check failed: nothing posted')
+    return .array~of(0, 1)
+  end
+  counts = .WorkflowMailbox~new(client, log)~postAll(out || '/outbox')
+  log~info('mailbox:' counts[1] 'posted,' counts[2] 'not posted')
+  return counts
+
 opt: procedure
   use strict arg opts, key, default
   v = opts[key]
@@ -215,7 +253,7 @@ countsOf: procedure
   return t~strip
 
 usage:
-  say 'usage: rexx bin/workflow.rex steps | plan PKGDIR | run PKGDIR | survey LIST  [--repo DIR] [--db FILE] [--only "A B"] [--rule K=M,...] [--lane L] [--to P] [--parent REQ] [--work DIR] [--again] [--quiet]'
+  say 'usage: rexx bin/workflow.rex steps | plan PKGDIR | run PKGDIR | survey LIST | post  [--repo DIR] [--db FILE] [--only A,B] [--rule K=M,...] [--lane L] [--to P] [--parent REQ] [--work DIR] [--again] [--quiet]'
   exit 2
 
 failed:
@@ -229,11 +267,12 @@ failed:
 ::requires 'WorkflowLog.cls'
 ::requires 'WorkflowHash.cls'
 ::requires 'WorkflowReport.cls'
+::requires 'WorkflowMailbox.cls'
 
 /* a receipt the ledger answered: the earlier verdict, no new run */
 ::class WorkflowLedgerReceipt public
 ::constant MODULE_VERSION '0.1-dev1'
-::constant MODULE_LASTCHANGED '2026-11-11'
+::constant MODULE_LASTCHANGED '2026-11-19'
 ::attribute ctx get
 ::attribute verdict get
 ::attribute path get

@@ -18,10 +18,12 @@ address system 'rm -rf' work '&& mkdir -p' work
 say '== 1 every class answers ~module_version and ~module_lastChanged'
 classes = .array~of(.Workflow, .WorkflowStep, .WorkflowRegistry, .WorkflowRuleBook, .WorkflowContext, .WorkflowPlan, -
   .WorkflowReceipt, .WorkflowStepResult, .WorkflowFinding, .WorkflowSource, .WorkflowLog, .WorkflowLogFileTarget, -
-  .WorkflowHash, .WorkflowFailureReport, .WorkflowLedger, .ManifestStep, .HouseRulesStep, .ModuleStampStep)
+  .WorkflowHash, .WorkflowFailureReport, .WorkflowLedger, .ManifestStep, .HouseRulesStep, .ModuleStampStep, .PitfallsStep, -
+  .WorkflowMailbox, .WorkflowMailboxCheck)
 do c over classes
   call check c~module_version == '0.1-dev1', c~id 'module_version' c~module_version
-  call check c~module_lastChanged == '2026-11-11', c~id 'module_lastChanged' c~module_lastChanged
+  d = c~module_lastChanged
+  call check d >= '2026-11-11' & d <= date('I'), c~id 'module_lastChanged' d
 end
 
 say '== 2 family and version from a directory name'
@@ -83,8 +85,8 @@ expect = .array~of('Manifest MF-SCHEMA WARN integration.json:1', 'Manifest MF-NA
   'Manifest MF-PYTHON WARN integration.json:6', -
   'HouseRules HR-EXPOSE-FIRST FAIL src/Bad.cls:8', 'HouseRules HR-PRIVATE FAIL src/Bad.cls:10', -
   'HouseRules HR-RESULT FAIL src/Bad.cls:15', 'HouseRules HR-INDEX-LOOP WARN src/Bad.cls:16', -
-  'HouseRules HR-PLUS-ZERO FAIL src/Bad.cls:17', 'HouseRules HR-LITERAL-HEX FAIL src/Bad.cls:19', -
-  'HouseRules HR-LITERAL-CALL FAIL src/Bad.cls:20', 'HouseRules HR-COMMENT FAIL src/Unclosed.cls:1', -
+  'HouseRules HR-PLUS-ZERO FAIL src/Bad.cls:17', 'Pitfalls PF-P2 FAIL src/Bad.cls:19', -
+  'Pitfalls PF-P1 FAIL src/Bad.cls:20', 'HouseRules HR-COMMENT FAIL src/Unclosed.cls:1', -
   'HouseRules HR-CREDITS WARN README.md', -
   'ModuleStamp MS-VERSION FAIL src/Bad.cls:3', 'ModuleStamp MS-MISSING FAIL src/Bad.cls:23')
 /* MS-DATE needs git to know when Bad.cls last changed: in a checkout it does, in a bare copy it does not */
@@ -107,7 +109,7 @@ call check got~items = expect~items, expect~items 'findings expected,' got~items
 
 say '== 7 report mode: the FAILs become WARNs, and each says it'
 rp = .WorkflowRuleBook~new
-do s over .array~of('Manifest', 'HouseRules', 'ModuleStamp')
+do s over .array~of('Manifest', 'HouseRules', 'Pitfalls', 'ModuleStamp')
   rp~add('house', '*', s, 'report', 't')
 end
 rec = runOn(fx || '/bad_pkg_v0.4', fx, work, rp)
@@ -190,7 +192,7 @@ call check skips['Manifest'] == '', 'Manifest planned'
 call check skips['HouseRules']~pos('not asked for') > 0, 'HouseRules: not asked for'
 call check skips['ModuleStamp'] == 'switched off by house rule t:1', 'ModuleStamp:' skips['ModuleStamp']
 call check skips['KitRun']~pos('Body Slam') > 0, 'KitRun:' skips['KitRun']
-call check reg~steps~items + reg~unavailable~items = 4, 'four steps listed'
+call check reg~steps~items + reg~unavailable~items = 5, 'five steps listed'
 
 say '== 12 the ledger remembers a judgement'
 ld = .WorkflowLedger~new(work || '/ledger.words')
@@ -222,16 +224,81 @@ s~close
 call check n = 2, 'two log lines written (' || n || ')'
 call check t~pos('WARN  two') > 0, 'level and text in the line:' t
 
+say '== 15 failure reports reach the mailbox (MailboxClient against a stand-in curl)'
+mb = work || '/mb'
+ob = mb || '/outbox'
+address system 'mkdir -p' wfq(ob)
+tok = mb || '/token'
+call wfWriteFile tok, 'faketoken'
+address system 'chmod 600' wfq(tok)
+call putMessage ob || '/a_reply.json', 'REQ-9', 'with a parent'
+call putMessage ob || '/b_create.json', '', 'no parent'
+call wfWriteFile ob || '/c_broken.json', '{"recipientId": "CLAUDE"}'
+call value 'MAILBOX_FAKE_LOG', mb || '/fake.log', 'ENVIRONMENT'
+call value 'MAILBOX_FAKE_CREATE', '', 'ENVIRONMENT'
+client = .MailboxClient~new('https://mailbox.invalid/mcp', tok, home || '/tests/fakes/curl-mailbox-fake', 'CLAUDE', mb || '/tmp')
+ck = .WorkflowMailboxCheck~new
+client~ready(ck)
+call check \ck~stopped, 'the kit passes with a mode-600 token file' ck~items~makeString('L', ' ')
+lg = .WorkflowLog~new(mb || '/post.log', .false)
+box = .WorkflowMailbox~new(client, lg)
+counts = box~postAll(ob)
+call check counts[1] = 2 & counts[2] = 1, 'two posted, one refused (' || counts[1] counts[2] || ')'
+call check SysFileExists(ob || '/sent/a_reply.json'), 'a posted message moves to sent'
+call check wfReadFile(ob || '/sent/a_reply.json.posted')~pos('requestId REQ-R1') > 0, 'a message with a parent is a reply (REQ-R1)'
+call check wfReadFile(ob || '/sent/b_create.json.posted')~pos('requestId REQ-C1') > 0, 'a message without one is a new request (REQ-C1)'
+call check wfReadFile(ob || '/sent/b_create.json.posted')~pos('nudge Alchemy Workflow: look') > 0, 'the nudge is kept for the nudger'
+call check SysFileExists(ob || '/c_broken.json'), 'a broken message stays in the outbox'
+call check wfReadFile(ob || '/c_broken.json.error')~pos('has no componentId') > 0, 'with its error beside it'
+fl = wfReadFile(mb || '/fake.log')
+call check fl~pos('faketoken') = 0, 'the token is never in what was sent'
+call check fl~pos('slam-450') > 0, 'create names the lane'
+call check fl~pos('REQ-9') > 0, 'reply names the parent'
+counts = box~postAll(ob)
+call check counts[1] = 0, 'nothing is posted twice (' || counts[1] || ')'
+call putMessage ob || '/d_nolane.json', '', 'unknown lane'
+call value 'MAILBOX_FAKE_CREATE', 'nolane', 'ENVIRONMENT'
+counts = box~postAll(ob)
+call check counts[1] = 0 & SysFileExists(ob || '/d_nolane.json'), 'a refused post stays for the next run'
+call check wfReadFile(ob || '/d_nolane.json.error')~pos('COMPONENT_UNKNOWN') > 0, 'and says why'
+lg~close
+address system 'chmod 644' wfq(tok)
+ck = .WorkflowMailboxCheck~new
+client~ready(ck)
+call check ck~stopped, 'a token file others can read stops the kit check'
+
 say
 say 'checks:' .wf.pass 'passed,' .wf.fail 'failed'
 if .wf.fail > 0 then exit 1
 exit 0
+
+putMessage: procedure
+  use strict arg path, parent, what
+  d = .directory~new
+  d['recipientId'] = .JsonString~new('CLAUDE')
+  d['componentId'] = .JsonString~new('slam-450')
+  d['parentRequestId'] = .JsonString~new(parent)
+  d['subject'] = .JsonString~new('Workflow FAIL for test:' what)
+  d['body'] = .JsonString~new('body:' what)
+  d['nudge'] = .JsonString~new('Alchemy Workflow: look in your mailbox (' || what || ')')
+  call wfWriteFile path, .json~toJson(d)
+  return
+
+wfReadFile: procedure
+  use strict arg path
+  if \SysFileExists(path) then return ''
+  s = .stream~new(path)
+  s~open('read')
+  t = s~charIn(1, s~chars)
+  s~close
+  return t
 
 runOn: procedure
   use strict arg dir, repo, work, rb
   reg = .WorkflowRegistry~new
   reg~register(.ManifestStep~new)
   reg~register(.HouseRulesStep~new)
+  reg~register(.PitfallsStep~new)
   reg~register(.ModuleStampStep~new)
   log = .WorkflowLog~new(work || '/run.log', .false)
   wf = .Workflow~new('test', reg, rb, log)
@@ -283,6 +350,8 @@ failed:
 ::requires 'ManifestStep.cls'
 ::requires 'HouseRulesStep.cls'
 ::requires 'ModuleStampStep.cls'
+::requires 'PitfallsStep.cls'
+::requires 'WorkflowMailbox.cls'
 
 /* a step that breaks, for test 9 */
 ::class BrokenStep public subclass WorkflowStep

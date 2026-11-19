@@ -36,11 +36,22 @@ rexx packages/alchemy_workflow_v0.1-dev1/bin/workflow.rex steps
 rexx packages/alchemy_workflow_v0.1-dev1/bin/workflow.rex plan packages/alchemy_website_publisher_v0.4
 rexx packages/alchemy_workflow_v0.1-dev1/bin/workflow.rex run packages/alchemy_website_publisher_v0.4 --db /tmp/est/estate.db --lane slam-450
 rexx packages/alchemy_workflow_v0.1-dev1/bin/workflow.rex survey /tmp/packages.list --db /tmp/est/estate.db --quiet
+rexx packages/alchemy_workflow_v0.1-dev1/bin/workflow.rex post --url https://rasenfalcon.duckdns.org/mcp --token ~/.config/rasenfalcon/token --principal CLAUDE
 ```
 
 `--db` is Body Slam's database of the estate. KitRun needs it, and is skipped without it. KitRun
 also needs `REXXSQL_LIBDIR`, a directory holding `librexxsql.so`, set before sourcing
 `workflow_env.sh`.
+
+`post` sends every failure report waiting in `out/outbox` to the Rasen Falcon mailbox, through
+MailboxClient from `oorexx_browser_ui_kit_v0.4` (Claude (Opus 5.5), 10 Nov), which keeps the token
+off every command line and out of every log. The token file must be mode 600 or 400 and hold only
+the token. A report with a parent request goes as a reply; otherwise it is a new request on its
+lane. A posted report moves to `out/outbox/sent`, with a `.posted` file holding the request id and
+the nudge for MailNudger. A refused one stays, with a `.error` file, and is tried again next time.
+
+The documentation other chats read is the sphere `alchemy-workflow`
+(`spheres/alchemy_workflow_gopher_sphere_v0.1`), sealed by `tools/wf_sphere_seal.rex`.
 
 Exit codes:
 - 0: PASS
@@ -101,8 +112,8 @@ Each step file explains its own rules in its header.
 - Fix mode. ModuleStamp writing the two constants, and the tidy-up steps, will make object-level
   edits through SSC, never text substitution. The fix each finding names is the edit a fix step
   will make.
-- Posting to the mailbox. The report is written to `out/outbox`, and whoever runs the workflow
-  posts it. An ooRexx mailbox client comes next.
+- Sending the nudge itself. `post` puts the report in the mailbox and keeps the nudge sentence in
+  the `.posted` file; MailNudger, which owns the lane-to-chat map, sends it.
 - Steps as their own packages. They are separate files and classes now. Each will move to its own
   versioned package once the protocol has settled.
 - Tests, Publish, SphereRegenerate and Notify stages taking over from the Python Autobuild.
