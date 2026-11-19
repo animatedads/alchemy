@@ -6,7 +6,7 @@
   the steps and their rules, operations, and current state with the shadow survey of main.
 - Provenance is sealed by the Workflow's own tools/wf_sphere_seal.rex: file SHA-256 through crypto v0.8.3
   and the Foreign Runtime, and every cited line range checked to exist.
-- The code it describes is on branch workflow/v0.1-dev1-20261111, not yet on main; each provenance entry
-  names that branch as its artifact.
+- The code it describes is on branch workflow/v0.1-dev1-20261119, not yet on main; each provenance entry
+  names its commit (e1dad44f) as its artifact.
 
 Architecture: Tom Dyer. Coding (Workflow and this sphere): Claude (Opus 5.5).
