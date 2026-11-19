@@ -4,7 +4,7 @@
   "version": "0.1",
   "sphere": "alchemy-workflow",
   "title": "Current state of the Workflow (2026-11-19)",
-  "summary": "Alchemy Workflow v0.1-dev1 is on branch workflow/v0.1-dev1-20261119 (main 1b9261f2 plus the Workflow; the 11 Nov branch workflow/v0.1-dev1-20261111 is the older base), not on main, and is not installed on the build host. It runs in shadow mode: every step is in report mode at the house layer, so it stops nothing and the Python Autobuild still decides what is published. Its tests pass (152 checks). Judged by itself at full strength it gives WARN only for two PF-P3 findings from a known checker false positive. Shadow survey of main on 19 Nov (docs/SURVEY_20261119.txt): 178 packages with an integration.json, 27 PASS, 151 WARN, 0 ERROR, about 15 minutes with KitRun. Among the findings: alchemy_website_publisher_v0.4 declares version 0.3 and publishes to packages/alchemy_website_publisher_v0.3, so publishing it would write over v0.3; oorexx_maths v0.20 and v0.21 call routines named by strings in four error messages (PF-P1); alchemy_package_model_v0.1 runs its three tests from tests/ with paths that start tests/; the SSC store's live test cannot find foreign.cls; 5,715 classes without the module stamps; 2,452 private methods; 833 uses of + 0; 209 of result as a variable. Failure reports are written to the outbox and posted with `post`; the mailbox is not reachable from Claude's workspace, so the first live post has to run where a token and a route exist.",
+  "summary": "Alchemy Workflow v0.1-dev1 is on branch workflow/v0.1-dev1-20261119 (main 1b9261f2 plus the Workflow; the 11 Nov branch workflow/v0.1-dev1-20261111 is the older base), not on main, and is not installed on the build host. It runs in shadow mode: every step is in report mode at the house layer, so it stops nothing and the Python Autobuild still decides what is published. Its tests pass (152 checks). Judged by itself at full strength it gives WARN only for two PF-P3 findings from a known checker false positive. Shadow survey of main on 19 Nov with every step (docs/SURVEY_20261119.txt): 178 packages with an integration.json, 26 PASS, 152 WARN, 0 ERROR, about 15 minutes. Reported to their owners the same day: alchemy_website_publisher_v0.4 declares version 0.3 and publishes to packages/alchemy_website_publisher_v0.3 (REQ-00005111); oorexx_maths v0.20 and v0.21 build four shape-error messages as calls of routines named by strings, so they raise Error 43 instead of 88.900 (PF-P1, REQ-00005113); alchemy_package_model_v0.1 runs its three tests from tests/ with paths that start tests/ (REQ-00005117); RexxPitfallChecker's P3 counts message names (REQ-00005115). Across the estate: 5,814 classes without the module stamps, 2,678 private methods, 833 uses of + 0, 213 of result as a variable. KR-MISSING findings for a ::requires on a REXX_PATH entry that a test script makes in a temporary directory and deletes on exit (the SSC store's live suite) are false: KitRun follows the requires after the test has finished. Failure reports are written to the outbox and posted with `post`; the mailbox is not reachable from Claude's workspace, so the first live post has to run where a token and a route exist.",
   "invariants": [
     "Nothing the Workflow says is a release decision yet: the Python Autobuild's receipt is still the evidence a package integrated.",
     "The CODEX-PC run of the fleet job on a build host (REQ-00003545, 11 Nov) had no reply by 19 Nov.",
@@ -16,15 +16,15 @@
   ],
   "provenance": [
     {
-      "artifact": "animatedads/alchemy@e1dad44f",
-      "sha256": "cf971a7e923db68806bc4f2c19b96afab5cada92aa5f29dd003d839baad392ae",
+      "artifact": "animatedads/alchemy@8763607e",
+      "sha256": "f05f40ac116a65214da8ee2e53aaed9b76e1e5458a7a45fc19dc7e58245dbcce",
       "member": "packages/alchemy_workflow_v0.1-dev1/docs/SURVEY_20261119.txt",
       "line_start": 1,
-      "line_end": 206,
+      "line_end": 200,
       "claim": "The shadow survey of main on 19 Nov 2026, one line per package, then totals by rule."
     },
     {
-      "artifact": "animatedads/alchemy@e1dad44f",
+      "artifact": "animatedads/alchemy@8763607e",
       "sha256": "a1cb9d63b96b8a49dcb8914fb939016fd1726d4c6551399a167d4e10579b708d",
       "member": "packages/alchemy_workflow_v0.1-dev1/etc/house.rules",
       "line_start": 15,
