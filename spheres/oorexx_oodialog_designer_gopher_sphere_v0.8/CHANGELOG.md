@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8 - 2026-11-19
+- Designer v0.16 on ooDialog/WASM v0.21.0: up-down with buddy, month calendar, tool tips, track bar DRAG/ENDTRACK; the page fits the window.
+- v0.15 recorded as tested but not published (publish path named v0.14); tools/pkgcheck.rex added and put in the procedure.
+- start, program-format, build-and-test, qualification updated.
+
 ## 0.7 - 2026-11-17
 - Designer v0.15 (Autobuild: submitted 20261117T084611Z-CLAUDE-oorexx_oodialog_designer-v0.15-711768, result pending (the package lands on main only on PASS)): code assistance writes ooRexxDoc (kind DOC, AssistPlugin 0.9.0), after Rony G. Flatscher's suggestion.
 - Object Editor v0.4 (branch 372715c): Document... (getDoc, setDoc, memberText) and ooRexxDoc in the Libraries panel.
