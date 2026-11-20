@@ -1,0 +1,115 @@
+{
+   "id": "qt6.failure-modes",
+   "invariants": [
+      "Blame goes to the decision, not the person: each lesson in the README names the decision that caused it.",
+      "Where Qt and the page differ in geometry or event order, follow the page, and write the rule into RENDERER_CONTRACT.md.",
+      "Look at the screenshots after every run; several defects passed every check."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Grippers and band background found by screenshot; rb.get key order.",
+         "line_end": 103,
+         "line_start": 101,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Tool bar buttons squeezed instead of wrapped.",
+         "line_end": 116,
+         "line_start": 115,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "CSS rgb() colours read as black; pad order; status bar rectangles.",
+         "line_end": 192,
+         "line_start": 189,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "type sent no key code; Qt names the character, Windows the key.",
+         "line_end": 196,
+         "line_start": 194,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "A mouse event seen twice through propagation; a Leave from the tip window on X.",
+         "line_end": 204,
+         "line_start": 202,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Unfinished steps passed; editable combo; QCalendarWidget's first row.",
+         "line_end": 209,
+         "line_start": 206,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Rebuild between press and release; double click's second click.",
+         "line_end": 213,
+         "line_start": 211,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Row heights, drag selection, the 30 ms rule.",
+         "line_end": 218,
+         "line_start": 215,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "A check box click selected a row; sweep classification.",
+         "line_end": 222,
+         "line_start": 220,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Tests wrote into the checkout and inflated a count; pixmap cache; combo height; ENDTRACK twice.",
+         "line_end": 228,
+         "line_start": 224,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Separators; current row on focus; tab strip; srcDir.",
+         "line_end": 234,
+         "line_start": 230,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Thread lessons.",
+         "line_end": 24,
+         "line_start": 21,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      }
+   ],
+   "related": [
+      "qt6.renderer-contract",
+      "qt6.testing"
+   ],
+   "sphere": "oodialog-linux-qt6",
+   "summary": "Most defects so far came from the renderer's own design decisions. Few were in Qt or in oodWeb. Wire: a flat string lost the separators inside arguments, so tree nodes lost EXPANDED and rows kept only their first cell, with no error (fixed with 1D). Threads: the first Rexx caller as Qt's GUI thread hung t11 and crashed t02; a global QObject took Qt's main thread; Qt's pixmap cache was destroyed on the wrong thread at exit. Geometry: a tab strip vanished under a Qt layout when the control was only strip-high; combo boxes were as tall as their lists; list-view rows and header were taller than the page's, so a program that hit-tests by pixel (dragNdrop) dragged the wrong row. Event order and meaning, where Qt differs from Windows and the page: focus made row 0 current and reported it; a drag with the button held selected rows (on Windows it is LVN_BEGINDRAG, for the program); dragging a track bar sent ENDTRACK twice; the 30 ms move rule dropped the last move of a burst; a full rebuild of the list between a press and its release lost the click; Qt reports a double click's second click only as a double click; Qt makes the first item added to a combo its current one and adds an item on Enter in an editable combo's edit; QCalendarWidget starts a month that begins a week one row down; Qt passes an untaken mouse event on to the parents, so a watcher saw each move twice; on X, showing the tip window sent the dialog a Leave with the pointer still inside (offscreen runs passed, xcb runs caught it). Qt names the character a key makes (Shift and = is Key_Plus) where Windows names the key (VK_OEM_PLUS); and the player's type sent no key code at all from v0.2 to v0.10, which no test noticed until connectKeyPress met typed text (calckeys, v0.11.0). Colours: oodWeb gives a COLORREF as CSS rgb(r,g,b); Qt's QColor(QString) does not read that form and gave black with no error, until t22 set a dialog's colour (v0.12.0); the renderer now parses rgb()\/rgba(). The pad op's input is in CSS order and its answer left-first; reading both one way swapped margins. A status bar part's rectangle was read from Qt's layout, a pixel off the edges Windows answers from. The tool bar's buttons were first put in a box layout, which squeezed them and cut their texts where the page wraps them; only the screenshot showed it (v0.13.0). Again in v0.14.0: the re-bar passed its checks with no grippers drawn and a grey tool bar in its band; comparing each new control's screenshot with the page's is now a release step. rb.get's answer looks like JSON but oodWeb reads it by position: QJsonDocument sorts keys, so the renderer writes it by hand in the page's order. Process: up to v0.7.0 the runner passed a test whose program ended before its steps were done (dropDownComboBox, in v0.8.0's first run: Enter closed the dialog early); it now fails with STEPS NOT FINISHED. the test runner ran tests in their source directories, so tests wrote into the checkout, and a file one test wrote was counted as a passing test; one release's reported count was too high and was corrected. The first sample sweep counted modules and its own stop signal (HALT) as failures. In the cases the screenshots caught, the tests had passed.",
+   "title": "What has gone wrong, and the decision behind each",
+   "version": "0.7"
+}
