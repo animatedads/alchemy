@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9 - 2026-11-20
+- Designer v0.17 on ooDialog/WASM v0.23.0: resizable forms (ResizingAdmin) with per-control anchors.
+- v0.16 recorded as published; its two faults recorded (no pkgcheck.rex in the package; a wrong up-down note, corrected).
+- tools/mkpkg.rex in the procedure; the "..."b binary-literal trap in program-format.
+
 ## 0.8 - 2026-11-19
 - Designer v0.16 on ooDialog/WASM v0.21.0: up-down with buddy, month calendar, tool tips, track bar DRAG/ENDTRACK; the page fits the window.
 - v0.15 recorded as tested but not published (publish path named v0.14); tools/pkgcheck.rex added and put in the procedure.
