@@ -1,0 +1,368 @@
+run_all: ooRexx REXX-ooRexx_5.3.0(MT)_64-bit 6.06 3 Aug 2026
+run_all: 10 tests, in /tmp/oodd-tests-67001
+run_all: plugins laid out from /home/hc3/alchemy-autobuild/repo/packages
+run_all: RUN t01_model
+  ok   round trip gives the same program
+  ok   round trip keeps the event code
+  ok   round trip keeps the methods
+  ok   same design lines after the round trip
+  ok   a UserDialog subclass
+  ok   controls made with createXxx
+  ok   Cancel role becomes IDCANCEL
+  ok   events connected
+  ok   accessor per control
+  ok   edit's first text is its data attribute
+  ok   background event is unguarded
+  ok   every event, form and accessor method is unguarded (oodguide 4.3.2)
+  ok   background event replies first
+  ok   background survives the round trip
+  ok   reply line is not user code
+  ok   timer thread started in initDialog
+  ok   timer sleeps its interval
+  ok   tick is unguarded
+  ok   timer round trip
+  ok   removing a control removes its events
+  ok   rename rewrites self~status
+  ok   rename keeps events of other controls
+  ok   rename back restores the program
+  ok   refuses a UserDialog method as a name -- Name execute is already a method of UserDialog                                            
+  ok   refuses a used name -- Name b7 is in use                                                                         
+  ok   refuses a name that is not a symbol -- Name 7up must start with a letter or _                                                    
+  ok   refuses a style the control does not take -- BOGUS is not a style of EDIT; it takes READONLY RIGHT CENTER PASSWORD MULTILINE NUMBER UPP
+  ok   refuses an event the control does not have -- lcd has no event CLICKED                                                                  
+  ok   refuses a code line starting :: -- A line of code cannot start with ::                                                       
+  ok   refuses two OK buttons -- b7 has event code: an OK button's code goes in the form's OK event                        
+  ok   refuses a background form event -- The form's events run on the dialog's thread                                              
+  ok   refuses an unknown control type -- Unknown control type: HOLOGRAM                                                            
+  ok   refuses a role for a button with event code -- bAdd has event code: an OK button's code goes in the form's OK event                      
+  ok   an OK or Cancel button has no events
+  ok   actions name the control
+  ok   list actions for a list only
+  ok   module_version
+  ok   no CATCH: no guard, may run
+  ok     catch = 1 and a label are not CATCH clauses
+  ok   a CATCH clause found
+  ok     the program asks its ooRexx: a lone CATCH clause compiled
+  ok     and refuses to start where it compiles (a command there)
+  ok     not by revision (a build from git answers r0)
+  ok     the guard comes before the dialog is made
+  ok     and the round trip keeps the code
+  ok     refused to run on this ooRexx, which does not know CATCH (r13196)
+  ok   knowsClause: a plain command clause is not a keyword
+  ok     FINALLY alone too, any case
+  ok     FINALLY refused on this ooRexx, which does not know it
+  ok     its guard asks for FINALLY
+  ok   module_lastChanged
+  ok   views round trip
+  ok   tab page handler connected
+  ok   page handler passes on to the user's SELCHANGE
+  ok   first page shown at start
+  ok   list view columns in dialog units
+  ok   list view rows
+  ok   menu popups and END
+  ok   menu item with its event
+  ok   separator
+  ok   menu item accessor is its id
+  ok   event arguments known
+  ok   refuses a page of a missing tab -- page is tabName:n; there is no control nope                                               
+  ok   refuses a page past the last tab -- tabMain has tabs 1 to 2                                                                   
+  ok   refuses a page for the tab itself -- tabMain cannot sit on a tab page                                                          
+  ok   refuses an unknown extended style -- SPARKLES is not an extended style of LISTVIEW; it takes FULLROWSELECT GRIDLINES CHECKBOXES
+  ok   refuses a column width that is not a number -- column Name's width is a whole number of dialog units                                     
+  ok   renaming a tab moves its pages
+  ok   removing a tab leaves its controls on no page
+  ok   gadgets round trip
+  ok   tree root expanded
+  ok   tree depth as blank arguments
+  ok   track bar range and position
+  ok   date picker event connected
+  ok   refuses a tree whose first node is a child -- The first node is a top node (no dots)                                                    
+  ok   refuses a tree node with no text -- A node needs text after its dots: ..                                                      
+  ok   library required after ooDialog.cls
+  ok   sharedScope attribute
+  ok   shared entry made in init
+  ok   shared scope round trip
+  ok   refuses sharedScope as a control name -- sharedScope is the form's shared scope                                                    
+  ok   refuses a shared entry with no value -- A value (a Rexx expression) is needed                                                     
+  ok   an up-down dropped after an entry field takes it as buddy
+  ok     and SETBUDDYINT ARROWKEYS, not AUTOBUDDY
+  ok   up-down made with createUpDown
+  ok     its buddy set in initDialog
+  ok     its range and position
+  ok     its buddy's data starts at its position (execute sets it after initDialog)
+  ok     DELTAPOS connected, with its arguments
+  ok   month calendar made and SELECT connected
+  ok   track bar DRAG connected
+  ok   one ToolTip, its id after the controls'
+  ok     a tool per tip, quotes doubled
+  ok   new kinds round trip
+  ok   refuses a buddy that is not on the form -- The buddy nobody is not another control of this form                                      
+  ok   refuses an up-down as its own buddy -- The buddy ud1 is not another control of this form                                         
+  ok   refuses a tip of two lines -- tip is one line                                                                           
+  ok   renaming the buddy follows it
+  ok   a buddy removed is a problem
+  ok   with languages, a tip is a text of the table
+  ok     a control with no tip has no key
+  ok   a new control is anchored LEFT TOP
+  ok   not resizable: no ResizingAdmin, no defineSizing
+  ok   anchor is put in order, upper case
+  ok   no edge is CENTER
+  ok   resizable: inherits ResizingAdmin
+  ok     THICKFRAME added to the style
+  ok     default: stationary left and top, own width and height
+  ok     all four: it stretches
+  ok     right and bottom: it moves, its size kept
+  ok     none: it keeps to the centre
+  ok     a control left at LEFT TOP gets no line of its own
+  ok     defineSizing returns 0
+  ok   resizable round trips
+  ok   refuses an anchor that is not an edge -- MIDDLE is not an edge: LEFT, TOP, RIGHT or BOTTOM                                         
+  ok   refuses resizable is 0 or 1 -- resizable is 0 or 1                                                                       
+  ok   on a tab page: pinned to the tab
+  ok     the tab control is given before the controls pinned to it
+  ok   an older design (no anchor) is LEFT TOP
+t01_model: 119 of 119 checks passed
+run_all: PASS t01_model (0.27s)
+run_all: RUN t02_graph
+  ok   parses
+  ok   kinds in order
+  ok   nesting: say inside the THEN's do
+  ok   labels: header of the IF
+  ok   labels: a do loop
+  ok   labels: when
+  ok   insert at top level keeps the comment
+  ok   append inside a DO, indented like its sibling
+  ok   insert inside OTHERWISE
+  ok   refuses insert into a THEN's single instruction -- A THEN, ELSE or WHEN takes one instruction: wrap it in do...end first                     
+  ok   delete a whole-line statement
+  ok   delete the second clause of a line
+  ok   delete the first clause of a line
+  ok   move out of a loop to the top, after EXPOSE
+  ok     still parses
+  ok   move down in its own slot: before the place's block (the do loop)
+  ok   refuses a block into itself -- A block cannot go inside itself                                                           
+  ok   deleting a THEN's one instruction leaves NOP
+  ok   moving the ELSE's instruction out leaves NOP and it parses
+  ok   refuses moving a WHEN out of its SELECT -- A WHEN belongs to its block (SELECT, DO or LOOP): move the block, or the instructions in i
+  ok   refuses moving an OTHERWISE out of its SELECT -- A OTHERWISE belongs to its block (SELECT, DO or LOOP): move the block, or the instructions
+  ok   refuses deleting a SELECT's only WHEN -- A SELECT needs at least one WHEN: delete the SELECT instead                               
+  ok   deleting the OTHERWISE parses
+  ok   replace a block's header keeps its body
+  ok   wrap a THEN's instruction in do...end
+  ok     then it takes a second statement
+  ok   probed code parses
+  ok   no probe before EXPOSE
+  ok   probe before a top-level statement
+  ok   probe inside a DO
+  ok   no probe before a THEN's single instruction
+  ok   traced program: probes in events
+  ok   traced program: probes in form methods
+  ok   traced program: background events marked
+  ok   traced program: the probe routine
+  ok   a saved program has no probes
+  ok   traced program: every method on the line it has untraced
+  ok   a traced run sees the SIGL and RESULT an untraced run sees
+  ok   CATCH and FINALLY parse
+  ok     a clause node each, in the DO's catch slot
+  ok     each clause's instructions are its body
+  ok     into an empty DO body: before its first CATCH, not into it
+  ok     into a FINALLY body
+  ok     a CATCH deleted with its instructions
+  ok   refuses   a CATCH cannot be moved out of its block -- A CATCH belongs to its block (SELECT, DO or LOOP): move the block, or the instructions in 
+  ok     probes in CATCH and FINALLY bodies, and the probed code parses
+  ok     LEAVE out of a FINALLY is the parser's error
+  ok   a block inserted at the top: its lines as written
+  ok     inside a DO: two further in, END and CATCH with DO
+  ok   a bad parse is reported
+t02_graph: 50 of 50 checks passed
+run_all: PASS t02_graph (1.15s)
+run_all: RUN t03_nls
+  ok   no languages: texts are literals
+  ok   refuses a bad language code -- A language is 2 or 3 letters, perhaps with _ and a region: de, de_AT, pt_BR               
+  ok   base language
+  ok   keys: title, tabs, columns, label, button, menus and items (not the entry field, not a separator)
+  ok   base text is the property
+  ok   no German yet
+  ok   a German text
+  ok   keys are caseless
+  ok   the base language's text sets the property
+  ok   refuses the base language changed -- The base language is en: its texts are the design's own                                   
+  ok   an event string is a key
+  ok   refuses a key taken -- Key MSG.COUNT is in use                                                                   
+  ok   refuses a control's key -- Keys btnClose.… are btnClose's own                                                      
+  ok   refuses removing a control's key -- Only event strings are removed; a control's go with it                                    
+  ok   argument chooses the language
+  ok   init loads the table
+  ok   title from the table
+  ok   button text from the table
+  ok   tabs from the table
+  ok   columns from the table
+  ok   menu from the table
+  ok   the entry field's text stays data
+  ok   a ::RESOURCE per language
+  ok   untranslated keys left out of de
+  ok   the program parses
+  ok   round trip gives the same program
+  ok   round trip keeps German
+  ok   round trip keeps the event string
+  ok   a hand edit of the base table is kept
+  ok   export: key = text, base above
+  ok   export: untranslated key is empty
+  ok   import sets the texts
+  ok   import reports keys the design lacks
+  ok   refuses import into the base language -- The base language's texts are edited in the design                                        
+  ok   rename: key follows
+  ok   renaming a menu renames it for all its items
+  ok     and its German stays
+  ok   remove: its keys go
+  ok   remove an event string
+  ok   a language taken out goes
+  ok   German by argument
+  ok   a region falls back to its language
+  ok   an unknown language falls back to the base
+  ok   de-AT is read as de_AT
+  ok   no argument: LANG de_DE.UTF-8 gives German
+  ok     LC_ALL=C is passed over
+  ok     LC_ALL comes first
+  ok     none set: the base
+  ok   a key German lacks takes English
+  ok   arguments fill %1 and %2
+  ok   an argument holding %2 is put in as it is
+  ok   a % that is no argument stays
+  ok   a missing key shows itself
+  ok   an empty base text is a text, not a missing key
+  ok   UTF-8 to Windows-1252 for ooDialog on Windows
+t03_nls: 55 of 55 checks passed
+run_all: PASS t03_nls (0.17s)
+run_all: RUN t04_ui
+  ok   languages: en first, de there
+  ok   de: every key of en 
+  ok   de: no key en has not 
+  ok   de: the same %n as en 
+  ok   the tables are big enough to be the whole designer
+  ok   every key the page uses is in the table 
+  ok     (and the page uses many)
+  ok   every control kind has its label 
+  ok   every action has its label (39) 
+  ok   use de-DE: de
+  ok   a text in German
+  ok   %1 in German
+  ok   a refusal in German: Der Name 1abc muss mit einem Buchstaben oder _ beginnen
+  ok   a graph refusal in German: Ein THEN, ELSE oder WHEN nimmt eine Anweisung: erst in do...end einschließen
+  ok   use fr (none): en
+  ok   a refusal in English: Name 1abc must start with a letter or _
+t04_ui: 16 of 16 checks passed
+run_all: PASS t04_ui (0.17s)
+run_all: RUN t05_fresh
+  ok   first refusal, no setup, LANG=de_DE.UTF-8: Der Name 1abc muss mit einem Buchstaben oder _ beginnen
+t05_fresh: 1 of 1 checks passed
+run_all: PASS t05_fresh (0.04s)
+run_all: RUN t06_plugins
+  ok   the index lists Boston Crab, off
+  ok   nothing enabled
+  ok   refuses a plugin not switched on -- Plugin bostoncrab is not switched on
+  ok   refuses a plugin there is not -- No plugin nosuch
+  ok   switched on: its class
+  ok   it says what it does
+  ok   module_version
+  ok   findings, in order: 3
+  ok     P1 on line 2, with a fix: P1: a string followed at once by "(" calls a routine named by the string.  Fix: put || between them.
+  ok     fixed: say '"' || (n)'"'
+  ok     P2 on line 3: P2: a string followed at once by x is a hexadecimal or binary literal.  Fix: put || between them.
+  ok     P3, no fix: P3: TOTAL and Total differ only in case, and are one name to ooRexx.
+  ok   fixing both leaves only P3
+  ok   a fix that no longer applies changes nothing
+  ok   messages in the designer's language: P1: eine Zeichenkette direkt vor "(" ruft eine Routine mit dem Namen der Zeichenkette auf.  Abhilfe: || dazwischen setzen.
+  ok   the catalogue in German
+  ok   a secret is held
+  ok   the page sees its name only
+  ok   refuses a secret not set -- Kein Geheimnis OPENAI_KEY gesetzt: in den Einstellungen des Plugins angeben
+  ok   switched off
+t06_plugins: 20 of 20 checks passed
+run_all: PASS t06_plugins (0.02s)
+run_all: RUN t07_assist
+  ok   the index lists assist, off
+  ok   switched on: AssistPlugin, provides assist
+  ok   the host finds it by what it provides
+  ok   module_version
+t07_assist: SKIP the provider checks (no ADDRESS FETCH: native ooRexx)
+t07_assist: 4 of 4 checks passed
+run_all: PASS t07_assist (0.09s)
+run_all: RUN t08_git
+  ok   switched on: GitPlugin, provides scm
+  ok   module_version
+  ok   settings: the way is a choice, the token a secret
+  ok   refuses no repository named -- Give the repository as owner/name in the git plugin's settings.
+  ok   refuses a path out of the repository -- ../x.rex is not a path in the repository.
+  ok   refuses scm from a plugin that has none -- Plugin bostoncrab gives no source control
+t08_git: SKIP the GitHub checks (no ADDRESS FETCH: native ooRexx)
+  ok   refuses the github way with no ADDRESS FETCH: said plainly -- No ADDRESS FETCH here: the github way needs ooRexx/WASM (in the page, or in Node); outside it, use the cli way.
+  ok   refuses cli: no working copy -- Give the working copy in the git plugin's settings.
+  ok   cli LIST
+  ok   cli OPEN: the text as it is
+  ok   cli COMMIT: Committed 8bf7a0e on main.
+  ok   cli HISTORY: the message as given
+  ok   cli AT: the first
+  ok   cli COMMIT from a blob it moved past: refused
+  ok   cli COMMIT with nothing changed: refused
+  ok   cli STATUS: current
+  ok   refuses cli: a file not there, in German -- designs/None.rex ist nicht im Zweig main.
+t08_git: 17 of 17 checks passed
+run_all: PASS t08_git (0.13s)
+run_all: RUN t09_ssc
+  ok   switched on: SscPlugin, provides scm
+  ok   module_version
+  ok   the session is a secret setting
+  ok   refuses no store named -- Give the store's MCP address in the SSC plugin's settings.
+t09_ssc: SKIP the store checks (no ADDRESS FETCH: native ooRexx)
+  ok   refuses no ADDRESS FETCH: said plainly -- No ADDRESS FETCH here: the store is reached from ooRexx/WASM (in the page, or in Node).
+t09_ssc: 5 of 5 checks passed
+run_all: PASS t09_ssc (0.06s)
+run_all: RUN t10_binding
+  ok   the program opens a store, a session and the object
+  ok     takes the key as its argument, the design's when none
+  ok     requires the object layer and the class file
+  ok   the fields' first values from the object
+  ok   a check box: a flag
+  ok   a text shows a path: employer.name
+  ok   a list view shows a many-part, one attribute a column
+  ok   validate: the fields into the object, then one commit
+  ok     a path is not written back
+  ok     SAVED runs after the commit; a refusal is shown, the dialog stays
+  ok   round trip: the program reads back to the same program
+  ok     with its binding
+  ok   the problems: none
+  ok   a combo box offers a one-part's objects, the current one chosen
+  ok     validate puts the chosen object back
+  ok     the label routines: none first, labels made unique
+  ok   Add and Remove: their buttons call the list's methods
+  ok     Add: a new object of the part's class, its row, its fields
+  ok     Remove: current cleared first, a new part dropped, its row deleted
+  ok   row fields: empty at first, loaded and saved with the selection
+  ok     validate saves the selected row before the commit
+  ok     the first row is shown when the dialog opens
+  ok     a row field is not written to the object itself
+  ok   the user's own SELECTCHANGED and CLICKED: called from the bound methods, not connected twice
+  ok     and the round trip keeps them
+  ok   refuses a class name that is not a symbol -- Per son is not a class name
+  ok   refuses a database that is not name=folder -- ent: a database is name=folder
+  ok   refuses an entry field bound to a path -- txtName: employer.name can only be shown, not edited: bind it to a text
+  ok   refuses a list view bound without its attributes -- addresses: a list view binds part:attribute,attribute
+  ok   refuses an attribute that is not a name -- phone number is not an attribute name
+  ok   refuses a push button's bind that is not add: or remove: -- name: a push button binds add:list or remove:list
+  ok   refuses a combo box bound without its attribute -- employer: a combo box binds part:attribute (a one-part, shown by the attribute)
+  ok   refuses a row field without its attribute -- @lvAddresses: a field of a list's row binds @list.attribute
+  ok   refuses a check box bound to a row field -- @lvAddresses.active is not an attribute name
+  ok   refuses bind on a control that has none -- LISTBOX has no property bind
+  ok   a button naming no bound list: a problem
+  ok   a managed list without SINGLESEL: a problem
+  ok   Add with no row fields: a problem
+  ok   a list's attributes and columns differ: a problem
+  ok   an object with no databases: a problem
+  ok   bound controls with no object: a problem
+  ok   unbound: no store, no validate
+  ok   an unbound design: no bind= in its design lines
+  ok   German refusals
+t10_binding: 44 of 44 checks passed
+run_all: PASS t10_binding (0.16s)
+run_all: 10 of 10 tests passed
