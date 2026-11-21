@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.11 - 2026-11-21
+- Designer v0.19: qualified on ooDialog/WASM v0.27.0 and the Qt6 renderer v0.15.0.
+- CORRECTION: v0.10's "RAISE of USER/ERROR is not trapped" observation was a test fault (RAISE without RETURN is an EXIT); catchcheck fixed, 9/9 on trunk. The rule is in pitfalls.
+
 ## 0.10 - 2026-11-21
 - Designer v0.18: checked on the Linux Qt6 renderer (6 of 6 offscreen and on Xvfb); tests/qt; month calendar default 150x110.
 - CATCH/FINALLY asked of the ooRexx (compile probe), not its revision (a git build answers r0); FINALLY no longer refused outright.

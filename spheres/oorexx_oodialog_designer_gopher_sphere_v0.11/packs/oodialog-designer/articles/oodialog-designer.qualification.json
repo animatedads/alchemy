@@ -1,0 +1,29 @@
+{
+ "kind": "article",
+ "id": "oodialog-designer.qualification",
+ "sphere": "oodialog-designer",
+ "version": "0.11",
+ "section": "qualification",
+ "title": "Qualification and what is open",
+ "authority": "project-artifact",
+ "summary": "v0.19 (2026-11-21): on ooDialog/WASM v0.27.0 (fafd2c2): run_all 10/10, dztest 22/22, Object Editor oxtest 12/12; on the Qt6 renderer v0.15.0 (5cc1c57, its pinned oodialog-wasm e2e7899): tests/qt and tests/gen 6 of 6 offscreen and 6 of 6 on Xvfb; catchcheck.rex 9 of 9 on ooRexx git trunk 5f066c9 (CATCH and FINALLY), SKIP on trunk at 41385194 (the releases/5.1.0 point) and on ooRexx/WASM r13268, which know neither; Autobuild PASS 20261121T175503Z-e69c26cbddff-8b886ac3 (972f0d9a), published. CORRECTION to v0.18: its 'CATCH USER fails; RAISE of USER/ERROR is not trapped even by SIGNAL ON' was a test fault, not an ooRexx one: a RAISE without RETURN is an EXIT (RaiseInstruction.cpp), seen the same on all three builds. v0.18 (2026-11-21), on ooDialog/WASM v0.23.0 (191da5a): run_all t01-t10 (t01 119/119); dztest 22/22; Object Editor oxtest 12/12; Boston Crab clean; mkpkg and pkgcheck PASS; Autobuild PASS 20261121T105113Z-39cefd3ed200-67133caf (301bece7), published. Linux Qt6 renderer (oodialog-qt6 v0.14.0 f350653, Qt 6.4.2, ooRexx trunk 5f066c9 from GitHub, built here): tests/qt NewKinds, Resizer, Catcher and tests/gen Calculator, Contacts, Gadgets: 6 of 6 offscreen, 6 of 6 on Xvfb (xcb). The generated CATCH guard: passes on that trunk, refuses (before running anything) on ooRexx/WASM r13268. catchcheck.rex, first native run: 7 of 8 (the failing check was wrong; see v0.19). v0.17: Autobuild PASS 69231261, published. v0.16: PASS 1b9261f2 (its package lacks tools/pkgcheck.rex; its up-down note corrected). v0.15: not published. Not yet run: anything on Windows ooDialog (wincheck.rex, REQ-00004977). Open: graph label overlaps (ChatGPT, REQ-00003757); Fluent stand-in details (REQ-00005061/5073); status bar, tool bar, file dialogs, drawing; PROPORTIONAL pins and min/max sizes; month calendar day states; Document... for attributes, constants and the designer's methods; SSC defect REQ-00003605 (REQ-00003763).",
+ "invariants": [
+  "Do not call a test PASS that was not run; a stand-in server is not a live store.",
+  "Windows behaviour (Windows-1252 text, executeAsync timing) is unconfirmed until CODEX-PC reports."
+ ],
+ "topics": [
+  "qualification",
+  "open work",
+  "Windows"
+ ],
+ "related": [
+  "oodialog-designer.start"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_oodialog_designer_v0.19/README.md",
+   "sha256": "fbad85ff7eaa26dc7c4ce4868f5bf827da1046647d6d15c1d06978754d4e9f37",
+   "claim": "Package README of v0.19."
+  }
+ ]
+}
