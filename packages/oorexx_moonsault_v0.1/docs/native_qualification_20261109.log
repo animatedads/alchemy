@@ -1,0 +1,59 @@
+Moonsault native ooRexx qualification, 9 November 2026
+Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+Build date: Aug  3 2026
+Addressing mode: 64
+== Full five-frame PNG extraction, original tracker and streak rejection ==
+SKY 1 20:17:25 sky candidates=3
+SKY 2 20:24:30 sky candidates=9
+REGISTER 2 dx=0 dy=0 mean absolute error=13.9935897435897435897435897436
+SKY 3 20:32:05 sky candidates=11
+REGISTER 3 dx=0 dy=0 mean absolute error=19.5705128205128205128205128205
+SKY 4 20:32:17 sky candidates=11
+REGISTER 4 dx=0 dy=0 mean absolute error=19.8076923076923076923076923077
+SKY 5 20:37:11 sky candidates=9
+REGISTER 5 dx=0 dy=0 mean absolute error=21.4807692307692307692307692308
+TRACK 5/5 917 147 -> 877 193 rms=0.472
+TRACK 5/5 564 189 -> 519 207 rms=0.777
+TRACK 5/5 851 235 -> 806 274 rms=0.320
+MULTI_PEAK 317 260 322 263 peaks=4
+PERSIST 12 seconds 20:32:05 to 20:32:17 candidate pairs=6
+PASS ooRexx five-frame sky tracking and observed transient streak proposal
+== New four-frame tracking and duplicate suppression ==
+FRAME 1 candidates=9 alignment=0 0
+FRAME 2 candidates=11 alignment=0 0
+FRAME 3 candidates=11 alignment=0 0
+FRAME 4 candidates=9 alignment=0 0
+FOUR_FRAME_RAW_TRACKS 7
+FOUR_FRAME_UNIQUE_TRACKS 6
+TRACK 830 85 -> 807 111 rms=0.376 middle=816 101 816 101
+TRACK 536 97 -> 513 108 rms=0.485 middle=522 103 522 104
+TRACK 903 164 -> 877 193 rms=0.427 middle=887 181 887 182
+TRACK 149 176 -> 112 167 rms=0.510 middle=127 171 126 171
+TRACK 548 196 -> 519 207 rms=0.704 middle=531 203 531 203
+TRACK 835 249 -> 806 274 rms=0.371 middle=818 264 817 264
+PASS: six unique four-frame tracks, duplicate optical peak rejected
+== Sky epoch conversion/precession ==
+J2000_PRECESSION_2026 RA=0.344107137 Dec=0.1495080778887739
+PASS: J2000 identity, 2026 IAU1976 precession, day cache
+== Synthetic known six-star Yale match ==
+SYNTHETIC_KNOWN Nunki Sargas Kaus Australis fit=0.426 heldout=3 heldout_rms=0.520
+PASS: exact forward/inverse sky, 3 independent heldouts, integer pixel rounding
+== Real data three anchors, 3 withheld tracks (Yale SW subset) ==
+SKY_CENTRE 250 25 CATALOGUE 114 REFERENCE_HYPOTHESES 50
+CANDIDATE 1 refs=HD170296 HD144294 HD160613 fit=9.29 withheld=2 heldout_rms=8.02
+  HELDOUT Kaus Borealis 7.790
+  HELDOUT HD147971 8.251
+CANDIDATE 2 refs=HD157056 HD134481 Antares fit=10.43 withheld=1 heldout_rms=6.71
+  HELDOUT Lesath 6.712
+CANDIDATE 3 refs=HD159433 HD133955 Larawag fit=11.51 withheld=1 heldout_rms=9.21
+  HELDOUT HD134505 9.210
+CANDIDATE 4 refs=HD177716 HD147971 HD167818 fit=11.82 withheld=1 heldout_rms=8.30
+  HELDOUT Meridiana 8.301
+CANDIDATE 5 refs=Terebellum HD152334 Albaldah fit=11.84 withheld=1 heldout_rms=4.48
+  HELDOUT HD152980 4.480
+CANDIDATE 6 refs=Terebellum HD152236 Albaldah fit=11.92 withheld=1 heldout_rms=4.89
+  HELDOUT HD152980 4.887
+CANDIDATE 7 refs=HD177716 HD152334 Kaus Borealis fit=5.54 withheld=0 heldout_rms=-1.00
+CANDIDATE 8 refs=HD177716 HD152236 Kaus Borealis fit=5.75 withheld=0 heldout_rms=-1.00
+STATUS: WEAK_HELDOUT_MATCH_ONLY; CELESTIAL FIX REFUSED
+PASS: hypotheses ranked by independent withheld evidence

@@ -5,7 +5,7 @@
  * Numerical provider: ooRexx rxmath; optional Alchemy Maths trig adapter.
  * No Python process or network dependency.
  * This is an EPHEMERIS, not an observed position or GPS fix.
- * Input UTC is strictly YYYY-MM-DDTHH:MM:SSZ, lon positive east, degrees.
+ * Input UTC: ISO YYYY-MM-DDTHH:MM:SSZ or whole POSIX Unix seconds, lon east.
  * Sea-level spherical-earth topocentric lunar approximation, standard refraction.
  */
 
@@ -13,6 +13,8 @@
 ::method sunMoon class
   use strict arg utc, latitude, longitude
   numeric digits 17
+  /* SLAM450 passes whole Unix seconds; preserve legacy strict ISO UTC path. */
+  if datatype(utc,'W') then utc = self~unixToUtc(utc)
   ignore = .MoonsaultAngle~load
   if \datatype(latitude, 'N') | \datatype(longitude, 'N') then
     raise syntax 88.900 array('numeric latitude and longitude', latitude longitude)
@@ -88,7 +90,7 @@
   moon['visibilityCandidate'] = moon['aboveHorizon'] & illuminated >= 0.05 &,
     moon['altitudeRefractedDeg'] >= 2 & sun['altitudeRefractedDeg'] < -6
   moon['headingCandidate'] = moon['visibilityCandidate'] & moon['altitudeTrueDeg'] >= 5
-  moon['visibilityReason'] = 'geometric horizon, >=5% illumination, >2 deg elevation, Sun <-6 deg; weather unknown'
+  moon['visibilityReason'] = 'predicted geometric candidate only; >=5% lit, >2 deg, Sun <-6 deg; cloud and camera unknown'
 
   out = .directory~new
   out['utc'] = utc
@@ -100,6 +102,9 @@
   out['method'] = 'Schlyter low-precision orbital elements and lunar perturbations; Meeus/Bennett refraction approximation'
   out['coordinates'] = 'azimuth clockwise from true north; degrees; longitude east positive'
   out['status'] = 'PREDICTION_ONLY'
+  out['visibilityBasis'] = 'GEOMETRIC_EPHEMERIS_ONLY'
+  out['skyObservationStatus'] = 'NOT_OBSERVED'
+  out['cloudCoverStatus'] = 'UNKNOWN'
   out['clockModel'] = 'UTC approximated UT1; no delta-T correction'
   out['accuracyStatus'] = 'EPHEMERIS_REFERENCE_TESTED; OBSERVATION_AND_NAVIGATION_UNQUALIFIED'
   out['sourceTag'] = 'MOONSAULT_PREDICTED'
@@ -122,6 +127,11 @@
   b['illuminatedFraction'] = illum
   b['aboveHorizon'] = apparentAlt > 0
   b['visibilityCandidate'] = apparentAlt > 0
+  /* Celestial geometry is not a camera observation. No weather inference. */
+  b['visibilityBasis'] = 'GEOMETRIC_EPHEMERIS_ONLY'
+  b['observedVisibility'] = 'UNKNOWN'
+  b['cloudCoverStatus'] = 'UNKNOWN'
+  b['observationStatus'] = 'NOT_OBSERVED'
   b['refractionModelValid'] = trueAlt >= -1 & trueAlt <= 89.9
   b['headingCandidate'] = trueAlt >= 5
   b['method'] = 'geocentric orbital, local sidereal, lunar altitude parallax, standard atmosphere'
@@ -177,6 +187,26 @@
   a~append(o~norm(o~atan2(y,x)))
   a~append(o~atan2(z,o~sqrt(x*x+y*y)))
   return a
+
+::method unixToUtc private class
+  /* POSIX seconds (UTC), intentionally excluding fractional seconds and leap
+   * seconds. Calendar conversion uses ooRexx DATE, not system local time.
+   * Supports 1970-01-01T00:00:00Z through 2099-12-31T23:59:59Z.
+   */
+  use strict arg seconds
+  numeric digits 17
+  if \datatype(seconds,'W') then
+    raise syntax 88.900 array('integer Unix seconds', seconds)
+  if seconds < 0 | seconds > 4102444799 then
+    raise syntax 88.900 array('Unix timestamp in 1970-2099 UTC', seconds)
+  days = seconds % 86400
+  secondsToday = seconds - days*86400
+  ymd = date('S', date('B','19700101','S')+days, 'B')
+  hh = secondsToday % 3600
+  mm = (secondsToday - hh*3600) % 60
+  ss = secondsToday - hh*3600 - mm*60
+  return substr(ymd,1,4)||'-'||substr(ymd,5,2)||'-'||substr(ymd,7,2)||'T'||,
+    right('0'||hh,2)||':'||right('0'||mm,2)||':'||right('0'||ss,2)||'Z'
 
 ::method julianDate private class
   use strict arg utc
