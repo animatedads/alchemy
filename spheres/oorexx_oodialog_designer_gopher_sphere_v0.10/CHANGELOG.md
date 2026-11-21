@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.10 - 2026-11-21
+- Designer v0.18: checked on the Linux Qt6 renderer (6 of 6 offscreen and on Xvfb); tests/qt; month calendar default 150x110.
+- CATCH/FINALLY asked of the ooRexx (compile probe), not its revision (a git build answers r0); FINALLY no longer refused outright.
+- catchcheck's first native run and the RAISE observation recorded; the Qt build recipe in build-and-test.
+
 ## 0.9 - 2026-11-20
 - Designer v0.17 on ooDialog/WASM v0.23.0: resizable forms (ResizingAdmin) with per-control anchors.
 - v0.16 recorded as published; its two faults recorded (no pkgcheck.rex in the package; a wrong up-down note, corrected).
