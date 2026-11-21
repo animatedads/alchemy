@@ -1,0 +1,61 @@
+{
+   "id": "qt6.architecture",
+   "invariants": [
+      "No QObject is created before the Qt thread exists. A global QFile once made the Rexx thread Qt's main thread, which silently disabled the key filter.",
+      "Qt never waits on Rexx: a Rexx thread blocked on a guard cannot stop the renderer, and a second Rexx thread (TimedMessage) may end a dialog.",
+      "The package's unloader (oodqt_unload) stops the Qt thread before ooRexx unloads the library.",
+      "Widgets are not deleted at exit: deleting them freed some twice. Qt's pixmap cache is emptied on the Qt thread before the loop ends, or its timer is stopped from the wrong thread at exit.",
+      "Events go to Rexx in the order they happen. A list-view is redrawn from the Rexx-side model in place (rows updated, never rebuilt), so a press and its release always land on the same row."
+   ],
+   "kind": "article",
+   "provenance": [
+      {
+         "artifact": "animatedads\/oorexx@7ec85a5",
+         "claim": "Qt on its own thread; calls run there; Rexx only waits on the queue.",
+         "line_end": 19,
+         "line_start": 19,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "1d612115d00272d4a7e8d39cbd5bdbeffe33a73af75785eb76daafb34da2a4a6"
+      },
+      {
+         "artifact": "animatedads\/oorexx@7ec85a5",
+         "claim": "Every call runs on the Qt thread and blocks until done.",
+         "line_end": 4223,
+         "line_start": 4223,
+         "member": "oodialog-qt6\/native\/oodqt.cpp",
+         "sha256": "98621717eadd48018784eb83b6655faea04a9d6f51080b96efc9e6f045bab6bd"
+      },
+      {
+         "artifact": "animatedads\/oorexx@7ec85a5",
+         "claim": "Rexx takes events with oodqt_next.",
+         "line_end": 4238,
+         "line_start": 4238,
+         "member": "oodialog-qt6\/native\/oodqt.cpp",
+         "sha256": "98621717eadd48018784eb83b6655faea04a9d6f51080b96efc9e6f045bab6bd"
+      },
+      {
+         "artifact": "animatedads\/oorexx@7ec85a5",
+         "claim": "List-views are updated in place.",
+         "line_end": 387,
+         "line_start": 383,
+         "member": "oodialog-qt6\/native\/oodqt.cpp",
+         "sha256": "98621717eadd48018784eb83b6655faea04a9d6f51080b96efc9e6f045bab6bd"
+      },
+      {
+         "artifact": "animatedads\/oorexx@7ec85a5",
+         "claim": "No global QObject.",
+         "line_end": 24,
+         "line_start": 24,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "1d612115d00272d4a7e8d39cbd5bdbeffe33a73af75785eb76daafb34da2a4a6"
+      }
+   ],
+   "related": [
+      "qt6.renderer-contract",
+      "qt6.failure-modes"
+   ],
+   "sphere": "oodialog-linux-qt6",
+   "summary": "oodWeb.cls asks .js~page[\"__ood\"] for its renderer. On Linux, src\/js.cls answers with OodQtRenderer, which serialises each of the contract's 15 messages into one string and calls the native routine oodqt_call(name, payload). Rexx takes the renderer's events with oodqt_next(ms). The library starts Qt on a thread it owns, at the first call, and runs QApplication's event loop there for the life of the process. Every call from any Rexx thread is run on that thread with QMetaObject::invokeMethod and Qt::BlockingQueuedConnection. Qt signals never call into Rexx: they put records on a queue (key, kind, id, code, extra), and oodqt_next takes them. An application-level event filter turns keys into KEY events and mouse input into MOUSE events. Each dialog is an OodDialog window with a client widget; each control is a Qt widget (list-views and tree-views are QTreeWidget, tabs a QTabBar placed by hand over a frame, GDI device contexts are transparent QImage layers). The steps player runs inside the Qt loop on a timer, so a test drives real widgets the way a user would.",
+   "title": "Layers and threads: Qt runs on a thread of its own, Rexx only waits on a queue",
+   "version": "0.1"
+}

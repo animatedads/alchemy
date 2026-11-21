@@ -1,0 +1,55 @@
+{
+  "kind": "article",
+  "id": "qt6.current-state",
+  "version": "0.6",
+  "title": "Where the Qt6 renderer stands (v0.12.0, 19 Nov 2026)",
+  "summary": "The latest branch is oodialog-qt6-v0.12 (commit 7ec85a5), renderer v0.12.0, based on and tested against oodialog-wasm be78d99 (v0.21.0, which includes v0.20.0). All 55 of the suite's tests pass, offscreen and on an X server (Xvfb with Qt's xcb platform), with the designer's programs and the print kit. New in v0.12.0: the standby printer of v0.20.0 (deliver: the file is written to a folder and shown in a window with Print through CUPS lp, Open through xdg-open, Save and Close; a PDF shows as pages through pdftoppm; test print/t19_print, run with --pdfkit, the PDF classes oodialog-wasm's tools/oodpdfkit.rex collects); and v0.21.0's natives: the status bar (STATUSBAR, sb.* ops; t22_statusbar), windowAt, list-view rows by uid (t20_lvrows), edit lines, cue banners, tab sizes, padding, tab stops, item uids and row heights (t21_natives), the dialog's own colour, and the focused control's id in a KEY event. The build now needs Qt6 PrintSupport. In v0.11.0: KEY events with Windows virtual-key codes (demo/calckeys), and three demo samples checked with real X input through xdotool. In v0.10.0: pagedTab. In v0.9.0: tool tips. In v0.8.0: the month calendar, ResizingAdmin. The suite is the browser harness's tests, with their .steps and .expect files, plus the three programs the ooDialog Designer generates (Calculator, Contacts, Gadgets), used unchanged as a contract test. Every one of upstream's sample programs was also started with nothing clicked: against v0.21.0 (offscreen) 84 of 122 programs showed their dialog, the same as against v0.19.0; v0.20.0 and v0.21.0 added no sample. All 34 errors are in oodWeb.cls's scope; none is in the renderer: winsystm.cls 19, resource reader not set 8, ooDialog native functions oodWeb does not have yet 5, other 2. Since 15 Nov 2026 this chat owns Linux ooDialog (Tom's rule). Earlier branches and their oodialog-wasm bases: v0.2 2c861d8, v0.3 23d57b2, v0.4 155e1b0, v0.5 1d89981, v0.6 0e0e744, v0.7 fc16dfb, v0.8 2423db8, v0.9 71f3590, v0.10 ee4b515, v0.11 aad1631.",
+  "invariants": [
+    "A pass count is only quoted with the oodialog-wasm commit it was run against and the platform (offscreen or xcb).",
+    "The sweep is a coverage check, not a test: a program that shows its dialog may still draw wrongly.",
+    "Not done yet: a run on a physical desktop with a window manager (KDE, GNOME); every X run so far was on Xvfb. The brief for one is oodialog-qt6/briefs/DESKTOP_RUN_BRIEF_20261119.md (branch oodialog-qt6-v0.12); it waits on Tom's approval."
+  ],
+  "related": [
+    "qt6.testing",
+    "qt6.oodweb-proposals",
+    "qt6.continuation"
+  ],
+  "provenance": [
+    {
+      "member": "oodialog-qt6/README.md",
+      "find": "## State on 19 Nov 2026 (v0.12.0)",
+      "lines": 8,
+      "claim": "55 of 55 offscreen and on xcb against be78d99 (v0.21.0); what is new."
+    },
+    {
+      "member": "oodialog-qt6/README.md",
+      "find": "**Real X input (17 Nov 2026, v0.11.0).**",
+      "lines": 5,
+      "claim": "Three demo samples driven by real X input."
+    },
+    {
+      "member": "oodialog-qt6/README.md",
+      "find": "**84 of 122 programs show their dialog with no Rexx error**",
+      "lines": 8,
+      "claim": "Sweep result and the causes of the 34 errors."
+    },
+    {
+      "member": "oodialog-qt6/sweep/sweep-2026-11-19-v0.21-offscreen.md",
+      "find": "**84 shown, 34 with a Rexx error",
+      "lines": 1,
+      "claim": "The v0.21.0 sweep."
+    },
+    {
+      "member": "oodialog-qt6/briefs/DESKTOP_RUN_BRIEF_20261119.md",
+      "find": "# Brief: run the ooDialog Qt6 suite",
+      "lines": 1,
+      "claim": "The desktop-run brief for v0.12."
+    },
+    {
+      "member": "oodialog-qt6/README.md",
+      "find": "## Not yet",
+      "lines": 4,
+      "claim": "What is not done."
+    }
+  ]
+}

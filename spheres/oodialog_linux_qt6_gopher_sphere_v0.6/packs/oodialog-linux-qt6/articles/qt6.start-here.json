@@ -1,0 +1,61 @@
+{
+   "id": "qt6.start-here",
+   "invariants": [
+      "Upstream ooDialog classes and oodialog-wasm (oodWeb.cls, ooDialog.cls, the tests) are used unchanged. A defect found in oodWeb.cls is proposed to the ooDialog\/WASM chat as a patch (see qt6.oodweb-proposals), never fixed in place.",
+      "The renderer has no Python, no second process, and no callback into the interpreter from a Qt signal: events are queued and Rexx takes them with oodqt_next.",
+      "Each release is a new branch in animatedads\/oorexx; a branch is never force-pushed.",
+      "Every update states who did the architecture (Tom Dyer), who did the coding, and who wrote the update.",
+      "Reports go to TOM in the Rasen Falcon lane python-gate-win-resources. Both the Qt chat and the ooDialog\/WASM chat sign in as CLAUDE, and CLAUDE-to-CLAUDE replies are refused, so Tom relays between them."
+   ],
+   "kind": "article",
+   "procedure": [
+      "Read qt6.current-state for the branch, the oodialog-wasm commit it was tested against, and the results.",
+      "Read qt6.architecture and qt6.renderer-contract before changing the renderer.",
+      "Run the suite as qt6.testing says before and after a change.",
+      "Read qt6.failure-modes before you debug: most failures so far have been differences in geometry or event order between Qt and the page."
+   ],
+   "provenance": [
+      {
+         "artifact": "animatedads\/oorexx@7ec85a5",
+         "claim": "Not a rewrite; oodWeb.cls talks to a renderer through one object.",
+         "line_end": 7,
+         "line_start": 7,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "1d612115d00272d4a7e8d39cbd5bdbeffe33a73af75785eb76daafb34da2a4a6"
+      },
+      {
+         "artifact": "animatedads\/oorexx@7ec85a5",
+         "claim": "The layers, from upstream ooDialog.cls to native\/oodqt.cpp.",
+         "line_end": 15,
+         "line_start": 10,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "1d612115d00272d4a7e8d39cbd5bdbeffe33a73af75785eb76daafb34da2a4a6"
+      },
+      {
+         "artifact": "animatedads\/oorexx@7ec85a5",
+         "claim": "No Python, no second process, events queued and returned by oodqt_next.",
+         "line_end": 17,
+         "line_start": 17,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "1d612115d00272d4a7e8d39cbd5bdbeffe33a73af75785eb76daafb34da2a4a6"
+      },
+      {
+         "artifact": "animatedads\/oorexx@7ec85a5",
+         "claim": "Who did the architecture, the coding, and the writing.",
+         "line_end": 5,
+         "line_start": 3,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "1d612115d00272d4a7e8d39cbd5bdbeffe33a73af75785eb76daafb34da2a4a6"
+      }
+   ],
+   "related": [
+      "qt6.current-state",
+      "qt6.architecture",
+      "qt6.renderer-contract",
+      "qt6.testing"
+   ],
+   "sphere": "oodialog-linux-qt6",
+   "summary": "Upstream ooDialog's Rexx classes run on Linux unchanged. oodialog-wasm (Claude (Fable 5.2)) replaces the Windows DLL with oodWeb.cls, an ooRexx layer that talks to a renderer through one object. In the browser the renderer is a web page. On Linux it is this one: src\/js.cls plus a native library, native\/oodqt.cpp, built on Qt6 Widgets (Claude (Opus 5.5); architecture Tom Dyer). The renderer is not a rewrite of ooDialog. It implements the page's side of a written contract, RENDERER_CONTRACT.md, and is tested with the browser harness's own tests, unchanged. The code lives in animatedads\/oorexx, one branch per release (oodialog-qt6-v0.N), each based on the oodialog-wasm commit it was tested against.",
+   "title": "ooDialog on Linux is upstream ooDialog, oodWeb.cls, and a Qt6 renderer",
+   "version": "0.1"
+}

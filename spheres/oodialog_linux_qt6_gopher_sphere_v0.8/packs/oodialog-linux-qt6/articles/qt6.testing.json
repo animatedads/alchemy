@@ -1,0 +1,74 @@
+{
+   "id": "qt6.testing",
+   "invariants": [
+      "Tests never write into the source tree: a run that did (v0.3.0) counted a file a test wrote as a passing test.",
+      "A step the player does not know fails; it is never skipped.",
+      "A program that ends with steps left fails (STEPS NOT FINISHED): the steps not run were never checked.",
+      "The Qt dialect checks the tool tip box (v0.9.0: expect tipShown|tipText|tipTitle|tipLines|tipWidthSet|tipAtClient|tipBesideItem) and the program's output after it ends (output lines|count TEXT ==> WANT, checked by the runner).",
+      "The Qt dialect (v0.8.0) checks layouts against a mark: marklayout, then expect delta|right|scaled|unchanged|limits; and month calendars: mcpick, expect mcTitle|mcBold|mcBoldIn|mcSel|mcSelShown|mcFits.",
+      "As in the browser harness, a program may return a value once its output matches its .expect; a Rexx error, a failed step, or a non-zero return without an .expect fails it.",
+      "A sweep verdict of SHOWN means a dialog came up with no Rexx error, nothing more; MODULE files (required by another file) are listed, not started; programs whose header says to run them from the parent folder are run so.",
+      "Every run is killed after 90 seconds, so a hang shows as a failure.",
+      "The Qt dialect (v0.12.0) checks what a program hands to the user and its window (expect delivered|deliveredItem|deliverActions|deliverPanels, and pdf K ==> PAGES ; text ; ... through poppler's pdfinfo and pdftotext, fragments in order), and the status bar, rows and colours (stbDocked, stbText, stbPartWidths, stbPartText, stbPartTip, lvRows, lvFirsts, clientBg, buttonTexts, counts, lvColors).",
+      "The Qt dialect (v0.13.0) checks the tool bar (tbDocked, tbButtons, tbPushed, tbDisabled N, scope .ood-tb >> text=), custom draw as the page's computed style reads it (lvCd R [font], tvCd TEXT: text colour on background [font family]), tvKids TEXT, lvCount, and scrolls a view to its end with scrollend SELECTOR.",
+      "The Qt dialect (v0.14.0) checks the re-bar (rbDocked, rbBands, rbLayout, rbColors, rbFirst, rbCount; scope .ood-rb with >> text=, select, input) and whether a dialog is within reach (dlgReach: in, top-left, out); screenarea W H stands in for the browser's viewport step, and screenarea 0 0 restores the screen's own area."
+   ],
+   "kind": "article",
+   "procedure": [
+      "Build: cmake and make in native\/ (see the README's Build section).",
+      "export LD_LIBRARY_PATH=<oodialog-qt6>\/build and REXX_PATH=<oodialog-qt6>\/src:<oodialog-wasm>\/dist:<alchemy>\/packages\/oorexx_logging_stream_target_v0.1\/src",
+      "rexx tools\/oodqt_suite.rex --wasm <oodialog-wasm> --samples <samples\/windows\/oodialog> --designer <oodialog-designer>\/tests\/gen",
+      "xvfb-run -a rexx tools\/oodqt_suite.rex ... --platform xcb",
+      "Add --shots DIR and look at the screenshots: geometry defects (a highlighted row the program did not select, a strip lost under a layout) pass the checks and show only there."
+   ],
+   "provenance": [
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "The suite's groups and trees.",
+         "line_end": 65,
+         "line_start": 65,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Fresh staging directory, as \/home\/rexx, with Windows names.",
+         "line_end": 89,
+         "line_start": 89,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Exit-code rule.",
+         "line_end": 91,
+         "line_start": 91,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Qt-dialect steps files.",
+         "line_end": 26,
+         "line_start": 26,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Sweep verdicts.",
+         "line_end": 14,
+         "line_start": 11,
+         "member": "oodialog-qt6\/tools\/oodqt_sweep.rex",
+         "sha256": "330e39db3f99c55ca0035531cca7360b82ea700132eb9a282fae3859db502df4"
+      }
+   ],
+   "related": [
+      "qt6.current-state",
+      "qt6.failure-modes"
+   ],
+   "sphere": "oodialog-linux-qt6",
+   "summary": "Three ooRexx tools share one runner class, tools\/OodQtTest.cls, and log through oorexx_logging (ToolProgress). tools\/oodqt_test.rex runs given tests. tools\/oodqt_suite.rex runs the whole suite in the browser harness's groups: designer and res with no tree; t* and up with upstream's samples\/windows\/oodialog; up2 with samples\/tutorial; up3 with samples\/propertysheet.tabControls; up4 with samples\/mouse; up5 with samples\/controls\/ListView\/subitem.editing; up6 SimpleMonthCalendar with samples\/simple and PaidHolidays with samples\/controls; up7 with samples\/resizableDialogs\/ResizingAdmin; up8 with samples\/controls\/ToolTip; up9 with samples\/propertysheet.tabControls; up10 customDrawListview with samples\/controls\/ListView and treeViewCustomDraw with samples\/controls\/TreeView; print with the --pdfkit directory (oodialog-wasm's tools\/oodpdfkit.rex output), left out without it. A file a test hands to the user (deliver) goes to the test's own staged directory (OODQT_DELIVER), so it is removed with it. tools\/oodqt_sweep.rex starts every upstream sample with nothing clicked and writes a Markdown report. Each program runs in a fresh directory under TMPDIR, as the page runs it in a fresh \/home\/rexx. The directory holds the program, its TEST.files\/, the --tree, ooDialog.cls, oodWeb.cls and ooShapes.cls, plus the Windows file names the program uses (tools\/WindowsNames.cls, a port of the page's oodfiles.js; since 0.2.0 also data files named in strings). In .steps and .expect, \/home\/rexx means that directory. The steps player runs inside the Qt loop. It takes the harness's verbs (wait, click, fill, select, press, type, mouse, sleep, shot, expect) and Playwright-style selectors, and translates the harness's JavaScript checks it knows; it fails any step it does not know. Where a test's checks are JavaScript the player cannot translate, tests\/steps\/NAME.qt.steps gives the same steps in a Qt dialect. --platform xcb runs everything on an X server (under xvfb-run, or a desktop's DISPLAY).",
+   "title": "Testing: the browser harness's own tests, the designer's programs, and a sweep of every sample",
+   "version": "0.6"
+}

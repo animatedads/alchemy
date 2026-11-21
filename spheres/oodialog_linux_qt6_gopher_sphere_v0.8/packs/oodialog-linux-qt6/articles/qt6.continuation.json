@@ -1,0 +1,53 @@
+{
+   "id": "qt6.continuation",
+   "invariants": [
+      "Read the Programme Coordinator's missives and the lane's mail before starting.",
+      "Never force-push; never push to an existing release branch; never change oodialog-wasm's files.",
+      "Instructions handed to another model must be clear enough for a small model to follow.",
+      "Commands for Tom go on their own lines, with no trailing period."
+   ],
+   "kind": "article",
+   "procedure": [
+      "git -C <oorexx clone> fetch origin; git log --oneline origin\/oodialog-wasm",
+      "git diff <last tested> <new> -- oodialog-wasm\/src\/oodialog-web.js oodialog-wasm\/src\/oodWeb.cls oodialog-wasm\/tools\/oodtest.py",
+      "Implement, then run tools\/oodqt_suite.rex offscreen and with --platform xcb under xvfb-run, with --shots.",
+      "Run tools\/oodqt_sweep.rex --platform xcb --report; compare with the last report in sweep\/.",
+      "git checkout -b oodialog-qt6-v0.N origin\/oodialog-wasm, copy oodialog-qt6\/ in, commit with attribution, push the new branch.",
+      "Rebuild this sphere with its tools\/build_sphere.rex against the new commit, and publish it."
+   ],
+   "provenance": [
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Open work.",
+         "line_end": 239,
+         "line_start": 236,
+         "member": "oodialog-qt6\/README.md",
+         "sha256": "c8a49ec398403e4b2ee69a6dbdf34a760ddabe793153e48c1b00192a97f8a6f5"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "Each contract section names the commit it was read from.",
+         "line_end": 114,
+         "line_start": 114,
+         "member": "oodialog-qt6\/RENDERER_CONTRACT.md",
+         "sha256": "647f99169fd87a00a6eb868f38e48dedc89d829c2b066371e289a4b60b187ab7"
+      },
+      {
+         "artifact": "animatedads\/oorexx@f350653",
+         "claim": "The suite command.",
+         "line_end": 5,
+         "line_start": 5,
+         "member": "oodialog-qt6\/tools\/oodqt_suite.rex",
+         "sha256": "cc79e14b60aefa75fe9710243de5501b4e97dcbb2fb6ab01221f575d00a7f45e"
+      }
+   ],
+   "related": [
+      "qt6.current-state",
+      "qt6.testing",
+      "qt6.oodweb-proposals"
+   ],
+   "sphere": "oodialog-linux-qt6",
+   "summary": "The Qt renderer follows oodialog-wasm, which adds a part of ooDialog in each release (GDI v0.12, bitmaps v0.13, mouse v0.14, in-place editing v0.15, month calendar v0.16, ResizingAdmin v0.17, tool tips v0.18, pagedTab v0.19, the standby printer v0.20, the status bar and 192 natives v0.21, the tool bar and custom draw v0.22, the re-bar and dialogs within reach v0.23). Since 15 Nov 2026 Tom's rule is that this chat (Claude, Qt6 renderer) owns Linux ooDialog; CHATGPT's CPython oodialog-linux\/ (dev13\/dev14) is not to be extended. To catch up with a new release: fetch origin\/oodialog-wasm and read its commit message; diff oodialog-web.js and oodWeb.cls against the last commit you tested, and list every new op, message, event and harness step; implement each in native\/oodqt.cpp (and js.cls if the wire changes), following the page's behaviour; translate the new tests' JavaScript checks in the player or write NAME.qt.steps; run the suite offscreen and on xcb (with --designer and --pdfkit), and compare each new control's screenshot with the page's (oodialog-wasm\/shots); run the sweep; check that proposals\/oodWeb-*.patch still applies; update README (state, lessons) and RENDERER_CONTRACT.md (a section naming the commit it was read from); and update this sphere. Then commit to a new branch oodialog-qt6-v0.N, based on that oodialog-wasm commit, and report to TOM in lane python-gate-win-resources, with the attribution lines and a self-score. Open work: a run on a physical desktop (KDE, GNOME) with a window manager; upstream's winsystm.cls and the native functions oodWeb does not have yet belong to the ooDialog\/WASM chat. The Fluent (WinUI 3) controls are ChatGPT's, in lane oodialog_fluent_controls: a portable provider seam that would let this renderer draw a subset was proposed (REQ-00003661, REQ-00003737) and is not sanctioned; ChatGPT asked that no Qt Fluent code start until a sanctioned interface brief exists.",
+   "title": "Continuing: one oodialog-wasm release at a time",
+   "version": "0.6"
+}

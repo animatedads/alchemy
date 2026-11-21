@@ -1,0 +1,93 @@
+{
+  "kind": "article",
+  "id": "qt6.renderer-contract",
+  "version": "0.7",
+  "title": "The renderer contract shared with the browser page",
+  "summary": "RENDERER_CONTRACT.md writes down what oodWeb.cls asks of a renderer, so the page (oodialog-web.js) and the Qt library can be checked against each other. There are 17 messages: setHandler, create, addControl, show, destroy, sub, op, msg, measure, screen, setMenu, popupMenu, msgBox, image and hasImage, and from v0.21.0 deliver (hand a file to the user: the standby printer) and windowAt (the dialog and control at a screen point). Events come back as pageEvent(key, kind, id, code, extra), with kind CMD, NOTIFY, CTX, KEY, MSGBOX, WM, MOUSE or GC. On the flat wire, 1F separates fields and 1E separates records, and an argument's own 1F is sent as 1D, because oodWeb puts its separator inside single arguments (tree text SEP opts, a row's cells, a NOTIFY's parts). Dialog units follow Windows: fx = floor((avgWidth/26 + 1)/2)/4, fy = round(fontHeight)/8, with the font at size*96/72 pixels. The contract grows with each oodialog-wasm release; each section says which commit it was read from: GDI, images and sizing (v0.12/0.13), the mouse (v0.14), in-place editing and tab stops (v0.15), the month calendar (v0.16: mc.* ops, SELCHANGE/SELECT, GETDAYSTATE and bold days as one bit mask a month), ResizingAdmin (v0.17: ra.init with each control's four edges pinned, ra.limits, RASIZEENDED), the editable combo's edit (v0.17: isDropList), tool tips (v0.18: tip.* ops on the tool tip's own ID, one tip box, TT SHOW|POP|NEEDTEXT|RELAY events, tree-view GETINFOTIP, tv.hit and tv.rect), pagedTab (v0.19: ra.page, whose pages take the tab's display area after each layout; tab.outer; TCM_SETMINTABWIDTH; BM_SETSTATE) the virtual-key codes a KEY event carries (v0.19.1: the key, not the character, on a US layout, with the number pad's own codes), and v0.20.0/v0.21.0: deliver, windowAt, the status bar (sb.* ops, parts by right edge, part 255 the simple text), edit and list natives (getCue, lineOf, lineStart, lineLen, tabSize, pad, tabStop, optUid, rowHeight, lv.order, lv.uids, lv.row), the dialog's colour (color with id 0), and the focused control's id as a KEY event's extra. v0.22.0: the tool bar (tb.* ops, buttons flowing along the top, CHECK and CHECKGROUP), custom draw (cd.on; CD ROWS events with the rows in view, one question at a time; cd.paint with each row's colours and font), tv.kids, tv.order and lv.insRow's uid. Colours arrive in CSS form, including rgb(r,g,b); a renderer must read that form. When oodWeb.cls calls an op that oodialog-web.js answers, the Qt renderer answers it the same way, including the page's geometry where programs rely on it: list-view rows are a line and 2 px high, the header a line and 5 px, and a combo box is one line high (its cy is the height of its list).",
+  "invariants": [
+    "The contract is read from oodialog-web.js and oodWeb.cls at a named commit; the Qt renderer follows the page, not Windows, where the two differ and a test depends on it.",
+    "An argument on the wire never loses its own separators: 1F inside an argument travels as 1D, and an event's extra is everything after the fourth field.",
+    "A connected event that a renderer cannot produce is said so by oodWeb (\"is connected but is not produced yet\"); a renderer must not invent one.",
+    "The second click of a double click is a CLICK and then a DBLCLK, as the page reports it; Qt alone reports only the double click.",
+    "Colours on the wire are CSS: #rrggbb, a name, or rgb()/rgba(). The pad op takes CSS's order (top right bottom left) and answers left top right bottom."
+  ],
+  "related": [
+    "qt6.architecture",
+    "qt6.failure-modes",
+    "qt6.oodweb-proposals"
+  ],
+  "provenance": [
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "## The renderer's 15 messages",
+      "lines": 20,
+      "claim": "The 15 messages and their arguments."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "## Events: `pageEvent(key, kind, id, code, extra)`",
+      "lines": 11,
+      "claim": "Event kinds and dialog units."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "## Separators inside arguments",
+      "lines": 3,
+      "claim": "1F inside an argument travels as 1D."
+    },
+    {
+      "member": "oodialog-qt6/src/js.cls",
+      "find": "if args~hasIndex(i) then parts~append(args[i]~string~changeStr(self~FS, \"1D\"x))",
+      "lines": 1,
+      "claim": "js.cls escapes an argument's own separator."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "**Geometry the page has and Windows programs rely on.**",
+      "lines": 1,
+      "claim": "List-view row and header heights."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "## In-place editing and tab stops",
+      "lines": 10,
+      "claim": "v0.15.0 additions, including CLICK before DBLCLK."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "## Month calendar and ResizingAdmin",
+      "lines": 26,
+      "claim": "v0.16.0 and v0.17.0 additions: month calendar, ResizingAdmin, editable combo."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "## Tool tips",
+      "lines": 24,
+      "claim": "v0.18.0 additions: tool tips and the tree-view's hit and rect."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "## pagedTab, tab and button additions",
+      "lines": 7,
+      "claim": "v0.19.0 additions: pagedTab, tab.outer, minimum tab width, pushed buttons."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "## Virtual-key codes",
+      "lines": 8,
+      "claim": "v0.11.0: the virtual-key codes of KEY events."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "## Standby printer, windowAt, status bar and more natives",
+      "lines": 20,
+      "claim": "v0.12.0: deliver, windowAt, status bar, v0.21.0 natives, CSS colours."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "## Tool bar and custom draw",
+      "lines": 12,
+      "claim": "v0.13.0: tool bar, custom draw, tv.kids/order."
+    }
+  ]
+}

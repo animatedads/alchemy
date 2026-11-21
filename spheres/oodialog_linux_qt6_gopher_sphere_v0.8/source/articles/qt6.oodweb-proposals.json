@@ -1,0 +1,48 @@
+{
+  "kind": "article",
+  "id": "qt6.oodweb-proposals",
+  "version": "0.5",
+  "title": "Changes proposed to oodWeb.cls, and what became of them",
+  "summary": "The Qt chat does not change oodWeb.cls. It proposes changes to the ooDialog/WASM chat through Tom, each one tested on a staged copy against named samples. Taken: .application~srcDir is the program's directory, not oodWeb.cls's (proposed in v0.3.0, taken in oodialog-wasm v0.13.0); msSleep takes events only on the thread that runs pumpUntilFinished (proposed in v0.4.0 after up/oowalker hung about one run in six; taken in v0.13.1); tab_calcRect, change (2) below, taken in its own form in v0.19.0 (calcDisplayRect keeps the rectangle given, using tab.outer). Open: changes (1), (3) and (4), as proposals/oodWeb-v0.19.0-linux.patch, which applies to v0.19.0 (ee4b515) and, with line offsets only, to v0.21.0 (be78d99), v0.22.0 (d15b927) and v0.23.0 (191da5a): none of the three was taken in v0.20.0 to v0.23.0. proposals/oodWeb-v0.13.1-linux.patch held all four and applied unchanged from v0.13.1 to v0.18.0: (1) needProvider asks .js~resourceProvider when no reader was set, so the renderer can offer alchemy's oorexx_win_resources; (2) tab_calcRect keeps the coordinates it is given (calcDisplayRect is TCM_ADJUSTRECT), because answering in client coordinates put the TabDemo pages up and to the left of the tab; (3) BinaryMenuBar~new(.nil, id) makes an empty menu bar, as upstream does; (4) il_handle uses numeric digits 20, because identityHash is 64-bit on a 64-bit interpreter. With the patch, 6 more upstream samples come up: oowalk2, both TabDemos, BinaryMenuBar, employe9menuDyn and Exercise04's ASimpleDialog2. It was tested on the Qt renderer only, not in the browser.",
+  "invariants": [
+    "A proposal names the samples it fixes and says it was tested on a staged copy only.",
+    "The renderer never works round an oodWeb defect silently: any work-round is written down where the defect is. The runner stages ooDialog.cls, oodWeb.cls and ooShapes.cls beside the program; that began as a srcDir work-round and stays because it is how the page lays out /home/rexx.",
+    "Messages for the ooDialog/WASM chat go to TOM, marked for relay."
+  ],
+  "related": [
+    "qt6.renderer-contract",
+    "qt6.current-state"
+  ],
+  "provenance": [
+    {
+      "member": "oodialog-qt6/proposals/README.md",
+      "find": "**19 Nov 2026, oodialog-wasm v0.21.0",
+      "lines": 1,
+      "claim": "The v0.19.0 patch still applies to be78d99."
+    },
+    {
+      "member": "oodialog-qt6/proposals/README.md",
+      "find": "| Change | Why | Samples |",
+      "lines": 6,
+      "claim": "The four changes and the samples each fixes."
+    },
+    {
+      "member": "oodialog-qt6/proposals/README.md",
+      "find": "**16 Nov 2026, oodialog-wasm v0.19.0 (`ee4b515`):**",
+      "lines": 1,
+      "claim": "v0.19.0 took tab_calcRect; the other three are in the v0.19.0 patch."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "The thread proposal above (msSleep) was taken in oodialog-wasm v0.13.1",
+      "lines": 1,
+      "claim": "msSleep proposal taken in v0.13.1."
+    },
+    {
+      "member": "oodialog-qt6/RENDERER_CONTRACT.md",
+      "find": "## Known difference: `.application~srcDir`",
+      "lines": 3,
+      "claim": "The srcDir defect and the proposed fix."
+    }
+  ]
+}

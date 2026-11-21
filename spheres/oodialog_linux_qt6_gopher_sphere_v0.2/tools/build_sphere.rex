@@ -73,6 +73,13 @@ do k over spec~allIndexes
 end
 .json~toJsonFile(pack"/00-sphere.json", s, .true)
 .json~toJsonFile(pack"/01-access-policy.json", .json~fromJsonFile(sphereDir"/source/access-policy.json"), .true)
+-- The Gopher index loads a sphere through its profile: without profiles/<id>.json the sphere is never
+-- listed (v0.1 of these spheres was merged without one and stayed unreadable).
+prof = .directory~new
+prof["kind"] = "profile"; prof["id"] = id; prof["version"] = spec["version"]
+prof["packs"] = .array~of("packs/core", "packs/"id)
+address system 'mkdir -p "'sphereDir'/profiles"'
+.json~toJsonFile(sphereDir"/profiles/"id".json", prof, .true)
 address system 'rm -r "'work'"'
 log~log(.Log~INFO, built~items "articles in" pack)
 exit 0
