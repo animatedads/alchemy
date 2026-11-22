@@ -1,9 +1,9 @@
-# ooDialog Designer sphere (v0.11)
+# ooDialog Designer sphere (v0.12)
 
 Architecture: Tom Dyer. Code: Claude (Opus 5.5); the Database Lab: ChatGPT.
-Sphere written by Claude (Opus 5.5), 2026-11-21.
+Sphere written by Claude (Opus 5.5), 2026-11-22.
 
-Canonical packages: `packages/oorexx_oodialog_designer_v0.19` (and v0.7 to v0.18; v0.15 was not published), and the ooRexx Object Editor (folder `object-editor/` of the same branch);
+Canonical packages: `packages/oorexx_oodialog_designer_v0.21` (and v0.7 to v0.20; v0.15 was not published), and the ooRexx Object Editor (folder `object-editor/` of the same branch);
 working branch `oodialog-designer` in animatedads/oorexx. This sphere records
 the designer's authority, the program and design format, bound dialogs, the
 plugin host and its secrets chain, build and test, pitfalls and what is open.

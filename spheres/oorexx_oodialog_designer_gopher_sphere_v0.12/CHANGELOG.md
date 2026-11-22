@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.12 - 2026-11-22
+- Designer v0.20 and v0.21: a zip to send out, testable by its receiver (tools/selftest.rex); run_all portable to Windows and blank-safe; the Try-it instruction corrected.
+- How a zip is made and checked, in start; selftest in build-and-test.
+
 ## 0.11 - 2026-11-21
 - Designer v0.19: qualified on ooDialog/WASM v0.27.0 and the Qt6 renderer v0.15.0.
 - CORRECTION: v0.10's "RAISE of USER/ERROR is not trapped" observation was a test fault (RAISE without RETURN is an EXIT); catchcheck fixed, 9/9 on trunk. The rule is in pitfalls.
