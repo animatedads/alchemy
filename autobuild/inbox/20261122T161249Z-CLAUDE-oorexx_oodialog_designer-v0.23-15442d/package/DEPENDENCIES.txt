@@ -1,0 +1,52 @@
+ooDialog Designer v0.21 -- dependencies
+Architecture: Tom Dyer.  Code: Claude (Opus 5.5).
+
+Model, generator, graph and language support (src/, the Autobuild tests):
+- ooRexx 5.3.0 (native, or ooRexx/WASM 0.2.4 or 0.2.5 by Josep Maria Blasco)
+- vendor/rexx-parser: Josep Maria Blasco's Rexx Parser, beta 0.7 (refresh
+  20261115: CATCH and FINALLY), Apache License 2.0 (ANSI.ErrorText.cls: CPL
+  1.0, its LICENSE-CPL beside it), unchanged; its LICENSE, NOTICE and VERSION
+  are beside it.  OodGraph.cls requires "rexx-parser/bin/Rexx.Parser.cls", so
+  vendor/ goes on REXX_PATH.  Only the graph (OodGraph.cls, t02) needs it.
+
+The programs it writes:
+- ooDialog (upstream, Windows) or ooDialog/WASM v0.23.0 (Claude (Fable 5.2); resizable forms need v0.17+ of it;
+  the up-down, month calendar, tool tips and track bar events need v0.16+,
+  v0.18+ and v0.8+ of it)
+- nothing else: the language support (OodNls) is copied into each program
+
+The page (site/) and its browser tests (tools/dztest.py), not run by Autobuild:
+- ooRexx/WASM 0.2.5 web release (0.2.4 also qualified), ooDialog/WASM dist/, the Object Editor
+  (object-editor/ of animatedads/oorexx, branch oodialog-designer, v0.5.0+: the
+  Libraries panel), Python Playwright with Chromium; tools/build.rex
+  assembles site/.
+
+The plugins (plugins/, optional, none loaded until switched on):
+- Boston Crab and code assistance: oorexx_slam_bostoncrab v0.24
+  (tests/PitfallChecker.cls)
+- code assistance, git and ssc: oorexx_secret_broker v0.2 (with
+  alchemy_objects v0.8 and oorexx_crypto v0.1); code assistance also
+  oorexx_ai_access v0.6, oorexx_ai_provider_anthropic v0.5 (its fetch
+  client) and oorexx_ai_provider_openai_compat v0.6 (its fetch transport)
+- ooRexx/WASM's fetch.cls and json.cls for every call out; git's cli way
+  needs git and ooRexx outside a browser
+- their tests (t07-t09) need node for the stand-in servers in tests/fixtures/
+
+Bound dialogs (a design whose form names an object): the program needs
+oorexx_mapped_objects v0.1 (MappedObjects.cls) and what it requires:
+nosqlserver_v0.92-dev1 (NoSQLServer.cls), alchemy_objects v0.8 (AlchemyObject,
+AlchemySecurity, AlchemyLockedMethod, AlchemyEvidence) and oorexx_crypto v0.1
+(crypto.cls). tools/data.rex lays them out for the page (site/data).
+
+The Database Lab (ChatGPT's): oorexx_oodialog_database_lab v0.1.3 (its
+graphLines and addRelationship for graph drag-to-connect; v0.1.2 is still
+accepted for graph viewing by tools/database.rex)
+with nosqlserver_v0.92-dev1, alchemy_objects v0.8 and oorexx_crypto v0.1.
+The object lines of a bound design (src/OodBoundGraph.cls) use the same
+oorexx_mapped_objects v0.1 closure as a bound run. tests/database_lab_dom.cjs
+needs jsdom 27 (npm install --no-save jsdom@27).
+
+tests/wincheck.rex needs Windows ooDialog; tests/catchcheck.rex needs an
+ooRexx r13514 or later for its CATCH checks.  Both are for CODEX-PC (testing
+only, with Tom Dyer's approval).  The parser itself uses CATCH (r13514+); on
+an older ooRexx it loads and parses, and only its error hints are lost.
