@@ -1,0 +1,40 @@
+{
+  "kind": "article",
+  "id": "oodialog-designer.start",
+  "sphere": "oodialog-designer",
+  "version": "0.14",
+  "section": "start",
+  "title": "Current baseline, where the code is, who did what",
+  "authority": "project-artifact",
+  "summary": "The ooDialog Designer writes ooDialog programs in ooRexx from a drag-and-drop form, in the manner of VisPro/REXX, VX-REXX and DrDialog. Architecture: Tom Dyer. Code: Claude (Opus 5.5); the Database Lab: ChatGPT. It runs in a browser on ooDialog/WASM and Josep Maria Blasco's ooRexx/WASM 0.2.5 since designer v0.23 (0.2.4 before; designer v0.17: ooDialog/WASM v0.23.0, branch oodialog-wasm 191da5a; v0.16: v0.21.0); the programs it writes are plain upstream ooDialog for Windows. Published: packages/oorexx_oodialog_designer_v0.7, v0.8 (plugins), v0.9 (bound dialogs), v0.10 (reference picker, list Add/Remove, row fields) v0.11 (closed-first event tree, code marks, All code, trace probes that keep SIGL and RESULT; after feedback from Rony G. Flatscher and Josep Maria Blasco) v0.12 (ChatGPT's Database Lab graph merged; object lines filled for bound designs) v0.13 (Rexx Parser 20261115: CATCH and FINALLY in the graph; runtime guard) v0.14 (ChatGPT's Database Lab drag-to-connect merged, PR #3) v0.15 (code assistance writes ooRexxDoc; tested, not published: its publish path named v0.14) v0.16 (on ooDialog/WASM v0.21: up-down with buddy, month calendar, tool tips, track bar DRAG/ENDTRACK; tools/pkgcheck.rex) v0.17 (resizable forms: ResizingAdmin with per-control anchors) v0.18 (checked on the Linux Qt6 renderer; CATCH/FINALLY asked of the ooRexx, not its revision) v0.19 (catchcheck corrected, 9/9 on trunk; qualified on ooDialog/WASM v0.27 and Qt6 v0.15), v0.20 (testable by a receiver: tools/selftest.rex; run_all portable to Windows and blank-safe) v0.21 (the Try-it instruction corrected) and v0.22 (Libraries: several class files imported at once, a ::requires for each; the catch test asks the page's ooRexx) and v0.23 (qualified on ooRexx/WASM 0.2.5) in animatedads/alchemy; working branch oodialog-designer in animatedads/oorexx (folder oodialog-designer/, mirror of the Object Editor in object-editor/). Branch head after v0.23: d21b148.",
+  "invariants": [
+    "Check packages/ on a fresh pull of alchemy main before choosing a version number: a version that exists is never reused.",
+    "Every class has module_version and module_lastChanged.",
+    "Every update names the architect (Tom Dyer), the coder (Claude (Opus 5.5) or ChatGPT) and the model writing it.",
+    "Do not work in Autobuild's checkout; submit with tools/alchemy_submit.py.",
+    "The Database Lab is ChatGPT's lane (oorexx_oodialog_database_lab); the designer, plugins and bound dialogs are Claude's. Changes across lanes go by Falcon request.",
+    "A package and its sphere go together: change this sphere in the same piece of work as the package, so other chats are not left to guess.",
+    "Before a submission run tools/pkgcheck.rex PACKAGE_DIR: the folder, integration.json's version and publish path, module_version and the README title must agree. A bump that changes one mark of four is how v0.15 was refused at publication.",
+    "Make a package with tools/mkpkg.rex PREVIOUS_PACKAGE_DIR NEW_VERSION (on the branch from c40a88b, in the package from v0.18): it copies, refreshes, adds new files and runs pkgcheck. v0.16's package lacked tools/pkgcheck.rex because the hand-run assembly reported new files without copying them.",
+    "A program the designer writes must run on every renderer of upstream ooDialog: the page (ooDialog/WASM) and the Linux Qt6 renderer (oodialog-qt6, another Claude (Opus 5.5) chat), as well as Windows. tests/qt/make.rex regenerates the Qt fixtures from the current generator; tests/gen is from designer 0.3.0 and is not a test of current output.",
+    "A zip sent out is made from the published package plus the built site/ (tools/make.sh), without integration.json and shots/, with a README-FIRST.txt (credits, try it: node site/serve.mjs then /designer.html, test it: rexx tools/selftest.rex, Windows: rexx tests\\wincheck.rex site\\examples). Test it unpacked, from a path holding a blank, as a receiver would, before it goes."
+  ],
+  "topics": [
+    "versions",
+    "branches",
+    "lanes",
+    "credits"
+  ],
+  "related": [
+    "oodialog-designer.authority",
+    "oodialog-designer.qualification",
+    "mapped-objects.start"
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.21/README.md",
+      "sha256": "f771c71f863a6311209aa90262d44af924c89bd21554f7be73e3169810bda4d1",
+      "claim": "Package README of v0.21."
+    }
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "oodialog-designer.qualification",
+  "sphere": "oodialog-designer",
+  "version": "0.14",
+  "section": "qualification",
+  "title": "Qualification and what is open",
+  "authority": "project-artifact",
+  "summary": "v0.23: PASS e25f84db (Autobuild 20261122T161308Z). Qualified on ooRexx/WASM 0.2.5 (trunk r13591, published 2026-11-22), now the build default: dztest 23/23, the catch scenario on its run path (C clears, the FINALLY body runs); run_all 10/10; selftest PASS with catchcheck 9/9 in the runtime (its LOOP-and-CATCH NOTE \"1 c2\" matches native trunk). Object Editor on 0.2.5: t01 73/73, t02 29/29, oxtest 13/13. 0.2.4 still qualified (v0.22 results). The 0.2.4 revision question is moot for the tests. v0.22: PASS 69013351 (Autobuild 20261122T153838Z); run_all 10/10; dztest 23/23 on ooDialog/WASM v0.27.0 and ooRexx/WASM 0.2.4 (new: libmulti; catch now takes either answer from the page's ooRexx: a refusal on 0.2.4, a run with the FINALLY body on 0.2.5; the 0.2.5 path is not yet run here); Object Editor v0.5.0: t01 73/73, t02 29/29, oxtest 13/13. Qt6 not rerun for v0.22 (only version stamps changed in the generated tests). The ooRexx/WASM maintainer ran v0.21: 22/22 on 0.2.4, 21/22 on 0.2.5 (r13564), the catch scenario, which v0.22 answers. Revision of 0.2.4: its README says r13268 and .RexxInfo~revision answers 13268 in the npm package and the web zip used here; the maintainer gives r13344. v0.21 (2026-11-22): Autobuild PASS 343f1471; README instruction corrected only. v0.20: Autobuild PASS 10103557. The zip oodialog-designer-v0.21.zip (package v0.21 + site built on ooDialog/WASM v0.27.0), unpacked into a path holding a blank: tools/selftest.rex PASS on ooRexx 5.3.0 (trunk 5f066c9; run_all 10/10, catchcheck 9/9); on trunk at the 5.1.0 release point run_all 9/10 (t09 needs .JsonString~new), catchcheck skipped; dztest 22/22 against its own site and serve.mjs; serve.mjs sends COOP/COEP and application/wasm. Not run: Windows (run_all's Windows path is written but not executed there; wincheck.rex, REQ-00004977). v0.19 (2026-11-21): on ooDialog/WASM v0.27.0 (fafd2c2): run_all 10/10, dztest 22/22, Object Editor oxtest 12/12; on the Qt6 renderer v0.15.0 (5cc1c57, its pinned oodialog-wasm e2e7899): tests/qt and tests/gen 6 of 6 offscreen and 6 of 6 on Xvfb; catchcheck.rex 9 of 9 on ooRexx git trunk 5f066c9 (CATCH and FINALLY), SKIP on trunk at 41385194 (the releases/5.1.0 point) and on ooRexx/WASM r13268, which know neither; Autobuild PASS 20261121T175503Z-e69c26cbddff-8b886ac3 (972f0d9a), published. CORRECTION to v0.18: its 'CATCH USER fails; RAISE of USER/ERROR is not trapped even by SIGNAL ON' was a test fault, not an ooRexx one: a RAISE without RETURN is an EXIT (RaiseInstruction.cpp), seen the same on all three builds. v0.18 (2026-11-21), on ooDialog/WASM v0.23.0 (191da5a): run_all t01-t10 (t01 119/119); dztest 22/22; Object Editor oxtest 12/12; Boston Crab clean; mkpkg and pkgcheck PASS; Autobuild PASS 20261121T105113Z-39cefd3ed200-67133caf (301bece7), published. Linux Qt6 renderer (oodialog-qt6 v0.14.0 f350653, Qt 6.4.2, ooRexx trunk 5f066c9 from GitHub, built here): tests/qt NewKinds, Resizer, Catcher and tests/gen Calculator, Contacts, Gadgets: 6 of 6 offscreen, 6 of 6 on Xvfb (xcb). The generated CATCH guard: passes on that trunk, refuses (before running anything) on ooRexx/WASM r13268. catchcheck.rex, first native run: 7 of 8 (the failing check was wrong; see v0.19). v0.17: Autobuild PASS 69231261, published. v0.16: PASS 1b9261f2 (its package lacks tools/pkgcheck.rex; its up-down note corrected). v0.15: not published. Not yet run: anything on Windows ooDialog (wincheck.rex, REQ-00004977). Open: graph label overlaps (ChatGPT, REQ-00003757); Fluent stand-in details (REQ-00005061/5073); status bar, tool bar, file dialogs, drawing; PROPORTIONAL pins and min/max sizes; month calendar day states; Document... for attributes, constants and the designer's methods; SSC defect REQ-00003605 (REQ-00003763).",
+  "invariants": [
+    "Do not call a test PASS that was not run; a stand-in server is not a live store.",
+    "Windows behaviour (Windows-1252 text, executeAsync timing) is unconfirmed until CODEX-PC reports."
+  ],
+  "topics": [
+    "qualification",
+    "open work",
+    "Windows"
+  ],
+  "related": [
+    "oodialog-designer.start"
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.23/README.md",
+      "sha256": "c4ae42ad068803f9e74b453633ec952ef36b94fa5049b6a8d77b3b742caff95e",
+      "claim": "Package README of v0.23."
+    }
+  ]
+}
