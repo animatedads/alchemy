@@ -1,0 +1,56 @@
+{
+  "kind": "article",
+  "id": "oodialog-designer.bound-dialogs",
+  "sphere": "oodialog-designer",
+  "version": "0.2",
+  "section": "integration",
+  "title": "Bound dialogs: a form that edits one mapped object",
+  "authority": "project-artifact",
+  "summary": "Since v0.9 a dialog can edit one object instead of one table. The object is an instance of a class mapped over several tables with ::ANNOTATE (sphere mapped-objects). Form properties: OBJECT (class), OBJECTFILE (its .cls), OBJECTKEY (key opened when the program gets none; none: a new object), DATABASES (name=folder pairs, e.g. ent=ent, beside the program unless absolute). The design stores them as one line: binding object= file= key= databases=. A control's bind property: EDIT attr (edits it); CHECKBOX attr (a flag); STATIC attr or a.b path (shown only); LISTVIEW part:a,b (one row per part, one attribute per column). v0.10 added: COMBOBOX part:attr (a one-part, offered as all objects of its class, first entry empty = none); PUSHBUTTON add:list or remove:list; EDIT @list.attr (a field of the selected row of a bound list). The generated program takes the key as its first argument, opens .ObjectStore, attaches the databases (oodBeside), makes one session, finds or news the object, fills the fields (oodValueOf, oodPartsOf), and on OK: getData, the fields into the object, session~commit, then the form event SAVED. A refusal (NOT NULL, foreign key, a refused map) is shown with errorDialog and the dialog stays open with the user's edits.",
+  "procedure": [
+    "Set the form's object, objectfile, objectkey and databases.",
+    "Bind controls; the designer refuses a malformed bind (err.bind.*) and lists problems that it does not refuse (no object, no databases, column count, a button or field naming a list that is not a bound list view, Add without row fields, no SINGLESEL).",
+    "Run: the page lays out data/ (the mapped package closure, data/People.cls, data/ent) and starts from the example database each time."
+  ],
+  "invariants": [
+    "A path (employer.name) is only for display: entry fields and check boxes bind one attribute.",
+    "Generated code does not depend on the order of combo box items: the chosen object is found by its label, and labels are made unique ((2), (3)).",
+    "A bound list's rows map 1:1 to the part's array: fixed rows are not generated for a bound list, and user code must not sort it.",
+    "Removing a NEW part drops it from the session; removing a CLEAN part follows the part's ownership (owned: deleted at commit; shared: only its link or reference goes).",
+    "The selected row's fields are saved into its object before the selection moves, before Add, and in validate before the commit; Remove clears the current row first so nothing is saved into the next one.",
+    "One commit is one database (a NoSQLServer transaction); a design whose object spans two databases is refused at commit.",
+    "The generated list methods are <list>_bound (SELECTCHANGED), <list>_load(i), <list>_save, <list>_add, <list>_remove and <button>_bound (CLICKED); a user's on_<list>_selectchanged or on_<button>_clicked is called from them by forward, so the event is connected once.",
+    "A row field is enabled only while a row is selected; Add puts the caret in the first row field."
+  ],
+  "topics": [
+    "binding",
+    "bind",
+    "OBJECT",
+    "DATABASES",
+    "SAVED",
+    "reference picker",
+    "list add remove"
+  ],
+  "related": [
+    "mapped-objects.annotations",
+    "mapped-objects.session-and-commit",
+    "oodialog-designer.database-lab"
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.9/src/OodDesigner.cls",
+      "sha256": "12c9da682f2c69824721588668bf616ff41f91504cb6d3ccb76dbb7ce3190867",
+      "claim": "The model, catalogue, generator and reader."
+    },
+    {
+      "artifact": "packages/oorexx_mapped_objects_v0.1/README.md",
+      "sha256": "40f0c641c9eef9664008b2ad86a9d2041964dc3382e8d2f471f49622a73e0bca",
+      "claim": "Mapped objects package README."
+    },
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.10/README.md",
+      "sha256": "57ef3ef6eac0aa51a5712989e97d01d2e29a094e856351c763735b617c51baca",
+      "claim": "Package README of v0.10 (as submitted)."
+    }
+  ]
+}

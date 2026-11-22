@@ -1,0 +1,34 @@
+{
+  "kind": "article",
+  "id": "oodialog-designer.object-editor",
+  "sphere": "oodialog-designer",
+  "version": "0.3",
+  "section": "integration",
+  "title": "The ooRexx Object Editor (same lane, folder object-editor/)",
+  "authority": "project-artifact",
+  "summary": "The Object Editor (v0.4, folder object-editor/ of branch oodialog-designer in animatedads/oorexx; architecture Tom Dyer, code Claude (Opus 5.5)) edits a class file found by reflection, not by scanning text: the file is loaded with .Package~new(name, lines) (prolog blanked), and classes, hierarchy, mixins, members, visibility, guard, abstract and what ::requires bring in are read back from the objects. Edits change directive segments (OxSource) and reload at once; one that does not compile is undone and refused with ooRexx's message. Completion asks the objects. It shares with the designer: OodNls/OodUi texts, the Libraries panel (LibraryProviders.cls), the plugins (Boston Crab, Ask…, Repository…), the Database Lab, and the Rexx Parser for OxDocs. Build: rexx tools/build.rex RUNTIME_DIR OODIALOG_WASM_DIST DESIGNER_SITE/examples (the designer's site must be built first). Tests: tests/t01_object.rex (73 checks, run in examples/ with the parser's parent on REXX_PATH), tests/t02_libraries.rex, tools/oxtest.py (12 scenarios; OOD_DESIGNER names the designer folder). v0.4 writes ooRexxDoc: Document... (beside Ask... for the open method, and in the class card) asks a code assistance plugin for a DOC proposal and applies it with OxWorkspace~setDoc(class, member, side, text): the doc-comment before the directive is replaced or put there after a blank line; an ordinary /* */ comment is left alone; an empty text removes it; anything that is not one doc-comment is refused (ox.err.notDoc). getDoc answers the comment as written; memberText the directive and body. The Libraries panel shows a library's ooRexxDoc (OxLibraryShelf~goodies carries summary and text; first sentence on hover, the whole comment on click). v0.5.0: the Libraries panel lists a library's files as checkboxes, not a radio group: the main one ticked at first; Install installs each ticked file (with what it requires) and shows what each offers under its name; Use calls onUse once per file, so a ::requires is added for each. A tick changed after an install turns Use off until the next install.",
+  "invariants": [
+    "Discovery is by reflection; never replace it with a text scanner (inherited members, mixin order and a library's methods need the objects).",
+    "Every edit compiles or is undone.",
+    "It has no Autobuild package of its own yet: it lives on the branch beside the designer.",
+    "A doc-comment lives at the end of the previous directive segment's body (OxSource); setDoc edits that body and reloads, like any structural edit.",
+    "The Libraries panel hands the page one onUse(requiresName, path) per installed file; a page's onUse must accept being called several times in a row."
+  ],
+  "topics": [
+    "Object Editor",
+    "OxWorkspace",
+    "reflection",
+    "OxDocs"
+  ],
+  "related": [
+    "oodialog-designer.overview-and-docs",
+    "oodialog-designer.plugins"
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/oorexx@2b90a01:object-editor/README.md",
+      "sha256": "f12f59959ebad28b83448b4586fdfd5c42926674886952895748f4feacbb4bfa",
+      "claim": "Object Editor README v0.5.0 (branch oodialog-designer)."
+    }
+  ]
+}

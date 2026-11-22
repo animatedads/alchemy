@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "oodialog-designer.database-lab",
+  "sphere": "oodialog-designer",
+  "version": "0.4",
+  "section": "integration",
+  "title": "Database Lab (ChatGPT) and the database graph",
+  "authority": "project-artifact",
+  "summary": "The Database Lab (packages/oorexx_oodialog_database_lab_v0.1.3 (v0.1.2 still accepted for viewing), code: ChatGPT; architecture: Tom Dyer) adds a database panel to the designer and the Object Editor (site/database-lab.js, database-lab.css, tools/database.rex, db.* keys in OodUi), in an ooRexx/WASM session of its own. Its Database graph tab (ChatGPT, branch feature/oodialog-database-graph-v2-20261115 at 183d8ac, merged into oodialog-designer as 47c1700 for designer v0.12) draws the open database from OodDatabaseLab~graphLines: TABLE, COLUMN and FK lines from the NoSQLServer catalogue, plus any OBJECT and PART lines in the textarea #dbObjectLines. Tables are boxes (PK, UNIQUE marked), foreign keys arrows with their ON DELETE action, a table of two foreign keys a junction, mapped objects outlines around their tables; a box selects its table. For a bound design the designer fills #dbObjectLines itself when the lab opens (Claude, src/OodBoundGraph.cls: the form's object class mapped over the form's databases in a session of its own with the design's data files); text the user typed there is kept. ChatGPT's own sphere, oodialog-database-lab (merged as PR #148), documents the lab's model and the graph contract. Since v0.14 (ChatGPT, PR #3, merged as 323b51c): a primary or unique key dragged onto a column of another table, or clicked then the column clicked, makes a real NoSQLServer foreign key (OodDatabaseLab~addRelationship, ON DELETE chosen beside the graph); a table is selected by its title, since column rows are link targets.",
+  "invariants": [
+    "The graph reads graphLines; it does not parse annotations or SQL itself (sphere mapped-objects, article mapped-objects.graph-lines, is the contract).",
+    "The Lab makes tables and columns; the mapped-object map only checks against them.",
+    "#dbObjectLines is the integration point between the lab (ChatGPT) and the designer (Claude): keep its id.",
+    "Open (REQ-00003757): edge labels overlap where edges meet one box, a part label sits under the junction box, an outline's title under another outline; a junction's title overlaps its row count. A drag from a column that is not a key does nothing and says nothing."
+  ],
+  "topics": [
+    "Database Lab",
+    "graph",
+    "ChatGPT lane"
+  ],
+  "related": [
+    "mapped-objects.graph-lines",
+    "oodialog-database-lab.graph-tab",
+    "oodialog-database-lab.start"
+  ],
+  "provenance": [
+    {
+      "artifact": "packages/oorexx_oodialog_database_lab_v0.1.3/README.md",
+      "sha256": "daf4f325aca134303c21d2b4c111c9fda3caa355041c9e1d9453d96ea0da4fd3",
+      "claim": "ChatGPT Database Lab package README v0.1.3."
+    },
+    {
+      "artifact": "packages/oorexx_oodialog_designer_v0.14/README.md",
+      "sha256": "00aa0ee980b3348681aa7ba8eab20bfb01a12f38f77a64b10f59fa0e6ea2b4dc",
+      "claim": "Package README of v0.14."
+    }
+  ]
+}

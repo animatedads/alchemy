@@ -1,0 +1,42 @@
+{
+ "kind": "article",
+ "id": "oodialog-designer.overview-and-docs",
+ "sphere": "oodialog-designer",
+ "version": "0.2",
+ "section": "architecture",
+ "title": "Overview first: the closed event tree, code marks, All code, ooRexxDoc",
+ "authority": "project-artifact",
+ "summary": "From v0.11 (designer) and v0.3 (Object Editor), after feedback from Rony G. Flatscher (start collapsed and drill down; DrDialog-like view of which parts have code; all the code in one place; ooRexxDoc as tooltips) and Josep Maria Blasco. Designer: the event tree starts closed; each control shows its count of coded events (\"3 ●\"); ▸ opens it; the selected control is open; Open all, Close all, With code only. On the form, a control with code carries a blue count mark (.dz-code); clicking it opens the control in the tree. All code (OodDesign~allCode) shows every event and method the user wrote, in form order, each under a heading (\"@@\" TAB kind TAB control TAB event TAB method TAB thread, then the code); a heading opens that piece. Object Editor: inherited members are grouped by defining class, Object and Class closed; doc-comments are read by OxDocs.cls with the Rexx Parser (option DocComments All): the summary is the tooltip, the whole text the doc box. v0.15/v0.4: Rony's 'AI can write ooRexxDoc' is done as the DOC kind of code assistance, applied by the Object Editor's Document...; library docs are shown in the Libraries panel.",
+ "invariants": [
+  "The page counts and draws; ooRexx answers the code (allCode) and the docs (OxWorkspace~docsOf, OxDocs~docsOf): no Rexx is parsed in JavaScript.",
+  "A doc-comment belongs to the directive right after it, with only blanks between. Kinds: CLASS, METHOD, ATTRIBUTE, CONSTANT, ROUTINE; a class-side member's name ends \" class\".",
+  "OxDocs and the parser load on first use (loadPackage), not with the editor.",
+  "The Object Editor loads a file with its prolog blanked (so the prolog does not run); docs for the file's own classes are read from the text as written, or a class's doc-comment in the prolog is lost.",
+  "Browser tests that pick an event open its control first (dztest pick_event); tests that read a control's text read its body (> div:first-child), not the mark."
+ ],
+ "topics": [
+  "overview",
+  "event tree",
+  "All code",
+  "code marks",
+  "ooRexxDoc",
+  "OxDocs",
+  "Rexx Parser doc-comments"
+ ],
+ "related": [
+  "oodialog-designer.object-editor",
+  "oodialog-designer.qualification"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_oodialog_designer_v0.11/README.md",
+   "sha256": "842b4ae4b11e1fee82582c84f2b2212f42e3f1af863e759e54c7fab984662175",
+   "claim": "Package README of v0.11."
+  },
+  {
+   "artifact": "animatedads/oorexx@b6a6287:object-editor/README.md",
+   "sha256": "1b62ffddab59c73722acb5df605fa5114fe7f4aed482314ba75aaf9b63efbebc",
+   "claim": "Object Editor README v0.3 (branch oodialog-designer)."
+  }
+ ]
+}
