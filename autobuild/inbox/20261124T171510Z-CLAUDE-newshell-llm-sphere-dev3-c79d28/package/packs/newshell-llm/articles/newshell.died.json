@@ -1,0 +1,36 @@
+{
+ "kind": "article",
+ "id": "newshell.died",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev3",
+ "title": "A step that died",
+ "section": "recovery",
+ "summary": "A program killed by a signal is DIED, not FAILED: killedBy n, exit 128+n, and the plan stops whatever onFail says. The report the LLM is sent: History, Job, State, Stage reached, each step PASS/FAIL/DIED/NOT RUN, the error point (first error-pattern line of stderr, else the end of stderr, else the end of stdout: what it was doing when it died) with 3 lines before and 6 after, and relative paths of the full logs for ws~tail. Live: killall -9 make mid-compile gave \"make was killed by signal 9 (SIGKILL)\", last stdout line sleep 3.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "The LLM is sent the error point and a trace, never the full output",
+  "A died step stops the plan"
+ ],
+ "procedure": [
+  "When stderr is empty, look at the end of stdout"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev5/src/ShellJobs.cls",
+   "sha256": "6b6d89f0e1ecc1501c3f2c2b1d04fb61e6fd9b8c03bfb5aa84ecfea3f50af5f9",
+   "claim": "RunResult killedBy/died, StepOutcome errorReport, ErrorPoint"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev5/tests/test_died.rex",
+   "sha256": "056509119fce5b5d0c90f7105b8077c1f9fa194d53d91ac430983d24ff339455",
+   "claim": "kill mid-compile, DIED, SIGKILL, sleep 3 in the report"
+  }
+ ],
+ "related": [
+  "newshell.followups"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}
