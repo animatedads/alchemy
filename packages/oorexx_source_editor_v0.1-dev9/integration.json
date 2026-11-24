@@ -1,0 +1,18 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {"name": "oorexx_source_editor", "version": "0.1-dev9", "kind": "oorexx"},
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "source-editor-suites",
+      "argv": ["bash", "tests/run_tests.sh"],
+      "timeout_seconds": 600,
+      "environment": {
+        "set": {
+          "ATOMIC_FILE_DIR": "${REPO_ROOT}/packages/oorexx_atomic_file_v0.1-dev1"
+        }
+      }
+    }
+  ],
+  "publish": {"tree": {"source": ".", "path": "packages/oorexx_source_editor_v0.1-dev9"}}
+}

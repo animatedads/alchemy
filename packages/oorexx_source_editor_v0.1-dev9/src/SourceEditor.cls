@@ -1,0 +1,927 @@
+/* ooRexx Source / Code / Class Editor v0.1-dev9
+ * Language-neutral editing core with first-tier ooRexx, C, C++, JSON and Python profiles.
+ * The implementation language is ooRexx; source semantics stay language-neutral.
+ */
+
+::class SourceLanguageRegistry public
+::method init
+  expose extensions
+  extensions = .directory~new
+  do e over .array~of('.rex','.cls') ; extensions[e]='oorexx'; end
+  do e over .array~of('.c') ; extensions[e]='c'; end
+  do e over .array~of('.cc','.cpp','.cxx','.h','.hh','.hpp','.hxx','.ipp','.tpp','.inl','.inc') ; extensions[e]='cpp'; end
+  do e over .array~of('.json','.jsonc') ; extensions[e]='json'; end
+  do e over .array~of('.py','.pyi') ; extensions[e]='python'; end
+  do e over .array~of('.md','.txt','.cfg','.conf','.ini') ; extensions[e]='text'; end
+
+::method languageFor
+  expose extensions
+  use arg path, explicit=''
+  if explicit <> '' then return explicit~lower
+  name = path~string
+  base = .SourceEditorUtil~baseName(name)
+  if base~caselessEquals('Makefile') then return 'make'
+  if base~caselessEquals('CMakeLists.txt') then return 'cmake'
+  dot = name~lastPos('.')
+  if dot = 0 then return 'text'
+  ext = name~substr(dot)~lower
+  if extensions~hasIndex(ext) then return extensions[ext]
+  return 'text'
+
+::class SourceSymbol public
+::method init
+  expose kind name startLine endLine owner detail
+  use arg kind, name, startLine, endLine=0, owner='', detail=''
+  self~kind=kind; self~name=name; self~startLine=startLine; self~endLine=endLine; self~owner=owner; self~detail=detail
+::attribute kind
+::attribute name
+::attribute startLine
+::attribute endLine
+::attribute owner
+::attribute detail
+::method asString
+  expose kind name startLine endLine owner
+  s=kind name 'line' startLine
+  if endLine>0 then s=s||'..'||endLine
+  if owner<>'' then s=s 'owner='owner
+  return s
+
+::class SourceDocument public
+::method init
+  expose path language registry originalText lines newline trailingNewline
+  use arg path, language=''
+  registry=.SourceLanguageRegistry~new
+  self~path=path~string
+  self~language=registry~languageFor(self~path,language)
+  originalText=.SourceEditorUtil~readAll(self~path)
+  if originalText~pos(d2c(13)||d2c(10))>0 then newline=d2c(13)||d2c(10)
+  else newline=d2c(10)
+  trailingNewline=(originalText~right(newline~length)=newline)
+  normalized=originalText~changeStr(d2c(13)||d2c(10),d2c(10))~changeStr(d2c(13),d2c(10))
+  lines=normalized~makeArray(d2c(10))
+  if lines=.nil then lines=.array~new
+::attribute path
+::attribute language
+
+::method lineCount
+  expose lines
+  return lines~items
+
+::method line
+  expose lines
+  use arg n
+  if n<1 | n>lines~items then raise syntax 88.900 array('line out of range:' n)
+  return lines[n]
+
+::method text
+  expose lines newline trailingNewline
+  out=''
+  do i=1 to lines~items
+    if i>1 then out=out||newline
+    out=out||lines[i]
+  end
+  if trailingNewline & lines~items>0 then out=out||newline
+  return out
+
+::method dirty
+  expose originalText
+  return self~text <> originalText
+
+::method replaceLine
+  expose lines
+  use arg n, value
+  if n<1 | n>lines~items then raise syntax 88.900 array('line out of range:' n)
+  if value~pos(d2c(10))>0 | value~pos(d2c(13))>0 then raise syntax 88.900 array('replaceLine accepts exactly one logical line')
+  lines[n]=value
+  return self
+
+::method insertBefore
+  expose lines
+  use arg n, value
+  if n<1 | n>lines~items+1 then raise syntax 88.900 array('insert position out of range:' n)
+  addition=.SourceEditorUtil~textLines(value)
+  lines=.SourceEditorUtil~splice(lines,n,n-1,addition)
+  return self
+
+::method insertAfter
+  use arg n, value
+  return self~insertBefore(n+1,value)
+
+::method deleteRange
+  expose lines
+  use arg first,last=.nil
+  if last=.nil then last=first
+  if first<1 | last<first | last>lines~items then raise syntax 88.900 array('delete range out of range:' first last)
+  lines=.SourceEditorUtil~splice(lines,first,last,.array~new)
+  return self
+
+::method replaceRange
+  expose lines
+  use arg first,last,value
+  if first<1 | last<first | last>lines~items then raise syntax 88.900 array('replace range out of range:' first last)
+  lines=.SourceEditorUtil~splice(lines,first,last,.SourceEditorUtil~textLines(value))
+  return self
+
+::method symbols
+  expose language lines
+  scanner=.SourceScannerFactory~new~scannerFor(language)
+  return scanner~symbols(lines)
+
+::method findSymbol
+  use arg name, kind=''
+  found=.array~new
+  do s over self~symbols
+    if s~name~caselessEquals(name) then do
+      if kind='' | s~kind~caselessEquals(kind) then found~append(s)
+    end
+  end
+  if found~items=0 then raise syntax 88.900 array('symbol not found:' name)
+  if found~items>1 then raise syntax 88.900 array('symbol is ambiguous:' name 'matches' found~items)
+  return found[1]
+
+::method replaceSymbol
+  use arg name, replacement, kind=''
+  s=self~findSymbol(name,kind)
+  if s~endLine=0 then raise syntax 88.900 array('symbol has no bounded editable range:' name)
+  self~replaceRange(s~startLine,s~endLine,replacement)
+  return self
+
+::method insertIntoSymbol
+  expose lines language
+  use arg name, text, kind=''
+  s=self~findSymbol(name,kind)
+  if s~endLine=0 then raise syntax 88.900 array('symbol has no bounded editable range:' name)
+  if language='cpp' | language='c' then do
+    /* Insert immediately before the closing brace line of a bounded C/C++ scope. */
+    self~insertBefore(s~endLine,text)
+  end
+  else if language='oorexx' then do
+    self~insertBefore(s~endLine+1,text)
+  end
+  else self~insertBefore(s~endLine,text)
+  return self
+
+::method validate
+  expose language
+  if language='json' then return .JsonSourceValidator~new~validate(self~text)
+  /* dev9: ooRexx is compiled (SourceSyntaxCheck); C/C++/Python stay lexical only. */
+  if language='oorexx' then return self~check~ok
+  return .true
+
+/* dev9 (Tom Dyer: read, line edit / amend, lint and check; code Claude (Opus 5.5)) */
+::method amend
+  /* Replace lines first..last with text (several lines when it holds line ends).
+     last = first - 1 inserts before first without replacing anything.
+     Returns the lines that were replaced, so the caller can show what changed. */
+  expose lines
+  use strict arg first, last, value
+  if first<1 | first>lines~items+1 | last<first-1 | last>lines~items then raise syntax 88.900 array('amend range out of range:' first last)
+  old=.array~new
+  do i=first to last; old~append(lines[i]); end
+  if last=first-1 then do
+    if first>lines~items then do x over .SourceEditorUtil~textLines(value); lines~append(x); end
+    else self~insertBefore(first,value)
+  end
+  else self~replaceRange(first,last,value)
+  return old
+
+::method lines
+  expose lines
+  return lines~copy
+
+::method lint
+  /* ooRexx pitfalls P1-P4, P7 and P9 as SourceLintFinding objects; other languages: none. */
+  expose language lines
+  if language<>'oorexx' then return .array~new
+  return .SourceLinter~new~lint(lines)
+
+::method check
+  /* Does the ooRexx source compile? A SourceCheckResult: ok, code, line, message,
+     dependencies. ::requires are looked for beside the file and on REXX_PATH. */
+  expose language lines path
+  if language<>'oorexx' then return .SourceCheckResult~new(.true)
+  dirs=.array~of(.File~new(path)~absoluteFile~parent)
+  return .SourceSyntaxCheck~new~check(lines,dirs)
+
+::method saveChecked
+  /* save, but never let an edit break an ooRexx file that compiled when it was loaded. */
+  expose language originalText path
+  use arg keepBackup=.true
+  if language='oorexx' then do
+    now=self~check
+    if \now~ok then do
+      before=.SourceSyntaxCheck~new~check(.SourceEditorUtil~textLines(originalText),.array~of(.File~new(path)~absoluteFile~parent))
+      if before~ok then raise syntax 88.900 array('edit refused: the file compiled before this edit and now fails:' now~string)
+    end
+  end
+  return self~save(keepBackup)
+
+::method save
+  expose path originalText lastPublicationResult lastBackupResult
+  use arg keepBackup=.true
+  current=.SourceEditorUtil~readAll(path)
+  if current<>originalText then raise syntax 88.900 array('source generation changed since load; refusing overwrite:' path)
+  candidate=self~text
+  options=.AtomicFileOptions~new
+  options~durability='FULL'
+  options~noFollow=.true
+  options~preserveMode=.true
+  options~backupPolicy='NONE'
+  atomic=.AtomicFile~new
+
+  lastBackupResult=.nil
+  if keepBackup then do
+    bak=path||'.newshell-bak'
+    lastBackupResult=atomic~replace(bak,current,options)
+    if \lastBackupResult~ok then
+      raise syntax 88.900 array('source backup publication failed:' lastBackupResult~errorStage lastBackupResult~errorMessage)
+  end
+
+  lastPublicationResult=atomic~replace(path,candidate,options)
+  if lastPublicationResult~published then originalText=candidate
+  if \lastPublicationResult~ok then
+    raise syntax 88.900 array('source publication failed:' lastPublicationResult~errorStage lastPublicationResult~errorMessage)
+  originalText=candidate
+  return path
+
+::attribute lastPublicationResult get
+::attribute lastBackupResult get
+
+::method find
+  use arg needle, mode='text', caseMode='sensitive'
+  return .SourceFinder~new(self)~find(needle,mode,caseMode)
+::method grep
+  use arg pattern, mode='text', caseMode='sensitive'
+  return .SourceFinder~new(self)~grep(pattern,mode,caseMode)
+::method references
+  use arg name, caseMode='sensitive'
+  return .SourceFinder~new(self)~references(name,caseMode)
+::class SourceMatch public
+::method init
+  use arg path,lineNumber,column,text,kind='text',symbol='',role='match'
+  self~path=path; self~lineNumber=lineNumber; self~column=column; self~text=text; self~kind=kind; self~symbol=symbol; self~role=role
+::attribute path
+::attribute lineNumber
+::attribute column
+::attribute text
+::attribute kind
+::attribute symbol
+::attribute role
+::method asString
+  expose path lineNumber column text kind symbol role
+  suffix=''
+  if symbol<>'' then suffix=suffix||' symbol='symbol
+  if role<>'match' then suffix=suffix||' role='role
+  return path':'lineNumber':'column' ['kind'] 'text||suffix
+
+::class SourceFinder public
+::method init
+  use arg document
+  self~document=document
+::attribute document
+
+::method find
+  expose document
+  use arg needle, mode='text', caseMode='sensitive'
+  if needle='' then raise syntax 88.900 array('find needle must not be empty')
+  mode=mode~lower; caseMode=caseMode~lower
+  if mode<>'text' & mode<>'code' then raise syntax 88.900 array('find mode must be text or code:' mode)
+  if caseMode<>'sensitive' & caseMode<>'insensitive' then raise syntax 88.900 array('case mode must be sensitive or insensitive:' caseMode)
+  lines=.array~new
+  do i=1 to document~lineCount; lines~append(document~line(i)); end
+  if mode='code' then hay=.SourceEditorUtil~codeProjection(lines,document~language); else hay=lines
+  syms=document~symbols
+  out=.array~new
+  do i=1 to hay~items
+    search=hay[i]; target=needle
+    if caseMode='insensitive' then do; search=search~lower; target=target~lower; end
+    start=1
+    do while start<=search~length+1
+      rel=search~substr(start)~pos(target)
+      if rel=0 then leave
+      col=start+rel-1
+      sym=self~symbolAt(syms,i)
+      out~append(.SourceMatch~new(document~path,i,col,document~line(i),mode,sym))
+      start=col+max(1,target~length)
+    end
+  end
+  return out
+
+::method grep
+  expose document
+  use arg pattern, mode='text', caseMode='sensitive'
+  if pattern='' then raise syntax 88.900 array('grep pattern must not be empty')
+  mode=mode~lower; caseMode=caseMode~lower
+  if mode<>'text' & mode<>'code' then raise syntax 88.900 array('grep mode must be text or code:' mode)
+  if caseMode<>'sensitive' & caseMode<>'insensitive' then raise syntax 88.900 array('case mode must be sensitive or insensitive:' caseMode)
+  lines=.array~new
+  do i=1 to document~lineCount; lines~append(document~line(i)); end
+  if mode='code' then hay=.SourceEditorUtil~codeProjection(lines,document~language); else hay=lines
+  syms=document~symbols
+  out=.array~new
+  regexPattern=pattern
+  if caseMode='insensitive' then regexPattern=regexPattern~lower
+  signal on syntax name badPattern
+  re=.RegularExpression~new(regexPattern)
+  signal off syntax
+  do i=1 to hay~items
+    search=hay[i]
+    if caseMode='insensitive' then search=search~lower
+    start=1
+    do while start<=search~length+1
+      rel=re~pos(search~substr(start))
+      if rel=0 then leave
+      col=start+rel-1
+      matchEnd=start+re~position-1
+      sym=self~symbolAt(syms,i)
+      out~append(.SourceMatch~new(document~path,i,col,document~line(i),mode,sym))
+      if matchEnd<col then start=col+1
+      else start=matchEnd+1
+    end
+  end
+  return out
+badPattern:
+  raise syntax 88.900 array('invalid regular expression:' pattern condition('D'))
+
+::method references
+  expose document
+  use arg name, caseMode='sensitive'
+  if name='' then raise syntax 88.900 array('reference name must not be empty')
+  matches=self~find(name,'code',caseMode)
+  syms=document~symbols
+  do m over matches
+    role='reference'
+    do s over syms
+      sameName=s~name=name
+      if caseMode~lower='insensitive' then sameName=s~name~caselessEquals(name)
+      if sameName & m~lineNumber=s~startLine then do
+        role='declaration'
+        leave
+      end
+    end
+    m~role=role
+  end
+  return matches
+
+::method symbolAt private
+  use arg syms,lineNumber
+  do s over syms
+    if lineNumber>=s~startLine & (s~endLine=0 | lineNumber<=s~endLine) then return s~name
+  end
+  return ''
+::class SourceFileMatch public
+::method init
+  use arg path, language='text'
+  self~path=path
+  self~language=language
+::attribute path
+::attribute language
+::method asString
+  expose path language
+  return path 'language='language
+
+::class SourceTreeFinder public
+::method init
+  use arg root='.'
+  if RxFuncQuery('SysFileTree') then do
+    call RxFuncAdd 'SysLoadFuncs','rexxutil','SysLoadFuncs'
+    call SysLoadFuncs
+  end
+  self~root=root~string
+  self~registry=.SourceLanguageRegistry~new
+::attribute root
+::attribute registry
+
+::method files
+  expose root registry
+  use arg filespec='*', language=''
+  spec=root
+  if spec~right(1)<>'/' then spec=spec||'/'
+  spec=spec||filespec
+  found=.array~new
+  call SysFileTree spec, 'tree.', 'FSO'
+  do i=1 to tree.0
+    lang=registry~languageFor(tree.i)
+    if language='' | lang~caselessEquals(language) then found~append(.SourceFileMatch~new(tree.i,lang))
+  end
+  return found
+
+::method grep
+  expose registry
+  use arg pattern, filespec='*', mode='code', caseMode='sensitive', language=''
+  results=.array~new
+  do f over self~files(filespec,language)
+    lang=f~language
+    if mode='code' & (lang='text' | lang='make' | lang='cmake') then iterate
+    doc=.SourceDocument~new(f~path,lang)
+    matches=doc~grep(pattern,mode,caseMode)
+    do m over matches; results~append(m); end
+  end
+  return results
+
+::method references
+  use arg name, filespec='*', caseMode='sensitive', language=''
+  results=.array~new
+  do f over self~files(filespec,language)
+    lang=f~language
+    if lang='text' | lang='make' | lang='cmake' then iterate
+    doc=.SourceDocument~new(f~path,lang)
+    matches=doc~references(name,caseMode)
+    do m over matches; results~append(m); end
+  end
+  return results
+
+::class SourceCompletionCandidate public
+::method init
+  use arg label, kind='symbol', detail='', path='', lineNumber=0, insertText=''
+  self~label=label
+  self~kind=kind
+  self~detail=detail
+  self~path=path
+  self~lineNumber=lineNumber
+  if insertText='' then insertText=label
+  self~insertText=insertText
+::attribute label
+::attribute kind
+::attribute detail
+::attribute path
+::attribute lineNumber
+::attribute insertText
+::method asString
+  expose label kind detail path lineNumber
+  s=label 'kind='kind
+  if detail<>'' then s=s 'detail='detail
+  if path<>'' then s=s 'path='path
+  if lineNumber>0 then s=s 'line='lineNumber
+  return s
+
+::class SourceCompletionProvider public
+::method completeDocument
+  use arg document, prefix='', kind=''
+  prefix=prefix~string
+  kind=kind~string~lower
+  out=.array~new
+  do s over document~symbols
+    if prefix<>'' then do
+      if s~name~length<prefix~length then iterate
+      if \s~name~left(prefix~length)~caselessEquals(prefix) then iterate
+    end
+    if kind<>'' & \s~kind~caselessEquals(kind) then iterate
+    detail=''
+    if s~owner<>'' then detail='owner='s~owner
+    out~append(.SourceCompletionCandidate~new(s~name,s~kind,detail,document~path,s~startLine,s~name))
+  end
+  return self~sorted(out)
+
+::method completeTree
+  use arg root='.', prefix='', filespec='*', language=''
+  finder=.SourceTreeFinder~new(root)
+  out=.array~new
+  do f over finder~files(filespec,language)
+    name=.SourceEditorUtil~baseName(f~path)
+    if prefix<>'' then do
+      if name~length<prefix~length then iterate
+      if \name~left(prefix~length)~caselessEquals(prefix) then iterate
+    end
+    out~append(.SourceCompletionCandidate~new(name,'file','language='f~language,f~path,0,f~path))
+  end
+  return self~sorted(out)
+
+::method sorted private
+  use arg input
+  work=.array~new
+  do item over input; work~append(item); end
+  /* deterministic insertion sort: visible completion order must never depend on Directory order. */
+  do i=2 to work~items
+    item=work[i]
+    j=i-1
+    do while j>=1
+      left=work[j]~label~lower
+      right=item~label~lower
+      if left<right | left=right then leave
+      work[j+1]=work[j]
+      j=j-1
+    end
+    work[j+1]=item
+  end
+  return work
+
+::class SourceEditorCliSearchArgs public
+::method init
+  -- dev9: the attributes are read-only, so init sets the variables itself
+  expose expression mode caseMode
+  use arg expression, mode='text', caseMode='sensitive'
+::attribute expression get
+::attribute mode get
+::attribute caseMode get
+
+::method parse class
+  use arg argv, startIndex=3, defaultMode='text', defaultCase='sensitive'
+  mode=defaultMode
+  caseMode=defaultCase
+  endIndex=argv~items
+  explicit=.false
+
+  do i=startIndex to endIndex
+    if argv[i]='--mode' | argv[i]='--case' then explicit=.true
+  end
+
+  if \explicit then do
+    if endIndex>=startIndex+1 then do
+      last=argv[endIndex]~lower
+      if last='sensitive' | last='insensitive' then do
+        caseMode=last
+        endIndex=endIndex-1
+      end
+    end
+    if endIndex>=startIndex+1 then do
+      last=argv[endIndex]~lower
+      if last='text' | last='code' then do
+        mode=last
+        endIndex=endIndex-1
+      end
+    end
+  end
+
+  words=.array~new
+  i=startIndex
+  do while i<=endIndex
+    token=argv[i]
+    if token='--mode' then do
+      i=i+1
+      if i>endIndex then raise syntax 88.900 array('--mode requires text or code')
+      mode=argv[i]~lower
+    end
+    else if token='--case' then do
+      i=i+1
+      if i>endIndex then raise syntax 88.900 array('--case requires sensitive or insensitive')
+      caseMode=argv[i]~lower
+    end
+    else words~append(token)
+    i=i+1
+  end
+
+  if mode<>'text' & mode<>'code' then raise syntax 88.900 array('invalid search mode:' mode)
+  if caseMode<>'sensitive' & caseMode<>'insensitive' then raise syntax 88.900 array('invalid search case:' caseMode)
+  if words~items=0 then raise syntax 88.900 array('search expression is empty')
+
+  expression=''
+  do word over words
+    if expression<>'' then expression=expression||' '
+    expression=expression||word
+  end
+  return self~new(expression,mode,caseMode)
+
+::class SourceScannerFactory public
+::method scannerFor
+  use arg language
+  select
+    when language='oorexx' then return .RexxSourceScanner~new
+    when language='c' then return .CppSourceScanner~new('c')
+    when language='cpp' then return .CppSourceScanner~new('cpp')
+    when language='python' then return .PythonSourceScanner~new
+    when language='json' then return .JsonSourceScanner~new
+    otherwise return .TextSourceScanner~new
+  end
+
+::class TextSourceScanner public
+::method symbols
+  use arg lines
+  return .array~new
+
+::class RexxSourceScanner subclass TextSourceScanner public
+::method symbols
+  use arg lines
+  out=.array~new
+  currentClass=''
+  currentMethod=.nil
+  do i=1 to lines~items
+    t=lines[i]~strip
+    u=t~upper
+    if u~left(8)='::CLASS ' then do
+      if currentMethod<>.nil then do; currentMethod~endLine=i-1; currentMethod=.nil; end
+      words=t~words
+      if words>=2 then do
+        currentClass=t~word(2)
+        out~append(.SourceSymbol~new('class',currentClass,i,0))
+      end
+    end
+    else if u~left(9)='::METHOD ' then do
+      if currentMethod<>.nil then currentMethod~endLine=i-1
+      name=t~word(2)
+      currentMethod=.SourceSymbol~new('method',name,i,0,currentClass)
+      out~append(currentMethod)
+    end
+    else if u~left(11)='::ATTRIBUTE ' then do
+      name=t~word(2); out~append(.SourceSymbol~new('attribute',name,i,i,currentClass))
+    end
+    else if u~left(10)='::ROUTINE ' then do
+      if currentMethod<>.nil then currentMethod~endLine=i-1
+      name=t~word(2); currentMethod=.SourceSymbol~new('routine',name,i,0,'')
+      out~append(currentMethod)
+    end
+    else if u~left(11)='::REQUIRES ' then out~append(.SourceSymbol~new('requires',t~substr(12)~strip,i,i))
+  end
+  if currentMethod<>.nil then currentMethod~endLine=lines~items
+  /* A class scope is the remainder of the package or until the next class. */
+  do j=1 to out~items
+    if out[j]~kind='class' & out[j]~endLine=0 then do
+      stop=lines~items
+      do k=j+1 to out~items
+        if out[k]~kind='class' then do; stop=out[k]~startLine-1; leave; end
+      end
+      out[j]~endLine=stop
+    end
+  end
+  return out
+
+::class PythonSourceScanner subclass TextSourceScanner public
+::method symbols
+  use arg lines
+  out=.array~new
+  do i=1 to lines~items
+    t=lines[i]~strip
+    if t~left(6)='class ' then do
+      p=t~pos('('); c=t~pos(':')
+      if p=0 | (c>0 & c<p) then p=c
+      if p=0 then p=t~length+1
+      name=t~substr(7,p-7)~strip
+      out~append(.SourceSymbol~new('class',name,i,.SourceEditorUtil~pythonBlockEnd(lines,i)))
+    end
+    else if t~left(4)='def ' then do
+      p=t~pos('(')
+      if p>4 then do
+        name=t~substr(5,p-5)~strip
+        out~append(.SourceSymbol~new('function',name,i,.SourceEditorUtil~pythonBlockEnd(lines,i)))
+      end
+    end
+  end
+  return out
+
+::class CppSourceScanner subclass TextSourceScanner public
+::method init
+  expose language
+  use arg language='cpp'
+  self~language=language
+::attribute language
+
+::method symbols
+  expose language
+  use arg lines
+  projected=.SourceEditorUtil~codeProjection(lines,language)
+  out=.array~new
+  do i=1 to projected~items
+    t=projected[i]~strip
+    if t='' then iterate
+    if t~left(1)='#' then do
+      directive=t~word(1)~lower
+      if directive='#define' & t~words>=2 then out~append(.SourceSymbol~new('macro',t~word(2),i,i))
+      else if directive='#include' & t~words>=2 then out~append(.SourceSymbol~new('include',t~subword(2),i,i))
+      iterate
+    end
+    first=t~word(1)~lower
+    if first='class' | first='struct' | first='enum' | first='namespace' then do
+      if t~words>=2 then do
+        name=t~word(2)
+        do while name~right(1)='{' | name~right(1)=':' | name~right(1)=';'; name=name~left(name~length-1); end
+        fin=.SourceEditorUtil~braceBlockEnd(projected,i)
+        kind=first
+        out~append(.SourceSymbol~new(kind,name,i,fin))
+      end
+      iterate
+    end
+    open=t~pos('(')
+    if open>1 then do
+      before=t~left(open-1)~strip
+      candidate=before~word(before~words)
+      low=candidate~lower
+      if low<>'' & low<> 'if' & low<>'for' & low<>'while' & low<>'switch' & low<>'catch' & low<>'sizeof' then do
+        /* Trim pointer/reference markers; preserve namespace and destructor spelling. */
+        do while candidate~left(1)='*' | candidate~left(1)='&'; candidate=candidate~substr(2); end
+        if candidate<>'' then do
+          fin=.SourceEditorUtil~braceBlockEnd(projected,i)
+          if fin>0 then out~append(.SourceSymbol~new('function',candidate,i,fin))
+        end
+      end
+    end
+  end
+  return out
+
+::class JsonSourceScanner subclass TextSourceScanner public
+::method symbols
+  use arg lines
+  out=.array~new
+  /* Lightweight key projection. Exact object semantics/validation come from json.cls. */
+  do i=1 to lines~items
+    t=lines[i]~strip
+    if t~left(1)='"' then do
+      p=t~pos('"',2)
+      if p>2 then do
+        rest=t~substr(p+1)~strip
+        if rest~left(1)=':' then out~append(.SourceSymbol~new('json-key',t~substr(2,p-2),i,i))
+      end
+    end
+  end
+  return out
+
+::class JsonSourceValidator public
+::method validate
+  use arg text
+  signal on syntax name badJson
+  v=.json~fromJSON(text)
+  return .true
+badJson:
+  raise syntax 88.900 array('invalid JSON source')
+
+::class RexxClassEditor public
+::method init
+  expose document searchPaths
+  use arg path, searchPaths=.nil
+  if searchPaths=.nil then searchPaths=.array~new
+  document=.SourceDocument~new(path,'oorexx')
+  self~searchPaths=searchPaths
+::attribute document
+::attribute searchPaths
+
+::method addRequires
+  expose document searchPaths
+  use arg package
+  resolved=.SourceEditorUtil~resolvePackage(package,searchPaths)
+  /* Do not emit ::requires until the target is demonstrably resolvable. */
+  do s over document~symbols
+    if s~kind='requires' then do
+      existing=s~name~strip('B','"')~strip('B',"'")
+      if existing~caselessEquals(package) then return resolved
+    end
+  end
+  document~insertBefore(1,'::requires "'||package||'"')
+  return resolved
+
+::method addMethod
+  expose document
+  use arg className, methodName, body='return'
+  c=document~findSymbol(className,'class')
+  methodText='::method '||methodName||d2c(10)||body
+  /* Append inside the class region, after existing declarations. */
+  document~insertBefore(c~endLine+1,methodText||d2c(10))
+  return document
+
+::class CppClassEditor public
+::method init
+  expose document
+  use arg path
+  document=.SourceDocument~new(path,'cpp')
+::attribute document
+
+::method addInclude
+  expose document
+  use arg includeText
+  needle='#include '||includeText
+  do i=1 to document~lineCount
+    if document~line(i)~strip~caselessEquals(needle) then return document
+  end
+  pos=1
+  do i=1 to document~lineCount
+    t=document~line(i)~strip
+    if t~left(8)='#include' then pos=i+1
+  end
+  document~insertBefore(pos,needle)
+  return document
+
+::method addMember
+  expose document
+  use arg className, declaration
+  c=document~findSymbol(className,'class')
+  document~insertBefore(c~endLine,'    '||declaration)
+  return document
+
+::class SourceEditorUtil public
+::method baseName class
+  use arg path
+  p1=path~lastPos('/'); p2=path~lastPos('\\'); p=p1
+  if p2>p then p=p2
+  if p=0 then return path
+  return path~substr(p+1)
+
+::method readAll class
+  use arg path
+  state=stream(path,'c','open read')
+  if state~left(6)<>'READY:' then raise syntax 88.900 array('cannot open source for read:' path state)
+  n=chars(path)
+  if n>0 then data=charin(path,1,n); else data=''
+  call stream path,'c','close'
+  return data
+
+::method writeAll class
+  use arg path,data
+  state=stream(path,'c','open write replace')
+  if state~left(6)<>'READY:' then raise syntax 88.900 array('cannot open source for write:' path state)
+  if data<>'' then call charout path,data
+  call stream path,'c','close'
+  return path
+
+::method textLines class
+  use arg text
+  n=text~changeStr(d2c(13)||d2c(10),d2c(10))~changeStr(d2c(13),d2c(10))
+  a=n~makeArray(d2c(10))
+  if a=.nil then a=.array~new
+  return a
+
+::method splice class
+  use arg source,first,last,replacement
+  out=.array~new
+  do i=1 to first-1; out~append(source[i]); end
+  do x over replacement; out~append(x); end
+  do i=last+1 to source~items; out~append(source[i]); end
+  return out
+
+::method codeProjection class
+  /* Each line with comments and string contents blanked, columns kept.
+     dev9: ooRexx has its own rules (-- line comments, nested block comments,
+     a doubled quote inside a string, no backslash escapes); the variable is
+     no longer named RESULT (ooRexx sets RESULT itself). */
+  use arg lines,language
+  rexx=(language='oorexx')
+  out=.array~new; depth=0
+  do line over lines
+    i=1; projected=''; quote=''
+    do while i<=line~length
+      ch=line~substr(i,1)
+      if i<line~length then pair=line~substr(i,2); else pair=ch
+      if depth>0 then do
+        if pair='*/' then do; depth=depth-1; projected=projected||'  '; i=i+2; iterate; end
+        if rexx & pair='/*' then do; depth=depth+1; projected=projected||'  '; i=i+2; iterate; end
+        projected=projected||' '; i=i+1; iterate
+      end
+      if quote<>'' then do
+        projected=projected||ch
+        if \rexx & ch='\' & i<line~length then do; projected=projected||line~substr(i+1,1); i=i+2; iterate; end
+        if ch=quote then quote=''
+        i=i+1; iterate
+      end
+      if ch='"' | ch="'" then do; quote=ch; projected=projected||ch; i=i+1; iterate; end
+      if pair='/*' then do; depth=depth+1; projected=projected||'  '; i=i+2; iterate; end
+      if \rexx & pair='//' then do; projected=projected||copies(' ',line~length-i+1); leave; end
+      if rexx & pair='--' then do; projected=projected||copies(' ',line~length-i+1); leave; end
+      projected=projected||ch; i=i+1
+    end
+    out~append(projected)
+  end
+  return out
+
+::method braceBlockEnd class
+  use arg lines,start
+  depth=0; seen=.false
+  do i=start to lines~items
+    line=lines[i]
+    do j=1 to line~length
+      ch=line~substr(j,1)
+      if ch='{' then do; depth=depth+1; seen=.true; end
+      else if ch='}' & seen then do
+        depth=depth-1
+        if depth=0 then return i
+      end
+    end
+  end
+  return 0
+
+::method pythonBlockEnd class
+  use arg lines,start
+  base=.SourceEditorUtil~indentOf(lines[start])
+  stop=lines~items
+  do i=start+1 to lines~items
+    t=lines[i]
+    if t~strip='' then iterate
+    if .SourceEditorUtil~indentOf(t)<=base then return i-1
+  end
+  return stop
+
+::method indentOf class
+  use arg line
+  n=0
+  do i=1 to line~length
+    ch=line~substr(i,1)
+    if ch=' ' then n=n+1
+    else if ch=d2c(9) then n=n+4
+    else leave
+  end
+  return n
+
+::method resolvePackage class
+  use arg package,paths
+  /* explicit absolute/relative path first */
+  if stream(package,'c','query exists')<>'' then return stream(package,'c','query exists')
+  do root over paths
+    sep='/'
+    candidate=root
+    if candidate~right(1)<>'/' & candidate~right(1)<>'\\' then candidate=candidate||sep
+    candidate=candidate||package
+    exists=stream(candidate,'c','query exists')
+    if exists<>'' then return exists
+  end
+  raise syntax 88.900 array('required package not found:' package)
+
+::requires "AtomicFile.cls"
+::requires "rxregexp.cls"
+::requires "json.cls"
+::requires "SourceLint.cls"
