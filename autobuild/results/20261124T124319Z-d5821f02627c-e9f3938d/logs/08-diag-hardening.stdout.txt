@@ -1,0 +1,16 @@
+g++ -Iinclude -I/home/hc3/alchemy-autobuild/staging/run-qfe_b6ae/build/planner/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -pthread -DXTP_TRANSPORT_SRC='"/home/hc3/alchemy-autobuild/staging/run-qfe_b6ae/src/xtp_transport.cpp"' -o tests/test_diag_hardening.bin tests/test_diag_hardening.cpp build/xtp_security.o build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o -lcrypto
+./tests/test_diag_hardening.bin
+  H1 reason='SERVICE_NOT_ADMITTED'
+PASS H1 a refused service is told SERVICE_NOT_ADMITTED and its requested name is not echoed
+  H2 big: trigger=104 diag=64 reason='MALFORMED'; small: trigger=48 diag=48 reason=''
+PASS H2a a malformed FIRST gets MALFORMED with no parser text, no larger than the FIRST
+PASS H2b a minimum-size FIRST gets a bare DIAG that is no larger than it
+  H3 300 refused FIRSTs in 0 ms -> 20 DIAGs (bound 21.0049); after 1.1 s: answered
+PASS H3a a flood from one peer gets at most burst + rate x time DIAGs
+PASS H3b the peer is answered again once its bucket refills
+  H4 200 refused FIRSTs -> 10 DIAGs (global bound 11.0032)
+PASS H4 the global DIAG limit holds when the per-peer limit is high
+PASS H5 diag_rate_per_sec = 0 sends no DIAG (the dev28 behaviour)
+  H6 POLICY_DENIED AUTH_REQUIRED FACILITY_UNSUPPORTED QUOTA_EXCEEDED LOOP_DETECTED INSPECTION_DENIED NOT_READY EMERGENCY_VETO
+PASS H6 VALUEs 16-23 are named in the sender's error; 24 is still UNKNOWN
+DIAG HARDENING SUITE: fail=0

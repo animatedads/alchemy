@@ -1,0 +1,7 @@
+PASS client: svc.msg profile encrypt from the key file
+PASS client: sent with the service profile applied, no protection argument needed
+PASS client: multipath transfer of svc.msg sent over 2 routes, protected chunk by chunk
+PASS client: no keys left, the message is refused: XTP named-service send: XTP: no active key for service svc.msg (it needs encrypt)         
+PASS server: 102,400-byte message received byte-exact, protection=encrypt keyId=00000000000c0de1
+PASS server: multipath transfer over 2 routes received byte-exact, protection=encrypt service=svc.msg
+PASS ooRexx protected messages and multipath: the service profile applies on its own; with no keys left the message is refused

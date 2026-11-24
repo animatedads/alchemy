@@ -1,0 +1,13 @@
+g++ -Iinclude -I/home/hc3/alchemy-autobuild/staging/run-qfe_b6ae/build/planner/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -pthread -DXTP_DEV29 -DXTP_TRANSPORT_SRC='"/home/hc3/alchemy-autobuild/staging/run-qfe_b6ae/src/xtp_transport.cpp"' -o tests/test_sync_diag.bin tests/test_sync_diag.cpp build/xtp_security.o build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o -lcrypto
+./tests/test_sync_diag.bin
+  Y1 A delivered=1 stale_close_captured=1 B sender=ok B delivered=1
+PASS Y1 a stale close from an earlier context with the same KEY cannot complete a new transfer
+  Y2 elapsed_ms=4 timeout_ms=2000 relay_forward_packets=126 (every 5th dropped) reverse_packets=101 (every 7th dropped)
+PASS Y2 100 KB at 20%/14% loss with timeout_ms=2000 finishes within one timeout (RTT-timed waits)
+  Y3 reply=yes echo=0x5150a1 rseq=1024
+PASS Y3 a SYNC status request is answered with ECHO=SYNC and the current RSEQ
+  D1 single: 0 ms, XTP context refused by peer: SERVICE_NOT_ADMITTED (code=1 value=1 reason=SERVICE_NOT_ADMITTED)
+  D1 stream: 0 ms, XTP context refused by peer: SERVICE_NOT_ADMITTED (code=1 value=1 reason=SERVICE_NOT_ADMITTED)
+PASS D1 a refused service fails fast with its reason (single FIRST and stream)
+PASS D2 a DIAG from a source other than the destination is ignored
+SYNC/DIAG SUITE: fail=0

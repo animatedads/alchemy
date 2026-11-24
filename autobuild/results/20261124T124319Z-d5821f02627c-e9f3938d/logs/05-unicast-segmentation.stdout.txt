@@ -1,0 +1,17 @@
+g++ -Iinclude -I/home/hc3/alchemy-autobuild/staging/run-qfe_b6ae/build/planner/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -pthread -DXTP_TRANSPORT_SRC='"/home/hc3/alchemy-autobuild/staging/run-qfe_b6ae/src/xtp_transport.cpp"' -o tests/test_segmentation.bin tests/test_segmentation.cpp build/xtp_security.o build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o -lcrypto
+./tests/test_segmentation.bin
+  S1 segments=301 retransmitted=0
+PASS S1 UDP 300 KB in 1024-byte segments, named service, byte-exact
+SKIP S2 L2 stream (AF_PACKET unavailable)
+  S3 segments=200 retransmitted=49 relay_dropped fwd=49 rev=28
+PASS S3 UDP 200 KB through 20%/14% loss, byte-exact; retransmissions bounded by losses (selective repeat)
+PASS S4 stream for an unadmitted service is refused and nothing is delivered
+PASS S5 a small message is still exactly one FIRST with EOM (dev26 wire format)
+PASS S6 an identical stream resent with the same KEY is delivered once; the resend is acknowledged, not delivered again
+PASS S7 a retransmitted FIRST mid-stream does not discard progress
+  S8 cntls=1 rseq=1024 spans=1 [3072,4000)
+PASS S8 an out-of-order segment is kept and reported as a SPAN; filling the gap completes the stream
+PASS S9 NSPAN round-trips; NSPAN=0 CNTL is the dev27 layout; an overlong NSPAN or inverted SPAN is refused
+  S10 3201 ms: XTP L4 stream not acknowledged (49 segments): no progress for 3200 ms
+PASS S10 a receiver that reports a SPAN and then goes silent ends the send within the no-progress budget
+SEGMENTATION SUITE: fail=0 skip=1

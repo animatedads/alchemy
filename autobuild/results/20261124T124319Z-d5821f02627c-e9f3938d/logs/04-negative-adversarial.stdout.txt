@@ -1,0 +1,9 @@
+OPERATIONAL_PLANNER_DIR=/home/hc3/alchemy-autobuild/staging/run-qfe_b6ae/build/planner bash tests/run_negative.sh
+PASS N1 UDP sender rejects close-ACK from a non-destination port
+SKIP N1-L2 L2 sender rejects close-ACK from a foreign MAC (SKIP L2 spoofed-ACK test: AF_PACKET unavailable (needs CAP_NET_RAW))
+PASS N1-RTN sender requires the XTP return bit on a close-ACK
+SKIP N2 L2 listener ignores frames addressed to a foreign MAC (SKIP L2 foreign-MAC test: AF_PACKET unavailable (needs CAP_NET_RAW))
+PASS N8 operational adapter refuses zero-THROTTLE like the planner
+PASS E6 malformed FIRST is dropped; listener keeps serving
+PASS E7 replay per (peer host, KEY, payload), bounded window
+NEGATIVE SUITE: pass=5 fail=0 skip=2

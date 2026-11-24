@@ -1,0 +1,30 @@
+XTP v0.1-dev38 validation, 2026-11-24, Claude (Opus 5.5)
+Host: Claude workspace, Ubuntu, ooRexx 5.3.0 trunk (built 2026-11-23), planner dev5 left unbuilt.
+Run: every integration.json test in order from a fresh copy, REPO_ROOT = animatedads/alchemy at 49b23d5c, no REXX_BIN, rexx on PATH, TMPDIR unset.
+PASS named-service                     39s PASS ooRexx named-service routine registration and manager scope
+PASS capacity-rate                      1s PASS XTP live UDP capacity rate elapsed_ms=201
+PASS auto-context-key                   1s PASS automatic XTP context keys prevent false replay across repeated named-service sends
+PASS negative-adversarial              75s NEGATIVE SUITE: pass=7 fail=0 skip=0
+PASS unicast-segmentation              24s XTP_STALE_CONTROL_IGNORED key=4242 count=30
+PASS interop-dev36-lossy               65s PASS protected message to an older listener: refused there, nothing delivered
+PASS sync-echo-diag                    18s XTP_FOREIGN_CONTROL_IGNORED carrier=udp from=127.0.0.1:46042
+PASS diag-hardening                    19s XTP_DIAG_SUPPRESSED key=4000 peer=127.0.0.1 reason=SERVICE_NOT_ADMITTED detail=named service not admitted: oth
+PASS interactive-sessions              28s XTP_FOREIGN_CONTROL_IGNORED carrier=session from=127.0.0.1:52811
+PASS interactive-sessions-oorexx        0s PASS ooRexx XtpSession: refusal, binary messages, half-close, close, and read on one thread while writing on a
+PASS service-protection                46s XTP_DIAG_SENT key=9555 peer=127.0.0.1:57119 value=1 detail=named service not admitted: svc.twice authenticated
+PASS service-keys-ldap-oorexx           9s PASS ooRexx XTP service keys: LDAP first, key file fallback (LDAP down, no keys, bad entry, raising source), w
+PASS message-protection                61s XTP_PROTECTED_MESSAGE_DROPPED peer=127.0.0.1:35444 reason=an interactive (session) FIRST at a message listener
+PASS message-keys-oorexx                0s PASS ooRexx protected messages and multipath: the service profile applies on its own; with no keys left the me
+PASS session-socket-oorexx              0s PASS XTP session as a SocketProvider stream: send, recv, bounded pump, end of stream, encrypted by the service
+PASS hostile-ldap-entries-oorexx       56s PASS hostile LDAP entries: no key planted through a crafted name, a misplaced generation or a misplaced client
+PASS protection-evidence-oorexx         4s PASS XTP protection evidence: route evidence as open_session would choose; session evidence on both ends; reti
+FAILED 0
+
+Before the dev38 test fixes, the same run had 3 failures: interop-dev36-lossy (peer not built),
+service-protection (P12, P20: hard-coded scratch path), message-protection (M20: segmentation fault, same cause).
+dev37 itself fails service-protection and message-protection the same way on this host.
+
+Autobuild on the architect's host (2026-11-24, submission ...-95d006, run unprivileged): 15 of 17 entries passed.
+service-protection: P20 (other user's file), P21 (raw36/L2: Operation not permitted); message-protection: M12 (same), M19 (send error not shown).
+Fixed after that run: SKIP for checks the host cannot make; M19 prints its send errors.
+Re-checked here as root (P20, P21, M12, M19 run and pass; fail=0 both suites) and as uid 65534 (P21, M12 SKIP; P20 passes without the root-only part; fail=0 both suites).
