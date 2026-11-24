@@ -1,0 +1,26 @@
+== interpreter: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+== send (process 1)
+sender: value 42 committedSequence 2
+sender: 3 envelopes written
+== receive (process 2)
+PASS round trip
+PASS state arrived: value 42, committed 42
+PASS lifecycle recorded: RECONSTRUCTED (was not recorded in dev3)
+PASS reconstruction is inert: not ACTIVE (NEGOTIATING)
+PASS bind then activate: lifecycle ACTIVE
+PASS envelope applied to another object -> RTO_WRONG_TARGET: envelope is for "C1:MI-A" but the target is "OTHER:M
+PASS foreign schema -> RTO_SCHEMA: envelope schema "not.rto/9" is not alchemy.rto/0.1        
+PASS state changed after capture -> RTO_DIGEST: the envelope does not match its digest (changed after capt
+PASS an older capture over newer state -> RTO_STALE: envelope committedSequence 2 is older than the target's 3  
+PASS no digest at all -> RTO_DIGEST: envelope carries no digest                                
+PASS sequence not a number -> RTO_SEQUENCE: sequence "x" and committedSequence "2" must be whole num
+PASS committed after sequence -> RTO_SEQUENCE: committedSequence 9 is after sequence 2                 
+PASS forged digest with no verifier is accepted (by design: no key, no authentication)
+PASS a verifier requires a seal -> RTO_SEAL: a seal is required and the envelope has none                
+PASS HMAC seal verifies
+PASS HMAC: state changed and digest recomputed -> RTO_SEAL: the seal does not verify                                    
+PASS HMAC: key not trusted here -> RTO_SEAL: key "k-tom-1" (HMAC-SHA-512) is not trusted here            
+PASS Ed25519 seal verifies with the public key
+PASS Ed25519: another public key -> RTO_SEAL: the seal does not verify                                    
+PASS Ed25519: state changed and digest recomputed -> RTO_SEAL: the seal does not verify                                    
+PASS alchemy_rto_core dev4

@@ -1,0 +1,14 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {"name": "alchemy_rto_core", "version": "0.1-dev4", "kind": "oorexx"},
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "rto-core-two-process",
+      "argv": ["bash", "tests/run_tests.sh"],
+      "timeout_seconds": 900,
+      "environment": {"set": {"CRYPTO_DIR": "${REPO_ROOT}/packages/oorexx_crypto_v0.8.3"}}
+    }
+  ],
+  "publish": {"tree": {"source": ".", "path": "packages/alchemy_rto_core_v0.1-dev4"}}
+}
