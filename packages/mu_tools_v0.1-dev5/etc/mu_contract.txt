@@ -1,0 +1,20 @@
+# rexxos-mu contract v0.1-draft
+# Architecture: Tom Dyer.  Draft: Claude (Opus 5.5), 23 Nov 2026, for Tom's review.
+# An MU runs MIs, carries XTP, enforces compiled per-box tables, attests and
+# reports.  Anything else on an MU is drift and belongs in an MI.
+#
+# allow process NAME...         processes the MU may run (kernel threads are always allowed)
+# allow listen PROTO PORT       sockets the MU may listen on (XTP is raw, so no TCP for it)
+# allow login USER...           accounts with a login shell
+# forbid package CATEGORY PATTERN...   package names (trailing * matches a prefix)
+
+allow process systemd systemd-journal systemd-udevd systemd-logind dbus-daemon agetty
+allow process qemu-system-x86_64 rexx rxapi mu-agent xtpd
+allow process sshd
+allow listen tcp 22
+allow login root muops
+
+forbid package workload nginx* apache2* php* nodejs* postgresql* mysql* mariadb* redis* mongodb*
+forbid package platform slapd* rabbitmq* kafka*
+forbid package build gcc* g++* make cmake* python3-pip* cargo* golang*
+forbid package container docker* containerd* podman* runc*
