@@ -1,0 +1,31 @@
+{
+ "kind": "article",
+ "id": "newshell.filesystem",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev1",
+ "title": "FileSystem, FsFile, FileEditor",
+ "section": "operations",
+ "summary": "A directory tree as shell objects. DO OVER fs gives every regular file (links listed, never followed). fs~file(path), fs~create(path) (protected), f~edit (protected) gives a FileEditor, e~addLine(text) (protected), e~lines. Live: create /tmp/test.txt and add \"test 1234\" allowed by policy; the same in /home/claude denied at create.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Reading is open; changing is only through protected methods",
+  "Nothing outside the root; never through a link"
+ ],
+ "procedure": [
+  "Mount the narrowest root the task needs"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev4/src/FileSystem.cls",
+   "sha256": "6abe8ea3185d9b817b0cdbbcd4012f2db28ae083c5d43d3cb94805857a5009f1",
+   "claim": "FileSystem, FsFile, FileEditor and their authority paths"
+  }
+ ],
+ "related": [
+  "newshell.security"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}

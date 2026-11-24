@@ -1,0 +1,37 @@
+{
+ "kind": "article",
+ "id": "newshell.next",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev1",
+ "title": "Next: newshell on ed209g, driven by Codex",
+ "section": "rollout",
+ "summary": "Goal (Tom Dyer, 2026-11-24): put newshell on ed209g (cats1) and have Codex drive the work there through it. Needed first: Codex as a principal (codex) that submits proposals and plans directly and receives the same reports (mailbox, not the in-process inbox); objects to start an MU, examine networks (interfaces, routes, the nft fence read-only), xtpd status, services; orphan-process cleanup for a died step; an autopilot budget per chain; kit for cats1 built in the jammy chroot. Every machine change goes as an order marked NEEDS TOM'S DIRECT APPROVAL.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Never without Tom's explicit yes: change a firewall, rotate or copy a key, replace the WAN forwarder, reboot a host",
+  "Port 22 stays open until SSH over XTP has survived a reboot"
+ ],
+ "procedure": [
+  "Build the read-only network objects first; they find issues fastest"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev4/README.md",
+   "sha256": "252e54e8ea780ae5f19b035997a88f5db5037aa1418c713280a18e8ff2e2629b",
+   "claim": "Not in dev4 lists"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev4/etc/newshell.policy",
+   "sha256": "002ffa5ab30d798f077b30041ebc043b8d3707564ae16f057321acdc4a892f20",
+   "claim": "the policy any new object joins"
+  }
+ ],
+ "related": [
+  "newshell.start",
+  "newshell.security"
+ ],
+ "qualification_boundaries": {
+  "status": "plan; nothing built for ed209g yet",
+  "field": "not yet run on an ED209 node"
+ }
+}

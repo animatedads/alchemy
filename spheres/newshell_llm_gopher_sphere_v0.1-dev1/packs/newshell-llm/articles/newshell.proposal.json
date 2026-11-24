@@ -1,0 +1,33 @@
+{
+ "kind": "article",
+ "id": "newshell.proposal",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev1",
+ "title": "Prompt, review against source, check, run",
+ "section": "architecture",
+ "summary": "llm~prompt(task) does round 1 (draft from a system prompt describing every provided object and the objects they return, cached with cache_control), round 2 (every ~method the draft sends is looked up on the live objects; its source, read through MethodSourceCache, is sent back with any unknown methods named; the model replies with final code), then ProposalCheck, and one repair round if rejected. The Proposal records a SHA-512 digest of each checked source; ~run refuses if any changed. ~run executes the code as a routine under ADDRESS NEWSHELL_NONE and the security manager as principal llm.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "The model checks the source of the methods it calls against the live objects (Tom Dyer, 2026-11-24)",
+  "A changed method source makes ~run refuse",
+  "Keys come from the Secret Broker and reach curl on stdin only"
+ ],
+ "procedure": [
+  "Use the estate Anthropic client (oorexx_ai_provider_anthropic v0.5) for the model call"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev4/src/ShellLlm.cls",
+   "sha256": "3bbeb3daa7fbe66e7c9de7dd66fc2ee41ec4d270b8c4858ea6f77e9d7cccff36",
+   "claim": "Llm, Proposal, MethodSourceCache, MethodSource, prompt rounds, run"
+  }
+ ],
+ "related": [
+  "newshell.check",
+  "newshell.security"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}

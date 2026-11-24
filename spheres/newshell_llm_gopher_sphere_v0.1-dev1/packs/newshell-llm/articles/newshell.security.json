@@ -1,0 +1,43 @@
+{
+ "kind": "article",
+ "id": "newshell.security",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev1",
+ "title": "The security manager authorises",
+ "section": "operations",
+ "summary": "Proposals run under ooRexx Routine~setSecurityManager. METHOD (any protected call): the policy decides from principal, class, method (or authorityAction, e.g. Workspace~run is run:make) and authorityPath; a path through a symbolic link is denied before any rule. COMMAND/CALL/STREAM/REQUIRES: denied for llm, allowed and logged for console. LOCAL/ENVIRONMENT: llm only ARRAY SHELLCOLLECTION TRUE FALSE NIL ENDOFLINE. Every decision is a ShellDecision receipt (verdict, principal, kind, target, path, rule) and an AUTH log line. Policy: etc/newshell.policy, verdict principal class method path, first match wins, no match denies, paths match on / boundaries, method* is a prefix. Trusted shell classes run unchecked: the objects do the I/O, the proposal only asks.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Run proposals under the security manager and have it perform the authorisation (Tom Dyer, 2026-11-24)",
+  "No match = deny",
+  "Console lines run as principal console under the same policy"
+ ],
+ "procedure": [
+  "To allow a new capability: make the method PROTECTED, give authorityPath, add one policy line"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev4/src/ShellSecurity.cls",
+   "sha256": "18c33a91e13832d8bbb935306fdf02b56a045d08a594f125c4119736424d82ee",
+   "claim": "ShellPolicy, ShellPolicyRule, ShellDecision, ShellSecurityManager"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev4/etc/newshell.policy",
+   "sha256": "002ffa5ab30d798f077b30041ebc043b8d3707564ae16f057321acdc4a892f20",
+   "claim": "default policy: llm may change /tmp only"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev4/tests/test_security.rex",
+   "sha256": "8bbc3b02e640f855c0d1935cc3c89f0a3c3bc7cd5a2f7e57d384f75623ec4d53",
+   "claim": "allow, deny, link, boundary, command/stream/call/dot-name refusals"
+  }
+ ],
+ "related": [
+  "newshell.workspace",
+  "newshell.filesystem"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}

@@ -1,0 +1,36 @@
+{
+ "kind": "article",
+ "id": "newshell.running",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev1",
+ "title": "Running it",
+ "section": "start",
+ "summary": "tests/run_tests.sh runs in a temporary copy (never writes the source tree), builds the oorexx_process native from source, pre-checks P7 and P9, and runs test_offline, test_security, test_jobs, test_died (fake curl) and, with ANTHROPIC_API_KEY, test_live. WRITE_ENV=1 also writes build/env.sh for bin/nsh.sh. The key is read by the Secret Broker from the environment; never on argv, on disk or in a log. Model default claude-haiku-5-5. Dependencies: oorexx_ai_provider_anthropic v0.5, oorexx_ai_access v0.6, alchemy_objects v0.8, oorexx_secret_broker v0.2, oorexx_crypto v0.1, oorexx_logging v0.7, oorexx_process v0.1-dev2, oorexx_foreign_runtime v0.22.6.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Tests never write the source tree",
+  "The key never reaches argv, disk or a log"
+ ],
+ "procedure": [
+  "WRITE_ENV=1 bash tests/run_tests.sh, then bin/nsh.sh"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev4/README.md",
+   "sha256": "252e54e8ea780ae5f19b035997a88f5db5037aa1418c713280a18e8ff2e2629b",
+   "claim": "Files and dependencies"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev4/bin/nsh.rex",
+   "sha256": "52411bb44de46d2fbcf27cfacae31600761e060d2ce6dd6aac23f96947822dfb",
+   "claim": "console"
+  }
+ ],
+ "related": [
+  "newshell.start"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}
