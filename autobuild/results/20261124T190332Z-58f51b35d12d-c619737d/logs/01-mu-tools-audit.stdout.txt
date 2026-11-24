@@ -1,0 +1,23 @@
+== interpreter: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+== test_mu_audit
+PASS test_mu_audit (22 checks)
+== mu_audit.rex replays the fixture recording (want exit 1 and 10 findings)
+FORBIDDEN exec     hexdump                      a byte dumper: no witness on an MU (package bsdextrautils)
+FORBIDDEN exec     gpg                          an intruder's toolkit: no witness on an MU (package gpg)
+FORBIDDEN exec     perl                         an intruder's toolkit: no witness on an MU (in perl-base, an Essential package: only the stripped image removes it)
+FORBIDDEN exec     script                       records or replays a terminal: no human sessions on an MU (in bsdutils, an Essential package: only the stripped image removes it)
+EXTRA     exec     (no package)                 1 with no witness: orphan
+EXTRA     exec     alternatives                 1 with no witness: editor
+UNOWNED   file     /usr/bin/typescript          no package owns it and it has no witness: remove it, or write its witness
+UNOWNED   file     /usr/bin/orphan              no package owns it and it has no witness: remove it, or write its witness
+UNOWNED   file     /root/.gnupg/pubring.kbx     no package owns it and it has no witness: remove it, or write its witness
+UNOWNED   file     /root/snap/lxd/41283         no package owns it and it has no witness: remove it, or write its witness
+PASS mu_audit.rex replay
+== mu_audit.rex reads both contracts
+PASS etc/mu_contract.txt reads (exit 1)
+PASS etc/mu_contract_cats.txt reads (exit 1)
+== a bad contract line stops the audit with exit 2 and names the line
+PASS bad contract: exit 2, line named
+== HostCommand: a missing command gives rc 127, not an error
+PASS HostCommand: missing command is rc 127
+PASS mu-tools v0.1-dev3
