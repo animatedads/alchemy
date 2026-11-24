@@ -1,0 +1,10 @@
+# /etc/xtpd/xtpd.conf -- xtpd v0.1-dev1 (cats1 example)
+socket          /run/xtpd/xtpd.sock
+socket_mode     0660
+services        /etc/xtpd/emergency/services.txt
+peers           /etc/xtpd/emergency/peers.txt
+keys            /etc/xtpd/emergency/service.keys
+routes          /run/xtpd/routes.tsv
+listen          3 raw36 20.0.154.12
+firewall_helper /usr/local/bin/rexx /opt/xtpd/libexec/xtpd_firewall.rex
+log             /var/log/xtpd.log
