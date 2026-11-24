@@ -1,0 +1,40 @@
+== interpreter: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+== test_mu_audit
+PASS contract: check exec read
+PASS contract: watch read
+[ns] reading the package database
+[ns] reading executables in /usr/bin
+[ns] looking for files no package owns in /usr/bin
+[ns] looking for files no package owns in /root
+[ns] 9 findings for fixture
+    FORBIDDEN exec     hexdump                      a byte dumper: no witness on an MU (package bsdextrautils)
+    FORBIDDEN exec     gpg                          an intruder's toolkit: no witness on an MU (package gpg)
+    FORBIDDEN exec     perl                         an intruder's toolkit: no witness on an MU (in perl-base, an Essential package: only the stripped image removes it)
+    FORBIDDEN exec     script                       records or replays a terminal: no human sessions on an MU (in bsdutils, an Essential package: only the stripped image removes it)
+    EXTRA     exec     (no package)                 1 with no witness: orphan
+    UNOWNED   file     /usr/bin/typescript          no package owns it and it has no witness: remove it, or write its witness
+    UNOWNED   file     /usr/bin/orphan              no package owns it and it has no witness: remove it, or write its witness
+    UNOWNED   file     /root/.gnupg/pubring.kbx     no package owns it and it has no witness: remove it, or write its witness
+    UNOWNED   file     /root/snap/lxd/41283         no package owns it and it has no witness: remove it, or write its witness
+PASS script is FORBIDDEN and named as Essential (bsdutils)
+PASS perl is FORBIDDEN (perl-base, Essential)
+PASS gpg is FORBIDDEN, removable
+PASS hexdump is FORBIDDEN as a dumper
+PASS an executable no package owns is EXTRA
+FAIL an alternatives link needs a witness too
+PASS script's typescript in /usr/bin is UNOWNED
+PASS gpg's /root/.gnupg is UNOWNED
+PASS the orphan program is also an UNOWNED file
+PASS an empty directory left by snap is UNOWNED
+PASS bash: allowed by its package, and owned through the /bin spelling
+PASS sshd: allowed by name
+PASS /root/.ssh: allowed by a file witness
+FAIL exactly 10 findings: 4 forbidden, 2 extra, 4 unowned (got 9)
+[ns] 9 findings for recording /tmp/mu_tools.6fvsPe/fx/fixture.rec
+PASS replay of the recording gives the same 9 findings
+PASS mu_contract.txt: no exec or watch lines
+PASS mu_contract_cats.txt: exec and files checked
+PASS mu_contract_cats.txt: dbus-daemon keeps a witness
+PASS the dbus witness names systemd-logind
+FAIL mu-tools dev3 tests: 2 failed
+FAIL test_mu_audit
