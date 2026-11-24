@@ -1,0 +1,38 @@
+{
+ "kind": "article",
+ "id": "newshell.followups",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev2",
+ "title": "Follow-ups: review, cleanup, amend",
+ "section": "recovery",
+ "summary": "When a job stops (or a review plan with notify always passes), the LLM is sent the report and answers with the next proposal, not advice: a review plan if something DIED or the cause is unclear, a cleanup of what a review showed, the amended original plan once clean, or return .nil. The proposal goes through the same draft, source review and check; its leading comment is the diagnosis. Jobs submitted by a follow-up remember their origin; reports start with the History; jobs~find(name) reaches any earlier job. autopilot N runs up to N checked follow-ups. Live: DIED -> review-make-killed -> clean-stale-build-lock -> build-and-test-hello-retry (amended: new step 2 removes the stale lock) PASSED -> return .nil; 10 calls, $0.0032.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Died -> review the wreckage -> clean up -> amend the plan with a fix -> run it (Tom Dyer, 2026-11-24)",
+  "A repeat review that looks at the same things is discouraged",
+  "autopilot never runs a rejected proposal"
+ ],
+ "procedure": [
+  "Give autopilot a small budget"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev5/src/ShellLlm.cls",
+   "sha256": "5bfe0490ee782ad39de9b65fa97cd109d6b8ff061ec03649c05174ea59c070cd",
+   "claim": "jobFinished: the follow-up task and leadingComment"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev4/VALIDATION_session.txt",
+   "sha256": "4461b6769d42fa69993e676d40db76b1772d571389565a38816fa8a5aa9ca0ec",
+   "claim": "the live recovery chain"
+  }
+ ],
+ "related": [
+  "newshell.died",
+  "newshell.findings"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}
