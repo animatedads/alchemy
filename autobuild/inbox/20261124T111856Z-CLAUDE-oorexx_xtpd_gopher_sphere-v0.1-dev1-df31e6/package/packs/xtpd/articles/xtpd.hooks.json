@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "xtpd.hooks",
+  "sphere": "xtpd",
+  "version": "0.1-dev1",
+  "title": "Hooks",
+  "section": "architecture",
+  "summary": "A hook is what xtpd runs when a session for a registered service is accepted. exec: socketpair, the program gets one end as stdin and stdout, xtpd pumps the other to the session (first user: sshd -i for ssh.management). rexx: the session object goes to an ooRexx method in a hook process. fd: a connected descriptor is passed over a unix socket to a waiting local process. Hooks run as separate processes; a crashing hook ends only its own sessions.",
+  "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+  "invariants": ["A hook never chooses its protection, route or priority: they come from its registration", "A hook process cannot take xtpd down"],
+  "procedure": ["ssh.management registers the exec hook sshd -i; no TCP listener remains"],
+  "provenance": [{"artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SESSIONS.md", "sha256": "e7bfdea74e54becea80e83be588b57a87aae21354e940305418a822b62411c7c", "claim": "XTP sessions: one context, both directions, per-direction close, one listener socket for all sessions"}],
+  "related": ["xtpd.inputs", "xtpd.planes", "xtpd.ssh-management"],
+  "qualification_boundaries": {"status": "design only", "field": "nothing built or field-tested"}
+}

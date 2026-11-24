@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "xtpd.findings",
+  "sphere": "xtpd",
+  "version": "0.1-dev1",
+  "title": "Findings and gaps",
+  "section": "qualification",
+  "summary": "Findings 2026-11-24 on ooRexx 5.3.0 trunk: dev37's native library fails to build under -Werror (unused parameter context from the RexxRoutine macros); with -Wno-unused-parameter the dev37 ooRexx session test passes; ooRexx charin on a pipe waits for end of file; mu_fence.nft drops unicast DHCP renewals to 168.63.129.16 UDP 67; nothing on an MU uses 169.254.169.254. Gaps to build: the daemon and /run/xtpd.sock protocol; native pump and fd passing (libxtp dev38); live operating-state change in the listener; emergency-file writer and parser; the xtp.provision actuator and identity resolver.",
+  "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+  "invariants": ["Fix the dev37 -Werror build before cats1 builds it", "Accept unicast DHCP to 168.63.129.16 and drop IMDS in the skeleton fence"],
+  "procedure": ["Treat each gap as its own package with its own tests"],
+  "provenance": [{"artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SESSIONS.md", "sha256": "e7bfdea74e54becea80e83be588b57a87aae21354e940305418a822b62411c7c", "claim": "XTP sessions: one context, both directions, per-direction close, one listener socket for all sessions"}, {"artifact": "packages/xtp_route_publication_v0.1-dev2/README.md", "sha256": "247c6abf1c83de3843b758ec03d02a450cd67539e21a7ad80e6c48a113b466cd", "claim": "xtp.provision ingress gate only; no actuator or identity resolver"}],
+  "related": ["xtpd.planes", "xtpd.decisions"],
+  "qualification_boundaries": {"status": "design only", "field": "nothing built or field-tested"}
+}
