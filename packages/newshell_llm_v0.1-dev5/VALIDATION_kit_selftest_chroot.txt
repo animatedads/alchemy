@@ -1,0 +1,60 @@
+== describe: ok
+== mu (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: CHECKED, 1 lines, 0 method source(s) checked
+   hostname       vm
+   kernel         6.18.44-fc-v819
+   uptimeSeconds  901.53
+   bootId         770c83a5-4ed7-4c13-9c71-fedf3ce9aae9
+== listening sockets (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: CHECKED, 1 lines, 2 method source(s) checked
+   proto  source  address    port   uid  inode
+   tcp    tcp     127.0.0.1  35791  0    1123
+   tcp    tcp     127.0.0.1  39353  0    923
+   tcp    tcp     127.0.0.1  28471  0    929
+   tcp    tcp     0.0.0.0    2024   0    1062
+== interfaces (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: CHECKED, 1 lines, 2 method source(s) checked
+   name  operstate  mtu    mac                carrier  rxBytes  txBytes
+   eth0  up         1400   02:fc:00:00:00:01  1        692689   644934
+   ifb0  down       1500   36:c1:de:38:17:54           0        0
+   ifb1  down       1500   8e:30:1c:b9:15:27           0        0
+   lo    unknown    65536  00:00:00:00:00:00  1        1054850  1054850
+== routes (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: CHECKED, 1 lines, 2 method source(s) checked
+   family  destination   gateway    dev   metric
+   ipv4    0.0.0.0/0     192.0.2.1  eth0  0
+   ipv4    192.0.2.0/24  0.0.0.0    eth0  0
+== fence chains (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: CHECKED, 1 lines, 3 method source(s) checked
+   (empty)
+== fence rules (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: CHECKED, 1 lines, 3 method source(s) checked
+   (empty)
+== fence sets (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: CHECKED, 1 lines, 3 method source(s) checked
+   (empty)
+== failed units (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: CHECKED, 1 lines, 2 method source(s) checked
+   (empty)
+== MU audit (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: CHECKED, 1 lines, 1 method source(s) checked
+   contract      /opt/mu-tools/etc/mu_contract_cats.txt
+   thin          0
+   findingCount  22
+   error         
+== xtpd (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: CHECKED, 1 lines, 1 method source(s) checked
+   installed      0
+   running        0
+   pids           
+   socketPresent  0
+   config         /etc/xtpd/xtpd.conf
+   listens        
+== xtpd bringUp is refused by the policy (exit 2, want 2)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: CHECKED, 2 lines, 2 method source(s) checked
+   REFUSED: Authorization failure:  newshell policy: codex may not XTPD~bringup /etc/xtpd/xtpd.conf.
+== a command is rejected before it runs (exit 2, want 2)
+   Proposal /tmp/newshell-selftest.QX7jvG/p.rex: REJECTED, 2 lines, 0 method source(s) checked
+   PROBLEM: ADDRESS is not allowed: address system ''
+PASS newshell kit self-test
+Kit newshell-kit-v0.1-dev5-jammy.tar.gz sha256 ad6207e3830f847d64873c6f89a2b92d7e5f2219c3f1d81b8b0983adda094c33: KIT_OK from /, LDD_DONE clean, self-test PASS in the jammy chroot (2026-11-24).
