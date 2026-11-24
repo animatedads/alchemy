@@ -1,0 +1,106 @@
+ooRexx Source / Code / Class Editor qualification
+Target runtime: ooRexx 5.3.0 r13196
+
+Accepted delivered baseline
+===========================
+v0.1-dev5 remains the last fully qualified delivered baseline.
+
+Dev5 suite:
+  PASS language cpp
+  PASS class start
+  PASS function start
+  PASS C++ save
+  PASS stale generation rejected
+  PASS language json
+  PASS json valid
+  PASS require resolved
+  PASS require inserted
+  PASS cpp member inserted
+  PASS find text comment
+  PASS find code ignores comment
+  PASS find code visible
+  PASS find code repeated
+  PASS grep regex code
+  PASS grep regex ignores comment
+  PASS grep regex text comment
+  PASS grep regex insensitive
+  PASS tree file find
+  PASS tree grep code
+  PASS tree grep ignores comment
+  PASS completion document classes
+  PASS completion deterministic order
+  PASS completion tree file
+  PASS ooRexx source editor dev5
+
+Dev6 candidate
+==============
+SourceDocument~save now consumes oorexx.atomic-file/0.1 dev1:
+- stale-generation reread/fence remains before publication;
+- optional .newshell-bak is published through AtomicFile;
+- live candidate is published through AtomicFile;
+- FULL durability is requested;
+- lastBackupResult / lastPublicationResult expose evidence;
+- backup + live publication are NOT claimed as one atomic transaction;
+- Atomic File dev1 does not provide race-free expected-generation CAS.
+
+Rasen Falcon qualification request REQ-00000589 returned NOT_RUN because the worker did not have a checkout matching the requested commits plus the Atomic File native/source closure. This is not a failure result and not a PASS. Dev6 remains unqualified.
+
+Dev7 candidate
+==============
+Dev7 adds SourceEditorCliSearchArgs and changes find/grep CLI parsing so multi-word expressions survive the flattened ooRexx command tail.
+
+Regression assertions added:
+- cli multiword expression
+- cli explicit mode
+- cli explicit case
+- cli legacy expression
+- cli legacy mode
+- cli legacy case
+
+Canonical examples:
+  code-editor find FILE words with spaces --mode code --case insensitive
+  code-editor grep FILE regular expression here --mode text --case sensitive
+
+The historical single-token positional form remains compatible.
+
+Qualification status
+====================
+CURRENT CANDIDATE: dev9 (dev8 never loaded: see README "Why dev8 did not run")
+ACCEPTED DELIVERED BASELINE: dev5
+FRESH r13196 + Atomic File native-provider execution: PASS under dev9 (see below)
+
+Do not promote/package dev8 as accepted until the full source-editor suite passes with oorexx_atomic_file_v0.1-dev1 resolvable and the AtomicFile publication assertions execute successfully.
+
+
+Dev8 candidate
+==============
+Dev8 adds lexical/source-aware reference navigation:
+- SourceDocument~references
+- SourceTreeFinder~references
+- SourceMatch~role = match|declaration|reference
+- CLI references
+- CLI references-tree
+
+Regression assertions added:
+- reference declaration classified
+- reference use classified
+- tree references
+
+The classification contract is intentionally conservative: declaration means scanner-known symbol name + symbol start line. It is not compiler/AST semantic resolution.
+
+Dev8 qualification status remains PENDING together with the inherited dev6 Atomic File dependency. No new accepted delivery is claimed.
+
+Dev9 qualification
+==================
+Architecture: Tom Dyer. Coding and this record: Claude (Opus 5.5). 24 November 2026.
+Runtime: ooRexx 5.3.0 r13196 (/home/claude/oorexx-install), Ubuntu container.
+Atomic File: oorexx_atomic_file_v0.1-dev1, native built from source by tests/run_tests.sh.
+
+  bash tests/run_tests.sh
+  == test_source_editor   PASS (37 checks: the dev8 suite, Atomic File FULL publication included)
+  == test_dev9            PASS (40 checks: lint, check, amend, saveChecked, ooRexx code mode, CLI)
+  == the editor checks itself: SourceEditor.cls compiles; lint findings 0 in every source file
+  PASS oorexx_source_editor v0.1-dev9
+
+Status: dev9 qualified with Atomic File on this host. Autobuild on Tom's host is the second
+witness; its result.json is the record.
