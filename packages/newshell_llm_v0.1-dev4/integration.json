@@ -1,0 +1,20 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {"name": "newshell_llm", "version": "0.1-dev4", "kind": "oorexx"},
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "newshell-llm-offline-suites",
+      "argv": ["bash", "tests/run_tests.sh"],
+      "timeout_seconds": 900,
+      "environment": {
+        "set": {
+          "PACKAGES": "${REPO_ROOT}/packages",
+          "PROCESS_DIR": "${REPO_ROOT}/packages/oorexx_process_v0.1-dev2",
+          "FOREIGN_RUNTIME_HOME": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6"
+        }
+      }
+    }
+  ],
+  "publish": {"tree": {"source": ".", "path": "packages/newshell_llm_v0.1-dev4"}}
+}

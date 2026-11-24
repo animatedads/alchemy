@@ -1,0 +1,271 @@
+[newshell] POLICY loaded 11 rule(s) from /home/claude/nsl/newshell_llm_v0.1-dev4/etc/newshell.policy
+nsh> mount ws /tmp/nsdied
+path          /tmp/nsdied
+capabilities  READ RUN(policy)
+nsh> start llm claude
+[newshell] LLM START claude model claude-haiku-5-5 key from environment variable ANTHROPIC_API_KEY
+[newshell] PROVIDE jobs a JOBBOARD identity JOBBOARD:-94410574935489
+nsh> provide llm claude the ws
+[newshell] PROVIDE ws a WORKSPACE identity ws:/tmp/nsdied
+kind      claude
+model     claude-haiku-5-5
+provided  jobs ws
+prompts   0
+costUsd   0.000000
+nsh> prompt claude "unzip hello.zip, compile it with make in the hello directory, then test run ./hello/hello and check it prints Hello"
+[newshell] PROMPT "unzip hello.zip, compile it with make in the hello direct..." - round 1 (draft)
+[newshell] REPLY ok in 48 out 339 cache read 0 ms 509 usd 0.000441
+[newshell] SOURCES 7 checked, cache hits 0 misses 7
+[newshell] PROMPT round 2 (review against 7 method sources)
+[newshell] REPLY ok in 1597 out 339 cache read 2136 ms 366 usd 0.000351
+[newshell] SOURCES 7 checked, cache hits 7 misses 7
+[newshell] CHECK CHECKED 0 problem(s)
+task            unzip hello.zip, compile it with make in the hello directory, then test run ./hello/hello and check it prints Hello
+model           claude-haiku-5-5
+state           CHECKED
+lines           25
+methodsChecked  7
+problems        0
+  1 plan = jobs~plan('build-and-test-hello')
+  2 
+  3 s1 = plan~step('unzip')
+  4 s1~does(ws, 'run', .Array~of('unzip', '-o', 'hello.zip'))
+  5 s1~passIf('exitIs', 0)
+  6 s1~passIf('fileExists', 'hello')
+  7 s1~onFail('stop')
+  8 s1~timeout(600)
+  9 
+ 10 s2 = plan~step('make')
+ 11 s2~does(ws, 'run', .Array~of('make', '-C', 'hello'))
+ 12 s2~passIf('exitIs', 0)
+ 13 s2~passIf('fileExists', 'hello/hello')
+ 14 s2~onFail('stop')
+ 15 s2~timeout(600)
+ 16 
+ 17 s3 = plan~step('test-run')
+ 18 s3~does(ws, 'run', .Array~of('./hello/hello'))
+ 19 s3~passIf('exitIs', 0)
+ 20 s3~passIf('outputHas', 'Hello')
+ 21 s3~onFail('stop')
+ 22 s3~timeout(600)
+ 23 
+ 24 jobs~submit(plan)
+ 25 return plan
+nsh> autopilot 5
+autopilot: up to 5 follow-up proposal(s) will be run without asking (the policy still decides every call)
+nsh> ~run
+[newshell] RUN start under the security manager, principal llm, policy /home/claude/nsl/newshell_llm_v0.1-dev4/etc/newshell.policy
+[newshell] AUTH ALLOW llm METHOD JOBBOARD~submit  rule 15
+[newshell] JOB SUBMITTED PLAN build-and-test-hello
+[newshell] RUN done in 0.001s, returned a PLAN
+name       build-and-test-hello
+state      RUNNING
+stage      
+stepCount  3
+seconds    0.00
+nsh> '(sleep 1.2; killall -9 make) >/dev/null 2>&1 &'
+[newshell] PLAN build-and-test-hello start, 3 step(s)
+[newshell] AUTH ALLOW console COMMAND sh: (sleep 1.2; killall -9 make) >/dev/null 2>&1 &                
+[newshell] PLAN build-and-test-hello step 1/3 unzip
+[newshell] AUTH ALLOW llm METHOD WORKSPACE~run:unzip /tmp/nsdied rule 16
+[newshell] RUN /usr/bin/unzip -o hello.zip in /tmp/nsdied
+nsh> wait 200
+[newshell] RUN exit 0 in 0.01s, stdout 4 lines, stderr 0 lines
+[newshell] PLAN build-and-test-hello step 1/3 unzip PASS all 2 check(s) passed
+[newshell] PLAN build-and-test-hello step 2/3 make
+[newshell] AUTH ALLOW llm METHOD WORKSPACE~run:make /tmp/nsdied rule 17
+[newshell] RUN /usr/bin/make -C hello in /tmp/nsdied
+[newshell] RUN exit 137 in 3.03s, stdout 4 lines, stderr 0 lines
+[newshell] PLAN build-and-test-hello step 2/3 make DIED make was killed by signal 9 (SIGKILL) after 3.03s
+[newshell] PLAN build-and-test-hello DIED at 2/3 make in 3.04s
+[newshell] NOTIFY claude about build-and-test-hello (686 chars, state DIED)
+[newshell] PROVIDE job a PLAN identity plan:build-and-test-hello:-94410573882529
+[newshell] PROMPT "Job: plan "build-and-test-hello" (3 steps)
+State: DIED
+St..." - round 1 (draft)
+[newshell] REPLY ok in 665 out 338 cache read 0 ms 690 usd 0.000501
+[newshell] SOURCES 7 checked, cache hits 13 misses 8
+[newshell] PROMPT round 2 (review against 7 method sources)
+[newshell] REPLY ok in 2266 out 331 cache read 2122 ms 379 usd 0.000413
+[newshell] SOURCES 7 checked, cache hits 20 misses 8
+[newshell] CHECK CHECKED 0 problem(s)
+[newshell] FOLLOW-UP for build-and-test-hello: CHECKED, 22 lines
+inbox: 15:59:53.794472 plan "build-and-test-hello" DIED at step 2/3 make
+   llm: The make step was SIGKILLed mid-build and left build.lock behind in the
+   llm: workspace. The draft only looks: it lists hello/ and tails the make logs.
+   llm: This code submits that review plan with notify always, so findings come back.
+   follow-up proposal: CHECKED, 22 lines (it is now PROPOSAL; ~run runs it)
+  1 -- The make step was SIGKILLed mid-build and left build.lock behind in the
+  2 -- workspace. The draft only looks: it lists hello/ and tails the make logs.
+  3 -- This code submits that review plan with notify always, so findings come back.
+  4 review = jobs~plan('review-make-killed')
+  5 review~notify('always')
+  6 
+  7 s1 = review~step('list-hello')
+  8 s1~does(ws, 'list', .Array~of('hello'))
+  9 s1~passIf('exitIs', 0)
+ 10 
+ 11 s2 = review~step('tail-make-out')
+ 12 s2~does(ws, 'tail', .Array~of('.newshell/runs/002-make.out', 40))
+ 13 s2~passIf('exitIs', 0)
+ 14 s2~onFail('continue')
+ 15 
+ 16 s3 = review~step('tail-make-err')
+ 17 s3~does(ws, 'tail', .Array~of('.newshell/runs/002-make.err', 40))
+ 18 s3~passIf('exitIs', 0)
+ 19 s3~onFail('continue')
+ 20 
+ 21 jobs~submit(review)
+ 22 return review
+autopilot: running the follow-up (4 left)
+[newshell] RUN start under the security manager, principal llm, policy /home/claude/nsl/newshell_llm_v0.1-dev4/etc/newshell.policy
+[newshell] AUTH ALLOW llm METHOD JOBBOARD~submit  rule 15
+[newshell] JOB SUBMITTED PLAN review-make-killed
+[newshell] RUN done in 0.001s, returned a PLAN
+name       review-make-killed
+state      RUNNING
+stage      
+stepCount  3
+seconds    0.00
+[newshell] PLAN review-make-killed start, 3 step(s)
+[newshell] PLAN review-make-killed step 1/3 list-hello
+[newshell] PLAN review-make-killed step 1/3 list-hello PASS all 1 check(s) passed
+[newshell] PLAN review-make-killed step 2/3 tail-make-out
+[newshell] PLAN review-make-killed step 2/3 tail-make-out PASS all 1 check(s) passed
+[newshell] PLAN review-make-killed step 3/3 tail-make-err
+[newshell] PLAN review-make-killed step 3/3 tail-make-err PASS all 1 check(s) passed
+[newshell] PLAN review-make-killed PASSED at 3/3 tail-make-err in 0.01s
+[newshell] NOTIFY claude about review-make-killed (860 chars, state PASSED)
+[newshell] PROVIDE job a PLAN identity plan:review-make-killed:-94410576968097
+[newshell] PROMPT "History (oldest first; jobs~find(name) gives any of them)..." - round 1 (draft)
+[newshell] REPLY ok in 752 out 297 cache read 2122 ms 666 usd 0.000245
+[newshell] SOURCES 7 checked, cache hits 27 misses 8
+[newshell] PROMPT round 2 (review against 7 method sources)
+[newshell] REPLY ok in 2312 out 296 cache read 2122 ms 395 usd 0.000400
+[newshell] SOURCES 7 checked, cache hits 34 misses 8
+[newshell] CHECK CHECKED 0 problem(s)
+[newshell] FOLLOW-UP for review-make-killed: CHECKED, 15 lines
+inbox: 15:59:56.997693 plan "review-make-killed" PASSED at step 3/3 tail-make-err
+   llm: The review plan showed hello/build.lock (0 bytes, left by the killed build) and
+   llm: build-and-test-hello died at step 2/3 make. The lock is stale, so this plan removes
+   llm: only that file, checks it is gone, and reports; the amended plan can follow.
+   follow-up proposal: CHECKED, 15 lines (it is now PROPOSAL; ~run runs it)
+  1 -- The review plan showed hello/build.lock (0 bytes, left by the killed build) and
+  2 -- build-and-test-hello died at step 2/3 make. The lock is stale, so this plan removes
+  3 -- only that file, checks it is gone, and reports; the amended plan can follow.
+  4 clean = jobs~plan('clean-stale-build-lock')
+  5 s1 = clean~step('remove-build-lock')
+  6 s1~does(ws, 'remove', .Array~of('hello/build.lock'))
+  7 s1~passIf('fileAbsent', 'hello/build.lock')
+  8 s1~onFail('stop')
+  9 s2 = clean~step('list-after-clean')
+ 10 s2~does(ws, 'list', .Array~of('hello'))
+ 11 s2~passIf('outputHas', 'hello/Makefile')
+ 12 s2~onFail('continue')
+ 13 clean~notify('always')
+ 14 jobs~submit(clean)
+ 15 return clean
+autopilot: running the follow-up (3 left)
+[newshell] RUN start under the security manager, principal llm, policy /home/claude/nsl/newshell_llm_v0.1-dev4/etc/newshell.policy
+[newshell] AUTH ALLOW llm METHOD JOBBOARD~submit  rule 15
+[newshell] JOB SUBMITTED PLAN clean-stale-build-lock
+[newshell] RUN done in 0.001s, returned a PLAN
+name       clean-stale-build-lock
+state      RUNNING
+stage      
+stepCount  2
+seconds    0.00
+[newshell] PLAN clean-stale-build-lock start, 2 step(s)
+[newshell] PLAN clean-stale-build-lock step 1/2 remove-build-lock
+[newshell] AUTH ALLOW llm METHOD WORKSPACE~remove /tmp/nsdied/hello/build.lock rule 19
+[newshell] REMOVED /tmp/nsdied/hello/build.lock
+[newshell] PLAN clean-stale-build-lock step 1/2 remove-build-lock PASS all 1 check(s) passed
+[newshell] PLAN clean-stale-build-lock step 2/2 list-after-clean
+[newshell] PLAN clean-stale-build-lock step 2/2 list-after-clean PASS all 1 check(s) passed
+[newshell] PLAN clean-stale-build-lock PASSED at 2/2 list-after-clean in 0.01s
+[newshell] NOTIFY claude about clean-stale-build-lock (660 chars, state PASSED)
+[newshell] PROVIDE job a PLAN identity plan:clean-stale-build-lock:-94410565294577
+[newshell] PROMPT "History (oldest first; jobs~find(name) gives any of them)..." - round 1 (draft)
+[newshell] REPLY ok in 652 out 268 cache read 2122 ms 489 usd 0.000220
+[newshell] SOURCES 8 checked, cache hits 39 misses 11
+[newshell] PROMPT round 2 (review against 8 method sources)
+[newshell] REPLY ok in 2419 out 269 cache read 2122 ms 234 usd 0.000398
+[newshell] SOURCES 8 checked, cache hits 47 misses 11
+[newshell] CHECK CHECKED 0 problem(s)
+[newshell] FOLLOW-UP for clean-stale-build-lock: CHECKED, 13 lines
+inbox: 16:00:00.655757 plan "clean-stale-build-lock" PASSED at step 2/2 list-after-clean
+   llm: The clean-stale-build-lock plan passed: the lock is gone and hello/ holds
+   llm: Makefile, hello.c and hello.o. The earlier build-and-test-hello died at make,
+   llm: so amend that plan: insert a step before make that removes any stale lock,
+   llm: then submit the amended plan so the failure cannot recur.
+   follow-up proposal: CHECKED, 13 lines (it is now PROPOSAL; ~run runs it)
+  1 -- The clean-stale-build-lock plan passed: the lock is gone and hello/ holds
+  2 -- Makefile, hello.c and hello.o. The earlier build-and-test-hello died at make,
+  3 -- so amend that plan: insert a step before make that removes any stale lock,
+  4 -- then submit the amended plan so the failure cannot recur.
+  5 failed = jobs~find('build-and-test-hello')
+  6 fixed = failed~amend('build-and-test-hello-retry')
+  7 s = fixed~insertStep(2, 'remove-stale-lock')
+  8 s~does(ws, 'remove', .Array~of('hello/build.lock'))
+  9 s~onFail('continue')
+ 10 s~passIf('fileAbsent', 'hello/build.lock')
+ 11 fixed~notify('always')
+ 12 jobs~submit(fixed)
+ 13 return fixed
+autopilot: running the follow-up (2 left)
+[newshell] RUN start under the security manager, principal llm, policy /home/claude/nsl/newshell_llm_v0.1-dev4/etc/newshell.policy
+[newshell] AUTH ALLOW llm METHOD JOBBOARD~submit  rule 15
+[newshell] JOB SUBMITTED PLAN build-and-test-hello-retry
+[newshell] RUN done in 0.001s, returned a PLAN
+name       build-and-test-hello-retry
+state      RUNNING
+stage      
+stepCount  4
+seconds    0.00
+[newshell] PLAN build-and-test-hello-retry start, 4 step(s)
+[newshell] PLAN build-and-test-hello-retry step 1/4 unzip
+[newshell] AUTH ALLOW llm METHOD WORKSPACE~run:unzip /tmp/nsdied rule 16
+[newshell] RUN /usr/bin/unzip -o hello.zip in /tmp/nsdied
+[newshell] RUN exit 0 in 0.00s, stdout 3 lines, stderr 0 lines
+[newshell] PLAN build-and-test-hello-retry step 1/4 unzip PASS all 2 check(s) passed
+[newshell] PLAN build-and-test-hello-retry step 2/4 remove-stale-lock
+[newshell] AUTH ALLOW llm METHOD WORKSPACE~remove /tmp/nsdied/hello/build.lock rule 19
+[newshell] PLAN build-and-test-hello-retry step 2/4 remove-stale-lock PASS all 1 check(s) passed
+[newshell] PLAN build-and-test-hello-retry step 3/4 make
+[newshell] AUTH ALLOW llm METHOD WORKSPACE~run:make /tmp/nsdied rule 17
+[newshell] RUN /usr/bin/make -C hello in /tmp/nsdied
+[newshell] RUN exit 0 in 3.05s, stdout 7 lines, stderr 0 lines
+[newshell] PLAN build-and-test-hello-retry step 3/4 make PASS all 2 check(s) passed
+[newshell] PLAN build-and-test-hello-retry step 4/4 test-run
+[newshell] AUTH ALLOW llm METHOD WORKSPACE~run:./hello/hello /tmp/nsdied rule 18
+[newshell] RUN /tmp/nsdied/hello/hello in /tmp/nsdied
+[newshell] RUN exit 0 in 0.00s, stdout 1 lines, stderr 0 lines
+[newshell] PLAN build-and-test-hello-retry step 4/4 test-run PASS all 2 check(s) passed
+[newshell] PLAN build-and-test-hello-retry PASSED at 4/4 test-run in 3.06s
+[newshell] NOTIFY claude about build-and-test-hello-retry (592 chars, state PASSED)
+[newshell] PROVIDE job a PLAN identity plan:build-and-test-hello-retry:-94410579006513
+[newshell] PROMPT "History (oldest first; jobs~find(name) gives any of them)..." - round 1 (draft)
+[newshell] REPLY ok in 631 out 57 cache read 2122 ms 675 usd 0.000113
+[newshell] SOURCES 0 checked, cache hits 47 misses 11
+[newshell] PROMPT round 2 (review against 0 method sources)
+[newshell] REPLY ok in 747 out 66 cache read 2122 ms 619 usd 0.000129
+[newshell] SOURCES 0 checked, cache hits 47 misses 11
+[newshell] CHECK CHECKED 0 problem(s)
+[newshell] FOLLOW-UP for build-and-test-hello-retry: CHECKED, 3 lines
+inbox: 16:00:05.284443 plan "build-and-test-hello-retry" PASSED at step 4/4 test-run
+   llm: The retry plan passed all four steps. Step 2 found build.lock already absent,
+   llm: so the earlier clean worked. Nothing is left to fix; no new job is submitted.
+   follow-up proposal: CHECKED, 3 lines (it is now PROPOSAL; ~run runs it)
+  1 -- The retry plan passed all four steps. Step 2 found build.lock already absent,
+  2 -- so the earlier clean worked. Nothing is left to fix; no new job is submitted.
+  3 return .nil
+autopilot: running the follow-up (1 left)
+[newshell] RUN start under the security manager, principal llm, policy /home/claude/nsl/newshell_llm_v0.1-dev4/etc/newshell.policy
+[newshell] RUN done in 0.000s, returned nothing
+nsh> jobs
+name                        state   stage                 stepCount  seconds
+build-and-test-hello        DIED    2/3 make              3          3.04
+review-make-killed          PASSED  3/3 tail-make-err     3          0.01
+clean-stale-build-lock      PASSED  2/2 list-after-clean  2          0.01
+build-and-test-hello-retry  PASSED  4/4 test-run          4          3.06
+nsh> quit
