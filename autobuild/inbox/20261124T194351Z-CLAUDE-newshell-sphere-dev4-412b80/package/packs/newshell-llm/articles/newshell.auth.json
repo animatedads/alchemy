@@ -1,0 +1,39 @@
+{
+ "kind": "article",
+ "id": "newshell.auth",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev4",
+ "title": "The Auth: one lockout point for remote access",
+ "section": "rollout",
+ "summary": "Design decided by Tom Dyer, 24 Nov 2026 (not built). A shell gets an Auth: not a logon. A logon may request one, but getting an Auth is a request-and-lock operation: the Auth is locked to the shell that requested it (session, process, principal). The Auth key lives in a su-locked account (no login shell, locked password, reached only by su from root), validated through one means only; that account signs for the shell, like ssh-agent: the shell holds a handle, never the key, so an LLM in the shell cannot copy it. RTO2 requests are signed under the Auth for n, where n is both a number of requests and a time window, whichever runs out first. On the target host the request runs under the Auth's delegate (a local principal with its own NewShell policy); if the Auth has no delegate on that host, RTO2 rejects it. Locking the Auth stops remote access everywhere: because every signature passes the su-locked account, receivers accept a grant until n runs out and do not call the authority per request (Tom: signing there is sufficient).",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "An Auth is requested and locked, never implied by a logon",
+  "The Auth key never leaves the su-locked account; it signs, the shell asks",
+  "n is both a count and a time window",
+  "No delegate on the host: RTO2 rejects",
+  "One lockout point: lock the Auth"
+ ],
+ "procedure": [
+  "Build on the dev4 verifier slot: an AlchemyRTOAuthVerifier asking the host validator",
+  "Add RTO_AUTH_LOCKED, RTO_AUTH_EXPIRED and RTO_NO_DELEGATE to admit",
+  "Put the delegate decision in the RTO2 identity seam (IdentityDirectory~aclDecision, rexxos_rto2_grid dev16/dev17)",
+  "Claude's additions, not yet ruled on: a request counter per Auth so a signed request cannot be replayed within n; a second check at activation so an Auth locked after delivery still stops the run",
+  "Reuse the SSC pattern (signed challenge, short-lived session, revocation per request, fresh challenge for sensitive actions) rather than a second scheme"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/alchemy_rto_core_v0.1-dev4/src/AlchemyRTO.cls",
+   "sha256": "b16f4263df7c9772e3f7da36b9511c0868910d77399cb6b12e0d415aac26f0c3",
+   "claim": "the verifier slot the Auth plugs into"
+  }
+ ],
+ "related": [
+  "newshell.rto2",
+  "newshell.security"
+ ],
+ "qualification_boundaries": {
+  "status": "design decided; not built",
+  "field": "not yet run on an ED209 node"
+ }
+}

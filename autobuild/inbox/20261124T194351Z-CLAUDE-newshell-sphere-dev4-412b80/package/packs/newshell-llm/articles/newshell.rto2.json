@@ -1,0 +1,43 @@
+{
+ "kind": "article",
+ "id": "newshell.rto2",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev4",
+ "title": "Plans travel on RTO2, never on oorexx_rto",
+ "section": "rollout",
+ "summary": "RTO2's core (AlchemyRTO, API alchemy.rto/0.1) sends state, never code: the receiver supplies an object of its own installed class, reconstruction is inert, bind and activate are separate. A NewShell Plan travels this way: the Plan class is on the MU from a digest-checked kit; only the plan's state crosses. On 24 Nov a two-process probe showed dev3 reconstruct checked nothing (wrong target, foreign schema, tampered and stale envelopes all accepted); alchemy_rto_core v0.1-dev4 (Claude (Opus 5.5)) adds admit: RTO_SCHEMA, RTO_SEQUENCE, RTO_WRONG_TARGET, RTO_STALE, RTO_DIGEST (SHA-512 over a canonical envelope), RTO_SEAL (HMAC-SHA-512 shared key, or Ed25519 where the receiver holds only public keys); lifecycle recorded. 20 checks in two processes; published 3dda4fa5, passed on Tom's host (5.3.0 r13196). The older oorexx_rto (RTOSerializer, wire label oorexx.rto.v2) rebuilds classes from shipped method source: shipped init, leaf and superclass methods ran address system on the receiver with RTOSecurityManager supplied. It must not be used between nodes.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "State travels, code never does",
+  "Between nodes always pass a verifier: a digest alone detects damage, not an attacker",
+  "Every RTO_* refusal is fail-closed; the target is untouched"
+ ],
+ "procedure": [
+  "Capture with a sealer; reconstruct with a verifier; then bind and activate under the receiving policy"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/alchemy_rto_core_v0.1-dev4/src/AlchemyRTO.cls",
+   "sha256": "b16f4263df7c9772e3f7da36b9511c0868910d77399cb6b12e0d415aac26f0c3",
+   "claim": "admit and the sealers"
+  },
+  {
+   "artifact": "packages/alchemy_rto_core_v0.1-dev4/README.md",
+   "sha256": "954a012bd2eeccd4ded78ba0718e348979c36c26631883cdddf1c88108522edc",
+   "claim": "probe results and limits"
+  },
+  {
+   "artifact": "packages/alchemy_rto_core_v0.1-dev4/tests/recv.rex",
+   "sha256": "9179576ba173a8538140360789a7fda67849d05545cb07e91e4bb9e7ed3efafc",
+   "claim": "the attacks the receiver refuses"
+  }
+ ],
+ "related": [
+  "newshell.auth",
+  "newshell.next"
+ ],
+ "qualification_boundaries": {
+  "status": "core built and published; NewShell round trip not built",
+  "field": "not yet run on an ED209 node"
+ }
+}

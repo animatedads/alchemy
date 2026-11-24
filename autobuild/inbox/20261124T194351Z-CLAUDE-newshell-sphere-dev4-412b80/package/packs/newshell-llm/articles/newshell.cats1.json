@@ -1,0 +1,63 @@
+{
+ "kind": "article",
+ "id": "newshell.cats1",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev4",
+ "title": "cats1: policy, config and kit",
+ "section": "rollout",
+ "summary": "etc/cats1.policy turns Tom's standing rule into deny lines for every principal: Firewall, Keys, Forwarder, Host reboot, and run:nft iptables ssh-keygen systemctl reboot shutdown. Xtpd is denied until Tom adds an allow line (allow codex Xtpd bringup /etc/xtpd/xtpd.conf). Codex may submit jobs and remove files in /var/lib/newshell/work, nothing else. etc/agent.conf provides mu, net, svc, xtpd, host and ws. The cats contract forbids build tools on cats1, so the compile chain is a demonstration elsewhere, not a cats1 job. Kit: newshell-kit-v0.1-dev6-jammy.tar.gz (sha256 64e3edc6d3b8bfc73398e2fc9073bb8adc4de997188b81e9ee084a6eb07be120), built in the jammy chroot. Installed on cats1 with Tom's approval and proven there by Codex (REQ-00005621, 24 Nov): KIT_OK, self-test PASS with real readings (xtp_peers elementCount 3; audit thin 1, findingCount 0, invokerOnly 1, INVOKER sudo), nothing left running, post-test audit THIN. dev6 fixed what dev5 found on cats1: the audit counted its own sudo caller (now INVOKER), and the wrapped third xtp_peers element was lost. The mu-tools dev3 audit (programs and files, packages/mu_tools_v0.1-dev3) is separate; newshell's MuAuditor still uses the dev2 checks.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Never without Tom's explicit yes: change a firewall, rotate or copy a key, replace the WAN forwarder, reboot a host",
+  "Port 22 stays open until SSH over XTP has survived a reboot",
+  "Installing the kit on cats1 is an order marked NEEDS TOM'S DIRECT APPROVAL"
+ ],
+ "procedure": [
+  "Verify the kit from / (sha256sum -c opt/newshell/SHA256SUMS), check ldd, run tests/kit_selftest.sh as root"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/etc/cats1.policy",
+   "sha256": "88308fd7e2956ddf5ae0bdb40d4fb2528714cdd39a8b0b32209557d86321d507",
+   "claim": "the cats1 policy"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/etc/agent.conf",
+   "sha256": "98f5cb3dd41c1d673791c7eccb2dbb31e3eae139577302af8c91d8dd291023ff",
+   "claim": "the cats1 agent config"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/tests/kit_selftest.sh",
+   "sha256": "5a11eb8d3152e0280cfa26f3fea8ede2aa1e6ade0f9af13cd8b356d575bfa92f",
+   "claim": "the kit self-test"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/tests/build_newshell_kit.sh",
+   "sha256": "e9df923572f2b54557f547643c5c7e4e18650dd58da8a3dec72ea4283eadaf2b",
+   "claim": "the kit build"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/VALIDATION_kit_selftest_chroot.txt",
+   "sha256": "15c769ef6a6195f3e233c9d5cebbd1ad0040ae5f191a835ff70716caf3498500",
+   "claim": "the chroot rehearsal"
+  },
+  {
+   "artifact": "packages/mu_tools_v0.1-dev3/README.txt",
+   "sha256": "48bd71a862306afa85c09b30f5686fa9fe6853d14dc0be536e76ac57ae22c462",
+   "claim": "mu-tools dev3: programs and files checked"
+  },
+  {
+   "artifact": "packages/mu_tools_v0.1-dev3/etc/mu_contract_cats.txt",
+   "sha256": "314f0ab925905011f0a409db5dd1582b274fde6a52b772bd369c0c154e33a8c4",
+   "claim": "cats contract v0.3"
+  }
+ ],
+ "related": [
+  "newshell.agent",
+  "newshell.next"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}

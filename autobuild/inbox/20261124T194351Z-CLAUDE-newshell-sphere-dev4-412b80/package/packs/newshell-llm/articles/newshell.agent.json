@@ -1,0 +1,44 @@
+{
+ "kind": "article",
+ "id": "newshell.agent",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev4",
+ "title": "Codex as a principal: nsh-agent",
+ "section": "agent",
+ "summary": "bin/nsh-agent.rex (kit: /opt/newshell/bin/nsh-agent): describe (the brief an LLM is given), check FILE (the check plus the source of every method FILE calls), run FILE [--follows JOB] [--wait S] (runs as the config principal, default codex, waits for submitted jobs, prints each report), jobs, report JOB. stdout is for the agent, progress on stderr; exit 0 ok, 1 a job FAILED/DIED, 2 rejected/refused/error. Agent is a ShellContext with no LLM client. A JobStore keeps each settled job as JSON in the state directory and every invocation restores them, so jobs~find, amend and History work across separate commands. Plan steps run as their owner's principal.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Codex works one command at a time; nothing it needs may live only in one process",
+  "Plan steps run as the principal that owns the plan",
+  "Codex reads the report from run; it never polls a build"
+ ],
+ "procedure": [
+  "Write the proposal to a file, nsh-agent check it, then nsh-agent run it; answer a stopped job with --follows JOBNAME"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/src/ShellAgent.cls",
+   "sha256": "c4f279c5e60a60830a23cac8e894c7f1f52ece39f0ea81f8ed4cd1152d26b390",
+   "claim": "Agent, JobStore, restore, makeObject"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/bin/nsh-agent.rex",
+   "sha256": "84fe7804d2bdce1ccedcf65b411a0d5fa6be7a72a49e66ce121ba38c4d12671a",
+   "claim": "the commands and exit codes"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/tests/test_agent.rex",
+   "sha256": "3075ed0f0c095c5754e06a523d58d18d5394020d2a9722abd7fde8da7cb3c983",
+   "claim": "the killed-compile chain as separate processes; refusals; objects"
+  }
+ ],
+ "related": [
+  "newshell.mu-objects",
+  "newshell.cats1",
+  "newshell.followups"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}
