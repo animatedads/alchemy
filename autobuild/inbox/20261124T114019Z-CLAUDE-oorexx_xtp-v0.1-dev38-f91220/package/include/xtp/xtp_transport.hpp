@@ -1,0 +1,261 @@
+#pragma once
+#include "xtp/xtp_route.hpp"
+#include "xtp/xtp_priority.hpp"
+#include "xtp/xtp_service.hpp"
+#include "xtp/xtp_security.hpp"
+#include <cstdint>
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+
+namespace xtp {
+
+struct SendOptions {
+    int timeout_ms = 250;
+    int retries = 12;
+    uint32_t key = 0;
+    bool little_endian = true;
+    PrioritySpec priority{};
+    // XTP common-header ROUTE value for this context. 0 means unset.
+    uint32_t route_value = 0;
+    // Application-facing XTP target.  This is a named service, never an IP address.
+    std::string service_name;
+    // Sender-side operational capacity ticket. 0 means unlimited.
+    uint64_t max_rate_bytes_per_sec = 0;
+    // dev27: maximum data bytes carried by one FIRST/DATA packet.  A message
+    // (plus its named-service segment) that fits in one segment is sent as a
+    // single FIRST exactly as in dev26; a larger one becomes a FIRST+DATA
+    // stream that the receiver must be dev27 or later to reassemble.
+    // 0 = automatic: L2 = interface MTU - 40 (no IP fragmentation exists on
+    // L2); raw36 and UDP = the largest single IP datagram, so everything that
+    // worked before dev27 keeps the identical single-packet path.  Set it
+    // explicitly (for example 1200) on lossy WAN routes to avoid relying on IP
+    // fragmentation.  Rounded down to a multiple of 8; minimum 64.
+    size_t segment_bytes = 0;
+    // dev33: protection (docs/SECURITY.md).  A named service with a profile
+    // (authenticate or encrypt) is always sent protected, under the service's
+    // newest active key, as a FIRST+DATA stream.  This option is a minimum:
+    // "none" never lowers the profile.  key_principal picks among keys held
+    // for particular principals.
+    std::optional<Protection> protection;
+    std::string key_principal;
+};
+
+struct SendResult {
+    Route route;
+    int attempts = 0;
+    size_t logical_bytes = 0;
+    size_t wire_bytes = 0;
+    uint32_t rseq = 0;
+    uint32_t dseq = 0;
+    uint32_t alloc = 0;
+    uint32_t peer_rate_bytes_per_sec = 0xffffffffu;
+    uint32_t peer_burst_bytes = 0xffffffffu;
+    uint32_t route_value = 0;
+    uint32_t peer_return_route = 0;
+    uint32_t peer_xroute = 0;
+    // dev27: information packets in the transaction (1 = single FIRST).
+    size_t segments = 1;
+    size_t retransmitted_packets = 0;
+    // dev33: protection used, and packets from the receiver dropped because
+    // their tag did not verify (including unauthenticated refusals)
+    Protection protection = Protection::None;
+    uint64_t key_id = 0;
+    size_t auth_failures = 0;
+};
+
+
+struct MulticastOptions {
+    int timeout_ms = 250;
+    int retries = 12;
+    uint32_t key = 0x23456701u;
+    bool little_endian = true;
+    size_t expected_receivers = 1;
+    bool reliable = true;
+    int ttl = 1;
+    bool loopback = true;
+    PrioritySpec priority{};
+    // Maximum logical wire bytes carried by one FIRST/DATA information segment.
+    // Values below 64 are rejected; the default is conservative for routed paths.
+    size_t segment_bytes = 1200;
+    // Reliable multicast flow control begins conservatively with one
+    // information segment, then advances only within the minimum ALLOC
+    // advertised by the receiver population.
+    bool allocation_pacing = true;
+    // XTP receiver-advertised RATE/BURST pacing.  Before receiver status is
+    // known, these conservative sender defaults are used.  0xffffffff disables
+    // rate pacing, matching XTP's RATE=-1 convention.
+    bool rate_pacing = true;
+    uint32_t default_rate_bytes_per_sec = 0xffffffffu;
+    uint32_t default_burst_bytes = 0xffffffffu;
+    std::string service_name;
+};
+
+struct MulticastSendResult {
+    Route route;
+    int attempts = 0;
+    size_t logical_bytes = 0;
+    size_t wire_bytes = 0;
+    size_t acknowledgements = 0;
+    size_t required_acknowledgements = 0;
+    std::vector<std::string> responders;
+    size_t packets = 0;
+    size_t retransmitted_packets = 0;
+    size_t rollback_events = 0;
+    uint32_t slowest_rseq = 0;
+    uint32_t slowest_alloc = 0;
+    size_t allocation_rounds = 0;
+    size_t allocation_stalls = 0;
+    uint32_t slowest_rate_bytes_per_sec = 0xffffffffu;
+    uint32_t slowest_burst_bytes = 0xffffffffu;
+    size_t rate_paced_bursts = 0;
+    uint64_t rate_sleep_microseconds = 0;
+};
+
+struct QualificationResult {
+    Route route;
+    std::string provider;
+    std::string method;
+    int attempts = 0;
+    uint32_t generation_before = 1;
+    uint32_t generation_after = 1;
+};
+
+struct ListenOptions {
+    int timeout_ms = 0; // 0 = blocking
+    size_t max_logical_bytes = 64u * 1024u * 1024u;
+    uint32_t receive_window = 1024u * 1024u;
+    // Receiver-advertised XTP rate-control parameters returned in CNTL.
+    // RATE=0xffffffff disables rate control.  BURST is bytes per burst.
+    uint32_t advertised_rate_bytes_per_sec = 0xffffffffu;
+    uint32_t advertised_burst_bytes = 0xffffffffu;
+    // Multicast reject suppression follows the XTP rule: before emitting a
+    // reject, listen briefly for another receiver's multicast reject. If that
+    // reject asks the sender to roll back at least as far as we require, ours
+    // is suppressed.
+    int reject_suppression_ms = 20;
+    // Optional XTP ROUTE value to offer back to a peer via CNTL XROUTE.
+    // 0 disables route exchange.
+    uint32_t exchange_route_value = 0;
+    // Empty preserves legacy accept-any behavior.  A non-empty list causes FIRST
+    // admission to fail closed unless its named service is registered here.
+    std::vector<std::string> allowed_services;
+    // dev26: replay suppression is keyed by (peer host, KEY, FIRST payload
+    // digest), not KEY alone.  Two hosts that choose the same KEY, and two
+    // different contexts whose 31-bit KEYs collide on one host (for example
+    // XMP1 chunks of different transfers), are no longer falsely suppressed; a
+    // genuine retransmission carries identical bytes and still is.  Peer host is
+    // the source MAC (L2) or source IPv4 address (L3/L4, port excluded so a
+    // restarted sender retrying the same KEY and payload is still suppressed).
+    // The window is bounded: once more than this many contexts have been seen,
+    // the oldest are forgotten and could be delivered again.  0 is refused.
+    size_t replay_window_entries = 65536;
+    // dev30: DIAG refusals (dev29) answer an unauthenticated source, so they
+    // are rate limited: at most diag_rate_per_sec per peer host (bursts up to
+    // diag_burst) and diag_global_rate_per_sec in total (bursts up to twice
+    // that).  Beyond the limit a refused peer gets silence.  0 in either rate
+    // turns DIAG off.  A DIAG is also never larger than the packet that caused it.
+    uint32_t diag_rate_per_sec = 10;
+    uint32_t diag_burst = 20;
+    uint32_t diag_global_rate_per_sec = 100;
+    // dev33: a service with a profile refuses unprotected or weaker messages
+    // with DIAG 17 AUTH_REQUIRED.  require_protection also refuses unprotected
+    // messages for services that have no profile.  Protected opens are rate
+    // limited before any cryptography, per sending address and in total.
+    bool require_protection = false;
+    uint32_t open_rate_per_sec = 200;
+    uint32_t open_burst = 400;
+    uint32_t open_global_rate_per_sec = 2000;
+    // Protected message contexts remembered (for retransmissions and the
+    // close of a finished message); the oldest are forgotten first.
+    size_t protected_contexts = 4096;
+};
+
+struct MulticastListenerStats {
+    size_t reject_notices_sent = 0;
+    size_t reject_notices_suppressed = 0;
+};
+
+struct ReceiveResult {
+    Route route;
+    uint32_t key = 0;
+    uint32_t sequence = 0;
+    uint32_t route_value = 0;
+    bool little_endian = true;
+    bool replay = false;
+    PrioritySpec priority{};
+    std::string peer_address;
+    std::string service_name;
+    size_t wire_bytes = 0;
+    std::vector<uint8_t> logical;
+    // dev33: how the message was protected, and under which key
+    Protection protection = Protection::None;
+    uint64_t key_id = 0;
+    std::string key_principal;
+    uint64_t key_serial = 0;            // dev37: the key table's serial of that key (ServiceKey::serial)
+};
+
+
+// XTP multicast reject coverage rule.  An observed reject at or before our
+// own RSEQ already requests sufficient rollback, so our reject is redundant.
+bool multicast_reject_covers(uint32_t own_rseq, uint32_t observed_rseq);
+
+// Carrier-independent XTP client send. Route.layer/carrier determines the
+// actual L2/L3/L4 provider. Wire filters are taken from Route::wire_filters.
+SendResult send_message(const Route& route, const std::vector<uint8_t>& logical,
+                        const SendOptions& options = {});
+
+// XTP 3.4 multicast message/stream transaction. FIRST carries the initial
+// information segment and subsequent bytes are carried in DATA packets.
+// Reliable mode uses sequence-level go-back-N: receiver CNTL RSEQ values
+// identify the earliest byte that must be replayed. NOERR mode sends once.
+MulticastSendResult send_multicast(const Route& route, const std::vector<uint8_t>& logical,
+                                   const MulticastOptions& options = {});
+
+// Live path qualification uses a reserved XTP transaction that is acknowledged
+// by the remote Listener but never delivered to the application. The carrier
+// remains provider-specific: L2 EtherType 0x817D, native IP protocol 36, or
+// configured L4 carrier.
+QualificationResult qualify_path(const Route& route,
+                                 const SendOptions& options = {});
+
+// Persistent receive-side endpoint.  It owns the carrier socket, acknowledges
+// XTP FIRST transactions, suppresses duplicate KEY delivery, and decodes the
+// self-describing wire-filter envelope before returning application bytes.
+// The same class is used for L2 EtherType 0x817D, L3 protocol 36 and L4 UDP.
+class Listener {
+public:
+    explicit Listener(const Route& route, const ListenOptions& options = {});
+    ~Listener();
+    Listener(Listener&&) noexcept;
+    Listener& operator=(Listener&&) noexcept;
+    Listener(const Listener&) = delete;
+    Listener& operator=(const Listener&) = delete;
+
+    ReceiveResult receive();
+    const Route& route() const;
+    void close();
+private:
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
+};
+
+class MulticastListener {
+public:
+    explicit MulticastListener(const Route& route, const ListenOptions& options = {});
+    ~MulticastListener();
+    MulticastListener(MulticastListener&&) noexcept;
+    MulticastListener& operator=(MulticastListener&&) noexcept;
+    MulticastListener(const MulticastListener&) = delete;
+    MulticastListener& operator=(const MulticastListener&) = delete;
+    ReceiveResult receive();
+    const Route& route() const;
+    MulticastListenerStats stats() const;
+    void close();
+private:
+    struct Impl;
+    std::unique_ptr<Impl> impl_;
+};
+
+} // namespace xtp

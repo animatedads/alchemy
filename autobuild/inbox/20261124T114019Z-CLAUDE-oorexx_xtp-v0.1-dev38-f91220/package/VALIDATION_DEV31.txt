@@ -1,0 +1,100 @@
+ooRexx XTP v0.1-dev31: validation record
+==========================================
+
+Architecture: Tom Dyer
+Coding: ChatGPT and Codex (dev1-dev25); Claude (Opus 5.5) for dev26 to dev31
+Validation written and run by: Claude (Opus 5.5), 27 October 2026
+Independent code review: a separate Claude (Opus 5.5) agent that had not seen the work being
+written, before commit
+
+Baseline:  oorexx_xtp_v0.1-dev30 as committed to animatedads/alchemy main in 1e6e8ee3
+Planner:   oorexx_operational_degradation_planner_v0.1-dev5, built locally
+ooRexx:    Open Object Rexx 5.3.0 r13196 (/usr/local/bin/rexx)
+Host:      Linux 6.18.44 x86_64, g++ 13.3.0, -O2 -std=c++17 -Wall -Wextra -Werror, run as root
+           (so the raw36 and AF_PACKET tests ran rather than skipped)
+Evidence class: LOCAL_PASS. FIELD_PASS is NOT claimed.
+
+Changes against dev30 (lines added / removed)
+  src/xtp_transport.cpp        +739 -36  70fe788693a80ec0e1bb6aa098ce61079fa5ccec333b8630878a0b1b975d920c
+      interactive contexts (sessions); DIAG limiter moved to detail::DiagLimiter (behaviour
+      unchanged); VALUE 4 MODE_UNSUPPORTED; PayloadPacket carries the return bit, trailer flags
+      and descriptor flags; stream sender gives up after a bounded time without progress
+  src/xtp_rexx_native.cpp      +171 -1   10 session routines for ooRexx
+  src/xtp_service.cpp          +4 -3     named-service descriptor byte 4 = flags (INTERACTIVE 0x01)
+  include/xtp/xtp_service.hpp  +7 -1
+  tests/test_segmentation.cpp  +26 -1    S10
+  Makefile                     +5 -2     target test-session
+  New: include/xtp/xtp_session.hpp, rexx/XtpSession.cls (157 lines), tests/test_session.cpp (327),
+       tests/test_xtp_session_rexx.sh and its server and client .rex files, docs/SESSIONS.md,
+       docs/XTP_SPEC_GAPS_DEV31.md
+  Metadata: CAPABILITIES.json (dev31_interactive_contexts), DEPENDENCIES.json, integration.json
+  (adds interactive-sessions and interactive-sessions-oorexx; interop peer is now dev30),
+  docs/DIAG_REGISTRY.md (VALUE 4; libxtp now sends 19), README.md
+
+1. Session suite (make test-session): 22/22 PASS (S9 has two checks); 14 runs since the last change to session code, no failure
+   S1  open, a message each way, both ends close                                 PASS
+   S2  2 MB each way at once, relay dropping every 5th forward / 7th reverse     PASS 60-139 ms, ~1,210 drops, ~380 resends
+   S3  EOM: sizes 1,100,1408,1409,5000,3,70000; also read 7 bytes at a time      PASS
+   S4  half-close                                                                PASS
+   S5  backpressure: writer held at 131,072 bytes (64 KB window + 64 KB buffer)   PASS
+   S6  refused service                                                           PASS ~50 ms, SERVICE_NOT_ADMITTED
+   S7  dev30 Listener on the port: open fails at its 800 ms timeout              PASS ~850 ms, with a reason
+   S8  abort reaches the peer                                                    PASS
+   S9a keepalive (100 ms) holds an idle session past dead_after (600 ms)         PASS
+   S9b peer silenced: context fails with a reason                                PASS
+   S10 forged END from another port ignored                                      PASS
+   S11 20 concurrent sessions x 50 KB echo; contexts released after linger       PASS 20/20, 0 left
+   S12 first 3 reverse packets (accept, status) dropped                          PASS
+   S13 raw IP protocol 36 on loopback, 300 KB echo                               PASS
+   S14 L2 EtherType 0x817D on lo, 300 KB echo                                    PASS
+   After the independent review:
+   S15 listener that cannot bind throws (it crashed)                             PASS
+   S16 RSEQ inside a held segment frees nothing (out-of-bounds read)             PASS
+   S17 8,000 hostile out-of-order segments: <= 1024 held, within the window      PASS 24 ms
+   S18 10,000 one-byte messages: marks and buffers released                      PASS
+   S19 forged END (abort and graceful) and DIAG from the peer's own address      PASS
+   S20 lost abort resent when the peer next speaks                               PASS ~500 ms, was 30 s
+   S21 oversize segment_bytes refused at open                                    PASS
+
+2. ooRexx (tests/test_xtp_session_rexx.sh: two interpreter processes over native libxtp)
+   refused service raises SERVICE_NOT_ADMITTED; a short message and a 76,800-byte message of
+   every byte value echoed intact; half-close; close completes; 200 messages written on one
+   thread and read on another thread of the same session object                     PASS
+
+3. Independent review: 10 defects found, all fixed
+   HIGH   SessionListener crashed if the socket could not be opened                    S15
+   HIGH   peer-reported RSEQ inside a segment caused an out-of-bounds read             S16
+   HIGH   out-of-order store unbounded (memory, and CPU under the endpoint lock)       S17
+   MEDIUM EOM marks never released                                                     S18
+   MEDIUM END / DIAG not held to ECHO binding; SYNC bases predictable                  S19
+   MEDIUM abort sent once only                                                         S20
+   LOW    no linger when a finished Session was destroyed; END not retried            S2 timing
+   LOW    ooRexx classes had no uninit                                                 desk check
+   LOW    no maximum on segment_bytes                                                  S21
+   LOW    stderr line per hostile packet                                               desk check
+   The END retry was added after the first post-review regression run. There, S2 took 10 s,
+   because each close() lingered 5 s for a final END that had been lost.
+
+4. Stream sender fix, found by the final regression run
+   test-segmentation hung in 1 of about 35 runs: the S3 sender went on resending after the
+   listener had delivered and stopped reading, because the early wake for a SPAN hole never
+   counts as a timeout.  New segmentation S10 drives a fake receiver that reports a SPAN and
+   then goes silent:
+     dev30: still sending when killed at 60 s
+     dev31: "no progress for 3200 ms" after 3.2 s
+   25 further runs of the segmentation suite, under concurrent session load: no hang.
+
+5. Interop (make test-interop, PEER_ROOT = committed dev30, 150 KB, 20%/14% loss)
+   I1 dev31 -> dev30   36 resends     I2 dev30 -> dev31   35     I3 dev31 -> dev31   35     all delivered
+
+6. Full regression on dev31 (final run)
+   9 make targets: service, capacity-rate, auto-key, negative 7/7, segmentation 10/10,
+     interop 3/3, sync-diag 5/5, diag-hardening 8/8, session 22/22                  all rc=0
+   26 shell suites, run_tests.sh and the ooRexx suites included                      all rc=0
+   Totals: 152 PASS, 0 FAIL, 1 SKIP (proxy binary absent)
+
+7. Not run
+   - Real Ethernet between hosts, and the ED209 field path.
+   - Sessions across a real WAN, sessions lasting hours, and more than 20 concurrent sessions.
+
+Claude (Opus 5.5)
