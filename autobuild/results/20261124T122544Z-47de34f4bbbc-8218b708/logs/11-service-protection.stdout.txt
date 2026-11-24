@@ -1,0 +1,59 @@
+g++ -Iinclude -I/home/hc3/alchemy-autobuild/staging/run-bug4eyvx/build/planner/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -pthread -DXTP_TRANSPORT_SRC='"/home/hc3/alchemy-autobuild/staging/run-bug4eyvx/src/xtp_transport.cpp"' -o tests/test_security.bin tests/test_security.cpp build/xtp_security.o build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o -lcrypto
+./tests/test_security.bin
+  P1 protection=authenticate key=101 echo ok=1 data visible on the wire=1
+PASS P1 authenticate: the session works both ways under key 101, and its data is in clear on the wire
+  P2 108 ms, protection=encrypt, resent 381, marker on the wire=0
+PASS P2 encrypt: 2 MB each way through 20%/14% loss, byte-exact, closed; the plaintext never appears on the wire
+  P3 300 KB echo: byte-exact
+PASS P3 ChaCha20-Poly1305 suite, encrypt mode
+  P4 5 DATA packets changed in transit: receiver dropped 5, data byte-exact
+PASS P4 a changed byte (with valid XTP checksums) is dropped as unauthenticated and the data is repaired by retransmission
+  P5 after forged abort, graceful END and DATA from the peer's address: 'two', client dropped 3
+PASS P5 forged END (abort and graceful) and DATA from the peer's own address are dropped
+  P6 a captured DATA packet replayed 3 times: rejected 3, data byte-exact
+PASS P6 a replayed DATA packet is rejected by the anti-replay window
+  P7 replayed open FIRST: contexts before 0, accepted nothing
+PASS P7 a replayed open FIRST opens nothing (open nonce already seen)
+  P8 a clear open of svc.needs (keys: encrypt) is answered with DIAG VALUE 17 (AUTH_REQUIRED)
+PASS P8 an unprotected open of a service that has keys is refused with AUTH_REQUIRED
+  P9 XTP context refused by peer: AUTH_REQUIRED (code=1 value=17)
+PASS P9 require_protection refuses unprotected opens of services without keys
+  P10 first session key 1001, after rotation 1002; old session read 'still-on-1001', new 'new-on-1002'
+PASS P10 rotation: the new key opens new sessions; a session on the retiring key keeps working
+  P11 XTP: no active key for service svc.missing (it needs encrypt)
+PASS P11 open_session with protection demanded and no active key refuses before sending
+  P12 loaded 2 keys, profile encrypt, principal 'mu-07'; 644: XTP key file /tmp/xtp-test-iICivz/keys_644.tsv is readable or writable by group or others; chmod 600 it; bad: XTP key file /tmp/xtp-test-iICivz/keys_bad.tsv line 3: key id must be 16 hex digits; keys kept 2
+PASS P12 key file: loads at mode 600; refused at 644; a bad line is named and leaves the loaded keys in place
+  P13 20 MB on loopback: unprotected 258 MB/s, encrypted 182 MB/s
+PASS P13 throughput measured for both (recorded, not a pass/fail bound)
+  P14 key expired: profile encrypt; default open: XTP: no active key for service svc.sticky (it needs encrypt); open asking none: XTP: no active key for service svc.sticky (it needs encrypt); clear open answered AUTH_REQUIRED; after forget_profile: none
+PASS P14 profiles are sticky: an expired key leaves the service at encrypt, opens fail closed, "none" is only a minimum; forget_profile lowers it
+  P15 20000 replacements, 20735 concurrent checks, 0 without an encrypt key; bad sets: 'XTP key id must be non-zero' / 'XTP key id 1599 already belongs to service svc.other' / 'line 2: secret is not hex'; table unchanged=1
+PASS P15 replace_source is one step: no moment without the service's keys; a bad set is refused whole and changes nothing
+  P16 open captured at A, replayed to B (same service key): A session ok=1, B accept: nothing, B held 1 unconfirmed context(s)
+PASS P16 an open replayed to another listener holding the key never reaches accept(): the opener must prove the key first
+  P17 25 spoofed copies of the open over 2.5 s (dead_after 800 ms): server context open=0, packets the server sent the spoofed address=5 (XTP context timed out: nothing heard from the peer for 800 ms)
+PASS P17 a spoofed copy of the open neither keeps a dead context alive nor draws accepts (only its own keepalives and abort)
+  P18 105984 valid opens of a non-admitted service during the test: 40/40 echoes, worst round trip 0 ms; a fresh open during the flood: opened
+PASS P18 a key holder flooding valid opens does not stall sessions on the same listener, nor stop new opens
+  P19 key revoked: both ends closed after 1002 ms; opener: XTP key 1901 of service svc.revoke was revoked, replaced or expired; the context is closed; responder: XTP context aborted by peer
+PASS P19 revoking a key ends the contexts using it at both ends, within about a second
+  P20 symlink: XTP key file /tmp/xtp-test-iICivz/keys_link.tsv is a symbolic link; give the real path; other user's file: LOADED; real file loaded 1; bad secrets: secret is not hex | secret must be 64 hex digits | secret is not hex | 
+FAIL P20 key file: a symbolic link and another user's file are refused; secrets must be exact hex
+  P21 300 KB echo: raw36: XTP session raw36 socket: Operation not permitted L2: XTP session AF_PACKET socket: Operation not permitted
+FAIL P21 encrypted sessions over raw IP protocol 36 and over L2
+  P22 key installed for svc.late: the clear session closed after 1003 ms (XTP service svc.late now requires encrypt; this none context is closed / XTP service svc.late now requires encrypt; this none context is closed)
+PASS P22 a clear session ends when its service gets a profile
+  P23 300 clear opens of made-up services: 32 contexts held; then a protected open: opened
+PASS P23 clear opens of made-up services hold at most half the table; a protected open still succeeds
+  P24 18576 valid opens from 64 ports of 127.0.0.2; opens from 127.0.0.1 that succeeded: 6/6
+PASS P24 the open limit is per host: a flood from 64 ports of one host does not starve another host
+  P25 200 unconfirmed contexts with their accept resends spent: 0.000826154 s of CPU in 3 s
+PASS P25 unconfirmed contexts whose accept resends are spent do not spin
+  P26 one open sent twice to a listener that refuses it: 2 refusals, 2 distinct counters
+PASS P26 two refusals of the same open never reuse an AEAD nonce
+  P27 32,000 keys replaced twice in 35 ms, worst wait for the table 3.67682 ms; refused: invalid named service | invalid named service | invalid principal | 
+PASS P27 32,000 keys replace in O(n); invalid service names and principals are refused
+  P28 default opener used key 2801; opener naming alice used 2802 (listener saw principal alice); bob: XTP: no active key for service svc.gw (it needs encrypt)
+PASS P28 a client's key is used only by an opener naming that client, and the listener sees the client
+SECURITY SUITE: fail=2

@@ -1,0 +1,8 @@
+OPERATIONAL_PLANNER_DIR=/home/hc3/alchemy-autobuild/staging/run-bug4eyvx/build/planner bash tests/test_interop_selective.sh
+PASS I1 0.1-dev38 sender to 0.1-dev36 receiver, 150 KB, 20%/14% loss: SENT bytes=150000 segments=147 retransmitted=35 RECV_OK bytes=150000
+PASS I2 0.1-dev36 sender to 0.1-dev38 receiver, 150 KB, 20%/14% loss: SENT bytes=150000 segments=147 retransmitted=35 RECV_OK bytes=150000
+PASS I3 0.1-dev38 sender to 0.1-dev38 receiver, 150 KB, 20%/14% loss: SENT bytes=150000 segments=147 retransmitted=36 RECV_OK bytes=150000
+OPERATIONAL_PLANNER_DIR=/home/hc3/alchemy-autobuild/staging/run-bug4eyvx/build/planner bash tests/test_interop_protected.sh
+  sender: REFUSED: XTP L4 stream not acknowledged (1 segments): no progress after 5 timeouts; the receiver may not hold key 77, or may be older than dev33
+  older listener: NOTHING: XTP listener timeout
+PASS protected message to an older listener: refused there, nothing delivered

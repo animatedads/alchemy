@@ -1,0 +1,51 @@
+g++ -Iinclude -I/home/hc3/alchemy-autobuild/staging/run-bug4eyvx/build/planner/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -pthread -DXTP_TRANSPORT_SRC='"/home/hc3/alchemy-autobuild/staging/run-bug4eyvx/src/xtp_transport.cpp"' -o tests/test_message_security.bin tests/test_message_security.cpp build/xtp_multipath.o build/xtp_security.o build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o -lcrypto
+./tests/test_message_security.bin
+  M1 sent: ok, segments 1; received: authenticate key 3101; marker on the wire=1
+PASS M1 authenticate, one packet: delivered with its protection and key id; data in clear on the wire
+  M2 103 ms, 1525 segments, resent 495, protection encrypt; marker on the wire=0
+PASS M2 encrypt, 2 MB stream through 20%/14% loss: byte-exact; the plaintext never appears on the wire
+  M3 300 KB: byte-exact
+PASS M3 ChaCha20-Poly1305 suite, encrypt mode
+  M4 5 DATA packets changed in transit; data byte-exact
+PASS M4 a changed byte (with valid XTP checksums) is dropped and the data repaired by retransmission
+  M5 clear message to msg.needs (keys: encrypt): DIAG AUTH_REQUIRED; listener: XTP listener timeout
+PASS M5 a clear message to a service with keys is refused with AUTH_REQUIRED and not delivered
+  M6 captured message replayed to the same listener: XTP listener timeout
+PASS M6 a protected message replayed to the same listener is not delivered again
+  M7 the capture at pool node B: delivered once (documented limit: no handshake); second copy at B: not delivered
+PASS M7 a replay reaches another listener holding the key at most once (documented limit), never twice
+  M8 3 forged close-acknowledgements while the receiver had nothing: sender returned, dropped 3 unverified; receiver byte-exact
+PASS M8 forged close-acknowledgements are dropped: the sender reports success only after real delivery
+  M9 protection demanded, no key: XTP: no active key for service msg.nokey (it needs encrypt); asking none of an encrypt service: encrypt
+PASS M9 no active key refuses before sending; asking for none never lowers the profile
+  M10 key expired: XTP: no active key for service msg.sticky (it needs encrypt); packets on the wire: 0
+PASS M10 an expired key leaves the profile in place: the message is refused, never sent clear
+  M11 20 MB messages on loopback: unprotected 294 MB/s, authenticated 221 MB/s, encrypted 224 MB/s
+PASS M11 throughput measured (recorded, not a pass/fail bound)
+  M12 300 KB each: raw36: raw36 listener socket: Operation not permitted L2: AF_PACKET listener socket: Operation not permitted
+FAIL M12 encrypted messages over raw IP protocol 36 and over L2
+  M13 200 KB over 2 paths after a clear chunk for the same id, a 2^32-1 count and 40 transfers claiming 2^20 chunks: byte-exact, protection encrypt, key 4101; memory grew 0 KB (eager slots would be about 960 MB)
+PASS M13 multipath chunks are protected per service; a clear chunk is never mixed in; claimed chunk counts commit no memory
+  M14 clear FIRST with the return bit to msg.rb: listener XTP listener timeout, answer 0; 5 genuine DATA replaced in transit by clear DATA with the return bit: data byte-exact
+PASS M14 a FIRST or DATA with the return bit set is dropped: never delivered, never answered, never mixed into a stream
+  M15 clear FIRST flagged INTERACTIVE|AUTHENTICATED to msg.ia: listener XTP listener timeout
+PASS M15 a FIRST flagged interactive (and claiming protection) is never delivered as a message
+  M16 the same FIRST at two listeners holding the key: their first counters 8790258294326217072 and 7927354946766268828
+PASS M16 two listeners answering one FIRST start from different random counters: no AEAD nonce repeats
+  M17 empty protected message: sent; received 0 bytes, encrypt
+PASS M17 an empty protected message is sent as one FIRST and delivered
+  M18 segment_bytes 64: XTP segment_bytes 64 is too small for a protected message (at least 168)
+PASS M18 a protected segment that cannot hold the open block and tail is refused
+  M19 a 400 KB stream with two small messages arriving during it, protected_contexts=2: stream byte-exact, messages received 3
+FAIL M19 a finished context is evicted before one in the middle of a stream
+  M20 key revoked 1.1 s into a 4 s stream: sender XTP key 4801 of service msg.revoke was revoked, replaced or expired during the send; receiver nothing, contexts it forgot 1
+PASS M20 a key revoked mid-stream ends the context at the receiver too, and stops the send
+  M21 secret replaced 1.1 s into a 4 s stream: sender XTP key 4901 of service msg.replace was revoked, replaced or expired during the send; receiver nothing, contexts it forgot 1; session kept after the same secret: yes, closed 522 ms after a new one: XTP key 4902 of service ses.replace was revoked, replaced or expired; the context is closed
+PASS M21 a new secret under the same key id ends message and session contexts; the same secret again changes nothing
+  M22 same secret under the same id: principal changed: closed after 1003 ms suite changed: closed after 1003 ms
+PASS M22 the same secret held for another principal, or used with another suite, ends the session as a new secret does
+  M23 chunk 0 under the old secret, chunk 1 under the new: not joined (XTP listener is closed); sends: ok / ok
+PASS M23 multipath chunks sent under an old and a new secret are never joined into one transfer
+  M24 close() from another thread: receive returned after 10 ms (XTP listener is closed)
+PASS M24 close() from another thread ends a receive() that waits with no timeout
+MESSAGE SECURITY SUITE: fail=2

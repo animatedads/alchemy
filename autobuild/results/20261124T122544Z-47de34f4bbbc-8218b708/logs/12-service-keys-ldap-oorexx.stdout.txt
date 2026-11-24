@@ -1,0 +1,16 @@
+PASS client: keys from LDAP: 00000000000a11c0=retiring/ldap 00000000000a11c1=active/ldap
+PASS client: protection evidence over LDAP keys: keySource=ldap keyState=active
+PASS client: encrypted session over LDAP keys keyId=00000000000a11c1
+PASS client: LDAP unreachable, keys from the key file (ldap: LDAP connect failed: LDAP_CONNECT_FAILED)
+PASS client: protection evidence over key-file keys: keySource=file keyState=active
+PASS client: encrypted session over key-file keys keyId=00000000000a11c1
+PASS client: LDAP with no keys is a failure; the key file is used (ldap: no usable XTP keys under uid=mu-07,ou=nodes,dc=example,dc=org (can uid=mu-07,ou=node)
+PASS client: a secret reference outside the service prefix is refused (ldap: no usable XTP keys under dc=example,dc=org (can uid=mu-07,ou=nodes,dc=example,dc=org)
+PASS client: a source that raises falls through to the key file (raising: this key source always fails                       )
+PASS client: wrong secret cannot open: XTP session open: XTP interactive context not accepted by peer within 1500 ms (unreachable, not a dev32 SessionListener,
+PASS client: no keys left, profile still encrypt, open refused: XTP session open: XTP: no active key for service svc.ldap (it needs encrypt)    
+PASS server: keys from LDAP, count=2 profile of svc.ldap=encrypt
+PASS server: session 1 protection=encrypt keyId=00000000000a11c1 closed=1
+PASS server: session 2 protection=encrypt keyId=00000000000a11c1 closed=1
+XTP KEYS LDAP FIXTURE DONE connections=4
+PASS ooRexx XTP service keys: LDAP first, key file fallback (LDAP down, no keys, bad entry, raising source), wrong secret refused, profile kept with no keys, encrypted sessions over native libxtp
