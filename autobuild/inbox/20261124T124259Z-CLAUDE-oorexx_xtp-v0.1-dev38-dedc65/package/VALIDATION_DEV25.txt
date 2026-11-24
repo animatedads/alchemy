@@ -1,0 +1,31 @@
+XTP v0.1-dev25 validation
+
+Build:
+- C++17 -Wall -Wextra -Werror PASS
+- native ooRexx module built against ooRexx 5.3.0 r13196 headers PASS
+
+New capacity/key tests:
+- live UDP named-service capacity rate: 60,000 bytes at 300,000 B/s -> ~200 ms PASS
+- ooRexx named-service capacity rate -> ~213 ms PASS
+- automatic context KEY allocation: two repeated named-service sends both delivered PASS
+- cross-layer Storage ticket -> ooRexx XTP named service:
+  first 60,000-byte send at 300,000 B/s -> 0.201 s
+  capacity contraction -> 150,000 B/s
+  second send -> 0.401 s
+  both transactions delivered PASS
+
+Inherited regression checks completed after dev25 changes:
+- named service FIRST admission/delivery PASS
+- ooRexx native named-service registration/manager scope PASS
+- multicast reject suppression PASS
+- capability contract PASS
+- ooRexx native multicast PASS (using dev13 compatibility SocketProvider source available locally; current external authority remains dev16)
+- ooRexx RATE/BURST multicast PASS
+- SORT/DEADLINE PASS
+- ooRexx priority hook PASS
+- ROUTE/XROUTE PASS
+- operational-class enforcement mapping PASS
+- SocketSelector stream+multicast capability negotiation PASS
+- ooRexx transport-neutral planner hook PASS
+
+The monolithic tests/run_tests.sh exceeded the 120-second harness limit after the multicast RATE test; the remaining tests were rerun individually and passed. No failure was hidden as a pass.
