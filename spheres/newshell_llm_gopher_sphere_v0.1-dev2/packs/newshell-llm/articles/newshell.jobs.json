@@ -1,0 +1,40 @@
+{
+ "kind": "article",
+ "id": "newshell.jobs",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev2",
+ "title": "Plans the LLM registers",
+ "section": "jobs",
+ "summary": "jobs~plan(name)~step(name)~does(target, method, args)~passIf(kind, value). Check kinds: exitIs N (exitIs 0 on a non-program action means it completed), fileExists, fileAbsent, outputHas, outputLacks (these read the text of any result). onFail stop|continue (continue runs on, the plan still ends FAILED). timeout(s). jobs~submit(plan) is protected and starts the plan on its own thread. Each step action runs through a secured routine as llm. Plan states REGISTERED RUNNING PASSED FAILED DIED; settled means state final, owner told, inbox posted. notify fail|always. amend(newName), insertStep(at, name), removeStep(at), stepNamed(name), stepAt(at).",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "The LLM registers a multi-step plan object; each step carries its checks and pass/fail criteria (Tom Dyer, 2026-11-24)",
+  "The plan runs without the LLM watching it",
+  "Plan and watch loops run unguarded so the console can read them"
+ ],
+ "procedure": [
+  "Prefer stepNamed after insertStep: positions shift"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev5/src/ShellJobs.cls",
+   "sha256": "6b6d89f0e1ecc1501c3f2c2b1d04fb61e6fd9b8c03bfb5aa84ecfea3f50af5f9",
+   "claim": "JobBoard, Plan, PlanStep, StepCheck, StepOutcome, ShellInbox"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev5/tests/test_jobs.rex",
+   "sha256": "c9105d0237f519b0fa7009b2acbebb9517f131a98007a9cb5f2910a51dd3056f",
+   "claim": "failed build, passed build, refused rm, watches, no way round submit"
+  }
+ ],
+ "related": [
+  "newshell.workspace",
+  "newshell.died",
+  "newshell.followups",
+  "newshell.watches"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}

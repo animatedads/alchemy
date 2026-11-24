@@ -1,0 +1,37 @@
+{
+ "kind": "article",
+ "id": "newshell.next",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev2",
+ "title": "Next: newshell on ed209g, driven by Codex",
+ "section": "rollout",
+ "summary": "Goal (Tom Dyer, 2026-11-24): put newshell on ed209g (cats1) and have Codex drive the work there through it. Done in dev5: Codex as principal (nsh-agent), job store, MU objects, cats1 policy, kit and self-test. Next: install the kit on cats1 under Tom's approval and run the self-test; then let Codex examine the MU; reports to Codex through the Rasen Falcon mailbox; xtpd STATUS over the control socket; MU start beyond xtpd (MIs, mu-agent); orphan-process cleanup for a died step; an autopilot budget per chain; a fix for mu-tools HostCommand when a command is missing.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Every machine change goes as an order marked NEEDS TOM'S DIRECT APPROVAL",
+  "Codex asks Tom directly; an order never claims Tom approved"
+ ],
+ "procedure": [
+  "Install, self-test, then read-only examination first"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev5/README.md",
+   "sha256": "38c876e6642f81bf9ac79f5aea29a3cba80170e8a50ac3e59dd5966c014fc4cf",
+   "claim": "Not in dev5 list"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev5/etc/cats1.policy",
+   "sha256": "88308fd7e2956ddf5ae0bdb40d4fb2528714cdd39a8b0b32209557d86321d507",
+   "claim": "the policy any new object joins"
+  }
+ ],
+ "related": [
+  "newshell.start",
+  "newshell.cats1"
+ ],
+ "qualification_boundaries": {
+  "status": "plan; kit built and rehearsed, not yet on cats1",
+  "field": "not yet run on an ED209 node"
+ }
+}

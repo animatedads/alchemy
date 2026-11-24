@@ -1,0 +1,37 @@
+{
+ "kind": "article",
+ "id": "newshell.findings",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev2",
+ "title": "Findings and pitfalls",
+ "section": "qualification",
+ "summary": "ooRexx: P7 call x~y is a syntax error (made five times; run_tests.sh refuses to run while it is present). P8 /proc files report size 0, so lines() says 0. P9 a variable named RESULT is overwritten by the next message instruction (made twice; pre-check too). MutableBuffer~append(a, b) joins without spaces. A guarded method that loops holds the object lock (fixed: plan/watch loops unguarded). The security manager does not see .File/.Stream or value(..., ENVIRONMENT). API traps the live LLM found: empty results looked unreadable; insertStep shifted positions; exitIs on a non-program; outputHas only on programs; no fileAbsent; continue-after-fail reported PASSED. A killed make orphan (sleep 3) held the output pipe 1.8 s.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "In an LLM-first shell the live LLM is the usability test",
+  "Pitfalls that recur become pre-checks"
+ ],
+ "procedure": [
+  "Run the live chain after any change to the job objects"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev5/README.md",
+   "sha256": "38c876e6642f81bf9ac79f5aea29a3cba80170e8a50ac3e59dd5966c014fc4cf",
+   "claim": "Found sections dev1-dev4"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev4/VALIDATION_session.txt",
+   "sha256": "4461b6769d42fa69993e676d40db76b1772d571389565a38816fa8a5aa9ca0ec",
+   "claim": "live chain after the fixes"
+  }
+ ],
+ "related": [
+  "newshell.check",
+  "newshell.next"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}
