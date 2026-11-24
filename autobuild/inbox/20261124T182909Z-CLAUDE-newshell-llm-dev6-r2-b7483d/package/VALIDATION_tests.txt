@@ -1,0 +1,261 @@
+newshell_llm v0.1-dev6: ooRexx Version, work copy /tmp/newshell_llm.MSRr6x/pkg
+ok   five regular files (the link to / is not followed)
+ok   the link is listed as a link
+ok   total bytes
+ok   sortedBy size D, first 2
+ok   sortedBy relPath A (caseless)
+ok   DO OVER fs gives the files
+ok   system prompt describes fs from the class
+ok   system prompt describes the items
+ok   two rounds: draft and review
+ok   draft called ~bytes
+ok   final uses ~size after the review
+ok   fences stripped
+ok   final proposal checked
+ok   method sources checked
+task            find largest file
+model           claude-haiku-5-5
+state           CHECKED
+lines           8
+methodsChecked  1
+problems        0
+  1 best = .nil
+  2 do f over fs
+  3   if best == .nil then best = f
+  4   else if f~size > best~size then best = f
+  5 end
+  6 list = .Array~new
+  7 if best \== .nil then list~append(best)
+  8 return .ShellCollection~new(list)
+receiver  name  definedIn  kind    digest16
+FSFILE    size  FSFILE     method  42b7af09c740dd15
+ok   run returns a ShellCollection
+ok   one file
+ok   largest is media/video.bin
+ok   its size
+relPath          size    modified
+media/video.bin  250000  2026-11-24T18:28:31.794270
+ok   second prompt served method sources from the cache
+ok   rejects ADDRESS
+ok   rejects CALL after THEN
+ok   rejects bare string command
+ok   rejects .File
+ok   rejects ~class
+ok   rejects INTERPRET
+ok   rejects Sys* function
+ok   rejects VALUE()
+ok   rejects directive
+ok   rejects no RETURN
+ok   rejects RESULT as a variable
+ok   ~result as a message name is fine
+ok   words inside a string are not flagged
+     2 *-* 'touch /tmp/newshell_llm.MSRr6x/pkg/build/proto_fs/HACKED'
+       >>>   "touch /tmp/newshell_llm.MSRr6x/pkg/build/proto_fs/HACKED"
+       +++   "RC(30)"
+ok   ADDRESS NEWSHELL_NONE: command not executed (rc 30)
+ok   run refuses when a checked source changed
+NEWSHELL_LLM OFFLINE: OK
+ok   policy loaded: 4 rules
+ok   system prompt lists the protected methods
+ok   system prompt describes FileEditor (reached through relatedSamples)
+ok   allowed proposal checks
+ok   notes/test.txt holds "test 1234"
+ok   three decisions recorded
+ok   all three allowed
+verdict  principal  kind    target              path                                                      rule
+allow    llm        METHOD  FILESYSTEM~create   /tmp/newshell_llm.MSRr6x/pkg/build/sec_fs/notes/test.txt  rule 2
+allow    llm        METHOD  FSFILE~edit         /tmp/newshell_llm.MSRr6x/pkg/build/sec_fs/notes/test.txt  rule 3
+allow    llm        METHOD  FILEEDITOR~addline  /tmp/newshell_llm.MSRr6x/pkg/build/sec_fs/notes/test.txt  rule 4
+ok   denied proposal still passes the lint (the manager decides)
+ok   edit of logs/app.log refused
+ok   logs/app.log unchanged
+ok   proposal state FAILED
+verdict  principal  kind    target       path                                                    rule
+deny     llm        METHOD  FSFILE~edit  /tmp/newshell_llm.MSRr6x/pkg/build/sec_fs/logs/app.log  rule 5
+ok   create through notes/etclink (-> /etc) refused
+ok   nothing created in /etc
+ok   command refused for llm
+ok   command did not run
+ok   stream refused for llm
+ok   stream not written
+ok   .foo refused for llm
+ok   external call refused for llm
+ok   readme.txt still there
+ok   console create refused: no rule for console
+ok   notes2/ does not match the notes rule (falls to the catch-all deny)
+ok   malformed policy line refused
+NEWSHELL_LLM SECURITY: OK
+ok   system prompt describes Plan, PlanStep and RunResult
+ok   plan proposal checks
+ok   ~run returns the Plan at once
+State: FAILED
+Stage rea..." - round 1 (draft)
+ok   plan FAILED
+ok   atError: step 2, compile
+ok   error point is the compiler error line: hello.c:3:34: error: expected ';' before 'return'
+ok   report names the stage reached
+ok   report says step 3 did not run
+ok   report does not carry the build noise
+ok   the build really printed 203 lines (kept in /tmp/newshell_llm.MSRr6x/pkg/build/jobs_ws/.newshell/runs/002-make.out)
+ok   the LLM was told once, without polling (one follow-up: draft and review)
+ok   diagnosis (the follow-up's leading comment) kept on the plan
+ok   a follow-up proposal is waiting, checked, not run
+ok   the message to the LLM has the error point, not the output
+ok   one inbox message
+Job: plan "build hello" (3 steps)
+State: FAILED
+Stage reached: step 2/3 compile
+  step 1 unzip: PASS (0.01s) all 1 check(s) passed
+  step 2 compile: FAIL (0.03s) exit 2, wanted 0
+  step 3 check: NOT RUN
+Error point: step 2 "compile", check exitis 0: exit 2, wanted 0
+Program: /usr/bin/make -C hello, exit 2, timed out 0
+First error line: stderr line 2: hello.c:3:34: error: expected ';' before 'return'
+Trace (stderr lines 1-8 of 8):
+       1: hello.c: In function 'main':
+  >    2: hello.c:3:34: error: expected ';' before 'return'
+       3:     3 |   printf("Hello from newshell\n")
+       4:       |                                  ^
+       5:       |                                  ;
+       6:     4 |   return 0;
+       7:       |   ~~~~~~                          
+       8: make: *** [Makefile:3: hello] Error 1
+Full logs (for ws~tail): .newshell/runs/002-make.out .newshell/runs/002-make.err
+
+index  name     state  failedCheck  reason                 exitCode  errorLine
+1      unzip    PASS                all 1 check(s) passed  0
+2      compile  FAIL   exitis 0     exit 2, wanted 0       2         hello.c:3:34: error: expected ';' before 'return'
+verdict  principal  kind    target               path                                        rule
+allow    llm        METHOD  WORKSPACE~run:unzip  /tmp/newshell_llm.MSRr6x/pkg/build/jobs_ws  rule 2
+allow    llm        METHOD  WORKSPACE~run:make   /tmp/newshell_llm.MSRr6x/pkg/build/jobs_ws  rule 3
+at               kind  name         text
+18:28:34.109845  plan  build hello  FAILED at step 2/3 compile
+ok   good program: plan PASSED
+ok   three outcomes
+ok   a pass is posted to the inbox, not sent to the LLM
+ok   inbox has the pass
+State: FAILED
+Stage reached: s..." - round 1 (draft)
+ok   run:rm refused by the policy: the action raised 98.948: Authorization failure:  newshell policy: llm may not WORKSPACE~run:rm /tmp/newshell_llm.MSRr6x/pkg/build/jobs_ws.
+ok   nothing removed
+ok   deny receipt names WORKSPACE~run:rm
+ok   fileAppears watch armed
+ok   an armed watch can be tabled (poll holds no lock)
+ok   watch fired on logs/app.log: new file /tmp/newshell_llm.MSRr6x/pkg/build/jobs_ws/logs/app.log
+ok   the LLM was told about the event
+ok   diskFreeBelow 1e18 fires: free space under /tmp/newshell_llm.MSRr6x/pkg/build/jobs_ws is 28638130176 bytes, below 1E18
+ok   diskFreeBelow 1 byte stays armed
+ok   watch stopped
+ok   jobs table mixes plans and watches
+ok   lint rejects ~launch
+ok   lint rejects ~execute
+ok   security manager refuses Plan~launch from llm code
+NEWSHELL_LLM JOBS: OK
+State: DIED
+Stage reach..." - round 1 (draft)
+ok   plan state DIED (not FAILED)
+ok   atError: step 2 compile DIED
+ok   killed by signal 9
+ok   report says the step DIED of SIGKILL
+ok   test run did not run
+ok   report shows what make was doing when it died (sleep 3)
+ok   log paths are relative, ready for ws~tail
+ok   the wreckage is real: hello/build.lock left behind
+Job: plan "build hello" (3 steps)
+State: DIED
+Stage reached: step 2/3 compile
+  step 1 unzip: PASS (0.01s) all 1 check(s) passed
+  step 2 compile: DIED (3.03s) make was killed by signal 9 (SIGKILL) after 3.03s
+  step 3 test run: NOT RUN
+Error point: step 2 "compile" DIED: make was killed by signal 9 (SIGKILL) after 3.03s
+Program: /usr/bin/make -C hello, exit 137, timed out 0
+No line matched an error pattern; showing the end of stdout.
+Trace (stdout lines 1-4 of 4):
+       1: make: Entering directory '/tmp/newshell_llm.MSRr6x/pkg/build/died_ws/hello'
+       2: touch build.lock
+       3: cc -c hello.c -o hello.o
+       4: sleep 3
+Full logs (for ws~tail): .newshell/runs/002-make.out .newshell/runs/002-make.err
+
+ok   follow-up proposal waiting, checked
+ok   follow-up is a review plan
+ok   diagnosis: The compile step DIED: make was killed by signal 9 mid-build. / Reviewing the wreckage before changing anything: list the build tree.
+ok   review plan PASSED
+ok   review report shows what it found: build.lock
+ok   review remembers the job it follows
+ok   follow-up to the review is a cleanup plan
+ok   cleanup PASSED
+ok   lock and partial object removed
+ok   cleanup report carries the history
+ok   follow-up to the cleanup amends the original plan
+ok   amended plan: 4 steps, new step 2 clears the lock
+ok   the original plan is untouched
+ok   amended plan PASSED
+ok   its history: build hello, review, cleanup
+History (oldest first; jobs~find(name) gives any of them):
+   1 "build hello" DIED at 2/3 compile
+   2 "review wreckage" PASSED at 1/1 list build tree
+   3 "cleanup" PASSED at 3/3 confirm clean
+Job: plan "build hello, attempt 2" (4 steps)
+State: PASSED
+Stage reached: step 4/4 test run
+  step 1 unzip: PASS (0.01s) all 1 check(s) passed
+  step 2 clear stale lock: PASS (0.00s) all 0 check(s) passed
+  step 3 compile: PASS (3.06s) all 1 check(s) passed
+  step 4 test run: PASS (0.01s) all 1 check(s) passed
+Step 2 clear stale lock found:
+  absent: hello/build.lock
+
+ok   three follow-ups, two rounds each; the LLM never polled
+name                    state   stage                stepCount  seconds
+build hello             DIED    2/3 compile          3          3.04
+review wreckage         PASSED  1/1 list build tree  1          0.00
+cleanup                 PASSED  3/3 confirm clean    3          0.01
+build hello, attempt 2  PASSED  4/4 test run         4          3.08
+ok   with a stale lock planted, the amended plan still passes
+ok   remove ../escape.txt refused
+ok   make -C /etc refused
+ok   tail /etc/passwd refused
+ok   exitIs 0 passes for a completed remove
+ok   outputHas/outputLacks read a ws~list table
+State: FAILED
+Stage ..." - round 1 (draft)
+ok   continue runs on, but the plan ends FAILED; fileAbsent passes
+ok   an empty file is reported as empty
+ok   insertStep/removeStep renumber:  1:first 2:a 3:last
+ok   amend leaves the original alone
+ok   stepNamed finds by name after inserts
+NEWSHELL_LLM DIED: OK
+ok   describe lists net and jobs
+ok   the brief tells the agent how to submit
+ok   check: CHECKED
+ok   check prints the source of net~listening
+ok   run: listening sockets table
+ok   run exits 1: a job died
+ok   the report says the compile DIED of SIGKILL
+ok   the wreckage: hello/build.lock
+ok   jobs: build hello DIED, restored from the store
+ok   report: the kept report
+ok   review found build.lock
+ok   review report carries the history
+ok   cleanup PASSED
+ok   the amended plan, rebuilt from the store, PASSED
+ok   its history: build hello, review, cleanup
+ok   step 2 is the new one
+ok   xtpd~bringUp refused for codex
+ok   rejected: ADDRESS
+ok   svc~failed: xtpd.service
+ok   net~firewall~rules: the fence
+ok   net~firewall~sets: xtp_peers and its elements, including the one nft wrapped onto a second line
+ok   xtp_peers has 3 elements, not 2
+ok   chain input, policy drop
+SKIP mu~audit: MU_TOOLS_DIR has no NewShellMuAudit.cls
+ok   findings: nshinvoker marked INVOKER, ghostproc listed
+ok   audit: 1 finding counts (ghostproc), 1 is only the invoker (nshinvoker), not thin
+ok   processTree: this rexx is its own ancestor chain
+ok   processTree: the bash that ran the suite is an ancestor
+ok   processTree: kernel threads are not ancestors
+NEWSHELL_LLM AGENT: OK
+SKIP live test: ANTHROPIC_API_KEY not set
+NEWSHELL_LLM v0.1-dev6: ALL OK
+Rerun 2026-11-24T18:29:09Z with another rexx process running (as on the autobuild host, where the first dev6 submission 20261124T182547Z-...-71f4b1 FAILED: the INVOKER test used rexx, which other processes there are also called; it now uses a bash named nshinvoker).

@@ -1,0 +1,30 @@
+# cats1.policy - newshell on ed209g (cats1), driven by Codex.
+# Architecture: Tom Dyer. Written by Claude (Opus 5.5), 24 November 2026.
+#
+# verdict principal class method path   ('*' matches anything; first match wins; no match = deny)
+#
+# Tom's standing rule, as policy: never without Tom's explicit yes - change a
+# firewall, rotate or copy a key, replace the WAN forwarder, reboot a host.
+# newshell has no method for any of these; the lines below make sure that if
+# one is ever added, it is refused until Tom writes an allow line above them.
+deny    *       Firewall     *          *
+deny    *       Keys         *          *
+deny    *       Forwarder    *          *
+deny    *       Host         reboot     *
+deny    *       Workspace    run:nft    *
+deny    *       Workspace    run:iptables *
+deny    *       Workspace    run:ssh-keygen *
+deny    *       Workspace    run:systemctl *
+deny    *       Workspace    run:reboot *
+deny    *       Workspace    run:shutdown *
+#
+# Starting an MU's xtpd is Tom's to allow. To allow it, put a line such as
+#   allow codex Xtpd bringup   /etc/xtpd/xtpd.conf
+#   allow codex Xtpd bringdown /etc/xtpd/xtpd.conf
+# above the deny that follows.
+deny    *       Xtpd         *          *
+#
+# Codex's own scratch space; nothing else on cats1 can be changed.
+allow   codex   JobBoard     submit     *
+allow   codex   Workspace    remove     /var/lib/newshell/work
+deny    *       *            *          *
