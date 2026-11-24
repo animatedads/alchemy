@@ -1,0 +1,33 @@
+{
+ "kind": "article",
+ "id": "newshell.objects",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev3",
+ "title": "The ShellObject contract",
+ "section": "architecture",
+ "summary": "Every shell object inherits the ShellObject mixin: ordered fields and field(name), table/json for ~~table~~json chaining, asTable/asJson, identity and isCurrent (a kept object must not silently become a different resource: LinuxProcess identity is pid plus start time), generation/refresh, source, capabilities (READ by default), keep(name) onto the ScratchPad, and describe(name), which tells an LLM the class, fields, public and protected methods and SHELL_HELP note, built from the class so it cannot drift. ShellCollection shows lists (sortedBy, first, select; mixed rows allowed).",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "describe() is generated from the class, never written by hand",
+  "A class gives the LLM its semantics in a SHELL_HELP constant",
+  "Long values in tables keep their tail (paths end in what matters)"
+ ],
+ "procedure": [
+  "New objects: inherit ShellObject, define fields, add SHELL_HELP, mark anything that changes state PROTECTED, give authorityPath (and authorityAction if the method name is too coarse)"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev5/src/ShellObject.cls",
+   "sha256": "e2dde1dcd37ab1a37395349a9ec74caf05854498c536162409a2f2d84deb9ade",
+   "claim": "ShellObject, ShellCollection, ScratchPad, describe, shellPublicMethods, shellProtectedMethods"
+  }
+ ],
+ "related": [
+  "newshell.security",
+  "newshell.proposal"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}
