@@ -1,0 +1,19 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {"name": "oorexx_process", "version": "0.1-dev2", "kind": "oorexx"},
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "process-dev1-contract-and-dev2-descriptors",
+      "argv": ["bash", "tests/run_dev2.sh"],
+      "timeout_seconds": 300,
+      "environment": {
+        "set": {
+          "FOREIGN_RUNTIME_HOME": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6",
+          "UNIX_SOCKET_DIR": "${REPO_ROOT}/packages/oorexx_unix_socket_v0.6"
+        }
+      }
+    }
+  ],
+  "publish": {"tree": {"source": ".", "path": "packages/oorexx_process_v0.1-dev2"}}
+}
