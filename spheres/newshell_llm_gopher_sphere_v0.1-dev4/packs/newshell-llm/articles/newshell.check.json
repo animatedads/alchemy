@@ -1,0 +1,32 @@
+{
+ "kind": "article",
+ "id": "newshell.check",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev4",
+ "title": "ProposalCheck: the lint and its limits",
+ "section": "architecture",
+ "summary": "ProposalCheck rejects ADDRESS, CALL, INTERPRET, SIGNAL, PULL, directives, stream functions, VALUE(), Sys* functions, dot names other than .Array/.ShellCollection, reflection messages (~class ~send ~setMethod ~launch ~execute ~poll ...), RESULT/RC/SIGL as variables, bare string commands, calls to unknown methods, and code with no RETURN. It is a lint, not a sandbox; it stays because the security manager does not see built-in classes (.File, .Stream) or value(..., ENVIRONMENT).",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "The lint is early feedback plus cover for what the security manager cannot see",
+  "A rejected proposal is never run, by a person or by autopilot"
+ ],
+ "procedure": [
+  "Extend the lint when a new built-in route to I/O is found"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/src/ShellProposal.cls",
+   "sha256": "df653417c749f549cc0b045775e63000b4e6e90dad2b838978c9ae0108b2f3c9",
+   "claim": "ProposalCheck, scrub, messageNames, dotNames, specialVariables"
+  }
+ ],
+ "related": [
+  "newshell.security",
+  "newshell.findings"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}

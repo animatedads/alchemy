@@ -1,0 +1,37 @@
+{
+ "kind": "article",
+ "id": "newshell.mu-objects",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev4",
+ "title": "Objects for an MU",
+ "section": "agent",
+ "summary": "Read-only unless marked. Network: interfaces (/sys/class/net), addresses (ip -j, else /proc), routes (/proc/net/route, ipv6_route), listening (/proc/net/tcp*, udp*), firewall (nft -a list ruleset as root: rules with handles, sets such as xtp_peers with elements, chains with hook and policy). Services: units, failed, enabled. MuAuditor: the estate MU audit (/opt/mu-tools, loaded at run time): findings, thin, error. Xtpd: installed, running, pids, socket, config, listens, logTail; bringUp(config) and bringDown are PROTECTED (not start/stop: ~start is the asynchronous send the check refuses). Mu gathers them: mu~net, mu~services, mu~audit, mu~xtpd, with hostname, kernel, uptime and boot id.",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Examining is open; starting is protected",
+  "A command line is read inside Xtpd but never exposed: it can carry secrets"
+ ],
+ "procedure": [
+  "Start with mu~audit and mu~net~listening; they find issues fastest"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/src/ShellNet.cls",
+   "sha256": "72547c005fa231b33907d3dba8f3cd0bb6b7ed532eb1900ae3f9f06f6e127f38",
+   "claim": "Network, NetInterface, NetAddress, NetRoute, NetListen, Firewall"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/src/ShellHost.cls",
+   "sha256": "f6f3dab40ffeef9d10afe969abc4181f240dae3fd200af778a3af7180889dc6f",
+   "claim": "Mu, Services, MuAuditor, Xtpd"
+  }
+ ],
+ "related": [
+  "newshell.cats1",
+  "newshell.agent"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}

@@ -1,0 +1,35 @@
+{
+ "kind": "article",
+ "id": "newshell.watches",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev4",
+ "title": "Watches: trigger events",
+ "section": "jobs",
+ "summary": "jobs~watch('diskFreeBelow', path, bytes) or jobs~watch('fileAppears', dir, pattern), every(s), lasting(s), submitted like a plan. A watch fires once; the LLM is told with the event and replies with a follow-up. Disk free uses df -P -B1 through oorexx_process (ooRexx has no statvfs on Linux).",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Trigger events work like plans: they tell the LLM, it does not poll"
+ ],
+ "procedure": [
+  "Prefer a native statvfs when one exists in the estate"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/src/ShellJobs.cls",
+   "sha256": "6b6d89f0e1ecc1501c3f2c2b1d04fb61e6fd9b8c03bfb5aa84ecfea3f50af5f9",
+   "claim": "Watch, diskFree, globMatch"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/tests/test_jobs.rex",
+   "sha256": "c9105d0237f519b0fa7009b2acbebb9517f131a98007a9cb5f2910a51dd3056f",
+   "claim": "fileAppears fires on a new log, diskFreeBelow fires and stays armed"
+  }
+ ],
+ "related": [
+  "newshell.jobs"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}

@@ -1,0 +1,41 @@
+{
+ "kind": "article",
+ "id": "newshell.start",
+ "sphere": "newshell-llm",
+ "version": "0.1-dev4",
+ "title": "What newshell_llm is",
+ "section": "start",
+ "summary": "An ooRexx shell made for an LLM or an agent (Codex) to use, with a person (or a bounded autopilot) approving. The LLM is given shell objects, writes ooRexx proposals that use them, and registers multi-step plans that run on their own and report back. Every protected call is authorised by the ooRexx security manager against a text policy. Console: bin/nsh.rex (verbs start llm, mount fs/ws, provide, prompt, proposal, ~run, jobs, inbox, wait, autopilot, policy, decisions).",
+ "authority": "built and tested (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "A proposal runs nothing until ~run",
+  "Every protected method call from LLM or console code goes to the security manager",
+  "Plans report back; the LLM never polls"
+ ],
+ "procedure": [
+  "Read newshell.proposal, newshell.security and newshell.jobs before writing objects for it",
+  "Read newshell.next for the ED209 plan"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/README.md",
+   "sha256": "35edfbe3e8992cc12d3919f0649e42eabe1d85c4067aac804cbaf8a59a412eee",
+   "claim": "dev1-dev4 sections: what each version added, live results, findings"
+  },
+  {
+   "artifact": "packages/newshell_llm_v0.1-dev6/bin/nsh.rex",
+   "sha256": "52411bb44de46d2fbcf27cfacae31600761e060d2ce6dd6aac23f96947822dfb",
+   "claim": "console verbs and the secured per-line routine"
+  }
+ ],
+ "related": [
+  "newshell.proposal",
+  "newshell.security",
+  "newshell.jobs",
+  "newshell.next"
+ ],
+ "qualification_boundaries": {
+  "status": "built; offline suites pass; live runs on Claude Haiku 5.5",
+  "field": "not yet run on an ED209 node"
+ }
+}
