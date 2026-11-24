@@ -1,0 +1,82 @@
+== describe: ok
+== mu (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 1 lines, 0 method source(s) checked
+   hostname       vm
+   kernel         6.18.44-fc-v819
+   uptimeSeconds  604.51
+   bootId         f693ae85-741b-4ebf-ac91-648fdce3289e
+== listening sockets (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 1 lines, 2 method source(s) checked
+   proto  source  address    port   uid  inode
+   tcp    tcp     127.0.0.1  28471  0    1138
+   tcp    tcp     0.0.0.0    2024   0    1062
+   tcp    tcp     127.0.0.1  46859  0    933
+   tcp    tcp     127.0.0.1  46193  0    908
+== interfaces (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 1 lines, 2 method source(s) checked
+   (empty)
+== routes (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 1 lines, 2 method source(s) checked
+   family  destination   gateway    dev   metric
+   ipv4    0.0.0.0/0     192.0.2.1  eth0  0
+   ipv4    192.0.2.0/24  0.0.0.0    eth0  0
+== fence chains (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 1 lines, 3 method source(s) checked
+   (empty)
+== fence rules (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 1 lines, 3 method source(s) checked
+   (empty)
+== fence sets (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 1 lines, 3 method source(s) checked
+   (empty)
+== failed units (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 1 lines, 2 method source(s) checked
+   (empty)
+== MU audit (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 1 lines, 1 method source(s) checked
+   contract      /opt/mu-tools/etc/mu_contract_cats.txt
+   thin          0
+   findingCount  18
+   invokerOnly   4
+   error         
+== MU audit findings (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 1 lines, 2 method source(s) checked
+   verdict    kind     item                       belongs
+   INVOKER    process  process_api                only this audit's own caller (an ancestor of the audit process): not ...
+   EXTRA      process  8                          no witness in the MU contract: cut it, or move it to an MI
+   EXTRA      process  rclone-filestor            no witness in the MU contract: cut it, or move it to an MI
+   INVOKER    process  environment-man            only this audit's own caller (an ancestor of the audit process): not ...
+   INVOKER    process  sh                         only this audit's own caller (an ancestor of the audit process): not ...
+   INVOKER    process  claude                     only this audit's own caller (an ancestor of the audit process): not ...
+   EXTRA      listen   tcp 28471                  a listening service on the MU: put it behind an XTP named service in ...
+   EXTRA      listen   tcp 2024                   a listening service on the MU: put it behind an XTP named service in ...
+   EXTRA      listen   tcp 46859                  a listening service on the MU: put it behind an XTP named service in ...
+   EXTRA      listen   tcp 46193                  a listening service on the MU: put it behind an XTP named service in ...
+   FORBIDDEN  package  binutils                   build tooling: a build MI; MIs receive finished images
+   FORBIDDEN  package  binutils-common            build tooling: a build MI; MIs receive finished images
+   FORBIDDEN  package  binutils-x86-64-linux-gnu  build tooling: a build MI; MIs receive finished images
+   FORBIDDEN  package  cmake                      build tooling: a build MI; MIs receive finished images
+   FORBIDDEN  package  cmake-data                 build tooling: a build MI; MIs receive finished images
+   FORBIDDEN  package  g++                        build tooling: a build MI; MIs receive finished images
+   FORBIDDEN  package  g++-11                     build tooling: a build MI; MIs receive finished images
+   FORBIDDEN  package  gcc                        build tooling: a build MI; MIs receive finished images
+   FORBIDDEN  package  gcc-11                     build tooling: a build MI; MIs receive finished images
+   FORBIDDEN  package  gcc-11-base                build tooling: a build MI; MIs receive finished images
+   FORBIDDEN  package  make                       build tooling: a build MI; MIs receive finished images
+   FORBIDDEN  package  perl                       an intruder's toolkit: no witness on an MU
+== xtpd (exit 0, want 0)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 1 lines, 1 method source(s) checked
+   installed      0
+   running        0
+   pids           
+   socketPresent  0
+   config         /etc/xtpd/xtpd.conf
+   listens        
+== xtpd bringUp is refused by the policy (exit 2, want 2)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: CHECKED, 2 lines, 2 method source(s) checked
+   REFUSED: Authorization failure:  newshell policy: codex may not XTPD~bringup /etc/xtpd/xtpd.conf.
+== a command is rejected before it runs (exit 2, want 2)
+   Proposal /tmp/newshell-selftest.ePWNzX/p.rex: REJECTED, 2 lines, 0 method source(s) checked
+   PROBLEM: ADDRESS is not allowed: address system ''
+PASS newshell kit self-test
+Kit newshell-kit-v0.1-dev6-jammy.tar.gz sha256 64e3edc6d3b8bfc73398e2fc9073bb8adc4de997188b81e9ee084a6eb07be120: KIT_OK from /, LDD_DONE clean, self-test PASS in the jammy chroot (2026-11-24).
