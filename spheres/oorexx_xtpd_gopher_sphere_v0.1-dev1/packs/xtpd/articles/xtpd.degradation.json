@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "xtpd.degradation",
+  "sphere": "xtpd",
+  "version": "0.1-dev1",
+  "title": "Degradation: half the ship is gone",
+  "section": "operations",
+  "summary": "xtpd declares the node's operating state (NORMAL, DEGRADED, CONSTRAINED, EMERGENCY) from what it sees first (peerages lost, routes down, witness silent, capacity shrinking) or an operator override, and applies it to every service at once through the Operational Degradation Planner dev5. New opens of a shed class get a DIAG refusal; running sessions of that class are suspended by reconcile(), not killed. fire-control.primary keeps capacity, routes and SORT priority. On degrade xtpd switches to the local emergency text files. Back to NORMAL only when LDAP and the witness are both back. The cats failover and quorum call is part of declaring the state.",
+  "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+  "invariants": ["Shed by class, live, without restarting listeners", "Suspend, do not kill: backup.bulk resumes after recovery", "Nothing reaches the wire without passing the operating state"],
+  "procedure": ["Declare state in xtpd only; never in an application"],
+  "provenance": [{"artifact": "packages/oorexx_operational_degradation_planner_v0.1-dev5/README.md", "sha256": "5ff704ae28ef694aa0d99f3a674292a2b717af56b5e7ac264edecb6ead055e0d", "claim": "Four operating states, class policy, capacity domains, reconcile() of live contexts"}, {"artifact": "packages/oorexx_xtp_v0.1-dev37/docs/NAMED_SERVICES.md", "sha256": "4f2e72ca69dda48fd9c5e30ca9acccc1735b8faef973d2390783ddf9c70e504b", "claim": "Service name to class to logical peer to route; IP addresses only in the route table; admission before CNTL"}],
+  "related": ["xtpd.emergency-files", "xtpd.decisions"],
+  "qualification_boundaries": {"status": "design only", "field": "nothing built or field-tested"}
+}

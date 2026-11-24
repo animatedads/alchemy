@@ -1,0 +1,20 @@
+{
+  "kind": "corpus",
+  "id": "xtpd.continuity",
+  "sphere": "xtpd",
+  "title": "xtpd design decision ledger",
+  "records": [
+    {"topic": "daemon", "rule": "One multi-threaded XTP network service daemon per node takes registrations, service requests and peerages, and runs hooks (Tom Dyer, 2026-11-24)."},
+    {"topic": "firewall", "rule": "xtpd has the linkage for firewall rule injection; peerages fill the nft set xtp_peers (Tom Dyer, 2026-11-24)."},
+    {"topic": "lifecycle", "rule": "xtpd deals with lifecycle once, for every service on the node (Tom Dyer, 2026-11-24)."},
+    {"topic": "degradation", "rule": "xtpd is where 'half the ship is gone, keep fire control up' sits (Tom Dyer, 2026-11-24)."},
+    {"topic": "emergency", "rule": "On degrade xtpd drops to local emergency text files (Tom Dyer, 2026-11-24)."},
+    {"topic": "addressing", "rule": "TCP and XTP opens are not one to one: an XTP address is a service name resolved to peers and routes; IP lives only in the route table."},
+    {"topic": "priority", "rule": "The XTP open decides who, what, how urgent and which way in its first packet, before any state; bytes come last."},
+    {"topic": "planes", "rule": "ooRexx decides (control plane); libxtp moves bytes (data plane); the data plane never waits on the control plane."},
+    {"topic": "ssh", "rule": "ssh.management is the first registration, with exec hook sshd -i; candidate 4 is replaced, not ported."},
+    {"topic": "approval", "rule": "Every machine change goes to CODEX-PC marked NEEDS TOM'S DIRECT APPROVAL; orders never claim Tom approved."},
+    {"topic": "port22", "rule": "Port 22 stays open on cats1 until SSH over XTP has survived a reboot."},
+    {"topic": "status", "rule": "Design only: nothing built or field-tested as of 2026-11-24."}
+  ]
+}

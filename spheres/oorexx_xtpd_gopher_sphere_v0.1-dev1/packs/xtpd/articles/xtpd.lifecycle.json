@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "xtpd.lifecycle",
+  "sphere": "xtpd",
+  "version": "0.1-dev1",
+  "title": "Lifecycle once",
+  "section": "operations",
+  "summary": "xtpd owns every stage of every service's life on the node: open, accept, keepalive, half-close, close and abort; key refresh, rotation and revocation; route health and failover between L2, L3 and L4; admission against the operating state; receipts for every open, refusal and close; and its own start and stop, including the firewall set and the emergency files. systemd starts it once at boot.",
+  "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+  "invariants": ["No application re-implements session, key, route or firewall lifecycle", "No TCP listener remains on an MU once xtpd carries SSH"],
+  "procedure": ["Start xtpd once from systemd"],
+  "provenance": [{"artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SESSIONS.md", "sha256": "e7bfdea74e54becea80e83be588b57a87aae21354e940305418a822b62411c7c", "claim": "XTP sessions: one context, both directions, per-direction close, one listener socket for all sessions"}, {"artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SECURITY.md", "sha256": "f6c306dfc985aafdf838ccba0fd4302502bde3676c03c2c52fe3c84f11f9a69f", "claim": "Per-service keys, LDAP first then a mode-600 key file; protected FIRST checked before any state"}],
+  "related": ["xtpd.firewall", "xtpd.degradation"],
+  "qualification_boundaries": {"status": "design only", "field": "nothing built or field-tested"}
+}

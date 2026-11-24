@@ -1,0 +1,15 @@
+{
+  "kind": "article",
+  "id": "xtpd.ssh-management",
+  "sphere": "xtpd",
+  "version": "0.1-dev1",
+  "title": "First registration: ssh.management on cats1",
+  "section": "rollout",
+  "summary": "ssh.management is xtpd's first registration and cats1 (ed209g, 20.0.154.12) its first field node, with ed209k as client. Steps: build and test locally (libxtp dev38, xtpd v0.1, OpenSSH with ProxyUseFdpass to sshd -i); install on cats1 beside port 22; prove several sessions, a copy and a reboot; close tcp 22 under a 10-minute dead-man revert; then disable sshd's listener, remove the Azure NSG rule and audit against contract v0.4. Every machine change goes to CODEX-PC marked NEEDS TOM'S DIRECT APPROVAL. Once 22 is gone XTP is the only door; the fallback is redeploying a disposable VM.",
+  "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+  "invariants": ["Port 22 stays open until SSH over XTP has survived a reboot", "Every machine change needs Tom's direct approval"],
+  "procedure": ["Follow the six steps in order; stop at the first failure"],
+  "provenance": [{"artifact": "packages/ssh_over_xtp_v0.1-candidate4/README.md", "sha256": "7be9587c6777e9323aca8b9f5e988273b5be9827ad7b14d830d2c16f484fc58e", "claim": "Candidate 4: fixed rx/tx peers, TCP port 22 target, one client per launch, transaction per frame"}, {"artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SESSIONS.md", "sha256": "e7bfdea74e54becea80e83be588b57a87aae21354e940305418a822b62411c7c", "claim": "XTP sessions: one context, both directions, per-direction close, one listener socket for all sessions"}],
+  "related": ["xtpd.hooks", "xtpd.decisions"],
+  "qualification_boundaries": {"status": "design only", "field": "nothing built or field-tested"}
+}
