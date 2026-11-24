@@ -1,0 +1,27 @@
+# newshell.policy - who may call which protected method, and where.
+# Architecture: Tom Dyer. Written by Claude (Opus 5.5).
+#
+# verdict principal class      method  path        ('*' matches anything)
+# First matching line wins. No match = deny. A path matches itself and
+# everything below it. A path through a symbolic link is always denied.
+# Workspace~run is judged as run:PROGRAM (run:make, run:./hello/hello);
+# a method ending in * is a prefix (run:./* is any program inside the
+# workspace). JobBoard~submit has no path, so its rules use *.
+# Principals: llm (code an LLM proposed, run with ~run), console (a person
+# typing at nsh).
+allow   llm       FileSystem   create   /tmp
+allow   llm       FsFile       edit     /tmp
+allow   llm       FileEditor   addline  /tmp
+allow   llm       SourceFile   replaceline /tmp
+allow   llm       SourceFile   insertbefore /tmp
+allow   llm       SourceFile   insertafter /tmp
+allow   llm       SourceFile   amend    /tmp
+allow   llm       SourceFile   save     /tmp
+allow   llm       JobBoard     submit   *
+allow   llm       Workspace    run:unzip  /tmp
+allow   llm       Workspace    run:make   /tmp
+allow   llm       Workspace    run:./*    /tmp
+allow   llm       Workspace    remove   /tmp
+allow   console   JobBoard     submit   *
+allow   console   *            *        /tmp
+deny    *         *            *        *
