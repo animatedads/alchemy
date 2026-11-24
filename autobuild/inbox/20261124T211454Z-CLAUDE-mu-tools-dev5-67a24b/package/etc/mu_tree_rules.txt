@@ -1,0 +1,58 @@
+# mu_tree_rules.txt - witness rules for the files on an MU (cats1, after stage A pass 1)
+# Architecture: Tom Dyer.  Rules: Claude (Opus 5.5).  23 Nov 2026.
+# verdict PREFIX | reason.  Longest prefix wins.
+
+virtual /proc | kernel view
+virtual /sys | kernel view
+virtual /dev | device nodes
+virtual /run | runtime state, rebuilt every boot
+
+keep /boot | witness: kernel, initrd and GRUB until stage C
+keep /usr/lib/grub | witness: GRUB until stage C
+keep /usr/lib/modules | witness: modules of the running kernel until stage C
+keep /usr/lib/systemd | witness: init until the static init (stage D)
+keep /etc | witness: configuration; audited separately
+keep /var/lib/dpkg | witness: package manager until the image
+keep /var/lib/apt | witness: package manager until the image
+keep /usr/share/perl5 | witness: debconf, needed by dpkg and apt until the image
+cut /usr/share/ca-certificates | about 140 pre-trusted public CAs: no MU path uses public TLS (apt is plain HTTP with signed indexes, to confirm); estate trust is SecOp-issued only
+
+cut /usr/src | kernel headers: no on-box compile after the stage C build
+cut /usr/share/man | manual pages: no human reader on an MU
+cut /usr/share/doc | package documentation
+cut /usr/share/info | info pages
+cut /usr/share/locale | translations: the MU runs in the C locale
+cut /usr/share/i18n | locale sources
+cut /usr/share/vim | editor runtime
+cut /usr/share/terminfo | extra terminal types (ncurses-term); the base set lives in /lib/terminfo
+cut /usr/share/python-babel-localedata | cloud-init dependency, second pass
+cut /usr/lib/python3 | Python: goes with netplan in the second pass
+cut /usr/lib/python3.10 | Python: goes with netplan in the second pass
+cut /usr/lib/python3.11 | python3-distutils also ships a 3.11 copy on 22.04: goes with it in the second pass
+cut /usr/share/perl | perl-modules: nothing on an MU runs Perl scripts
+cut /usr/share/bash-completion | interactive shell sugar
+cut /usr/share/X11 | X keyboard and locale data: no display
+cut /usr/share/consolefonts | console fonts: the break-glass console is serial
+cut /usr/share/consoletrans | console fonts: the break-glass console is serial
+cut /usr/share/keymaps | console keymaps: the break-glass console is serial
+cut /usr/share/tcltk | Tcl, second pass
+cut /usr/share/groff | groff: formats man pages
+cut /usr/share/lintian | package lint overrides
+cut /usr/share/apport | crash reporter hooks left behind
+cut /usr/share/mime | desktop MIME database
+cut /usr/share/zoneinfo | time zones: an MU logs in UTC, keep Etc/UTC only
+cut /usr/lib/git-core | git
+cut /var/lib/cloud | cloud-init state left after the purge
+cut /var/tmp/cloud-init | cloud-init state left after the purge
+cut /var/lib/usbutils | USB ID list left after the purge
+cut /var/log/unattended-upgrades | logs left after the purge
+cut /var/lib/update-notifier | state left after the purge
+cut /var/lib/ubuntu-release-upgrader | state left after the purge
+cut /var/lib/waagent | Azure agent state left after the purge
+cut /var/lib/snapd | snap state left after the purge
+cut /snap | snap mount point left after the purge
+cut /var/cache/apt | apt download cache: apt-get clean
+cut /var/lib/git | git state
+cut /etc/ssl/certs | hashed links to the public CA bundle; replaced by SecOp's estate trust list
+keep /etc/ssl/openssl.cnf | witness: libssl3 reads it (ooRexx crypto, OpenSSH)
+cut /etc/apparmor.d | shipped profiles for absent programs; replaced by SecOp's MU profile set
