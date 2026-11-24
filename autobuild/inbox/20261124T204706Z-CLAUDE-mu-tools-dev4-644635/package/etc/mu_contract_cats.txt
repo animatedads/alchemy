@@ -1,0 +1,82 @@
+# rexxos-mu contract v0.4 for the playground MUs (cats1, cats2)
+# Architecture: Tom Dyer.  Draft: Claude (Opus 5.5), 23 Nov 2026; v0.3 and v0.4 24 Nov 2026, for Tom's review.
+# v0.4: witnesses proposed for cats1's 24 Nov audit (105 findings, REQ-00005627); see CONTRACT_REVIEW_v0.4.md.
+# Accepted by Tom Dyer, 24 Nov 2026 ("continue"); su: "on for the moment, almost clear to go".
+# Every allow line carries its witness after "|". Anything not allowed here is a finding.
+# Tom, 24 Nov: "if you can't justify them then they ought not be there".
+
+allow process systemd systemd-journal systemd-udevd agetty | init and the serial console until the static init (stage D)
+allow process systemd-logind dbus-daemon | only for ssh login sessions (pam_systemd), so only until M8; dbus is here because logind needs the system bus, nothing else on the MU uses it (cats1: only dbus-user-session and libdbus-1-3 depend on dbus, both optional)
+allow process systemd-network | DHCP on eth0, which Azure requires
+allow process chronyd | time: log ordering, key validity, policy time windows
+allow process sshd bash (sd-pam) | bring-up channel, until M8
+allow process sudo | sshnode.sh orders run sudo; bring-up until M8
+allow process su | Tom's root console session during bring-up; Tom, 24 Nov: on for the moment, almost clear to go
+allow process rexx rxapi | mu-agent and mu_audit
+allow process qemu-system-x86_64 firecracker mu-agent xtpd | MU duties
+allow listen tcp 22 | bring-up channel, until M8
+allow listen udp 68 | DHCP client
+allow login root | locked; console break-glass
+allow login azureuser | bring-up channel, until M8
+allow unit ssh.service | bring-up channel, until M8
+allow unit chrony.service | time
+allow unit systemd-networkd.service systemd-networkd.socket systemd-networkd-wait-online.service | DHCP on eth0
+allow unit apparmor.service | SecOp's MU profile set (to be written)
+allow unit fstrim.timer | discard on the data disk
+allow unit nftables.service | loads the fence (table mu_fence) at boot
+allow unit grub-common.service grub-initrd-fallback.service | GRUB's boot-record bookkeeping, until stage C
+allow unit systemd-pstore.service | keeps kernel panic records (pstore) after a crash: evidence for the post-mortem
+allow unit getty@.service | template only: serial-getty on ttyS0 is the break-glass console
+allow package gcc-12-base | runtime base of libgcc-s1 and libstdc++6, which ooRexx needs
+
+forbid package workload nginx* apache2* php* nodejs* postgresql* mysql* mariadb* redis* mongodb*
+forbid package platform slapd* rabbitmq* kafka*
+forbid package build gcc* g++* make cmake* python3-pip* cargo* golang* binutils* linux-headers* linux-azure-6.8-headers*
+forbid package container docker* containerd* podman* runc* lxd* lxd-agent-loader
+forbid package packaging snapd flatpak* | cats1, 24 Nov: /root/snap/lxd was left behind by a snap install of lxd
+forbid package toolkit curl wget tnftp ftp telnet netcat-openbsd git perl python3 tcpdump strace vim vim-tiny rsync
+
+# v0.3: the programs on the MU.  A program needs a witness, by name or by its package.
+# Names under "forbid exec" are reported even when their package is allowed.
+check exec /usr/bin /usr/sbin /usr/local/bin /usr/local/sbin | the PATH of root and of the bring-up account
+allow exec-package systemd udev | init until the static init (stage D)
+allow exec agetty login | the serial console, break-glass
+allow exec-package openssh-server openssh-sftp-server | bring-up channel, until M8 (sshnode.sh runs commands and transfers files)
+allow exec-package bash dash | the shells sshnode.sh and systemd units run, until M8 and stage D
+allow exec-package sudo | sshnode.sh orders run "sudo", until M8
+allow exec-package chrony | time
+allow exec-package nftables | the fence (newshell reads it with nft -a list ruleset)
+allow exec getent ldd | newshell readings (accounts) and the kit self-test's library check
+allow exec-package oorexx | mu-agent, mu_audit and newshell
+allow exec-package coreutils tar gzip grep procps iproute2 | the bring-up orders sent through sshnode.sh (sha256sum, cat, ls, tar -z, grep, pgrep, ss), until M8
+allow exec dbus-daemon | with systemd-logind, for ssh login sessions only, until M8
+allow exec awk | the alternatives link to mawk, which dpkg maintainer scripts use
+allow exec-package apparmor | SecOp's MU profile set (apparmor.service is witnessed)
+allow exec-package gpgv | apt checks the signatures on package indexes, until the image
+allow exec-package debconf ucf sensible-utils adduser debianutils diffutils findutils sed mawk init-system-helpers libc-bin login passwd libpam-modules-bin libpam-runtime base-files base-passwd install-info ncurses-bin hostname bsdutils sysvinit-utils util-linux tzdata | dpkg, its maintainer scripts and the base system, until the image
+allow exec-package systemd-sysv | init: PID 1 is /sbin/init, until stage D
+allow exec-package mount e2fsprogs logsave kmod | systemd mounts, checks and loads modules at boot, until stage D
+allow exec-package grub-common grub2-common grub-pc grub-gfxpayload-lists initramfs-tools initramfs-tools-core linux-base efibootmgr mokutil sbsigntool shim-signed cpio zstd xz-utils dosfstools | the boot chain (GRUB, initramfs, signed kernel, EFI partition), until stage C
+allow exec-package azure-vm-utils nvme-cli | Azure names its NVMe disks through these udev rules; until the image
+allow exec-package uuid-runtime | nvme-cli depends on it (apt-get -s, REQ-00005739); until the image
+allow exec-package libcap2-bin | chrony and iproute2 depend on it (apt-get -s, REQ-00005739)
+allow exec-package gettext-base | the signed boot chain (shim-signed, grub) cannot be resolved without it (apt-get -s, REQ-00005739); until stage C
+allow exec-package cryptsetup-bin dmsetup | removal rebuilds the initramfs; not worth a boot risk before stage C, when the boot chain is ours
+allow exec-package openssh-client | openssh-server depends on it (apt-get -s, REQ-00005739); until M8
+allow exec-package dpkg apt | the package manager, until the image (same witness as /var/lib/dpkg in mu_tree_rules.txt)
+forbid exec recorder script scriptreplay scriptlive
+forbid exec personality setarch i386 x86_64 linux32 linux64 uname26
+forbid exec toolkit perl perl5.34.0 gpg gpg-agent gpg-connect-agent gpgconf gpgsm nc nc.openbsd netcat ncat socat telnet ftp tnftp wget curl busybox python3 python3.10 expect tclsh
+forbid exec dumper hexdump hd xxd od
+forbid exec bus dbus-send dbus-monitor busctl gdbus
+forbid exec debug gdb strace ltrace tcpdump
+forbid exec editor vi vim vim.tiny nano ed
+
+# v0.3: the trees where every file must belong to a package or carry a witness.
+watch /usr/bin /usr/sbin /usr/local /root /home /opt | where programs and hand-made files land
+allow file /opt/mu-tools | this audit (kit, 23 Nov)
+allow file /opt/newshell | the newshell kit (dev6, REQ-00005617)
+allow file /opt/xtpd | the xtpd kit (r2, REQ-00005577)
+allow file /home/azureuser /root/.ssh/authorized_keys | the bring-up account's home and keys, until M8
+allow file /root/.profile /root/.bashrc | root's shell profile, for the break-glass console
+allow file /usr/local/man /usr/local/src /usr/local/games /usr/local/etc /usr/local/sbin | empty directories base-files makes; nothing is in them
