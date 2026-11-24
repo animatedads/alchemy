@@ -1,0 +1,44 @@
+g++ -Iinclude -I/home/hc3/alchemy-autobuild/staging/run-i2e5j1nv/build/planner/include -O2 -std=c++17 -Wall -Wextra -Werror -fPIC -pthread -DXTP_TRANSPORT_SRC='"/home/hc3/alchemy-autobuild/staging/run-i2e5j1nv/src/xtp_transport.cpp"' -o tests/test_session.bin tests/test_session.cpp build/xtp_security.o build/xtp_service.o build/xtp_priority.o build/xtp_wire.o build/xtp_route.o -lcrypto
+./tests/test_session.bin
+  S1 reply='world' closed=1
+PASS S1 open, one message each way, both ends close gracefully
+  S2 80 ms, relay dropped 1213 of 7059, client resent 384 packets, srtt 0.475645 ms
+PASS S2 2 MB each way at once through 20%/14% loss, byte-exact, closed both ends
+  S3 sizes read: 1 100 1408 1409 5000 3 70000 | with 7-byte reads: 1 100 1408 1409 5000 3 70000 
+PASS S3 message boundaries survive segmentation, 7-byte reads and 1-in-6 loss
+  S4 server saw 'question' (then end); client got 'answer to: question' end=1
+PASS S4 half-close: the server reads to end, then still answers on its own direction
+  S5 writer stopped after 131072 bytes ('XTP session write timed out: the peer is not reading'); after the reader started, all 1048576 bytes arrived
+PASS S5 a peer that does not read holds the writer to window + send buffer; reading releases it
+  S6 50 ms: XTP context refused by peer: SERVICE_NOT_ADMITTED (code=1 value=1)
+PASS S6 a refused service fails open_session at once with its reason
+  S7 851 ms: XTP interactive context not accepted by peer within 800 ms (unreachable, or not a dev31 SessionListener)
+PASS S7 a listener without interactive contexts fails open_session at its timeout, with a reason
+  S8 XTP context aborted by peer
+PASS S8 an abort reaches the peer, whose read fails with the reason
+  S9 idle 1.5 s with keepalive 100 ms: open=1 keepalives=12; peer silenced: failed after 509 ms: XTP context timed out: nothing heard from the peer for 600 ms
+PASS S9a keepalive holds an idle context open past dead_after_ms
+PASS S9b a silent peer ends the context after dead_after_ms, with a reason
+  S10 after a forged END: 'two'
+PASS S10 a forged END from another port does not end the context
+  S11 20/20 sessions echoed 50 KB; contexts left after linger: 0
+PASS S11 20 concurrent sessions on one listener, each byte-exact; finished contexts are released
+  S12 first 3 reverse packets dropped: 'ping' in 303 ms
+PASS S12 the accept FIRST and first status packets are lost, and the session still opens
+SKIP S13 raw IP protocol 36 needs CAP_NET_RAW
+SKIP S14 AF_PACKET needs CAP_NET_RAW
+  S15 XTP session UDP bind: Address already in use
+PASS S15 a SessionListener that cannot bind throws instead of crashing
+  S16 after RSEQ=500 inside [0,1000): sbase=0 held=1000 peer_rseq=0 resent=1
+PASS S16 an RSEQ inside a held segment frees nothing that segment needs, and its resend stays in bounds
+  S17 8000 hostile out-of-order segments in 13 ms: held 1024 segments, 6620 bytes (window 262144)
+PASS S17 overlapping or tiny out-of-order segments cannot grow the reassembly store past the window or the segment cap
+  S18 10000 one-byte messages sent and acknowledged: eoms left 0, bytes held 0
+PASS S18 message-boundary marks and acknowledged bytes are released
+  S19 after a forged abort, graceful END and DIAG from the peer's address: 'two'
+PASS S19 once SYNC/ECHO is established, ENDs without a valid ECHO and DIAGs on an open context are ignored
+  S20 the abort was sent while the reverse path dropped everything for 300 ms; the client learned 351 ms after it: XTP context aborted by peer
+PASS S20 a lost abort is sent again when the peer next speaks (here its 500 ms keepalive), instead of the peer waiting dead_after_ms (30 s)
+  S21 XTP segment_bytes 70000 exceeds the carrier maximum 65467
+PASS S21 a segment size the carrier cannot send is refused at open
+SESSION SUITE: fail=0 skip=2
