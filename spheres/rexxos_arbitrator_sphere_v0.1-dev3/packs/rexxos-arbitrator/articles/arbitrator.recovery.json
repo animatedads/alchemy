@@ -1,0 +1,49 @@
+{
+ "kind": "article",
+ "id": "arbitrator.recovery",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev3",
+ "title": "Recovery: pre-approved, and a plan that survives a pulled plug",
+ "section": "rollout",
+ "summary": "Tom Dyer, 2026-11-25: the lab manager would pull the circuit breaker about 45 minutes before an exam or essay was due; if you had not saved your work and planned your recovery, it was on you. And: the disappearance of a node is just that, something the cluster grid deals with. Rule (approved by Tom Dyer with \"continue\", 2026-11-25): recovery steps - FENCE_ROLE, ROUTE_SERVICE of a role or a dead MU's service, ACTIVATE_TASK or START_TASK of what existed - are pre-approved: they run without waiting, are logged with their cause and reported. A recovery step may only restore what existed; a plan that would add capacity or change exposure (swap, a new cache, swapping out other work, a DNS repoint) drops back to NEEDS TOM'S DIRECT APPROVAL and says why. The rule covers the arbitrator's own plans; it changes nothing about orders sent to Codex or anyone else. muDown is a RECOVERY plan and restores a dead MU's services restore only (same site, then home zone, then anywhere). PlanRunner journals a machine plan (PLAN, BEGIN, numbered ledger snapshot with the step it is through, DONE, END) through an effector; resume after a pulled plug performs an in-doubt step again only if its effect is absent and applies it to the ledger only if the ledger lacks it; torn journal lines and torn snapshots are ignored and the next record starts on its own line. Progress goes through oorexx_logging v0.7.",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "Recovery only restores; anything more needs Tom",
+  "Every step is done exactly once across a pulled plug",
+  "A DNS edge makes recovery need approval; gateways do not",
+  "The arbitrator rule does not change orders to Codex"
+ ],
+ "procedure": [
+  "Test by pulling the plug: the runner tests pull it before a step, after it and after the snapshot; on the estate, spot eviction of cats1/cats2 is the lab manager"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev3/src/PlanRunner.cls",
+   "sha256": "a8f6ed71cd369753c48ef85103b283697d1c234677e27b70c73cf839de179c31",
+   "claim": "PlanRunner, SimulatedEffector, LogLineTarget"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev3/src/Arbitrator.cls",
+   "sha256": "3bae29526e54ef5d1e7243d2d981be5629db4c1e3fd11298fa66eca5eb1b577c",
+   "claim": "ProvisionPlan purpose, approvalClass, recoveryProblem; restoreOnly"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev3/src/ClusterArbitrator.cls",
+   "sha256": "6e273069d09c13e7b08767e6f3b38206e34e1235d4a4bc068232c22a8e214094",
+   "claim": "muDown restores services"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev3/tests/test_dev3.rex",
+   "sha256": "e5fc342eac68b190d885eca199f5244153846415d59a8f656c075b9b00cfa9b8",
+   "claim": "recovery class, text forms, the breaker"
+  }
+ ],
+ "related": [
+  "arbitrator.roles",
+  "arbitrator.next"
+ ],
+ "qualification_boundaries": {
+  "status": "planners and journalled runner built; 130 offline checks pass on ooRexx 5.2.0 and 5.3.0",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}
