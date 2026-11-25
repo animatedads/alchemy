@@ -1,0 +1,38 @@
+{
+ "kind": "article",
+ "id": "grid.item1",
+ "sphere": "rexxos-grid-plan",
+ "version": "0.2",
+ "title": "Item 1: xtpd at boot with the role file",
+ "section": "rollout",
+ "summary": "ChatGPT coded the role component (packages/xtpd_bootstrap_v0.1-dev1). Claude (Opus 5.5) qualified it: the 34-test suite reproduced, 5 of 5 controls caught, and the real AtomicFile with FULL durability and noFollow exercised. Binding it into xtpd is Claude (Opus 5.5)'s job as xtpd author, in xtpd v0.1-dev2: the xtp.roles exec-hook service, the LDAP role probe, and the role file loaded at start, with READY only on FRESH. Placement: LDAP.main on ed209k (Vultr, reliable, not Spot, native XTP; R6); LDAP.spare on cats2 (Azure Central US, Spot; R1). Done when a cats2 cold boot resolves ed209k as LDAP.main FRESH with no manual step. Open, not needed for item 1: ed209k is also the witness, so once the spare can promote itself the LDAP pair needs a third vote outside the pair; cats1 is the candidate and needs Tom's yes.",
+ "authority": "plan agreed by Tom Dyer (continue, 25 Nov 2026 15:04); hitlist Claude (Fable 5.2); review and writing Claude (Opus 5.5)",
+ "invariants": [
+  "READY only on FRESH",
+  "No autonomous promotion yet",
+  "Test key is a test boundary only"
+ ],
+ "procedure": [
+  "xtpd v0.1-dev2 binds the component; then a cats2 cold boot under R1"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_grid_plan_v0.2/docs/PLAN.md",
+   "sha256": "8f97f35b68ff719746719d08c197a1700d84f1b6c21759f87ccb45f090e15116",
+   "claim": "item 1 status, placement and done-when"
+  },
+  {
+   "artifact": "packages/rexxos_grid_plan_v0.2/docs/STANDING_RULES.md",
+   "sha256": "8b9c75516b844fa2c4b68cec88a85af1f461cfac5c1cd9083a950d50bf09f548",
+   "claim": "R6 approval wording"
+  }
+ ],
+ "related": [
+  "grid.plan",
+  "grid.rules"
+ ],
+ "qualification_boundaries": {
+  "status": "in progress",
+  "field": "cats2 (ed209l) is the proving node"
+ }
+}
