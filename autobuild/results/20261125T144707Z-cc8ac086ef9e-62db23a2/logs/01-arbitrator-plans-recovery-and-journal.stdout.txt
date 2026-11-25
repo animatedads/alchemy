@@ -1,0 +1,367 @@
+== interpreter: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+== test_dev1_machine.rex
+PASS site: low load gives start then RAM store
+PASS site: plan is sound
+PASS site: RAM store holds the whole site
+PASS site: read-only store is verified before the switch
+PASS site: machine changes need approval
+PASS site: state records the store
+PASS site: nothing to do in the target state
+PASS site: RAM demand takes the store back first
+PASS site: read-only store needs no flush
+PASS site: plan is sound
+PASS site: root switches back before the store goes
+PASS site: demand gone, store comes back
+PASS hysteresis: existing store kept when it still fits
+PASS hysteresis: new store not made without headroom
+PASS T1/T2: swap first, then T2, then T1
+PASS T1/T2: swap sized to the excess plus margin
+PASS T1/T2: no RAM cache while swapping
+PASS T1/T2: plan is sound
+PASS T1/T2: T2 gone early, swap removal deferred
+PASS T1/T2: T2 gone, swap goes, RAM cache for T1
+PASS T1/T2: T1 gets a write-back cache (its request is TEMPORARY)
+PASS T1/T2: cache is RAM above headroom
+PASS T1/T2: plan is sound
+PASS flush: write-back cache flushed, dropped, then T3
+PASS flush: plan is sound
+PASS write-through: DURABLE request gets a write-through cache
+PASS write-through: dropped with no flush
+PASS case by case: request names write-through for temporary data
+PASS cluster: unpageable demand bigger than RAM goes to the cluster, no swap
+PASS cluster: asking needs no approval
+PASS cluster: higher priority asks the cluster to move the lower
+PASS cluster: the new task waits for the move
+PASS cluster: the arbitrator never stops the moved task itself
+PASS cluster: after the move, re-plan stops T2 and starts T5
+PASS cluster: no disk for swap, demand goes to the cluster
+PASS cluster: plan is sound
+PASS cluster: not enough fabric space
+PASS invariant: resident over budget is reported
+PASS step: inverses
+PASS step: flush has no inverse
+PASS step: dirty write-back cache cannot be dropped
+PASS demand: DURABLE data may not use write-back
+PASS demand: read-only cache needs read-only data
+PASS demand: pageable cannot exceed RAM
+PASS demand: RAM speed needs storage
+PASS demand: bad id refused
+PASS plan: same demand twice refused
+PASS step: unknown kind refused
+
+TOTAL 48 passed, 0 failed
+== test_dev2.rex
+PASS swap-out: more important demand swaps out the checkpointed task, no waiting
+PASS swap-out: the cluster is asked where B1 resumes
+PASS swap-out: plan is sound
+PASS swap-out: state written to its checkpoint and verified before RAM is released
+PASS swap-out: undo is ACTIVATE_TASK
+PASS swap-out instead of swap: no swap file when a task can be swapped out
+PASS swap-out instead of swap: plan is sound
+PASS swap-out: B1 is parked, not running
+PASS activate: room again, B1 resumes from its saved state
+PASS activate: saved state verified before resuming
+PASS TEMPORARY state: not swapped out; swap provisioned instead
+PASS cache: checkpointed temporary data gets a write-back cache
+PASS cache: flushed and dropped before the task is swapped out
+PASS cache: plan is sound
+PASS state: DURABLE data lives on a fabric by default
+PASS state: TEMPORARY data is TEMPORARY by default
+PASS state: importance is the priority
+PASS state: LOCAL state is refused (an MU holds nothing that cannot be rebuilt or moved)
+PASS state: DURABLE data cannot have TEMPORARY state
+PASS state: activating with no saved state is refused
+PASS state: a TEMPORARY task cannot be parked
+PASS site: starts on UK tin with its RAM store
+PASS site: midday with UK traffic stays in the UK
+PASS site: 23:00 GMT with Australian traffic moves to AU
+PASS site: new copy on au1, old released on uk1
+PASS site: route moves before the old copy goes, and old DNS answers expire first
+PASS site: checked before anyone is sent to it
+PASS site: route and DNS changes need approval, waiting and checking do not
+PASS site: clients keep the same service address
+PASS site: plan is sound
+PASS site: now on au1
+PASS site: nothing of it left parked on uk1
+PASS site: half an hour later it is held by its minimum residence
+PASS site: 08:30 GMT goes home to UK tin even with Australian traffic
+PASS site: a lot of access from the USA moves it to the US
+PASS gateway edge: the move is a route change only, no DNS steps
+PASS no room: no MU in AU can take it without displacing other work
+PASS checkpoint: old copy swapped out first, then resumed on the target, then the route
+PASS checkpoint: the outage is stated
+PASS checkpoint: running on us1 only
+PASS temporary: a service whose state is TEMPORARY does not move
+PASS roles: LDAP.main on uk1, LDAP.spare on au1
+PASS failover: fence, the spare becomes the main, a new spare is made and named
+PASS failover: the old main is fenced before LDAP.main moves
+PASS failover: the new spare is on a site other than the new main (au1 is AU; uk2 is UK)
+PASS failover: the new spare has caught up before it is named
+PASS failover: plan is sound
+PASS failover: LDAP.main is now au1, LDAP.spare uk2, epoch 2
+PASS failover: clients still address LDAP.main; only the route moved
+PASS spare lost: only a new spare is made, on a site other than the main
+PASS spare lost: LDAP.spare is us1, LDAP.main unchanged, epoch unchanged
+PASS no other site left: running without a spare is reported, not hidden
+PASS roles: main and spare on the same site refused
+PASS roles: a hot spare needs fabric state
+PASS service: bad window refused
+PASS service: a public name needs an edge
+
+TOTAL 56 passed, 0 failed
+== test_dev3.rex
+PASS recovery: the plan is a RECOVERY plan
+PASS recovery: it needs no approval
+PASS recovery: every change is marked pre-approved, none needs Tom
+PASS recovery: LDAP fails over first
+PASS recovery: the site is restored on the same site (uk2), from its saved state
+PASS recovery: restore only - no RAM store is made for the site
+PASS recovery: the TEMPORARY service is started afresh, and the loss is said
+PASS recovery: the site keeps its service address
+PASS recovery: plan is sound
+PASS recovery: site on uk2, LDAP.main on au1, nothing held by the dead MU
+PASS DNS edge: recovery that repoints DNS needs approval
+PASS DNS edge: the description says why
+PASS provision: an ordinary plan still needs Tom
+PASS provision: a "recovery" plan that adds swap is not pre-approved
+PASS text: an id with | is refused by the id rule
+PASS text: a demand round-trips
+PASS text: a step round-trips, | and % escaped
+PASS text: the ledger round-trips
+  [log INFO] plan plan-1: 3 steps (TOM)
+  [log INFO] step 1/3 ADD_SWAP 2579MiB begins: pageable RAM of placed tasks exceeds free RAM by 2579 MiB with margin
+  [log INFO] step 1/3 ADD_SWAP 2579MiB done
+  [log INFO] step 2/3 START_TASK T2 begins: demand T2 (importance 70)
+  [log INFO] step 2/3 START_TASK T2 done
+  [log INFO] step 3/3 START_TASK T1 begins: demand T1 (importance 60)
+  [log INFO] step 3/3 START_TASK T1 done
+  [log INFO] plan plan-1 finished
+PASS runner: an uninterrupted run reaches the planned state
+PASS runner: the journal holds the plan, a BEGIN and DONE per step, and END
+PASS runner: the progress went through oorexx_logging
+  [log INFO] plan plan-1: 3 steps (TOM)
+  [log INFO] step 1/3 ADD_SWAP 2579MiB begins: pageable RAM of placed tasks exceeds free RAM by 2579 MiB with margin
+  [log INFO] step 1/3 ADD_SWAP 2579MiB done
+  [log INFO] step 2/3 START_TASK T2 begins: demand T2 (importance 70)
+  [log INFO] resume: plan plan-1, ledger snapshot through plan-1:1, steps done 1 of 3
+  [log INFO] step 2 START_TASK T2 was in doubt: effect present no, in ledger no
+  [log INFO] step 2/3 START_TASK T2 begins: demand T2 (importance 70)
+  [log INFO] step 2/3 START_TASK T2 done
+  [log INFO] step 3/3 START_TASK T1 begins: demand T1 (importance 60)
+  [log INFO] step 3/3 START_TASK T1 done
+  [log INFO] plan plan-1 finished
+PASS breaker at step 2 BEFORE_PERFORM: resume finishes, every step done exactly once, ledger matches the machine
+  [log INFO] plan plan-1: 3 steps (TOM)
+  [log INFO] step 1/3 ADD_SWAP 2579MiB begins: pageable RAM of placed tasks exceeds free RAM by 2579 MiB with margin
+  [log INFO] step 1/3 ADD_SWAP 2579MiB done
+  [log INFO] step 2/3 START_TASK T2 begins: demand T2 (importance 70)
+  [log INFO] resume: plan plan-1, ledger snapshot through plan-1:1, steps done 1 of 3
+  [log INFO] step 2 START_TASK T2 was in doubt: effect present yes, in ledger no
+  [log INFO] step 3/3 START_TASK T1 begins: demand T1 (importance 60)
+  [log INFO] step 3/3 START_TASK T1 done
+  [log INFO] plan plan-1 finished
+PASS breaker at step 2 AFTER_PERFORM: resume finishes, every step done exactly once, ledger matches the machine
+  [log INFO] plan plan-1: 3 steps (TOM)
+  [log INFO] step 1/3 ADD_SWAP 2579MiB begins: pageable RAM of placed tasks exceeds free RAM by 2579 MiB with margin
+  [log INFO] step 1/3 ADD_SWAP 2579MiB done
+  [log INFO] step 2/3 START_TASK T2 begins: demand T2 (importance 70)
+  [log INFO] resume: plan plan-1, ledger snapshot through plan-1:2, steps done 1 of 3
+  [log INFO] step 2 START_TASK T2 was in doubt: effect present yes, in ledger yes
+  [log INFO] step 3/3 START_TASK T1 begins: demand T1 (importance 60)
+  [log INFO] step 3/3 START_TASK T1 done
+  [log INFO] plan plan-1 finished
+PASS breaker at step 2 AFTER_SNAPSHOT: resume finishes, every step done exactly once, ledger matches the machine
+  [log INFO] plan plan-1: 3 steps (TOM)
+  [log INFO] step 1/3 ADD_SWAP 2579MiB begins: pageable RAM of placed tasks exceeds free RAM by 2579 MiB with margin
+  [log INFO] step 1/3 ADD_SWAP 2579MiB done
+  [log INFO] step 2/3 START_TASK T2 begins: demand T2 (importance 70)
+  [log INFO] resume: plan plan-1, ledger snapshot through plan-1:1, steps done 1 of 3
+  [log INFO] step 2 START_TASK T2 was in doubt: effect present yes, in ledger no
+  [log INFO] step 3/3 START_TASK T1 begins: demand T1 (importance 60)
+  [log INFO] step 3/3 START_TASK T1 done
+  [log INFO] plan plan-1 finished
+PASS breaker with a torn last journal line and a torn snapshot: still exactly once
+  [log INFO] resume: nothing unfinished in the journal
+PASS runner: nothing to resume after a finished plan
+
+TOTAL 26 passed, 0 failed
+== test_dev4.rex
+PASS cluster text: the whole cluster round-trips
+PASS cluster text: the restored cluster plans the same move
+PASS cluster text: every recovery step round-trips with its MU, role and address
+  [log INFO] plan rec-1: 8 steps (RECOVERY)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 begins: uk1 is down (quorum)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 done
+  [log INFO] step 2/8 [au1] ROUTE_SERVICE LDAP-2 begins: the spare becomes the main
+  [log INFO] step 2/8 [au1] ROUTE_SERVICE LDAP-2 done
+  [log INFO] step 3/8 [uk2] ACTIVATE_TASK LDAP-3 begins: demand LDAP-3 (importance 95)
+  [log INFO] step 3/8 [uk2] ACTIVATE_TASK LDAP-3 done
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 begins: the new spare must have caught up before it is named
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 done
+  [log INFO] step 5/8 [uk2] ROUTE_SERVICE LDAP-3 begins: a new hot spare on another site
+  [log INFO] step 5/8 [uk2] ROUTE_SERVICE LDAP-3 done
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site begins: demand rasen-site (importance 50)
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site done
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site begins: prove the restored copy serves before anyone is sent to it
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site done
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site begins: uk1 is down (quorum)
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site done
+  [log INFO] plan rec-1 finished
+PASS recovery run: uninterrupted, the world ends as planned
+  [log INFO] plan rec-1: 8 steps (RECOVERY)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 begins: uk1 is down (quorum)
+  [log INFO] resume: plan rec-1, ledger snapshot through rec-1:0, steps done 0 of 8
+  [log INFO] step 1 [au1] FENCE_ROLE LDAP-2 was in doubt: effect present no, in ledger no
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 begins: uk1 is down (quorum)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 done
+  [log INFO] step 2/8 [au1] ROUTE_SERVICE LDAP-2 begins: the spare becomes the main
+  [log INFO] step 2/8 [au1] ROUTE_SERVICE LDAP-2 done
+  [log INFO] step 3/8 [uk2] ACTIVATE_TASK LDAP-3 begins: demand LDAP-3 (importance 95)
+  [log INFO] step 3/8 [uk2] ACTIVATE_TASK LDAP-3 done
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 begins: the new spare must have caught up before it is named
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 done
+  [log INFO] step 5/8 [uk2] ROUTE_SERVICE LDAP-3 begins: a new hot spare on another site
+  [log INFO] step 5/8 [uk2] ROUTE_SERVICE LDAP-3 done
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site begins: demand rasen-site (importance 50)
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site done
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site begins: prove the restored copy serves before anyone is sent to it
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site done
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site begins: uk1 is down (quorum)
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site done
+  [log INFO] plan rec-1 finished
+PASS recovery run: breaker at step 1 BEFORE_PERFORM; a cluster arbitrator that remembers nothing resumes; every step once; ledgers, routes and epochs match the world
+  [log INFO] plan rec-1: 8 steps (RECOVERY)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 begins: uk1 is down (quorum)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 done
+  [log INFO] step 2/8 [au1] ROUTE_SERVICE LDAP-2 begins: the spare becomes the main
+  [log INFO] resume: plan rec-1, ledger snapshot through rec-1:1, steps done 1 of 8
+  [log INFO] step 2 [au1] ROUTE_SERVICE LDAP-2 was in doubt: effect present yes, in ledger no
+  [log INFO] step 3/8 [uk2] ACTIVATE_TASK LDAP-3 begins: demand LDAP-3 (importance 95)
+  [log INFO] step 3/8 [uk2] ACTIVATE_TASK LDAP-3 done
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 begins: the new spare must have caught up before it is named
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 done
+  [log INFO] step 5/8 [uk2] ROUTE_SERVICE LDAP-3 begins: a new hot spare on another site
+  [log INFO] step 5/8 [uk2] ROUTE_SERVICE LDAP-3 done
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site begins: demand rasen-site (importance 50)
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site done
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site begins: prove the restored copy serves before anyone is sent to it
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site done
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site begins: uk1 is down (quorum)
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site done
+  [log INFO] plan rec-1 finished
+PASS recovery run: breaker at step 2 AFTER_PERFORM; a cluster arbitrator that remembers nothing resumes; every step once; ledgers, routes and epochs match the world
+  [log INFO] plan rec-1: 8 steps (RECOVERY)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 begins: uk1 is down (quorum)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 done
+  [log INFO] step 2/8 [au1] ROUTE_SERVICE LDAP-2 begins: the spare becomes the main
+  [log INFO] step 2/8 [au1] ROUTE_SERVICE LDAP-2 done
+  [log INFO] step 3/8 [uk2] ACTIVATE_TASK LDAP-3 begins: demand LDAP-3 (importance 95)
+  [log INFO] resume: plan rec-1, ledger snapshot through rec-1:2, steps done 2 of 8
+  [log INFO] step 3 [uk2] ACTIVATE_TASK LDAP-3 was in doubt: effect present yes, in ledger no
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 begins: the new spare must have caught up before it is named
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 done
+  [log INFO] step 5/8 [uk2] ROUTE_SERVICE LDAP-3 begins: a new hot spare on another site
+  [log INFO] step 5/8 [uk2] ROUTE_SERVICE LDAP-3 done
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site begins: demand rasen-site (importance 50)
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site done
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site begins: prove the restored copy serves before anyone is sent to it
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site done
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site begins: uk1 is down (quorum)
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site done
+  [log INFO] plan rec-1 finished
+PASS recovery run: breaker at step 3 AFTER_PERFORM; a cluster arbitrator that remembers nothing resumes; every step once; ledgers, routes and epochs match the world
+  [log INFO] plan rec-1: 8 steps (RECOVERY)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 begins: uk1 is down (quorum)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 done
+  [log INFO] step 2/8 [au1] ROUTE_SERVICE LDAP-2 begins: the spare becomes the main
+  [log INFO] step 2/8 [au1] ROUTE_SERVICE LDAP-2 done
+  [log INFO] step 3/8 [uk2] ACTIVATE_TASK LDAP-3 begins: demand LDAP-3 (importance 95)
+  [log INFO] step 3/8 [uk2] ACTIVATE_TASK LDAP-3 done
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 begins: the new spare must have caught up before it is named
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 done
+  [log INFO] step 5/8 [uk2] ROUTE_SERVICE LDAP-3 begins: a new hot spare on another site
+  [log INFO] resume: plan rec-1, ledger snapshot through rec-1:5, steps done 4 of 8
+  [log INFO] step 5 [uk2] ROUTE_SERVICE LDAP-3 was in doubt: effect present yes, in ledger yes
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site begins: demand rasen-site (importance 50)
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site done
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site begins: prove the restored copy serves before anyone is sent to it
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site done
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site begins: uk1 is down (quorum)
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site done
+  [log INFO] plan rec-1 finished
+PASS recovery run: breaker at step 5 AFTER_SNAPSHOT; a cluster arbitrator that remembers nothing resumes; every step once; ledgers, routes and epochs match the world
+  [log INFO] plan rec-1: 8 steps (RECOVERY)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 begins: uk1 is down (quorum)
+  [log INFO] step 1/8 [au1] FENCE_ROLE LDAP-2 done
+  [log INFO] step 2/8 [au1] ROUTE_SERVICE LDAP-2 begins: the spare becomes the main
+  [log INFO] step 2/8 [au1] ROUTE_SERVICE LDAP-2 done
+  [log INFO] step 3/8 [uk2] ACTIVATE_TASK LDAP-3 begins: demand LDAP-3 (importance 95)
+  [log INFO] step 3/8 [uk2] ACTIVATE_TASK LDAP-3 done
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 begins: the new spare must have caught up before it is named
+  [log INFO] step 4/8 [uk2] CHECK_SERVING LDAP-3 done
+  [log INFO] step 5/8 [uk2] ROUTE_SERVICE LDAP-3 begins: a new hot spare on another site
+  [log INFO] step 5/8 [uk2] ROUTE_SERVICE LDAP-3 done
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site begins: demand rasen-site (importance 50)
+  [log INFO] step 6/8 [uk2] ACTIVATE_TASK rasen-site done
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site begins: prove the restored copy serves before anyone is sent to it
+  [log INFO] step 7/8 [uk2] CHECK_SERVING rasen-site done
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site begins: uk1 is down (quorum)
+  [log INFO] resume: plan rec-1, ledger snapshot through rec-1:7, steps done 7 of 8
+  [log INFO] step 8 [uk2] ROUTE_SERVICE rasen-site was in doubt: effect present no, in ledger no
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site begins: uk1 is down (quorum)
+  [log INFO] step 8/8 [uk2] ROUTE_SERVICE rasen-site done
+  [log INFO] plan rec-1 finished
+PASS recovery run: breaker at step 8 BEFORE_PERFORM; a cluster arbitrator that remembers nothing resumes; every step once; ledgers, routes and epochs match the world
+
+TOTAL 9 passed, 0 failed
+== test_dev5.rex
+PASS normal: a daemon resolves through LDAP.main
+PASS main silent, no quorum yet: the daemon reads from the spare, marked STALE
+PASS main silent: no daemon changes its bootstrap file on its own
+PASS plan: LDAP is self-routing, so its role moves are announced, not published through LDAP
+PASS plan: still a pre-approved recovery plan
+PASS plan: the fence names the LDAP epoch authority
+PASS after: every live daemon file says main au1, spare uk2, epoch 2, version 3
+PASS after: lookups go through the new main again (FRESH)
+PASS after: the cluster agrees (LDAP.main au1, LDAP.spare uk2, epoch 2)
+PASS after: the dead MU daemon was not reached and still holds epoch 1
+PASS refuse: a forged signature
+PASS refuse: a key the file does not trust
+PASS refuse: a genuine but older record (the old main announcing epoch 1)
+PASS refuse: the file is unchanged after all three
+PASS return: the old main daemon catches up from its file (au1 answered)
+PASS return: the old LDAP main hears the higher epoch and stands down
+PASS second failure: uk2 becomes main, a new spare on another site (us1)
+PASS second failure: live daemons hold epoch 3, main uk2, spare us1
+PASS sleeper: its file still names the dead uk1 and au1
+PASS sleeper wakes: main and spare in its file are both gone, a seed answers, epoch 3 adopted
+PASS sleeper: lookups FRESH through uk2
+PASS no source: main, spare and every seed are gone - NO_ROLE_SOURCE, file kept
+PASS locked: the announcement is refused at signing (AUTH_LOCKED)
+PASS locked: no daemon file changed
+PASS locked: the fence (step 1) is done; the announcement (step 2) is in the journal as begun, not done
+PASS unlocked: a fresh arbitrator resumes the plan from the journal
+PASS unlocked: every live daemon now holds epoch 2, main au1, spare uk2
+PASS unlocked: each step performed exactly once
+PASS text: a restored cluster still announces LDAP role moves
+
+TOTAL 29 passed, 0 failed
+== test_dev6.rex
+PASS lease: runner A holds epoch 1
+PASS lease: every journal record carries epoch 1
+PASS lease: the plan finished, each step once, ledger matches the machine
+PASS crash: runner A is cut off at step 2
+PASS held: runner B is refused while A's lease runs
+PASS expired: runner B takes over at epoch 2 and finishes
+PASS expired: each step once, ledger matches the machine
+PASS zombie: A stalls in step 2, B takes over and finishes, then A stops with LEASE_LOST
+PASS zombie: each step once (B found step 2 already done), ledger of B matches the machine
+PASS zombie: no epoch-1 record after the first epoch-2 record
+PASS renew: 3 steps of 25 s with a 60 s lease finish at epoch 1
+PASS renew: the lease now ends after the last step
+PASS late write: B (epoch 2) is cut off before step 3
+PASS late write: runner C (epoch 3) ignores A's epoch-1 DONE and END and does step 3
+PASS late write: each step once, ledger matches the machine
+
+TOTAL 15 passed, 0 failed
+PASS rexxos_arbitrator v0.1-dev6 (183 checks)
