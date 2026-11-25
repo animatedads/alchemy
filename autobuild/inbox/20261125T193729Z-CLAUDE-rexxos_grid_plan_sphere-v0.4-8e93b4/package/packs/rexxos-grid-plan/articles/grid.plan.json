@@ -1,0 +1,34 @@
+{
+ "kind": "article",
+ "id": "grid.plan",
+ "sphere": "rexxos-grid-plan",
+ "version": "0.4",
+ "title": "The grid push",
+ "section": "start",
+ "summary": "Aim: the boot is the test - every restart of cats2 ends with cats2 on the grid with nobody logging in; one thin slice end to end (the failover cat app) before breadth. Claude (Opus 5.5): 1 controller (one ooRexx process, the only unit enabled at boot, holding arbitrator, NewShell endpoint, RTO2 runner and log subscription; talks to xtpd; journal with lease; done when a cold boot reports MU_READY over XTP with no login); 2 arbitrator live (state from the log pump; real effectors for start MI, stop MI, swap; done when a demand produces a running MI and the journal shows each checked effect); 3 grid placement by advertise-and-decide (done when cats1, cats2 and ed209k place a job three ways and it moves when one withdraws); 4 enforcing audit (done when THIN with zero findings and port 22 closed on cats2 under R2); 5 single submit point grid~submit(package) (done when three submit points each get a job id and receipt). ChatGPT: 1 xtpd at boot with the bootstrap role file; 2 the real Auth (Ed25519, su-locked, delegates per host); 3 MI image and launcher (namespace containers if no nested virtualisation); 4 package job on RTO2 surviving cats2 deallocation; 5 Storage Fabric for real (CAS lease, journal, two copies); 6 pump events (RAM, pressure, link state, MI death; providers dev17/dev18 are the start).",
+ "authority": "plan agreed by Tom Dyer (continue, 25 Nov 2026 15:04); hitlist Claude (Fable 5.2); review and writing Claude (Opus 5.5)",
+ "invariants": [
+  "The boot is the test",
+  "Thin slice before breadth",
+  "The controller logs every step from first boot"
+ ],
+ "procedure": [
+  "Follow the build order in grid.order"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_grid_plan_v0.4/docs/PLAN.md",
+   "sha256": "86089027dbcadad726c6ca0ad5207c7f8b1cd092f1085303d9a1d6e806198d50",
+   "claim": "items, done-when conditions, risks"
+  }
+ ],
+ "related": [
+  "grid.rules",
+  "grid.order",
+  "grid.open"
+ ],
+ "qualification_boundaries": {
+  "status": "agreed plan; nothing built yet",
+  "field": "cats2 (ed209l) is the proving node"
+ }
+}
