@@ -1,0 +1,33 @@
+{
+ "kind": "article",
+ "id": "arbitrator.next",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev2",
+ "title": "Not done yet",
+ "section": "rollout",
+ "summary": "Not done in dev2: the arbitrator own state on the fabric with write-ahead plan progress (first, see arbitrator.recovery); inputs from the pump (access by zone, RAM, PSI pressure, the quorum decision, as LogEvents on oorexx_logging v0.8, REQ-00005849); response-time goals (need pressure input); the real steps (XTP daemon registration, LDAP route publication, epoch fence, DNS, checkpoint write) rehearsed on the Virtual PC; two replicas of every state-freezable job; failure domains below the site (provider, power); shrinking a cache; Tom decisions on an approval exception for failover steps and on route publication when LDAP.main itself fails.",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "Real steps need Tom's direct approval until he says otherwise",
+  "NOT QUALIFIED for any real machine"
+ ],
+ "procedure": [
+  "Next: persist the arbitrator ledger and plan progress; then feed MachineState from the pump"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev2/README.md",
+   "sha256": "02c510a1e77eddbe588ebf4047d3c78e394c84bfa86dbfd90706c35293a8ac47",
+   "claim": "Not done; two things for Tom to decide"
+  }
+ ],
+ "related": [
+  "arbitrator.model",
+  "arbitrator.cluster",
+  "arbitrator.recovery"
+ ],
+ "qualification_boundaries": {
+  "status": "planned",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}

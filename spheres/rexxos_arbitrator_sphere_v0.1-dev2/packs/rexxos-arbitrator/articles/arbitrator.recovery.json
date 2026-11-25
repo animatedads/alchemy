@@ -1,0 +1,32 @@
+{
+ "kind": "article",
+ "id": "arbitrator.recovery",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev2",
+ "title": "Recovery is the job of the one who did the work",
+ "section": "rollout",
+ "summary": "Tom Dyer, 2026-11-25: the lab manager would pull the circuit breaker about 45 minutes before an exam or essay was due; if you had not saved your work and planned your recovery, it was on you. In RexxOS terms: a task saves its own state at checkpoints (its deactivating hook, RTO2 snapshot points); a role has a fenced spare on another site; and the arbitrator itself must survive a pulled plug. dev2 does not yet: the arbitrator ledger and a plan in progress live in RAM. dev3 must write each completed step to the fabric before the next starts, so a restarted arbitrator resumes the plan where it stopped.",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "Every task can be stopped at any moment without losing what it has already done",
+  "A plan in progress must be resumable after a pulled plug (dev3)"
+ ],
+ "procedure": [
+  "Test by pulling the plug: muDown in tests; on the estate, spot eviction of cats1/cats2 is the lab manager"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev2/README.md",
+   "sha256": "02c510a1e77eddbe588ebf4047d3c78e394c84bfa86dbfd90706c35293a8ac47",
+   "claim": "Not done: keeping the arbitrator state across restarts"
+  }
+ ],
+ "related": [
+  "arbitrator.roles",
+  "arbitrator.next"
+ ],
+ "qualification_boundaries": {
+  "status": "planners built; 104 offline checks pass on ooRexx 5.2.0 and 5.3.0",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}
