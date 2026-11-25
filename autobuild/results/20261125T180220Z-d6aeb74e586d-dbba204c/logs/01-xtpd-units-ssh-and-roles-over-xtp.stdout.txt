@@ -1,0 +1,24 @@
+building dependencies in /tmp/tmp.9VHTmb81Ny
+PASS xtpd units: checks, services, peers, routes, config, symlink refusal
+PASS role_file without node and role_keys is refused
+PASS role_file with node and role_keys is accepted
+PASS a bad node name is refused
+PASS role_timeout_ms below 100 is refused
+PASS role key loaded
+PASS a duplicate role key id is refused
+PASS a non-hex secret is refused
+PASS a symlinked role key file is refused
+PASS xtp.roles hook serves the exact envelope
+PASS xtp.roles hook refuses a symlinked role file
+PASS probe: this node is not MAIN
+PASS probe: a different version is not confirmed
+PASS probe: an unknown role is a bad request
+PASS probe: a bad verb is a bad request
+PASS probe: holder at the right record, no LDAP server: LDAP_DOWN
+PASS probe: the spare is checked the same way
+PASS xtpd roles units
+SKIP xtpd local ssh (needs root for sshd -i)
+SKIP xtpd roles (needs root: STATUS and ROLE are root only)
+SKIP xtpd local ssh (needs root for sshd -i)
+SKIP xtpd roles (needs root: STATUS and ROLE are root only)
+PASS xtpd units; end-to-end SKIPPED in part (needs root, OpenSSH and the LDAP kits)

@@ -1,0 +1,5 @@
+# SERVICE        CLASS       PROTECTION  HOOK
+ssh.management   management  encrypt     exec /usr/sbin/sshd -i
+# dev2: the role services.  xtp.roles on every node; ldap.role only on a node that may hold LDAP.main or LDAP.spare
+xtp.roles        management  authenticate exec /usr/local/bin/rexx /opt/xtpd/libexec/xtp_roles.rex /etc/xtpd/role
+ldap.role        management  authenticate exec /usr/local/bin/rexx /opt/xtpd/libexec/ldap_role.rex /etc/xtpd/role ed209k 127.0.0.1 389
