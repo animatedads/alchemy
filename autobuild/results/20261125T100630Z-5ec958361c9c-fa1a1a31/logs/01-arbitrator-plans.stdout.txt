@@ -1,0 +1,52 @@
+== interpreter: Open Object Rexx Version 5.3.0 r13196 - Internal Test Version
+PASS site: low load gives start then RAM store
+PASS site: plan is sound
+PASS site: RAM store holds the whole site
+PASS site: read-only store is verified before the switch
+PASS site: machine changes need approval
+PASS site: state records the store
+PASS site: nothing to do in the target state
+PASS site: RAM demand takes the store back first
+PASS site: read-only store needs no flush
+PASS site: plan is sound
+PASS site: root switches back before the store goes
+PASS site: demand gone, store comes back
+PASS hysteresis: existing store kept when it still fits
+PASS hysteresis: new store not made without headroom
+PASS T1/T2: swap first, then T2, then T1
+PASS T1/T2: swap sized to the excess plus margin
+PASS T1/T2: no RAM cache while swapping
+PASS T1/T2: plan is sound
+PASS T1/T2: T2 gone early, swap removal deferred
+PASS T1/T2: T2 gone, swap goes, RAM cache for T1
+PASS T1/T2: T1 gets a write-back cache (its request is TEMPORARY)
+PASS T1/T2: cache is RAM above headroom
+PASS T1/T2: plan is sound
+PASS flush: write-back cache flushed, dropped, then T3
+PASS flush: plan is sound
+PASS write-through: DURABLE request gets a write-through cache
+PASS write-through: dropped with no flush
+PASS case by case: request names write-through for temporary data
+PASS cluster: unpageable demand bigger than RAM goes to the cluster, no swap
+PASS cluster: asking needs no approval
+PASS cluster: higher priority asks the cluster to move the lower
+PASS cluster: the new task waits for the move
+PASS cluster: the arbitrator never stops the moved task itself
+PASS cluster: after the move, re-plan stops T2 and starts T5
+PASS cluster: no disk for swap, demand goes to the cluster
+PASS cluster: plan is sound
+PASS cluster: not enough fabric space
+PASS invariant: resident over budget is reported
+PASS step: inverses
+PASS step: flush has no inverse
+PASS step: dirty write-back cache cannot be dropped
+PASS demand: DURABLE data may not use write-back
+PASS demand: read-only cache needs read-only data
+PASS demand: pageable cannot exceed RAM
+PASS demand: RAM speed needs storage
+PASS demand: bad id refused
+PASS plan: same demand twice refused
+PASS step: unknown kind refused
+
+TOTAL 48 passed, 0 failed
+PASS rexxos_arbitrator v0.1-dev1 (48 checks)
