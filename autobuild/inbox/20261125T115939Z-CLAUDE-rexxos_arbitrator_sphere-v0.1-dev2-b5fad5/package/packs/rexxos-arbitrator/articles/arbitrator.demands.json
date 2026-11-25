@@ -1,0 +1,38 @@
+{
+ "kind": "article",
+ "id": "arbitrator.demands",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev2",
+ "title": "Demands and the cache mode",
+ "section": "architecture",
+ "summary": "A Demand has id, priority, ramMiB, pageableMiB (the part that may page; 0 means must not page), storageMiB, storageWhere (NONE LOCAL FABRIC), wantsRamSpeed, durability (READONLY TEMPORARY DURABLE) and cacheMode. The cache mode is decided case by case, per request (Tom Dyer, 2026-11-25): a request may name it; otherwise READONLY data gets a READONLY store, TEMPORARY a WRITEBACK cache, DURABLE a WRITETHROUGH cache. DURABLE data may not use WRITEBACK; a READONLY store needs READONLY data.",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "The request decides its cache mode (Tom Dyer, 2026-11-25)",
+  "DURABLE data never uses a write-back cache",
+  "An unpageable demand never counts swap as RAM"
+ ],
+ "procedure": [
+  "Give every demand its real pageable part; it decides whether swap can help"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev2/src/Arbitrator.cls",
+   "sha256": "b61360f84ca7710fab119b9c5cd308bcb46c5b65c69f0ad98bcc4f0f193f25bb",
+   "claim": "class Demand: validation and default cache mode"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev2/tests/test_dev1_machine.rex",
+   "sha256": "45394eeeabd00af6380eb7301d59efdf1bca9a439f567426702059e599a1ee08",
+   "claim": "case by case, DURABLE/WRITEBACK and READONLY refusals"
+  }
+ ],
+ "related": [
+  "arbitrator.plan",
+  "arbitrator.examples"
+ ],
+ "qualification_boundaries": {
+  "status": "planners built; 104 offline checks pass on ooRexx 5.2.0 and 5.3.0",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}

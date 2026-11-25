@@ -1,0 +1,33 @@
+{
+ "kind": "article",
+ "id": "arbitrator.lineage",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev2",
+ "title": "Sysplex, WLM, Aglets and NixOS",
+ "section": "start",
+ "summary": "Lineage (Claude (Opus 5.5) review, 2026-11-25; ChatGPT found the sysplex resemblance in its own chat \"Explain GDPS Environments\"). MU as CEC, MI as LPAR, the fabrics as Coupling Facility plus shared DASD. The machine arbitrator is WLM (goals and importance instead of hand-tuned settings) with IRD across the LPARs of one CEC; cross-arbitration is sysplex-wide WLM plus GDPS automation. DB2 data sharing is why an MU, like a sysplex member, owns no database. Tasks follow IBM Tokyo Research Laboratory Aglets (Lange and Oshima): create, clone, dispatch, retract, deactivate, activate, dispose, with hooks; Master/Slave and Notifier patterns; swap-in/swap-out of whole agents. RTO2 differs from Aglets by shipping state only, never code. NixOS (closest commercial competitor, Tom Dyer) declares what is installed at build time; its own rule against touching databases marks where its model stops; RexxOS declares what a machine should be doing now, from demands, at run time.",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "Ship state, never code (RTO2, not Aglets code bases)",
+  "Importance is the WLM word for priority"
+ ],
+ "procedure": [
+  "Use the lineage to name things; do not copy IBM mechanisms that need IBM hardware"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev2/README.md",
+   "sha256": "02c510a1e77eddbe588ebf4047d3c78e394c84bfa86dbfd90706c35293a8ac47",
+   "claim": "direction of 25 Nov 2026 and lineage notes"
+  }
+ ],
+ "related": [
+  "arbitrator.model",
+  "arbitrator.state",
+  "arbitrator.cluster"
+ ],
+ "qualification_boundaries": {
+  "status": "planners built; 104 offline checks pass on ooRexx 5.2.0 and 5.3.0",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}
