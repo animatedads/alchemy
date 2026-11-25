@@ -1,0 +1,37 @@
+{
+ "kind": "article",
+ "id": "xtpd.inputs",
+ "sphere": "xtpd",
+ "version": "0.1-dev3",
+ "title": "The three inputs",
+ "section": "architecture",
+ "summary": "Registrations come from LDAP (what a service means for a group of nodes) or the emergency services.txt and carry service, class, hook, protection and allowed principals; xtpd admits the service, loads its keys and records its hook. Service requests come from a local client on /run/xtpd.sock and carry service, peer and an optional client principal; xtpd opens the session and passes back a connected descriptor. Peerages come through the xtp.provision admission gate or the emergency peers.txt and carry peer, routes, keys and fence; xtpd installs routes and keys and adds the peer address to the nft set xtp_peers.",
+ "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Everything reaches xtpd as a registration, a service request or a peerage",
+  "Everything leaves as a hook, a firewall change or a receipt"
+ ],
+ "procedure": [
+  "Register a service; do not open a listener in the application"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/xtp_route_publication_v0.1-dev2/README.md",
+   "sha256": "247c6abf1c83de3843b758ec03d02a450cd67539e21a7ad80e6c48a113b466cd",
+   "claim": "xtp.provision ingress gate only; no actuator or identity resolver"
+  },
+  {
+   "artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SECURITY.md",
+   "sha256": "f6c306dfc985aafdf838ccba0fd4302502bde3676c03c2c52fe3c84f11f9a69f",
+   "claim": "Per-service keys, LDAP first then a mode-600 key file; protected FIRST checked before any state"
+  }
+ ],
+ "related": [
+  "xtpd.hooks",
+  "xtpd.firewall"
+ ],
+ "qualification_boundaries": {
+  "status": "dev1 and dev2 built: packages/oorexx_xtpd_v0.1-dev2 (Claude (Opus 5.5), 24-25 Nov 2026) - files, unix-socket OPEN with descriptor passing, exec hooks, the fence, receipts; dev2 adds the bootstrap role file (ChatGPT component xtpd_bootstrap v0.1-dev1): xtp.roles and ldap.role hooks, catch-up, READY only on FRESH, STATUS role and ROLE verb",
+  "field": "tested on loopback only (two daemons, UDP and raw IP 36, real OpenSSH and a real ooRexx LDAP server; 71 checks in the Ubuntu 22.04 build container as root; autobuild runs units only, as non-root); not field-tested; LDAP inputs, operating states, emergency files and announcements are not built"
+ }
+}

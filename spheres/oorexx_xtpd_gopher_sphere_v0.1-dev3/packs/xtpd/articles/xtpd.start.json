@@ -1,0 +1,40 @@
+{
+ "kind": "article",
+ "id": "xtpd.start",
+ "sphere": "xtpd",
+ "version": "0.1-dev3",
+ "title": "What xtpd is",
+ "section": "start",
+ "summary": "Every XTP node runs exactly one multi-threaded network service daemon, xtpd. It takes registrations, service requests and network infrastructure peerages, and runs the matching hooks. Applications never handle a carrier socket, key, route or firewall rule. It is also where the node decides what survives damage. Design doc: https://claude.ai/artifact/5xdnepoEfSABaQoCxcByNe Built so far: xtpd dev2, packages/oorexx_xtpd_v0.1-dev2 (bin/xtpd.rex, src/Xtpd.cls, libexec/xtp_roles.rex, libexec/ldap_role.rex; tests/run_all.sh). dev2 binds the bootstrap role file for grid item 1: a node catches up over xtp.roles and resolves LDAP.main by an authenticated ldap.role probe of a live LDAP server; READY only on FRESH. Rule found in dev2: no slow work under the Xtpd object guard, because the listener needs it (track) for every session.",
+ "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "One xtpd per node; it is the node's only network process",
+  "Applications are hooks; they never hold a carrier socket, key, route or firewall rule",
+  "Nothing in this sphere is built or field-tested"
+ ],
+ "procedure": [
+  "Read xtpd.addressing before designing any XTP client or service",
+  "Read xtpd.decisions for what Tom has not yet decided"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SESSIONS.md",
+   "sha256": "e7bfdea74e54becea80e83be588b57a87aae21354e940305418a822b62411c7c",
+   "claim": "XTP sessions: one context, both directions, per-direction close, one listener socket for all sessions"
+  },
+  {
+   "artifact": "packages/oorexx_xtp_v0.1-dev37/docs/NAMED_SERVICES.md",
+   "sha256": "4f2e72ca69dda48fd9c5e30ca9acccc1735b8faef973d2390783ddf9c70e504b",
+   "claim": "Service name to class to logical peer to route; IP addresses only in the route table; admission before CNTL"
+  }
+ ],
+ "related": [
+  "xtpd.addressing",
+  "xtpd.inputs",
+  "xtpd.decisions"
+ ],
+ "qualification_boundaries": {
+  "status": "dev1 and dev2 built: packages/oorexx_xtpd_v0.1-dev2 (Claude (Opus 5.5), 24-25 Nov 2026) - files, unix-socket OPEN with descriptor passing, exec hooks, the fence, receipts; dev2 adds the bootstrap role file (ChatGPT component xtpd_bootstrap v0.1-dev1): xtp.roles and ldap.role hooks, catch-up, READY only on FRESH, STATUS role and ROLE verb",
+  "field": "tested on loopback only (two daemons, UDP and raw IP 36, real OpenSSH and a real ooRexx LDAP server; 71 checks in the Ubuntu 22.04 build container as root; autobuild runs units only, as non-root); not field-tested; LDAP inputs, operating states, emergency files and announcements are not built"
+ }
+}

@@ -1,0 +1,33 @@
+{
+ "kind": "article",
+ "id": "xtpd.firewall",
+ "sphere": "xtpd",
+ "version": "0.1-dev3",
+ "title": "Firewall linkage",
+ "section": "operations",
+ "summary": "A peerage is the only thing that puts an address into the fence. The static nftables file keeps the skeleton (default drop, loopback, established, DHCP, an empty set xtp_peers admitting IP protocol 36). xtpd adds a peer's address when the peerage is taken and removes it when the peerage is withdrawn or its fence lapses, through the firewall controller's narrow nft helper, which touches named sets only and refuses protected sources. At start xtpd empties the set and rebuilds it; at stop it withdraws.",
+ "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "No application, hook or MI writes a firewall rule",
+  "Clean at both ends: start rebuilds, stop withdraws"
+ ],
+ "procedure": [
+  "Mutate only the named set xtp_peers through libexec/firewall-nft"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_firewall_controller/README.md",
+   "sha256": "54b0509b9957597532ababf5f054de8eea55e41a2a935f68fbc0f9d9d1200802",
+   "claim": "Narrow nft mutation helper; protected-source registry"
+  }
+ ],
+ "related": [
+  "xtpd.inputs",
+  "xtpd.lifecycle",
+  "xtpd.degradation"
+ ],
+ "qualification_boundaries": {
+  "status": "dev1 and dev2 built: packages/oorexx_xtpd_v0.1-dev2 (Claude (Opus 5.5), 24-25 Nov 2026) - files, unix-socket OPEN with descriptor passing, exec hooks, the fence, receipts; dev2 adds the bootstrap role file (ChatGPT component xtpd_bootstrap v0.1-dev1): xtp.roles and ldap.role hooks, catch-up, READY only on FRESH, STATUS role and ROLE verb",
+  "field": "tested on loopback only (two daemons, UDP and raw IP 36, real OpenSSH and a real ooRexx LDAP server; 71 checks in the Ubuntu 22.04 build container as root; autobuild runs units only, as non-root); not field-tested; LDAP inputs, operating states, emergency files and announcements are not built"
+ }
+}
