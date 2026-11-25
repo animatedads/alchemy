@@ -1,0 +1,37 @@
+{
+ "kind": "article",
+ "id": "arbitrator.cluster",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev1",
+ "title": "Asking the cluster",
+ "section": "architecture",
+ "summary": "The machine arbitrator never moves a task: it asks the cluster for cross-arbitration (Tom Dyer, 2026-11-25). ASK_CLUSTER is planned when a demand cannot fit here (resident RAM, local disk, fabric space, or no disk for the swap it needs), or when a higher-priority demand is blocked by a lower-priority running task: then the plan asks to move that task and the new START_TASK is WAITING. The cluster's answer arrives as an event; the arbitrator re-plans (the moved task then stops here and the waiting one starts).",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "The arbitrator asks; it never stops a task to make room on its own",
+  "A running task keeps its place until the cluster moves it"
+ ],
+ "procedure": [
+  "Treat the cluster's answer as an event and call plan again"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev1/src/Arbitrator.cls",
+   "sha256": "752b75955e0908cf73b008639bc393fcc155879dd18c46a300cd3f0603251cb9",
+   "claim": "ASK_CLUSTER placement and lowestRunningBelow"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev1/tests/test_dev1.rex",
+   "sha256": "c4e7613a9c1f8b05865a720097a53c77c65a283260a950611cc44136b4d6d448",
+   "claim": "cluster cases"
+  }
+ ],
+ "related": [
+  "arbitrator.plan",
+  "arbitrator.next"
+ ],
+ "qualification_boundaries": {
+  "status": "planner built; 48 offline checks pass on ooRexx 5.2.0 and 5.3.0",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}
