@@ -1,0 +1,38 @@
+{
+ "kind": "article",
+ "id": "arbitrator.state",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev6",
+ "title": "Where state lives, and swapping out whole",
+ "section": "architecture",
+ "summary": "An MU is a processing unit that hosts MIs and is disposable, like an MI (Tom Dyer, 2026-11-25), so it holds nothing that cannot be rebuilt or moved: a Demand stateWhere is FABRIC, CHECKPOINT or TEMPORARY; LOCAL is refused. A task whose state survives is deactivated whole (Aglets swap-out): its hook runs, its state is written and verified against a digest, its RAM is released; ACTIVATE_TASK resumes it here or anywhere. The arbitrator prefers swapping out a lower-importance task to adding swap and to making a more important demand wait, and asks the cluster where the swapped-out task resumes. TEMPORARY tasks keep dev1 behaviour: swap is added, or the cluster is asked to move them and the new start is WAITING.",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "LOCAL state is refused",
+  "State is verified against a digest before RAM is released, and before a task resumes",
+  "Each swap-out asks the cluster where the task resumes"
+ ],
+ "procedure": [
+  "Give every demand its real stateWhere; it decides whether it can be swapped out or moved"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev6/src/Arbitrator.cls",
+   "sha256": "cb1f865001af505305c02df5df1252c67263f391cea71a8dcd18d59ab39db11c",
+   "claim": "Demand stateWhere, MachineState park/apply, DEACTIVATE_TASK/ACTIVATE_TASK"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev6/tests/test_dev2.rex",
+   "sha256": "e4a20e3e2e64b71db3bc6282190bde69a6e5a9b9be3a1acd71ca49ece29030e9",
+   "claim": "swap-out cases and the state rule"
+  }
+ ],
+ "related": [
+  "arbitrator.plan",
+  "arbitrator.lineage"
+ ],
+ "qualification_boundaries": {
+  "status": "planners and journalled runner (machine and cluster plans) role bootstrap and journal lease built; 183 offline checks pass on ooRexx 5.2.0 and 5.3.0",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}

@@ -1,0 +1,40 @@
+{
+ "kind": "article",
+ "id": "arbitrator.cluster",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev6",
+ "title": "Cross-arbitration: moving a service",
+ "section": "architecture",
+ "summary": "The machine arbitrator never moves a task: it asks the cluster (Tom Dyer, 2026-11-25). ClusterArbitrator~planMoves(now, access) places each ServicePlacement by its rules (zone, optional GMT window, minimum share of access; first match wins, else the home zone) and minimum residence. XTP addresses services, not equipment (Tom Dyer, 2026-11-25), so a move is ROUTE_SERVICE: the target XTP daemon registers the service address and the route is published (LDAP); clients keep the address. Only a DNS edge names equipment and needs REPOINT_DNS and WAIT_DNS; a GATEWAY edge never changes. FABRIC state: activate on the target, CHECK_SERVING, route, (DNS), then release the old copy, so both serve during the overlap. CHECKPOINT state: deactivate first, activate on the target, check, route; the outage is stated. TEMPORARY state does not move. A target must take the service without asking the cluster anything, else the service stays and the decision says why.",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "Clients address the service, never a machine",
+  "A new copy is checked before anyone is routed to it",
+  "The old copy goes only after the route has moved (and old DNS answers have expired)",
+  "TEMPORARY state does not move"
+ ],
+ "procedure": [
+  "Treat the cluster answer and the quorum decision as events; call planMoves or muDown again"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev6/src/ClusterArbitrator.cls",
+   "sha256": "0cfef1c2ec03ddf3be0f3ec3b891dd47fdcc113b9bcc60a5178a0c1ac5446eed",
+   "claim": "ServicePlacement, ClusterStep, ClusterArbitrator~planMoves"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev6/tests/test_dev2.rex",
+   "sha256": "e4a20e3e2e64b71db3bc6282190bde69a6e5a9b9be3a1acd71ca49ece29030e9",
+   "claim": "follow-the-sun, gateway edge, no room, checkpoint handover"
+  }
+ ],
+ "related": [
+  "arbitrator.roles",
+  "arbitrator.examples",
+  "arbitrator.lineage"
+ ],
+ "qualification_boundaries": {
+  "status": "planners and journalled runner (machine and cluster plans) role bootstrap and journal lease built; 183 offline checks pass on ooRexx 5.2.0 and 5.3.0",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}
