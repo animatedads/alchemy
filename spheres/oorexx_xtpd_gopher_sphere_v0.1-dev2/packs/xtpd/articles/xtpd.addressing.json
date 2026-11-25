@@ -1,0 +1,49 @@
+{
+ "kind": "article",
+ "id": "xtpd.addressing",
+ "sphere": "xtpd",
+ "version": "0.1-dev2",
+ "title": "Addressing: XTP is not one to one",
+ "section": "start",
+ "summary": "A TCP address (IP:port) pins one socket to one program and answers any SYN before anyone is known. An XTP address is a service name; it resolves to logical peers, each peer to L2, L3 (raw IP protocol 36) or L4 (UDP) routes, and only the route table holds IP addresses. One listener socket carries every admitted service and up to 256 contexts. The open decides in its first packet, in order: who may speak (key, nonce, time, checked before any state), what is asked for (service name in the 0xA11C descriptor, admitted before CNTL), how urgent (SORT or deadline on every packet), which way (route chosen by health and metric), and only then bytes.",
+ "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "Never model XTP as a cable between two fixed points",
+  "No IP address in a service descriptor; IP lives only in the ROUTE table",
+  "Admission, protection and priority are decided at FIRST, before any state is kept",
+  "SSH over XTP candidate 4 is replaced, not ported"
+ ],
+ "procedure": [
+  "Address a service by name and let the route table choose the path"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_xtp_v0.1-dev37/docs/NAMED_SERVICES.md",
+   "sha256": "4f2e72ca69dda48fd9c5e30ca9acccc1735b8faef973d2390783ddf9c70e504b",
+   "claim": "Service name to class to logical peer to route; IP addresses only in the route table; admission before CNTL"
+  },
+  {
+   "artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SECURITY.md",
+   "sha256": "f6c306dfc985aafdf838ccba0fd4302502bde3676c03c2c52fe3c84f11f9a69f",
+   "claim": "Per-service keys, LDAP first then a mode-600 key file; protected FIRST checked before any state"
+  },
+  {
+   "artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SESSIONS.md",
+   "sha256": "e7bfdea74e54becea80e83be588b57a87aae21354e940305418a822b62411c7c",
+   "claim": "XTP sessions: one context, both directions, per-direction close, one listener socket for all sessions"
+  },
+  {
+   "artifact": "packages/ssh_over_xtp_v0.1-candidate4/README.md",
+   "sha256": "7be9587c6777e9323aca8b9f5e988273b5be9827ad7b14d830d2c16f484fc58e",
+   "claim": "Candidate 4: fixed rx/tx peers, TCP port 22 target, one client per launch, transaction per frame"
+  }
+ ],
+ "related": [
+  "xtpd.start",
+  "xtpd.inputs"
+ ],
+ "qualification_boundaries": {
+  "status": "dev1 built: packages/oorexx_xtpd_v0.1-dev1 (Claude (Opus 5.5), 24 Nov 2026) - registrations, peerages and keys from files, unix-socket OPEN with descriptor passing, exec hooks, the fence, receipts through oorexx_logging",
+  "field": "tested on loopback only (two daemons, real OpenSSH over UDP and raw IP 36); not field-tested; LDAP inputs, operating states, emergency files and the role bootstrap are not built"
+ }
+}

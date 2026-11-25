@@ -1,0 +1,37 @@
+{
+ "kind": "article",
+ "id": "xtpd.emergency-files",
+ "sphere": "xtpd",
+ "version": "0.1-dev2",
+ "title": "Local emergency text files",
+ "section": "operations",
+ "summary": "On degrade xtpd runs from plain text in /etc/xtpd/emergency/: services.txt (service, class, hook, protection), peers.txt (peer, layer, carrier, address; also fills xtp_peers), service.keys (XTP key-file format, mode 600), classes.txt (planner disposition syntax), state.txt (declared state and reason; an operator edit forces it). In NORMAL xtpd rewrites the set from LDAP after every good refresh (write, sync, rename) with time and LDAP epoch at the top. One strict parser: no symbolic links, owner and mode checked, bad lines reported by number while good lines stay in force. mu_audit checks existence, mode and freshness.",
+ "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "One record per line, readable from a serial console",
+  "A degrade switches the source; nothing is reconfigured during an emergency",
+  "A stale emergency set is an audit finding"
+ ],
+ "procedure": [
+  "Keep the set current in NORMAL; never edit it except to force a state in an emergency"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SECURITY.md",
+   "sha256": "f6c306dfc985aafdf838ccba0fd4302502bde3676c03c2c52fe3c84f11f9a69f",
+   "claim": "Per-service keys, LDAP first then a mode-600 key file; protected FIRST checked before any state"
+  },
+  {
+   "artifact": "packages/oorexx_operational_degradation_planner_v0.1-dev5/README.md",
+   "sha256": "5ff704ae28ef694aa0d99f3a674292a2b717af56b5e7ac264edecb6ead055e0d",
+   "claim": "Four operating states, class policy, capacity domains, reconcile() of live contexts"
+  }
+ ],
+ "related": [
+  "xtpd.degradation"
+ ],
+ "qualification_boundaries": {
+  "status": "design only (not in xtpd dev1)",
+  "field": "nothing built or field-tested"
+ }
+}
