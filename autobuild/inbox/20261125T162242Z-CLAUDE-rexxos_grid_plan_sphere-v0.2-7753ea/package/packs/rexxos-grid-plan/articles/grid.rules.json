@@ -1,0 +1,33 @@
+{
+ "kind": "article",
+ "id": "grid.rules",
+ "sphere": "rexxos-grid-plan",
+ "version": "0.2",
+ "title": "Standing rules R1-R6",
+ "section": "start",
+ "summary": "R1 (Tom Dyer, 25 Nov 2026 15:04, \"agreed re cats2 entirely\"): Everything inside cats2 (ed209l), including rebooting and deallocating it, is approved. Keys and the Auth, the Azure network security group, and every other node are not. An order changing only cats2 cites R1 and needs no separate approval; anything outside it still needs Tom directly; an agent unsure asks Tom. R2: port 22 on cats2 closes only when cats2 can be rebuilt from its image with nobody logging in and the Azure serial console works as break-glass; cats1 keeps port 22 until SSH over XTP survives a reboot. R3: kits built in the Ubuntu 22.04 build container; image = stock Ubuntu minimal plus a first-boot script that installs kits and applies the contract; no build tools on cats; contract versioned in the image; enforcing boot never disables the controller dependencies. R4: controllers advertise capacity, a cluster arbitrator (main and spare on separate sites) decides; no bidding without a decider. R5: recover cats2 by rebuild, not repair; offline suites are regression, not a ladder. R6 (Tom Dyer, 25 Nov 2026 16:17, \"We can use ed209k as well\", narrow reading written by Claude (Opus 5.5)): installing and running xtpd, an LDAP role (main or spare), their kits from the repository and their files inside ed209k is approved for the grid push; rebooting ed209k, keys and the Auth, Vultr account and firewall settings, and anything else on ed209k are not.",
+ "authority": "plan agreed by Tom Dyer (continue, 25 Nov 2026 15:04); hitlist Claude (Fable 5.2); review and writing Claude (Opus 5.5)",
+ "invariants": [
+  "R1 covers cats2 only; keys, Auth, Azure NSG and every other node still need Tom",
+  "Port 22 on cats2 closes only under R2",
+  "Advertise, then decide"
+ ],
+ "procedure": [
+  "Cite the rule number in any order that relies on it"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_grid_plan_v0.2/docs/STANDING_RULES.md",
+   "sha256": "8b9c75516b844fa2c4b68cec88a85af1f461cfac5c1cd9083a950d50bf09f548",
+   "claim": "the standing rules, with Tom Dyer approval wording"
+  }
+ ],
+ "related": [
+  "grid.plan",
+  "grid.order"
+ ],
+ "qualification_boundaries": {
+  "status": "in force",
+  "field": "cats2 (ed209l) is the proving node"
+ }
+}

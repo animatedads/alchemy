@@ -1,0 +1,31 @@
+{
+ "kind": "article",
+ "id": "grid.open",
+ "sphere": "rexxos-grid-plan",
+ "version": "0.2",
+ "title": "Open, read-only checks first",
+ "section": "rollout",
+ "summary": "Before building on them: cats2 Azure size and whether it allows nested virtualisation (KVM); the current state of xtpd and the fabrics on cats1, cats2 and ed209k; whether the Azure serial console works on cats2 (R2). Risks: skipping the rehearsal ladder makes node failures harder to diagnose (mitigated by logging every step from first boot and the journal of checked effects); disabling things at boot can lock cats2 out (acceptable only with rebuild recovery R5 and port 22 under R2).",
+ "authority": "plan agreed by Tom Dyer (continue, 25 Nov 2026 15:04); hitlist Claude (Fable 5.2); review and writing Claude (Opus 5.5)",
+ "invariants": [
+  "Read-only checks before building on assumptions"
+ ],
+ "procedure": [
+  "Codex runs the read-only checks"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_grid_plan_v0.2/docs/PLAN.md",
+   "sha256": "8f97f35b68ff719746719d08c197a1700d84f1b6c21759f87ccb45f090e15116",
+   "claim": "open items and risks"
+  }
+ ],
+ "related": [
+  "grid.rules",
+  "grid.plan"
+ ],
+ "qualification_boundaries": {
+  "status": "open",
+  "field": "cats2 (ed209l) is the proving node"
+ }
+}
