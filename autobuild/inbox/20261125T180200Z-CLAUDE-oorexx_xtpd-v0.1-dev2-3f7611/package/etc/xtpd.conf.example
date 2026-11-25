@@ -1,0 +1,15 @@
+# /etc/xtpd/xtpd.conf -- xtpd v0.1-dev2 (cats1 example)
+socket          /run/xtpd/xtpd.sock
+socket_mode     0660
+services        /etc/xtpd/emergency/services.txt
+peers           /etc/xtpd/emergency/peers.txt
+keys            /etc/xtpd/emergency/service.keys
+routes          /run/xtpd/routes.tsv
+listen          3 raw36 20.0.154.12
+firewall_helper /usr/local/bin/rexx /opt/xtpd/libexec/xtpd_firewall.rex
+log             /var/log/xtpd.log
+# dev2: the bootstrap role file (xtpd_bootstrap v0.1-dev1).  role_keys holds TEST keys only, mode 600.
+node            cats1
+role_file       /etc/xtpd/role
+role_keys       /etc/xtpd/role.keys
+role_timeout_ms 3000
