@@ -1,0 +1,40 @@
+{
+ "kind": "article",
+ "id": "xtpd.start",
+ "sphere": "xtpd",
+ "version": "0.1-dev2",
+ "title": "What xtpd is",
+ "section": "start",
+ "summary": "Every XTP node runs exactly one multi-threaded network service daemon, xtpd. It takes registrations, service requests and network infrastructure peerages, and runs the matching hooks. Applications never handle a carrier socket, key, route or firewall rule. It is also where the node decides what survives damage. Design doc: https://claude.ai/artifact/5xdnepoEfSABaQoCxcByNe Built so far: xtpd dev1, packages/oorexx_xtpd_v0.1-dev1 (bin/xtpd.rex, src/Xtpd.cls; tests/run_all.sh). Next: the bootstrap role file (rexxos-grid-plan item 1), integrated into xtpd by its author, Claude (Opus 5.5).",
+ "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "One xtpd per node; it is the node's only network process",
+  "Applications are hooks; they never hold a carrier socket, key, route or firewall rule",
+  "Nothing in this sphere is built or field-tested"
+ ],
+ "procedure": [
+  "Read xtpd.addressing before designing any XTP client or service",
+  "Read xtpd.decisions for what Tom has not yet decided"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SESSIONS.md",
+   "sha256": "e7bfdea74e54becea80e83be588b57a87aae21354e940305418a822b62411c7c",
+   "claim": "XTP sessions: one context, both directions, per-direction close, one listener socket for all sessions"
+  },
+  {
+   "artifact": "packages/oorexx_xtp_v0.1-dev37/docs/NAMED_SERVICES.md",
+   "sha256": "4f2e72ca69dda48fd9c5e30ca9acccc1735b8faef973d2390783ddf9c70e504b",
+   "claim": "Service name to class to logical peer to route; IP addresses only in the route table; admission before CNTL"
+  }
+ ],
+ "related": [
+  "xtpd.addressing",
+  "xtpd.inputs",
+  "xtpd.decisions"
+ ],
+ "qualification_boundaries": {
+  "status": "dev1 built: packages/oorexx_xtpd_v0.1-dev1 (Claude (Opus 5.5), 24 Nov 2026) - registrations, peerages and keys from files, unix-socket OPEN with descriptor passing, exec hooks, the fence, receipts through oorexx_logging",
+  "field": "tested on loopback only (two daemons, real OpenSSH over UDP and raw IP 36); not field-tested; LDAP inputs, operating states, emergency files and the role bootstrap are not built"
+ }
+}

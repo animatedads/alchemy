@@ -1,0 +1,37 @@
+{
+ "kind": "article",
+ "id": "xtpd.planes",
+ "sphere": "xtpd",
+ "version": "0.1-dev2",
+ "title": "Control plane and data plane",
+ "section": "architecture",
+ "summary": "ooRexx decides; libxtp moves bytes, as XTP's dev10 architecture states. The control plane (ooRexx, multi-threaded) owns registrations, peerages, key refresh, operating state, admission, firewall requests and receipts through oorexx_logging. The data plane (libxtp) owns carrier sockets, session listeners, byte pumps between sessions and hook descriptors, and fd passing. The pump is native because ooRexx charin on a pipe waits for end of file (tested 2026-11-24).",
+ "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "The data plane never waits on the control plane: a slow LDAP or a stuck hook leaves established sessions pumping",
+  "Logging goes through oorexx_logging"
+ ],
+ "procedure": [
+  "Put byte movement in libxtp; put decisions in ooRexx"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_xtp_v0.1-dev37/rexx/XtpSession.cls",
+   "sha256": "82efcbc374b1e6e0dd01593388c3b08fd6f374071796dd2bcd56a3dfae437575",
+   "claim": "ooRexx session API: unguarded read, write, accept"
+  },
+  {
+   "artifact": "packages/oorexx_xtp_v0.1-dev37/docs/SESSIONS.md",
+   "sha256": "e7bfdea74e54becea80e83be588b57a87aae21354e940305418a822b62411c7c",
+   "claim": "XTP sessions: one context, both directions, per-direction close, one listener socket for all sessions"
+  }
+ ],
+ "related": [
+  "xtpd.hooks",
+  "xtpd.findings"
+ ],
+ "qualification_boundaries": {
+  "status": "design only (not in xtpd dev1)",
+  "field": "nothing built or field-tested"
+ }
+}

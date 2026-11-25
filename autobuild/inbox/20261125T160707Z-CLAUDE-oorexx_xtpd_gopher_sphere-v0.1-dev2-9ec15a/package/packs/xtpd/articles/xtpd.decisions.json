@@ -1,0 +1,36 @@
+{
+ "kind": "article",
+ "id": "xtpd.decisions",
+ "sphere": "xtpd",
+ "version": "0.1-dev2",
+ "title": "Open decisions for Tom",
+ "section": "qualification",
+ "summary": "1 Registrations: LDAP holds what a service means, emergency services.txt the local copy. 2 Local client path: unix socket /run/xtpd.sock, root and a named group, fd passing. 3 Name: xtpd. 4 Fence expiry in DEGRADED and below: protected-class peerages keep firewall entry and keys until hard key expiry, every hold logged; NORMAL strict. 5 Workstation path to cats1: through ed209k, or XTP over UDP. 6 Parachute without port 22: redeploy, or a serial-console root login. 7 Witness placement: ed209k is 14.7 ms from cats1 and 126.9 ms from cats2. These are Claude's suggestions, not decisions.",
+ "authority": "design (architecture Tom Dyer; written by Claude (Opus 5.5), 2026-11-24)",
+ "invariants": [
+  "None of these is decided until Tom says so"
+ ],
+ "procedure": [
+  "Ask Tom; do not build on a suggestion as if decided"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_firewall_controller/README.md",
+   "sha256": "54b0509b9957597532ababf5f054de8eea55e41a2a935f68fbc0f9d9d1200802",
+   "claim": "Narrow nft mutation helper; protected-source registry"
+  },
+  {
+   "artifact": "packages/oorexx_operational_degradation_planner_v0.1-dev5/README.md",
+   "sha256": "5ff704ae28ef694aa0d99f3a674292a2b717af56b5e7ac264edecb6ead055e0d",
+   "claim": "Four operating states, class policy, capacity domains, reconcile() of live contexts"
+  }
+ ],
+ "related": [
+  "xtpd.degradation",
+  "xtpd.ssh-management"
+ ],
+ "qualification_boundaries": {
+  "status": "design only (not in xtpd dev1)",
+  "field": "nothing built or field-tested"
+ }
+}
