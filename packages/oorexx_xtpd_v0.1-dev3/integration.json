@@ -1,0 +1,41 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_xtpd",
+    "version": "0.1-dev3",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "xtpd-units-ssh-and-roles-over-xtp",
+      "argv": [
+        "bash",
+        "tests/run_all.sh"
+      ],
+      "timeout_seconds": 900,
+      "environment": {
+        "set": {
+          "XTP_SRC": "${REPO_ROOT}/packages/oorexx_xtp_v0.1-dev38",
+          "PLANNER_SRC": "${REPO_ROOT}/packages/oorexx_operational_degradation_planner_v0.1-dev5",
+          "PROCESS_SRC": "${REPO_ROOT}/packages/oorexx_process_v0.1-dev2",
+          "FOREIGN_RUNTIME_HOME": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6",
+          "UNIX_SOCKET_DIR": "${REPO_ROOT}/packages/oorexx_unix_socket_v0.6",
+          "LOGGING_DIR": "${REPO_ROOT}/packages/oorexx_logging_v0.7",
+          "CRYPTO_DIR": "${REPO_ROOT}/packages/oorexx_crypto_v0.8.3",
+          "BOOTSTRAP_DIR": "${REPO_ROOT}/packages/xtpd_bootstrap_v0.1-dev1",
+          "ATOMIC_FILE_SRC": "${REPO_ROOT}/packages/oorexx_atomic_file_v0.1-dev1",
+          "LDAP_DIR": "${REPO_ROOT}/packages/oorexx_ldap_identity_v0.1-dev9",
+          "SECRET_BROKER_DIR": "${REPO_ROOT}/packages/oorexx_secret_broker_v0.2",
+          "ALCHEMY_OBJECTS_DIR": "${REPO_ROOT}/packages/alchemy_objects_v0.8"
+        }
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_xtpd_v0.1-dev3"
+    }
+  }
+}
