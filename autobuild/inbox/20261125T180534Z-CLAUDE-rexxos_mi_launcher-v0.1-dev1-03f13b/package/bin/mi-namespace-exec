@@ -1,0 +1,19 @@
+#!/bin/sh
+# Trusted argv-only process adapter. No provisioning or network exposure.
+set -eu
+[ "$#" = 5 ] || exit 64
+root=$1; mi=$2; mu=$3; incarnation=$4; service=$5
+[ "$(id -u)" != 0 ] || { echo 'dedicated unprivileged account required' >&2; exit 77; }
+for v in "$mi" "$mu" "$incarnation" "$service"; do
+ case "$v" in ''|*[!a-zA-Z0-9._-]*) exit 64;; esac
+ [ "${#v}" -le 128 ] || exit 64
+done
+[ "$root" != / ] && [ "$(readlink -f -- "$root")" = "$root" ] && [ -d "$root" ] || exit 65
+[ -f "$root/etc/rexxos-mi/contract-v1" ] && [ ! -L "$root/etc/rexxos-mi/contract-v1" ] || exit 65
+[ -x "$root/opt/rexxos-mi/bin/runner" ] && [ ! -L "$root/opt/rexxos-mi/bin/runner" ] || exit 65
+# A per-incarnation root, with no host mounts or secrets, is required.
+# Runner is a reviewed deployment adapter, not a job-supplied command.
+exec /usr/bin/env -i PATH=/usr/bin:/bin /usr/bin/unshare \
+ --user --map-root-user --mount --propagation private --pid --fork --kill-child=SIGKILL \
+ --uts --ipc --net --root "$root" --wd / --mount-proc \
+ /opt/rexxos-mi/bin/runner "$mi" "$mu" "$incarnation" "$service"
