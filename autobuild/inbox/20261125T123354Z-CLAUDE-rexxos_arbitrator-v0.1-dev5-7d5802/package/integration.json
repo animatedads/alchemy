@@ -1,0 +1,14 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {"name": "rexxos_arbitrator", "version": "0.1-dev5", "kind": "oorexx"},
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "arbitrator-plans-recovery-and-journal",
+      "argv": ["bash", "tests/run_tests.sh"],
+      "timeout_seconds": 180,
+      "environment": {"set": {"PACKAGES": "${REPO_ROOT}/packages"}}
+    }
+  ],
+  "publish": {"tree": {"source": ".", "path": "packages/rexxos_arbitrator_v0.1-dev5"}}
+}
