@@ -1,0 +1,38 @@
+{
+ "kind": "article",
+ "id": "arbitrator.plan",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev3",
+ "title": "The plan: order, simulation, approval",
+ "section": "architecture",
+ "summary": "MachineArbitrator~plan(demands, now) places running tasks first, then new demands by priority; works out swap (pageable RAM beyond free RAM, plus a 10% margin); then caches (a new cache needs 15% headroom, an existing one only has to fit: hysteresis). Steps free before they take: STOP_TASK, FLUSH_CACHE, DROP_CACHE, ADD_SWAP, START_TASK, REMOVE_SWAP, ADD_CACHE. Swap removal inside its 600 s minimum lifetime is DEFERRED. Every step has a cause, actions and an inverse; every step but ASK_CLUSTER is marked NEEDS TOM'S DIRECT APPROVAL. The plan is simulated on a copy of the state; a step that breaks an invariant makes the plan REFUSED.",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "Invariants hold at every step: resident RAM within budget; RAM plus pageable within RAM plus swap; disk and fabric not overcommitted; no dirty write-back cache dropped",
+  "A write-back cache is flushed before it is dropped",
+  "A read-only store is verified against its digest before the root switches to it"
+ ],
+ "procedure": [
+  "Apply only PLANNED steps, in order; record each with completed(step, now); re-plan on the next event"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev3/src/Arbitrator.cls",
+   "sha256": "3bae29526e54ef5d1e7243d2d981be5629db4c1e3fd11298fa66eca5eb1b577c",
+   "claim": "MachineArbitrator~plan, MachineState~violations and ~apply"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev3/tests/test_dev1_machine.rex",
+   "sha256": "45394eeeabd00af6380eb7301d59efdf1bca9a439f567426702059e599a1ee08",
+   "claim": "ordering, flush, deferral, invariants"
+  }
+ ],
+ "related": [
+  "arbitrator.cluster",
+  "arbitrator.examples"
+ ],
+ "qualification_boundaries": {
+  "status": "planners and journalled runner built; 130 offline checks pass on ooRexx 5.2.0 and 5.3.0",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}

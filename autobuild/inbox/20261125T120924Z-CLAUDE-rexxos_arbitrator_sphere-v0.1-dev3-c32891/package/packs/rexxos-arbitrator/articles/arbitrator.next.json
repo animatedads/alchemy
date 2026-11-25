@@ -1,0 +1,33 @@
+{
+ "kind": "article",
+ "id": "arbitrator.next",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev3",
+ "title": "Not done yet",
+ "section": "rollout",
+ "summary": "Not done in dev3: a durable runner for cluster and recovery plans (machine plans have one); a real effector that checks a step's effect on the machine; inputs from the pump (access by zone, RAM, PSI pressure, the quorum decision, as LogEvents on oorexx_logging v0.8, REQ-00005849); response-time goals (need pressure input); the real steps (XTP daemon registration, LDAP route publication, epoch fence, DNS, checkpoint write) rehearsed on the Virtual PC; two replicas of every state-freezable job; failure domains below the site; shrinking a cache; Tom's decision on route publication when LDAP.main itself fails.",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "Provisioning steps need Tom's direct approval; only restoring recovery steps are pre-approved",
+  "NOT QUALIFIED for any real machine"
+ ],
+ "procedure": [
+  "Next: a durable cluster runner; then feed MachineState from the pump"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev3/README.md",
+   "sha256": "d07c3fe5aad5773e5212fff13703c6452b4b392f1fe3d0e8dbd38d9b54defc82",
+   "claim": "Not done; still for Tom to decide"
+  }
+ ],
+ "related": [
+  "arbitrator.model",
+  "arbitrator.cluster",
+  "arbitrator.recovery"
+ ],
+ "qualification_boundaries": {
+  "status": "planned",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}

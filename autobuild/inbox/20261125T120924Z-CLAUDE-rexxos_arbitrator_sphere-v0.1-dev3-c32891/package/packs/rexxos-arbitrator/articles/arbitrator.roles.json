@@ -1,0 +1,39 @@
+{
+ "kind": "article",
+ "id": "arbitrator.roles",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev3",
+ "title": "LDAP.main and LDAP.spare",
+ "section": "architecture",
+ "summary": "Tom Dyer, 2026-11-25: wherever LDAP main and LDAP hot spare are this minute, they are LDAP.main and LDAP.spare; when LDAP.main goes down LDAP.spare becomes LDAP.main. These are service addresses kept on separate sites, not addresses of nodes that may vanish when someone pulls a power plug. RolePair keeps a main and a spare on separate sites with fabric state. muDown(mu) (quorum decided): FENCE_ROLE raises the role epoch so the old main is refused if it returns; ROUTE_SERVICE moves .main to the spare; a new spare is activated on a site other than the new main, checked (replica generation) and only then routed as .spare. No other site: reported, never hidden. Failover steps are pre-approved recovery (arbitrator.recovery). Open: LDAP.main route publication must not depend on the dead LDAP.main (override files or a direct daemon announce).",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "Main and spare are on separate sites",
+  "The old main is fenced before .main moves",
+  "A new spare is named only after it has caught up",
+  "Running without a spare is reported"
+ ],
+ "procedure": [
+  "Decide how the LDAP.main route is published when LDAP.main itself has failed"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev3/src/ClusterArbitrator.cls",
+   "sha256": "6e273069d09c13e7b08767e6f3b38206e34e1235d4a4bc068232c22a8e214094",
+   "claim": "RolePair, addPair, muDown, roleAt"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev3/tests/test_dev2.rex",
+   "sha256": "e4a20e3e2e64b71db3bc6282190bde69a6e5a9b9be3a1acd71ca49ece29030e9",
+   "claim": "failover, lost spare, no site left"
+  }
+ ],
+ "related": [
+  "arbitrator.cluster",
+  "arbitrator.recovery"
+ ],
+ "qualification_boundaries": {
+  "status": "planners and journalled runner built; 130 offline checks pass on ooRexx 5.2.0 and 5.3.0",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}
