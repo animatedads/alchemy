@@ -1,0 +1,41 @@
+{
+ "kind": "article",
+ "id": "arbitrator.start",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev5",
+ "title": "What the arbitrator is",
+ "section": "start",
+ "summary": "A machine does not run provisioning scripts. It holds demands (start an MI with a service; serve a site). Its MachineArbitrator, the one authority over that machine's resources, turns the demands and the machine state into a ProvisionPlan: the ordered steps that reach the target state. Swap is the example: nobody decides it at install; a demand that needs it provisions it, and it goes when the demand ends or moves. dev1 is the planner only (src/Arbitrator.cls).",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "One arbitrator per machine; it is the only authority over that machine's resources",
+  "A plan is data, not a script",
+  "dev1 touches no real machine"
+ ],
+ "procedure": [
+  "Read arbitrator.model, then arbitrator.plan",
+  "Run: bash tests/run_tests.sh"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev5/README.md",
+   "sha256": "64b2a6e49a1bc028ce6f600938aa7a10392165fb6d32690213d25696426031c2",
+   "claim": "what it is, rules, classes, the T1/T2 plan, what is not done"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev5/src/Arbitrator.cls",
+   "sha256": "08907d731fdb1a407f058727066f164e1de8e4f822888eecf0bd9ae3784a866a",
+   "claim": "Demand, MachineState, ProvisionStep, ProvisionPlan, MachineArbitrator"
+  }
+ ],
+ "related": [
+  "arbitrator.model",
+  "arbitrator.plan",
+  "arbitrator.examples",
+  "arbitrator.next"
+ ],
+ "qualification_boundaries": {
+  "status": "planners and journalled runner (machine and cluster plans) and role bootstrap built; 168 offline checks pass on ooRexx 5.2.0 and 5.3.0",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}
