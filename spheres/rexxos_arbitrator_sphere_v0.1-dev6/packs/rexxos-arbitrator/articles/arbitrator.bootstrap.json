@@ -1,0 +1,44 @@
+{
+ "kind": "article",
+ "id": "arbitrator.bootstrap",
+ "sphere": "rexxos-arbitrator",
+ "version": "0.1-dev6",
+ "title": "Moving LDAP.main when LDAP.main died",
+ "section": "architecture",
+ "summary": "Tom Dyer, 2026-11-25: probably with a preplanned LDAP.spare deployed address in a file, which then takes over and switches to LDAP resolution. As DNS keeps root hints, every XTP daemon keeps a bootstrap file with the role record (main, spare, epoch, version, seeds, trusted announce keys); the role addresses are never resolved through LDAP. Before the quorum a daemon reads from the spare replica (STALE) and changes nothing. After it, the plan for a self-routing RolePair uses ANNOUNCE_ROLE: the role authority signs the new record and it goes unicast to every live daemon, which accepts it only if the key is trusted by its own file, the signature checks and the record is newer; it rewrites its file and resolves FRESH through the new main. An old main that returns stands down; a sleeper asks its file main, spare and seeds (NO_ROLE_SOURCE if none answer); locking the authority stops role changes at signing and a fresh arbitrator resumes after unlocking. RoleAuthority is a keyed-checksum stand-in, NOT CRYPTOGRAPHY, for the Auth. The ooRexx LDAP server (oorexx_ldap_identity, ChatGPT) already has IdentityPeerEpochAuthority~promote (externally authorized promotion; FENCE_ROLE for LDAP is that call), peer update replication with a durable outbox (caught up = peer origin sequence), XtpProvisionLdapResolver (XTP KEYID to principal and ACL), and does not choose XTP carriers (XTP multicast=false, so announcements are unicast).",
+ "authority": "built and tested offline (architecture Tom Dyer; coding and writing Claude (Opus 5.5), 2026-11-25)",
+ "invariants": [
+  "Role addresses come from the bootstrap file, never from LDAP",
+  "A daemon never decides the main is dead; it only reads STALE from the spare",
+  "Only a trusted, genuine, newer record is accepted",
+  "Locking the authority stops role changes"
+ ],
+ "procedure": [
+  "Use RolePair~new(name, template, .true) for the pair that carries the routes"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev6/src/RoleBootstrap.cls",
+   "sha256": "087dfe1ab3a4e99b86f98ca34d4798fec0038324332ca548467473daf3d18dba",
+   "claim": "RoleAuthority, RoleRecord, XtpDaemonSim, RoleWorld"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev6/src/ClusterArbitrator.cls",
+   "sha256": "0cfef1c2ec03ddf3be0f3ec3b891dd47fdcc113b9bcc60a5178a0c1ac5446eed",
+   "claim": "selfRouting RolePair and ANNOUNCE_ROLE"
+  },
+  {
+   "artifact": "packages/rexxos_arbitrator_v0.1-dev6/tests/test_dev5.rex",
+   "sha256": "e3c0dc33888c32e4ff224a25acb9c2313a75d5b0f9c78742f267bb53350e341e",
+   "claim": "stale reads, announcement, refusals, return, sleeper, lock"
+  }
+ ],
+ "related": [
+  "arbitrator.roles",
+  "arbitrator.recovery"
+ ],
+ "qualification_boundaries": {
+  "status": "planners and journalled runner (machine and cluster plans) role bootstrap and journal lease built; 183 offline checks pass on ooRexx 5.2.0 and 5.3.0",
+  "field": "no real machine touched; inputs supplied by hand"
+ }
+}
