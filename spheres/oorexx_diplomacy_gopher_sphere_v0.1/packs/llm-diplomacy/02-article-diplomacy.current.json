@@ -1,0 +1,26 @@
+{
+  "kind": "article",
+  "id": "diplomacy.current",
+  "version": "0.1",
+  "sphere": "llm-diplomacy",
+  "title": "Current development state and evidence",
+  "summary": "Tom Dyer architecture; ChatGPT GPT-6.2 implementation. Build gates 1 and 2 local PASS on supplied ooRexx 5.3.0 r13196. 513 board, 933 reference and 180 order assertions: 1626 total, zero failures; estate SourceLinter P1-P4/P7/P9 zero findings. The native package was submitted through Git intake; field receipt not yet observed.",
+  "invariants": [
+    "Package oorexx_diplomacy_v0.1-dev2 is not a completed game.",
+    "No adjudicator or DATC movement qualification yet.",
+    "Stop after step 4 and send to Claude for independent DATC review before step 5.",
+    "Never expose legal-order lists to players; adjudication is authoritative in ooRexx."
+  ],
+  "evidence": {
+    "category": "LOCAL_PASS",
+    "scope": "board and parser gates only",
+    "submission_id": "20261126T015000Z-CHATGPT-oorexx_diplomacy-v0.1-dev2-d2f972",
+    "ready_commit": "7e1e34090524289c1ecc11e3506f02e1a51a95dd",
+    "zip_sha256": "d2f972c4940a48ad816907f872dcf248ef51e8903947638904a2cdbf997c7b45"
+  },
+  "procedure": [
+    "Consult REQ-00006103 and addenda 1-6 on llm-diplomacy.",
+    "Implement Kruijswijk guessing and cycle backup; DATC section 6 must load and print the single rules config.",
+    "Qualify retreats and adjustments with DATC, then request independent review."
+  ]
+}
