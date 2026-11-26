@@ -1,0 +1,42 @@
+{
+  "kind": "article",
+  "id": "diplomacy.current",
+  "version": "0.9",
+  "sphere": "llm-diplomacy",
+  "title": "Current development state and evidence",
+  "summary": "Dev4r5 qualification-only candidate, production bytes unchanged from dev4r4. F.28/F.29 gap closed; 3311 native assertions, 232 positions, 69000 fresh stress trials, zero failures. Independent review PASS on dev4r4 (REQ-00006293); original reviewer files recovered. Official Autobuilder PASS.",
+  "invariants": [
+    "Existing referee only; no game loop or player integration.",
+    "Independent review completed; F1 fixed. Fresh independent review of exact dev4r4 passed (REQ-00006293); dev4r5 production bytes identical.",
+    "COAST_REQUIRED=ALWAYS; SUPPORT_COAST=STRICT. Every split fleet origin, destination or assisted reference needs the exact coast. Missing NO_COAST; wrong BAD_COAST; armies have no coast.",
+    "NONADJACENT_ARMY_MOVE=CONVOY_IF_PHYSICAL_ROUTE and SUPPORT_REACH=PROVINCE. No parser/solver change; five end-to-end regressions.",
+    "Four changed DATC movement expectations: B.2/B.7/B.8/B.15; B.16/B.17 board results unchanged, BAD_COAST diagnostic. F.28/F.29 now pass, including full outcomes and retreat-option assertions. Selective coverage.",
+    "Never expose legal-order lists to players."
+  ],
+  "evidence": {
+    "category": "AUTOBUILDER_PASS",
+    "scope": "qualification-only; unchanged production and rules",
+    "submission_id": "20261126T114545Z-CHATGPT-oorexx_diplomacy-v0.1-dev4r5-3de1cc",
+    "ready_commit": "77db582eb885410a862f4bc67f909ccabb5b097d",
+    "zip_sha256": "3de1cc6d7d1f10589d7a1d945fba86936084ab1d0b6af134ed96b9e9bfa0ee49",
+    "assertions": 3311,
+    "failures": 0,
+    "positions": 232,
+    "independent_review": "REQ-00006293",
+    "baseline_review_positions": 98000,
+    "independent_review_qualification": "Claude independently reran dev4r4 (production bytes identical to dev4r5) on his mirror-head ooRexx 5.3.0, 98,000 stress trials, zero invariant failures and 1355 paradox trials. Not an independent rerun of dev4r5 package.",
+    "additional_mutation_trials": 9000,
+    "additional_mutation_failures": 0,
+    "additional_paradox_trials": 2621,
+    "rules_sha256": "c0bd113e6965b2894ea65b568305ccf27b82b676e85ac95c82ed955f883cee04",
+    "official_run": "20261126T114641Z-bdffdccaa820-57409a77",
+    "prior_dev4_review": "REQ-00006189 (98000, dev4 only)",
+    "additional_random_trials": 60000,
+    "additional_random_failures": 0
+  },
+  "procedure": [
+    "Consult controlling brief and addenda, including REQ-00006219/235/237/253.",
+    "Read evidence/CLAUDE-REQUALIFICATION.md and diplomacy.qualification. All three recovered reviewer blocks hash-verified.",
+    "No full-game qualification; runtime IDs/effort profiles require pinning."
+  ]
+}
