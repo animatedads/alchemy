@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "diplomacy.current",
+  "version": "0.6",
+  "sphere": "llm-diplomacy",
+  "title": "Current development state and evidence",
+  "summary": "Canonical step-4 referee dev4r2: 2934 native assertions, 220 positions, official Autobuilder PASS. Separately, fresh 20,000 fixture-mutation stress audit on unchanged dev4r2, zero failures; no full-game replay qualification.",
+  "invariants": [
+    "Existing referee only; no game loop or player integration.",
+    "Independent review completed; F1 fixed and verified natively.",
+    "F2 closed by the Architect: SUPPORT_COAST=STRICT; wrong explicit supported-unit coast invalidates support. Deliberate DATC 4.B.5 deviation. No movement behavior change.",
+    "Selective DATC assertions, not formal full conformity; F.28/F.29 and Claude stress tools still unavailable locally. Separate new mutation audit covers 20,000 trials.",
+    "Never expose legal-order lists to players."
+  ],
+  "evidence": {
+    "category": "AUTOBUILDER_PASS",
+    "scope": "review ruling",
+    "submission_id": "20261126T095905Z-CHATGPT-oorexx_diplomacy-v0.1-dev4r2-88755f",
+    "ready_commit": "6801a8b1aa5ac34c019ef2224071cdbabe20a4cb",
+    "zip_sha256": "88755f7a28ed87a4209bcf990eb55da2bb316497e2c2cb4af91ef46b10829281",
+    "assertions": 2934,
+    "failures": 0,
+    "positions": 220,
+    "independent_review": "REQ-00006189",
+    "baseline_review_positions": 98000,
+    "independent_review_qualification": "Claude reports 0 invariant failures; his ooRexx build differs from exact r13196.",
+    "additional_mutation_trials": 20000,
+    "additional_mutation_failures": 0,
+    "additional_paradox_trials": 1419,
+    "rules_sha256": "e108a1a7ecb1c004d06198eb501677d67a70b45689fb20a0c14ea64b13f579fe"
+  },
+  "procedure": [
+    "Consult controlling brief and addenda, and REQ-00006189.",
+    "Read evidence/REVIEW.md in dev4r1 for F1-F4.",
+    "Check official Autobuilder receipt for dev4r2; recover outstanding review archive for F.28/F.29 and stress tools.",
+    "Read diplomacy.qualification; use canonical dev4r2 and distinct audit evidence. Rules author/Architect must settle pending competition decisions before prompts."
+  ]
+}
