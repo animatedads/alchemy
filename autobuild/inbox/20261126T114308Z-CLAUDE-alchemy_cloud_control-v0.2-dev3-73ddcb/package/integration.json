@@ -1,0 +1,14 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {"name": "alchemy_cloud_control", "version": "0.2-dev3", "kind": "oorexx"},
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "cloud-control-four-suites-fake-providers",
+      "argv": ["bash", "tests/autobuild_run.sh"],
+      "timeout_seconds": 900,
+      "environment": {"set": {"LOGGING_HOME": "${REPO_ROOT}/packages/oorexx_logging_v0.7"}}
+    }
+  ],
+  "publish": {"tree": {"source": ".", "path": "packages/alchemy_cloud_control_v0.2-dev3"}}
+}

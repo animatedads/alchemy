@@ -1,0 +1,51 @@
+#!/bin/sh
+# xtp-fake -- answers the reads "cloudctl xtp" makes with grid-shaped state; everything else goes to dev4's
+# cloud-fake.  Architecture: Tom Dyer.  Coding: Claude (Opus 5.5), 7 Nov 2026.
+set -eu
+name=$(basename "$0")
+args=" $* "
+answer() { if [ -n "${CLOUDCTL_PROVIDER_LOG:-}" ]; then printf "%s %s\n" "$name" "$*" >> "$CLOUDCTL_PROVIDER_LOG"; fi; }
+# 26 Nov 2026 (Claude (Opus 5.5)): every aws call records whether AWS_PAGER was set (cloudctl sets it empty).
+if [ "$name" = aws ] && [ -n "${CLOUDCTL_PROVIDER_LOG:-}" ]; then printf "aws-pager=[%s]\n" "${AWS_PAGER-unset}" >> "$CLOUDCTL_PROVIDER_LOG"; fi
+case "$name:$args" in
+  aws:*' describe-security-group-rules '*'sg-xtp'*) answer "$@"; cat <<'JSON'
+{"SecurityGroupRules":[
+ {"SecurityGroupRuleId":"sgr-22","IsEgress":false,"IpProtocol":"tcp","FromPort":22,"ToPort":22,"CidrIpv4":"0.0.0.0/0"},
+ {"SecurityGroupRuleId":"sgr-36keep","IsEgress":false,"IpProtocol":"36","FromPort":-1,"ToPort":-1,"CidrIpv4":"193.123.184.140/32"},
+ {"SecurityGroupRuleId":"sgr-36old","IsEgress":false,"IpProtocol":"36","FromPort":-1,"ToPort":-1,"CidrIpv4":"203.0.113.99/32"},
+ {"SecurityGroupRuleId":"sgr-36out","IsEgress":true,"IpProtocol":"36","FromPort":-1,"ToPort":-1,"CidrIpv4":"203.0.113.98/32"},
+ {"SecurityGroupRuleId":"sgr-u1","IsEgress":false,"IpProtocol":"udp","FromPort":62801,"ToPort":62801,"CidrIpv4":"34.16.115.198/32"},
+ {"SecurityGroupRuleId":"sgr-u2","IsEgress":false,"IpProtocol":"udp","FromPort":62801,"ToPort":62801,"CidrIpv4":"34.44.126.133/32"}
+]}
+JSON
+  ;;
+  oci:*' security-list get '*) answer "$@"; cat <<'JSON'
+{"data":{"id":"ocid1.securitylist.oc1.fake","ingress-security-rules":[
+ {"description":null,"icmp-options":null,"is-stateless":false,"protocol":"6","source":"0.0.0.0/0","source-type":"CIDR_BLOCK","tcp-options":{"destination-port-range":{"max":22,"min":22},"source-port-range":null},"udp-options":null},
+ {"description":"ED209 XTP peer qualification","is-stateless":false,"protocol":"36","source":"203.0.113.99/32","source-type":"CIDR_BLOCK"},
+ {"description":"ED209 XTP peer qualification","is-stateless":false,"protocol":"36","source":"52.146.17.8/32","source-type":"CIDR_BLOCK"},
+ {"description":"ED209 XTP peer qualification","is-stateless":false,"protocol":"36","source":"52.146.17.8/32","source-type":"CIDR_BLOCK"}
+]}}
+JSON
+  ;;
+  az:*' nsg rule show '*'nsg-ro'*) answer "$@"; cat >&2 <<'TRACE'
+Traceback (most recent call last):
+  File "/usr/lib/python3.13/site-packages/azure/cli/core/_session.py", line 54, in save
+    with open(self.filename, 'w', encoding=self._encoding) as f:
+OSError: [Errno 30] Read-only file system: '/home/hc3/.azure/az.sess'
+TRACE
+  exit 1 ;;
+  az:*' nsg rule show '*'nsg-c'*' ed209-xtp-peers '*) answer "$@"; cat <<'JSON'
+{"name":"ed209-xtp-peers","protocol":"*","destinationPortRange":"*","sourceAddressPrefix":"","sourceAddressPrefixes":["193.123.184.140/32","203.0.113.77/32"],"priority":250}
+JSON
+  ;;
+  az:*' nsg rule show '*'nsg-c'*' ed209-xtp-udp '*) answer "$@"; cat <<'JSON'
+{"name":"ed209-xtp-udp","protocol":"Udp","destinationPortRange":"62801","sourceAddressPrefix":null,"sourceAddressPrefixes":["34.16.115.198/32","34.44.126.133/32"],"priority":249}
+JSON
+  ;;
+  gcloud:*' firewall-rules describe ed209-xtp-udp '*) answer "$@"; cat <<'JSON'
+{"name":"ed209-xtp-udp","sourceRanges":["193.123.184.140/32","198.51.100.200/32"],"allowed":[{"IPProtocol":"udp","ports":["62801"]}]}
+JSON
+  ;;
+  *) exec "${XTPFAKE_NEXT:?XTPFAKE_NEXT names the directory of dev4 cloud-fake links}/$name" "$@" ;;
+esac
