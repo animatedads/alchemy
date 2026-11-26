@@ -1,0 +1,36 @@
+{
+  "kind": "article",
+  "id": "diplomacy.movement",
+  "version": "1.1",
+  "sphere": "llm-diplomacy",
+  "title": "Movement adjudicator and DATC qualification",
+  "summary": "Existing authoritative movement API with literal coast rules: 39 original cases, 130 DATC v3.0-derived positions, 8 additional v3.4 and 2 strict regressions; reversed-insertion replay.",
+  "invariants": [
+    "Use .DiplomacyAdjudicator~new(board, rulesPath) then ~movement(units, submitted).",
+    "Units keyed by province; submitted keyed by power with arrays of original lines. Inputs remain unchanged.",
+    "Result exposes units, dislodged tuple (original unit, attacker origin, convoy flag), outcomes, standoffs, paradoxes and published power/original/status records.",
+    "Rules loaded from data/rules.conf; no player legal-order interface.",
+    "Explicit VIA CONVOY for adjacent convoy intent; Szykman backup; distinct physically impossible convoy versus missing matching orders.",
+    "Recursive decision trials check final equations except explicit paradox overrides; bounded 4096 trials fail closed.",
+    "Original trial-based adaptation; Claude reported 98000 stress trials on dev4 and independently re-qualified dev4r4 with another 98000 (REQ-00006293), zero exceptions/invariant failures. Strict support-coast choice retained.",
+    "A future caller must trap unresolved syntax 93.900, log failure and stop rather than publish a board.",
+    "COAST_REQUIRED=ALWAYS and SUPPORT_COAST=STRICT; missing split fleet coast NO_COAST, wrong BAD_COAST. No coast repair; support destination matches exact named coast.",
+    "Dev4r5 r13196 69000 fresh stress trials (36000 ChatGPT-authored and 33000 recovered reviewer-authored tools), zero failures, 2621 paradox trials. Dev4r4 1330, dev4r3 1393 and dev4r2 1419 mutation figures historical.",
+    "Architect confirmed: a nonadjacent army move is an implicit convoy if a physical route exists; orders must establish a surviving matching convoy. Adjacent army defaults to land unless VIA CONVOY. Province-level support reach including other coast is valid; assisted fleet destination must match exactly.",
+    "F.28 six attacks dislodge convoy fleets (BOT and NWG cannot retreat). F.29 adds hold support for MAO; no dislodgements and all convoy paths remain available. Dev4r4 production solver passes both unchanged."
+  ],
+  "evidence": {
+    "package": "packages/oorexx_diplomacy_v0.1-dev4r5",
+    "movement_assertions": 187,
+    "datc_assertions": 594,
+    "datc_positions": 130,
+    "scope": "B.2/B.7/B.8/B.15 strict outcomes; B.16/B.17 strict board results. F.28/F.29 independently transcribed from published DATC v3.4; every starting unit outcome, published order status, occupant, dislodgement and six F.28 retreat-option sets asserted.",
+    "provenance": "evidence/DATC-PROVENANCE.md",
+    "additional_review_positions": 10,
+    "additional_review_assertions": 286
+  },
+  "procedure": [
+    "Use sh tests/run.sh with rexx on PATH and ALCHEMY_REPO_ROOT set.",
+    "Preserve movement result for seasonal API; no inferred coast. No claim of full DATC conformity."
+  ]
+}

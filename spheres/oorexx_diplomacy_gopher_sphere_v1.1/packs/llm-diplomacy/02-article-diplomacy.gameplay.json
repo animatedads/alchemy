@@ -1,0 +1,67 @@
+{
+  "kind": "article",
+  "id": "diplomacy.gameplay",
+  "version": "1.1",
+  "sphere": "llm-diplomacy",
+  "title": "Step-5 competition phase controller and replay",
+  "summary": "Step-5 native game controller evidence retained; dev6 adds private press (diplomacy.press) and DIPLOG|2. No-press journals remain byte-identical.",
+  "invariants": [
+    "Use DiplomacyGameConfig~load(data/game.conf), DiplomacyGame~new(board, judge, config, initialUnits, initialOwnership, source, journal, seed). The existing referee and its rules.conf are unchanged.",
+    "Movement calls one per surviving power, retreat calls only for dislodged powers, winter calls only for nonzero adjustment quota. Detached public board, map, ownership, own task and last results; no opposing current submissions, legal-order list or referee reference.",
+    "Source returns (status, array of raw order lines). Bad response, exception or timeout status gives no orders. Real timeout implementation remains step 7.",
+    "LogService v0.7 emits immutable canonical event payloads to an INTERNAL journal target. All calls (including empty/failed), raw bytes, states, outcomes, ownership, automatic removals and year tallies logged. Log includes map, rules, referee version, seed. Wall clock and process identifiers excluded from replay projection.",
+    "ReplaySource consumes recorded calls only (including press in dev6); re-adjudicate and compare complete bytes. A syntax failure is logged, must stop the game; failed or incomplete journal cannot replay as completed.",
+    "Hold/random stubs are qualification sources, not competitive prompts. One local Park-Miller PRNG in random stub. No live API calls.",
+    "For dev6, data/game.conf has PRESS_ROUNDS=3; the historical no-press gate explicitly uses P=0 and retains dev5 bytes. In press-enabled replay, regenerate address shuffles from logged seed."
+  ],
+  "procedure": [
+    "Set REXX_PATH to src, tools, estate packages/oorexx_logging_v0.7/src; native r13196.",
+    "rexx tools/game.rex run HOLD 7 hold.log; rexx tools/game.rex replay hold.log hold-replay.log",
+    "rexx tools/game.rex run RANDOM 20261126 random.log; rexx tools/game.rex replay random.log random-replay.log",
+    "sh tests/run.sh with ALCHEMY_REPO_ROOT; all referee regression tests and game stage tests."
+  ],
+  "evidence": {
+    "category": "AUTOBUILDER_PASS",
+    "scope": "step-5 game controller; existing referee and rules unchanged",
+    "package": "oorexx_diplomacy_v0.1-dev5",
+    "submission_id": "20261126T121054Z-CHATGPT-oorexx_diplomacy-v0.1-dev5-ad7bed",
+    "source_commit": "b6f7bb622cc451877f77160b2dea93e4031ea264",
+    "official_run": "20261126T121147Z-c54e98b2e517-b24cde58",
+    "tree_sha256": "c54e98b2e517121cd9f2df97a6a105a2e24de4fa3334c6b5f304597aa9825b52",
+    "local_zip_sha256": "ad7bed4d531b4fedc7516cff7451cb519f40a4a5c873b7ed06d894ca694aa2d2",
+    "assertions": 3374,
+    "referee_assertions": 3311,
+    "referee_positions": 232,
+    "game_assertions": 63,
+    "failures": 0,
+    "rules_sha256": "c0bd113e6965b2894ea65b568305ccf27b82b676e85ac95c82ed955f883cee04",
+    "independent_controller_review": "not yet performed",
+    "replay_games": [
+      {
+        "stub": "HOLD",
+        "seed": 7,
+        "phases": 125,
+        "calls": 350,
+        "invalid_orders": 0,
+        "sha256": "6ada6be204824b8eb4f39c377b083639ca6e57c450614d25d8799c89543bf2d7",
+        "byte_identical": true
+      },
+      {
+        "stub": "RANDOM",
+        "seed": 20261126,
+        "phases": 125,
+        "calls": 376,
+        "invalid_orders": 163,
+        "sha256": "ba68d770498185e97363fea503c87b72a6f770751cbd3e65fe8dcde40049d29c",
+        "byte_identical": true
+      }
+    ]
+  },
+  "directed_tests": [
+    "Retreat calls only for dislodged powers; Fall ownership changes after retreats; two winter builds; replay exact.",
+    "Solo at 18 after Fall retreats, no winter phase.",
+    "Bad response, reported timeout and source exception give no orders atomically; raw bytes preserved.",
+    "Detached task mutation cannot alter later calls or referee state.",
+    "Injected judge failure stops game and logs error without publishing failed phase result; missing/failed/tampered journal rejected."
+  ]
+}
