@@ -1,0 +1,32 @@
+{
+  "kind": "article",
+  "id": "diplomacy.movement",
+  "version": "0.4",
+  "sphere": "llm-diplomacy",
+  "title": "Movement adjudicator and DATC qualification",
+  "summary": "Native ooRexx authoritative movement API; 32 original and 130 DATC-derived movement positions, deterministic reversed-insertion replay.",
+  "invariants": [
+    "Use .DiplomacyAdjudicator~new(board, rulesPath) then ~movement(units, submitted).",
+    "Units keyed by province; submitted keyed by power with arrays of original lines. Inputs remain unchanged.",
+    "Result exposes units, dislodged tuple (original unit, attacker origin, convoy flag), outcomes, standoffs, paradoxes and published power/original/status records.",
+    "Rules loaded from data/rules.conf; no player legal-order interface.",
+    "Explicit VIA CONVOY for adjacent convoy intent; Szykman backup; distinct physically impossible convoy versus missing matching orders.",
+    "Recursive decision trials check final equations except explicit paradox overrides; bounded 4096 trials fail closed.",
+    "Original trial-based adaptation; Claude reviewed dev4 and reported no failures in 98000 random/mutated positions, no trial cap exhaustion. F2 support-coast difference remains pending Tom.",
+    "A future caller must trap unresolved syntax 93.900, log failure and stop rather than publish a board."
+  ],
+  "evidence": {
+    "package": "packages/oorexx_diplomacy_v0.1-dev4r1",
+    "movement_assertions": 147,
+    "datc_assertions": 582,
+    "datc_positions": 130,
+    "scope": "Previous 130 v3.0 positions, 32 original, plus 6 available v3.4 passing review positions. B.16/B.17 held apart as known disagreements; F.28/F.29 not locally available. No movement behavior change.",
+    "provenance": "evidence/DATC-PROVENANCE.md",
+    "additional_review_positions": 6,
+    "additional_review_assertions": 43
+  },
+  "procedure": [
+    "Use sh tests/run.sh with rexx on PATH and ALCHEMY_REPO_ROOT set.",
+    "Preserve movement result for seasonal API; review F2 pending. No claim of full DATC conformity."
+  ]
+}
