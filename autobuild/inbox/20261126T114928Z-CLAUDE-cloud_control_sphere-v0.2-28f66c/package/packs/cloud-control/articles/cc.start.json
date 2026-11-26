@@ -1,0 +1,46 @@
+{
+ "kind": "article",
+ "id": "cc.start",
+ "sphere": "cloud-control",
+ "version": "0.2",
+ "title": "What Cloud Control is and where it runs",
+ "section": "start",
+ "summary": "Cloud Control (cloudctl) is one ooRexx command line for the ED209 estate's cloud machines and cloud firewalls across Oracle (OCI), Azure, AWS, Google (GCP) and Vultr; Clouvider (ed209f) has no cloud firewall plug-in, so its host firewall carries XTP. Commands: PROVIDER machine list|create|start|stop|reboot|destroy, PROVIDER firewall list|allow|revoke|reconcile, xtp show|NODE|all, discover, ops, hours, check. Every mutation is a PLAN until --apply; destroy also needs --confirm. Each run goes resolve -> rules (STOP/WARN/INFO buckets) -> observe (read-only) -> plan -> apply -> ledger (var/ops-YYYYMM.tsv) with events through oorexx_logging. The live copy is on Tom Dyer's workstation in ~/alchemy-autobuild/cloudctl, called as ./cloudctl-rx.sh from ~/alchemy-autobuild; it holds the live registry (etc/machines, etc/accounts) that the package leaves out.",
+ "authority": "architecture Tom Dyer; ooRexx Cloud Control coded by Claude (Opus 5.5), 7 Nov 2026; v0.2-dev3 fixes by Claude (Opus 5.5) at Tom Dyer's instruction (\"fix cloud controller\", 26 Nov 2026 10:50); v0.1-dev4 bash adapters by ChatGPT/Codex",
+ "invariants": [
+  "PLAN until --apply",
+  "Observe before plan: a failed read is a STOP, never read as absent",
+  "The live registry never leaves the workstation"
+ ],
+ "procedure": [
+  "Read cc.addonly and cc.removals before any firewall order",
+  "Run from ~/alchemy-autobuild as ./cloudctl-rx.sh"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/README.md",
+   "sha256": "c6a813a957db63c1269193da0b7d5eb3b2c125964f253ab1a55f840761e6ec3f",
+   "claim": "scope, layout, what is not in the package"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/README.md",
+   "sha256": "9956d28650ffd8e323a25595bd091661aa11812f95f8fe036ebd8ea2514ede34",
+   "claim": "full manual"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/src/CloudCtl.cls",
+   "sha256": "10f2fe9c4d775dd77629edfbd41e5737644a0bcfe7425c937cf831ac2b329404",
+   "claim": "session run loop"
+  }
+ ],
+ "related": [
+  "cc.addonly",
+  "cc.removals",
+  "cc.r8",
+  "cc.registry"
+ ],
+ "qualification_boundaries": {
+  "status": "qualified: autobuild run 20261126T114851Z-e143b26a585a-4fce14c3 PASS (fake providers)",
+  "field": "live use is on Tom Dyer's workstation, ~/alchemy-autobuild/cloudctl, run by Codex (CODEX-PC) under orders"
+ }
+}
