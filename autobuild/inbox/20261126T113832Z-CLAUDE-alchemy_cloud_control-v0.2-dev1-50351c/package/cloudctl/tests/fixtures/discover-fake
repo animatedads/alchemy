@@ -1,0 +1,63 @@
+#!/bin/sh
+# discover-fake -- answers the read calls "cloudctl discover" makes, with grid-shaped instances; everything else goes
+# to the next fake ($DISCOVERFAKE_NEXT/<name>).  Architecture: Tom Dyer.  Coding: Claude (Opus 5.5), 7 Nov 2026.
+# Deliberate traps: the first OCI instance listed is ed209b's (so the a/b mapping must come from the address), and
+# ed209i's NSG is on its subnet, not its NIC.  cats1 (ed209g) and cats2 (ed209l) added 26 Nov 2026 (Claude (Opus 5.5)).
+set -eu
+name=$(basename "$0")
+args=" $* "
+log() { if [ -n "${CLOUDCTL_PROVIDER_LOG:-}" ]; then printf "%s %s\n" "$name" "$*" >> "$CLOUDCTL_PROVIDER_LOG"; fi; }
+case "$name:$args" in
+  aws:*' describe-instances '*'Values=16.170.244.216 '*) log "$@"; cat <<'JSON'
+{"Reservations":[{"Instances":[{"InstanceId":"i-0d1ed209d","State":{"Name":"running"},"SecurityGroups":[{"GroupId":"sg-0ed209d","GroupName":"launch-wizard-1"}]}]}]}
+JSON
+  ;;
+  aws:*' describe-instances '*) log "$@"; echo '{"Reservations":[]}' ;;
+  az:*' public-ip list '*52.146.17.8*) log "$@"; cat <<'JSON'
+[{"ipAddress":"52.146.17.8","ipConfiguration":{"id":"/subscriptions/s1/resourceGroups/ED209C-RG/providers/Microsoft.Network/networkInterfaces/ed209c-nic/ipConfigurations/ipconfig1"}}]
+JSON
+  ;;
+  az:*' public-ip list '*20.114.63.150*) log "$@"; cat <<'JSON'
+[{"ipAddress":"20.114.63.150","ipConfiguration":{"id":"/subscriptions/s1/resourceGroups/ED209I-RG/providers/Microsoft.Network/networkInterfaces/ed209i-nic/ipConfigurations/ipconfig1"}}]
+JSON
+  ;;
+  az:*' public-ip list '*20.0.154.12*) log "$@"; cat <<'JSON'
+[{"ipAddress":"20.0.154.12","ipConfiguration":{"id":"/subscriptions/s1/resourceGroups/CATS1_GROUP/providers/Microsoft.Network/networkInterfaces/cats1-nic/ipConfigurations/ipconfig1"}}]
+JSON
+  ;;
+  az:*' public-ip list '*20.118.224.14*) log "$@"; cat <<'JSON'
+[{"ipAddress":"20.118.224.14","ipConfiguration":{"id":"/subscriptions/s1/resourceGroups/CATS2_GROUP/providers/Microsoft.Network/networkInterfaces/cats2-nic/ipConfigurations/ipconfig1"}}]
+JSON
+  ;;
+  az:*' nic show '*cats1-nic*) log "$@"; echo '{"virtualMachine":{"id":"/subscriptions/s1/resourceGroups/CATS1_GROUP/providers/Microsoft.Compute/virtualMachines/cats1"},"networkSecurityGroup":{"id":"/subscriptions/s1/resourceGroups/cats1_group/providers/Microsoft.Network/networkSecurityGroups/cats1-nsg"},"ipConfigurations":[{"subnet":{"id":"/subscriptions/s1/resourceGroups/CATS1_GROUP/providers/Microsoft.Network/virtualNetworks/v1/subnets/default"}}]}' ;;
+  az:*' nic show '*cats2-nic*) log "$@"; echo '{"virtualMachine":{"id":"/subscriptions/s1/resourceGroups/CATS2_GROUP/providers/Microsoft.Compute/virtualMachines/cats2"},"networkSecurityGroup":{"id":"/subscriptions/s1/resourceGroups/cats2_group/providers/Microsoft.Network/networkSecurityGroups/cats2-nsg"},"ipConfigurations":[{"subnet":{"id":"/subscriptions/s1/resourceGroups/CATS2_GROUP/providers/Microsoft.Network/virtualNetworks/v2/subnets/default"}}]}' ;;
+  az:*' subnet show '*CATS1_GROUP*) log "$@"; echo '{"networkSecurityGroup":null}' ;;
+  az:*' subnet show '*CATS2_GROUP*) log "$@"; echo '{"networkSecurityGroup":null}' ;;
+  az:*' nic show '*ed209c-nic*) log "$@"; cat <<'JSON'
+{"virtualMachine":{"id":"/subscriptions/s1/resourceGroups/ED209C-RG/providers/Microsoft.Compute/virtualMachines/ed209c"},"networkSecurityGroup":{"id":"/subscriptions/s1/resourceGroups/ED209C-RG/providers/Microsoft.Network/networkSecurityGroups/ed209c-nsg"},"ipConfigurations":[{"subnet":{"id":"/subscriptions/s1/resourceGroups/ED209C-RG/providers/Microsoft.Network/virtualNetworks/v/subnets/default"}}]}
+JSON
+  ;;
+  az:*' nic show '*ed209i-nic*) log "$@"; cat <<'JSON'
+{"virtualMachine":{"id":"/subscriptions/s1/resourceGroups/ED209I-RG/providers/Microsoft.Compute/virtualMachines/ed209i"},"networkSecurityGroup":null,"ipConfigurations":[{"subnet":{"id":"/subscriptions/s1/resourceGroups/ED209I-RG/providers/Microsoft.Network/virtualNetworks/vi/subnets/default"}}]}
+JSON
+  ;;
+  az:*' subnet show '*ED209C-RG*) log "$@"; echo '{"networkSecurityGroup":null}' ;;
+  az:*' subnet show '*ED209I-RG*) log "$@"; echo '{"networkSecurityGroup":{"id":"/subscriptions/s1/resourceGroups/ED209I-RG/providers/Microsoft.Network/networkSecurityGroups/ed209i-subnet-nsg"}}' ;;
+  gcloud:*' instances list '*) log "$@"; cat <<'JSON'
+[{"name":"instance-20260906-161857","zone":"https://www.googleapis.com/compute/v1/projects/p/zones/us-central1-a","status":"RUNNING","tags":{"items":["https-server"]},"networkInterfaces":[{"network":"https://www.googleapis.com/compute/v1/projects/p/global/networks/default","accessConfigs":[{"natIP":"34.16.115.198"}]}]},
+ {"name":"ed209j","zone":"https://www.googleapis.com/compute/v1/projects/q/zones/us-central1-c","status":"RUNNING","networkInterfaces":[{"network":"https://www.googleapis.com/compute/v1/projects/q/global/networks/default","accessConfigs":[{"natIP":"34.44.126.133"}]}]}]
+JSON
+  ;;
+  oci:*' instance list '*) log "$@"; cat <<'JSON'
+{"data":[{"id":"ocid1.instance.fake.B","display-name":"instance-20260901-1722","lifecycle-state":"RUNNING"},{"id":"ocid1.instance.fake.A","display-name":"instance-20260901-1748","lifecycle-state":"RUNNING"},{"id":"ocid1.instance.fake.Z","display-name":"old","lifecycle-state":"TERMINATED"}]}
+JSON
+  ;;
+  oci:*' list-vnics '*fake.B*) log "$@"; echo '{"data":[{"public-ip":"193.123.190.35","subnet-id":"ocid1.subnet.fake","nsg-ids":[]}]}' ;;
+  oci:*' list-vnics '*fake.A*) log "$@"; echo '{"data":[{"public-ip":"193.123.184.140","subnet-id":"ocid1.subnet.fake","nsg-ids":[]}]}' ;;
+  oci:*' subnet get '*) log "$@"; echo '{"data":{"display-name":"lon-free-public-subnet-works","cidr-block":"10.0.0.0/24","security-list-ids":["ocid1.securitylist.oc1.fake"]}}' ;;
+  vultr-cli:*' instance list '*) log "$@"; cat <<'JSON'
+{"instances":[{"id":"befff703-37ce-4f13-820a-98a5a75f4eaa","main_ip":"80.240.21.156","label":"ed209k","region":"fra","firewall_group_id":""},{"id":"h-0001","main_ip":"155.138.214.182","label":"ed209h","region":"ewr","firewall_group_id":"fw-h"}],"meta":{"total":2}}
+JSON
+  ;;
+  *) exec "${DISCOVERFAKE_NEXT:?DISCOVERFAKE_NEXT names the directory of the next fake}/$name" "$@" ;;
+esac
