@@ -1,0 +1,32 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_mcp_service",
+    "version": "0.2-dev9",
+    "kind": "oorexx"
+  },
+  "working_directory": ".",
+  "tests": [
+    {
+      "name": "mcp-project-service-with-bounded-mailbox",
+      "argv": ["bash", "tests/autobuild_run.sh"],
+      "timeout_seconds": 900,
+      "environment": {
+        "set": {
+          "WIRE_UI_SERVER_HOME": "${REPO_ROOT}/packages/wire_ui_server_v0.17",
+          "HTTPS_SERVER_HOME": "${REPO_ROOT}/packages/oorexx_https_server_v0.4.4",
+          "FOREIGN_RUNTIME_HOME": "${REPO_ROOT}/packages/oorexx_foreign_runtime_v0.22.6",
+          "QEB_HOME": "${REPO_ROOT}/packages/qualification_execution_broker_v0.1-dev1",
+          "CRYPTO_HOME": "${REPO_ROOT}/packages/oorexx_crypto_v0.8.3",
+          "RUNTIME_REFERENCE_HOME": "${REPO_ROOT}/packages/runtime_reference_v0.4"
+        }
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_mcp_service_v0.2-dev9"
+    }
+  }
+}
