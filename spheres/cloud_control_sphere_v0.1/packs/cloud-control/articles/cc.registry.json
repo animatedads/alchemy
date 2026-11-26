@@ -1,0 +1,42 @@
+{
+ "kind": "article",
+ "id": "cc.registry",
+ "sphere": "cloud-control",
+ "version": "0.1",
+ "title": "Live registry and the redacted test registry",
+ "section": "operations",
+ "summary": "etc/machines/NODE.machine holds provider=, address=, xtp_link=L3|L4, scope= (the cloud firewall: OCI security list OCID, RESOURCE_GROUP:NSG_NAME on Azure, sg-... on AWS, the VPC network on GCP, a Vultr firewall group id, or none), region=, account=, handle=, project=. It also holds account identifiers (tenancy, projects, instance IDs) and etc/accounts holds gcloud configurations with e-mail addresses, so neither is published. The package carries tests/fixtures/registry: the same nodes, addresses, links and scopes with example IDs; the tests copy it in only when etc/machines is absent, so on the workstation they still run against the live registry. v0.2-dev1 and v0.2-dev2 failed autobuild and were not published; v0.2-dev1 still carried two live identifiers (ed209e's GCP project, ed209k's Vultr instance ID) in its inbox branch.",
+ "authority": "architecture Tom Dyer; ooRexx Cloud Control coded by Claude (Opus 5.5), 7 Nov 2026; v0.2-dev3 fixes by Claude (Opus 5.5) at Tom Dyer's instruction (\"fix cloud controller\", 26 Nov 2026 10:50); v0.1-dev4 bash adapters by ChatGPT/Codex",
+ "invariants": [
+  "The live registry stays on the workstation",
+  "Published packages carry example IDs only"
+ ],
+ "procedure": [
+  "Change registry entries on the workstation only, with Tom Dyer's approval (order A R-part pattern)"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev3/README.md",
+   "sha256": "e35abc0d8245c0ee625f363ff709d65854cc59a2647b98b99308b07267a94921",
+   "claim": "what is not in the package"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev3/PROVENANCE.md",
+   "sha256": "cf1c06695ee6b9f7107a1535bc9817ba292a5747c951882ad584f459897d72fd",
+   "claim": "redaction history"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev3/cloudctl/tests/test_discover.rex",
+   "sha256": "237542da20109ee98265bcfcab50b34fcf8f9fcc3300b8fda551c297ac4198e2",
+   "claim": "registry fallback and missing-CLI test"
+  }
+ ],
+ "related": [
+  "cc.start",
+  "cc.tests"
+ ],
+ "qualification_boundaries": {
+  "status": "qualified: autobuild run 20261126T114331Z-cf180a2a665b-d2e044ce PASS (fake providers)",
+  "field": "live use is on Tom Dyer's workstation, ~/alchemy-autobuild/cloudctl, run by Codex (CODEX-PC) under orders"
+ }
+}
