@@ -1,0 +1,29 @@
+{
+  "kind": "article",
+  "id": "diplomacy.movement",
+  "version": "0.3",
+  "sphere": "llm-diplomacy",
+  "title": "Movement adjudicator and DATC qualification",
+  "summary": "Native ooRexx authoritative movement API; 32 original and 130 DATC-derived movement positions, deterministic reversed-insertion replay.",
+  "invariants": [
+    "Use .DiplomacyAdjudicator~new(board, rulesPath) then ~movement(units, submitted).",
+    "Units keyed by province; submitted keyed by power with arrays of original lines. Inputs remain unchanged.",
+    "Result exposes units, dislodged tuple (original unit, attacker origin, convoy flag), outcomes, standoffs, paradoxes and published power/original/status records.",
+    "Rules loaded from data/rules.conf; no player legal-order interface.",
+    "Explicit VIA CONVOY for adjacent convoy intent; Szykman backup; distinct physically impossible convoy versus missing matching orders.",
+    "Recursive decision trials check final equations except explicit paradox overrides; bounded 4096 trials fail closed.",
+    "Original trial-based adaptation of Kruijswijk equations, not literal reference implementation. Independent review and wider stress tests outstanding."
+  ],
+  "evidence": {
+    "package": "packages/oorexx_diplomacy_v0.1-dev4",
+    "movement_assertions": 147,
+    "datc_assertions": 582,
+    "datc_positions": 130,
+    "scope": "A–G except B.14, plus G.11 explicit variant; selective outcome assertions, not exhaustive dislodgements/retreat options.",
+    "provenance": "evidence/DATC-PROVENANCE.md"
+  },
+  "procedure": [
+    "Use sh tests/run.sh with rexx on PATH and ALCHEMY_REPO_ROOT set.",
+    "Preserve movement result for the season API. F.7 retreat expectation now tested; broader exhaustive verification remains open."
+  ]
+}
