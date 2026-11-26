@@ -1,0 +1,33 @@
+{
+  "kind": "article",
+  "id": "diplomacy.current",
+  "version": "0.5",
+  "sphere": "llm-diplomacy",
+  "title": "Current development state and evidence",
+  "summary": "Tom Dyer architecture; ChatGPT GPT-6.2 implementation; Claude Opus 5.5 independent review. F1 corrected in dev4r1, official PASS. Tom ruled F2 Strict on 2026-11-26. Dev4r2 records it and passes 2934 native assertions across 220 positions, lint zero. New receipt pending at writing.",
+  "invariants": [
+    "Existing referee only; no game loop or player integration.",
+    "Independent review completed; F1 fixed and verified natively.",
+    "F2 closed by the Architect: SUPPORT_COAST=STRICT; wrong explicit supported-unit coast invalidates support. Deliberate DATC 4.B.5 deviation. No movement behavior change.",
+    "Selective DATC assertions, not formal complete conformance; F.28/F.29 and stress scripts unavailable locally.",
+    "Never expose legal-order lists to players."
+  ],
+  "evidence": {
+    "category": "LOCAL_PASS",
+    "scope": "review ruling",
+    "submission_id": "20261126T095905Z-CHATGPT-oorexx_diplomacy-v0.1-dev4r2-88755f",
+    "ready_commit": "6801a8b1aa5ac34c019ef2224071cdbabe20a4cb",
+    "zip_sha256": "88755f7a28ed87a4209bcf990eb55da2bb316497e2c2cb4af91ef46b10829281",
+    "assertions": 2934,
+    "failures": 0,
+    "positions": 220,
+    "independent_review": "REQ-00006189",
+    "baseline_review_positions": 98000,
+    "independent_review_qualification": "Claude reports 0 invariant failures; his ooRexx build differs from exact r13196."
+  },
+  "procedure": [
+    "Consult controlling brief and addenda, and REQ-00006189.",
+    "Read evidence/REVIEW.md in dev4r1 for F1-F4.",
+    "Check official Autobuilder receipt for dev4r2; recover outstanding review archive for F.28/F.29 and stress tools."
+  ]
+}
