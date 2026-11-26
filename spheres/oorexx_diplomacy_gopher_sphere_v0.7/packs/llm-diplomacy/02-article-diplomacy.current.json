@@ -1,0 +1,38 @@
+{
+  "kind": "article",
+  "id": "diplomacy.current",
+  "version": "0.7",
+  "sphere": "llm-diplomacy",
+  "title": "Current development state and evidence",
+  "summary": "Architect correction REQ-00006237: no coast means no coast. Dev4r3 replaces dev4r2 as latest step-4 candidate; exact r13196 PASS, 3055 assertions, 225 positions, 20000 fresh fixture mutation trials. Official Autobuilder PASS.",
+  "invariants": [
+    "Existing referee only; no game loop or player integration.",
+    "Independent review completed; F1 fixed and verified natively.",
+    "COAST_REQUIRED=ALWAYS; SUPPORT_COAST=STRICT. Every split fleet origin, destination or assisted reference needs the exact coast. Missing NO_COAST; wrong BAD_COAST; armies have no coast.",
+    "Four changed DATC movement expectations: B.2/B.7/B.8/B.15; B.16/B.17 board results unchanged, BAD_COAST diagnostic. Selective coverage, F.28/F.29 still unavailable locally.",
+    "Never expose legal-order lists to players."
+  ],
+  "evidence": {
+    "category": "AUTOBUILDER_PASS",
+    "scope": "literal coast correction",
+    "submission_id": "20261126T110154Z-CHATGPT-oorexx_diplomacy-v0.1-dev4r3-a77210",
+    "ready_commit": "165fee25588738502560400f20326d45dbb57b0d",
+    "zip_sha256": "a77210e3124af0e9c222bf779bd58a1755db6633e2ca68ed08066d0d65ae9ddd",
+    "assertions": 3055,
+    "failures": 0,
+    "positions": 225,
+    "independent_review": "REQ-00006189",
+    "baseline_review_positions": 98000,
+    "independent_review_qualification": "Claude reports 0 invariant failures; his ooRexx build differs from exact r13196.",
+    "additional_mutation_trials": 20000,
+    "additional_mutation_failures": 0,
+    "additional_paradox_trials": 1393,
+    "rules_sha256": "4276f7ecb981c56f2cbe94b0579867e5131a83d2c4c2a46400da5baff2a6a1f4",
+    "official_run": "20261126T110233Z-a15efe720ff3-b159806d"
+  },
+  "procedure": [
+    "Consult controlling brief and addenda, including REQ-00006235/REQ-00006237.",
+    "Read dev4r3 evidence/LITERAL-AUDIT.md and diplomacy.qualification. Other defaults sent for Architect ruling; not changed.",
+    "Check official receipt; recover outstanding Claude review archive for F.28/F.29. No full-game qualification."
+  ]
+}
