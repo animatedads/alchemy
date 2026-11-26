@@ -1,0 +1,39 @@
+{
+  "kind": "article",
+  "id": "diplomacy.current",
+  "version": "0.8",
+  "sphere": "llm-diplomacy",
+  "title": "Current development state and evidence",
+  "summary": "Dev4r4 is the latest step-4 candidate: Architect confirms nonadjacent convoy intent and province-level support reach; literal coast contract unchanged. Exact r13196 PASS, 3083 assertions, 230 positions, 20000 fresh fixture mutation trials. Official Autobuilder PASS.",
+  "invariants": [
+    "Existing referee only; no game loop or player integration.",
+    "Independent review completed; F1 fixed and verified natively.",
+    "COAST_REQUIRED=ALWAYS; SUPPORT_COAST=STRICT. Every split fleet origin, destination or assisted reference needs the exact coast. Missing NO_COAST; wrong BAD_COAST; armies have no coast.",
+    "NONADJACENT_ARMY_MOVE=CONVOY_IF_PHYSICAL_ROUTE and SUPPORT_REACH=PROVINCE. No parser/solver change; five end-to-end regressions.",
+    "Four changed DATC movement expectations: B.2/B.7/B.8/B.15; B.16/B.17 board results unchanged, BAD_COAST diagnostic. Selective coverage, F.28/F.29 still unavailable locally.",
+    "Never expose legal-order lists to players."
+  ],
+  "evidence": {
+    "category": "AUTOBUILDER_PASS",
+    "scope": "confirmed nonadjacent convoy and province support reach",
+    "submission_id": "20261126T111728Z-CHATGPT-oorexx_diplomacy-v0.1-dev4r4-7fc89b",
+    "ready_commit": "78c2f653141790a0583b0acd0ad4719fc9020eea",
+    "zip_sha256": "7fc89b5a4dd0bbbfb2e76835f8e69139a63db47311f2fdc06686282676d0055d",
+    "assertions": 3083,
+    "failures": 0,
+    "positions": 230,
+    "independent_review": "REQ-00006189",
+    "baseline_review_positions": 98000,
+    "independent_review_qualification": "Claude reports 0 invariant failures; his ooRexx build differs from exact r13196.",
+    "additional_mutation_trials": 20000,
+    "additional_mutation_failures": 0,
+    "additional_paradox_trials": 1330,
+    "rules_sha256": "c0bd113e6965b2894ea65b568305ccf27b82b676e85ac95c82ed955f883cee04",
+    "official_run": "20261126T111807Z-de68eab60e75-4234a194"
+  },
+  "procedure": [
+    "Consult controlling brief and addenda, including REQ-00006235/REQ-00006237.",
+    "Read dev4r4 evidence/LITERAL-AUDIT.md and diplomacy.qualification. Both interpretation questions are resolved; remaining audited defaults unchanged.",
+    "Check official receipt; recover outstanding Claude review archive for F.28/F.29. No full-game qualification."
+  ]
+}
