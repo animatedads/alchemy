@@ -1,0 +1,48 @@
+{
+ "kind": "corpus",
+ "id": "cloud-control.continuity",
+ "sphere": "cloud-control",
+ "title": "cloud control decision ledger",
+ "records": [
+  {
+   "topic": "plan",
+   "rule": "Every mutation is a PLAN until --apply."
+  },
+  {
+   "topic": "addOnly",
+   "rule": "--add-only adds missing sources and removes none; kept sources print as NOTE kept (add-only)."
+  },
+  {
+   "topic": "removals",
+   "rule": "Every plan names each removal as REMOVE CIDR; Azure and GCP read the rule before updating it."
+  },
+  {
+   "topic": "r8",
+   "rule": "R8 runs always use --add-only and run outside the sandbox."
+  },
+  {
+   "topic": "approval",
+   "rule": "No --apply on a firewall without Tom Dyer's direct approval; Codex asks Tom."
+  },
+  {
+   "topic": "port22",
+   "rule": "Port 22 rules are never touched under R8."
+  },
+  {
+   "topic": "sandbox",
+   "rule": "az fails inside Codex's sandbox (read-only HOME, ~/.azure/az.sess)."
+  },
+  {
+   "topic": "aws",
+   "rule": "No --no-cli-pager; AWS_PAGER empty on every aws command."
+  },
+  {
+   "topic": "registry",
+   "rule": "The live registry (machines, accounts) stays on the workstation; packages carry example IDs."
+  },
+  {
+   "topic": "credits",
+   "rule": "Architecture Tom Dyer; ooRexx Cloud Control and the 26 Nov fixes Claude (Opus 5.5); dev4 bash adapters ChatGPT/Codex."
+  }
+ ]
+}

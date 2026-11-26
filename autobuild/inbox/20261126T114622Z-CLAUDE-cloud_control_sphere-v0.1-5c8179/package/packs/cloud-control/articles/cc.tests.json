@@ -1,0 +1,41 @@
+{
+ "kind": "article",
+ "id": "cc.tests",
+ "sphere": "cloud-control",
+ "version": "0.1",
+ "title": "How it is tested",
+ "section": "rollout",
+ "summary": "Four suites against fake provider CLIs, no cloud touched: test_column_display 15, test_cloudctl 101, test_discover 30, test_xtp 95 (241 checks). test_xtp covers add-only per provider, REMOVE naming, NO CHANGE for an Azure rule already as wanted, the read-only HOME path, AWS_PAGER, and --add-only on firewall reconcile. Three deliberate breakages (add-only off for named rules, AWS_PAGER unset, the hint removed) were each caught. The missing-CLI checks run on a PATH holding only the tools a run needs, with REXX_PATH set, because hosts such as the autobuild runner have the real aws installed. Run: LOGGING_HOME=packages/oorexx_logging_v0.7 bash tests/autobuild_run.sh.",
+ "authority": "architecture Tom Dyer; ooRexx Cloud Control coded by Claude (Opus 5.5), 7 Nov 2026; v0.2-dev3 fixes by Claude (Opus 5.5) at Tom Dyer's instruction (\"fix cloud controller\", 26 Nov 2026 10:50); v0.1-dev4 bash adapters by ChatGPT/Codex",
+ "invariants": [
+  "Tests never touch a cloud",
+  "Tests do not depend on which CLIs the host has"
+ ],
+ "procedure": [
+  "bash tests/autobuild_run.sh with LOGGING_HOME set"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev3/tests/autobuild_run.sh",
+   "sha256": "cccdc0e54d770c8dc94a904821601257d792765db441787caf2198cccee234c2",
+   "claim": "autobuild entry"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev3/cloudctl/tests/test_xtp.rex",
+   "sha256": "ee56962eefc116bd3316d814a060f785f0c1c197a37d9b63f28d83d863ff46f8",
+   "claim": "XTP tests"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev3/cloudctl/tests/test_discover.rex",
+   "sha256": "237542da20109ee98265bcfcab50b34fcf8f9fcc3300b8fda551c297ac4198e2",
+   "claim": "discover tests"
+  }
+ ],
+ "related": [
+  "cc.registry"
+ ],
+ "qualification_boundaries": {
+  "status": "qualified: autobuild run 20261126T114331Z-cf180a2a665b-d2e044ce PASS (fake providers)",
+  "field": "live use is on Tom Dyer's workstation, ~/alchemy-autobuild/cloudctl, run by Codex (CODEX-PC) under orders"
+ }
+}

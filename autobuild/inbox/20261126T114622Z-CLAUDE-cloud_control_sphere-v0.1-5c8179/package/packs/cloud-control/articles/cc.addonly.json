@@ -1,0 +1,53 @@
+{
+ "kind": "article",
+ "id": "cc.addonly",
+ "sphere": "cloud-control",
+ "version": "0.1",
+ "title": "--add-only: add, never remove",
+ "section": "start",
+ "summary": "From v0.2-dev1 (26 Nov 2026), xtp and firewall reconcile take --add-only. Every provider plug-in then adds the missing sources and removes none: a source a full reconcile would remove stays, and the plan prints NOTE kept (add-only): CIDR. On OCI security lists duplicate entries stay too. On Azure and GCP the update sends the union of the rule's current sources and the wanted ones; an Azure rule already open to * gets nothing added. Grid rule R8 (XTP through the firewalls) is additions only, so every R8 order uses --add-only.",
+ "authority": "architecture Tom Dyer; ooRexx Cloud Control coded by Claude (Opus 5.5), 7 Nov 2026; v0.2-dev3 fixes by Claude (Opus 5.5) at Tom Dyer's instruction (\"fix cloud controller\", 26 Nov 2026 10:50); v0.1-dev4 bash adapters by ChatGPT/Codex",
+ "invariants": [
+  "With --add-only no plan contains REMOVE",
+  "Kept sources are always listed as NOTE lines"
+ ],
+ "procedure": [
+  "Add --add-only to every R8 xtp command",
+  "Count REMOVE lines in the plan: must be 0"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev3/cloudctl/src/CloudCtl.cls",
+   "sha256": "10f2fe9c4d775dd77629edfbd41e5737644a0bcfe7425c937cf831ac2b329404",
+   "claim": "namedSources and the NOTE output"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev3/cloudctl/src/CloudOci.cls",
+   "sha256": "2a379f333a4df8a2252d469dd712905ae9df68a4fec1de395a3c5c3e32bb4f89",
+   "claim": "planSecList and planNsg add-only"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev3/cloudctl/src/CloudAws.cls",
+   "sha256": "e7aa9813846b1e1858ca95c45047a0a44de0bb5f65ac9333700bea79d0b0e04e",
+   "claim": "reconcile add-only"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev3/cloudctl/tests/test_xtp.rex",
+   "sha256": "ee56962eefc116bd3316d814a060f785f0c1c197a37d9b63f28d83d863ff46f8",
+   "claim": "add-only tests per provider"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev3/cloudctl/cloudctl.rex",
+   "sha256": "3156fc893ef15759cf98bdb6bf4a5d40d115e5d4736b1115f2bce0b494ed6309",
+   "claim": "--add-only parsing"
+  }
+ ],
+ "related": [
+  "cc.removals",
+  "cc.r8"
+ ],
+ "qualification_boundaries": {
+  "status": "qualified: autobuild run 20261126T114331Z-cf180a2a665b-d2e044ce PASS (fake providers)",
+  "field": "live use is on Tom Dyer's workstation, ~/alchemy-autobuild/cloudctl, run by Codex (CODEX-PC) under orders"
+ }
+}
