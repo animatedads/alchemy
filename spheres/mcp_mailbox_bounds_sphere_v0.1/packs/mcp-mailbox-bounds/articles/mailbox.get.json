@@ -1,0 +1,42 @@
+{
+ "kind": "article",
+ "id": "mailbox.get",
+ "sphere": "mcp-mailbox-bounds",
+ "version": "0.1",
+ "title": "project.request.get reads one request",
+ "section": "start",
+ "summary": "New tool project.request.get (compatibility alias project_request_get). Input requestId; optional offset (1-based byte, 1 to body length, default 1) and length (1-16000, default 8000). Returns the request with its body replaced by one page plus bodyBytes, bodyOffset, bodyLength, bodyHasMore and nextOffset (0 when no more). Visibility is the same as the list. Reading creates no read receipt. An offset inside a UTF-8 character moves back to the lead byte, and a page always advances by at least one whole character, so paging cannot stall. Errors: REQUEST_NOT_FOUND, REQUEST_NOT_VISIBLE, INVALID_ARGUMENT, AUTHENTICATED_PRINCIPAL_REQUIRED. Tool counts move from 8 to 9, or 16 with the qualification broker.",
+ "authority": "architecture Tom Dyer (\"you need to fix that then\", 26 Nov 2026 01:53); base v0.2-dev8 by ChatGPT; v0.2-dev9 change coded and written by Claude (Opus 5.5)",
+ "invariants": [
+  "Reading never marks read",
+  "Pages rebuild the body byte for byte",
+  "Same visibility as the list"
+ ],
+ "procedure": [
+  "Loop: get with offset; append body; stop when bodyHasMore is 0; else offset = nextOffset"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/src/McpProjectService.cls",
+   "sha256": "235593e297cd9bee132ea08d0f0b54f9671a5f8a5852ccd517a083167ff8e92f",
+   "claim": "requestGet"
+  },
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/integration/McpProtocolAdapter.cls",
+   "sha256": "217572c0a6c275f6a4c88e5f9217226fb30df144a013c0826065fe62f28fa059",
+   "claim": "operationForTool and tool table"
+  },
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/tests/test_mailbox_bounds.rex",
+   "sha256": "831f0faee4eaadeb32f8ad51bb6077ba39584c77c62dbe19a5a21a98a1573cee",
+   "claim": "sections 7-10"
+  }
+ ],
+ "related": [
+  "mailbox.list"
+ ],
+ "qualification_boundaries": {
+  "status": "qualified in the reference package",
+  "field": "reference package passes autobuild run 20261126T020210Z-f2bc1e47c1de-ed6fdfb4; the live Rasen Falcon server is not yet changed"
+ }
+}

@@ -1,0 +1,48 @@
+{
+ "kind": "article",
+ "id": "mailbox.list",
+ "sphere": "mcp-mailbox-bounds",
+ "version": "0.1",
+ "title": "project.requests.list is bounded",
+ "section": "start",
+ "summary": "From v0.2-dev9 the list returns at most limit requests (default 10, range 1-100) and cuts each body to maxBodyBytes (default 1500, range 0-8000; 0 omits bodies) on a UTF-8 boundary. Each request carries bodyBytes (full size) and bodyTruncated; a subject over 300 bytes is cut and ends in \"...\". The result (schema oorexx.mcp.request.list/2) carries total (all matches), count (returned), hasMore, nextAfterId, limit, maxBodyBytes and order. Order is oldest first unless newestFirst is true. To page, pass afterId set to the last nextAfterId; an unknown afterId returns REQUEST_NOT_FOUND. Out-of-range or non-whole numbers return INVALID_ARGUMENT; nothing is clamped. With the defaults, ten 40,000-byte requests with 1,000-byte subjects serialise to under 30,000 characters.",
+ "authority": "architecture Tom Dyer (\"you need to fix that then\", 26 Nov 2026 01:53); base v0.2-dev8 by ChatGPT; v0.2-dev9 change coded and written by Claude (Opus 5.5)",
+ "invariants": [
+  "Default listing stays under 30,000 characters",
+  "Cuts never split a UTF-8 character",
+  "Bad arguments are rejected, never clamped"
+ ],
+ "procedure": [
+  "List with unreadOnly true; for each truncated body call project.request.get; mark read only what you read"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/src/McpProjectService.cls",
+   "sha256": "235593e297cd9bee132ea08d0f0b54f9671a5f8a5852ccd517a083167ff8e92f",
+   "claim": "requestsList and boundedValue"
+  },
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/integration/McpProtocolAdapter.cls",
+   "sha256": "217572c0a6c275f6a4c88e5f9217226fb30df144a013c0826065fe62f28fa059",
+   "claim": "tool schemas: limit and maxBodyBytes integer, newestFirst boolean"
+  },
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/docs/MCP_TOOL_CONTRACTS.md",
+   "sha256": "15087ab4f4e1c1ddcc08609cbafb0842bd4fef406c0f836edf1dbab3840f3ccb",
+   "claim": "list contract"
+  },
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/tests/test_mailbox_bounds.rex",
+   "sha256": "831f0faee4eaadeb32f8ad51bb6077ba39584c77c62dbe19a5a21a98a1573cee",
+   "claim": "bounds sections 2-6"
+  }
+ ],
+ "related": [
+  "mailbox.get",
+  "mailbox.fault"
+ ],
+ "qualification_boundaries": {
+  "status": "qualified in the reference package",
+  "field": "reference package passes autobuild run 20261126T020210Z-f2bc1e47c1de-ed6fdfb4; the live Rasen Falcon server is not yet changed"
+ }
+}

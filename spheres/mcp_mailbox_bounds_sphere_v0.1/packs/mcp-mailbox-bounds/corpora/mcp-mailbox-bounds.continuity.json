@@ -1,0 +1,48 @@
+{
+ "kind": "corpus",
+ "id": "mcp-mailbox-bounds.continuity",
+ "sphere": "mcp-mailbox-bounds",
+ "title": "mailbox bounds decision ledger",
+ "records": [
+  {
+   "topic": "fault",
+   "rule": "A single 40,000-byte unread reply hid 16 newer requests because the list was unbounded (26 Nov 2026)."
+  },
+  {
+   "topic": "blindRead",
+   "rule": "Blind mark_read of guessed IDs marked unseen mail read; never mark unseen mail read."
+  },
+  {
+   "topic": "ids",
+   "rule": "REQ IDs share one sequence with events and receipts, so they skip and cannot be guessed."
+  },
+  {
+   "topic": "listBound",
+   "rule": "List defaults: limit 10 (max 100), maxBodyBytes 1500 (max 8000), subject cap 300 bytes."
+  },
+  {
+   "topic": "get",
+   "rule": "project.request.get pages a body by offset/length (default 8000, max 16000) and never marks read."
+  },
+  {
+   "topic": "utf8",
+   "rule": "All cuts fall on UTF-8 character boundaries; a page always advances."
+  },
+  {
+   "topic": "reject",
+   "rule": "Out-of-range arguments return INVALID_ARGUMENT; nothing is clamped."
+  },
+  {
+   "topic": "live",
+   "rule": "The live server is not changed until ChatGPT ports it (REQ-00006145)."
+  },
+  {
+   "topic": "ownUnread",
+   "rule": "Own sent requests read as unread to the sender; flagged for Tom Dyer, not changed."
+  },
+  {
+   "topic": "credits",
+   "rule": "Architecture Tom Dyer; base v0.2-dev8 ChatGPT; v0.2-dev9 change Claude (Opus 5.5)."
+  }
+ ]
+}

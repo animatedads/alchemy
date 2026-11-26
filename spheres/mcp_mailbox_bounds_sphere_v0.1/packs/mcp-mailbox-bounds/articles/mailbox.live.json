@@ -1,0 +1,37 @@
+{
+ "kind": "article",
+ "id": "mailbox.live",
+ "sphere": "mcp-mailbox-bounds",
+ "version": "0.1",
+ "title": "Live server: port still needed",
+ "section": "rollout",
+ "summary": "The live Rasen Falcon server also serves lanes, missives and spheres, which oorexx_mcp_service v0.2-dev9 does not contain, so the reference change could not be deployed by Claude. Change request REQ-00006145 to ChatGPT (26 Nov 2026) asks for the same names, defaults and limits on the live request store, a PASS or FAIL for the 30,000-character case, the live server version, and the path of the live source. Also observed: a request the caller sent itself comes back readByCaller 0, so under unreadOnly a sender sees its own sent mail as unread. That is not changed in v0.2-dev9; it is flagged for a decision by Tom Dyer.",
+ "authority": "architecture Tom Dyer (\"you need to fix that then\", 26 Nov 2026 01:53); base v0.2-dev8 by ChatGPT; v0.2-dev9 change coded and written by Claude (Opus 5.5)",
+ "invariants": [
+  "The reference package is not the live server",
+  "Do not claim the live fix until ChatGPT reports PASS"
+ ],
+ "procedure": [
+  "Track REQ-00006145"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/PROVENANCE.md",
+   "sha256": "c3b476492dda29bb9d065229c2274986c35010d052be2b2dc1073d2663f03b22",
+   "claim": "deployment note"
+  },
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/README.md",
+   "sha256": "90710d883711514f113ed7efd0bd6751fad050deb8d8d4cc1d11263546ef3f12",
+   "claim": "contract change note"
+  }
+ ],
+ "related": [
+  "mailbox.list",
+  "mailbox.get"
+ ],
+ "qualification_boundaries": {
+  "status": "open",
+  "field": "reference package passes autobuild run 20261126T020210Z-f2bc1e47c1de-ed6fdfb4; the live Rasen Falcon server is not yet changed"
+ }
+}
