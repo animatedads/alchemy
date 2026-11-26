@@ -1,0 +1,37 @@
+{
+ "kind": "article",
+ "id": "cc.errors",
+ "sphere": "cloud-control",
+ "version": "0.2",
+ "title": "Error reasons and the read-only HOME",
+ "section": "operations",
+ "summary": "Fault found in R8 order A: every Azure read failed after 0.1 s and cloudctl showed only \"Traceback (most recent call last):\", the first stderr line. Order C found the cause: Codex's sandbox mounts HOME read-only and az writes ~/.azure/az.sess on every start (OSError Errno 30). Since v0.2-dev1 a failed read reports the last non-blank stderr line (the exception), writes the last 12 stderr lines to the run log as \"cloudctl: | ...\", and adds a hint when the text contains Read-only file system. Any order that runs az, gcloud, oci or aws through cloudctl must say to run outside the sandbox.",
+ "authority": "architecture Tom Dyer; ooRexx Cloud Control coded by Claude (Opus 5.5), 7 Nov 2026; v0.2-dev3 fixes by Claude (Opus 5.5) at Tom Dyer's instruction (\"fix cloud controller\", 26 Nov 2026 10:50); v0.1-dev4 bash adapters by ChatGPT/Codex",
+ "invariants": [
+  "A failure is never read as absent",
+  "The reason is the exception line, not the traceback header"
+ ],
+ "procedure": [
+  "In orders: \"Run every command OUTSIDE your sandbox\""
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/src/CloudCtl.cls",
+   "sha256": "10f2fe9c4d775dd77629edfbd41e5737644a0bcfe7425c937cf831ac2b329404",
+   "claim": "ccErrReason, ccErrTail, failWith"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/tests/test_xtp.rex",
+   "sha256": "f3cabe9912cf38b9ec122200265cb964ef287662b22052052cb4db71d1daaeb5",
+   "claim": "read-only HOME test"
+  }
+ ],
+ "related": [
+  "cc.start",
+  "cc.aws"
+ ],
+ "qualification_boundaries": {
+  "status": "qualified: autobuild run 20261126T114851Z-e143b26a585a-4fce14c3 PASS (fake providers)",
+  "field": "live use is on Tom Dyer's workstation, ~/alchemy-autobuild/cloudctl, run by Codex (CODEX-PC) under orders"
+ }
+}

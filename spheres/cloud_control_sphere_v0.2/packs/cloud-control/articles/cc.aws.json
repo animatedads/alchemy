@@ -1,0 +1,36 @@
+{
+ "kind": "article",
+ "id": "cc.aws",
+ "sphere": "cloud-control",
+ "version": "0.2",
+ "title": "AWS CLI v1",
+ "section": "operations",
+ "summary": "The workstation has AWS CLI v1 (1.45.64), which rejects --no-cli-pager; cloudctl appended it to every aws command, so every ed209d call failed. Since v0.2-dev1 no flag is added: each aws command runs with AWS_PAGER set empty in its own environment, which v1 ignores and v2 honours. Tests check every aws call has AWS_PAGER empty and none carries --no-cli-pager.",
+ "authority": "architecture Tom Dyer; ooRexx Cloud Control coded by Claude (Opus 5.5), 7 Nov 2026; v0.2-dev3 fixes by Claude (Opus 5.5) at Tom Dyer's instruction (\"fix cloud controller\", 26 Nov 2026 10:50); v0.1-dev4 bash adapters by ChatGPT/Codex",
+ "invariants": [
+  "No --no-cli-pager",
+  "AWS_PAGER empty on every aws command"
+ ],
+ "procedure": [
+  "ed209d plans run through cloudctl again"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/src/CloudAws.cls",
+   "sha256": "e7aa9813846b1e1858ca95c45047a0a44de0bb5f65ac9333700bea79d0b0e04e",
+   "claim": "read and change set AWS_PAGER"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/tests/test_xtp.rex",
+   "sha256": "f3cabe9912cf38b9ec122200265cb964ef287662b22052052cb4db71d1daaeb5",
+   "claim": "pager tests"
+  }
+ ],
+ "related": [
+  "cc.errors"
+ ],
+ "qualification_boundaries": {
+  "status": "qualified: autobuild run 20261126T114851Z-e143b26a585a-4fce14c3 PASS (fake providers)",
+  "field": "live use is on Tom Dyer's workstation, ~/alchemy-autobuild/cloudctl, run by Codex (CODEX-PC) under orders"
+ }
+}

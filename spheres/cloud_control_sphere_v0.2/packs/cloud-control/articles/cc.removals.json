@@ -1,0 +1,46 @@
+{
+ "kind": "article",
+ "id": "cc.removals",
+ "sphere": "cloud-control",
+ "version": "0.2",
+ "title": "No hidden removals",
+ "section": "start",
+ "summary": "Fault found in R8 order A (26 Nov 2026): cloudctl's Azure and GCP plug-ins only checked that a rule existed, then planned an update carrying the full wanted source list, which replaces whatever sources the rule held, and the plan did not show what would be lost. OCI showed only a count (add 0 remove 1) and dropped ed209f's UDP 62801 rule from the ed209a/ed209b security list because the registry calls ed209f L3. Since v0.2-dev1 Azure reads the rule with az network nsg rule show --output json and GCP with gcloud compute firewall-rules describe --format=json, and every plug-in names each removal as REMOVE CIDR in the step's description. A rule that already holds exactly the wanted sources, protocol and port gets no step (NO CHANGE). v0.2-dev4: members share one firewall, and have their source sets united, only with the same provider, scope, account, project and region; ed209e and ed209j (scope=default in different GCP projects) had been treated as one network, so each was planned as its own peer.",
+ "authority": "architecture Tom Dyer; ooRexx Cloud Control coded by Claude (Opus 5.5), 7 Nov 2026; v0.2-dev3 fixes by Claude (Opus 5.5) at Tom Dyer's instruction (\"fix cloud controller\", 26 Nov 2026 10:50); v0.1-dev4 bash adapters by ChatGPT/Codex",
+ "invariants": [
+  "Every removal is named in the plan",
+  "Named-rule providers read the current rule before updating it"
+ ],
+ "procedure": [
+  "Review every REMOVE line before approving an --apply without --add-only"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/src/CloudAzure.cls",
+   "sha256": "b54bcbab4fb29b0d738bd9fa1bfa3cf82595fc633dbc87af9e928159c9d86430",
+   "claim": "observe returns sources, protocol, ports"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/src/CloudGcp.cls",
+   "sha256": "80919fa0fd977a50eae3e1a96fc6d442ca26459ce8d7eba35d8b089458d4db80",
+   "claim": "observe returns sourceRanges and spec"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/src/CloudOci.cls",
+   "sha256": "2a379f333a4df8a2252d469dd712905ae9df68a4fec1de395a3c5c3e32bb4f89",
+   "claim": "REMOVE list in the purpose"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/tests/test_xtp.rex",
+   "sha256": "f3cabe9912cf38b9ec122200265cb964ef287662b22052052cb4db71d1daaeb5",
+   "claim": "REMOVE and NO CHANGE tests"
+  }
+ ],
+ "related": [
+  "cc.addonly"
+ ],
+ "qualification_boundaries": {
+  "status": "qualified: autobuild run 20261126T114851Z-e143b26a585a-4fce14c3 PASS (fake providers)",
+  "field": "live use is on Tom Dyer's workstation, ~/alchemy-autobuild/cloudctl, run by Codex (CODEX-PC) under orders"
+ }
+}

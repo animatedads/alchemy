@@ -1,0 +1,39 @@
+{
+ "kind": "article",
+ "id": "cc.r8",
+ "sphere": "cloud-control",
+ "version": "0.2",
+ "title": "Using cloudctl for grid rule R8",
+ "section": "rollout",
+ "summary": "R8 (Tom Dyer, 25 Nov 2026; UDP port amended to 62801): ed209k accepts XTP over UDP 62801 from cats2, and every ed209 machine accepts XTP (IP protocol 36 and UDP) from Tom's workstation 82.68.79.12; port 22 rules are never touched. Pattern: 1. read-only plan per node, ./cloudctl-rx.sh xtp NODE --add-only --workstation 82.68.79.12/32, outside the sandbox, reported with its NOTE and REMOVE lines (order D, REQ-00006241); 2. review: zero REMOVE, every CHANGE adds only grid or workstation sources; 3. apply per node only under an order marked NEEDS TOM'S DIRECT APPROVAL, where Codex asks Tom directly. ed209k is Vultr with scope=none: its ufw carries XTP (order B done). ed209f (Clouvider) and ed209h (Vultr cannot select protocol 36) need host firewall rules; ed209b was unreachable. Order D (REQ-00006241, 26 Nov 2026 11:19, before the v0.2-dev4 shared-scope fix) planned every cloud-firewall node with --add-only: 0 REMOVE lines. ed209a/ed209b (one OCI list): add protocol 36 from cats1, cats2 and the workstation, add the workstation UDP range, keep ed209f UDP 62801. ed209c and ed209i: peers already as wanted, create the two workstation rules. ed209d (AWS, working again on CLI v1): add protocol 36 from cats1, cats2 and the workstation, add the workstation UDP range. cats1 (ed209g) and cats2 (ed209l): create ed209-xtp-udp (ed209e, ed209j) and the two workstation rules. ed209e and ed209j: add cats1 and cats2 on UDP 62801 and create the workstation UDP rule; their plans must be re-run on v0.2-dev4, which stops adding each node's own address.",
+ "authority": "architecture Tom Dyer; ooRexx Cloud Control coded by Claude (Opus 5.5), 7 Nov 2026; v0.2-dev3 fixes by Claude (Opus 5.5) at Tom Dyer's instruction (\"fix cloud controller\", 26 Nov 2026 10:50); v0.1-dev4 bash adapters by ChatGPT/Codex",
+ "invariants": [
+  "Plans before apply; --add-only on every R8 run",
+  "No --apply without Tom Dyer's direct approval",
+  "Port 22 rules are never touched under R8"
+ ],
+ "procedure": [
+  "Order D: plans; then one apply order per node after review"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/src/CloudXtp.cls",
+   "sha256": "1adef03e3d964603e5cce4198f99dcbc3788445cf725ee6a4c9308ea38c22177",
+   "claim": "slots and --add-only"
+  },
+  {
+   "artifact": "packages/alchemy_cloud_control_v0.2-dev4/cloudctl/cloudctl.rex",
+   "sha256": "3156fc893ef15759cf98bdb6bf4a5d40d115e5d4736b1115f2bce0b494ed6309",
+   "claim": "xtp command"
+  }
+ ],
+ "related": [
+  "cc.addonly",
+  "cc.removals",
+  "cc.errors"
+ ],
+ "qualification_boundaries": {
+  "status": "rollout in progress",
+  "field": "live use is on Tom Dyer's workstation, ~/alchemy-autobuild/cloudctl, run by Codex (CODEX-PC) under orders"
+ }
+}
