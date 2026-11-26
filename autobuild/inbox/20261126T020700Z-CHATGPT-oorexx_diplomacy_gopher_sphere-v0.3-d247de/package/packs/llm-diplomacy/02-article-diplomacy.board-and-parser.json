@@ -1,0 +1,28 @@
+{
+  "kind": "article",
+  "id": "diplomacy.board-and-parser",
+  "version": "0.3",
+  "sphere": "llm-diplomacy",
+  "title": "Map, occupancy, parser and adjudicator boundary",
+  "summary": "75 provinces, 34 centres, 81 graph nodes, 504 directed army/fleet adjacency edges. Initial deployment file has 22 units. Order parser preserves original text and applies static validity only.",
+  "invariants": [
+    "Occupancy key is board~provinceOf(location); fleet adjacency uses actual coast nodes.",
+    "F CON - BUL is ambiguous; F CON - BUL/SC is valid; F RUM - BUL/SC invalid. Support can target BUL without coast.",
+    "Last recognizable owned-unit order wins, earlier records SUPERSEDED; no premature legality feedback.",
+    "Convoy routes, matching supports, strength, dislodgement, retreat collisions, adjustment counts and civil disorder are NOT solved by the parser.",
+    "Sorted directory traversal whenever results or logs depend on iteration."
+  ],
+  "provenance": [
+    {
+      "artifact": "animatedads/alchemy@7e1e34090524289c1ecc11e3506f02e1a51a95dd",
+      "member": "autobuild/inbox/20261126T015000Z-CHATGPT-oorexx_diplomacy-v0.1-dev2-d2f972/package/src/DiplomacyOrderParser.cls",
+      "claim": "Referee-side parser and static validation only."
+    },
+    {
+      "artifact": "diplomacy/diplomacy",
+      "member": "diplomacy/maps/standard.map",
+      "git_blob": "620fa3a81acb4c0021bd2cd5aec3628b66b373a3",
+      "claim": "Independent standard map adjacency and home ownership reference."
+    }
+  ]
+}
