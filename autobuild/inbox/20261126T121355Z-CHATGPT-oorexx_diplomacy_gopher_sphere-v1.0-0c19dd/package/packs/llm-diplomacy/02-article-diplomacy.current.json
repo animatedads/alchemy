@@ -1,0 +1,79 @@
+{
+  "kind": "article",
+  "id": "diplomacy.current",
+  "version": "1.0",
+  "sphere": "llm-diplomacy",
+  "title": "Current development state and evidence",
+  "summary": "Dev5 adds the step-5 competition phase controller; the qualified dev4r5 referee and rules are byte-identical. Native full games and replay tested. Press and live engines are not implemented.",
+  "invariants": [
+    "Deterministic game controller delegates to the existing referee. No player legal-order API, press, or live engine.",
+    "Independent review completed; F1 fixed. Fresh independent review of exact dev4r4 passed (REQ-00006293); dev4r5 production bytes identical.",
+    "COAST_REQUIRED=ALWAYS; SUPPORT_COAST=STRICT. Every split fleet origin, destination or assisted reference needs the exact coast. Missing NO_COAST; wrong BAD_COAST; armies have no coast.",
+    "NONADJACENT_ARMY_MOVE=CONVOY_IF_PHYSICAL_ROUTE and SUPPORT_REACH=PROVINCE. No parser/solver change; five end-to-end regressions.",
+    "Four changed DATC movement expectations: B.2/B.7/B.8/B.15; B.16/B.17 board results unchanged, BAD_COAST diagnostic. F.28/F.29 now pass, including full outcomes and retreat-option assertions. Selective coverage.",
+    "Never expose legal-order lists to players."
+  ],
+  "evidence": {
+    "category": "AUTOBUILDER_PASS",
+    "scope": "step-5 game controller; existing referee and rules unchanged",
+    "package": "oorexx_diplomacy_v0.1-dev5",
+    "submission_id": "20261126T121054Z-CHATGPT-oorexx_diplomacy-v0.1-dev5-ad7bed",
+    "source_commit": "b6f7bb622cc451877f77160b2dea93e4031ea264",
+    "official_run": "20261126T121147Z-c54e98b2e517-b24cde58",
+    "tree_sha256": "c54e98b2e517121cd9f2df97a6a105a2e24de4fa3334c6b5f304597aa9825b52",
+    "local_zip_sha256": "ad7bed4d531b4fedc7516cff7451cb519f40a4a5c873b7ed06d894ca694aa2d2",
+    "assertions": 3374,
+    "referee_assertions": 3311,
+    "referee_positions": 232,
+    "game_assertions": 63,
+    "failures": 0,
+    "rules_sha256": "c0bd113e6965b2894ea65b568305ccf27b82b676e85ac95c82ed955f883cee04",
+    "independent_controller_review": "not yet performed",
+    "replay_games": [
+      {
+        "stub": "HOLD",
+        "seed": 7,
+        "phases": 125,
+        "calls": 350,
+        "invalid_orders": 0,
+        "sha256": "6ada6be204824b8eb4f39c377b083639ca6e57c450614d25d8799c89543bf2d7",
+        "byte_identical": true
+      },
+      {
+        "stub": "RANDOM",
+        "seed": 20261126,
+        "phases": 125,
+        "calls": 376,
+        "invalid_orders": 163,
+        "sha256": "ba68d770498185e97363fea503c87b72a6f770751cbd3e65fe8dcde40049d29c",
+        "byte_identical": true
+      }
+    ]
+  },
+  "procedure": [
+    "Consult controlling brief and addenda, including REQ-00006219/235/237/253.",
+    "Read evidence/CLAUDE-REQUALIFICATION.md and diplomacy.qualification. All three recovered reviewer blocks hash-verified.",
+    "Use diplomacy.gameplay for the step-5 gate and stub/replay runner. Step 6 press and live runtime profiles remain outstanding."
+  ],
+  "referee_qualification": {
+    "category": "AUTOBUILDER_PASS",
+    "scope": "qualification-only; unchanged production and rules",
+    "submission_id": "20261126T114545Z-CHATGPT-oorexx_diplomacy-v0.1-dev4r5-3de1cc",
+    "ready_commit": "77db582eb885410a862f4bc67f909ccabb5b097d",
+    "zip_sha256": "3de1cc6d7d1f10589d7a1d945fba86936084ab1d0b6af134ed96b9e9bfa0ee49",
+    "assertions": 3311,
+    "failures": 0,
+    "positions": 232,
+    "independent_review": "REQ-00006293",
+    "baseline_review_positions": 98000,
+    "independent_review_qualification": "Claude independently reran dev4r4 (production bytes identical to dev4r5) on his mirror-head ooRexx 5.3.0, 98,000 stress trials, zero invariant failures and 1355 paradox trials. Not an independent rerun of dev4r5 package.",
+    "additional_mutation_trials": 9000,
+    "additional_mutation_failures": 0,
+    "additional_paradox_trials": 2621,
+    "rules_sha256": "c0bd113e6965b2894ea65b568305ccf27b82b676e85ac95c82ed955f883cee04",
+    "official_run": "20261126T114641Z-bdffdccaa820-57409a77",
+    "prior_dev4_review": "REQ-00006189 (98000, dev4 only)",
+    "additional_random_trials": 60000,
+    "additional_random_failures": 0
+  }
+}
