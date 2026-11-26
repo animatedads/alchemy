@@ -1,0 +1,30 @@
+{
+  "kind": "article",
+  "id": "diplomacy.season",
+  "version": "0.8",
+  "sphere": "llm-diplomacy",
+  "title": "Retreats, winter adjustments and ownership",
+  "summary": "Existing seasonal referee; 53 passing seasonal positions, 556 checks including literal-coast retreat/disband regressions.",
+  "invariants": [
+    "Use judge~retreats(movement, submitted), judge~initialOwnership, judge~afterFallRetreats(ownership, retreatState), judge~adjustments(units, ownership, submitted).",
+    "Never expose referee retreatOptions as a player legal-order API.",
+    "Retreat collisions resolve per province, not coast. Missing or invalid retreat disbands.",
+    "Builds in vacant owned home centres; first legal adjustment orders within quota; last order for an existing unit wins.",
+    "Civil disorder: shortest land/sea graph distance to owned centres, fleet first then English province name (review F1, DATC 4.D.8).",
+    "Convoyed attacker origin may be used as retreat destination if otherwise available; Claude confirmed DATC 4.A.5 preferred option.",
+    "Ownership changes only after Fall retreats, phase sequencing is caller responsibility.",
+    "No competitive prompt text in the sphere.",
+    "Retreats, builds and explicit disbands require fleet coast on split provinces. Invalid retreats disband, invalid winter disbands do not satisfy quotas."
+  ],
+  "evidence": {
+    "positions": 53,
+    "assertions": 556,
+    "failures": 0,
+    "fixture_files": [
+      "data/datc-v3-season.txt",
+      "data/season-fixtures.txt",
+      "review/datc-v3.4-additions-season.txt"
+    ],
+    "scope": "Previous v3.0 cases plus review H.16 and name tie-break regressions; selective assertions."
+  }
+}
