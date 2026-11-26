@@ -1,0 +1,30 @@
+#!/bin/sh
+# curl-fake -- stands in for curl under bin/vultr-api.rex.  Logs "curl METHOD URL [body] auth=stdin|MISSING" and
+# answers Vultr API v2 paths with grid-shaped data.  It fails (rc 22, like curl -f on 401) when the Authorization
+# header did not arrive on stdin, so a test proves the key never needed argv.
+# Architecture: Tom Dyer.  Coding: Claude (Opus 5.5), 7 Nov 2026.
+set -eu
+method=GET; url=''; body=''; hdrin=no
+while [ $# -gt 0 ]; do
+  case "$1" in
+    -X) method=$2; shift 2 ;;
+    -H) [ "$2" = "@-" ] && hdrin=yes; shift 2 ;;
+    --data-binary) body=$(cat "${2#@}"); shift 2 ;;
+    -*) shift ;;
+    *) url=$1; shift ;;
+  esac
+done
+auth=MISSING
+if [ "$hdrin" = yes ] && grep -q '^Authorization: Bearer ' ; then auth=stdin; fi
+if [ -n "${CLOUDCTL_PROVIDER_LOG:-}" ]; then printf 'curl %s %s %s auth=%s\n' "$method" "$url" "$body" "$auth" >> "$CLOUDCTL_PROVIDER_LOG"; fi
+if [ "$auth" != stdin ]; then echo "curl: (22) The requested URL returned error: 401" >&2; exit 22; fi
+case "$method $url" in
+  'GET '*'/instances?main_ip=80.240.21.156'*) echo '{"instances":[{"id":"example-vultr-ed209k","main_ip":"80.240.21.156","label":"ed209k","region":"fra","power_status":"running","firewall_group_id":""}],"meta":{"total":1}}' ;;
+  'GET '*'/instances?main_ip=155.138.214.182'*) echo '{"instances":[{"id":"h-0001","main_ip":"155.138.214.182","label":"ed209h","region":"ewr","power_status":"running","firewall_group_id":"fw-h"}],"meta":{"total":1}}' ;;
+  'GET '*'/instances?main_ip='*) echo '{"instances":[],"meta":{"total":0}}' ;;
+  'GET '*'/instances?'*) echo '{"instances":[{"id":"vultr-123","label":"vultr-one","region":"lhr","status":"active","main_ip":"203.0.113.13"}],"meta":{"total":1}}' ;;
+  'GET '*'/firewalls/fw-123/rules'*) echo '{"firewall_rules":[{"id":"vfr-123","ip_type":"v4","protocol":"tcp","port":"22","subnet":"203.0.113.0","subnet_size":24,"notes":"ssh test"}],"meta":{"total":1}}' ;;
+  'GET '*'/firewalls/'*'/rules'*) echo '{"firewall_rules":[{"id":"vfr-u1","ip_type":"v4","protocol":"udp","port":"62801","subnet":"34.16.115.198","subnet_size":32},{"id":"vfr-old","ip_type":"v4","protocol":"udp","port":"62801","subnet":"203.0.113.99","subnet_size":32}],"meta":{"total":2}}' ;;
+  'DELETE '*) : ;;
+  *) echo '{"fake":"vultr-ok"}' ;;
+esac

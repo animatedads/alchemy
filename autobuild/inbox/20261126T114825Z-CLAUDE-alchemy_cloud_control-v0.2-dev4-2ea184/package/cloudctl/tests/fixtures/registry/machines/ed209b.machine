@@ -1,0 +1,15 @@
+# test registry: a redacted copy of the live entry (26 Nov 2026, Claude (Opus 5.5)); tenancy, project, security list and instance IDs are examples.
+# ed209b -- Oracle Cloud, opc
+# Architecture: Tom Dyer.  Coding: Claude (Opus 5.5), 7 Nov 2026.  address= from sshnode etc/nodes; scope= is the
+# cloud firewall cloudctl xtp reconciles: blank until found (cloudctl xtp NODE names what is missing).
+provider=oci
+address=193.123.190.35
+xtp_link=L3
+# region and compartment (the tenancy root) from oci compute instance list, 7 Nov 2026.  Both instances are
+# instance-20260901-1722 and -1748; which is ed209a and which ed209b is settled by their VNIC public IPs.
+region=uk-london-1
+compartment=ocid1.tenancy.oc1..exampletenancy
+# ed209a and ed209b share subnet lon-free-public-subnet-works (10.0.0.0/24) and its one security list (Tom, 7 Nov
+# 2026): cloudctl xtp reconciles it to the union of both nodes' sets.  handle= (instance OCID) still to be mapped.
+handle=
+scope=ocid1.securitylist.oc1.uk-london-1.examplelist
