@@ -1,0 +1,42 @@
+{
+ "kind": "article",
+ "id": "mailbox.test",
+ "sphere": "mcp-mailbox-bounds",
+ "version": "0.1",
+ "title": "How it was tested",
+ "section": "rollout",
+ "summary": "tests/test_mailbox_bounds.rex reproduces the lane: one 40,000-byte report then 16 small requests. It checks the default limit, total, hasMore and nextAfterId; the 1500-byte cut and bodyBytes; that the listing JSON is under 30,000 characters, and also for twelve 40,000-byte requests with 1,000-byte subjects; afterId paging returns all 17 exactly once in order; newestFirst; maxBodyBytes 0; rejection of limit 0, 101, 2.5 and ten; get paging rebuilds the 40,000 bytes exactly; get leaves requests unread, hides them from other principals and rejects bad IDs and ranges; UTF-8 cuts (e-acute C3A9, Euro E282AC) never split a character and a 2-byte page over 3-byte characters still advances; and tools/list plus tools/call over MCP for both the dotted and compatibility names. Full suite: 11 PASS, test_gopher_sphere_checker SKIP (needs a live Gopher roll-up, as in v0.2-dev8). Autobuild run 20261126T020210Z-f2bc1e47c1de-ed6fdfb4 PASS, using tests/autobuild_run.sh, which builds the Foreign Runtime native library in a temporary copy.",
+ "authority": "architecture Tom Dyer (\"you need to fix that then\", 26 Nov 2026 01:53); base v0.2-dev8 by ChatGPT; v0.2-dev9 change coded and written by Claude (Opus 5.5)",
+ "invariants": [
+  "The regression reproduces the field case",
+  "Autobuild builds natives from source"
+ ],
+ "procedure": [
+  "bash tests/autobuild_run.sh with the six *_HOME variables set as in integration.json"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/tests/test_mailbox_bounds.rex",
+   "sha256": "831f0faee4eaadeb32f8ad51bb6077ba39584c77c62dbe19a5a21a98a1573cee",
+   "claim": "regression test"
+  },
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/VALIDATION.txt",
+   "sha256": "2fc61816030ec54f3791d7bb8dfd89d8f29a6805cafcb4e0c0eda7329c8599f6",
+   "claim": "suite results"
+  },
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/tests/autobuild_run.sh",
+   "sha256": "a3ac9ad558ca308e5755d5b082d3fe62286a548acfae1f289e5c207471d68aa5",
+   "claim": "autobuild entry"
+  }
+ ],
+ "related": [
+  "mailbox.list",
+  "mailbox.get"
+ ],
+ "qualification_boundaries": {
+  "status": "qualified in the reference package",
+  "field": "reference package passes autobuild run 20261126T020210Z-f2bc1e47c1de-ed6fdfb4; the live Rasen Falcon server is not yet changed"
+ }
+}

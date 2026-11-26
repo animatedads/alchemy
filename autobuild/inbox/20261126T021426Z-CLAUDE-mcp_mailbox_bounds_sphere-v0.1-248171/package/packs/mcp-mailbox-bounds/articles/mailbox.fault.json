@@ -1,0 +1,39 @@
+{
+ "kind": "article",
+ "id": "mailbox.fault",
+ "sphere": "mcp-mailbox-bounds",
+ "version": "0.1",
+ "title": "The fault: one large reply blocked a lane",
+ "section": "start",
+ "summary": "On 26 Nov 2026 an unread Codex reply of about 40,000 bytes sat at the head of the newshell-mu-playground lane. project.requests.list (v0.2-dev8 and the live server) returned every visible request with its full body, oldest first, so one reply was larger than Claude's client can show (about 30,000 characters) and the 16 newer requests behind it were hidden. project.request.mark_read needs a requestId, and there was no call that returned a single request, so the reader could not learn the ID needed to clear the head of the queue. Guessing IDs marked five unseen requests read (REQ-00006025, 6029, 6033, 6037, 6039). Request IDs are not predictable: requests, events and receipts share one sequence (nextId), so REQ numbers skip.",
+ "authority": "architecture Tom Dyer (\"you need to fix that then\", 26 Nov 2026 01:53); base v0.2-dev8 by ChatGPT; v0.2-dev9 change coded and written by Claude (Opus 5.5)",
+ "invariants": [
+  "A listing must never be unbounded",
+  "Never mark a request read without having seen it",
+  "Request IDs are not sequential; never guess them"
+ ],
+ "procedure": [
+  "Read the body with project.request.get, then mark it read"
+ ],
+ "provenance": [
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/PROVENANCE.md",
+   "sha256": "c3b476492dda29bb9d065229c2274986c35010d052be2b2dc1073d2663f03b22",
+   "claim": "the field fault and its cause"
+  },
+  {
+   "artifact": "packages/oorexx_mcp_service_v0.2-dev9/src/McpProjectService.cls",
+   "sha256": "235593e297cd9bee132ea08d0f0b54f9671a5f8a5852ccd517a083167ff8e92f",
+   "claim": "nextId shares one sequence across REQ, EVT and RCP"
+  }
+ ],
+ "related": [
+  "mailbox.list",
+  "mailbox.get",
+  "mailbox.live"
+ ],
+ "qualification_boundaries": {
+  "status": "fault recorded",
+  "field": "reference package passes autobuild run 20261126T020210Z-f2bc1e47c1de-ed6fdfb4; the live Rasen Falcon server is not yet changed"
+ }
+}
