@@ -1,0 +1,23 @@
+{
+ "kind": "article",
+ "id": "slam-heelturn.engine-face",
+ "title": "Runner face and one call",
+ "section": "runtime",
+ "version": "0.5",
+ "sphere": "slam-heelturn",
+ "authority": "implementation",
+ "summary": "HeelTurnEngine~invoke(system, input) returns STATUS TEXT INPUT_TOKENS OUTPUT_TOKENS (tokens are words); profile~identity is SLAM|heelturn-0.1r4|deterministic|words|0. DiplomacyPlayer uses it in place of a DiplomacyEngine. It receives the same SYSTEM (fixed header + designer prompt) and USER text (RULES MAP STATE LAST RESULTS PLAYER LIST INBOX MEMORY TASK) as any runner and answers in SEND, ORDERS and MEMORY blocks. Every call is fresh: only its own MEMORY block carries forward.",
+ "invariants": [
+  "No referee object and no legal-move list are used or assumed.",
+  "Section headers are matched in their fixed order, so rules or mail text cannot open a later section.",
+  "Call flow: view, prompt policy, assessment, memory, verify published results, read inbox, Reasoned Thought judge, relations, plan, compose press or check orders, write memory.",
+  "Every call logs through oorexx_logging_v0.7 (LogService heelturn, INTERNAL): CALL PROMPT ASSESS MAIL EVENT RELATIONS RELY CANNOT_TELL SEND ORDER_CHECK_FAIL ORDERS MEMORY FAULT.",
+  "A syntax fault returns STATUS ERROR with no text, which the framework treats as a failed call (no orders, no mail, memory unchanged)."
+ ],
+ "procedure": [
+  "engine = .HeelTurnEngine~new(packageRoot'/data', logPath, progress)",
+  "source = .DiplomacyPlayer~new(engine, prompts, rules, journal, gameId, seed)",
+  "Or run tools/heelturn_game.rex DIPLOMACY_ROOT PROMPT_DIR END_YEAR SEED JOURNAL [LOG] [QUIET]",
+  "Talk to the SLAM: rexx tools/slam_reply.rex MESSAGE_FILE FROM TO [PROMPT_FILE] [LOG] puts one press message into a framework-rendered Spring 1901 press call and prints what Heel Turn read, what it believes of each promise, and its reply messages."
+ ]
+}
