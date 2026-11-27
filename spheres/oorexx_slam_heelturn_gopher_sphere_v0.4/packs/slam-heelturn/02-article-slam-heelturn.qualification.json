@@ -1,0 +1,23 @@
+{
+ "kind": "article",
+ "id": "slam-heelturn.qualification",
+ "title": "Qualification and limits",
+ "section": "qualification",
+ "version": "0.4",
+ "sphere": "slam-heelturn",
+ "authority": "evidence",
+ "summary": "sh tests/run.sh (v0.1r3), 21 s here: lint (Boston Crab pitfalls P1-P4 and estate SourceLint) zero findings on every file; prompt 36, press 32, orders 11, truth 29, game 14 checks. Game gate: seven Heel Turn players with seven prompts, 1901-1905, 302 calls all OK, zero invalid orders, no faults, lies told and caught, promises settled; same seed gives byte-identical journal (diplomacySameJournal) and Heel Turn log; framework replay byte-identical. Interpreter here: ooRexx 5.3.0 from the ooRexx/ooRexx GitHub head. On r13196 Autobuild ran v0.1 to v0.1r2: all suites passed, the game gate timed out at 600 s (pure-ooRexx SHA-512 of four files); v0.1r3 compares bytes and does not hash.",
+ "invariants": [
+  "Autobuild on r13196: v0.1, v0.1r1, v0.1r2 FAIL by timeout in the game gate only (runs 20261127T135051Z, 20261127T143835Z, 20261127T145002Z); v0.1r3 removes the cause. Read the newest result before claiming qualification.",
+  "Librarian grammar loads from virtual_ryta_hardworld_v0.31_work/librarian/LibrarianSalvagedCore_v09.cls (LibrarianLexicon, LibrarianGrammar only); it should move to a published Librarian package.",
+  "Closed vocabulary: long LLM prompts and messages will have unread sentences, which are listed.",
+  "English orders inside press are not yet reference-checked with Boston Crab's rules.",
+  "Play strength against Haiku or Sol is not measured; no live provider call was made.",
+  "No hashing in Heel Turn or its tests: equality is checked by bytes. Where a digest is ever needed it goes through crypto's Foreign Runtime provider, never the pure-ooRexx path.",
+  "Designer prompts are sealed until unsealed by the competition: they are never test fixtures. tests/fixtures/constructs.txt holds constructions written for the tests."
+ ],
+ "procedure": [
+  "export ALCHEMY_REPO_ROOT=/path/to/alchemy",
+  "sh tests/run.sh"
+ ]
+}
