@@ -1,0 +1,32 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_diplomacy_web",
+    "version": "0.1-dev2",
+    "kind": "oorexx"
+  },
+  "tests": [
+    {
+      "name": "diplomacy-web-native-security-and-human-controller",
+      "argv": ["sh", "tests/run.sh"],
+      "timeout_seconds": 150,
+      "environment": {
+        "set": {
+          "OOREXX_CRYPTO_ROOT": "${REPO_ROOT}/packages/oorexx_crypto_v0.8.3",
+          "OOREXX_DIPLOMACY_ROOT": "${REPO_ROOT}/packages/oorexx_diplomacy_v0.1-dev7r1",
+          "OOREXX_LOGGING_ROOT": "${REPO_ROOT}/packages/oorexx_logging_v0.7",
+          "WIRE_SERVER_ROOT": "${REPO_ROOT}/packages/wire_ui_server_v0.17",
+          "QUEUE_FABRIC_ROOT": "${REPO_ROOT}/packages/oorexx_queue_fabric_v0.9-dev6",
+          "ALCHEMY_OBJECTS_ROOT": "${REPO_ROOT}/packages/alchemy_objects_v0.8"
+        },
+        "require_dirs": ["OOREXX_CRYPTO_ROOT", "OOREXX_DIPLOMACY_ROOT", "OOREXX_LOGGING_ROOT", "WIRE_SERVER_ROOT", "QUEUE_FABRIC_ROOT", "ALCHEMY_OBJECTS_ROOT"]
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_diplomacy_web_v0.1-dev2"
+    }
+  }
+}
