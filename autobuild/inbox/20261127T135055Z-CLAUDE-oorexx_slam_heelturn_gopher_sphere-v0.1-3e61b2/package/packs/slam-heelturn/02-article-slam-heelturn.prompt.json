@@ -1,0 +1,9 @@
+{
+  "kind": "article", "id": "slam-heelturn.prompt", "title": "Reading a designer prompt", "section": "language", "version": "0.1", "sphere": "slam-heelturn", "authority": "implementation",
+  "summary": "data/concepts.src and data/lexicon.src (Boston Crab house format) map words and phrases to concepts; closed-class roles come from LibrarianGrammar~installBuiltins. data/policy.src maps act|object to setting|weight, most exact rule first. A directive carries polarity (not, never, avoid; double negatives cancel), force (must 1.0, should 0.7, may 0.4), an optional condition (if, when, unless -> weak, betrayed, attacked, gain, needed, leader, or its opposite) and a time (early, late) for stance settings. Statements about others raise suspicion and are not licences. Sentences that move no setting are listed as not read.",
+  "invariants": [
+    "Never guess an unread sentence; list it (policy~notRead) and log it.",
+    "Prompts need not name powers or provinces; the reader works on kinds (ally, neighbour, leader, weakest, centre, neutral, home).",
+    "Coverage grows by adding words to lexicon.src, never by heuristics on strings."
+  ]
+}
