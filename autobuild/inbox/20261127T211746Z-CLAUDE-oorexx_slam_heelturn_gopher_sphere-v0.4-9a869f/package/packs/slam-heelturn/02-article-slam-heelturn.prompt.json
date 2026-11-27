@@ -1,0 +1,18 @@
+{
+ "kind": "article",
+ "id": "slam-heelturn.prompt",
+ "title": "Reading a designer prompt",
+ "section": "language",
+ "version": "0.4",
+ "sphere": "slam-heelturn",
+ "authority": "implementation",
+ "summary": "data/concepts.src and data/lexicon.src (Boston Crab house format) map words and phrases to concepts; closed-class roles come from LibrarianGrammar~installBuiltins. data/policy.src maps act|object to setting|weight, most exact rule first. A directive carries polarity (not, never, avoid; double negatives cancel), force (must 1.0, should 0.7, may 0.4), an optional condition (if, when, unless -> weak, betrayed, attacked, gain, needed, leader, or its opposite) and a time (early, late) for stance settings. Statements about others raise suspicion and are not licences. Sentences that move no setting are listed as not read.",
+ "invariants": [
+  "Never guess an unread sentence; list it (policy~notRead) and log it.",
+  "Prompts need not name powers or provinces; the reader works on kinds (ally, neighbour, leader, weakest, centre, neutral, home).",
+  "Coverage grows by adding words to lexicon.src, never by heuristics on strings.",
+  "v0.1r1: a misread is silent, only an unread sentence is listed. Designers check a prompt with: rexx tools/read_prompt.rex PROMPT_FILE (each sentence READ with the settings it moved and the condition, or NOT READ with the unknown words). Give it to all seven designers at once.",
+  "v0.1r1 fixes: relative clauses and a new subject after the act are not directives; before/after set no condition; a negative quantity on the object turns the act down (send few messages); keeps a promise is the kept condition; after avoid the word is the act it negates; weak/strong in the object name weakest/leader; bare build moves expand.",
+  "There is no settings channel: the prompt is prose only. A designer who wants a setting writes the directive that moves it."
+ ]
+}

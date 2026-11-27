@@ -1,0 +1,17 @@
+{
+ "kind": "article",
+ "id": "slam-heelturn.orders",
+ "title": "Orders from the graph, and the self-check",
+ "section": "orders",
+ "version": "0.4",
+ "sphere": "slam-heelturn",
+ "authority": "implementation",
+ "summary": "Destinations come only from the unit's own army or fleet column in the MAP, so coasts are literal (F STP/SC - BOT, BUILD F STP/NC). Movement: scored moves, collision- and swap-free assignment, supports for contested moves and threatened holds, promised supports kept first, single-fleet convoys. Retreats avoid occupied provinces, the attacker's origin and standoffs. Builds go to vacant owned homes. Every line is read back and checked against the graph before it is sent.",
+ "invariants": [
+  "Grammar: A BUD - SER | F TRI H | A VIE S A BUD - GAL | F NTH C A LON - NWY | A PAR R PIC | A PAR D | BUILD F STP/NC | DISBAND A WAR | WAIVE.",
+  "Self-check rejects: unit not ours or not where stated, destination not in its column, supporter cannot reach the province, supported unit absent, supported fleet coast not in its column, army with a coast, convoy fleet not at sea, build not a vacant owned home or coast missing.",
+  "A failed line is not sent: movement holds, retreat disbands, adjustment drops the line.",
+  "Supporting a foreign unit is legal and passes.",
+  "v0.1r3: Heel Turn never offers a DMZ on a supply centre."
+ ]
+}
