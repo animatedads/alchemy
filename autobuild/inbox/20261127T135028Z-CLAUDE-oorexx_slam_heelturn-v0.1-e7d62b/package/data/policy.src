@@ -1,0 +1,125 @@
+# policy.src - what a read directive does to the player's settings.
+#   act | object | knob | weight
+# act and object are concepts (isa is followed, so stab, which isa attack,
+# also meets the attack rules unless a more exact rule names it). An empty
+# object means the act with no object the rules know. The most exact rule
+# for an act+object pair wins: exact act and object, then exact act with any
+# object, then the act's parents. Not in front of the act flips the weight;
+# the force words (always, should, may) scale it. Knobs run 0 to 1, from 0.5.
+#
+# --- attacking ---
+attack||aggression|0.35
+attack|power|aggression|0.3
+attack|enemy-power|aggression|0.3
+attack|neighbour|aggression|0.35
+attack|centre|expand|0.35
+attack|neutral|expand|0.45
+attack|home|aggression|0.3
+attack|ally-power|stab|0.5
+attack|leader|balance|0.5
+attack|weakest|bully|0.5
+attack|distant|aggression|0.2
+betray||stab|0.5
+betray|ally-power|stab|0.5
+betray|leader|balance|0.3
+punish||retaliate|0.5
+punish|others|retaliate|0.5
+# --- defending ---
+defend||defence|0.35
+defend|home|defence|0.45
+defend|centre|defence|0.35
+defend|border|defence|0.3
+defend|ally-power|loyal|0.4
+hold||defence|0.2
+survive||defence|0.35
+# --- helping and alliances ---
+support||loyal|0.25
+support|ally-power|loyal|0.4
+support|weakest|balance|0.35
+support|leader|bandwagon|0.4
+ally||alliance|0.35
+ally|neighbour|allyNear|0.45
+ally|distant|allyFar|0.45
+ally|weakest|balance|0.35
+ally|leader|bandwagon|0.45
+ally|others|alliance|0.3
+ally|alliance|alliance|0.35
+ally|power|alliance|0.3
+balance||balance|0.5
+balance|leader|balance|0.5
+# --- truth and lies ---
+lie||honesty|-0.6
+lie|others|honesty|-0.6
+truth||honesty|0.5
+be|honest|honesty|0.5
+be|loyal|keepWord|0.5
+be|deceptive|honesty|-0.5
+keep|promise|keepWord|0.5
+keep|deal|keepWord|0.5
+break|promise|keepWord|-0.5
+break|deal|keepWord|-0.5
+break|alliance|stab|0.4
+promise||promises|0.35
+offer||promises|0.25
+propose|dmz|promises|0.35
+propose|alliance|alliance|0.35
+propose|deal|promises|0.3
+# --- trust ---
+trust||trust|0.4
+trust|others|trust|0.4
+trust|ally-power|trust|0.35
+distrust||suspicion|0.4
+distrust|others|suspicion|0.4
+expect||suspicion|0.2
+remember||memory|0.4
+forgive||retaliate|-0.4
+# --- growth ---
+expand||expand|0.4
+expand|centre|expand|0.4
+expand|neutral|expand|0.45
+win||aggression|0.2
+win|game|aggression|0.25
+build|fleet|fleetPref|0.5
+build|army|fleetPref|-0.5
+build|unit|expand|0.1
+move||aggression|0.1
+move|centre|expand|0.3
+move|neutral|expand|0.35
+convoy||fleetPref|0.2
+plan||patience|0.2
+# --- talking ---
+talk||talk|0.4
+talk|others|talk|0.4
+talk|ally-power|talk|0.35
+talk|neighbour|talk|0.4
+tell||talk|0.25
+tell|plan-obj|openness|0.4
+ask||talk|0.2
+request|support|talk|0.2
+silence||talk|-0.5
+be|friendly|warmth|0.5
+be|hostile|warmth|-0.5
+be|brief|brevity|0.5
+be|verbose|brevity|-0.5
+be|aggressive|aggression|0.5
+be|cautious|defence|0.45
+be|patient|patience|0.5
+be|flexible|flexibility|0.5
+# --- second effects of the same act+object (all lines of the matched pair apply) ---
+be|cautious|aggression|-0.2
+be|aggressive|defence|-0.15
+distrust||trust|-0.25
+distrust|others|trust|-0.25
+trust||suspicion|-0.2
+trust|others|suspicion|-0.2
+lie||suspicion|0.1
+be|deceptive|stab|0.15
+betray||keepWord|-0.2
+move|home|defence|-0.35
+move|message|talk|0.4
+talk|message|talk|0.4
+praise||warmth|0.4
+praise|others|warmth|0.4
+be|loyal|loyal|0.4
+keep-out||promises|0.3
+keep-out|dmz|promises|0.35
