@@ -1,0 +1,44 @@
+{
+  "kind": "article",
+  "id": "diplomacy.player-engine",
+  "version": "1.2",
+  "sphere": "llm-diplomacy",
+  "title": "Stateless player and runtime boundary (step 7 offline)",
+  "summary": "Dev7r1: deterministic player text integration, private memory, explicit runtime profiles, provider codecs and isolated transport. Seeded inbox delivery. Live gate still open.",
+  "invariants": [
+    "Fixed SYSTEM header plus own designer prompt, then RULES, MAP, STATE, LAST RESULTS, PLAYER LIST, INBOX, MEMORY, TASK. All text is detached. No referee object or legal order hints.",
+    "Raw public results since last successful call are quoted. Numeric list only in press, inbox follows existing round barrier. Own private memory only.",
+    "One optional MEMORY block replaces own notes; absent retains, empty clears; 8000 UTF-8 code points capped and logged. Only complete phase-appropriate SEND or ORDERS blocks have effects. Bad response or timeout atomic; no repair of order bytes. Visible text outside blocks logged, not hidden reasoning.",
+    "Every call is fresh; same immutable explicit provider profile for all powers. Exact model, effort, max output and timeout required, no default or alias. Supported low/medium/high map to Haiku output_config.effort or Sol reasoning.effort; no claim of equal compute. Haiku adaptive thinking; Sol store=false, no previous_response_id. No sampling controls or reasoning effort none.",
+    "Reject wrong model, incomplete response, refusal, malformed JSON and absent or invalid usage. Visible text of rejected decodable responses remains in operator audit; reasoning blocks excluded.",
+    "Transport accepts provider/body/timeout and yields status/HTTP/body. Curl uses fixed HTTPS endpoints, short-lived Secret Broker lease, stdin config, private request/response scratch, no secrets in argv or request, outer deadline, no retries. Offline fake curl tested; actual live transport not executed.",
+    "Canonical replay journal unchanged; separate operator journal records game/seed/phase/power/round/profile, SHA512 prompt digest, full system/user/visible output, status, token usage, elapsed and memory cuts. Keep operator log private. SHA512 via estate crypto v0.8.3 native path, not step-8 prompt seal.",
+    "Do not treat fixture IDs or budgets as authorized. data/engine-profile.example fails closed. Actual Haiku game year must await Architect pins and credentials.",
+    "New games use DIPLOG|3 seeded inbox sender grouping to remove fixed seat rank. Historical formats retained for replay."
+  ],
+  "procedure": [
+    "Run sh tests/run.sh under exact ooRexx 5.3.0 r13196 and pinned estate dependencies.",
+    "Review README and evidence/PLAYER-QUALIFICATION.md and INBOX-ORDER-QUALIFICATION.md; latest package oorexx_diplomacy_v0.1-dev7r1.",
+    "Operator-only tools/live.rex requires explicit pinned profile, rules text, seven designer prompt files, game ID, seed and fresh journal; provision Secret Broker and private operator directory, verify all statuses. No automatic authorization to spend."
+  ],
+  "evidence": {
+    "player_assertions": 189,
+    "transport_assertions": 12,
+    "failures": 0,
+    "mock_game_year": {
+      "press_calls": 42,
+      "order_calls": 14,
+      "byte_identical": true,
+      "sha256": "a75eedd4882b39739c7861c1ee5ec5158ae74302ca740ace5af41d93d7c2474f"
+    },
+    "live_calls": 0,
+    "live_gate": "OPEN",
+    "additional_offline_cli_probe": {
+      "scope": "SecretBroker v0.2 with published Alchemy Objects v0.8 and fake curl; declared v0.7 dependency not recovered; no real network",
+      "calls_ok": 56,
+      "invalid_orders": 0,
+      "byte_identical_replay": true,
+      "sha256": "9b8095aeb6f4a8f66df79975276d0f52e56a565201ffafea688063867d8f403c"
+    }
+  }
+}

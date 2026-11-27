@@ -1,0 +1,94 @@
+{
+  "kind": "article",
+  "id": "diplomacy.press",
+  "version": "1.2",
+  "sphere": "llm-diplomacy",
+  "title": "Private press and sealed round barriers",
+  "summary": "Dev6 private press independently passed mechanics (REQ-00006401). Dev7r1 fixes P1 seat-order bias with seeded recipient-specific sender groups and DIPLOG|3. Old replay formats remain exact.",
+  "invariants": [
+    "Use PRESS_ROUNDS in data/game.conf, default 3; only movement phases have press. Each active power has its own independently shuffled permutation of active powers every round, including self. Draws may coincide by chance. No order-call list.",
+    "Each player receives detached public/own state and that player's list and inbox only. All calls collected before delivery. Mail from round k becomes visible in round k+1; last round feeds order call. New movement phase has empty inbox. No delivery receipts, bounce notices, or warnings.",
+    "Source contract for press: source~press(view) returns array(status, raw string); view ROUND, ROUNDS, PLAYER_LIST, INBOX. Movement orders view INBOX only. Missing or malformed recognized SEND block drops all mail atomically. Non-OK source statuses deliver nothing.",
+    "Parse case-insensitive SEND TO: <numbers> / MESSAGE: / END MESSAGE. Resolve using sender's original round list, not mutated callback view. Mixed invalid/valid addresses drop entire message. Duplicate recipients get one copy. First 6 blocks only; cap each body at 1500 UTF-8 code points; invalid bytes individually counted. CR/LF normalized for framing; original raw bytes logged.",
+    "True sender and sorted true recipients stamped in === MAIL <id> FROM <power> TO <powers> === and === END MAIL <id> ===. Prefix body lines that begin === with > . Never block or filter player behaviour; log syntactic injection markers only, no penalty.",
+    "Sort senders, keep original SEND block order, sort recipients. IDs deterministic; reverse insertion delivery yields identical bytes. Park-Miller PRNG initialized from logged game seed; log every list with pre-draw PRNG state.",
+    "DIPLOG|2 has P in META; logs PRESS_ROUND, PLAYER_LIST, PRESS_CALL (raw hex output), PRESS_PARSE, MAIL_DROP, MAIL_CUT, MAIL, PRESS_END, PRESS_TOTAL. Replay regenerates routing, delivery and adjudication from logged raw calls and compares complete bytes. Existing DIPLOG|1 P=0 gate remains exact.",
+    "Dev7 adds the offline full text contract, memory, runtime profile, token counts and trusted transport (diplomacy.player-engine). No live provider qualification yet. Test stubs are trusted in-process code, not a sandbox.",
+    "Dev7r1: delivery events/sequence IDs remain canonical sorted sender, but inbox presentation order uses each recipient own independently seeded list for that round, preserving the original messages within each sender group. New INBOX_ORDER records the actual ordered message IDs in each recipient inbox.",
+    "DIPLOG|3 supports seeded inbox order; DIPLOG|2 maintains the old alphabetical inbox policy for exact legacy replay. No additional PRNG draws or cap change.",
+    "Claude P2: received press counts as input tokens and can affect rivals’ efficiency tie-break. Await Tom ruling; no scoring change. P3 volume advantage remains legal and identical by seat."
+  ],
+  "procedure": [
+    "Read REQ-00006103, REQ-00006117, REQ-00006121 for controlling rules.",
+    "rexx tools/game.rex run SCRIPTED 7 press.log; rexx tools/game.rex replay press.log press-replay.log (new log paths).",
+    "sh tests/run.sh with ALCHEMY_REPO_ROOT and native r13196. Read evidence/PRESS-QUALIFICATION.md."
+  ],
+  "evidence": {
+    "category": "AUTOBUILDER_PASS",
+    "scope": "Step 6 private press, unchanged qualified referee; prior no-press byte-identical",
+    "package": "oorexx_diplomacy_v0.1-dev6",
+    "submission_id": "20261126T210329Z-CHATGPT-oorexx_diplomacy-v0.1-dev6-c16477",
+    "source_commit": "b02c8b00fbd772662f67b0cf883e70695bb72e0f",
+    "official_run": "20261126T210426Z-a105de33e80a-3311c333",
+    "tree_sha256": "a105de33e80ad56528ea047c768a9e159d078b0dcc8335480551faac7f0b8b92",
+    "assertions": 3650,
+    "referee_assertions": 3311,
+    "referee_positions": 232,
+    "game_assertions": 63,
+    "press_assertions": 276,
+    "failures": 0,
+    "lint_findings": 0,
+    "rules_sha256": "c0bd113e6965b2894ea65b568305ccf27b82b676e85ac95c82ed955f883cee04",
+    "independent_press_review": "PASS mechanics REQ-00006401 on dev6; P1 measured seat-order bias.",
+    "full_game": {
+      "mode": "SCRIPTED",
+      "seed": 7,
+      "phases": 125,
+      "press_calls": 1050,
+      "order_calls": 350,
+      "delivered_messages": 2100,
+      "bad_address_drops": 1050,
+      "invalid_orders": 0,
+      "byte_identical": true,
+      "sha256": "e33afd96a19ed8d7bf19d607304e2b1131b19551846c54e417dc7e9f5344d6ac"
+    },
+    "directed_game": {
+      "press_calls": 42,
+      "order_calls": 14,
+      "byte_identical": true,
+      "sha256": "4258862816cef26d85b47909329a01fb2d0c295f20a38405105f5acb2184f462"
+    },
+    "historical_no_press_hashes_unchanged": true
+  },
+  "seeded_order_qualification": {
+    "package": "oorexx_diplomacy_v0.1-dev7r1",
+    "assertions": 1123,
+    "failures": 0,
+    "quiet_mean_rank_range": [
+      3.382,
+      3.62
+    ],
+    "quiet_first_last_percentage_range": [
+      12.67,
+      22.33
+    ],
+    "full_game_years": 25,
+    "inbox_order_events": 1050,
+    "byte_identical": true,
+    "sha256": "cdb34587b601dc48685feaf4179deaefa07fb900cb0a7b7c872ef84cc732c472",
+    "loud_volume_share_each_seat_pct": 94.9,
+    "category": "AUTOBUILDER_PASS",
+    "official_run": "20261127T121401Z-548229668727-6bd2e9a7",
+    "reviewer_script_cross_check": {
+      "years": 25,
+      "scenarios": 8,
+      "finished": 8,
+      "press_calls_each": 1050,
+      "order_calls_each": 350,
+      "loud_share_pct": 94.9,
+      "bytes_per_opponent_order_inbox": 9552,
+      "bytes_per_press_inbox": 6368,
+      "no_real_models": true
+    }
+  }
+}

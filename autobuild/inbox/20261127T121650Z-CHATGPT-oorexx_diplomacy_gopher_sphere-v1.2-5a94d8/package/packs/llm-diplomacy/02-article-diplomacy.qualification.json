@@ -1,0 +1,122 @@
+{
+  "kind": "article",
+  "id": "diplomacy.qualification",
+  "version": "1.2",
+  "sphere": "llm-diplomacy",
+  "title": "Canonical referee pin, mutation audit and review follow-up",
+  "summary": "Dev4r5 closes F.28/F.29 with no production or rules change: 3311 assertions, 232 positions, 69000 fresh stress trials, 2621 paradox trials, zero failures. Independent dev4r4 PASS; original tools recovered.",
+  "invariants": [
+    "Latest qualification-only package dev4r5 ZIP SHA-256 3de1cc6d7d1f10589d7a1d945fba86936084ab1d0b6af134ed96b9e9bfa0ee49, ready commit 77db582eb885410a862f4bc67f909ccabb5b097d; production and rules exactly dev4r4.",
+    "Independent Claude REQ-00006189 applied to dev4; independent REQ-00006293 applied to dev4r4 (98000, zero failures, 1355 paradox trials). Dev4r5 production bytes identical. No separate independent review of dev4r5 packaging.",
+    "Replay regression index includes bad_last_order_holds, retreat-duplicate, winter-double-coast-build, CD-NAME-TIEBREAK and CD-NAME-CONTROL. Reverse directory insertion tests retain order-array ordering.",
+    "F.28/F.29 and reviewer tools recovered; original ZIP unavailable. Step 5 separate game controller now qualified; dev4r5 historic referee evidence remains pinned.",
+    "Addendum 7 REQ-00006219 establishes engine-specific profiles, invalid/timed-out expression void rules, precommitted control pool; not implemented. Exact runtime IDs and effort levels, equal-source-release wording and role disclosure remain to be settled.",
+    "Architecture Tom Dyer; implementation ChatGPT GPT-6.2; Claude Opus 5.5 rules and independent review; Meta Muse document-only comments. Report of Grok 4.1 Heavy review requires original evidence.",
+    "Architect audit REQ-00006235/REQ-00006237 and resolved convoy/support questions in audit-dev4r4/LITERAL-AUDIT.md. Other audited defaults unchanged."
+  ],
+  "evidence": {
+    "official_receipt": "autobuild/receipts/20261126T114545Z-CHATGPT-oorexx_diplomacy-v0.1-dev4r5-3de1cc.json",
+    "canonical_package": "packages/oorexx_diplomacy_v0.1-dev4r5",
+    "failures": 0,
+    "paradox_trials": 2621,
+    "audit_paths": [
+      "audit-dev4r5/CLAUDE-REQUALIFICATION.md",
+      "audit-dev4r5/STRESS-QUALIFICATION.md",
+      "audit-dev4r5/production-identity.sha256",
+      "audit-dev4r5/reviewer-recovered.sha256",
+      "packages/oorexx_diplomacy_v0.1-dev4r5/review/run-stress.sh",
+      "packages/oorexx_diplomacy_v0.1-dev4r5/review/run-claude-qualification.sh"
+    ],
+    "historical_dev4r2": {
+      "official_receipt": "autobuild/receipts/20261126T095905Z-CHATGPT-oorexx_diplomacy-v0.1-dev4r2-88755f.json",
+      "canonical_package": "packages/oorexx_diplomacy_v0.1-dev4r2",
+      "audit_script_sha256": "a54b8258b614d6d9e55016bba9efcf8c3e4d22f0626ef51552ae38c79bd332d0",
+      "mixed_seed": 261126,
+      "mixed_trials": 10000,
+      "convoy_seed": 261127,
+      "convoy_trials": 10000,
+      "failures": 0,
+      "paradox_trials": 1419,
+      "audit_paths": [
+        "audit/QUALIFICATION.md",
+        "audit/mutate.rex",
+        "audit/mixed.txt",
+        "audit/convoy.txt",
+        "audit/MANIFEST.sha256"
+      ]
+    },
+    "historical_dev4r3": {
+      "official_receipt": "autobuild/receipts/20261126T110154Z-CHATGPT-oorexx_diplomacy-v0.1-dev4r3-a77210.json",
+      "canonical_package": "packages/oorexx_diplomacy_v0.1-dev4r3",
+      "audit_script_sha256": "a54b8258b614d6d9e55016bba9efcf8c3e4d22f0626ef51552ae38c79bd332d0",
+      "mixed_seed": 261126,
+      "mixed_trials": 10000,
+      "convoy_seed": 261127,
+      "convoy_trials": 10000,
+      "failures": 0,
+      "paradox_trials": 1393,
+      "audit_paths": [
+        "audit-dev4r3/LITERAL-AUDIT.md",
+        "packages/oorexx_diplomacy_v0.1-dev4r3/review/literal-mutate.rex",
+        "packages/oorexx_diplomacy_v0.1-dev4r3/evidence/literal-stress-mixed.txt",
+        "packages/oorexx_diplomacy_v0.1-dev4r3/evidence/literal-stress-convoy.txt"
+      ]
+    },
+    "historical_dev4r4": {
+      "official_receipt": "autobuild/receipts/20261126T111728Z-CHATGPT-oorexx_diplomacy-v0.1-dev4r4-7fc89b.json",
+      "canonical_package": "packages/oorexx_diplomacy_v0.1-dev4r4",
+      "audit_script_sha256": "a54b8258b614d6d9e55016bba9efcf8c3e4d22f0626ef51552ae38c79bd332d0",
+      "mixed_seed": 261126,
+      "mixed_trials": 10000,
+      "convoy_seed": 261127,
+      "convoy_trials": 10000,
+      "failures": 0,
+      "paradox_trials": 1330,
+      "audit_paths": [
+        "audit-dev4r4/LITERAL-AUDIT.md",
+        "packages/oorexx_diplomacy_v0.1-dev4r4/review/literal-mutate.rex",
+        "packages/oorexx_diplomacy_v0.1-dev4r4/evidence/confirmed-stress-mixed.txt",
+        "packages/oorexx_diplomacy_v0.1-dev4r4/evidence/confirmed-stress-convoy.txt"
+      ]
+    },
+    "reviewer_recovered_sha256": {
+      "claude-datc-v3.4-sixth-order.txt": "0956db5200a1dfddfd0ebc18003a2060d55c8979ec9235a78974e21b3f01200f",
+      "fuzz.rex": "f2687454219e007e90b27300e1e1b8b866bd6addc144303422218d16479886af",
+      "mutate.rex": "58b031eb4fd8a1d800174f215f8092b487218ddfeceb8c7a3147fb76fd6d9e37"
+    },
+    "reviewer_requests": [
+      "REQ-00006293",
+      "REQ-00006295",
+      "REQ-00006297"
+    ],
+    "independent_dev4r4": {
+      "random_trials": 90000,
+      "mutation_trials": 8000,
+      "failures": 0,
+      "paradox_trials": 1355,
+      "interpreter": "Claude mirror-head ooRexx 5.3.0"
+    },
+    "supplemental_native": {
+      "random_trials": 30000,
+      "mutation_trials": 6000,
+      "failures": 0,
+      "paradox_trials": 1625,
+      "random_script_sha256": "896f22a01512c82920117053a938c8693103f47414d628d9f4ee8fa7223c4442",
+      "mutation_script_sha256": "cf5c7d80389b659ddafad0fec46f1a1f05551e1f6151212367fdbf28ac41a3ea"
+    },
+    "reviewer_native": {
+      "random_trials": 30000,
+      "mutation_trials": 3000,
+      "failures": 0,
+      "paradox_trials": 996,
+      "mixed_seed": 7,
+      "convoy_seed": 8,
+      "mutation_seed": 9
+    }
+  },
+  "procedure": [
+    "Read audit-dev4r5/CLAUDE-REQUALIFICATION.md, audit-dev4r5 reviewer and production identity hashes and package evidence. Historical audits retained.",
+    "Reproduce separate campaigns using exact dev4r5 on r13196: review/run-stress.sh and review/run-claude-qualification.sh.",
+    "See diplomacy.gameplay for dev5 game gate; engine IDs/effort and press integration remain open."
+  ]
+}
