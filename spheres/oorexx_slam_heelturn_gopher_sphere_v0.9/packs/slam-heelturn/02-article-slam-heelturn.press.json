@@ -1,0 +1,21 @@
+{
+ "kind": "article",
+ "id": "slam-heelturn.press",
+ "title": "Press: speech acts, tone, intent, writing",
+ "section": "language",
+ "version": "0.9",
+ "sphere": "slam-heelturn",
+ "authority": "implementation",
+ "summary": "Each sentence gets one speech act (PROMISE PROPOSAL REQUEST THREAT ACCEPT REFUSE ACCUSE THANKS APOLOGY GREETING QUESTION CLAIM) and yields commitments (NOMOVE MOVE SUPPORT HOLD NOATTACK ALLY), requests, threats with provinces, accusations, hearsay and board-checkable claims. Tone (HOSTILE FLATTERING PLEADING PRESSING FRIENDLY NEUTRAL), flags (OVERASSURED EMPTY_ASSURANCE HEDGED VAGUE TAKER) and intent (COERCE ACCUSE WEDGE COOPERATE ASK PROBE INFORM) are a separate layer from counts only. Writing realises chosen acts in a small fixed English the same reader reads back.",
+ "invariants": [
+  "Intent steers what Heel Turn says back; it never decides what Heel Turn believes.",
+  "Only the flags cross into Reasoned Thought, as STYLOMETRIC grounds.",
+  "Powers are written by name (England), places by code (ENG is the Channel).",
+  "Every writer sentence that commits must read back as that commitment (tests/press.rex).",
+  "v0.1r4 references (Boston Crab order_check.rex verdict policy, by concept, on the public board): CLEAR binds 'my army' / 'your fleet' to the one unit that can do what is asked; AMBIGUOUS (recipient's units) and WRITER AMBIGUOUS (writer's units) bind nothing and Heel Turn asks 'Which of my/your units do you mean for X?'; NO REFERENT on the writer's own unit binds it to no unit, so the promise cannot be done. NOT VISIBLE and MEANS DIFFERENT THINGS need private sight and cannot arise on a public board.",
+  "v0.1r8: a question to Heel Turn about its own play is an ASK, not a request: MOVE P (move/attack/take with a province), ATTACK power (me/us = the sender), PLANS [P] (a what/where/which question naming a plan, move or attack, or ending on do). Support and keep-out questions stay requests; a question with a condition is not answered as if unconditional.",
+  "Answers come from the plan under the honesty setting (heelTurnAnswerChoice): not doing it -> a promise I mean, which binds my orders; doing it, not against the asker -> told when openness >= 0.5 to a non-enemy, else declined; doing it against the asker -> a lie only where honesty allows (MYLIE), else declined. A question about my own province is answered with my unit's move or hold, never a promise to stay out of my own ground. Third powers: declined. Decline: 'I will not say what I plan for P.' commits to nothing. Each question answered once per phase.",
+  "v0.1r8 fault fixed: a negated acceptance ('I cannot agree to a DMZ in GAL') read as ACCEPT with a NOMOVE commitment, so every refused DMZ was recorded as agreed, then as a lie. It is now REFUSE.",
+  "Log readers: EVENT|TOLD_LIE X names the power the lie was told to, in the liar's own call."
+ ]
+}
