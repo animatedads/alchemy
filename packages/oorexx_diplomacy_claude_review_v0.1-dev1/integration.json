@@ -1,0 +1,19 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {"name": "oorexx_diplomacy_claude_review", "version": "0.1-dev1", "kind": "oorexx"},
+  "working_directory": ".",
+  "environment": {
+    "set": {
+      "DIPLOMACY_ENGINE_ROOT": "${REPO_ROOT}/packages/oorexx_diplomacy_v0.1-dev5",
+      "OOREXX_LOGGING_ROOT": "${REPO_ROOT}/packages/oorexx_logging_v0.7",
+      "OOREXX_SOURCE_EDITOR_ROOT": "${REPO_ROOT}/packages/oorexx_source_editor_v0.1-dev9",
+      "ALCHEMY_REPO_ROOT": "${REPO_ROOT}"
+    },
+    "require_dirs": ["DIPLOMACY_ENGINE_ROOT", "OOREXX_LOGGING_ROOT", "OOREXX_SOURCE_EDITOR_ROOT"],
+    "report": ["DIPLOMACY_ENGINE_ROOT", "OOREXX_LOGGING_ROOT", "OOREXX_SOURCE_EDITOR_ROOT", "ALCHEMY_REPO_ROOT"]
+  },
+  "tests": [
+    {"name": "independent-review-checks", "argv": ["sh", "tests/run.sh"], "timeout_seconds": 900}
+  ],
+  "publish": {"tree": {"source": ".", "path": "packages/oorexx_diplomacy_claude_review_v0.1-dev1"}}
+}
