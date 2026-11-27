@@ -1,0 +1,716 @@
+# lexicon.src - English labels pointing at concepts (Boston Crab house format).
+#   label | pos | ^concept | feats (k=v;k=v)
+# pos: act obj qual cond time tone negverb condword force subj filler
+# A label may be several words; the longest label wins. The reader also
+# tries simple endings (s es ed ing ies, doubled last letter) before a word
+# is called unread. The first label listed for a concept+pos is the one the
+# realiser says. Closed-class words (not, will, you, and, the, ...) come from
+# the Librarian's grammar (LibrarianGrammar~installBuiltins), not from here.
+#
+# --- attack ---
+attack|act|^attack|
+invade|act|^attack|
+assault|act|^attack|
+strike|act|^attack|
+hit|act|^attack|
+take|act|^attack|
+seize|act|^attack|
+capture|act|^attack|
+conquer|act|^attack|
+grab|act|^attack|
+crush|act|^attack|
+destroy|act|^attack|
+eliminate|act|^attack|
+go after|act|^attack|
+push into|act|^attack|
+move against|act|^attack|
+pressure|act|^attack|
+squeeze|act|^attack|
+fight|act|^attack|
+war|act|^attack|
+offensive|act|^attack|
+aggression|act|^attack|
+target|act|^attack|
+# --- defend ---
+defend|act|^defend|
+protect|act|^defend|
+guard|act|^defend|
+secure|act|^defend|
+cover|act|^defend|
+keep safe|act|^defend|
+shield|act|^defend|
+defence|act|^defend|
+defense|act|^defend|
+defensive|qual|^cautious|
+hold|act|^hold|
+stay|act|^hold|
+wait|act|^hold|
+sit|act|^hold|
+stand|act|^hold|
+# --- support ---
+support|act|^support|
+back|act|^support|
+help|act|^support|
+assist|act|^support|
+aid|act|^support|
+# --- alliance ---
+ally|act|^ally|
+allies|obj|^ally-power|
+ally with|act|^ally|
+team up|act|^ally|
+cooperate|act|^ally|
+co-operate|act|^ally|
+work with|act|^ally|
+work together|act|^ally|
+befriend|act|^ally|
+partner|act|^ally|
+join forces|act|^ally|
+coordinate|act|^ally|
+form|act|^ally|
+make friends|act|^ally|
+# --- betrayal ---
+stab|act|^betray|
+backstab|act|^betray|
+back-stab|act|^betray|
+stab in the back|act|^betray|
+betray|act|^betray|
+betrayal|act|^betray|
+double-cross|act|^betray|
+double cross|act|^betray|
+turn on|act|^betray|
+turn against|act|^betray|
+break the alliance|act|^betray|
+abandon|act|^betray|
+switch sides|act|^betray|
+# --- lying ---
+lie|act|^lie|
+lies|act|^lie|
+lying|act|^lie|
+deceive|act|^lie|
+deception|act|^lie|
+mislead|act|^lie|
+bluff|act|^lie|
+trick|act|^lie|
+fool|act|^lie|
+fib|act|^lie|
+misdirect|act|^lie|
+feint|act|^lie|
+manipulate|act|^lie|
+deceptive|qual|^deceptive|
+cunning|qual|^deceptive|
+sly|qual|^deceptive|
+sneaky|qual|^deceptive|
+devious|qual|^deceptive|
+ruthless|qual|^aggressive|
+# --- truth ---
+tell the truth|act|^truth|
+be truthful|act|^truth|
+truthful|qual|^honest|
+honest|qual|^honest|
+honesty|qual|^honest|
+sincere|qual|^honest|
+frank|qual|^honest|
+candid|qual|^honest|
+transparent|qual|^honest|
+straightforward|qual|^honest|
+reliable|qual|^loyal|
+loyal|qual|^loyal|
+faithful|qual|^loyal|
+dependable|qual|^loyal|
+trustworthy|qual|^loyal|
+# --- trust ---
+trust|act|^trust|
+believe|act|^trust|
+rely on|act|^trust|
+count on|act|^trust|
+take at face value|act|^trust|
+# --- distrust ---
+distrust|act|^distrust|
+mistrust|act|^distrust|
+suspect|act|^distrust|
+doubt|act|^distrust|
+be wary|act|^distrust|
+wary|qual|^cautious|
+verify|act|^distrust|
+check|act|^distrust|
+test|act|^distrust|
+watch|act|^distrust|
+watch out|act|^distrust|
+be careful|act|^distrust|
+sceptical|qual|^cautious|
+skeptical|qual|^cautious|
+suspicious|qual|^cautious|
+# --- promises ---
+promise|act|^promise|
+commit|act|^promise|
+commitment|obj|^promise|
+pledge|act|^promise|
+guarantee|act|^promise|
+swear|act|^promise|
+vow|act|^promise|
+word|obj|^promise|
+agreement|obj|^deal|
+agreements|obj|^deal|
+keep|act|^keep|
+honour|act|^keep|
+honor|act|^keep|
+fulfil|act|^keep|
+fulfill|act|^keep|
+stick to|act|^keep|
+break|act|^break|
+renege|act|^break|
+go back on|act|^break|
+# --- growth ---
+expand|act|^expand|
+grow|act|^expand|
+gain|act|^expand|
+acquire|act|^expand|
+claim|act|^expand|
+win|act|^win|
+solo|obj|^game|
+victory|obj|^game|
+dominate|act|^win|
+survive|act|^survive|
+stay alive|act|^survive|
+build|act|^build|
+build up|act|^build|
+# --- movement ---
+move|act|^move|
+go|act|^move|
+advance|act|^move|
+march|act|^move|
+sail|act|^move|
+enter|act|^move|
+head|act|^move|
+send|act|^move|
+retreat|act|^move|
+convoy|act|^convoy|
+# --- speech ---
+talk|act|^talk|
+message|act|^talk|
+messages|obj|^message|
+press|obj|^message|
+diplomacy|obj|^message|
+negotiate|act|^talk|
+negotiation|act|^talk|
+communicate|act|^talk|
+write|act|^talk|
+contact|act|^talk|
+reach out|act|^talk|
+chat|act|^talk|
+correspond|act|^talk|
+discuss|act|^talk|
+reply|act|^talk|
+respond|act|^talk|
+answer|act|^talk|
+share|act|^tell|
+tell|act|^tell|
+inform|act|^tell|
+say|act|^tell|
+explain|act|^tell|
+reveal|act|^tell|
+warn|act|^tell|
+propose|act|^propose|
+proposal|act|^propose|
+suggest|act|^propose|
+how about|act|^propose|
+lets|act|^propose|
+let us|act|^propose|
+shall we|act|^propose|
+why not|act|^propose|
+offer|act|^offer|
+ask|act|^ask|
+request|act|^request|
+please|act|^request|
+demand|act|^request|
+threaten|act|^threaten|
+threat|act|^threaten|
+or else|act|^threaten|
+regret|act|^threaten|
+accept|act|^accept|
+agree|act|^accept|
+agreed|act|^accept|
+deal|act|^accept|
+yes|act|^accept|
+sure|act|^accept|
+sounds good|act|^accept|
+refuse|act|^refuse|
+reject|act|^refuse|
+decline|act|^refuse|
+thank|act|^thank|
+thanks|act|^thank|
+grateful|act|^thank|
+appreciate|act|^thank|
+sorry|act|^apologise|
+apologise|act|^apologise|
+apologize|act|^apologise|
+apology|act|^apologise|
+accuse|act|^accuse|
+lied|act|^accuse|
+betrayed|cond|^betrayed|
+hello|act|^greet|
+greetings|act|^greet|
+hi|act|^greet|
+silent|qual|^brief|
+quiet|act|^silence|
+ignore|act|^silence|
+# --- other acts ---
+punish|act|^punish|
+retaliate|act|^punish|
+revenge|act|^punish|
+avenge|act|^punish|
+get back at|act|^punish|
+make them pay|act|^punish|
+forgive|act|^forgive|
+forget|act|^forgive|
+second chance|act|^forgive|
+balance|act|^balance|
+contain|act|^balance|
+stop|act|^balance|
+gang up on|act|^balance|
+gang up|act|^balance|
+check the leader|act|^balance|
+expect|act|^expect|
+assume|act|^expect|
+anticipate|act|^expect|
+beware|act|^expect|
+plan|act|^plan|
+plans|obj|^plan-obj|
+think ahead|act|^plan|
+remember|act|^remember|
+record|act|^remember|
+note|act|^remember|
+track|act|^remember|
+be|act|^be|
+play|act|^be|
+act|act|^be|
+remain|act|^be|
+know|act|^know|
+want|act|^want|
+wants|act|^want|
+need|act|^need|
+# --- negating verbs: carry not into the act after them ---
+avoid|negverb|^act|
+refrain from|negverb|^act|
+hesitate|negverb|^act|
+afraid|negverb|^act|
+reluctant|negverb|^act|
+stop|negverb|^act|
+without|negverb|^act|
+no one|negverb|^act|
+nobody|negverb|^act|
+# --- powers as kinds ---
+neighbour|obj|^neighbour|
+neighbours|obj|^neighbour|
+neighbor|obj|^neighbour|
+neighbors|obj|^neighbour|
+neighbouring|obj|^neighbour|
+neighboring|obj|^neighbour|
+adjacent|obj|^neighbour|
+bordering|obj|^neighbour|
+nearby|obj|^neighbour|
+next to you|obj|^neighbour|
+near|obj|^neighbour|
+distant|obj|^distant|
+far|obj|^distant|
+faraway|obj|^distant|
+far away|obj|^distant|
+remote|obj|^distant|
+other side of the board|obj|^distant|
+leader|obj|^leader|
+leading|obj|^leader|
+strongest|obj|^leader|
+biggest|obj|^leader|
+largest|obj|^leader|
+front-runner|obj|^leader|
+frontrunner|obj|^leader|
+runaway|obj|^leader|
+whoever leads|obj|^leader|
+weakest|obj|^weakest|
+smallest|obj|^weakest|
+struggling|obj|^weakest|
+weaker|obj|^weakest|
+enemy|obj|^enemy-power|
+enemies|obj|^enemy-power|
+rival|obj|^enemy-power|
+rivals|obj|^enemy-power|
+foe|obj|^enemy-power|
+attacker|obj|^enemy-power|
+anyone|obj|^others|
+everyone|obj|^others|
+everybody|obj|^others|
+others|obj|^others|
+other players|obj|^others|
+other powers|obj|^others|
+opponents|obj|^others|
+opponent|obj|^others|
+players|obj|^others|
+powers|obj|^others|
+power|obj|^power|
+player|obj|^power|
+friend|obj|^ally-power|
+friends|obj|^ally-power|
+partner|obj|^ally-power|
+partners|obj|^ally-power|
+yourself|obj|^self|
+# --- things ---
+supply centre|obj|^centre|
+supply center|obj|^centre|
+supply centres|obj|^centre|
+supply centers|obj|^centre|
+centre|obj|^centre|
+center|obj|^centre|
+centres|obj|^centre|
+centers|obj|^centre|
+sc|obj|^centre|
+scs|obj|^centre|
+dots|obj|^centre|
+dot|obj|^centre|
+territory|obj|^centre|
+neutral|obj|^neutral|
+neutrals|obj|^neutral|
+unowned|obj|^neutral|
+unclaimed|obj|^neutral|
+home|obj|^home|
+homeland|obj|^home|
+home centres|obj|^home|
+home centers|obj|^home|
+fleet|obj|^fleet|
+fleets|obj|^fleet|
+navy|obj|^fleet|
+army|obj|^army|
+armies|obj|^army|
+unit|obj|^unit|
+units|obj|^unit|
+sea|obj|^sea|
+seas|obj|^sea|
+ocean|obj|^sea|
+land|obj|^land|
+border|obj|^border|
+borders|obj|^border|
+frontier|obj|^border|
+dmz|obj|^dmz|
+demilitarised zone|obj|^dmz|
+demilitarized zone|obj|^dmz|
+demilitarised|obj|^dmz|
+demilitarized|obj|^dmz|
+alliance|obj|^alliance|
+alliances|obj|^alliance|
+pact|obj|^alliance|
+non-aggression|obj|^alliance|
+truce|obj|^alliance|
+peace|obj|^alliance|
+position|obj|^position|
+game|obj|^game|
+orders|obj|^order|
+order|obj|^order|
+# --- qualities ---
+aggressive|qual|^aggressive|
+aggressively|qual|^aggressive|
+bold|qual|^aggressive|
+boldly|qual|^aggressive|
+attacking|qual|^aggressive|
+ambitious|qual|^aggressive|
+greedy|qual|^aggressive|
+cautious|qual|^cautious|
+cautiously|qual|^cautious|
+careful|qual|^cautious|
+carefully|qual|^cautious|
+safe|qual|^cautious|
+conservative|qual|^cautious|
+patient|qual|^patient|
+patiently|qual|^patient|
+flexible|qual|^flexible|
+pragmatic|qual|^flexible|
+opportunistic|qual|^flexible|
+friendly|qual|^friendly|
+polite|qual|^friendly|
+politely|qual|^friendly|
+warm|qual|^friendly|
+kind|qual|^friendly|
+courteous|qual|^friendly|
+charming|qual|^friendly|
+nice|qual|^friendly|
+hostile|qual|^hostile|
+rude|qual|^hostile|
+blunt|qual|^hostile|
+brief|qual|^brief|
+short|qual|^brief|
+concise|qual|^brief|
+terse|qual|^brief|
+detailed|qual|^verbose|
+long|qual|^verbose|
+verbose|qual|^verbose|
+chatty|qual|^verbose|
+persuasive|qual|^verbose|
+# --- conditions ---
+weak|cond|^weak|
+vulnerable|cond|^weak|
+exposed|cond|^weak|
+overextended|cond|^weak|
+distracted|cond|^weak|
+strong|cond|^strong|
+threatening|cond|^strong|
+attacked|cond|^attacked|
+betrays you|cond|^betrayed|
+broke|cond|^betrayed|
+broken|cond|^betrayed|
+gains|cond|^gain|
+wins you|cond|^gain|
+worth it|cond|^gain|
+profitable|cond|^gain|
+pays off|cond|^gain|
+necessary|cond|^needed|
+needed|cond|^needed|
+must|cond|^needed|
+outnumbered|cond|^outnumbered|
+# --- time scope ---
+early|time|^early|
+opening|time|^early|
+first year|time|^early|
+start|time|^early|
+beginning|time|^early|
+late|time|^late|
+endgame|time|^late|
+end game|time|^late|
+later|time|^late|
+eventually|time|^late|
+now|time|^now|
+immediately|time|^now|
+this turn|time|^now|
+this season|time|^now|
+next turn|time|^next|
+next season|time|^next|
+next year|time|^next|
+# --- words that set when a sentence is a condition ---
+if|condword|^cond|
+when|condword|^cond|
+whenever|condword|^cond|
+unless|condword|^cond|polar=neg
+once|condword|^cond|
+until|condword|^cond|
+as soon as|condword|^cond|
+only if|condword|^cond|
+only when|condword|^cond|
+# --- force and frequency ---
+always|force|^always|force=1.0
+never|force|^always|force=1.0;polar=neg
+must|force|^always|force=1.0
+have to|force|^always|force=1.0
+need to|force|^always|force=1.0
+should|force|^time|force=0.7
+try|force|^time|force=0.7
+try to|force|^time|force=0.7
+prefer|force|^time|force=0.7
+aim to|force|^time|force=0.7
+generally|force|^time|force=0.7
+usually|force|^time|force=0.7
+often|force|^time|force=0.7
+sometimes|force|^time|force=0.4
+consider|force|^time|force=0.4
+occasionally|force|^time|force=0.4
+rarely|force|^time|force=0.6;polar=neg
+seldom|force|^time|force=0.6;polar=neg
+very|force|^time|scale=1.25
+highly|force|^time|scale=1.25
+extremely|force|^time|scale=1.25
+slightly|force|^time|scale=0.5
+somewhat|force|^time|scale=0.5
+a little|force|^time|scale=0.5
+# --- tone markers for press ---
+trust me|tone|^assurance|
+believe me|tone|^assurance|
+honestly|tone|^assurance|
+i swear|tone|^assurance|
+i promise|tone|^assurance|
+you have my word|tone|^assurance|
+on my honour|tone|^assurance|
+on my honor|tone|^assurance|
+i guarantee|tone|^assurance|
+absolutely|tone|^assurance|
+definitely|tone|^assurance|
+100%|tone|^assurance|
+maybe|tone|^hedge|
+perhaps|tone|^hedge|
+possibly|tone|^hedge|
+probably|tone|^hedge|
+i think|tone|^hedge|
+might|tone|^hedge|
+likely|tone|^hedge|
+hopefully|tone|^hedge|
+for now|tone|^hedge|
+we will see|tone|^hedge|
+dear|tone|^warm|
+friend|tone|^warm|
+glad|tone|^warm|
+happy|tone|^warm|
+pleasure|tone|^warm|
+together|tone|^warm|
+mutual|tone|^warm|
+best|tone|^warm|
+great|tone|^flattery|
+brilliant|tone|^flattery|
+wise|tone|^flattery|
+impressive|tone|^flattery|
+excellent|tone|^flattery|
+genius|tone|^flattery|
+smart|tone|^flattery|
+fool|tone|^cold|
+stupid|tone|^cold|
+idiot|tone|^cold|
+pathetic|tone|^cold|
+traitor|tone|^cold|
+liar|tone|^cold|
+regret|tone|^cold|
+last chance|tone|^urgency|
+right now|tone|^urgency|
+urgent|tone|^urgency|
+urgently|tone|^urgency|
+quickly|tone|^urgency|
+asap|tone|^urgency|
+before it is too late|tone|^urgency|
+worried|tone|^fear|
+afraid|tone|^fear|
+scared|tone|^fear|
+desperate|tone|^fear|
+help me|tone|^fear|
+# --- subjects that are not the player ---
+they|subj|^others|
+them|subj|^others|
+their|subj|^others|
+other|subj|^others|
+# --- words read and carrying nothing ---
+game|filler|^thing|
+turn|filler|^thing|
+season|filler|^thing|
+year|filler|^thing|
+goal|filler|^thing|
+strategy|filler|^thing|
+approach|filler|^thing|
+style|filler|^thing|
+role|filler|^thing|
+player|filler|^thing|
+diplomat|filler|^thing|
+good|filler|^thing|
+just|filler|^thing|
+also|filler|^thing|
+then|filler|^thing|
+only|filler|^thing|
+make|filler|^thing|
+sure|filler|^thing|
+get|filler|^thing|
+able|filler|^thing|
+it|filler|^thing|
+is|filler|^thing|
+are|filler|^thing|
+am|filler|^thing|
+was|filler|^thing|
+were|filler|^thing|
+been|filler|^thing|
+do|filler|^thing|
+does|filler|^thing|
+did|filler|^thing|
+have|filler|^thing|
+has|filler|^thing|
+had|filler|^thing|
+there|filler|^thing|
+here|filler|^thing|
+than|filler|^thing|
+more|filler|^thing|
+most|filler|^thing|
+much|filler|^thing|
+any|filler|^thing|
+own|filler|^thing|
+first|filler|^thing|
+too|filler|^thing|
+even|filler|^thing|
+still|filler|^thing|
+already|filler|^thing|
+again|filler|^thing|
+up|filler|^thing|
+out|filler|^thing|
+off|filler|^thing|
+way|filler|^thing|
+time|filler|^thing|
+times|filler|^thing|
+chance|filler|^thing|
+lot|filler|^thing|
+lots|filler|^thing|
+things|filler|^thing|
+thing|filler|^thing|
+one|filler|^thing|
+ones|filler|^thing|
+two|filler|^thing|
+three|filler|^thing|
+everything|filler|^thing|
+something|filler|^thing|
+nothing|negverb|^act|
+possible|filler|^thing|
+important|filler|^thing|
+key|filler|^thing|
+well|filler|^thing|
+like|filler|^thing|
+around|filler|^thing|
+toward|filler|^thing|
+towards|filler|^thing|
+into|filler|^thing|
+ok|act|^accept|
+okay|act|^accept|
+ally|obj|^ally-power|
+e.g|filler|^thing|
+i.e|filler|^thing|
+etc|filler|^thing|
+leave|act|^move|
+abandon your|act|^move|
+garrison|act|^defend|
+consistent|qual|^loyal|
+waste time on|negverb|^act|
+promise|obj|^promise|
+flatter|act|^praise|
+praise|act|^praise|
+compliment|act|^praise|
+trap|act|^lie|
+pick|act|^ally|
+choose|act|^ally|
+stay out of|act|^keep-out|
+keep out of|act|^keep-out|
+stay away from|act|^keep-out|
+keep away from|act|^keep-out|
+leave empty|act|^keep-out|
+leave alone|act|^keep-out|
+move against|act|^attack|
+go for|act|^attack|
+going to|force|^always|force=0.9
+intend to|force|^always|force=0.9
+plan to|force|^always|force=0.8
+will be|force|^always|force=1.0
+plans against|act|^attack|
+designs on|act|^attack|
+intentions against|act|^attack|
+before|condword|^cond|order=1
+after|condword|^cond|order=1
+few|force|^time|force=0.6;polar=neg
+fewer|force|^time|force=0.6;polar=neg
+little|force|^time|force=0.6;polar=neg
+cold|qual|^hostile|
+coldly|qual|^hostile|
+plead|act|^praise|
+beg|act|^praise|
+grovel|act|^praise|
+hold|obj|^hold|
+move|obj|^move|
+stab|obj|^betray|
+attack|obj|^attack|
+attacking|act|^attack|
+# --- v0.1r6: judging by orders, not mail (words only where the sentence then reads as meant) ---
+judge|act|^distrust|
+mail|obj|^message|
+mails|obj|^message|
+explanation|obj|^message|
+explanations|obj|^message|
+published|filler|^thing|
+verbatim|filler|^thing|
+outcome|filler|^thing|
+outcomes|filler|^thing|
+claim|obj|^message|
+claims|obj|^message|
