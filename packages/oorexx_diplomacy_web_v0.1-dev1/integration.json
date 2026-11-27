@@ -1,0 +1,32 @@
+{
+  "schema": "alchemy.autobuild.integration/0.3",
+  "package": {
+    "name": "oorexx_diplomacy_web",
+    "version": "0.1-dev1",
+    "kind": "oorexx"
+  },
+  "tests": [
+    {
+      "name": "diplomacy-web-native-security",
+      "argv": [
+        "sh",
+        "tests/run.sh"
+      ],
+      "timeout_seconds": 120,
+      "environment": {
+        "set": {
+          "OOREXX_CRYPTO_ROOT": "${REPO_ROOT}/packages/oorexx_crypto_v0.8.3"
+        },
+        "require_dirs": [
+          "OOREXX_CRYPTO_ROOT"
+        ]
+      }
+    }
+  ],
+  "publish": {
+    "tree": {
+      "source": ".",
+      "path": "packages/oorexx_diplomacy_web_v0.1-dev1"
+    }
+  }
+}

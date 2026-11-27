@@ -1,0 +1,33 @@
+/* Loopback fixture edge only. Production uses owned ooRexx HTTPS. */
+import http from 'node:http';
+import fs from 'node:fs';
+import path from 'node:path';
+import {fileURLToPath,pathToFileURL} from 'node:url';
+const here=path.dirname(fileURLToPath(import.meta.url));
+const root=path.resolve(here,'../web');
+const estate=process.env.WIRE_ESTATE;
+const gateway=path.resolve(estate,'oorexx_queue_fabric_web_gateway_v0.2/node');
+const {QueueBackendClient}=await import(pathToFileURL(path.join(gateway,'queue-backend-client.mjs')));
+const {QueueFabricWebSocketEdge}=await import(pathToFileURL(path.join(gateway,'websocket-edge.mjs')));
+const host='127.0.0.1';
+const edge=new QueueFabricWebSocketEdge({backend:new QueueBackendClient({host,port:+process.argv[2],bridgeToken:'fixture-loopback-only'}),inboundQueue:'WIREUI.IN.AP1',host,port:0,path:'/wire-ui',pollMs:10});
+await edge.start();
+const jsRoot=path.resolve(estate,'alchemy_wire_ui_js_v0.4-dev6');
+const web=http.createServer((req,res)=>{
+ const url=new URL(req.url,'http://localhost');
+ const send=(code,data,type='text/plain')=>{res.writeHead(code,{'content-type':type,'cache-control':'no-store','x-content-type-options':'nosniff'});res.end(data)};
+ if(req.method!=='GET')return send(405,'Read only front');
+ if(url.pathname==='/wire-ui/bootstrap')return send(200,JSON.stringify({moduleUrl:'/wire-js/src/index.js',gatewayUrl:'ws://'+host+':'+edge.port+'/wire-ui',outboundQueue:'WIREUI.IN.AP1',siteId:'DIPLOMACY_FIXTURE',ownership:{applicationId:'DIPLOMACY',sessionId:'S1',accessPointId:'AP1'}}),'application/json');
+ const isJS=url.pathname.startsWith('/wire-js/');
+ const base=isJS?jsRoot:root;
+ const rel=isJS?url.pathname.slice(9):url.pathname==='/'?'index.html':url.pathname.slice(1);
+ const file=path.resolve(base,rel);
+ if(!file.startsWith(base+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return send(404,'Not found');
+ const type=file.endsWith('.js')?'text/javascript':file.endsWith('.css')?'text/css':'text/html';
+ send(200,fs.readFileSync(file),type+'; charset=utf-8');
+});
+await new Promise(r=>web.listen(0,host,r));
+fs.writeFileSync(process.argv[3],String(web.address().port));
+console.log('DIPLOMACY_WEB_READY http://'+host+':'+web.address().port);
+const stop=async()=>{await edge.stop();web.close();process.exit(0)};
+process.on('SIGTERM',stop);process.on('SIGINT',stop);
