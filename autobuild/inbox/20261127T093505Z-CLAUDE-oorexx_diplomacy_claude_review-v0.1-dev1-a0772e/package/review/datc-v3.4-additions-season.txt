@@ -1,0 +1,37 @@
+# Independent review fixtures: season cases. Written by Claude (Opus 5.5) from DATC v3.4.
+#
+# 6.H.16 (v3.4) No coastal crawl escape from Portugal: dislodged, no retreat possible.
+CASE 6.H.16-v3.4 RETREAT
+UNIT ENG F POR
+MOVE ENG F POR H
+UNIT FRA F SPA/SC
+MOVE FRA F SPA/SC - POR
+UNIT FRA F MAO
+MOVE FRA F MAO S F SPA/SC - POR
+ORDER ENG F POR R SPA/NC
+EXPECT REMOVED POR
+EXPECT AT SPA -
+EXPECT AT POR FRA F POR
+EXPECT COUNT 2
+END
+# DATC 4.D.8 tie-break: equal distance, both fleets -> alphabetical by English province
+# NAME. "Marseilles" sorts before "Mid-Atlantic Ocean"; codes sort the other way
+# (MAO < MAR). DATC removes F Marseilles.
+CASE CD-NAME-TIEBREAK ADJUSTMENT
+OWN SPA FRA
+UNIT FRA F MAO
+UNIT FRA F MAR
+EXPECT REMOVED MAR
+EXPECT AUTOCOUNT 1
+EXPECT COUNT 1
+END
+# Control: armies at equal distance where name order and code order agree
+# (Trieste < Tyrolia, TRI < TYR). Must remove A Trieste under either reading.
+CASE CD-NAME-CONTROL ADJUSTMENT
+OWN VEN ITA
+UNIT ITA A TRI
+UNIT ITA A TYR
+EXPECT REMOVED TRI
+EXPECT AUTOCOUNT 1
+EXPECT COUNT 1
+END
