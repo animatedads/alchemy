@@ -1,0 +1,21 @@
+{
+ "kind": "article",
+ "id": "slam-heelturn.testimony",
+ "title": "Testimony policies and the workload tie-break (v0.1r5)",
+ "section": "truth",
+ "version": "0.9",
+ "sphere": "slam-heelturn",
+ "authority": "project-continuity",
+ "summary": "Tom Dyer's v0.1r5 decisions: Boston Crab testimony policies on the board, and SLAM token counts as processing time.",
+ "invariants": [
+  "Decided (Tom Dyer, 27 Nov 2026): SELF-SERVING, ACCOMPLICE and IMPEACHMENT are relevant, especially late game. Each is an UNDERCUT at TESTIMONY tier: the ground is quarantined, the promise DISPUTED, CANNOT TELL, played as if not made.",
+  "IMPEACHMENT: a power with a documented lie in the last impeachment_years (2) has every other claim undercut, promises and hearsay.",
+  "ACCOMPLICE (Tom Dyer's definition): two or more powers seen acting in unison who then present in unison to a party, or present a conflicting picture when the board shows cooperation (such as fleet convoy behaviour). Acting in unison is read from the published orders only: one power supporting or convoying another's unit (COOP memory lines). Present in unison: the same promise or the same warning to me in the same phase. Conflicting: one warns of the other as a threat while the orders show them cooperating.",
+  "SELF-SERVING: a promise not to take one of my centres from a power that can reach it, or not to attack me from a power touching my ground, from self_serving_from_year (1907) or with the sender at self_serving_solo_near (14) centres or more. Earlier it would leave every neighbour CANNOT TELL.",
+  "PARTIALITY (hearsay from a non-ally against a third power) and AGAINST-INTEREST (an announced move into my ground: noted, never upgraded) as before.",
+  "Thresholds live in data/testimony.src. Each policy's reason is kept beside the combiner's verdict (TESTIMONY_POLICY log lines; slam_reply 'policy:' lines), because the Reasoned Thought why-trail lists grounds, not undercut notes.",
+  "Heel Turn writes no warnings about a third power, so in a Heel-Turn-only game ACCOMPLICE has nothing to test; truth test 16 covers it. It meets real warnings once Haiku or Sol runners play.",
+  "Decided (Tom Dyer, 27 Nov 2026): for a SLAM the token count is total SLAM processing time, effectively workload over the SLAM unit. INPUT_TOKENS = microseconds reading the call, OUTPUT_TOKENS = microseconds planning and writing. Identity SLAM|heelturn-0.1r5|deterministic|us|0. Figures go to the operator audit only, never the replay journal or Heel Turn log. Wall-clock inside invoke: a series compares only across the same kind of host.",
+  "v0.1r5 fault fixed: the memory loader demanded 13 fields on OUT lines where 12 are written, so every promise Heel Turn made was dropped at the next call and never constrained its orders (Austria 1902 Fall promised to support F BLA - RUM, ordered A BUD H). Since v0.1 the honest prompts broke their word without choosing to. Fixed; truth test 19 fails on the old loader. Seven-seat game to 1908: COOPERATION 0 -> 42 events."
+ ]
+}
