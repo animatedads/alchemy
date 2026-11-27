@@ -1,0 +1,23 @@
+{
+ "kind": "article",
+ "id": "slam-heelturn.prompt",
+ "title": "Reading a designer prompt",
+ "section": "language",
+ "version": "0.8",
+ "sphere": "slam-heelturn",
+ "authority": "implementation",
+ "summary": "data/concepts.src and data/lexicon.src (Boston Crab house format) map words and phrases to concepts; closed-class roles come from LibrarianGrammar~installBuiltins. data/policy.src maps act|object to setting|weight, most exact rule first. A directive carries polarity (not, never, avoid; double negatives cancel), force (must 1.0, should 0.7, may 0.4), an optional condition (if, when, unless -> weak, betrayed, attacked, gain, needed, leader, or its opposite) and a time (early, late) for stance settings. Statements about others raise suspicion and are not licences. Sentences that move no setting are listed as not read.",
+ "invariants": [
+  "Never guess an unread sentence; list it (policy~notRead) and log it.",
+  "Prompts need not name powers or provinces; the reader works on kinds (ally, neighbour, leader, weakest, centre, neutral, home).",
+  "Coverage grows by adding words to lexicon.src, never by heuristics on strings.",
+  "v0.1r1: a misread is silent, only an unread sentence is listed. Designers check a prompt with: rexx tools/read_prompt.rex PROMPT_FILE (each sentence READ with the settings it moved and the condition, or NOT READ with the unknown words). Give it to all seven designers at once.",
+  "v0.1r1 fixes: relative clauses and a new subject after the act are not directives; before/after set no condition; a negative quantity on the object turns the act down (send few messages); keeps a promise is the kept condition; after avoid the word is the act it negates; weak/strong in the object name weakest/leader; bare build moves expand.",
+  "There is no settings channel: the prompt is prose only. A designer who wants a setting writes the directive that moves it.",
+  "Decided (Tom Dyer, 27 Nov 2026, on Meta Muse's recommendation): each policy.src rule (act|object as policy.src has it) moves a setting once per condition over the whole prompt; the strongest wording wins; equal and opposite wordings cancel. Repetition and prompt length are not strength. Before v0.1r6 repeats added up and a long prompt saturated settings (Muse's 119-sentence run: nine at 1.00, two at 0.00).",
+  "read_prompt (v0.1r6) shows each hit as COUNTED, REPEAT or CANCELLED from one read of the whole prompt, as the engine reads it. Every designer's prompt must be re-run after v0.1r6.",
+  "v0.1r6 reader rules: an act word beside a finite be (is/are/was/were) or in its -s form is a noun or a description, never an order (at a clause head it makes the clause a description); a not in a condition region counts only in the clause that names the condition; 'X and nothing else' (X not a power) turns the general act the other way; claim after a determiner is the noun.",
+  "A misread is silent, a not-read sentence is listed: words are added only where the sentence then reads as meant ('When you break a deal, break it ...' stays not read: its condition would read as betrayed).",
+  "v0.1r7: a rule keeps the strength it has reached; a repeat never revives a cancelled rule, only a strictly stronger wording replaces it ('Lie. Lie. Do not lie.' stays cancelled; 'Lie. Do not lie. You must lie.' reads as must)."
+ ]
+}
