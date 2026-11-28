@@ -1,0 +1,63 @@
+/* read_prompt.rex - show what Heel Turn reads from a designer prompt.
+   Architecture: Tom Dyer. Code: Claude (Opus 5.5).
+   The same reader and the same single read the engine uses: READ with the
+   settings each sentence moved (setting, change, condition, COUNTED or
+   REPEAT or CANCELLED, act/object),
+   or NOT READ with the words the lexicon does not know. Then the settings.
+   Usage: rexx tools/read_prompt.rex PROMPT_FILE [DATA_DIR] */
+parse arg file dataDir
+if file == '' then do
+  say 'usage: rexx tools/read_prompt.rex PROMPT_FILE [DATA_DIR]'
+  exit 2
+end
+if dataDir == '' then dataDir = 'data'
+src = .stream~new(file)
+if src~open('READ') \== 'READY:' then do
+  say 'cannot read' file
+  exit 2
+end
+text = src~charin(1, src~chars)
+src~close
+reader = .HeelTurnReader~new(.HeelTurnVocabulary~new(dataDir))
+pr = .HeelTurnPromptReader~new(reader)
+-- one read of the whole prompt, as the engine does; each hit is shown under
+-- its sentence with what it bought: COUNTED, REPEAT (the same rule said as
+-- strongly or more strongly elsewhere) or CANCELLED (equal and opposite)
+policy = pr~read(text)
+bySentence = .directory~new
+do hi = 1 to policy~hits~items
+  parse value policy~hits[hi] with knob '|' delta '|' cond '|' why '|' sn '|' .
+  if \bySentence~hasIndex(sn) then bySentence[sn] = .array~new
+  if cond \== '' then cond = 'when' cond
+  bySentence[sn]~append((knob delta cond)~space~left(28) policy~hitStatus(hi)~left(9) '('why')')
+end
+unread = .directory~new
+do nr over policy~notRead
+  parse var nr sentence '|' unknown
+  unread[sentence] = unknown
+end
+n = 0
+readCount = 0
+do sentence over reader~sentences(text)
+  n += 1
+  if bySentence~hasIndex(n) then do
+    readCount += 1
+    say 'READ    ' n':' sentence
+    do line over bySentence[n]
+      say '            ' line
+    end
+  end
+  else do
+    unknown = ''
+    if unread~hasIndex(sentence) then unknown = unread[sentence]
+    say 'NOT READ' n':' sentence
+    if unknown \== '' then say '             unknown words:' unknown
+    else say '             every word known; no act moves a setting'
+  end
+end
+say ''
+say 'Sentences:' n '  read:' readCount '  not read:' n - readCount '  characters:' text~length
+say 'Settings (0 to 1, from 0.5; [condition:change]; each rule counted once, strongest wording):'
+say policy~summary
+exit 0
+::requires 'HeelTurnPolicy.cls'
