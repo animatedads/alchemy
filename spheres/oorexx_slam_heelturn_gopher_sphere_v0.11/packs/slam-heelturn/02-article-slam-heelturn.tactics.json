@@ -1,0 +1,22 @@
+{
+ "kind": "article",
+ "id": "slam-heelturn.tactics",
+ "title": "Tactics and agreements (v0.2)",
+ "section": "orders",
+ "version": "0.11",
+ "sphere": "slam-heelturn",
+ "authority": "project-continuity",
+ "summary": "Strength-counted defence, cuts, dislodgement, bounces, strategic retreats; bounce and dislodge by agreement, and the dislodge trap.",
+ "invariants": [
+  "Required by Tom Dyer (28 Nov 2026): forced bounces, dislodgement, strategic moves on retreat; bounce by agreement; dislodge by treaty to force an elected move on retreat (allies attack a square of the other to fill it; the dislodged unit's move is made in the retreat phase, so the outcome is predictable).",
+  "Strength table: worst case for a province = every hostile unit that can reach it supporting the strongest move into it (hostile excludes allies and powers whose promise Reasoned Thought lets us plan on). Hold = 1 + hold supports; a tie holds. A move into an occupied province must beat 1 + the occupant's own power's units that can support it. A support is weak only if an enemy can cut it with a unit that could not have joined the attack.",
+  "Tactics run after each unit's own best move: defend (hold supports, then cuts; call a unit back to a centre under a supported threat or any fall threat; move a unit into an empty threatened centre), cut, dislodge (when the province is worth it or the victim has no retreat), deny (bounce a hostile unit out: fall centres not mine; with the deny setting, provinces next to my centres). Units spent: holders, then movers whose move gains nothing, then (defence only) any unpromised mover; a unit taken off a move gets it back if the tactic is dropped. Promised moves and units with a role are never taken; no tactic orders a swap.",
+  "Retreats are moves: fall capture of an unowned centre; a home centre left vacant when a build is due; else nearer a target, a threatened centre of mine, not where it would be dislodged again. An agreed retreat is taken if still open.",
+  "Bounce by agreement: commitment BOUNCE P. Kept = their move into P and no support of theirs into it. Offered instead of a DMZ when trust < 0.5 or suspicion >= 0.6; accepted if a unit of mine can move in without breaking another promise. My side: a promised unsupported move (MOVES, NOSUPPORTINTO).",
+  "Dislodge by agreement: commitments DISLODGE_ME (they dislodge my unit) and DISLODGE_THEM (I dislodge theirs), read over the whole mail from literal orders (a supported MOVE into P, a RETREAT of P's unit to Q). Victim side kept = their move into P and none of their units into Q. Attacker side kept = their unit held, unsupported by them. An agreed dislodge is not recorded as an attack.",
+  "The trap (Tom Dyer: a particularly unpleasant trick, working because the parties see the dislodge as mutually beneficial): the square taken as agreed, then the retreat province taken or bounced so the unit disbands. Heel Turn as victim accepts only from an ally, never on its own centre, and only if no unit but the attacker can reach Q. As attacker it proposes only with no other unit of its own able to reach Q. A prompt that lies (honesty < 0.5) and stabs (stab >= 0.5) may accept and spring it: dislodge plus a third unit into Q, recorded as its own lie (KEEPCLEAR, TOLD_LIE).",
+  "One unit, one promise: agreements and told moves use only units nothing else this phase speaks for; the unit already in a bounce in P (or told to move into P) is the bouncer; no bounce where a stay-out is promised; no DMZ or bounce on a province an agreement names; a promised support takes the named unit off its own move; told moves are direct moves only.",
+  "Tests: tests/tactics.rex with tests/HeelTurnBench.cls: positions rendered and parsed by the framework's DiplomacyPlayer, outcomes decided by DiplomacyAdjudicator. v0.1r9 fails the five tactics cases.",
+  "Series (seven rotations of the prompts, to 1908, means, v0.1r9 -> v0.2): moves succeeding 26% -> 38%; dislodgements 6.0 -> 2.9; standoffs 35.4 -> 31.4; bounce agreements 0 -> 16.9; dislodge treaties 0 -> 0 (strict conditions; directed tests carry them); caught lies with no told lie behind them 5.0 -> 1.0; invalid orders 0.1 -> 0; largest power 7.7 -> 8.7; seconds per game 17.7 -> 22.3. A mirror series."
+ ]
+}

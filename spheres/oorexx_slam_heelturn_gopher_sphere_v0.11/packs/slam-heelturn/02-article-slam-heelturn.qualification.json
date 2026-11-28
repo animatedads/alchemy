@@ -1,0 +1,22 @@
+{
+ "kind": "article",
+ "id": "slam-heelturn.qualification",
+ "title": "Qualification and limits",
+ "section": "qualification",
+ "version": "0.11",
+ "sphere": "slam-heelturn",
+ "authority": "evidence",
+ "summary": "sh tests/run.sh (v0.1r4), 24 s here: lint zero findings on every file; prompt 36, press 40, orders 11, truth 38, game 14 checks. Game gate: seven Heel Turn players, 1901-1905, 302 calls all OK, zero invalid orders, no faults, lies told and caught, promises settled; same seed byte-identical journal and log; framework replay byte-identical. Autobuild on r13196: v0.1r3 PASS (run 20261127T211753Z-97951077def4-5fce11a0, 71 s).",
+ "invariants": [
+  "Autobuild on r13196: v0.1-v0.1r2 FAIL by game-gate timeout (pure-ooRexx SHA-512); v0.1r3 PASS 20261127T211753Z-97951077def4-5fce11a0; v0.1r4 PASS 20261127T215133Z-ae80256063c6-34196ba5; v0.1r5 PASS 20261127T221027Z-e815183f99b8-89ae8415; v0.1r6 PASS 20261127T223220Z-86b6e0ff7788-a49320a2; v0.1r7 PASS 20261127T232339Z-a191a3e47073-54a85576; v0.1r8 PASS 20261127T233709Z-8d289d8b6b97-5dd2c5d7. v0.2 local gate: 241 checks (prompt 49, press 49, orders 15, truth 59, answers 31, tactics 24, game 14). Read the newest result before claiming qualification of a later version.",
+  "Librarian grammar loads from virtual_ryta_hardworld_v0.31_work/librarian/LibrarianSalvagedCore_v09.cls (LibrarianLexicon, LibrarianGrammar only); it should move to a published Librarian package.",
+  "Closed vocabulary: long LLM prompts and messages will have unread sentences, which are listed.",
+  "Play strength against Haiku or Sol is not measured; no live provider call was made.",
+  "No hashing in Heel Turn or its tests: equality is checked by bytes. Where a digest is ever needed it goes through crypto's Foreign Runtime provider, never the pure-ooRexx path.",
+  "Designer prompts are sealed until unsealed by the competition: they are never test fixtures. tests/fixtures/constructs.txt holds constructions written for the tests."
+ ],
+ "procedure": [
+  "export ALCHEMY_REPO_ROOT=/path/to/alchemy",
+  "sh tests/run.sh"
+ ]
+}
